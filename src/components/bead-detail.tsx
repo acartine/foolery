@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
@@ -51,6 +52,7 @@ interface BeadDetailProps {
 export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const savingRef = useRef(false);
 
   const startEdit = useCallback((field: string, currentValue: string) => {
     setEditingField(field);
@@ -63,7 +65,8 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
   }, []);
 
   const saveEdit = useCallback(async (field: string, value: string) => {
-    if (!onUpdate) return;
+    if (!onUpdate || savingRef.current) return;
+    savingRef.current = true;
     const fields: UpdateBeadInput = {};
     if (field === "title") fields.title = value;
     else if (field === "description") fields.description = value;
@@ -76,9 +79,24 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
       await onUpdate(fields);
     } catch {
       // Error toast shown by mutation onError handler
+    } finally {
+      savingRef.current = false;
+      setEditingField(null);
+      setEditValue("");
     }
-    setEditingField(null);
-    setEditValue("");
+  }, [onUpdate]);
+
+  /** Fire-and-forget update for Select dropdowns - does not return a Promise */
+  const fireUpdate = useCallback((fields: UpdateBeadInput) => {
+    if (!onUpdate) return;
+    onUpdate(fields).catch(() => {
+      // Error toast shown by mutation onError handler
+    });
+  }, [onUpdate]);
+
+  const removeLabel = useCallback((label: string) => {
+    if (!onUpdate) return;
+    onUpdate({ removeLabels: [label] }).catch(() => {});
   }, [onUpdate]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent, field: string) => {
@@ -128,9 +146,9 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             {onUpdate ? (
               <Select
                 value={bead.type}
-                onValueChange={(v) => onUpdate({ type: v as BeadType })}
+                onValueChange={(v) => fireUpdate({ type: v as BeadType })}
               >
-                <SelectTrigger className="h-7 w-auto border-none bg-transparent p-0 shadow-none">
+                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
                   <BeadTypeBadge type={bead.type} />
                 </SelectTrigger>
                 <SelectContent>
@@ -146,9 +164,9 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             {onUpdate ? (
               <Select
                 value={bead.status}
-                onValueChange={(v) => onUpdate({ status: v as BeadStatus })}
+                onValueChange={(v) => fireUpdate({ status: v as BeadStatus })}
               >
-                <SelectTrigger className="h-7 w-auto border-none bg-transparent p-0 shadow-none">
+                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
                   <BeadStatusBadge status={bead.status} />
                 </SelectTrigger>
                 <SelectContent>
@@ -164,9 +182,9 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             {onUpdate ? (
               <Select
                 value={String(bead.priority)}
-                onValueChange={(v) => onUpdate({ priority: Number(v) as BeadPriority })}
+                onValueChange={(v) => fireUpdate({ priority: Number(v) as BeadPriority })}
               >
-                <SelectTrigger className="h-7 w-auto border-none bg-transparent p-0 shadow-none">
+                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
                   <BeadPriorityBadge priority={bead.priority} />
                 </SelectTrigger>
                 <SelectContent>
@@ -216,31 +234,58 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           {(bead.labels.length > 0 || onUpdate) && (
             <>
               <Separator />
-              {editingField === "labels" ? (
-                <Input
-                  autoFocus
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={() => saveEdit("labels", editValue)}
-                  onKeyDown={(e) => handleKeyDown(e, "labels")}
-                  placeholder="label1, label2, ..."
-                />
-              ) : (
-                <div
-                  className={`flex gap-1 flex-wrap ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 min-h-[28px]" : ""}`}
-                  onClick={() => onUpdate && startEdit("labels", bead.labels.join(", "))}
-                >
-                  {bead.labels.length > 0 ? (
-                    bead.labels.map((label) => (
-                      <Badge key={label} variant="secondary">
-                        {label}
-                      </Badge>
-                    ))
-                  ) : onUpdate ? (
-                    <span className="text-xs text-muted-foreground">Click to add labels</span>
-                  ) : null}
-                </div>
-              )}
+              <div className="flex gap-1 flex-wrap items-center min-h-[28px]">
+                {bead.labels.map((label) => (
+                  <Badge key={label} variant="secondary" className="gap-1 pr-1">
+                    {label}
+                    {onUpdate && (
+                      <button
+                        type="button"
+                        className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                        onClick={() => removeLabel(label)}
+                      >
+                        <X className="size-3" />
+                      </button>
+                    )}
+                  </Badge>
+                ))}
+                {onUpdate && (
+                  <button
+                    type="button"
+                    className="text-xs text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded hover:bg-muted"
+                    onClick={() => startEdit("labels", "")}
+                  >
+                    + Add
+                  </button>
+                )}
+                {editingField === "labels" && (
+                  <Input
+                    autoFocus
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => {
+                      if (editValue.trim()) {
+                        saveEdit("labels", [...bead.labels, ...editValue.split(",").map(s => s.trim()).filter(Boolean)].join(", "));
+                      } else {
+                        cancelEdit();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") cancelEdit();
+                      else if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (editValue.trim()) {
+                          saveEdit("labels", [...bead.labels, ...editValue.split(",").map(s => s.trim()).filter(Boolean)].join(", "));
+                        } else {
+                          cancelEdit();
+                        }
+                      }
+                    }}
+                    placeholder="New label..."
+                    className="w-[150px] h-7 text-xs"
+                  />
+                )}
+              </div>
             </>
           )}
         </CardContent>
