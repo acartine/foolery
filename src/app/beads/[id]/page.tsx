@@ -3,9 +3,9 @@
 import { use } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, XCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { fetchBead, closeBead, fetchDeps, updateBead } from "@/lib/api";
+import { fetchBead, fetchDeps, updateBead } from "@/lib/api";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
@@ -35,25 +35,20 @@ export default function BeadDetailPage({
   const queryClient = useQueryClient();
 
   const { mutateAsync: handleUpdate } = useMutation({
-    mutationFn: (fields: UpdateBeadInput) => updateBead(id, fields, repo),
+    mutationFn: async (fields: UpdateBeadInput) => {
+      const result = await updateBead(id, fields, repo);
+      if (!result.ok) throw new Error(result.error ?? "Failed to update bead");
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bead", id, repo] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
   const bead = data?.ok ? data.data : undefined;
   const deps = depsData?.ok ? (depsData.data ?? []) : [];
-
-  async function handleClose() {
-    const reason = prompt("Close reason (optional):");
-    const result = await closeBead(id, { reason: reason ?? undefined }, repo);
-    if (result.ok) {
-      toast.success("Bead closed");
-      router.refresh();
-    } else {
-      toast.error(result.error ?? "Failed to close bead");
-    }
-  }
 
   if (isLoading) {
     return (
@@ -86,14 +81,7 @@ export default function BeadDetailPage({
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <div className="flex gap-2">
-          {bead.status !== "closed" && (
-            <Button variant="outline" onClick={handleClose}>
-              <XCircle className="mr-2 h-4 w-4" />
-              Close
-            </Button>
-          )}
-        </div>
+        <div className="flex gap-2" />
       </div>
 
       <BeadDetail bead={bead} onUpdate={async (fields) => { await handleUpdate(fields); }} />

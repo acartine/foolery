@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Bead, BeadType, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
@@ -66,11 +67,22 @@ export function getBeadColumns(opts: {
     {
       accessorKey: "id",
       header: "ID",
-      cell: ({ row }) => (
-        <span className="font-mono text-xs text-muted-foreground">
-          {row.original.id.replace(/^[^-]+-/, "")}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const shortId = row.original.id.replace(/^[^-]+-/, "");
+        return (
+          <span
+            className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+            title="Click to copy ID"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(shortId);
+              toast.success(`Copied: ${shortId}`);
+            }}
+          >
+            {shortId}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "title",

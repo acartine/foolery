@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
@@ -67,10 +68,15 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
     if (field === "title") fields.title = value;
     else if (field === "description") fields.description = value;
     else if (field === "acceptance") fields.acceptance = value;
+    else if (field === "notes") fields.notes = value;
     else if (field === "labels") {
       fields.labels = value.split(",").map((s) => s.trim()).filter(Boolean);
     }
-    await onUpdate(fields);
+    try {
+      await onUpdate(fields);
+    } catch {
+      // Error toast shown by mutation onError handler
+    }
     setEditingField(null);
     setEditValue("");
   }, [onUpdate]);
@@ -105,7 +111,17 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               {bead.title}
             </CardTitle>
           )}
-          <code className="text-xs text-muted-foreground">{bead.id}</code>
+          <code
+            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+            onClick={() => {
+              const shortId = bead.id.replace(/^[^-]+-/, "");
+              navigator.clipboard.writeText(shortId);
+              toast.success(`Copied: ${shortId}`);
+            }}
+            title="Click to copy ID"
+          >
+            {bead.id}
+          </code>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2 flex-wrap">
@@ -257,16 +273,32 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
         </CardContent>
       </Card>
 
-      {bead.notes && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm">{bead.notes}</p>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Notes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {editingField === "notes" ? (
+            <Textarea
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => saveEdit("notes", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") cancelEdit();
+              }}
+              className="min-h-[100px]"
+            />
+          ) : (
+            <p
+              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 min-h-[40px]" : ""}`}
+              onClick={() => onUpdate && startEdit("notes", bead.notes ?? "")}
+            >
+              {bead.notes || (onUpdate ? "Click to add notes" : "-")}
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
