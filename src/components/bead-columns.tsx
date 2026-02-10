@@ -73,8 +73,6 @@ function VerificationButtons({
   const hasVerification = bead.labels?.includes("stage:verification");
   if (!hasVerification || (!onUpdateBead && !onCloseBead)) return null;
 
-  const labelsWithout = (bead.labels ?? []).filter((l) => l !== "stage:verification");
-
   return (
     <>
       {onCloseBead && (
@@ -84,8 +82,8 @@ function VerificationButtons({
           title="Verify (LGTM)"
           onClick={(e) => {
             e.stopPropagation();
+            onUpdateBead?.(bead.id, { removeLabels: ["stage:verification"] });
             onCloseBead(bead.id);
-            onUpdateBead?.(bead.id, { labels: labelsWithout });
           }}
         >
           <Check className="size-4" />
@@ -105,8 +103,6 @@ function RejectButton({
   const hasVerification = bead.labels?.includes("stage:verification");
   if (!hasVerification || !onUpdateBead) return null;
 
-  const labelsWithout = (bead.labels ?? []).filter((l) => l !== "stage:verification");
-
   return (
     <button
       type="button"
@@ -114,7 +110,7 @@ function RejectButton({
       title="Reject"
       onClick={(e) => {
         e.stopPropagation();
-        onUpdateBead(bead.id, { status: "open", labels: labelsWithout });
+        onUpdateBead(bead.id, { status: "open", removeLabels: ["stage:verification"] });
       }}
     >
       <ThumbsDown className="size-4" />
@@ -204,6 +200,35 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       },
     },
     {
+      accessorKey: "priority",
+      header: "Priority",
+      cell: ({ row }) => {
+        if (!onUpdateBead) return <BeadPriorityBadge priority={row.original.priority} />;
+        return (
+          <Select
+            value={String(row.original.priority)}
+            onValueChange={(v) => {
+              onUpdateBead(row.original.id, { priority: Number(v) as BeadPriority });
+            }}
+          >
+            <SelectTrigger
+              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BeadPriorityBadge priority={row.original.priority} />
+            </SelectTrigger>
+            <SelectContent>
+              {PRIORITIES.map((p) => (
+                <SelectItem key={p} value={String(p)}>
+                  P{p}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      },
+    },
+    {
       accessorKey: "type",
       header: "Type",
       cell: ({ row }) => {
@@ -246,35 +271,6 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
           <RejectButton bead={row.original} onUpdateBead={onUpdateBead} />
         </div>
       ),
-    },
-    {
-      accessorKey: "priority",
-      header: "Priority",
-      cell: ({ row }) => {
-        if (!onUpdateBead) return <BeadPriorityBadge priority={row.original.priority} />;
-        return (
-          <Select
-            value={String(row.original.priority)}
-            onValueChange={(v) => {
-              onUpdateBead(row.original.id, { priority: Number(v) as BeadPriority });
-            }}
-          >
-            <SelectTrigger
-              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <BeadPriorityBadge priority={row.original.priority} />
-            </SelectTrigger>
-            <SelectContent>
-              {PRIORITIES.map((p) => (
-                <SelectItem key={p} value={String(p)}>
-                  P{p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-      },
     },
   ];
 

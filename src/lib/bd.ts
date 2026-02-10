@@ -151,7 +151,9 @@ export async function updateBead(
   for (const [key, val] of Object.entries(fields)) {
     if (val === undefined) continue;
     if (key === "labels" && Array.isArray(val)) {
-      args.push("--set-labels", val.join(","));
+      if (val.length > 0) args.push("--set-labels", val.join(","));
+    } else if (key === "removeLabels" && Array.isArray(val)) {
+      for (const label of val) args.push("--remove-label", label);
     } else {
       args.push(`--${key}`, String(val));
     }
