@@ -143,11 +143,6 @@ export function getBeadColumns(opts: {
       },
     },
     {
-      accessorKey: "assignee",
-      header: "Assignee",
-      cell: ({ row }) => row.original.assignee ?? "-",
-    },
-    {
       accessorKey: "updated",
       header: "Updated",
       cell: ({ row }) => (
