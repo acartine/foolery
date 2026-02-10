@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { fetchBeads, fetchBeadsFromAllRepos } from "@/lib/api";
+import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
@@ -17,11 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
+import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
+import type { UpdateBeadInput } from "@/lib/schemas";
 
 export default function BeadsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectionVersion, setSelectionVersion] = useState(0);
+  const queryClient = useQueryClient();
   const {
     commandPaletteOpen,
     toggleCommandPalette,
@@ -46,77 +51,108 @@ export default function BeadsPage() {
   if (filters.status) params.status = filters.status;
   if (filters.type) params.type = filters.type;
   if (filters.priority !== undefined) params.priority = String(filters.priority);
-  if (filters.assignee) params.assignee = filters.assignee;
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["beads", params, activeRepo],
     queryFn: () => {
-      if (activeRepo) {
-        return fetchBeads(params, activeRepo);
-      }
-      if (registeredRepos.length > 0) {
-        return fetchBeadsFromAllRepos(registeredRepos, params);
-      }
+      if (activeRepo) return fetchBeads(params, activeRepo);
+      if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
       return fetchBeads(params);
     },
   });
 
   const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
-
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
+  const { mutate: bulkUpdate } = useMutation({
+    mutationFn: async ({ ids, fields }: { ids: string[]; fields: UpdateBeadInput }) => {
+      await Promise.all(
+        ids.map((id) => {
+          const bead = beads.find((b) => b.id === id) as unknown as Record<string, unknown>;
+          const repo = bead?._repoPath as string | undefined;
+          return updateBead(id, fields, repo);
+        })
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      setSelectionVersion((v) => v + 1);
+      toast.success("Beads updated");
+    },
+    onError: () => {
+      toast.error("Failed to update beads");
+    },
+  });
+
+  const handleSelectionChange = useCallback((ids: string[]) => {
+    setSelectedIds(ids);
+  }, []);
+
+  const handleBulkUpdate = useCallback(
+    (fields: UpdateBeadInput) => {
+      if (selectedIds.length > 0) {
+        bulkUpdate({ ids: selectedIds, fields });
+      }
+    },
+    [selectedIds, bulkUpdate]
+  );
+
+  const handleClearSelection = useCallback(() => {
+    setSelectionVersion((v) => v + 1);
+  }, []);
+
+  const newBeadButton = !activeRepo && registeredRepos.length > 0 ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm">
+          <Plus className="mr-2 h-4 w-4" />
+          New Bead
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {registeredRepos.map((repo) => (
+          <DropdownMenuItem
+            key={repo.path}
+            onClick={() => {
+              setSelectedRepo(repo.path);
+              setCreateOpen(true);
+            }}
+          >
+            {repo.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <Button size="sm" onClick={() => setCreateOpen(true)}>
+      <Plus className="mr-2 h-4 w-4" />
+      New Bead
+    </Button>
+  );
+
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {activeRepo
-              ? (registeredRepos.find((r) => r.path === activeRepo)?.name ?? "Beads")
-              : "Beads"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your issues and tasks
-          </p>
-        </div>
-        {!activeRepo && registeredRepos.length > 0 ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New Bead
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {registeredRepos.map((repo) => (
-                <DropdownMenuItem
-                  key={repo.path}
-                  onClick={() => {
-                    setSelectedRepo(repo.path);
-                    setCreateOpen(true);
-                  }}
-                >
-                  {repo.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Bead
-          </Button>
-        )}
+    <div className="container mx-auto pt-4 px-4 max-w-7xl">
+      <div className="flex items-center justify-between mb-3">
+        <FilterBar
+          selectedIds={selectedIds}
+          onBulkUpdate={handleBulkUpdate}
+          onClearSelection={handleClearSelection}
+        />
+        {newBeadButton}
       </div>
 
-      <FilterBar />
-
-      <div className="mt-4">
+      <div className="mt-2">
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-muted-foreground">
             Loading beads...
           </div>
         ) : (
-          <BeadTable data={beads} showRepoColumn={showRepoColumn} />
+          <BeadTable
+            data={beads}
+            showRepoColumn={showRepoColumn}
+            onSelectionChange={handleSelectionChange}
+            selectionVersion={selectionVersion}
+          />
         )}
       </div>
 

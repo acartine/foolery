@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   useReactTable,
@@ -13,7 +13,7 @@ import {
   type RowSelectionState,
 } from "@tanstack/react-table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
+import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
 import { getBeadColumns } from "@/components/bead-columns";
@@ -36,12 +36,27 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 
+const PAGE_SIZE_KEY = "foolery-page-size";
+const DEFAULT_PAGE_SIZE = 50;
+
+function getStoredPageSize(): number {
+  if (typeof window === "undefined") return DEFAULT_PAGE_SIZE;
+  const stored = localStorage.getItem(PAGE_SIZE_KEY);
+  if (!stored) return DEFAULT_PAGE_SIZE;
+  const parsed = Number(stored);
+  return [25, 50, 100].includes(parsed) ? parsed : DEFAULT_PAGE_SIZE;
+}
+
 export function BeadTable({
   data,
   showRepoColumn = false,
+  onSelectionChange,
+  selectionVersion,
 }: {
   data: Bead[];
   showRepoColumn?: boolean;
+  onSelectionChange?: (ids: string[]) => void;
+  selectionVersion?: number;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -86,25 +101,9 @@ export function BeadTable({
     [showRepoColumn, handleUpdateBead, handleCloseBead]
   );
 
-  const { mutate: bulkUpdate } = useMutation({
-    mutationFn: async ({ ids, fields }: { ids: string[]; fields: UpdateBeadInput }) => {
-      await Promise.all(
-        ids.map((id) => {
-          const bead = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
-          const repo = bead?._repoPath as string | undefined;
-          return updateBead(id, fields, repo);
-        })
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      setRowSelection({});
-      toast.success("Beads updated");
-    },
-    onError: () => {
-      toast.error("Failed to update beads");
-    },
-  });
+  useEffect(() => {
+    setRowSelection({});
+  }, [selectionVersion]);
 
   const table = useReactTable({
     data,
@@ -117,55 +116,19 @@ export function BeadTable({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: getStoredPageSize() } },
   });
 
   const selectedIds = table.getFilteredSelectedRowModel().rows.map((r) => r.original.id);
+  const selectedKey = selectedIds.join(",");
+
+  useEffect(() => {
+    onSelectionChange?.(selectedIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKey, onSelectionChange]);
 
   return (
     <div className="space-y-4">
-      {selectedIds.length > 0 && (
-        <div className="flex items-center gap-4 rounded-md border bg-muted/50 p-2">
-          <span className="text-sm font-medium">
-            {selectedIds.length} selected
-          </span>
-          <Select
-            onValueChange={(v) => bulkUpdate({ ids: selectedIds, fields: { type: v as BeadType } })}
-          >
-            <SelectTrigger className="h-8 w-[130px]">
-              <SelectValue placeholder="Set type..." />
-            </SelectTrigger>
-            <SelectContent>
-              {(["bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate"] as const).map((t) => (
-                <SelectItem key={t} value={t}>{t}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            onValueChange={(v) => bulkUpdate({ ids: selectedIds, fields: { priority: Number(v) as BeadPriority } })}
-          >
-            <SelectTrigger className="h-8 w-[130px]">
-              <SelectValue placeholder="Set priority..." />
-            </SelectTrigger>
-            <SelectContent>
-              {([0, 1, 2, 3, 4] as const).map((p) => (
-                <SelectItem key={p} value={String(p)}>P{p}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            onValueChange={(v) => bulkUpdate({ ids: selectedIds, fields: { status: v as BeadStatus } })}
-          >
-            <SelectTrigger className="h-8 w-[130px]">
-              <SelectValue placeholder="Set status..." />
-            </SelectTrigger>
-            <SelectContent>
-              {(["open", "in_progress", "blocked", "deferred", "closed"] as const).map((s) => (
-                <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -231,23 +194,48 @@ export function BeadTable({
         </TableBody>
       </Table>
 
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </div>
+        <div className="flex items-center gap-2">
+          <Select
+            value={String(table.getState().pagination.pageSize)}
+            onValueChange={(v) => {
+              const size = Number(v);
+              table.setPageSize(size);
+              localStorage.setItem(PAGE_SIZE_KEY, String(size));
+            }}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[25, 50, 100].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

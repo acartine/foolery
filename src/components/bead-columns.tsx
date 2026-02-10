@@ -269,11 +269,6 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         );
       },
     },
-    {
-      accessorKey: "assignee",
-      header: "Assignee",
-      cell: ({ row }) => row.original.assignee ?? "-",
-    },
   ];
 
   if (showRepoColumn) {
