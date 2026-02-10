@@ -62,7 +62,11 @@ export default function BeadsPage() {
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Beads</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {activeRepo
+              ? (registeredRepos.find((r) => r.path === activeRepo)?.name ?? "Beads")
+              : "Beads"}
+          </h1>
           <p className="text-muted-foreground mt-1">
             Manage your issues and tasks
           </p>

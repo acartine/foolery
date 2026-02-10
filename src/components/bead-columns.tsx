@@ -1,10 +1,24 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import type { Bead } from "@/lib/types";
+import type { Bead, BeadType, BeadPriority } from "@/lib/types";
+import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadTypeBadge } from "@/components/bead-type-badge";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const BEAD_TYPES: BeadType[] = [
+  "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
+];
+
+const PRIORITIES: BeadPriority[] = [0, 1, 2, 3, 4];
 
 function relativeTime(dateStr: string): string {
   const now = Date.now();
@@ -20,14 +34,20 @@ function relativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
+export function getBeadColumns(opts: {
+  showRepoColumn?: boolean;
+  onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+} | boolean = false): ColumnDef<Bead>[] {
+  const showRepoColumn = typeof opts === "boolean" ? opts : (opts.showRepoColumn ?? false);
+  const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
+
   const columns: ColumnDef<Bead>[] = [
     {
       accessorKey: "id",
       header: "ID",
       cell: ({ row }) => (
         <span className="font-mono text-xs text-muted-foreground">
-          {row.original.id.slice(0, 8)}
+          {row.original.id.replace(/^[^-]+-/, "")}
         </span>
       ),
     },
@@ -41,7 +61,31 @@ export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
     {
       accessorKey: "type",
       header: "Type",
-      cell: ({ row }) => <BeadTypeBadge type={row.original.type} />,
+      cell: ({ row }) => {
+        if (!onUpdateBead) return <BeadTypeBadge type={row.original.type} />;
+        return (
+          <Select
+            value={row.original.type}
+            onValueChange={(v) => {
+              onUpdateBead(row.original.id, { type: v as BeadType });
+            }}
+          >
+            <SelectTrigger
+              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BeadTypeBadge type={row.original.type} />
+            </SelectTrigger>
+            <SelectContent>
+              {BEAD_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -51,7 +95,31 @@ export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
     {
       accessorKey: "priority",
       header: "Priority",
-      cell: ({ row }) => <BeadPriorityBadge priority={row.original.priority} />,
+      cell: ({ row }) => {
+        if (!onUpdateBead) return <BeadPriorityBadge priority={row.original.priority} />;
+        return (
+          <Select
+            value={String(row.original.priority)}
+            onValueChange={(v) => {
+              onUpdateBead(row.original.id, { priority: Number(v) as BeadPriority });
+            }}
+          >
+            <SelectTrigger
+              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <BeadPriorityBadge priority={row.original.priority} />
+            </SelectTrigger>
+            <SelectContent>
+              {PRIORITIES.map((p) => (
+                <SelectItem key={p} value={String(p)}>
+                  P{p}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      },
     },
     {
       accessorKey: "assignee",
@@ -89,4 +157,4 @@ export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
   return columns;
 }
 
-export const beadColumns = getBeadColumns(false);
+export const beadColumns = getBeadColumns({ showRepoColumn: false });
