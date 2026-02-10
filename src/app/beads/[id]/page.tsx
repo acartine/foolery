@@ -25,11 +25,13 @@ export default function BeadDetailPage({
   const { data, isLoading } = useQuery({
     queryKey: ["bead", id, repo],
     queryFn: () => fetchBead(id, repo),
+    refetchInterval: 10_000,
   });
 
   const { data: depsData } = useQuery({
     queryKey: ["bead-deps", id, repo],
     queryFn: () => fetchDeps(id, repo),
+    refetchInterval: 10_000,
   });
 
   const queryClient = useQueryClient();

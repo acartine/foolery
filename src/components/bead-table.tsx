@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead } from "@/lib/api";
+import { buildHierarchy } from "@/lib/bead-hierarchy";
 import { getBeadColumns } from "@/components/bead-columns";
 import {
   Table,
@@ -62,6 +63,8 @@ export function BeadTable({
     },
   });
 
+  const hierarchicalData = useMemo(() => buildHierarchy(data), [data]);
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
@@ -91,7 +94,7 @@ export function BeadTable({
   });
 
   const table = useReactTable({
-    data,
+    data: hierarchicalData,
     columns,
     state: { sorting, rowSelection },
     onSortingChange: setSorting,
