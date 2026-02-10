@@ -20,50 +20,73 @@ function relativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-export const beadColumns: ColumnDef<Bead>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs text-muted-foreground">
-        {row.original.id.slice(0, 8)}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "title",
-    header: "Title",
-    cell: ({ row }) => (
-      <span className="font-medium">{row.original.title}</span>
-    ),
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => <BeadTypeBadge type={row.original.type} />,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <BeadStatusBadge status={row.original.status} />,
-  },
-  {
-    accessorKey: "priority",
-    header: "Priority",
-    cell: ({ row }) => <BeadPriorityBadge priority={row.original.priority} />,
-  },
-  {
-    accessorKey: "assignee",
-    header: "Assignee",
-    cell: ({ row }) => row.original.assignee ?? "-",
-  },
-  {
-    accessorKey: "updated",
-    header: "Updated",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground text-xs">
-        {relativeTime(row.original.updated)}
-      </span>
-    ),
-  },
-];
+export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
+  const columns: ColumnDef<Bead>[] = [
+    {
+      accessorKey: "id",
+      header: "ID",
+      cell: ({ row }) => (
+        <span className="font-mono text-xs text-muted-foreground">
+          {row.original.id.slice(0, 8)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.title}</span>
+      ),
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row }) => <BeadTypeBadge type={row.original.type} />,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <BeadStatusBadge status={row.original.status} />,
+    },
+    {
+      accessorKey: "priority",
+      header: "Priority",
+      cell: ({ row }) => <BeadPriorityBadge priority={row.original.priority} />,
+    },
+    {
+      accessorKey: "assignee",
+      header: "Assignee",
+      cell: ({ row }) => row.original.assignee ?? "-",
+    },
+    {
+      accessorKey: "updated",
+      header: "Updated",
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-xs">
+          {relativeTime(row.original.updated)}
+        </span>
+      ),
+    },
+  ];
+
+  if (showRepoColumn) {
+    columns.splice(1, 0, {
+      id: "_repoName",
+      header: "Repo",
+      cell: ({ row }) => {
+        const repoName = (row.original as unknown as Record<string, unknown>)._repoName;
+        return repoName ? (
+          <span className="text-xs font-mono text-muted-foreground">
+            {repoName as string}
+          </span>
+        ) : (
+          "-"
+        );
+      },
+    });
+  }
+
+  return columns;
+}
+
+export const beadColumns = getBeadColumns(false);

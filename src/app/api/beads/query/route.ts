@@ -4,7 +4,8 @@ import { queryBeadSchema } from "@/lib/schemas";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const parsed = queryBeadSchema.safeParse(body);
+  const { _repo: repoPath, ...rest } = body;
+  const parsed = queryBeadSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
     );
   }
   const { expression, limit, sort } = parsed.data;
-  const result = await queryBeads(expression, { limit, sort });
+  const result = await queryBeads(expression, { limit, sort }, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }

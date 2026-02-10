@@ -68,8 +68,18 @@ export const addDepSchema = z.object({
   blocks: z.string().min(1, "Blocked issue ID is required"),
 });
 
+export const addRepoSchema = z.object({
+  path: z.string().min(1, "Path is required"),
+});
+
+export const removeRepoSchema = z.object({
+  path: z.string().min(1, "Path is required"),
+});
+
 export type CreateBeadInput = z.infer<typeof createBeadSchema>;
 export type UpdateBeadInput = z.infer<typeof updateBeadSchema>;
 export type CloseBeadInput = z.infer<typeof closeBeadSchema>;
 export type QueryBeadInput = z.infer<typeof queryBeadSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;
+export type AddRepoInput = z.infer<typeof addRepoSchema>;
+export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;

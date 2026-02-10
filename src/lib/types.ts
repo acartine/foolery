@@ -50,3 +50,20 @@ export interface BdResult<T> {
   data?: T;
   error?: string;
 }
+
+export interface RegisteredRepo {
+  path: string;
+  name: string;
+  addedAt: string;
+}
+
+export interface DirEntry {
+  name: string;
+  path: string;
+  isBeadsRepo: boolean;
+}
+
+export interface BeadWithRepo extends Bead {
+  _repoPath: string;
+  _repoName: string;
+}

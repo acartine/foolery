@@ -1,19 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { fetchBeads } from "@/lib/api";
+import { fetchBeads, fetchBeadsFromAllRepos } from "@/lib/api";
+import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
 import { CommandPalette } from "@/components/command-palette";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
+import type { Bead } from "@/lib/types";
 
 export default function BeadsPage() {
   const [createOpen, setCreateOpen] = useState(false);
-  const { commandPaletteOpen, toggleCommandPalette, filters } = useAppStore();
+  const {
+    commandPaletteOpen,
+    toggleCommandPalette,
+    filters,
+    activeRepo,
+    registeredRepos,
+    setRegisteredRepos,
+  } = useAppStore();
+
+  const { data: registryData } = useQuery({
+    queryKey: ["registry"],
+    queryFn: fetchRegistry,
+  });
+
+  useEffect(() => {
+    if (registryData?.ok && registryData.data) {
+      setRegisteredRepos(registryData.data);
+    }
+  }, [registryData, setRegisteredRepos]);
 
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
@@ -22,11 +42,21 @@ export default function BeadsPage() {
   if (filters.assignee) params.assignee = filters.assignee;
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["beads", params],
-    queryFn: () => fetchBeads(params),
+    queryKey: ["beads", params, activeRepo],
+    queryFn: () => {
+      if (activeRepo) {
+        return fetchBeads(params, activeRepo);
+      }
+      if (registeredRepos.length > 0) {
+        return fetchBeadsFromAllRepos(registeredRepos, params);
+      }
+      return fetchBeads(params);
+    },
   });
 
-  const beads = data?.ok ? (data.data ?? []) : [];
+  const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
+
+  const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -51,7 +81,7 @@ export default function BeadsPage() {
             Loading beads...
           </div>
         ) : (
-          <BeadTable data={beads} />
+          <BeadTable data={beads} showRepoColumn={showRepoColumn} />
         )}
       </div>
 

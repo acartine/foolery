@@ -8,14 +8,15 @@ export async function POST(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const parsed = closeBeadSchema.safeParse(body);
+  const { _repo: repoPath, ...rest } = body;
+  const parsed = closeBeadSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
       { status: 400 }
     );
   }
-  const result = await closeBead(id, parsed.data.reason);
+  const result = await closeBead(id, parsed.data.reason, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }

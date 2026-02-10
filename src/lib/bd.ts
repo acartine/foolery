@@ -1,3 +1,4 @@
+import { execFile } from "node:child_process";
 import type { Bead, BeadDependency, BdResult } from "./types";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
@@ -10,21 +11,18 @@ function baseArgs(): string[] {
 }
 
 async function exec(
-  args: string[]
+  args: string[],
+  options?: { cwd?: string }
 ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  const proc = Bun.spawn([BD_BIN, ...baseArgs(), ...args], {
-    stdout: "pipe",
-    stderr: "pipe",
-    env: { ...process.env },
+  return new Promise((resolve) => {
+    execFile(BD_BIN, [...baseArgs(), ...args], { env: process.env, cwd: options?.cwd }, (error, stdout, stderr) => {
+      resolve({
+        stdout: (stdout ?? "").trim(),
+        stderr: (stderr ?? "").trim(),
+        exitCode: error ? (error.code as number) ?? 1 : 0,
+      });
+    });
   });
-
-  const [stdout, stderr] = await Promise.all([
-    new Response(proc.stdout).text(),
-    new Response(proc.stderr).text(),
-  ]);
-  const exitCode = await proc.exited;
-
-  return { stdout: stdout.trim(), stderr: stderr.trim(), exitCode };
 }
 
 function parseJson<T>(raw: string): T {
@@ -32,7 +30,8 @@ function parseJson<T>(raw: string): T {
 }
 
 export async function listBeads(
-  filters?: Record<string, string>
+  filters?: Record<string, string>,
+  repoPath?: string
 ): Promise<BdResult<Bead[]>> {
   const args = ["list", "--json", "--limit", "0"];
   if (filters) {
@@ -40,7 +39,7 @@ export async function listBeads(
       if (val) args.push(`--${key}`, val);
     }
   }
-  const { stdout, stderr, exitCode } = await exec(args);
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
   try {
     return { ok: true, data: parseJson<Bead[]>(stdout) };
@@ -50,7 +49,8 @@ export async function listBeads(
 }
 
 export async function readyBeads(
-  filters?: Record<string, string>
+  filters?: Record<string, string>,
+  repoPath?: string
 ): Promise<BdResult<Bead[]>> {
   const args = ["ready", "--json", "--limit", "0"];
   if (filters) {
@@ -58,7 +58,7 @@ export async function readyBeads(
       if (val) args.push(`--${key}`, val);
     }
   }
-  const { stdout, stderr, exitCode } = await exec(args);
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd ready failed" };
   try {
     return { ok: true, data: parseJson<Bead[]>(stdout) };
@@ -69,12 +69,13 @@ export async function readyBeads(
 
 export async function queryBeads(
   expression: string,
-  options?: { limit?: number; sort?: string }
+  options?: { limit?: number; sort?: string },
+  repoPath?: string
 ): Promise<BdResult<Bead[]>> {
   const args = ["query", expression, "--json"];
   if (options?.limit) args.push("--limit", String(options.limit));
   if (options?.sort) args.push("--sort", options.sort);
-  const { stdout, stderr, exitCode } = await exec(args);
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd query failed" };
   try {
@@ -84,8 +85,8 @@ export async function queryBeads(
   }
 }
 
-export async function showBead(id: string): Promise<BdResult<Bead>> {
-  const { stdout, stderr, exitCode } = await exec(["show", id, "--json"]);
+export async function showBead(id: string, repoPath?: string): Promise<BdResult<Bead>> {
+  const { stdout, stderr, exitCode } = await exec(["show", id, "--json"], { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd show failed" };
   try {
     return { ok: true, data: parseJson<Bead>(stdout) };
@@ -95,7 +96,8 @@ export async function showBead(id: string): Promise<BdResult<Bead>> {
 }
 
 export async function createBead(
-  fields: Record<string, string | string[] | number | undefined>
+  fields: Record<string, string | string[] | number | undefined>,
+  repoPath?: string
 ): Promise<BdResult<{ id: string }>> {
   const args = ["create", "--json"];
   for (const [key, val] of Object.entries(fields)) {
@@ -106,7 +108,7 @@ export async function createBead(
       args.push(`--${key}`, String(val));
     }
   }
-  const { stdout, stderr, exitCode } = await exec(args);
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd create failed" };
   try {
@@ -121,7 +123,8 @@ export async function createBead(
 
 export async function updateBead(
   id: string,
-  fields: Record<string, string | string[] | number | undefined>
+  fields: Record<string, string | string[] | number | undefined>,
+  repoPath?: string
 ): Promise<BdResult<void>> {
   const args = ["update", id];
   for (const [key, val] of Object.entries(fields)) {
@@ -132,14 +135,14 @@ export async function updateBead(
       args.push(`--${key}`, String(val));
     }
   }
-  const { stderr, exitCode } = await exec(args);
+  const { stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd update failed" };
   return { ok: true };
 }
 
-export async function deleteBead(id: string): Promise<BdResult<void>> {
-  const { stderr, exitCode } = await exec(["delete", id, "--force"]);
+export async function deleteBead(id: string, repoPath?: string): Promise<BdResult<void>> {
+  const { stderr, exitCode } = await exec(["delete", id, "--force"], { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd delete failed" };
   return { ok: true };
@@ -147,23 +150,24 @@ export async function deleteBead(id: string): Promise<BdResult<void>> {
 
 export async function closeBead(
   id: string,
-  reason?: string
+  reason?: string,
+  repoPath?: string
 ): Promise<BdResult<void>> {
   const args = ["close", id];
   if (reason) args.push("--reason", reason);
-  const { stderr, exitCode } = await exec(args);
+  const { stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd close failed" };
   return { ok: true };
 }
 
-export async function listDeps(id: string): Promise<BdResult<BeadDependency[]>> {
+export async function listDeps(id: string, repoPath?: string): Promise<BdResult<BeadDependency[]>> {
   const { stdout, stderr, exitCode } = await exec([
     "dep",
     "list",
     id,
     "--json",
-  ]);
+  ], { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd dep list failed" };
   try {
@@ -175,14 +179,15 @@ export async function listDeps(id: string): Promise<BdResult<BeadDependency[]>> 
 
 export async function addDep(
   blockerId: string,
-  blockedId: string
+  blockedId: string,
+  repoPath?: string
 ): Promise<BdResult<void>> {
   const { stderr, exitCode } = await exec([
     "dep",
     blockerId,
     "--blocks",
     blockedId,
-  ]);
+  ], { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd dep add failed" };
   return { ok: true };

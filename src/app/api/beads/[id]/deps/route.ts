@@ -3,11 +3,12 @@ import { listDeps, addDep } from "@/lib/bd";
 import { addDepSchema } from "@/lib/schemas";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const result = await listDeps(id);
+  const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
+  const result = await listDeps(id, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
@@ -20,14 +21,15 @@ export async function POST(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const parsed = addDepSchema.safeParse(body);
+  const { _repo: repoPath, ...rest } = body;
+  const parsed = addDepSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
       { status: 400 }
     );
   }
-  const result = await addDep(id, parsed.data.blocks);
+  const result = await addDep(id, parsed.data.blocks, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }

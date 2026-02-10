@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   useReactTable,
@@ -12,7 +12,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type { Bead } from "@/lib/types";
-import { beadColumns } from "@/components/bead-columns";
+import { getBeadColumns } from "@/components/bead-columns";
 import {
   Table,
   TableHeader,
@@ -24,13 +24,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 
-export function BeadTable({ data }: { data: Bead[] }) {
+export function BeadTable({
+  data,
+  showRepoColumn = false,
+}: {
+  data: Bead[];
+  showRepoColumn?: boolean;
+}) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  const columns = useMemo(
+    () => getBeadColumns(showRepoColumn),
+    [showRepoColumn]
+  );
+
   const table = useReactTable({
     data,
-    columns: beadColumns,
+    columns,
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -71,7 +82,15 @@ export function BeadTable({ data }: { data: Bead[] }) {
               <TableRow
                 key={row.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/beads/${row.original.id}`)}
+                onClick={() => {
+                  const repoPath = (
+                    row.original as unknown as Record<string, unknown>
+                  )._repoPath as string | undefined;
+                  const qs = repoPath
+                    ? `?repo=${encodeURIComponent(repoPath)}`
+                    : "";
+                  router.push(`/beads/${row.original.id}${qs}`);
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -83,7 +102,7 @@ export function BeadTable({ data }: { data: Bead[] }) {
           ) : (
             <TableRow>
               <TableCell
-                colSpan={beadColumns.length}
+                colSpan={columns.length}
                 className="h-24 text-center"
               >
                 No beads found.

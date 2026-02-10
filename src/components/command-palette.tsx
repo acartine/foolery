@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { List, Plus, XCircle } from "lucide-react";
+import { Database, List, Plus, XCircle } from "lucide-react";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -46,6 +46,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <CommandItem onSelect={() => runAction(() => router.push("/beads"))}>
             <List className="mr-2 size-4" />
             Go to Beads
+          </CommandItem>
+          <CommandItem onSelect={() => runAction(() => router.push("/registry"))}>
+            <Database className="mr-2 size-4" />
+            Manage Repositories
           </CommandItem>
         </CommandGroup>
 

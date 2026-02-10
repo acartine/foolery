@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { RepoSwitcher } from "@/components/repo-switcher";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,7 +30,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <header className="border-b">
+            <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-7xl">
+              <Link
+                href="/beads"
+                className="text-lg font-semibold tracking-tight"
+              >
+                Foolery
+              </Link>
+              <RepoSwitcher />
+            </div>
+          </header>
+          {children}
+        </Providers>
       </body>
     </html>
   );

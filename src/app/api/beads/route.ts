@@ -4,7 +4,9 @@ import { createBeadSchema } from "@/lib/schemas";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
-  const result = await listBeads(params);
+  const repoPath = params._repo;
+  delete params._repo;
+  const result = await listBeads(params, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
@@ -13,7 +15,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const parsed = createBeadSchema.safeParse(body);
+  const { _repo: repoPath, ...rest } = body;
+  const parsed = createBeadSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
@@ -33,7 +36,7 @@ export async function POST(request: NextRequest) {
     parent,
     estimate,
   };
-  const result = await createBead(fields);
+  const result = await createBead(fields, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }

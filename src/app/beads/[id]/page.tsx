@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Trash2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { fetchBead, deleteBead, closeBead, fetchDeps } from "@/lib/api";
@@ -18,15 +18,17 @@ export default function BeadDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const repo = searchParams.get("repo") || undefined;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["bead", id],
-    queryFn: () => fetchBead(id),
+    queryKey: ["bead", id, repo],
+    queryFn: () => fetchBead(id, repo),
   });
 
   const { data: depsData } = useQuery({
-    queryKey: ["bead-deps", id],
-    queryFn: () => fetchDeps(id),
+    queryKey: ["bead-deps", id, repo],
+    queryFn: () => fetchDeps(id, repo),
   });
 
   const bead = data?.ok ? data.data : undefined;
@@ -34,7 +36,7 @@ export default function BeadDetailPage({
 
   async function handleDelete() {
     if (!confirm("Are you sure you want to delete this bead?")) return;
-    const result = await deleteBead(id);
+    const result = await deleteBead(id, repo);
     if (result.ok) {
       toast.success("Bead deleted");
       router.push("/beads");
@@ -45,7 +47,7 @@ export default function BeadDetailPage({
 
   async function handleClose() {
     const reason = prompt("Close reason (optional):");
-    const result = await closeBead(id, { reason: reason ?? undefined });
+    const result = await closeBead(id, { reason: reason ?? undefined }, repo);
     if (result.ok) {
       toast.success("Bead closed");
       router.refresh();
