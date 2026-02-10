@@ -16,15 +16,17 @@ interface CreateBeadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
+  repo?: string | null;
 }
 
 export function CreateBeadDialog({
   open,
   onOpenChange,
   onCreated,
+  repo,
 }: CreateBeadDialogProps) {
   async function handleSubmit(data: CreateBeadInput) {
-    const result = await createBead(data);
+    const result = await createBead(data, repo ?? undefined);
     if (result.ok) {
       toast.success("Bead created");
       onCreated();

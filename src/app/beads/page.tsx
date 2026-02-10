@@ -92,6 +92,7 @@ export default function BeadsPage() {
           setCreateOpen(false);
           refetch();
         }}
+        repo={activeRepo}
       />
 
       <CommandPalette
