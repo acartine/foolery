@@ -51,20 +51,21 @@ const typeConfig: Record<
 };
 
 function formatType(type: BeadType): string {
-  return type
+  return (type ?? "task")
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 }
 
 export function BeadTypeBadge({
-  type,
+  type: rawType,
   className,
 }: {
   type: BeadType;
   className?: string;
 }) {
-  const config = typeConfig[type];
+  const type = rawType ?? "task";
+  const config = typeConfig[type] ?? typeConfig.task;
   const Icon = config.icon;
   return (
     <Badge variant="outline" className={cn(config.color, className)}>

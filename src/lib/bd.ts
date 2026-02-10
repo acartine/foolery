@@ -29,6 +29,25 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
 
+/** Map bd CLI JSON field names to our Bead interface field names. */
+function normalizeBead(raw: Record<string, unknown>): Bead {
+  return {
+    ...raw,
+    type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
+    status: (raw.status ?? "open") as Bead["status"],
+    priority: (raw.priority ?? 2) as Bead["priority"],
+    created: (raw.created_at ?? raw.created) as string,
+    updated: (raw.updated_at ?? raw.updated) as string,
+    estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
+    labels: (raw.labels ?? []) as string[],
+  } as Bead;
+}
+
+function normalizeBeads(raw: string): Bead[] {
+  const items = JSON.parse(raw) as Record<string, unknown>[];
+  return items.map(normalizeBead);
+}
+
 export async function listBeads(
   filters?: Record<string, string>,
   repoPath?: string
@@ -42,7 +61,7 @@ export async function listBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
   try {
-    return { ok: true, data: parseJson<Bead[]>(stdout) };
+    return { ok: true, data: normalizeBeads(stdout) };
   } catch {
     return { ok: false, error: "Failed to parse bd list output" };
   }
@@ -61,7 +80,7 @@ export async function readyBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd ready failed" };
   try {
-    return { ok: true, data: parseJson<Bead[]>(stdout) };
+    return { ok: true, data: normalizeBeads(stdout) };
   } catch {
     return { ok: false, error: "Failed to parse bd ready output" };
   }
@@ -79,7 +98,7 @@ export async function queryBeads(
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd query failed" };
   try {
-    return { ok: true, data: parseJson<Bead[]>(stdout) };
+    return { ok: true, data: normalizeBeads(stdout) };
   } catch {
     return { ok: false, error: "Failed to parse bd query output" };
   }
@@ -89,7 +108,9 @@ export async function showBead(id: string, repoPath?: string): Promise<BdResult<
   const { stdout, stderr, exitCode } = await exec(["show", id, "--json"], { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd show failed" };
   try {
-    return { ok: true, data: parseJson<Bead>(stdout) };
+    const parsed = JSON.parse(stdout);
+    const item = Array.isArray(parsed) ? parsed[0] : parsed;
+    return { ok: true, data: normalizeBead(item as Record<string, unknown>) };
   } catch {
     return { ok: false, error: "Failed to parse bd show output" };
   }

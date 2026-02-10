@@ -12,19 +12,20 @@ const statusColors: Record<BeadStatus, string> = {
 };
 
 function formatStatus(status: BeadStatus): string {
-  return status
+  return (status ?? "open")
     .split("_")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 }
 
 export function BeadStatusBadge({
-  status,
+  status: rawStatus,
   className,
 }: {
   status: BeadStatus;
   className?: string;
 }) {
+  const status = rawStatus ?? "open";
   return (
     <Badge variant="outline" className={cn(statusColors[status], className)}>
       {formatStatus(status)}

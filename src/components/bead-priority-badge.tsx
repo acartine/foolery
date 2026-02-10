@@ -26,13 +26,14 @@ const priorityConfig: Record<BeadPriority, { label: string; color: string }> = {
 };
 
 export function BeadPriorityBadge({
-  priority,
+  priority: rawPriority,
   className,
 }: {
   priority: BeadPriority;
   className?: string;
 }) {
-  const config = priorityConfig[priority];
+  const priority = rawPriority ?? 2;
+  const config = priorityConfig[priority] ?? priorityConfig[2];
   return (
     <Badge variant="outline" className={cn(config.color, className)}>
       {config.label}
