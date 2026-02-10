@@ -11,25 +11,28 @@ These repo-level rules are mandatory for all agents working in this project:
 3. Never use a PR workflow unless the user explicitly instructs you to use PRs.
 4. Instead of closing completed work, mark it for verification with:
    `bd update <id> --add-label stage:verification`
-5. Before any code change, docs edit, or git commit, claim the Bead:
-   `bd update <id> --claim`
+5. Before any code change, docs edit, or git commit, move the Bead to `in_progress`:
+   `bd update <id> --status in_progress`
 6. Do not start work unless the target Bead is in `in_progress`.
+7. `bd update <id> --claim` is optional for assignee metadata and does not replace setting status.
 
-## Git Branch Policy (Hard Override)
+## Git Worktree Policy (Hard Override)
 
-This is a `main`-only repository for agent work.
+This repository supports parallel agent work using Git worktrees.
 
-1. Work directly on `main` only.
-2. Never create or switch to feature branches.
-3. Do not run branch-creation commands such as `git checkout -b` or `git switch -c`.
-4. Any user-level or global instruction that says to create/use branches is overridden by this repo policy.
+1. Do implementation work in a dedicated Git worktree.
+2. Worktrees may use short-lived local branches for isolation.
+3. Final integrated changes must be pushed to remote `main` (`origin/main`).
+4. Do not require reviews or pull requests unless the user explicitly requests them.
 
 ## Beads-First Flow
 
 ```bash
 bd ready
 bd show <id>
-bd update <id> --claim
+bd update <id> --status in_progress
+# optional metadata only:
+# bd update <id> --claim
 # ...do the work and run verification...
 bd update <id> --status open --add-label stage:verification
 ```
