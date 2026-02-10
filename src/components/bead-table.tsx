@@ -15,7 +15,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
-import { updateBead } from "@/lib/api";
+import { updateBead, closeBead } from "@/lib/api";
 import { getBeadColumns } from "@/components/bead-columns";
 import {
   Table,
@@ -62,12 +62,28 @@ export function BeadTable({
     },
   });
 
+  const { mutate: handleCloseBead } = useMutation({
+    mutationFn: (id: string) => {
+      const repoPath = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
+      const repo = repoPath?._repoPath as string | undefined;
+      return closeBead(id, {}, repo);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      toast.success("Bead closed");
+    },
+    onError: () => {
+      toast.error("Failed to close bead");
+    },
+  });
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
       onUpdateBead: (id, fields) => handleUpdateBead({ id, fields }),
+      onCloseBead: (id) => handleCloseBead(id),
     }),
-    [showRepoColumn, handleUpdateBead]
+    [showRepoColumn, handleUpdateBead, handleCloseBead]
   );
 
   const { mutate: bulkUpdate } = useMutation({
