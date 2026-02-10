@@ -1,11 +1,12 @@
 "use client";
 
 import { use } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { fetchBead, closeBead, fetchDeps } from "@/lib/api";
+import { fetchBead, closeBead, fetchDeps, updateBead } from "@/lib/api";
+import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,15 @@ export default function BeadDetailPage({
   const { data: depsData } = useQuery({
     queryKey: ["bead-deps", id, repo],
     queryFn: () => fetchDeps(id, repo),
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: handleUpdate } = useMutation({
+    mutationFn: (fields: UpdateBeadInput) => updateBead(id, fields, repo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bead", id, repo] });
+    },
   });
 
   const bead = data?.ok ? data.data : undefined;
@@ -86,7 +96,7 @@ export default function BeadDetailPage({
         </div>
       </div>
 
-      <BeadDetail bead={bead} />
+      <BeadDetail bead={bead} onUpdate={async (fields) => { await handleUpdate(fields); }} />
 
       {deps.length > 0 && (
         <>
