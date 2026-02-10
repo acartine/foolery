@@ -12,11 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
@@ -144,55 +145,58 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
         <CardContent className="space-y-4">
           <div className="flex gap-2 flex-wrap">
             {onUpdate ? (
-              <Select
-                value={bead.type}
-                onValueChange={(v) => fireUpdate({ type: v as BeadType })}
-              >
-                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
-                  <BeadTypeBadge type={bead.type} />
-                </SelectTrigger>
-                <SelectContent>
-                  {BEAD_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="cursor-pointer">
+                    <BeadTypeBadge type={bead.type} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup value={bead.type} onValueChange={(v) => fireUpdate({ type: v as BeadType })}>
+                    {BEAD_TYPES.map((t) => (
+                      <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <BeadTypeBadge type={bead.type} />
             )}
 
             {onUpdate ? (
-              <Select
-                value={bead.status}
-                onValueChange={(v) => fireUpdate({ status: v as BeadStatus })}
-              >
-                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
-                  <BeadStatusBadge status={bead.status} />
-                </SelectTrigger>
-                <SelectContent>
-                  {BEAD_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="cursor-pointer">
+                    <BeadStatusBadge status={bead.status} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup value={bead.status} onValueChange={(v) => fireUpdate({ status: v as BeadStatus })}>
+                    {BEAD_STATUSES.map((s) => (
+                      <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <BeadStatusBadge status={bead.status} />
             )}
 
             {onUpdate ? (
-              <Select
-                value={String(bead.priority)}
-                onValueChange={(v) => fireUpdate({ priority: Number(v) as BeadPriority })}
-              >
-                <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none cursor-pointer">
-                  <BeadPriorityBadge priority={bead.priority} />
-                </SelectTrigger>
-                <SelectContent>
-                  {PRIORITIES.map((p) => (
-                    <SelectItem key={p} value={String(p)}>P{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="cursor-pointer">
+                    <BeadPriorityBadge priority={bead.priority} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup value={String(bead.priority)} onValueChange={(v) => fireUpdate({ priority: Number(v) as BeadPriority })}>
+                    {PRIORITIES.map((p) => (
+                      <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <BeadPriorityBadge priority={bead.priority} />
             )}

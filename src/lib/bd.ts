@@ -36,6 +36,7 @@ function normalizeBead(raw: Record<string, unknown>): Bead {
     type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
     status: (raw.status ?? "open") as Bead["status"],
     priority: (raw.priority ?? 2) as Bead["priority"],
+    acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
