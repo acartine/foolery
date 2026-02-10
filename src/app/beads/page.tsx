@@ -10,11 +10,18 @@ import { FilterBar } from "@/components/filter-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
 import { CommandPalette } from "@/components/command-palette";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
 import type { Bead } from "@/lib/types";
 
 export default function BeadsPage() {
   const [createOpen, setCreateOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const {
     commandPaletteOpen,
     toggleCommandPalette,
@@ -71,10 +78,34 @@ export default function BeadsPage() {
             Manage your issues and tasks
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Bead
-        </Button>
+        {!activeRepo && registeredRepos.length > 0 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                New Bead
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {registeredRepos.map((repo) => (
+                <DropdownMenuItem
+                  key={repo.path}
+                  onClick={() => {
+                    setSelectedRepo(repo.path);
+                    setCreateOpen(true);
+                  }}
+                >
+                  {repo.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button onClick={() => setCreateOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Bead
+          </Button>
+        )}
       </div>
 
       <FilterBar />
@@ -94,9 +125,10 @@ export default function BeadsPage() {
         onOpenChange={setCreateOpen}
         onCreated={() => {
           setCreateOpen(false);
+          setSelectedRepo(null);
           refetch();
         }}
-        repo={activeRepo}
+        repo={selectedRepo ?? activeRepo}
       />
 
       <CommandPalette

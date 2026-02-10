@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -42,6 +43,26 @@ export function getBeadColumns(opts: {
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
 
   const columns: ColumnDef<Bead>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      enableSorting: false,
+    },
     {
       accessorKey: "id",
       header: "ID",
