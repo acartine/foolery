@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,11 +34,8 @@ export default function RootLayout({
         <Providers>
           <header className="border-b">
             <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-7xl">
-              <Link
-                href="/beads"
-                className="text-lg font-semibold tracking-tight"
-              >
-                Foolery
+              <Link href="/beads" className="flex items-center">
+                <Image src="/foolery_icon.png" alt="Foolery" width={32} height={32} />
               </Link>
               <RepoSwitcher />
             </div>

@@ -3,9 +3,9 @@
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Trash2, XCircle } from "lucide-react";
+import { ArrowLeft, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { fetchBead, deleteBead, closeBead, fetchDeps } from "@/lib/api";
+import { fetchBead, closeBead, fetchDeps } from "@/lib/api";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
 import { Button } from "@/components/ui/button";
@@ -33,17 +33,6 @@ export default function BeadDetailPage({
 
   const bead = data?.ok ? data.data : undefined;
   const deps = depsData?.ok ? (depsData.data ?? []) : [];
-
-  async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this bead?")) return;
-    const result = await deleteBead(id, repo);
-    if (result.ok) {
-      toast.success("Bead deleted");
-      router.push("/beads");
-    } else {
-      toast.error(result.error ?? "Failed to delete bead");
-    }
-  }
 
   async function handleClose() {
     const reason = prompt("Close reason (optional):");
@@ -94,10 +83,6 @@ export default function BeadDetailPage({
               Close
             </Button>
           )}
-          <Button variant="destructive" onClick={handleDelete}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
         </div>
       </div>
 

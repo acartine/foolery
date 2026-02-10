@@ -51,10 +51,7 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
       type: "task" as const,
       priority: 2 as const,
       labels: [] as string[],
-      assignee: "",
-      due: "",
       acceptance: "",
-      estimate: undefined as number | undefined,
       ...defaultValues,
     },
   });
@@ -113,16 +110,6 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField label="Assignee">
-          <Input placeholder="Assignee" {...form.register("assignee")} />
-        </FormField>
-
-        <FormField label="Due date">
-          <Input type="date" {...form.register("due")} />
-        </FormField>
-      </div>
-
       <FormField label="Labels (comma-separated)">
         <Input
           placeholder="bug, frontend, urgent"
@@ -142,14 +129,6 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
         <Textarea
           placeholder="Acceptance criteria"
           {...form.register("acceptance")}
-        />
-      </FormField>
-
-      <FormField label="Estimate (hours)">
-        <Input
-          type="number"
-          min={1}
-          {...form.register("estimate", { valueAsNumber: true })}
         />
       </FormField>
 
