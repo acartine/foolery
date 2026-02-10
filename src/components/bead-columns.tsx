@@ -15,12 +15,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Check, ThumbsDown } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
 ];
 
 const PRIORITIES: BeadPriority[] = [0, 1, 2, 3, 4];
+
+const LABEL_COLORS = [
+  "bg-red-100 text-red-800",
+  "bg-blue-100 text-blue-800",
+  "bg-green-100 text-green-800",
+  "bg-yellow-100 text-yellow-800",
+  "bg-purple-100 text-purple-800",
+  "bg-pink-100 text-pink-800",
+  "bg-indigo-100 text-indigo-800",
+  "bg-orange-100 text-orange-800",
+  "bg-teal-100 text-teal-800",
+  "bg-cyan-100 text-cyan-800",
+];
+
+function labelColor(label: string): string {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) hash = ((hash << 5) - hash + label.charCodeAt(i)) | 0;
+  return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
+}
 
 function relativeTime(dateStr: string): string {
   const now = Date.now();
@@ -36,12 +56,99 @@ function relativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-export function getBeadColumns(opts: {
+export interface BeadColumnOpts {
   showRepoColumn?: boolean;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
-} | boolean = false): ColumnDef<Bead>[] {
+  onCloseBead?: (id: string) => void;
+}
+
+function VerificationButtons({
+  bead,
+  onUpdateBead,
+  onCloseBead,
+}: {
+  bead: Bead;
+  onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  onCloseBead?: (id: string) => void;
+}) {
+  const hasVerification = bead.labels?.includes("stage:verification");
+  if (!hasVerification || (!onUpdateBead && !onCloseBead)) return null;
+
+  const labelsWithout = (bead.labels ?? []).filter((l) => l !== "stage:verification");
+
+  return (
+    <>
+      {onCloseBead && (
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded p-1 text-green-700 hover:bg-green-100"
+          title="Verify (LGTM)"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCloseBead(bead.id);
+            onUpdateBead?.(bead.id, { labels: labelsWithout });
+          }}
+        >
+          <Check className="size-4" />
+        </button>
+      )}
+    </>
+  );
+}
+
+function RejectButton({
+  bead,
+  onUpdateBead,
+}: {
+  bead: Bead;
+  onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+}) {
+  const hasVerification = bead.labels?.includes("stage:verification");
+  if (!hasVerification || !onUpdateBead) return null;
+
+  const labelsWithout = (bead.labels ?? []).filter((l) => l !== "stage:verification");
+
+  return (
+    <button
+      type="button"
+      className="inline-flex items-center justify-center rounded p-1 text-red-700 hover:bg-red-100"
+      title="Reject"
+      onClick={(e) => {
+        e.stopPropagation();
+        onUpdateBead(bead.id, { status: "open", labels: labelsWithout });
+      }}
+    >
+      <ThumbsDown className="size-4" />
+    </button>
+  );
+}
+
+function TitleCell({ bead }: { bead: Bead }) {
+  const labels = bead.labels ?? [];
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="font-medium">{bead.title}</span>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-muted-foreground text-xs">
+          {relativeTime(bead.updated)}
+        </span>
+        {labels.map((label) => (
+          <span
+            key={label}
+            className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium leading-none ${labelColor(label)}`}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDef<Bead>[] {
   const showRepoColumn = typeof opts === "boolean" ? opts : (opts.showRepoColumn ?? false);
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
+  const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -87,9 +194,7 @@ export function getBeadColumns(opts: {
     {
       accessorKey: "title",
       header: "Title",
-      cell: ({ row }) => (
-        <span className="font-medium">{row.original.title}</span>
-      ),
+      cell: ({ row }) => <TitleCell bead={row.original} />,
     },
     {
       accessorKey: "type",
@@ -123,7 +228,17 @@ export function getBeadColumns(opts: {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <BeadStatusBadge status={row.original.status} />,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1">
+          <VerificationButtons
+            bead={row.original}
+            onUpdateBead={onUpdateBead}
+            onCloseBead={onCloseBead}
+          />
+          <BeadStatusBadge status={row.original.status} />
+          <RejectButton bead={row.original} onUpdateBead={onUpdateBead} />
+        </div>
+      ),
     },
     {
       accessorKey: "priority",
@@ -158,15 +273,6 @@ export function getBeadColumns(opts: {
       accessorKey: "assignee",
       header: "Assignee",
       cell: ({ row }) => row.original.assignee ?? "-",
-    },
-    {
-      accessorKey: "updated",
-      header: "Updated",
-      cell: ({ row }) => (
-        <span className="text-muted-foreground text-xs">
-          {relativeTime(row.original.updated)}
-        </span>
-      ),
     },
   ];
 
