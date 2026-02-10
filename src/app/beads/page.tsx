@@ -59,6 +59,7 @@ export default function BeadsPage() {
       if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
       return fetchBeads(params);
     },
+    refetchInterval: 10_000,
   });
 
   const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
