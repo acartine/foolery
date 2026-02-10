@@ -5,6 +5,7 @@ import type { Bead } from "@/lib/types";
 import { BeadTypeBadge } from "@/components/bead-type-badge";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function relativeTime(dateStr: string): string {
   const now = Date.now();
@@ -22,6 +23,26 @@ function relativeTime(dateStr: string): string {
 
 export function getBeadColumns(showRepoColumn = false): ColumnDef<Bead>[] {
   const columns: ColumnDef<Bead>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      enableSorting: false,
+    },
     {
       accessorKey: "id",
       header: "ID",
