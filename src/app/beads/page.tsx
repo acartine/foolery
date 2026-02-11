@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
@@ -22,6 +23,8 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 
 export default function BeadsPage() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") ?? "";
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -51,6 +54,7 @@ export default function BeadsPage() {
   if (filters.status) params.status = filters.status;
   if (filters.type) params.type = filters.type;
   if (filters.priority !== undefined) params.priority = String(filters.priority);
+  if (searchQuery) params.q = searchQuery;
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["beads", params, activeRepo],
