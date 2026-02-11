@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
-export function SearchBar() {
-  const [query, setQuery] = useState("");
+function SearchBarInner() {
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(urlQuery);
   const router = useRouter();
+
+  useEffect(() => {
+    setQuery(urlQuery);
+  }, [urlQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,5 +34,13 @@ export function SearchBar() {
         className="h-7"
       />
     </form>
+  );
+}
+
+export function SearchBar() {
+  return (
+    <Suspense fallback={<div className="flex-1 max-w-md mx-2" />}>
+      <SearchBarInner />
+    </Suspense>
   );
 }
