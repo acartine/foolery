@@ -173,6 +173,7 @@ function BeadsPageInner() {
               onSelectionChange={handleSelectionChange}
               selectionVersion={selectionVersion}
               onRowFocus={handleRowFocus}
+              searchQuery={searchQuery}
             />
           )}
         </div>

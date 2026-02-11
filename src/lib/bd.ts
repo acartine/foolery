@@ -97,6 +97,31 @@ export async function readyBeads(
   }
 }
 
+export async function searchBeads(
+  query: string,
+  filters?: Record<string, string>,
+  repoPath?: string
+): Promise<BdResult<Bead[]>> {
+  const args = ["search", query, "--json", "--limit", "0"];
+  if (filters) {
+    for (const [key, val] of Object.entries(filters)) {
+      if (!val) continue;
+      if (key === "priority") {
+        args.push("--priority-min", val, "--priority-max", val);
+      } else {
+        args.push(`--${key}`, val);
+      }
+    }
+  }
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "bd search failed" };
+  try {
+    return { ok: true, data: normalizeBeads(stdout) };
+  } catch {
+    return { ok: false, error: "Failed to parse bd search output" };
+  }
+}
+
 export async function queryBeads(
   expression: string,
   options?: { limit?: number; sort?: string },

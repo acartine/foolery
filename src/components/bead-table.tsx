@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const PAGE_SIZE_KEY = "foolery-page-size";
@@ -54,12 +54,14 @@ export function BeadTable({
   onSelectionChange,
   selectionVersion,
   onRowFocus,
+  searchQuery,
 }: {
   data: Bead[];
   showRepoColumn?: boolean;
   onSelectionChange?: (ids: string[]) => void;
   selectionVersion?: number;
   onRowFocus?: (bead: Bead | null) => void;
+  searchQuery?: string;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -242,7 +244,22 @@ export function BeadTable({
                 colSpan={columns.length}
                 className="h-10 text-center"
               >
-                No beads found.
+                {searchQuery ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <span>No results for &ldquo;{searchQuery}&rdquo;</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1"
+                      onClick={() => router.push("/beads")}
+                    >
+                      <XCircle className="size-3.5" />
+                      Clear search
+                    </Button>
+                  </div>
+                ) : (
+                  "No beads found."
+                )}
               </TableCell>
             </TableRow>
           )}
