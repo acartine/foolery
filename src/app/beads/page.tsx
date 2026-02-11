@@ -145,7 +145,7 @@ function BeadsPageInner() {
 
   return (
     <div className="container mx-auto pt-1 px-1 max-w-7xl">
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-end gap-2 mb-1">
         <FilterBar
           selectedIds={selectedIds}
           onBulkUpdate={handleBulkUpdate}
