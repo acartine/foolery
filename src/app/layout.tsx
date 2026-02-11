@@ -41,7 +41,9 @@ export default function RootLayout({
                 </Link>
                 <SearchBar />
               </div>
-              <RepoSwitcher />
+              <div className="shrink-0 ml-4">
+                <RepoSwitcher />
+              </div>
             </div>
           </header>
           {children}
