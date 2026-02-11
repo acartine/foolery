@@ -142,14 +142,14 @@ function TitleCell({ bead, onTitleClick }: { bead: Bead; onTitleClick?: (bead: B
       ) : (
         <span className="font-medium">{bead.title}</span>
       )}
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center gap-1 flex-wrap">
         <span className="text-muted-foreground text-xs">
           {relativeTime(bead.updated)}
         </span>
         {labels.map((label) => (
           <span
             key={label}
-            className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium leading-none ${labelColor(label)}`}
+            className={`inline-flex items-center rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
           >
             {label}
           </span>
@@ -213,7 +213,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         const depth = (row.original as unknown as { _depth?: number })._depth ?? 0;
         return (
-          <div className="flex items-start gap-1" style={{ paddingLeft: `${depth * 20}px` }}>
+          <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
             <TitleCell bead={row.original} onTitleClick={onTitleClick} />
           </div>
@@ -270,7 +270,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <VerificationButtons
             bead={row.original}
             onUpdateBead={onUpdateBead}
