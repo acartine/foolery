@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   useReactTable,
@@ -53,17 +53,20 @@ export function BeadTable({
   showRepoColumn = false,
   onSelectionChange,
   selectionVersion,
+  onRowFocus,
 }: {
   data: Bead[];
   showRepoColumn?: boolean;
   onSelectionChange?: (ids: string[]) => void;
   selectionVersion?: number;
+  onRowFocus?: (bead: Bead | null) => void;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [userSorted, setUserSorted] = useState(false);
+  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -120,6 +123,11 @@ export function BeadTable({
     [showRepoColumn, handleUpdateBead, handleCloseBead, router]
   );
 
+  const handleRowFocus = useCallback((bead: Bead) => {
+    setFocusedRowId(bead.id);
+    onRowFocus?.(bead);
+  }, [onRowFocus]);
+
   useEffect(() => {
     setRowSelection({});
   }, [selectionVersion]);
@@ -148,6 +156,39 @@ export function BeadTable({
     onSelectionChange?.(selectedIds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedKey, onSelectionChange]);
+
+  useEffect(() => {
+    const rows = table.getRowModel().rows;
+    if (rows.length > 0 && !focusedRowId) {
+      const first = rows[0].original;
+      setFocusedRowId(first.id);
+      onRowFocus?.(first);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table.getRowModel().rows.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+      const rows = table.getRowModel().rows;
+      if (rows.length === 0) return;
+      const currentIndex = rows.findIndex((r) => r.original.id === focusedRowId);
+      let nextIndex: number;
+      if (e.key === "ArrowDown") {
+        nextIndex = currentIndex < rows.length - 1 ? currentIndex + 1 : currentIndex;
+      } else {
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+      }
+      if (nextIndex !== currentIndex) {
+        e.preventDefault();
+        const nextBead = rows[nextIndex].original;
+        setFocusedRowId(nextBead.id);
+        onRowFocus?.(nextBead);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [focusedRowId, table, onRowFocus]);
 
   return (
     <div className="space-y-4">
@@ -185,6 +226,8 @@ export function BeadTable({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
+                className={focusedRowId === row.original.id ? "bg-muted/50" : ""}
+                onClick={() => handleRowFocus(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
