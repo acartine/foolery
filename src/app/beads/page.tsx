@@ -25,7 +25,7 @@ import type { UpdateBeadInput } from "@/lib/schemas";
 
 export default function BeadsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-12 text-muted-foreground">Loading beads...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-6 text-muted-foreground">Loading beads...</div>}>
       <BeadsPageInner />
     </Suspense>
   );
@@ -150,8 +150,8 @@ function BeadsPageInner() {
   );
 
   return (
-    <div className="container mx-auto pt-4 px-4 max-w-7xl">
-      <div className="flex items-center justify-between mb-3">
+    <div className="container mx-auto pt-2 px-2 max-w-7xl">
+      <div className="flex items-center justify-between mb-1">
         <FilterBar
           selectedIds={selectedIds}
           onBulkUpdate={handleBulkUpdate}
@@ -160,10 +160,10 @@ function BeadsPageInner() {
         {newBeadButton}
       </div>
 
-      <div className="mt-2 flex gap-4">
+      <div className="mt-1 flex gap-2">
         <div className="flex-1 min-w-0">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12 text-muted-foreground">
+            <div className="flex items-center justify-center py-6 text-muted-foreground">
               Loading beads...
             </div>
           ) : (

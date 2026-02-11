@@ -19,13 +19,13 @@ export function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex-1 max-w-md mx-4">
+    <form onSubmit={handleSubmit} className="flex-1 max-w-md mx-2">
       <Input
         type="text"
         placeholder="find your beads..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="h-8"
+        className="h-7"
       />
     </form>
   );

@@ -50,14 +50,14 @@ function BulkEditControls({
   onClearSelection,
 }: Required<FilterBarProps>) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-1.5">
       <span className="text-sm font-medium">
         {selectedIds.length} selected
       </span>
       <Select
         onValueChange={(v) => onBulkUpdate({ type: v as BeadType })}
       >
-        <SelectTrigger className="w-[130px] h-9">
+        <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set type..." />
         </SelectTrigger>
         <SelectContent>
@@ -73,7 +73,7 @@ function BulkEditControls({
           onBulkUpdate({ priority: Number(v) as BeadPriority })
         }
       >
-        <SelectTrigger className="w-[130px] h-9">
+        <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set priority..." />
         </SelectTrigger>
         <SelectContent>
@@ -87,7 +87,7 @@ function BulkEditControls({
       <Select
         onValueChange={(v) => onBulkUpdate({ status: v as BeadStatus })}
       >
-        <SelectTrigger className="w-[130px] h-9">
+        <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set status..." />
         </SelectTrigger>
         <SelectContent>
@@ -113,14 +113,14 @@ function FilterControls() {
     filters.status || filters.type || filters.priority !== undefined;
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-1.5">
       <Select
         value={filters.status ?? "all"}
         onValueChange={(v) =>
           setFilter("status", v === "all" ? undefined : (v as BeadStatus))
         }
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -139,7 +139,7 @@ function FilterControls() {
           setFilter("type", v === "all" ? undefined : (v as BeadType))
         }
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
@@ -161,7 +161,7 @@ function FilterControls() {
           )
         }
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>

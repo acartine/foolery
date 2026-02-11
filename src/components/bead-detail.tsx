@@ -109,8 +109,8 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
   }, [cancelEdit, saveEdit, editValue]);
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-3">
+    <div className="space-y-1">
+      <div className="space-y-1">
         <div className="flex items-start gap-2">
           <code
             className="text-xs text-muted-foreground cursor-pointer hover:text-foreground mt-1.5"
@@ -242,11 +242,11 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               onKeyDown={(e) => {
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="min-h-[100px]"
+              className="min-h-[60px]"
             />
           ) : (
             <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 min-h-[40px]" : ""}`}
+              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
               onClick={() => onUpdate && startEdit("description", bead.description ?? "")}
             >
               {bead.description || (onUpdate ? "Click to add description" : "-")}
@@ -269,11 +269,11 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               onKeyDown={(e) => {
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="min-h-[100px]"
+              className="min-h-[60px]"
             />
           ) : (
             <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 min-h-[40px]" : ""}`}
+              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
               onClick={() => onUpdate && startEdit("notes", bead.notes ?? "")}
             >
               {bead.notes || (onUpdate ? "Click to add notes" : "-")}
@@ -296,11 +296,11 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               onKeyDown={(e) => {
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="min-h-[100px]"
+              className="min-h-[60px]"
             />
           ) : (
             <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 min-h-[40px]" : ""}`}
+              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
               onClick={() => onUpdate && startEdit("acceptance", bead.acceptance ?? "")}
             >
               {bead.acceptance || (onUpdate ? "Click to add acceptance criteria" : "-")}

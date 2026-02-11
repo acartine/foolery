@@ -59,7 +59,7 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
   return (
     <form
       onSubmit={form.handleSubmit((data) => onSubmit(data as never))}
-      className="space-y-4"
+      className="space-y-2"
     >
       <FormField label="Title" error={form.formState.errors.title?.message}>
         <Input placeholder="Bead title" {...form.register("title")} />
@@ -72,7 +72,7 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
         />
       </FormField>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2">
         <FormField label="Type">
           <Select
             value={form.watch("type")}

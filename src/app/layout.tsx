@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <Providers>
           <header className="border-b">
-            <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-7xl">
+            <div className="container mx-auto flex h-10 items-center justify-between px-2 max-w-7xl">
               <Link href="/beads" className="flex items-center">
                 <Image src="/foolery_icon.png" alt="Foolery" width={48} height={48} unoptimized className="rounded-lg" />
               </Link>

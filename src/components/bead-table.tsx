@@ -191,7 +191,7 @@ export function BeadTable({
   }, [focusedRowId, table, onRowFocus]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -240,7 +240,7 @@ export function BeadTable({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="h-24 text-center"
+                className="h-16 text-center"
               >
                 No beads found.
               </TableCell>

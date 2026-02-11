@@ -10,7 +10,7 @@ export function BeadPreviewPane({ bead }: { bead: Bead | null }) {
   }
 
   return (
-    <div className="space-y-4 p-4 overflow-y-auto h-full">
+    <div className="space-y-1.5 p-2 overflow-y-auto h-full">
       <div>
         <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
         <p className="text-sm whitespace-pre-wrap">{bead.description || "-"}</p>
