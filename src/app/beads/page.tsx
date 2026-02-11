@@ -150,7 +150,7 @@ function BeadsPageInner() {
   );
 
   return (
-    <div className="container mx-auto pt-2 px-2 max-w-7xl">
+    <div className="container mx-auto pt-1 px-1 max-w-7xl">
       <div className="flex items-center justify-between mb-1">
         <FilterBar
           selectedIds={selectedIds}
@@ -160,7 +160,7 @@ function BeadsPageInner() {
         {newBeadButton}
       </div>
 
-      <div className="mt-1 flex gap-2">
+      <div className="mt-0.5 flex gap-1">
         <div className="flex-1 min-w-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-6 text-muted-foreground">

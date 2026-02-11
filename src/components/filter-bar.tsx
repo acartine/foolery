@@ -50,7 +50,7 @@ function BulkEditControls({
   onClearSelection,
 }: Required<FilterBarProps>) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1">
       <span className="text-sm font-medium">
         {selectedIds.length} selected
       </span>
@@ -113,7 +113,7 @@ function FilterControls() {
     filters.status || filters.type || filters.priority !== undefined;
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1">
       <Select
         value={filters.status ?? "all"}
         onValueChange={(v) =>

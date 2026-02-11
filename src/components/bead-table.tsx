@@ -240,7 +240,7 @@ export function BeadTable({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="h-16 text-center"
+                className="h-10 text-center"
               >
                 No beads found.
               </TableCell>
@@ -254,7 +254,7 @@ export function BeadTable({
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Select
             value={String(table.getState().pagination.pageSize)}
             onValueChange={(v) => {
