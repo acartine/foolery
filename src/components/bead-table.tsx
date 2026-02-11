@@ -186,8 +186,9 @@ export function BeadTable({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+      if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
-      if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT" || target.closest('[role="dialog"]')) return;
+      if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
       const rows = table.getRowModel().rows;
       if (rows.length === 0) return;
       const currentIndex = rows.findIndex((r) => r.original.id === focusedRowId);
