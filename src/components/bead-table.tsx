@@ -209,12 +209,12 @@ export function BeadTable({
 
   return (
     <div className="space-y-1">
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} style={{ width: header.getSize() }}>
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       type="button"
@@ -247,7 +247,10 @@ export function BeadTable({
                 onClick={() => handleRowFocus(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cell.column.id === "title" ? "whitespace-normal" : undefined}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
                       cell.column.id === "title" && (

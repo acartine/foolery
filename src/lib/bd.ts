@@ -183,20 +183,56 @@ export async function updateBead(
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
 ): Promise<BdResult<void>> {
+  const labelsToRemove = extractRemoveLabels(fields);
+  const mainResult = await applyMainFields(id, fields, repoPath);
+  if (!mainResult.ok) return mainResult;
+  return applyRemoveLabels(id, labelsToRemove, repoPath);
+}
+
+function extractRemoveLabels(
+  fields: Record<string, string | string[] | number | undefined>
+): string[] {
+  const val = fields.removeLabels;
+  return Array.isArray(val) ? (val as string[]) : [];
+}
+
+async function applyMainFields(
+  id: string,
+  fields: Record<string, string | string[] | number | undefined>,
+  repoPath?: string
+): Promise<BdResult<void>> {
   const args = ["update", id];
+  let hasArgs = false;
   for (const [key, val] of Object.entries(fields)) {
-    if (val === undefined) continue;
+    if (val === undefined || key === "removeLabels") continue;
     if (key === "labels" && Array.isArray(val)) {
-      if (val.length > 0) args.push("--set-labels", val.join(","));
-    } else if (key === "removeLabels" && Array.isArray(val)) {
-      for (const label of val) args.push("--remove-label", label);
+      if (val.length > 0) {
+        args.push("--set-labels", val.join(","));
+        hasArgs = true;
+      }
     } else {
       args.push(`--${key}`, String(val));
+      hasArgs = true;
     }
   }
+  if (!hasArgs) return { ok: true };
   const { stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd update failed" };
+  return { ok: true };
+}
+
+async function applyRemoveLabels(
+  id: string,
+  labels: string[],
+  repoPath?: string
+): Promise<BdResult<void>> {
+  if (labels.length === 0) return { ok: true };
+  const args = ["update", id];
+  for (const label of labels) args.push("--remove-label", label);
+  const { stderr, exitCode } = await exec(args, { cwd: repoPath });
+  if (exitCode !== 0)
+    return { ok: false, error: stderr || "bd update (remove-label) failed" };
   return { ok: true };
 }
 

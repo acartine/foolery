@@ -168,6 +168,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const columns: ColumnDef<Bead>[] = [
     {
       id: "select",
+      size: 30,
+      minSize: 30,
+      maxSize: 30,
       header: ({ table }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
@@ -189,6 +192,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "id",
       header: "",
+      size: 60,
+      minSize: 60,
+      maxSize: 60,
       enableSorting: false,
       cell: ({ row }) => {
         const shortId = row.original.id.replace(/^[^-]+-/, "");
@@ -223,6 +229,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "priority",
       header: "Priority",
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
       cell: ({ row }) => {
         if (!onUpdateBead) return <BeadPriorityBadge priority={row.original.priority} />;
         return (
@@ -246,6 +255,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "type",
       header: "Type",
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
       cell: ({ row }) => {
         if (!onUpdateBead) return <BeadTypeBadge type={row.original.type} />;
         return (
@@ -269,6 +281,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "status",
       header: "Status",
+      size: 130,
+      minSize: 130,
+      maxSize: 130,
       cell: ({ row }) => (
         <div className="flex items-center gap-0.5">
           <VerificationButtons
