@@ -117,7 +117,7 @@ function BeadsPageInner() {
   const newBeadButton = !activeRepo && registeredRepos.length > 0 ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm">
+        <Button size="sm" variant="success">
           <Plus className="mr-2 h-4 w-4" />
           New
         </Button>
@@ -137,7 +137,7 @@ function BeadsPageInner() {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <Button size="sm" onClick={() => setCreateOpen(true)}>
+    <Button size="sm" variant="success" onClick={() => setCreateOpen(true)}>
       <Plus className="mr-2 h-4 w-4" />
       New
     </Button>
