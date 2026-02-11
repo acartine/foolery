@@ -2,22 +2,27 @@
 
 import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { Bead, BeadType, BeadPriority } from "@/lib/types";
+import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadTypeBadge } from "@/components/bead-type-badge";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
+];
+
+const BEAD_STATUSES: BeadStatus[] = [
+  "open", "in_progress", "blocked", "deferred", "closed",
 ];
 
 const PRIORITIES: BeadPriority[] = [0, 1, 2, 3, 4];
@@ -205,26 +210,20 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         if (!onUpdateBead) return <BeadPriorityBadge priority={row.original.priority} />;
         return (
-          <Select
-            value={String(row.original.priority)}
-            onValueChange={(v) => {
-              onUpdateBead(row.original.id, { priority: Number(v) as BeadPriority });
-            }}
-          >
-            <SelectTrigger
-              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <BeadPriorityBadge priority={row.original.priority} />
-            </SelectTrigger>
-            <SelectContent>
-              {PRIORITIES.map((p) => (
-                <SelectItem key={p} value={String(p)}>
-                  P{p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                <BeadPriorityBadge priority={row.original.priority} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuRadioGroup value={String(row.original.priority)} onValueChange={(v) => onUpdateBead(row.original.id, { priority: Number(v) as BeadPriority })}>
+                {PRIORITIES.map((p) => (
+                  <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -234,26 +233,20 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         if (!onUpdateBead) return <BeadTypeBadge type={row.original.type} />;
         return (
-          <Select
-            value={row.original.type}
-            onValueChange={(v) => {
-              onUpdateBead(row.original.id, { type: v as BeadType });
-            }}
-          >
-            <SelectTrigger
-              className="h-7 w-auto border-none bg-transparent p-0 shadow-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <BeadTypeBadge type={row.original.type} />
-            </SelectTrigger>
-            <SelectContent>
-              {BEAD_TYPES.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                <BeadTypeBadge type={row.original.type} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuRadioGroup value={row.original.type} onValueChange={(v) => onUpdateBead(row.original.id, { type: v as BeadType })}>
+                {BEAD_TYPES.map((t) => (
+                  <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
@@ -267,7 +260,24 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
             onUpdateBead={onUpdateBead}
             onCloseBead={onCloseBead}
           />
-          <BeadStatusBadge status={row.original.status} />
+          {onUpdateBead ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                  <BeadStatusBadge status={row.original.status} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={row.original.status} onValueChange={(v) => onUpdateBead(row.original.id, { status: v as BeadStatus })}>
+                  {BEAD_STATUSES.map((s) => (
+                    <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <BeadStatusBadge status={row.original.status} />
+          )}
           <RejectButton bead={row.original} onUpdateBead={onUpdateBead} />
         </div>
       ),
