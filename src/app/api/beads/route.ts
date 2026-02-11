@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listBeads, createBead } from "@/lib/bd";
+import { listBeads, searchBeads, createBead } from "@/lib/bd";
 import { createBeadSchema } from "@/lib/schemas";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const repoPath = params._repo;
   delete params._repo;
-  const result = await listBeads(params, repoPath);
+  const query = params.q;
+  delete params.q;
+  const result = query
+    ? await searchBeads(query, params, repoPath)
+    : await listBeads(params, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
