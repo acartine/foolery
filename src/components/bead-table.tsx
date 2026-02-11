@@ -63,6 +63,7 @@ export function BeadTable({
   const queryClient = useQueryClient();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [userSorted, setUserSorted] = useState(false);
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -96,13 +97,27 @@ export function BeadTable({
 
   const hierarchicalData = useMemo(() => buildHierarchy(data), [data]);
 
+  const sortedData = useMemo(() => {
+    if (userSorted) return hierarchicalData;
+    return [...hierarchicalData].sort((a, b) => {
+      const aVerify = a.labels?.includes("stage:verification") ? 0 : 1;
+      const bVerify = b.labels?.includes("stage:verification") ? 0 : 1;
+      return aVerify - bVerify;
+    });
+  }, [hierarchicalData, userSorted]);
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
       onUpdateBead: (id, fields) => handleUpdateBead({ id, fields }),
       onCloseBead: (id) => handleCloseBead(id),
+      onTitleClick: (bead) => {
+        const repoPath = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
+        const qs = repoPath ? `?repo=${encodeURIComponent(repoPath)}` : "";
+        router.push(`/beads/${bead.id}${qs}`);
+      },
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead]
+    [showRepoColumn, handleUpdateBead, handleCloseBead, router]
   );
 
   useEffect(() => {
@@ -110,10 +125,13 @@ export function BeadTable({
   }, [selectionVersion]);
 
   const table = useReactTable({
-    data: hierarchicalData,
+    data: sortedData,
     columns,
     state: { sorting, rowSelection },
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      setSorting(updater);
+      setUserSorted(true);
+    },
     onRowSelectionChange: setRowSelection,
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
@@ -167,18 +185,6 @@ export function BeadTable({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                className="cursor-pointer"
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  if (target.closest("[data-slot='dropdown-menu-content']") || target.closest("[data-slot='dropdown-menu-trigger']")) return;
-                  const repoPath = (
-                    row.original as unknown as Record<string, unknown>
-                  )._repoPath as string | undefined;
-                  const qs = repoPath
-                    ? `?repo=${encodeURIComponent(repoPath)}`
-                    : "";
-                  router.push(`/beads/${row.original.id}${qs}`);
-                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

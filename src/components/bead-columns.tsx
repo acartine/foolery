@@ -64,6 +64,7 @@ export interface BeadColumnOpts {
   showRepoColumn?: boolean;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
   onCloseBead?: (id: string) => void;
+  onTitleClick?: (bead: Bead) => void;
 }
 
 function VerificationButtons({
@@ -123,11 +124,24 @@ function RejectButton({
   );
 }
 
-function TitleCell({ bead }: { bead: Bead }) {
+function TitleCell({ bead, onTitleClick }: { bead: Bead; onTitleClick?: (bead: Bead) => void }) {
   const labels = bead.labels ?? [];
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="font-medium">{bead.title}</span>
+      {onTitleClick ? (
+        <button
+          type="button"
+          className="font-medium text-left hover:underline"
+          onClick={(e) => {
+            e.stopPropagation();
+            onTitleClick(bead);
+          }}
+        >
+          {bead.title}
+        </button>
+      ) : (
+        <span className="font-medium">{bead.title}</span>
+      )}
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="text-muted-foreground text-xs">
           {relativeTime(bead.updated)}
@@ -149,6 +163,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const showRepoColumn = typeof opts === "boolean" ? opts : (opts.showRepoColumn ?? false);
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
   const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
+  const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -173,7 +188,8 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     },
     {
       accessorKey: "id",
-      header: "ID",
+      header: "",
+      enableSorting: false,
       cell: ({ row }) => {
         const shortId = row.original.id.replace(/^[^-]+-/, "");
         return (
@@ -199,7 +215,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <div className="flex items-start gap-1" style={{ paddingLeft: `${depth * 20}px` }}>
             {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
-            <TitleCell bead={row.original} />
+            <TitleCell bead={row.original} onTitleClick={onTitleClick} />
           </div>
         );
       },
