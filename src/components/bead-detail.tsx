@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -111,8 +110,19 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
+      <div className="space-y-3">
+        <div className="flex items-start gap-2">
+          <code
+            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground mt-1.5"
+            onClick={() => {
+              const shortId = bead.id.replace(/^[^-]+-/, "");
+              navigator.clipboard.writeText(shortId);
+              toast.success(`Copied: ${shortId}`);
+            }}
+            title="Click to copy ID"
+          >
+            {bead.id.replace(/^[^-]+-/, "")}
+          </code>
           {editingField === "title" ? (
             <Input
               autoFocus
@@ -123,177 +133,100 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               className="text-xl font-semibold"
             />
           ) : (
-            <CardTitle
-              className={`text-xl ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded px-1 -mx-1" : ""}`}
+            <h2
+              className={`text-xl font-semibold ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded px-1" : ""}`}
               onClick={() => onUpdate && startEdit("title", bead.title)}
             >
               {bead.title}
-            </CardTitle>
+            </h2>
           )}
-          <code
-            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground"
-            onClick={() => {
-              const shortId = bead.id.replace(/^[^-]+-/, "");
-              navigator.clipboard.writeText(shortId);
-              toast.success(`Copied: ${shortId}`);
-            }}
-            title="Click to copy ID"
-          >
-            {bead.id}
-          </code>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-2 flex-wrap">
-            {onUpdate ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="cursor-pointer">
-                    <BeadTypeBadge type={bead.type} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuRadioGroup value={bead.type} onValueChange={(v) => fireUpdate({ type: v as BeadType })}>
-                    {BEAD_TYPES.map((t) => (
-                      <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <BeadTypeBadge type={bead.type} />
-            )}
+        </div>
 
-            {onUpdate ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="cursor-pointer">
-                    <BeadStatusBadge status={bead.status} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuRadioGroup value={bead.status} onValueChange={(v) => fireUpdate({ status: v as BeadStatus })}>
-                    {BEAD_STATUSES.map((s) => (
-                      <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <BeadStatusBadge status={bead.status} />
-            )}
+        <div className="flex gap-2 flex-wrap">
+          {onUpdate ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="cursor-pointer">
+                  <BeadTypeBadge type={bead.type} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={bead.type} onValueChange={(v) => fireUpdate({ type: v as BeadType })}>
+                  {BEAD_TYPES.map((t) => (
+                    <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <BeadTypeBadge type={bead.type} />
+          )}
 
-            {onUpdate ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button type="button" className="cursor-pointer">
-                    <BeadPriorityBadge priority={bead.priority} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuRadioGroup value={String(bead.priority)} onValueChange={(v) => fireUpdate({ priority: Number(v) as BeadPriority })}>
-                    {PRIORITIES.map((p) => (
-                      <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <BeadPriorityBadge priority={bead.priority} />
-            )}
-          </div>
+          {onUpdate ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="cursor-pointer">
+                  <BeadStatusBadge status={bead.status} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={bead.status} onValueChange={(v) => fireUpdate({ status: v as BeadStatus })}>
+                  {BEAD_STATUSES.map((s) => (
+                    <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <BeadStatusBadge status={bead.status} />
+          )}
 
-          <Separator />
+          {onUpdate ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="cursor-pointer">
+                  <BeadPriorityBadge priority={bead.priority} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={String(bead.priority)} onValueChange={(v) => fireUpdate({ priority: Number(v) as BeadPriority })}>
+                  {PRIORITIES.map((p) => (
+                    <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <BeadPriorityBadge priority={bead.priority} />
+          )}
+        </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Assignee</span>
-              <p>{bead.assignee ?? "-"}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Owner</span>
-              <p>{bead.owner ?? "-"}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Created</span>
-              <p>{formatDate(bead.created)}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Updated</span>
-              <p>{formatDate(bead.updated)}</p>
-            </div>
-            {bead.due && (
-              <div>
-                <span className="text-muted-foreground">Due</span>
-                <p>{formatDate(bead.due)}</p>
-              </div>
-            )}
-            {bead.estimate != null && (
-              <div>
-                <span className="text-muted-foreground">Estimate</span>
-                <p>{bead.estimate}h</p>
-              </div>
-            )}
-          </div>
+        <p className="text-sm text-muted-foreground">
+          {bead.owner ?? "someone"} created this on {formatDate(bead.created)}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          last update {formatDate(bead.updated)}
+        </p>
 
-          {(bead.labels.length > 0 || onUpdate) && (
-            <>
-              <Separator />
-              <div className="flex gap-1 flex-wrap items-center min-h-[28px]">
-                {bead.labels.map((label) => (
-                  <Badge key={label} variant="secondary" className="gap-1 pr-1">
-                    {label}
-                    {onUpdate && (
-                      <button
-                        type="button"
-                        className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
-                        onClick={() => removeLabel(label)}
-                      >
-                        <X className="size-3" />
-                      </button>
-                    )}
-                  </Badge>
-                ))}
+        {bead.labels.length > 0 && (
+          <div className="flex gap-1 flex-wrap items-center">
+            {bead.labels.map((label) => (
+              <Badge key={label} variant="secondary" className="gap-1 pr-1">
+                {label}
                 {onUpdate && (
                   <button
                     type="button"
-                    className="text-xs text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded hover:bg-muted"
-                    onClick={() => startEdit("labels", "")}
+                    className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                    onClick={() => removeLabel(label)}
                   >
-                    + Add
+                    <X className="size-3" />
                   </button>
                 )}
-                {editingField === "labels" && (
-                  <Input
-                    autoFocus
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => {
-                      if (editValue.trim()) {
-                        saveEdit("labels", [...bead.labels, ...editValue.split(",").map(s => s.trim()).filter(Boolean)].join(", "));
-                      } else {
-                        cancelEdit();
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Escape") cancelEdit();
-                      else if (e.key === "Enter") {
-                        e.preventDefault();
-                        if (editValue.trim()) {
-                          saveEdit("labels", [...bead.labels, ...editValue.split(",").map(s => s.trim()).filter(Boolean)].join(", "));
-                        } else {
-                          cancelEdit();
-                        }
-                      }
-                    }}
-                    placeholder="New label..."
-                    className="w-[150px] h-7 text-xs"
-                  />
-                )}
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
 
       <Card>
         <CardHeader>
