@@ -167,7 +167,9 @@ export function BeadTable({
               <TableRow
                 key={row.id}
                 className="cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.closest("[data-slot='dropdown-menu-content']") || target.closest("[data-slot='dropdown-menu-trigger']")) return;
                   const repoPath = (
                     row.original as unknown as Record<string, unknown>
                   )._repoPath as string | undefined;
