@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -25,13 +27,27 @@ export function CreateBeadDialog({
   onCreated,
   repo,
 }: CreateBeadDialogProps) {
+  const [formKey, setFormKey] = useState(0);
+  const queryClient = useQueryClient();
+
   async function handleSubmit(data: CreateBeadInput) {
     const result = await createBead(data, repo ?? undefined);
     if (result.ok) {
-      toast.success("Bead created");
+      toast.success("Created");
       onCreated();
     } else {
-      toast.error(result.error ?? "Failed to create bead");
+      toast.error(result.error ?? "Failed to create");
+    }
+  }
+
+  async function handleCreateMore(data: CreateBeadInput) {
+    const result = await createBead(data, repo ?? undefined);
+    if (result.ok) {
+      toast.success("Created — ready for another");
+      setFormKey((k) => k + 1);
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+    } else {
+      toast.error(result.error ?? "Failed to create");
     }
   }
 
@@ -39,12 +55,17 @@ export function CreateBeadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Bead</DialogTitle>
+          <DialogTitle>Create New</DialogTitle>
           <DialogDescription>
             Add a new issue or task to your project.
           </DialogDescription>
         </DialogHeader>
-        <BeadForm mode="create" onSubmit={handleSubmit} />
+        <BeadForm
+          key={formKey}
+          mode="create"
+          onSubmit={handleSubmit}
+          onCreateMore={handleCreateMore}
+        />
       </DialogContent>
     </Dialog>
   );

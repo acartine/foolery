@@ -34,6 +34,7 @@ type BeadFormProps =
       mode: "create";
       defaultValues?: Partial<CreateBeadInput>;
       onSubmit: (data: CreateBeadInput) => void;
+      onCreateMore?: (data: CreateBeadInput) => void;
     }
   | {
       mode: "edit";
@@ -41,7 +42,9 @@ type BeadFormProps =
       onSubmit: (data: UpdateBeadInput) => void;
     };
 
-export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
+export function BeadForm(props: BeadFormProps) {
+  const { mode, defaultValues, onSubmit } = props;
+  const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const form = useForm({
     resolver: zodResolver(schema),
@@ -132,9 +135,21 @@ export function BeadForm({ mode, defaultValues, onSubmit }: BeadFormProps) {
         />
       </FormField>
 
-      <Button type="submit" className="w-full">
-        {mode === "create" ? "Create Bead" : "Update Bead"}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" className="flex-1">
+          {mode === "create" ? "Done" : "Update"}
+        </Button>
+        {onCreateMore && (
+          <Button
+            type="button"
+            variant="secondary"
+            className="flex-1"
+            onClick={form.handleSubmit((data) => onCreateMore(data as never))}
+          >
+            Create More
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

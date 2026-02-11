@@ -125,7 +125,7 @@ function BeadsPageInner() {
       <DropdownMenuTrigger asChild>
         <Button size="sm">
           <Plus className="mr-2 h-4 w-4" />
-          New Bead
+          New
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -145,7 +145,7 @@ function BeadsPageInner() {
   ) : (
     <Button size="sm" onClick={() => setCreateOpen(true)}>
       <Plus className="mr-2 h-4 w-4" />
-      New Bead
+      New
     </Button>
   );
 

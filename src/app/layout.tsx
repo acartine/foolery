@@ -33,7 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <header className="border-b">
+          <header>
             <div className="container mx-auto flex h-10 items-center justify-between px-2 max-w-7xl">
               <Link href="/beads" className="flex items-center">
                 <Image src="/foolery_icon.png" alt="Foolery" width={48} height={48} unoptimized className="rounded-lg" />
