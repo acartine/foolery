@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -23,6 +23,14 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 
 export default function BeadsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-12 text-muted-foreground">Loading beads...</div>}>
+      <BeadsPageInner />
+    </Suspense>
+  );
+}
+
+function BeadsPageInner() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") ?? "";
   const [createOpen, setCreateOpen] = useState(false);
