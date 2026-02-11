@@ -29,14 +29,24 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
 
+/** Infer parent ID from dot notation: "foolery-3ji.1" → "foolery-3ji" */
+function inferParent(id: string, explicit?: unknown): string | undefined {
+  if (typeof explicit === "string" && explicit) return explicit;
+  const dotIdx = id.lastIndexOf(".");
+  if (dotIdx === -1) return undefined;
+  return id.slice(0, dotIdx);
+}
+
 /** Map bd CLI JSON field names to our Bead interface field names. */
 function normalizeBead(raw: Record<string, unknown>): Bead {
+  const id = raw.id as string;
   return {
     ...raw,
     type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
     status: (raw.status ?? "open") as Bead["status"],
     priority: (raw.priority ?? 2) as Bead["priority"],
     acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
+    parent: inferParent(id, raw.parent),
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
