@@ -34,11 +34,13 @@ export default function RootLayout({
       >
         <Providers>
           <header>
-            <div className="container mx-auto flex h-10 items-center justify-between px-2 max-w-7xl">
-              <Link href="/beads" className="flex items-center">
-                <Image src="/foolery_icon.png" alt="Foolery" width={48} height={48} unoptimized className="rounded-lg" />
-              </Link>
-              <SearchBar />
+            <div className="container mx-auto flex items-center justify-between px-2 py-2 max-w-7xl">
+              <div className="flex items-center flex-1 min-w-0">
+                <Link href="/beads" className="flex items-center shrink-0">
+                  <Image src="/foolery_icon.png" alt="Foolery" width={72} height={72} unoptimized className="rounded-lg" />
+                </Link>
+                <SearchBar />
+              </div>
               <RepoSwitcher />
             </div>
           </header>
