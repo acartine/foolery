@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { RepoSwitcher } from "@/components/repo-switcher";
+import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
 import Image from "next/image";
 import "./globals.css";
@@ -37,6 +38,7 @@ export default function RootLayout({
               <Link href="/beads" className="flex items-center">
                 <Image src="/foolery_icon.png" alt="Foolery" width={48} height={48} unoptimized className="rounded-lg" />
               </Link>
+              <SearchBar />
               <RepoSwitcher />
             </div>
           </header>
