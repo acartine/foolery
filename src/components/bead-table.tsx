@@ -70,8 +70,9 @@ export function BeadTable({
       const repo = repoPath?._repoPath as string | undefined;
       return updateBead(id, fields, repo);
     },
-    onSuccess: () => {
+    onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["bead", id] });
     },
     onError: () => {
       toast.error("Failed to update bead");
