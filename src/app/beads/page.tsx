@@ -7,7 +7,6 @@ import { Plus } from "lucide-react";
 import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
-import { BeadPreviewPane } from "@/components/bead-preview-pane";
 import { FilterBar } from "@/components/filter-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
 import { CommandPalette } from "@/components/command-palette";
@@ -38,7 +37,6 @@ function BeadsPageInner() {
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
-  const [focusedBead, setFocusedBead] = useState<Bead | null>(null);
   const queryClient = useQueryClient();
   const {
     commandPaletteOpen,
@@ -103,10 +101,6 @@ function BeadsPageInner() {
     setSelectedIds(ids);
   }, []);
 
-  const handleRowFocus = useCallback((bead: Bead | null) => {
-    setFocusedBead(bead);
-  }, []);
-
   const handleBulkUpdate = useCallback(
     (fields: UpdateBeadInput) => {
       if (selectedIds.length > 0) {
@@ -160,25 +154,19 @@ function BeadsPageInner() {
         {newBeadButton}
       </div>
 
-      <div className="mt-1 flex gap-2">
-        <div className="flex-1 min-w-0">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-6 text-muted-foreground">
-              Loading beads...
-            </div>
-          ) : (
-            <BeadTable
-              data={beads}
-              showRepoColumn={showRepoColumn}
-              onSelectionChange={handleSelectionChange}
-              selectionVersion={selectionVersion}
-              onRowFocus={handleRowFocus}
-            />
-          )}
-        </div>
-        <div className="w-[400px] shrink-0 sticky top-0 h-[calc(100vh-8rem)] border rounded-lg overflow-hidden">
-          <BeadPreviewPane bead={focusedBead} />
-        </div>
+      <div className="mt-1">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-6 text-muted-foreground">
+            Loading beads...
+          </div>
+        ) : (
+          <BeadTable
+            data={beads}
+            showRepoColumn={showRepoColumn}
+            onSelectionChange={handleSelectionChange}
+            selectionVersion={selectionVersion}
+          />
+        )}
       </div>
 
       <CreateBeadDialog

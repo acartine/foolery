@@ -37,6 +37,25 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 
+function InlineSummary({ bead }: { bead: Bead }) {
+  if (!bead.description && !bead.notes) return null;
+
+  return (
+    <div className="mt-1.5 flex text-xs leading-relaxed">
+      <div className="flex-1 rounded-l px-2 py-1 bg-green-50 whitespace-pre-wrap break-words min-w-0">
+        {bead.description || ""}
+      </div>
+      <div
+        className={`flex-1 rounded-r px-2 py-1 whitespace-pre-wrap break-words min-w-0${
+          bead.notes ? " bg-yellow-50" : ""
+        }`}
+      >
+        {bead.notes || ""}
+      </div>
+    </div>
+  );
+}
+
 const PAGE_SIZE_KEY = "foolery-page-size";
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -53,13 +72,11 @@ export function BeadTable({
   showRepoColumn = false,
   onSelectionChange,
   selectionVersion,
-  onRowFocus,
 }: {
   data: Bead[];
   showRepoColumn?: boolean;
   onSelectionChange?: (ids: string[]) => void;
   selectionVersion?: number;
-  onRowFocus?: (bead: Bead | null) => void;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -125,8 +142,7 @@ export function BeadTable({
 
   const handleRowFocus = useCallback((bead: Bead) => {
     setFocusedRowId(bead.id);
-    onRowFocus?.(bead);
-  }, [onRowFocus]);
+  }, []);
 
   useEffect(() => {
     setRowSelection({});
@@ -160,9 +176,7 @@ export function BeadTable({
   useEffect(() => {
     const rows = table.getRowModel().rows;
     if (rows.length > 0 && !focusedRowId) {
-      const first = rows[0].original;
-      setFocusedRowId(first.id);
-      onRowFocus?.(first);
+      setFocusedRowId(rows[0].original.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getRowModel().rows.length]);
@@ -181,14 +195,12 @@ export function BeadTable({
       }
       if (nextIndex !== currentIndex) {
         e.preventDefault();
-        const nextBead = rows[nextIndex].original;
-        setFocusedRowId(nextBead.id);
-        onRowFocus?.(nextBead);
+        setFocusedRowId(rows[nextIndex].original.id);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, onRowFocus]);
+  }, [focusedRowId, table]);
 
   return (
     <div className="space-y-1">
@@ -232,6 +244,10 @@ export function BeadTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {focusedRowId === row.original.id &&
+                      cell.column.id === "title" && (
+                        <InlineSummary bead={row.original} />
+                      )}
                   </TableCell>
                 ))}
               </TableRow>
