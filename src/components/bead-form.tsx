@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createBeadSchema, updateBeadSchema } from "@/lib/schemas";
@@ -15,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RelationshipPicker } from "@/components/relationship-picker";
 
 const BEAD_TYPES = [
   "bug",
@@ -29,12 +31,17 @@ const BEAD_TYPES = [
 
 const PRIORITIES = [0, 1, 2, 3, 4] as const;
 
+export interface RelationshipDeps {
+  blocks: string[];
+  blockedBy: string[];
+}
+
 type BeadFormProps =
   | {
       mode: "create";
       defaultValues?: Partial<CreateBeadInput>;
-      onSubmit: (data: CreateBeadInput) => void;
-      onCreateMore?: (data: CreateBeadInput) => void;
+      onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
+      onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
     }
   | {
       mode: "edit";
@@ -46,6 +53,8 @@ export function BeadForm(props: BeadFormProps) {
   const { mode, defaultValues, onSubmit } = props;
   const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
+  const [blocks, setBlocks] = useState<string[]>([]);
+  const [blockedBy, setBlockedBy] = useState<string[]>([]);
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -59,11 +68,27 @@ export function BeadForm(props: BeadFormProps) {
     },
   });
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    if (mode === "create") {
+      (onSubmit as (d: CreateBeadInput, deps?: RelationshipDeps) => void)(
+        data as CreateBeadInput,
+        { blocks, blockedBy },
+      );
+    } else {
+      (onSubmit as (d: UpdateBeadInput) => void)(data as UpdateBeadInput);
+    }
+  });
+
+  const handleCreateMoreClick = form.handleSubmit((data) => {
+    if (onCreateMore) {
+      onCreateMore(data as CreateBeadInput, { blocks, blockedBy });
+      setBlocks([]);
+      setBlockedBy([]);
+    }
+  });
+
   return (
-    <form
-      onSubmit={form.handleSubmit((data) => onSubmit(data as never))}
-      className="space-y-2"
-    >
+    <form onSubmit={handleFormSubmit} className="space-y-2">
       <FormField label="Title" error={form.formState.errors.title?.message}>
         <Input placeholder="Bead title" autoFocus {...form.register("title")} />
       </FormField>
@@ -135,6 +160,27 @@ export function BeadForm(props: BeadFormProps) {
         />
       </FormField>
 
+      {mode === "create" && (
+        <>
+          <RelationshipPicker
+            label="Blocks"
+            selectedIds={blocks}
+            onAdd={(id) => setBlocks((prev) => [...prev, id])}
+            onRemove={(id) =>
+              setBlocks((prev) => prev.filter((x) => x !== id))
+            }
+          />
+          <RelationshipPicker
+            label="Blocked By"
+            selectedIds={blockedBy}
+            onAdd={(id) => setBlockedBy((prev) => [...prev, id])}
+            onRemove={(id) =>
+              setBlockedBy((prev) => prev.filter((x) => x !== id))
+            }
+          />
+        </>
+      )}
+
       <div className="flex gap-2">
         <Button type="submit" variant="success" className="flex-1">
           {mode === "create" ? "Done" : "Update"}
@@ -144,7 +190,7 @@ export function BeadForm(props: BeadFormProps) {
             type="button"
             variant="success-light"
             className="flex-1"
-            onClick={form.handleSubmit((data) => onCreateMore(data as never))}
+            onClick={handleCreateMoreClick}
           >
             Create More
           </Button>
