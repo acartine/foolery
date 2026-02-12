@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   useReactTable,
@@ -36,22 +36,74 @@ import {
 } from "@/components/ui/select";
 import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { HotkeyHelp } from "@/components/hotkey-help";
+
+function SummaryColumn({
+  text,
+  bg,
+  rounded,
+  expanded,
+  onExpand,
+}: {
+  text: string;
+  bg: string;
+  rounded: string;
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setOverflows(el.scrollHeight > el.clientHeight + 1);
+  }, [text]);
+
+  return (
+    <div className={`flex-1 ${rounded} px-2 py-1 ${bg} min-w-0`}>
+      <div
+        ref={ref}
+        className={`whitespace-pre-wrap break-words ${expanded ? "" : "line-clamp-[7]"}`}
+      >
+        {text}
+      </div>
+      {!expanded && overflows && (
+        <button
+          type="button"
+          className="text-green-700 font-bold cursor-pointer mt-0.5"
+          onMouseEnter={onExpand}
+        >
+          ...show more...
+        </button>
+      )}
+    </div>
+  );
+}
 
 function InlineSummary({ bead }: { bead: Bead }) {
+  const [expanded, setExpanded] = useState(false);
   if (!bead.description && !bead.notes) return null;
 
   return (
-    <div className="mt-1.5 flex text-xs leading-relaxed">
-      <div className="flex-1 rounded-l px-2 py-1 bg-green-50 whitespace-pre-wrap break-words min-w-0">
-        {bead.description || ""}
-      </div>
-      <div
-        className={`flex-1 rounded-r px-2 py-1 whitespace-pre-wrap break-words min-w-0${
-          bead.notes ? " bg-yellow-50" : ""
-        }`}
-      >
-        {bead.notes || ""}
-      </div>
+    <div
+      className={`mt-1.5 flex text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}
+      onMouseLeave={() => setExpanded(false)}
+    >
+      <SummaryColumn
+        text={bead.description || ""}
+        bg="bg-green-50"
+        rounded="rounded-l"
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
+      <SummaryColumn
+        text={bead.notes || ""}
+        bg={bead.notes ? "bg-yellow-50" : ""}
+        rounded="rounded-r"
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
     </div>
   );
 }
@@ -86,6 +138,7 @@ export function BeadTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -189,6 +242,12 @@ export function BeadTable({
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
+      if (e.key === "h" && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setHotkeyHelpOpen((prev) => !prev);
+        return;
+      }
+
       if (e.key === "L" && e.shiftKey) {
         e.preventDefault();
         const focusedRow = document.querySelector("tr.bg-muted\\/50");
@@ -234,7 +293,7 @@ export function BeadTable({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, hotkeyHelpOpen]);
 
   return (
     <div className="space-y-1">
@@ -363,6 +422,8 @@ export function BeadTable({
           </Button>
         </div>
       </div>
+
+      <HotkeyHelp open={hotkeyHelpOpen} />
     </div>
   );
 }
