@@ -67,3 +67,46 @@ export interface BeadWithRepo extends Bead {
   _repoPath: string;
   _repoName: string;
 }
+
+// ── Terminal types ──────────────────────────────────────────
+
+export type TerminalSessionStatus = "idle" | "running" | "completed" | "error" | "aborted";
+
+export interface TerminalSession {
+  id: string;
+  beadId: string;
+  beadTitle: string;
+  status: TerminalSessionStatus;
+  startedAt: string;
+  exitCode?: number;
+}
+
+export interface TerminalEvent {
+  type: "stdout" | "stderr" | "exit";
+  data: string;
+  timestamp: number;
+}
+
+// ── Wave planner types ──────────────────────────────────────
+
+export interface WaveBead {
+  id: string;
+  title: string;
+  type: BeadType;
+  status: BeadStatus;
+  priority: BeadPriority;
+  labels: string[];
+  blockedBy: string[];
+}
+
+export interface Wave {
+  level: number;
+  beads: WaveBead[];
+  gate?: WaveBead;
+}
+
+export interface WavePlan {
+  waves: Wave[];
+  unschedulable: WaveBead[];
+  computedAt: string;
+}

@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, X } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, X, Rocket } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -67,6 +67,7 @@ export interface BeadColumnOpts {
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
   onCloseBead?: (id: string) => void;
   onTitleClick?: (bead: Bead) => void;
+  onShipBead?: (bead: Bead) => void;
   allLabels?: string[];
 }
 
@@ -262,6 +263,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
   const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
+  const onShipBead = typeof opts === "boolean" ? undefined : opts.onShipBead;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
 
   const columns: ColumnDef<Bead>[] = [
@@ -413,6 +415,34 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       ),
     },
   ];
+
+  if (onShipBead) {
+    columns.push({
+      id: "ship",
+      header: "",
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const bead = row.original;
+        if (bead.status === "closed" || bead.type === "gate") return null;
+        return (
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              onShipBead(bead);
+            }}
+          >
+            <Rocket className="size-3" />
+            Ship
+          </button>
+        );
+      },
+    });
+  }
 
   if (showRepoColumn) {
     columns.splice(1, 0, {

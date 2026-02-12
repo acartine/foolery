@@ -4,10 +4,12 @@ import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
+import { startSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
 import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
@@ -28,6 +30,7 @@ function BeadsPageInner() {
   const queryClient = useQueryClient();
   const { filters, activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
+  const { setActiveTerminal } = useTerminalStore();
 
   const { data: registryData } = useQuery({
     queryKey: ["registry"],
@@ -107,6 +110,24 @@ function BeadsPageInner() {
     setSelectionVersion((v) => v + 1);
   }, []);
 
+  const handleShipBead = useCallback(
+    async (bead: Bead) => {
+      const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
+      const result = await startSession(bead.id, repo ?? activeRepo ?? undefined);
+      if (!result.ok || !result.data) {
+        toast.error(result.error ?? "Failed to start terminal session");
+        return;
+      }
+      setActiveTerminal({
+        sessionId: result.data.id,
+        beadId: bead.id,
+        beadTitle: bead.title,
+        status: "running",
+      });
+    },
+    [activeRepo, setActiveTerminal]
+  );
+
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
       <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
@@ -129,6 +150,7 @@ function BeadsPageInner() {
             onSelectionChange={handleSelectionChange}
             selectionVersion={selectionVersion}
             searchQuery={searchQuery}
+            onShipBead={handleShipBead}
           />
         )}
       </div>

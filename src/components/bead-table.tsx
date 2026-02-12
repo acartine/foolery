@@ -37,6 +37,7 @@ import {
 import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { HotkeyHelp } from "@/components/hotkey-help";
+import { useTerminalStore } from "@/stores/terminal-store";
 
 function SummaryColumn({
   text,
@@ -125,12 +126,14 @@ export function BeadTable({
   onSelectionChange,
   selectionVersion,
   searchQuery,
+  onShipBead,
 }: {
   data: Bead[];
   showRepoColumn?: boolean;
   onSelectionChange?: (ids: string[]) => void;
   selectionVersion?: number;
   searchQuery?: string;
+  onShipBead?: (bead: Bead) => void;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -139,6 +142,7 @@ export function BeadTable({
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
+  const { togglePanel: toggleTerminalPanel } = useTerminalStore();
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -197,9 +201,10 @@ export function BeadTable({
         const qs = repoPath ? `?repo=${encodeURIComponent(repoPath)}` : "";
         router.push(`/beads/${bead.id}${qs}`);
       },
+      onShipBead,
       allLabels,
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead, router, allLabels]
+    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, allLabels]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -301,11 +306,22 @@ export function BeadTable({
         if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
         handleUpdateBead({ id: bead.id, fields: rejectBeadFields(bead) });
+      } else if (e.key === "S" && e.shiftKey) {
+        // Shift-S: Ship focused bead
+        if (!onShipBead || currentIndex < 0) return;
+        const bead = rows[currentIndex].original;
+        if (bead.status === "closed" || bead.type === "gate") return;
+        e.preventDefault();
+        onShipBead(bead);
+      } else if (e.key === "T" && e.shiftKey) {
+        // Shift-T: Toggle terminal panel
+        e.preventDefault();
+        toggleTerminalPanel();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, hotkeyHelpOpen]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen]);
 
   return (
     <div className="space-y-1">

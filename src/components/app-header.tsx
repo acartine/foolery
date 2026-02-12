@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, Layers } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -16,7 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { WavePlanner } from "@/components/wave-planner";
 import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
+import { startSession } from "@/lib/terminal-api";
+import { toast } from "sonner";
+import type { WaveBead } from "@/lib/types";
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -24,8 +29,10 @@ export function AppHeader() {
     pathname === "/beads" || pathname.startsWith("/beads/");
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [orchestrateOpen, setOrchestrateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const { activeRepo, registeredRepos } = useAppStore();
+  const { setActiveTerminal } = useTerminalStore();
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
@@ -59,6 +66,21 @@ export function AppHeader() {
   const openCreateDialog = (repo: string | null) => {
     setSelectedRepo(repo);
     setCreateOpen(true);
+  };
+
+  const handleShipFromWave = async (bead: WaveBead) => {
+    const repo = activeRepo ?? undefined;
+    const result = await startSession(bead.id, repo);
+    if (!result.ok || !result.data) {
+      toast.error(result.error ?? "Failed to start terminal session");
+      return;
+    }
+    setActiveTerminal({
+      sessionId: result.data.id,
+      beadId: bead.id,
+      beadTitle: bead.title,
+      status: "running",
+    });
   };
 
   const createButton = shouldChooseRepo ? (
@@ -122,6 +144,15 @@ export function AppHeader() {
 
             {isBeadsRoute ? (
               <div className="ml-auto flex items-center gap-2">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="gap-1.5 px-2.5"
+                  onClick={() => setOrchestrateOpen(true)}
+                >
+                  <Layers className="size-4" />
+                  Orchestrate
+                </Button>
                 {canCreate ? (
                   createButton
                 ) : (
@@ -136,16 +167,23 @@ export function AppHeader() {
       </header>
 
       {isBeadsRoute ? (
-        <CreateBeadDialog
-          open={createOpen}
-          onOpenChange={setCreateOpen}
-          onCreated={() => {
-            setCreateOpen(false);
-            setSelectedRepo(null);
-            queryClient.invalidateQueries({ queryKey: ["beads"] });
-          }}
-          repo={selectedRepo ?? activeRepo}
-        />
+        <>
+          <CreateBeadDialog
+            open={createOpen}
+            onOpenChange={setCreateOpen}
+            onCreated={() => {
+              setCreateOpen(false);
+              setSelectedRepo(null);
+              queryClient.invalidateQueries({ queryKey: ["beads"] });
+            }}
+            repo={selectedRepo ?? activeRepo}
+          />
+          <WavePlanner
+            open={orchestrateOpen}
+            onOpenChange={setOrchestrateOpen}
+            onShipBead={handleShipFromWave}
+          />
+        </>
       ) : null}
     </>
   );
