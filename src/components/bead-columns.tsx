@@ -405,6 +405,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     columns.splice(1, 0, {
       id: "_repoName",
       header: "Repo",
+      size: 100,
+      minSize: 100,
+      maxSize: 100,
       cell: ({ row }) => {
         const repoName = (row.original as unknown as Record<string, unknown>)._repoName;
         return repoName ? (
