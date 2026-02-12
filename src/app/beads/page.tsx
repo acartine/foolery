@@ -81,8 +81,19 @@ function BeadsPageInner() {
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["beads", params, activeRepo],
-    queryFn: () => {
-      if (activeRepo) return fetchBeads(params, activeRepo);
+    queryFn: async () => {
+      if (activeRepo) {
+        const result = await fetchBeads(params, activeRepo);
+        if (result.ok && result.data) {
+          const repo = registeredRepos.find((r) => r.path === activeRepo);
+          result.data = result.data.map((bead) => ({
+            ...bead,
+            _repoPath: activeRepo,
+            _repoName: repo?.name ?? activeRepo,
+          })) as typeof result.data;
+        }
+        return result;
+      }
       if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
       return fetchBeads(params);
     },

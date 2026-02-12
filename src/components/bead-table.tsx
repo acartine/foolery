@@ -142,8 +142,8 @@ export function BeadTable({
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
-      const repoPath = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
-      const repo = repoPath?._repoPath as string | undefined;
+      const bead = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
+      const repo = bead?._repoPath as string | undefined;
       return updateBead(id, fields, repo);
     },
     onSuccess: (_data, { id }) => {
@@ -157,8 +157,8 @@ export function BeadTable({
 
   const { mutate: handleCloseBead } = useMutation({
     mutationFn: (id: string) => {
-      const repoPath = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
-      const repo = repoPath?._repoPath as string | undefined;
+      const bead = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
+      const repo = bead?._repoPath as string | undefined;
       return closeBead(id, {}, repo);
     },
     onSuccess: () => {
