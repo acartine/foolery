@@ -17,7 +17,7 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
-import { getBeadColumns } from "@/components/bead-columns";
+import { getBeadColumns, rejectBeadFields } from "@/components/bead-columns";
 import {
   Table,
   TableHeader,
@@ -181,6 +181,12 @@ export function BeadTable({
     });
   }, [hierarchicalData, userSorted]);
 
+  const allLabels = useMemo(() => {
+    const labelSet = new Set<string>();
+    data.forEach((bead) => bead.labels?.forEach((l) => labelSet.add(l)));
+    return Array.from(labelSet).sort();
+  }, [data]);
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
@@ -191,8 +197,9 @@ export function BeadTable({
         const qs = repoPath ? `?repo=${encodeURIComponent(repoPath)}` : "";
         router.push(`/beads/${bead.id}${qs}`);
       },
+      allLabels,
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead, router]
+    [showRepoColumn, handleUpdateBead, handleCloseBead, router, allLabels]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -288,7 +295,7 @@ export function BeadTable({
         const bead = rows[currentIndex].original;
         if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
-        handleUpdateBead({ id: bead.id, fields: { status: "open", removeLabels: ["stage:verification"] } });
+        handleUpdateBead({ id: bead.id, fields: rejectBeadFields(bead) });
       }
     };
     window.addEventListener("keydown", handleKeyDown);
