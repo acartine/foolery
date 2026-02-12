@@ -183,20 +183,47 @@ export async function updateBead(
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
 ): Promise<BdResult<void>> {
+  // Separate label operations from field updates because
+  // bd update --remove-label / --set-labels are broken;
+  // only bd label add/remove actually persists.
+  const labelsToRemove: string[] = [];
   const args = ["update", id];
+  let hasUpdateFields = false;
+
   for (const [key, val] of Object.entries(fields)) {
     if (val === undefined) continue;
-    if (key === "labels" && Array.isArray(val)) {
-      if (val.length > 0) args.push("--set-labels", val.join(","));
-    } else if (key === "removeLabels" && Array.isArray(val)) {
-      for (const label of val) args.push("--remove-label", label);
+    if (key === "removeLabels" && Array.isArray(val)) {
+      labelsToRemove.push(...val);
+    } else if (key === "labels" && Array.isArray(val)) {
+      // skip — handled via bd label add below if needed
     } else {
       args.push(`--${key}`, String(val));
+      hasUpdateFields = true;
     }
   }
-  const { stderr, exitCode } = await exec(args, { cwd: repoPath });
-  if (exitCode !== 0)
-    return { ok: false, error: stderr || "bd update failed" };
+
+  // Run bd update for non-label fields
+  if (hasUpdateFields) {
+    const { stderr, exitCode } = await exec(args, { cwd: repoPath });
+    if (exitCode !== 0)
+      return { ok: false, error: stderr || "bd update failed" };
+  }
+
+  // Remove labels via bd label remove (the only command that works)
+  for (const label of labelsToRemove) {
+    const { stderr, exitCode } = await exec(
+      ["label", "remove", id, label],
+      { cwd: repoPath }
+    );
+    if (exitCode !== 0)
+      return { ok: false, error: stderr || `bd label remove ${label} failed` };
+  }
+
+  // Flush to JSONL so the daemon's auto-import doesn't restore stale labels
+  if (labelsToRemove.length > 0) {
+    await exec(["sync"], { cwd: repoPath });
+  }
+
   return { ok: true };
 }
 
