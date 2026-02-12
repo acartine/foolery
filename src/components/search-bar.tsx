@@ -41,7 +41,7 @@ function SearchBarInner() {
     <form onSubmit={handleSubmit} className="flex-1 max-w-md mx-2 relative">
       <Input
         type="text"
-        placeholder="find your beads..."
+        placeholder="search it up"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}

@@ -37,7 +37,7 @@ export default function RootLayout({
             <div className="container mx-auto flex items-center justify-between px-2 py-2 max-w-7xl">
               <div className="flex items-center flex-1 min-w-0">
                 <Link href="/beads" className="flex items-center shrink-0">
-                  <Image src="/foolery_icon.png" alt="Foolery" width={72} height={72} unoptimized className="rounded-lg" />
+                  <Image src="/foolery_icon.png" alt="Foolery" width={54} height={54} unoptimized className="rounded-lg" />
                 </Link>
                 <SearchBar />
               </div>
