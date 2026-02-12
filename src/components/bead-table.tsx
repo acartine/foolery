@@ -245,7 +245,7 @@ export function BeadTable({
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  style={{ width: header.column.columnDef.maxSize != null ? header.getSize() : "100%" }}
+                  style={{ width: header.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? header.getSize() : undefined }}
                 >
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
@@ -281,7 +281,7 @@ export function BeadTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={cell.column.columnDef.maxSize != null ? undefined : "whitespace-normal overflow-hidden"}
+                    className={cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? undefined : "whitespace-normal overflow-hidden"}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
