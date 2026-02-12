@@ -50,7 +50,7 @@ function normalizeBead(raw: Record<string, unknown>): Bead {
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
-    labels: (raw.labels ?? []) as string[],
+    labels: ((raw.labels ?? []) as string[]).filter(l => l.trim() !== ""),
   } as Bead;
 }
 
@@ -194,7 +194,6 @@ export async function updateBead(
       args.push(`--${key}`, String(val));
     }
   }
-  args.push("--no-auto-flush");
   const { stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd update failed" };
