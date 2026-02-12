@@ -302,8 +302,6 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "title",
       header: "Title",
-      size: 9999,
-      minSize: 200,
       cell: ({ row }) => {
         const depth = (row.original as unknown as { _depth?: number })._depth ?? 0;
         return (

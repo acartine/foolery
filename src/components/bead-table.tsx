@@ -38,62 +38,20 @@ import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 function InlineSummary({ bead }: { bead: Bead }) {
-  const [expanded, setExpanded] = useState(false);
-
   if (!bead.description && !bead.notes) return null;
 
   return (
-    <div className={`mt-1.5 flex text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}>
-      <div
-        className={`flex-1 rounded-l px-2 py-1 bg-green-50 min-w-0 ${
-          expanded ? "whitespace-pre-wrap break-words" : "whitespace-pre-wrap break-words"
-        }`}
-        style={expanded ? undefined : {
-          display: "-webkit-box",
-          WebkitLineClamp: 7,
-          WebkitBoxOrient: "vertical" as const,
-          overflow: "hidden",
-        }}
-      >
+    <div className="mt-1.5 flex text-xs leading-relaxed">
+      <div className="flex-1 rounded-l px-2 py-1 bg-green-50 whitespace-pre-wrap break-words min-w-0">
         {bead.description || ""}
       </div>
       <div
-        className={`flex-1 rounded-r px-2 py-1 min-w-0 ${
-          bead.notes ? "bg-yellow-50" : ""
-        } ${expanded ? "whitespace-pre-wrap break-words" : "whitespace-pre-wrap break-words"}`}
-        style={expanded ? undefined : {
-          display: "-webkit-box",
-          WebkitLineClamp: 7,
-          WebkitBoxOrient: "vertical" as const,
-          overflow: "hidden",
-        }}
+        className={`flex-1 rounded-r px-2 py-1 whitespace-pre-wrap break-words min-w-0${
+          bead.notes ? " bg-yellow-50" : ""
+        }`}
       >
         {bead.notes || ""}
       </div>
-      {!expanded && (
-        <button
-          type="button"
-          className="absolute bottom-0 left-0 right-0 text-center py-0.5 font-bold text-green-800 hover:text-green-600 cursor-pointer bg-gradient-to-t from-white/90 to-transparent"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded(true);
-          }}
-        >
-          ...show more...
-        </button>
-      )}
-      {expanded && (
-        <button
-          type="button"
-          className="absolute bottom-0 left-0 right-0 text-center py-0.5 font-bold text-green-800 hover:text-green-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded(false);
-          }}
-        >
-          ...show less...
-        </button>
-      )}
     </div>
   );
 }
@@ -280,7 +238,7 @@ export function BeadTable({
 
   return (
     <div className="space-y-1">
-      <Table className="table-fixed w-full">
+      <Table className="table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
