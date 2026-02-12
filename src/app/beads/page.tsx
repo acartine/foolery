@@ -159,7 +159,7 @@ function BeadsPageInner() {
   );
 
   return (
-    <div className="container mx-auto pt-1 px-1 max-w-7xl overflow-hidden">
+    <div className="mx-auto pt-1 px-4 max-w-[95vw] overflow-hidden">
       <div className="flex items-center justify-end gap-2 mb-1">
         {selectedIds.length > 0 ? (
           <BulkEditControls
