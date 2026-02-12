@@ -44,7 +44,7 @@ interface FilterBarProps {
   onClearSelection?: () => void;
 }
 
-function BulkEditControls({
+export function BulkEditControls({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
