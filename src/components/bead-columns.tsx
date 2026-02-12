@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
@@ -10,12 +11,13 @@ import { BeadPriorityBadge } from "@/components/bead-priority-badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, X } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -124,7 +126,76 @@ function RejectButton({
   );
 }
 
-function TitleCell({ bead, onTitleClick }: { bead: Bead; onTitleClick?: (bead: Bead) => void }) {
+function AddLabelDropdown({
+  beadId,
+  existingLabels,
+  onUpdateBead,
+}: {
+  beadId: string;
+  existingLabels: string[];
+  onUpdateBead: (id: string, fields: UpdateBeadInput) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [newLabel, setNewLabel] = useState("");
+
+  const knownLabels = [
+    "bug", "feature", "frontend", "backend", "urgent", "blocked",
+    "stage:verification", "needs-review", "wontfix", "duplicate",
+  ];
+
+  const availableLabels = knownLabels.filter((l) => !existingLabels.includes(l));
+
+  const addLabel = (label: string) => {
+    const currentLabels = [...existingLabels, label];
+    onUpdateBead(beadId, { labels: currentLabels });
+    setOpen(false);
+    setNewLabel("");
+  };
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          data-add-label
+          className="inline-flex items-center rounded px-1.5 py-0 text-[10px] font-semibold leading-none bg-green-700 text-white hover:bg-green-600"
+          onClick={(e) => e.stopPropagation()}
+        >
+          + Label
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-48">
+        <div className="p-1">
+          <input
+            type="text"
+            placeholder="New label..."
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && newLabel.trim()) {
+                e.preventDefault();
+                addLabel(newLabel.trim());
+              }
+              e.stopPropagation();
+            }}
+            className="w-full px-2 py-1 text-xs border rounded mb-1 outline-none focus:ring-1 focus:ring-green-500"
+          />
+        </div>
+        {availableLabels.map((label) => (
+          <DropdownMenuItem key={label} onClick={() => addLabel(label)}>
+            {label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function TitleCell({ bead, onTitleClick, onUpdateBead }: {
+  bead: Bead;
+  onTitleClick?: (bead: Bead) => void;
+  onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+}) {
   const labels = bead.labels ?? [];
   return (
     <div className="flex flex-col gap-0.5">
@@ -149,11 +220,26 @@ function TitleCell({ bead, onTitleClick }: { bead: Bead; onTitleClick?: (bead: B
         {labels.map((label) => (
           <span
             key={label}
-            className={`inline-flex items-center rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
+            className={`inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
           >
             {label}
+            {onUpdateBead && (
+              <button
+                type="button"
+                className="ml-0.5 rounded-full hover:bg-black/10 p-0 leading-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateBead(bead.id, { removeLabels: [label] });
+                }}
+              >
+                <X className="size-2.5" />
+              </button>
+            )}
           </span>
         ))}
+        {onUpdateBead && (
+          <AddLabelDropdown beadId={bead.id} existingLabels={labels} onUpdateBead={onUpdateBead} />
+        )}
       </div>
     </div>
   );
@@ -223,7 +309,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
-            <TitleCell bead={row.original} onTitleClick={onTitleClick} />
+            <TitleCell bead={row.original} onTitleClick={onTitleClick} onUpdateBead={onUpdateBead} />
           </div>
         );
       },
