@@ -21,6 +21,7 @@ interface AppState {
   registeredRepos: RegisteredRepo[];
   setFilter: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
   resetFilters: () => void;
+  setCommandPaletteOpen: (open: boolean) => void;
   toggleCommandPalette: () => void;
   setViewMode: (mode: "table" | "board") => void;
   setActiveRepo: (repo: string | null) => void;
@@ -40,6 +41,7 @@ export const useAppStore = create<AppState>((set) => ({
       filters: { ...state.filters, [key]: value },
     })),
   resetFilters: () => set({ filters: initialFilters }),
+  setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
   toggleCommandPalette: () =>
     set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
   setViewMode: (mode) => set({ viewMode: mode }),

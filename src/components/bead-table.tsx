@@ -249,7 +249,12 @@ export function BeadTable({
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
-      if (e.key === "h" && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      if (
+        e.key.toLowerCase() === "h" &&
+        e.shiftKey &&
+        !e.metaKey &&
+        !e.ctrlKey
+      ) {
         e.preventDefault();
         setHotkeyHelpOpen((prev) => !prev);
         return;

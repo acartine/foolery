@@ -1,0 +1,152 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { RepoSwitcher } from "@/components/repo-switcher";
+import { SearchBar } from "@/components/search-bar";
+import { CreateBeadDialog } from "@/components/create-bead-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAppStore } from "@/stores/app-store";
+
+export function AppHeader() {
+  const pathname = usePathname();
+  const isBeadsRoute =
+    pathname === "/beads" || pathname.startsWith("/beads/");
+  const queryClient = useQueryClient();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const { activeRepo, registeredRepos } = useAppStore();
+
+  const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
+  const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
+  const defaultRepo = useMemo(
+    () => activeRepo ?? registeredRepos[0]?.path ?? null,
+    [activeRepo, registeredRepos]
+  );
+
+  useEffect(() => {
+    if (!isBeadsRoute || !canCreate) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "N" && e.shiftKey) {
+        if (document.querySelector('[role="dialog"]')) return;
+        const target = e.target as HTMLElement;
+        if (
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "INPUT" ||
+          target.tagName === "SELECT"
+        ) {
+          return;
+        }
+        e.preventDefault();
+        setSelectedRepo(defaultRepo);
+        setCreateOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [canCreate, defaultRepo, isBeadsRoute]);
+
+  const openCreateDialog = (repo: string | null) => {
+    setSelectedRepo(repo);
+    setCreateOpen(true);
+  };
+
+  const createButton = shouldChooseRepo ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="lg" variant="success" className="gap-1.5 px-2.5">
+          <Plus className="size-4" />
+          Add
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {registeredRepos.map((repo) => (
+          <DropdownMenuItem
+            key={repo.path}
+            onClick={() => openCreateDialog(repo.path)}
+          >
+            {repo.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <Button
+      size="lg"
+      variant="success"
+      className="gap-1.5 px-2.5"
+      onClick={() => openCreateDialog(defaultRepo)}
+    >
+      <Plus className="size-4" />
+      Add
+    </Button>
+  );
+
+  return (
+    <>
+      <header className="border-b border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/90 supports-[backdrop-filter]:backdrop-blur">
+        <div className="mx-auto max-w-[95vw] px-4 py-2">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
+            <div className="flex min-w-0 shrink-0 items-center gap-2">
+              <Link href="/beads" className="flex shrink-0 items-center gap-2">
+                <Image
+                  src="/foolery_icon.png"
+                  alt="Foolery"
+                  width={38}
+                  height={38}
+                  unoptimized
+                  className="rounded-md"
+                />
+                <span className="hidden text-sm font-semibold tracking-tight sm:inline">
+                  Foolery
+                </span>
+              </Link>
+              <RepoSwitcher />
+            </div>
+
+            <SearchBar
+              className="order-3 mx-0 basis-full md:order-none md:basis-auto md:flex-1 md:max-w-none"
+              inputClassName="h-8"
+              placeholder="Search beads..."
+            />
+
+            {isBeadsRoute ? (
+              <div className="ml-auto flex items-center gap-2">
+                {canCreate ? (
+                  createButton
+                ) : (
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="/registry">Add Repo</Link>
+                  </Button>
+                )}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </header>
+
+      {isBeadsRoute ? (
+        <CreateBeadDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onCreated={() => {
+            setCreateOpen(false);
+            setSelectedRepo(null);
+            queryClient.invalidateQueries({ queryKey: ["beads"] });
+          }}
+          repo={selectedRepo ?? activeRepo}
+        />
+      ) : null}
+    </>
+  );
+}

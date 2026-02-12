@@ -45,3 +45,6 @@ storybook-static
 
 # claude code
 .claude/
+
+# playwright mcp
+.playwright-mcp/

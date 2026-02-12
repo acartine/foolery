@@ -4,8 +4,19 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-function SearchBarInner() {
+interface SearchBarInnerProps {
+  className?: string;
+  inputClassName?: string;
+  placeholder?: string;
+}
+
+function SearchBarInner({
+  className,
+  inputClassName,
+  placeholder = "Search beads...",
+}: SearchBarInnerProps) {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = useState(urlQuery);
@@ -38,14 +49,17 @@ function SearchBarInner() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex-1 max-w-md mx-2 relative">
+    <form
+      onSubmit={handleSubmit}
+      className={cn("relative mx-2 flex-1 max-w-md", className)}
+    >
       <Input
         type="text"
-        placeholder="search it up"
+        placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="h-7 pr-7"
+        className={cn("h-7 pr-7", inputClassName)}
       />
       {query && (
         <button
@@ -61,10 +75,24 @@ function SearchBarInner() {
   );
 }
 
-export function SearchBar() {
+interface SearchBarProps {
+  className?: string;
+  inputClassName?: string;
+  placeholder?: string;
+}
+
+export function SearchBar({
+  className,
+  inputClassName,
+  placeholder,
+}: SearchBarProps = {}) {
   return (
-    <Suspense fallback={<div className="flex-1 max-w-md mx-2" />}>
-      <SearchBarInner />
+    <Suspense fallback={<div className={cn("mx-2 flex-1 max-w-md", className)} />}>
+      <SearchBarInner
+        className={className}
+        inputClassName={inputClassName}
+        placeholder={placeholder}
+      />
     </Suspense>
   );
 }

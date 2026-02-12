@@ -39,9 +39,9 @@ export function RepoSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="outline" size="lg" className="h-8 gap-1.5 px-2.5">
           <Database className="size-4" />
-          <span className="truncate max-w-[200px]">{currentName}</span>
+          <span className="max-w-[180px] truncate">{currentName}</span>
           <ChevronDown className="size-3" />
         </Button>
       </DropdownMenuTrigger>

@@ -5,7 +5,7 @@ const HOTKEYS = [
   { key: "Shift+V", description: "Verify (close) focused bead" },
   { key: "Shift+F", description: "Reject focused bead" },
   { key: "Shift+L", description: "Add label to focused bead" },
-  { key: "h", description: "Toggle this help" },
+  { key: "Shift+H", description: "Toggle this help" },
 ];
 
 export function HotkeyHelp({ open }: { open: boolean }) {
