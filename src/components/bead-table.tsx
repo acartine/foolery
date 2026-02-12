@@ -185,10 +185,21 @@ export function BeadTable({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+
+      if (e.key === "L" && e.shiftKey) {
+        e.preventDefault();
+        const focusedRow = document.querySelector("tr.bg-muted\\/50");
+        if (focusedRow) {
+          const addLabelBtn = focusedRow.querySelector("[data-add-label]") as HTMLButtonElement;
+          if (addLabelBtn) addLabelBtn.click();
+        }
+        return;
+      }
+
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
       const rows = table.getRowModel().rows;
       if (rows.length === 0) return;
       const currentIndex = rows.findIndex((r) => r.original.id === focusedRowId);
