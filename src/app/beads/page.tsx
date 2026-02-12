@@ -58,6 +58,21 @@ function BeadsPageInner() {
     }
   }, [registryData, setRegisteredRepos]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "N" && e.shiftKey) {
+        // Don't open if already in a dialog or input
+        if (document.querySelector('[role="dialog"]')) return;
+        const target = e.target as HTMLElement;
+        if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+        e.preventDefault();
+        setCreateOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
   if (filters.type) params.type = filters.type;

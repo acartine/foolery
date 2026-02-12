@@ -185,27 +185,46 @@ export function BeadTable({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+
       const rows = table.getRowModel().rows;
       if (rows.length === 0) return;
       const currentIndex = rows.findIndex((r) => r.original.id === focusedRowId);
-      let nextIndex: number;
+
       if (e.key === "ArrowDown") {
-        nextIndex = currentIndex < rows.length - 1 ? currentIndex + 1 : currentIndex;
-      } else {
-        nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
-      }
-      if (nextIndex !== currentIndex) {
+        const nextIndex = currentIndex < rows.length - 1 ? currentIndex + 1 : currentIndex;
+        if (nextIndex !== currentIndex) {
+          e.preventDefault();
+          setFocusedRowId(rows[nextIndex].original.id);
+        }
+      } else if (e.key === "ArrowUp") {
+        const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+        if (nextIndex !== currentIndex) {
+          e.preventDefault();
+          setFocusedRowId(rows[nextIndex].original.id);
+        }
+      } else if (e.key === "V" && e.shiftKey) {
+        // Shift-V: Verify (close) the focused bead if it has stage:verification
+        if (currentIndex < 0) return;
+        const bead = rows[currentIndex].original;
+        if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
-        setFocusedRowId(rows[nextIndex].original.id);
+        handleUpdateBead({ id: bead.id, fields: { removeLabels: ["stage:verification"] } });
+        handleCloseBead(bead.id);
+      } else if (e.key === "F" && e.shiftKey) {
+        // Shift-F: Reject the focused bead if it has stage:verification
+        if (currentIndex < 0) return;
+        const bead = rows[currentIndex].original;
+        if (!bead.labels?.includes("stage:verification")) return;
+        e.preventDefault();
+        handleUpdateBead({ id: bead.id, fields: { status: "open", removeLabels: ["stage:verification"] } });
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead]);
 
   return (
     <div className="space-y-1">
