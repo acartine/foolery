@@ -1,14 +1,15 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { fetchBead, fetchDeps, updateBead } from "@/lib/api";
+import { fetchBead, fetchDeps, updateBead, addDep } from "@/lib/api";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
+import { RelationshipPicker } from "@/components/relationship-picker";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -88,13 +89,69 @@ export default function BeadDetailPage({
 
       <BeadDetail bead={bead} onUpdate={async (fields) => { await handleUpdate(fields); }} />
 
-      {deps.length > 0 && (
-        <>
-          <Separator className="my-6" />
-          <h2 className="text-lg font-semibold mb-4">Dependencies</h2>
-          <DepTree deps={deps} beadId={id} />
-        </>
-      )}
+      <Separator className="my-6" />
+      <h2 className="text-lg font-semibold mb-4">Dependencies</h2>
+      {deps.length > 0 && <DepTree deps={deps} beadId={id} />}
+
+      <div className="mt-4">
+        <AddRelationshipSection beadId={id} repo={repo} />
+      </div>
+    </div>
+  );
+}
+
+function AddRelationshipSection({
+  beadId,
+  repo,
+}: {
+  beadId: string;
+  repo?: string;
+}) {
+  const [blocksIds, setBlocksIds] = useState<string[]>([]);
+  const [blockedByIds, setBlockedByIds] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
+  const { mutate: handleAddDep } = useMutation({
+    mutationFn: ({ source, target }: { source: string; target: string }) =>
+      addDep(source, { blocks: target }, repo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bead-deps", beadId] });
+      toast.success("Dependency added");
+    },
+    onError: () => {
+      toast.error("Failed to add dependency");
+    },
+  });
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold">Add Relationship</h3>
+      <RelationshipPicker
+        label="This bead blocks"
+        selectedIds={blocksIds}
+        onAdd={(id) => {
+          handleAddDep({ source: beadId, target: id });
+          setBlocksIds((prev) => [...prev, id]);
+        }}
+        onRemove={(id) =>
+          setBlocksIds((prev) => prev.filter((x) => x !== id))
+        }
+        excludeId={beadId}
+        repo={repo}
+      />
+      <RelationshipPicker
+        label="This bead is blocked by"
+        selectedIds={blockedByIds}
+        onAdd={(id) => {
+          handleAddDep({ source: id, target: beadId });
+          setBlockedByIds((prev) => [...prev, id]);
+        }}
+        onRemove={(id) =>
+          setBlockedByIds((prev) => prev.filter((x) => x !== id))
+        }
+        excludeId={beadId}
+        repo={repo}
+      />
     </div>
   );
 }

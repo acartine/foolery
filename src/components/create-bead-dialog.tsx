@@ -11,8 +11,24 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { BeadForm } from "@/components/bead-form";
-import { createBead } from "@/lib/api";
+import type { RelationshipDeps } from "@/components/bead-form";
+import { createBead, addDep } from "@/lib/api";
 import type { CreateBeadInput } from "@/lib/schemas";
+
+async function addDepsForBead(
+  beadId: string,
+  deps: RelationshipDeps,
+  repo?: string,
+) {
+  const promises: Promise<unknown>[] = [];
+  for (const blockId of deps.blocks) {
+    promises.push(addDep(beadId, { blocks: blockId }, repo));
+  }
+  for (const blockerId of deps.blockedBy) {
+    promises.push(addDep(blockerId, { blocks: beadId }, repo));
+  }
+  await Promise.allSettled(promises);
+}
 
 interface CreateBeadDialogProps {
   open: boolean;
@@ -30,9 +46,15 @@ export function CreateBeadDialog({
   const [formKey, setFormKey] = useState(0);
   const queryClient = useQueryClient();
 
-  async function handleSubmit(data: CreateBeadInput) {
+  async function handleSubmit(
+    data: CreateBeadInput,
+    deps?: RelationshipDeps,
+  ) {
     const result = await createBead(data, repo ?? undefined);
     if (result.ok) {
+      if (deps && result.data?.id) {
+        await addDepsForBead(result.data.id, deps, repo ?? undefined);
+      }
       toast.success("Created");
       onCreated();
     } else {
@@ -40,9 +62,15 @@ export function CreateBeadDialog({
     }
   }
 
-  async function handleCreateMore(data: CreateBeadInput) {
+  async function handleCreateMore(
+    data: CreateBeadInput,
+    deps?: RelationshipDeps,
+  ) {
     const result = await createBead(data, repo ?? undefined);
     if (result.ok) {
+      if (deps && result.data?.id) {
+        await addDepsForBead(result.data.id, deps, repo ?? undefined);
+      }
       toast.success("Created — ready for another");
       setFormKey((k) => k + 1);
       queryClient.invalidateQueries({ queryKey: ["beads"] });
