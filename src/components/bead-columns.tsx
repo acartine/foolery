@@ -67,6 +67,7 @@ export interface BeadColumnOpts {
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
   onCloseBead?: (id: string) => void;
   onTitleClick?: (bead: Bead) => void;
+  allLabels?: string[];
 }
 
 function VerificationButtons({
@@ -101,6 +102,19 @@ function VerificationButtons({
   );
 }
 
+export function rejectBeadFields(bead: Bead): UpdateBeadInput {
+  const currentLabels = bead.labels ?? [];
+  const filtered = currentLabels.filter(
+    (l) => l !== "stage:verification" && !l.startsWith("attempts:")
+  );
+  const prev = currentLabels.find((l) => l.startsWith("attempts:"));
+  const attemptNum = prev ? parseInt(prev.split(":")[1], 10) + 1 : 1;
+  return {
+    status: "open",
+    labels: [...filtered, "stage:retry", `attempts:${attemptNum}`],
+  };
+}
+
 function RejectButton({
   bead,
   onUpdateBead,
@@ -118,7 +132,7 @@ function RejectButton({
       title="Reject"
       onClick={(e) => {
         e.stopPropagation();
-        onUpdateBead(bead.id, { status: "open", removeLabels: ["stage:verification"] });
+        onUpdateBead(bead.id, rejectBeadFields(bead));
       }}
     >
       <ThumbsDown className="size-4" />
@@ -130,20 +144,17 @@ function AddLabelDropdown({
   beadId,
   existingLabels,
   onUpdateBead,
+  allLabels = [],
 }: {
   beadId: string;
   existingLabels: string[];
   onUpdateBead: (id: string, fields: UpdateBeadInput) => void;
+  allLabels?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [newLabel, setNewLabel] = useState("");
 
-  const knownLabels = [
-    "bug", "feature", "frontend", "backend", "urgent", "blocked",
-    "stage:verification", "needs-review", "wontfix", "duplicate",
-  ];
-
-  const availableLabels = knownLabels.filter((l) => !existingLabels.includes(l));
+  const availableLabels = allLabels.filter((l) => !existingLabels.includes(l));
 
   const addLabel = (label: string) => {
     const currentLabels = [...existingLabels, label];
@@ -191,10 +202,11 @@ function AddLabelDropdown({
   );
 }
 
-function TitleCell({ bead, onTitleClick, onUpdateBead }: {
+function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels }: {
   bead: Bead;
   onTitleClick?: (bead: Bead) => void;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  allLabels?: string[];
 }) {
   const labels = bead.labels ?? [];
   return (
@@ -226,19 +238,20 @@ function TitleCell({ bead, onTitleClick, onUpdateBead }: {
             {onUpdateBead && (
               <button
                 type="button"
-                className="ml-0.5 rounded-full hover:bg-black/10 p-0 leading-none"
+                className="ml-0.5 rounded-full hover:bg-black/10 p-0.5 leading-none"
+                title={`Remove ${label}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onUpdateBead(bead.id, { removeLabels: [label] });
                 }}
               >
-                <X className="size-2.5" />
+                <X className="size-3" />
               </button>
             )}
           </span>
         ))}
         {onUpdateBead && (
-          <AddLabelDropdown beadId={bead.id} existingLabels={labels} onUpdateBead={onUpdateBead} />
+          <AddLabelDropdown beadId={bead.id} existingLabels={labels} onUpdateBead={onUpdateBead} allLabels={allLabels} />
         )}
       </div>
     </div>
@@ -250,6 +263,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
   const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
+  const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -307,7 +321,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
-            <TitleCell bead={row.original} onTitleClick={onTitleClick} onUpdateBead={onUpdateBead} />
+            <TitleCell bead={row.original} onTitleClick={onTitleClick} onUpdateBead={onUpdateBead} allLabels={allLabels} />
           </div>
         );
       },
