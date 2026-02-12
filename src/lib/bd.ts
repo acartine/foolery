@@ -187,6 +187,7 @@ export async function updateBead(
   // bd update --remove-label / --set-labels are broken;
   // only bd label add/remove actually persists.
   const labelsToRemove: string[] = [];
+  const labelsToAdd: string[] = [];
   const args = ["update", id];
   let hasUpdateFields = false;
 
@@ -195,7 +196,7 @@ export async function updateBead(
     if (key === "removeLabels" && Array.isArray(val)) {
       labelsToRemove.push(...val);
     } else if (key === "labels" && Array.isArray(val)) {
-      // skip — handled via bd label add below if needed
+      labelsToAdd.push(...val);
     } else {
       args.push(`--${key}`, String(val));
       hasUpdateFields = true;
@@ -209,7 +210,7 @@ export async function updateBead(
       return { ok: false, error: stderr || "bd update failed" };
   }
 
-  // Remove labels via bd label remove (the only command that works)
+  // Remove labels via bd label remove
   for (const label of labelsToRemove) {
     const { stderr, exitCode } = await exec(
       ["label", "remove", id, label],
@@ -219,8 +220,18 @@ export async function updateBead(
       return { ok: false, error: stderr || `bd label remove ${label} failed` };
   }
 
+  // Add labels via bd label add
+  for (const label of labelsToAdd) {
+    const { stderr, exitCode } = await exec(
+      ["label", "add", id, label],
+      { cwd: repoPath }
+    );
+    if (exitCode !== 0)
+      return { ok: false, error: stderr || `bd label add ${label} failed` };
+  }
+
   // Flush to JSONL so the daemon's auto-import doesn't restore stale labels
-  if (labelsToRemove.length > 0) {
+  if (labelsToRemove.length > 0 || labelsToAdd.length > 0) {
     await exec(["sync"], { cwd: repoPath });
   }
 

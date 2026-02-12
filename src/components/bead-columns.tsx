@@ -104,14 +104,14 @@ function VerificationButtons({
 
 export function rejectBeadFields(bead: Bead): UpdateBeadInput {
   const currentLabels = bead.labels ?? [];
-  const filtered = currentLabels.filter(
-    (l) => l !== "stage:verification" && !l.startsWith("attempts:")
-  );
   const prev = currentLabels.find((l) => l.startsWith("attempts:"));
   const attemptNum = prev ? parseInt(prev.split(":")[1], 10) + 1 : 1;
+  const removeLabels = ["stage:verification"];
+  if (prev) removeLabels.push(prev);
   return {
     status: "open",
-    labels: [...filtered, "stage:retry", `attempts:${attemptNum}`],
+    removeLabels,
+    labels: ["stage:retry", `attempts:${attemptNum}`],
   };
 }
 
@@ -157,8 +157,7 @@ function AddLabelDropdown({
   const availableLabels = allLabels.filter((l) => !existingLabels.includes(l));
 
   const addLabel = (label: string) => {
-    const currentLabels = [...existingLabels, label];
-    onUpdateBead(beadId, { labels: currentLabels });
+    onUpdateBead(beadId, { labels: [label] });
     setOpen(false);
     setNewLabel("");
   };
