@@ -37,6 +37,9 @@ export function TerminalPanel() {
     () => getActiveTerminal(terminals, activeSessionId),
     [activeSessionId, terminals]
   );
+  const activeSessionKey = activeTerminal?.sessionId ?? null;
+  const activeBeadId = activeTerminal?.beadId ?? null;
+  const activeBeadTitle = activeTerminal?.beadTitle ?? null;
 
   const termContainerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XtermTerminal | null>(null);
@@ -56,7 +59,12 @@ export function TerminalPanel() {
 
   // Initialize xterm + connect to SSE for active session
   useEffect(() => {
-    if (!panelOpen || !activeTerminal || !termContainerRef.current) return;
+    if (!panelOpen || !activeSessionKey || !activeBeadId || !activeBeadTitle || !termContainerRef.current) {
+      return;
+    }
+    const sessionId = activeSessionKey;
+    const beadId = activeBeadId;
+    const beadTitle = activeBeadTitle;
 
     let term: XtermTerminal | null = null;
     let disposed = false;
@@ -102,13 +110,13 @@ export function TerminalPanel() {
       const liveTerm = term;
 
       liveTerm.writeln(
-        `\x1b[36m▶ Shipping bead: ${activeTerminal.beadId}\x1b[0m`
+        `\x1b[36m▶ Shipping bead: ${beadId}\x1b[0m`
       );
-      liveTerm.writeln(`\x1b[90m  ${activeTerminal.beadTitle}\x1b[0m`);
+      liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
       liveTerm.writeln("");
 
       const cleanup = connectToSession(
-        activeTerminal.sessionId,
+        sessionId,
         (event: TerminalEvent) => {
           if (disposed) return;
           if (event.type === "stdout") {
@@ -123,7 +131,7 @@ export function TerminalPanel() {
             } else {
               liveTerm.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
             }
-            updateStatus(activeTerminal.sessionId, code === 0 ? "completed" : "error");
+            updateStatus(sessionId, code === 0 ? "completed" : "error");
           }
         },
         () => {
@@ -148,7 +156,7 @@ export function TerminalPanel() {
         fitRef.current = null;
       }
     };
-  }, [panelOpen, activeTerminal, updateStatus]);
+  }, [panelOpen, activeSessionKey, activeBeadId, activeBeadTitle, updateStatus]);
 
   useEffect(() => {
     if (!panelOpen || !fitRef.current) return;

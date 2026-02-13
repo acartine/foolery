@@ -59,6 +59,20 @@ function normalizeBeads(raw: string): Bead[] {
   return items.map(normalizeBead);
 }
 
+function normalizeLabels(labels: string[]): string[] {
+  const deduped = new Set<string>();
+  for (const label of labels) {
+    const trimmed = label.trim();
+    if (!trimmed) continue;
+    deduped.add(trimmed);
+  }
+  return Array.from(deduped);
+}
+
+function isStageLabel(label: string): boolean {
+  return label.startsWith("stage:");
+}
+
 export async function listBeads(
   filters?: Record<string, string>,
   repoPath?: string
@@ -207,6 +221,35 @@ export async function updateBead(
     }
   }
 
+  const normalizedLabelsToAdd = normalizeLabels(labelsToAdd);
+  let normalizedLabelsToRemove = normalizeLabels(labelsToRemove);
+
+  // Stage labels are mutually exclusive in this workflow. If callers add any
+  // stage:* label, automatically remove other current stage:* labels so
+  // regressions in frontend payload construction can't leave stale stage labels.
+  if (
+    normalizedLabelsToAdd.some(isStageLabel) ||
+    normalizedLabelsToRemove.some(isStageLabel)
+  ) {
+    const current = await showBead(id, repoPath);
+    if (!current.ok || !current.data) {
+      return { ok: false, error: current.error || "Failed to load bead before label update" };
+    }
+
+    if (normalizedLabelsToAdd.some(isStageLabel)) {
+      const stageLabelsToKeep = new Set(
+        normalizedLabelsToAdd.filter(isStageLabel)
+      );
+      const extraStageLabels = (current.data.labels ?? []).filter(
+        (label) => isStageLabel(label) && !stageLabelsToKeep.has(label)
+      );
+      normalizedLabelsToRemove = normalizeLabels([
+        ...normalizedLabelsToRemove,
+        ...extraStageLabels,
+      ]);
+    }
+  }
+
   // Run bd update for non-label fields
   if (hasUpdateFields) {
     const { stderr, exitCode } = await exec(args, { cwd: repoPath });
@@ -215,7 +258,7 @@ export async function updateBead(
   }
 
   // Remove labels via bd label remove
-  for (const label of labelsToRemove) {
+  for (const label of normalizedLabelsToRemove) {
     const { stderr, exitCode } = await exec(
       ["label", "remove", id, label],
       { cwd: repoPath }
@@ -225,7 +268,7 @@ export async function updateBead(
   }
 
   // Add labels via bd label add
-  for (const label of labelsToAdd) {
+  for (const label of normalizedLabelsToAdd) {
     const { stderr, exitCode } = await exec(
       ["label", "add", id, label],
       { cwd: repoPath }
@@ -235,8 +278,11 @@ export async function updateBead(
   }
 
   // Flush to JSONL so the daemon's auto-import doesn't restore stale labels
-  if (labelsToRemove.length > 0 || labelsToAdd.length > 0) {
-    await exec(["sync"], { cwd: repoPath });
+  if (normalizedLabelsToRemove.length > 0 || normalizedLabelsToAdd.length > 0) {
+    const { stderr, exitCode } = await exec(["sync"], { cwd: repoPath });
+    if (exitCode !== 0) {
+      return { ok: false, error: stderr || "bd sync failed after label update" };
+    }
   }
 
   return { ok: true };

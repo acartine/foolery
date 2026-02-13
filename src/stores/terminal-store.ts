@@ -78,11 +78,16 @@ export const useTerminalStore = create<TerminalState>((set) => ({
       };
     }),
   updateStatus: (sessionId, status) =>
-    set((state) => ({
-      terminals: state.terminals.map((item) =>
-        item.sessionId === sessionId ? { ...item, status } : item
-      ),
-    })),
+    set((state) => {
+      let changed = false;
+      const terminals = state.terminals.map((item) => {
+        if (item.sessionId !== sessionId) return item;
+        if (item.status === status) return item;
+        changed = true;
+        return { ...item, status };
+      });
+      return changed ? { terminals } : state;
+    }),
 }));
 
 export function getActiveTerminal(
