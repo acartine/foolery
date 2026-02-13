@@ -18,16 +18,27 @@ export async function GET(
   const stream = new ReadableStream({
     start(controller) {
       const encoder = new TextEncoder();
+      let closed = false;
 
       const send = (event: { type: string; data: string; timestamp: number }) => {
+        if (closed) return;
         try {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(event)}\n\n`)
-          );
+          const payload = `data: ${JSON.stringify(event)}\n\n`;
+          console.log(`[terminal-sse] [${sessionId}] sending ${event.type} (${event.data.length} chars)`);
+          controller.enqueue(encoder.encode(payload));
         } catch {
           // stream closed
         }
       };
+
+      const closeStream = () => {
+        if (closed) return;
+        closed = true;
+        console.log(`[terminal-sse] [${sessionId}] closing stream`);
+        try { controller.close(); } catch { /* already closed */ }
+      };
+
+      console.log(`[terminal-sse] [${sessionId}] connected, buffer=${entry.buffer.length} events, status=${entry.session.status}`);
 
       // Replay buffered events
       for (const evt of entry.buffer) {
@@ -38,23 +49,25 @@ export async function GET(
       const listener = (evt: { type: string; data: string; timestamp: number }) => {
         send(evt);
         if (evt.type === "exit") {
-          try { controller.close(); } catch { /* already closed */ }
+          // Small delay so the browser can process the message before stream closes
+          setTimeout(closeStream, 100);
         }
       };
       entry.emitter.on("data", listener);
 
-      // If process already exited and we've replayed all, close
+      // If process already exited and we've replayed all, close after delay
       if (entry.session.status !== "running" && entry.session.status !== "idle") {
         const hasExit = entry.buffer.some((e) => e.type === "exit");
         if (hasExit) {
-          try { controller.close(); } catch { /* already closed */ }
+          // Give the browser time to process replayed events before closing
+          setTimeout(closeStream, 250);
         }
       }
 
       // Handle client disconnect
       request.signal.addEventListener("abort", () => {
         entry.emitter.off("data", listener);
-        try { controller.close(); } catch { /* already closed */ }
+        closeStream();
       });
     },
   });

@@ -38,10 +38,12 @@ export function connectToSession(
   onError?: (error: Event) => void
 ): () => void {
   const es = new EventSource(`${BASE}/${sessionId}`);
+  let gotExit = false;
 
   es.onmessage = (msg) => {
     try {
       const event = JSON.parse(msg.data) as TerminalEvent;
+      if (event.type === "exit") gotExit = true;
       onEvent(event);
     } catch {
       // ignore parse errors
@@ -49,7 +51,10 @@ export function connectToSession(
   };
 
   es.onerror = (err) => {
-    onError?.(err);
+    // Stream closing after exit is normal, not an error
+    if (!gotExit) {
+      onError?.(err);
+    }
     es.close();
   };
 
