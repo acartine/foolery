@@ -180,16 +180,14 @@ export function BeadTable({
     },
   });
 
-  const hierarchicalData = useMemo(() => buildHierarchy(data), [data]);
-
   const sortedData = useMemo(() => {
-    if (userSorted) return hierarchicalData;
-    return [...hierarchicalData].sort((a, b) => {
-      const aVerify = a.labels?.includes("stage:verification") ? 0 : 1;
-      const bVerify = b.labels?.includes("stage:verification") ? 0 : 1;
-      return aVerify - bVerify;
-    });
-  }, [hierarchicalData, userSorted]);
+    const sortFn = userSorted ? undefined : (a: Bead, b: Bead) => {
+      const aV = a.labels?.includes("stage:verification") ? 0 : 1;
+      const bV = b.labels?.includes("stage:verification") ? 0 : 1;
+      return aV - bV;
+    };
+    return buildHierarchy(data, sortFn);
+  }, [data, userSorted]);
 
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
