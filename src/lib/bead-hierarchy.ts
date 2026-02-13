@@ -9,8 +9,14 @@ export interface HierarchicalBead extends Bead {
  * with a `_depth` field indicating nesting level.
  * Beads whose parent ID is not in the dataset are treated as top-level.
  * Circular references are skipped via a visited set.
+ *
+ * An optional `sortChildren` comparator reorders siblings within each parent
+ * group without breaking the hierarchy (children never escape their subtree).
  */
-export function buildHierarchy(beads: Bead[]): HierarchicalBead[] {
+export function buildHierarchy(
+  beads: Bead[],
+  sortChildren?: (a: Bead, b: Bead) => number,
+): HierarchicalBead[] {
   const byId = new Map(beads.map((b) => [b.id, b]));
   const children = new Map<string | undefined, Bead[]>();
 
@@ -24,7 +30,9 @@ export function buildHierarchy(beads: Bead[]): HierarchicalBead[] {
   const visited = new Set<string>();
 
   function walk(parentId: string | undefined, depth: number) {
-    for (const b of children.get(parentId) ?? []) {
+    const kids = children.get(parentId) ?? [];
+    if (sortChildren) kids.sort(sortChildren);
+    for (const b of kids) {
       if (visited.has(b.id)) continue;
       visited.add(b.id);
       result.push({ ...b, _depth: depth });
