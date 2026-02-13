@@ -36,6 +36,7 @@ export const createBeadSchema = z.object({
   assignee: z.string().optional(),
   due: z.string().optional(),
   acceptance: z.string().optional(),
+  notes: z.string().optional(),
   parent: z.string().optional(),
   estimate: z.number().int().positive().optional(),
 });

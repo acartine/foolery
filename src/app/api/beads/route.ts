@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  const { title, description, type, priority, labels, assignee, due, acceptance, parent, estimate } = parsed.data;
+  const { title, description, type, priority, labels, assignee, due, acceptance, notes, parent, estimate } = parsed.data;
   const fields: Record<string, string | string[] | number | undefined> = {
     title,
     description,
@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
     assignee,
     due,
     acceptance,
+    notes,
     parent,
     estimate,
   };
