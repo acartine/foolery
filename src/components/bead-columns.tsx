@@ -171,7 +171,7 @@ function AddLabelDropdown({
         <button
           type="button"
           data-add-label
-          className="inline-flex items-center rounded px-1.5 py-0 text-[10px] font-semibold leading-none bg-purple-600 text-white hover:bg-purple-500"
+          className="inline-flex items-center rounded px-1.5 py-0 text-[10px] font-semibold leading-none bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:hover:bg-purple-900/60"
           onClick={(e) => e.stopPropagation()}
         >
           + Label
