@@ -123,6 +123,8 @@ export async function createSession(
       ``,
       `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, then exit plan mode and implement it. Do not skip the planning step.`,
       ``,
+      `AUTONOMY: Do NOT use AskUserQuestion — there is no human to respond. Use your own judgement to make decisions and resolve ambiguity.`,
+      ``,
       `ID: ${bead.id}`,
       `Title: ${bead.title}`,
       `Type: ${bead.type}`,
