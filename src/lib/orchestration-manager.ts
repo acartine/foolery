@@ -5,6 +5,7 @@ import {
   createBead,
   listBeads,
   listDeps,
+  showBead,
   updateBead,
 } from "@/lib/bd";
 import type {
@@ -386,17 +387,90 @@ function applyLineEvent(entry: OrchestrationSessionEntry, line: string) {
   }
 }
 
-function consumeAssistantText(entry: OrchestrationSessionEntry, delta: string) {
+function formatLogValue(value: unknown): string {
+  const raw = typeof value === "string" ? value : JSON.stringify(value);
+  if (!raw) return "";
+  return raw.length > 220 ? `${raw.slice(0, 220)}...` : raw;
+}
+
+function formatStructuredLogLine(line: string): string {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+    return `${line}\n`;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    const obj = toObject(parsed);
+    if (!obj || typeof obj.event !== "string") return `${line}\n`;
+
+    const text =
+      typeof obj.text === "string"
+        ? obj.text
+        : typeof obj.message === "string"
+          ? obj.message
+          : typeof obj.result === "string"
+            ? obj.result
+            : "";
+
+    const extras = Object.entries(obj)
+      .filter(([key]) => !["event", "text", "message", "result"].includes(key))
+      .map(([key, value]) => ({ key, value: formatLogValue(value) }))
+      .filter((entry) => entry.value.length > 0);
+
+    const out = [`${obj.event} | ${text || "(no text)"}\n`];
+    for (const extra of extras) {
+      out.push(`  ${extra.key}: ${extra.value}\n`);
+    }
+    return out.join("");
+  } catch {
+    return `${line}\n`;
+  }
+}
+
+function consumeAssistantText(entry: OrchestrationSessionEntry, delta: string): string[] {
   entry.assistantText += delta;
   entry.lineBuffer += delta;
+  const completedLines: string[] = [];
 
   let newlineIndex = entry.lineBuffer.indexOf("\n");
   while (newlineIndex !== -1) {
     const line = entry.lineBuffer.slice(0, newlineIndex);
     entry.lineBuffer = entry.lineBuffer.slice(newlineIndex + 1);
     applyLineEvent(entry, line);
+    completedLines.push(line);
     newlineIndex = entry.lineBuffer.indexOf("\n");
   }
+
+  return completedLines;
+}
+
+function flushAssistantTail(entry: OrchestrationSessionEntry) {
+  if (!entry.lineBuffer.trim()) {
+    entry.lineBuffer = "";
+    return;
+  }
+
+  const tail = entry.lineBuffer;
+  entry.lineBuffer = "";
+  applyLineEvent(entry, tail);
+  pushEvent(entry, "log", formatStructuredLogLine(tail));
+}
+
+function summarizeResult(result: unknown, isError: boolean): string {
+  if (!isError) return "Claude orchestration complete";
+  if (typeof result !== "string" || !result.trim()) {
+    return "Claude orchestration failed";
+  }
+
+  const firstLine = result
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line.length > 0);
+  if (!firstLine) return "Claude orchestration failed";
+  return firstLine.length > 180
+    ? `Claude orchestration failed: ${firstLine.slice(0, 180)}...`
+    : `Claude orchestration failed: ${firstLine}`;
 }
 
 function finalizeSession(
@@ -406,6 +480,7 @@ function finalizeSession(
 ) {
   if (entry.exited) return;
   entry.exited = true;
+  flushAssistantTail(entry);
 
   if (!entry.session.plan) {
     const beadTitleMap = new Map(
@@ -556,8 +631,10 @@ export async function createOrchestrationSession(
           delta?.type === "text_delta" &&
           typeof delta.text === "string"
         ) {
-          pushEvent(entry, "log", delta.text);
-          consumeAssistantText(entry, delta.text);
+          const completedLines = consumeAssistantText(entry, delta.text);
+          for (const completedLine of completedLines) {
+            pushEvent(entry, "log", formatStructuredLogLine(completedLine));
+          }
         }
         continue;
       }
@@ -589,12 +666,7 @@ export async function createOrchestrationSession(
 
       if (obj.type === "result") {
         const isError = Boolean(obj.is_error);
-        const resultText =
-          typeof obj.result === "string" && obj.result.trim()
-            ? obj.result.trim()
-            : isError
-              ? "Claude orchestration failed"
-              : "Claude orchestration complete";
+        const resultText = summarizeResult(obj.result, isError);
 
         if (!entry.session.plan && typeof obj.result === "string") {
           const beadTitleMap = new Map(
@@ -629,12 +701,7 @@ export async function createOrchestrationSession(
         const obj = toObject(parsed);
         if (obj?.type === "result") {
           const isError = Boolean(obj.is_error);
-          const msg =
-            typeof obj.result === "string" && obj.result.trim()
-              ? obj.result.trim()
-              : isError
-                ? "Claude orchestration failed"
-                : "Claude orchestration complete";
+          const msg = summarizeResult(obj.result, isError);
           finalizeSession(entry, isError ? "error" : "completed", msg);
           return;
         }
@@ -719,15 +786,16 @@ export async function applyOrchestrationSession(
       continue;
     }
 
-    const priorities = validChildren
-      .map((bead) => entry.allBeads.get(bead.id)?.priority)
-      .filter((value): value is Bead["priority"] => value !== undefined);
-    const wavePriority =
-      priorities.length > 0
-        ? priorities.reduce((min, current) =>
-            current < min ? current : min
-          )
-        : 2;
+    let wavePriority: Bead["priority"] = 2;
+    let hasPriority = false;
+    for (const bead of validChildren) {
+      const priority = entry.allBeads.get(bead.id)?.priority;
+      if (priority === undefined) continue;
+      if (!hasPriority || priority < wavePriority) {
+        wavePriority = priority;
+        hasPriority = true;
+      }
+    }
 
     const description = [
       `Generated by orchestration session ${sessionId}.`,
@@ -773,6 +841,21 @@ export async function applyOrchestrationSession(
       );
       if (!updateResult.ok) {
         throw new Error(updateResult.error ?? `Failed to reparent ${child.id}`);
+      }
+
+      const refreshed = await showBead(child.id, repoPath);
+      if (!refreshed.ok || refreshed.data?.parent !== waveId) {
+        throw new Error(`Failed to confirm ${child.id} parent relationship to ${waveId}`);
+      }
+
+      const relationDep = await addDep(waveId, child.id, repoPath);
+      if (
+        !relationDep.ok &&
+        !/already exists|duplicate|exists/i.test(relationDep.error ?? "")
+      ) {
+        throw new Error(
+          relationDep.error ?? `Failed to link wave ${waveId} to ${child.id}`
+        );
       }
     }
 

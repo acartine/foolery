@@ -68,9 +68,8 @@ export interface BeadColumnOpts {
   onCloseBead?: (id: string) => void;
   onTitleClick?: (bead: Bead) => void;
   onShipBead?: (bead: Bead) => void;
-  isShippingLocked?: boolean;
-  shippingBeadId?: string;
-  onAbortShipping?: () => void;
+  shippingByBeadId?: Record<string, string>;
+  onAbortShipping?: (beadId: string) => void;
   allLabels?: string[];
 }
 
@@ -267,8 +266,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
   const onShipBead = typeof opts === "boolean" ? undefined : opts.onShipBead;
-  const isShippingLocked = typeof opts === "boolean" ? false : (opts.isShippingLocked ?? false);
-  const shippingBeadId = typeof opts === "boolean" ? undefined : opts.shippingBeadId;
+  const shippingByBeadId = typeof opts === "boolean" ? {} : (opts.shippingByBeadId ?? {});
   const onAbortShipping = typeof opts === "boolean" ? undefined : opts.onAbortShipping;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
 
@@ -433,8 +431,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         const bead = row.original;
         if (bead.status === "closed" || bead.type === "gate") return null;
-        const isActiveShipping = isShippingLocked && shippingBeadId === bead.id;
-        const shipDisabled = isShippingLocked && shippingBeadId !== bead.id;
+        const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
 
         if (isActiveShipping) {
           return (
@@ -448,7 +445,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
                 className="inline-flex h-5 w-5 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAbortShipping?.();
+                  onAbortShipping?.(bead.id);
                 }}
               >
                 <Square className="size-3" />
@@ -460,16 +457,10 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <button
             type="button"
-            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
-              shipDisabled
-                ? "cursor-not-allowed text-muted-foreground opacity-50"
-                : "text-blue-700 hover:bg-blue-100"
-            }`}
-            disabled={shipDisabled}
-            title={shipDisabled ? "Another ship is currently running" : "Ship"}
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+            title="Ship"
             onClick={(e) => {
               e.stopPropagation();
-              if (shipDisabled) return;
               onShipBead(bead);
             }}
           >

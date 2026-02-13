@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -10,6 +11,7 @@ import {
   Square,
   Users,
   Workflow,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +23,9 @@ import {
   connectToOrchestration,
   startOrchestration,
 } from "@/lib/orchestration-api";
+import { startSession } from "@/lib/terminal-api";
 import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
 import type {
   ApplyOrchestrationResult,
   OrchestrationEvent,
@@ -29,22 +33,29 @@ import type {
   OrchestrationSession,
 } from "@/lib/types";
 
-const MAX_LOG_CHARS = 120_000;
+const MAX_LOG_LINES = 900;
 
 interface OrchestrationViewProps {
   onApplied?: () => void;
+}
+
+interface LogExtraField {
+  key: string;
+  value: string;
+}
+
+interface LogLine {
+  id: string;
+  type: "structured" | "plain";
+  event?: string;
+  text: string;
+  extras?: LogExtraField[];
 }
 
 function isPlanPayload(value: unknown): value is OrchestrationPlan {
   if (!value || typeof value !== "object") return false;
   const obj = value as Record<string, unknown>;
   return typeof obj.summary === "string" && Array.isArray(obj.waves);
-}
-
-function appendLog(prev: string, nextChunk: string): string {
-  const next = prev + nextChunk;
-  if (next.length <= MAX_LOG_CHARS) return next;
-  return next.slice(next.length - MAX_LOG_CHARS);
 }
 
 function formatAgentLabel(agent: { role: string; count: number; specialty?: string }): string {
@@ -60,24 +71,101 @@ function statusTone(status: OrchestrationSession["status"] | "idle") {
   return "bg-zinc-100 text-zinc-700 border-zinc-200";
 }
 
+function compactValue(value: unknown): string {
+  const raw = typeof value === "string" ? value : JSON.stringify(value);
+  if (!raw) return "";
+  return raw.length > 240 ? `${raw.slice(0, 240)}...` : raw;
+}
+
+function eventTone(eventName: string): string {
+  const normalized = eventName.toLowerCase();
+  if (normalized.includes("error")) return "text-red-300";
+  if (normalized.includes("wave")) return "text-violet-300";
+  if (normalized.includes("plan")) return "text-emerald-300";
+  if (normalized.includes("thinking")) return "text-sky-300";
+  if (normalized.includes("status")) return "text-amber-300";
+  return "text-cyan-300";
+}
+
+function parseLogLine(line: string, id: string): LogLine {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) {
+    return {
+      id,
+      type: "plain",
+      text: line,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+    const event = typeof parsed.event === "string" ? parsed.event.trim() : "";
+    if (!event) {
+      return {
+        id,
+        type: "plain",
+        text: line,
+      };
+    }
+
+    const text =
+      typeof parsed.text === "string"
+        ? parsed.text
+        : typeof parsed.message === "string"
+          ? parsed.message
+          : typeof parsed.result === "string"
+            ? parsed.result
+            : "";
+
+    const extras = Object.entries(parsed)
+      .filter(([key]) => !["event", "text", "message", "result"].includes(key))
+      .map(([key, value]) => ({ key, value: compactValue(value) }))
+      .filter((entry) => entry.value.length > 0);
+
+    return {
+      id,
+      type: "structured",
+      event,
+      text,
+      extras,
+    };
+  } catch {
+    return {
+      id,
+      type: "plain",
+      text: line,
+    };
+  }
+}
+
+function normalizeStatusText(message: string): string {
+  const clean = message.replace(/\s+/g, " ").trim();
+  if (clean.length <= 180) return clean;
+  return `${clean.slice(0, 180)}...`;
+}
+
 export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
+  const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
 
   const [objective, setObjective] = useState("");
   const [session, setSession] = useState<OrchestrationSession | null>(null);
   const [plan, setPlan] = useState<OrchestrationPlan | null>(null);
-  const [terminalText, setTerminalText] = useState("");
+  const [logLines, setLogLines] = useState<LogLine[]>([]);
   const [statusText, setStatusText] = useState(
     "Ready to ask Claude for an orchestration plan"
   );
   const [isStarting, setIsStarting] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+  const [isTriggeringNow, setIsTriggeringNow] = useState(false);
   const [applyResult, setApplyResult] = useState<ApplyOrchestrationResult | null>(
     null
   );
 
   const terminalRef = useRef<HTMLDivElement>(null);
+  const pendingLogRef = useRef("");
   const sessionId = session?.id;
 
   const repoLabel = useMemo(() => {
@@ -87,10 +175,33 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     );
   }, [activeRepo, registeredRepos]);
 
+  const nextWaveToTrigger = useMemo(() => {
+    if (!applyResult || applyResult.applied.length === 0) return null;
+    return [...applyResult.applied].sort((a, b) => a.waveIndex - b.waveIndex)[0] ?? null;
+  }, [applyResult]);
+
+  const appendLogChunk = useCallback((chunk: string) => {
+    const combined = pendingLogRef.current + chunk;
+    const lines = combined.split(/\r?\n/);
+    pendingLogRef.current = lines.pop() ?? "";
+
+    if (lines.length === 0) return;
+
+    setLogLines((prev) => {
+      const timestamp = Date.now();
+      const next = [...prev];
+      lines.forEach((line, index) => {
+        next.push(parseLogLine(line, `${timestamp}-${index}-${next.length}`));
+      });
+      if (next.length <= MAX_LOG_LINES) return next;
+      return next.slice(next.length - MAX_LOG_LINES);
+    });
+  }, []);
+
   useEffect(() => {
     if (!terminalRef.current) return;
     terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-  }, [terminalText]);
+  }, [logLines]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -101,7 +212,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         const message = typeof event.data === "string" ? event.data : null;
 
         if (event.type === "log" && message) {
-          setTerminalText((prev) => appendLog(prev, message));
+          appendLogChunk(message);
           return;
         }
 
@@ -111,7 +222,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         }
 
         if (event.type === "status" && message) {
-          setStatusText(message);
+          setStatusText(normalizeStatusText(message));
           if (message.toLowerCase().includes("complete")) {
             setSession((prev) =>
               prev ? { ...prev, status: "completed", completedAt: new Date().toISOString() } : prev
@@ -121,7 +232,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         }
 
         if (event.type === "error" && message) {
-          setStatusText(message);
+          setStatusText(normalizeStatusText(message));
           setSession((prev) =>
             prev
               ? {
@@ -136,9 +247,18 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         }
 
         if (event.type === "exit") {
+          if (pendingLogRef.current.trim()) {
+            appendLogChunk(`${pendingLogRef.current}\n`);
+            pendingLogRef.current = "";
+          }
           setSession((prev) => {
             if (!prev) return prev;
-            const nextStatus = prev.status === "aborted" ? "aborted" : prev.status === "error" ? "error" : "completed";
+            const nextStatus =
+              prev.status === "aborted"
+                ? "aborted"
+                : prev.status === "error"
+                  ? "error"
+                  : "completed";
             return {
               ...prev,
               status: nextStatus,
@@ -153,7 +273,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     );
 
     return disconnect;
-  }, [sessionId]);
+  }, [appendLogChunk, sessionId]);
 
   const isRunning = session?.status === "running";
   const canApply = Boolean(session && plan && activeRepo && !isRunning);
@@ -167,7 +287,8 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setIsStarting(true);
     setApplyResult(null);
     setPlan(null);
-    setTerminalText("");
+    pendingLogRef.current = "";
+    setLogLines([]);
     setStatusText("Starting Claude orchestration...");
 
     const result = await startOrchestration(activeRepo, objective);
@@ -216,6 +337,40 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         result.data.applied.length === 1 ? "" : "s"
       }`
     );
+  };
+
+  const handleTriggerNow = async () => {
+    if (!activeRepo || !nextWaveToTrigger) return;
+
+    const existingRunning = terminals.find(
+      (terminal) =>
+        terminal.beadId === nextWaveToTrigger.waveId && terminal.status === "running"
+    );
+    if (existingRunning) {
+      setActiveSession(existingRunning.sessionId);
+      router.push("/beads");
+      return;
+    }
+
+    setIsTriggeringNow(true);
+    const result = await startSession(nextWaveToTrigger.waveId, activeRepo);
+    setIsTriggeringNow(false);
+
+    if (!result.ok || !result.data) {
+      toast.error(result.error ?? "Failed to trigger ship session");
+      return;
+    }
+
+    upsertTerminal({
+      sessionId: result.data.id,
+      beadId: nextWaveToTrigger.waveId,
+      beadTitle: nextWaveToTrigger.waveTitle,
+      status: "running",
+      startedAt: new Date().toISOString(),
+    });
+
+    toast.success(`Triggered ${nextWaveToTrigger.waveTitle}`);
+    router.push("/beads");
   };
 
   return (
@@ -293,8 +448,31 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             ref={terminalRef}
             className="h-[380px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
           >
-            {terminalText ? (
-              <pre className="whitespace-pre-wrap break-words">{terminalText}</pre>
+            {logLines.length > 0 ? (
+              <div className="space-y-1">
+                {logLines.map((line) =>
+                  line.type === "structured" ? (
+                    <div key={line.id} className="whitespace-pre-wrap break-words">
+                      <span className={`font-semibold ${eventTone(line.event ?? "")}`}>
+                        {line.event}
+                      </span>
+                      <span className="text-slate-500"> | </span>
+                      <span className="text-slate-200">{line.text || "(no text)"}</span>
+                      {line.extras && line.extras.length > 0 && (
+                        <div className="mt-0.5 space-y-0.5 pl-3 text-slate-400">
+                          {line.extras.map((extra) => (
+                            <div key={`${line.id}-${extra.key}`}>{extra.key}: {extra.value}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div key={line.id} className="whitespace-pre-wrap break-words text-slate-300">
+                      {line.text}
+                    </div>
+                  )
+                )}
+              </div>
             ) : (
               <p className="text-slate-500">No output yet. Start a planning run to stream Claude output.</p>
             )}
@@ -421,10 +599,36 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                   </li>
                 ))}
               </ul>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={handleTriggerNow}
+                  disabled={!nextWaveToTrigger || isTriggeringNow}
+                >
+                  {isTriggeringNow ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <Rocket className="size-3.5" />
+                  )}
+                  Trigger Now
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={() => router.push("/beads")}
+                >
+                  <ArrowRight className="size-3.5" />
+                  Back to List
+                </Button>
+              </div>
+
               {applyResult.skipped.length > 0 && (
-                <p className="mt-2 text-xs text-amber-800">
+                <div className="mt-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
                   Skipped: {applyResult.skipped.join(", ")}
-                </p>
+                </div>
               )}
             </div>
           )}

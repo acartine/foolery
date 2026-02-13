@@ -128,8 +128,7 @@ export function BeadTable({
   selectionVersion,
   searchQuery,
   onShipBead,
-  isShippingLocked = false,
-  shippingBeadId,
+  shippingByBeadId = {},
   onAbortShipping,
 }: {
   data: Bead[];
@@ -138,9 +137,8 @@ export function BeadTable({
   selectionVersion?: number;
   searchQuery?: string;
   onShipBead?: (bead: Bead) => void;
-  isShippingLocked?: boolean;
-  shippingBeadId?: string;
-  onAbortShipping?: () => void;
+  shippingByBeadId?: Record<string, string>;
+  onAbortShipping?: (beadId: string) => void;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -210,12 +208,11 @@ export function BeadTable({
         router.push(`/beads/${bead.id}${qs}`);
       },
       onShipBead,
-      isShippingLocked,
-      shippingBeadId,
+      shippingByBeadId,
       onAbortShipping,
       allLabels,
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, isShippingLocked, shippingBeadId, onAbortShipping, allLabels]
+    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -322,7 +319,6 @@ export function BeadTable({
         if (!onShipBead || currentIndex < 0) return;
         const bead = rows[currentIndex].original;
         if (bead.status === "closed" || bead.type === "gate") return;
-        if (isShippingLocked && shippingBeadId !== bead.id) return;
         e.preventDefault();
         onShipBead(bead);
       } else if (e.key === "T" && e.shiftKey) {
@@ -349,7 +345,7 @@ export function BeadTable({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, isShippingLocked, shippingBeadId, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, setActiveRepo]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, setActiveRepo]);
 
   return (
     <div className="space-y-1">

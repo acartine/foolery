@@ -32,9 +32,21 @@ function BeadsPageInner() {
   const queryClient = useQueryClient();
   const { filters, activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
-  const { setActiveTerminal, activeTerminal, updateStatus } = useTerminalStore();
-  const isShippingLocked = activeTerminal?.status === "running";
-  const shippingBeadId = isShippingLocked ? activeTerminal.beadId : undefined;
+  const {
+    terminals,
+    setActiveSession,
+    upsertTerminal,
+    updateStatus,
+  } = useTerminalStore();
+  const shippingByBeadId = terminals.reduce<Record<string, string>>(
+    (acc, terminal) => {
+      if (terminal.status === "running") {
+        acc[terminal.beadId] = terminal.sessionId;
+      }
+      return acc;
+    },
+    {}
+  );
 
   const { data: registryData } = useQuery({
     queryKey: ["registry"],
@@ -117,36 +129,46 @@ function BeadsPageInner() {
 
   const handleShipBead = useCallback(
     async (bead: Bead) => {
-      if (isShippingLocked && shippingBeadId !== bead.id) {
-        toast.error("A ship is already in progress");
+      const existingRunning = terminals.find(
+        (terminal) => terminal.beadId === bead.id && terminal.status === "running"
+      );
+      if (existingRunning) {
+        setActiveSession(existingRunning.sessionId);
+        toast.info("Opened active ship terminal");
         return;
       }
+
       const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
       const result = await startSession(bead.id, repo ?? activeRepo ?? undefined);
       if (!result.ok || !result.data) {
         toast.error(result.error ?? "Failed to start terminal session");
         return;
       }
-      setActiveTerminal({
+      upsertTerminal({
         sessionId: result.data.id,
         beadId: bead.id,
         beadTitle: bead.title,
         status: "running",
+        startedAt: new Date().toISOString(),
       });
     },
-    [activeRepo, isShippingLocked, setActiveTerminal, shippingBeadId]
+    [activeRepo, setActiveSession, terminals, upsertTerminal]
   );
 
-  const handleAbortShipping = useCallback(async () => {
-    if (!activeTerminal) return;
-    const result = await abortSession(activeTerminal.sessionId);
+  const handleAbortShipping = useCallback(async (beadId: string) => {
+    const running = terminals.find(
+      (terminal) => terminal.beadId === beadId && terminal.status === "running"
+    );
+    if (!running) return;
+
+    const result = await abortSession(running.sessionId);
     if (!result.ok) {
       toast.error(result.error ?? "Failed to terminate ship");
       return;
     }
-    updateStatus("aborted");
+    updateStatus(running.sessionId, "aborted");
     toast.success("Ship terminated");
-  }, [activeTerminal, updateStatus]);
+  }, [terminals, updateStatus]);
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
@@ -179,8 +201,7 @@ function BeadsPageInner() {
             selectionVersion={selectionVersion}
             searchQuery={searchQuery}
             onShipBead={handleShipBead}
-            isShippingLocked={isShippingLocked}
-            shippingBeadId={shippingBeadId}
+            shippingByBeadId={shippingByBeadId}
             onAbortShipping={handleAbortShipping}
           />
         )}

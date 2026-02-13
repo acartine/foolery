@@ -31,9 +31,8 @@ interface WavePlannerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onShipBead?: (bead: WaveBead) => void;
-  onAbortShip?: () => void;
-  isShippingLocked?: boolean;
-  shippingBeadId?: string;
+  onAbortShip?: (beadId: string) => void;
+  shippingByBeadId?: Record<string, string>;
 }
 
 const READINESS_STYLES: Record<WaveReadiness, string> = {
@@ -60,10 +59,9 @@ function shortId(id: string): string {
 
 function canShipBead(
   bead: WaveBead,
-  isShippingLocked: boolean,
-  shippingBeadId?: string
+  shippingByBeadId: Record<string, string>
 ): boolean {
-  if (isShippingLocked && shippingBeadId !== bead.id) return false;
+  if (shippingByBeadId[bead.id]) return false;
   return bead.readiness === "runnable";
 }
 
@@ -71,17 +69,15 @@ function BeadCard({
   bead,
   onShip,
   onAbortShip,
-  isShippingLocked,
-  shippingBeadId,
+  shippingByBeadId,
 }: {
   bead: WaveBead;
   onShip?: (bead: WaveBead) => void;
-  onAbortShip?: () => void;
-  isShippingLocked: boolean;
-  shippingBeadId?: string;
+  onAbortShip?: (beadId: string) => void;
+  shippingByBeadId: Record<string, string>;
 }) {
-  const isActiveShipping = isShippingLocked && shippingBeadId === bead.id;
-  const isShipDisabled = !canShipBead(bead, isShippingLocked, shippingBeadId);
+  const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
+  const isShipDisabled = !canShipBead(bead, shippingByBeadId);
 
   return (
     <div
@@ -133,11 +129,11 @@ function BeadCard({
                 <button
                   type="button"
                   title="Terminating"
-                  className="inline-flex h-6 w-6 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
-                  onClick={onAbortShip}
-                >
-                  <Square className="size-3" />
-                </button>
+                    className="inline-flex h-6 w-6 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
+                    onClick={() => onAbortShip?.(bead.id)}
+                  >
+                    <Square className="size-3" />
+                  </button>
               </>
             ) : (
               <Button
@@ -148,9 +144,7 @@ function BeadCard({
                 onClick={() => onShip(bead)}
                 title={
                   isShipDisabled
-                    ? isShippingLocked
-                      ? "Another ship is currently running"
-                      : bead.readinessReason
+                    ? bead.readinessReason
                     : "Ship this bead"
                 }
               >
@@ -179,8 +173,7 @@ export function WavePlanner({
   onOpenChange,
   onShipBead,
   onAbortShip,
-  isShippingLocked = false,
-  shippingBeadId,
+  shippingByBeadId = {},
 }: WavePlannerProps) {
   const { activeRepo, registeredRepos } = useAppStore();
 
@@ -302,7 +295,7 @@ export function WavePlanner({
                   <Button
                     size="sm"
                     className="gap-1"
-                    disabled={!recommendationBead || !canShipBead(recommendationBead, isShippingLocked, shippingBeadId)}
+                    disabled={!recommendationBead || !canShipBead(recommendationBead, shippingByBeadId)}
                     onClick={() => recommendationBead && shipBead(recommendationBead)}
                   >
                     <Workflow className="size-3.5" />
@@ -339,7 +332,7 @@ export function WavePlanner({
                             size="sm"
                             variant="outline"
                             className="h-7 gap-1 text-xs"
-                            disabled={!canShipBead(waveNext, isShippingLocked, shippingBeadId)}
+                            disabled={!canShipBead(waveNext, shippingByBeadId)}
                             onClick={() => shipBead(waveNext)}
                           >
                             <Rocket className="size-3.5" />
@@ -355,8 +348,7 @@ export function WavePlanner({
                             bead={bead}
                             onShip={shipBead}
                             onAbortShip={onAbortShip}
-                            isShippingLocked={isShippingLocked}
-                            shippingBeadId={shippingBeadId}
+                            shippingByBeadId={shippingByBeadId}
                           />
                         ))}
                       </div>
@@ -378,8 +370,7 @@ export function WavePlanner({
                       <BeadCard
                         key={bead.id}
                         bead={bead}
-                        isShippingLocked={isShippingLocked}
-                        shippingBeadId={shippingBeadId}
+                        shippingByBeadId={shippingByBeadId}
                       />
                     ))}
                   </div>

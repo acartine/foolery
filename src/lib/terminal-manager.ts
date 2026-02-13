@@ -11,7 +11,7 @@ interface SessionEntry {
 }
 
 const MAX_BUFFER = 5000;
-const MAX_SESSIONS = 4;
+const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
 
@@ -83,6 +83,99 @@ function makeUserMessageLine(text: string): string {
   }) + "\n";
 }
 
+function compactValue(value: unknown, max = 220): string {
+  const rendered =
+    typeof value === "string"
+      ? value
+      : JSON.stringify(value);
+  if (!rendered) return "";
+  return rendered.length > max ? `${rendered.slice(0, max)}...` : rendered;
+}
+
+function extractEventPayload(value: unknown): {
+  event: string;
+  text: string;
+  extras: Array<{ key: string; value: string }>;
+} | null {
+  const obj = toObject(value);
+  if (!obj) return null;
+
+  const eventName =
+    typeof obj.event === "string"
+      ? obj.event
+      : typeof obj.type === "string"
+        ? obj.type
+        : null;
+  if (!eventName) return null;
+
+  const delta = toObject(obj.delta);
+  const text =
+    typeof obj.text === "string"
+      ? obj.text
+      : typeof obj.message === "string"
+        ? obj.message
+        : typeof obj.result === "string"
+          ? obj.result
+          : typeof obj.summary === "string"
+            ? obj.summary
+            : typeof delta?.text === "string"
+              ? delta.text
+              : "";
+
+  const extras = Object.entries(obj)
+    .filter(([key]) => !["event", "type", "text", "message", "result", "summary", "delta"].includes(key))
+    .map(([key, raw]) => ({ key, value: compactValue(raw) }))
+    .filter((entry) => entry.value.length > 0);
+
+  return {
+    event: eventName,
+    text: text.trim(),
+    extras,
+  };
+}
+
+function formatEventPayload(payload: {
+  event: string;
+  text: string;
+  extras: Array<{ key: string; value: string }>;
+}): string {
+  const out: string[] = [];
+  out.push(`\x1b[35m${payload.event}\x1b[0m \x1b[90m|\x1b[0m ${payload.text || "(no text)"}\n`);
+  for (const extra of payload.extras) {
+    out.push(`\x1b[90m  ${extra.key}: ${extra.value}\x1b[0m\n`);
+  }
+  return out.join("");
+}
+
+function formatEventTextLines(text: string): string {
+  if (!text) return "";
+  const lines = text.split("\n");
+  const hadTrailingNewline = text.endsWith("\n");
+  const out: string[] = [];
+
+  for (let idx = 0; idx < lines.length; idx += 1) {
+    const line = lines[idx];
+    const trimmed = line.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        const payload = extractEventPayload(parsed);
+        if (payload) {
+          out.push(formatEventPayload(payload));
+          continue;
+        }
+      } catch {
+        // Fall through to raw line output.
+      }
+    }
+
+    if (line.length > 0) out.push(`${line}\n`);
+    else if (idx < lines.length - 1 || hadTrailingNewline) out.push("\n");
+  }
+
+  return out.join("");
+}
+
 export function getSession(id: string): SessionEntry | undefined {
   return sessions.get(id);
 }
@@ -101,7 +194,7 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
     const parts: string[] = [];
     for (const block of content) {
       if (block.type === "text" && typeof block.text === "string") {
-        parts.push(block.text);
+        parts.push(formatEventTextLines(block.text));
       } else if (block.type === "tool_use") {
         const name = block.name as string;
         const input = block.input as Record<string, unknown> | undefined;
@@ -118,6 +211,18 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
     return parts.join("") || null;
   }
 
+  if (obj.type === "stream_event") {
+    const streamEvent = toObject(obj.event);
+    if (!streamEvent) return null;
+    const payload = extractEventPayload(streamEvent);
+    if (payload) return formatEventPayload(payload);
+
+    const delta = toObject(streamEvent.delta);
+    if (typeof delta?.text === "string") {
+      return formatEventTextLines(delta.text);
+    }
+  }
+
   // Tool result
   if (obj.type === "user" && typeof obj.message === "object" && obj.message) {
     const msg = obj.message as Record<string, unknown>;
@@ -130,10 +235,14 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
           : JSON.stringify(block.content);
         // Show abbreviated result (first 500 chars)
         const abbrev = text.length > 500 ? text.slice(0, 500) + "...\n" : text;
-        return `\x1b[90m${abbrev}\x1b[0m\n`;
+        const rendered = formatEventTextLines(abbrev);
+        return `\x1b[90m${rendered || abbrev}\x1b[0m\n`;
       }
     }
   }
+
+  const adHocEvent = extractEventPayload(obj);
+  if (adHocEvent) return formatEventPayload(adHocEvent);
 
   // Final result
   if (obj.type === "result") {
@@ -251,7 +360,19 @@ export async function createSession(
           "Exit planning mode if needed, then execute the plan now.",
           "Apply concrete file edits, run relevant verification commands, and report the final outcome.",
         ].join("\n");
+  const autoShipCompletionPrompt =
+    customPrompt
+      ? null
+      : [
+          "Ship completion follow-up:",
+          "If you created and merged a PR, summarize and finish.",
+          "If you created a PR but have not merged it, merge it.",
+          "If you created a branch with changes but no PR, commit/push, create a PR, and merge it.",
+          "If your changes are only on main, move them to a branch, then commit/push, create a PR, and merge it.",
+          "Ensure there are no local uncommitted edits left behind before finishing.",
+        ].join("\n");
   let executionPromptSent = false;
+  let shipCompletionPromptSent = false;
 
   const closeInput = () => {
     if (stdinClosed) return;
@@ -310,6 +431,32 @@ export async function createSession(
     return false;
   };
 
+  const maybeSendShipCompletionPrompt = (): boolean => {
+    if (!autoShipCompletionPrompt || !executionPromptSent || shipCompletionPromptSent) return false;
+    const sent = sendUserTurn(autoShipCompletionPrompt);
+    if (sent) {
+      shipCompletionPromptSent = true;
+      pushEvent({
+        type: "stdout",
+        data: "\x1b[33m-> Auto-sent ship completion follow-up prompt\x1b[0m\n",
+        timestamp: Date.now(),
+      });
+      return true;
+    }
+    pushEvent({
+      type: "stderr",
+      data: "Failed to send ship completion follow-up prompt.\n",
+      timestamp: Date.now(),
+    });
+    return false;
+  };
+
+  const handleResultFollowUp = (): boolean => {
+    if (maybeSendExecutionPrompt()) return true;
+    if (maybeSendShipCompletionPrompt()) return true;
+    return false;
+  };
+
   const maybeAutoAnswerAskUser = (obj: JsonObject) => {
     if (obj.type !== "assistant") return;
 
@@ -359,7 +506,7 @@ export async function createSession(
         maybeAutoAnswerAskUser(obj);
 
         if (obj.type === "result") {
-          if (!maybeSendExecutionPrompt()) {
+          if (!handleResultFollowUp()) {
             scheduleInputClose();
           }
         } else {
@@ -393,7 +540,7 @@ export async function createSession(
         maybeAutoAnswerAskUser(obj);
 
         if (obj.type === "result") {
-          if (!maybeSendExecutionPrompt()) {
+          if (!handleResultFollowUp()) {
             scheduleInputClose();
           }
         } else {

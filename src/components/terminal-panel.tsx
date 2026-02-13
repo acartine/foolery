@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { Square, Maximize2, Minimize2, X } from "lucide-react";
-import { useTerminalStore } from "@/stores/terminal-store";
+import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession } from "@/lib/terminal-api";
 import type { TerminalEvent } from "@/lib/types";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
@@ -16,15 +16,27 @@ const STATUS_COLORS: Record<string, string> = {
   idle: "bg-gray-500",
 };
 
+function shortId(id: string): string {
+  return id.replace(/^[^-]+-/, "");
+}
+
 export function TerminalPanel() {
   const {
     panelOpen,
     panelHeight,
-    activeTerminal,
+    terminals,
+    activeSessionId,
     closePanel,
     setPanelHeight,
+    setActiveSession,
+    removeTerminal,
     updateStatus,
   } = useTerminalStore();
+
+  const activeTerminal = useMemo(
+    () => getActiveTerminal(terminals, activeSessionId),
+    [activeSessionId, terminals]
+  );
 
   const termContainerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XtermTerminal | null>(null);
@@ -35,14 +47,14 @@ export function TerminalPanel() {
   const handleAbort = useCallback(async () => {
     if (!activeTerminal) return;
     await abortSession(activeTerminal.sessionId);
-    updateStatus("aborted");
+    updateStatus(activeTerminal.sessionId, "aborted");
   }, [activeTerminal, updateStatus]);
 
   const toggleMaximize = useCallback(() => {
     setPanelHeight(isMaximized ? 35 : 80);
   }, [isMaximized, setPanelHeight]);
 
-  // Initialize xterm + connect to SSE
+  // Initialize xterm + connect to SSE for active session
   useEffect(() => {
     if (!panelOpen || !activeTerminal || !termContainerRef.current) return;
 
@@ -53,7 +65,6 @@ export function TerminalPanel() {
       const { Terminal } = await import("@xterm/xterm");
       const { FitAddon } = await import("@xterm/addon-fit");
 
-      // We also need the CSS - inject a link tag if not present
       if (!document.querySelector('link[href*="xterm"]')) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
@@ -93,12 +104,9 @@ export function TerminalPanel() {
       liveTerm.writeln(
         `\x1b[36m▶ Shipping bead: ${activeTerminal.beadId}\x1b[0m`
       );
-      liveTerm.writeln(
-        `\x1b[90m  ${activeTerminal.beadTitle}\x1b[0m`
-      );
+      liveTerm.writeln(`\x1b[90m  ${activeTerminal.beadTitle}\x1b[0m`);
       liveTerm.writeln("");
 
-      // Connect SSE
       const cleanup = connectToSession(
         activeTerminal.sessionId,
         (event: TerminalEvent) => {
@@ -113,11 +121,9 @@ export function TerminalPanel() {
             if (code === 0) {
               liveTerm.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
             } else {
-              liveTerm.writeln(
-                `\x1b[31m✗ Process exited with code ${code}\x1b[0m`
-              );
+              liveTerm.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
             }
-            updateStatus(code === 0 ? "completed" : "error");
+            updateStatus(activeTerminal.sessionId, code === 0 ? "completed" : "error");
           }
         },
         () => {
@@ -142,16 +148,14 @@ export function TerminalPanel() {
         fitRef.current = null;
       }
     };
-  }, [panelOpen, activeTerminal?.sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [panelOpen, activeTerminal, updateStatus]);
 
-  // Handle resize
   useEffect(() => {
     if (!panelOpen || !fitRef.current) return;
     const timeout = setTimeout(() => fitRef.current?.fit(), 100);
     return () => clearTimeout(timeout);
   }, [panelOpen, panelHeight]);
 
-  // Handle window resize
   useEffect(() => {
     if (!panelOpen) return;
     const handleResize = () => fitRef.current?.fit();
@@ -159,48 +163,80 @@ export function TerminalPanel() {
     return () => window.removeEventListener("resize", handleResize);
   }, [panelOpen]);
 
-  if (!panelOpen) return null;
+  if (!panelOpen || terminals.length === 0) return null;
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-40 flex flex-col border-t border-border bg-[#1a1a2e]"
       style={{ height: `${panelHeight}vh` }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-[#16162a] border-b border-white/10">
-        <div className="flex items-center gap-2 min-w-0">
-          {activeTerminal && (
-            <>
-              <span className="text-[11px] font-mono text-blue-400 shrink-0">
-                {activeTerminal.beadId.replace(/^[^-]+-/, "")}
+      <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-[#16162a] px-3 py-1.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto pb-0.5">
+            {terminals.map((terminal) => {
+              const isActive = terminal.sessionId === activeTerminal?.sessionId;
+              const isRunning = terminal.status === "running";
+              return (
+                <button
+                  key={terminal.sessionId}
+                  type="button"
+                  className={`group inline-flex items-center gap-1.5 rounded px-2 py-1 text-[11px] ${
+                    isActive
+                      ? "bg-white/15 text-white"
+                      : "bg-white/5 text-white/70 hover:bg-white/10"
+                  }`}
+                  onClick={() => setActiveSession(terminal.sessionId)}
+                  title={`${terminal.beadId} - ${terminal.beadTitle}`}
+                >
+                  <span className="font-mono">{shortId(terminal.beadId)}</span>
+                  <span
+                    className={`inline-block size-1.5 rounded-full ${
+                      STATUS_COLORS[terminal.status] ?? STATUS_COLORS.idle
+                    }`}
+                  />
+                  {!isRunning && (
+                    <span
+                      className="rounded p-0.5 text-white/55 hover:bg-white/10 hover:text-white"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        removeTerminal(terminal.sessionId);
+                      }}
+                      title="Dismiss"
+                    >
+                      <X className="size-3" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {activeTerminal &&
+            (activeTerminal.status === "running" ? (
+              <span
+                className="inline-block size-2 shrink-0 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa] animate-pulse"
+                title="running"
+              />
+            ) : activeTerminal.status === "aborted" ? (
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-red-400">
+                [terminated]
               </span>
-              <span className="text-[11px] text-white/50 truncate">
-                {activeTerminal.beadTitle}
-              </span>
-              {activeTerminal.status === "running" ? (
-                <span
-                  className="inline-block size-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa] animate-pulse"
-                  title="running"
-                />
-              ) : activeTerminal.status === "aborted" ? (
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-red-400">
-                  [terminated]
-                </span>
-              ) : (
-                <span
-                  className={`inline-block size-2 rounded-full ${STATUS_COLORS[activeTerminal.status] ?? STATUS_COLORS.idle}`}
-                  title={activeTerminal.status}
-                />
-              )}
-            </>
-          )}
+            ) : (
+              <span
+                className={`inline-block size-2 shrink-0 rounded-full ${
+                  STATUS_COLORS[activeTerminal.status] ?? STATUS_COLORS.idle
+                }`}
+                title={activeTerminal.status}
+              />
+            ))}
         </div>
+
         <div className="flex items-center gap-1">
           {activeTerminal?.status === "running" && (
             <button
               type="button"
-              className="rounded p-1 text-red-300 hover:bg-red-600/20 hover:text-red-200"
-              title="terminate"
+              className="rounded bg-red-600 p-1 text-white hover:bg-red-500"
+              title="Terminate"
               onClick={handleAbort}
             >
               <Square className="size-3.5" />
@@ -229,7 +265,6 @@ export function TerminalPanel() {
         </div>
       </div>
 
-      {/* Terminal content */}
       <div ref={termContainerRef} className="flex-1 overflow-hidden px-1 py-1" />
     </div>
   );
