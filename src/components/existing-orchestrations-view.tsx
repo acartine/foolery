@@ -8,11 +8,15 @@ import {
   useState,
   type JSX,
 } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Clapperboard,
   ChevronLeft,
   ChevronRight,
+  Loader2,
   Pencil,
+  RefreshCw,
   Save,
   ZoomIn,
   ZoomOut,
@@ -23,8 +27,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchBeads, fetchDeps, updateBead } from "@/lib/api";
-import type { Bead, BeadDependency } from "@/lib/types";
+import { restageOrchestration } from "@/lib/orchestration-api";
+import {
+  ORCHESTRATION_RESTAGE_DRAFT_KEY,
+  type OrchestrationRestageDraft,
+} from "@/lib/orchestration-restage";
+import { startSession } from "@/lib/terminal-api";
+import type { Bead, BeadDependency, OrchestrationPlan } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
 import {
   ORCHESTRATION_WAVE_LABEL,
   allocateWaveSlug,
@@ -83,6 +94,8 @@ interface MigrationPlan {
   newTitle: string;
 }
 
+type NavigationLevel = "tree" | "wave" | "child";
+
 const MIN_ZOOM_DEPTH = 2;
 
 function isWaveBead(bead: Bead): boolean {
@@ -108,6 +121,29 @@ function parseWaveName(title: string): string {
   return stripped || title;
 }
 
+function parseDescriptionLine(
+  description: string | undefined,
+  label: string
+): string | undefined {
+  if (!description) return undefined;
+  const pattern = new RegExp(`(?:^|\\n)${label}\\s*(.+?)(?:\\n|$)`, "i");
+  const match = description.match(pattern);
+  if (!match?.[1]) return undefined;
+  const value = match[1].trim();
+  return value || undefined;
+}
+
+function parseWaveObjective(description: string | undefined): string {
+  return (
+    parseDescriptionLine(description, "Objective:") ??
+    "Execute assigned beads for this section."
+  );
+}
+
+function parseWaveNotes(description: string | undefined): string | undefined {
+  return parseDescriptionLine(description, "Notes:");
+}
+
 function countHierarchyNodes(nodes: HierarchyNode[]): number {
   return nodes.reduce((sum, node) => sum + 1 + countHierarchyNodes(node.children), 0);
 }
@@ -119,6 +155,42 @@ function measureDepth(nodes: HierarchyNode[], depth: number): number {
     maxDepth = Math.max(maxDepth, measureDepth(node.children, depth + 1));
   }
   return maxDepth;
+}
+
+function buildRestagePlan(tree: OrchestrationTree): OrchestrationPlan {
+  const waves = tree.waves
+    .map((wave, index) => ({
+      waveIndex: index + 1,
+      name: wave.name,
+      objective: parseWaveObjective(wave.bead.description),
+      agents: [],
+      beads: wave.children.map((child) => ({
+        id: child.id,
+        title: child.title,
+      })),
+      notes: parseWaveNotes(wave.bead.description),
+    }))
+    .filter((wave) => wave.beads.length > 0);
+
+  return {
+    summary: `Restaged ${waves.length} section${
+      waves.length === 1 ? "" : "s"
+    } from tree ${tree.label}.`,
+    waves,
+    unassignedBeadIds: [],
+    assumptions: [`Restaged from existing wave tree ${tree.label}.`],
+  };
+}
+
+function buildRestageWaveEdits(
+  tree: OrchestrationTree
+): Record<string, { name: string; slug: string }> {
+  return Object.fromEntries(
+    tree.waves.map((wave, index) => [
+      String(index + 1),
+      { name: wave.name, slug: wave.slug },
+    ])
+  );
 }
 
 function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
@@ -363,23 +435,40 @@ function statusTone(status: Bead["status"]): string {
   return "bg-emerald-100 text-emerald-700";
 }
 
+function rotateIndex(current: number, size: number, direction: -1 | 1): number {
+  if (size <= 1) return 0;
+  return (current + direction + size) % size;
+}
+
 function HierarchyList({
   nodes,
   depth,
   zoomDepth,
+  activeDepth,
+  activeNodeId,
+  onSelectNode,
 }: {
   nodes: HierarchyNode[];
   depth: number;
   zoomDepth: number;
+  activeDepth?: number;
+  activeNodeId?: string | null;
+  onSelectNode?: (node: HierarchyNode, depth: number, index: number) => void;
 }): JSX.Element | null {
   if (nodes.length === 0) return null;
   return (
     <ul className="space-y-1.5">
-      {nodes.map((node) => {
+      {nodes.map((node, index) => {
         const showChildren = depth < zoomDepth;
         const hiddenCount = showChildren ? 0 : countHierarchyNodes(node.children);
+        const isActive = depth === activeDepth && activeNodeId === node.id;
         return (
-          <li key={node.id} className="rounded-md border bg-white/90 px-2.5 py-2">
+          <li
+            key={node.id}
+            className={`rounded-md border bg-white/90 px-2.5 py-2 transition-colors ${
+              isActive ? "border-primary/60 ring-1 ring-primary/40" : ""
+            }`}
+          >
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="font-mono text-[10px] text-muted-foreground">{node.id}</span>
               <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
@@ -388,7 +477,13 @@ function HierarchyList({
               <span className={`rounded px-1.5 py-0.5 text-[10px] ${statusTone(node.status)}`}>
                 {node.status}
               </span>
-              <span className="text-xs">{node.title}</span>
+              <button
+                type="button"
+                onClick={() => onSelectNode?.(node, depth, index)}
+                className="text-left text-xs hover:text-foreground"
+              >
+                {node.title}
+              </button>
             </div>
             {node.children.length > 0 && (
               <div className="mt-2 border-l border-dashed border-border/80 pl-2.5">
@@ -397,6 +492,9 @@ function HierarchyList({
                     nodes={node.children}
                     depth={depth + 1}
                     zoomDepth={zoomDepth}
+                    activeDepth={activeDepth}
+                    activeNodeId={activeNodeId}
+                    onSelectNode={onSelectNode}
                   />
                 ) : (
                   <p className="text-[11px] text-muted-foreground">
@@ -414,8 +512,10 @@ function HierarchyList({
 }
 
 export function ExistingOrchestrationsView() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
+  const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
   const [activeTreeIndex, setActiveTreeIndex] = useState(0);
   const [zoomByTreeId, setZoomByTreeId] = useState<Record<string, number>>({});
   const [editing, setEditing] = useState<{
@@ -424,6 +524,15 @@ export function ExistingOrchestrationsView() {
     slug: string;
   } | null>(null);
   const [savingWaveId, setSavingWaveId] = useState<string | null>(null);
+  const [triggeringWaveId, setTriggeringWaveId] = useState<string | null>(null);
+  const [isRestaging, setIsRestaging] = useState(false);
+  const [navigationLevel, setNavigationLevel] = useState<NavigationLevel>("tree");
+  const [activeWaveIndexByTreeId, setActiveWaveIndexByTreeId] = useState<
+    Record<string, number>
+  >({});
+  const [activeChildIndexByWaveId, setActiveChildIndexByWaveId] = useState<
+    Record<string, number>
+  >({});
   const migrationKeyRef = useRef<string>("");
 
   const query = useQuery({
@@ -489,6 +598,21 @@ export function ExistingOrchestrationsView() {
   const treeCount = trees.length;
   const safeTreeIndex = treeCount === 0 ? 0 : Math.min(activeTreeIndex, treeCount - 1);
   const activeTree = trees[safeTreeIndex] ?? null;
+  const activeWaveIndex = activeTree
+    ? Math.min(
+        Math.max(activeWaveIndexByTreeId[activeTree.id] ?? 0, 0),
+        Math.max(activeTree.waves.length - 1, 0)
+      )
+    : 0;
+  const activeWave = activeTree?.waves[activeWaveIndex] ?? null;
+  const treeRootWave = activeTree?.waves[0] ?? null;
+  const activeChildIndex = activeWave
+    ? Math.min(
+        Math.max(activeChildIndexByWaveId[activeWave.id] ?? 0, 0),
+        Math.max(activeWave.children.length - 1, 0)
+      )
+    : 0;
+  const activeChild = activeWave?.children[activeChildIndex] ?? null;
   const defaultZoom = activeTree
     ? Math.min(Math.max(MIN_ZOOM_DEPTH, MIN_ZOOM_DEPTH), activeTree.maxDepth)
     : MIN_ZOOM_DEPTH;
@@ -500,15 +624,99 @@ export function ExistingOrchestrationsView() {
     : MIN_ZOOM_DEPTH;
   const canZoomIn = Boolean(activeTree && zoomDepth < activeTree.maxDepth);
   const canZoomOut = Boolean(activeTree && zoomDepth > MIN_ZOOM_DEPTH);
+  const effectiveNavigationLevel: NavigationLevel =
+    navigationLevel === "tree" && treeCount <= 1
+      ? "wave"
+      : navigationLevel === "child" && (!activeWave || activeWave.children.length === 0)
+        ? "wave"
+        : navigationLevel;
+  const treeSiblingCount = treeCount;
+  const waveSiblingCount = activeTree?.waves.length ?? 0;
+  const childSiblingCount = activeWave?.children.length ?? 0;
 
-  const cycleTree = useCallback(
+  const lateralLevel: NavigationLevel =
+    effectiveNavigationLevel === "child"
+      ? childSiblingCount > 1
+        ? "child"
+        : waveSiblingCount > 1
+          ? "wave"
+          : treeSiblingCount > 1
+            ? "tree"
+            : "child"
+      : effectiveNavigationLevel === "wave"
+        ? waveSiblingCount > 1
+          ? "wave"
+          : treeSiblingCount > 1
+            ? "tree"
+            : "wave"
+        : treeSiblingCount > 1
+          ? "tree"
+          : "wave";
+
+  const moveLaterally = useCallback(
     (direction: -1 | 1) => {
-      if (treeCount <= 1) return;
-      setActiveTreeIndex((prev) => (prev + direction + treeCount) % treeCount);
+      if (!activeTree) return;
       setEditing(null);
+      if (lateralLevel !== effectiveNavigationLevel) {
+        setNavigationLevel(lateralLevel);
+      }
+
+      if (lateralLevel === "tree") {
+        if (treeCount <= 1) return;
+        setActiveTreeIndex((prev) => rotateIndex(prev, treeCount, direction));
+        return;
+      }
+
+      if (lateralLevel === "wave") {
+        const waveCount = activeTree.waves.length;
+        if (waveCount <= 1) return;
+        setActiveWaveIndexByTreeId((prev) => ({
+          ...prev,
+          [activeTree.id]: rotateIndex(
+            prev[activeTree.id] ?? 0,
+            waveCount,
+            direction
+          ),
+        }));
+        return;
+      }
+
+      if (!activeWave) return;
+      const childCount = activeWave.children.length;
+      if (childCount <= 1) return;
+      setActiveChildIndexByWaveId((prev) => ({
+        ...prev,
+        [activeWave.id]: rotateIndex(
+          prev[activeWave.id] ?? 0,
+          childCount,
+          direction
+        ),
+      }));
     },
-    [treeCount]
+    [activeTree, activeWave, effectiveNavigationLevel, lateralLevel, treeCount]
   );
+
+  const drillDown = useCallback(() => {
+    if (!activeTree) return;
+    if (effectiveNavigationLevel === "tree") {
+      if (activeTree.waves.length > 0) setNavigationLevel("wave");
+      return;
+    }
+    if (effectiveNavigationLevel === "wave" && activeWave?.children.length) {
+      setNavigationLevel("child");
+    }
+  }, [activeTree, activeWave, effectiveNavigationLevel]);
+
+  const drillUp = useCallback(() => {
+    if (!activeTree) return;
+    if (effectiveNavigationLevel === "child") {
+      setNavigationLevel("wave");
+      return;
+    }
+    if (effectiveNavigationLevel === "wave" && treeCount > 1) {
+      setNavigationLevel("tree");
+    }
+  }, [activeTree, effectiveNavigationLevel, treeCount]);
 
   const setZoom = useCallback(
     (delta: -1 | 1) => {
@@ -528,7 +736,7 @@ export function ExistingOrchestrationsView() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (document.querySelector('[role="dialog"]')) return;
       const target = event.target as HTMLElement | null;
       if (
@@ -541,17 +749,27 @@ export function ExistingOrchestrationsView() {
         return;
       }
 
-      if (event.code === "BracketLeft") {
+      if (event.key === "ArrowLeft" || (event.shiftKey && event.code === "BracketLeft")) {
         event.preventDefault();
-        cycleTree(-1);
+        moveLaterally(-1);
         return;
       }
-      if (event.code === "BracketRight") {
+      if (event.key === "ArrowRight" || (event.shiftKey && event.code === "BracketRight")) {
         event.preventDefault();
-        cycleTree(1);
+        moveLaterally(1);
         return;
       }
-      if (event.code === "Equal") {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        drillDown();
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        drillUp();
+        return;
+      }
+      if (event.shiftKey && event.code === "Equal") {
         event.preventDefault();
         setZoom(1);
         return;
@@ -564,7 +782,21 @@ export function ExistingOrchestrationsView() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cycleTree, setZoom]);
+  }, [drillDown, drillUp, moveLaterally, setZoom]);
+
+  const lateralCount =
+    lateralLevel === "tree"
+      ? treeCount
+      : lateralLevel === "wave"
+        ? activeTree?.waves.length ?? 0
+        : activeWave?.children.length ?? 0;
+  const canMoveLaterally = lateralCount > 1;
+  const navigationSummary =
+    lateralLevel === "tree"
+      ? `tree ${safeTreeIndex + 1}/${Math.max(treeCount, 1)}`
+      : lateralLevel === "wave"
+        ? `section ${activeWaveIndex + 1}/${Math.max(activeTree?.waves.length ?? 0, 1)}`
+        : `child ${activeChildIndex + 1}/${Math.max(activeWave?.children.length ?? 0, 1)}`;
 
   const allSlugs = useMemo(() => {
     const slugSet = new Set<string>();
@@ -619,6 +851,105 @@ export function ExistingOrchestrationsView() {
     [activeRepo, allSlugs, editing, queryClient]
   );
 
+  const handleTriggerWave = useCallback(
+    async (wave: WaveCard) => {
+      if (!activeRepo) {
+        toast.error("Select a repository first");
+        return;
+      }
+
+      const existingRunning = terminals.find(
+        (terminal) => terminal.beadId === wave.id && terminal.status === "running"
+      );
+      if (existingRunning) {
+        setActiveSession(existingRunning.sessionId);
+        toast.info("Opened active Action session");
+        return;
+      }
+
+      setTriggeringWaveId(wave.id);
+      let result;
+      try {
+        result = await startSession(wave.id, activeRepo);
+      } catch {
+        setTriggeringWaveId((current) => (current === wave.id ? null : current));
+        toast.error("Failed to run Action");
+        return;
+      }
+      setTriggeringWaveId((current) => (current === wave.id ? null : current));
+
+      if (!result.ok || !result.data) {
+        toast.error(result.error ?? "Failed to run Action");
+        return;
+      }
+
+      upsertTerminal({
+        sessionId: result.data.id,
+        beadId: wave.id,
+        beadTitle: wave.title,
+        status: "running",
+        startedAt: new Date().toISOString(),
+      });
+      toast.success(`Action fired for ${wave.name}`);
+    },
+    [activeRepo, setActiveSession, terminals, upsertTerminal]
+  );
+
+  const handleRewrite = useCallback(async () => {
+    if (!activeRepo || !activeTree) {
+      toast.error("No active tree to rewrite");
+      return;
+    }
+
+    const plan = buildRestagePlan(activeTree);
+    if (plan.waves.length === 0) {
+      toast.error("Active tree has no sections with child tasks to restage");
+      return;
+    }
+
+    setIsRestaging(true);
+    let result;
+    try {
+      result = await restageOrchestration(
+        activeRepo,
+        plan,
+        `Rewrite existing orchestration tree ${activeTree.label}`
+      );
+    } catch {
+      setIsRestaging(false);
+      toast.error("Failed to rewrite orchestration tree");
+      return;
+    }
+    setIsRestaging(false);
+
+    if (!result.ok || !result.data) {
+      toast.error(result.error ?? "Failed to rewrite orchestration tree");
+      return;
+    }
+
+    const stagedPlan = result.data.plan ?? plan;
+    const draft: OrchestrationRestageDraft = {
+      repoPath: activeRepo,
+      session: result.data,
+      plan: stagedPlan,
+      waveEdits: buildRestageWaveEdits(activeTree),
+      objective: `Rewrite existing orchestration tree ${activeTree.label}`,
+      statusText: `Restaged ${stagedPlan.waves.length} section${
+        stagedPlan.waves.length === 1 ? "" : "s"
+      } from ${activeTree.label}.`,
+    };
+
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(
+        ORCHESTRATION_RESTAGE_DRAFT_KEY,
+        JSON.stringify(draft)
+      );
+    }
+
+    toast.success("Restaged into Orchestrate view");
+    router.push("/beads?view=orchestration");
+  }, [activeRepo, activeTree, router]);
+
   if (!activeRepo) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
@@ -670,9 +1001,43 @@ export function ExistingOrchestrationsView() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
+              onClick={() => void handleRewrite()}
+              disabled={!activeTree || isRestaging}
+              className="gap-1.5"
+            >
+              {isRestaging ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="size-3.5" />
+              )}
+              Rewrite
+            </Button>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => {
+                if (!treeRootWave) return;
+                void handleTriggerWave(treeRootWave);
+              }}
+              disabled={!treeRootWave || triggeringWaveId === treeRootWave.id}
+              title={
+                treeRootWave
+                  ? `Trigger root section ${treeRootWave.slug}`
+                  : "No tree root section available"
+              }
+            >
+              {treeRootWave && triggeringWaveId === treeRootWave.id ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Clapperboard className="size-3.5" />
+              )}
+              Action!
+            </Button>
+            <Button
+              size="sm"
               variant="outline"
-              onClick={() => cycleTree(-1)}
-              disabled={treeCount <= 1}
+              onClick={() => moveLaterally(-1)}
+              disabled={!canMoveLaterally}
               className="gap-1.5"
             >
               <ChevronLeft className="size-3.5" />
@@ -681,8 +1046,8 @@ export function ExistingOrchestrationsView() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => cycleTree(1)}
-              disabled={treeCount <= 1}
+              onClick={() => moveLaterally(1)}
+              disabled={!canMoveLaterally}
               className="gap-1.5"
             >
               Next
@@ -713,11 +1078,19 @@ export function ExistingOrchestrationsView() {
 
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
           <Badge variant="outline" className="font-mono">
+            ← / →
+          </Badge>
+          <span>move siblings ({navigationSummary})</span>
+          <Badge variant="outline" className="font-mono">
+            ↑ / ↓
+          </Badge>
+          <span>up/down level</span>
+          <Badge variant="outline" className="font-mono">
             Shift+[ / Shift+]
           </Badge>
-          <span>cycle trees</span>
+          <span>legacy sibling nav</span>
           <Badge variant="outline" className="font-mono">
-            Shift++ / Shift+-
+            Shift++ / -
           </Badge>
           <span>
             zoom depth ({zoomDepth}/{activeTree?.maxDepth ?? MIN_ZOOM_DEPTH})
@@ -731,10 +1104,27 @@ export function ExistingOrchestrationsView() {
       </section>
 
       <section className="space-y-3">
-        {activeTree?.waves.map((wave) => {
+        {activeTree?.waves.map((wave, waveIndex) => {
           const isEditing = editing?.waveId === wave.id;
+          const isActiveWave =
+            waveIndex === activeWaveIndex &&
+            (effectiveNavigationLevel === "wave" ||
+              effectiveNavigationLevel === "child");
           return (
-            <div key={wave.id} className="rounded-xl border bg-card p-3">
+            <div
+              key={wave.id}
+              className={`rounded-xl border bg-card p-3 transition-colors ${
+                isActiveWave ? "border-primary/60 ring-1 ring-primary/30" : ""
+              }`}
+              onClick={() => {
+                if (!activeTree) return;
+                setActiveWaveIndexByTreeId((prev) => ({
+                  ...prev,
+                  [activeTree.id]: waveIndex,
+                }));
+                setNavigationLevel("wave");
+              }}
+            >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   {isEditing ? (
@@ -792,7 +1182,7 @@ export function ExistingOrchestrationsView() {
                         <Badge variant="outline" className="font-mono text-[11px]">
                           {wave.slug}
                         </Badge>
-                        <span className="text-sm font-semibold">{wave.title}</span>
+                        <span className="text-sm font-semibold">{wave.name}</span>
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {wave.descendants} descendant bead
@@ -802,27 +1192,65 @@ export function ExistingOrchestrationsView() {
                   )}
                 </div>
                 {!isEditing && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-1.5"
-                    onClick={() =>
-                      setEditing({
-                        waveId: wave.id,
-                        name: wave.name,
-                        slug: wave.slug,
-                      })
-                    }
-                  >
-                    <Pencil className="size-3.5" />
-                    Rename
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={() => void handleTriggerWave(wave)}
+                      disabled={triggeringWaveId === wave.id}
+                    >
+                      {triggeringWaveId === wave.id ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Clapperboard className="size-3.5" />
+                      )}
+                      Action!
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={() =>
+                        setEditing({
+                          waveId: wave.id,
+                          name: wave.name,
+                          slug: wave.slug,
+                        })
+                      }
+                    >
+                      <Pencil className="size-3.5" />
+                      Rename
+                    </Button>
+                  </div>
                 )}
               </div>
 
               <div className="mt-3">
                 {wave.children.length > 0 ? (
-                  <HierarchyList nodes={wave.children} depth={2} zoomDepth={zoomDepth} />
+                  <HierarchyList
+                    nodes={wave.children}
+                    depth={2}
+                    zoomDepth={zoomDepth}
+                    activeDepth={2}
+                    activeNodeId={
+                      effectiveNavigationLevel === "child" &&
+                      waveIndex === activeWaveIndex
+                        ? activeChild?.id ?? null
+                        : null
+                    }
+                    onSelectNode={(_, depth, index) => {
+                      if (!activeTree || depth !== 2) return;
+                      setActiveWaveIndexByTreeId((prev) => ({
+                        ...prev,
+                        [activeTree.id]: waveIndex,
+                      }));
+                      setActiveChildIndexByWaveId((prev) => ({
+                        ...prev,
+                        [wave.id]: index,
+                      }));
+                      setNavigationLevel("child");
+                    }}
+                  />
                 ) : (
                   <p className="text-xs text-muted-foreground">
                     No child tasks linked to this wave.

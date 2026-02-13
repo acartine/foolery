@@ -25,6 +25,10 @@ import {
   connectToOrchestration,
   startOrchestration,
 } from "@/lib/orchestration-api";
+import {
+  ORCHESTRATION_RESTAGE_DRAFT_KEY,
+  type OrchestrationRestageDraft,
+} from "@/lib/orchestration-restage";
 import { startSession } from "@/lib/terminal-api";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
@@ -286,6 +290,22 @@ function normalizeStatusText(message: string): string {
   return `${clean.slice(0, 180)}...`;
 }
 
+function normalizeStoredWaveEdits(
+  waveEdits: OrchestrationRestageDraft["waveEdits"] | undefined
+): Record<number, { name: string; slug: string }> {
+  if (!waveEdits) return {};
+  const normalized: Record<number, { name: string; slug: string }> = {};
+  for (const [key, value] of Object.entries(waveEdits)) {
+    const waveIndex = Number(key);
+    if (!Number.isFinite(waveIndex)) continue;
+    normalized[Math.trunc(waveIndex)] = {
+      name: value?.name ?? "",
+      slug: value?.slug ?? "",
+    };
+  }
+  return normalized;
+}
+
 export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -319,6 +339,46 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       registeredRepos.find((repo) => repo.path === activeRepo)?.name ?? activeRepo
     );
   }, [activeRepo, registeredRepos]);
+
+  useEffect(() => {
+    if (!activeRepo || typeof window === "undefined") return;
+
+    const rawDraft = window.sessionStorage.getItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+    if (!rawDraft) return;
+
+    let draft: OrchestrationRestageDraft | null = null;
+    try {
+      draft = JSON.parse(rawDraft) as OrchestrationRestageDraft;
+    } catch {
+      window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+      return;
+    }
+
+    if (!draft || draft.repoPath !== activeRepo || !isPlanPayload(draft.plan)) {
+      return;
+    }
+
+    window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+    const hydrationTimer = window.setTimeout(() => {
+      setSession(draft.session);
+      setPlan(draft.plan);
+      setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
+      setApplyResult(null);
+      setLogLines([]);
+      pendingLogRef.current = "";
+      if (draft.objective) setObjective(draft.objective);
+      setStatusText(
+        draft.statusText ?? "Restaged existing groups into Orchestrate view"
+      );
+      toast.success(
+        `Restaged ${draft.plan.waves.length} section${
+          draft.plan.waves.length === 1 ? "" : "s"
+        } into Orchestrate`
+      );
+    }, 0);
+
+    return () => window.clearTimeout(hydrationTimer);
+  }, [activeRepo]);
 
   const nextWaveToTrigger = useMemo(() => {
     if (!applyResult || applyResult.applied.length === 0) return null;

@@ -3,6 +3,7 @@ import type {
   ApplyOrchestrationOverrides,
   BdResult,
   OrchestrationEvent,
+  OrchestrationPlan,
   OrchestrationSession,
 } from "@/lib/types";
 
@@ -68,6 +69,28 @@ export async function applyOrchestration(
   const json = await res.json();
   if (!res.ok) {
     return { ok: false, error: json.error ?? "Failed to apply orchestration" };
+  }
+
+  return { ok: true, data: json.data };
+}
+
+export async function restageOrchestration(
+  repo: string,
+  plan: OrchestrationPlan,
+  objective?: string
+): Promise<BdResult<OrchestrationSession>> {
+  const body: Record<string, unknown> = { _repo: repo, plan };
+  if (objective?.trim()) body.objective = objective.trim();
+
+  const res = await fetch(`${BASE}/restage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const json = await res.json();
+  if (!res.ok) {
+    return { ok: false, error: json.error ?? "Failed to restage orchestration" };
   }
 
   return { ok: true, data: json.data };

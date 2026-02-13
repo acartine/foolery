@@ -731,6 +731,114 @@ export async function createOrchestrationSession(
   return session;
 }
 
+export async function createRestagedOrchestrationSession(
+  repoPath: string,
+  plan: OrchestrationPlan,
+  objective?: string
+): Promise<OrchestrationSession> {
+  const { beads } = await collectContext(repoPath);
+
+  if (beads.length === 0) {
+    throw new Error("No open/in_progress/blocked beads available for orchestration");
+  }
+
+  const allBeads = new Map(beads.map((bead) => [bead.id, bead]));
+  const assigned = new Set<string>();
+
+  const normalizedWaves = plan.waves
+    .slice()
+    .sort((a, b) => a.waveIndex - b.waveIndex)
+    .map((wave, index) => {
+      const fallbackWaveIndex = index + 1;
+      const waveIndex = Number.isFinite(wave.waveIndex)
+        ? Math.max(1, Math.trunc(wave.waveIndex))
+        : fallbackWaveIndex;
+      const name = wave.name?.trim() || `Wave ${waveIndex}`;
+      const waveObjective =
+        wave.objective?.trim() || "Execute assigned beads for this wave.";
+      const notes = wave.notes?.trim() || undefined;
+      const agents = wave.agents
+        .filter((agent) => Boolean(agent.role?.trim()))
+        .map((agent) => ({
+          role: agent.role.trim(),
+          count: Math.max(1, Math.trunc(agent.count || 1)),
+          specialty: agent.specialty?.trim() || undefined,
+        }));
+
+      const beadsForWave = wave.beads
+        .filter((bead) => typeof bead.id === "string" && bead.id.trim().length > 0)
+        .map((bead) => bead.id.trim())
+        .filter((beadId) => allBeads.has(beadId) && !assigned.has(beadId))
+        .map((beadId) => {
+          assigned.add(beadId);
+          return {
+            id: beadId,
+            title: allBeads.get(beadId)?.title ?? beadId,
+          };
+        });
+
+      return {
+        waveIndex,
+        name,
+        objective: waveObjective,
+        agents,
+        beads: beadsForWave,
+        notes,
+      };
+    })
+    .filter((wave) => wave.beads.length > 0);
+
+  if (normalizedWaves.length === 0) {
+    throw new Error(
+      "Restaged plan has no beads currently eligible (open/in_progress/blocked)."
+    );
+  }
+
+  const normalizedPlan: OrchestrationPlan = {
+    summary:
+      plan.summary?.trim() ||
+      `Restaged ${normalizedWaves.length} wave${
+        normalizedWaves.length === 1 ? "" : "s"
+      }.`,
+    waves: normalizedWaves,
+    unassignedBeadIds: (plan.unassignedBeadIds ?? []).filter(
+      (id) => typeof id === "string" && allBeads.has(id) && !assigned.has(id)
+    ),
+    assumptions: (plan.assumptions ?? [])
+      .filter((assumption): assumption is string => typeof assumption === "string")
+      .map((assumption) => assumption.trim())
+      .filter((assumption) => assumption.length > 0),
+  };
+
+  const session: OrchestrationSession = {
+    id: generateId(),
+    repoPath,
+    status: "running",
+    startedAt: new Date().toISOString(),
+    objective: objective?.trim() || undefined,
+    plan: normalizedPlan,
+  };
+
+  const entry: OrchestrationSessionEntry = {
+    session,
+    process: null,
+    emitter: new EventEmitter(),
+    buffer: [],
+    allBeads,
+    draftWaves: new Map(
+      normalizedPlan.waves.map((wave) => [wave.waveIndex, wave])
+    ),
+    assistantText: "",
+    lineBuffer: "",
+    exited: false,
+  };
+  entry.emitter.setMaxListeners(20);
+  sessions.set(session.id, entry);
+
+  finalizeSession(entry, "completed", "Restaged existing groups into Orchestrate view");
+  return session;
+}
+
 export function getOrchestrationSession(
   id: string
 ): OrchestrationSessionEntry | undefined {
