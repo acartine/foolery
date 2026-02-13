@@ -64,10 +64,14 @@ export async function listBeads(
   repoPath?: string
 ): Promise<BdResult<Bead[]>> {
   const args = ["list", "--json", "--limit", "0"];
+  const hasStatusFilter = filters && filters.status;
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
       if (val) args.push(`--${key}`, val);
     }
+  }
+  if (!hasStatusFilter) {
+    args.push("--all");
   }
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
