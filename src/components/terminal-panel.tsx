@@ -86,7 +86,7 @@ export function TerminalPanel() {
         cursorBlink: false,
         disableStdin: true,
         fontSize: 13,
-        fontFamily: "var(--font-geist-mono), monospace",
+        fontFamily: "var(--font-ibm-plex-mono), monospace",
         theme: {
           background: "#1a1a2e",
           foreground: "#e0e0e0",

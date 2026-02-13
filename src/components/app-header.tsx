@@ -83,7 +83,7 @@ export function AppHeader() {
       <DropdownMenuTrigger asChild>
         <Button size="lg" variant="success" className="gap-1.5 px-2.5">
           <Plus className="size-4" />
-          Add
+          New
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -119,8 +119,8 @@ export function AppHeader() {
                 <Image
                   src="/foolery_icon.png"
                   alt="Foolery"
-                  width={38}
-                  height={38}
+                  width={152}
+                  height={49}
                   unoptimized
                   className="rounded-md"
                 />
