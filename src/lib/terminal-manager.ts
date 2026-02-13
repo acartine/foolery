@@ -121,6 +121,8 @@ export async function createSession(
     [
       `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
       ``,
+      `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, then exit plan mode and implement it. Do not skip the planning step.`,
+      ``,
       `ID: ${bead.id}`,
       `Title: ${bead.title}`,
       `Type: ${bead.type}`,
