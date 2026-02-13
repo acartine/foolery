@@ -12,6 +12,7 @@ import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
 
 export default function BeadDetailPage({
   params,
@@ -84,7 +85,15 @@ export default function BeadDetailPage({
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <div className="flex gap-2" />
+        <div className="flex gap-2">
+          <MoveToProjectDialog
+            bead={bead}
+            currentRepo={repo}
+            onMoved={(newId, targetRepo) => {
+              router.push(`/beads/${newId}?repo=${encodeURIComponent(targetRepo)}`);
+            }}
+          />
+        </div>
       </div>
 
       <BeadDetail bead={bead} onUpdate={async (fields) => { await handleUpdate(fields); }} />
