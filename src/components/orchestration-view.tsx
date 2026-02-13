@@ -39,9 +39,14 @@ interface OrchestrationViewProps {
   onApplied?: () => void;
 }
 
+type ExtraValue =
+  | { kind: "primitive"; text: string }
+  | { kind: "object"; entries: { key: string; value: ExtraValue }[] }
+  | { kind: "array"; items: ExtraValue[] };
+
 interface LogExtraField {
   key: string;
-  value: string;
+  value: ExtraValue;
 }
 
 interface LogLine {
@@ -71,10 +76,78 @@ function statusTone(status: OrchestrationSession["status"] | "idle") {
   return "bg-zinc-100 text-zinc-700 border-zinc-200";
 }
 
-function compactValue(value: unknown): string {
-  const raw = typeof value === "string" ? value : JSON.stringify(value);
-  if (!raw) return "";
-  return raw.length > 240 ? `${raw.slice(0, 240)}...` : raw;
+const MAX_EXTRA_DEPTH = 5;
+const MAX_ARRAY_ITEMS = 20;
+const MAX_PRIMITIVE_LEN = 300;
+
+function tryParseJson(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
+  if ((!trimmed.startsWith("{") && !trimmed.startsWith("[")) || trimmed.length < 2) return value;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return value;
+  }
+}
+
+function parseExtraValue(value: unknown, depth = 0): ExtraValue {
+  if (depth >= MAX_EXTRA_DEPTH) {
+    const fallback = typeof value === "string" ? value : JSON.stringify(value) ?? "";
+    return {
+      kind: "primitive",
+      text: fallback.length > MAX_PRIMITIVE_LEN ? `${fallback.slice(0, MAX_PRIMITIVE_LEN)}...` : fallback,
+    };
+  }
+
+  if (value === null || value === undefined) {
+    return { kind: "primitive", text: String(value) };
+  }
+
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    const text = String(value);
+    return {
+      kind: "primitive",
+      text: text.length > MAX_PRIMITIVE_LEN ? `${text.slice(0, MAX_PRIMITIVE_LEN)}...` : text,
+    };
+  }
+
+  if (Array.isArray(value)) {
+    const items = value.slice(0, MAX_ARRAY_ITEMS).map((item) => parseExtraValue(item, depth + 1));
+    if (value.length > MAX_ARRAY_ITEMS) {
+      items.push({ kind: "primitive", text: `... +${value.length - MAX_ARRAY_ITEMS} more` });
+    }
+    return { kind: "array", items };
+  }
+
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).map(([k, v]) => ({
+      key: k,
+      value: parseExtraValue(v, depth + 1),
+    }));
+    return { kind: "object", entries };
+  }
+
+  return { kind: "primitive", text: String(value) };
+}
+
+const KEY_COLORS = [
+  "text-sky-400",
+  "text-amber-400",
+  "text-emerald-400",
+  "text-pink-400",
+  "text-violet-400",
+  "text-orange-400",
+  "text-teal-400",
+  "text-rose-400",
+] as const;
+
+function keyTone(key: string): string {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+  }
+  return KEY_COLORS[Math.abs(hash) % KEY_COLORS.length];
 }
 
 function eventTone(eventName: string): string {
@@ -119,8 +192,11 @@ function parseLogLine(line: string, id: string): LogLine {
 
     const extras = Object.entries(parsed)
       .filter(([key]) => !["event", "text", "message", "result"].includes(key))
-      .map(([key, value]) => ({ key, value: compactValue(value) }))
-      .filter((entry) => entry.value.length > 0);
+      .map(([key, value]) => ({ key, value: parseExtraValue(tryParseJson(value)) }))
+      .filter((entry) => {
+        if (entry.value.kind === "primitive") return entry.value.text.length > 0;
+        return true;
+      });
 
     return {
       id,
@@ -136,6 +212,69 @@ function parseLogLine(line: string, id: string): LogLine {
       text: line,
     };
   }
+}
+
+function ExtraValueNode({ value, depth = 0 }: { value: ExtraValue; depth?: number }) {
+  const indent = depth > 0 ? "pl-3" : "";
+
+  if (value.kind === "primitive") {
+    return <span className="text-slate-300">{value.text}</span>;
+  }
+
+  if (value.kind === "array") {
+    if (value.items.length === 0) {
+      return <span className="text-slate-500">[]</span>;
+    }
+
+    const allPrimitive = value.items.every((item) => item.kind === "primitive");
+    if (allPrimitive && value.items.length <= 3) {
+      return (
+        <span className="text-slate-300">
+          [{value.items.map((item, i) => (
+            <span key={i}>
+              {i > 0 && ", "}
+              <ExtraValueNode value={item} depth={depth + 1} />
+            </span>
+          ))}]
+        </span>
+      );
+    }
+
+    return (
+      <div className={indent}>
+        {value.items.map((item, index) => (
+          <div key={index} className="flex items-start gap-1">
+            <span className="text-slate-600 select-none">{index}.</span>
+            <div className="min-w-0 flex-1">
+              <ExtraValueNode value={item} depth={depth + 1} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (value.entries.length === 0) {
+    return <span className="text-slate-500">{"{}"}</span>;
+  }
+
+  return (
+    <div className={indent}>
+      {value.entries.map((entry) => (
+        <div key={entry.key}>
+          <span className={`font-medium ${keyTone(entry.key)}`}>{entry.key}</span>
+          <span className="text-slate-600">: </span>
+          {entry.value.kind === "primitive" ? (
+            <ExtraValueNode value={entry.value} depth={depth + 1} />
+          ) : (
+            <div className="mt-0.5">
+              <ExtraValueNode value={entry.value} depth={depth + 1} />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function normalizeStatusText(message: string): string {
@@ -441,7 +580,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         <section className="rounded-2xl border bg-[#0f172a] text-slate-100">
           <div className="flex items-center justify-between border-b border-slate-700 px-3 py-2 text-xs">
-            <div className="font-mono uppercase tracking-wide text-slate-300">Claude Stream</div>
+            <div className="font-mono uppercase tracking-wide text-slate-300">Orchestration Console</div>
             <div className="text-slate-400">live</div>
           </div>
           <div
@@ -461,7 +600,17 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                       {line.extras && line.extras.length > 0 && (
                         <div className="mt-0.5 space-y-0.5 pl-3 text-slate-400">
                           {line.extras.map((extra) => (
-                            <div key={`${line.id}-${extra.key}`}>{extra.key}: {extra.value}</div>
+                            <div key={`${line.id}-${extra.key}`}>
+                              <span className={`font-medium ${keyTone(extra.key)}`}>{extra.key}</span>
+                              <span className="text-slate-600">: </span>
+                              {extra.value.kind === "primitive" ? (
+                                <span className="text-slate-300">{extra.value.text}</span>
+                              ) : (
+                                <div className="mt-0.5">
+                                  <ExtraValueNode value={extra.value} depth={1} />
+                                </div>
+                              )}
+                            </div>
                           ))}
                         </div>
                       )}
