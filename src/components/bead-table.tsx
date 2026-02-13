@@ -38,6 +38,7 @@ import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { HotkeyHelp } from "@/components/hotkey-help";
 import { useTerminalStore } from "@/stores/terminal-store";
+import { useAppStore } from "@/stores/app-store";
 
 function SummaryColumn({
   text,
@@ -143,6 +144,7 @@ export function BeadTable({
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
+  const { activeRepo, registeredRepos, setActiveRepo } = useAppStore();
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -317,11 +319,27 @@ export function BeadTable({
         // Shift-T: Toggle terminal panel
         e.preventDefault();
         toggleTerminalPanel();
+      } else if (e.key === "R" && e.shiftKey && (e.metaKey || e.ctrlKey)) {
+        // Cmd+Shift+R: previous repo
+        e.preventDefault();
+        if (registeredRepos.length === 0) return;
+        const cycle: Array<string | null> = [null, ...registeredRepos.map((r) => r.path)];
+        const currentIdx = cycle.indexOf(activeRepo);
+        const prevIdx = (currentIdx - 1 + cycle.length) % cycle.length;
+        setActiveRepo(cycle[prevIdx]);
+      } else if (e.key === "R" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        // Shift+R: next repo
+        e.preventDefault();
+        if (registeredRepos.length === 0) return;
+        const cycle: Array<string | null> = [null, ...registeredRepos.map((r) => r.path)];
+        const currentIdx = cycle.indexOf(activeRepo);
+        const nextIdx = (currentIdx + 1) % cycle.length;
+        setActiveRepo(cycle[nextIdx]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, setActiveRepo]);
 
   return (
     <div className="space-y-1">
