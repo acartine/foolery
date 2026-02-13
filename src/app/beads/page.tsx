@@ -4,10 +4,11 @@ import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
-import { startSession } from "@/lib/terminal-api";
+import { startSession, abortSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
+import { OrchestrationView } from "@/components/orchestration-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
@@ -25,12 +26,15 @@ export default function BeadsPage() {
 function BeadsPageInner() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") ?? "";
+  const isOrchestrationView = searchParams.get("view") === "orchestration";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
   const queryClient = useQueryClient();
   const { filters, activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
-  const { setActiveTerminal } = useTerminalStore();
+  const { setActiveTerminal, activeTerminal, updateStatus } = useTerminalStore();
+  const isShippingLocked = activeTerminal?.status === "running";
+  const shippingBeadId = isShippingLocked ? activeTerminal.beadId : undefined;
 
   const { data: registryData } = useQuery({
     queryKey: ["registry"],
@@ -67,6 +71,7 @@ function BeadsPageInner() {
       if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
       return fetchBeads(params);
     },
+    enabled: !isOrchestrationView,
     refetchInterval: 10_000,
   });
 
@@ -112,6 +117,10 @@ function BeadsPageInner() {
 
   const handleShipBead = useCallback(
     async (bead: Bead) => {
+      if (isShippingLocked && shippingBeadId !== bead.id) {
+        toast.error("A ship is already in progress");
+        return;
+      }
       const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
       const result = await startSession(bead.id, repo ?? activeRepo ?? undefined);
       if (!result.ok || !result.data) {
@@ -125,21 +134,40 @@ function BeadsPageInner() {
         status: "running",
       });
     },
-    [activeRepo, setActiveTerminal]
+    [activeRepo, isShippingLocked, setActiveTerminal, shippingBeadId]
   );
+
+  const handleAbortShipping = useCallback(async () => {
+    if (!activeTerminal) return;
+    const result = await abortSession(activeTerminal.sessionId);
+    if (!result.ok) {
+      toast.error(result.error ?? "Failed to terminate ship");
+      return;
+    }
+    updateStatus("aborted");
+    toast.success("Ship terminated");
+  }, [activeTerminal, updateStatus]);
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
-      <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
-        <FilterBar
-          selectedIds={selectedIds}
-          onBulkUpdate={handleBulkUpdate}
-          onClearSelection={handleClearSelection}
-        />
-      </div>
+      {!isOrchestrationView && (
+        <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
+          <FilterBar
+            selectedIds={selectedIds}
+            onBulkUpdate={handleBulkUpdate}
+            onClearSelection={handleClearSelection}
+          />
+        </div>
+      )}
 
-      <div className="mt-0.5 overflow-x-auto">
-        {isLoading ? (
+      <div className={isOrchestrationView ? "mt-0.5" : "mt-0.5 overflow-x-auto"}>
+        {isOrchestrationView ? (
+          <OrchestrationView
+            onApplied={() => {
+              queryClient.invalidateQueries({ queryKey: ["beads"] });
+            }}
+          />
+        ) : isLoading ? (
           <div className="flex items-center justify-center py-6 text-muted-foreground">
             Loading beads...
           </div>
@@ -151,6 +179,9 @@ function BeadsPageInner() {
             selectionVersion={selectionVersion}
             searchQuery={searchQuery}
             onShipBead={handleShipBead}
+            isShippingLocked={isShippingLocked}
+            shippingBeadId={shippingBeadId}
+            onAbortShipping={handleAbortShipping}
           />
         )}
       </div>

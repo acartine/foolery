@@ -14,6 +14,7 @@ interface TerminalState {
   activeTerminal: ActiveTerminal | null;
   openPanel: () => void;
   closePanel: () => void;
+  clearActiveTerminal: () => void;
   togglePanel: () => void;
   setPanelHeight: (height: number) => void;
   setActiveTerminal: (terminal: ActiveTerminal | null) => void;
@@ -25,7 +26,8 @@ export const useTerminalStore = create<TerminalState>((set) => ({
   panelHeight: 35,
   activeTerminal: null,
   openPanel: () => set({ panelOpen: true }),
-  closePanel: () => set({ panelOpen: false, activeTerminal: null }),
+  closePanel: () => set({ panelOpen: false }),
+  clearActiveTerminal: () => set({ activeTerminal: null }),
   togglePanel: () => set((s) => ({ panelOpen: !s.panelOpen })),
   setPanelHeight: (height) => set({ panelHeight: Math.max(15, Math.min(80, height)) }),
   setActiveTerminal: (terminal) => set({ activeTerminal: terminal, panelOpen: true }),

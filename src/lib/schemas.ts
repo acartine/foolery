@@ -46,6 +46,7 @@ export const updateBeadSchema = z.object({
   type: beadTypeSchema.optional(),
   status: beadStatusSchema.optional(),
   priority: beadPrioritySchema.optional(),
+  parent: z.string().optional(),
   labels: z.array(z.string()).optional(),
   removeLabels: z.array(z.string()).optional(),
   assignee: z.string().optional(),

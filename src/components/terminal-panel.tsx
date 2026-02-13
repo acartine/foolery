@@ -5,9 +5,11 @@ import { Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { connectToSession, abortSession } from "@/lib/terminal-api";
 import type { TerminalEvent } from "@/lib/types";
+import type { Terminal as XtermTerminal } from "@xterm/xterm";
+import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
 
 const STATUS_COLORS: Record<string, string> = {
-  running: "bg-green-500",
+  running: "bg-blue-400",
   completed: "bg-blue-500",
   error: "bg-red-500",
   aborted: "bg-yellow-500",
@@ -25,8 +27,8 @@ export function TerminalPanel() {
   } = useTerminalStore();
 
   const termContainerRef = useRef<HTMLDivElement>(null);
-  const termRef = useRef<any>(null); // xterm Terminal instance
-  const fitRef = useRef<any>(null); // FitAddon instance
+  const termRef = useRef<XtermTerminal | null>(null);
+  const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const isMaximized = panelHeight > 70;
 
@@ -44,7 +46,7 @@ export function TerminalPanel() {
   useEffect(() => {
     if (!panelOpen || !activeTerminal || !termContainerRef.current) return;
 
-    let term: any = null;
+    let term: XtermTerminal | null = null;
     let disposed = false;
 
     const init = async () => {
@@ -86,14 +88,15 @@ export function TerminalPanel() {
 
       termRef.current = term;
       fitRef.current = fitAddon;
+      const liveTerm = term;
 
-      term.writeln(
+      liveTerm.writeln(
         `\x1b[36m▶ Shipping bead: ${activeTerminal.beadId}\x1b[0m`
       );
-      term.writeln(
+      liveTerm.writeln(
         `\x1b[90m  ${activeTerminal.beadTitle}\x1b[0m`
       );
-      term.writeln("");
+      liveTerm.writeln("");
 
       // Connect SSE
       const cleanup = connectToSession(
@@ -101,16 +104,16 @@ export function TerminalPanel() {
         (event: TerminalEvent) => {
           if (disposed) return;
           if (event.type === "stdout") {
-            term.write(event.data);
+            liveTerm.write(event.data);
           } else if (event.type === "stderr") {
-            term.write(`\x1b[31m${event.data}\x1b[0m`);
+            liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
           } else if (event.type === "exit") {
             const code = parseInt(event.data, 10);
-            term.writeln("");
+            liveTerm.writeln("");
             if (code === 0) {
-              term.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
+              liveTerm.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
             } else {
-              term.writeln(
+              liveTerm.writeln(
                 `\x1b[31m✗ Process exited with code ${code}\x1b[0m`
               );
             }
@@ -119,7 +122,7 @@ export function TerminalPanel() {
         },
         () => {
           if (!disposed) {
-            term.writeln("\x1b[31m✗ Connection lost\x1b[0m");
+            liveTerm.writeln("\x1b[31m✗ Connection lost\x1b[0m");
           }
         }
       );
@@ -166,9 +169,6 @@ export function TerminalPanel() {
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-1.5 bg-[#16162a] border-b border-white/10">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-[11px] font-semibold tracking-wider text-white/60 uppercase">
-            Terminal
-          </span>
           {activeTerminal && (
             <>
               <span className="text-[11px] font-mono text-blue-400 shrink-0">
@@ -177,10 +177,21 @@ export function TerminalPanel() {
               <span className="text-[11px] text-white/50 truncate">
                 {activeTerminal.beadTitle}
               </span>
-              <span
-                className={`inline-block size-2 rounded-full ${STATUS_COLORS[activeTerminal.status] ?? STATUS_COLORS.idle}`}
-                title={activeTerminal.status}
-              />
+              {activeTerminal.status === "running" ? (
+                <span
+                  className="inline-block size-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa] animate-pulse"
+                  title="running"
+                />
+              ) : activeTerminal.status === "aborted" ? (
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-red-400">
+                  [terminated]
+                </span>
+              ) : (
+                <span
+                  className={`inline-block size-2 rounded-full ${STATUS_COLORS[activeTerminal.status] ?? STATUS_COLORS.idle}`}
+                  title={activeTerminal.status}
+                />
+              )}
             </>
           )}
         </div>
@@ -188,8 +199,8 @@ export function TerminalPanel() {
           {activeTerminal?.status === "running" && (
             <button
               type="button"
-              className="rounded p-1 text-white/60 hover:bg-white/10 hover:text-white"
-              title="Abort"
+              className="rounded p-1 text-red-300 hover:bg-red-600/20 hover:text-red-200"
+              title="terminate"
               onClick={handleAbort}
             >
               <Square className="size-3.5" />

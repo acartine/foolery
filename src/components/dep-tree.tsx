@@ -17,10 +17,19 @@ export function DepTree({ deps, beadId }: DepTreeProps) {
   return (
     <ul className="space-y-2">
       {deps.map((dep) => {
-        const linkedId = dep.source === beadId ? dep.target : dep.source;
+        let linkedId: string | undefined;
+        if (dep.source && dep.target) {
+          linkedId = dep.source === beadId ? dep.target : dep.source;
+        } else {
+          linkedId = dep.id;
+        }
+
+        if (!linkedId) return null;
+
+        const depType = dep.type ?? dep.dependency_type ?? "depends";
         return (
           <li key={dep.id} className="flex items-center gap-2 text-sm">
-            <Badge variant="outline">{dep.type}</Badge>
+            <Badge variant="outline">{depType}</Badge>
             <Link
               href={`/beads/${linkedId}`}
               className="text-primary hover:underline font-mono text-xs"

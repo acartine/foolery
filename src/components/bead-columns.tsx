@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, X, Rocket } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, X, Rocket, Square } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -68,6 +68,9 @@ export interface BeadColumnOpts {
   onCloseBead?: (id: string) => void;
   onTitleClick?: (bead: Bead) => void;
   onShipBead?: (bead: Bead) => void;
+  isShippingLocked?: boolean;
+  shippingBeadId?: string;
+  onAbortShipping?: () => void;
   allLabels?: string[];
 }
 
@@ -264,6 +267,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
   const onShipBead = typeof opts === "boolean" ? undefined : opts.onShipBead;
+  const isShippingLocked = typeof opts === "boolean" ? false : (opts.isShippingLocked ?? false);
+  const shippingBeadId = typeof opts === "boolean" ? undefined : opts.shippingBeadId;
+  const onAbortShipping = typeof opts === "boolean" ? undefined : opts.onAbortShipping;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
 
   const columns: ColumnDef<Bead>[] = [
@@ -427,12 +433,43 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         const bead = row.original;
         if (bead.status === "closed" || bead.type === "gate") return null;
+        const isActiveShipping = isShippingLocked && shippingBeadId === bead.id;
+        const shipDisabled = isShippingLocked && shippingBeadId !== bead.id;
+
+        if (isActiveShipping) {
+          return (
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-green-700">
+                Shipping...
+              </span>
+              <button
+                type="button"
+                title="Terminating"
+                className="inline-flex h-5 w-5 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAbortShipping?.();
+                }}
+              >
+                <Square className="size-3" />
+              </button>
+            </div>
+          );
+        }
+
         return (
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${
+              shipDisabled
+                ? "cursor-not-allowed text-muted-foreground opacity-50"
+                : "text-blue-700 hover:bg-blue-100"
+            }`}
+            disabled={shipDisabled}
+            title={shipDisabled ? "Another ship is currently running" : "Ship"}
             onClick={(e) => {
               e.stopPropagation();
+              if (shipDisabled) return;
               onShipBead(bead);
             }}
           >

@@ -32,5 +32,5 @@ bd update <id> --status in_progress
 # optional metadata only:
 # bd update <id> --claim
 # ...implement and validate...
-bd update <id> --status open --add-label stage:verification
+bd update <id> --add-label stage:verification
 ```

@@ -40,9 +40,16 @@ export interface Bead {
 
 export interface BeadDependency {
   id: string;
-  type: string;
-  source: string;
-  target: string;
+  type?: string;
+  source?: string;
+  target?: string;
+  dependency_type?: string;
+  title?: string;
+  description?: string;
+  status?: BeadStatus;
+  priority?: BeadPriority;
+  issue_type?: BeadType;
+  owner?: string;
 }
 
 export interface BdResult<T> {
@@ -97,6 +104,9 @@ export interface WaveBead {
   priority: BeadPriority;
   labels: string[];
   blockedBy: string[];
+  readiness: WaveReadiness;
+  readinessReason: string;
+  waveLevel?: number;
 }
 
 export interface Wave {
@@ -105,8 +115,107 @@ export interface Wave {
   gate?: WaveBead;
 }
 
+export type WaveReadiness =
+  | "runnable"
+  | "in_progress"
+  | "blocked"
+  | "verification"
+  | "gate"
+  | "unschedulable";
+
+export interface WaveSummary {
+  total: number;
+  runnable: number;
+  inProgress: number;
+  blocked: number;
+  verification: number;
+  gates: number;
+  unschedulable: number;
+}
+
+export interface WaveRecommendation {
+  beadId: string;
+  title: string;
+  waveLevel: number;
+  reason: string;
+}
+
 export interface WavePlan {
   waves: Wave[];
   unschedulable: WaveBead[];
+  summary: WaveSummary;
+  recommendation?: WaveRecommendation;
+  runnableQueue: WaveRecommendation[];
   computedAt: string;
+}
+
+// ── Claude orchestration types ─────────────────────────────
+
+export interface OrchestrationAgentSpec {
+  role: string;
+  count: number;
+  specialty?: string;
+}
+
+export interface OrchestrationWaveBead {
+  id: string;
+  title: string;
+}
+
+export interface OrchestrationWave {
+  waveIndex: number;
+  name: string;
+  objective: string;
+  agents: OrchestrationAgentSpec[];
+  beads: OrchestrationWaveBead[];
+  notes?: string;
+}
+
+export interface OrchestrationPlan {
+  summary: string;
+  waves: OrchestrationWave[];
+  unassignedBeadIds: string[];
+  assumptions: string[];
+}
+
+export type OrchestrationSessionStatus =
+  | "running"
+  | "completed"
+  | "error"
+  | "aborted";
+
+export interface OrchestrationSession {
+  id: string;
+  repoPath: string;
+  status: OrchestrationSessionStatus;
+  startedAt: string;
+  objective?: string;
+  completedAt?: string;
+  error?: string;
+  plan?: OrchestrationPlan;
+}
+
+export type OrchestrationEventType =
+  | "log"
+  | "plan"
+  | "status"
+  | "error"
+  | "exit";
+
+export interface OrchestrationEvent {
+  type: OrchestrationEventType;
+  data: string | OrchestrationPlan;
+  timestamp: number;
+}
+
+export interface AppliedWaveResult {
+  waveIndex: number;
+  waveId: string;
+  waveTitle: string;
+  childCount: number;
+}
+
+export interface ApplyOrchestrationResult {
+  applied: AppliedWaveResult[];
+  skipped: string[];
 }

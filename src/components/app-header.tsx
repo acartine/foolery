@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Layers } from "lucide-react";
+import { Plus, Layers, List } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -16,23 +16,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { WavePlanner } from "@/components/wave-planner";
 import { useAppStore } from "@/stores/app-store";
-import { useTerminalStore } from "@/stores/terminal-store";
-import { startSession } from "@/lib/terminal-api";
-import { toast } from "sonner";
-import type { WaveBead } from "@/lib/types";
 
 export function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
+  const isOrchestrationView =
+    isBeadsRoute && searchParams.get("view") === "orchestration";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
-  const [orchestrateOpen, setOrchestrateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const { activeRepo, registeredRepos } = useAppStore();
-  const { setActiveTerminal } = useTerminalStore();
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
@@ -68,19 +65,12 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const handleShipFromWave = async (bead: WaveBead) => {
-    const repo = activeRepo ?? undefined;
-    const result = await startSession(bead.id, repo);
-    if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to start terminal session");
-      return;
-    }
-    setActiveTerminal({
-      sessionId: result.data.id,
-      beadId: bead.id,
-      beadTitle: bead.title,
-      status: "running",
-    });
+  const setBeadsView = (view: "list" | "orchestration") => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (view === "list") params.delete("view");
+    else params.set("view", "orchestration");
+    const qs = params.toString();
+    router.push(`/beads${qs ? `?${qs}` : ""}`);
   };
 
   const createButton = shouldChooseRepo ? (
@@ -146,12 +136,26 @@ export function AppHeader() {
               <div className="ml-auto flex items-center gap-2">
                 <Button
                   size="lg"
-                  variant="outline"
+                  variant={isOrchestrationView ? "default" : "outline"}
                   className="gap-1.5 px-2.5"
-                  onClick={() => setOrchestrateOpen(true)}
+                  disabled={!activeRepo && !isOrchestrationView}
+                  title={
+                    !activeRepo && !isOrchestrationView
+                      ? "Select a repository to orchestrate"
+                      : "Open orchestration"
+                  }
+                  onClick={() =>
+                    setBeadsView(
+                      isOrchestrationView ? "list" : "orchestration"
+                    )
+                  }
                 >
-                  <Layers className="size-4" />
-                  Orchestrate
+                  {isOrchestrationView ? (
+                    <List className="size-4" />
+                  ) : (
+                    <Layers className="size-4" />
+                  )}
+                  {isOrchestrationView ? "List View" : "Orchestrate"}
                 </Button>
                 {canCreate ? (
                   createButton
@@ -177,11 +181,6 @@ export function AppHeader() {
               queryClient.invalidateQueries({ queryKey: ["beads"] });
             }}
             repo={selectedRepo ?? activeRepo}
-          />
-          <WavePlanner
-            open={orchestrateOpen}
-            onOpenChange={setOrchestrateOpen}
-            onShipBead={handleShipFromWave}
           />
         </>
       ) : null}

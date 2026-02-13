@@ -13,6 +13,9 @@ interface SessionEntry {
 const MAX_BUFFER = 5000;
 const MAX_SESSIONS = 4;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
+const INPUT_CLOSE_GRACE_MS = 2000;
+
+type JsonObject = Record<string, unknown>;
 
 // Use globalThis so the sessions map is shared across all Next.js route
 // module instances (they each get their own module scope).
@@ -22,6 +25,62 @@ const sessions = g.__terminalSessions;
 
 function generateId(): string {
   return `term-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function toObject(value: unknown): JsonObject | null {
+  if (!value || typeof value !== "object") return null;
+  return value as JsonObject;
+}
+
+function buildAutoAskUserResponse(input: unknown): string {
+  const payload = toObject(input);
+  const rawQuestions = payload?.questions;
+  const questions = Array.isArray(rawQuestions) ? rawQuestions : [];
+
+  if (questions.length === 0) {
+    return [
+      "Ship mode auto-response (non-interactive):",
+      "- No question payload was provided.",
+      "- Proceed with your best assumptions and continue implementation.",
+    ].join("\n");
+  }
+
+  const lines: string[] = ["Ship mode auto-response (non-interactive):"];
+  for (const [index, rawQuestion] of questions.entries()) {
+    const question = toObject(rawQuestion);
+    const prompt =
+      typeof question?.question === "string"
+        ? question.question
+        : `Question ${index + 1}`;
+    const rawOptions = question?.options;
+    const options = Array.isArray(rawOptions) ? rawOptions : [];
+
+    if (options.length === 0) {
+      lines.push(`${index + 1}. ${prompt}: no options provided; proceed with your best assumption.`);
+      continue;
+    }
+
+    const firstOption = toObject(options[0]);
+    const label =
+      typeof firstOption?.label === "string" && firstOption.label.trim()
+        ? firstOption.label.trim()
+        : "first option";
+
+    lines.push(`${index + 1}. ${prompt}: choose "${label}".`);
+  }
+
+  lines.push("Continue without waiting for additional input unless blocked by a hard error.");
+  return lines.join("\n");
+}
+
+function makeUserMessageLine(text: string): string {
+  return JSON.stringify({
+    type: "user",
+    message: {
+      role: "user",
+      content: [{ type: "text", text }],
+    },
+  }) + "\n";
 }
 
 export function getSession(id: string): SessionEntry | undefined {
@@ -121,9 +180,9 @@ export async function createSession(
     [
       `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
       ``,
-      `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, then exit plan mode and implement it. Do not skip the planning step.`,
+      `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, exit plan mode, then stop and wait for an execution follow-up prompt before implementing.`,
       ``,
-      `AUTONOMY: Do NOT use AskUserQuestion — there is no human to respond. Use your own judgement to make decisions and resolve ambiguity.`,
+      `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
       `ID: ${bead.id}`,
       `Title: ${bead.title}`,
@@ -153,7 +212,8 @@ export async function createSession(
 
   // Spawn claude CLI with stream-json so we can see tool usage
   const args = [
-    "-p", prompt,
+    "-p",
+    "--input-format", "stream-json",
     "--verbose",
     "--output-format", "stream-json",
     "--dangerously-skip-permissions",
@@ -168,7 +228,7 @@ export async function createSession(
   const child = spawn("claude", args, {
     cwd,
     env: { ...process.env },
-    stdio: ["ignore", "pipe", "pipe"],
+    stdio: ["pipe", "pipe", "pipe"],
   });
   entry.process = child;
 
@@ -178,6 +238,111 @@ export async function createSession(
     if (buffer.length >= MAX_BUFFER) buffer.shift();
     buffer.push(evt);
     emitter.emit("data", evt);
+  };
+
+  let stdinClosed = false;
+  let closeInputTimer: NodeJS.Timeout | null = null;
+  const autoAnsweredToolUseIds = new Set<string>();
+  const autoExecutionPrompt =
+    customPrompt
+      ? null
+      : [
+          "Execution follow-up:",
+          "Exit planning mode if needed, then execute the plan now.",
+          "Apply concrete file edits, run relevant verification commands, and report the final outcome.",
+        ].join("\n");
+  let executionPromptSent = false;
+
+  const closeInput = () => {
+    if (stdinClosed) return;
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
+    child.stdin?.end();
+  };
+
+  const cancelInputClose = () => {
+    if (!closeInputTimer) return;
+    clearTimeout(closeInputTimer);
+    closeInputTimer = null;
+  };
+
+  const scheduleInputClose = () => {
+    cancelInputClose();
+    closeInputTimer = setTimeout(() => {
+      closeInput();
+    }, INPUT_CLOSE_GRACE_MS);
+  };
+
+  const sendUserTurn = (text: string): boolean => {
+    if (!child.stdin || child.stdin.destroyed || child.stdin.writableEnded || stdinClosed) {
+      return false;
+    }
+    cancelInputClose();
+    const line = makeUserMessageLine(text);
+    try {
+      child.stdin.write(line);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const maybeSendExecutionPrompt = (): boolean => {
+    if (!autoExecutionPrompt || executionPromptSent) return false;
+    const sent = sendUserTurn(autoExecutionPrompt);
+    if (sent) {
+      executionPromptSent = true;
+      pushEvent({
+        type: "stdout",
+        data: "\x1b[33m-> Auto-sent execution follow-up prompt\x1b[0m\n",
+        timestamp: Date.now(),
+      });
+      return true;
+    }
+    pushEvent({
+      type: "stderr",
+      data: "Failed to send execution follow-up prompt.\n",
+      timestamp: Date.now(),
+    });
+    return false;
+  };
+
+  const maybeAutoAnswerAskUser = (obj: JsonObject) => {
+    if (obj.type !== "assistant") return;
+
+    const msg = toObject(obj.message);
+    const content = msg?.content;
+    if (!Array.isArray(content)) return;
+
+    for (const rawBlock of content) {
+      const block = toObject(rawBlock);
+      if (!block) continue;
+      if (block.type !== "tool_use" || block.name !== "AskUserQuestion") continue;
+
+      const toolUseId = typeof block.id === "string" ? block.id : null;
+      if (!toolUseId || autoAnsweredToolUseIds.has(toolUseId)) continue;
+
+      autoAnsweredToolUseIds.add(toolUseId);
+      const autoResponse = buildAutoAskUserResponse(block.input);
+      const sent = sendUserTurn(autoResponse);
+
+      if (sent) {
+        pushEvent({
+          type: "stdout",
+          data: `\x1b[33m-> Auto-answered AskUserQuestion (${toolUseId.slice(0, 12)}...)\x1b[0m\n`,
+          timestamp: Date.now(),
+        });
+      } else {
+        pushEvent({
+          type: "stderr",
+          data: "Failed to send auto-response for AskUserQuestion.\n",
+          timestamp: Date.now(),
+        });
+      }
+    }
   };
 
   // Parse stream-json NDJSON output from claude CLI
@@ -191,6 +356,16 @@ export async function createSession(
       if (!line.trim()) continue;
       try {
         const obj = JSON.parse(line) as Record<string, unknown>;
+        maybeAutoAnswerAskUser(obj);
+
+        if (obj.type === "result") {
+          if (!maybeSendExecutionPrompt()) {
+            scheduleInputClose();
+          }
+        } else {
+          cancelInputClose();
+        }
+
         const display = formatStreamEvent(obj);
         if (display) {
           console.log(`[terminal-manager] [${id}] display (${display.length} chars): ${display.slice(0, 150).replace(/\n/g, "\\n")}`);
@@ -215,6 +390,16 @@ export async function createSession(
     if (lineBuffer.trim()) {
       try {
         const obj = JSON.parse(lineBuffer) as Record<string, unknown>;
+        maybeAutoAnswerAskUser(obj);
+
+        if (obj.type === "result") {
+          if (!maybeSendExecutionPrompt()) {
+            scheduleInputClose();
+          }
+        } else {
+          cancelInputClose();
+        }
+
         const display = formatStreamEvent(obj);
         if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
       } catch {
@@ -224,6 +409,11 @@ export async function createSession(
     }
 
     console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events`);
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
     session.exitCode = code ?? 1;
     session.status = code === 0 ? "completed" : "error";
     pushEvent({
@@ -240,6 +430,11 @@ export async function createSession(
 
   child.on("error", (err) => {
     console.error(`[terminal-manager] [${id}] spawn error:`, err.message);
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
     session.status = "error";
     pushEvent({
       type: "stderr",
@@ -253,6 +448,15 @@ export async function createSession(
       sessions.delete(id);
     }, CLEANUP_DELAY_MS);
   });
+
+  const initialPromptSent = sendUserTurn(prompt);
+  if (!initialPromptSent) {
+    closeInput();
+    session.status = "error";
+    child.kill("SIGTERM");
+    sessions.delete(id);
+    throw new Error("Failed to send initial prompt to claude");
+  }
 
   return session;
 }

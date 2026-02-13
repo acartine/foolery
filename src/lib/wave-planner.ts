@@ -98,6 +98,16 @@ export function computeWaves(
   return {
     waves: filteredWaves,
     unschedulable,
+    summary: {
+      total: 0,
+      runnable: 0,
+      inProgress: 0,
+      blocked: 0,
+      verification: 0,
+      gates: 0,
+      unschedulable: 0,
+    },
+    runnableQueue: [],
     computedAt: new Date().toISOString(),
   };
 }
