@@ -208,11 +208,17 @@ export interface OrchestrationEvent {
   timestamp: number;
 }
 
+export interface AppliedWaveChild {
+  id: string;
+  title: string;
+}
+
 export interface AppliedWaveResult {
   waveIndex: number;
   waveId: string;
   waveTitle: string;
   childCount: number;
+  children: AppliedWaveChild[];
 }
 
 export interface ApplyOrchestrationResult {

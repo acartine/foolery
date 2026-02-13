@@ -75,11 +75,11 @@ describe("updateBead label transitions", () => {
     expect(result).toEqual({ ok: true });
     expect(execCalls).toContainEqual(["show", "foolery-123", "--json"]);
     expect(execCalls).toContainEqual(["update", "foolery-123", "--status", "open"]);
-    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "stage:verification"]);
-    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "attempts:2"]);
-    expect(execCalls).toContainEqual(["label", "add", "foolery-123", "stage:retry"]);
-    expect(execCalls).toContainEqual(["label", "add", "foolery-123", "attempts:3"]);
-    expect(execCalls).toContainEqual(["sync"]);
+    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "stage:verification", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "attempts:2", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "add", "foolery-123", "stage:retry", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "add", "foolery-123", "attempts:3", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["sync", "--no-daemon"]);
   });
 
   it("fails when sync fails after label mutation", async () => {
@@ -108,7 +108,7 @@ describe("updateBead label transitions", () => {
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("sync");
-    expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:verification"]);
-    expect(execCalls).toContainEqual(["label", "add", "foolery-456", "stage:retry"]);
+    expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:verification", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "add", "foolery-456", "stage:retry", "--no-daemon"]);
   });
 });

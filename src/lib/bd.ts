@@ -29,9 +29,19 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
 
-/** Infer parent ID from dot notation: "foolery-3ji.1" → "foolery-3ji" */
-function inferParent(id: string, explicit?: unknown): string | undefined {
+/** Resolve parent ID from explicit field, dependencies array, or dot notation. */
+function inferParent(id: string, explicit?: unknown, dependencies?: unknown): string | undefined {
   if (typeof explicit === "string" && explicit) return explicit;
+  // bd list --json doesn't return a top-level parent field, but it includes
+  // a dependencies array with type:"parent-child" entries whose depends_on_id
+  // is the parent.
+  if (Array.isArray(dependencies)) {
+    for (const dep of dependencies) {
+      if (dep && typeof dep === "object" && dep.type === "parent-child" && typeof dep.depends_on_id === "string") {
+        return dep.depends_on_id;
+      }
+    }
+  }
   const dotIdx = id.lastIndexOf(".");
   if (dotIdx === -1) return undefined;
   return id.slice(0, dotIdx);
@@ -46,7 +56,7 @@ function normalizeBead(raw: Record<string, unknown>): Bead {
     status: (raw.status ?? "open") as Bead["status"],
     priority: (raw.priority ?? 2) as Bead["priority"],
     acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
-    parent: inferParent(id, raw.parent),
+    parent: inferParent(id, raw.parent, raw.dependencies),
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
@@ -257,29 +267,32 @@ export async function updateBead(
       return { ok: false, error: stderr || "bd update failed" };
   }
 
-  // Remove labels via bd label remove
+  // Remove labels via bd label remove.
+  // Use --no-daemon to bypass the daemon and write directly to the database.
+  // The daemon's label remove command acknowledges success but doesn't persist
+  // the removal, causing labels to reappear on the next list/show call.
   for (const label of normalizedLabelsToRemove) {
     const { stderr, exitCode } = await exec(
-      ["label", "remove", id, label],
+      ["label", "remove", id, label, "--no-daemon"],
       { cwd: repoPath }
     );
     if (exitCode !== 0)
       return { ok: false, error: stderr || `bd label remove ${label} failed` };
   }
 
-  // Add labels via bd label add
+  // Add labels via bd label add (also bypass daemon for consistency)
   for (const label of normalizedLabelsToAdd) {
     const { stderr, exitCode } = await exec(
-      ["label", "add", id, label],
+      ["label", "add", id, label, "--no-daemon"],
       { cwd: repoPath }
     );
     if (exitCode !== 0)
       return { ok: false, error: stderr || `bd label add ${label} failed` };
   }
 
-  // Flush to JSONL so the daemon's auto-import doesn't restore stale labels
+  // Flush to JSONL so the daemon's auto-import picks up the direct DB writes
   if (normalizedLabelsToRemove.length > 0 || normalizedLabelsToAdd.length > 0) {
-    const { stderr, exitCode } = await exec(["sync"], { cwd: repoPath });
+    const { stderr, exitCode } = await exec(["sync", "--no-daemon"], { cwd: repoPath });
     if (exitCode !== 0) {
       return { ok: false, error: stderr || "bd sync failed after label update" };
     }

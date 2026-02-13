@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
+  ChevronRight,
   Loader2,
   Play,
   Rocket,
@@ -737,14 +738,27 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
                 Applied
               </p>
-              <ul className="mt-2 space-y-1 text-sm">
+              <ul className="mt-2 space-y-2 text-sm">
                 {applyResult.applied.map((wave) => (
-                  <li key={wave.waveId} className="flex items-center gap-2">
-                    <Rocket className="size-3.5 text-emerald-700" />
-                    <span>
-                      {wave.waveTitle} ({wave.childCount} child bead{wave.childCount === 1 ? "" : "s"})
-                    </span>
-                    <span className="font-mono text-xs text-emerald-700">{wave.waveId}</span>
+                  <li key={wave.waveId}>
+                    <div className="flex items-center gap-2">
+                      <Rocket className="size-3.5 text-emerald-700" />
+                      <span>
+                        {wave.waveTitle} ({wave.childCount} child bead{wave.childCount === 1 ? "" : "s"})
+                      </span>
+                      <span className="font-mono text-xs text-emerald-700">{wave.waveId}</span>
+                    </div>
+                    {wave.children.length > 0 && (
+                      <ul className="ml-6 mt-1 space-y-0.5">
+                        {wave.children.map((child) => (
+                          <li key={child.id} className="flex items-center gap-1.5 text-xs text-emerald-900/70">
+                            <ChevronRight className="size-3 text-emerald-600" />
+                            <span className="font-mono">{child.id}</span>
+                            <span className="truncate">{child.title}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>

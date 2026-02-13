@@ -872,6 +872,7 @@ export async function applyOrchestrationSession(
       waveId,
       waveTitle: `Wave ${wave.waveIndex}: ${wave.name}`,
       childCount: validChildren.length,
+      children: validChildren.map((child) => ({ id: child.id, title: child.title })),
     });
   }
 
