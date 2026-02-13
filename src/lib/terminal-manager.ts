@@ -121,8 +121,6 @@ export async function createSession(
     [
       `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
       ``,
-      `IMPORTANT: You are running in non-interactive print mode. Do NOT use EnterPlanMode or plan mode — there is no human to approve the plan and the process will exit. Implement changes directly.`,
-      ``,
       `ID: ${bead.id}`,
       `Title: ${bead.title}`,
       `Type: ${bead.type}`,
@@ -150,7 +148,12 @@ export async function createSession(
   sessions.set(id, entry);
 
   // Spawn claude CLI with stream-json so we can see tool usage
-  const args = ["-p", prompt, "--verbose", "--output-format", "stream-json"];
+  const args = [
+    "-p", prompt,
+    "--verbose",
+    "--output-format", "stream-json",
+    "--dangerously-skip-permissions",
+  ];
   const cwd = repoPath || process.cwd();
 
   console.log(`[terminal-manager] Creating session ${id}`);
