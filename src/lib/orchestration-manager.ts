@@ -9,6 +9,7 @@ import {
   updateBead,
 } from "@/lib/bd";
 import type {
+  ApplyOrchestrationOverrides,
   ApplyOrchestrationResult,
   Bead,
   OrchestrationAgentSpec,
@@ -17,6 +18,14 @@ import type {
   OrchestrationSession,
   OrchestrationWave,
 } from "@/lib/types";
+import {
+  ORCHESTRATION_WAVE_LABEL,
+  allocateWaveSlug,
+  buildWaveSlugLabel,
+  buildWaveTitle,
+  extractWaveSlug,
+  isLegacyNumericWaveSlug,
+} from "@/lib/wave-slugs";
 
 interface DepEdge {
   blocker: string;
@@ -761,7 +770,8 @@ function formatAgentPlan(agents: OrchestrationAgentSpec[]): string {
 
 export async function applyOrchestrationSession(
   sessionId: string,
-  repoPath: string
+  repoPath: string,
+  overrides?: ApplyOrchestrationOverrides
 ): Promise<ApplyOrchestrationResult> {
   const entry = sessions.get(sessionId);
   if (!entry) {
@@ -777,6 +787,17 @@ export async function applyOrchestrationSession(
   const skipped: string[] = [];
 
   let previousWaveId: string | null = null;
+  const existing = await listBeads(undefined, repoPath);
+  if (!existing.ok || !existing.data) {
+    throw new Error(existing.error ?? "Failed to load existing orchestration waves");
+  }
+  const usedWaveSlugs = new Set<string>();
+  for (const bead of existing.data) {
+    if (!bead.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
+    const slug = extractWaveSlug(bead.labels);
+    if (!slug || isLegacyNumericWaveSlug(slug)) continue;
+    usedWaveSlugs.add(slug);
+  }
 
   for (const wave of plan.waves.slice().sort((a, b) => a.waveIndex - b.waveIndex)) {
     const validChildren = wave.beads.filter((bead) => entry.allBeads.has(bead.id));
@@ -816,12 +837,19 @@ export async function applyOrchestrationSession(
       .filter((line): line is string => Boolean(line))
       .join("\n");
 
+    const waveIndexKey = String(wave.waveIndex);
+    const overriddenName = overrides?.waveNames?.[waveIndexKey]?.trim();
+    const waveName = overriddenName || wave.name;
+    const overrideSlug = overrides?.waveSlugs?.[waveIndexKey];
+    const waveSlug = allocateWaveSlug(usedWaveSlugs, overrideSlug);
+    const waveTitle = buildWaveTitle(waveSlug, waveName);
+
     const createResult = await createBead(
       {
-        title: `Wave ${wave.waveIndex}: ${wave.name}`,
+        title: waveTitle,
         type: "epic",
         priority: wavePriority,
-        labels: ["orchestration:wave", `orchestration:wave:${wave.waveIndex}`],
+        labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
       },
       repoPath
@@ -870,7 +898,8 @@ export async function applyOrchestrationSession(
     applied.push({
       waveIndex: wave.waveIndex,
       waveId,
-      waveTitle: `Wave ${wave.waveIndex}: ${wave.name}`,
+      waveSlug,
+      waveTitle,
       childCount: validChildren.length,
       children: validChildren.map((child) => ({ id: child.id, title: child.title })),
     });

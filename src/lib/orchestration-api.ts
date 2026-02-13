@@ -1,5 +1,6 @@
 import type {
   ApplyOrchestrationResult,
+  ApplyOrchestrationOverrides,
   BdResult,
   OrchestrationEvent,
   OrchestrationSession,
@@ -47,12 +48,21 @@ export async function abortOrchestration(
 
 export async function applyOrchestration(
   sessionId: string,
-  repo: string
+  repo: string,
+  overrides?: ApplyOrchestrationOverrides
 ): Promise<BdResult<ApplyOrchestrationResult>> {
+  const body: Record<string, unknown> = { sessionId, _repo: repo };
+  if (overrides?.waveNames && Object.keys(overrides.waveNames).length > 0) {
+    body.waveNames = overrides.waveNames;
+  }
+  if (overrides?.waveSlugs && Object.keys(overrides.waveSlugs).length > 0) {
+    body.waveSlugs = overrides.waveSlugs;
+  }
+
   const res = await fetch(`${BASE}/apply`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId, _repo: repo }),
+    body: JSON.stringify(body),
   });
 
   const json = await res.json();

@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   abortOrchestration,
@@ -33,6 +34,7 @@ import type {
   OrchestrationPlan,
   OrchestrationSession,
 } from "@/lib/types";
+import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
 
 const MAX_LOG_LINES = 900;
 
@@ -297,6 +299,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const [statusText, setStatusText] = useState(
     "Ready to ask Claude for an orchestration plan"
   );
+  const [waveEdits, setWaveEdits] = useState<
+    Record<number, { name: string; slug: string }>
+  >({});
   const [isStarting, setIsStarting] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [isTriggeringNow, setIsTriggeringNow] = useState(false);
@@ -426,6 +431,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
     setIsStarting(true);
     setApplyResult(null);
+    setWaveEdits({});
     setPlan(null);
     pendingLogRef.current = "";
     setLogLines([]);
@@ -459,8 +465,21 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const handleApply = async () => {
     if (!session || !activeRepo || !plan) return;
 
+    const waveNames: Record<string, string> = {};
+    const waveSlugs: Record<string, string> = {};
+    for (const wave of plan.waves) {
+      const edit = waveEdits[wave.waveIndex];
+      const name = edit?.name?.trim();
+      if (name) waveNames[String(wave.waveIndex)] = name;
+      const slug = normalizeWaveSlugCandidate(edit?.slug ?? "");
+      if (slug) waveSlugs[String(wave.waveIndex)] = slug;
+    }
+
     setIsApplying(true);
-    const result = await applyOrchestration(session.id, activeRepo);
+    const result = await applyOrchestration(session.id, activeRepo, {
+      waveNames,
+      waveSlugs,
+    });
     setIsApplying(false);
 
     if (!result.ok || !result.data) {
@@ -645,8 +664,8 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
           {plan ? (
             <div className="space-y-3">
-              {plan.waves.map((wave, index) => (
-                <div key={`${wave.waveIndex}-${wave.name}`} className="relative rounded-xl border bg-slate-50 p-3">
+	              {plan.waves.map((wave, index) => (
+	                <div key={`${wave.waveIndex}-${wave.name}`} className="relative rounded-xl border bg-slate-50 p-3">
                   {index < plan.waves.length - 1 && (
                     <div className="pointer-events-none absolute -bottom-3 left-4 h-3 border-l border-dashed border-slate-300" />
                   )}
@@ -656,8 +675,43 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{wave.beads.length} beads</span>
                   </div>
-                  <p className="text-sm font-semibold">{wave.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
+	                  <div className="mt-1 space-y-1.5">
+	                    <Input
+	                      value={waveEdits[wave.waveIndex]?.name ?? wave.name}
+	                      onChange={(event) =>
+	                        setWaveEdits((prev) => ({
+	                          ...prev,
+	                          [wave.waveIndex]: {
+	                            name: event.target.value,
+	                            slug: prev[wave.waveIndex]?.slug ?? "",
+	                          },
+	                        }))
+	                      }
+	                      className="h-8 bg-white text-sm font-semibold"
+	                      disabled={isRunning || isApplying}
+	                    />
+	                    <div className="flex items-center gap-2">
+	                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+	                        slug
+	                      </span>
+	                      <Input
+	                        value={waveEdits[wave.waveIndex]?.slug ?? ""}
+	                        onChange={(event) =>
+	                          setWaveEdits((prev) => ({
+	                            ...prev,
+	                            [wave.waveIndex]: {
+	                              name: prev[wave.waveIndex]?.name ?? wave.name,
+	                              slug: event.target.value,
+	                            },
+	                          }))
+	                        }
+	                        placeholder="auto-generated (e.g. streep-montage)"
+	                        className="h-7 bg-white font-mono text-[11px]"
+	                        disabled={isRunning || isApplying}
+	                      />
+	                    </div>
+	                  </div>
+	                  <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
 
                   <div className="mt-2 flex flex-wrap gap-1">
                     {wave.agents.length > 0 ? (

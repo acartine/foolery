@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { applyOrchestrationSession } from "@/lib/orchestration-manager";
+import type { ApplyOrchestrationOverrides } from "@/lib/types";
+
+function parseStringMap(value: unknown): Record<string, string> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const entries = Object.entries(value as Record<string, unknown>)
+    .filter((entry): entry is [string, string] => {
+      return typeof entry[1] === "string" && entry[1].trim().length > 0;
+    })
+    .map(([key, text]) => [key, text.trim()]);
+  if (entries.length === 0) return undefined;
+  return Object.fromEntries(entries);
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -26,8 +38,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const overrides: ApplyOrchestrationOverrides = {
+    waveNames: parseStringMap(body?.waveNames),
+    waveSlugs: parseStringMap(body?.waveSlugs),
+  };
+
   try {
-    const result = await applyOrchestrationSession(sessionId, repoPath);
+    const result = await applyOrchestrationSession(sessionId, repoPath, overrides);
     return NextResponse.json({ data: result });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to apply plan";

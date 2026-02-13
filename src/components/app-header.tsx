@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Layers, List } from "lucide-react";
+import { Plus, Layers, List, Network } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -24,8 +24,13 @@ export function AppHeader() {
   const searchParams = useSearchParams();
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
-  const isOrchestrationView =
-    isBeadsRoute && searchParams.get("view") === "orchestration";
+  const viewParam = searchParams.get("view");
+  const beadsView: "list" | "orchestration" | "existing" =
+    viewParam === "orchestration"
+      ? "orchestration"
+      : viewParam === "existing"
+        ? "existing"
+        : "list";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -65,10 +70,10 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = (view: "list" | "orchestration") => {
+  const setBeadsView = (view: "list" | "orchestration" | "existing") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
-    else params.set("view", "orchestration");
+    else params.set("view", view);
     const qs = params.toString();
     router.push(`/beads${qs ? `?${qs}` : ""}`);
   };
@@ -134,29 +139,39 @@ export function AppHeader() {
 
             {isBeadsRoute ? (
               <div className="ml-auto flex items-center gap-2">
-                <Button
-                  size="lg"
-                  variant={isOrchestrationView ? "default" : "outline"}
-                  className="gap-1.5 px-2.5"
-                  disabled={!activeRepo && !isOrchestrationView}
-                  title={
-                    !activeRepo && !isOrchestrationView
-                      ? "Select a repository to orchestrate"
-                      : "Open orchestration"
-                  }
-                  onClick={() =>
-                    setBeadsView(
-                      isOrchestrationView ? "list" : "orchestration"
-                    )
-                  }
-                >
-                  {isOrchestrationView ? (
+                <div className="flex items-center gap-1 rounded-lg border bg-muted/20 p-1">
+                  <Button
+                    size="lg"
+                    variant={beadsView === "list" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    onClick={() => setBeadsView("list")}
+                  >
                     <List className="size-4" />
-                  ) : (
+                    List
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={beadsView === "orchestration" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    disabled={!activeRepo}
+                    title={!activeRepo ? "Select a repository to orchestrate" : "Orchestration planner"}
+                    onClick={() => setBeadsView("orchestration")}
+                  >
                     <Layers className="size-4" />
-                  )}
-                  {isOrchestrationView ? "List View" : "Orchestrate"}
-                </Button>
+                    Orchestrate
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={beadsView === "existing" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    disabled={!activeRepo}
+                    title={!activeRepo ? "Select a repository to browse waves" : "Existing wave trees"}
+                    onClick={() => setBeadsView("existing")}
+                  >
+                    <Network className="size-4" />
+                    Waves
+                  </Button>
+                </div>
                 {canCreate ? (
                   createButton
                 ) : (

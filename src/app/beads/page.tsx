@@ -9,6 +9,7 @@ import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
 import { OrchestrationView } from "@/components/orchestration-view";
+import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
@@ -26,7 +27,16 @@ export default function BeadsPage() {
 function BeadsPageInner() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") ?? "";
-  const isOrchestrationView = searchParams.get("view") === "orchestration";
+  const viewParam = searchParams.get("view");
+  const beadsView: "list" | "orchestration" | "existing" =
+    viewParam === "orchestration"
+      ? "orchestration"
+      : viewParam === "existing"
+        ? "existing"
+        : "list";
+  const isOrchestrationView = beadsView === "orchestration";
+  const isExistingOrchestrationView = beadsView === "existing";
+  const isListView = beadsView === "list";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
   const queryClient = useQueryClient();
@@ -83,7 +93,7 @@ function BeadsPageInner() {
       if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
       return fetchBeads(params);
     },
-    enabled: !isOrchestrationView,
+    enabled: isListView,
     refetchInterval: 10_000,
   });
 
@@ -172,7 +182,7 @@ function BeadsPageInner() {
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
-      {!isOrchestrationView && (
+      {isListView && (
         <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
           <FilterBar
             selectedIds={selectedIds}
@@ -182,13 +192,15 @@ function BeadsPageInner() {
         </div>
       )}
 
-      <div className={isOrchestrationView ? "mt-0.5" : "mt-0.5 overflow-x-auto"}>
+      <div className={isListView ? "mt-0.5 overflow-x-auto" : "mt-0.5"}>
         {isOrchestrationView ? (
           <OrchestrationView
             onApplied={() => {
               queryClient.invalidateQueries({ queryKey: ["beads"] });
             }}
           />
+        ) : isExistingOrchestrationView ? (
+          <ExistingOrchestrationsView />
         ) : isLoading ? (
           <div className="flex items-center justify-center py-6 text-muted-foreground">
             Loading beads...

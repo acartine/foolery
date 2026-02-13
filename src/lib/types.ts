@@ -216,6 +216,7 @@ export interface AppliedWaveChild {
 export interface AppliedWaveResult {
   waveIndex: number;
   waveId: string;
+  waveSlug: string;
   waveTitle: string;
   childCount: number;
   children: AppliedWaveChild[];
@@ -224,4 +225,9 @@ export interface AppliedWaveResult {
 export interface ApplyOrchestrationResult {
   applied: AppliedWaveResult[];
   skipped: string[];
+}
+
+export interface ApplyOrchestrationOverrides {
+  waveNames?: Record<string, string>;
+  waveSlugs?: Record<string, string>;
 }
