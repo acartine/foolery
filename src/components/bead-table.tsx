@@ -182,6 +182,9 @@ export function BeadTable({
 
   const sortedData = useMemo(() => {
     const sortFn = userSorted ? undefined : (a: Bead, b: Bead) => {
+      const aClosed = a.status === "closed" ? 1 : 0;
+      const bClosed = b.status === "closed" ? 1 : 0;
+      if (aClosed !== bClosed) return aClosed - bClosed;
       const aV = a.labels?.includes("stage:verification") ? 0 : 1;
       const bV = b.labels?.includes("stage:verification") ? 0 : 1;
       return aV - bV;
