@@ -148,7 +148,7 @@ export async function createSession(
   sessions.set(id, entry);
 
   // Spawn claude CLI with stream-json so we can see tool usage
-  const args = ["-p", prompt, "--output-format", "stream-json"];
+  const args = ["-p", prompt, "--verbose", "--output-format", "stream-json"];
   const cwd = repoPath || process.cwd();
 
   console.log(`[terminal-manager] Creating session ${id}`);
