@@ -41,7 +41,7 @@ export default function BeadDetailPage({
   const { mutateAsync: handleUpdate } = useMutation({
     mutationFn: async (fields: UpdateBeadInput) => {
       const result = await updateBead(id, fields, repo);
-      if (!result.ok) throw new Error(result.error ?? "Failed to update bead");
+      if (!result.ok) throw new Error(result.error ?? "Failed to update beat");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bead", id, repo] });
@@ -58,7 +58,7 @@ export default function BeadDetailPage({
     return (
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="flex items-center justify-center py-12 text-muted-foreground">
-          Loading bead...
+          Loading beat...
         </div>
       </div>
     );
@@ -68,10 +68,10 @@ export default function BeadDetailPage({
     return (
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">Bead not found</p>
+          <p className="text-muted-foreground">Beat not found</p>
           <Button variant="ghost" className="mt-4" onClick={() => router.push("/beads")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Beads
+            Back to Beats
           </Button>
         </div>
       </div>
@@ -136,7 +136,7 @@ function AddRelationshipSection({
     <div className="space-y-3">
       <h3 className="text-sm font-semibold">Add Relationship</h3>
       <RelationshipPicker
-        label="This bead blocks"
+        label="This beat blocks"
         selectedIds={blocksIds}
         onAdd={(id) => {
           handleAddDep({ source: beadId, target: id });
@@ -149,7 +149,7 @@ function AddRelationshipSection({
         repo={repo}
       />
       <RelationshipPicker
-        label="This bead is blocked by"
+        label="This beat is blocked by"
         selectedIds={blockedByIds}
         onAdd={(id) => {
           handleAddDep({ source: id, target: beadId });

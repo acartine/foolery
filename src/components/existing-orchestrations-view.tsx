@@ -11,13 +11,16 @@ import {
 import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Check,
   Clapperboard,
   ChevronLeft,
   ChevronRight,
+  Eye,
   Loader2,
   Pencil,
   RefreshCw,
   Save,
+  ThumbsDown,
   ZoomIn,
   ZoomOut,
   X,
@@ -26,7 +29,8 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchBeads, fetchDeps, updateBead } from "@/lib/api";
+import { fetchBeads, fetchDeps, updateBead, closeBead } from "@/lib/api";
+import { verifyBeadFields, rejectBeadFields } from "@/components/bead-columns";
 import { restageOrchestration } from "@/lib/orchestration-api";
 import {
   ORCHESTRATION_RESTAGE_DRAFT_KEY,
@@ -147,7 +151,7 @@ function parseDescriptionLine(
 function parseWaveObjective(description: string | undefined): string {
   return (
     parseDescriptionLine(description, "Objective:") ??
-    "Execute assigned beads for this section."
+    "Execute assigned beats for this section."
   );
 }
 
@@ -584,6 +588,70 @@ export function ExistingOrchestrationsView() {
   const migrationPlan = useMemo(
     () => buildMigrationPlan(query.data?.waves ?? []),
     [query.data]
+  );
+
+  const builtForReviewIds = useMemo(() => {
+    const beads = query.data?.beads ?? [];
+    const byParent = new Map<string, Bead[]>();
+    for (const bead of beads) {
+      if (!bead.parent) continue;
+      const list = byParent.get(bead.parent) ?? [];
+      list.push(bead);
+      byParent.set(bead.parent, list);
+    }
+    const result = new Set<string>();
+    for (const [parentId, children] of byParent) {
+      const hasVerification = children.some(
+        (c) => c.status === "in_progress" && c.labels?.includes("stage:verification")
+      );
+      if (!hasVerification) continue;
+      const allSettled = children.every(
+        (c) =>
+          c.status === "closed" ||
+          (c.status === "in_progress" && c.labels?.includes("stage:verification"))
+      );
+      if (allSettled) result.add(parentId);
+    }
+    return result;
+  }, [query.data]);
+
+  const handleApproveReview = useCallback(
+    async (parentId: string) => {
+      const beads = query.data?.beads ?? [];
+      const children = beads.filter(
+        (b) =>
+          b.parent === parentId &&
+          b.status === "in_progress" &&
+          b.labels?.includes("stage:verification")
+      );
+      for (const child of children) {
+        await updateBead(child.id, verifyBeadFields(), activeRepo ?? undefined);
+      }
+      await closeBead(parentId, {}, activeRepo ?? undefined);
+      queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      toast.success("Review approved");
+    },
+    [query.data, activeRepo, queryClient]
+  );
+
+  const handleRejectReview = useCallback(
+    async (parentId: string) => {
+      const beads = query.data?.beads ?? [];
+      const children = beads.filter(
+        (b) =>
+          b.parent === parentId &&
+          b.status === "in_progress" &&
+          b.labels?.includes("stage:verification")
+      );
+      for (const child of children) {
+        await updateBead(child.id, rejectBeadFields(child), activeRepo ?? undefined);
+      }
+      queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      toast.success("Review rejected — beats returned to open");
+    },
+    [query.data, activeRepo, queryClient]
   );
 
   useEffect(() => {
@@ -1221,9 +1289,37 @@ export function ExistingOrchestrationsView() {
                         <span className="text-sm font-semibold">{wave.name}</span>
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {wave.descendants} descendant bead
+                        {wave.descendants} descendant beat
                         {wave.descendants === 1 ? "" : "s"} · depth {wave.maxDepth}
                       </p>
+                      {builtForReviewIds.has(wave.id) && (
+                        <div className="mt-1.5 flex items-center gap-1.5 rounded border border-orange-200 bg-orange-50 px-2 py-1">
+                          <Eye className="size-3.5 text-orange-600 shrink-0" />
+                          <span className="text-xs font-semibold text-orange-700">Built for Review</span>
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center rounded p-0.5 text-green-700 hover:bg-green-100"
+                            title="Approve all — close children and parent"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handleApproveReview(wave.id);
+                            }}
+                          >
+                            <Check className="size-4" />
+                          </button>
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center rounded p-0.5 text-red-700 hover:bg-red-100"
+                            title="Reject all — return children to open"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handleRejectReview(wave.id);
+                            }}
+                          >
+                            <ThumbsDown className="size-4" />
+                          </button>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>

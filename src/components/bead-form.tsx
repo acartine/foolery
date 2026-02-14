@@ -90,7 +90,7 @@ export function BeadForm(props: BeadFormProps) {
   return (
     <form onSubmit={handleFormSubmit} className="space-y-2">
       <FormField label="Title" error={form.formState.errors.title?.message}>
-        <Input placeholder="Bead title" autoFocus {...form.register("title")} />
+        <Input placeholder="Beat title" autoFocus {...form.register("title")} />
       </FormField>
 
       <FormField label="Description">

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Layers, List, Network } from "lucide-react";
+import { Plus, Clapperboard, List, Film } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -154,7 +154,7 @@ export function AppHeader() {
             <SearchBar
               className="order-3 mx-0 basis-full md:order-none md:basis-auto md:flex-1 md:max-w-none"
               inputClassName="h-8"
-              placeholder="Search beads..."
+              placeholder="Search beats..."
             />
 
             {isBeadsRoute ? (
@@ -167,29 +167,29 @@ export function AppHeader() {
                     onClick={() => setBeadsView("list")}
                   >
                     <List className="size-4" />
-                    List
+                    Beats
                   </Button>
                   <Button
                     size="lg"
                     variant={beadsView === "orchestration" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     disabled={!activeRepo}
-                    title={!activeRepo ? "Select a repository to orchestrate" : "Orchestration planner"}
+                    title={!activeRepo ? "Select a repository to direct" : "Direction planner"}
                     onClick={() => setBeadsView("orchestration")}
                   >
-                    <Layers className="size-4" />
-                    Orchestrate
+                    <Clapperboard className="size-4" />
+                    Direct
                   </Button>
                   <Button
                     size="lg"
                     variant={beadsView === "existing" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     disabled={!activeRepo}
-                    title={!activeRepo ? "Select a repository to browse waves" : "Existing wave trees"}
+                    title={!activeRepo ? "Select a repository to browse scenes" : "Existing scene trees"}
                     onClick={() => setBeadsView("existing")}
                   >
-                    <Network className="size-4" />
-                    Waves
+                    <Film className="size-4" />
+                    Scenes
                   </Button>
                 </div>
                 {canCreate ? (

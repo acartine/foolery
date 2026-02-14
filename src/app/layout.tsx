@@ -23,8 +23,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Foolery — Beads Viewer",
-  description: "View and manage Beads issues",
+  title: "Foolery — Beats Viewer",
+  description: "View and manage beats",
 };
 
 export default function RootLayout({

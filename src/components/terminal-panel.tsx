@@ -147,7 +147,7 @@ export function TerminalPanel() {
       const liveTerm = term;
 
       liveTerm.writeln(
-        `\x1b[36m▶ Shipping bead: ${beadId}\x1b[0m`
+        `\x1b[36m▶ Rolling beat: ${beadId}\x1b[0m`
       );
       liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
       liveTerm.writeln("");

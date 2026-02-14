@@ -8,7 +8,7 @@ import {
   ChevronRight,
   Loader2,
   Play,
-  Rocket,
+  Clapperboard,
   Square,
   Users,
   Workflow,
@@ -598,7 +598,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     onApplied?.();
 
     toast.success(
-      `Created ${result.data.applied.length} wave bead${
+      `Created ${result.data.applied.length} wave beat${
         result.data.applied.length === 1 ? "" : "s"
       }`
     );
@@ -622,7 +622,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setIsTriggeringNow(false);
 
     if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to trigger ship session");
+      toast.error(result.error ?? "Failed to start session");
       return;
     }
 
@@ -685,7 +685,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               ) : (
                 <Workflow className="size-4" />
               )}
-              Apply Wave Beads
+              Apply Wave Beats
             </Button>
             {isRunning && (
               <Button
@@ -755,7 +755,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     <Badge variant="outline" className="font-mono text-[11px]">
                       Wave {wave.waveIndex}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{wave.beads.length} beads</span>
+                    <span className="text-xs text-muted-foreground">{wave.beads.length} beats</span>
                   </div>
                   <div className="mt-1 space-y-1.5">
                     <Input
@@ -933,9 +933,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     {applyResult.applied.map((wave) => (
                       <li key={wave.waveId}>
                         <div className="flex items-center gap-2">
-                          <Rocket className="size-3.5 text-emerald-700" />
+                          <Clapperboard className="size-3.5 text-emerald-700" />
                           <span>
-                            {wave.waveTitle} ({wave.childCount} child bead
+                            {wave.waveTitle} ({wave.childCount} child beat
                             {wave.childCount === 1 ? "" : "s"})
                           </span>
                           <span className="font-mono text-xs text-emerald-700">{wave.waveId}</span>
@@ -975,9 +975,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     {isTriggeringNow ? (
                       <Loader2 className="size-3.5 animate-spin" />
                     ) : (
-                      <Rocket className="size-3.5" />
+                      <Clapperboard className="size-3.5" />
                     )}
-                    Trigger Now
+                    Take! Now
                   </Button>
                   <Button
                     size="sm"
@@ -992,7 +992,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               </>
             ) : (
               <div className="flex h-[190px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
-                Applied section appears here after you create wave beads.
+                Applied section appears here after you create wave beats.
               </div>
             )}
           </section>

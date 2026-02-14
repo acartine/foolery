@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, X, Rocket, Square, Eye } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, X, Clapperboard, Square, Eye } from "lucide-react";
 import { ORCHESTRATION_WAVE_LABEL, ORCHESTRATION_WAVE_LABEL_PREFIX } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
@@ -493,7 +493,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
           return (
             <div className="inline-flex items-center gap-1.5">
               <span className="text-xs font-semibold text-green-700">
-                Shipping...
+                Rolling...
               </span>
               <button
                 type="button"
@@ -514,14 +514,14 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
-            title="Ship"
+            title="Take!"
             onClick={(e) => {
               e.stopPropagation();
               onShipBead(bead);
             }}
           >
-            <Rocket className="size-3" />
-            Ship
+            <Clapperboard className="size-3" />
+            Take!
           </button>
         );
       },

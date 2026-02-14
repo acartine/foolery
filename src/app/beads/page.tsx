@@ -18,7 +18,7 @@ import type { UpdateBeadInput } from "@/lib/schemas";
 
 export default function BeadsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-6 text-muted-foreground">Loading beads...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-6 text-muted-foreground">Loading beats...</div>}>
       <BeadsPageInner />
     </Suspense>
   );
@@ -115,10 +115,10 @@ function BeadsPageInner() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["beads"] });
       setSelectionVersion((v) => v + 1);
-      toast.success("Beads updated");
+      toast.success("Beats updated");
     },
     onError: () => {
-      toast.error("Failed to update beads");
+      toast.error("Failed to update beats");
     },
   });
 
@@ -146,7 +146,7 @@ function BeadsPageInner() {
       );
       if (existingRunning) {
         setActiveSession(existingRunning.sessionId);
-        toast.info("Opened active ship terminal");
+        toast.info("Opened active session");
         return;
       }
 
@@ -175,11 +175,11 @@ function BeadsPageInner() {
 
     const result = await abortSession(running.sessionId);
     if (!result.ok) {
-      toast.error(result.error ?? "Failed to terminate ship");
+      toast.error(result.error ?? "Failed to terminate session");
       return;
     }
     updateStatus(running.sessionId, "aborted");
-    toast.success("Ship terminated");
+    toast.success("Take terminated");
   }, [terminals, updateStatus]);
 
   return (
@@ -208,7 +208,7 @@ function BeadsPageInner() {
         <div className={isListView ? "overflow-x-auto" : "hidden"}>
           {isLoading ? (
             <div className="flex items-center justify-center py-6 text-muted-foreground">
-              Loading beads...
+              Loading beats...
             </div>
           ) : (
             <BeadTable

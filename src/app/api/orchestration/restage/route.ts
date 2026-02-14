@@ -62,7 +62,7 @@ function parseWave(
     : fallbackWaveIndex;
   const name = parseText(obj.name) ?? `Wave ${waveIndex}`;
   const objective =
-    parseText(obj.objective) ?? "Execute assigned beads for this wave.";
+    parseText(obj.objective) ?? "Execute assigned beats for this wave.";
   const notes = parseText(obj.notes);
   const agents = parseAgents(obj.agents);
   const beadObjects = Array.isArray(obj.beads) ? obj.beads : [];

@@ -67,7 +67,7 @@ export function MoveToProjectDialog({
       );
       if (!createResult.ok || !createResult.data) {
         throw new Error(
-          createResult.error ?? "Failed to create bead in target project"
+          createResult.error ?? "Failed to create beat in target project"
         );
       }
       const newId = createResult.data.id;
@@ -82,14 +82,14 @@ export function MoveToProjectDialog({
       );
       if (!closeResult.ok) {
         toast.warning(
-          `Bead created in ${targetName} (${newId}), but failed to close the original. Please close it manually.`
+          `Beat created in ${targetName} (${newId}), but failed to close the original. Please close it manually.`
         );
       }
 
       return { newId, targetRepo };
     },
     onSuccess: ({ newId, targetRepo: repo }) => {
-      toast.success("Bead moved successfully");
+      toast.success("Beat moved successfully");
       setOpen(false);
       onMoved(newId, repo);
     },
@@ -111,7 +111,7 @@ export function MoveToProjectDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Move Bead to Another Project</DialogTitle>
+          <DialogTitle>Move Beat to Another Project</DialogTitle>
           <DialogDescription>
             This will create a copy in the target project and close the original
             with a reason indicating it was moved.

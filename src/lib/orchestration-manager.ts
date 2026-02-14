@@ -189,7 +189,7 @@ function normalizeWave(
   const objective =
     typeof obj.objective === "string" && obj.objective.trim()
       ? obj.objective.trim()
-      : "Execute assigned beads for this wave.";
+      : "Execute assigned beats for this wave.";
 
   const notes =
     typeof obj.notes === "string" && obj.notes.trim() ? obj.notes.trim() : undefined;
@@ -755,7 +755,7 @@ export async function createRestagedOrchestrationSession(
         : fallbackWaveIndex;
       const name = wave.name?.trim() || `Wave ${waveIndex}`;
       const waveObjective =
-        wave.objective?.trim() || "Execute assigned beads for this wave.";
+        wave.objective?.trim() || "Execute assigned beats for this wave.";
       const notes = wave.notes?.trim() || undefined;
       const agents = wave.agents
         .filter((agent) => Boolean(agent.role?.trim()))

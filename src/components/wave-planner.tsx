@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Rocket,
+  Clapperboard,
   AlertTriangle,
   Shield,
   Layers,
@@ -124,7 +124,7 @@ function BeadCard({
             {isActiveShipping ? (
               <>
                 <span className="text-xs font-semibold text-green-700">
-                  Shipping...
+                  Rolling...
                 </span>
                 <button
                   type="button"
@@ -145,11 +145,11 @@ function BeadCard({
                 title={
                   isShipDisabled
                     ? bead.readinessReason
-                    : "Ship this bead"
+                    : "Take! this beat"
                 }
               >
-                <Rocket className="size-3" />
-                Ship
+                <Clapperboard className="size-3" />
+                Take!
               </Button>
             )}
           </div>
@@ -288,7 +288,7 @@ export function WavePlanner({
                       </>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        No runnable beads available right now.
+                        No runnable beats available right now.
                       </p>
                     )}
                   </div>
@@ -299,7 +299,7 @@ export function WavePlanner({
                     onClick={() => recommendationBead && shipBead(recommendationBead)}
                   >
                     <Workflow className="size-3.5" />
-                    Ship Next
+                    Take! Next
                   </Button>
                 </div>
               </div>
@@ -318,7 +318,7 @@ export function WavePlanner({
                             Wave {wave.level}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            {wave.beads.length} bead{wave.beads.length === 1 ? "" : "s"}
+                            {wave.beads.length} beat{wave.beads.length === 1 ? "" : "s"}
                           </span>
                           {wave.gate && (
                             <Badge variant="secondary" className="gap-1">
@@ -335,8 +335,8 @@ export function WavePlanner({
                             disabled={!canShipBead(waveNext, shippingByBeadId)}
                             onClick={() => shipBead(waveNext)}
                           >
-                            <Rocket className="size-3.5" />
-                            Ship Next In Wave
+                            <Clapperboard className="size-3.5" />
+                            Take! Next In Wave
                           </Button>
                         )}
                       </div>

@@ -15,7 +15,7 @@ interface SearchBarInnerProps {
 function SearchBarInner({
   className,
   inputClassName,
-  placeholder = "Search beads...",
+  placeholder = "Search beats...",
 }: SearchBarInnerProps) {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";

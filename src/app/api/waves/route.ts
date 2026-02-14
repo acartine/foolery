@@ -32,7 +32,7 @@ function inferReadiness(
   if (bead.type === "gate") {
     return {
       readiness: "gate",
-      reason: "Gate bead. Requires human verification before progressing.",
+      reason: "Gate beat. Requires human verification before progressing.",
     };
   }
 

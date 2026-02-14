@@ -58,11 +58,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             onSelect={() => runAction(() => router.push("/beads?create=1"))}
           >
             <Plus className="mr-2 size-4" />
-            Create Bead
+            Create Beat
           </CommandItem>
           <CommandItem onSelect={() => runAction(() => {})}>
             <XCircle className="mr-2 size-4" />
-            Close Bead
+            Close Beat
           </CommandItem>
         </CommandGroup>
       </CommandList>

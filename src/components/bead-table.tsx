@@ -165,7 +165,7 @@ export function BeadTable({
       queryClient.invalidateQueries({ queryKey: ["bead", id] });
     },
     onError: () => {
-      toast.error("Failed to update bead");
+      toast.error("Failed to update beat");
     },
   });
 
@@ -177,10 +177,10 @@ export function BeadTable({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["beads"] });
-      toast.success("Bead closed");
+      toast.success("Beat closed");
     },
     onError: () => {
-      toast.error("Failed to close bead");
+      toast.error("Failed to close beat");
     },
   });
 
@@ -510,7 +510,7 @@ export function BeadTable({
                     </Button>
                   </div>
                 ) : (
-                  "No beads found."
+                  "No beats found."
                 )}
               </TableCell>
             </TableRow>
