@@ -233,6 +233,7 @@ export function BeadTable({
       (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
     );
     for (const child of children) {
+      // Use the shared atomic verify payload to avoid split-update regressions.
       handleUpdateBead({ id: child.id, fields: verifyBeadFields() });
     }
     handleCloseBead(parentId);
@@ -369,7 +370,7 @@ export function BeadTable({
           setFocusedRowId(rows[nextIndex].original.id);
         }
       } else if (e.key === "V" && e.shiftKey) {
-        // Shift-V: Verify (close) the focused bead if it has stage:verification
+        // Shift-V: Verify (close) via one atomic update (status + label removal).
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
         if (!bead.labels?.includes("stage:verification")) return;

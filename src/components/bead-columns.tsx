@@ -103,6 +103,9 @@ function VerificationButtons({
   );
 }
 
+// Verification must remain atomic (single update mutation).
+// A prior split flow (remove label, then close) repeatedly regressed into
+// "label removed but bead still in_progress" when only one step completed.
 export function verifyBeadFields(): UpdateBeadInput {
   return {
     status: "closed",
