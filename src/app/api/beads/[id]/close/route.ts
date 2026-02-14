@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { closeBead } from "@/lib/bd";
 import { closeBeadSchema } from "@/lib/schemas";
+import { regroomAncestors } from "@/lib/regroom";
 
 export async function POST(
   request: NextRequest,
@@ -20,5 +21,9 @@ export async function POST(
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
+
+  // Auto-close ancestors whose children are all closed
+  await regroomAncestors(id, repoPath);
+
   return NextResponse.json({ ok: true });
 }

@@ -201,6 +201,53 @@ export function BeadTable({
     return Array.from(labelSet).sort();
   }, [data]);
 
+  // Detect parent beads whose children are all in verification (or closed)
+  const builtForReviewIds = useMemo(() => {
+    const byParent = new Map<string, Bead[]>();
+    for (const bead of data) {
+      if (!bead.parent) continue;
+      const list = byParent.get(bead.parent) ?? [];
+      list.push(bead);
+      byParent.set(bead.parent, list);
+    }
+    const result = new Set<string>();
+    for (const [parentId, children] of byParent) {
+      const hasVerification = children.some(
+        (c) => c.status === "in_progress" && c.labels?.includes("stage:verification")
+      );
+      if (!hasVerification) continue;
+      const allSettled = children.every(
+        (c) =>
+          c.status === "closed" ||
+          (c.status === "in_progress" && c.labels?.includes("stage:verification"))
+      );
+      if (allSettled) result.add(parentId);
+    }
+    return result;
+  }, [data]);
+
+  // Approve all verification children under a parent and close the parent
+  const handleApproveReview = useCallback((parentId: string) => {
+    const children = data.filter(
+      (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
+    );
+    for (const child of children) {
+      handleUpdateBead({ id: child.id, fields: { removeLabels: ["stage:verification"] } });
+      handleCloseBead(child.id);
+    }
+    handleCloseBead(parentId);
+  }, [data, handleUpdateBead, handleCloseBead]);
+
+  // Reject all verification children under a parent back to open
+  const handleRejectReview = useCallback((parentId: string) => {
+    const children = data.filter(
+      (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
+    );
+    for (const child of children) {
+      handleUpdateBead({ id: child.id, fields: rejectBeadFields(child) });
+    }
+  }, [data, handleUpdateBead]);
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
@@ -215,8 +262,11 @@ export function BeadTable({
       shippingByBeadId,
       onAbortShipping,
       allLabels,
+      builtForReviewIds,
+      onApproveReview: handleApproveReview,
+      onRejectReview: handleRejectReview,
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels]
+    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {

@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, X, Rocket, Square } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, X, Rocket, Square, Eye } from "lucide-react";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -71,6 +71,9 @@ export interface BeadColumnOpts {
   shippingByBeadId?: Record<string, string>;
   onAbortShipping?: (beadId: string) => void;
   allLabels?: string[];
+  builtForReviewIds?: Set<string>;
+  onApproveReview?: (parentId: string) => void;
+  onRejectReview?: (parentId: string) => void;
 }
 
 function VerificationButtons({
@@ -204,11 +207,15 @@ function AddLabelDropdown({
   );
 }
 
-function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels }: {
+function TitleCell({ bead, onTitleClick, onUpdateBead, onCloseBead, allLabels, isBuiltForReview, onApproveReview, onRejectReview }: {
   bead: Bead;
   onTitleClick?: (bead: Bead) => void;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  onCloseBead?: (id: string) => void;
   allLabels?: string[];
+  isBuiltForReview?: boolean;
+  onApproveReview?: (parentId: string) => void;
+  onRejectReview?: (parentId: string) => void;
 }) {
   const labels = bead.labels ?? [];
   return (
@@ -226,6 +233,38 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels }: {
         </button>
       ) : (
         <span className="font-medium">{bead.title}</span>
+      )}
+      {isBuiltForReview && (
+        <div className="mt-0.5 flex items-center gap-1.5 rounded border border-orange-200 bg-orange-50 px-2 py-1">
+          <Eye className="size-3.5 text-orange-600 shrink-0" />
+          <span className="text-xs font-semibold text-orange-700">Built for Review</span>
+          {onApproveReview && (
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded p-0.5 text-green-700 hover:bg-green-100"
+              title="Approve all — close children and parent"
+              onClick={(e) => {
+                e.stopPropagation();
+                onApproveReview(bead.id);
+              }}
+            >
+              <Check className="size-4" />
+            </button>
+          )}
+          {onRejectReview && (
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded p-0.5 text-red-700 hover:bg-red-100"
+              title="Reject all — return children to open"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRejectReview(bead.id);
+              }}
+            >
+              <ThumbsDown className="size-4" />
+            </button>
+          )}
+        </div>
       )}
       <div className="flex items-center gap-1 flex-wrap">
         <span className="text-muted-foreground text-xs">
@@ -269,6 +308,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const shippingByBeadId = typeof opts === "boolean" ? {} : (opts.shippingByBeadId ?? {});
   const onAbortShipping = typeof opts === "boolean" ? undefined : opts.onAbortShipping;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
+  const builtForReviewIds = typeof opts === "boolean" ? new Set<string>() : (opts.builtForReviewIds ?? new Set<string>());
+  const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
+  const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -323,10 +365,20 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       header: "Title",
       cell: ({ row }) => {
         const depth = (row.original as unknown as { _depth?: number })._depth ?? 0;
+        const isReview = builtForReviewIds.has(row.original.id);
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
-            <TitleCell bead={row.original} onTitleClick={onTitleClick} onUpdateBead={onUpdateBead} allLabels={allLabels} />
+            <TitleCell
+              bead={row.original}
+              onTitleClick={onTitleClick}
+              onUpdateBead={onUpdateBead}
+              onCloseBead={onCloseBead}
+              allLabels={allLabels}
+              isBuiltForReview={isReview}
+              onApproveReview={isReview ? onApproveReview : undefined}
+              onRejectReview={isReview ? onRejectReview : undefined}
+            />
           </div>
         );
       },

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { showBead, updateBead, deleteBead } from "@/lib/bd";
 import { updateBeadSchema } from "@/lib/schemas";
+import { regroomAncestors } from "@/lib/regroom";
 
 export async function GET(
   request: NextRequest,
@@ -39,6 +40,17 @@ export async function PATCH(
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
+
+  // Regroom ancestors when verification is removed (rejection may unblock parent close)
+  const removedLabels = parsed.data.removeLabels;
+  if (
+    removedLabels &&
+    Array.isArray(removedLabels) &&
+    removedLabels.includes("stage:verification")
+  ) {
+    await regroomAncestors(id, repoPath);
+  }
+
   return NextResponse.json({ ok: true });
 }
 

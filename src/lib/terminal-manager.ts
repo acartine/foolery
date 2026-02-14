@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { showBead } from "@/lib/bd";
+import { regroomAncestors } from "@/lib/regroom";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 
 interface SessionEntry {
@@ -569,6 +570,13 @@ export async function createSession(
       timestamp: Date.now(),
     });
     entry.process = null;
+
+    // Regroom ancestors after successful session completion
+    if (code === 0) {
+      regroomAncestors(beadId, cwd).catch((err) => {
+        console.error(`[terminal-manager] regroom failed for ${beadId}:`, err);
+      });
+    }
 
     setTimeout(() => {
       sessions.delete(id);
