@@ -1,8 +1,9 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { showBead } from "@/lib/bd";
+import { listBeads, showBead } from "@/lib/bd";
 import { regroomAncestors } from "@/lib/regroom";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
+import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -72,6 +73,40 @@ function buildAutoAskUserResponse(input: unknown): string {
 
   lines.push("Continue without waiting for additional input unless blocked by a hard error.");
   return lines.join("\n");
+}
+
+function quoteId(id: string): string {
+  return JSON.stringify(id);
+}
+
+function buildVerificationStateCommand(id: string): string {
+  return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification`;
+}
+
+function buildSingleBeadCompletionFollowUp(beadId: string): string {
+  return [
+    "Ship completion follow-up:",
+    `Confirm that changes for ${beadId} are merged according to your normal shipping guidelines.`,
+    "Do not ask for another follow-up prompt until that merge confirmation is done (or blocked by a hard error).",
+    "After confirming merge, run this command to set verification state:",
+    buildVerificationStateCommand(beadId),
+    "Then summarize merge confirmation and command result.",
+  ].join("\n");
+}
+
+function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string {
+  const targets = beatIds.length > 0 ? beatIds : [waveId];
+  return [
+    "Wave completion follow-up:",
+    `Handle this in one pass for wave ${waveId}.`,
+    "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
+    "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
+    "For each beat after merge confirmation, run exactly one command to set verification state:",
+    ...targets.map((id) => buildVerificationStateCommand(id)),
+    "Beats in this wave:",
+    ...targets.map((id) => `- ${id}`),
+    "Then summarize per beat: merged yes/no and verification-state command result.",
+  ].join("\n");
 }
 
 function makeUserMessageLine(text: string): string {
@@ -283,6 +318,21 @@ export async function createSession(
     throw new Error(result.error ?? "Failed to fetch bead");
   }
   const bead = result.data;
+  const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
+  let waveBeatIds: string[] = [];
+  if (isWave) {
+    const childResult = await listBeads({ parent: bead.id }, repoPath);
+    if (childResult.ok && childResult.data) {
+      waveBeatIds = childResult.data
+        .filter((child) => child.status !== "closed")
+        .map((child) => child.id)
+        .sort((a, b) => a.localeCompare(b));
+    } else {
+      console.warn(
+        `[terminal-manager] Failed to load wave children for ${bead.id}: ${childResult.error ?? "unknown error"}`
+      );
+    }
+  }
 
   const id = generateId();
   const prompt =
@@ -364,14 +414,9 @@ export async function createSession(
   const autoShipCompletionPrompt =
     customPrompt
       ? null
-      : [
-          "Ship completion follow-up:",
-          "If you created and merged a PR, summarize and finish.",
-          "If you created a PR but have not merged it, merge it.",
-          "If you created a branch with changes but no PR, commit/push, create a PR, and merge it.",
-          "If your changes are only on main, move them to a branch, then commit/push, create a PR, and merge it.",
-          "Ensure there are no local uncommitted edits left behind before finishing.",
-        ].join("\n");
+      : isWave
+        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
+        : buildSingleBeadCompletionFollowUp(bead.id);
   let executionPromptSent = false;
   let shipCompletionPromptSent = false;
 
