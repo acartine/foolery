@@ -87,11 +87,11 @@ export function AppHeader() {
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
-      if (e.key === "]" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      if ((e.key === "}" || e.key === "]") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         const idx = views.indexOf(beadsView);
         setBeadsView(views[(idx + 1) % views.length]);
-      } else if (e.key === "[" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+      } else if ((e.key === "{" || e.key === "[") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         const idx = views.indexOf(beadsView);
         setBeadsView(views[(idx - 1 + views.length) % views.length]);

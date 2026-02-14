@@ -116,9 +116,10 @@ function FilterControls() {
     <div className="flex flex-wrap items-center gap-1">
       <Select
         value={filters.status ?? "all"}
-        onValueChange={(v) =>
-          setFilter("status", v === "all" ? undefined : (v as BeadStatus | "ready"))
-        }
+        onValueChange={(v) => {
+          setFilter("status", v === "all" ? undefined : (v as BeadStatus | "ready"));
+          (document.activeElement as HTMLElement)?.blur?.();
+        }}
       >
         <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Status" />
@@ -136,9 +137,10 @@ function FilterControls() {
 
       <Select
         value={filters.type ?? "all"}
-        onValueChange={(v) =>
-          setFilter("type", v === "all" ? undefined : (v as BeadType))
-        }
+        onValueChange={(v) => {
+          setFilter("type", v === "all" ? undefined : (v as BeadType));
+          (document.activeElement as HTMLElement)?.blur?.();
+        }}
       >
         <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Type" />
@@ -155,12 +157,13 @@ function FilterControls() {
 
       <Select
         value={filters.priority !== undefined ? String(filters.priority) : "all"}
-        onValueChange={(v) =>
+        onValueChange={(v) => {
           setFilter(
             "priority",
             v === "all" ? undefined : (Number(v) as 0 | 1 | 2 | 3 | 4)
-          )
-        }
+          );
+          (document.activeElement as HTMLElement)?.blur?.();
+        }}
       >
         <SelectTrigger className="w-[140px] h-7">
           <SelectValue placeholder="Priority" />

@@ -222,6 +222,9 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
   onRejectReview?: (parentId: string) => void;
 }) {
   const labels = bead.labels ?? [];
+  const isOrchestrated = labels.some(
+    (l) => l === ORCHESTRATION_WAVE_LABEL || l.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX)
+  );
   const visibleLabels = labels.filter(
     (l) => l !== ORCHESTRATION_WAVE_LABEL && !l.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX)
   );
@@ -277,6 +280,12 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
         <span className="text-muted-foreground text-xs">
           {relativeTime(bead.updated)}
         </span>
+        {isOrchestrated && (
+          <span className="inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none bg-slate-100 text-slate-600">
+            <Clapperboard className="size-2.5" />
+            Orchestrated
+          </span>
+        )}
         {visibleLabels.map((label) => (
           <span
             key={label}
