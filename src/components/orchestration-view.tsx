@@ -29,6 +29,11 @@ import {
   ORCHESTRATION_RESTAGE_DRAFT_KEY,
   type OrchestrationRestageDraft,
 } from "@/lib/orchestration-restage";
+import {
+  clearOrchestrationViewState,
+  loadOrchestrationViewState,
+  saveOrchestrationViewState,
+} from "@/lib/orchestration-state";
 import { startSession } from "@/lib/terminal-api";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
@@ -46,17 +51,17 @@ interface OrchestrationViewProps {
   onApplied?: () => void;
 }
 
-type ExtraValue =
+export type ExtraValue =
   | { kind: "primitive"; text: string }
   | { kind: "object"; entries: { key: string; value: ExtraValue }[] }
   | { kind: "array"; items: ExtraValue[] };
 
-interface LogExtraField {
+export interface LogExtraField {
   key: string;
   value: ExtraValue;
 }
 
-interface LogLine {
+export interface LogLine {
   id: string;
   type: "structured" | "plain";
   event?: string;
@@ -343,38 +348,53 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   useEffect(() => {
     if (!activeRepo || typeof window === "undefined") return;
 
+    // 1. Restage draft takes priority (intentional user action)
     const rawDraft = window.sessionStorage.getItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
-    if (!rawDraft) return;
+    if (rawDraft) {
+      let draft: OrchestrationRestageDraft | null = null;
+      try {
+        draft = JSON.parse(rawDraft) as OrchestrationRestageDraft;
+      } catch {
+        window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+      }
 
-    let draft: OrchestrationRestageDraft | null = null;
-    try {
-      draft = JSON.parse(rawDraft) as OrchestrationRestageDraft;
-    } catch {
-      window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
-      return;
+      if (draft && draft.repoPath === activeRepo && isPlanPayload(draft.plan)) {
+        window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+        const hydrationTimer = window.setTimeout(() => {
+          setSession(draft.session);
+          setPlan(draft.plan);
+          setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
+          setApplyResult(null);
+          setLogLines([]);
+          pendingLogRef.current = "";
+          if (draft.objective) setObjective(draft.objective);
+          setStatusText(
+            draft.statusText ?? "Restaged existing groups into Orchestrate view"
+          );
+          toast.success(
+            `Restaged ${draft.plan.waves.length} section${
+              draft.plan.waves.length === 1 ? "" : "s"
+            } into Orchestrate`
+          );
+        }, 0);
+        return () => window.clearTimeout(hydrationTimer);
+      }
     }
 
-    if (!draft || draft.repoPath !== activeRepo || !isPlanPayload(draft.plan)) {
-      return;
-    }
+    // 2. Restore saved view state (preserves state across view toggles)
+    const saved = loadOrchestrationViewState(activeRepo);
+    if (!saved) return;
 
-    window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
+    clearOrchestrationViewState();
     const hydrationTimer = window.setTimeout(() => {
-      setSession(draft.session);
-      setPlan(draft.plan);
-      setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
-      setApplyResult(null);
-      setLogLines([]);
+      setSession(saved.session);
+      setPlan(saved.plan);
+      setWaveEdits(saved.waveEdits);
+      setObjective(saved.objective);
+      setStatusText(saved.statusText);
+      setLogLines(saved.logLines);
+      setApplyResult(saved.applyResult);
       pendingLogRef.current = "";
-      if (draft.objective) setObjective(draft.objective);
-      setStatusText(
-        draft.statusText ?? "Restaged existing groups into Orchestrate view"
-      );
-      toast.success(
-        `Restaged ${draft.plan.waves.length} section${
-          draft.plan.waves.length === 1 ? "" : "s"
-        } into Orchestrate`
-      );
     }, 0);
 
     return () => window.clearTimeout(hydrationTimer);
@@ -480,6 +500,31 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     return disconnect;
   }, [appendLogChunk, sessionId]);
 
+  // Auto-save orchestration state for view-toggle preservation
+  useEffect(() => {
+    const hasWork = session !== null || plan !== null || logLines.length > 0;
+    if (!hasWork || !activeRepo) {
+      clearOrchestrationViewState();
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      saveOrchestrationViewState({
+        session,
+        plan,
+        objective,
+        waveEdits,
+        statusText,
+        logLines,
+        applyResult,
+        repoPath: activeRepo,
+        savedAt: Date.now(),
+      });
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [session, plan, objective, waveEdits, statusText, logLines, applyResult, activeRepo]);
+
   const isRunning = session?.status === "running";
   const canApply = Boolean(session && plan && activeRepo && !isRunning);
 
@@ -489,6 +534,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       return;
     }
 
+    clearOrchestrationViewState();
     setIsStarting(true);
     setApplyResult(null);
     setWaveEdits({});
