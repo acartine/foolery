@@ -700,60 +700,33 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           </div>
         </div>
 
+        {plan && (
+          <div className="mt-3 rounded-xl border bg-white/80 p-3">
+            <p className="text-sm font-semibold">Planner Summary</p>
+            <p className="mt-1 text-sm text-muted-foreground">{plan.summary}</p>
+
+            {plan.assumptions.length > 0 && (
+              <div className="mt-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Assumptions
+                </p>
+                <ul className="mt-1 space-y-1 text-sm">
+                  {plan.assumptions.map((assumption, idx) => (
+                    <li key={`${assumption}-${idx}`} className="flex items-start gap-2">
+                      <CheckCircle2 className="mt-0.5 size-3.5 text-green-700" />
+                      <span>{assumption}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
         <p className="mt-2 text-xs text-muted-foreground">{statusText}</p>
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-2xl border bg-[#0f172a] text-slate-100">
-          <div className="flex items-center justify-between border-b border-slate-700 px-3 py-2 text-xs">
-            <div className="font-mono uppercase tracking-wide text-slate-300">Orchestration Console</div>
-            <div className="text-slate-400">live</div>
-          </div>
-          <div
-            ref={terminalRef}
-            className="h-[380px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
-          >
-            {logLines.length > 0 ? (
-              <div className="space-y-1">
-                {logLines.map((line) =>
-                  line.type === "structured" ? (
-                    <div key={line.id} className="whitespace-pre-wrap break-words">
-                      <span className={`font-semibold ${eventTone(line.event ?? "")}`}>
-                        {line.event}
-                      </span>
-                      <span className="text-slate-500"> | </span>
-                      <span className="text-slate-200">{line.text || "(no text)"}</span>
-                      {line.extras && line.extras.length > 0 && (
-                        <div className="mt-0.5 space-y-0.5 pl-3 text-slate-400">
-                          {line.extras.map((extra) => (
-                            <div key={`${line.id}-${extra.key}`}>
-                              <span className={`font-medium ${keyTone(extra.key)}`}>{extra.key}</span>
-                              <span className="text-slate-600">: </span>
-                              {extra.value.kind === "primitive" ? (
-                                <span className="text-slate-300">{extra.value.text}</span>
-                              ) : (
-                                <div className="mt-0.5">
-                                  <ExtraValueNode value={extra.value} depth={1} />
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div key={line.id} className="whitespace-pre-wrap break-words text-slate-300">
-                      {line.text}
-                    </div>
-                  )
-                )}
-              </div>
-            ) : (
-              <p className="text-slate-500">No output yet. Start a planning run to stream Claude output.</p>
-            )}
-          </div>
-        </section>
-
         <section className="rounded-2xl border bg-card p-3">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold">Wave Diagram</h3>
@@ -770,8 +743,11 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
           {plan ? (
             <div className="space-y-3">
-	              {plan.waves.map((wave, index) => (
-	                <div key={`${wave.waveIndex}-${wave.name}`} className="relative rounded-xl border bg-slate-50 p-3">
+              {plan.waves.map((wave, index) => (
+                <div
+                  key={`${wave.waveIndex}-${wave.name}`}
+                  className="relative rounded-xl border bg-slate-50 p-3"
+                >
                   {index < plan.waves.length - 1 && (
                     <div className="pointer-events-none absolute -bottom-3 left-4 h-3 border-l border-dashed border-slate-300" />
                   )}
@@ -781,43 +757,43 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     </Badge>
                     <span className="text-xs text-muted-foreground">{wave.beads.length} beads</span>
                   </div>
-	                  <div className="mt-1 space-y-1.5">
-	                    <Input
-	                      value={waveEdits[wave.waveIndex]?.name ?? wave.name}
-	                      onChange={(event) =>
-	                        setWaveEdits((prev) => ({
-	                          ...prev,
-	                          [wave.waveIndex]: {
-	                            name: event.target.value,
-	                            slug: prev[wave.waveIndex]?.slug ?? "",
-	                          },
-	                        }))
-	                      }
-	                      className="h-8 bg-white text-sm font-semibold"
-	                      disabled={isRunning || isApplying}
-	                    />
-	                    <div className="flex items-center gap-2">
-	                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-	                        slug
-	                      </span>
-	                      <Input
-	                        value={waveEdits[wave.waveIndex]?.slug ?? ""}
-	                        onChange={(event) =>
-	                          setWaveEdits((prev) => ({
-	                            ...prev,
-	                            [wave.waveIndex]: {
-	                              name: prev[wave.waveIndex]?.name ?? wave.name,
-	                              slug: event.target.value,
-	                            },
-	                          }))
-	                        }
-	                        placeholder="auto-generated (e.g. streep-montage)"
-	                        className="h-7 bg-white font-mono text-[11px]"
-	                        disabled={isRunning || isApplying}
-	                      />
-	                    </div>
-	                  </div>
-	                  <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
+                  <div className="mt-1 space-y-1.5">
+                    <Input
+                      value={waveEdits[wave.waveIndex]?.name ?? wave.name}
+                      onChange={(event) =>
+                        setWaveEdits((prev) => ({
+                          ...prev,
+                          [wave.waveIndex]: {
+                            name: event.target.value,
+                            slug: prev[wave.waveIndex]?.slug ?? "",
+                          },
+                        }))
+                      }
+                      className="h-8 bg-white text-sm font-semibold"
+                      disabled={isRunning || isApplying}
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        slug
+                      </span>
+                      <Input
+                        value={waveEdits[wave.waveIndex]?.slug ?? ""}
+                        onChange={(event) =>
+                          setWaveEdits((prev) => ({
+                            ...prev,
+                            [wave.waveIndex]: {
+                              name: prev[wave.waveIndex]?.name ?? wave.name,
+                              slug: event.target.value,
+                            },
+                          }))
+                        }
+                        placeholder="auto-generated (e.g. streep-montage)"
+                        className="h-7 bg-white font-mono text-[11px]"
+                        disabled={isRunning || isApplying}
+                      />
+                    </div>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
 
                   <div className="mt-2 flex flex-wrap gap-1">
                     {wave.agents.length > 0 ? (
@@ -832,7 +808,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                         </Badge>
                       ))
                     ) : (
-                      <Badge variant="secondary" className="text-[10px]">1 x generalist</Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        1 x generalist
+                      </Badge>
                     )}
                   </div>
 
@@ -870,93 +848,156 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             </div>
           )}
         </section>
-      </div>
 
-      {plan && (
-        <section className="rounded-2xl border bg-card p-3">
-          <p className="text-sm font-semibold">Planner Summary</p>
-          <p className="mt-1 text-sm text-muted-foreground">{plan.summary}</p>
-
-          {plan.assumptions.length > 0 && (
-            <div className="mt-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Assumptions
-              </p>
-              <ul className="mt-1 space-y-1 text-sm">
-                {plan.assumptions.map((assumption, idx) => (
-                  <li key={`${assumption}-${idx}`} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 size-3.5 text-green-700" />
-                    <span>{assumption}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {applyResult && (
-            <div className="mt-3 rounded-xl border border-emerald-300 bg-emerald-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
-                Applied
-              </p>
-              <ul className="mt-2 space-y-2 text-sm">
-                {applyResult.applied.map((wave) => (
-                  <li key={wave.waveId}>
-                    <div className="flex items-center gap-2">
-                      <Rocket className="size-3.5 text-emerald-700" />
-                      <span>
-                        {wave.waveTitle} ({wave.childCount} child bead{wave.childCount === 1 ? "" : "s"})
-                      </span>
-                      <span className="font-mono text-xs text-emerald-700">{wave.waveId}</span>
-                    </div>
-                    {wave.children.length > 0 && (
-                      <ul className="ml-6 mt-1 space-y-0.5">
-                        {wave.children.map((child) => (
-                          <li key={child.id} className="flex items-center gap-1.5 text-xs text-emerald-900/70">
-                            <ChevronRight className="size-3 text-emerald-600" />
-                            <span className="font-mono">{child.id}</span>
-                            <span className="truncate">{child.title}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={handleTriggerNow}
-                  disabled={!nextWaveToTrigger || isTriggeringNow}
-                >
-                  {isTriggeringNow ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <Rocket className="size-3.5" />
-                  )}
-                  Trigger Now
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5"
-                  onClick={() => router.push("/beads")}
-                >
-                  <ArrowRight className="size-3.5" />
-                  Back to List
-                </Button>
+        <div className="space-y-4">
+          <section className="rounded-2xl border bg-[#0f172a] text-slate-100">
+            <div className="flex items-center justify-between border-b border-slate-700 px-3 py-2 text-xs">
+              <div className="font-mono uppercase tracking-wide text-slate-300">
+                Orchestration Console
               </div>
-
-              {applyResult.skipped.length > 0 && (
-                <div className="mt-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
-                  Skipped: {applyResult.skipped.join(", ")}
+              <div className="text-slate-400">live</div>
+            </div>
+            <div
+              ref={terminalRef}
+              className="h-[190px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
+            >
+              {logLines.length > 0 ? (
+                <div className="space-y-1">
+                  {logLines.map((line) =>
+                    line.type === "structured" ? (
+                      <div key={line.id} className="whitespace-pre-wrap break-words">
+                        <span className={`font-semibold ${eventTone(line.event ?? "")}`}>
+                          {line.event}
+                        </span>
+                        <span className="text-slate-500"> | </span>
+                        <span className="text-slate-200">{line.text || "(no text)"}</span>
+                        {line.extras && line.extras.length > 0 && (
+                          <div className="mt-0.5 space-y-0.5 pl-3 text-slate-400">
+                            {line.extras.map((extra) => (
+                              <div key={`${line.id}-${extra.key}`}>
+                                <span className={`font-medium ${keyTone(extra.key)}`}>
+                                  {extra.key}
+                                </span>
+                                <span className="text-slate-600">: </span>
+                                {extra.value.kind === "primitive" ? (
+                                  <span className="text-slate-300">{extra.value.text}</span>
+                                ) : (
+                                  <div className="mt-0.5">
+                                    <ExtraValueNode value={extra.value} depth={1} />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        key={line.id}
+                        className="whitespace-pre-wrap break-words text-slate-300"
+                      >
+                        {line.text}
+                      </div>
+                    )
+                  )}
                 </div>
+              ) : (
+                <p className="text-slate-500">
+                  No output yet. Start a planning run to stream Claude output.
+                </p>
               )}
             </div>
-          )}
-        </section>
-      )}
+          </section>
+
+          <section className="rounded-2xl border bg-card p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-sm font-semibold">Applied Section</p>
+              {applyResult ? (
+                <Badge variant="secondary" className="text-[11px]">
+                  {applyResult.applied.length} applied
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-[11px]">
+                  waiting for apply
+                </Badge>
+              )}
+            </div>
+
+            {applyResult ? (
+              <>
+                <div className="h-[190px] overflow-auto rounded-xl border border-emerald-300 bg-emerald-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                    Applied
+                  </p>
+                  <ul className="mt-2 space-y-2 text-sm">
+                    {applyResult.applied.map((wave) => (
+                      <li key={wave.waveId}>
+                        <div className="flex items-center gap-2">
+                          <Rocket className="size-3.5 text-emerald-700" />
+                          <span>
+                            {wave.waveTitle} ({wave.childCount} child bead
+                            {wave.childCount === 1 ? "" : "s"})
+                          </span>
+                          <span className="font-mono text-xs text-emerald-700">{wave.waveId}</span>
+                        </div>
+                        {wave.children.length > 0 && (
+                          <ul className="ml-6 mt-1 space-y-0.5">
+                            {wave.children.map((child) => (
+                              <li
+                                key={child.id}
+                                className="flex items-center gap-1.5 text-xs text-emerald-900/70"
+                              >
+                                <ChevronRight className="size-3 text-emerald-600" />
+                                <span className="font-mono">{child.id}</span>
+                                <span className="truncate">{child.title}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {applyResult.skipped.length > 0 && (
+                    <div className="mt-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
+                      Skipped: {applyResult.skipped.join(", ")}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={handleTriggerNow}
+                    disabled={!nextWaveToTrigger || isTriggeringNow}
+                  >
+                    {isTriggeringNow ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <Rocket className="size-3.5" />
+                    )}
+                    Trigger Now
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5"
+                    onClick={() => router.push("/beads")}
+                  >
+                    <ArrowRight className="size-3.5" />
+                    Back to List
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex h-[190px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
+                Applied section appears here after you create wave beads.
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
