@@ -66,7 +66,6 @@ function relativeTime(dateStr: string): string {
 export interface BeadColumnOpts {
   showRepoColumn?: boolean;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
-  onCloseBead?: (id: string) => void;
   onTitleClick?: (bead: Bead) => void;
   onShipBead?: (bead: Bead) => void;
   shippingByBeadId?: Record<string, string>;
@@ -80,33 +79,35 @@ export interface BeadColumnOpts {
 function VerificationButtons({
   bead,
   onUpdateBead,
-  onCloseBead,
 }: {
   bead: Bead;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
-  onCloseBead?: (id: string) => void;
 }) {
   const hasVerification = bead.labels?.includes("stage:verification");
-  if (!hasVerification || (!onUpdateBead && !onCloseBead)) return null;
+  if (!hasVerification || !onUpdateBead) return null;
 
   return (
     <>
-      {onCloseBead && (
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded p-1 text-green-700 hover:bg-green-100"
-          title="Verify (LGTM)"
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdateBead?.(bead.id, { removeLabels: ["stage:verification"] });
-            onCloseBead(bead.id);
-          }}
-        >
-          <Check className="size-4" />
-        </button>
-      )}
+      <button
+        type="button"
+        className="inline-flex items-center justify-center rounded p-1 text-green-700 hover:bg-green-100"
+        title="Verify (LGTM)"
+        onClick={(e) => {
+          e.stopPropagation();
+          onUpdateBead(bead.id, verifyBeadFields());
+        }}
+      >
+        <Check className="size-4" />
+      </button>
     </>
   );
+}
+
+export function verifyBeadFields(): UpdateBeadInput {
+  return {
+    status: "closed",
+    removeLabels: ["stage:verification"],
+  };
 }
 
 export function rejectBeadFields(bead: Bead): UpdateBeadInput {
@@ -208,11 +209,10 @@ function AddLabelDropdown({
   );
 }
 
-function TitleCell({ bead, onTitleClick, onUpdateBead, onCloseBead, allLabels, isBuiltForReview, onApproveReview, onRejectReview }: {
+function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForReview, onApproveReview, onRejectReview }: {
   bead: Bead;
   onTitleClick?: (bead: Bead) => void;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
-  onCloseBead?: (id: string) => void;
   allLabels?: string[];
   isBuiltForReview?: boolean;
   onApproveReview?: (parentId: string) => void;
@@ -306,7 +306,6 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, onCloseBead, allLabels, i
 export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDef<Bead>[] {
   const showRepoColumn = typeof opts === "boolean" ? opts : (opts.showRepoColumn ?? false);
   const onUpdateBead = typeof opts === "boolean" ? undefined : opts.onUpdateBead;
-  const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const onTitleClick = typeof opts === "boolean" ? undefined : opts.onTitleClick;
   const onShipBead = typeof opts === "boolean" ? undefined : opts.onShipBead;
   const shippingByBeadId = typeof opts === "boolean" ? {} : (opts.shippingByBeadId ?? {});
@@ -377,7 +376,6 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
               bead={row.original}
               onTitleClick={onTitleClick}
               onUpdateBead={onUpdateBead}
-              onCloseBead={onCloseBead}
               allLabels={allLabels}
               isBuiltForReview={isReview}
               onApproveReview={isReview ? onApproveReview : undefined}
@@ -450,7 +448,6 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
           <VerificationButtons
             bead={row.original}
             onUpdateBead={onUpdateBead}
-            onCloseBead={onCloseBead}
           />
           {onUpdateBead ? (
             <DropdownMenu>

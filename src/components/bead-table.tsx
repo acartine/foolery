@@ -17,7 +17,7 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
-import { getBeadColumns, rejectBeadFields } from "@/components/bead-columns";
+import { getBeadColumns, rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
 import {
   Table,
   TableHeader,
@@ -233,8 +233,7 @@ export function BeadTable({
       (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
     );
     for (const child of children) {
-      handleUpdateBead({ id: child.id, fields: { removeLabels: ["stage:verification"] } });
-      handleCloseBead(child.id);
+      handleUpdateBead({ id: child.id, fields: verifyBeadFields() });
     }
     handleCloseBead(parentId);
   }, [data, handleUpdateBead, handleCloseBead]);
@@ -253,7 +252,6 @@ export function BeadTable({
     () => getBeadColumns({
       showRepoColumn,
       onUpdateBead: (id, fields) => handleUpdateBead({ id, fields }),
-      onCloseBead: (id) => handleCloseBead(id),
       onTitleClick: (bead) => {
         const repoPath = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
         const qs = repoPath ? `?repo=${encodeURIComponent(repoPath)}` : "";
@@ -267,7 +265,7 @@ export function BeadTable({
       onApproveReview: handleApproveReview,
       onRejectReview: handleRejectReview,
     }),
-    [showRepoColumn, handleUpdateBead, handleCloseBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
+    [showRepoColumn, handleUpdateBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -314,7 +312,6 @@ export function BeadTable({
   // Reset focus to first row when filters change
   useEffect(() => {
     setFocusedRowId(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersKey]);
 
   useEffect(() => {
@@ -377,8 +374,7 @@ export function BeadTable({
         const bead = rows[currentIndex].original;
         if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
-        handleUpdateBead({ id: bead.id, fields: { removeLabels: ["stage:verification"] } });
-        handleCloseBead(bead.id);
+        handleUpdateBead({ id: bead.id, fields: verifyBeadFields() });
         // Advance focus to the next row (or previous if at end)
         const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
         if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
