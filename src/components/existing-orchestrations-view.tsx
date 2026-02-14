@@ -77,6 +77,7 @@ interface WaveCard {
 interface OrchestrationTree {
   id: string;
   label: string;
+  displayLabel: string;
   waves: WaveCard[];
   maxDepth: number;
   updatedAt: string;
@@ -119,6 +120,16 @@ function compareByTimestamp(a: Bead, b: Bead): number {
 function parseWaveName(title: string): string {
   const stripped = title.replace(/^wave\s+[^:]+:\s*/i, "").trim();
   return stripped || title;
+}
+
+function stripIssuePrefix(id: string): string {
+  const delimiterIndex = id.indexOf("-");
+  if (delimiterIndex < 0 || delimiterIndex === id.length - 1) return id;
+  return id.slice(delimiterIndex + 1);
+}
+
+function formatWaveLabel(id: string, slug: string): string {
+  return `${stripIssuePrefix(id)} ${slug}`;
 }
 
 function parseDescriptionLine(
@@ -194,12 +205,29 @@ function buildRestageWaveEdits(
 }
 
 function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
+  const byId = new Map(beads.map((bead) => [bead.id, bead]));
   const byParent = new Map<string, Bead[]>();
+
+  const resolveVisibleParentId = (bead: Bead): string | undefined => {
+    let parentId = bead.parent;
+    const seen = new Set<string>();
+    while (parentId && !seen.has(parentId)) {
+      seen.add(parentId);
+      const parent = byId.get(parentId);
+      if (!parent) return undefined;
+      if (parent.status !== "closed") return parent.id;
+      parentId = parent.parent;
+    }
+    return undefined;
+  };
+
   for (const bead of beads) {
-    if (!bead.parent) continue;
-    const list = byParent.get(bead.parent) ?? [];
+    if (bead.status === "closed") continue;
+    const parentId = resolveVisibleParentId(bead);
+    if (!parentId) continue;
+    const list = byParent.get(parentId) ?? [];
     list.push(bead);
-    byParent.set(bead.parent, list);
+    byParent.set(parentId, list);
   }
   for (const [parent, list] of byParent.entries()) {
     byParent.set(
@@ -244,7 +272,10 @@ function buildNode(
 }
 
 function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrchestration {
-  const waves = data.waves.slice().sort(compareByTimestamp);
+  const waves = data.waves
+    .filter((wave) => wave.status !== "closed")
+    .slice()
+    .sort(compareByTimestamp);
   const waveIds = new Set(waves.map((wave) => wave.id));
   const byParent = buildChildrenIndex(data.beads);
 
@@ -353,7 +384,9 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
       .map((id) => waveCards.get(id))
       .filter((wave): wave is WaveCard => Boolean(wave));
     const fallbackLabel = `tree-${index + 1}`;
-    const label = waveCardsInTree[0]?.slug ?? fallbackLabel;
+    const rootWave = waveCardsInTree[0];
+    const label = rootWave?.slug ?? fallbackLabel;
+    const displayLabel = rootWave ? formatWaveLabel(rootWave.id, rootWave.slug) : fallbackLabel;
     const maxDepth = waveCardsInTree.reduce(
       (max, waveCard) => Math.max(max, waveCard.maxDepth),
       MIN_ZOOM_DEPTH
@@ -365,6 +398,7 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
     return {
       id: `${label}-${index}-${waveCardsInTree.map((waveCard) => waveCard.id).join("-")}`,
       label,
+      displayLabel,
       waves: waveCardsInTree,
       maxDepth,
       updatedAt,
@@ -995,7 +1029,9 @@ export function ExistingOrchestrationsView() {
             <p className="text-sm text-muted-foreground">
               Tree {safeTreeIndex + 1} of {treeCount}
               <span className="mx-1">·</span>
-              <span className="font-mono text-foreground">{activeTree?.label}</span>
+              <span className="font-mono text-foreground">
+                {activeTree?.displayLabel ?? activeTree?.label}
+              </span>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -1180,7 +1216,7 @@ export function ExistingOrchestrationsView() {
                     <>
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant="outline" className="font-mono text-[11px]">
-                          {wave.slug}
+                          {formatWaveLabel(wave.id, wave.slug)}
                         </Badge>
                         <span className="text-sm font-semibold">{wave.name}</span>
                       </div>
