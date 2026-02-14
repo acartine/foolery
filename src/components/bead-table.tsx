@@ -151,7 +151,8 @@ export function BeadTable({
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
-  const { activeRepo, registeredRepos, setActiveRepo } = useAppStore();
+  const { activeRepo, registeredRepos, setActiveRepo, filters } = useAppStore();
+  const filtersKey = JSON.stringify(filters);
 
   const { mutate: handleUpdateBead } = useMutation({
     mutationFn: ({ id, fields }: { id: string; fields: UpdateBeadInput }) => {
@@ -310,6 +311,12 @@ export function BeadTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table.getRowModel().rows.length]);
 
+  // Reset focus to first row when filters change
+  useEffect(() => {
+    setFocusedRowId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersKey]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
@@ -403,6 +410,17 @@ export function BeadTable({
         const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
         const prevIdx = currentIdx <= 0 ? cycle.length - 1 : currentIdx - 1;
         setActiveRepo(cycle[prevIdx]);
+      } else if (e.key === "C" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        // Shift+C: Close focused bead
+        if (currentIndex < 0) return;
+        const bead = rows[currentIndex].original;
+        if (bead.status === "closed") return;
+        e.preventDefault();
+        handleCloseBead(bead.id);
+        const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
+        if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
+          setFocusedRowId(rows[nextFocusIdx].original.id);
+        }
       } else if (e.key === "R" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         // Shift+R: next repo
         e.preventDefault();
@@ -467,7 +485,9 @@ export function BeadTable({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
                       cell.column.id === "title" && (
-                        <InlineSummary bead={row.original} />
+                        <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16}px` }}>
+                          <InlineSummary bead={row.original} />
+                        </div>
                       )}
                   </TableCell>
                 ))}

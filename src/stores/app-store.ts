@@ -14,10 +14,22 @@ interface Filters {
 }
 
 const ACTIVE_REPO_KEY = "foolery-active-repo";
+const FILTERS_KEY = "foolery-filters";
 
 function getStoredActiveRepo(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(ACTIVE_REPO_KEY);
+}
+
+function getStoredFilters(): Filters {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(FILTERS_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) as Filters;
+  } catch {
+    return {};
+  }
 }
 
 interface AppState {
@@ -37,17 +49,29 @@ interface AppState {
 
 const initialFilters: Filters = {};
 
+function persistFilters(filters: Filters) {
+  if (typeof window === "undefined") return;
+  const hasValues = Object.values(filters).some((v) => v !== undefined);
+  if (hasValues) localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  else localStorage.removeItem(FILTERS_KEY);
+}
+
 export const useAppStore = create<AppState>((set) => ({
-  filters: initialFilters,
+  filters: getStoredFilters(),
   commandPaletteOpen: false,
   viewMode: "table",
   activeRepo: getStoredActiveRepo(),
   registeredRepos: [],
   setFilter: (key, value) =>
-    set((state) => ({
-      filters: { ...state.filters, [key]: value },
-    })),
-  resetFilters: () => set({ filters: initialFilters }),
+    set((state) => {
+      const filters = { ...state.filters, [key]: value };
+      persistFilters(filters);
+      return { filters };
+    }),
+  resetFilters: () => {
+    persistFilters(initialFilters);
+    return set({ filters: initialFilters });
+  },
   setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
   toggleCommandPalette: () =>
     set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),

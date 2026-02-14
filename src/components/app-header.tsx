@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Layers, List, Network } from "lucide-react";
@@ -70,13 +70,36 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = (view: "list" | "orchestration" | "existing") => {
+  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
     const qs = params.toString();
     router.push(`/beads${qs ? `?${qs}` : ""}`);
-  };
+  }, [searchParams, router]);
+
+  // Shift+] / Shift+[ to cycle views
+  useEffect(() => {
+    if (!isBeadsRoute) return;
+    const views: ("list" | "orchestration" | "existing")[] = ["list", "orchestration", "existing"];
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+
+      if (e.key === "]" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        const idx = views.indexOf(beadsView);
+        setBeadsView(views[(idx + 1) % views.length]);
+      } else if (e.key === "[" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        const idx = views.indexOf(beadsView);
+        setBeadsView(views[(idx - 1 + views.length) % views.length]);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isBeadsRoute, beadsView, setBeadsView]);
 
   const createButton = shouldChooseRepo ? (
     <DropdownMenu>

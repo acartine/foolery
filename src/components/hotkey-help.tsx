@@ -3,6 +3,7 @@
 const HOTKEYS = [
   { key: "↑ / ↓", description: "Navigate rows" },
   { key: "Shift+V", description: "Verify (close) focused bead" },
+  { key: "Shift+C", description: "Close focused bead" },
   { key: "Shift+F", description: "Reject focused bead" },
   { key: "Shift+O", description: "Notes for focused bead" },
   { key: "Shift+L", description: "Add label to focused bead" },
@@ -11,6 +12,8 @@ const HOTKEYS = [
   { key: "⌘+Shift+R", description: "Previous repository" },
   { key: "Shift+S", description: "Ship focused bead" },
   { key: "Shift+T", description: "Toggle terminal panel" },
+  { key: "Shift+]", description: "Next view" },
+  { key: "Shift+[", description: "Previous view" },
   { key: "Shift+H", description: "Toggle this help" },
 ];
 

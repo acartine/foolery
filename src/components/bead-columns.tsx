@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, X, Rocket, Square, Eye } from "lucide-react";
+import { ORCHESTRATION_WAVE_LABEL, ORCHESTRATION_WAVE_LABEL_PREFIX } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -218,6 +219,9 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, onCloseBead, allLabels, i
   onRejectReview?: (parentId: string) => void;
 }) {
   const labels = bead.labels ?? [];
+  const visibleLabels = labels.filter(
+    (l) => l !== ORCHESTRATION_WAVE_LABEL && !l.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX)
+  );
   return (
     <div className="flex flex-col gap-0.5">
       {onTitleClick ? (
@@ -270,7 +274,7 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, onCloseBead, allLabels, i
         <span className="text-muted-foreground text-xs">
           {relativeTime(bead.updated)}
         </span>
-        {labels.map((label) => (
+        {visibleLabels.map((label) => (
           <span
             key={label}
             className={`inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
