@@ -7,10 +7,17 @@ import type {
 } from "@/lib/types";
 
 interface Filters {
-  status?: BeadStatus;
+  status?: BeadStatus | "ready";
   type?: BeadType;
   priority?: BeadPriority;
   assignee?: string;
+}
+
+const ACTIVE_REPO_KEY = "foolery-active-repo";
+
+function getStoredActiveRepo(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ACTIVE_REPO_KEY);
 }
 
 interface AppState {
@@ -34,7 +41,7 @@ export const useAppStore = create<AppState>((set) => ({
   filters: initialFilters,
   commandPaletteOpen: false,
   viewMode: "table",
-  activeRepo: null,
+  activeRepo: getStoredActiveRepo(),
   registeredRepos: [],
   setFilter: (key, value) =>
     set((state) => ({
@@ -45,6 +52,12 @@ export const useAppStore = create<AppState>((set) => ({
   toggleCommandPalette: () =>
     set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
   setViewMode: (mode) => set({ viewMode: mode }),
-  setActiveRepo: (repo) => set({ activeRepo: repo }),
+  setActiveRepo: (repo) => {
+    if (typeof window !== "undefined") {
+      if (repo) localStorage.setItem(ACTIVE_REPO_KEY, repo);
+      else localStorage.removeItem(ACTIVE_REPO_KEY);
+    }
+    set({ activeRepo: repo });
+  },
   setRegisteredRepos: (repos) => set({ registeredRepos: repos }),
 }));

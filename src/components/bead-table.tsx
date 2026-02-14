@@ -37,6 +37,7 @@ import {
 import { ArrowUpDown, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { HotkeyHelp } from "@/components/hotkey-help";
+import { NotesDialog } from "@/components/notes-dialog";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
 
@@ -146,7 +147,9 @@ export function BeadTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
-  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(false);
+  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(true);
+  const [notesDialogOpen, setNotesDialogOpen] = useState(false);
+  const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
   const { activeRepo, registeredRepos, setActiveRepo } = useAppStore();
 
@@ -284,6 +287,17 @@ export function BeadTable({
         return;
       }
 
+      if (e.key === "O" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        const rows = table.getRowModel().rows;
+        const idx = rows.findIndex((r) => r.original.id === focusedRowId);
+        if (idx >= 0) {
+          setNotesBead(rows[idx].original);
+          setNotesDialogOpen(true);
+        }
+        return;
+      }
+
       const rows = table.getRowModel().rows;
       if (rows.length === 0) return;
       const currentIndex = rows.findIndex((r) => r.original.id === focusedRowId);
@@ -308,6 +322,11 @@ export function BeadTable({
         e.preventDefault();
         handleUpdateBead({ id: bead.id, fields: { removeLabels: ["stage:verification"] } });
         handleCloseBead(bead.id);
+        // Advance focus to the next row (or previous if at end)
+        const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
+        if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
+          setFocusedRowId(rows[nextFocusIdx].original.id);
+        }
       } else if (e.key === "F" && e.shiftKey) {
         // Shift-F: Reject the focused bead if it has stage:verification
         if (currentIndex < 0) return;
@@ -330,17 +349,17 @@ export function BeadTable({
         // Cmd+Shift+R: previous repo
         e.preventDefault();
         if (registeredRepos.length === 0) return;
-        const cycle: Array<string | null> = [null, ...registeredRepos.map((r) => r.path)];
-        const currentIdx = cycle.indexOf(activeRepo);
-        const prevIdx = (currentIdx - 1 + cycle.length) % cycle.length;
+        const cycle = registeredRepos.map((r) => r.path);
+        const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
+        const prevIdx = currentIdx <= 0 ? cycle.length - 1 : currentIdx - 1;
         setActiveRepo(cycle[prevIdx]);
       } else if (e.key === "R" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         // Shift+R: next repo
         e.preventDefault();
         if (registeredRepos.length === 0) return;
-        const cycle: Array<string | null> = [null, ...registeredRepos.map((r) => r.path)];
-        const currentIdx = cycle.indexOf(activeRepo);
-        const nextIdx = (currentIdx + 1) % cycle.length;
+        const cycle = registeredRepos.map((r) => r.path);
+        const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
+        const nextIdx = currentIdx < cycle.length - 1 ? currentIdx + 1 : 0;
         setActiveRepo(cycle[nextIdx]);
       }
     };
@@ -479,6 +498,12 @@ export function BeadTable({
       )}
 
       <HotkeyHelp open={hotkeyHelpOpen} />
+      <NotesDialog
+        bead={notesBead}
+        open={notesDialogOpen}
+        onOpenChange={setNotesDialogOpen}
+        onUpdate={(id, fields) => handleUpdateBead({ id, fields })}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchBeads, fetchBeadsFromAllRepos, updateBead } from "@/lib/api";
+import { fetchBeads, fetchBeadsFromAllRepos, fetchReadyBeads, updateBead } from "@/lib/api";
 import { startSession, abortSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
@@ -69,17 +69,19 @@ function BeadsPageInner() {
     }
   }, [registryData, setRegisteredRepos]);
 
+  const isReadyFilter = filters.status === "ready";
   const params: Record<string, string> = {};
-  if (filters.status) params.status = filters.status;
+  if (filters.status && !isReadyFilter) params.status = filters.status;
   if (filters.type) params.type = filters.type;
   if (filters.priority !== undefined) params.priority = String(filters.priority);
   if (searchQuery) params.q = searchQuery;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beads", params, activeRepo],
+    queryKey: ["beads", params, activeRepo, isReadyFilter],
     queryFn: async () => {
+      const fetcher = isReadyFilter ? fetchReadyBeads : fetchBeads;
       if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
+        const result = await fetcher(params, activeRepo);
         if (result.ok && result.data) {
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data.map((bead) => ({
@@ -91,7 +93,7 @@ function BeadsPageInner() {
         return result;
       }
       if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
-      return fetchBeads(params);
+      return fetcher(params);
     },
     enabled: isListView,
     refetchInterval: 10_000,
@@ -192,31 +194,35 @@ function BeadsPageInner() {
         </div>
       )}
 
-      <div className={isListView ? "mt-0.5 overflow-x-auto" : "mt-0.5"}>
-        {isOrchestrationView ? (
+      <div className="mt-0.5">
+        <div className={isOrchestrationView ? "" : "hidden"}>
           <OrchestrationView
             onApplied={() => {
               queryClient.invalidateQueries({ queryKey: ["beads"] });
             }}
           />
-        ) : isExistingOrchestrationView ? (
+        </div>
+        <div className={isExistingOrchestrationView ? "" : "hidden"}>
           <ExistingOrchestrationsView />
-        ) : isLoading ? (
-          <div className="flex items-center justify-center py-6 text-muted-foreground">
-            Loading beads...
-          </div>
-        ) : (
-          <BeadTable
-            data={beads}
-            showRepoColumn={showRepoColumn}
-            onSelectionChange={handleSelectionChange}
-            selectionVersion={selectionVersion}
-            searchQuery={searchQuery}
-            onShipBead={handleShipBead}
-            shippingByBeadId={shippingByBeadId}
-            onAbortShipping={handleAbortShipping}
-          />
-        )}
+        </div>
+        <div className={isListView ? "overflow-x-auto" : "hidden"}>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-6 text-muted-foreground">
+              Loading beads...
+            </div>
+          ) : (
+            <BeadTable
+              data={beads}
+              showRepoColumn={showRepoColumn}
+              onSelectionChange={handleSelectionChange}
+              selectionVersion={selectionVersion}
+              searchQuery={searchQuery}
+              onShipBead={handleShipBead}
+              shippingByBeadId={shippingByBeadId}
+              onAbortShipping={handleAbortShipping}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

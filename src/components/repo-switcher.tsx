@@ -27,8 +27,12 @@ export function RepoSwitcher() {
   useEffect(() => {
     if (data?.ok && data.data) {
       setRegisteredRepos(data.data);
+      // Default to first repo if no repo was ever selected
+      if (!activeRepo && data.data.length > 0) {
+        setActiveRepo(data.data[0].path);
+      }
     }
-  }, [data, setRegisteredRepos]);
+  }, [data, setRegisteredRepos, activeRepo, setActiveRepo]);
 
   const currentName = activeRepo
     ? registeredRepos.find((r) => r.path === activeRepo)?.name ?? "Unknown"

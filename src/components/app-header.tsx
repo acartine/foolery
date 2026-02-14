@@ -124,9 +124,6 @@ export function AppHeader() {
                   unoptimized
                   className="rounded-md"
                 />
-                <span className="hidden text-sm font-semibold tracking-tight sm:inline">
-                  Foolery
-                </span>
               </Link>
               <RepoSwitcher />
             </div>

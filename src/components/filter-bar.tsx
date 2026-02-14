@@ -117,7 +117,7 @@ function FilterControls() {
       <Select
         value={filters.status ?? "all"}
         onValueChange={(v) =>
-          setFilter("status", v === "all" ? undefined : (v as BeadStatus))
+          setFilter("status", v === "all" ? undefined : (v as BeadStatus | "ready"))
         }
       >
         <SelectTrigger className="w-[140px] h-7">
@@ -125,6 +125,7 @@ function FilterControls() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="ready">Ready</SelectItem>
           {statuses.map((s) => (
             <SelectItem key={s} value={s}>
               {formatLabel(s)}

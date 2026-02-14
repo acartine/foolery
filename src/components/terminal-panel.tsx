@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession } from "@/lib/terminal-api";
@@ -15,6 +15,12 @@ const STATUS_COLORS: Record<string, string> = {
   aborted: "bg-yellow-500",
   idle: "bg-gray-500",
 };
+
+function tabDotClasses(status: string, isClosing: boolean): string {
+  if (isClosing) return "inline-block size-1.5 rounded-full bg-green-500 animate-pulse";
+  if (status === "running") return "inline-block size-1.5 rounded-full bg-blue-400 animate-pulse";
+  return `inline-block size-1.5 rounded-full ${STATUS_COLORS[status] ?? STATUS_COLORS.idle}`;
+}
 
 function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
@@ -46,6 +52,37 @@ export function TerminalPanel() {
   const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const isMaximized = panelHeight > 70;
+
+  // Track sessions that are in the "green flicker then close" phase
+  const [closingSessions, setClosingSessions] = useState<Set<string>>(new Set());
+
+  // Auto-close completed terminals after 5 seconds with green flicker
+  useEffect(() => {
+    const completedTerminals = terminals.filter(
+      (t) => t.status === "completed" && !closingSessions.has(t.sessionId)
+    );
+    if (completedTerminals.length === 0) return;
+
+    // Mark them as closing
+    setClosingSessions((prev) => {
+      const next = new Set(prev);
+      completedTerminals.forEach((t) => next.add(t.sessionId));
+      return next;
+    });
+
+    const timers = completedTerminals.map((t) =>
+      setTimeout(() => {
+        removeTerminal(t.sessionId);
+        setClosingSessions((prev) => {
+          const next = new Set(prev);
+          next.delete(t.sessionId);
+          return next;
+        });
+      }, 5000)
+    );
+
+    return () => timers.forEach(clearTimeout);
+  }, [terminals, closingSessions, removeTerminal]);
 
   const handleAbort = useCallback(async () => {
     if (!activeTerminal) return;
@@ -184,6 +221,7 @@ export function TerminalPanel() {
             {terminals.map((terminal) => {
               const isActive = terminal.sessionId === activeTerminal?.sessionId;
               const isRunning = terminal.status === "running";
+              const isClosing = closingSessions.has(terminal.sessionId);
               return (
                 <button
                   key={terminal.sessionId}
@@ -197,12 +235,8 @@ export function TerminalPanel() {
                   title={`${terminal.beadId} - ${terminal.beadTitle}`}
                 >
                   <span className="font-mono">{shortId(terminal.beadId)}</span>
-                  <span
-                    className={`inline-block size-1.5 rounded-full ${
-                      STATUS_COLORS[terminal.status] ?? STATUS_COLORS.idle
-                    }`}
-                  />
-                  {!isRunning && (
+                  <span className={tabDotClasses(terminal.status, isClosing)} />
+                  {!isRunning && !isClosing && (
                     <span
                       className="rounded p-0.5 text-white/55 hover:bg-white/10 hover:text-white"
                       onClick={(event) => {
