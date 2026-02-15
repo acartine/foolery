@@ -113,6 +113,11 @@ export function isWaveLabel(label: string): boolean {
   return label === ORCHESTRATION_WAVE_LABEL || label.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX);
 }
 
+/** Labels that are internal bookkeeping and should not render as user-visible tag badges. */
+export function isInternalLabel(label: string): boolean {
+  return isWaveLabel(label) || label.startsWith("stage:") || label.startsWith("attempts:");
+}
+
 export function isWaveSlugLabel(label: string): boolean {
   return label.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX);
 }

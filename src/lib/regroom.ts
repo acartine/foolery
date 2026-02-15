@@ -44,19 +44,9 @@ export async function regroomAncestors(
   repoPath?: string
 ): Promise<void> {
   try {
-    // Fetch all beads (need full set to build hierarchy).
-    // Combine open + in_progress + closed to get complete picture.
-    const [openResult, inProgressResult, closedResult] = await Promise.all([
-      listBeads({ status: "open" }, repoPath),
-      listBeads({ status: "in_progress" }, repoPath),
-      listBeads({ status: "closed" }, repoPath),
-    ]);
-
-    const allBeads: Bead[] = [];
-    if (openResult.ok && openResult.data) allBeads.push(...openResult.data);
-    if (inProgressResult.ok && inProgressResult.data)
-      allBeads.push(...inProgressResult.data);
-    if (closedResult.ok && closedResult.data) allBeads.push(...closedResult.data);
+    // Single call with no status filter gets --all (see bd.ts listBeads)
+    const allResult = await listBeads({}, repoPath);
+    const allBeads: Bead[] = allResult.ok && allResult.data ? allResult.data : [];
 
     // Deduplicate by ID
     const beadsById = new Map<string, Bead>();

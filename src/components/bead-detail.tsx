@@ -20,7 +20,7 @@ import {
 import { toast } from "sonner";
 import { X, Clapperboard } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
-import { isWaveLabel } from "@/lib/wave-slugs";
+import { isWaveLabel, isInternalLabel } from "@/lib/wave-slugs";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
@@ -211,7 +211,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
 
         {bead.labels.length > 0 && (() => {
           const isOrchestrated = bead.labels.some(isWaveLabel);
-          const visibleLabels = bead.labels.filter((l) => !isWaveLabel(l));
+          const visibleLabels = bead.labels.filter((l) => !isInternalLabel(l));
           return (
             <div className="flex gap-1 flex-wrap items-center">
               {isOrchestrated && (

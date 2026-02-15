@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -45,13 +45,15 @@ export function CreateBeadDialog({
 }: CreateBeadDialogProps) {
   const [formKey, setFormKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const queryClient = useQueryClient();
 
   async function handleSubmit(
     data: CreateBeadInput,
     deps?: RelationshipDeps,
   ) {
-    if (isSubmitting) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const result = await createBead(data, repo ?? undefined);
@@ -65,6 +67,7 @@ export function CreateBeadDialog({
         toast.error(result.error ?? "Failed to create");
       }
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   }
@@ -73,7 +76,8 @@ export function CreateBeadDialog({
     data: CreateBeadInput,
     deps?: RelationshipDeps,
   ) {
-    if (isSubmitting) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const result = await createBead(data, repo ?? undefined);
@@ -88,6 +92,7 @@ export function CreateBeadDialog({
         toast.error(result.error ?? "Failed to create");
       }
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   }

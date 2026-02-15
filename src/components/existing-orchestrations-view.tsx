@@ -132,9 +132,6 @@ function stripIssuePrefix(id: string): string {
   return id.slice(delimiterIndex + 1);
 }
 
-function formatWaveLabel(id: string, slug: string): string {
-  return `${stripIssuePrefix(id)} ${slug}`;
-}
 
 function parseDescriptionLine(
   description: string | undefined,

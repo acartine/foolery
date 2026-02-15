@@ -234,6 +234,11 @@ export async function updateBead(
   const normalizedLabelsToAdd = normalizeLabels(labelsToAdd);
   let normalizedLabelsToRemove = normalizeLabels(labelsToRemove);
 
+  // Start field update immediately — don't wait for the stage label check
+  const updatePromise = hasUpdateFields
+    ? exec(args, { cwd: repoPath })
+    : null;
+
   // Stage labels are mutually exclusive in this workflow. If callers add any
   // stage:* label, automatically remove other current stage:* labels so
   // regressions in frontend payload construction can't leave stale stage labels.
@@ -260,9 +265,9 @@ export async function updateBead(
     }
   }
 
-  // Run bd update for non-label fields
-  if (hasUpdateFields) {
-    const { stderr, exitCode } = await exec(args, { cwd: repoPath });
+  // Await field update if started
+  if (updatePromise) {
+    const { stderr, exitCode } = await updatePromise;
     if (exitCode !== 0)
       return { ok: false, error: stderr || "bd update failed" };
   }
@@ -292,8 +297,9 @@ export async function updateBead(
     }
   }
 
-  // Flush to JSONL so the daemon's auto-import picks up the direct DB writes
-  if (normalizedLabelsToRemove.length > 0 || normalizedLabelsToAdd.length > 0) {
+  // Flush to JSONL so the daemon's auto-import picks up the direct DB writes.
+  // Only sync after label removals — the daemon persistence bug only affects removes.
+  if (normalizedLabelsToRemove.length > 0) {
     const { stderr, exitCode } = await exec(["sync", "--no-daemon"], { cwd: repoPath });
     if (exitCode !== 0) {
       return { ok: false, error: stderr || "bd sync failed after label update" };

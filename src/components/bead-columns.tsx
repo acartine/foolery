@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, X, Clapperboard, Square, Eye } from "lucide-react";
-import { isWaveLabel } from "@/lib/wave-slugs";
+import { isWaveLabel, isInternalLabel, extractWaveSlug } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -223,7 +223,8 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
 }) {
   const labels = bead.labels ?? [];
   const isOrchestrated = labels.some(isWaveLabel);
-  const visibleLabels = labels.filter((l) => !isWaveLabel(l));
+  const waveSlug = extractWaveSlug(labels);
+  const visibleLabels = labels.filter((l) => !isInternalLabel(l));
   return (
     <div className="flex flex-col gap-0.5">
       {onTitleClick ? (
@@ -235,10 +236,10 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
             onTitleClick(bead);
           }}
         >
-          {bead.title}
+          {waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{bead.title}
         </button>
       ) : (
-        <span className="font-medium">{bead.title}</span>
+        <span className="font-medium">{waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{bead.title}</span>
       )}
       {isBuiltForReview && (
         <div className="mt-0.5 flex items-center gap-1.5 rounded border border-orange-200 bg-orange-50 px-2 py-1">

@@ -22,5 +22,7 @@ export async function GET(request: NextRequest) {
     if (!merged.has(bead.id)) merged.set(bead.id, bead);
   }
 
-  return NextResponse.json({ data: Array.from(merged.values()) });
+  // Closed beads are never "ready" — filter them to avoid showing closed parents in the wave tree
+  const result = Array.from(merged.values()).filter(b => b.status !== "closed");
+  return NextResponse.json({ data: result });
 }

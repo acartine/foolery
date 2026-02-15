@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchBeads, fetchBeadsFromAllRepos, fetchReadyBeads, updateBead } from "@/lib/api";
+import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
 import { startSession, abortSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
@@ -92,7 +92,20 @@ function BeadsPageInner() {
         }
         return result;
       }
-      if (registeredRepos.length > 0) return fetchBeadsFromAllRepos(registeredRepos, params);
+      if (registeredRepos.length > 0) {
+        const results = await Promise.all(
+          registeredRepos.map(async (repo) => {
+            const result = await fetcher(params, repo.path);
+            if (!result.ok || !result.data) return [];
+            return result.data.map((bead) => ({
+              ...bead,
+              _repoPath: repo.path,
+              _repoName: repo.name,
+            }));
+          })
+        );
+        return { ok: true, data: results.flat() };
+      }
       return fetcher(params);
     },
     enabled: isListView,

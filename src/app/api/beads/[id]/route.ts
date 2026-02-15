@@ -48,7 +48,10 @@ export async function PATCH(
     Array.isArray(removedLabels) &&
     removedLabels.includes("stage:verification")
   ) {
-    await regroomAncestors(id, repoPath);
+    // Fire-and-forget: don't block the HTTP response on ancestor regroom
+    regroomAncestors(id, repoPath).catch((err) =>
+      console.error(`[regroom] background error for ${id}:`, err)
+    );
   }
 
   return NextResponse.json({ ok: true });
