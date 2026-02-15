@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Foolery
 
-## Getting Started
+**Product-focused agentic orchestration tool** — one layer up from managing 8 agent terminals, one level down from massively multi-agent chaos.
 
-First, run the development server:
+Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking, giving you a visual control surface for organizing, orchestrating, and reviewing AI agent work across your repositories.
+
+## Why Foolery?
+
+- **Rapid scratch pad for small bugs and big ideas alike.** Create a beat, fire off an agent, review the result — all without leaving the keyboard.
+- **Leverage agents to organize groups of work and optimize them for parallel execution.** Ask Claude to decompose a set of tasks into dependency-aware waves, then launch them scene by scene.
+- **Track "completed" work units in a first-class way — accept or reject them with notes.** Every finished beat flows into a verification queue where you approve, reject, or annotate before it's truly done.
+- **Keyboard-first workflow.** Navigate, select, bulk-update, and trigger agent sessions entirely from the keyboard.
+- **Dependency-aware wave planning.** Visualize what's runnable, what's blocked, and what's next — across your whole project.
+- **Multi-repo support.** Switch between repositories or view beats across all of them in one place.
+
+## Quick Start
+
+**Prerequisites:** [Bun](https://bun.sh) and [Beads](https://github.com/steveyegge/beads) (`bd` CLI) must be installed.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/anthropics/foolery.git && cd foolery && bun install && bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Foolery reads from whatever Beads-enabled repos you register. If you don't have one yet:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd your-project
+bd init
+```
 
-## Learn More
+## Views
 
-To learn more about Next.js, take a look at the following resources:
+### Beats
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The main table. See every beat at a glance — filter by status, type, priority, or free-text search. Select rows with spacebar, bulk-update fields, drill into inline summaries, and trigger agent sessions on any beat.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Beats view](docs/screenshots/beats.png)
 
-## Deploy on Vercel
+### Scenes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Browse and manage your orchestration trees. Navigate dependency hierarchies with keyboard arrows, zoom in/out on wave depth, rename slugs, and trigger execution on any wave with a single shortcut.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![Scenes view](docs/screenshots/scenes.png)
+
+### Direct
+
+The planning room. Select a set of beats and ask Claude to organize them into dependency-aware scenes. Watch the plan stream in real time, edit wave names and agent counts, then apply the whole orchestration with one click.
+
+![Direct view](docs/screenshots/direct.png)
+
+### Final Cut
+
+The verification queue. Every beat labeled `stage:verification` lands here. Review each one, approve it, or reject it with notes — keeping your done list honest.
+
+![Final Cut view](docs/screenshots/final-cut.png)
+
+## Key Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `↑ / ↓` | Navigate rows |
+| `Space` | Select row & advance |
+| `Shift+]` / `Shift+[` | Next / previous view |
+| `Shift+S` | Take! — start agent session on focused beat |
+| `Shift+V` | Verify (close) focused beat |
+| `Shift+F` | Reject focused beat |
+| `Shift+O` | Open notes dialog |
+| `Shift+N` | Create new beat |
+| `Shift+T` | Toggle terminal panel |
+| `Shift+H` | Toggle shortcut help |
+
+## Tech Stack
+
+Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / Zustand / TanStack Query / xterm.js
+
+## License
+
+MIT
