@@ -373,7 +373,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             draft.statusText ?? "Restaged existing groups into Scene view"
           );
           toast.success(
-            `Restaged ${draft.plan.waves.length} section${
+            `Restaged ${draft.plan.waves.length} scene${
               draft.plan.waves.length === 1 ? "" : "s"
             } into Scene view`
           );
@@ -912,7 +912,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
           <section className="rounded-2xl border bg-card p-3">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-semibold">Applied Section</p>
+              <p className="text-sm font-semibold">Applied Scenes</p>
               {applyResult ? (
                 <Badge variant="secondary" className="text-[11px]">
                   {applyResult.applied.length} applied
@@ -993,7 +993,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               </>
             ) : (
               <div className="flex h-[190px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
-                Applied section appears here after you create scene beats.
+                Applied scenes appear here after you create scene beats.
               </div>
             )}
           </section>

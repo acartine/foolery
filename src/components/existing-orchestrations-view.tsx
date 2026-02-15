@@ -148,7 +148,7 @@ function parseDescriptionLine(
 function parseWaveObjective(description: string | undefined): string {
   return (
     parseDescriptionLine(description, "Objective:") ??
-    "Execute assigned beats for this section."
+    "Execute assigned beats for this scene."
   );
 }
 
@@ -185,7 +185,7 @@ function buildRestagePlan(tree: OrchestrationTree): OrchestrationPlan {
     .filter((wave) => wave.beads.length > 0);
 
   return {
-    summary: `Restaged ${waves.length} section${
+    summary: `Restaged ${waves.length} scene${
       waves.length === 1 ? "" : "s"
     } from tree ${tree.label}.`,
     waves,
@@ -891,7 +891,7 @@ export function ExistingOrchestrationsView() {
     lateralLevel === "tree"
       ? `tree ${safeTreeIndex + 1}/${Math.max(treeCount, 1)}`
       : lateralLevel === "wave"
-        ? `section ${activeWaveIndex + 1}/${Math.max(activeTree?.waves.length ?? 0, 1)}`
+        ? `scene ${activeWaveIndex + 1}/${Math.max(activeTree?.waves.length ?? 0, 1)}`
         : `child ${activeChildIndex + 1}/${Math.max(activeWave?.children.length ?? 0, 1)}`;
 
   const allSlugs = useMemo(() => {
@@ -999,7 +999,7 @@ export function ExistingOrchestrationsView() {
 
     const plan = buildRestagePlan(activeTree);
     if (plan.waves.length === 0) {
-      toast.error("Active tree has no sections with child tasks to restage");
+      toast.error("Active tree has no scenes with child tasks to restage");
       return;
     }
 
@@ -1030,7 +1030,7 @@ export function ExistingOrchestrationsView() {
       plan: stagedPlan,
       waveEdits: buildRestageWaveEdits(activeTree),
       objective: `Rewrite existing scene tree ${activeTree.label}`,
-      statusText: `Restaged ${stagedPlan.waves.length} section${
+      statusText: `Restaged ${stagedPlan.waves.length} scene${
         stagedPlan.waves.length === 1 ? "" : "s"
       } from ${activeTree.label}.`,
     };
@@ -1123,8 +1123,8 @@ export function ExistingOrchestrationsView() {
               disabled={!treeRootWave || triggeringWaveId === treeRootWave.id}
               title={
                 treeRootWave
-                  ? `Trigger root section ${treeRootWave.slug}`
-                  : "No tree root section available"
+                  ? `Trigger root scene ${treeRootWave.slug}`
+                  : "No tree root scene available"
               }
             >
               {treeRootWave && triggeringWaveId === treeRootWave.id ? (
@@ -1330,7 +1330,7 @@ export function ExistingOrchestrationsView() {
                       className="gap-1.5"
                       onClick={() => void handleTriggerWave(wave)}
                       disabled={triggeringWaveId === wave.id}
-                      title={`Trigger section ${wave.slug}`}
+                      title={`Trigger scene ${wave.slug}`}
                     >
                       {triggeringWaveId === wave.id ? (
                         <Loader2 className="size-3.5 animate-spin" />
