@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
+import { useUpdateUrl } from "@/hooks/use-update-url";
 import { X, Clapperboard } from "lucide-react";
 import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
@@ -62,6 +63,7 @@ export function BulkEditControls({
           variant="default"
           size="sm"
           className="gap-1"
+          title="Group selected beats into a scene"
           onClick={() => onSceneBeads(selectedIds)}
         >
           <Clapperboard className="h-3.5 w-3.5" />
@@ -112,7 +114,7 @@ export function BulkEditControls({
           ))}
         </SelectContent>
       </Select>
-      <Button variant="ghost" size="sm" onClick={onClearSelection}>
+      <Button variant="ghost" size="sm" title="Clear selection" onClick={onClearSelection}>
         <X className="h-4 w-4 mr-1" />
         Clear
       </Button>
@@ -121,7 +123,8 @@ export function BulkEditControls({
 }
 
 function FilterControls() {
-  const { filters, setFilter, resetFilters } = useAppStore();
+  const { filters } = useAppStore();
+  const updateUrl = useUpdateUrl();
 
   const hasFilters =
     filters.status || filters.type || filters.priority !== undefined;
@@ -131,7 +134,7 @@ function FilterControls() {
       <Select
         value={filters.status ?? "all"}
         onValueChange={(v) => {
-          setFilter("status", v === "all" ? undefined : (v as BeadStatus | "ready"));
+          updateUrl({ status: v === "all" ? undefined : (v as BeadStatus | "ready") });
           (document.activeElement as HTMLElement)?.blur?.();
         }}
       >
@@ -152,7 +155,7 @@ function FilterControls() {
       <Select
         value={filters.type ?? "all"}
         onValueChange={(v) => {
-          setFilter("type", v === "all" ? undefined : (v as BeadType));
+          updateUrl({ type: v === "all" ? undefined : (v as BeadType) });
           (document.activeElement as HTMLElement)?.blur?.();
         }}
       >
@@ -172,10 +175,9 @@ function FilterControls() {
       <Select
         value={filters.priority !== undefined ? String(filters.priority) : "all"}
         onValueChange={(v) => {
-          setFilter(
-            "priority",
-            v === "all" ? undefined : (Number(v) as 0 | 1 | 2 | 3 | 4)
-          );
+          updateUrl({
+            priority: v === "all" ? undefined : (Number(v) as 0 | 1 | 2 | 3 | 4),
+          });
           (document.activeElement as HTMLElement)?.blur?.();
         }}
       >
@@ -193,7 +195,12 @@ function FilterControls() {
       </Select>
 
       {hasFilters && (
-        <Button variant="ghost" size="sm" onClick={resetFilters}>
+        <Button
+          variant="ghost"
+          size="sm"
+          title="Clear all filters"
+          onClick={() => updateUrl({ status: undefined, type: undefined, priority: undefined })}
+        >
           <X className="h-4 w-4 mr-1" />
           Clear
         </Button>

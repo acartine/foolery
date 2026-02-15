@@ -106,7 +106,7 @@ export function AppHeader() {
   const createButton = shouldChooseRepo ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="lg" variant="success" className="gap-1.5 px-2.5">
+        <Button size="lg" variant="success" className="gap-1.5 px-2.5" title="Create new beat (Shift+N)">
           <Plus className="size-4" />
           New
         </Button>
@@ -127,6 +127,7 @@ export function AppHeader() {
       size="lg"
       variant="success"
       className="gap-1.5 px-2.5"
+      title="Create new beat (Shift+N)"
       onClick={() => openCreateDialog(defaultRepo)}
     >
       <Plus className="size-4" />
@@ -140,7 +141,7 @@ export function AppHeader() {
         <div className="mx-auto max-w-[95vw] px-4 py-2">
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <div className="flex min-w-0 shrink-0 items-center gap-2">
-              <Link href="/beads" className="flex shrink-0 items-center gap-2">
+              <Link href="/beads" title="Home" className="flex shrink-0 items-center gap-2">
                 <Image
                   src="/foolery_icon.png"
                   alt="Foolery"
@@ -166,6 +167,7 @@ export function AppHeader() {
                     size="lg"
                     variant={beadsView === "list" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
+                    title="Beat list view"
                     onClick={() => setBeadsView("list")}
                   >
                     <List className="size-4" />
@@ -197,6 +199,7 @@ export function AppHeader() {
                     size="lg"
                     variant={beadsView === "finalcut" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
+                    title="Verification queue"
                     onClick={() => setBeadsView("finalcut")}
                   >
                     <Scissors className="size-4" />
@@ -206,7 +209,7 @@ export function AppHeader() {
                 {canCreate ? (
                   createButton
                 ) : (
-                  <Button size="lg" variant="outline" asChild>
+                  <Button size="lg" variant="outline" asChild title="Register a repository">
                     <Link href="/registry">Add Repo</Link>
                   </Button>
                 )}

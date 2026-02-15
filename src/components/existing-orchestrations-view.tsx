@@ -8,7 +8,7 @@ import {
   useState,
   type JSX,
 } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
@@ -122,7 +122,7 @@ function compareByTimestamp(a: Bead, b: Bead): number {
 }
 
 function parseWaveName(title: string): string {
-  const stripped = title.replace(/^wave\s+[^:]+:\s*/i, "").trim();
+  const stripped = title.replace(/^(?:wave|scene)\s+[^:]+:\s*/i, "").trim();
   return stripped || title;
 }
 
@@ -190,7 +190,7 @@ function buildRestagePlan(tree: OrchestrationTree): OrchestrationPlan {
     } from tree ${tree.label}.`,
     waves,
     unassignedBeadIds: [],
-    assumptions: [`Restaged from existing wave tree ${tree.label}.`],
+    assumptions: [`Restaged from existing scene tree ${tree.label}.`],
   };
 }
 
@@ -544,6 +544,7 @@ function HierarchyList({
 
 export function ExistingOrchestrationsView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
@@ -669,14 +670,14 @@ export function ExistingOrchestrationsView() {
           activeRepo
         );
         if (!result.ok) {
-          toast.error(`Failed to migrate wave ${item.waveId}: ${result.error}`);
+          toast.error(`Failed to migrate scene ${item.waveId}: ${result.error}`);
           continue;
         }
         migratedCount += 1;
       }
       if (cancelled || migratedCount === 0) return;
       toast.success(
-        `Migrated ${migratedCount} wave slug${migratedCount === 1 ? "" : "s"}`
+        `Migrated ${migratedCount} scene slug${migratedCount === 1 ? "" : "s"}`
       );
       queryClient.invalidateQueries({
         queryKey: ["existing-orchestrations", activeRepo],
@@ -904,17 +905,17 @@ export function ExistingOrchestrationsView() {
       if (!activeRepo || !editing) return;
       const name = editing.name.trim();
       if (!name) {
-        toast.error("Wave name is required");
+        toast.error("Scene name is required");
         return;
       }
       const slug = normalizeWaveSlugCandidate(editing.slug);
       if (!slug) {
-        toast.error("Wave slug is required");
+        toast.error("Scene slug is required");
         return;
       }
       const slugConflict = Array.from(allSlugs).includes(slug) && slug !== wave.slug;
       if (slugConflict) {
-        toast.error(`Wave slug "${slug}" is already in use`);
+        toast.error(`Scene slug "${slug}" is already in use`);
         return;
       }
 
@@ -932,7 +933,7 @@ export function ExistingOrchestrationsView() {
       setSavingWaveId(null);
 
       if (!result.ok) {
-        toast.error(result.error ?? "Failed to rename wave");
+        toast.error(result.error ?? "Failed to rename scene");
         return;
       }
 
@@ -941,7 +942,7 @@ export function ExistingOrchestrationsView() {
         queryKey: ["existing-orchestrations", activeRepo],
       });
       queryClient.invalidateQueries({ queryKey: ["beads"] });
-      toast.success("Wave renamed");
+      toast.success("Scene renamed");
     },
     [activeRepo, allSlugs, editing, queryClient]
   );
@@ -1008,17 +1009,17 @@ export function ExistingOrchestrationsView() {
       result = await restageOrchestration(
         activeRepo,
         plan,
-        `Rewrite existing orchestration tree ${activeTree.label}`
+        `Rewrite existing scene tree ${activeTree.label}`
       );
     } catch {
       setIsRestaging(false);
-      toast.error("Failed to rewrite orchestration tree");
+      toast.error("Failed to rewrite scene tree");
       return;
     }
     setIsRestaging(false);
 
     if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to rewrite orchestration tree");
+      toast.error(result.error ?? "Failed to rewrite scene tree");
       return;
     }
 
@@ -1028,7 +1029,7 @@ export function ExistingOrchestrationsView() {
       session: result.data,
       plan: stagedPlan,
       waveEdits: buildRestageWaveEdits(activeTree),
-      objective: `Rewrite existing orchestration tree ${activeTree.label}`,
+      objective: `Rewrite existing scene tree ${activeTree.label}`,
       statusText: `Restaged ${stagedPlan.waves.length} section${
         stagedPlan.waves.length === 1 ? "" : "s"
       } from ${activeTree.label}.`,
@@ -1041,14 +1042,16 @@ export function ExistingOrchestrationsView() {
       );
     }
 
-    toast.success("Restaged into Orchestrate view");
-    router.push("/beads?view=orchestration");
-  }, [activeRepo, activeTree, router]);
+    toast.success("Restaged into Scene view");
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", "orchestration");
+    router.push(`/beads?${params.toString()}`);
+  }, [activeRepo, activeTree, router, searchParams]);
 
   if (!activeRepo) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-        Select a repository to browse existing orchestration trees.
+        Select a repository to browse existing scenes.
       </div>
     );
   }
@@ -1056,7 +1059,7 @@ export function ExistingOrchestrationsView() {
   if (query.isLoading) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-        Loading existing orchestrations...
+        Loading existing scenes...
       </div>
     );
   }
@@ -1072,7 +1075,7 @@ export function ExistingOrchestrationsView() {
   if (treeCount === 0) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-        No existing orchestration waves found for{" "}
+        No scenes found for{" "}
         <span className="font-medium text-foreground">
           {registeredRepos.find((repo) => repo.path === activeRepo)?.name ?? activeRepo}
         </span>
@@ -1086,7 +1089,7 @@ export function ExistingOrchestrationsView() {
       <section className="rounded-2xl border bg-gradient-to-br from-slate-50 via-emerald-50 to-cyan-50 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-base font-semibold tracking-tight">Existing Orchestrations</h2>
+            <h2 className="text-base font-semibold tracking-tight">Existing Scenes</h2>
             <p className="text-sm text-muted-foreground">
               Tree {safeTreeIndex + 1} of {treeCount}
               <span className="mx-1">·</span>
@@ -1101,6 +1104,7 @@ export function ExistingOrchestrationsView() {
               onClick={() => void handleRewrite()}
               disabled={!activeTree || isRestaging}
               className="gap-1.5"
+              title="Rewrite scene plan"
             >
               {isRestaging ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -1136,6 +1140,7 @@ export function ExistingOrchestrationsView() {
               onClick={() => moveLaterally(-1)}
               disabled={!canMoveLaterally}
               className="gap-1.5"
+              title="Previous tree"
             >
               <ChevronLeft className="size-3.5" />
               Prev
@@ -1146,6 +1151,7 @@ export function ExistingOrchestrationsView() {
               onClick={() => moveLaterally(1)}
               disabled={!canMoveLaterally}
               className="gap-1.5"
+              title="Next tree"
             >
               Next
               <ChevronRight className="size-3.5" />
@@ -1156,6 +1162,7 @@ export function ExistingOrchestrationsView() {
               onClick={() => setZoom(-1)}
               disabled={!canZoomOut}
               className="gap-1.5"
+              title="Decrease zoom level"
             >
               <ZoomOut className="size-3.5" />
               Zoom Out
@@ -1166,6 +1173,7 @@ export function ExistingOrchestrationsView() {
               onClick={() => setZoom(1)}
               disabled={!canZoomIn}
               className="gap-1.5"
+              title="Increase zoom level"
             >
               <ZoomIn className="size-3.5" />
               Zoom In
@@ -1232,7 +1240,7 @@ export function ExistingOrchestrationsView() {
                                 : prev
                             )
                           }
-                          placeholder="Wave name"
+                          placeholder="Scene name"
                           className="h-8"
                         />
                         <Input
@@ -1244,7 +1252,7 @@ export function ExistingOrchestrationsView() {
                                 : prev
                             )
                           }
-                          placeholder="wave-slug"
+                          placeholder="scene-slug"
                           className="h-8 font-mono text-xs"
                         />
                       </div>
@@ -1254,6 +1262,7 @@ export function ExistingOrchestrationsView() {
                           onClick={() => void saveRename(wave)}
                           disabled={savingWaveId === wave.id}
                           className="gap-1.5"
+                          title="Save scene name"
                         >
                           <Save className="size-3.5" />
                           Save
@@ -1263,6 +1272,7 @@ export function ExistingOrchestrationsView() {
                           variant="outline"
                           onClick={() => setEditing(null)}
                           className="gap-1.5"
+                          title="Cancel rename"
                         >
                           <X className="size-3.5" />
                           Cancel
@@ -1320,6 +1330,7 @@ export function ExistingOrchestrationsView() {
                       className="gap-1.5"
                       onClick={() => void handleTriggerWave(wave)}
                       disabled={triggeringWaveId === wave.id}
+                      title={`Trigger section ${wave.slug}`}
                     >
                       {triggeringWaveId === wave.id ? (
                         <Loader2 className="size-3.5 animate-spin" />
@@ -1332,6 +1343,7 @@ export function ExistingOrchestrationsView() {
                       size="sm"
                       variant="outline"
                       className="gap-1.5"
+                      title="Rename this scene"
                       onClick={() =>
                         setEditing({
                           waveId: wave.id,
@@ -1375,7 +1387,7 @@ export function ExistingOrchestrationsView() {
                   />
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    No child tasks linked to this wave.
+                    No child tasks linked to this scene.
                   </p>
                 )}
               </div>

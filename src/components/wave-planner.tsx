@@ -116,7 +116,7 @@ function BeadCard({
 
       <div className="mt-0.5 flex items-center justify-between">
         <Badge variant="secondary" className="text-[10px]">
-          wave {bead.waveLevel ?? "-"}
+          scene {bead.waveLevel ?? "-"}
         </Badge>
 
         {onShip && bead.type !== "gate" && (
@@ -212,7 +212,7 @@ export function WavePlanner({
         <DialogHeader className="border-b px-6 py-4">
           <DialogTitle className="flex items-center gap-2">
             <Layers className="size-5 text-blue-600" />
-            Orchestration
+            Pipeline
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
             Pipeline view for <span className="font-semibold text-foreground">{repoLabel}</span>
@@ -222,19 +222,19 @@ export function WavePlanner({
         <div className="space-y-5 px-6 py-5">
           {!canPlan && (
             <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-              Select a single repository first. Orchestration needs a concrete dependency graph.
+              Select a single repository first. Pipeline needs a concrete dependency graph.
             </div>
           )}
 
           {isLoading && canPlan && (
             <div className="flex items-center justify-center py-10 text-muted-foreground">
-              Computing execution waves...
+              Computing execution scenes...
             </div>
           )}
 
           {error && canPlan && (
             <div className="flex items-center justify-center py-10 text-red-600">
-              Failed to compute wave plan
+              Failed to compute scene plan
             </div>
           )}
 
@@ -283,7 +283,7 @@ export function WavePlanner({
                           {plan.recommendation.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Wave {plan.recommendation.waveLevel} · {plan.recommendation.reason}
+                          Scene {plan.recommendation.waveLevel} · {plan.recommendation.reason}
                         </p>
                       </>
                     ) : (
@@ -297,6 +297,7 @@ export function WavePlanner({
                     className="gap-1"
                     disabled={!recommendationBead || !canShipBead(recommendationBead, shippingByBeadId)}
                     onClick={() => recommendationBead && shipBead(recommendationBead)}
+                    title="Execute recommended next beat"
                   >
                     <Workflow className="size-3.5" />
                     Take! Next
@@ -315,7 +316,7 @@ export function WavePlanner({
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="font-mono">
-                            Wave {wave.level}
+                            Scene {wave.level}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             {wave.beads.length} beat{wave.beads.length === 1 ? "" : "s"}
@@ -334,9 +335,10 @@ export function WavePlanner({
                             className="h-7 gap-1 text-xs"
                             disabled={!canShipBead(waveNext, shippingByBeadId)}
                             onClick={() => shipBead(waveNext)}
+                            title="Execute next beat in this scene"
                           >
                             <Clapperboard className="size-3.5" />
-                            Take! Next In Wave
+                            Take! Next In Scene
                           </Button>
                         )}
                       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,6 +40,7 @@ import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
+import { useUpdateUrl } from "@/hooks/use-update-url";
 import { isInternalLabel } from "@/lib/wave-slugs";
 
 function SummaryColumn({
@@ -112,17 +113,7 @@ function InlineSummary({ bead }: { bead: Bead }) {
   );
 }
 
-const PAGE_SIZE_KEY = "foolery-page-size";
-const DEFAULT_PAGE_SIZE = 50;
 const HOTKEY_HELP_KEY = "foolery-hotkey-help";
-
-function getStoredPageSize(): number {
-  if (typeof window === "undefined") return DEFAULT_PAGE_SIZE;
-  const stored = localStorage.getItem(PAGE_SIZE_KEY);
-  if (!stored) return DEFAULT_PAGE_SIZE;
-  const parsed = Number(stored);
-  return [25, 50, 100].includes(parsed) ? parsed : DEFAULT_PAGE_SIZE;
-}
 
 function getStoredHotkeyHelp(): boolean {
   if (typeof window === "undefined") return true;
@@ -151,6 +142,7 @@ export function BeadTable({
   onAbortShipping?: (beadId: string) => void;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -161,7 +153,8 @@ export function BeadTable({
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
-  const { activeRepo, registeredRepos, setActiveRepo, filters } = useAppStore();
+  const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
+  const updateUrl = useUpdateUrl();
   const filtersKey = JSON.stringify(filters);
 
   const { mutate: handleUpdateBead } = useMutation({
@@ -303,7 +296,7 @@ export function BeadTable({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: getStoredPageSize() } },
+    initialState: { pagination: { pageSize } },
   });
 
   const selectedIds = table.getFilteredSelectedRowModel().rows.map((r) => r.original.id);
@@ -438,7 +431,7 @@ export function BeadTable({
         const cycle = registeredRepos.map((r) => r.path);
         const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
         const prevIdx = currentIdx <= 0 ? cycle.length - 1 : currentIdx - 1;
-        setActiveRepo(cycle[prevIdx]);
+        updateUrl({ repo: cycle[prevIdx] });
       } else if (e.key === "C" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         // Shift+C: Close focused bead
         if (currentIndex < 0) return;
@@ -457,12 +450,12 @@ export function BeadTable({
         const cycle = registeredRepos.map((r) => r.path);
         const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
         const nextIdx = currentIdx < cycle.length - 1 ? currentIdx + 1 : 0;
-        setActiveRepo(cycle[nextIdx]);
+        updateUrl({ repo: cycle[nextIdx] });
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, setActiveRepo]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl]);
 
   return (
     <div ref={tableContainerRef} tabIndex={-1} className="space-y-1 outline-none">
@@ -535,7 +528,13 @@ export function BeadTable({
                       variant="ghost"
                       size="sm"
                       className="gap-1"
-                      onClick={() => router.push("/beads")}
+                      title="Clear search query"
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.delete("q");
+                        const qs = params.toString();
+                        router.push(`/beads${qs ? `?${qs}` : ""}`);
+                      }}
                     >
                       <XCircle className="size-3.5" />
                       Clear search
@@ -562,7 +561,7 @@ export function BeadTable({
               onValueChange={(v) => {
                 const size = Number(v);
                 table.setPageSize(size);
-                localStorage.setItem(PAGE_SIZE_KEY, String(size));
+                updateUrl({ pageSize: size });
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
@@ -579,6 +578,7 @@ export function BeadTable({
             <Button
               variant="outline"
               size="sm"
+              title="Previous page"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
@@ -587,6 +587,7 @@ export function BeadTable({
             <Button
               variant="outline"
               size="sm"
+              title="Next page"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >

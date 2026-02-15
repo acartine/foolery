@@ -26,19 +26,23 @@ function SearchBarInner({
     setQuery(urlQuery);
   }, [urlQuery]);
 
+  const buildUrl = (q: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (q) params.set("q", q);
+    else params.delete("q");
+    const qs = params.toString();
+    return `/beads${qs ? `?${qs}` : ""}`;
+  };
+
   const clearSearch = () => {
     setQuery("");
-    router.push("/beads");
+    router.push(buildUrl(null));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = query.trim();
-    if (trimmed) {
-      router.push(`/beads?q=${encodeURIComponent(trimmed)}`);
-    } else {
-      router.push("/beads");
-    }
+    router.push(buildUrl(trimmed || null));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -67,6 +71,7 @@ function SearchBarInner({
           onClick={clearSearch}
           className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Clear search"
+          title="Clear search"
         >
           <X className="h-3.5 w-3.5" />
         </button>
