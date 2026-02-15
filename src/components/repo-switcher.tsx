@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Database } from "lucide-react";
 import { fetchRegistry } from "@/lib/registry-api";
 import { useAppStore } from "@/stores/app-store";
+import { useUpdateUrl } from "@/hooks/use-update-url";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +17,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function RepoSwitcher() {
-  const { activeRepo, setActiveRepo, registeredRepos, setRegisteredRepos } =
+  const { activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
+  const updateUrl = useUpdateUrl();
 
   const { data } = useQuery({
     queryKey: ["registry"],
@@ -29,10 +31,10 @@ export function RepoSwitcher() {
       setRegisteredRepos(data.data);
       // Default to first repo if no repo was ever selected
       if (!activeRepo && data.data.length > 0) {
-        setActiveRepo(data.data[0].path);
+        updateUrl({ repo: data.data[0].path });
       }
     }
-  }, [data, setRegisteredRepos, activeRepo, setActiveRepo]);
+  }, [data, setRegisteredRepos, activeRepo, updateUrl]);
 
   const currentName = activeRepo
     ? registeredRepos.find((r) => r.path === activeRepo)?.name ?? "Unknown"
@@ -50,7 +52,7 @@ export function RepoSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuItem onClick={() => setActiveRepo(null)}>
+        <DropdownMenuItem onClick={() => updateUrl({ repo: null })}>
           <span className={!activeRepo ? "font-semibold" : ""}>
             All Repositories
           </span>
@@ -59,7 +61,7 @@ export function RepoSwitcher() {
         {registeredRepos.map((repo) => (
           <DropdownMenuItem
             key={repo.path}
-            onClick={() => setActiveRepo(repo.path)}
+            onClick={() => updateUrl({ repo: repo.path })}
           >
             <div className="min-w-0">
               <div

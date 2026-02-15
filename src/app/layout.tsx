@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Providers } from "@/components/providers";
 import { AppHeader } from "@/components/app-header";
 import { TerminalPanel } from "@/components/terminal-panel";
+import { UrlStateSync } from "@/components/url-state-sync";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={null}>
             <AppHeader />
+            <UrlStateSync />
           </Suspense>
           {children}
           <TerminalPanel />
