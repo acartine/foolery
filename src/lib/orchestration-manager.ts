@@ -186,12 +186,12 @@ function normalizeWave(
   const name =
     typeof obj.name === "string" && obj.name.trim()
       ? obj.name.trim()
-      : `Wave ${waveIndex}`;
+      : `Scene ${waveIndex}`;
 
   const objective =
     typeof obj.objective === "string" && obj.objective.trim()
       ? obj.objective.trim()
-      : "Execute assigned beats for this wave.";
+      : "Execute assigned beats for this scene.";
 
   const notes =
     typeof obj.notes === "string" && obj.notes.trim() ? obj.notes.trim() : undefined;
@@ -286,7 +286,7 @@ function normalizePlan(
   const summary =
     typeof obj.summary === "string" && obj.summary.trim()
       ? obj.summary.trim()
-      : `Generated ${waves.length} wave${waves.length === 1 ? "" : "s"}.`;
+      : `Generated ${waves.length} scene${waves.length === 1 ? "" : "s"}.`;
 
   const assumptions = Array.isArray(obj.assumptions)
     ? obj.assumptions.filter((value): value is string => typeof value === "string")
@@ -315,7 +315,7 @@ function buildDraftPlan(entry: OrchestrationSessionEntry): OrchestrationPlan {
   );
 
   return {
-    summary: `Drafting ${waves.length} wave${waves.length === 1 ? "" : "s"}...`,
+    summary: `Drafting ${waves.length} scene${waves.length === 1 ? "" : "s"}...`,
     waves,
     unassignedBeadIds: unassigned,
     assumptions: [],
@@ -778,9 +778,9 @@ export async function createRestagedOrchestrationSession(
       const waveIndex = Number.isFinite(wave.waveIndex)
         ? Math.max(1, Math.trunc(wave.waveIndex))
         : fallbackWaveIndex;
-      const name = wave.name?.trim() || `Wave ${waveIndex}`;
+      const name = wave.name?.trim() || `Scene ${waveIndex}`;
       const waveObjective =
-        wave.objective?.trim() || "Execute assigned beats for this wave.";
+        wave.objective?.trim() || "Execute assigned beats for this scene.";
       const notes = wave.notes?.trim() || undefined;
       const agents = wave.agents
         .filter((agent) => Boolean(agent.role?.trim()))
@@ -822,7 +822,7 @@ export async function createRestagedOrchestrationSession(
   const normalizedPlan: OrchestrationPlan = {
     summary:
       plan.summary?.trim() ||
-      `Restaged ${normalizedWaves.length} wave${
+      `Restaged ${normalizedWaves.length} scene${
         normalizedWaves.length === 1 ? "" : "s"
       }.`,
     waves: normalizedWaves,
@@ -860,7 +860,7 @@ export async function createRestagedOrchestrationSession(
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
-  finalizeSession(entry, "completed", "Restaged existing groups into Orchestrate view");
+  finalizeSession(entry, "completed", "Restaged existing groups into Scene view");
   return session;
 }
 
@@ -944,7 +944,7 @@ export async function applyOrchestrationSession(
   let previousWaveId: string | null = null;
   const existing = await listBeads(undefined, repoPath);
   if (!existing.ok || !existing.data) {
-    throw new Error(existing.error ?? "Failed to load existing orchestration waves");
+    throw new Error(existing.error ?? "Failed to load existing scenes");
   }
   const usedWaveSlugs = new Set<string>();
   for (const bead of existing.data) {
@@ -1011,7 +1011,7 @@ export async function applyOrchestrationSession(
     );
 
     if (!createResult.ok || !createResult.data?.id) {
-      throw new Error(createResult.error ?? `Failed to create wave ${wave.waveIndex}`);
+      throw new Error(createResult.error ?? `Failed to create scene ${wave.waveIndex}`);
     }
 
     const waveId = createResult.data.id;
@@ -1057,7 +1057,7 @@ export async function applyOrchestrationSession(
         !/already exists|duplicate|exists/i.test(relationDep.error ?? "")
       ) {
         throw new Error(
-          relationDep.error ?? `Failed to link wave ${waveId} to ${child.id}`
+          relationDep.error ?? `Failed to link scene ${waveId} to ${child.id}`
         );
       }
     }
@@ -1065,7 +1065,7 @@ export async function applyOrchestrationSession(
     if (previousWaveId) {
       const depResult = await addDep(previousWaveId, waveId, repoPath);
       if (!depResult.ok) {
-        throw new Error(depResult.error ?? `Failed to link waves ${previousWaveId} -> ${waveId}`);
+        throw new Error(depResult.error ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
       }
     }
     previousWaveId = waveId;
@@ -1084,7 +1084,7 @@ export async function applyOrchestrationSession(
     const refreshed = await listBeads(undefined, repoPath);
     if (!refreshed.ok || !refreshed.data) {
       throw new Error(
-        refreshed.error ?? "Failed to refresh beads before closing rewritten source waves"
+        refreshed.error ?? "Failed to refresh beads before closing rewritten source scenes"
       );
     }
 
@@ -1106,7 +1106,7 @@ export async function applyOrchestrationSession(
         repoPath
       );
       if (!closeResult.ok) {
-        throw new Error(closeResult.error ?? `Failed to close emptied source wave ${parentId}`);
+        throw new Error(closeResult.error ?? `Failed to close emptied source scene ${parentId}`);
       }
     }
   }

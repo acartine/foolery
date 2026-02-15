@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
@@ -313,6 +313,7 @@ function normalizeStoredWaveEdits(
 
 export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
@@ -322,7 +323,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const [plan, setPlan] = useState<OrchestrationPlan | null>(null);
   const [logLines, setLogLines] = useState<LogLine[]>([]);
   const [statusText, setStatusText] = useState(
-    "Ready to ask Claude for an orchestration plan"
+    "Ready to ask Claude for a scene plan"
   );
   const [waveEdits, setWaveEdits] = useState<
     Record<number, { name: string; slug: string }>
@@ -369,12 +370,12 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           pendingLogRef.current = "";
           if (draft.objective) setObjective(draft.objective);
           setStatusText(
-            draft.statusText ?? "Restaged existing groups into Orchestrate view"
+            draft.statusText ?? "Restaged existing groups into Scene view"
           );
           toast.success(
             `Restaged ${draft.plan.waves.length} section${
               draft.plan.waves.length === 1 ? "" : "s"
-            } into Orchestrate`
+            } into Scene view`
           );
         }, 0);
         return () => window.clearTimeout(hydrationTimer);
@@ -493,7 +494,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         }
       },
       () => {
-        setStatusText("Connection lost while streaming orchestration output");
+        setStatusText("Connection lost while streaming session output");
       }
     );
 
@@ -541,31 +542,31 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setPlan(null);
     pendingLogRef.current = "";
     setLogLines([]);
-    setStatusText("Starting Claude orchestration...");
+    setStatusText("Starting Claude session...");
 
     const result = await startOrchestration(activeRepo, objective);
     setIsStarting(false);
 
     if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to start orchestration");
-      setStatusText(result.error ?? "Failed to start orchestration");
+      toast.error(result.error ?? "Failed to start session");
+      setStatusText(result.error ?? "Failed to start session");
       return;
     }
 
     setSession(result.data);
-    setStatusText("Claude is organizing waves...");
+    setStatusText("Claude is organizing scenes...");
   };
 
   const handleAbort = async () => {
     if (!session) return;
     const result = await abortOrchestration(session.id);
     if (!result.ok) {
-      toast.error(result.error ?? "Failed to abort orchestration");
+      toast.error(result.error ?? "Failed to abort session");
       return;
     }
     setSession((prev) => (prev ? { ...prev, status: "aborted" } : prev));
-    setStatusText("Orchestration aborted");
-    toast.success("Orchestration terminated");
+    setStatusText("Session aborted");
+    toast.success("Session terminated");
   };
 
   const handleApply = async () => {
@@ -589,7 +590,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setIsApplying(false);
 
     if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to apply orchestration");
+      toast.error(result.error ?? "Failed to apply session");
       return;
     }
 
@@ -598,7 +599,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     onApplied?.();
 
     toast.success(
-      `Created ${result.data.applied.length} wave beat${
+      `Created ${result.data.applied.length} scene beat${
         result.data.applied.length === 1 ? "" : "s"
       }`
     );
@@ -613,7 +614,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     );
     if (existingRunning) {
       setActiveSession(existingRunning.sessionId);
-      router.push("/beads");
+      router.push(`/beads${searchParams.has("repo") ? `?repo=${encodeURIComponent(searchParams.get("repo")!)}` : ""}`);
       return;
     }
 
@@ -635,7 +636,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     });
 
     toast.success(`Triggered ${nextWaveToTrigger.waveTitle}`);
-    router.push("/beads");
+    router.push(`/beads${searchParams.has("repo") ? `?repo=${encodeURIComponent(searchParams.get("repo")!)}` : ""}`);
   };
 
   return (
@@ -643,9 +644,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       <section className="rounded-2xl border bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-base font-semibold tracking-tight">Orchestration View</h2>
+            <h2 className="text-base font-semibold tracking-tight">Direct</h2>
             <p className="text-sm text-muted-foreground">
-              Claude organizes dependency-aware waves, agent counts, and specialties for <span className="font-medium text-foreground">{repoLabel}</span>.
+              Claude organizes dependency-aware scenes, agent counts, and specialties for <span className="font-medium text-foreground">{repoLabel}</span>.
             </p>
           </div>
           <Badge variant="outline" className={statusTone(session?.status ?? "idle")}>
@@ -657,7 +658,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           <Textarea
             value={objective}
             onChange={(event) => setObjective(event.target.value)}
-            placeholder="Optional: steer orchestration (e.g. focus on backend first, or maximize QA parallelism)."
+            placeholder="Optional: steer session (e.g. focus on backend first, or maximize QA parallelism)."
             className="min-h-20 bg-white"
             disabled={isRunning}
           />
@@ -672,7 +673,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               ) : (
                 <Play className="size-4" />
               )}
-              {session ? "Run Again" : "Plan Waves"}
+              {session ? "Run Again" : "Plan Scenes"}
             </Button>
             <Button
               variant="outline"
@@ -685,7 +686,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               ) : (
                 <Workflow className="size-4" />
               )}
-              Apply Wave Beats
+              Apply Scene Beats
             </Button>
             {isRunning && (
               <Button
@@ -729,10 +730,10 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         <section className="rounded-2xl border bg-card p-3">
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Wave Diagram</h3>
+            <h3 className="text-sm font-semibold">Scene Diagram</h3>
             {plan ? (
               <Badge variant="secondary" className="text-[11px]">
-                {plan.waves.length} wave{plan.waves.length === 1 ? "" : "s"}
+                {plan.waves.length} scene{plan.waves.length === 1 ? "" : "s"}
               </Badge>
             ) : (
               <Badge variant="outline" className="text-[11px]">
@@ -753,7 +754,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                   )}
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <Badge variant="outline" className="font-mono text-[11px]">
-                      Wave {wave.waveIndex}
+                      Scene {wave.waveIndex}
                     </Badge>
                     <span className="text-xs text-muted-foreground">{wave.beads.length} beats</span>
                   </div>
@@ -844,7 +845,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             </div>
           ) : (
             <div className="flex h-[320px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
-              Wave cards appear here as Claude drafts each wave.
+              Scene cards appear here as Claude drafts each scene.
             </div>
           )}
         </section>
@@ -853,7 +854,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           <section className="rounded-2xl border bg-[#0f172a] text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-700 px-3 py-2 text-xs">
               <div className="font-mono uppercase tracking-wide text-slate-300">
-                Orchestration Console
+                Scene Console
               </div>
               <div className="text-slate-400">live</div>
             </div>
@@ -983,7 +984,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     size="sm"
                     variant="outline"
                     className="gap-1.5"
-                    onClick={() => router.push("/beads")}
+                    onClick={() => router.push(`/beads${searchParams.has("repo") ? `?repo=${encodeURIComponent(searchParams.get("repo")!)}` : ""}`)}
                   >
                     <ArrowRight className="size-3.5" />
                     Back to List
@@ -992,7 +993,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               </>
             ) : (
               <div className="flex h-[190px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
-                Applied section appears here after you create wave beats.
+                Applied section appears here after you create scene beats.
               </div>
             )}
           </section>

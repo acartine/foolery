@@ -60,9 +60,9 @@ function parseWave(
   const waveIndex = Number.isFinite(waveIndexValue)
     ? Math.max(1, Math.trunc(waveIndexValue))
     : fallbackWaveIndex;
-  const name = parseText(obj.name) ?? `Wave ${waveIndex}`;
+  const name = parseText(obj.name) ?? `Scene ${waveIndex}`;
   const objective =
-    parseText(obj.objective) ?? "Execute assigned beats for this wave.";
+    parseText(obj.objective) ?? "Execute assigned beats for this scene.";
   const notes = parseText(obj.notes);
   const agents = parseAgents(obj.agents);
   const beadObjects = Array.isArray(obj.beads) ? obj.beads : [];
@@ -106,7 +106,7 @@ function parsePlan(value: unknown): OrchestrationPlan | null {
   return {
     summary:
       parseText(obj.summary) ??
-      `Restaged ${waves.length} wave${waves.length === 1 ? "" : "s"}.`,
+      `Restaged ${waves.length} scene${waves.length === 1 ? "" : "s"}.`,
     waves,
     assumptions: parseStringArray(obj.assumptions),
     unassignedBeadIds: parseStringArray(
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
 
   if (!plan) {
     return NextResponse.json(
-      { error: "plan with at least one wave is required" },
+      { error: "plan with at least one scene is required" },
       { status: 400 }
     );
   }

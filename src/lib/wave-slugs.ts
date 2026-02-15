@@ -189,15 +189,15 @@ export function allocateWaveSlug(
 
 export function buildWaveTitle(slug: string, name: string): string {
   const cleanName = name.trim();
-  if (!cleanName) return `Wave ${slug}`;
-  return `Wave ${slug}: ${cleanName}`;
+  if (!cleanName) return `Scene ${slug}`;
+  return `Scene ${slug}: ${cleanName}`;
 }
 
 export function rewriteWaveTitleSlug(title: string, slug: string): string {
   const trimmed = title.trim();
-  if (!trimmed) return `Wave ${slug}`;
-  if (/^wave\s+[^:]+:\s*/i.test(trimmed)) {
-    return trimmed.replace(/^wave\s+[^:]+:\s*/i, `Wave ${slug}: `);
+  if (!trimmed) return `Scene ${slug}`;
+  if (/^(?:wave|scene)\s+[^:]+:\s*/i.test(trimmed)) {
+    return trimmed.replace(/^(?:wave|scene)\s+[^:]+:\s*/i, `Scene ${slug}: `);
   }
-  return `Wave ${slug}: ${trimmed}`;
+  return `Scene ${slug}: ${trimmed}`;
 }

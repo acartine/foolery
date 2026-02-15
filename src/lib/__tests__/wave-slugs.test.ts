@@ -45,10 +45,10 @@ describe("wave-slugs", () => {
       "orchestration:wave:streep-montage"
     );
     expect(buildWaveTitle("streep-montage", "Backend unblockers")).toBe(
-      "Wave streep-montage: Backend unblockers"
+      "Scene streep-montage: Backend unblockers"
     );
     expect(rewriteWaveTitleSlug("Wave 1: Backend unblockers", "streep-montage")).toBe(
-      "Wave streep-montage: Backend unblockers"
+      "Scene streep-montage: Backend unblockers"
     );
   });
 });

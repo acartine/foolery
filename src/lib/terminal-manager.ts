@@ -97,13 +97,13 @@ function buildSingleBeadCompletionFollowUp(beadId: string): string {
 function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string {
   const targets = beatIds.length > 0 ? beatIds : [waveId];
   return [
-    "Wave completion follow-up:",
-    `Handle this in one pass for wave ${waveId}.`,
+    "Scene completion follow-up:",
+    `Handle this in one pass for scene ${waveId}.`,
     "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     "For each beat after merge confirmation, run exactly one command to set verification state:",
     ...targets.map((id) => buildVerificationStateCommand(id)),
-    "Beats in this wave:",
+    "Beats in this scene:",
     ...targets.map((id) => `- ${id}`),
     "Then summarize per beat: merged yes/no and verification-state command result.",
   ].join("\n");
@@ -343,7 +343,7 @@ export async function createSession(
         .sort((a, b) => a.localeCompare(b));
     } else {
       console.warn(
-        `[terminal-manager] Failed to load wave children for ${bead.id}: ${childResult.error ?? "unknown error"}`
+        `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error ?? "unknown error"}`
       );
     }
   }
