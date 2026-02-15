@@ -235,6 +235,11 @@ export function TerminalPanel() {
                   title={`${terminal.beadId} - ${terminal.beadTitle}`}
                 >
                   <span className="font-mono">{shortId(terminal.beadId)}</span>
+                  {terminal.beadTitle && (
+                    <span className="truncate text-white/50">
+                      {terminal.beadTitle.slice(0, 40)}
+                    </span>
+                  )}
                   <span className={tabDotClasses(terminal.status, isClosing)} />
                   {!isRunning && !isClosing && (
                     <span
