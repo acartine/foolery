@@ -351,21 +351,46 @@ export async function createSession(
   const id = generateId();
   const prompt =
     customPrompt ??
-    [
-      `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
-      ``,
-      `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, exit plan mode, then stop and wait for an execution follow-up prompt before implementing.`,
-      ``,
-      `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
-      ``,
-      `ID: ${bead.id}`,
-      `Title: ${bead.title}`,
-      `Type: ${bead.type}`,
-      `Priority: P${bead.priority}`,
-      bead.description ? `\nDescription:\n${bead.description}` : "",
-      bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
-      bead.notes ? `\nNotes:\n${bead.notes}` : "",
-    ]
+    (isWave
+      ? [
+          `You are executing a parent scene bead. You MUST edit source files directly — do not just describe what to do.`,
+          ``,
+          `IMPORTANT INSTRUCTIONS:`,
+          `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
+          `2. Use this parent bead's description/acceptance/notes as the source of truth for strategy and agent roles.`,
+          `3. Use the Task tool to spawn subagents for independent child beads whenever parallel execution is possible.`,
+          `4. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
+          `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
+          ``,
+          `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
+          ``,
+          `Parent ID: ${bead.id}`,
+          `Parent Title: ${bead.title}`,
+          `Type: ${bead.type}`,
+          `Priority: P${bead.priority}`,
+          waveBeatIds.length > 0
+            ? `Open child bead IDs:\n${waveBeatIds.map((id) => `- ${id}`).join("\n")}`
+            : "Open child bead IDs: (none loaded)",
+          bead.description ? `\nDescription:\n${bead.description}` : "",
+          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
+          bead.notes ? `\nNotes:\n${bead.notes}` : "",
+        ]
+      : [
+          `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
+          ``,
+          `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, exit plan mode, then stop and wait for an execution follow-up prompt before implementing.`,
+          ``,
+          `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
+          ``,
+          `ID: ${bead.id}`,
+          `Title: ${bead.title}`,
+          `Type: ${bead.type}`,
+          `Priority: P${bead.priority}`,
+          bead.description ? `\nDescription:\n${bead.description}` : "",
+          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
+          bead.notes ? `\nNotes:\n${bead.notes}` : "",
+        ]
+    )
       .filter(Boolean)
       .join("\n");
 
@@ -418,7 +443,7 @@ export async function createSession(
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt =
-    customPrompt
+    customPrompt || isWave
       ? null
       : [
           "Execution follow-up:",
@@ -431,7 +456,7 @@ export async function createSession(
       : isWave
         ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
         : buildSingleBeadCompletionFollowUp(bead.id);
-  let executionPromptSent = false;
+  let executionPromptSent = autoExecutionPrompt === null;
   let shipCompletionPromptSent = false;
 
   const closeInput = () => {
@@ -727,12 +752,11 @@ export async function createSceneSession(
     `You are in SCENE MODE. You have ${beads.length} beads to implement.`,
     ``,
     `IMPORTANT INSTRUCTIONS:`,
-    `1. Plan all beads first, then implement them with MAXIMUM PARALLELISM.`,
-    `2. Use the Task tool to spawn subagents for independent beads.`,
-    `3. Each bead should get its own worktree branch for isolation.`,
-    `4. After all beads are complete, land changes on main.`,
-    ``,
-    `WORKFLOW: First, enter plan mode. Read each bead, explore the codebase, identify dependencies between beads, and design an execution plan that maximizes parallelism. Write the plan, exit plan mode, then stop and wait for an execution follow-up prompt.`,
+    `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
+    `2. Use the bead descriptions/acceptance/notes below as your source of truth for sequencing and agent assignment.`,
+    `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
+    `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
+    `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
     ``,
     `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
     ``,
@@ -787,13 +811,9 @@ export async function createSceneSession(
   let stdinClosed = false;
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
-  const autoExecutionPrompt = [
-    "Execution follow-up:",
-    "Exit planning mode if needed, then execute the plan now.",
-    "Apply concrete file edits, run relevant verification commands, and report the final outcome.",
-  ].join("\n");
+  const autoExecutionPrompt: string | null = null;
   const autoShipCompletionPrompt = buildSceneCompletionFollowUp(beadIds);
-  let executionPromptSent = false;
+  let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
   const closeInput = () => {
@@ -834,7 +854,7 @@ export async function createSceneSession(
   };
 
   const maybeSendExecutionPrompt = (): boolean => {
-    if (executionPromptSent) return false;
+    if (!autoExecutionPrompt || executionPromptSent) return false;
     const sent = sendUserTurn(autoExecutionPrompt);
     if (sent) {
       executionPromptSent = true;
