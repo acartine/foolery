@@ -16,6 +16,8 @@ const STATUS_COLORS: Record<string, string> = {
   idle: "bg-gray-500",
 };
 
+const AUTO_CLOSE_MS = 5_000;
+
 function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
@@ -26,11 +28,14 @@ export function TerminalPanel() {
     panelHeight,
     terminals,
     activeSessionId,
+    pendingClose,
     closePanel,
     setPanelHeight,
     setActiveSession,
     removeTerminal,
     updateStatus,
+    markPendingClose,
+    cancelPendingClose,
   } = useTerminalStore();
 
   const activeTerminal = useMemo(
@@ -45,6 +50,7 @@ export function TerminalPanel() {
   const termRef = useRef<XtermTerminal | null>(null);
   const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const autoCloseTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const isMaximized = panelHeight > 70;
 
   const handleAbort = useCallback(async () => {
@@ -56,6 +62,64 @@ export function TerminalPanel() {
   const toggleMaximize = useCallback(() => {
     setPanelHeight(isMaximized ? 35 : 80);
   }, [isMaximized, setPanelHeight]);
+
+  // Auto-close tabs after process completion
+  useEffect(() => {
+    for (const terminal of terminals) {
+      const isDone = terminal.status === "completed" || terminal.status === "error";
+      const alreadyPending = pendingClose.has(terminal.sessionId);
+      const hasTimer = autoCloseTimers.current.has(terminal.sessionId);
+
+      if (isDone && !alreadyPending && !hasTimer) {
+        markPendingClose(terminal.sessionId);
+        const timer = setTimeout(() => {
+          autoCloseTimers.current.delete(terminal.sessionId);
+          const current = useTerminalStore.getState();
+          if (current.pendingClose.has(terminal.sessionId)) {
+            removeTerminal(terminal.sessionId);
+          }
+        }, AUTO_CLOSE_MS);
+        autoCloseTimers.current.set(terminal.sessionId, timer);
+      }
+
+      // If user cancelled pending close, clear the timer
+      if (!isDone || (!alreadyPending && hasTimer)) {
+        const existingTimer = autoCloseTimers.current.get(terminal.sessionId);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+          autoCloseTimers.current.delete(terminal.sessionId);
+        }
+      }
+    }
+
+    // Clean up timers for removed terminals
+    for (const [sessionId, timer] of autoCloseTimers.current) {
+      if (!terminals.some((t) => t.sessionId === sessionId)) {
+        clearTimeout(timer);
+        autoCloseTimers.current.delete(sessionId);
+      }
+    }
+  }, [terminals, pendingClose, markPendingClose, removeTerminal]);
+
+  // Cleanup all timers on unmount
+  useEffect(() => {
+    return () => {
+      for (const timer of autoCloseTimers.current.values()) {
+        clearTimeout(timer);
+      }
+      autoCloseTimers.current.clear();
+    };
+  }, []);
+
+  const handleTabClick = useCallback((sessionId: string) => {
+    cancelPendingClose(sessionId);
+    const timer = autoCloseTimers.current.get(sessionId);
+    if (timer) {
+      clearTimeout(timer);
+      autoCloseTimers.current.delete(sessionId);
+    }
+    setActiveSession(sessionId);
+  }, [setActiveSession, cancelPendingClose]);
 
   // Initialize xterm + connect to SSE for active session
   useEffect(() => {
@@ -184,17 +248,20 @@ export function TerminalPanel() {
             {terminals.map((terminal) => {
               const isActive = terminal.sessionId === activeTerminal?.sessionId;
               const isRunning = terminal.status === "running";
+              const isPending = pendingClose.has(terminal.sessionId);
               return (
                 <button
                   key={terminal.sessionId}
                   type="button"
                   className={`group inline-flex items-center gap-1.5 rounded px-2 py-1 text-[11px] ${
-                    isActive
-                      ? "bg-white/15 text-white"
-                      : "bg-white/5 text-white/70 hover:bg-white/10"
+                    isPending
+                      ? "animate-pulse bg-amber-500/30 text-amber-200"
+                      : isActive
+                        ? "bg-white/15 text-white"
+                        : "bg-white/5 text-white/70 hover:bg-white/10"
                   }`}
-                  onClick={() => setActiveSession(terminal.sessionId)}
-                  title={`${terminal.beadId} - ${terminal.beadTitle}`}
+                  onClick={() => handleTabClick(terminal.sessionId)}
+                  title={isPending ? "Click to keep open" : `${terminal.beadId} - ${terminal.beadTitle}`}
                 >
                   <span className="font-mono">{shortId(terminal.beadId)}</span>
                   {terminal.beadTitle && (

@@ -14,6 +14,7 @@ interface TerminalState {
   panelHeight: number; // vh percentage
   terminals: ActiveTerminal[];
   activeSessionId: string | null;
+  pendingClose: Set<string>;
   openPanel: () => void;
   closePanel: () => void;
   clearTerminals: () => void;
@@ -23,6 +24,8 @@ interface TerminalState {
   removeTerminal: (sessionId: string) => void;
   setActiveSession: (sessionId: string) => void;
   updateStatus: (sessionId: string, status: TerminalSessionStatus) => void;
+  markPendingClose: (sessionId: string) => void;
+  cancelPendingClose: (sessionId: string) => void;
 }
 
 export const useTerminalStore = create<TerminalState>((set) => ({
@@ -30,9 +33,10 @@ export const useTerminalStore = create<TerminalState>((set) => ({
   panelHeight: 35,
   terminals: [],
   activeSessionId: null,
+  pendingClose: new Set<string>(),
   openPanel: () => set({ panelOpen: true }),
   closePanel: () => set({ panelOpen: false }),
-  clearTerminals: () => set({ terminals: [], activeSessionId: null }),
+  clearTerminals: () => set({ terminals: [], activeSessionId: null, pendingClose: new Set() }),
   togglePanel: () => set((s) => ({ panelOpen: !s.panelOpen })),
   setPanelHeight: (height) => set({ panelHeight: Math.max(15, Math.min(80, height)) }),
   upsertTerminal: (terminal) =>
@@ -61,20 +65,26 @@ export const useTerminalStore = create<TerminalState>((set) => ({
       const nextActiveSessionId = isRemovingActive
         ? (terminals.at(-1)?.sessionId ?? null)
         : state.activeSessionId;
+      const pendingClose = new Set(state.pendingClose);
+      pendingClose.delete(sessionId);
 
       return {
         terminals,
         activeSessionId: nextActiveSessionId,
         panelOpen: terminals.length > 0 && state.panelOpen,
+        pendingClose,
       };
     }),
   setActiveSession: (sessionId) =>
     set((state) => {
       const exists = state.terminals.some((item) => item.sessionId === sessionId);
       if (!exists) return {};
+      const pendingClose = new Set(state.pendingClose);
+      pendingClose.delete(sessionId);
       return {
         activeSessionId: sessionId,
         panelOpen: true,
+        pendingClose,
       };
     }),
   updateStatus: (sessionId, status) =>
@@ -87,6 +97,19 @@ export const useTerminalStore = create<TerminalState>((set) => ({
         return { ...item, status };
       });
       return changed ? { terminals } : state;
+    }),
+  markPendingClose: (sessionId) =>
+    set((state) => {
+      const pendingClose = new Set(state.pendingClose);
+      pendingClose.add(sessionId);
+      return { pendingClose };
+    }),
+  cancelPendingClose: (sessionId) =>
+    set((state) => {
+      if (!state.pendingClose.has(sessionId)) return state;
+      const pendingClose = new Set(state.pendingClose);
+      pendingClose.delete(sessionId);
+      return { pendingClose };
     }),
 }));
 

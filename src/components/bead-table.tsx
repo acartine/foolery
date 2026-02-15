@@ -114,6 +114,7 @@ function InlineSummary({ bead }: { bead: Bead }) {
 
 const PAGE_SIZE_KEY = "foolery-page-size";
 const DEFAULT_PAGE_SIZE = 50;
+const HOTKEY_HELP_KEY = "foolery-hotkey-help";
 
 function getStoredPageSize(): number {
   if (typeof window === "undefined") return DEFAULT_PAGE_SIZE;
@@ -121,6 +122,13 @@ function getStoredPageSize(): number {
   if (!stored) return DEFAULT_PAGE_SIZE;
   const parsed = Number(stored);
   return [25, 50, 100].includes(parsed) ? parsed : DEFAULT_PAGE_SIZE;
+}
+
+function getStoredHotkeyHelp(): boolean {
+  if (typeof window === "undefined") return true;
+  const stored = localStorage.getItem(HOTKEY_HELP_KEY);
+  if (stored === null) return true;
+  return stored !== "false";
 }
 
 export function BeadTable({
@@ -149,7 +157,7 @@ export function BeadTable({
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(true);
+  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(getStoredHotkeyHelp);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
@@ -316,10 +324,15 @@ export function BeadTable({
 
   // Reset focus to first row when filters change
   useEffect(() => {
-    setFocusedRowId(null);
-    requestAnimationFrame(() => {
+    const rows = table.getRowModel().rows;
+    const firstId = rows.length > 0 ? rows[0].original.id : null;
+    setFocusedRowId(firstId);
+    // Use setTimeout to defer past Radix Select's async focus cleanup
+    const timer = setTimeout(() => {
       tableContainerRef.current?.focus();
-    });
+    }, 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersKey]);
 
   useEffect(() => {
@@ -335,7 +348,11 @@ export function BeadTable({
         !e.ctrlKey
       ) {
         e.preventDefault();
-        setHotkeyHelpOpen((prev) => !prev);
+        setHotkeyHelpOpen((prev) => {
+          const next = !prev;
+          localStorage.setItem(HOTKEY_HELP_KEY, String(next));
+          return next;
+        });
         return;
       }
 
