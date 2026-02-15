@@ -179,6 +179,7 @@ function AddLabelDropdown({
         <button
           type="button"
           data-add-label
+          title="Add a label"
           className="inline-flex items-center rounded px-1.5 py-0 text-[10px] font-semibold leading-none bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:hover:bg-purple-900/60"
           onClick={(e) => e.stopPropagation()}
         >
@@ -230,6 +231,7 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
       {onTitleClick ? (
         <button
           type="button"
+          title="Open beat details"
           className="font-medium text-left hover:underline"
           onClick={(e) => {
             e.stopPropagation();
@@ -405,7 +407,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+              <button type="button" title="Change priority" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
                 <BeadPriorityBadge priority={row.original.priority} />
               </button>
             </DropdownMenuTrigger>
@@ -431,7 +433,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+              <button type="button" title="Change type" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
                 <BeadTypeBadge type={row.original.type} />
               </button>
             </DropdownMenuTrigger>
@@ -461,7 +463,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
           {onUpdateBead ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                <button type="button" title="Change status" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
                   <BeadStatusBadge status={row.original.status} />
                 </button>
               </DropdownMenuTrigger>

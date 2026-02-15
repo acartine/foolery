@@ -184,11 +184,11 @@ export function BeadForm(props: BeadFormProps) {
       )}
 
       <div className="flex gap-2">
-        <Button type="submit" variant="success" className="flex-1" disabled={isSubmitting}>
+        <Button type="submit" title="Submit" variant="success" className="flex-1" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : mode === "create" ? "Done" : "Update"}
         </Button>
         {onCreateMore && (
-          <Button
+          <Button title="Create this beat and start another"
             type="button"
             variant="success-light"
             className="flex-1"

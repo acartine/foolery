@@ -663,7 +663,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             disabled={isRunning}
           />
           <div className="flex flex-wrap items-start gap-2 lg:flex-col lg:items-stretch">
-            <Button
+            <Button title="Generate a scene plan with Claude"
               className="gap-1.5"
               onClick={handleStart}
               disabled={!activeRepo || isStarting || isRunning}
@@ -675,7 +675,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               )}
               {session ? "Run Again" : "Plan Scenes"}
             </Button>
-            <Button
+            <Button title="Create scene beats from the current plan" title="Create scene beats from the current plan"
               variant="outline"
               className="gap-1.5"
               onClick={handleApply}
@@ -689,7 +689,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               Apply Scene Beats
             </Button>
             {isRunning && (
-              <Button
+              <Button title="Abort the current planning session"
                 variant="destructive"
                 className="gap-1.5"
                 onClick={handleAbort}
@@ -967,7 +967,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Button
+                  <Button title="Start executing the next scene"
                     size="sm"
                     className="gap-1.5"
                     onClick={handleTriggerNow}
@@ -980,7 +980,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     )}
                     Take! Now
                   </Button>
-                  <Button
+                  <Button title="Return to the beats list view"
                     size="sm"
                     variant="outline"
                     className="gap-1.5"

@@ -104,7 +104,7 @@ export function MoveToProjectDialog({
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTargetRepo(""); }}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" title="Move this beat to another project" size="sm">
           <ArrowRightLeft className="mr-2 h-4 w-4" />
           Move to Project
         </Button>
@@ -137,14 +137,14 @@ export function MoveToProjectDialog({
         </div>
 
         <DialogFooter>
-          <Button
+          <Button title="Cancel move"
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
           >
             Cancel
           </Button>
-          <Button
+          <Button title="Move beat to selected project"
             onClick={() => handleMove()}
             disabled={!targetRepo || isPending}
           >

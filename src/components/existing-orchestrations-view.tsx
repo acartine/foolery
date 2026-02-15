@@ -510,6 +510,7 @@ function HierarchyList({
               </span>
               <button
                 type="button"
+                title="Select this beat"
                 onClick={() => onSelectNode?.(node, depth, index)}
                 className="text-left text-xs hover:text-foreground"
               >

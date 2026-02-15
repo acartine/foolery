@@ -147,7 +147,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           {onUpdate ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button" className="cursor-pointer">
+                <button type="button" title="Change beat type" className="cursor-pointer">
                   <BeadTypeBadge type={bead.type} />
                 </button>
               </DropdownMenuTrigger>
@@ -166,7 +166,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           {onUpdate ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button" className="cursor-pointer">
+                <button type="button" title="Change beat status" className="cursor-pointer">
                   <BeadStatusBadge status={bead.status} />
                 </button>
               </DropdownMenuTrigger>
@@ -185,7 +185,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           {onUpdate ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button" className="cursor-pointer">
+                <button type="button" title="Change beat priority" className="cursor-pointer">
                   <BeadPriorityBadge priority={bead.priority} />
                 </button>
               </DropdownMenuTrigger>
@@ -226,7 +226,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
                   {onUpdate && (
                     <button
                       type="button"
-                      className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                      title="Remove label" className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
                       onClick={() => removeLabel(label)}
                     >
                       <X className="size-3" />
