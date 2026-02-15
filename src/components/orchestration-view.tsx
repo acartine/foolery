@@ -675,7 +675,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               )}
               {session ? "Run Again" : "Plan Scenes"}
             </Button>
-            <Button title="Create scene beats from the current plan" title="Create scene beats from the current plan"
+            <Button title="Create scene beats from the current plan"
               variant="outline"
               className="gap-1.5"
               onClick={handleApply}
