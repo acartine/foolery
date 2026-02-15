@@ -524,23 +524,7 @@ async function collectContext(repoPath: string): Promise<{
   beads: Bead[];
   deps: DepEdge[];
 }> {
-  const [open, inProgress, blocked] = await Promise.all([
-    listBeads({ status: "open" }, repoPath),
-    listBeads({ status: "in_progress" }, repoPath),
-    listBeads({ status: "blocked" }, repoPath),
-  ]);
-
-  for (const result of [open, inProgress, blocked]) {
-    if (!result.ok) {
-      throw new Error(result.error ?? "Failed to load beads for orchestration");
-    }
-  }
-
-  const beads = dedupeBeads([
-    ...(open.data ?? []),
-    ...(inProgress.data ?? []),
-    ...(blocked.data ?? []),
-  ]);
+  const beads = await collectEligibleBeads(repoPath);
 
   const depResults = await Promise.allSettled(beads.map((bead) => listDeps(bead.id, repoPath)));
   const deps: DepEdge[] = [];
@@ -560,6 +544,27 @@ async function collectContext(repoPath: string): Promise<{
   }
 
   return { beads, deps };
+}
+
+async function collectEligibleBeads(repoPath: string): Promise<Bead[]> {
+  const [open, inProgress, blocked] = await Promise.all([
+    listBeads({ status: "open" }, repoPath),
+    listBeads({ status: "in_progress" }, repoPath),
+    listBeads({ status: "blocked" }, repoPath),
+  ]);
+
+  for (const result of [open, inProgress, blocked]) {
+    if (!result.ok) {
+      throw new Error(result.error ?? "Failed to load beads for orchestration");
+    }
+  }
+
+  const beads = dedupeBeads([
+    ...(open.data ?? []),
+    ...(inProgress.data ?? []),
+    ...(blocked.data ?? []),
+  ]);
+  return beads;
 }
 
 export async function createOrchestrationSession(
@@ -738,7 +743,7 @@ export async function createRestagedOrchestrationSession(
   plan: OrchestrationPlan,
   objective?: string
 ): Promise<OrchestrationSession> {
-  const { beads } = await collectContext(repoPath);
+  const beads = await collectEligibleBeads(repoPath);
 
   if (beads.length === 0) {
     throw new Error("No open/in_progress/blocked beads available for orchestration");
