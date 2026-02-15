@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, X, Clapperboard, Square, Eye } from "lucide-react";
-import { ORCHESTRATION_WAVE_LABEL, ORCHESTRATION_WAVE_LABEL_PREFIX } from "@/lib/wave-slugs";
+import { isWaveLabel } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -222,12 +222,8 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
   onRejectReview?: (parentId: string) => void;
 }) {
   const labels = bead.labels ?? [];
-  const isOrchestrated = labels.some(
-    (l) => l === ORCHESTRATION_WAVE_LABEL || l.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX)
-  );
-  const visibleLabels = labels.filter(
-    (l) => l !== ORCHESTRATION_WAVE_LABEL && !l.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX)
-  );
+  const isOrchestrated = labels.some(isWaveLabel);
+  const visibleLabels = labels.filter((l) => !isWaveLabel(l));
   return (
     <div className="flex flex-col gap-0.5">
       {onTitleClick ? (

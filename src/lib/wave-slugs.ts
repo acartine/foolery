@@ -109,6 +109,10 @@ export function normalizeWaveSlugCandidate(value: string): string {
   return slugify(value);
 }
 
+export function isWaveLabel(label: string): boolean {
+  return label === ORCHESTRATION_WAVE_LABEL || label.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX);
+}
+
 export function isWaveSlugLabel(label: string): boolean {
   return label.startsWith(ORCHESTRATION_WAVE_LABEL_PREFIX);
 }

@@ -44,21 +44,28 @@ export function CreateBeadDialog({
   repo,
 }: CreateBeadDialogProps) {
   const [formKey, setFormKey] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
 
   async function handleSubmit(
     data: CreateBeadInput,
     deps?: RelationshipDeps,
   ) {
-    const result = await createBead(data, repo ?? undefined);
-    if (result.ok) {
-      if (deps && result.data?.id) {
-        await addDepsForBead(result.data.id, deps, repo ?? undefined);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await createBead(data, repo ?? undefined);
+      if (result.ok) {
+        if (deps && result.data?.id) {
+          await addDepsForBead(result.data.id, deps, repo ?? undefined);
+        }
+        toast.success("Created");
+        onCreated();
+      } else {
+        toast.error(result.error ?? "Failed to create");
       }
-      toast.success("Created");
-      onCreated();
-    } else {
-      toast.error(result.error ?? "Failed to create");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -66,16 +73,22 @@ export function CreateBeadDialog({
     data: CreateBeadInput,
     deps?: RelationshipDeps,
   ) {
-    const result = await createBead(data, repo ?? undefined);
-    if (result.ok) {
-      if (deps && result.data?.id) {
-        await addDepsForBead(result.data.id, deps, repo ?? undefined);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await createBead(data, repo ?? undefined);
+      if (result.ok) {
+        if (deps && result.data?.id) {
+          await addDepsForBead(result.data.id, deps, repo ?? undefined);
+        }
+        toast.success("Created — ready for another");
+        setFormKey((k) => k + 1);
+        queryClient.invalidateQueries({ queryKey: ["beads"] });
+      } else {
+        toast.error(result.error ?? "Failed to create");
       }
-      toast.success("Created — ready for another");
-      setFormKey((k) => k + 1);
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-    } else {
-      toast.error(result.error ?? "Failed to create");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -93,6 +106,7 @@ export function CreateBeadDialog({
           mode="create"
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
+          isSubmitting={isSubmitting}
         />
       </DialogContent>
     </Dialog>

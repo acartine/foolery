@@ -18,8 +18,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { X, Clapperboard } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
+import { isWaveLabel } from "@/lib/wave-slugs";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
@@ -208,24 +209,34 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           last update {formatDate(bead.updated)}
         </p>
 
-        {bead.labels.length > 0 && (
-          <div className="flex gap-1 flex-wrap items-center">
-            {bead.labels.map((label) => (
-              <Badge key={label} variant="secondary" className="gap-1 pr-1">
-                {label}
-                {onUpdate && (
-                  <button
-                    type="button"
-                    className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
-                    onClick={() => removeLabel(label)}
-                  >
-                    <X className="size-3" />
-                  </button>
-                )}
-              </Badge>
-            ))}
-          </div>
-        )}
+        {bead.labels.length > 0 && (() => {
+          const isOrchestrated = bead.labels.some(isWaveLabel);
+          const visibleLabels = bead.labels.filter((l) => !isWaveLabel(l));
+          return (
+            <div className="flex gap-1 flex-wrap items-center">
+              {isOrchestrated && (
+                <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-600">
+                  <Clapperboard className="size-2.5" />
+                  Orchestrated
+                </Badge>
+              )}
+              {visibleLabels.map((label) => (
+                <Badge key={label} variant="secondary" className="gap-1 pr-1">
+                  {label}
+                  {onUpdate && (
+                    <button
+                      type="button"
+                      className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                      onClick={() => removeLabel(label)}
+                    >
+                      <X className="size-3" />
+                    </button>
+                  )}
+                </Badge>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       <Card>

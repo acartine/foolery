@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readyBeads } from "@/lib/bd";
+import { readyBeads, listBeads } from "@/lib/bd";
+import type { Bead } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const repoPath = params._repo;
   delete params._repo;
-  const result = await readyBeads(params, repoPath);
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 500 });
+
+  const [readyResult, inProgressResult] = await Promise.all([
+    readyBeads(params, repoPath),
+    listBeads({ ...params, status: "in_progress" }, repoPath),
+  ]);
+
+  if (!readyResult.ok) {
+    return NextResponse.json({ error: readyResult.error }, { status: 500 });
   }
-  return NextResponse.json({ data: result.data });
+
+  const merged = new Map<string, Bead>();
+  for (const bead of readyResult.data ?? []) merged.set(bead.id, bead);
+  for (const bead of (inProgressResult.ok ? inProgressResult.data ?? [] : [])) {
+    if (!merged.has(bead.id)) merged.set(bead.id, bead);
+  }
+
+  return NextResponse.json({ data: Array.from(merged.values()) });
 }

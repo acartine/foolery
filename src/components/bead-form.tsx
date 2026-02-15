@@ -42,6 +42,7 @@ type BeadFormProps =
       defaultValues?: Partial<CreateBeadInput>;
       onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
+      isSubmitting?: boolean;
     }
   | {
       mode: "edit";
@@ -52,6 +53,7 @@ type BeadFormProps =
 export function BeadForm(props: BeadFormProps) {
   const { mode, defaultValues, onSubmit } = props;
   const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
+  const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blockedBy, setBlockedBy] = useState<string[]>([]);
@@ -182,8 +184,8 @@ export function BeadForm(props: BeadFormProps) {
       )}
 
       <div className="flex gap-2">
-        <Button type="submit" variant="success" className="flex-1">
-          {mode === "create" ? "Done" : "Update"}
+        <Button type="submit" variant="success" className="flex-1" disabled={isSubmitting}>
+          {isSubmitting ? "Creating..." : mode === "create" ? "Done" : "Update"}
         </Button>
         {onCreateMore && (
           <Button
@@ -191,6 +193,7 @@ export function BeadForm(props: BeadFormProps) {
             variant="success-light"
             className="flex-1"
             onClick={handleCreateMoreClick}
+            disabled={isSubmitting}
           >
             Create More
           </Button>

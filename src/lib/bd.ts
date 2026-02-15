@@ -267,27 +267,29 @@ export async function updateBead(
       return { ok: false, error: stderr || "bd update failed" };
   }
 
-  // Remove labels via bd label remove.
+  // Run all label add/remove operations in parallel.
   // Use --no-daemon to bypass the daemon and write directly to the database.
   // The daemon's label remove command acknowledges success but doesn't persist
   // the removal, causing labels to reappear on the next list/show call.
+  const labelOps: Promise<{ stdout: string; stderr: string; exitCode: number }>[] = [];
+  const labelOpDescs: string[] = [];
+
   for (const label of normalizedLabelsToRemove) {
-    const { stderr, exitCode } = await exec(
-      ["label", "remove", id, label, "--no-daemon"],
-      { cwd: repoPath }
-    );
-    if (exitCode !== 0)
-      return { ok: false, error: stderr || `bd label remove ${label} failed` };
+    labelOps.push(exec(["label", "remove", id, label, "--no-daemon"], { cwd: repoPath }));
+    labelOpDescs.push(`remove ${label}`);
+  }
+  for (const label of normalizedLabelsToAdd) {
+    labelOps.push(exec(["label", "add", id, label, "--no-daemon"], { cwd: repoPath }));
+    labelOpDescs.push(`add ${label}`);
   }
 
-  // Add labels via bd label add (also bypass daemon for consistency)
-  for (const label of normalizedLabelsToAdd) {
-    const { stderr, exitCode } = await exec(
-      ["label", "add", id, label, "--no-daemon"],
-      { cwd: repoPath }
-    );
-    if (exitCode !== 0)
-      return { ok: false, error: stderr || `bd label add ${label} failed` };
+  if (labelOps.length > 0) {
+    const results = await Promise.all(labelOps);
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].exitCode !== 0) {
+        return { ok: false, error: results[i].stderr || `bd label ${labelOpDescs[i]} failed` };
+      }
+    }
   }
 
   // Flush to JSONL so the daemon's auto-import picks up the direct DB writes

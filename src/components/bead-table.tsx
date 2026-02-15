@@ -40,6 +40,7 @@ import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
+import { isWaveLabel } from "@/lib/wave-slugs";
 
 function SummaryColumn({
   text,
@@ -198,7 +199,9 @@ export function BeadTable({
 
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
-    data.forEach((bead) => bead.labels?.forEach((l) => labelSet.add(l)));
+    data.forEach((bead) => bead.labels?.forEach((l) => {
+      if (!isWaveLabel(l)) labelSet.add(l);
+    }));
     return Array.from(labelSet).sort();
   }, [data]);
 

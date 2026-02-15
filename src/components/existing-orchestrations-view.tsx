@@ -213,16 +213,12 @@ function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
   const byParent = new Map<string, Bead[]>();
 
   const resolveVisibleParentId = (bead: Bead): string | undefined => {
-    let parentId = bead.parent;
-    const seen = new Set<string>();
-    while (parentId && !seen.has(parentId)) {
-      seen.add(parentId);
-      const parent = byId.get(parentId);
-      if (!parent) return undefined;
-      if (parent.status !== "closed") return parent.id;
-      parentId = parent.parent;
-    }
-    return undefined;
+    const parentId = bead.parent;
+    if (!parentId) return undefined;
+    const parent = byId.get(parentId);
+    if (!parent) return undefined;
+    if (parent.status === "closed") return undefined;
+    return parent.id;
   };
 
   for (const bead of beads) {
@@ -390,7 +386,7 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
     const fallbackLabel = `tree-${index + 1}`;
     const rootWave = waveCardsInTree[0];
     const label = rootWave?.slug ?? fallbackLabel;
-    const displayLabel = rootWave ? formatWaveLabel(rootWave.id, rootWave.slug) : fallbackLabel;
+    const displayLabel = rootWave ? `${rootWave.id} ${rootWave.slug}` : fallbackLabel;
     const maxDepth = waveCardsInTree.reduce(
       (max, waveCard) => Math.max(max, waveCard.maxDepth),
       MIN_ZOOM_DEPTH
@@ -1283,8 +1279,9 @@ export function ExistingOrchestrationsView() {
                   ) : (
                     <>
                       <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-[10px] text-muted-foreground">{wave.id}</span>
                         <Badge variant="outline" className="font-mono text-[11px]">
-                          {formatWaveLabel(wave.id, wave.slug)}
+                          {wave.slug}
                         </Badge>
                         <span className="text-sm font-semibold">{wave.name}</span>
                       </div>
