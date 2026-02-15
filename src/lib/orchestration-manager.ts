@@ -524,9 +524,13 @@ async function collectContext(repoPath: string): Promise<{
   beads: Bead[];
   deps: DepEdge[];
 }> {
-  const beads = await collectEligibleBeads(repoPath);
+  const beads = await collectEligibleBeads(repoPath, {
+    excludeOrchestrationWaves: true,
+  });
 
-  const depResults = await Promise.allSettled(beads.map((bead) => listDeps(bead.id, repoPath)));
+  const depResults = await Promise.allSettled(
+    beads.map((bead) => listDeps(bead.id, repoPath, { type: "blocks" }))
+  );
   const deps: DepEdge[] = [];
 
   for (const [index, result] of depResults.entries()) {
@@ -546,7 +550,10 @@ async function collectContext(repoPath: string): Promise<{
   return { beads, deps };
 }
 
-async function collectEligibleBeads(repoPath: string): Promise<Bead[]> {
+async function collectEligibleBeads(
+  repoPath: string,
+  options?: { excludeOrchestrationWaves?: boolean }
+): Promise<Bead[]> {
   const [open, inProgress, blocked] = await Promise.all([
     listBeads({ status: "open" }, repoPath),
     listBeads({ status: "in_progress" }, repoPath),
@@ -564,7 +571,10 @@ async function collectEligibleBeads(repoPath: string): Promise<Bead[]> {
     ...(inProgress.data ?? []),
     ...(blocked.data ?? []),
   ]);
-  return beads;
+  if (!options?.excludeOrchestrationWaves) return beads;
+  return beads.filter(
+    (bead) => !(bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false)
+  );
 }
 
 export async function createOrchestrationSession(

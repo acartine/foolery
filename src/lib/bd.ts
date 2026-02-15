@@ -321,13 +321,14 @@ export async function closeBead(
   return { ok: true };
 }
 
-export async function listDeps(id: string, repoPath?: string): Promise<BdResult<BeadDependency[]>> {
-  const { stdout, stderr, exitCode } = await exec([
-    "dep",
-    "list",
-    id,
-    "--json",
-  ], { cwd: repoPath });
+export async function listDeps(
+  id: string,
+  repoPath?: string,
+  options?: { type?: string }
+): Promise<BdResult<BeadDependency[]>> {
+  const args = ["dep", "list", id, "--json"];
+  if (options?.type) args.push("--type", options.type);
+  const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd dep list failed" };
   try {
