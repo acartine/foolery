@@ -610,6 +610,14 @@ export async function createOrchestrationSession(
   sessions.set(session.id, entry);
 
   const prompt = buildPrompt(repoPath, beads, deps, objective);
+  const promptLog = [
+    "prompt_initial | Full orchestration prompt",
+    "----- BEGIN PROMPT -----",
+    prompt,
+    "----- END PROMPT -----",
+    "",
+  ].join("\n");
+  pushEvent(entry, "log", promptLog);
   const args = [
     "-p",
     prompt,
