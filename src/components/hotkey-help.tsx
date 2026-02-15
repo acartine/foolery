@@ -37,7 +37,6 @@ const HOTKEY_SECTIONS: HotkeySection[] = [
     title: "Panels",
     hotkeys: [
       { key: "Shift+T", description: "Toggle terminal panel" },
-      { key: "Shift+H", description: "Toggle this help" },
     ],
   },
 ];
@@ -46,9 +45,14 @@ export function HotkeyHelp({ open }: { open: boolean }) {
   if (!open) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-72 rounded-lg border bg-background shadow-lg p-4">
-      <h3 className="font-semibold text-sm mb-2">Keyboard Shortcuts</h3>
-      <div className="space-y-3">
+    <div className="fixed bottom-4 right-4 z-50 w-[540px] rounded-lg border bg-background shadow-lg p-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-sm">Keyboard Shortcuts</h3>
+        <kbd className="rounded border bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+          Shift+H
+        </kbd>
+      </div>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
         {HOTKEY_SECTIONS.map((section) => (
           <div key={section.title}>
             <h4 className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">

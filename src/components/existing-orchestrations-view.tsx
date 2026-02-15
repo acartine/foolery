@@ -504,7 +504,7 @@ function HierarchyList({
             }`}
           >
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="font-mono text-[10px] text-muted-foreground">{node.id}</span>
+              <span className="font-mono text-[10px] text-muted-foreground">{node.id.replace(/^[^-]+-/, "")}</span>
               <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
                 {node.type}
               </Badge>
@@ -1185,10 +1185,6 @@ export function ExistingOrchestrationsView() {
             ↑ / ↓
           </Badge>
           <span>up/down level</span>
-          <Badge variant="outline" className="font-mono">
-            Shift+[ / Shift+]
-          </Badge>
-          <span>legacy sibling nav</span>
           <Badge variant="outline" className="font-mono">
             Shift++ / -
           </Badge>

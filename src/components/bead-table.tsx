@@ -40,7 +40,7 @@ import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
-import { isWaveLabel } from "@/lib/wave-slugs";
+import { isInternalLabel } from "@/lib/wave-slugs";
 
 function SummaryColumn({
   text,
@@ -148,6 +148,7 @@ export function BeadTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(true);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
@@ -200,7 +201,7 @@ export function BeadTable({
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
     data.forEach((bead) => bead.labels?.forEach((l) => {
-      if (!isWaveLabel(l)) labelSet.add(l);
+      if (!isInternalLabel(l)) labelSet.add(l);
     }));
     return Array.from(labelSet).sort();
   }, [data]);
@@ -316,6 +317,9 @@ export function BeadTable({
   // Reset focus to first row when filters change
   useEffect(() => {
     setFocusedRowId(null);
+    requestAnimationFrame(() => {
+      tableContainerRef.current?.focus();
+    });
   }, [filtersKey]);
 
   useEffect(() => {
@@ -436,7 +440,7 @@ export function BeadTable({
   }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, setActiveRepo]);
 
   return (
-    <div className="space-y-1">
+    <div ref={tableContainerRef} tabIndex={-1} className="space-y-1 outline-none">
       <Table className="table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
