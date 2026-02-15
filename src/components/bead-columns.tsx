@@ -489,9 +489,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     columns.push({
       id: "ship",
       header: "",
-      size: 70,
-      minSize: 70,
-      maxSize: 70,
+      size: 100,
+      minSize: 100,
+      maxSize: 100,
       enableSorting: false,
       cell: ({ row }) => {
         const bead = row.original;
