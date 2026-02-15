@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -25,12 +25,14 @@ export function AppHeader() {
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
         ? "existing"
-        : "list";
+        : viewParam === "finalcut"
+          ? "finalcut"
+          : "list";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -70,7 +72,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing") => {
+  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
@@ -81,7 +83,7 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeadsRoute) return;
-    const views: ("list" | "orchestration" | "existing")[] = ["list", "orchestration", "existing"];
+    const views: ("list" | "orchestration" | "existing" | "finalcut")[] = ["list", "existing", "orchestration", "finalcut"];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
@@ -171,6 +173,17 @@ export function AppHeader() {
                   </Button>
                   <Button
                     size="lg"
+                    variant={beadsView === "existing" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    disabled={!activeRepo}
+                    title={!activeRepo ? "Select a repository to browse scenes" : "Existing scene trees"}
+                    onClick={() => setBeadsView("existing")}
+                  >
+                    <Film className="size-4" />
+                    Scenes
+                  </Button>
+                  <Button
+                    size="lg"
                     variant={beadsView === "orchestration" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     disabled={!activeRepo}
@@ -182,14 +195,12 @@ export function AppHeader() {
                   </Button>
                   <Button
                     size="lg"
-                    variant={beadsView === "existing" ? "default" : "ghost"}
+                    variant={beadsView === "finalcut" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
-                    disabled={!activeRepo}
-                    title={!activeRepo ? "Select a repository to browse scenes" : "Existing scene trees"}
-                    onClick={() => setBeadsView("existing")}
+                    onClick={() => setBeadsView("finalcut")}
                   >
-                    <Film className="size-4" />
-                    Scenes
+                    <Scissors className="size-4" />
+                    Final Cut
                   </Button>
                 </div>
                 {canCreate ? (

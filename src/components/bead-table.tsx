@@ -393,6 +393,14 @@ export function BeadTable({
           e.preventDefault();
           setFocusedRowId(rows[nextIndex].original.id);
         }
+      } else if (e.key === " ") {
+        // Space: toggle selection on focused row and advance
+        e.preventDefault();
+        if (currentIndex < 0) return;
+        rows[currentIndex].toggleSelected(!rows[currentIndex].getIsSelected());
+        if (currentIndex < rows.length - 1) {
+          setFocusedRowId(rows[currentIndex + 1].original.id);
+        }
       } else if (e.key === "V" && e.shiftKey) {
         // Shift-V: Verify (close) via one atomic update (status + label removal).
         if (currentIndex < 0) return;
