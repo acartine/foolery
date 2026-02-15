@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Zap } from "lucide-react";
 import { RelationshipPicker } from "@/components/relationship-picker";
 
 const BEAD_TYPES = [
@@ -42,6 +43,7 @@ type BeadFormProps =
       defaultValues?: Partial<CreateBeadInput>;
       onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
+      onQuickDirect?: (data: CreateBeadInput) => void;
       isSubmitting?: boolean;
     }
   | {
@@ -53,6 +55,7 @@ type BeadFormProps =
 export function BeadForm(props: BeadFormProps) {
   const { mode, defaultValues, onSubmit } = props;
   const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
+  const onQuickDirect = props.mode === "create" ? props.onQuickDirect : undefined;
   const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
@@ -86,6 +89,12 @@ export function BeadForm(props: BeadFormProps) {
       onCreateMore(data as CreateBeadInput, { blocks, blockedBy });
       setBlocks([]);
       setBlockedBy([]);
+    }
+  });
+
+  const handleQuickDirectClick = form.handleSubmit((data) => {
+    if (onQuickDirect) {
+      onQuickDirect(data as CreateBeadInput);
     }
   });
 
@@ -196,6 +205,19 @@ export function BeadForm(props: BeadFormProps) {
             disabled={isSubmitting}
           >
             Create More
+          </Button>
+        )}
+        {onQuickDirect && (
+          <Button
+            title="Create and decompose into sub-tasks with AI"
+            type="button"
+            variant="outline"
+            className="gap-1"
+            onClick={handleQuickDirectClick}
+            disabled={isSubmitting}
+          >
+            <Zap className="size-3.5" />
+            Quick Direct
           </Button>
         )}
       </div>

@@ -11,6 +11,7 @@ import { FilterBar } from "@/components/filter-bar";
 import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
+import { HydrationView } from "@/components/hydration-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
@@ -29,18 +30,21 @@ function BeadsPageInner() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") ?? "";
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "hydration" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
         ? "existing"
         : viewParam === "finalcut"
           ? "finalcut"
-          : "list";
+          : viewParam === "hydration"
+            ? "hydration"
+            : "list";
   const isOrchestrationView = beadsView === "orchestration";
   const isExistingOrchestrationView = beadsView === "existing";
   const isListView = beadsView === "list";
   const isFinalCutView = beadsView === "finalcut";
+  const isHydrationView = beadsView === "hydration";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
   const queryClient = useQueryClient();
@@ -256,6 +260,9 @@ function BeadsPageInner() {
         </div>
         <div className={isFinalCutView ? "" : "hidden"}>
           <FinalCutView />
+        </div>
+        <div className={isHydrationView ? "" : "hidden"}>
+          <HydrationView />
         </div>
         <div className={isListView ? "overflow-x-auto" : "hidden"}>
           {isLoading ? (

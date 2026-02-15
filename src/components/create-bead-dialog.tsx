@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -43,6 +44,8 @@ export function CreateBeadDialog({
   onCreated,
   repo,
 }: CreateBeadDialogProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [formKey, setFormKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
@@ -97,6 +100,30 @@ export function CreateBeadDialog({
     }
   }
 
+  async function handleQuickDirect(data: CreateBeadInput) {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setIsSubmitting(true);
+    try {
+      const result = await createBead(data, repo ?? undefined);
+      if (!result.ok || !result.data?.id) {
+        toast.error(result.error ?? "Failed to create parent beat");
+        return;
+      }
+      toast.success("Created — starting hydration...");
+      onOpenChange(false);
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("view", "hydration");
+      params.set("parent", result.data.id);
+      router.push(`/beads?${params.toString()}`);
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -111,6 +138,7 @@ export function CreateBeadDialog({
           mode="create"
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
+          onQuickDirect={handleQuickDirect}
           isSubmitting={isSubmitting}
         />
       </DialogContent>

@@ -232,3 +232,61 @@ export interface ApplyOrchestrationOverrides {
   waveNames?: Record<string, string>;
   waveSlugs?: Record<string, string>;
 }
+
+// ── Hydration types (Quick Direct) ────────────────────────
+
+export interface HydrationBeadSpec {
+  title: string;
+  type: BeadType;
+  priority: BeadPriority;
+  description?: string;
+}
+
+export interface HydrationWave {
+  waveIndex: number;
+  name: string;
+  objective: string;
+  beads: HydrationBeadSpec[];
+  notes?: string;
+}
+
+export interface HydrationPlan {
+  summary: string;
+  waves: HydrationWave[];
+  assumptions: string[];
+}
+
+export type HydrationSessionStatus =
+  | "running"
+  | "completed"
+  | "error"
+  | "aborted";
+
+export interface HydrationSession {
+  id: string;
+  repoPath: string;
+  parentBeadId: string;
+  status: HydrationSessionStatus;
+  startedAt: string;
+  completedAt?: string;
+  error?: string;
+  plan?: HydrationPlan;
+}
+
+export type HydrationEventType =
+  | "log"
+  | "plan"
+  | "status"
+  | "error"
+  | "exit";
+
+export interface HydrationEvent {
+  type: HydrationEventType;
+  data: string | HydrationPlan;
+  timestamp: number;
+}
+
+export interface ApplyHydrationResult {
+  createdBeadIds: string[];
+  waveCount: number;
+}
