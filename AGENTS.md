@@ -25,6 +25,16 @@ This repository supports parallel agent work using Git worktrees.
 3. Final integrated changes must be pushed to remote `main` (`origin/main`).
 4. Do not require reviews or pull requests unless the user explicitly requests them.
 
+## Worktree Dependency Bootstrap
+
+Each Git worktree is a separate checkout and does not share `node_modules`.
+
+1. After creating or switching to a worktree, run:
+   `bun install --frozen-lockfile`
+2. Run dependency install before lint, typecheck, test, or build commands.
+3. Prefer `bun run <script>` over `bunx <tool>` so plugins resolve from local project dependencies.
+4. If `node_modules` is missing in the worktree, treat lint/typecheck results as invalid until install completes.
+
 ## Beads-First Flow
 
 ```bash
