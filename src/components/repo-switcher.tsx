@@ -45,7 +45,7 @@ export function RepoSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="lg" className="h-8 gap-1.5 px-2.5">
+        <Button variant="outline" size="lg" title="Switch repository" className="h-8 gap-1.5 px-2.5">
           <Database className="size-4" />
           <span className="max-w-[180px] truncate">{currentName}</span>
           <ChevronDown className="size-3" />

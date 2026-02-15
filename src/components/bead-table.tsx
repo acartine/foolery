@@ -75,7 +75,7 @@ function SummaryColumn({
       </div>
       {!expanded && overflows && (
         <button
-          type="button"
+          type="button" title="Expand full text"
           className="text-green-700 font-bold cursor-pointer mt-0.5"
           onMouseEnter={onExpand}
         >
@@ -471,6 +471,7 @@ export function BeadTable({
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       type="button"
+                      title="Sort column"
                       className="flex items-center gap-1"
                       onClick={header.column.getToggleSortingHandler()}
                     >

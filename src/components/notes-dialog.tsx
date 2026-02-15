@@ -63,14 +63,14 @@ export function NotesDialog({ bead, open, onOpenChange, onUpdate }: NotesDialogP
         />
         <DialogFooter>
           {hasVerification && (
-            <Button variant="destructive" onClick={handleReject} className="mr-auto">
+            <Button variant="destructive" title="Reject this work and return to open" onClick={handleReject} className="mr-auto">
               Reject Work?
             </Button>
           )}
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" title="Close without saving" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} title="Save notes">Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
