@@ -352,3 +352,19 @@ export async function addDep(
     return { ok: false, error: stderr || "bd dep add failed" };
   return { ok: true };
 }
+
+export async function removeDep(
+  blockerId: string,
+  blockedId: string,
+  repoPath?: string
+): Promise<BdResult<void>> {
+  const { stderr, exitCode } = await exec([
+    "dep",
+    "remove",
+    blockedId,
+    blockerId,
+  ], { cwd: repoPath });
+  if (exitCode !== 0)
+    return { ok: false, error: stderr || "bd dep remove failed" };
+  return { ok: true };
+}

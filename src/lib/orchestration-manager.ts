@@ -2,9 +2,11 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import {
   addDep,
+  closeBead,
   createBead,
   listBeads,
   listDeps,
+  removeDep,
   showBead,
   updateBead,
 } from "@/lib/bd";
@@ -876,6 +878,26 @@ function formatAgentPlan(agents: OrchestrationAgentSpec[]): string {
     .join("\n");
 }
 
+function countActiveChildrenByParent(beads: Bead[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const bead of beads) {
+    if (!bead.parent || bead.status === "closed") continue;
+    counts.set(bead.parent, (counts.get(bead.parent) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function isOpenOrchestratedWave(bead: Bead | undefined): boolean {
+  if (!bead) return false;
+  if (bead.status === "closed") return false;
+  return bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
+}
+
+function isMissingDependencyError(error?: string): boolean {
+  if (!error) return false;
+  return /not found|no dependency|does not exist|doesn't exist|no such/i.test(error);
+}
+
 export async function applyOrchestrationSession(
   sessionId: string,
   repoPath: string,
@@ -893,6 +915,8 @@ export async function applyOrchestrationSession(
   const plan = entry.session.plan;
   const applied: ApplyOrchestrationResult["applied"] = [];
   const skipped: string[] = [];
+  const sourceParentIds = new Set<string>();
+  const createdWaveIds = new Set<string>();
 
   let previousWaveId: string | null = null;
   const existing = await listBeads(undefined, repoPath);
@@ -968,8 +992,12 @@ export async function applyOrchestrationSession(
     }
 
     const waveId = createResult.data.id;
+    createdWaveIds.add(waveId);
 
     for (const child of validChildren) {
+      const currentParentId = entry.allBeads.get(child.id)?.parent;
+      if (currentParentId) sourceParentIds.add(currentParentId);
+
       const updateResult = await updateBead(
         child.id,
         { parent: waveId },
@@ -982,6 +1010,22 @@ export async function applyOrchestrationSession(
       const refreshed = await showBead(child.id, repoPath);
       if (!refreshed.ok || refreshed.data?.parent !== waveId) {
         throw new Error(`Failed to confirm ${child.id} parent relationship to ${waveId}`);
+      }
+
+      const existingChild = entry.allBeads.get(child.id);
+      if (existingChild) {
+        entry.allBeads.set(child.id, { ...existingChild, parent: waveId });
+      }
+
+      // Rewrites move children to a new wave; prune old wave->child edge if present.
+      if (currentParentId && currentParentId !== waveId) {
+        const removeResult = await removeDep(currentParentId, child.id, repoPath);
+        if (!removeResult.ok && !isMissingDependencyError(removeResult.error)) {
+          throw new Error(
+            removeResult.error ??
+              `Failed to remove dependency ${currentParentId} -> ${child.id}`
+          );
+        }
       }
 
       const relationDep = await addDep(waveId, child.id, repoPath);
@@ -1011,6 +1055,37 @@ export async function applyOrchestrationSession(
       childCount: validChildren.length,
       children: validChildren.map((child) => ({ id: child.id, title: child.title })),
     });
+  }
+
+  if (sourceParentIds.size > 0) {
+    const refreshed = await listBeads(undefined, repoPath);
+    if (!refreshed.ok || !refreshed.data) {
+      throw new Error(
+        refreshed.error ?? "Failed to refresh beads before closing rewritten source waves"
+      );
+    }
+
+    const beadsById = new Map(refreshed.data.map((bead) => [bead.id, bead]));
+    const activeChildCounts = countActiveChildrenByParent(refreshed.data);
+
+    for (const parentId of sourceParentIds) {
+      if (createdWaveIds.has(parentId)) continue;
+
+      const parent = beadsById.get(parentId);
+      if (!isOpenOrchestratedWave(parent)) continue;
+
+      const activeChildren = activeChildCounts.get(parentId) ?? 0;
+      if (activeChildren > 0) continue;
+
+      const closeResult = await closeBead(
+        parentId,
+        `Rewritten by orchestration session ${sessionId}`,
+        repoPath
+      );
+      if (!closeResult.ok) {
+        throw new Error(closeResult.error ?? `Failed to close emptied source wave ${parentId}`);
+      }
+    }
   }
 
   return {
