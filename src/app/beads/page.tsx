@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
-import { startSession, abortSession } from "@/lib/terminal-api";
+import { startSession, startSceneSession, abortSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { FilterBar } from "@/components/filter-bar";
@@ -51,7 +51,13 @@ function BeadsPageInner() {
   const shippingByBeadId = terminals.reduce<Record<string, string>>(
     (acc, terminal) => {
       if (terminal.status === "running") {
-        acc[terminal.beadId] = terminal.sessionId;
+        if (terminal.beadIds && terminal.beadIds.length > 0) {
+          for (const bid of terminal.beadIds) {
+            acc[bid] = terminal.sessionId;
+          }
+        } else {
+          acc[terminal.beadId] = terminal.sessionId;
+        }
       }
       return acc;
     },
@@ -182,7 +188,10 @@ function BeadsPageInner() {
 
   const handleAbortShipping = useCallback(async (beadId: string) => {
     const running = terminals.find(
-      (terminal) => terminal.beadId === beadId && terminal.status === "running"
+      (terminal) =>
+        terminal.status === "running" &&
+        (terminal.beadId === beadId ||
+         (terminal.beadIds && terminal.beadIds.includes(beadId)))
     );
     if (!running) return;
 
@@ -192,8 +201,30 @@ function BeadsPageInner() {
       return;
     }
     updateStatus(running.sessionId, "aborted");
-    toast.success("Take terminated");
+    toast.success(running.beadIds ? "Scene terminated" : "Take terminated");
   }, [terminals, updateStatus]);
+
+  const handleSceneBeads = useCallback(
+    async (ids: string[]) => {
+      const firstBead = beads.find((b) => ids.includes(b.id));
+      const repo = (firstBead as unknown as Record<string, unknown>)?._repoPath as string | undefined;
+
+      const result = await startSceneSession(ids, repo ?? activeRepo ?? undefined);
+      if (!result.ok || !result.data) {
+        toast.error(result.error ?? "Failed to start scene session");
+        return;
+      }
+      upsertTerminal({
+        sessionId: result.data.id,
+        beadId: result.data.beadId,
+        beadTitle: result.data.beadTitle,
+        beadIds: result.data.beadIds,
+        status: "running",
+        startedAt: new Date().toISOString(),
+      });
+    },
+    [beads, activeRepo, upsertTerminal]
+  );
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
@@ -203,6 +234,7 @@ function BeadsPageInner() {
             selectedIds={selectedIds}
             onBulkUpdate={handleBulkUpdate}
             onClearSelection={handleClearSelection}
+            onSceneBeads={handleSceneBeads}
           />
         </div>
       )}

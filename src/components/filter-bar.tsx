@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
-import { X } from "lucide-react";
+import { X, Clapperboard } from "lucide-react";
 import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 
@@ -42,18 +42,32 @@ interface FilterBarProps {
   selectedIds?: string[];
   onBulkUpdate?: (fields: UpdateBeadInput) => void;
   onClearSelection?: () => void;
+  onSceneBeads?: (ids: string[]) => void;
 }
 
 export function BulkEditControls({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
-}: Required<FilterBarProps>) {
+  onSceneBeads,
+}: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
+  Pick<FilterBarProps, "onSceneBeads">) {
   return (
     <div className="flex flex-wrap items-center gap-1">
       <span className="text-sm font-medium">
         {selectedIds.length} selected
       </span>
+      {onSceneBeads && selectedIds.length >= 2 && (
+        <Button
+          variant="default"
+          size="sm"
+          className="gap-1"
+          onClick={() => onSceneBeads(selectedIds)}
+        >
+          <Clapperboard className="h-3.5 w-3.5" />
+          Scene!
+        </Button>
+      )}
       <Select
         onValueChange={(v) => onBulkUpdate({ type: v as BeadType })}
       >
@@ -192,6 +206,7 @@ export function FilterBar({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
+  onSceneBeads,
 }: FilterBarProps) {
   if (selectedIds && selectedIds.length > 0 && onBulkUpdate && onClearSelection) {
     return (
@@ -199,6 +214,7 @@ export function FilterBar({
         selectedIds={selectedIds}
         onBulkUpdate={onBulkUpdate}
         onClearSelection={onClearSelection}
+        onSceneBeads={onSceneBeads}
       />
     );
   }

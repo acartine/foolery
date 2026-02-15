@@ -109,6 +109,20 @@ function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string 
   ].join("\n");
 }
 
+function buildSceneCompletionFollowUp(beadIds: string[]): string {
+  return [
+    "Scene completion follow-up:",
+    `Handle this in one pass for all ${beadIds.length} beads.`,
+    "For EACH bead below, confirm its changes are merged according to your normal shipping guidelines.",
+    "Do not ask for another follow-up prompt until all listed beads are merge-confirmed (or blocked by a hard error).",
+    "For each bead after merge confirmation, run exactly one command to set verification state:",
+    ...beadIds.map((id) => buildVerificationStateCommand(id)),
+    "Beads in this scene:",
+    ...beadIds.map((id) => `- ${id}`),
+    "Then summarize per bead: merged yes/no and verification-state command result.",
+  ].join("\n");
+}
+
 function makeUserMessageLine(text: string): string {
   return JSON.stringify({
     type: "user",
@@ -620,6 +634,368 @@ export async function createSession(
     if (code === 0) {
       regroomAncestors(beadId, cwd).catch((err) => {
         console.error(`[terminal-manager] regroom failed for ${beadId}:`, err);
+      });
+    }
+
+    setTimeout(() => {
+      sessions.delete(id);
+    }, CLEANUP_DELAY_MS);
+  });
+
+  child.on("error", (err) => {
+    console.error(`[terminal-manager] [${id}] spawn error:`, err.message);
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
+    session.status = "error";
+    pushEvent({
+      type: "stderr",
+      data: `Process error: ${err.message}`,
+      timestamp: Date.now(),
+    });
+    pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    entry.process = null;
+
+    setTimeout(() => {
+      sessions.delete(id);
+    }, CLEANUP_DELAY_MS);
+  });
+
+  const initialPromptSent = sendUserTurn(prompt);
+  if (!initialPromptSent) {
+    closeInput();
+    session.status = "error";
+    child.kill("SIGTERM");
+    sessions.delete(id);
+    throw new Error("Failed to send initial prompt to claude");
+  }
+
+  return session;
+}
+
+export async function createSceneSession(
+  beadIds: string[],
+  repoPath?: string
+): Promise<TerminalSession> {
+  // Enforce max concurrent sessions
+  const running = Array.from(sessions.values()).filter(
+    (e) => e.session.status === "running"
+  );
+  if (running.length >= MAX_SESSIONS) {
+    throw new Error(`Max concurrent sessions (${MAX_SESSIONS}) reached`);
+  }
+
+  if (beadIds.length === 0) {
+    throw new Error("At least one bead ID is required for a scene session");
+  }
+
+  // Fetch all bead details in parallel
+  const beadResults = await Promise.all(
+    beadIds.map((bid) => showBead(bid, repoPath))
+  );
+  const beads = beadResults.map((r, i) => {
+    if (!r.ok || !r.data) {
+      throw new Error(`Failed to fetch bead ${beadIds[i]}: ${r.error ?? "unknown error"}`);
+    }
+    return r.data;
+  });
+
+  const id = generateId();
+
+  // Build combined prompt with all bead details
+  const beadBlocks = beads
+    .map(
+      (bead, i) =>
+        [
+          `--- Bead ${i + 1} of ${beads.length} ---`,
+          `ID: ${bead.id}`,
+          `Title: ${bead.title}`,
+          `Type: ${bead.type}`,
+          `Priority: P${bead.priority}`,
+          bead.description ? `\nDescription:\n${bead.description}` : "",
+          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
+          bead.notes ? `\nNotes:\n${bead.notes}` : "",
+        ]
+          .filter(Boolean)
+          .join("\n")
+    )
+    .join("\n\n");
+
+  const prompt = [
+    `You are in SCENE MODE. You have ${beads.length} beads to implement.`,
+    ``,
+    `IMPORTANT INSTRUCTIONS:`,
+    `1. Plan all beads first, then implement them with MAXIMUM PARALLELISM.`,
+    `2. Use the Task tool to spawn subagents for independent beads.`,
+    `3. Each bead should get its own worktree branch for isolation.`,
+    `4. After all beads are complete, land changes on main.`,
+    ``,
+    `WORKFLOW: First, enter plan mode. Read each bead, explore the codebase, identify dependencies between beads, and design an execution plan that maximizes parallelism. Write the plan, exit plan mode, then stop and wait for an execution follow-up prompt.`,
+    ``,
+    `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
+    ``,
+    beadBlocks,
+  ].join("\n");
+
+  const session: TerminalSession = {
+    id,
+    beadId: "scene",
+    beadTitle: `Scene: ${beads.length} beads`,
+    beadIds,
+    status: "running",
+    startedAt: new Date().toISOString(),
+  };
+
+  const emitter = new EventEmitter();
+  emitter.setMaxListeners(20);
+  const buffer: TerminalEvent[] = [];
+
+  const entry: SessionEntry = { session, process: null, emitter, buffer };
+  sessions.set(id, entry);
+
+  const args = [
+    "-p",
+    "--input-format", "stream-json",
+    "--verbose",
+    "--output-format", "stream-json",
+    "--dangerously-skip-permissions",
+  ];
+  const cwd = repoPath || process.cwd();
+
+  console.log(`[terminal-manager] Creating scene session ${id}`);
+  console.log(`[terminal-manager]   beadIds: ${beadIds.join(", ")}`);
+  console.log(`[terminal-manager]   cwd: ${cwd}`);
+  console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
+
+  const child = spawn("claude", args, {
+    cwd,
+    env: { ...process.env },
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+  entry.process = child;
+
+  console.log(`[terminal-manager]   pid: ${child.pid ?? "failed to spawn"}`);
+
+  const pushEvent = (evt: TerminalEvent) => {
+    if (buffer.length >= MAX_BUFFER) buffer.shift();
+    buffer.push(evt);
+    emitter.emit("data", evt);
+  };
+
+  let stdinClosed = false;
+  let closeInputTimer: NodeJS.Timeout | null = null;
+  const autoAnsweredToolUseIds = new Set<string>();
+  const autoExecutionPrompt = [
+    "Execution follow-up:",
+    "Exit planning mode if needed, then execute the plan now.",
+    "Apply concrete file edits, run relevant verification commands, and report the final outcome.",
+  ].join("\n");
+  const autoShipCompletionPrompt = buildSceneCompletionFollowUp(beadIds);
+  let executionPromptSent = false;
+  let shipCompletionPromptSent = false;
+
+  const closeInput = () => {
+    if (stdinClosed) return;
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
+    child.stdin?.end();
+  };
+
+  const cancelInputClose = () => {
+    if (!closeInputTimer) return;
+    clearTimeout(closeInputTimer);
+    closeInputTimer = null;
+  };
+
+  const scheduleInputClose = () => {
+    cancelInputClose();
+    closeInputTimer = setTimeout(() => {
+      closeInput();
+    }, INPUT_CLOSE_GRACE_MS);
+  };
+
+  const sendUserTurn = (text: string): boolean => {
+    if (!child.stdin || child.stdin.destroyed || child.stdin.writableEnded || stdinClosed) {
+      return false;
+    }
+    cancelInputClose();
+    const line = makeUserMessageLine(text);
+    try {
+      child.stdin.write(line);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const maybeSendExecutionPrompt = (): boolean => {
+    if (executionPromptSent) return false;
+    const sent = sendUserTurn(autoExecutionPrompt);
+    if (sent) {
+      executionPromptSent = true;
+      pushEvent({
+        type: "stdout",
+        data: "\x1b[33m-> Auto-sent execution follow-up prompt\x1b[0m\n",
+        timestamp: Date.now(),
+      });
+      return true;
+    }
+    pushEvent({
+      type: "stderr",
+      data: "Failed to send execution follow-up prompt.\n",
+      timestamp: Date.now(),
+    });
+    return false;
+  };
+
+  const maybeSendShipCompletionPrompt = (): boolean => {
+    if (!executionPromptSent || shipCompletionPromptSent) return false;
+    const sent = sendUserTurn(autoShipCompletionPrompt);
+    if (sent) {
+      shipCompletionPromptSent = true;
+      pushEvent({
+        type: "stdout",
+        data: "\x1b[33m-> Auto-sent scene completion follow-up prompt\x1b[0m\n",
+        timestamp: Date.now(),
+      });
+      return true;
+    }
+    pushEvent({
+      type: "stderr",
+      data: "Failed to send scene completion follow-up prompt.\n",
+      timestamp: Date.now(),
+    });
+    return false;
+  };
+
+  const handleResultFollowUp = (): boolean => {
+    if (maybeSendExecutionPrompt()) return true;
+    if (maybeSendShipCompletionPrompt()) return true;
+    return false;
+  };
+
+  const maybeAutoAnswerAskUser = (obj: JsonObject) => {
+    if (obj.type !== "assistant") return;
+
+    const msg = toObject(obj.message);
+    const content = msg?.content;
+    if (!Array.isArray(content)) return;
+
+    for (const rawBlock of content) {
+      const block = toObject(rawBlock);
+      if (!block) continue;
+      if (block.type !== "tool_use" || block.name !== "AskUserQuestion") continue;
+
+      const toolUseId = typeof block.id === "string" ? block.id : null;
+      if (!toolUseId || autoAnsweredToolUseIds.has(toolUseId)) continue;
+
+      autoAnsweredToolUseIds.add(toolUseId);
+      const autoResponse = buildAutoAskUserResponse(block.input);
+      const sent = sendUserTurn(autoResponse);
+
+      if (sent) {
+        pushEvent({
+          type: "stdout",
+          data: `\x1b[33m-> Auto-answered AskUserQuestion (${toolUseId.slice(0, 12)}...)\x1b[0m\n`,
+          timestamp: Date.now(),
+        });
+      } else {
+        pushEvent({
+          type: "stderr",
+          data: "Failed to send auto-response for AskUserQuestion.\n",
+          timestamp: Date.now(),
+        });
+      }
+    }
+  };
+
+  // Parse stream-json NDJSON output from claude CLI
+  let lineBuffer = "";
+  child.stdout?.on("data", (chunk: Buffer) => {
+    lineBuffer += chunk.toString();
+    const lines = lineBuffer.split("\n");
+    lineBuffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const obj = JSON.parse(line) as Record<string, unknown>;
+        maybeAutoAnswerAskUser(obj);
+
+        if (obj.type === "result") {
+          if (!handleResultFollowUp()) {
+            scheduleInputClose();
+          }
+        } else {
+          cancelInputClose();
+        }
+
+        const display = formatStreamEvent(obj);
+        if (display) {
+          console.log(`[terminal-manager] [${id}] display (${display.length} chars): ${display.slice(0, 150).replace(/\n/g, "\\n")}`);
+          pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+        }
+      } catch {
+        console.log(`[terminal-manager] [${id}] raw stdout: ${line.slice(0, 150)}`);
+        pushEvent({ type: "stdout", data: line + "\n", timestamp: Date.now() });
+      }
+    }
+  });
+
+  child.stderr?.on("data", (chunk: Buffer) => {
+    const text = chunk.toString();
+    console.log(`[terminal-manager] [${id}] stderr: ${text.slice(0, 200)}`);
+    pushEvent({ type: "stderr", data: text, timestamp: Date.now() });
+  });
+
+  child.on("close", (code, signal) => {
+    if (lineBuffer.trim()) {
+      try {
+        const obj = JSON.parse(lineBuffer) as Record<string, unknown>;
+        maybeAutoAnswerAskUser(obj);
+
+        if (obj.type === "result") {
+          if (!handleResultFollowUp()) {
+            scheduleInputClose();
+          }
+        } else {
+          cancelInputClose();
+        }
+
+        const display = formatStreamEvent(obj);
+        if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+      } catch {
+        pushEvent({ type: "stdout", data: lineBuffer + "\n", timestamp: Date.now() });
+      }
+      lineBuffer = "";
+    }
+
+    console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events`);
+    if (closeInputTimer) {
+      clearTimeout(closeInputTimer);
+      closeInputTimer = null;
+    }
+    stdinClosed = true;
+    session.exitCode = code ?? 1;
+    session.status = code === 0 ? "completed" : "error";
+    pushEvent({
+      type: "exit",
+      data: String(code ?? 1),
+      timestamp: Date.now(),
+    });
+    entry.process = null;
+
+    // Regroom ancestors for all beads in the scene
+    if (code === 0) {
+      Promise.all(
+        beadIds.map((bid) => regroomAncestors(bid, cwd))
+      ).catch((err) => {
+        console.error(`[terminal-manager] regroom failed for scene:`, err);
       });
     }
 

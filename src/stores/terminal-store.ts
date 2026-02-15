@@ -5,6 +5,7 @@ export interface ActiveTerminal {
   sessionId: string;
   beadId: string;
   beadTitle: string;
+  beadIds?: string[];
   status: TerminalSessionStatus;
   startedAt: string;
 }

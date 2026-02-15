@@ -21,6 +21,23 @@ export async function startSession(
   return { ok: true, data: json.data };
 }
 
+export async function startSceneSession(
+  beadIds: string[],
+  repo?: string
+): Promise<BdResult<TerminalSession>> {
+  const body: Record<string, unknown> = { beadIds };
+  if (repo) body._repo = repo;
+
+  const res = await fetch(BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  if (!res.ok) return { ok: false, error: json.error ?? "Failed to start scene session" };
+  return { ok: true, data: json.data };
+}
+
 export async function abortSession(sessionId: string): Promise<BdResult<void>> {
   const res = await fetch(BASE, {
     method: "DELETE",

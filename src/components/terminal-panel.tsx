@@ -173,10 +173,19 @@ export function TerminalPanel() {
       fitRef.current = fitAddon;
       const liveTerm = term;
 
-      liveTerm.writeln(
-        `\x1b[36m▶ Rolling beat: ${beadId}\x1b[0m`
-      );
-      liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
+      if (activeTerminal?.beadIds) {
+        liveTerm.writeln(
+          `\x1b[36m▶ Scene: rolling ${activeTerminal.beadIds.length} beads\x1b[0m`
+        );
+        for (const bid of activeTerminal.beadIds) {
+          liveTerm.writeln(`\x1b[90m  - ${bid}\x1b[0m`);
+        }
+      } else {
+        liveTerm.writeln(
+          `\x1b[36m▶ Rolling beat: ${beadId}\x1b[0m`
+        );
+        liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
+      }
       liveTerm.writeln("");
 
       const cleanup = connectToSession(
@@ -263,7 +272,11 @@ export function TerminalPanel() {
                   onClick={() => handleTabClick(terminal.sessionId)}
                   title={isPending ? "Click to keep open" : `${terminal.beadId} - ${terminal.beadTitle}`}
                 >
-                  <span className="font-mono">{shortId(terminal.beadId)}</span>
+                  <span className="font-mono">
+                    {terminal.beadIds
+                      ? `Scene (${terminal.beadIds.length})`
+                      : shortId(terminal.beadId)}
+                  </span>
                   {terminal.beadTitle && (
                     <span className="truncate text-white/50">
                       {terminal.beadTitle.slice(0, 40)}
