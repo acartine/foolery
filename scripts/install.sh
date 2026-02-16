@@ -599,8 +599,13 @@ remove_path "\$LAUNCHER_PATH"
 remove_if_empty "\$INSTALL_ROOT"
 remove_if_empty "\$BIN_DIR"
 
-log "Uninstall complete."
+  log "Uninstall complete."
 UNINSTALL
+
+  if ! bash -n "\$tmp_script"; then
+    rm -f "\$tmp_script"
+    fail "Generated uninstall helper failed syntax validation."
+  fi
 
   chmod +x "\$tmp_script"
   "\$tmp_script" "\$APP_DIR" "\$STATE_DIR" "\$LAUNCHER_PATH" "\$BIN_DIR" "\$INSTALL_ROOT"
