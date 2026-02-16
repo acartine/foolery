@@ -49,3 +49,5 @@ storybook-static
 
 # playwright mcp
 .playwright-mcp/
+# bd worktree
+codex-release-wrapper/
