@@ -735,13 +735,27 @@ read_registry_paths() {
   fi
 }
 
+_REGISTRY_CACHE=""
+_REGISTRY_CACHE_VALID=0
+
+refresh_registry_cache() {
+  _REGISTRY_CACHE="$(read_registry_paths)"
+  _REGISTRY_CACHE_VALID=1
+}
+
+invalidate_registry_cache() {
+  _REGISTRY_CACHE_VALID=0
+}
+
 is_path_registered() {
-  local target="$1" existing
-  existing="$(read_registry_paths)"
-  if [[ -z "$existing" ]]; then
+  local target="$1"
+  if [[ "$_REGISTRY_CACHE_VALID" -ne 1 ]]; then
+    refresh_registry_cache
+  fi
+  if [[ -z "$_REGISTRY_CACHE" ]]; then
     return 1
   fi
-  printf '%s\n' "$existing" | grep -qxF "$target"
+  printf '%s\n' "$_REGISTRY_CACHE" | grep -qxF "$target"
 }
 
 show_mounted_repos() {
@@ -772,6 +786,7 @@ write_registry_entry() {
   else
     write_registry_entry_sed "$repo_path" "$repo_name" "$now"
   fi
+  invalidate_registry_cache
 }
 
 write_registry_entry_jq() {
@@ -790,10 +805,19 @@ write_registry_entry_jq() {
   mv "$tmp_file" "$REGISTRY_FILE"
 }
 
+escape_json_string() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  printf '%s' "$s"
+}
+
 write_registry_entry_sed() {
   local repo_path="$1" repo_name="$2" now="$3"
-  local entry
-  entry="$(printf '{"path": "%s", "name": "%s", "addedAt": "%s"}' "$repo_path" "$repo_name" "$now")"
+  local safe_path safe_name entry
+  safe_path="$(escape_json_string "$repo_path")"
+  safe_name="$(escape_json_string "$repo_name")"
+  entry="$(printf '{"path": "%s", "name": "%s", "addedAt": "%s"}' "$safe_path" "$safe_name" "$now")"
 
   if [[ ! -f "$REGISTRY_FILE" ]]; then
     printf '{"repos": [%s]}\n' "$entry" >"$REGISTRY_FILE"
@@ -819,7 +843,7 @@ scan_and_mount_repos() {
   local scan_dir="$1"
   if [[ ! -d "$scan_dir" ]]; then
     log "Directory does not exist: $scan_dir"
-    return 1
+    return 0
   fi
 
   local found_repos
@@ -864,6 +888,8 @@ mount_selected_repos() {
   local found_repos="$1" choice
   read -r -p "Enter numbers to mount (comma-separated, or 'all') [all]: " choice </dev/tty || choice=""
   choice="${choice:-all}"
+  # Strip spaces so "1, 2" becomes "1,2"
+  choice="${choice// /}"
 
   local i=0
   while IFS= read -r beads_dir; do
