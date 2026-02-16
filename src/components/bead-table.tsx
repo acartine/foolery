@@ -41,7 +41,7 @@ import { NotesDialog } from "@/components/notes-dialog";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { isInternalLabel } from "@/lib/wave-slugs";
+import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 
 function SummaryColumn({
   text,
@@ -202,7 +202,7 @@ export function BeadTable({
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
     data.forEach((bead) => bead.labels?.forEach((l) => {
-      if (!isInternalLabel(l)) labelSet.add(l);
+      if (!isInternalLabel(l) && !isReadOnlyLabel(l)) labelSet.add(l);
     }));
     return Array.from(labelSet).sort();
   }, [data]);

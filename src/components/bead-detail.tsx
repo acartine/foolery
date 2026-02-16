@@ -20,7 +20,7 @@ import {
 import { toast } from "sonner";
 import { X, Clapperboard } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
-import { isWaveLabel, isInternalLabel } from "@/lib/wave-slugs";
+import { isWaveLabel, isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
@@ -223,7 +223,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               {visibleLabels.map((label) => (
                 <Badge key={label} variant="secondary" className="gap-1 pr-1">
                   {label}
-                  {onUpdate && (
+                  {onUpdate && !isReadOnlyLabel(label) && (
                     <button
                       type="button"
                       title="Remove label" className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"

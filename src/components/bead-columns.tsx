@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, X, Clapperboard, Square, Eye } from "lucide-react";
-import { isWaveLabel, isInternalLabel, extractWaveSlug } from "@/lib/wave-slugs";
+import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -295,7 +295,7 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
             className={`inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
           >
             {label}
-            {onUpdateBead && (
+            {onUpdateBead && !isReadOnlyLabel(label) && (
               <button
                 type="button"
                 className="ml-0.5 rounded-full hover:bg-black/10 p-0.5 leading-none"

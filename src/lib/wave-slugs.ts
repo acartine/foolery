@@ -115,7 +115,12 @@ export function isWaveLabel(label: string): boolean {
 
 /** Labels that are internal bookkeeping and should not render as user-visible tag badges. */
 export function isInternalLabel(label: string): boolean {
-  return isWaveLabel(label) || label.startsWith("stage:") || label.startsWith("attempts:");
+  return isWaveLabel(label) || label.startsWith("stage:");
+}
+
+/** Labels that should render but cannot be removed by the user (no X button). */
+export function isReadOnlyLabel(label: string): boolean {
+  return label.startsWith("attempts:");
 }
 
 export function isWaveSlugLabel(label: string): boolean {
