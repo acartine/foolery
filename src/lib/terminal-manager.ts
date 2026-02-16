@@ -378,7 +378,11 @@ export async function createSession(
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
           ``,
-          `WORKFLOW: First, enter plan mode to explore the codebase and design your approach. Write a clear plan, exit plan mode, then stop and wait for an execution follow-up prompt before implementing.`,
+          `IMPORTANT INSTRUCTIONS:`,
+          `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
+          `2. Use the Task tool to spawn subagents for independent subtasks whenever parallel execution is possible.`,
+          `3. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
+          `4. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
@@ -442,21 +446,14 @@ export async function createSession(
   let stdinClosed = false;
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
-  const autoExecutionPrompt =
-    customPrompt || isWave
-      ? null
-      : [
-          "Execution follow-up:",
-          "Exit planning mode if needed, then execute the plan now.",
-          "Apply concrete file edits, run relevant verification commands, and report the final outcome.",
-        ].join("\n");
+  const autoExecutionPrompt: string | null = null;
   const autoShipCompletionPrompt =
     customPrompt
       ? null
       : isWave
         ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
         : buildSingleBeadCompletionFollowUp(bead.id);
-  let executionPromptSent = autoExecutionPrompt === null;
+  let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
   const closeInput = () => {
