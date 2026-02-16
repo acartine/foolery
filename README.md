@@ -34,6 +34,7 @@ Run Foolery like an app:
 
 ```bash
 foolery start
+foolery open
 foolery stop
 foolery restart
 foolery status
@@ -41,8 +42,10 @@ foolery uninstall
 ```
 
 `foolery start` launches the backend in the background, prints log paths, opens your browser automatically, and returns immediately.
+`foolery open` opens Foolery in your browser without spawning duplicate tabs when one is already open.
 Default logs are in `~/.local/state/foolery/logs/stdout.log` and `~/.local/state/foolery/logs/stderr.log`.
 `foolery uninstall` removes the runtime bundle, local state/logs, and the launcher binary.
+The launcher also shows an update banner when a newer Foolery release is available.
 
 To install a specific release tag instead of latest:
 

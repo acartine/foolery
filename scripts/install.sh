@@ -92,9 +92,18 @@ STDERR_LOG="\${FOOLERY_STDERR_LOG:-\$LOG_DIR/stderr.log}"
 NO_BROWSER="\${FOOLERY_NO_BROWSER:-0}"
 WAIT_FOR_READY="\${FOOLERY_WAIT_FOR_READY:-0}"
 URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
+RELEASE_OWNER="\${FOOLERY_RELEASE_OWNER:-$RELEASE_OWNER}"
+RELEASE_REPO="\${FOOLERY_RELEASE_REPO:-$RELEASE_REPO}"
+UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
+UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
+UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
 
 if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
   URL="http://127.0.0.1:\$PORT"
+fi
+
+if [[ ! "\$UPDATE_CHECK_INTERVAL_SECONDS" =~ ^[0-9]+$ ]]; then
+  UPDATE_CHECK_INTERVAL_SECONDS=21600
 fi
 
 log() {
@@ -151,9 +160,200 @@ clear_stale_pid() {
   fi
 }
 
+read_installed_version() {
+  if [[ ! -f "\$APP_DIR/package.json" ]]; then
+    return 1
+  fi
+
+  local version
+  version="\$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*$/\1/p' "\$APP_DIR/package.json" | head -n 1)"
+  if [[ -z "\$version" ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "\$version"
+}
+
+semver_triplet() {
+  local raw="\$1"
+  raw="\${raw#v}"
+  raw="\${raw%%-*}"
+  raw="\${raw%%+*}"
+
+  local major minor patch
+  IFS='.' read -r major minor patch _ <<<"\$raw"
+
+  if [[ ! "\$major" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+  if [[ -n "\${minor:-}" && ! "\$minor" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+  if [[ -n "\${patch:-}" && ! "\$patch" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+
+  printf '%s %s %s\n' "\$major" "\${minor:-0}" "\${patch:-0}"
+}
+
+is_newer_version() {
+  local installed="\$1"
+  local latest="\$2"
+  local installed_triplet latest_triplet
+
+  if ! installed_triplet="\$(semver_triplet "\$installed")"; then
+    return 1
+  fi
+  if ! latest_triplet="\$(semver_triplet "\$latest")"; then
+    return 1
+  fi
+
+  local i_major i_minor i_patch
+  local l_major l_minor l_patch
+  read -r i_major i_minor i_patch <<<"\$installed_triplet"
+  read -r l_major l_minor l_patch <<<"\$latest_triplet"
+
+  if ((l_major > i_major)); then
+    return 0
+  fi
+  if ((l_major < i_major)); then
+    return 1
+  fi
+  if ((l_minor > i_minor)); then
+    return 0
+  fi
+  if ((l_minor < i_minor)); then
+    return 1
+  fi
+
+  ((l_patch > i_patch))
+}
+
+read_cached_latest_tag() {
+  if [[ ! -f "\$UPDATE_CHECK_FILE" ]]; then
+    return 1
+  fi
+
+  local checked_at latest_tag now
+  checked_at="\$(sed -n '1p' "\$UPDATE_CHECK_FILE" 2>/dev/null || true)"
+  latest_tag="\$(sed -n '2p' "\$UPDATE_CHECK_FILE" 2>/dev/null || true)"
+
+  if [[ ! "\$checked_at" =~ ^[0-9]+$ ]] || [[ -z "\$latest_tag" ]]; then
+    return 1
+  fi
+
+  now="\$(date +%s)"
+  if ((now - checked_at > UPDATE_CHECK_INTERVAL_SECONDS)); then
+    return 1
+  fi
+
+  printf '%s\n' "\$latest_tag"
+}
+
+write_cached_latest_tag() {
+  local latest_tag="\$1"
+  local now
+  now="\$(date +%s)"
+  mkdir -p "\$STATE_DIR" >/dev/null 2>&1 || true
+  printf '%s\n%s\n' "\$now" "\$latest_tag" >"\$UPDATE_CHECK_FILE" 2>/dev/null || true
+}
+
+fetch_latest_release_tag() {
+  if ! command -v curl >/dev/null 2>&1; then
+    return 1
+  fi
+
+  local api_url payload latest_tag
+  api_url="https://api.github.com/repos/\$RELEASE_OWNER/\$RELEASE_REPO/releases/latest"
+  payload="\$(curl --silent --show-error --location --max-time 2 --retry 1 "\$api_url" 2>/dev/null || true)"
+  latest_tag="\$(printf '%s\n' "\$payload" | sed -nE 's/.*"tag_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' | head -n 1)"
+
+  if [[ -z "\$latest_tag" ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "\$latest_tag"
+}
+
+maybe_print_update_banner() {
+  if [[ "\$UPDATE_CHECK_ENABLED" != "1" ]]; then
+    return 0
+  fi
+
+  local installed_version latest_tag
+  if ! installed_version="\$(read_installed_version)"; then
+    return 0
+  fi
+
+  if ! latest_tag="\$(read_cached_latest_tag)"; then
+    if ! latest_tag="\$(fetch_latest_release_tag)"; then
+      return 0
+    fi
+    write_cached_latest_tag "\$latest_tag"
+  fi
+
+  if is_newer_version "\$installed_version" "\$latest_tag"; then
+    log "------------------------------------------------------------"
+    log "New Foolery version available: \${latest_tag} (installed \${installed_version})"
+    log "Upgrade: curl -fsSL https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/install.sh | bash"
+    log "------------------------------------------------------------"
+  fi
+}
+
+macos_browser_has_url_open() {
+  if [[ "\$(uname -s)" != "Darwin" ]]; then
+    return 1
+  fi
+  if ! command -v osascript >/dev/null 2>&1; then
+    return 1
+  fi
+
+  local app result
+  local -a browsers=("Safari" "Google Chrome" "Chromium" "Brave Browser" "Arc" "Microsoft Edge")
+  for app in "\${browsers[@]}"; do
+    result="\$(osascript - "\$app" "\$URL" <<'APPLESCRIPT' 2>/dev/null || true
+on run argv
+  set appName to item 1 of argv
+  set targetPrefix to item 2 of argv
+  try
+    tell application appName
+      if not running then return "0"
+      repeat with w in windows
+        repeat with t in tabs of w
+          try
+            set tabURL to (URL of t) as text
+            if tabURL starts with targetPrefix then
+              return "1"
+            end if
+          end try
+        end repeat
+      end repeat
+    end tell
+  end try
+  return "0"
+end run
+APPLESCRIPT
+)"
+    if [[ "\$result" == "1" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+browser_has_url_open() {
+  macos_browser_has_url_open
+}
+
 open_browser() {
   if [[ "\$NO_BROWSER" == "1" ]]; then
     log "Skipping browser open (FOOLERY_NO_BROWSER=1). URL: \$URL"
+    return 0
+  fi
+
+  if browser_has_url_open; then
+    log "Foolery is already open in a browser at \$URL"
     return 0
   fi
 
@@ -289,6 +489,17 @@ status_cmd() {
   log "Not running."
 }
 
+open_cmd() {
+  clear_stale_pid
+  if is_running; then
+    open_browser
+    return 0
+  fi
+
+  log "Foolery is not running. Starting it first."
+  start_cmd "\$@"
+}
+
 uninstall_cmd() {
   stop_cmd || true
 
@@ -350,6 +561,7 @@ Usage: foolery <command>
 
 Commands:
   start     Start Foolery in the background and open browser
+  open      Open Foolery in your browser (skips if already open)
   stop      Stop the background Foolery process
   restart   Restart Foolery
   status    Show process/log status
@@ -362,9 +574,14 @@ main() {
   local cmd="\${1:-start}"
   shift || true
 
+  maybe_print_update_banner
+
   case "\$cmd" in
     start)
       start_cmd "\$@"
+      ;;
+    open)
+      open_cmd "\$@"
       ;;
     stop)
       stop_cmd "\$@"
@@ -459,7 +676,7 @@ main() {
   fi
 
   log "Install complete"
-  log "Commands: foolery start | foolery stop | foolery restart | foolery status | foolery uninstall"
+  log "Commands: foolery start | foolery open | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)
