@@ -70,6 +70,16 @@ bun run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
+## Release
+
+Create and publish a GitHub release from `main`:
+
+```bash
+bun run release -- v0.1.1
+```
+
+This runs `gh release create <tag> --target main --generate-notes --latest` and triggers the runtime artifact workflow.
+
 ## Views
 
 ### Beats
