@@ -316,19 +316,20 @@ on run argv
   set appName to item 1 of argv
   set targetPrefix to item 2 of argv
   try
-    tell application appName
-      if not running then return "0"
-      repeat with w in windows
-        repeat with t in tabs of w
-          try
-            set tabURL to (URL of t) as text
-            if tabURL starts with targetPrefix then
-              return "1"
-            end if
-          end try
+    if application appName is running then
+      tell application appName
+        repeat with w in windows
+          repeat with t in tabs of w
+            try
+              set tabURL to (URL of t) as text
+              if tabURL starts with targetPrefix then
+                return "1"
+              end if
+            end try
+          end repeat
         end repeat
-      end repeat
-    end tell
+      end tell
+    end if
   end try
   return "0"
 end run
