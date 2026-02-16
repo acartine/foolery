@@ -334,6 +334,10 @@ export function BeadTable({
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
+      // Skip keyboard handling when this table is hidden (e.g. another view tab is active)
+      const container = tableContainerRef.current;
+      if (container && container.offsetParent === null) return;
+
       if (
         e.key.toLowerCase() === "h" &&
         e.shiftKey &&
