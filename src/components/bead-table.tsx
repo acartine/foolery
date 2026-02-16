@@ -282,10 +282,16 @@ export function BeadTable({
     setRowSelection({});
   }, [selectionVersion]);
 
+  // Clear selection when active repo changes
+  useEffect(() => {
+    setRowSelection({});
+  }, [activeRepo]);
+
   const table = useReactTable({
     data: sortedData,
     columns,
     state: { sorting, rowSelection },
+    getRowId: (row) => row.id,
     onSortingChange: (updater) => {
       setSorting(updater);
       setUserSorted(true);
