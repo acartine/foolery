@@ -87,6 +87,7 @@ PID_FILE="\${FOOLERY_PID_FILE:-\$STATE_DIR/foolery.pid}"
 STDOUT_LOG="\${FOOLERY_STDOUT_LOG:-\$LOG_DIR/stdout.log}"
 STDERR_LOG="\${FOOLERY_STDERR_LOG:-\$LOG_DIR/stderr.log}"
 NO_BROWSER="\${FOOLERY_NO_BROWSER:-0}"
+WAIT_FOR_READY="\${FOOLERY_WAIT_FOR_READY:-0}"
 URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
 
 if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
@@ -222,7 +223,9 @@ start_cmd() {
     fail "Failed to capture process ID for started server."
   fi
 
-  if ! wait_for_startup "\$pid"; then
+  # Detect immediate startup failure without blocking normal background startup.
+  sleep 0.2
+  if ! kill -0 "\$pid" >/dev/null 2>&1; then
     rm -f "\$PID_FILE"
     fail "Server exited during startup. Check logs: \$STDERR_LOG"
   fi
@@ -231,6 +234,13 @@ start_cmd() {
   log "stdout: \$STDOUT_LOG"
   log "stderr: \$STDERR_LOG"
   open_browser
+
+  if [[ "\$WAIT_FOR_READY" == "1" ]]; then
+    if ! wait_for_startup "\$pid"; then
+      rm -f "\$PID_FILE"
+      fail "Server exited during startup. Check logs: \$STDERR_LOG"
+    fi
+  fi
 }
 
 stop_cmd() {

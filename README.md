@@ -39,7 +39,7 @@ foolery restart
 foolery status
 ```
 
-`foolery start` launches the backend in the background, writes logs, and opens your browser automatically.
+`foolery start` launches the backend in the background, prints log paths, opens your browser automatically, and returns immediately.
 Default logs are in `~/.local/state/foolery/logs/stdout.log` and `~/.local/state/foolery/logs/stderr.log`.
 
 To install a specific release tag instead of latest:
