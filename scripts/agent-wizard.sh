@@ -2,8 +2,8 @@
 # Agent discovery wizard for Foolery install.
 # Detects supported AI agents on PATH and writes multi-agent settings.
 #
-# Designed to be sourced by install.sh; avoids top-level declare -A
-# for compatibility with Bash 3.2 (macOS default).
+# Designed to be sourced by install.sh; compatible with Bash 3.2+
+# (macOS default) — no associative arrays or bash 4+ expansions.
 
 CONFIG_DIR="${HOME}/.config/foolery"
 SETTINGS_FILE="${CONFIG_DIR}/settings.toml"
@@ -14,6 +14,10 @@ KNOWN_AGENTS=(claude codex gemini)
 _wizard_log() {
   printf '[foolery-install] %s\n' "$*"
 }
+
+# Bash 3.2-safe key-value helpers (replaces associative arrays).
+_kv_set() { eval "_KV_${1}__${2}=\$3"; }
+_kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
 
 # Return the human-readable label for a known agent id.
 _agent_label() {
@@ -28,7 +32,7 @@ _agent_label() {
 # ── TOML writer ───────────────────────────────────────────────
 
 # Write a complete settings file from the collected state.
-# Reads from globals: FOUND_AGENTS, AGENT_MODELS, ACTION_MAP.
+# Reads from globals: FOUND_AGENTS; uses _kv_get for AGENT_MODELS/ACTION_MAP.
 _write_settings_toml() {
   mkdir -p "$CONFIG_DIR"
 
@@ -42,8 +46,10 @@ _write_settings_toml() {
       lbl="$(_agent_label "$aid")"
       printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
         "$aid" "$aid" "$lbl"
-      if [[ -n "${AGENT_MODELS[$aid]:-}" ]]; then
-        printf 'model = "%s"\n' "${AGENT_MODELS[$aid]}"
+      local _model
+      _model="$(_kv_get AGENT_MODELS "$aid" "")"
+      if [[ -n "$_model" ]]; then
+        printf 'model = "%s"\n' "$_model"
       fi
       printf '\n'
     done
@@ -51,7 +57,7 @@ _write_settings_toml() {
     printf '[actions]\n'
     local action
     for action in take scene direct breakdown hydration; do
-      printf '%s = "%s"\n' "$action" "${ACTION_MAP[$action]:-default}"
+      printf '%s = "%s"\n' "$action" "$(_kv_get ACTION_MAP "$action" "default")"
     done
   } > "$SETTINGS_FILE"
 }
@@ -126,7 +132,7 @@ _prompt_action_mappings() {
   for ((i = 0; i < ${#action_names[@]}; i++)); do
     local chosen
     chosen="$(_prompt_action_choice "${action_labels[$i]}" "${FOUND_AGENTS[@]}")"
-    ACTION_MAP[${action_names[$i]}]="$chosen"
+    _kv_set ACTION_MAP "${action_names[$i]}" "$chosen"
   done
 }
 
@@ -137,7 +143,7 @@ _prompt_all_models() {
   for aid in "${FOUND_AGENTS[@]}"; do
     local model
     model="$(_prompt_model "$aid")"
-    AGENT_MODELS[$aid]="$model"
+    _kv_set AGENT_MODELS "$aid" "$model"
   done
 }
 
@@ -152,9 +158,7 @@ maybe_agent_wizard() {
   printf '\nWould you like Foolery to scan for and auto-register AI agents? [Y/n] '
   local answer
   read -r answer </dev/tty || true
-  if [[ "${answer,,}" == "n" ]]; then
-    return 0
-  fi
+  case "$answer" in [nN]) return 0 ;; esac
 
   detect_agents
 
@@ -163,16 +167,14 @@ maybe_agent_wizard() {
     return 0
   fi
 
-  # Associative arrays declared inside the function to avoid
-  # top-level declare -A issues with set -u on older Bash.
-  declare -A AGENT_MODELS=()
-  declare -A ACTION_MAP=()
+  # AGENT_MODELS and ACTION_MAP use _kv_set/_kv_get (bash 3.2-safe).
+  :
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local action
     for action in take scene direct breakdown hydration; do
-      ACTION_MAP[$action]="$sole"
+      _kv_set ACTION_MAP "$action" "$sole"
     done
     _wizard_log "Registered $sole as default agent for all actions."
   else

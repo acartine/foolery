@@ -26,6 +26,10 @@ _setup_confirm() {
   esac
 }
 
+# Bash 3.2-safe key-value helpers (replaces associative arrays).
+_kv_set() { eval "_KV_${1}__${2}=\$3"; }
+_kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
+
 # ---------------------------------------------------------------------------
 # Repo discovery wizard
 # ---------------------------------------------------------------------------
@@ -331,8 +335,10 @@ _write_settings_toml() {
       lbl="$(_agent_label "$aid")"
       printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
         "$aid" "$aid" "$lbl"
-      if [[ -n "${AGENT_MODELS[$aid]:-}" ]]; then
-        printf 'model = "%s"\n' "${AGENT_MODELS[$aid]}"
+      local _model
+      _model="$(_kv_get AGENT_MODELS "$aid" "")"
+      if [[ -n "$_model" ]]; then
+        printf 'model = "%s"\n' "$_model"
       fi
       printf '\n'
     done
@@ -340,7 +346,7 @@ _write_settings_toml() {
     printf '[actions]\n'
     local action
     for action in take scene direct breakdown hydration; do
-      printf '%s = "%s"\n' "$action" "${ACTION_MAP[$action]:-default}"
+      printf '%s = "%s"\n' "$action" "$(_kv_get ACTION_MAP "$action" "default")"
     done
   } > "$_AGENT_SETTINGS_FILE"
 }
@@ -404,7 +410,7 @@ _prompt_action_mappings() {
   for ((i = 0; i < ${#action_names[@]}; i++)); do
     local chosen
     chosen="$(_prompt_action_choice "${action_labels[$i]}" "${FOUND_AGENTS[@]}")"
-    ACTION_MAP[${action_names[$i]}]="$chosen"
+    _kv_set ACTION_MAP "${action_names[$i]}" "$chosen"
   done
 }
 
@@ -414,7 +420,7 @@ _prompt_all_models() {
   for aid in "${FOUND_AGENTS[@]}"; do
     local model
     model="$(_prompt_model "$aid")"
-    AGENT_MODELS[$aid]="$model"
+    _kv_set AGENT_MODELS "$aid" "$model"
   done
 }
 
@@ -431,14 +437,14 @@ _agent_wizard() {
     return 0
   fi
 
-  declare -A AGENT_MODELS=()
-  declare -A ACTION_MAP=()
+  # AGENT_MODELS and ACTION_MAP use _kv_set/_kv_get (bash 3.2-safe).
+  :
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local action
     for action in take scene direct breakdown hydration; do
-      ACTION_MAP[$action]="$sole"
+      _kv_set ACTION_MAP "$action" "$sole"
     done
     _setup_log "Registered $sole as default agent for all actions."
   else
