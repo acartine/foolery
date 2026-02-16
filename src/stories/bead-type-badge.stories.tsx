@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { BeadTypeBadge } from '@/components/badges/bead-type-badge';
+import { BeadTypeBadge } from '@/components/bead-type-badge';
 import type { BeadType } from '@/lib/types';
 import '@/app/globals.css';
 

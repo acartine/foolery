@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BeadTable } from '@/components/bead-table';
 import type { Bead } from '@/lib/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@/app/globals.css';
+
+const queryClient = new QueryClient();
 
 const meta = {
   title: 'Components/BeadTable',
@@ -9,6 +12,13 @@ const meta = {
   parameters: {
     layout: 'fullscreen',
   },
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
   tags: ['autodocs'],
 } satisfies Meta<typeof BeadTable>;
 
@@ -87,39 +97,31 @@ const mockBeads: Bead[] = [
 
 export const Default: Story = {
   args: {
-    beads: mockBeads,
-    isLoading: false,
-    onBeadClick: (bead) => console.log('Clicked:', bead.id),
+    data: mockBeads,
   },
 };
 
 export const Loading: Story = {
   args: {
-    beads: [],
-    isLoading: true,
+    data: [],
   },
 };
 
 export const Empty: Story = {
   args: {
-    beads: [],
-    isLoading: false,
+    data: [],
   },
 };
 
 export const SingleBead: Story = {
   args: {
-    beads: [mockBeads[0]],
-    isLoading: false,
-    onBeadClick: (bead) => console.log('Clicked:', bead.id),
+    data: [mockBeads[0]],
   },
 };
 
 export const WithSelection: Story = {
   args: {
-    beads: mockBeads,
-    isLoading: false,
-    onBeadClick: (bead) => console.log('Clicked:', bead.id),
+    data: mockBeads,
     onSelectionChange: (ids) => console.log('Selected:', ids),
   },
 };

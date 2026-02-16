@@ -55,8 +55,9 @@ describe("updateBead label transitions", () => {
     });
 
     queueExec(
-      { stdout: beadJson }, // show
+      // updateBead starts field updates in parallel before calling showBead.
       { stdout: "" }, // update --status
+      { stdout: beadJson }, // show
       { stdout: "" }, // remove stage:verification
       { stdout: "" }, // remove attempts:2
       { stdout: "" }, // add stage:retry
