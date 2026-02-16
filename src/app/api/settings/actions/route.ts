@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loadSettings, updateSettings } from "@/lib/settings";
-import { actionAgentMappingsSchema } from "@/lib/schemas";
 
 export async function GET() {
   const settings = await loadSettings();
@@ -10,11 +9,9 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const partial = actionAgentMappingsSchema.parse({
-      ...(await loadSettings()).actions,
-      ...body,
-    });
-    const updated = await updateSettings({ actions: partial });
+    // Pass the partial directly; updateSettings does an atomic
+    // read-merge-write using the freshest cached settings.
+    const updated = await updateSettings({ actions: body });
     return NextResponse.json({ ok: true, data: updated.actions });
   } catch (err) {
     return NextResponse.json(

@@ -12,8 +12,12 @@ export async function GET() {
   return NextResponse.json({ ok: true, data: agents });
 }
 
+const RESERVED_IDS = new Set(["default"]);
+
 const addAgentBody = z.object({
-  id: z.string().min(1),
+  id: z.string().min(1).refine((v) => !RESERVED_IDS.has(v), {
+    message: '"default" is a reserved agent id',
+  }),
   command: z.string().min(1),
   model: z.string().optional(),
   label: z.string().optional(),

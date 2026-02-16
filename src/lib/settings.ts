@@ -1,6 +1,9 @@
 import { parse, stringify } from "smol-toml";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 import { join } from "node:path";
 import { homedir } from "node:os";
 import {
@@ -125,15 +128,18 @@ export async function removeRegisteredAgent(
 const SCANNABLE_AGENTS = ["claude", "codex", "gemini"] as const;
 
 /** Scans PATH for known agent CLIs and returns what was found. */
-export function scanForAgents(): ScannedAgent[] {
-  return SCANNABLE_AGENTS.map((name) => {
-    try {
-      const path = execSync(`which ${name}`, { encoding: "utf-8" }).trim();
-      return { id: name, command: name, path, installed: true };
-    } catch {
-      return { id: name, command: name, path: "", installed: false };
-    }
-  });
+export async function scanForAgents(): Promise<ScannedAgent[]> {
+  const results = await Promise.all(
+    SCANNABLE_AGENTS.map(async (name): Promise<ScannedAgent> => {
+      try {
+        const { stdout } = await execAsync(`which ${name}`);
+        return { id: name, command: name, path: stdout.trim(), installed: true };
+      } catch {
+        return { id: name, command: name, path: "", installed: false };
+      }
+    }),
+  );
+  return results;
 }
 
 /** Reset the in-memory cache (useful for testing). */
