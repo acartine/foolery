@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
+import { ArrowLeft, FolderOpen, Plus, Trash2, Database } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -62,11 +63,20 @@ export function RepoRegistry() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Repositories</h2>
-          <p className="text-muted-foreground mt-1">
-            Manage your registered beads repositories
-          </p>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/beads"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Link>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Repositories</h2>
+            <p className="text-muted-foreground mt-1">
+              Manage your registered beads repositories
+            </p>
+          </div>
         </div>
         <Button onClick={() => setBrowseOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
