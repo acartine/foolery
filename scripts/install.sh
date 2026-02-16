@@ -1045,6 +1045,15 @@ main() {
   log "Log files default to: $STATE_DIR/logs"
 
   maybe_repo_wizard
+
+  # Run agent discovery wizard if the helper script is available.
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+  if [[ -f "$script_dir/agent-wizard.sh" ]]; then
+    # shellcheck source=scripts/agent-wizard.sh
+    source "$script_dir/agent-wizard.sh"
+    maybe_agent_wizard
+  fi
 }
 
 main "$@"
