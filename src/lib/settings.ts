@@ -1,5 +1,9 @@
 import { parse, stringify } from "smol-toml";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 import { join } from "node:path";
 import { homedir } from "node:os";
 import {
@@ -7,7 +11,11 @@ import {
   type FoolerySettings,
   type RegisteredAgentConfig,
 } from "@/lib/schemas";
-import type { ActionName, RegisteredAgent } from "@/lib/types";
+import type {
+  RegisteredAgent,
+  ActionName,
+  ScannedAgent,
+} from "@/lib/types";
 
 const CONFIG_DIR = join(homedir(), ".config", "foolery");
 const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
@@ -53,7 +61,7 @@ export async function saveSettings(
 /** Partial shape accepted by updateSettings for deep merging. */
 type SettingsPartial = Partial<{
   agent: Partial<FoolerySettings["agent"]>;
-  agents: Record<string, RegisteredAgentConfig>;
+  agents: FoolerySettings["agents"];
   actions: Partial<FoolerySettings["actions"]>;
 }>;
 
@@ -67,7 +75,7 @@ export async function updateSettings(
   const merged: FoolerySettings = {
     ...current,
     agent: { ...current.agent, ...partial.agent },
-    agents: { ...current.agents, ...partial.agents },
+    agents: partial.agents !== undefined ? { ...current.agents, ...partial.agents } : current.agents,
     actions: { ...current.actions, ...partial.actions },
   };
   const validated = foolerySettingsSchema.parse(merged);
@@ -81,7 +89,7 @@ export async function getAgentCommand(): Promise<string> {
   return settings.agent.command;
 }
 
-/** Returns the full agents map from settings. */
+/** Returns the registered agents map. */
 export async function getRegisteredAgents(): Promise<
   Record<string, RegisteredAgentConfig>
 > {
@@ -89,35 +97,30 @@ export async function getRegisteredAgents(): Promise<
   return settings.agents;
 }
 
-/**
- * Looks up which agent config to use for a given action.
- * If the mapping says "default", falls back to `agent.command`.
- */
+/** Resolves an action name to its agent config. Falls back to default agent. */
 export async function getActionAgent(
   action: ActionName,
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
   const agentId = settings.actions[action] ?? "default";
-
   if (agentId !== "default" && settings.agents[agentId]) {
     const reg = settings.agents[agentId];
     return { command: reg.command, model: reg.model, label: reg.label };
   }
-
   return { command: settings.agent.command };
 }
 
-/** Adds an agent to the agents map. */
+/** Adds or updates a registered agent. */
 export async function addRegisteredAgent(
   id: string,
   agent: RegisteredAgent,
 ): Promise<FoolerySettings> {
-  return updateSettings({
-    agents: { [id]: { command: agent.command, model: agent.model, label: agent.label } },
-  });
+  const current = await loadSettings();
+  const agents = { ...current.agents, [id]: { command: agent.command, model: agent.model, label: agent.label } };
+  return updateSettings({ agents });
 }
 
-/** Removes an agent from the agents map. */
+/** Removes a registered agent by id. */
 export async function removeRegisteredAgent(
   id: string,
 ): Promise<FoolerySettings> {
@@ -129,6 +132,23 @@ export async function removeRegisteredAgent(
   const validated = foolerySettingsSchema.parse(updated);
   await saveSettings(validated);
   return validated;
+}
+
+const SCANNABLE_AGENTS = ["claude", "codex", "gemini"] as const;
+
+/** Scans PATH for known agent CLIs and returns what was found. */
+export async function scanForAgents(): Promise<ScannedAgent[]> {
+  const results = await Promise.all(
+    SCANNABLE_AGENTS.map(async (name): Promise<ScannedAgent> => {
+      try {
+        const { stdout } = await execAsync(`which ${name}`);
+        return { id: name, command: name, path: stdout.trim(), installed: true };
+      } catch {
+        return { id: name, command: name, path: "", installed: false };
+      }
+    }),
+  );
+  return results;
 }
 
 /** Reset the in-memory cache (useful for testing). */

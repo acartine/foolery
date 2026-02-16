@@ -291,7 +291,7 @@ export interface ApplyHydrationResult {
   waveCount: number;
 }
 
-// ── Multi-agent types ─────────────────────────────────────
+// ── Agent management types ──────────────────────────────────
 
 export interface RegisteredAgent {
   command: string;
@@ -299,4 +299,16 @@ export interface RegisteredAgent {
   label?: string;
 }
 
-export type ActionName = "take" | "scene" | "direct" | "breakdown" | "hydration";
+export type ActionName =
+  | "take"
+  | "scene"
+  | "direct"
+  | "breakdown"
+  | "hydration";
+
+export interface ScannedAgent {
+  id: string;
+  command: string;
+  path: string;
+  installed: boolean;
+}
