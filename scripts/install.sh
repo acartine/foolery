@@ -316,10 +316,17 @@ macos_browser_has_url_open() {
   if ! command -v osascript >/dev/null 2>&1; then
     return 1
   fi
+  if ! command -v pgrep >/dev/null 2>&1; then
+    return 1
+  fi
 
   local app result
   local -a browsers=("Safari" "Google Chrome" "Chromium" "Brave Browser" "Arc" "Microsoft Edge")
   for app in "\${browsers[@]}"; do
+    if ! pgrep -x "\$app" >/dev/null 2>&1; then
+      continue
+    fi
+
     result="\$(osascript - "\$app" "\$URL" <<'APPLESCRIPT' 2>/dev/null || true
 on run argv
   set appName to item 1 of argv
