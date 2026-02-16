@@ -13,15 +13,41 @@ Foolery is a local web UI that sits on top of [Beads](https://github.com/steveye
 - **Dependency-aware wave planning.** Visualize what's runnable, what's blocked, and what's next — across your whole project.
 - **Multi-repo support.** Switch between repositories or view beats across all of them in one place.
 
-## Quick Start
+## Install (App Mode)
 
-**Prerequisites:** [Bun](https://bun.sh) and [Beads](https://github.com/steveyegge/beads) (`bd` CLI) must be installed.
+**Prerequisites:** [Bun](https://bun.sh), [curl](https://curl.se), [tar](https://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
 
 ```bash
-git clone https://github.com/anthropics/foolery.git && cd foolery && bun install && bun dev
+curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
 ```
 
-Then open [http://localhost:3000](http://localhost:3000).
+The installer downloads the latest prebuilt GitHub Release runtime artifact for your platform and writes a launcher to `~/.local/bin/foolery`.
+
+If `~/.local/bin` is not on your `PATH`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Run Foolery like an app:
+
+```bash
+foolery start
+foolery stop
+foolery restart
+foolery status
+```
+
+`foolery start` launches the backend in the background, writes logs, and opens your browser automatically.
+Default logs are in `~/.local/state/foolery/logs/stdout.log` and `~/.local/state/foolery/logs/stderr.log`.
+
+To install a specific release tag instead of latest:
+
+```bash
+FOOLERY_RELEASE_TAG=v0.1.0 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
+```
+
+Re-run the same install command to upgrade/reinstall.
 
 Foolery reads from whatever Beads-enabled repos you register. If you don't have one yet:
 
@@ -29,6 +55,17 @@ Foolery reads from whatever Beads-enabled repos you register. If you don't have 
 cd your-project
 bd init
 ```
+
+## Development
+
+```bash
+git clone https://github.com/acartine/foolery.git
+cd foolery
+bun install
+bun run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
 
 ## Views
 

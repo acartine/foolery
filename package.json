@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:runtime": "bash scripts/build-runtime-artifact.sh",
     "start": "next start",
     "lint": "eslint",
     "storybook": "storybook dev -p 6006",

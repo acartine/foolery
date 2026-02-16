@@ -1,0 +1,404 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INSTALL_ROOT="${FOOLERY_INSTALL_ROOT:-$HOME/.local/share/foolery}"
+APP_DIR="${FOOLERY_APP_DIR:-$INSTALL_ROOT/runtime}"
+BIN_DIR="${FOOLERY_BIN_DIR:-$HOME/.local/bin}"
+STATE_DIR="${FOOLERY_STATE_DIR:-$HOME/.local/state/foolery}"
+LAUNCHER_PATH="$BIN_DIR/foolery"
+
+RELEASE_OWNER="${FOOLERY_RELEASE_OWNER:-acartine}"
+RELEASE_REPO="${FOOLERY_RELEASE_REPO:-foolery}"
+RELEASE_TAG="${FOOLERY_RELEASE_TAG:-latest}"
+ASSET_BASENAME="${FOOLERY_ASSET_BASENAME:-foolery-runtime}"
+ARTIFACT_URL="${FOOLERY_ARTIFACT_URL:-}"
+
+log() {
+  printf '[foolery-install] %s\n' "$*"
+}
+
+warn() {
+  printf '[foolery-install] WARNING: %s\n' "$*" >&2
+}
+
+fail() {
+  printf '[foolery-install] ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+require_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    fail "Missing required command: $1"
+  fi
+}
+
+normalize_os() {
+  case "$1" in
+    Darwin) printf 'darwin\n' ;;
+    Linux) printf 'linux\n' ;;
+    *) fail "Unsupported OS: $1" ;;
+  esac
+}
+
+normalize_arch() {
+  case "$1" in
+    x86_64|amd64) printf 'x64\n' ;;
+    arm64|aarch64) printf 'arm64\n' ;;
+    *) fail "Unsupported architecture: $1" ;;
+  esac
+}
+
+artifact_name() {
+  local os arch
+  os="$(normalize_os "$(uname -s)")"
+  arch="$(normalize_arch "$(uname -m)")"
+  printf '%s-%s-%s.tar.gz\n' "$ASSET_BASENAME" "$os" "$arch"
+}
+
+download_url() {
+  local asset
+  asset="$(artifact_name)"
+
+  if [[ -n "$ARTIFACT_URL" ]]; then
+    printf '%s\n' "$ARTIFACT_URL"
+    return 0
+  fi
+
+  if [[ "$RELEASE_TAG" == "latest" ]]; then
+    printf 'https://github.com/%s/%s/releases/latest/download/%s\n' "$RELEASE_OWNER" "$RELEASE_REPO" "$asset"
+    return 0
+  fi
+
+  printf 'https://github.com/%s/%s/releases/download/%s/%s\n' "$RELEASE_OWNER" "$RELEASE_REPO" "$RELEASE_TAG" "$asset"
+}
+
+write_launcher() {
+  cat >"$LAUNCHER_PATH" <<LAUNCHER
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_DIR="\${FOOLERY_APP_DIR:-$APP_DIR}"
+STATE_DIR="\${FOOLERY_STATE_DIR:-$STATE_DIR}"
+HOST="\${FOOLERY_HOST:-127.0.0.1}"
+PORT="\${FOOLERY_PORT:-3210}"
+LOG_DIR="\${FOOLERY_LOG_DIR:-\$STATE_DIR/logs}"
+PID_FILE="\${FOOLERY_PID_FILE:-\$STATE_DIR/foolery.pid}"
+STDOUT_LOG="\${FOOLERY_STDOUT_LOG:-\$LOG_DIR/stdout.log}"
+STDERR_LOG="\${FOOLERY_STDERR_LOG:-\$LOG_DIR/stderr.log}"
+NO_BROWSER="\${FOOLERY_NO_BROWSER:-0}"
+URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
+
+if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
+  URL="http://127.0.0.1:\$PORT"
+fi
+
+log() {
+  printf '[foolery] %s\n' "\$*"
+}
+
+fail() {
+  printf '[foolery] ERROR: %s\n' "\$*" >&2
+  exit 1
+}
+
+require_cmd() {
+  if ! command -v "\$1" >/dev/null 2>&1; then
+    fail "Missing required command: \$1"
+  fi
+}
+
+ensure_runtime() {
+  if [[ ! -d "\$APP_DIR" ]]; then
+    fail "Runtime not found at \$APP_DIR. Re-run installer."
+  fi
+
+  if [[ ! -f "\$APP_DIR/package.json" || ! -f "\$APP_DIR/.next/BUILD_ID" || ! -d "\$APP_DIR/node_modules" ]]; then
+    fail "Runtime bundle is incomplete. Re-run installer to refresh files."
+  fi
+}
+
+read_pid() {
+  if [[ ! -f "\$PID_FILE" ]]; then
+    return 1
+  fi
+
+  local pid
+  pid="\$(tr -d '[:space:]' <"\$PID_FILE")"
+  if [[ ! "\$pid" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+
+  printf '%s\n' "\$pid"
+}
+
+is_running() {
+  local pid
+  if ! pid="\$(read_pid)"; then
+    return 1
+  fi
+
+  kill -0 "\$pid" >/dev/null 2>&1
+}
+
+clear_stale_pid() {
+  if [[ -f "\$PID_FILE" ]] && ! is_running; then
+    rm -f "\$PID_FILE"
+  fi
+}
+
+open_browser() {
+  if [[ "\$NO_BROWSER" == "1" ]]; then
+    log "Skipping browser open (FOOLERY_NO_BROWSER=1). URL: \$URL"
+    return 0
+  fi
+
+  if command -v open >/dev/null 2>&1; then
+    open "\$URL" >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "\$URL" >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m webbrowser "\$URL" >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  log "No browser opener found. Open this URL manually: \$URL"
+}
+
+wait_for_startup() {
+  local pid="\$1"
+  local attempts=30
+
+  if ! command -v curl >/dev/null 2>&1; then
+    sleep 2
+    return 0
+  fi
+
+  while ((attempts > 0)); do
+    if ! kill -0 "\$pid" >/dev/null 2>&1; then
+      return 1
+    fi
+
+    if curl --silent --show-error --max-time 1 "\$URL" >/dev/null 2>&1; then
+      return 0
+    fi
+
+    attempts=\$((attempts - 1))
+    sleep 1
+  done
+
+  return 0
+}
+
+start_cmd() {
+  require_cmd bun
+  ensure_runtime
+  mkdir -p "\$STATE_DIR" "\$LOG_DIR"
+  clear_stale_pid
+
+  if is_running; then
+    local pid
+    pid="\$(read_pid)"
+    log "Already running (pid \$pid) at \$URL"
+    open_browser
+    return 0
+  fi
+
+  log "Starting Foolery on \$URL"
+  (
+    cd "\$APP_DIR"
+    nohup env NODE_ENV=production bun run start -- --hostname "\$HOST" --port "\$PORT" >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
+    echo \$! >"\$PID_FILE"
+  )
+
+  local pid
+  if ! pid="\$(read_pid)"; then
+    fail "Failed to capture process ID for started server."
+  fi
+
+  if ! wait_for_startup "\$pid"; then
+    rm -f "\$PID_FILE"
+    fail "Server exited during startup. Check logs: \$STDERR_LOG"
+  fi
+
+  log "Started (pid \$pid)"
+  log "stdout: \$STDOUT_LOG"
+  log "stderr: \$STDERR_LOG"
+  open_browser
+}
+
+stop_cmd() {
+  clear_stale_pid
+  if ! is_running; then
+    log "Foolery is not running."
+    return 0
+  fi
+
+  local pid
+  pid="\$(read_pid)"
+  log "Stopping Foolery (pid \$pid)"
+  kill "\$pid" >/dev/null 2>&1 || true
+
+  local attempts=20
+  while ((attempts > 0)); do
+    if ! kill -0 "\$pid" >/dev/null 2>&1; then
+      rm -f "\$PID_FILE"
+      log "Stopped."
+      return 0
+    fi
+    attempts=\$((attempts - 1))
+    sleep 1
+  done
+
+  log "Process did not stop gracefully; forcing kill."
+  kill -9 "\$pid" >/dev/null 2>&1 || true
+  rm -f "\$PID_FILE"
+  log "Stopped."
+}
+
+status_cmd() {
+  clear_stale_pid
+  if is_running; then
+    local pid
+    pid="\$(read_pid)"
+    log "Running (pid \$pid) at \$URL"
+    log "stdout: \$STDOUT_LOG"
+    log "stderr: \$STDERR_LOG"
+    return 0
+  fi
+
+  log "Not running."
+}
+
+usage() {
+  cat <<USAGE
+Usage: foolery <command>
+
+Commands:
+  start     Start Foolery in the background and open browser
+  stop      Stop the background Foolery process
+  restart   Restart Foolery
+  status    Show process/log status
+  help      Show this help
+USAGE
+}
+
+main() {
+  local cmd="\${1:-start}"
+  shift || true
+
+  case "\$cmd" in
+    start)
+      start_cmd "\$@"
+      ;;
+    stop)
+      stop_cmd "\$@"
+      ;;
+    restart)
+      stop_cmd "\$@"
+      start_cmd "\$@"
+      ;;
+    status)
+      status_cmd "\$@"
+      ;;
+    help|-h|--help)
+      usage
+      ;;
+    *)
+      usage
+      fail "Unknown command: \$cmd"
+      ;;
+  esac
+}
+
+main "\$@"
+LAUNCHER
+
+  chmod +x "$LAUNCHER_PATH"
+}
+
+install_runtime() {
+  local asset archive_url tmp_dir archive_path extract_dir runtime_source runtime_target
+
+  asset="$(artifact_name)"
+  archive_url="$(download_url)"
+  runtime_target="$APP_DIR"
+
+  tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/foolery-install.XXXXXX")"
+  archive_path="$tmp_dir/$asset"
+  extract_dir="$tmp_dir/extract"
+  mkdir -p "$extract_dir"
+
+  log "Downloading runtime artifact: $asset"
+  log "Source: $archive_url"
+  if ! curl --fail --location --silent --show-error --retry 3 --retry-delay 1 --output "$archive_path" "$archive_url"; then
+    fail "Failed to download release artifact. Verify release/tag exists and includes $asset"
+  fi
+
+  tar -xzf "$archive_path" -C "$extract_dir"
+  runtime_source="$extract_dir/foolery-runtime"
+
+  if [[ ! -d "$runtime_source" ]]; then
+    fail "Downloaded artifact is missing expected folder: foolery-runtime"
+  fi
+
+  if [[ ! -f "$runtime_source/package.json" || ! -f "$runtime_source/.next/BUILD_ID" || ! -d "$runtime_source/node_modules" ]]; then
+    fail "Downloaded artifact is missing required runtime files"
+  fi
+
+  local tmp_runtime
+  tmp_runtime="${runtime_target}.new.$$"
+  rm -rf "$tmp_runtime"
+  cp -R "$runtime_source" "$tmp_runtime"
+  rm -rf "$runtime_target"
+  mv "$tmp_runtime" "$runtime_target"
+
+  rm -rf "$tmp_dir"
+}
+
+main() {
+  require_cmd curl
+  require_cmd tar
+  require_cmd bun
+
+  if ! command -v bd >/dev/null 2>&1; then
+    warn "bd CLI is not on PATH. Foolery relies on bd at runtime."
+  fi
+
+  mkdir -p "$INSTALL_ROOT" "$BIN_DIR" "$STATE_DIR"
+
+  install_runtime
+
+  log "Writing launcher to $LAUNCHER_PATH"
+  write_launcher
+
+  if [[ -f "$STATE_DIR/foolery.pid" ]]; then
+    local existing_pid
+    existing_pid="$(tr -d '[:space:]' <"$STATE_DIR/foolery.pid" || true)"
+    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && kill -0 "$existing_pid" >/dev/null 2>&1; then
+      warn "Foolery is already running (pid $existing_pid). Run 'foolery restart' to pick up the new runtime."
+    fi
+  fi
+
+  log "Install complete"
+  log "Commands: foolery start | foolery stop | foolery restart | foolery status"
+
+  case ":$PATH:" in
+    *":$BIN_DIR:"*)
+      log "Launcher is on PATH."
+      ;;
+    *)
+      log "Add $BIN_DIR to PATH:"
+      log "  export PATH=\"$BIN_DIR:\$PATH\""
+      ;;
+  esac
+
+  log "Log files default to: $STATE_DIR/logs"
+}
+
+main "$@"
