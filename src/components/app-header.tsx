@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
+import { SettingsSheet } from "@/components/settings-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,6 +37,7 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
@@ -160,6 +162,16 @@ export function AppHeader() {
               placeholder="Search beats..."
             />
 
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-8 shrink-0"
+              title="Settings"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <Settings className="size-4" />
+            </Button>
+
             {isBeadsRoute ? (
               <div className="ml-auto flex items-center gap-2">
                 <div className="flex items-center gap-1 rounded-lg border bg-muted/20 p-1">
@@ -220,19 +232,19 @@ export function AppHeader() {
       </header>
 
       {isBeadsRoute ? (
-        <>
-          <CreateBeadDialog
-            open={createOpen}
-            onOpenChange={setCreateOpen}
-            onCreated={() => {
-              setCreateOpen(false);
-              setSelectedRepo(null);
-              queryClient.invalidateQueries({ queryKey: ["beads"] });
-            }}
-            repo={selectedRepo ?? activeRepo}
-          />
-        </>
+        <CreateBeadDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onCreated={() => {
+            setCreateOpen(false);
+            setSelectedRepo(null);
+            queryClient.invalidateQueries({ queryKey: ["beads"] });
+          }}
+          repo={selectedRepo ?? activeRepo}
+        />
       ) : null}
+
+      <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
   );
 }

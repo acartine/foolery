@@ -2,6 +2,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { listBeads, showBead } from "@/lib/bd";
 import { regroomAncestors } from "@/lib/regroom";
+import { getAgentCommand } from "@/lib/settings";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 
@@ -428,7 +429,8 @@ export async function createSession(
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
-  const child = spawn("claude", args, {
+  const agentCmd = await getAgentCommand();
+  const child = spawn(agentCmd, args, {
     cwd,
     env: { ...process.env },
     stdio: ["pipe", "pipe", "pipe"],
@@ -790,7 +792,8 @@ export async function createSceneSession(
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
-  const child = spawn("claude", args, {
+  const agentCmd = await getAgentCommand();
+  const child = spawn(agentCmd, args, {
     cwd,
     env: { ...process.env },
     stdio: ["pipe", "pipe", "pipe"],

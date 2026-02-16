@@ -10,6 +10,7 @@ import {
   showBead,
   updateBead,
 } from "@/lib/bd";
+import { getAgentCommand } from "@/lib/settings";
 import type {
   ApplyOrchestrationOverrides,
   ApplyOrchestrationResult,
@@ -630,7 +631,8 @@ export async function createOrchestrationSession(
     "--dangerously-skip-permissions",
   ];
 
-  const child = spawn("claude", args, {
+  const agentCmd = await getAgentCommand();
+  const child = spawn(agentCmd, args, {
     cwd: repoPath,
     env: { ...process.env },
     stdio: ["ignore", "pipe", "pipe"],

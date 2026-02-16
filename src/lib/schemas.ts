@@ -86,3 +86,16 @@ export type QueryBeadInput = z.infer<typeof queryBeadSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;
 export type AddRepoInput = z.infer<typeof addRepoSchema>;
 export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;
+
+// ── Settings schemas ────────────────────────────────────────
+
+export const agentSettingsSchema = z.object({
+  command: z.string().min(1).default("claude"),
+});
+
+export const foolerySettingsSchema = z.object({
+  agent: agentSettingsSchema.default({ command: "claude" }),
+});
+
+export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
+export type AgentSettings = z.infer<typeof agentSettingsSchema>;
