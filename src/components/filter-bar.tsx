@@ -126,8 +126,8 @@ function FilterControls() {
   const { filters } = useAppStore();
   const updateUrl = useUpdateUrl();
 
-  const hasFilters =
-    filters.status || filters.type || filters.priority !== undefined;
+  const hasNonDefaultFilters =
+    filters.status !== "ready" || filters.type || filters.priority !== undefined;
 
   return (
     <div className="flex flex-wrap items-center gap-1">
@@ -194,12 +194,12 @@ function FilterControls() {
         </SelectContent>
       </Select>
 
-      {hasFilters && (
+      {hasNonDefaultFilters && (
         <Button
           variant="ghost"
           size="sm"
           title="Clear all filters"
-          onClick={() => updateUrl({ status: undefined, type: undefined, priority: undefined })}
+          onClick={() => updateUrl({ status: "ready", type: undefined, priority: undefined })}
         >
           <X className="h-4 w-4 mr-1" />
           Clear
