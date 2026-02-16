@@ -162,11 +162,19 @@ clear_stale_pid() {
 }
 
 read_installed_version() {
+  local version
+  if [[ -f "\$APP_DIR/RELEASE_VERSION" ]]; then
+    version="\$(tr -d '[:space:]' <"\$APP_DIR/RELEASE_VERSION")"
+    if [[ -n "\$version" ]]; then
+      printf '%s\n' "\$version"
+      return 0
+    fi
+  fi
+
   if [[ ! -f "\$APP_DIR/package.json" ]]; then
     return 1
   fi
 
-  local version
   version="\$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*$/\1/p' "\$APP_DIR/package.json" | head -n 1)"
   if [[ -z "\$version" ]]; then
     return 1
@@ -359,8 +367,13 @@ open_browser() {
     return 0
   fi
 
+  if [[ "\$(uname -s)" == "Darwin" ]] && [[ -x "/usr/bin/open" ]]; then
+    /usr/bin/open "\$URL" >/dev/null 2>&1 || true
+    return 0
+  fi
+
   if command -v open >/dev/null 2>&1; then
-    open "\$URL" >/dev/null 2>&1 || true
+    command open "\$URL" >/dev/null 2>&1 || true
     return 0
   fi
 
@@ -600,7 +613,7 @@ USAGE
 }
 
 main() {
-  local cmd="\${1:-start}"
+  local cmd="\${1:-open}"
   shift || true
 
   maybe_print_update_banner
@@ -720,7 +733,7 @@ main() {
       ;;
   esac
 
-  log "Get started: foolery start"
+  log "Get started: foolery"
   log "Log files default to: $STATE_DIR/logs"
 }
 

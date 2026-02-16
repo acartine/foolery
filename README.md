@@ -33,6 +33,7 @@ export PATH="$HOME/.local/bin:$PATH"
 Run Foolery like an app:
 
 ```bash
+foolery
 foolery start
 foolery open
 foolery update
@@ -42,6 +43,7 @@ foolery status
 foolery uninstall
 ```
 
+`foolery` is the default open flow: if the server is down it starts it, then opens the app URL only if it is not already open.
 `foolery start` launches the backend in the background, prints log paths, opens your browser automatically, and returns immediately.
 `foolery open` opens Foolery in your browser without spawning duplicate tabs when one is already open.
 `foolery update` downloads and installs the latest Foolery runtime.
