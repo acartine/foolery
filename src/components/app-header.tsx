@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors, Settings, PartyPopper } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, Settings, PartyPopper, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -18,6 +18,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
+
+type VersionBanner = {
+  installedVersion: string;
+  latestVersion: string;
+};
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -38,6 +43,8 @@ export function AppHeader() {
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
+  const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
@@ -70,6 +77,37 @@ export function AppHeader() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [beadsView, canCreate, defaultRepo, isBeadsRoute]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadVersionBanner = async () => {
+      try {
+        const res = await fetch("/api/version", {
+          method: "GET",
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          ok?: boolean;
+          data?: {
+            installedVersion?: string | null;
+            latestVersion?: string | null;
+            updateAvailable?: boolean;
+          };
+        };
+        if (!json?.data?.updateAvailable) return;
+        if (!json.data.installedVersion || !json.data.latestVersion) return;
+        setVersionBanner({
+          installedVersion: json.data.installedVersion,
+          latestVersion: json.data.latestVersion,
+        });
+      } catch {
+        // No banner on failed checks.
+      }
+    };
+    void loadVersionBanner();
+    return () => controller.abort();
+  }, []);
 
   const openCreateDialog = (repo: string | null) => {
     setSelectedRepo(repo);
@@ -168,6 +206,24 @@ export function AppHeader() {
     <>
       <header className="border-b border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/90 supports-[backdrop-filter]:backdrop-blur">
         <div className="mx-auto max-w-[95vw] px-4 py-2">
+          {versionBanner && !versionBannerDismissed ? (
+            <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+              <p className="leading-6">
+                New Foolery version <span className="font-semibold">{versionBanner.latestVersion}</span> available
+                {" "}
+                (installed {versionBanner.installedVersion}). Run <code className="rounded bg-amber-100 px-1 py-0.5 font-mono text-xs">foolery update</code>.
+              </p>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="size-7 shrink-0 text-amber-900 hover:bg-amber-100 hover:text-amber-950"
+                title="Dismiss update banner"
+                onClick={() => setVersionBannerDismissed(true)}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          ) : null}
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <div className="flex min-w-0 shrink-0 items-center gap-2">
               <Link href="/beads" title="Home" className="flex shrink-0 items-center gap-2">

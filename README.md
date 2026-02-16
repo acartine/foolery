@@ -86,6 +86,7 @@ bun run release -- v0.1.1
 ```
 
 This runs `gh release create <tag> --target main --generate-notes --latest` and triggers the runtime artifact workflow.
+The command now blocks until the `Release Runtime Artifact` workflow completes, streaming status updates every 10 seconds and failing if runtime tarball assets are missing.
 
 ## Views
 
