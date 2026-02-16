@@ -79,12 +79,14 @@ export interface BeadColumnOpts {
 function VerificationButtons({
   bead,
   onUpdateBead,
+  isRolling,
 }: {
   bead: Bead;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  isRolling?: boolean;
 }) {
   const hasVerification = bead.labels?.includes("stage:verification");
-  if (!hasVerification || !onUpdateBead) return null;
+  if (!hasVerification || !onUpdateBead || isRolling) return null;
 
   return (
     <>
@@ -129,12 +131,14 @@ export function rejectBeadFields(bead: Bead): UpdateBeadInput {
 function RejectButton({
   bead,
   onUpdateBead,
+  isRolling,
 }: {
   bead: Bead;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  isRolling?: boolean;
 }) {
   const hasVerification = bead.labels?.includes("stage:verification");
-  if (!hasVerification || !onUpdateBead) return null;
+  if (!hasVerification || !onUpdateBead || isRolling) return null;
 
   return (
     <button
@@ -454,33 +458,38 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       size: 130,
       minSize: 130,
       maxSize: 130,
-      cell: ({ row }) => (
-        <div className="flex items-center gap-0.5">
-          <VerificationButtons
-            bead={row.original}
-            onUpdateBead={onUpdateBead}
-          />
-          {onUpdateBead ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button type="button" title="Change status" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                  <BeadStatusBadge status={row.original.status} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuRadioGroup value={row.original.status} onValueChange={(v) => onUpdateBead(row.original.id, { status: v as BeadStatus })}>
-                  {BEAD_STATUSES.map((s) => (
-                    <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <BeadStatusBadge status={row.original.status} />
-          )}
-          <RejectButton bead={row.original} onUpdateBead={onUpdateBead} />
-        </div>
-      ),
+      cell: ({ row }) => {
+        const isRolling = Boolean(shippingByBeadId[row.original.id]);
+        const pulseClass = isRolling && row.original.status === "in_progress" ? "animate-pulse" : "";
+        return (
+          <div className="flex items-center gap-0.5">
+            <VerificationButtons
+              bead={row.original}
+              onUpdateBead={onUpdateBead}
+              isRolling={isRolling}
+            />
+            {onUpdateBead ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" title="Change status" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
+                    <BeadStatusBadge status={row.original.status} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup value={row.original.status} onValueChange={(v) => onUpdateBead(row.original.id, { status: v as BeadStatus })}>
+                    {BEAD_STATUSES.map((s) => (
+                      <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <BeadStatusBadge status={row.original.status} className={pulseClass} />
+            )}
+            <RejectButton bead={row.original} onUpdateBead={onUpdateBead} isRolling={isRolling} />
+          </div>
+        );
+      },
     },
   ];
 
