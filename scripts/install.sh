@@ -747,6 +747,18 @@ invalidate_registry_cache() {
   _REGISTRY_CACHE_VALID=0
 }
 
+append_to_registry_cache() {
+  local path="$1"
+  if [[ "$_REGISTRY_CACHE_VALID" -ne 1 ]]; then
+    refresh_registry_cache
+  fi
+  if [[ -z "$_REGISTRY_CACHE" ]]; then
+    _REGISTRY_CACHE="$path"
+  else
+    _REGISTRY_CACHE="$(printf '%s\n%s' "$_REGISTRY_CACHE" "$path")"
+  fi
+}
+
 is_path_registered() {
   local target="$1"
   if [[ "$_REGISTRY_CACHE_VALID" -ne 1 ]]; then
@@ -786,7 +798,7 @@ write_registry_entry() {
   else
     write_registry_entry_sed "$repo_path" "$repo_name" "$now"
   fi
-  invalidate_registry_cache
+  append_to_registry_cache "$repo_path"
 }
 
 write_registry_entry_jq() {
@@ -847,7 +859,8 @@ scan_and_mount_repos() {
   fi
 
   local found_repos
-  found_repos="$(find "$scan_dir" -maxdepth 2 -type d -name '.beads' 2>/dev/null | sort)"
+  # Repos can be up to 2 levels deep; .beads/ is one level inside, so depth 3
+  found_repos="$(find "$scan_dir" -maxdepth 3 -type d -name '.beads' 2>/dev/null | sort)"
   if [[ -z "$found_repos" ]]; then
     log "No repositories with .beads/ found under $scan_dir"
     return 0
