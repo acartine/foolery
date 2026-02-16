@@ -37,8 +37,12 @@ export function useUpdateUrl() {
       if (repo) params.set("repo", repo);
       else params.delete("repo");
 
-      if (status) params.set("status", status);
-      else params.delete("status");
+      if ("status" in overrides) {
+        if (overrides.status) params.set("status", overrides.status);
+        else params.set("status", "all");
+      } else if (status) {
+        params.set("status", status);
+      }
 
       if (type) params.set("type", type);
       else params.delete("type");

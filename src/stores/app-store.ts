@@ -31,7 +31,7 @@ interface AppState {
   setPageSize: (size: number) => void;
 }
 
-const initialFilters: Filters = {};
+const initialFilters: Filters = { status: "ready" };
 
 export const useAppStore = create<AppState>((set) => ({
   filters: initialFilters,

@@ -9,7 +9,7 @@ const VALID_PAGE_SIZES = [25, 50, 100];
 const DEFAULT_PAGE_SIZE = 50;
 
 const VALID_STATUSES = new Set<string>([
-  "open", "in_progress", "blocked", "deferred", "closed", "ready",
+  "open", "in_progress", "blocked", "deferred", "closed", "ready", "all",
 ]);
 
 const VALID_TYPES = new Set<string>([
@@ -34,9 +34,11 @@ export function UrlStateSync() {
     const urlPriority = searchParams.get("priority");
     const urlAssignee = searchParams.get("assignee");
 
-    const newStatus = urlStatus && VALID_STATUSES.has(urlStatus)
-      ? (urlStatus as BeadStatus | "ready")
-      : undefined;
+    const newStatus = urlStatus === "all"
+      ? undefined
+      : urlStatus && VALID_STATUSES.has(urlStatus)
+        ? (urlStatus as BeadStatus | "ready")
+        : "ready";
     const newType = urlType && VALID_TYPES.has(urlType)
       ? (urlType as BeadType)
       : undefined;
