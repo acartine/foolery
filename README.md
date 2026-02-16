@@ -37,10 +37,12 @@ foolery start
 foolery stop
 foolery restart
 foolery status
+foolery uninstall
 ```
 
 `foolery start` launches the backend in the background, prints log paths, opens your browser automatically, and returns immediately.
 Default logs are in `~/.local/state/foolery/logs/stdout.log` and `~/.local/state/foolery/logs/stderr.log`.
+`foolery uninstall` removes the runtime bundle, local state/logs, and the launcher binary.
 
 To install a specific release tag instead of latest:
 

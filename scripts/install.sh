@@ -78,6 +78,9 @@ write_launcher() {
 set -euo pipefail
 
 APP_DIR="\${FOOLERY_APP_DIR:-$APP_DIR}"
+INSTALL_ROOT="\${FOOLERY_INSTALL_ROOT:-$INSTALL_ROOT}"
+BIN_DIR="\${FOOLERY_BIN_DIR:-$BIN_DIR}"
+LAUNCHER_PATH="\${FOOLERY_LAUNCHER_PATH:-$LAUNCHER_PATH}"
 STATE_DIR="\${FOOLERY_STATE_DIR:-$STATE_DIR}"
 HOST="\${FOOLERY_HOST:-127.0.0.1}"
 PORT="\${FOOLERY_PORT:-3210}"
@@ -286,6 +289,61 @@ status_cmd() {
   log "Not running."
 }
 
+uninstall_cmd() {
+  stop_cmd || true
+
+  local tmp_script
+  tmp_script="\$(mktemp "\${TMPDIR:-/tmp}/foolery-uninstall.XXXXXX")"
+
+  cat >"\$tmp_script" <<'UNINSTALL'
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_DIR="\$1"
+STATE_DIR="\$2"
+LAUNCHER_PATH="\$3"
+BIN_DIR="\$4"
+INSTALL_ROOT="\$5"
+
+log() {
+  printf '[foolery-uninstall] %s\n' "\$*"
+}
+
+remove_path() {
+  local path="\$1"
+  if [[ -z "\$path" || "\$path" == "/" ]]; then
+    log "Skipping unsafe path: \$path"
+    return 0
+  fi
+
+  if [[ -e "\$path" ]]; then
+    rm -rf "\$path"
+    log "Removed \$path"
+  fi
+}
+
+remove_if_empty() {
+  local path="\$1"
+  if [[ -d "\$path" ]] && [[ -z "\$(ls -A "\$path" 2>/dev/null)" ]]; then
+    rmdir "\$path" >/dev/null 2>&1 || true
+  fi
+}
+
+remove_path "\$APP_DIR"
+remove_path "\$STATE_DIR"
+remove_path "\$LAUNCHER_PATH"
+
+remove_if_empty "\$INSTALL_ROOT"
+remove_if_empty "\$BIN_DIR"
+
+log "Uninstall complete."
+UNINSTALL
+
+  chmod +x "\$tmp_script"
+  "\$tmp_script" "\$APP_DIR" "\$STATE_DIR" "\$LAUNCHER_PATH" "\$BIN_DIR" "\$INSTALL_ROOT"
+  rm -f "\$tmp_script"
+}
+
 usage() {
   cat <<USAGE
 Usage: foolery <command>
@@ -295,6 +353,7 @@ Commands:
   stop      Stop the background Foolery process
   restart   Restart Foolery
   status    Show process/log status
+  uninstall Remove Foolery runtime, logs/state, and launcher
   help      Show this help
 USAGE
 }
@@ -316,6 +375,9 @@ main() {
       ;;
     status)
       status_cmd "\$@"
+      ;;
+    uninstall)
+      uninstall_cmd "\$@"
       ;;
     help|-h|--help)
       usage
@@ -397,7 +459,7 @@ main() {
   fi
 
   log "Install complete"
-  log "Commands: foolery start | foolery stop | foolery restart | foolery status"
+  log "Commands: foolery start | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)
