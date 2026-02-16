@@ -15,13 +15,14 @@ Foolery is a local web UI that sits on top of [Beads](https://github.com/steveye
 
 ## Install (App Mode)
 
-**Prerequisites:** [Bun](https://bun.sh), [curl](https://curl.se), [tar](https://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
+**Prerequisites:** [Node.js](https://nodejs.org), [curl](https://curl.se), [tar](https://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
 ```
 
 The installer downloads the latest prebuilt GitHub Release runtime artifact for your platform and writes a launcher to `~/.local/bin/foolery`.
+Bun is not required for installed app usage.
 
 If `~/.local/bin` is not on your `PATH`:
 

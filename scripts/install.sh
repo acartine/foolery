@@ -81,6 +81,7 @@ APP_DIR="\${FOOLERY_APP_DIR:-$APP_DIR}"
 STATE_DIR="\${FOOLERY_STATE_DIR:-$STATE_DIR}"
 HOST="\${FOOLERY_HOST:-127.0.0.1}"
 PORT="\${FOOLERY_PORT:-3210}"
+NEXT_BIN="\${FOOLERY_NEXT_BIN:-\$APP_DIR/node_modules/next/dist/bin/next}"
 LOG_DIR="\${FOOLERY_LOG_DIR:-\$STATE_DIR/logs}"
 PID_FILE="\${FOOLERY_PID_FILE:-\$STATE_DIR/foolery.pid}"
 STDOUT_LOG="\${FOOLERY_STDOUT_LOG:-\$LOG_DIR/stdout.log}"
@@ -112,7 +113,7 @@ ensure_runtime() {
     fail "Runtime not found at \$APP_DIR. Re-run installer."
   fi
 
-  if [[ ! -f "\$APP_DIR/package.json" || ! -f "\$APP_DIR/.next/BUILD_ID" || ! -d "\$APP_DIR/node_modules" ]]; then
+  if [[ ! -f "\$APP_DIR/package.json" || ! -f "\$APP_DIR/.next/BUILD_ID" || ! -d "\$APP_DIR/node_modules" || ! -f "\$NEXT_BIN" ]]; then
     fail "Runtime bundle is incomplete. Re-run installer to refresh files."
   fi
 }
@@ -196,7 +197,7 @@ wait_for_startup() {
 }
 
 start_cmd() {
-  require_cmd bun
+  require_cmd node
   ensure_runtime
   mkdir -p "\$STATE_DIR" "\$LOG_DIR"
   clear_stale_pid
@@ -212,7 +213,7 @@ start_cmd() {
   log "Starting Foolery on \$URL"
   (
     cd "\$APP_DIR"
-    nohup env NODE_ENV=production bun run start -- --hostname "\$HOST" --port "\$PORT" >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
+    nohup env NODE_ENV=production node "\$NEXT_BIN" start --hostname "\$HOST" --port "\$PORT" >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
     echo \$! >"\$PID_FILE"
   )
 
@@ -364,7 +365,7 @@ install_runtime() {
 main() {
   require_cmd curl
   require_cmd tar
-  require_cmd bun
+  require_cmd node
 
   if ! command -v bd >/dev/null 2>&1; then
     warn "bd CLI is not on PATH. Foolery relies on bd at runtime."
