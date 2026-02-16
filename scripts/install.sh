@@ -720,6 +720,7 @@ main() {
       ;;
   esac
 
+  log "Get started: foolery start"
   log "Log files default to: $STATE_DIR/logs"
 }
 
