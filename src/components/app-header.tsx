@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors, Settings } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, Settings, PartyPopper } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -49,6 +49,8 @@ export function AppHeader() {
 
   useEffect(() => {
     if (!isBeadsRoute || !canCreate) return;
+    // Shift+N only opens create dialog on Beats list view
+    if (beadsView !== "list") return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "N" && e.shiftKey) {
         if (document.querySelector('[role="dialog"]')) return;
@@ -67,7 +69,7 @@ export function AppHeader() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [canCreate, defaultRepo, isBeadsRoute]);
+  }, [beadsView, canCreate, defaultRepo, isBeadsRoute]);
 
   const openCreateDialog = (repo: string | null) => {
     setSelectedRepo(repo);
@@ -105,37 +107,62 @@ export function AppHeader() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeadsRoute, beadsView, setBeadsView]);
 
-  const createButton = shouldChooseRepo ? (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="lg" variant="success" className="gap-1.5 px-2.5" title="Create new beat (Shift+N)">
-          <Plus className="size-4" />
-          New
+  // Button config changes per view: hidden on Direct/Scenes, "Wrap!" on Final Cut, "Add" on Beats
+  const showActionButton = beadsView === "list" || beadsView === "finalcut";
+
+  const actionButton = (() => {
+    if (beadsView === "finalcut") {
+      // Final Cut: celebratory "Wrap!" button — no create dialog, just a visual cue
+      return (
+        <Button
+          size="lg"
+          variant="success"
+          className="gap-1.5 px-2.5"
+          title="That's a wrap!"
+        >
+          <PartyPopper className="size-4" />
+          Wrap!
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {registeredRepos.map((repo) => (
-          <DropdownMenuItem
-            key={repo.path}
-            onClick={() => openCreateDialog(repo.path)}
-          >
-            {repo.name}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  ) : (
-    <Button
-      size="lg"
-      variant="success"
-      className="gap-1.5 px-2.5"
-      title="Create new beat (Shift+N)"
-      onClick={() => openCreateDialog(defaultRepo)}
-    >
-      <Plus className="size-4" />
-      Add
-    </Button>
-  );
+      );
+    }
+
+    // Beats list: original Add / New behavior
+    if (shouldChooseRepo) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="lg" variant="success" className="gap-1.5 px-2.5" title="Create new beat (Shift+N)">
+              <Plus className="size-4" />
+              New
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {registeredRepos.map((repo) => (
+              <DropdownMenuItem
+                key={repo.path}
+                onClick={() => openCreateDialog(repo.path)}
+              >
+                {repo.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return (
+      <Button
+        size="lg"
+        variant="success"
+        className="gap-1.5 px-2.5"
+        title="Create new beat (Shift+N)"
+        onClick={() => openCreateDialog(defaultRepo)}
+      >
+        <Plus className="size-4" />
+        Add
+      </Button>
+    );
+  })();
 
   return (
     <>
@@ -218,8 +245,16 @@ export function AppHeader() {
                     Final Cut
                   </Button>
                 </div>
-                {canCreate ? (
-                  createButton
+                {canCreate && showActionButton ? (
+                  actionButton
+                ) : canCreate ? (
+                  // Invisible placeholder preserves layout so the view switcher doesn't shift
+                  <div className="invisible" aria-hidden="true">
+                    <Button size="lg" variant="success" className="gap-1.5 px-2.5" tabIndex={-1}>
+                      <Plus className="size-4" />
+                      Add
+                    </Button>
+                  </div>
                 ) : (
                   <Button size="lg" variant="outline" asChild title="Register a repository">
                     <Link href="/registry">Add Repo</Link>
