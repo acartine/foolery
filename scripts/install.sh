@@ -742,6 +742,15 @@ main() {
 
   log "Get started: foolery"
   log "Log files default to: $STATE_DIR/logs"
+
+  # Run agent discovery wizard if the helper script is available.
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+  if [[ -f "$script_dir/agent-wizard.sh" ]]; then
+    # shellcheck source=scripts/agent-wizard.sh
+    source "$script_dir/agent-wizard.sh"
+    maybe_agent_wizard
+  fi
 }
 
 main "$@"

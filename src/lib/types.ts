@@ -290,3 +290,13 @@ export interface ApplyHydrationResult {
   createdBeadIds: string[];
   waveCount: number;
 }
+
+// ── Multi-agent types ─────────────────────────────────────
+
+export interface RegisteredAgent {
+  command: string;
+  model?: string;
+  label?: string;
+}
+
+export type ActionName = "take" | "scene" | "direct" | "breakdown" | "hydration";
