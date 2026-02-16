@@ -101,14 +101,15 @@ export async function getReleaseVersionStatus(): Promise<ReleaseVersionStatus> {
     readInstalledVersion(),
     fetchLatestReleaseTag(),
   ]);
+  const updateAvailable =
+    installedVersion !== null &&
+    latestVersion !== null &&
+    isNewerVersion(installedVersion, latestVersion);
 
   return {
     installedVersion,
     latestVersion,
-    updateAvailable:
-      Boolean(installedVersion) &&
-      Boolean(latestVersion) &&
-      isNewerVersion(installedVersion!, latestVersion!),
+    updateAvailable,
   };
 }
 
