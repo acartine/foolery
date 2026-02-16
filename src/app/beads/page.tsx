@@ -127,6 +127,7 @@ function BeadsPageInner() {
   });
 
   const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
+  const loadError = data && !data.ok ? data.error ?? "Failed to load beats." : null;
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   const { mutate: bulkUpdate } = useMutation({
@@ -268,6 +269,10 @@ function BeadsPageInner() {
           {isLoading ? (
             <div className="flex items-center justify-center py-6 text-muted-foreground">
               Loading beats...
+            </div>
+          ) : loadError ? (
+            <div className="flex items-center justify-center py-6 text-sm text-destructive">
+              Failed to load beats: {loadError}
             </div>
           ) : (
             <BeadTable

@@ -3,6 +3,7 @@ import type { Bead, BeadDependency, BdResult } from "./types";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
+const OUT_OF_SYNC_SIGNATURE = "Database out of sync with JSONL";
 
 function baseArgs(): string[] {
   const args: string[] = [];
@@ -10,10 +11,16 @@ function baseArgs(): string[] {
   return args;
 }
 
-async function exec(
+type ExecResult = { stdout: string; stderr: string; exitCode: number };
+
+function isOutOfSyncError(result: ExecResult): boolean {
+  return `${result.stderr}\n${result.stdout}`.includes(OUT_OF_SYNC_SIGNATURE);
+}
+
+async function execOnce(
   args: string[],
   options?: { cwd?: string }
-): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+): Promise<ExecResult> {
   return new Promise((resolve) => {
     execFile(BD_BIN, [...baseArgs(), ...args], { env: process.env, cwd: options?.cwd }, (error, stdout, stderr) => {
       resolve({
@@ -23,6 +30,23 @@ async function exec(
       });
     });
   });
+}
+
+async function exec(
+  args: string[],
+  options?: { cwd?: string }
+): Promise<ExecResult> {
+  const firstResult = await execOnce(args, options);
+  if (firstResult.exitCode === 0) return firstResult;
+  if (args[0] === "sync" || !isOutOfSyncError(firstResult)) {
+    return firstResult;
+  }
+
+  // Auto-heal stale bd SQLite metadata after repo switches/pulls by importing JSONL
+  // and retrying the original command once in the same repo.
+  const syncResult = await execOnce(["sync", "--import-only"], options);
+  if (syncResult.exitCode !== 0) return firstResult;
+  return execOnce(args, options);
 }
 
 function parseJson<T>(raw: string): T {
