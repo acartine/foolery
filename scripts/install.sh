@@ -94,6 +94,7 @@ WAIT_FOR_READY="\${FOOLERY_WAIT_FOR_READY:-0}"
 URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
 RELEASE_OWNER="\${FOOLERY_RELEASE_OWNER:-$RELEASE_OWNER}"
 RELEASE_REPO="\${FOOLERY_RELEASE_REPO:-$RELEASE_REPO}"
+RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
 UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
@@ -501,6 +502,32 @@ open_cmd() {
   start_cmd "\$@"
 }
 
+update_cmd() {
+  require_cmd bash
+  require_cmd curl
+
+  local install_url
+  install_url="https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/install.sh"
+
+  log "Updating Foolery runtime from \$RELEASE_OWNER/\$RELEASE_REPO (\$RELEASE_TAG)..."
+  if ! curl --fail --location --silent --show-error "\$install_url" | \
+    env \
+      FOOLERY_INSTALL_ROOT="\$INSTALL_ROOT" \
+      FOOLERY_APP_DIR="\$APP_DIR" \
+      FOOLERY_BIN_DIR="\$BIN_DIR" \
+      FOOLERY_STATE_DIR="\$STATE_DIR" \
+      FOOLERY_LAUNCHER_PATH="\$LAUNCHER_PATH" \
+      FOOLERY_RELEASE_OWNER="\$RELEASE_OWNER" \
+      FOOLERY_RELEASE_REPO="\$RELEASE_REPO" \
+      FOOLERY_RELEASE_TAG="\$RELEASE_TAG" \
+      bash; then
+    fail "Update failed."
+  fi
+
+  rm -f "\$UPDATE_CHECK_FILE" >/dev/null 2>&1 || true
+  log "Update complete."
+}
+
 uninstall_cmd() {
   stop_cmd || true
 
@@ -563,6 +590,7 @@ Usage: foolery <command>
 Commands:
   start     Start Foolery in the background and open browser
   open      Open Foolery in your browser (skips if already open)
+  update    Download and install the latest Foolery runtime
   stop      Stop the background Foolery process
   restart   Restart Foolery
   status    Show process/log status
@@ -583,6 +611,9 @@ main() {
       ;;
     open)
       open_cmd "\$@"
+      ;;
+    update)
+      update_cmd "\$@"
       ;;
     stop)
       stop_cmd "\$@"
@@ -677,7 +708,7 @@ main() {
   fi
 
   log "Install complete"
-  log "Commands: foolery start | foolery open | foolery stop | foolery restart | foolery status | foolery uninstall"
+  log "Commands: foolery start | foolery open | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)
