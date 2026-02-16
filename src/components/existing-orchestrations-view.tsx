@@ -13,16 +13,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
   Clapperboard,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   Loader2,
   Pencil,
   RefreshCw,
   Save,
   ThumbsDown,
-  ZoomIn,
-  ZoomOut,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -1134,50 +1130,6 @@ export function ExistingOrchestrationsView() {
                 <Clapperboard className="size-3.5" />
               )}
               Action!
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => moveLaterally(-1)}
-              disabled={!canMoveLaterally}
-              className="gap-1.5"
-              title="Previous tree"
-            >
-              <ChevronLeft className="size-3.5" />
-              Prev
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => moveLaterally(1)}
-              disabled={!canMoveLaterally}
-              className="gap-1.5"
-              title="Next tree"
-            >
-              Next
-              <ChevronRight className="size-3.5" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setZoom(-1)}
-              disabled={!canZoomOut}
-              className="gap-1.5"
-              title="Decrease zoom level"
-            >
-              <ZoomOut className="size-3.5" />
-              Zoom Out
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setZoom(1)}
-              disabled={!canZoomIn}
-              className="gap-1.5"
-              title="Increase zoom level"
-            >
-              <ZoomIn className="size-3.5" />
-              Zoom In
             </Button>
           </div>
         </div>
