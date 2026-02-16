@@ -703,6 +703,268 @@ install_runtime() {
   rm -rf "$tmp_dir"
 }
 
+# ---------------------------------------------------------------------------
+# Interactive repo-discovery wizard (post-install)
+# ---------------------------------------------------------------------------
+
+REGISTRY_DIR="${HOME}/.config/foolery"
+REGISTRY_FILE="${REGISTRY_DIR}/registry.json"
+
+confirm_prompt() {
+  local prompt="$1" default="${2:-y}"
+  local answer
+  read -r -p "$prompt" answer </dev/tty || answer=""
+  answer="${answer:-$default}"
+  case "$answer" in
+    [Yy]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+read_registry_paths() {
+  if [[ ! -f "$REGISTRY_FILE" ]]; then
+    return 0
+  fi
+  if command -v jq >/dev/null 2>&1; then
+    jq -r '.repos[]?.path // empty' "$REGISTRY_FILE" 2>/dev/null || true
+  else
+    # Use tr to split entries onto separate lines, then extract paths
+    tr '{' '\n' <"$REGISTRY_FILE" 2>/dev/null \
+      | sed -nE 's/.*"path"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' \
+      || true
+  fi
+}
+
+is_path_registered() {
+  local target="$1" existing
+  existing="$(read_registry_paths)"
+  if [[ -z "$existing" ]]; then
+    return 1
+  fi
+  printf '%s\n' "$existing" | grep -qxF "$target"
+}
+
+show_mounted_repos() {
+  local mounted
+  mounted="$(read_registry_paths)"
+  if [[ -z "$mounted" ]]; then
+    return 1
+  fi
+  printf '\nThe following clones are already mounted:\n'
+  while IFS= read -r p; do
+    [[ -z "$p" ]] && continue
+    printf '  - %s (%s)\n' "$p" "$(basename "$p")"
+  done <<EOF
+$mounted
+EOF
+  return 0
+}
+
+write_registry_entry() {
+  local repo_path="$1"
+  local repo_name now
+  repo_name="$(basename "$repo_path")"
+  now="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S 2>/dev/null || date +%s)"
+  mkdir -p "$REGISTRY_DIR"
+
+  if command -v jq >/dev/null 2>&1; then
+    write_registry_entry_jq "$repo_path" "$repo_name" "$now"
+  else
+    write_registry_entry_sed "$repo_path" "$repo_name" "$now"
+  fi
+}
+
+write_registry_entry_jq() {
+  local repo_path="$1" repo_name="$2" now="$3"
+  local tmp_file="${REGISTRY_FILE}.tmp.$$"
+
+  if [[ -f "$REGISTRY_FILE" ]]; then
+    jq --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" \
+      '.repos += [{"path": $p, "name": $n, "addedAt": $d}]' \
+      "$REGISTRY_FILE" >"$tmp_file" 2>/dev/null
+  else
+    jq -n --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" \
+      '{"repos": [{"path": $p, "name": $n, "addedAt": $d}]}' \
+      >"$tmp_file" 2>/dev/null
+  fi
+  mv "$tmp_file" "$REGISTRY_FILE"
+}
+
+write_registry_entry_sed() {
+  local repo_path="$1" repo_name="$2" now="$3"
+  local entry
+  entry="$(printf '{"path": "%s", "name": "%s", "addedAt": "%s"}' "$repo_path" "$repo_name" "$now")"
+
+  if [[ ! -f "$REGISTRY_FILE" ]]; then
+    printf '{"repos": [%s]}\n' "$entry" >"$REGISTRY_FILE"
+    return 0
+  fi
+
+  # Read existing content, strip newlines for single-line manipulation
+  local content
+  content="$(tr -d '\n' <"$REGISTRY_FILE")"
+
+  # Build new content by stripping the trailing ]} and appending the new entry
+  local prefix
+  prefix="${content%\]*}"
+  if [[ "$prefix" == "$content" ]]; then
+    # Malformed file -- overwrite
+    printf '{"repos": [%s]}\n' "$entry" >"$REGISTRY_FILE"
+    return 0
+  fi
+  printf '%s,%s]}\n' "$prefix" "$entry" >"$REGISTRY_FILE"
+}
+
+scan_and_mount_repos() {
+  local scan_dir="$1"
+  if [[ ! -d "$scan_dir" ]]; then
+    log "Directory does not exist: $scan_dir"
+    return 1
+  fi
+
+  local found_repos
+  found_repos="$(find "$scan_dir" -maxdepth 2 -type d -name '.beads' 2>/dev/null | sort)"
+  if [[ -z "$found_repos" ]]; then
+    log "No repositories with .beads/ found under $scan_dir"
+    return 0
+  fi
+
+  local new_count
+  new_count="$(display_scan_results "$found_repos")"
+
+  if [[ "$new_count" -eq 0 ]]; then
+    log "All found repositories are already mounted."
+    return 0
+  fi
+
+  mount_selected_repos "$found_repos"
+}
+
+display_scan_results() {
+  local found_repos="$1" i=0 new_count=0
+  printf '\nFound repositories:\n' >&2
+  while IFS= read -r beads_dir; do
+    [[ -z "$beads_dir" ]] && continue
+    local repo_dir
+    repo_dir="$(dirname "$beads_dir")"
+    i=$((i + 1))
+    if is_path_registered "$repo_dir"; then
+      printf '  %d) %s (already mounted)\n' "$i" "$repo_dir" >&2
+    else
+      printf '  %d) %s\n' "$i" "$repo_dir" >&2
+      new_count=$((new_count + 1))
+    fi
+  done <<EOF
+$found_repos
+EOF
+  printf '%d\n' "$new_count"
+}
+
+mount_selected_repos() {
+  local found_repos="$1" choice
+  read -r -p "Enter numbers to mount (comma-separated, or 'all') [all]: " choice </dev/tty || choice=""
+  choice="${choice:-all}"
+
+  local i=0
+  while IFS= read -r beads_dir; do
+    [[ -z "$beads_dir" ]] && continue
+    local repo_dir
+    repo_dir="$(dirname "$beads_dir")"
+    i=$((i + 1))
+
+    if is_path_registered "$repo_dir"; then
+      continue
+    fi
+
+    if [[ "$choice" == "all" ]] || printf ',%s,' ",$choice," | grep -q ",$i,"; then
+      write_registry_entry "$repo_dir"
+      log "Mounted: $repo_dir"
+    fi
+  done <<EOF
+$found_repos
+EOF
+}
+
+handle_manual_entry() {
+  while true; do
+    local repo_path
+    read -r -p "Enter repository path (or empty to finish): " repo_path </dev/tty || break
+    if [[ -z "$repo_path" ]]; then
+      break
+    fi
+
+    # Expand ~ to HOME
+    case "$repo_path" in
+      "~"*) repo_path="${HOME}${repo_path#"~"}" ;;
+    esac
+
+    if [[ ! -d "$repo_path" ]]; then
+      log "Path does not exist or is not a directory: $repo_path"
+      continue
+    fi
+    if [[ ! -d "$repo_path/.beads" ]]; then
+      log "No .beads/ directory found in: $repo_path"
+      continue
+    fi
+    if is_path_registered "$repo_path"; then
+      log "Already mounted: $repo_path"
+      continue
+    fi
+
+    write_registry_entry "$repo_path"
+    log "Mounted: $repo_path"
+  done
+}
+
+prompt_scan_method() {
+  printf '\nHow would you like to find repositories?\n'
+  printf '  1) Scan a directory (default: ~, up to 2 levels deep)\n'
+  printf '  2) Manually specify paths\n'
+  local method
+  read -r -p "Choice [1]: " method </dev/tty || method=""
+  method="${method:-1}"
+
+  case "$method" in
+    1)
+      local scan_dir
+      read -r -p "Directory to scan [$HOME]: " scan_dir </dev/tty || scan_dir=""
+      scan_dir="${scan_dir:-$HOME}"
+      # Expand ~ to HOME
+      case "$scan_dir" in
+        "~"*) scan_dir="${HOME}${scan_dir#"~"}" ;;
+      esac
+      scan_and_mount_repos "$scan_dir"
+      ;;
+    2)
+      handle_manual_entry
+      ;;
+    *)
+      log "Invalid choice: $method"
+      ;;
+  esac
+}
+
+maybe_repo_wizard() {
+  # Skip wizard when stdin is not a terminal (piped install)
+  if [[ ! -t 0 ]]; then
+    return 0
+  fi
+
+  printf '\n'
+  if ! confirm_prompt "Would you like to mount existing local repo clones? (You probably do) [Y/n] " "y"; then
+    return 0
+  fi
+
+  # Show already-mounted repos if any
+  if show_mounted_repos; then
+    if ! confirm_prompt "Are there others you'd like to add? [Y/n] " "y"; then
+      return 0
+    fi
+  fi
+
+  prompt_scan_method
+}
+
 main() {
   require_cmd curl
   require_cmd tar
@@ -742,6 +1004,8 @@ main() {
 
   log "Get started: foolery"
   log "Log files default to: $STATE_DIR/logs"
+
+  maybe_repo_wizard
 }
 
 main "$@"
