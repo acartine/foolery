@@ -1,46 +1,47 @@
 #!/usr/bin/env bash
 # Agent discovery wizard for Foolery install.
 # Detects supported AI agents on PATH and writes multi-agent settings.
-set -euo pipefail
+#
+# Designed to be sourced by install.sh; avoids top-level declare -A
+# for compatibility with Bash 3.2 (macOS default).
 
 CONFIG_DIR="${HOME}/.config/foolery"
 SETTINGS_FILE="${CONFIG_DIR}/settings.toml"
 
-# Known agents: id -> (command, label)
+# Known agent ids checked during detection.
 KNOWN_AGENTS=(claude codex gemini)
-declare -A AGENT_LABELS=(
-  [claude]="Claude Code"
-  [codex]="OpenAI Codex"
-  [gemini]="Google Gemini"
-)
 
 _wizard_log() {
   printf '[foolery-install] %s\n' "$*"
 }
 
-# ── TOML helpers ──────────────────────────────────────────────
-
-# Read the current settings file content (empty string if missing).
-_read_settings_file() {
-  if [[ -f "$SETTINGS_FILE" ]]; then
-    cat "$SETTINGS_FILE"
-  fi
+# Return the human-readable label for a known agent id.
+_agent_label() {
+  case "$1" in
+    claude) printf 'Claude Code' ;;
+    codex)  printf 'OpenAI Codex' ;;
+    gemini) printf 'Google Gemini' ;;
+    *)      printf '%s' "$1" ;;
+  esac
 }
 
+# ── TOML writer ───────────────────────────────────────────────
+
 # Write a complete settings file from the collected state.
-# Arguments: found_ids[@]  models_assoc  action_mappings_assoc
-# Uses global associative arrays: AGENT_MODELS, ACTION_MAP, AGENT_LABELS
+# Reads from globals: FOUND_AGENTS, AGENT_MODELS, ACTION_MAP.
 _write_settings_toml() {
-  local -n _ids=$1
   mkdir -p "$CONFIG_DIR"
 
-  local default_cmd="${_ids[0]:-claude}"
+  local default_cmd="${FOUND_AGENTS[0]:-claude}"
   {
     printf '[agent]\ncommand = "%s"\n\n' "$default_cmd"
 
-    for aid in "${_ids[@]}"; do
+    local aid
+    for aid in "${FOUND_AGENTS[@]}"; do
+      local lbl
+      lbl="$(_agent_label "$aid")"
       printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
-        "$aid" "$aid" "${AGENT_LABELS[$aid]}"
+        "$aid" "$aid" "$lbl"
       if [[ -n "${AGENT_MODELS[$aid]:-}" ]]; then
         printf 'model = "%s"\n' "${AGENT_MODELS[$aid]}"
       fi
@@ -63,15 +64,17 @@ detect_agents() {
   local aid
   for aid in "${KNOWN_AGENTS[@]}"; do
     if command -v "$aid" >/dev/null 2>&1; then
-      local path
-      path="$(command -v "$aid")"
-      _wizard_log "  Found: $aid (at $path)"
+      local agent_path
+      agent_path="$(command -v "$aid")"
+      _wizard_log "  Found: $aid (at $agent_path)"
       FOUND_AGENTS+=("$aid")
     fi
   done
 }
 
 # ── Prompts ───────────────────────────────────────────────────
+# All user-facing prompts write to /dev/tty so that command
+# substitution callers only capture the actual answer on stdout.
 
 # Ask the user which agent to use for a given action.
 # Prints the chosen agent id to stdout.
@@ -81,14 +84,14 @@ _prompt_action_choice() {
   local agents=("$@")
   local count=${#agents[@]}
 
-  printf '\nWhich agent for "%s"?\n' "$action_label"
+  printf '\nWhich agent for "%s"?\n' "$action_label" >/dev/tty
   local i
   for ((i = 0; i < count; i++)); do
-    printf '  %d) %s\n' "$((i + 1))" "${agents[$i]}"
+    printf '  %d) %s\n' "$((i + 1))" "${agents[$i]}" >/dev/tty
   done
 
   local choice
-  printf 'Choice [1]: '
+  printf 'Choice [1]: ' >/dev/tty
   read -r choice </dev/tty || true
   choice="${choice:-1}"
 
@@ -103,14 +106,13 @@ _prompt_action_choice() {
 _prompt_model() {
   local aid="$1"
   local model
-  printf 'Model for %s (optional, press Enter to skip): ' "$aid"
+  printf 'Model for %s (optional, press Enter to skip): ' "$aid" >/dev/tty
   read -r model </dev/tty || true
   printf '%s' "$model"
 }
 
 # Prompt for per-action agent mappings (multiple agents).
 _prompt_action_mappings() {
-  local -n _agents=$1
   local -a action_names=(take scene direct breakdown hydration)
   local -a action_labels=(
     '"Take!" (execute single bead)'
@@ -123,17 +125,16 @@ _prompt_action_mappings() {
   local i
   for ((i = 0; i < ${#action_names[@]}; i++)); do
     local chosen
-    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${_agents[@]}")"
+    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${FOUND_AGENTS[@]}")"
     ACTION_MAP[${action_names[$i]}]="$chosen"
   done
 }
 
 # Prompt for model preferences for each found agent.
 _prompt_all_models() {
-  local -n _agents=$1
   local aid
-  printf '\n'
-  for aid in "${_agents[@]}"; do
+  printf '\n' >/dev/tty
+  for aid in "${FOUND_AGENTS[@]}"; do
     local model
     model="$(_prompt_model "$aid")"
     AGENT_MODELS[$aid]="$model"
@@ -162,21 +163,23 @@ maybe_agent_wizard() {
     return 0
   fi
 
-  # Shared state for TOML generation
+  # Associative arrays declared inside the function to avoid
+  # top-level declare -A issues with set -u on older Bash.
   declare -A AGENT_MODELS=()
   declare -A ACTION_MAP=()
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
+    local action
     for action in take scene direct breakdown hydration; do
       ACTION_MAP[$action]="$sole"
     done
     _wizard_log "Registered $sole as default agent for all actions."
   else
-    _prompt_all_models FOUND_AGENTS
-    _prompt_action_mappings FOUND_AGENTS
+    _prompt_all_models
+    _prompt_action_mappings
   fi
 
-  _write_settings_toml FOUND_AGENTS
+  _write_settings_toml
   _wizard_log "Agent settings saved to $SETTINGS_FILE"
 }

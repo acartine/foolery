@@ -79,7 +79,11 @@ describe("loadSettings", () => {
 
 describe("saveSettings", () => {
   it("writes valid TOML that round-trips", async () => {
-    const settings = { agent: { command: "my-agent" } };
+    const settings = {
+      agent: { command: "my-agent" },
+      agents: {},
+      actions: DEFAULT_ACTIONS,
+    };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
     expect(mockWriteFile).toHaveBeenCalledTimes(1);
