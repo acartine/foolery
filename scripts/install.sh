@@ -73,7 +73,11 @@ download_url() {
 }
 
 write_launcher() {
-  cat >"$LAUNCHER_PATH" <<LAUNCHER
+  local launcher_dir tmp_launcher
+  launcher_dir="$(dirname "$LAUNCHER_PATH")"
+  tmp_launcher="$(mktemp "$launcher_dir/foolery-launcher.XXXXXX")"
+
+  cat >"$tmp_launcher" <<LAUNCHER
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -661,7 +665,13 @@ main() {
 main "\$@"
 LAUNCHER
 
-  chmod +x "$LAUNCHER_PATH"
+  chmod +x "$tmp_launcher"
+  if ! bash -n "$tmp_launcher"; then
+    rm -f "$tmp_launcher"
+    fail "Generated launcher failed syntax validation."
+  fi
+
+  mv "$tmp_launcher" "$LAUNCHER_PATH"
 }
 
 install_runtime() {
