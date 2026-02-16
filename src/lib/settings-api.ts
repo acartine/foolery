@@ -1,0 +1,82 @@
+import type { BdResult, RegisteredAgent, ScannedAgent } from "./types";
+import type { FoolerySettings, ActionAgentMappings } from "./schemas";
+
+const SETTINGS_BASE = "/api/settings";
+
+async function request<T>(
+  url: string,
+  options?: RequestInit,
+): Promise<BdResult<T>> {
+  const res = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    return { ok: false, error: json.error ?? "Request failed" };
+  }
+  return { ok: true, data: json.data ?? json };
+}
+
+export function fetchSettings(): Promise<BdResult<FoolerySettings>> {
+  return request<FoolerySettings>(SETTINGS_BASE);
+}
+
+export function saveSettings(
+  settings: FoolerySettings,
+): Promise<BdResult<FoolerySettings>> {
+  return request<FoolerySettings>(SETTINGS_BASE, {
+    method: "PUT",
+    body: JSON.stringify(settings),
+  });
+}
+
+export function fetchAgents(): Promise<
+  BdResult<Record<string, RegisteredAgent>>
+> {
+  return request<Record<string, RegisteredAgent>>(
+    `${SETTINGS_BASE}/agents`,
+  );
+}
+
+export function addAgent(
+  id: string,
+  agent: RegisteredAgent,
+): Promise<BdResult<Record<string, RegisteredAgent>>> {
+  return request<Record<string, RegisteredAgent>>(
+    `${SETTINGS_BASE}/agents`,
+    {
+      method: "POST",
+      body: JSON.stringify({ id, ...agent }),
+    },
+  );
+}
+
+export function removeAgent(
+  id: string,
+): Promise<BdResult<Record<string, RegisteredAgent>>> {
+  return request<Record<string, RegisteredAgent>>(
+    `${SETTINGS_BASE}/agents`,
+    {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    },
+  );
+}
+
+export function scanAgents(): Promise<BdResult<ScannedAgent[]>> {
+  return request<ScannedAgent[]>(`${SETTINGS_BASE}/agents/scan`);
+}
+
+export function fetchActions(): Promise<BdResult<ActionAgentMappings>> {
+  return request<ActionAgentMappings>(`${SETTINGS_BASE}/actions`);
+}
+
+export function saveActions(
+  actions: Partial<ActionAgentMappings>,
+): Promise<BdResult<ActionAgentMappings>> {
+  return request<ActionAgentMappings>(`${SETTINGS_BASE}/actions`, {
+    method: "PUT",
+    body: JSON.stringify(actions),
+  });
+}

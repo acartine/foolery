@@ -290,3 +290,25 @@ export interface ApplyHydrationResult {
   createdBeadIds: string[];
   waveCount: number;
 }
+
+// ── Agent management types ──────────────────────────────────
+
+export interface RegisteredAgent {
+  command: string;
+  model?: string;
+  label?: string;
+}
+
+export type ActionName =
+  | "take"
+  | "scene"
+  | "direct"
+  | "breakdown"
+  | "hydration";
+
+export interface ScannedAgent {
+  id: string;
+  command: string;
+  path: string;
+  installed: boolean;
+}

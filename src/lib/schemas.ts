@@ -93,9 +93,42 @@ export const agentSettingsSchema = z.object({
   command: z.string().min(1).default("claude"),
 });
 
+// A single registered agent
+export const registeredAgentSchema = z.object({
+  command: z.string().min(1),
+  model: z.string().optional(),
+  label: z.string().optional(),
+});
+
+// Map of agent-id -> agent config
+export const agentsMapSchema = z
+  .record(z.string(), registeredAgentSchema)
+  .default({});
+
+// Which agent to use for each agentic action
+export const actionAgentMappingsSchema = z
+  .object({
+    take: z.string().default("default"),
+    scene: z.string().default("default"),
+    direct: z.string().default("default"),
+    breakdown: z.string().default("default"),
+    hydration: z.string().default("default"),
+  })
+  .default({
+    take: "default",
+    scene: "default",
+    direct: "default",
+    breakdown: "default",
+    hydration: "default",
+  });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
+  agents: agentsMapSchema,
+  actions: actionAgentMappingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
 export type AgentSettings = z.infer<typeof agentSettingsSchema>;
+export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
+export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;

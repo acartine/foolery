@@ -13,6 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { SettingsAgentsSection } from "@/components/settings-agents-section";
+import { SettingsActionsSection } from "@/components/settings-actions-section";
+import { fetchSettings, saveSettings } from "@/lib/settings-api";
+import type { RegisteredAgent } from "@/lib/types";
+import type { ActionAgentMappings } from "@/lib/schemas";
 
 interface SettingsSheetProps {
   open: boolean;
@@ -21,9 +27,21 @@ interface SettingsSheetProps {
 
 interface SettingsData {
   agent: { command: string };
+  agents: Record<string, RegisteredAgent>;
+  actions: ActionAgentMappings;
 }
 
-const DEFAULTS: SettingsData = { agent: { command: "claude" } };
+const DEFAULTS: SettingsData = {
+  agent: { command: "claude" },
+  agents: {},
+  actions: {
+    take: "default",
+    scene: "default",
+    direct: "default",
+    breakdown: "default",
+    hydration: "default",
+  },
+};
 
 export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
@@ -33,10 +51,15 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.ok && json.data) setSettings(json.data);
+    fetchSettings()
+      .then((res) => {
+        if (res.ok && res.data) {
+          setSettings({
+            agent: res.data.agent ?? DEFAULTS.agent,
+            agents: res.data.agents ?? DEFAULTS.agents,
+            actions: res.data.actions ?? DEFAULTS.actions,
+          });
+        }
       })
       .catch(() => toast.error("Failed to load settings"))
       .finally(() => setLoading(false));
@@ -45,17 +68,12 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
   async function handleSave() {
     setSaving(true);
     try {
-      const res = await fetch("/api/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
-      });
-      const json = await res.json();
-      if (json.ok) {
+      const res = await saveSettings(settings);
+      if (res.ok) {
         toast.success("Settings saved");
-        setSettings(json.data);
+        if (res.data) setSettings(res.data);
       } else {
-        toast.error(json.error ?? "Failed to save settings");
+        toast.error(res.error ?? "Failed to save settings");
       }
     } catch {
       toast.error("Failed to save settings");
@@ -78,30 +96,55 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="space-y-6 px-4 py-6">
+        <div className="space-y-6 px-4 py-6 overflow-y-auto flex-1">
           {loading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : (
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium">Agent</h3>
-              <div className="space-y-2">
-                <Label htmlFor="agent-command">Command</Label>
-                <Input
-                  id="agent-command"
-                  value={settings.agent.command}
-                  placeholder="claude"
-                  onChange={(e) =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      agent: { ...prev.agent, command: e.target.value },
-                    }))
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  The CLI command used to spawn agent sessions (e.g. claude, codex).
-                </p>
+            <>
+              {/* Section 1: Agent Management */}
+              <SettingsAgentsSection
+                agents={settings.agents}
+                onAgentsChange={(agents) =>
+                  setSettings((prev) => ({ ...prev, agents }))
+                }
+              />
+
+              <Separator />
+
+              {/* Section 2: Action Mappings */}
+              <SettingsActionsSection
+                actions={settings.actions}
+                agents={settings.agents}
+                onActionsChange={(actions) =>
+                  setSettings((prev) => ({ ...prev, actions }))
+                }
+              />
+
+              <Separator />
+
+              {/* Section 3: Legacy / Default Agent */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Default Agent Command</h3>
+                <div className="space-y-2">
+                  <Label htmlFor="agent-command">Command</Label>
+                  <Input
+                    id="agent-command"
+                    value={settings.agent.command}
+                    placeholder="claude"
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        agent: { ...prev.agent, command: e.target.value },
+                      }))
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Fallback command when action mapping is set to
+                    &quot;default&quot;
+                  </p>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 
