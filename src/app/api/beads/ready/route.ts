@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
     if (!merged.has(bead.id)) merged.set(bead.id, bead);
   }
 
-  // Closed beads are never "ready" — filter them to avoid showing closed parents in the wave tree
-  const result = Array.from(merged.values()).filter(b => b.status !== "closed");
+  // Closed beads and those awaiting verification are never "ready"
+  const result = Array.from(merged.values()).filter(
+    b => b.status !== "closed" && !b.labels?.includes("stage:verification")
+  );
   return NextResponse.json({ data: result });
 }
