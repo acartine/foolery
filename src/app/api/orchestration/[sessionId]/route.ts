@@ -31,9 +31,14 @@ export async function GET(
         }
       };
 
+      const cleanup = () => {
+        entry.emitter.off("data", listener);
+      };
+
       const closeStream = () => {
         if (closed) return;
         closed = true;
+        cleanup();
         try {
           controller.close();
         } catch {
@@ -60,7 +65,6 @@ export async function GET(
       }
 
       request.signal.addEventListener("abort", () => {
-        entry.emitter.off("data", listener);
         closeStream();
       });
     },

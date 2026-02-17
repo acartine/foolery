@@ -516,7 +516,22 @@ function finalizeSession(
 
   pushEvent(entry, "exit", message);
 
+  // Free large accumulated strings now that the session is done.
+  // Note: allBeads is kept because applyOrchestrationSession uses it
+  // after finalization. It is cleared when the session is deleted.
+  entry.assistantText = "";
+  entry.lineBuffer = "";
+  entry.draftWaves.clear();
+
+  // Remove all listeners after a short drain window so SSE clients
+  // receive the final exit event before we detach them.
   setTimeout(() => {
+    entry.emitter.removeAllListeners();
+  }, 2000);
+
+  setTimeout(() => {
+    entry.buffer.length = 0;
+    entry.allBeads.clear();
     sessions.delete(entry.session.id);
   }, CLEANUP_DELAY_MS);
 }
@@ -727,11 +742,19 @@ export async function createOrchestrationSession(
     pushEvent(entry, "log", text);
   });
 
+  const releaseChildStreams = () => {
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
+  };
+
   child.on("error", (err) => {
+    releaseChildStreams();
     finalizeSession(entry, "error", `Failed to start Claude: ${err.message}`);
   });
 
   child.on("close", (code, signal) => {
+    releaseChildStreams();
+
     if (ndjsonBuffer.trim()) {
       try {
         const parsed = JSON.parse(ndjsonBuffer);
