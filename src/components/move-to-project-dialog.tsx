@@ -106,7 +106,7 @@ export function MoveToProjectDialog({
       <DialogTrigger asChild>
         <Button variant="outline" title="Move this beat to another project" size="sm">
           <ArrowRightLeft className="mr-2 h-4 w-4" />
-          Move to Project
+          Move
         </Button>
       </DialogTrigger>
       <DialogContent>

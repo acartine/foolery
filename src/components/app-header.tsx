@@ -356,22 +356,23 @@ export function AppHeader() {
                     )}
                   </Button>
                 </div>
-                {canCreate && showActionButton ? (
-                  actionButton
-                ) : canCreate ? (
-                  // Invisible placeholder preserves layout so the view switcher doesn't shift.
-                  // Uses "Wrap!" text (the widest action button) to prevent any layout shift.
-                  <div className="invisible" aria-hidden="true">
-                    <Button size="lg" variant="success" className="gap-1.5 px-2.5" tabIndex={-1}>
-                      <PartyPopper className="size-4" />
-                      Wrap!
+                <div className="grid w-[88px]">
+                  {canCreate && showActionButton ? (
+                    actionButton
+                  ) : canCreate ? (
+                    /* Invisible placeholder keeps fixed width so the view switcher stays put */
+                    <div className="invisible" aria-hidden="true">
+                      <Button size="lg" variant="success" className="gap-1.5 px-2.5" tabIndex={-1}>
+                        <PartyPopper className="size-4" />
+                        Wrap!
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button size="lg" variant="outline" title="Register a repository" onClick={openSettingsToRepos}>
+                      Add Repo
                     </Button>
-                  </div>
-                ) : (
-                  <Button size="lg" variant="outline" title="Register a repository" onClick={openSettingsToRepos}>
-                    Add Repo
-                  </Button>
-                )}
+                  )}
+                </div>
               </div>
             ) : null}
           </div>

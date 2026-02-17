@@ -104,14 +104,20 @@ export function BeadDetailLightbox({
       >
         <DialogHeader className="border-b border-border/70 px-3 py-2">
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
+            <div className="flex min-w-0 items-baseline gap-2">
+              <DialogDescription
+                className="shrink-0 cursor-pointer font-mono text-[11px]"
+                onClick={() => {
+                  const shortId = beadId.replace(/^[^-]+-/, "");
+                  navigator.clipboard.writeText(shortId);
+                }}
+                title="Click to copy ID"
+              >
+                {beadId.replace(/^[^-]+-/, "")}
+              </DialogDescription>
               <DialogTitle className="truncate text-base leading-tight">
                 {bead?.title ?? "Loading beat..."}
               </DialogTitle>
-              <DialogDescription className="mt-0.5 font-mono text-[11px]">
-                {beadId}
-                {repo ? ` • ${repo}` : ""}
-              </DialogDescription>
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
               {bead && (

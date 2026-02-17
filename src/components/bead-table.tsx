@@ -155,6 +155,7 @@ export function BeadTable({
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(getStoredHotkeyHelp);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
+  const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
@@ -250,6 +251,12 @@ export function BeadTable({
     }
   }, [data, handleUpdateBead]);
 
+  const handleRejectBead = useCallback((bead: Bead) => {
+    setNotesBead(bead);
+    setNotesRejectionMode(true);
+    setNotesDialogOpen(true);
+  }, []);
+
   const columns = useMemo(
     () => getBeadColumns({
       showRepoColumn,
@@ -275,8 +282,9 @@ export function BeadTable({
       builtForReviewIds,
       onApproveReview: handleApproveReview,
       onRejectReview: handleRejectReview,
+      onRejectBead: handleRejectBead,
     }),
-    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
+    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -410,24 +418,23 @@ export function BeadTable({
           setFocusedRowId(rows[currentIndex + 1].original.id);
         }
       } else if (e.key === "V" && e.shiftKey) {
-        // Shift-V: Verify (close) via one atomic update (status + label removal).
+        // Shift-V: Open rejection notes dialog for focused bead with stage:verification.
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
         if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
-        handleUpdateBead({ id: bead.id, fields: verifyBeadFields() });
-        // Advance focus to the next row (or previous if at end)
-        const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
-        if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
-          setFocusedRowId(rows[nextFocusIdx].original.id);
-        }
+        setNotesBead(bead);
+        setNotesRejectionMode(true);
+        setNotesDialogOpen(true);
       } else if (e.key === "F" && e.shiftKey) {
-        // Shift-F: Reject the focused bead if it has stage:verification
+        // Shift-F: Open rejection notes dialog for focused bead with stage:verification.
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
         if (!bead.labels?.includes("stage:verification")) return;
         e.preventDefault();
-        handleUpdateBead({ id: bead.id, fields: rejectBeadFields(bead) });
+        setNotesBead(bead);
+        setNotesRejectionMode(true);
+        setNotesDialogOpen(true);
       } else if (e.key === "S" && e.shiftKey) {
         // Shift-S: Ship focused bead
         if (!onShipBead || currentIndex < 0) return;
@@ -617,7 +624,11 @@ export function BeadTable({
       <NotesDialog
         bead={notesBead}
         open={notesDialogOpen}
-        onOpenChange={setNotesDialogOpen}
+        rejectionMode={notesRejectionMode}
+        onOpenChange={(open) => {
+          setNotesDialogOpen(open);
+          if (!open) setNotesRejectionMode(false);
+        }}
         onUpdate={(id, fields) => handleUpdateBead({ id, fields })}
       />
     </div>

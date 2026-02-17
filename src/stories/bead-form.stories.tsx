@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BeadForm } from '@/components/bead-form';
-import type { Bead, CreateBeadInput } from '@/lib/types';
+import type { Bead } from '@/lib/types';
+import type { CreateBeadInput } from '@/lib/schemas';
 import '@/app/globals.css';
 
 const meta = {

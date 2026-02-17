@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
@@ -11,10 +10,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
 import { X, Clapperboard } from "lucide-react";
 import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
-import { isWaveLabel, isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
+import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
@@ -152,51 +150,9 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
     onUpdate({ removeLabels: [label] }).catch(() => {});
   }, [onUpdate]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent, field: string) => {
-    if (e.key === "Escape") {
-      cancelEdit();
-    } else if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      void saveEdit(field, editValue);
-    }
-  }, [cancelEdit, saveEdit, editValue]);
-
   return (
     <div className="space-y-2">
       <section className="space-y-1.5 border-b border-border/70 pb-2">
-        <div className="flex items-start gap-2">
-          <code
-            className="mt-1 cursor-pointer text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              const shortId = bead.id.replace(/^[^-]+-/, "");
-              navigator.clipboard.writeText(shortId);
-              toast.success(`Copied: ${shortId}`);
-            }}
-            title="Click to copy ID"
-          >
-            {bead.id.replace(/^[^-]+-/, "")}
-          </code>
-          {editingField === "title" ? (
-            <Input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => {
-                void saveEdit("title", editValue);
-              }}
-              onKeyDown={(e) => handleKeyDown(e, "title")}
-              className="h-8 text-base font-semibold"
-            />
-          ) : (
-            <h2
-              className={`text-base leading-tight font-semibold ${onUpdate ? "cursor-pointer rounded px-1 py-0.5 hover:bg-muted/70" : ""}`}
-              onClick={() => onUpdate && startEdit("title", bead.title)}
-            >
-              {bead.title}
-            </h2>
-          )}
-        </div>
-
         <div className="flex flex-wrap gap-1.5">
           {onUpdate ? (
             <DropdownMenu>
@@ -263,7 +219,6 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
 
         {bead.labels.length > 0 && (() => {
           const isOrchestrated = bead.labels.some(isWaveLabel);
-          const visibleLabels = bead.labels.filter((l) => !isInternalLabel(l));
           return (
             <div className="flex flex-wrap items-center gap-1">
               {isOrchestrated && (
@@ -272,7 +227,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
                   Orchestrated
                 </Badge>
               )}
-              {visibleLabels.map((label) => (
+              {bead.labels.map((label) => (
                 <Badge key={label} variant="secondary" className="gap-1 pr-1">
                   {label}
                   {onUpdate && !isReadOnlyLabel(label) && (

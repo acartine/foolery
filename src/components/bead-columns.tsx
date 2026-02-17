@@ -74,6 +74,8 @@ export interface BeadColumnOpts {
   builtForReviewIds?: Set<string>;
   onApproveReview?: (parentId: string) => void;
   onRejectReview?: (parentId: string) => void;
+  /** Opens the rejection notes dialog for a bead instead of directly rejecting. */
+  onRejectBead?: (bead: Bead) => void;
 }
 
 function VerificationButtons({
@@ -131,14 +133,16 @@ export function rejectBeadFields(bead: Bead): UpdateBeadInput {
 function RejectButton({
   bead,
   onUpdateBead,
+  onRejectBead,
   isRolling,
 }: {
   bead: Bead;
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
+  onRejectBead?: (bead: Bead) => void;
   isRolling?: boolean;
 }) {
   const hasVerification = bead.labels?.includes("stage:verification");
-  if (!hasVerification || !onUpdateBead || isRolling) return null;
+  if (!hasVerification || (!onUpdateBead && !onRejectBead) || isRolling) return null;
 
   return (
     <button
@@ -147,7 +151,11 @@ function RejectButton({
       title="Reject"
       onClick={(e) => {
         e.stopPropagation();
-        onUpdateBead(bead.id, rejectBeadFields(bead));
+        if (onRejectBead) {
+          onRejectBead(bead);
+        } else if (onUpdateBead) {
+          onUpdateBead(bead.id, rejectBeadFields(bead));
+        }
       }}
     >
       <ThumbsDown className="size-4" />
@@ -329,6 +337,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const builtForReviewIds = typeof opts === "boolean" ? new Set<string>() : (opts.builtForReviewIds ?? new Set<string>());
   const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
   const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
+  const onRejectBead = typeof opts === "boolean" ? undefined : opts.onRejectBead;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -486,7 +495,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
             ) : (
               <BeadStatusBadge status={row.original.status} className={pulseClass} />
             )}
-            <RejectButton bead={row.original} onUpdateBead={onUpdateBead} isRolling={isRolling} />
+            <RejectButton bead={row.original} onUpdateBead={onUpdateBead} onRejectBead={onRejectBead} isRolling={isRolling} />
           </div>
         );
       },

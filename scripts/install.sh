@@ -661,12 +661,114 @@ doctor_cmd() {
     fail "Failed to reach Foolery API at \$URL/api/doctor"
   }
 
-  # Pretty-print if jq is available, raw JSON otherwise
-  if command -v jq >/dev/null 2>&1; then
-    printf '%s\n' "\$response" | jq .
-  else
+  # Formatted output requires jq; fall back to raw JSON
+  if ! command -v jq >/dev/null 2>&1; then
     printf '%s\n' "\$response"
+    return
   fi
+
+  local GREEN='\033[0;32m' RED='\033[0;31m' YELLOW='\033[0;33m' CYAN='\033[0;36m' BOLD='\033[1m' RESET='\033[0m'
+  local CHECK_PASS="${GREEN}✔${RESET}" CHECK_FAIL="${RED}✘${RESET}" CHECK_WARN="${YELLOW}⚠${RESET}"
+
+  printf "\n${BOLD}Foolery Doctor${RESET}\n\n"
+
+  if [[ "\$fix" -eq 1 ]]; then
+    # Fix mode — show fix results
+    local attempted succeeded failed
+    attempted=\$(printf '%s' "\$response" | jq -r '.data.summary.attempted // 0')
+    succeeded=\$(printf '%s' "\$response" | jq -r '.data.summary.succeeded // 0')
+    failed=\$(printf '%s' "\$response" | jq -r '.data.summary.failed // 0')
+
+    if [[ "\$attempted" -eq 0 ]]; then
+      printf "  ${CHECK_PASS}  Nothing to fix\n"
+    else
+      printf '%s' "\$response" | jq -r '.data.fixes[] | "\(.success)|\(.check)|\(.message)"' | while IFS='|' read -r success check msg; do
+        if [[ "\$success" == "true" ]]; then
+          printf "  ${CHECK_PASS}  ${GREEN}%s${RESET}  %s\n" "\$check" "\$msg"
+        else
+          printf "  ${CHECK_FAIL}  ${RED}%s${RESET}  %s\n" "\$check" "\$msg"
+        fi
+      done
+      printf "\n  Fixes: ${GREEN}%s succeeded${RESET}, ${RED}%s failed${RESET} (of %s)\n" "\$succeeded" "\$failed" "\$attempted"
+    fi
+  else
+    # Diagnose mode — group by check, show summary counts
+    local errors warnings infos fixable
+    errors=\$(printf '%s' "\$response" | jq -r '.data.summary.errors // 0')
+    warnings=\$(printf '%s' "\$response" | jq -r '.data.summary.warnings // 0')
+    infos=\$(printf '%s' "\$response" | jq -r '.data.summary.infos // 0')
+    fixable=\$(printf '%s' "\$response" | jq -r '.data.summary.fixable // 0')
+
+    # Group diagnostics by severity for cleaner output
+    local has_items=0
+
+    # Errors first
+    local error_count
+    error_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "error")] | length')
+    if [[ "\$error_count" -gt 0 ]]; then
+      has_items=1
+      local error_checks
+      error_checks=\$(printf '%s' "\$response" | jq -r '[.data.diagnostics[] | select(.severity == "error") | .check] | unique | .[]')
+      while IFS= read -r check_name; do
+        local count
+        count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "error" and .check == \$c)] | length')
+        if [[ "\$count" -gt 3 ]]; then
+          printf "  ${CHECK_FAIL}  ${RED}%s${RESET}  %s issues found\n" "\$check_name" "\$count"
+        else
+          printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "error" and .check == \$c) | .message' | while IFS= read -r msg; do
+            printf "  ${CHECK_FAIL}  %s\n" "\$msg"
+          done
+        fi
+      done <<< "\$error_checks"
+    fi
+
+    # Warnings
+    local warn_count
+    warn_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "warning")] | length')
+    if [[ "\$warn_count" -gt 0 ]]; then
+      has_items=1
+      local warn_checks
+      warn_checks=\$(printf '%s' "\$response" | jq -r '[.data.diagnostics[] | select(.severity == "warning") | .check] | unique | .[]')
+      while IFS= read -r check_name; do
+        local count
+        count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "warning" and .check == \$c)] | length')
+        if [[ "\$count" -gt 3 ]]; then
+          printf "  ${CHECK_WARN}  ${YELLOW}%s${RESET}  %s issues found\n" "\$check_name" "\$count"
+        else
+          printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "warning" and .check == \$c) | .message' | while IFS= read -r msg; do
+            printf "  ${CHECK_WARN}  %s\n" "\$msg"
+          done
+        fi
+      done <<< "\$warn_checks"
+    fi
+
+    # Info (healthy checks)
+    local info_count
+    info_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "info")] | length')
+    if [[ "\$info_count" -gt 0 ]]; then
+      has_items=1
+      printf '%s' "\$response" | jq -r '.data.diagnostics[] | select(.severity == "info") | .message' | while IFS= read -r msg; do
+        printf "  ${CHECK_PASS}  %s\n" "\$msg"
+      done
+    fi
+
+    if [[ "\$has_items" -eq 0 ]]; then
+      printf "  ${CHECK_PASS}  All checks passed\n"
+    fi
+
+    # Summary line
+    printf "\n"
+    if [[ "\$errors" -gt 0 ]] || [[ "\$warnings" -gt 0 ]]; then
+      printf "  Summary: ${RED}%s errors${RESET}, ${YELLOW}%s warnings${RESET}, ${GREEN}%s ok${RESET}" "\$errors" "\$warnings" "\$infos"
+      if [[ "\$fixable" -gt 0 ]]; then
+        printf " (${CYAN}%s auto-fixable${RESET} — run ${BOLD}foolery doctor --fix${RESET})" "\$fixable"
+      fi
+      printf "\n"
+    else
+      printf "  ${GREEN}${BOLD}All clear!${RESET} %s checks passed.\n" "\$infos"
+    fi
+  fi
+  printf "\n"
 }
 
 usage() {
