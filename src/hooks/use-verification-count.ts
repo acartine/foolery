@@ -14,8 +14,14 @@ import type { Bead, BdResult } from "@/lib/types";
  *  - Invalidating ["beads"] also refreshes this count.
  *
  * @param enabled - pass false to suspend polling (e.g. when not on /beads).
+ * @param isFinalCutActive - true when FinalCutView is the active view.
+ *   When false the hook still polls but at a slower cadence (30s vs 10s),
+ *   reducing background traffic on other /beads views.
  */
-export function useVerificationCount(enabled: boolean): number {
+export function useVerificationCount(
+  enabled: boolean,
+  isFinalCutActive: boolean,
+): number {
   const { activeRepo, registeredRepos } = useAppStore();
 
   const hasRepos = Boolean(activeRepo) || registeredRepos.length > 0;
@@ -25,13 +31,22 @@ export function useVerificationCount(enabled: boolean): number {
     queryFn: () => fetchVerificationBeads(activeRepo, registeredRepos),
     select: (result) => (result.ok ? (result.data?.length ?? 0) : 0),
     enabled: enabled && hasRepos,
-    refetchInterval: 10_000,
+    // When FinalCutView is active it drives the same cache at 10s;
+    // on other views, poll at a relaxed 30s for the header badge.
+    refetchInterval: isFinalCutActive ? 10_000 : 30_000,
   });
 
   return data ?? 0;
 }
 
-/** Fetch in_progress beads with stage:verification across repos. */
+/**
+ * Fetch in_progress beads with stage:verification across repos.
+ *
+ * NOTE: The multi-repo fan-out silences per-repo failures and returns
+ * partial results. This matches FinalCutView's existing behaviour
+ * (final-cut-view.tsx lines 51-65) and avoids hiding all results when
+ * a single repo is temporarily unreachable.
+ */
 async function fetchVerificationBeads(
   activeRepo: string | null,
   registeredRepos: { path: string; name: string }[],
