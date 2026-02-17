@@ -9,14 +9,15 @@ These repo-level rules are mandatory for all agents working in this project:
 1. Always use Beads (`bd`) to track and coordinate work.
 2. Never close Beads unless the user explicitly instructs you to close them.
 3. Never use a PR workflow unless the user explicitly instructs you to use PRs.
-4. Before any code change, docs edit, or git commit, move the Bead to `in_progress`:
+4. `ship_with_review` is disabled in this repository unless the user explicitly requests `ship_with_review` or a PR workflow.
+5. Before any code change, docs edit, or git commit, move the Bead to `in_progress`:
    `bd update <id> --status in_progress`
-5. Do not start work unless the target Bead is in `in_progress`.
-6. `bd update <id> --claim` is optional for assignee metadata and does not replace setting status.
-7. For verification handoff, labels must be added in this order:
+6. Do not start work unless the target Bead is in `in_progress`.
+7. `bd update <id> --claim` is optional for assignee metadata and does not replace setting status.
+8. For verification handoff, labels must be added in this order:
    `bd update <id> --add-label commit:<short-commit-hash>`
    `bd update <id> --add-label stage:verification`
-8. Do not add `stage:verification` without a matching `commit:<short-commit-hash>` label.
+9. Do not add `stage:verification` without a matching `commit:<short-commit-hash>` label.
 
 ## Git Worktree Policy (Hard Override)
 
