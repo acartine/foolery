@@ -6,6 +6,20 @@ import type {
   RegisteredRepo,
 } from "@/lib/types";
 
+const ACTIVE_REPO_KEY = "foolery-active-repo";
+
+function persistActiveRepo(repo: string | null) {
+  if (typeof window === "undefined") return;
+  if (repo) localStorage.setItem(ACTIVE_REPO_KEY, repo);
+  else localStorage.removeItem(ACTIVE_REPO_KEY);
+}
+
+/** Read persisted repo (client only). */
+export function getStoredActiveRepo(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ACTIVE_REPO_KEY);
+}
+
 export interface Filters {
   status?: BeadStatus | "ready";
   type?: BeadType;
@@ -51,7 +65,10 @@ export const useAppStore = create<AppState>((set) => ({
   toggleCommandPalette: () =>
     set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
   setViewMode: (mode) => set({ viewMode: mode }),
-  setActiveRepo: (repo) => set({ activeRepo: repo }),
+  setActiveRepo: (repo) => {
+    persistActiveRepo(repo);
+    set({ activeRepo: repo });
+  },
   setRegisteredRepos: (repos) => set({ registeredRepos: repos }),
   setPageSize: (size) => set({ pageSize: size }),
 }));
