@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
-import { useNotificationStore, selectUnreadCount } from "@/stores/notification-store";
+import { useVerificationCount } from "@/hooks/use-verification-count";
 
 type VersionBanner = {
   installedVersion: string;
@@ -55,8 +55,7 @@ export function AppHeader() {
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
-  const unreadCount = useNotificationStore(selectUnreadCount);
-  const markAllRead = useNotificationStore((s) => s.markAllRead);
+  const verificationCount = useVerificationCount();
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
@@ -331,16 +330,13 @@ export function AppHeader() {
                     variant={beadsView === "finalcut" ? "default" : "ghost"}
                     className="relative h-8 gap-1.5 px-2.5"
                     title="Verification queue"
-                    onClick={() => {
-                      setBeadsView("finalcut");
-                      markAllRead();
-                    }}
+                    onClick={() => setBeadsView("finalcut")}
                   >
                     <Scissors className="size-4" />
                     Final Cut
-                    {unreadCount > 0 && (
+                    {verificationCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
-                        {unreadCount > 9 ? "9+" : unreadCount}
+                        {verificationCount > 9 ? "9+" : verificationCount}
                       </span>
                     )}
                   </Button>
