@@ -75,12 +75,16 @@ usage() {
 Usage: bun run release [-- [OPTIONS]]
 
 Options:
-  --patch    Bump patch version (0.1.0 -> 0.1.1)
-  --minor    Bump minor version (0.1.0 -> 0.2.0)
-  --major    Bump major version (0.1.0 -> 1.0.0)
-  -h, --help Show this help message
+  --patch                Bump patch version (0.1.0 -> 0.1.1)
+  --minor                Bump minor version (0.1.0 -> 0.2.0)
+  --major                Bump major version (0.1.0 -> 1.0.0)
+  --dry-run              Preview the release without making changes
+  --wait-for-artifacts   Wait for release artifacts after publishing (default)
+  --no-wait-for-artifacts  Skip waiting for release artifacts
+  -h, --help             Show this help message
 
-With no options, an interactive prompt lets you choose the bump type.
+With no bump flag, an interactive prompt lets you choose the bump type.
+--dry-run and --wait-for-artifacts cannot be used together.
 
 Environment variables:
   FOOLERY_RELEASE_DRY_RUN=1              Skip actual release (default: 0)
@@ -88,6 +92,8 @@ Environment variables:
   FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS=0   Skip waiting for artifacts (default: 1)
   FOOLERY_RELEASE_POLL_INTERVAL_SECONDS  Poll interval in seconds (default: 10)
   FOOLERY_RELEASE_WAIT_TIMEOUT_SECONDS   Artifact wait timeout (default: 600)
+
+Flags override their corresponding environment variables.
 EOF
 }
 
@@ -170,7 +176,8 @@ main() {
   require_cmd git
   require_cmd sed
 
-  local bump_kind="" target
+  local bump_kind="" target dry_run="" wait_artifacts=""
+  local wait_artifacts_explicit=0
   target="${FOOLERY_RELEASE_TARGET:-main}"
 
   while [[ $# -gt 0 ]]; do
@@ -178,6 +185,9 @@ main() {
       --patch) bump_kind="patch"; shift ;;
       --minor) bump_kind="minor"; shift ;;
       --major) bump_kind="major"; shift ;;
+      --dry-run) dry_run="1"; shift ;;
+      --wait-for-artifacts) wait_artifacts="1"; wait_artifacts_explicit=1; shift ;;
+      --no-wait-for-artifacts) wait_artifacts="0"; shift ;;
       -h|--help) usage; return 0 ;;
       *)
         printf 'Unrecognized option: %s\n' "$1" >&2
@@ -186,6 +196,27 @@ main() {
         ;;
     esac
   done
+
+  # Resolve flags with env var fallbacks
+  dry_run="${dry_run:-${FOOLERY_RELEASE_DRY_RUN:-0}}"
+  if [[ -z "$wait_artifacts" ]]; then
+    wait_artifacts="${FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS:-1}"
+    if [[ "$wait_artifacts" == "1" ]]; then
+      wait_artifacts_explicit=0
+    else
+      wait_artifacts_explicit=1
+    fi
+  fi
+
+  # Only error when wait-for-artifacts was explicitly requested with dry-run
+  if [[ "$dry_run" == "1" && "$wait_artifacts" == "1" && "$wait_artifacts_explicit" == "1" ]]; then
+    fail "--dry-run and --wait-for-artifacts cannot be used together"
+  fi
+
+  # Dry run implies no artifact wait
+  if [[ "$dry_run" == "1" ]]; then
+    wait_artifacts="0"
+  fi
 
   local pkg
   pkg="$(git rev-parse --show-toplevel)/package.json"
@@ -206,7 +237,7 @@ main() {
 
   log "Bumping $current_version -> $new_version ($bump_kind)"
 
-  if [[ "${FOOLERY_RELEASE_DRY_RUN:-0}" == "1" ]]; then
+  if [[ "$dry_run" == "1" ]]; then
     log "Dry run enabled. Would:"
     log "  - Update package.json to $new_version"
     log "  - git commit and tag $tag"
@@ -226,10 +257,10 @@ main() {
   log "Creating GitHub release $tag from target $target"
   gh release create "$tag" --target "$target" --generate-notes --latest
 
-  if [[ "${FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS:-1}" == "1" ]]; then
+  if [[ "$wait_artifacts" == "1" ]]; then
     wait_for_artifacts "$tag"
   else
-    log "Skipping artifact wait (FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS=0)."
+    log "Skipping artifact wait."
   fi
 }
 
