@@ -36,7 +36,7 @@ const SUPPRESSIBLE_PATTERNS = [
   "unable to open database",
   "could not obtain lock",
   "busy",
-  "EACCES",
+  "eacces",
   "permission denied",
 ];
 
