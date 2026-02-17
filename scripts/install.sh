@@ -719,9 +719,9 @@ doctor_cmd() {
   fi
 
   local GREEN='\033[0;32m' RED='\033[0;31m' YELLOW='\033[0;33m' CYAN='\033[0;36m' BOLD='\033[1m' RESET='\033[0m'
-  local CHECK_PASS="${GREEN}✔${RESET}" CHECK_FAIL="${RED}✘${RESET}" CHECK_WARN="${YELLOW}⚠${RESET}"
+  local CHECK_PASS="\${GREEN}✔\${RESET}" CHECK_FAIL="\${RED}✘\${RESET}" CHECK_WARN="\${YELLOW}⚠\${RESET}"
 
-  printf "\n${BOLD}Foolery Doctor${RESET}\n\n"
+  printf "\n\${BOLD}Foolery Doctor\${RESET}\n\n"
 
   if [[ "\$fix" -eq 1 ]]; then
     # Fix mode — show fix results
@@ -731,16 +731,16 @@ doctor_cmd() {
     failed=\$(printf '%s' "\$response" | jq -r '.data.summary.failed // 0')
 
     if [[ "\$attempted" -eq 0 ]]; then
-      printf "  ${CHECK_PASS}  Nothing to fix\n"
+      printf "  \${CHECK_PASS}  Nothing to fix\n"
     else
       printf '%s' "\$response" | jq -r '.data.fixes[] | "\(.success)|\(.check)|\(.message)"' | while IFS='|' read -r success check msg; do
         if [[ "\$success" == "true" ]]; then
-          printf "  ${CHECK_PASS}  ${GREEN}%s${RESET}  %s\n" "\$check" "\$msg"
+          printf "  \${CHECK_PASS}  \${GREEN}%s\${RESET}  %s\n" "\$check" "\$msg"
         else
-          printf "  ${CHECK_FAIL}  ${RED}%s${RESET}  %s\n" "\$check" "\$msg"
+          printf "  \${CHECK_FAIL}  \${RED}%s\${RESET}  %s\n" "\$check" "\$msg"
         fi
       done
-      printf "\n  Fixes: ${GREEN}%s succeeded${RESET}, ${RED}%s failed${RESET} (of %s)\n" "\$succeeded" "\$failed" "\$attempted"
+      printf "\n  Fixes: \${GREEN}%s succeeded\${RESET}, \${RED}%s failed\${RESET} (of %s)\n" "\$succeeded" "\$failed" "\$attempted"
     fi
   else
     # Diagnose mode — group by check, show summary counts
@@ -764,10 +764,10 @@ doctor_cmd() {
         local count
         count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "error" and .check == \$c)] | length')
         if [[ "\$count" -gt 3 ]]; then
-          printf "  ${CHECK_FAIL}  ${RED}%s${RESET}  %s issues found\n" "\$check_name" "\$count"
+          printf "  \${CHECK_FAIL}  \${RED}%s\${RESET}  %s issues found\n" "\$check_name" "\$count"
         else
           printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "error" and .check == \$c) | .message' | while IFS= read -r msg; do
-            printf "  ${CHECK_FAIL}  %s\n" "\$msg"
+            printf "  \${CHECK_FAIL}  %s\n" "\$msg"
           done
         fi
       done <<< "\$error_checks"
@@ -784,10 +784,10 @@ doctor_cmd() {
         local count
         count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "warning" and .check == \$c)] | length')
         if [[ "\$count" -gt 3 ]]; then
-          printf "  ${CHECK_WARN}  ${YELLOW}%s${RESET}  %s issues found\n" "\$check_name" "\$count"
+          printf "  \${CHECK_WARN}  \${YELLOW}%s\${RESET}  %s issues found\n" "\$check_name" "\$count"
         else
           printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "warning" and .check == \$c) | .message' | while IFS= read -r msg; do
-            printf "  ${CHECK_WARN}  %s\n" "\$msg"
+            printf "  \${CHECK_WARN}  %s\n" "\$msg"
           done
         fi
       done <<< "\$warn_checks"
@@ -799,24 +799,24 @@ doctor_cmd() {
     if [[ "\$info_count" -gt 0 ]]; then
       has_items=1
       printf '%s' "\$response" | jq -r '.data.diagnostics[] | select(.severity == "info") | .message' | while IFS= read -r msg; do
-        printf "  ${CHECK_PASS}  %s\n" "\$msg"
+        printf "  \${CHECK_PASS}  %s\n" "\$msg"
       done
     fi
 
     if [[ "\$has_items" -eq 0 ]]; then
-      printf "  ${CHECK_PASS}  All checks passed\n"
+      printf "  \${CHECK_PASS}  All checks passed\n"
     fi
 
     # Summary line
     printf "\n"
     if [[ "\$errors" -gt 0 ]] || [[ "\$warnings" -gt 0 ]]; then
-      printf "  Summary: ${RED}%s errors${RESET}, ${YELLOW}%s warnings${RESET}, ${GREEN}%s ok${RESET}" "\$errors" "\$warnings" "\$infos"
+      printf "  Summary: \${RED}%s errors\${RESET}, \${YELLOW}%s warnings\${RESET}, \${GREEN}%s ok\${RESET}" "\$errors" "\$warnings" "\$infos"
       if [[ "\$fixable" -gt 0 ]]; then
-        printf " (${CYAN}%s auto-fixable${RESET} — run ${BOLD}foolery doctor --fix${RESET})" "\$fixable"
+        printf " (\${CYAN}%s auto-fixable\${RESET} — run \${BOLD}foolery doctor --fix\${RESET})" "\$fixable"
       fi
       printf "\n"
     else
-      printf "  ${GREEN}${BOLD}All clear!${RESET} %s checks passed.\n" "\$infos"
+      printf "  \${GREEN}\${BOLD}All clear!\${RESET} %s checks passed.\n" "\$infos"
     fi
   fi
   printf "\n"
