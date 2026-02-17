@@ -127,7 +127,7 @@ function BeadsPageInner() {
       }
       return fetcher(params);
     },
-    enabled: isListView,
+    enabled: isListView && (Boolean(activeRepo) || registeredRepos.length > 0),
     refetchInterval: 10_000,
   });
 
