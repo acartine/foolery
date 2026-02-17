@@ -44,6 +44,8 @@ import type {
   OrchestrationSession,
 } from "@/lib/types";
 import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
+import { useAgentInfo } from "@/hooks/use-agent-info";
+import { AgentInfoLine } from "@/components/agent-info-line";
 
 const MAX_LOG_LINES = 900;
 
@@ -317,6 +319,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
+  const directAgentInfo = useAgentInfo("direct");
 
   const [objective, setObjective] = useState("");
   const [session, setSession] = useState<OrchestrationSession | null>(null);
@@ -646,6 +649,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-semibold tracking-tight">Direct</h2>
+            {directAgentInfo && <AgentInfoLine agent={directAgentInfo} />}
             <p className="text-sm text-muted-foreground">
               The agent organizes dependency-aware scenes, agent counts, and specialties for <span className="font-medium text-foreground">{repoLabel}</span>.
             </p>

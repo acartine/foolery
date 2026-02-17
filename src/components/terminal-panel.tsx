@@ -5,6 +5,8 @@ import { Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession, startSceneSession } from "@/lib/terminal-api";
 import { fetchBead } from "@/lib/api";
+import { useAgentInfo } from "@/hooks/use-agent-info";
+import { AgentInfoBar } from "@/components/agent-info-bar";
 import type { TerminalEvent } from "@/lib/types";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
@@ -84,6 +86,8 @@ export function TerminalPanel() {
   const cleanupRef = useRef<(() => void) | null>(null);
   const autoCloseTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const isMaximized = panelHeight > 70;
+  const agentAction = activeTerminal?.beadIds ? "scene" : "take";
+  const agentInfo = useAgentInfo(agentAction);
 
   const handleAbort = useCallback(async () => {
     if (!activeTerminal) return;
@@ -470,6 +474,8 @@ export function TerminalPanel() {
           </button>
         </div>
       </div>
+
+      {agentInfo && <AgentInfoBar agent={agentInfo} />}
 
       <div ref={termContainerRef} className="flex-1 overflow-hidden px-1 py-1" />
     </div>
