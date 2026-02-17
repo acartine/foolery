@@ -22,9 +22,9 @@ export function UrlStateSync() {
   useEffect(() => {
     const store = useAppStore.getState();
 
-    // Sync activeRepo
+    // Sync activeRepo -- only override store when URL explicitly has ?repo=
     const urlRepo = searchParams.get("repo");
-    if (urlRepo !== store.activeRepo) {
+    if (searchParams.has("repo") && urlRepo !== store.activeRepo) {
       store.setActiveRepo(urlRepo);
     }
 

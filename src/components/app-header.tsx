@@ -47,10 +47,10 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-  const settingsParamOnMount = searchParams.get("settings");
-  const [settingsOpen, setSettingsOpen] = useState(settingsParamOnMount === "repos");
+  const settingsParam = searchParams.get("settings");
+  const [settingsOpen, setSettingsOpen] = useState(settingsParam === "repos");
   const [settingsSection, setSettingsSection] = useState<SettingsSection>(
-    settingsParamOnMount === "repos" ? "repos" : null
+    settingsParam === "repos" ? "repos" : null
   );
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
@@ -120,15 +120,16 @@ export function AppHeader() {
     return () => controller.abort();
   }, []);
 
-  // Clean up ?settings=repos from URL after initial render
+  // Open settings sheet when ?settings=repos appears, then clean up URL
   useEffect(() => {
-    if (settingsParamOnMount !== "repos") return;
+    if (settingsParam !== "repos") return;
+    setSettingsSection("repos");
+    setSettingsOpen(true);
     const params = new URLSearchParams(searchParams.toString());
     params.delete("settings");
     const qs = params.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [settingsParam, searchParams, router, pathname]);
 
   function handleSettingsOpenChange(open: boolean) {
     setSettingsOpen(open);
