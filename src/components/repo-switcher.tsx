@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Database } from "lucide-react";
 import { fetchRegistry } from "@/lib/registry-api";
-import { useAppStore } from "@/stores/app-store";
+import { useAppStore, getPersistedRepo } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import {
   DropdownMenu,
@@ -14,12 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function RepoSwitcher() {
   const { activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
   const updateUrl = useUpdateUrl();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { data } = useQuery({
     queryKey: ["registry"],
@@ -29,9 +32,11 @@ export function RepoSwitcher() {
   useEffect(() => {
     if (data?.ok && data.data) {
       setRegisteredRepos(data.data);
-      // Default to first repo if no repo was ever selected
+      // Restore last selected repo, or default to first repo
       if (!activeRepo && data.data.length > 0) {
-        updateUrl({ repo: data.data[0].path });
+        const persisted = getPersistedRepo();
+        const match = persisted && data.data.find((r) => r.path === persisted);
+        updateUrl({ repo: match ? match.path : data.data[0].path });
       }
     }
   }, [data, setRegisteredRepos, activeRepo, updateUrl]);
@@ -76,10 +81,12 @@ export function RepoSwitcher() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/registry" className="w-full">
-            Manage Repositories...
-          </Link>
+        <DropdownMenuItem onClick={() => {
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("settings", "repos");
+          router.push(`${pathname}?${params.toString()}`);
+        }}>
+          Manage Repositories...
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

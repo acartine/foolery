@@ -33,6 +33,27 @@ interface AppState {
 
 const initialFilters: Filters = { status: "ready" };
 
+const LAST_REPO_KEY = "foolery:lastRepo";
+
+function getPersistedRepo(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(LAST_REPO_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function persistRepo(repo: string | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (repo) localStorage.setItem(LAST_REPO_KEY, repo);
+    else localStorage.removeItem(LAST_REPO_KEY);
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export const useAppStore = create<AppState>((set) => ({
   filters: initialFilters,
   commandPaletteOpen: false,
@@ -51,7 +72,12 @@ export const useAppStore = create<AppState>((set) => ({
   toggleCommandPalette: () =>
     set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
   setViewMode: (mode) => set({ viewMode: mode }),
-  setActiveRepo: (repo) => set({ activeRepo: repo }),
+  setActiveRepo: (repo) => {
+    persistRepo(repo);
+    set({ activeRepo: repo });
+  },
   setRegisteredRepos: (repos) => set({ registeredRepos: repos }),
   setPageSize: (size) => set({ pageSize: size }),
 }));
+
+export { getPersistedRepo };

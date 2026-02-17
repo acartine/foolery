@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const repoPath = params._repo;
   delete params._repo;
+  // Strip search query — bd ready doesn't accept --q
+  const query = params.q;
+  delete params.q;
 
   const [rawReady, rawInProgress] = await Promise.all([
     readyBeads(params, repoPath),
@@ -33,8 +36,19 @@ export async function GET(request: NextRequest) {
   }
 
   // Closed beads and those awaiting verification are never "ready"
-  const result = Array.from(merged.values()).filter(
+  let result = Array.from(merged.values()).filter(
     b => b.status !== "closed" && !b.labels?.includes("stage:verification")
   );
+
+  // Client-side search filtering — bd ready doesn't support --q
+  if (query) {
+    const q = query.toLowerCase();
+    result = result.filter(b =>
+      b.id.toLowerCase().includes(q) ||
+      (b.title && b.title.toLowerCase().includes(q)) ||
+      (b.description && b.description.toLowerCase().includes(q))
+    );
+  }
+
   return NextResponse.json({ data: result });
 }

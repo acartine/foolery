@@ -74,7 +74,7 @@ function EditableSection({
   const isEditing = editingField === field;
 
   return (
-    <section className="rounded-md border border-border/70 bg-muted/20 px-2 py-1.5">
+    <section className="min-w-0 rounded-md border border-border/70 bg-muted/20 px-2 py-1.5">
       <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
         {title}
       </h3>
@@ -93,7 +93,7 @@ function EditableSection({
         />
       ) : (
         <p
-          className={`min-h-[20px] whitespace-pre-wrap text-sm leading-snug ${onUpdate ? "cursor-pointer rounded px-1 py-0.5 hover:bg-muted/70" : ""}`}
+          className={`min-h-[20px] max-w-full whitespace-pre-wrap break-words text-sm leading-snug ${onUpdate ? "cursor-pointer rounded px-1 py-0.5 hover:bg-muted/70" : ""}`}
           onClick={() => onUpdate && onStartEdit(field, value)}
         >
           {value || (onUpdate ? placeholder : "-")}

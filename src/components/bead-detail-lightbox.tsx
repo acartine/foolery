@@ -130,8 +130,8 @@ export function BeadDetailLightbox({
           </div>
         </DialogHeader>
 
-        <div className="grid max-h-[84vh] min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1.8fr)_minmax(18rem,1fr)]">
-          <div className="min-h-0 overflow-y-auto px-3 py-2">
+        <div className="grid max-h-[84vh] min-h-0 grid-cols-1 overflow-hidden lg:grid-cols-[minmax(0,1.8fr)_minmax(18rem,1fr)]">
+          <div className="min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2">
             {isLoadingBead && !bead ? (
               <div className="py-6 text-sm text-muted-foreground">Loading beat...</div>
             ) : bead ? (
@@ -146,7 +146,7 @@ export function BeadDetailLightbox({
             )}
           </div>
 
-          <aside className="min-h-0 space-y-3 overflow-y-auto border-t border-border/70 bg-muted/20 px-3 py-2 lg:border-t-0 lg:border-l">
+          <aside className="min-h-0 min-w-0 space-y-3 overflow-y-auto overflow-x-hidden border-t border-border/70 bg-muted/20 px-3 py-2 lg:border-t-0 lg:border-l">
             <section className="space-y-1.5">
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 Dependencies

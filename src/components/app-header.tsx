@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Clapperboard, List, Film, Scissors, Settings, PartyPopper, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
@@ -47,15 +46,20 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-  const settingsParamOnMount = searchParams.get("settings");
-  const [settingsOpen, setSettingsOpen] = useState(settingsParamOnMount === "repos");
+  const settingsParam = searchParams.get("settings");
+  const settingsOpenFromUrl = settingsParam === "repos";
+  const [settingsOpen, setSettingsOpen] = useState(settingsOpenFromUrl);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>(
-    settingsParamOnMount === "repos" ? "repos" : null
+    settingsOpenFromUrl ? "repos" : null
   );
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
   const verificationCount = useVerificationCount(isBeadsRoute, beadsView === "finalcut");
+
+  // Derive settings sheet state from URL param — open when ?settings=repos is present
+  const effectiveSettingsOpen = settingsOpen || settingsOpenFromUrl;
+  const effectiveSettingsSection = settingsOpenFromUrl ? "repos" : settingsSection;
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
@@ -119,19 +123,20 @@ export function AppHeader() {
     return () => controller.abort();
   }, []);
 
-  // Clean up ?settings=repos from URL after initial render
-  useEffect(() => {
-    if (settingsParamOnMount !== "repos") return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("settings");
-    const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Note: ?settings=repos cleanup happens in handleSettingsOpenChange when sheet closes
 
   function handleSettingsOpenChange(open: boolean) {
     setSettingsOpen(open);
-    if (!open) setSettingsSection(null);
+    if (!open) {
+      setSettingsSection(null);
+      // Clean up ?settings= from URL if present
+      if (settingsOpenFromUrl) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("settings");
+        const qs = params.toString();
+        router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+      }
+    }
   }
 
   function openSettingsToRepos() {
@@ -259,7 +264,17 @@ export function AppHeader() {
           ) : null}
           <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <div className="flex min-w-0 shrink-0 items-center gap-2">
-              <Link href="/beads" title="Home" className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                title="Home"
+                className="flex shrink-0 cursor-pointer items-center gap-2"
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  if (activeRepo) params.set("repo", activeRepo);
+                  const qs = params.toString();
+                  router.push(`/beads${qs ? `?${qs}` : ""}`);
+                }}
+              >
                 <Image
                   src="/foolery_icon.png"
                   alt="Foolery"
@@ -268,7 +283,7 @@ export function AppHeader() {
                   unoptimized
                   className="rounded-md"
                 />
-              </Link>
+              </button>
               <RepoSwitcher />
             </div>
 
@@ -376,7 +391,7 @@ export function AppHeader() {
         />
       ) : null}
 
-      <SettingsSheet open={settingsOpen} onOpenChange={handleSettingsOpenChange} initialSection={settingsSection} />
+      <SettingsSheet open={effectiveSettingsOpen} onOpenChange={handleSettingsOpenChange} initialSection={effectiveSettingsSection} />
     </>
   );
 }

@@ -47,7 +47,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <List className="mr-2 size-4" />
             Go to Beads
           </CommandItem>
-          <CommandItem onSelect={() => runAction(() => router.push("/registry"))}>
+          <CommandItem onSelect={() => runAction(() => router.push("/beads?settings=repos"))}>
             <Database className="mr-2 size-4" />
             Manage Repositories
           </CommandItem>
