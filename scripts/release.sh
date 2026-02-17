@@ -104,22 +104,20 @@ prompt_bump_kind() {
   v_minor="$(bump_version "$current" minor)"
   v_major="$(bump_version "$current" major)"
 
-  printf '\n'
-  printf 'Current version: %s\n' "$current"
-  printf '\n'
-  printf '  1) patch  ->  %s\n' "$v_patch"
-  printf '  2) minor  ->  %s\n' "$v_minor"
-  printf '  3) major  ->  %s\n' "$v_major"
-  printf '\n'
+  printf '\n' >/dev/tty
+  printf '  [patch - %s]  [p]\n' "$v_patch" >/dev/tty
+  printf '  [minor - %s]  [i]\n' "$v_minor" >/dev/tty
+  printf '  [major - %s]  [j]\n' "$v_major" >/dev/tty
+  printf '\n' >/dev/tty
 
   local choice
-  read -rp 'Select bump type [1]: ' choice
-  choice="${choice:-1}"
+  read -rp 'Select [p]: ' choice </dev/tty >/dev/tty
+  choice="${choice:-p}"
 
   case "$choice" in
-    1) printf 'patch\n' ;;
-    2) printf 'minor\n' ;;
-    3) printf 'major\n' ;;
+    p) printf 'patch\n' ;;
+    i) printf 'minor\n' ;;
+    j) printf 'major\n' ;;
     *) fail "Invalid selection: $choice" ;;
   esac
 }
