@@ -683,6 +683,138 @@ prompt_cmd() {
   log "Prompt update complete: \$updated updated, \$skipped already up to date."
 }
 
+render_doctor_report() {
+  local response="\$1" fix_mode="\$2"
+
+  if ! command -v node >/dev/null 2>&1; then
+    printf '%s\n' "\$response"
+    return 0
+  fi
+
+  printf '%s' "\$response" | node - "\$fix_mode" <<'NODE'
+const fs = require('node:fs');
+
+const raw = fs.readFileSync(0, 'utf8');
+let payload;
+try {
+  payload = JSON.parse(raw);
+} catch {
+  process.stdout.write(raw + (raw.endsWith('\n') ? '' : '\n'));
+  process.exit(0);
+}
+
+const fixMode = process.argv[2] === '1';
+const data = payload && typeof payload === 'object' ? (payload.data || {}) : {};
+const diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : [];
+const fixes = Array.isArray(data.fixes) ? data.fixes : [];
+const summary = data.summary && typeof data.summary === 'object' ? data.summary : {};
+
+const GREEN = '\x1b[0;32m';
+const RED = '\x1b[0;31m';
+const YELLOW = '\x1b[0;33m';
+const CYAN = '\x1b[0;36m';
+const BOLD = '\x1b[1m';
+const RESET = '\x1b[0m';
+const CHECK_PASS = GREEN + '✔' + RESET;
+const CHECK_FAIL = RED + '✘' + RESET;
+const CHECK_WARN = YELLOW + '⚠' + RESET;
+
+const lines = [];
+lines.push('');
+lines.push(BOLD + 'Foolery Doctor' + RESET);
+lines.push('');
+
+const groupByCheck = (items, severity) => {
+  const byCheck = new Map();
+  for (const item of items) {
+    if (!item || item.severity !== severity) continue;
+    const key = item.check ? String(item.check) : 'unknown';
+    if (!byCheck.has(key)) byCheck.set(key, []);
+    byCheck.get(key).push(item);
+  }
+  return byCheck;
+};
+
+if (fixMode) {
+  const attempted = Number(summary.attempted || 0);
+  const succeeded = Number(summary.succeeded || 0);
+  const failed = Number(summary.failed || 0);
+
+  if (attempted === 0) {
+    lines.push('  ' + CHECK_PASS + '  Nothing to fix');
+  } else {
+    for (const fix of fixes) {
+      const ok = Boolean(fix && fix.success);
+      const check = fix && fix.check ? String(fix.check) : 'unknown';
+      const msg = fix && fix.message ? String(fix.message) : '';
+      if (ok) {
+        lines.push('  ' + CHECK_PASS + '  ' + GREEN + check + RESET + '  ' + msg);
+      } else {
+        lines.push('  ' + CHECK_FAIL + '  ' + RED + check + RESET + '  ' + msg);
+      }
+    }
+    lines.push('');
+    lines.push('  Fixes: ' + GREEN + succeeded + ' succeeded' + RESET + ', ' + RED + failed + ' failed' + RESET + ' (of ' + attempted + ')');
+  }
+} else {
+  const errors = Number(summary.errors || 0);
+  const warnings = Number(summary.warnings || 0);
+  const infos = Number(summary.infos || 0);
+  const fixable = Number(summary.fixable || 0);
+
+  let hasItems = false;
+
+  for (const [check, entries] of groupByCheck(diagnostics, 'error')) {
+    hasItems = true;
+    if (entries.length > 3) {
+      lines.push('  ' + CHECK_FAIL + '  ' + RED + check + RESET + '  ' + entries.length + ' issues found');
+    } else {
+      for (const entry of entries) {
+        lines.push('  ' + CHECK_FAIL + '  ' + String(entry.message || ''));
+      }
+    }
+  }
+
+  for (const [check, entries] of groupByCheck(diagnostics, 'warning')) {
+    hasItems = true;
+    if (entries.length > 3) {
+      lines.push('  ' + CHECK_WARN + '  ' + YELLOW + check + RESET + '  ' + entries.length + ' issues found');
+    } else {
+      for (const entry of entries) {
+        lines.push('  ' + CHECK_WARN + '  ' + String(entry.message || ''));
+      }
+    }
+  }
+
+  const infoItems = diagnostics.filter((d) => d && d.severity === 'info');
+  if (infoItems.length > 0) {
+    hasItems = true;
+    for (const item of infoItems) {
+      lines.push('  ' + CHECK_PASS + '  ' + String(item.message || ''));
+    }
+  }
+
+  if (!hasItems) {
+    lines.push('  ' + CHECK_PASS + '  All checks passed');
+  }
+
+  lines.push('');
+  if (errors > 0 || warnings > 0) {
+    let summaryLine = '  Summary: ' + RED + errors + ' errors' + RESET + ', ' + YELLOW + warnings + ' warnings' + RESET + ', ' + GREEN + infos + ' ok' + RESET;
+    if (fixable > 0) {
+      summaryLine += ' (' + CYAN + fixable + ' auto-fixable' + RESET + ' — run ' + BOLD + 'foolery doctor --fix' + RESET + ')';
+    }
+    lines.push(summaryLine);
+  } else {
+    lines.push('  ' + GREEN + BOLD + 'All clear!' + RESET + ' ' + infos + ' checks passed.');
+  }
+}
+
+lines.push('');
+process.stdout.write(lines.join('\n'));
+NODE
+}
+
 doctor_cmd() {
   local fix=0
   while [[ \$# -gt 0 ]]; do
@@ -712,114 +844,7 @@ doctor_cmd() {
     fail "Failed to reach Foolery API at \$URL/api/doctor"
   }
 
-  # Formatted output requires jq; fall back to raw JSON
-  if ! command -v jq >/dev/null 2>&1; then
-    printf '%s\n' "\$response"
-    return
-  fi
-
-  local GREEN='\033[0;32m' RED='\033[0;31m' YELLOW='\033[0;33m' CYAN='\033[0;36m' BOLD='\033[1m' RESET='\033[0m'
-  local CHECK_PASS="\${GREEN}✔\${RESET}" CHECK_FAIL="\${RED}✘\${RESET}" CHECK_WARN="\${YELLOW}⚠\${RESET}"
-
-  printf "\n\${BOLD}Foolery Doctor\${RESET}\n\n"
-
-  if [[ "\$fix" -eq 1 ]]; then
-    # Fix mode — show fix results
-    local attempted succeeded failed
-    attempted=\$(printf '%s' "\$response" | jq -r '.data.summary.attempted // 0')
-    succeeded=\$(printf '%s' "\$response" | jq -r '.data.summary.succeeded // 0')
-    failed=\$(printf '%s' "\$response" | jq -r '.data.summary.failed // 0')
-
-    if [[ "\$attempted" -eq 0 ]]; then
-      printf "  \${CHECK_PASS}  Nothing to fix\n"
-    else
-      printf '%s' "\$response" | jq -r '.data.fixes[] | "\(.success)|\(.check)|\(.message)"' | while IFS='|' read -r success check msg; do
-        if [[ "\$success" == "true" ]]; then
-          printf "  \${CHECK_PASS}  \${GREEN}%s\${RESET}  %s\n" "\$check" "\$msg"
-        else
-          printf "  \${CHECK_FAIL}  \${RED}%s\${RESET}  %s\n" "\$check" "\$msg"
-        fi
-      done
-      printf "\n  Fixes: \${GREEN}%s succeeded\${RESET}, \${RED}%s failed\${RESET} (of %s)\n" "\$succeeded" "\$failed" "\$attempted"
-    fi
-  else
-    # Diagnose mode — group by check, show summary counts
-    local errors warnings infos fixable
-    errors=\$(printf '%s' "\$response" | jq -r '.data.summary.errors // 0')
-    warnings=\$(printf '%s' "\$response" | jq -r '.data.summary.warnings // 0')
-    infos=\$(printf '%s' "\$response" | jq -r '.data.summary.infos // 0')
-    fixable=\$(printf '%s' "\$response" | jq -r '.data.summary.fixable // 0')
-
-    # Group diagnostics by severity for cleaner output
-    local has_items=0
-
-    # Errors first
-    local error_count
-    error_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "error")] | length')
-    if [[ "\$error_count" -gt 0 ]]; then
-      has_items=1
-      local error_checks
-      error_checks=\$(printf '%s' "\$response" | jq -r '[.data.diagnostics[] | select(.severity == "error") | .check] | unique | .[]')
-      while IFS= read -r check_name; do
-        local count
-        count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "error" and .check == \$c)] | length')
-        if [[ "\$count" -gt 3 ]]; then
-          printf "  \${CHECK_FAIL}  \${RED}%s\${RESET}  %s issues found\n" "\$check_name" "\$count"
-        else
-          printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "error" and .check == \$c) | .message' | while IFS= read -r msg; do
-            printf "  \${CHECK_FAIL}  %s\n" "\$msg"
-          done
-        fi
-      done <<< "\$error_checks"
-    fi
-
-    # Warnings
-    local warn_count
-    warn_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "warning")] | length')
-    if [[ "\$warn_count" -gt 0 ]]; then
-      has_items=1
-      local warn_checks
-      warn_checks=\$(printf '%s' "\$response" | jq -r '[.data.diagnostics[] | select(.severity == "warning") | .check] | unique | .[]')
-      while IFS= read -r check_name; do
-        local count
-        count=\$(printf '%s' "\$response" | jq --arg c "\$check_name" '[.data.diagnostics[] | select(.severity == "warning" and .check == \$c)] | length')
-        if [[ "\$count" -gt 3 ]]; then
-          printf "  \${CHECK_WARN}  \${YELLOW}%s\${RESET}  %s issues found\n" "\$check_name" "\$count"
-        else
-          printf '%s' "\$response" | jq -r --arg c "\$check_name" '.data.diagnostics[] | select(.severity == "warning" and .check == \$c) | .message' | while IFS= read -r msg; do
-            printf "  \${CHECK_WARN}  %s\n" "\$msg"
-          done
-        fi
-      done <<< "\$warn_checks"
-    fi
-
-    # Info (healthy checks)
-    local info_count
-    info_count=\$(printf '%s' "\$response" | jq '[.data.diagnostics[] | select(.severity == "info")] | length')
-    if [[ "\$info_count" -gt 0 ]]; then
-      has_items=1
-      printf '%s' "\$response" | jq -r '.data.diagnostics[] | select(.severity == "info") | .message' | while IFS= read -r msg; do
-        printf "  \${CHECK_PASS}  %s\n" "\$msg"
-      done
-    fi
-
-    if [[ "\$has_items" -eq 0 ]]; then
-      printf "  \${CHECK_PASS}  All checks passed\n"
-    fi
-
-    # Summary line
-    printf "\n"
-    if [[ "\$errors" -gt 0 ]] || [[ "\$warnings" -gt 0 ]]; then
-      printf "  Summary: \${RED}%s errors\${RESET}, \${YELLOW}%s warnings\${RESET}, \${GREEN}%s ok\${RESET}" "\$errors" "\$warnings" "\$infos"
-      if [[ "\$fixable" -gt 0 ]]; then
-        printf " (\${CYAN}%s auto-fixable\${RESET} — run \${BOLD}foolery doctor --fix\${RESET})" "\$fixable"
-      fi
-      printf "\n"
-    else
-      printf "  \${GREEN}\${BOLD}All clear!\${RESET} %s checks passed.\n" "\$infos"
-    fi
-  fi
-  printf "\n"
+  render_doctor_report "\$response" "\$fix"
 }
 
 usage() {
