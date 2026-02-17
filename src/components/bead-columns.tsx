@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, X, Clapperboard, Square, Eye } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
@@ -76,6 +76,8 @@ export interface BeadColumnOpts {
   onRejectReview?: (parentId: string) => void;
   /** Opens the rejection notes dialog for a bead instead of directly rejecting. */
   onRejectBead?: (bead: Bead) => void;
+  collapsedIds?: Set<string>;
+  onToggleCollapse?: (id: string) => void;
 }
 
 function VerificationButtons({
@@ -338,6 +340,8 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
   const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
   const onRejectBead = typeof opts === "boolean" ? undefined : opts.onRejectBead;
+  const collapsedIds = typeof opts === "boolean" ? new Set<string>() : (opts.collapsedIds ?? new Set<string>());
+  const onToggleCollapse = typeof opts === "boolean" ? undefined : opts.onToggleCollapse;
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -391,11 +395,29 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       accessorKey: "title",
       header: "Title",
       cell: ({ row }) => {
-        const depth = (row.original as unknown as { _depth?: number })._depth ?? 0;
+        const hb = row.original as unknown as { _depth?: number; _hasChildren?: boolean };
+        const depth = hb._depth ?? 0;
+        const hasChildren = hb._hasChildren ?? false;
+        const isCollapsed = collapsedIds.has(row.original.id);
         const isReview = builtForReviewIds.has(row.original.id);
+        const Chevron = isCollapsed ? ChevronRight : ChevronDown;
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
-            {depth > 0 && <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-muted-foreground shrink-0" />}
+            {hasChildren ? (
+              <button
+                type="button"
+                title={isCollapsed ? "Expand children" : "Collapse children"}
+                className="p-0 mt-0.5 text-muted-foreground hover:text-foreground shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleCollapse?.(row.original.id);
+                }}
+              >
+                <Chevron className="h-3.5 w-3.5" />
+              </button>
+            ) : depth > 0 ? (
+              <span className="inline-block w-3.5 shrink-0" />
+            ) : null}
             <TitleCell
               bead={row.original}
               onTitleClick={onTitleClick}

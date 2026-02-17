@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
-import { buildHierarchy } from "@/lib/bead-hierarchy";
+import { buildHierarchy, type HierarchicalBead } from "@/lib/bead-hierarchy";
 import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
 import { getBeadColumns, rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
 import {
@@ -156,6 +156,7 @@ export function BeadTable({
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
@@ -191,10 +192,34 @@ export function BeadTable({
     },
   });
 
-  const sortedData = useMemo(() => {
+  const handleToggleCollapse = useCallback((id: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const hierarchyData = useMemo(() => {
     const sortFn = userSorted ? undefined : compareBeadsByPriorityThenStatus;
     return buildHierarchy(data, sortFn);
   }, [data, userSorted]);
+
+  const sortedData = useMemo(() => {
+    if (collapsedIds.size === 0) return hierarchyData;
+    const result: HierarchicalBead[] = [];
+    let skipDepth: number | null = null;
+    for (const bead of hierarchyData) {
+      if (skipDepth !== null && bead._depth > skipDepth) continue;
+      skipDepth = null;
+      result.push(bead);
+      if (collapsedIds.has(bead.id)) {
+        skipDepth = bead._depth;
+      }
+    }
+    return result;
+  }, [hierarchyData, collapsedIds]);
 
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
@@ -283,8 +308,10 @@ export function BeadTable({
       onApproveReview: handleApproveReview,
       onRejectReview: handleRejectReview,
       onRejectBead: handleRejectBead,
+      collapsedIds,
+      onToggleCollapse: handleToggleCollapse,
     }),
-    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead]
+    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead, collapsedIds, handleToggleCollapse]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {

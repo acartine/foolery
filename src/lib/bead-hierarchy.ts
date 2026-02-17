@@ -2,6 +2,7 @@ import type { Bead } from "@/lib/types";
 
 export interface HierarchicalBead extends Bead {
   _depth: number;
+  _hasChildren: boolean;
 }
 
 /**
@@ -35,7 +36,8 @@ export function buildHierarchy(
     for (const b of kids) {
       if (visited.has(b.id)) continue;
       visited.add(b.id);
-      result.push({ ...b, _depth: depth });
+      const hasKids = (children.get(b.id) ?? []).length > 0;
+      result.push({ ...b, _depth: depth, _hasChildren: hasKids });
       walk(b.id, depth + 1);
     }
   }

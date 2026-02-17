@@ -20,9 +20,9 @@ describe("buildHierarchy", () => {
   it("returns flat beads at depth 0 when no parents", () => {
     const beads = [makeBead({ id: "a" }), makeBead({ id: "b" })];
     const result = buildHierarchy(beads);
-    expect(result.map((b) => [b.id, b._depth])).toEqual([
-      ["a", 0],
-      ["b", 0],
+    expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
+      ["a", 0, false],
+      ["b", 0, false],
     ]);
   });
 
@@ -33,10 +33,10 @@ describe("buildHierarchy", () => {
       makeBead({ id: "child2", parent: "parent" }),
     ];
     const result = buildHierarchy(beads);
-    expect(result.map((b) => [b.id, b._depth])).toEqual([
-      ["parent", 0],
-      ["child1", 1],
-      ["child2", 1],
+    expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
+      ["parent", 0, true],
+      ["child1", 1, false],
+      ["child2", 1, false],
     ]);
   });
 
@@ -47,10 +47,10 @@ describe("buildHierarchy", () => {
       makeBead({ id: "leaf", parent: "mid" }),
     ];
     const result = buildHierarchy(beads);
-    expect(result.map((b) => [b.id, b._depth])).toEqual([
-      ["root", 0],
-      ["mid", 1],
-      ["leaf", 2],
+    expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
+      ["root", 0, true],
+      ["mid", 1, true],
+      ["leaf", 2, false],
     ]);
   });
 
@@ -60,9 +60,9 @@ describe("buildHierarchy", () => {
       makeBead({ id: "root" }),
     ];
     const result = buildHierarchy(beads);
-    expect(result.map((b) => [b.id, b._depth])).toEqual([
-      ["orphan", 0],
-      ["root", 0],
+    expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
+      ["orphan", 0, false],
+      ["root", 0, false],
     ]);
   });
 
