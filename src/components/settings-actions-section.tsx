@@ -111,14 +111,14 @@ export function SettingsActionsSection({
                 </div>
               </div>
               <Select
-                value={actions[def.name] ?? "default"}
+                value={actions[def.name] || ""}
                 onValueChange={(v) => handleChange(def.name, v)}
+                disabled={agentIds.length === 0}
               >
                 <SelectTrigger className="w-[140px] shrink-0">
-                  <SelectValue />
+                  <SelectValue placeholder={agentIds.length === 0 ? "no agents" : "select agent"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default">default</SelectItem>
                   {agentIds.map((id) => (
                     <SelectItem key={id} value={id}>
                       {agents[id].label ?? id}

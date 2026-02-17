@@ -102,8 +102,8 @@ export async function getActionAgent(
   action: ActionName,
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
-  const agentId = settings.actions[action] ?? "default";
-  if (agentId !== "default" && settings.agents[agentId]) {
+  const agentId = settings.actions[action] ?? "";
+  if (agentId && agentId !== "default" && settings.agents[agentId]) {
     const reg = settings.agents[agentId];
     return { command: reg.command, model: reg.model, label: reg.label };
   }

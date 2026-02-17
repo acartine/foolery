@@ -108,18 +108,18 @@ export const agentsMapSchema = z
 // Which agent to use for each agentic action
 export const actionAgentMappingsSchema = z
   .object({
-    take: z.string().default("default"),
-    scene: z.string().default("default"),
-    direct: z.string().default("default"),
-    breakdown: z.string().default("default"),
-    hydration: z.string().default("default"),
+    take: z.string().default(""),
+    scene: z.string().default(""),
+    direct: z.string().default(""),
+    breakdown: z.string().default(""),
+    hydration: z.string().default(""),
   })
   .default({
-    take: "default",
-    scene: "default",
-    direct: "default",
-    breakdown: "default",
-    hydration: "default",
+    take: "",
+    scene: "",
+    direct: "",
+    breakdown: "",
+    hydration: "",
   });
 
 export const foolerySettingsSchema = z.object({

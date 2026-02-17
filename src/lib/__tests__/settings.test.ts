@@ -24,11 +24,11 @@ import {
 } from "@/lib/settings";
 
 const DEFAULT_ACTIONS = {
-  take: "default",
-  scene: "default",
-  direct: "default",
-  breakdown: "default",
-  hydration: "default",
+  take: "",
+  scene: "",
+  direct: "",
+  breakdown: "",
+  hydration: "",
 };
 
 const DEFAULT_SETTINGS = {
@@ -138,7 +138,7 @@ describe("updateSettings", () => {
       actions: { take: "codex" },
     });
     expect(updated.actions.take).toBe("codex");
-    expect(updated.actions.scene).toBe("default");
+    expect(updated.actions.scene).toBe("");
   });
 });
 
@@ -163,8 +163,21 @@ describe("getRegisteredAgents", () => {
 });
 
 describe("getActionAgent", () => {
-  it("falls back to agent.command when mapping is default", async () => {
+  it("falls back to agent.command when mapping is empty string", async () => {
     mockReadFile.mockResolvedValue('[agent]\ncommand = "claude"');
+    const agent = await getActionAgent("take");
+    expect(agent.command).toBe("claude");
+  });
+
+  it("falls back to agent.command when mapping is legacy 'default'", async () => {
+    const toml = [
+      '[agent]',
+      'command = "claude"',
+      '[actions]',
+      'take = "default"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
     const agent = await getActionAgent("take");
     expect(agent.command).toBe("claude");
   });

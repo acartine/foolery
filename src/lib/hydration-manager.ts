@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { addDep, createBead, showBead, updateBead } from "@/lib/bd";
-import { getAgentCommand } from "@/lib/settings";
+import { getActionAgent } from "@/lib/settings";
 import type {
   ApplyHydrationResult,
   BeadPriority,
@@ -377,8 +377,9 @@ export async function createHydrationSession(
     "--dangerously-skip-permissions",
   ];
 
-  const agentCmd = await getAgentCommand();
-  const child = spawn(agentCmd, args, {
+  const agent = await getActionAgent("hydration");
+  if (agent.model) args.push("--model", agent.model);
+  const child = spawn(agent.command, args, {
     cwd: repoPath,
     env: { ...process.env },
     stdio: ["ignore", "pipe", "pipe"],

@@ -2,7 +2,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { listBeads, showBead } from "@/lib/bd";
 import { regroomAncestors } from "@/lib/regroom";
-import { getAgentCommand } from "@/lib/settings";
+import { getActionAgent } from "@/lib/settings";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 
@@ -429,14 +429,16 @@ export async function createSession(
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
-  const agentCmd = await getAgentCommand();
-  const child = spawn(agentCmd, args, {
+  const agent = await getActionAgent("take");
+  if (agent.model) args.push("--model", agent.model);
+  const child = spawn(agent.command, args, {
     cwd,
     env: { ...process.env },
     stdio: ["pipe", "pipe", "pipe"],
   });
   entry.process = child;
 
+  console.log(`[terminal-manager]   agent: ${agent.command}${agent.model ? ` (model: ${agent.model})` : ""}`);
   console.log(`[terminal-manager]   pid: ${child.pid ?? "failed to spawn"}`);
 
   const pushEvent = (evt: TerminalEvent) => {
@@ -792,14 +794,16 @@ export async function createSceneSession(
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
-  const agentCmd = await getAgentCommand();
-  const child = spawn(agentCmd, args, {
+  const agent = await getActionAgent("scene");
+  if (agent.model) args.push("--model", agent.model);
+  const child = spawn(agent.command, args, {
     cwd,
     env: { ...process.env },
     stdio: ["pipe", "pipe", "pipe"],
   });
   entry.process = child;
 
+  console.log(`[terminal-manager]   agent: ${agent.command}${agent.model ? ` (model: ${agent.model})` : ""}`);
   console.log(`[terminal-manager]   pid: ${child.pid ?? "failed to spawn"}`);
 
   const pushEvent = (evt: TerminalEvent) => {

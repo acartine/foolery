@@ -35,11 +35,11 @@ const DEFAULTS: SettingsData = {
   agent: { command: "claude" },
   agents: {},
   actions: {
-    take: "default",
-    scene: "default",
-    direct: "default",
-    breakdown: "default",
-    hydration: "default",
+    take: "",
+    scene: "",
+    direct: "",
+    breakdown: "",
+    hydration: "",
   },
 };
 
@@ -131,6 +131,7 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
                     id="agent-command"
                     value={settings.agent.command}
                     placeholder="claude"
+                    disabled={Object.keys(settings.agents).length > 0}
                     onChange={(e) =>
                       setSettings((prev) => ({
                         ...prev,
@@ -139,8 +140,9 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
                     }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Fallback command when action mapping is set to
-                    &quot;default&quot;
+                    {Object.keys(settings.agents).length > 0
+                      ? "Disabled — actions use registered agents above. Remove all agents to edit."
+                      : "Fallback command when no agent is mapped to an action."}
                   </p>
                 </div>
               </div>
