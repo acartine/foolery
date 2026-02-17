@@ -55,7 +55,7 @@ export function AppHeader() {
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
-  const verificationCount = useVerificationCount(isBeadsRoute);
+  const verificationCount = useVerificationCount(isBeadsRoute, beadsView === "finalcut");
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
