@@ -3,50 +3,78 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchBeads } from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
+import type { Bead, BdResult } from "@/lib/types";
 
 /**
- * Returns the current count of beads in the verification queue
- * (status: in_progress with label stage:verification).
- * Polls every 10 seconds, matching the FinalCutView refresh cadence.
+ * Returns the count of beads in the verification queue.
+ *
+ * Shares the same React Query cache entry as FinalCutView
+ * (queryKey: ["beads", "finalcut", ...]) so:
+ *  - Only one network request is made when both are mounted.
+ *  - Invalidating ["beads"] also refreshes this count.
+ *
+ * @param enabled - pass false to suspend polling (e.g. when not on /beads).
  */
-export function useVerificationCount(): number {
+export function useVerificationCount(enabled: boolean): number {
   const { activeRepo, registeredRepos } = useAppStore();
 
-  const { data } = useQuery({
-    queryKey: ["verification-count", activeRepo, registeredRepos.length],
-    queryFn: async () => {
-      const params: Record<string, string> = { status: "in_progress" };
+  const hasRepos = Boolean(activeRepo) || registeredRepos.length > 0;
 
-      if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
-        if (!result.ok || !result.data) return 0;
-        return result.data.filter((b) =>
-          b.labels?.includes("stage:verification")
-        ).length;
-      }
-
-      if (registeredRepos.length > 0) {
-        const results = await Promise.all(
-          registeredRepos.map(async (repo) => {
-            const result = await fetchBeads(params, repo.path);
-            if (!result.ok || !result.data) return 0;
-            return result.data.filter((b) =>
-              b.labels?.includes("stage:verification")
-            ).length;
-          })
-        );
-        return results.reduce((sum, n) => sum + n, 0);
-      }
-
-      const result = await fetchBeads(params);
-      if (!result.ok || !result.data) return 0;
-      return result.data.filter((b) =>
-        b.labels?.includes("stage:verification")
-      ).length;
-    },
-    enabled: Boolean(activeRepo) || registeredRepos.length > 0,
+  const { data } = useQuery<BdResult<Bead[]>, Error, number>({
+    queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
+    queryFn: () => fetchVerificationBeads(activeRepo, registeredRepos),
+    select: (result) => (result.ok ? (result.data?.length ?? 0) : 0),
+    enabled: enabled && hasRepos,
     refetchInterval: 10_000,
   });
 
   return data ?? 0;
+}
+
+/** Fetch in_progress beads with stage:verification across repos. */
+async function fetchVerificationBeads(
+  activeRepo: string | null,
+  registeredRepos: { path: string; name: string }[],
+): Promise<BdResult<Bead[]>> {
+  const params: Record<string, string> = { status: "in_progress" };
+
+  if (activeRepo) {
+    const result = await fetchBeads(params, activeRepo);
+    if (result.ok && result.data) {
+      const repo = registeredRepos.find((r) => r.path === activeRepo);
+      result.data = result.data
+        .filter((b) => b.labels?.includes("stage:verification"))
+        .map((bead) => ({
+          ...bead,
+          _repoPath: activeRepo,
+          _repoName: repo?.name ?? activeRepo,
+        })) as typeof result.data;
+    }
+    return result;
+  }
+
+  if (registeredRepos.length > 0) {
+    const results = await Promise.all(
+      registeredRepos.map(async (repo) => {
+        const result = await fetchBeads(params, repo.path);
+        if (!result.ok || !result.data) return [];
+        return result.data
+          .filter((b) => b.labels?.includes("stage:verification"))
+          .map((bead) => ({
+            ...bead,
+            _repoPath: repo.path,
+            _repoName: repo.name,
+          }));
+      }),
+    );
+    return { ok: true, data: results.flat() };
+  }
+
+  const result = await fetchBeads(params);
+  if (result.ok && result.data) {
+    result.data = result.data.filter((b) =>
+      b.labels?.includes("stage:verification"),
+    );
+  }
+  return result;
 }
