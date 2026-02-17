@@ -54,8 +54,20 @@ bump_version() {
 }
 
 read_current_version() {
-  local pkg="$1"
-  sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pkg" | head -n 1
+  git fetch --tags --quiet
+  local latest
+  latest="$(git tag --sort=-v:refname | while read -r t; do
+    if [[ "$t" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      printf '%s\n' "$t"
+      break
+    fi
+  done)"
+
+  if [[ -z "$latest" ]]; then
+    fail "No semver release tags (v*.*.* ) found. Create an initial tag first (e.g. git tag v0.0.0)."
+  fi
+
+  printf '%s\n' "${latest#v}"
 }
 
 update_package_version() {
@@ -64,7 +76,7 @@ update_package_version() {
   rm -f "${pkg}.bak"
 
   local written
-  written="$(read_current_version "$pkg")"
+  written="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pkg" | head -n 1)"
   if [[ "$written" != "$new_version" ]]; then
     fail "Failed to update version in $pkg (expected $new_version, got $written)"
   fi
@@ -216,14 +228,8 @@ main() {
     wait_artifacts="0"
   fi
 
-  local pkg
-  pkg="$(git rev-parse --show-toplevel)/package.json"
   local current_version
-  current_version="$(read_current_version "$pkg")"
-
-  if [[ -z "$current_version" ]]; then
-    fail "Could not read version from $pkg"
-  fi
+  current_version="$(read_current_version)"
 
   if [[ -z "$bump_kind" ]]; then
     bump_kind="$(prompt_bump_kind "$current_version")"
@@ -244,6 +250,8 @@ main() {
     return 0
   fi
 
+  local pkg
+  pkg="$(git rev-parse --show-toplevel)/package.json"
   update_package_version "$pkg" "$new_version"
 
   git add package.json
