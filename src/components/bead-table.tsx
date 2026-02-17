@@ -17,6 +17,7 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
+import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
 import { getBeadColumns, rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
 import {
   Table,
@@ -190,14 +191,7 @@ export function BeadTable({
   });
 
   const sortedData = useMemo(() => {
-    const sortFn = userSorted ? undefined : (a: Bead, b: Bead) => {
-      const aClosed = a.status === "closed" ? 1 : 0;
-      const bClosed = b.status === "closed" ? 1 : 0;
-      if (aClosed !== bClosed) return aClosed - bClosed;
-      const aV = a.labels?.includes("stage:verification") ? 0 : 1;
-      const bV = b.labels?.includes("stage:verification") ? 0 : 1;
-      return aV - bV;
-    };
+    const sortFn = userSorted ? undefined : compareBeadsByPriorityThenStatus;
     return buildHierarchy(data, sortFn);
   }, [data, userSorted]);
 
