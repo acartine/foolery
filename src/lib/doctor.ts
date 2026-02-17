@@ -12,11 +12,18 @@ import type { Bead } from "./types";
 
 export type DiagnosticSeverity = "error" | "warning" | "info";
 
+export interface FixOption {
+  key: string;
+  label: string;
+}
+
 export interface Diagnostic {
   check: string;
   severity: DiagnosticSeverity;
   message: string;
   fixable: boolean;
+  /** Available fix strategies when fixable is true */
+  fixOptions?: FixOption[];
   /** Context for auto-fix: which bead/repo/agent is affected */
   context?: Record<string, string>;
 }
@@ -154,7 +161,12 @@ export async function checkUpdates(): Promise<Diagnostic[]> {
   return diagnostics;
 }
 
-// ── Corrupt ticket checks ──────────────────────────────────
+// ── Corrupt bead verification checks ──────────────────────
+
+const CORRUPT_BEAD_FIX_OPTIONS: FixOption[] = [
+  { key: "set-in-progress", label: "Set status to in_progress" },
+  { key: "remove-label", label: "Remove stage:verification label" },
+];
 
 /**
  * Finds beads that have stage:verification label but status != in_progress.
@@ -171,7 +183,7 @@ export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diag
       beads = result.data;
     } catch {
       diagnostics.push({
-        check: "corrupt-tickets",
+        check: "corrupt-beads",
         severity: "warning",
         message: `Could not list beads for repo "${repo.name}" (${repo.path}).`,
         fixable: false,
@@ -184,10 +196,11 @@ export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diag
       const hasVerificationLabel = bead.labels.some((l) => l === "stage:verification");
       if (hasVerificationLabel && bead.status !== "in_progress") {
         diagnostics.push({
-          check: "corrupt-ticket-verification",
+          check: "corrupt-bead-verification",
           severity: "error",
           message: `Bead ${bead.id} ("${bead.title}") has stage:verification label but status is "${bead.status}" (expected "in_progress") in repo "${repo.name}".`,
           fixable: true,
+          fixOptions: CORRUPT_BEAD_FIX_OPTIONS,
           context: {
             beadId: bead.id,
             repoPath: repo.path,
@@ -203,6 +216,10 @@ export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diag
 }
 
 // ── Stale parent checks ────────────────────────────────────
+
+const STALE_PARENT_FIX_OPTIONS: FixOption[] = [
+  { key: "mark-verification", label: "Move to in_progress with stage:verification" },
+];
 
 /**
  * Finds parent beads (open or in_progress) where ALL children are closed.
@@ -248,6 +265,7 @@ export async function checkStaleParents(repos: RegisteredRepo[]): Promise<Diagno
           severity: "warning",
           message: `Parent bead ${parent.id} ("${parent.title}") is "${parent.status}" but all ${children.length} children are closed in repo "${repo.name}".`,
           fixable: true,
+          fixOptions: STALE_PARENT_FIX_OPTIONS,
           context: {
             beadId: parent.id,
             repoPath: repo.path,
@@ -344,13 +362,23 @@ export async function runDoctor(): Promise<DoctorReport> {
 
 // ── Fix ────────────────────────────────────────────────────
 
-export async function runDoctorFix(): Promise<DoctorFixReport> {
+/**
+ * Strategies map: check name → chosen fix option key.
+ * If a check is absent from the map, its diagnostics are skipped.
+ * If strategies is undefined, all fixable diagnostics use their first (default) option.
+ */
+export type FixStrategies = Record<string, string>;
+
+export async function runDoctorFix(strategies?: FixStrategies): Promise<DoctorFixReport> {
   const report = await runDoctor();
   const fixable = report.diagnostics.filter((d) => d.fixable);
   const fixes: FixResult[] = [];
 
   for (const diag of fixable) {
-    const result = await applyFix(diag);
+    // When strategies are provided, skip checks the user didn't approve
+    if (strategies && !(diag.check in strategies)) continue;
+    const strategy = strategies?.[diag.check] ?? diag.fixOptions?.[0]?.key;
+    const result = await applyFix(diag, strategy);
     fixes.push(result);
   }
 
@@ -365,18 +393,26 @@ export async function runDoctorFix(): Promise<DoctorFixReport> {
   };
 }
 
-async function applyFix(diag: Diagnostic): Promise<FixResult> {
+async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult> {
   const ctx = diag.context ?? {};
 
   switch (diag.check) {
-    case "corrupt-ticket-verification": {
-      // Fix: set status to in_progress to match the verification label
+    case "corrupt-bead-verification": {
       const { beadId, repoPath } = ctx;
       if (!beadId || !repoPath) {
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
         const { updateBead } = await import("./bd");
+        if (strategy === "remove-label") {
+          // Fix: remove the stage:verification label to match the current status
+          const result = await updateBead(beadId, { removeLabels: ["stage:verification"] }, repoPath);
+          if (!result.ok) {
+            return { check: diag.check, success: false, message: result.error ?? "bd update failed", context: ctx };
+          }
+          return { check: diag.check, success: true, message: `Removed stage:verification from ${beadId}.`, context: ctx };
+        }
+        // Default: set status to in_progress to match the verification label
         const result = await updateBead(beadId, { status: "in_progress" }, repoPath);
         if (!result.ok) {
           return { check: diag.check, success: false, message: result.error ?? "bd update failed", context: ctx };

@@ -172,8 +172,12 @@ describe("checkCorruptTickets", () => {
     const diags = await checkCorruptTickets(repos);
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("error");
-    expect(diags[0].check).toBe("corrupt-ticket-verification");
+    expect(diags[0].check).toBe("corrupt-bead-verification");
     expect(diags[0].fixable).toBe(true);
+    expect(diags[0].fixOptions).toEqual([
+      { key: "set-in-progress", label: "Set status to in_progress" },
+      { key: "remove-label", label: "Remove stage:verification label" },
+    ]);
     expect(diags[0].context?.beadId).toBe("b-1");
   });
 
@@ -388,32 +392,66 @@ describe("runDoctor", () => {
 // ── runDoctorFix ───────────────────────────────────────────
 
 describe("runDoctorFix", () => {
-  it("fixes corrupt verification ticket", async () => {
+  const corruptBeadData = {
+    ok: true,
+    data: [
+      {
+        id: "b-fix",
+        title: "Fixable",
+        status: "open",
+        labels: ["stage:verification"],
+        type: "task",
+        priority: 2,
+        created: "2026-01-01",
+        updated: "2026-01-01",
+      },
+    ],
+  };
+
+  function setupCorruptBead() {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
     mockGetRegisteredAgents.mockResolvedValue({});
-
-    mockListBeads.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "b-fix",
-          title: "Fixable",
-          status: "open",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-      ],
-    });
-
+    mockListBeads.mockResolvedValue(corruptBeadData);
     mockUpdateBead.mockResolvedValue({ ok: true });
+  }
+
+  it("fixes corrupt verification bead with default strategy (set-in-progress)", async () => {
+    setupCorruptBead();
+
+    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
+    expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
+    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    expect(verificationFix?.success).toBe(true);
+    expect(verificationFix?.message).toContain("in_progress");
+    expect(mockUpdateBead).toHaveBeenCalledWith("b-fix", { status: "in_progress" }, "/repo");
+  });
+
+  it("fixes corrupt verification bead with remove-label strategy", async () => {
+    setupCorruptBead();
+
+    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "remove-label" });
+    expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
+    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    expect(verificationFix?.success).toBe(true);
+    expect(verificationFix?.message).toContain("Removed stage:verification");
+    expect(mockUpdateBead).toHaveBeenCalledWith("b-fix", { removeLabels: ["stage:verification"] }, "/repo");
+  });
+
+  it("skips checks not included in strategies", async () => {
+    setupCorruptBead();
+
+    const fixReport = await runDoctorFix({});
+    expect(fixReport.fixes).toHaveLength(0);
+    expect(fixReport.summary.attempted).toBe(0);
+  });
+
+  it("uses default first option when no strategies provided (backwards compat)", async () => {
+    setupCorruptBead();
 
     const fixReport = await runDoctorFix();
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-ticket-verification");
+    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
     expect(verificationFix?.success).toBe(true);
   });
 });

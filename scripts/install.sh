@@ -834,17 +834,133 @@ doctor_cmd() {
     fail "curl is required for foolery doctor."
   fi
 
-  local method="GET"
-  if [[ "\$fix" -eq 1 ]]; then
-    method="POST"
+  if [[ "\$fix" -eq 0 ]]; then
+    # Diagnostic-only mode
+    local response
+    response="\$(curl --silent --show-error --max-time 60 -X GET "\$URL/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$URL/api/doctor"
+    }
+    render_doctor_report "\$response" "0"
+    return
   fi
 
-  local response
-  response="\$(curl --silent --show-error --max-time 60 -X "\$method" "\$URL/api/doctor" 2>&1)" || {
+  # --fix mode: GET diagnostics first, prompt per check, then POST with strategies
+  local diag_response
+  diag_response="\$(curl --silent --show-error --max-time 60 -X GET "\$URL/api/doctor" 2>&1)" || {
     fail "Failed to reach Foolery API at \$URL/api/doctor"
   }
 
-  render_doctor_report "\$response" "\$fix"
+  if ! command -v node >/dev/null 2>&1; then
+    # Fallback: no node, just POST with defaults
+    local response
+    response="\$(curl --silent --show-error --max-time 60 -X POST "\$URL/api/doctor" 2>&1)" || {
+      fail "Failed to reach Foolery API at \$URL/api/doctor"
+    }
+    render_doctor_report "\$response" "1"
+    return
+  fi
+
+  # Use node to extract fixable checks and their options, then prompt user
+  local strategies_json
+  strategies_json="\$(printf '%s' "\$diag_response" | node - <<'NODE'
+const fs = require('node:fs');
+const readline = require('node:readline');
+
+const raw = fs.readFileSync(0, 'utf8');
+let payload;
+try { payload = JSON.parse(raw); } catch { process.exit(0); }
+
+const data = payload && typeof payload === 'object' ? (payload.data || {}) : {};
+const diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : [];
+const fixable = diagnostics.filter(d => d && d.fixable);
+
+if (fixable.length === 0) {
+  process.stdout.write('{}');
+  process.exit(0);
+}
+
+// Group fixable diagnostics by check name
+const byCheck = new Map();
+for (const d of fixable) {
+  const key = d.check || 'unknown';
+  if (!byCheck.has(key)) byCheck.set(key, { count: 0, fixOptions: d.fixOptions || [] });
+  byCheck.get(key).count++;
+}
+
+const BOLD = '\x1b[1m';
+const CYAN = '\x1b[0;36m';
+const GREEN = '\x1b[0;32m';
+const RESET = '\x1b[0m';
+
+const rl = readline.createInterface({ input: process.stdin, output: process.stderr });
+const ask = (q) => new Promise(resolve => rl.question(q, resolve));
+
+async function main() {
+  const strategies = {};
+
+  for (const [check, info] of byCheck) {
+    const options = info.fixOptions;
+
+    process.stderr.write('\n' + BOLD + 'Found ' + info.count + ' fixable issue' + (info.count !== 1 ? 's' : '') + ' for: ' + CYAN + check + RESET + '\n');
+
+    if (options.length === 0) {
+      // Single default fix, just confirm
+      const ans = await ask('  Apply fix? [Y/n/s(kip)] ');
+      const lower = (ans || '').trim().toLowerCase();
+      if (lower === 's' || lower === 'skip') continue;
+      if (lower === 'n' || lower === 'no') continue;
+      strategies[check] = 'default';
+    } else if (options.length === 1) {
+      // Single option, confirm
+      process.stderr.write('  Fix: ' + GREEN + options[0].label + RESET + '\n');
+      const ans = await ask('  Apply? [Y/n/s(kip)] ');
+      const lower = (ans || '').trim().toLowerCase();
+      if (lower === 's' || lower === 'skip') continue;
+      if (lower === 'n' || lower === 'no') continue;
+      strategies[check] = options[0].key;
+    } else {
+      // Multiple options — let user choose
+      for (let i = 0; i < options.length; i++) {
+        process.stderr.write('  [' + (i + 1) + '] ' + options[i].label + (i === 0 ? ' (default)' : '') + '\n');
+      }
+      process.stderr.write('  [s] Skip\n');
+      const ans = await ask('  Choice [1]: ');
+      const lower = (ans || '').trim().toLowerCase();
+      if (lower === 's' || lower === 'skip') continue;
+      const idx = lower === '' ? 0 : parseInt(lower, 10) - 1;
+      if (isNaN(idx) || idx < 0 || idx >= options.length) {
+        strategies[check] = options[0].key;
+      } else {
+        strategies[check] = options[idx].key;
+      }
+    }
+  }
+
+  rl.close();
+  process.stdout.write(JSON.stringify(strategies));
+}
+
+main().catch(() => { rl.close(); process.exit(1); });
+NODE
+)" || {
+    fail "Failed to process fix options."
+  }
+
+  # If no strategies selected (all skipped), report and exit
+  if [[ -z "\$strategies_json" || "\$strategies_json" == "{}" ]]; then
+    printf '\n  No fixes selected.\n\n'
+    return
+  fi
+
+  # POST with chosen strategies
+  local post_body
+  post_body="\$(printf '{"strategies":%s}' "\$strategies_json")"
+  local response
+  response="\$(curl --silent --show-error --max-time 60 -X POST -H 'Content-Type: application/json' -d "\$post_body" "\$URL/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$URL/api/doctor"
+  }
+
+  render_doctor_report "\$response" "1"
 }
 
 usage() {
