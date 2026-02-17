@@ -138,6 +138,34 @@ describe("bd-error-suppression", () => {
     // Should have evicted the first entry, keeping size at max
     expect(_internals.resultCache.size).toBe(max);
   });
+
+  it("returns degraded error when cache TTL expires during ongoing failure", () => {
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", fail("locked"));
+
+    // Fast-forward failure past suppression window
+    const failKey = Array.from(_internals.failureState.keys())[0];
+    _internals.failureState.get(failKey)!.firstFailedAt = Date.now() - 3 * 60 * 1000;
+
+    // Also expire the cache entry past TTL
+    const cacheKey = Array.from(_internals.resultCache.keys())[0];
+    _internals.resultCache.get(cacheKey)!.timestamp = Date.now() - 11 * 60 * 1000;
+
+    const out = withErrorSuppression("listBeads", fail("locked"));
+    expect(out.ok).toBe(false);
+    expect(out.error).toBe(DEGRADED_ERROR_MESSAGE);
+  });
+
+  it("produces same cache key regardless of filter key order", () => {
+    const filtersA = { status: "open", type: "bug" };
+    const filtersB = { type: "bug", status: "open" };
+
+    withErrorSuppression("listBeads", ok([STUB_BEAD]), filtersA);
+    const out = withErrorSuppression("listBeads", fail("locked"), filtersB);
+    // Should hit the cache from filtersA since keys are the same
+    expect(out.ok).toBe(true);
+    expect(out.data).toEqual([STUB_BEAD]);
+  });
 });
 
 describe("isSuppressibleError", () => {

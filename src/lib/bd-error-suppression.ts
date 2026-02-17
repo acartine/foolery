@@ -50,7 +50,12 @@ function cacheKey(
   repoPath?: string,
   query?: string,
 ): string {
-  return `${fn}:${query ?? ""}:${JSON.stringify(filters ?? {})}:${repoPath ?? ""}`;
+  // Sort filter keys so equivalent sets with different key order produce the
+  // same cache key, improving hit rate.
+  const sorted = filters
+    ? JSON.stringify(filters, Object.keys(filters).sort())
+    : "{}";
+  return `${fn}:${query ?? ""}:${sorted}:${repoPath ?? ""}`;
 }
 
 /** Returns true if the error message looks like a lock/access issue. */
@@ -100,16 +105,22 @@ export function withErrorSuppression(
   if (!isSuppressibleError(result.error ?? "")) return result;
 
   const cached = resultCache.get(key);
-  if (!cached) return result; // No cache available -- cannot suppress
+  const failure = failureState.get(key);
 
-  // Expire stale cache entries to bound memory on long-running servers
-  if (Date.now() - cached.timestamp > CACHE_TTL_MS) {
+  // If the cache entry has expired, evict it. If we already know this key
+  // has been failing for longer than the suppression window, return degraded
+  // error instead of reverting to the raw error.
+  if (cached && Date.now() - cached.timestamp > CACHE_TTL_MS) {
     resultCache.delete(key);
+    if (failure && Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
+      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+    }
     failureState.delete(key);
     return result;
   }
 
-  const failure = failureState.get(key);
+  if (!cached) return result; // No cache available -- cannot suppress
+
   if (!failure) {
     // First failure -- start tracking, return cached result
     failureState.set(key, { firstFailedAt: Date.now() });
