@@ -7,6 +7,7 @@ import { startSession } from "@/lib/terminal-api";
 import { BeadTable } from "@/components/bead-table";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
+import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
 import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
 
@@ -73,6 +74,7 @@ export function FinalCutView() {
   });
 
   const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
+  useVerificationNotifications(beads);
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   const handleSelectionChange = useCallback((ids: string[]) => {
