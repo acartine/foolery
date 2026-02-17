@@ -1,6 +1,11 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { addDep, createBead, showBead, updateBead } from "@/lib/bd";
+import {
+  startInteractionLog,
+  noopInteractionLog,
+  type InteractionLog,
+} from "@/lib/interaction-logger";
 import { getActionAgent } from "@/lib/settings";
 import type {
   ApplyBreakdownResult,
@@ -31,6 +36,7 @@ interface BreakdownSessionEntry {
   assistantText: string;
   lineBuffer: string;
   exited: boolean;
+  interactionLog: InteractionLog;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -319,6 +325,11 @@ function finalizeSession(
     }
   }
 
+  entry.interactionLog.logEnd(
+    status === "completed" ? 0 : 1,
+    status,
+  );
+
   entry.session.status = status;
   entry.session.completedAt = new Date().toISOString();
   if (status === "error" || status === "aborted") {
@@ -361,6 +372,16 @@ export async function createBreakdownSession(
     startedAt: new Date().toISOString(),
   };
 
+  const bkdnInteractionLog = await startInteractionLog({
+    sessionId: session.id,
+    interactionType: "breakdown",
+    repoPath,
+    beadIds: [parentBeadId],
+  }).catch((err) => {
+    console.error(`[breakdown-manager] Failed to start interaction log:`, err);
+    return noopInteractionLog();
+  });
+
   const entry: BreakdownSessionEntry = {
     session,
     process: null,
@@ -370,11 +391,13 @@ export async function createBreakdownSession(
     assistantText: "",
     lineBuffer: "",
     exited: false,
+    interactionLog: bkdnInteractionLog,
   };
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
   const prompt = buildBreakdownPrompt(parentTitle, parentDescription, repoPath);
+  bkdnInteractionLog.logPrompt(prompt);
   pushEvent(entry, "log", `Starting breakdown for: ${parentTitle}\n`);
 
   const args = [
@@ -407,6 +430,7 @@ export async function createBreakdownSession(
 
     for (const line of lines) {
       if (!line.trim()) continue;
+      bkdnInteractionLog.logResponse(line);
 
       let parsed: unknown;
       try {

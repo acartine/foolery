@@ -1,6 +1,11 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { listBeads, showBead } from "@/lib/bd";
+import {
+  startInteractionLog,
+  noopInteractionLog,
+  type InteractionLog,
+} from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
 import { getActionAgent } from "@/lib/settings";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
@@ -11,6 +16,7 @@ interface SessionEntry {
   process: ChildProcess | null;
   emitter: EventEmitter;
   buffer: TerminalEvent[];
+  interactionLog: InteractionLog;
 }
 
 const MAX_BUFFER = 5000;
@@ -398,7 +404,17 @@ export async function createSession(
   emitter.setMaxListeners(20);
   const buffer: TerminalEvent[] = [];
 
-  const entry: SessionEntry = { session, process: null, emitter, buffer };
+  const interactionLog = await startInteractionLog({
+    sessionId: id,
+    interactionType: isWave ? "scene" : "take",
+    repoPath: repoPath || process.cwd(),
+    beadIds: isWave ? waveBeatIds : [beadId],
+  }).catch((err) => {
+    console.error(`[terminal-manager] Failed to start interaction log:`, err);
+    return noopInteractionLog();
+  });
+
+  const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog };
   sessions.set(id, entry);
 
   // Spawn claude CLI with stream-json so we can see tool usage
@@ -574,6 +590,7 @@ export async function createSession(
 
     for (const line of lines) {
       if (!line.trim()) continue;
+      interactionLog.logResponse(line);
       try {
         const obj = JSON.parse(line) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
@@ -608,6 +625,7 @@ export async function createSession(
   child.on("close", (code, signal) => {
     // Flush any remaining line buffer
     if (lineBuffer.trim()) {
+      interactionLog.logResponse(lineBuffer);
       try {
         const obj = JSON.parse(lineBuffer) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
@@ -636,6 +654,7 @@ export async function createSession(
     stdinClosed = true;
     session.exitCode = code ?? 1;
     session.status = code === 0 ? "completed" : "error";
+    interactionLog.logEnd(code ?? 1, session.status);
     pushEvent({
       type: "exit",
       data: String(code ?? 1),
@@ -673,6 +692,7 @@ export async function createSession(
     }
     stdinClosed = true;
     session.status = "error";
+    interactionLog.logEnd(1, "error");
     pushEvent({
       type: "stderr",
       data: `Process error: ${err.message}`,
@@ -693,10 +713,12 @@ export async function createSession(
     }, CLEANUP_DELAY_MS);
   });
 
+  interactionLog.logPrompt(prompt);
   const initialPromptSent = sendUserTurn(prompt);
   if (!initialPromptSent) {
     closeInput();
     session.status = "error";
+    interactionLog.logEnd(1, "error");
     child.kill("SIGTERM");
     sessions.delete(id);
     throw new Error("Failed to send initial prompt to claude");
@@ -788,7 +810,17 @@ export async function createSceneSession(
   emitter.setMaxListeners(20);
   const buffer: TerminalEvent[] = [];
 
-  const entry: SessionEntry = { session, process: null, emitter, buffer };
+  const sceneInteractionLog = await startInteractionLog({
+    sessionId: id,
+    interactionType: "scene",
+    repoPath: repoPath || process.cwd(),
+    beadIds,
+  }).catch((err) => {
+    console.error(`[terminal-manager] Failed to start interaction log:`, err);
+    return noopInteractionLog();
+  });
+
+  const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog: sceneInteractionLog };
   sessions.set(id, entry);
 
   const args = [
@@ -960,6 +992,7 @@ export async function createSceneSession(
 
     for (const line of lines) {
       if (!line.trim()) continue;
+      sceneInteractionLog.logResponse(line);
       try {
         const obj = JSON.parse(line) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
@@ -992,6 +1025,7 @@ export async function createSceneSession(
 
   child.on("close", (code, signal) => {
     if (lineBuffer.trim()) {
+      sceneInteractionLog.logResponse(lineBuffer);
       try {
         const obj = JSON.parse(lineBuffer) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
@@ -1020,6 +1054,7 @@ export async function createSceneSession(
     stdinClosed = true;
     session.exitCode = code ?? 1;
     session.status = code === 0 ? "completed" : "error";
+    sceneInteractionLog.logEnd(code ?? 1, session.status);
     pushEvent({
       type: "exit",
       data: String(code ?? 1),
@@ -1059,6 +1094,7 @@ export async function createSceneSession(
     }
     stdinClosed = true;
     session.status = "error";
+    sceneInteractionLog.logEnd(1, "error");
     pushEvent({
       type: "stderr",
       data: `Process error: ${err.message}`,
@@ -1079,10 +1115,12 @@ export async function createSceneSession(
     }, CLEANUP_DELAY_MS);
   });
 
+  sceneInteractionLog.logPrompt(prompt);
   const initialPromptSent = sendUserTurn(prompt);
   if (!initialPromptSent) {
     closeInput();
     session.status = "error";
+    sceneInteractionLog.logEnd(1, "error");
     child.kill("SIGTERM");
     sessions.delete(id);
     throw new Error("Failed to send initial prompt to claude");

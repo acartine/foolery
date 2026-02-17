@@ -10,6 +10,11 @@ import {
   showBead,
   updateBead,
 } from "@/lib/bd";
+import {
+  startInteractionLog,
+  noopInteractionLog,
+  type InteractionLog,
+} from "@/lib/interaction-logger";
 import { getActionAgent } from "@/lib/settings";
 import type {
   ApplyOrchestrationOverrides,
@@ -45,6 +50,7 @@ interface OrchestrationSessionEntry {
   assistantText: string;
   lineBuffer: string;
   exited: boolean;
+  interactionLog: InteractionLog;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -505,6 +511,11 @@ function finalizeSession(
     }
   }
 
+  entry.interactionLog.logEnd(
+    status === "completed" ? 0 : 1,
+    status,
+  );
+
   entry.session.status = status;
   entry.session.completedAt = new Date().toISOString();
   if (status === "error" || status === "aborted") {
@@ -611,6 +622,16 @@ export async function createOrchestrationSession(
     objective: objective?.trim() || undefined,
   };
 
+  const orchInteractionLog = await startInteractionLog({
+    sessionId: session.id,
+    interactionType: "direct",
+    repoPath,
+    beadIds: beads.map((b) => b.id),
+  }).catch((err) => {
+    console.error(`[orchestration-manager] Failed to start interaction log:`, err);
+    return noopInteractionLog();
+  });
+
   const entry: OrchestrationSessionEntry = {
     session,
     process: null,
@@ -621,11 +642,13 @@ export async function createOrchestrationSession(
     assistantText: "",
     lineBuffer: "",
     exited: false,
+    interactionLog: orchInteractionLog,
   };
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
   const prompt = buildPrompt(repoPath, beads, deps, objective);
+  orchInteractionLog.logPrompt(prompt);
   const promptLog = [
     "prompt_initial | Full orchestration prompt",
     "----- BEGIN PROMPT -----",
@@ -664,6 +687,7 @@ export async function createOrchestrationSession(
 
     for (const line of lines) {
       if (!line.trim()) continue;
+      orchInteractionLog.logResponse(line);
 
       let parsed: unknown;
       try {
@@ -882,6 +906,7 @@ export async function createRestagedOrchestrationSession(
     assistantText: "",
     lineBuffer: "",
     exited: false,
+    interactionLog: noopInteractionLog(),
   };
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);

@@ -47,6 +47,9 @@ storybook-static
 # claude code
 .claude/
 
+# interaction logs (dev mode)
+.foolery-logs/
+
 # playwright mcp
 .playwright-mcp/
 # bd worktree
