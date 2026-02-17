@@ -70,6 +70,7 @@ export function FinalCutView() {
       }
       return result;
     },
+    enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
   });
 

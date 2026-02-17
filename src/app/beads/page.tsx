@@ -96,7 +96,7 @@ function BeadsPageInner() {
   if (searchQuery) params.q = searchQuery;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beads", params, activeRepo, isReadyFilter],
+    queryKey: ["beads", params, activeRepo, isReadyFilter, registeredRepos.length],
     queryFn: async () => {
       const fetcher = isReadyFilter ? fetchReadyBeads : fetchBeads;
       if (activeRepo) {
