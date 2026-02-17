@@ -323,7 +323,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const [plan, setPlan] = useState<OrchestrationPlan | null>(null);
   const [logLines, setLogLines] = useState<LogLine[]>([]);
   const [statusText, setStatusText] = useState(
-    "Ready to ask Claude for a scene plan"
+    "Ready to ask the agent for a scene plan"
   );
   const [waveEdits, setWaveEdits] = useState<
     Record<number, { name: string; slug: string }>
@@ -542,7 +542,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setPlan(null);
     pendingLogRef.current = "";
     setLogLines([]);
-    setStatusText("Starting Claude session...");
+    setStatusText("Starting agent session...");
 
     const result = await startOrchestration(activeRepo, objective);
     setIsStarting(false);
@@ -554,7 +554,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     }
 
     setSession(result.data);
-    setStatusText("Claude is organizing scenes...");
+    setStatusText("The agent is organizing scenes...");
   };
 
   const handleAbort = async () => {
@@ -646,7 +646,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           <div>
             <h2 className="text-base font-semibold tracking-tight">Direct</h2>
             <p className="text-sm text-muted-foreground">
-              Claude organizes dependency-aware scenes, agent counts, and specialties for <span className="font-medium text-foreground">{repoLabel}</span>.
+              The agent organizes dependency-aware scenes, agent counts, and specialties for <span className="font-medium text-foreground">{repoLabel}</span>.
             </p>
           </div>
           <Badge variant="outline" className={statusTone(session?.status ?? "idle")}>
@@ -663,7 +663,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             disabled={isRunning}
           />
           <div className="flex flex-wrap items-start gap-2 lg:flex-col lg:items-stretch">
-            <Button title="Generate a scene plan with Claude"
+            <Button title="Generate a scene plan with the agent"
               className="gap-1.5"
               onClick={handleStart}
               disabled={!activeRepo || isStarting || isRunning}
@@ -845,7 +845,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             </div>
           ) : (
             <div className="flex h-[320px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
-              Scene cards appear here as Claude drafts each scene.
+              Scene cards appear here as the agent drafts each scene.
             </div>
           )}
         </section>
@@ -904,7 +904,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                 </div>
               ) : (
                 <p className="text-slate-500">
-                  No output yet. Start a planning run to stream Claude output.
+                  No output yet. Start a planning run to stream agent output.
                 </p>
               )}
             </div>

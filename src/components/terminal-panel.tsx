@@ -16,7 +16,7 @@ const STATUS_COLORS: Record<string, string> = {
   idle: "bg-gray-500",
 };
 
-const AUTO_CLOSE_MS = 5_000;
+const AUTO_CLOSE_MS = 30_000;
 
 function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
