@@ -24,6 +24,7 @@ interface FailureState {
 
 const SUPPRESSION_WINDOW_MS = 2 * 60 * 1000; // 2 minutes
 const MAX_CACHE_ENTRIES = 64;
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 export const DEGRADED_ERROR_MESSAGE =
   "Unable to interact with beads store, try refreshing the page or restarting Foolery. If problems persist, investigate your beads install";
@@ -100,6 +101,13 @@ export function withErrorSuppression(
 
   const cached = resultCache.get(key);
   if (!cached) return result; // No cache available -- cannot suppress
+
+  // Expire stale cache entries to bound memory on long-running servers
+  if (Date.now() - cached.timestamp > CACHE_TTL_MS) {
+    resultCache.delete(key);
+    failureState.delete(key);
+    return result;
+  }
 
   const failure = failureState.get(key);
   if (!failure) {
