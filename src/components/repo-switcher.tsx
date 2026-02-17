@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { ChevronDown, Database } from "lucide-react";
 import { fetchRegistry } from "@/lib/registry-api";
 import { useAppStore } from "@/stores/app-store";
@@ -14,12 +15,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function RepoSwitcher() {
   const { activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
   const updateUrl = useUpdateUrl();
+  const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["registry"],
@@ -29,8 +30,10 @@ export function RepoSwitcher() {
   useEffect(() => {
     if (data?.ok && data.data) {
       setRegisteredRepos(data.data);
-      // Default to first repo if no repo was ever selected
-      if (!activeRepo && data.data.length > 0) {
+      if (data.data.length === 0) return;
+      // Validate stored repo still exists in registry
+      const storedValid = activeRepo && data.data.some((r) => r.path === activeRepo);
+      if (!storedValid) {
         updateUrl({ repo: data.data[0].path });
       }
     }
@@ -76,10 +79,8 @@ export function RepoSwitcher() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/registry" className="w-full">
-            Manage Repositories...
-          </Link>
+        <DropdownMenuItem onClick={() => router.push("/beads?settings=repos")}>
+          Manage Repositories...
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

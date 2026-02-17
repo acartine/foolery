@@ -85,6 +85,13 @@ function BeadsPageInner() {
   useEffect(() => {
     if (registryData?.ok && registryData.data) {
       setRegisteredRepos(registryData.data);
+      if (registryData.data.length === 0) return;
+      // Validate stored repo still exists; fall back to first repo
+      const current = useAppStore.getState().activeRepo;
+      const isValid = current && registryData.data.some((r) => r.path === current);
+      if (!isValid) {
+        useAppStore.getState().setActiveRepo(registryData.data[0].path);
+      }
     }
   }, [registryData, setRegisteredRepos]);
 
