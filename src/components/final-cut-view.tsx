@@ -31,7 +31,7 @@ export function FinalCutView() {
   );
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beads", "finalcut", activeRepo],
+    queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
     queryFn: async () => {
       const params: Record<string, string> = { status: "in_progress" };
       if (activeRepo) {

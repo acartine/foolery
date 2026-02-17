@@ -11,10 +11,12 @@ import {
 } from "@/lib/registry-api";
 import { DirectoryBrowser } from "@/components/directory-browser";
 import { Button } from "@/components/ui/button";
+import { useAppStore } from "@/stores/app-store";
 
 export function SettingsReposSection() {
   const [browseOpen, setBrowseOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { activeRepo, setActiveRepo } = useAppStore();
 
   const { data, isLoading } = useQuery({
     queryKey: ["registry"],
@@ -43,6 +45,9 @@ export function SettingsReposSection() {
     const result = await removeRepoFromRegistry(path);
     if (result.ok) {
       toast.success("Repository removed");
+      if (activeRepo === path) {
+        setActiveRepo(null);
+      }
       invalidateRegistryAndBeads();
     } else {
       toast.error(result.error ?? "Failed to remove repository");
