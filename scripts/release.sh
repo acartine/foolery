@@ -35,7 +35,7 @@ wait_for_artifact_run() {
       fail "Timed out waiting for release artifact workflow run for $tag."
     fi
 
-    log "Waiting for Release Runtime Artifact workflow to start for $tag..."
+    log "Waiting for Release Runtime Artifact workflow to start for $tag..." >&2
     sleep "$interval"
   done
 }
