@@ -8,15 +8,16 @@ import type {
 
 const ACTIVE_REPO_KEY = "foolery-active-repo";
 
-function getStoredActiveRepo(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(ACTIVE_REPO_KEY);
-}
-
 function persistActiveRepo(repo: string | null) {
   if (typeof window === "undefined") return;
   if (repo) localStorage.setItem(ACTIVE_REPO_KEY, repo);
   else localStorage.removeItem(ACTIVE_REPO_KEY);
+}
+
+/** Read persisted repo (client only). */
+export function getStoredActiveRepo(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ACTIVE_REPO_KEY);
 }
 
 export interface Filters {
@@ -50,7 +51,7 @@ export const useAppStore = create<AppState>((set) => ({
   filters: initialFilters,
   commandPaletteOpen: false,
   viewMode: "table",
-  activeRepo: getStoredActiveRepo(),
+  activeRepo: null,
   registeredRepos: [],
   pageSize: 50,
   setFilter: (key, value) =>

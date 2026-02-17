@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Database } from "lucide-react";
 import { fetchRegistry } from "@/lib/registry-api";
-import { useAppStore } from "@/stores/app-store";
+import { useAppStore, getStoredActiveRepo } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import {
   DropdownMenu,
@@ -28,14 +28,20 @@ export function RepoSwitcher() {
   });
 
   useEffect(() => {
-    if (data?.ok && data.data) {
-      setRegisteredRepos(data.data);
-      if (data.data.length === 0) return;
-      // Validate stored repo still exists in registry
-      const storedValid = activeRepo && data.data.some((r) => r.path === activeRepo);
-      if (!storedValid) {
-        updateUrl({ repo: data.data[0].path });
-      }
+    if (!data?.ok || !data.data) return;
+    setRegisteredRepos(data.data);
+    if (data.data.length === 0) {
+      // Clear stale repo when registry is empty
+      if (activeRepo) updateUrl({ repo: null });
+      return;
+    }
+    // Hydrate from localStorage on first load, then validate
+    const candidate = activeRepo ?? getStoredActiveRepo();
+    const isValid = candidate && data.data.some((r) => r.path === candidate);
+    if (!isValid) {
+      updateUrl({ repo: data.data[0].path });
+    } else if (!activeRepo) {
+      updateUrl({ repo: candidate });
     }
   }, [data, setRegisteredRepos, activeRepo, updateUrl]);
 
