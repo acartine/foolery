@@ -111,11 +111,6 @@ export function FinalCutView() {
 
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 border-b border-border/60 pb-2">
-        <span className="text-sm text-muted-foreground">
-          {beads.length} beat{beads.length !== 1 ? "s" : ""} awaiting verification
-        </span>
-      </div>
       {isLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
           Loading final cut...
