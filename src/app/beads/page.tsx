@@ -16,8 +16,26 @@ import { BreakdownView } from "@/components/breakdown-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
+import { AlertTriangle } from "lucide-react";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
+
+const DEGRADED_ERROR_PREFIX = "Unable to interact with beads store";
+
+/** Thrown when the backend reports a degraded beads store.
+ *  React Query keeps previous data when the queryFn throws. */
+class DegradedStoreError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DegradedStoreError";
+  }
+}
+
+function throwIfDegraded(result: { ok: boolean; error?: string }): void {
+  if (!result.ok && result.error?.startsWith(DEGRADED_ERROR_PREFIX)) {
+    throw new DegradedStoreError(result.error);
+  }
+}
 
 export default function BeadsPage() {
   return (
@@ -95,12 +113,13 @@ function BeadsPageInner() {
   if (filters.priority !== undefined) params.priority = String(filters.priority);
   if (searchQuery) params.q = searchQuery;
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error: queryError } = useQuery({
     queryKey: ["beads", params, activeRepo, isReadyFilter, registeredRepos.length],
     queryFn: async () => {
       const fetcher = isReadyFilter ? fetchReadyBeads : fetchBeads;
       if (activeRepo) {
         const result = await fetcher(params, activeRepo);
+        throwIfDegraded(result);
         if (result.ok && result.data) {
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data.map((bead) => ({
@@ -115,6 +134,7 @@ function BeadsPageInner() {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
             const result = await fetcher(params, repo.path);
+            throwIfDegraded(result);
             if (!result.ok || !result.data) return [];
             return result.data.map((bead) => ({
               ...bead,
@@ -125,14 +145,22 @@ function BeadsPageInner() {
         );
         return { ok: true, data: results.flat() };
       }
-      return fetcher(params);
+      const result = await fetcher(params);
+      throwIfDegraded(result);
+      return result;
     },
     enabled: isListView && (Boolean(activeRepo) || registeredRepos.length > 0),
     refetchInterval: 10_000,
+    retry: false,
   });
 
   const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
-  const loadError = data && !data.ok ? data.error ?? "Failed to load beats." : null;
+  const isDegradedError = queryError instanceof DegradedStoreError;
+  const loadError = isDegradedError
+    ? queryError.message
+    : data && !data.ok
+      ? data.error ?? "Failed to load beats."
+      : null;
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   const { mutate: bulkUpdate } = useMutation({
@@ -314,22 +342,30 @@ function BeadsPageInner() {
             <div className="flex items-center justify-center py-6 text-muted-foreground">
               Loading beats...
             </div>
-          ) : loadError ? (
+          ) : loadError && !isDegradedError ? (
             <div className="flex items-center justify-center py-6 text-sm text-destructive">
               Failed to load beats: {loadError}
             </div>
           ) : (
-            <BeadTable
-              data={beads}
-              showRepoColumn={showRepoColumn}
-              onSelectionChange={handleSelectionChange}
-              selectionVersion={selectionVersion}
-              searchQuery={searchQuery}
-              onOpenBead={handleOpenBead}
-              onShipBead={handleShipBead}
-              shippingByBeadId={shippingByBeadId}
-              onAbortShipping={handleAbortShipping}
-            />
+            <>
+              {isDegradedError && (
+                <div className="mb-2 flex items-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
+                  <AlertTriangle className="size-4 shrink-0" />
+                  <span>{loadError}</span>
+                </div>
+              )}
+              <BeadTable
+                data={beads}
+                showRepoColumn={showRepoColumn}
+                onSelectionChange={handleSelectionChange}
+                selectionVersion={selectionVersion}
+                searchQuery={searchQuery}
+                onOpenBead={handleOpenBead}
+                onShipBead={handleShipBead}
+                shippingByBeadId={shippingByBeadId}
+                onAbortShipping={handleAbortShipping}
+              />
+            </>
           )}
         </div>
       </div>

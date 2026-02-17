@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import type { Bead, BeadDependency, BdResult } from "./types";
+import { withErrorSuppression } from "./bd-error-suppression";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
@@ -122,12 +123,17 @@ export async function listBeads(
     args.push("--all");
   }
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
-  if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
-  try {
-    return { ok: true, data: normalizeBeads(stdout) };
-  } catch {
-    return { ok: false, error: "Failed to parse bd list output" };
+  let result: BdResult<Bead[]>;
+  if (exitCode !== 0) {
+    result = { ok: false, error: stderr || "bd list failed" };
+  } else {
+    try {
+      result = { ok: true, data: normalizeBeads(stdout) };
+    } catch {
+      result = { ok: false, error: "Failed to parse bd list output" };
+    }
   }
+  return withErrorSuppression("listBeads", result, filters, repoPath);
 }
 
 export async function readyBeads(
@@ -141,12 +147,17 @@ export async function readyBeads(
     }
   }
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
-  if (exitCode !== 0) return { ok: false, error: stderr || "bd ready failed" };
-  try {
-    return { ok: true, data: normalizeBeads(stdout) };
-  } catch {
-    return { ok: false, error: "Failed to parse bd ready output" };
+  let result: BdResult<Bead[]>;
+  if (exitCode !== 0) {
+    result = { ok: false, error: stderr || "bd ready failed" };
+  } else {
+    try {
+      result = { ok: true, data: normalizeBeads(stdout) };
+    } catch {
+      result = { ok: false, error: "Failed to parse bd ready output" };
+    }
   }
+  return withErrorSuppression("readyBeads", result, filters, repoPath);
 }
 
 export async function searchBeads(
@@ -166,12 +177,17 @@ export async function searchBeads(
     }
   }
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
-  if (exitCode !== 0) return { ok: false, error: stderr || "bd search failed" };
-  try {
-    return { ok: true, data: normalizeBeads(stdout) };
-  } catch {
-    return { ok: false, error: "Failed to parse bd search output" };
+  let result: BdResult<Bead[]>;
+  if (exitCode !== 0) {
+    result = { ok: false, error: stderr || "bd search failed" };
+  } else {
+    try {
+      result = { ok: true, data: normalizeBeads(stdout) };
+    } catch {
+      result = { ok: false, error: "Failed to parse bd search output" };
+    }
   }
+  return withErrorSuppression("searchBeads", result, filters, repoPath, query);
 }
 
 export async function queryBeads(

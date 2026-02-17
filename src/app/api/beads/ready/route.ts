@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readyBeads, listBeads } from "@/lib/bd";
+import { DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import type { Bead } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -13,7 +14,8 @@ export async function GET(request: NextRequest) {
   ]);
 
   if (!readyResult.ok) {
-    return NextResponse.json({ error: readyResult.error }, { status: 500 });
+    const status = readyResult.error === DEGRADED_ERROR_MESSAGE ? 503 : 500;
+    return NextResponse.json({ error: readyResult.error }, { status });
   }
 
   const merged = new Map<string, Bead>();
