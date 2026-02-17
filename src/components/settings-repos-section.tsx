@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
 import { toast } from "sonner";
@@ -16,6 +17,9 @@ import { useAppStore } from "@/stores/app-store";
 export function SettingsReposSection() {
   const [browseOpen, setBrowseOpen] = useState(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { activeRepo, setActiveRepo } = useAppStore();
 
   const { data, isLoading } = useQuery({
@@ -47,11 +51,19 @@ export function SettingsReposSection() {
       toast.success("Repository removed");
       if (activeRepo === path) {
         setActiveRepo(null);
+        clearRepoUrlParam();
       }
       invalidateRegistryAndBeads();
     } else {
       toast.error(result.error ?? "Failed to remove repository");
     }
+  }
+
+  function clearRepoUrlParam() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("repo");
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   }
 
   return (
