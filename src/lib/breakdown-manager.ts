@@ -7,6 +7,11 @@ import {
   type InteractionLog,
 } from "@/lib/interaction-logger";
 import { getActionAgent } from "@/lib/settings";
+import {
+  buildPromptModeArgs,
+  resolveDialect,
+  createLineNormalizer,
+} from "@/lib/agent-adapter";
 import type {
   ApplyBreakdownResult,
   BeadPriority,
@@ -400,21 +405,11 @@ export async function createBreakdownSession(
   bkdnInteractionLog.logPrompt(prompt);
   pushEvent(entry, "log", `Starting breakdown for: ${parentTitle}\n`);
 
-  const args = [
-    "-p",
-    prompt,
-    "--input-format",
-    "text",
-    "--output-format",
-    "stream-json",
-    "--include-partial-messages",
-    "--verbose",
-    "--dangerously-skip-permissions",
-  ];
-
   const agent = await getActionAgent("breakdown");
-  if (agent.model) args.push("--model", agent.model);
-  const child = spawn(agent.command, args, {
+  const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
+  const dialect = resolveDialect(agent.command);
+  const normalizeEvent = createLineNormalizer(dialect);
+  const child = spawn(agentCmd, args, {
     cwd: repoPath,
     env: { ...process.env },
     stdio: ["ignore", "pipe", "pipe"],
@@ -432,14 +427,14 @@ export async function createBreakdownSession(
       if (!line.trim()) continue;
       bkdnInteractionLog.logResponse(line);
 
-      let parsed: unknown;
+      let raw: unknown;
       try {
-        parsed = JSON.parse(line);
+        raw = JSON.parse(line);
       } catch {
         continue;
       }
 
-      const obj = toObject(parsed);
+      const obj = toObject(normalizeEvent(raw));
       if (!obj || typeof obj.type !== "string") continue;
 
       if (obj.type === "stream_event") {
@@ -512,17 +507,19 @@ export async function createBreakdownSession(
     child.stderr?.removeAllListeners();
   };
 
+  const agentLabel = agent.label || agent.command;
+
   child.on("error", (err) => {
     releaseChildStreams();
-    finalizeSession(entry, "error", `Failed to start Claude: ${err.message}`);
+    finalizeSession(entry, "error", `Failed to start ${agentLabel}: ${err.message}`);
   });
 
   child.on("close", (code, signal) => {
     releaseChildStreams();
     if (ndjsonBuffer.trim()) {
       try {
-        const parsed = JSON.parse(ndjsonBuffer);
-        const obj = toObject(parsed);
+        const raw = JSON.parse(ndjsonBuffer);
+        const obj = toObject(normalizeEvent(raw));
         if (obj?.type === "result") {
           const isError = Boolean(obj.is_error);
           finalizeSession(entry, isError ? "error" : "completed",
@@ -537,11 +534,11 @@ export async function createBreakdownSession(
     const isSuccess = code === 0 && signal == null;
     const message = isSuccess
       ? "Breakdown complete"
-      : `Claude exited (code=${code ?? "null"}, signal=${signal ?? "null"})`;
+      : `${agentLabel} exited (code=${code ?? "null"}, signal=${signal ?? "null"})`;
     finalizeSession(entry, isSuccess ? "completed" : "error", message);
   });
 
-  pushEvent(entry, "status", "Starting Claude breakdown...");
+  pushEvent(entry, "status", `Starting ${agentLabel} breakdown...`);
   return session;
 }
 

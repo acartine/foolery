@@ -8,6 +8,11 @@ import {
 } from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
 import { getActionAgent } from "@/lib/settings";
+import {
+  buildPromptModeArgs,
+  resolveDialect,
+  createLineNormalizer,
+} from "@/lib/agent-adapter";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 
@@ -417,14 +422,6 @@ export async function createSession(
   const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog };
   sessions.set(id, entry);
 
-  // Spawn claude CLI with stream-json so we can see tool usage
-  const args = [
-    "-p",
-    "--input-format", "stream-json",
-    "--verbose",
-    "--output-format", "stream-json",
-    "--dangerously-skip-permissions",
-  ];
   const cwd = repoPath || process.cwd();
 
   console.log(`[terminal-manager] Creating session ${id}`);
@@ -433,11 +430,33 @@ export async function createSession(
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
   const agent = await getActionAgent("take");
-  if (agent.model) args.push("--model", agent.model);
-  const child = spawn(agent.command, args, {
+  const dialect = resolveDialect(agent.command);
+  const isInteractive = dialect === "claude";
+
+  // For interactive (claude) sessions, use stream-json stdin; for codex, use one-shot prompt mode
+  let agentCmd: string;
+  let args: string[];
+  if (isInteractive) {
+    agentCmd = agent.command;
+    args = [
+      "-p",
+      "--input-format", "stream-json",
+      "--verbose",
+      "--output-format", "stream-json",
+      "--dangerously-skip-permissions",
+    ];
+    if (agent.model) args.push("--model", agent.model);
+  } else {
+    const built = buildPromptModeArgs(agent, prompt);
+    agentCmd = built.command;
+    args = built.args;
+  }
+  const normalizeEvent = createLineNormalizer(dialect);
+
+  const child = spawn(agentCmd, args, {
     cwd,
     env: { ...process.env },
-    stdio: ["pipe", "pipe", "pipe"],
+    stdio: [isInteractive ? "pipe" : "ignore", "pipe", "pipe"],
   });
   entry.process = child;
 
@@ -450,12 +469,13 @@ export async function createSession(
     emitter.emit("data", evt);
   };
 
-  let stdinClosed = false;
+  let stdinClosed = !isInteractive;
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
-  const autoShipCompletionPrompt =
-    customPrompt
+  const autoShipCompletionPrompt = !isInteractive
+    ? null
+    : customPrompt
       ? null
       : isWave
         ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
@@ -592,7 +612,8 @@ export async function createSession(
       if (!line.trim()) continue;
       interactionLog.logResponse(line);
       try {
-        const obj = JSON.parse(line) as Record<string, unknown>;
+        const raw = JSON.parse(line) as Record<string, unknown>;
+        const obj = (normalizeEvent(raw) ?? raw) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
 
         if (obj.type === "result") {
@@ -823,13 +844,6 @@ export async function createSceneSession(
   const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog: sceneInteractionLog };
   sessions.set(id, entry);
 
-  const args = [
-    "-p",
-    "--input-format", "stream-json",
-    "--verbose",
-    "--output-format", "stream-json",
-    "--dangerously-skip-permissions",
-  ];
   const cwd = repoPath || process.cwd();
 
   console.log(`[terminal-manager] Creating scene session ${id}`);
@@ -838,11 +852,32 @@ export async function createSceneSession(
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
   const agent = await getActionAgent("scene");
-  if (agent.model) args.push("--model", agent.model);
-  const child = spawn(agent.command, args, {
+  const sceneDialect = resolveDialect(agent.command);
+  const sceneIsInteractive = sceneDialect === "claude";
+
+  let sceneAgentCmd: string;
+  let args: string[];
+  if (sceneIsInteractive) {
+    sceneAgentCmd = agent.command;
+    args = [
+      "-p",
+      "--input-format", "stream-json",
+      "--verbose",
+      "--output-format", "stream-json",
+      "--dangerously-skip-permissions",
+    ];
+    if (agent.model) args.push("--model", agent.model);
+  } else {
+    const built = buildPromptModeArgs(agent, prompt);
+    sceneAgentCmd = built.command;
+    args = built.args;
+  }
+  const sceneNormalizeEvent = createLineNormalizer(sceneDialect);
+
+  const child = spawn(sceneAgentCmd, args, {
     cwd,
     env: { ...process.env },
-    stdio: ["pipe", "pipe", "pipe"],
+    stdio: [sceneIsInteractive ? "pipe" : "ignore", "pipe", "pipe"],
   });
   entry.process = child;
 
@@ -855,7 +890,7 @@ export async function createSceneSession(
     emitter.emit("data", evt);
   };
 
-  let stdinClosed = false;
+  let stdinClosed = !sceneIsInteractive;
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
@@ -994,7 +1029,8 @@ export async function createSceneSession(
       if (!line.trim()) continue;
       sceneInteractionLog.logResponse(line);
       try {
-        const obj = JSON.parse(line) as Record<string, unknown>;
+        const raw = JSON.parse(line) as Record<string, unknown>;
+        const obj = (sceneNormalizeEvent(raw) ?? raw) as Record<string, unknown>;
         maybeAutoAnswerAskUser(obj);
 
         if (obj.type === "result") {
