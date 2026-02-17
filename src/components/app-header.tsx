@@ -10,6 +10,7 @@ import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
 import { SettingsSheet } from "@/components/settings-sheet";
+import { NotificationBell } from "@/components/notification-bell";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
+import { useNotificationStore, selectUnreadCount } from "@/stores/notification-store";
 
 type VersionBanner = {
   installedVersion: string;
@@ -46,6 +48,8 @@ export function AppHeader() {
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
+  const unreadCount = useNotificationStore(selectUnreadCount);
+  const markAllRead = useNotificationStore((s) => s.markAllRead);
 
   const canCreate = Boolean(activeRepo) || registeredRepos.length > 0;
   const shouldChooseRepo = !activeRepo && registeredRepos.length > 1;
@@ -245,6 +249,8 @@ export function AppHeader() {
               placeholder="Search beats..."
             />
 
+            <NotificationBell />
+
             <Button
               size="icon"
               variant="ghost"
@@ -293,12 +299,20 @@ export function AppHeader() {
                   <Button
                     size="lg"
                     variant={beadsView === "finalcut" ? "default" : "ghost"}
-                    className="h-8 gap-1.5 px-2.5"
+                    className="relative h-8 gap-1.5 px-2.5"
                     title="Verification queue"
-                    onClick={() => setBeadsView("finalcut")}
+                    onClick={() => {
+                      setBeadsView("finalcut");
+                      markAllRead();
+                    }}
                   >
                     <Scissors className="size-4" />
                     Final Cut
+                    {unreadCount > 0 && (
+                      <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
                   </Button>
                 </div>
                 {canCreate && showActionButton ? (
