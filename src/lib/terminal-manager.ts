@@ -654,6 +654,9 @@ export async function createSession(
       data: String(code ?? 1),
       timestamp: Date.now(),
     });
+    // Release child process stream listeners to free closures
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
     entry.process = null;
 
     // Regroom ancestors after successful session completion
@@ -663,7 +666,14 @@ export async function createSession(
       });
     }
 
+    // Remove all emitter listeners after a short drain window so
+    // SSE clients receive the final exit event before detachment.
     setTimeout(() => {
+      emitter.removeAllListeners();
+    }, 2000);
+
+    setTimeout(() => {
+      buffer.length = 0;
       sessions.delete(id);
     }, CLEANUP_DELAY_MS);
   });
@@ -682,9 +692,16 @@ export async function createSession(
       timestamp: Date.now(),
     });
     pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
     entry.process = null;
 
     setTimeout(() => {
+      emitter.removeAllListeners();
+    }, 2000);
+
+    setTimeout(() => {
+      buffer.length = 0;
       sessions.delete(id);
     }, CLEANUP_DELAY_MS);
   });
@@ -1012,6 +1029,9 @@ export async function createSceneSession(
       data: String(code ?? 1),
       timestamp: Date.now(),
     });
+    // Release child process stream listeners to free closures
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
     entry.process = null;
 
     // Regroom ancestors for all beads in the scene
@@ -1023,7 +1043,14 @@ export async function createSceneSession(
       });
     }
 
+    // Remove all emitter listeners after a short drain window so
+    // SSE clients receive the final exit event before detachment.
     setTimeout(() => {
+      emitter.removeAllListeners();
+    }, 2000);
+
+    setTimeout(() => {
+      buffer.length = 0;
       sessions.delete(id);
     }, CLEANUP_DELAY_MS);
   });
@@ -1042,9 +1069,16 @@ export async function createSceneSession(
       timestamp: Date.now(),
     });
     pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
     entry.process = null;
 
     setTimeout(() => {
+      emitter.removeAllListeners();
+    }, 2000);
+
+    setTimeout(() => {
+      buffer.length = 0;
       sessions.delete(id);
     }, CLEANUP_DELAY_MS);
   });

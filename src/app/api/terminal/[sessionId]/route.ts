@@ -31,9 +31,14 @@ export async function GET(
         }
       };
 
+      const cleanup = () => {
+        entry.emitter.off("data", listener);
+      };
+
       const closeStream = () => {
         if (closed) return;
         closed = true;
+        cleanup();
         console.log(`[terminal-sse] [${sessionId}] closing stream`);
         try { controller.close(); } catch { /* already closed */ }
       };
@@ -66,7 +71,6 @@ export async function GET(
 
       // Handle client disconnect
       request.signal.addEventListener("abort", () => {
-        entry.emitter.off("data", listener);
         closeStream();
       });
     },
