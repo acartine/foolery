@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -16,13 +16,17 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { SettingsAgentsSection } from "@/components/settings-agents-section";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
+import { SettingsReposSection } from "@/components/settings-repos-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type { ActionAgentMappings } from "@/lib/schemas";
 
+export type SettingsSection = "repos" | null;
+
 interface SettingsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialSection?: SettingsSection;
 }
 
 interface SettingsData {
@@ -42,10 +46,17 @@ const DEFAULTS: SettingsData = {
   },
 };
 
-export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
+export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSheetProps) {
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const reposSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (open && initialSection === "repos" && reposSectionRef.current) {
+      reposSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [open, initialSection, loading]);
 
   useEffect(() => {
     if (!open) return;
@@ -100,6 +111,13 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : (
             <>
+              {/* Section: Repositories */}
+              <div ref={reposSectionRef}>
+                <SettingsReposSection />
+              </div>
+
+              <Separator />
+
               {/* Section 1: Agent Management */}
               <SettingsAgentsSection
                 agents={settings.agents}

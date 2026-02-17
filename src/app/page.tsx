@@ -6,5 +6,5 @@ export default async function Home() {
   if (repos.length > 0) {
     redirect("/beads");
   }
-  redirect("/registry");
+  redirect("/beads?settings=repos");
 }
