@@ -23,11 +23,16 @@ export function SettingsReposSection() {
 
   const repos = data?.ok ? (data.data ?? []) : [];
 
+  function invalidateRegistryAndBeads() {
+    queryClient.invalidateQueries({ queryKey: ["registry"] });
+    queryClient.invalidateQueries({ queryKey: ["beads"] });
+  }
+
   async function handleAdd(path: string) {
     const result = await addRepoToRegistry(path);
     if (result.ok) {
       toast.success(`Added ${path}`);
-      queryClient.invalidateQueries({ queryKey: ["registry"] });
+      invalidateRegistryAndBeads();
     } else {
       toast.error(result.error ?? "Failed to add repository");
     }
@@ -38,7 +43,7 @@ export function SettingsReposSection() {
     const result = await removeRepoFromRegistry(path);
     if (result.ok) {
       toast.success("Repository removed");
-      queryClient.invalidateQueries({ queryKey: ["registry"] });
+      invalidateRegistryAndBeads();
     } else {
       toast.error(result.error ?? "Failed to remove repository");
     }
