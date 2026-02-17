@@ -54,8 +54,8 @@ export function BulkEditControls({
 }: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
   Pick<FilterBarProps, "onSceneBeads">) {
   return (
-    <div className="flex flex-wrap items-center gap-1">
-      <span className="text-sm font-medium">
+    <div className="flex items-center gap-1 overflow-x-auto">
+      <span className="text-sm font-medium whitespace-nowrap">
         {selectedIds.length} selected
       </span>
       {onSceneBeads && selectedIds.length >= 2 && (
@@ -130,7 +130,7 @@ function FilterControls() {
     filters.status !== "ready" || filters.type || filters.priority !== undefined;
 
   return (
-    <div className="flex flex-wrap items-center gap-1">
+    <div className="flex items-center gap-1 overflow-x-auto">
       <Select
         value={filters.status ?? "all"}
         onValueChange={(v) => {

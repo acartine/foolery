@@ -280,7 +280,7 @@ function BeadsPageInner() {
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
       {(isListView || isFinalCutView) && (
-        <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
+        <div className="mb-2 flex h-10 items-center border-b border-border/60 pb-2">
           {isListView && (
             <FilterBar
               selectedIds={selectedIds}
