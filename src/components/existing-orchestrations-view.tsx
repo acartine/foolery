@@ -92,6 +92,7 @@ interface MigrationPlan {
   waveId: string;
   newSlug: string;
   removeLabels: string[];
+  addLabels: string[];
   newTitle: string;
 }
 
@@ -414,7 +415,17 @@ async function loadExistingOrchestrations(
   }
 
   const beads = beadsResult.data;
-  const waves = beads.filter(isWaveBead);
+
+  // Find all bead IDs referenced as parents by other beads
+  const parentIds = new Set<string>();
+  for (const bead of beads) {
+    if (bead.parent) parentIds.add(bead.parent);
+  }
+
+  // Waves = beads with orchestration:wave label OR beads that are parents
+  const waves = beads.filter(
+    (bead) => isWaveBead(bead) || parentIds.has(bead.id)
+  );
   const depResults = await Promise.all(
     waves.map(async (wave) => {
       const deps = await fetchDeps(wave.id, repoPath);
@@ -440,14 +451,20 @@ function buildMigrationPlan(waves: Bead[]): MigrationPlan[] {
 
   const updates: MigrationPlan[] = [];
   for (const wave of sorted) {
+    const hasWaveLabel = wave.labels?.includes(ORCHESTRATION_WAVE_LABEL);
     const slug = extractWaveSlug(wave.labels);
     if (slug && !isLegacyNumericWaveSlug(slug)) continue;
     const newSlug = allocateWaveSlug(used);
     const removeLabels = getWaveSlugLabels(wave.labels ?? []);
+    const addLabels = [buildWaveSlugLabel(newSlug)];
+    if (!hasWaveLabel) {
+      addLabels.push(ORCHESTRATION_WAVE_LABEL);
+    }
     updates.push({
       waveId: wave.id,
       newSlug,
       removeLabels,
+      addLabels,
       newTitle: rewriteWaveTitleSlug(wave.title, newSlug),
     });
   }
@@ -662,7 +679,7 @@ export function ExistingOrchestrationsView() {
           {
             title: item.newTitle,
             removeLabels: item.removeLabels,
-            labels: [buildWaveSlugLabel(item.newSlug)],
+            labels: item.addLabels,
           },
           activeRepo
         );
