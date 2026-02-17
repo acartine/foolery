@@ -16,6 +16,108 @@ require_cmd() {
   fi
 }
 
+semver_triplet() {
+  local raw="$1"
+  raw="${raw#v}"
+  raw="${raw%%-*}"
+  raw="${raw%%+*}"
+
+  local major minor patch
+  IFS='.' read -r major minor patch _ <<<"$raw"
+
+  if [[ ! "$major" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+  if [[ -n "${minor:-}" && ! "$minor" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+  if [[ -n "${patch:-}" && ! "$patch" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+
+  printf '%s %s %s\n' "$major" "${minor:-0}" "${patch:-0}"
+}
+
+bump_version() {
+  local current="$1" kind="$2"
+  local major minor patch
+  read -r major minor patch <<<"$(semver_triplet "$current")"
+
+  case "$kind" in
+    patch) patch=$((patch + 1)) ;;
+    minor) minor=$((minor + 1)); patch=0 ;;
+    major) major=$((major + 1)); minor=0; patch=0 ;;
+    *) fail "Unknown bump kind: $kind" ;;
+  esac
+
+  printf '%s.%s.%s\n' "$major" "$minor" "$patch"
+}
+
+read_current_version() {
+  local pkg="$1"
+  sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pkg" | head -n 1
+}
+
+update_package_version() {
+  local pkg="$1" new_version="$2"
+  sed -i.bak "s/\"version\"[[:space:]]*:[[:space:]]*\"[^\"]*\"/\"version\": \"$new_version\"/" "$pkg"
+  rm -f "${pkg}.bak"
+
+  local written
+  written="$(read_current_version "$pkg")"
+  if [[ "$written" != "$new_version" ]]; then
+    fail "Failed to update version in $pkg (expected $new_version, got $written)"
+  fi
+}
+
+usage() {
+  cat <<'EOF'
+Usage: bun run release [-- [OPTIONS]]
+
+Options:
+  --patch    Bump patch version (0.1.0 -> 0.1.1)
+  --minor    Bump minor version (0.1.0 -> 0.2.0)
+  --major    Bump major version (0.1.0 -> 1.0.0)
+  -h, --help Show this help message
+
+With no options, an interactive prompt lets you choose the bump type.
+
+Environment variables:
+  FOOLERY_RELEASE_DRY_RUN=1              Skip actual release (default: 0)
+  FOOLERY_RELEASE_TARGET=<branch>        Release target branch (default: main)
+  FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS=0   Skip waiting for artifacts (default: 1)
+  FOOLERY_RELEASE_POLL_INTERVAL_SECONDS  Poll interval in seconds (default: 10)
+  FOOLERY_RELEASE_WAIT_TIMEOUT_SECONDS   Artifact wait timeout (default: 600)
+EOF
+}
+
+prompt_bump_kind() {
+  local current="$1"
+  local v_patch v_minor v_major
+  v_patch="$(bump_version "$current" patch)"
+  v_minor="$(bump_version "$current" minor)"
+  v_major="$(bump_version "$current" major)"
+
+  printf '\n'
+  printf 'Current version: %s\n' "$current"
+  printf '\n'
+  printf '  1) patch  ->  %s\n' "$v_patch"
+  printf '  2) minor  ->  %s\n' "$v_minor"
+  printf '  3) major  ->  %s\n' "$v_major"
+  printf '\n'
+
+  local choice
+  read -rp 'Select bump type [1]: ' choice
+  choice="${choice:-1}"
+
+  case "$choice" in
+    1) printf 'patch\n' ;;
+    2) printf 'minor\n' ;;
+    3) printf 'major\n' ;;
+    *) fail "Invalid selection: $choice" ;;
+  esac
+}
+
 wait_for_artifact_run() {
   local tag="$1"
   local interval timeout_seconds started_at now run_id
@@ -65,24 +167,64 @@ wait_for_artifacts() {
 
 main() {
   require_cmd gh
+  require_cmd git
+  require_cmd sed
 
-  local tag target
-  tag="${1:-}"
+  local bump_kind="" target
   target="${FOOLERY_RELEASE_TARGET:-main}"
 
-  if [[ -z "$tag" ]]; then
-    fail "Usage: bun run release -- <tag> [extra gh release create args]"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --patch) bump_kind="patch"; shift ;;
+      --minor) bump_kind="minor"; shift ;;
+      --major) bump_kind="major"; shift ;;
+      -h|--help) usage; return 0 ;;
+      *)
+        printf 'Unrecognized option: %s\n' "$1" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  local pkg
+  pkg="$(git rev-parse --show-toplevel)/package.json"
+  local current_version
+  current_version="$(read_current_version "$pkg")"
+
+  if [[ -z "$current_version" ]]; then
+    fail "Could not read version from $pkg"
   fi
 
-  shift || true
+  if [[ -z "$bump_kind" ]]; then
+    bump_kind="$(prompt_bump_kind "$current_version")"
+  fi
+
+  local new_version tag
+  new_version="$(bump_version "$current_version" "$bump_kind")"
+  tag="v${new_version}"
+
+  log "Bumping $current_version -> $new_version ($bump_kind)"
 
   if [[ "${FOOLERY_RELEASE_DRY_RUN:-0}" == "1" ]]; then
-    log "Dry run enabled. Would run: gh release create $tag --target $target --generate-notes --latest $*"
+    log "Dry run enabled. Would:"
+    log "  - Update package.json to $new_version"
+    log "  - git commit and tag $tag"
+    log "  - git push && git push --tags"
+    log "  - gh release create $tag --target $target --generate-notes --latest"
     return 0
   fi
 
+  update_package_version "$pkg" "$new_version"
+
+  git add package.json
+  git commit -m "release: $tag"
+  git tag "$tag"
+  git push
+  git push --tags
+
   log "Creating GitHub release $tag from target $target"
-  gh release create "$tag" --target "$target" --generate-notes --latest "$@"
+  gh release create "$tag" --target "$target" --generate-notes --latest
 
   if [[ "${FOOLERY_RELEASE_WAIT_FOR_ARTIFACTS:-1}" == "1" ]]; then
     wait_for_artifacts "$tag"
