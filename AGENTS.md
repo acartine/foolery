@@ -1,5 +1,13 @@
 # Agent Instructions
 
+## Codex Configuration
+
+When using Codex CLI in this project:
+- **approval_policy**: `never` (autonomous mode for routine work)
+- **model_reasoning_effort**: `xhigh` (complex codebase, needs deep reasoning)
+
+Override with: `codex -c approval_policy=ask` or `codex -c model_reasoning_effort=medium` as needed.
+
 This repository uses `bd` (Beads) as the single source of truth for work tracking.
 
 ## Repository Overrides
