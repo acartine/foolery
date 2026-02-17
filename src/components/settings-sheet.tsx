@@ -106,14 +106,13 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
           </SheetDescription>
         </SheetHeader>
 
-        <div className="space-y-6 px-4 py-6 overflow-y-auto flex-1">
+        <div className="space-y-3 px-4 py-6 overflow-y-auto flex-1">
           {/* Section: Repositories (independent data, always rendered) */}
           <div ref={reposSectionRef}>
             <SettingsReposSection />
           </div>
 
           <Separator />
-
           {loading ? (
             <p className="text-sm text-muted-foreground">Loading settings...</p>
           ) : (

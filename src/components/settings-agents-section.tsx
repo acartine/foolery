@@ -12,7 +12,19 @@ import {
   addAgent,
   removeAgent,
   scanAgents,
+  saveActions,
 } from "@/lib/settings-api";
+import type { ActionAgentMappings } from "@/lib/schemas";
+
+async function setDefaultAgentForActions(agentId: string) {
+  const mappings: ActionAgentMappings = {
+    take: agentId,
+    scene: agentId,
+    direct: agentId,
+    breakdown: agentId,
+  };
+  await saveActions(mappings);
+}
 
 interface AgentsSectionProps {
   agents: Record<string, RegisteredAgent>;
@@ -59,9 +71,37 @@ export function SettingsAgentsSection({
     });
     if (res.ok && res.data) {
       onAgentsChange(res.data);
+      // If this is the only registered agent, set it as default
+      if (Object.keys(res.data).length === 1) {
+        await setDefaultAgentForActions(scanned.id);
+      }
       toast.success(`Added ${scanned.id}`);
     } else {
       toast.error(res.error ?? "Failed to add agent");
+    }
+  }
+
+  async function handleAddAll(unregistered: ScannedAgent[]) {
+    const sorted = [...unregistered].sort((a, b) =>
+      a.id.localeCompare(b.id),
+    );
+    let latestAgents: Record<string, RegisteredAgent> | undefined;
+    for (const agent of sorted) {
+      const res = await addAgent(agent.id, {
+        command: agent.path,
+        label: agent.id.charAt(0).toUpperCase() + agent.id.slice(1),
+      });
+      if (res.ok && res.data) {
+        latestAgents = res.data;
+      } else {
+        toast.error(res.error ?? `Failed to add ${agent.id}`);
+        return;
+      }
+    }
+    if (latestAgents) {
+      onAgentsChange(latestAgents);
+      await setDefaultAgentForActions(sorted[0].id);
+      toast.success(`Added ${sorted.length} agent(s)`);
     }
   }
 
@@ -110,6 +150,7 @@ export function SettingsAgentsSection({
           scanned={scannedAgents}
           registered={agents}
           onAdd={handleAddScanned}
+          onAddAll={handleAddAll}
           onDismiss={() => setScannedAgents(null)}
         />
       )}
@@ -170,57 +211,91 @@ function ScannedAgentsList({
   scanned,
   registered,
   onAdd,
+  onAddAll,
   onDismiss,
 }: {
   scanned: ScannedAgent[];
   registered: Record<string, RegisteredAgent>;
   onAdd: (a: ScannedAgent) => void;
+  onAddAll: (agents: ScannedAgent[]) => void;
   onDismiss: () => void;
 }) {
+  const unregisteredInstalled = scanned.filter(
+    (a) => a.installed && !registered[a.id],
+  );
+
   return (
     <div className="rounded-md border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           Scan Results
         </span>
-        <Button variant="ghost" size="sm" onClick={onDismiss}>
-          <X className="size-3.5" />
-        </Button>
-      </div>
-      {scanned.map((a) => (
-        <div
-          key={a.id}
-          className="flex items-center justify-between text-sm"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="shrink-0">{a.id}</span>
-            {a.installed ? (
-              <Badge variant="secondary" className="text-[10px] max-w-[200px] truncate" title={a.path}>
-                {a.path}
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-[10px]">
-                not found
-              </Badge>
-            )}
-          </div>
-          {a.installed && !registered[a.id] && (
+        <div className="flex items-center gap-1">
+          {unregisteredInstalled.length > 1 && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              onClick={() => onAdd(a)}
+              onClick={() => onAddAll(unregisteredInstalled)}
             >
               <Plus className="size-3.5 mr-1" />
-              Add
+              Add All
             </Button>
           )}
-          {a.installed && registered[a.id] && (
-            <Badge variant="outline" className="text-[10px]">
-              registered
-            </Badge>
-          )}
+          <Button variant="ghost" size="sm" onClick={onDismiss}>
+            <X className="size-3.5" />
+          </Button>
         </div>
+      </div>
+      {scanned.map((a) => (
+        <ScannedAgentRow
+          key={a.id}
+          agent={a}
+          isRegistered={!!registered[a.id]}
+          onAdd={() => onAdd(a)}
+        />
       ))}
+    </div>
+  );
+}
+
+function ScannedAgentRow({
+  agent,
+  isRegistered,
+  onAdd,
+}: {
+  agent: ScannedAgent;
+  isRegistered: boolean;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="shrink-0">{agent.id}</span>
+        {agent.installed ? (
+          <Badge
+            variant="secondary"
+            className="text-[10px] max-w-[200px] truncate [direction:rtl] [text-align:left]"
+            title={agent.path}
+          >
+            {agent.path}
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="text-[10px]">
+            not found
+          </Badge>
+        )}
+      </div>
+      {agent.installed && !isRegistered && (
+        <Button variant="ghost" size="sm" onClick={onAdd}>
+          <Plus className="size-3.5 mr-1" />
+          Add
+        </Button>
+      )}
+      {agent.installed && isRegistered && (
+        <Badge variant="outline" className="text-[10px]">
+          registered
+        </Badge>
+      )}
     </div>
   );
 }
@@ -371,24 +446,27 @@ function AgentEditRow({
 
   return (
     <div className="rounded-md border p-3 space-y-2">
-      <div className="grid grid-cols-3 gap-2">
-        <div className="space-y-1">
+      <div className="grid grid-cols-1 gap-1.5">
+        <div className="space-y-0.5">
           <Label className="text-xs">Command</Label>
           <Input
+            className="h-7 px-2 py-1 text-sm"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
           />
         </div>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <Label className="text-xs">Model</Label>
           <Input
+            className="h-7 px-2 py-1 text-sm"
             value={model}
             onChange={(e) => setModel(e.target.value)}
           />
         </div>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <Label className="text-xs">Label</Label>
           <Input
+            className="h-7 px-2 py-1 text-sm"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
           />
