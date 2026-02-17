@@ -37,6 +37,7 @@ foolery
 foolery start
 foolery open
 foolery update
+foolery prompt
 foolery stop
 foolery restart
 foolery status
@@ -113,6 +114,26 @@ The planning room. Select a set of beats and ask Claude to organize them into de
 The verification queue. Every beat labeled `stage:verification` lands here. Review each one, approve it, or reject it with notes — keeping your done list honest.
 
 ![Final Cut view](docs/screenshots/final-cut.png)
+
+## Foolery Prompt Guidance (Highly Recommended)
+
+Foolery works best when every repo has explicit agent handoff rules in `AGENTS.md` and/or `CLAUDE.md`.
+Use:
+
+```bash
+foolery prompt
+```
+
+This appends Foolery's guidance prompt (`PROMPT.md`) into whichever default prompt files already exist in the current repository.
+
+Why this matters:
+- Agents must move a bead to `in_progress` before any edits or commits.
+- Handoff must include `commit:<short-sha>` label first, then `stage:verification`.
+- Beads stay open for verification; do not close unless explicitly instructed.
+- Work is not complete until changes are pushed to `origin/main`.
+
+During `foolery setup`, Foolery will ask if you want to apply this guidance to mounted repos and marks it as highly recommended.
+`foolery doctor` also warns when prompt files are present but missing Foolery guidance.
 
 ## Key Shortcuts
 

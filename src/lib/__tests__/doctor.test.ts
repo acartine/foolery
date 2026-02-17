@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 // ── Mocks ──────────────────────────────────────────────────
 
@@ -47,6 +50,7 @@ import {
   checkUpdates,
   checkCorruptTickets,
   checkStaleParents,
+  checkPromptGuidance,
   runDoctor,
   runDoctorFix,
 } from "@/lib/doctor";
@@ -316,6 +320,47 @@ describe("checkStaleParents", () => {
     });
     const diags = await checkStaleParents(repos);
     expect(diags).toHaveLength(0);
+  });
+});
+
+// ── checkPromptGuidance ───────────────────────────────────
+
+describe("checkPromptGuidance", () => {
+  it("warns when AGENTS.md exists but guidance marker is missing", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-doctor-guidance-"));
+    try {
+      await writeFile(join(repoPath, "AGENTS.md"), "# Agent Instructions\n");
+
+      const diags = await checkPromptGuidance([
+        { path: repoPath, name: "repo-a", addedAt: "2026-01-01" },
+      ]);
+
+      expect(diags).toHaveLength(1);
+      expect(diags[0].check).toBe("prompt-guidance");
+      expect(diags[0].severity).toBe("warning");
+      expect(diags[0].message).toContain("missing Foolery guidance prompt");
+      expect(diags[0].context?.file).toBe("AGENTS.md");
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
+  it("does not warn when prompt marker is present", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-doctor-guidance-"));
+    try {
+      await writeFile(
+        join(repoPath, "CLAUDE.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\n## rules\n"
+      );
+
+      const diags = await checkPromptGuidance([
+        { path: repoPath, name: "repo-b", addedAt: "2026-01-01" },
+      ]);
+
+      expect(diags).toHaveLength(0);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
   });
 });
 

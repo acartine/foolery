@@ -1,4 +1,7 @@
 import { execFile } from "node:child_process";
+import { constants as fsConstants } from "node:fs";
+import { access, readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { listBeads } from "./bd";
 import { getRegisteredAgents } from "./settings";
 import { listRepos, type RegisteredRepo } from "./registry";
@@ -45,6 +48,8 @@ export interface DoctorFixReport {
     failed: number;
   };
 }
+
+const PROMPT_GUIDANCE_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
 
 // ── Agent health checks ────────────────────────────────────
 
@@ -258,19 +263,72 @@ export async function checkStaleParents(repos: RegisteredRepo[]): Promise<Diagno
   return diagnostics;
 }
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path, fsConstants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Warn when AGENTS.md/CLAUDE.md exists but is missing Foolery guidance prompt.
+ */
+export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+
+  for (const repo of repos) {
+    for (const fileName of ["AGENTS.md", "CLAUDE.md"]) {
+      const filePath = join(repo.path, fileName);
+      if (!(await fileExists(filePath))) continue;
+
+      try {
+        const content = await readFile(filePath, "utf8");
+        if (!content.includes(PROMPT_GUIDANCE_MARKER)) {
+          diagnostics.push({
+            check: "prompt-guidance",
+            severity: "warning",
+            fixable: false,
+            message: `Repo "${repo.name}" has ${fileName} but it is missing Foolery guidance prompt. Run \`foolery prompt\` in ${repo.path}.`,
+            context: { repoPath: repo.path, repoName: repo.name, file: fileName },
+          });
+        }
+      } catch {
+        diagnostics.push({
+          check: "prompt-guidance",
+          severity: "warning",
+          fixable: false,
+          message: `Could not read ${fileName} in repo "${repo.name}" (${repo.path}).`,
+          context: { repoPath: repo.path, repoName: repo.name, file: fileName },
+        });
+      }
+    }
+  }
+
+  return diagnostics;
+}
+
 // ── Run all checks ─────────────────────────────────────────
 
 export async function runDoctor(): Promise<DoctorReport> {
   const repos = await listRepos();
 
-  const [agentDiags, updateDiags, corruptDiags, staleDiags] = await Promise.all([
+  const [agentDiags, updateDiags, corruptDiags, staleDiags, promptDiags] = await Promise.all([
     checkAgents(),
     checkUpdates(),
     checkCorruptTickets(repos),
     checkStaleParents(repos),
+    checkPromptGuidance(repos),
   ]);
 
-  const diagnostics = [...agentDiags, ...updateDiags, ...corruptDiags, ...staleDiags];
+  const diagnostics = [
+    ...agentDiags,
+    ...updateDiags,
+    ...corruptDiags,
+    ...staleDiags,
+    ...promptDiags,
+  ];
 
   return {
     timestamp: new Date().toISOString(),

@@ -102,6 +102,8 @@ RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
 UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
+PROMPT_TEMPLATE_FILE="\${FOOLERY_PROMPT_TEMPLATE_FILE:-\$APP_DIR/PROMPT.md}"
+PROMPT_MARKER="FOOLERY_GUIDANCE_PROMPT_START"
 
 if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
   URL="http://127.0.0.1:\$PORT"
@@ -632,6 +634,55 @@ setup_cmd() {
   foolery_setup "\$@"
 }
 
+append_guidance_prompt() {
+  local target_file="\$1"
+
+  if grep -Fq "\$PROMPT_MARKER" "\$target_file" 2>/dev/null; then
+    return 2
+  fi
+
+  printf '\n\n' >>"\$target_file"
+  cat "\$PROMPT_TEMPLATE_FILE" >>"\$target_file"
+  printf '\n' >>"\$target_file"
+  return 0
+}
+
+prompt_cmd() {
+  local cwd target_file
+  local found=0 updated=0 skipped=0
+  cwd="\$(pwd)"
+
+  if [[ ! -f "\$PROMPT_TEMPLATE_FILE" ]]; then
+    fail "Guidance prompt template not found at \$PROMPT_TEMPLATE_FILE. Run foolery update."
+  fi
+
+  for target_file in "\$cwd/AGENTS.md" "\$cwd/CLAUDE.md"; do
+    if [[ ! -f "\$target_file" ]]; then
+      continue
+    fi
+
+    found=\$((found + 1))
+    if append_guidance_prompt "\$target_file"; then
+      log "Updated: \$target_file"
+      updated=\$((updated + 1))
+    else
+      local code="\$?"
+      if [[ "\$code" -eq 2 ]]; then
+        log "Already contains Foolery guidance: \$target_file"
+        skipped=\$((skipped + 1))
+      else
+        fail "Failed updating \$target_file"
+      fi
+    fi
+  done
+
+  if [[ "\$found" -eq 0 ]]; then
+    fail "No AGENTS.md or CLAUDE.md found in \$cwd."
+  fi
+
+  log "Prompt update complete: \$updated updated, \$skipped already up to date."
+}
+
 doctor_cmd() {
   local fix=0
   while [[ \$# -gt 0 ]]; do
@@ -779,6 +830,7 @@ Commands:
   start     Start Foolery in the background and open browser
   open      Open Foolery in your browser (skips if already open)
   setup     Configure repos and agents interactively
+  prompt    Append Foolery guidance prompt to AGENTS.md/CLAUDE.md
   update    Download and install the latest Foolery runtime
   stop      Stop the background Foolery process
   restart   Restart Foolery
@@ -804,6 +856,9 @@ main() {
       ;;
     setup)
       setup_cmd "\$@"
+      ;;
+    prompt)
+      prompt_cmd "\$@"
       ;;
     update)
       update_cmd "\$@"
@@ -910,7 +965,7 @@ main() {
   fi
 
   log "Install complete"
-  log "Commands: foolery start | foolery setup | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
+  log "Commands: foolery start | foolery setup | foolery prompt | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)

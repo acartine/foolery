@@ -26,6 +26,25 @@ _setup_confirm() {
   esac
 }
 
+_PROMPT_MARKER="FOOLERY_GUIDANCE_PROMPT_START"
+
+_resolve_prompt_template() {
+  if [[ -n "${APP_DIR:-}" && -f "${APP_DIR}/PROMPT.md" ]]; then
+    printf '%s\n' "${APP_DIR}/PROMPT.md"
+    return 0
+  fi
+
+  local script_dir repo_prompt
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  repo_prompt="$(cd "$script_dir/.." && pwd)/PROMPT.md"
+  if [[ -f "$repo_prompt" ]]; then
+    printf '%s\n' "$repo_prompt"
+    return 0
+  fi
+
+  return 1
+}
+
 # Bash 3.2-safe key-value helpers (replaces associative arrays).
 _kv_set() { eval "_KV_${1}__${2}=\$3"; }
 _kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
@@ -327,6 +346,70 @@ _repo_wizard() {
   _prompt_scan_method
 }
 
+_append_guidance_prompt_to_file() {
+  local target_file="$1" prompt_file="$2"
+
+  if grep -Fq "$_PROMPT_MARKER" "$target_file" 2>/dev/null; then
+    return 2
+  fi
+
+  printf '\n\n' >>"$target_file"
+  cat "$prompt_file" >>"$target_file"
+  printf '\n' >>"$target_file"
+  return 0
+}
+
+_prompt_guidance_wizard() {
+  local prompt_file mounted
+  if ! prompt_file="$(_resolve_prompt_template)"; then
+    _setup_log "Guidance prompt template unavailable; skipping prompt update."
+    return 0
+  fi
+
+  mounted="$(_read_registry_paths)"
+  if [[ -z "$mounted" ]]; then
+    return 0
+  fi
+
+  if ! _setup_confirm "Would you like to update default prompt files with Foolery's guidance prompt? (highly recommended) [Y/n] " "y"; then
+    return 0
+  fi
+
+  local updated=0 already=0 missing=0
+  while IFS= read -r repo_path; do
+    [[ -z "$repo_path" ]] && continue
+
+    local found_in_repo=0
+    local target_file
+    for target_file in "$repo_path/AGENTS.md" "$repo_path/CLAUDE.md"; do
+      if [[ ! -f "$target_file" ]]; then
+        continue
+      fi
+      found_in_repo=1
+
+      if _append_guidance_prompt_to_file "$target_file" "$prompt_file"; then
+        _setup_log "Updated prompt guidance: $target_file"
+        updated=$((updated + 1))
+      else
+        local code="$?"
+        if [[ "$code" -eq 2 ]]; then
+          already=$((already + 1))
+        else
+          _setup_log "Failed updating prompt guidance: $target_file"
+        fi
+      fi
+    done
+
+    if [[ "$found_in_repo" -eq 0 ]]; then
+      missing=$((missing + 1))
+    fi
+  done <<EOF
+$mounted
+EOF
+
+  _setup_log "Prompt guidance update complete: $updated updated, $already already present, $missing repos without AGENTS.md/CLAUDE.md."
+}
+
 # ---------------------------------------------------------------------------
 # Agent discovery wizard
 # ---------------------------------------------------------------------------
@@ -533,6 +616,7 @@ foolery_setup() {
 
   _setup_log "Foolery interactive setup"
   _repo_wizard
+  _prompt_guidance_wizard
   _agent_wizard
   _setup_log "Setup complete."
 }

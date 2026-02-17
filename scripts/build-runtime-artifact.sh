@@ -74,6 +74,7 @@ main() {
   log "Preparing runtime bundle"
   cp "$ROOT_DIR/package.json" "$RUNTIME_DIR/package.json"
   cp "$ROOT_DIR/bun.lock" "$RUNTIME_DIR/bun.lock"
+  cp "$ROOT_DIR/PROMPT.md" "$RUNTIME_DIR/PROMPT.md"
   printf '%s\n' "$version" > "$RUNTIME_DIR/RELEASE_VERSION"
 
   log "Installing production dependencies into runtime bundle"
