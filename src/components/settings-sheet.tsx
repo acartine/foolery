@@ -95,7 +95,7 @@ export function SettingsSheet({ open, onOpenChange }: SettingsSheetProps) {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="space-y-6 px-4 py-6 overflow-y-auto flex-1">
+        <div className="space-y-3 px-4 py-6 overflow-y-auto flex-1">
           {loading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : (
