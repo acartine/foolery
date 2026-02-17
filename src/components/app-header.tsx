@@ -31,14 +31,16 @@ export function AppHeader() {
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "breakdown" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
         ? "existing"
         : viewParam === "finalcut"
           ? "finalcut"
-          : "list";
+          : viewParam === "breakdown"
+            ? "breakdown"
+            : "list";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -114,7 +116,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut") => {
+  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut" | "breakdown") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
@@ -125,27 +127,30 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeadsRoute) return;
-    const views: ("list" | "orchestration" | "existing" | "finalcut")[] = ["list", "existing", "orchestration", "finalcut"];
+    const views = ["list", "existing", "orchestration", "finalcut"] as const;
+    type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
+      // Breakdown is not in the tab cycle; treat it as index 0 (list)
+      const idx = views.indexOf(beadsView as CyclableView);
+      const safeIdx = idx === -1 ? 0 : idx;
+
       if ((e.key === "}" || e.key === "]") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        const idx = views.indexOf(beadsView);
-        setBeadsView(views[(idx + 1) % views.length]);
+        setBeadsView(views[(safeIdx + 1) % views.length]);
       } else if ((e.key === "{" || e.key === "[") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        const idx = views.indexOf(beadsView);
-        setBeadsView(views[(idx - 1 + views.length) % views.length]);
+        setBeadsView(views[(safeIdx - 1 + views.length) % views.length]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeadsRoute, beadsView, setBeadsView]);
 
-  // Button config changes per view: hidden on Direct/Scenes, "Wrap!" on Final Cut, "Add" on Beats
+  // Button config changes per view: hidden on Direct/Scenes/Breakdown, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beadsView === "list" || beadsView === "finalcut";
 
   const actionButton = (() => {
@@ -304,11 +309,12 @@ export function AppHeader() {
                 {canCreate && showActionButton ? (
                   actionButton
                 ) : canCreate ? (
-                  // Invisible placeholder preserves layout so the view switcher doesn't shift
+                  // Invisible placeholder preserves layout so the view switcher doesn't shift.
+                  // Uses "Wrap!" text (the widest action button) to prevent any layout shift.
                   <div className="invisible" aria-hidden="true">
                     <Button size="lg" variant="success" className="gap-1.5 px-2.5" tabIndex={-1}>
-                      <Plus className="size-4" />
-                      Add
+                      <PartyPopper className="size-4" />
+                      Wrap!
                     </Button>
                   </div>
                 ) : (
