@@ -146,8 +146,9 @@ export function BreakdownView() {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("view");
     params.delete("parent");
+    params.set("bead", parentBeadId);
     router.push(`/beads?${params.toString()}`);
-  }, [session, plan, activeRepo, queryClient, searchParams, router]);
+  }, [session, plan, activeRepo, queryClient, searchParams, router, parentBeadId]);
 
   const handleBack = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
