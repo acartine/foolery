@@ -69,7 +69,7 @@ export default function BeadDetailPage({
       <div className="container mx-auto py-8 px-4 max-w-4xl">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Beat not found</p>
-          <Button variant="ghost" className="mt-4" onClick={() => router.push("/beads")}>
+          <Button variant="ghost" className="mt-4" onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Beats
           </Button>
@@ -81,7 +81,7 @@ export default function BeadDetailPage({
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" onClick={() => router.push("/beads")}>
+        <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
