@@ -997,6 +997,7 @@ export function ExistingOrchestrationsView() {
         sessionId: result.data.id,
         beadId: wave.id,
         beadTitle: wave.title,
+        repoPath: result.data.repoPath ?? activeRepo,
         status: "running",
         startedAt: new Date().toISOString(),
       });

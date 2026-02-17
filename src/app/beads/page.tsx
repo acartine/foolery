@@ -227,6 +227,7 @@ function BeadsPageInner() {
         sessionId: result.data.id,
         beadId: bead.id,
         beadTitle: bead.title,
+        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
       });
@@ -267,6 +268,7 @@ function BeadsPageInner() {
         beadId: result.data.beadId,
         beadTitle: result.data.beadTitle,
         beadIds: result.data.beadIds,
+        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
       });

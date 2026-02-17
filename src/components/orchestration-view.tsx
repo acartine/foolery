@@ -631,6 +631,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       sessionId: result.data.id,
       beadId: nextWaveToTrigger.waveId,
       beadTitle: nextWaveToTrigger.waveTitle,
+      repoPath: result.data.repoPath ?? activeRepo,
       status: "running",
       startedAt: new Date().toISOString(),
     });

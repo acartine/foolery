@@ -3,10 +3,12 @@
 import { useEffect, useRef, useCallback, useMemo } from "react";
 import { Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
-import { connectToSession, abortSession } from "@/lib/terminal-api";
+import { connectToSession, abortSession, startSceneSession } from "@/lib/terminal-api";
+import { fetchBead } from "@/lib/api";
 import type { TerminalEvent } from "@/lib/types";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
+import { toast } from "sonner";
 
 const STATUS_COLORS: Record<string, string> = {
   running: "bg-blue-400",
@@ -22,6 +24,33 @@ function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
 
+async function allSceneBeadsInVerificationState(
+  beadIds: string[],
+  repoPath?: string
+): Promise<boolean> {
+  const results = await Promise.all(beadIds.map((beadId) => fetchBead(beadId, repoPath)));
+  return results.every((result) => {
+    if (!result.ok || !result.data) return false;
+    return (
+      result.data.status === "in_progress" &&
+      Array.isArray(result.data.labels) &&
+      result.data.labels.includes("stage:verification")
+    );
+  });
+}
+
+function buildSceneRecoveryPrompt(previousSessionId: string, beadIds: string[]): string {
+  return [
+    `Scene recovery for prior session ${previousSessionId}.`,
+    "The previous scene stream disconnected before verification state was confirmed.",
+    "Use current repository state. Do not redo already-completed work.",
+    "If any listed bead is incomplete, finish it and land changes on main per project rules.",
+    "If you believe work is complete, verify merge/push state and then run one verification command per bead:",
+    ...beadIds.map((beadId) => `bd update ${JSON.stringify(beadId)} --status in_progress --add-label stage:verification`),
+    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, verification command result.",
+  ].join("\n");
+}
+
 export function TerminalPanel() {
   const {
     panelOpen,
@@ -33,6 +62,7 @@ export function TerminalPanel() {
     setPanelHeight,
     setActiveSession,
     removeTerminal,
+    upsertTerminal,
     updateStatus,
     markPendingClose,
     cancelPendingClose,
@@ -45,6 +75,8 @@ export function TerminalPanel() {
   const activeSessionKey = activeTerminal?.sessionId ?? null;
   const activeBeadId = activeTerminal?.beadId ?? null;
   const activeBeadTitle = activeTerminal?.beadTitle ?? null;
+  const activeBeadIds = activeTerminal?.beadIds;
+  const activeRepoPath = activeTerminal?.repoPath;
 
   const termContainerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XtermTerminal | null>(null);
@@ -173,11 +205,11 @@ export function TerminalPanel() {
       fitRef.current = fitAddon;
       const liveTerm = term;
 
-      if (activeTerminal?.beadIds) {
+      if (activeBeadIds) {
         liveTerm.writeln(
-          `\x1b[36m▶ Scene: rolling ${activeTerminal.beadIds.length} beads\x1b[0m`
+          `\x1b[36m▶ Scene: rolling ${activeBeadIds.length} beads\x1b[0m`
         );
-        for (const bid of activeTerminal.beadIds) {
+        for (const bid of activeBeadIds) {
           liveTerm.writeln(`\x1b[90m  - ${bid}\x1b[0m`);
         }
       } else {
@@ -187,6 +219,66 @@ export function TerminalPanel() {
         liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
       }
       liveTerm.writeln("");
+
+      let recoveryInFlight = false;
+
+      const maybeRecoverSceneSession = async () => {
+        if (recoveryInFlight) return;
+        const sceneBeadIds = activeBeadIds;
+        if (!sceneBeadIds || sceneBeadIds.length === 0) return;
+        recoveryInFlight = true;
+
+        liveTerm.writeln(
+          "\x1b[33m⚠ Scene stream disconnected. Checking verification state...\x1b[0m"
+        );
+
+        const alreadyVerified = await allSceneBeadsInVerificationState(
+          sceneBeadIds,
+          activeRepoPath
+        );
+        if (disposed) return;
+
+        if (alreadyVerified) {
+          liveTerm.writeln(
+            "\x1b[32m✓ All scene beads already in verification. Closing terminal tab.\x1b[0m"
+          );
+          updateStatus(sessionId, "completed");
+          removeTerminal(sessionId);
+          return;
+        }
+
+        liveTerm.writeln(
+          "\x1b[33m↻ Resuming scene to finish verification workflow...\x1b[0m"
+        );
+        const recovery = await startSceneSession(
+          sceneBeadIds,
+          activeRepoPath,
+          buildSceneRecoveryPrompt(sessionId, sceneBeadIds)
+        );
+        if (disposed) return;
+
+        if (!recovery.ok || !recovery.data) {
+          liveTerm.writeln(
+            `\x1b[31m✗ Recovery launch failed: ${recovery.error ?? "unknown error"}\x1b[0m`
+          );
+          updateStatus(sessionId, "error");
+          toast.error(recovery.error ?? "Failed to launch recovery scene session");
+          recoveryInFlight = false;
+          return;
+        }
+
+        upsertTerminal({
+          sessionId: recovery.data.id,
+          beadId: recovery.data.beadId,
+          beadTitle: recovery.data.beadTitle,
+          beadIds: recovery.data.beadIds,
+          repoPath: recovery.data.repoPath ?? activeRepoPath,
+          status: "running",
+          startedAt: new Date().toISOString(),
+        });
+        removeTerminal(sessionId);
+        toast.info("Scene stream disconnected; started automatic recovery session.");
+      };
 
       const cleanup = connectToSession(
         sessionId,
@@ -208,9 +300,14 @@ export function TerminalPanel() {
           }
         },
         () => {
-          if (!disposed) {
-            liveTerm.writeln("\x1b[31m✗ Connection lost\x1b[0m");
+          if (disposed) return;
+          if (activeBeadIds && activeBeadIds.length > 0) {
+            void maybeRecoverSceneSession();
+            return;
           }
+          liveTerm.writeln(
+            "\x1b[33m⚠ Session stream disconnected. Reopen the tab to retry stream attachment.\x1b[0m"
+          );
         }
       );
 
@@ -229,7 +326,17 @@ export function TerminalPanel() {
         fitRef.current = null;
       }
     };
-  }, [panelOpen, activeSessionKey, activeBeadId, activeBeadTitle, updateStatus]);
+  }, [
+    panelOpen,
+    activeSessionKey,
+    activeBeadId,
+    activeBeadTitle,
+    activeBeadIds,
+    activeRepoPath,
+    removeTerminal,
+    upsertTerminal,
+    updateStatus,
+  ]);
 
   useEffect(() => {
     if (!panelOpen || !fitRef.current) return;

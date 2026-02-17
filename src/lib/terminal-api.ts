@@ -23,10 +23,12 @@ export async function startSession(
 
 export async function startSceneSession(
   beadIds: string[],
-  repo?: string
+  repo?: string,
+  prompt?: string
 ): Promise<BdResult<TerminalSession>> {
   const body: Record<string, unknown> = { beadIds };
   if (repo) body._repo = repo;
+  if (prompt) body.prompt = prompt;
 
   const res = await fetch(BASE, {
     method: "POST",

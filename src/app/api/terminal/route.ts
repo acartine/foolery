@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
     try {
-      const session = await createSceneSession(beadIds, _repo);
+      const session = await createSceneSession(beadIds, _repo, typeof prompt === "string" ? prompt : undefined);
       return NextResponse.json({ data: session }, { status: 201 });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to create scene session";

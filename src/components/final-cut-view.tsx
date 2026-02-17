@@ -102,6 +102,7 @@ export function FinalCutView() {
         sessionId: result.data.id,
         beadId: bead.id,
         beadTitle: bead.title,
+        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
       });

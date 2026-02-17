@@ -110,20 +110,6 @@ function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string 
   ].join("\n");
 }
 
-function buildSceneCompletionFollowUp(beadIds: string[]): string {
-  return [
-    "Scene completion follow-up:",
-    `Handle this in one pass for all ${beadIds.length} beads.`,
-    "For EACH bead below, confirm its changes are merged according to your normal shipping guidelines.",
-    "Do not ask for another follow-up prompt until all listed beads are merge-confirmed (or blocked by a hard error).",
-    "For each bead after merge confirmation, run exactly one command to set verification state:",
-    ...beadIds.map((id) => buildVerificationStateCommand(id)),
-    "Beads in this scene:",
-    ...beadIds.map((id) => `- ${id}`),
-    "Then summarize per bead: merged yes/no and verification-state command result.",
-  ].join("\n");
-}
-
 function makeUserMessageLine(text: string): string {
   return JSON.stringify({
     type: "user",
@@ -403,6 +389,7 @@ export async function createSession(
     id,
     beadId: bead.id,
     beadTitle: bead.title,
+    repoPath: repoPath || process.cwd(),
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -703,7 +690,8 @@ export async function createSession(
 
 export async function createSceneSession(
   beadIds: string[],
-  repoPath?: string
+  repoPath?: string,
+  customPrompt?: string
 ): Promise<TerminalSession> {
   // Enforce max concurrent sessions
   const running = Array.from(sessions.values()).filter(
@@ -749,26 +737,32 @@ export async function createSceneSession(
     )
     .join("\n\n");
 
-  const prompt = [
-    `You are in SCENE MODE. You have ${beads.length} beads to implement.`,
-    ``,
-    `IMPORTANT INSTRUCTIONS:`,
-    `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-    `2. Use the bead descriptions/acceptance/notes below as your source of truth for sequencing and agent assignment.`,
-    `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
-    `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
-    `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-    ``,
-    `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
-    ``,
-    beadBlocks,
-  ].join("\n");
+  const prompt =
+    customPrompt ??
+    [
+      `You are in SCENE MODE. You have ${beads.length} beads to implement.`,
+      ``,
+      `IMPORTANT INSTRUCTIONS:`,
+      `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
+      `2. Use the bead descriptions/acceptance/notes below as your source of truth for sequencing and agent assignment.`,
+      `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
+      `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
+      `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
+      `6. For each bead, once merge/push is confirmed, run exactly one verification command:`,
+      ...beadIds.map((id) => buildVerificationStateCommand(id)),
+      `7. In your final summary, report per bead: merged yes/no and verification command result.`,
+      ``,
+      `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
+      ``,
+      beadBlocks,
+    ].join("\n");
 
   const session: TerminalSession = {
     id,
     beadId: "scene",
     beadTitle: `Scene: ${beads.length} beads`,
     beadIds,
+    repoPath: repoPath || process.cwd(),
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -816,7 +810,9 @@ export async function createSceneSession(
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
-  const autoShipCompletionPrompt = buildSceneCompletionFollowUp(beadIds);
+  // Scene prompts now include explicit verification-state commands, so a forced
+  // second completion turn is unnecessary and can leave sessions hanging.
+  const autoShipCompletionPrompt: string | null = null;
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
@@ -878,7 +874,7 @@ export async function createSceneSession(
   };
 
   const maybeSendShipCompletionPrompt = (): boolean => {
-    if (!executionPromptSent || shipCompletionPromptSent) return false;
+    if (!autoShipCompletionPrompt || !executionPromptSent || shipCompletionPromptSent) return false;
     const sent = sendUserTurn(autoShipCompletionPrompt);
     if (sent) {
       shipCompletionPromptSent = true;

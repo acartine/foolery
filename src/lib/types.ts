@@ -84,6 +84,7 @@ export interface TerminalSession {
   beadId: string;
   beadTitle: string;
   beadIds?: string[];
+  repoPath?: string;
   status: TerminalSessionStatus;
   startedAt: string;
   exitCode?: number;

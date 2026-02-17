@@ -6,6 +6,7 @@ export interface ActiveTerminal {
   beadId: string;
   beadTitle: string;
   beadIds?: string[];
+  repoPath?: string;
   status: TerminalSessionStatus;
   startedAt: string;
 }
