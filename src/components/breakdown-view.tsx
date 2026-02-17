@@ -14,27 +14,27 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  abortHydration,
-  applyHydration,
-  connectToHydration,
-  startHydration,
-} from "@/lib/hydration-api";
+  abortBreakdown,
+  applyBreakdown,
+  connectToBreakdown,
+  startBreakdown,
+} from "@/lib/breakdown-api";
 import { useAppStore } from "@/stores/app-store";
 import type {
-  HydrationEvent,
-  HydrationPlan,
-  HydrationSession,
+  BreakdownEvent,
+  BreakdownPlan,
+  BreakdownSession,
 } from "@/lib/types";
 
 const MAX_LOG_LINES = 500;
 
-function isPlanPayload(value: unknown): value is HydrationPlan {
+function isPlanPayload(value: unknown): value is BreakdownPlan {
   if (!value || typeof value !== "object") return false;
   const obj = value as Record<string, unknown>;
   return typeof obj.summary === "string" && Array.isArray(obj.waves);
 }
 
-function statusTone(status: HydrationSession["status"] | "idle") {
+function statusTone(status: BreakdownSession["status"] | "idle") {
   if (status === "running") return "bg-blue-100 text-blue-700 border-blue-200";
   if (status === "completed") return "bg-green-100 text-green-700 border-green-200";
   if (status === "error") return "bg-red-100 text-red-700 border-red-200";
@@ -42,7 +42,7 @@ function statusTone(status: HydrationSession["status"] | "idle") {
   return "bg-zinc-100 text-zinc-700 border-zinc-200";
 }
 
-export function HydrationView() {
+export function BreakdownView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -50,8 +50,8 @@ export function HydrationView() {
 
   const parentBeadId = searchParams.get("parent") ?? "";
 
-  const [session, setSession] = useState<HydrationSession | null>(null);
-  const [plan, setPlan] = useState<HydrationPlan | null>(null);
+  const [session, setSession] = useState<BreakdownSession | null>(null);
+  const [plan, setPlan] = useState<BreakdownPlan | null>(null);
   const [logLines, setLogLines] = useState<string[]>([]);
   const [isApplying, setIsApplying] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ export function HydrationView() {
   }, []);
 
   const handleEvent = useCallback(
-    (event: HydrationEvent) => {
+    (event: BreakdownEvent) => {
       if (event.type === "plan" && isPlanPayload(event.data)) {
         setPlan(event.data);
       } else if (event.type === "status" || event.type === "error") {
@@ -91,14 +91,14 @@ export function HydrationView() {
     startedRef.current = true;
 
     (async () => {
-      const result = await startHydration(activeRepo, parentBeadId);
+      const result = await startBreakdown(activeRepo, parentBeadId);
       if (!result.ok || !result.data) {
-        toast.error(result.error ?? "Failed to start hydration");
+        toast.error(result.error ?? "Failed to start breakdown");
         return;
       }
 
       setSession(result.data);
-      const cleanup = connectToHydration(result.data.id, handleEvent, () => {
+      const cleanup = connectToBreakdown(result.data.id, handleEvent, () => {
         appendLog("Connection lost");
       });
       cleanupRef.current = cleanup;
@@ -117,10 +117,10 @@ export function HydrationView() {
 
   const handleAbort = useCallback(async () => {
     if (!session) return;
-    const result = await abortHydration(session.id);
+    const result = await abortBreakdown(session.id);
     if (result.ok) {
       setSession((prev) => (prev ? { ...prev, status: "aborted" } : prev));
-      toast.success("Hydration aborted");
+      toast.success("Breakdown aborted");
     } else {
       toast.error(result.error ?? "Failed to abort");
     }
@@ -130,11 +130,11 @@ export function HydrationView() {
     if (!session || !plan || !activeRepo) return;
     setIsApplying(true);
 
-    const result = await applyHydration(session.id, activeRepo);
+    const result = await applyBreakdown(session.id, activeRepo);
     setIsApplying(false);
 
     if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to apply hydration plan");
+      toast.error(result.error ?? "Failed to apply breakdown plan");
       return;
     }
 
@@ -164,7 +164,7 @@ export function HydrationView() {
   if (!parentBeadId) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-        No parent beat specified. Go back to the beats list and use Quick Direct from the create dialog.
+        No parent beat specified. Go back to the beats list and use Breakdown from the create dialog.
       </div>
     );
   }
@@ -176,7 +176,7 @@ export function HydrationView() {
           <div>
             <h2 className="text-base font-semibold tracking-tight flex items-center gap-1.5">
               <Zap className="size-4" />
-              Quick Direct — Hydration
+              Breakdown
             </h2>
             <p className="text-sm text-muted-foreground">
               Decomposing beat into implementation tasks...
@@ -194,7 +194,7 @@ export function HydrationView() {
                 size="sm"
                 variant="destructive"
                 className="gap-1.5"
-                title="Abort the hydration session"
+                title="Abort the breakdown session"
                 onClick={handleAbort}
               >
                 <Square className="size-3.5" />

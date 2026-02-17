@@ -39,7 +39,6 @@ const DEFAULTS: SettingsData = {
     scene: "",
     direct: "",
     breakdown: "",
-    hydration: "",
   },
 };
 

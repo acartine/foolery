@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { showBead } from "@/lib/bd";
 import {
-  abortHydrationSession,
-  createHydrationSession,
-} from "@/lib/hydration-manager";
+  abortBreakdownSession,
+  createBreakdownSession,
+} from "@/lib/breakdown-manager";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const parent = parentResult.data;
-    const session = await createHydrationSession(
+    const session = await createBreakdownSession(
       repoPath,
       parentBeadId,
       parent.title,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ data: session }, { status: 201 });
   } catch (err) {
     const message =
-      err instanceof Error ? err.message : "Failed to start hydration";
+      err instanceof Error ? err.message : "Failed to start breakdown";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
@@ -64,7 +64,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const ok = abortHydrationSession(sessionId);
+  const ok = abortBreakdownSession(sessionId);
   if (!ok) {
     return NextResponse.json(
       { error: "Session not found or already stopped" },

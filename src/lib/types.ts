@@ -233,60 +233,60 @@ export interface ApplyOrchestrationOverrides {
   waveSlugs?: Record<string, string>;
 }
 
-// ── Hydration types (Quick Direct) ────────────────────────
+// ── Breakdown types ──────────────────────────────────────
 
-export interface HydrationBeadSpec {
+export interface BreakdownBeadSpec {
   title: string;
   type: BeadType;
   priority: BeadPriority;
   description?: string;
 }
 
-export interface HydrationWave {
+export interface BreakdownWave {
   waveIndex: number;
   name: string;
   objective: string;
-  beads: HydrationBeadSpec[];
+  beads: BreakdownBeadSpec[];
   notes?: string;
 }
 
-export interface HydrationPlan {
+export interface BreakdownPlan {
   summary: string;
-  waves: HydrationWave[];
+  waves: BreakdownWave[];
   assumptions: string[];
 }
 
-export type HydrationSessionStatus =
+export type BreakdownSessionStatus =
   | "running"
   | "completed"
   | "error"
   | "aborted";
 
-export interface HydrationSession {
+export interface BreakdownSession {
   id: string;
   repoPath: string;
   parentBeadId: string;
-  status: HydrationSessionStatus;
+  status: BreakdownSessionStatus;
   startedAt: string;
   completedAt?: string;
   error?: string;
-  plan?: HydrationPlan;
+  plan?: BreakdownPlan;
 }
 
-export type HydrationEventType =
+export type BreakdownEventType =
   | "log"
   | "plan"
   | "status"
   | "error"
   | "exit";
 
-export interface HydrationEvent {
-  type: HydrationEventType;
-  data: string | HydrationPlan;
+export interface BreakdownEvent {
+  type: BreakdownEventType;
+  data: string | BreakdownPlan;
   timestamp: number;
 }
 
-export interface ApplyHydrationResult {
+export interface ApplyBreakdownResult {
   createdBeadIds: string[];
   waveCount: number;
 }
@@ -303,8 +303,7 @@ export type ActionName =
   | "take"
   | "scene"
   | "direct"
-  | "breakdown"
-  | "hydration";
+  | "breakdown";
 
 export interface ScannedAgent {
   id: string;

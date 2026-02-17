@@ -43,7 +43,7 @@ type BeadFormProps =
       defaultValues?: Partial<CreateBeadInput>;
       onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
-      onQuickDirect?: (data: CreateBeadInput) => void;
+      onBreakdown?: (data: CreateBeadInput) => void;
       isSubmitting?: boolean;
     }
   | {
@@ -55,7 +55,7 @@ type BeadFormProps =
 export function BeadForm(props: BeadFormProps) {
   const { mode, defaultValues, onSubmit } = props;
   const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
-  const onQuickDirect = props.mode === "create" ? props.onQuickDirect : undefined;
+  const onBreakdown = props.mode === "create" ? props.onBreakdown : undefined;
   const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
@@ -92,9 +92,9 @@ export function BeadForm(props: BeadFormProps) {
     }
   });
 
-  const handleQuickDirectClick = form.handleSubmit((data) => {
-    if (onQuickDirect) {
-      onQuickDirect(data as CreateBeadInput);
+  const handleBreakdownClick = form.handleSubmit((data) => {
+    if (onBreakdown) {
+      onBreakdown(data as CreateBeadInput);
     }
   });
 
@@ -207,17 +207,17 @@ export function BeadForm(props: BeadFormProps) {
             Create More
           </Button>
         )}
-        {onQuickDirect && (
+        {onBreakdown && (
           <Button
             title="Create and decompose into sub-tasks with AI"
             type="button"
             variant="outline"
             className="gap-1"
-            onClick={handleQuickDirectClick}
+            onClick={handleBreakdownClick}
             disabled={isSubmitting}
           >
             <Zap className="size-3.5" />
-            Quick Direct
+            Breakdown
           </Button>
         )}
       </div>

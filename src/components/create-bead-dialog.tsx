@@ -100,7 +100,7 @@ export function CreateBeadDialog({
     }
   }
 
-  async function handleQuickDirect(data: CreateBeadInput) {
+  async function handleBreakdown(data: CreateBeadInput) {
     if (submittingRef.current) return;
     submittingRef.current = true;
     setIsSubmitting(true);
@@ -110,12 +110,12 @@ export function CreateBeadDialog({
         toast.error(result.error ?? "Failed to create parent beat");
         return;
       }
-      toast.success("Created — starting hydration...");
+      toast.success("Created — starting breakdown...");
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["beads"] });
 
       const params = new URLSearchParams(searchParams.toString());
-      params.set("view", "hydration");
+      params.set("view", "breakdown");
       params.set("parent", result.data.id);
       router.push(`/beads?${params.toString()}`);
     } finally {
@@ -138,7 +138,7 @@ export function CreateBeadDialog({
           mode="create"
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
-          onQuickDirect={handleQuickDirect}
+          onBreakdown={handleBreakdown}
           isSubmitting={isSubmitting}
         />
       </DialogContent>

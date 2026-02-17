@@ -3,14 +3,14 @@ import { EventEmitter } from "node:events";
 import { addDep, createBead, showBead, updateBead } from "@/lib/bd";
 import { getActionAgent } from "@/lib/settings";
 import type {
-  ApplyHydrationResult,
+  ApplyBreakdownResult,
   BeadPriority,
   BeadType,
-  HydrationBeadSpec,
-  HydrationEvent,
-  HydrationPlan,
-  HydrationSession,
-  HydrationWave,
+  BreakdownBeadSpec,
+  BreakdownEvent,
+  BreakdownPlan,
+  BreakdownSession,
+  BreakdownWave,
 } from "@/lib/types";
 import {
   ORCHESTRATION_WAVE_LABEL,
@@ -22,12 +22,12 @@ import {
 } from "@/lib/wave-slugs";
 import { listBeads } from "@/lib/bd";
 
-interface HydrationSessionEntry {
-  session: HydrationSession;
+interface BreakdownSessionEntry {
+  session: BreakdownSession;
   process: ChildProcess | null;
   emitter: EventEmitter;
-  buffer: HydrationEvent[];
-  draftWaves: Map<number, HydrationWave>;
+  buffer: BreakdownEvent[];
+  draftWaves: Map<number, BreakdownWave>;
   assistantText: string;
   lineBuffer: string;
   exited: boolean;
@@ -37,16 +37,16 @@ type JsonObject = Record<string, unknown>;
 
 const MAX_BUFFER = 5000;
 const CLEANUP_DELAY_MS = 10 * 60 * 1000;
-const HYDRATION_JSON_TAG = "hydration_plan_json";
+const BREAKDOWN_JSON_TAG = "breakdown_plan_json";
 
 const g = globalThis as unknown as {
-  __hydrationSessions?: Map<string, HydrationSessionEntry>;
+  __breakdownSessions?: Map<string, BreakdownSessionEntry>;
 };
-if (!g.__hydrationSessions) g.__hydrationSessions = new Map();
-const sessions = g.__hydrationSessions;
+if (!g.__breakdownSessions) g.__breakdownSessions = new Map();
+const sessions = g.__breakdownSessions;
 
 function generateId(): string {
-  return `hydr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return `bkdn-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function toObject(value: unknown): JsonObject | null {
@@ -60,7 +60,7 @@ function toInt(value: unknown, fallback: number): number {
   return Math.max(1, Math.floor(parsed));
 }
 
-function buildHydrationPrompt(
+function buildBreakdownPrompt(
   parentTitle: string,
   parentDescription: string,
   repoPath: string
@@ -89,9 +89,9 @@ function buildHydrationPrompt(
     "3) Emit one final line:",
     `   {"event":"plan_final","plan":{"summary":"...","waves":[{"wave_index":1,"name":"...","objective":"...","beads":[{"title":"...","type":"task","priority":2,"description":"..."}],"notes":"..."}],"assumptions":["..."]}}`,
     "4) Immediately repeat only the final plan JSON between tags:",
-    `<${HYDRATION_JSON_TAG}>`,
+    `<${BREAKDOWN_JSON_TAG}>`,
     "{...}",
-    `</${HYDRATION_JSON_TAG}>`,
+    `</${BREAKDOWN_JSON_TAG}>`,
     "",
     "Do not wrap output in Markdown code fences.",
   ]
@@ -99,7 +99,7 @@ function buildHydrationPrompt(
     .join("\n");
 }
 
-function normalizeBeadSpec(raw: unknown): HydrationBeadSpec | null {
+function normalizeBeadSpec(raw: unknown): BreakdownBeadSpec | null {
   const obj = toObject(raw);
   if (!obj) return null;
 
@@ -120,10 +120,10 @@ function normalizeBeadSpec(raw: unknown): HydrationBeadSpec | null {
   return { title, type, priority, description };
 }
 
-function normalizeHydrationWave(
+function normalizeBreakdownWave(
   raw: unknown,
   fallbackIndex: number
-): HydrationWave | null {
+): BreakdownWave | null {
   const obj = toObject(raw);
   if (!obj) return null;
 
@@ -142,21 +142,21 @@ function normalizeHydrationWave(
   const rawBeads = Array.isArray(obj.beads) ? obj.beads : [];
   const beads = rawBeads
     .map((b) => normalizeBeadSpec(b))
-    .filter((b): b is HydrationBeadSpec => b !== null);
+    .filter((b): b is BreakdownBeadSpec => b !== null);
 
   if (beads.length === 0) return null;
 
   return { waveIndex, name, objective, beads, notes };
 }
 
-function normalizeHydrationPlan(raw: unknown): HydrationPlan | null {
+function normalizeBreakdownPlan(raw: unknown): BreakdownPlan | null {
   const obj = toObject(raw);
   if (!obj) return null;
 
   const rawWaves = Array.isArray(obj.waves) ? obj.waves : [];
   const waves = rawWaves
-    .map((wave, index) => normalizeHydrationWave(wave, index + 1))
-    .filter((wave): wave is HydrationWave => wave !== null)
+    .map((wave, index) => normalizeBreakdownWave(wave, index + 1))
+    .filter((wave): wave is BreakdownWave => wave !== null)
     .sort((a, b) => a.waveIndex - b.waveIndex);
 
   if (waves.length === 0) return null;
@@ -173,7 +173,7 @@ function normalizeHydrationPlan(raw: unknown): HydrationPlan | null {
   return { summary, waves, assumptions };
 }
 
-function buildDraftPlan(entry: HydrationSessionEntry): HydrationPlan {
+function buildDraftPlan(entry: BreakdownSessionEntry): BreakdownPlan {
   const waves = Array.from(entry.draftWaves.values()).sort(
     (a, b) => a.waveIndex - b.waveIndex
   );
@@ -185,9 +185,9 @@ function buildDraftPlan(entry: HydrationSessionEntry): HydrationPlan {
   };
 }
 
-function extractPlanFromTaggedJson(text: string): HydrationPlan | null {
+function extractPlanFromTaggedJson(text: string): BreakdownPlan | null {
   const pattern = new RegExp(
-    `<${HYDRATION_JSON_TAG}>\\s*([\\s\\S]*?)\\s*</${HYDRATION_JSON_TAG}>`,
+    `<${BREAKDOWN_JSON_TAG}>\\s*([\\s\\S]*?)\\s*</${BREAKDOWN_JSON_TAG}>`,
     "i"
   );
   const match = text.match(pattern);
@@ -195,24 +195,24 @@ function extractPlanFromTaggedJson(text: string): HydrationPlan | null {
 
   try {
     const parsed = JSON.parse(match[1]);
-    return normalizeHydrationPlan(parsed);
+    return normalizeBreakdownPlan(parsed);
   } catch {
     return null;
   }
 }
 
 function pushEvent(
-  entry: HydrationSessionEntry,
-  type: HydrationEvent["type"],
-  data: HydrationEvent["data"]
+  entry: BreakdownSessionEntry,
+  type: BreakdownEvent["type"],
+  data: BreakdownEvent["data"]
 ) {
-  const evt: HydrationEvent = { type, data, timestamp: Date.now() };
+  const evt: BreakdownEvent = { type, data, timestamp: Date.now() };
   if (entry.buffer.length >= MAX_BUFFER) entry.buffer.shift();
   entry.buffer.push(evt);
   entry.emitter.emit("data", evt);
 }
 
-function applyLineEvent(entry: HydrationSessionEntry, line: string) {
+function applyLineEvent(entry: BreakdownSessionEntry, line: string) {
   const trimmed = line.trim();
   if (!trimmed.startsWith("{")) return;
 
@@ -227,7 +227,7 @@ function applyLineEvent(entry: HydrationSessionEntry, line: string) {
   if (!obj || typeof obj.event !== "string") return;
 
   if (obj.event === "wave_draft") {
-    const wave = normalizeHydrationWave(
+    const wave = normalizeBreakdownWave(
       obj.wave ?? obj,
       entry.draftWaves.size + 1
     );
@@ -241,7 +241,7 @@ function applyLineEvent(entry: HydrationSessionEntry, line: string) {
   }
 
   if (obj.event === "plan_final") {
-    const plan = normalizeHydrationPlan(obj.plan ?? obj);
+    const plan = normalizeBreakdownPlan(obj.plan ?? obj);
     if (!plan) return;
 
     entry.session.plan = plan;
@@ -273,7 +273,7 @@ function formatStructuredLogLine(line: string): string {
   }
 }
 
-function consumeAssistantText(entry: HydrationSessionEntry, delta: string): string[] {
+function consumeAssistantText(entry: BreakdownSessionEntry, delta: string): string[] {
   entry.assistantText += delta;
   entry.lineBuffer += delta;
   const completedLines: string[] = [];
@@ -290,7 +290,7 @@ function consumeAssistantText(entry: HydrationSessionEntry, delta: string): stri
   return completedLines;
 }
 
-function flushAssistantTail(entry: HydrationSessionEntry) {
+function flushAssistantTail(entry: BreakdownSessionEntry) {
   if (!entry.lineBuffer.trim()) {
     entry.lineBuffer = "";
     return;
@@ -303,8 +303,8 @@ function flushAssistantTail(entry: HydrationSessionEntry) {
 }
 
 function finalizeSession(
-  entry: HydrationSessionEntry,
-  status: HydrationSession["status"],
+  entry: BreakdownSessionEntry,
+  status: BreakdownSession["status"],
   message: string
 ) {
   if (entry.exited) return;
@@ -335,13 +335,13 @@ function finalizeSession(
   }, CLEANUP_DELAY_MS);
 }
 
-export async function createHydrationSession(
+export async function createBreakdownSession(
   repoPath: string,
   parentBeadId: string,
   parentTitle: string,
   parentDescription: string
-): Promise<HydrationSession> {
-  const session: HydrationSession = {
+): Promise<BreakdownSession> {
+  const session: BreakdownSession = {
     id: generateId(),
     repoPath,
     parentBeadId,
@@ -349,7 +349,7 @@ export async function createHydrationSession(
     startedAt: new Date().toISOString(),
   };
 
-  const entry: HydrationSessionEntry = {
+  const entry: BreakdownSessionEntry = {
     session,
     process: null,
     emitter: new EventEmitter(),
@@ -362,8 +362,8 @@ export async function createHydrationSession(
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
-  const prompt = buildHydrationPrompt(parentTitle, parentDescription, repoPath);
-  pushEvent(entry, "log", `Starting hydration for: ${parentTitle}\n`);
+  const prompt = buildBreakdownPrompt(parentTitle, parentDescription, repoPath);
+  pushEvent(entry, "log", `Starting breakdown for: ${parentTitle}\n`);
 
   const args = [
     "-p",
@@ -377,7 +377,7 @@ export async function createHydrationSession(
     "--dangerously-skip-permissions",
   ];
 
-  const agent = await getActionAgent("hydration");
+  const agent = await getActionAgent("breakdown");
   if (agent.model) args.push("--model", agent.model);
   const child = spawn(agent.command, args, {
     cwd: repoPath,
@@ -450,8 +450,8 @@ export async function createHydrationSession(
       if (obj.type === "result") {
         const isError = Boolean(obj.is_error);
         const resultText = isError
-          ? "Hydration failed"
-          : "Hydration complete";
+          ? "Breakdown failed"
+          : "Breakdown complete";
 
         if (!entry.session.plan && typeof obj.result === "string") {
           const fromTags = extractPlanFromTaggedJson(obj.result);
@@ -483,7 +483,7 @@ export async function createHydrationSession(
         if (obj?.type === "result") {
           const isError = Boolean(obj.is_error);
           finalizeSession(entry, isError ? "error" : "completed",
-            isError ? "Hydration failed" : "Hydration complete");
+            isError ? "Breakdown failed" : "Breakdown complete");
           return;
         }
       } catch {
@@ -493,22 +493,22 @@ export async function createHydrationSession(
 
     const isSuccess = code === 0 && signal == null;
     const message = isSuccess
-      ? "Hydration complete"
+      ? "Breakdown complete"
       : `Claude exited (code=${code ?? "null"}, signal=${signal ?? "null"})`;
     finalizeSession(entry, isSuccess ? "completed" : "error", message);
   });
 
-  pushEvent(entry, "status", "Starting Claude hydration...");
+  pushEvent(entry, "status", "Starting Claude breakdown...");
   return session;
 }
 
-export function getHydrationSession(
+export function getBreakdownSession(
   id: string
-): HydrationSessionEntry | undefined {
+): BreakdownSessionEntry | undefined {
   return sessions.get(id);
 }
 
-export function abortHydrationSession(id: string): boolean {
+export function abortBreakdownSession(id: string): boolean {
   const entry = sessions.get(id);
   if (!entry || !entry.process) return false;
 
@@ -521,17 +521,17 @@ export function abortHydrationSession(id: string): boolean {
     }
   }, 5000);
 
-  finalizeSession(entry, "aborted", "Hydration aborted");
+  finalizeSession(entry, "aborted", "Breakdown aborted");
   return true;
 }
 
-export async function applyHydrationPlan(
+export async function applyBreakdownPlan(
   sessionId: string,
   repoPath: string
-): Promise<ApplyHydrationResult> {
+): Promise<ApplyBreakdownResult> {
   const entry = sessions.get(sessionId);
-  if (!entry) throw new Error("Hydration session not found");
-  if (!entry.session.plan) throw new Error("No hydration plan available to apply");
+  if (!entry) throw new Error("Breakdown session not found");
+  if (!entry.session.plan) throw new Error("No breakdown plan available to apply");
 
   const plan = entry.session.plan;
   const parentBeadId = entry.session.parentBeadId;

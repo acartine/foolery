@@ -1,16 +1,16 @@
 import type {
-  ApplyHydrationResult,
+  ApplyBreakdownResult,
   BdResult,
-  HydrationEvent,
-  HydrationSession,
+  BreakdownEvent,
+  BreakdownSession,
 } from "@/lib/types";
 
-const BASE = "/api/hydration";
+const BASE = "/api/breakdown";
 
-export async function startHydration(
+export async function startBreakdown(
   repo: string,
   parentBeadId: string
-): Promise<BdResult<HydrationSession>> {
+): Promise<BdResult<BreakdownSession>> {
   const res = await fetch(BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -19,13 +19,13 @@ export async function startHydration(
 
   const json = await res.json();
   if (!res.ok) {
-    return { ok: false, error: json.error ?? "Failed to start hydration" };
+    return { ok: false, error: json.error ?? "Failed to start breakdown" };
   }
 
   return { ok: true, data: json.data };
 }
 
-export async function abortHydration(
+export async function abortBreakdown(
   sessionId: string
 ): Promise<BdResult<void>> {
   const res = await fetch(BASE, {
@@ -36,16 +36,16 @@ export async function abortHydration(
 
   const json = await res.json();
   if (!res.ok) {
-    return { ok: false, error: json.error ?? "Failed to abort hydration" };
+    return { ok: false, error: json.error ?? "Failed to abort breakdown" };
   }
 
   return { ok: true };
 }
 
-export async function applyHydration(
+export async function applyBreakdown(
   sessionId: string,
   repo: string
-): Promise<BdResult<ApplyHydrationResult>> {
+): Promise<BdResult<ApplyBreakdownResult>> {
   const res = await fetch(`${BASE}/apply`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -54,15 +54,15 @@ export async function applyHydration(
 
   const json = await res.json();
   if (!res.ok) {
-    return { ok: false, error: json.error ?? "Failed to apply hydration" };
+    return { ok: false, error: json.error ?? "Failed to apply breakdown" };
   }
 
   return { ok: true, data: json.data };
 }
 
-export function connectToHydration(
+export function connectToBreakdown(
   sessionId: string,
-  onEvent: (event: HydrationEvent) => void,
+  onEvent: (event: BreakdownEvent) => void,
   onError?: (event: Event) => void
 ): () => void {
   const es = new EventSource(`${BASE}/${sessionId}`);
@@ -70,7 +70,7 @@ export function connectToHydration(
 
   es.onmessage = (message) => {
     try {
-      const event = JSON.parse(message.data) as HydrationEvent;
+      const event = JSON.parse(message.data) as BreakdownEvent;
       if (event.type === "exit") gotExit = true;
       onEvent(event);
     } catch {

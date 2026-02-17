@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { applyHydrationPlan } from "@/lib/hydration-manager";
+import { applyBreakdownPlan } from "@/lib/breakdown-manager";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -26,11 +26,11 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const result = await applyHydrationPlan(sessionId, repoPath);
+    const result = await applyBreakdownPlan(sessionId, repoPath);
     return NextResponse.json({ data: result });
   } catch (err) {
     const message =
-      err instanceof Error ? err.message : "Failed to apply hydration plan";
+      err instanceof Error ? err.message : "Failed to apply breakdown plan";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

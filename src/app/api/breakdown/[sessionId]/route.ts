@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
-import { getHydrationSession } from "@/lib/hydration-manager";
-import type { HydrationEvent } from "@/lib/types";
+import { getBreakdownSession } from "@/lib/breakdown-manager";
+import type { BreakdownEvent } from "@/lib/types";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   const { sessionId } = await params;
-  const entry = getHydrationSession(sessionId);
+  const entry = getBreakdownSession(sessionId);
 
   if (!entry) {
     return new Response(JSON.stringify({ error: "Session not found" }), {
@@ -21,7 +21,7 @@ export async function GET(
       const encoder = new TextEncoder();
       let closed = false;
 
-      const send = (event: HydrationEvent) => {
+      const send = (event: BreakdownEvent) => {
         if (closed) return;
         try {
           const payload = `data: ${JSON.stringify(event)}\n\n`;
@@ -45,7 +45,7 @@ export async function GET(
         send(event);
       }
 
-      const listener = (event: HydrationEvent) => {
+      const listener = (event: BreakdownEvent) => {
         send(event);
         if (event.type === "exit") {
           setTimeout(closeStream, 100);

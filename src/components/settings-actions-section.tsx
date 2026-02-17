@@ -6,7 +6,6 @@ import {
   Clapperboard,
   Film,
   Layers,
-  Droplets,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -58,12 +57,6 @@ const ACTION_DEFS: ActionDef[] = [
     label: "Breakdown",
     description: "Decompose into sub-beads",
     icon: Layers,
-  },
-  {
-    name: "hydration",
-    label: "Hydration",
-    description: "Quick direct planning",
-    icon: Droplets,
   },
 ];
 

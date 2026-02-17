@@ -361,7 +361,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
       if (draft && draft.repoPath === activeRepo && isPlanPayload(draft.plan)) {
         window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
-        const hydrationTimer = window.setTimeout(() => {
+        const restoreTimer = window.setTimeout(() => {
           setSession(draft.session);
           setPlan(draft.plan);
           setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
@@ -378,7 +378,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             } into Scene view`
           );
         }, 0);
-        return () => window.clearTimeout(hydrationTimer);
+        return () => window.clearTimeout(restoreTimer);
       }
     }
 
@@ -387,7 +387,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     if (!saved) return;
 
     clearOrchestrationViewState();
-    const hydrationTimer = window.setTimeout(() => {
+    const restoreTimer = window.setTimeout(() => {
       setSession(saved.session);
       setPlan(saved.plan);
       setWaveEdits(saved.waveEdits);
@@ -398,7 +398,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       pendingLogRef.current = "";
     }, 0);
 
-    return () => window.clearTimeout(hydrationTimer);
+    return () => window.clearTimeout(restoreTimer);
   }, [activeRepo]);
 
   const nextWaveToTrigger = useMemo(() => {

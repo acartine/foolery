@@ -112,14 +112,12 @@ export const actionAgentMappingsSchema = z
     scene: z.string().default(""),
     direct: z.string().default(""),
     breakdown: z.string().default(""),
-    hydration: z.string().default(""),
   })
   .default({
     take: "",
     scene: "",
     direct: "",
     breakdown: "",
-    hydration: "",
   });
 
 export const foolerySettingsSchema = z.object({

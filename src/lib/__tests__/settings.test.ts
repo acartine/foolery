@@ -28,7 +28,6 @@ const DEFAULT_ACTIONS = {
   scene: "",
   direct: "",
   breakdown: "",
-  hydration: "",
 };
 
 const DEFAULT_SETTINGS = {
