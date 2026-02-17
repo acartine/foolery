@@ -30,6 +30,28 @@ _setup_confirm() {
 _kv_set() { eval "_KV_${1}__${2}=\$3"; }
 _kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
 
+_discover_models() {
+  local aid="$1"
+  case "$aid" in
+    codex)
+      local cache="$HOME/.codex/models_cache.json"
+      if [[ -f "$cache" ]]; then
+        if command -v jq >/dev/null 2>&1; then
+          jq -r '.models[] | select(.visibility=="list") | .slug' "$cache" 2>/dev/null
+        else
+          sed -n 's/.*"slug"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$cache"
+        fi
+      fi
+      ;;
+    claude)
+      printf '%s\n' sonnet opus haiku
+      ;;
+    gemini)
+      printf '%s\n' gemini-2.5-pro gemini-2.5-flash
+      ;;
+  esac
+}
+
 # ---------------------------------------------------------------------------
 # Repo discovery wizard
 # ---------------------------------------------------------------------------
@@ -390,10 +412,54 @@ _prompt_action_choice() {
 
 _prompt_model() {
   local aid="$1"
-  local model
-  printf 'Model for %s (optional, press Enter to skip): ' "$aid" >/dev/tty
-  read -r model </dev/tty || true
-  printf '%s' "$model"
+  local models_list
+  models_list="$(_discover_models "$aid")"
+
+  if [[ -z "$models_list" ]]; then
+    # No discovery available — free-text fallback
+    local model
+    printf 'Model for %s (optional, press Enter to skip): ' "$aid" >/dev/tty
+    read -r model </dev/tty || true
+    printf '%s' "$model"
+    return
+  fi
+
+  # Build numbered menu
+  local -a models=()
+  while IFS= read -r m; do
+    [[ -n "$m" ]] && models+=("$m")
+  done <<EOF
+$models_list
+EOF
+
+  local count=${#models[@]}
+  printf '\nAvailable models for %s:\n' "$aid" >/dev/tty
+  local i
+  for ((i = 0; i < count; i++)); do
+    printf '  %d) %s\n' "$((i + 1))" "${models[$i]}" >/dev/tty
+  done
+  printf '  %d) Skip\n' "$((count + 1))" >/dev/tty
+  printf '  %d) Other (type manually)\n' "$((count + 2))" >/dev/tty
+
+  local choice
+  printf 'Choice [%d]: ' "$((count + 1))" >/dev/tty
+  read -r choice </dev/tty || true
+  choice="${choice:-$((count + 1))}"
+
+  if [[ "$choice" =~ ^[0-9]+$ ]]; then
+    if ((choice >= 1 && choice <= count)); then
+      printf '%s' "${models[$((choice - 1))]}"
+      return
+    elif ((choice == count + 2)); then
+      local model
+      printf 'Enter model name: ' >/dev/tty
+      read -r model </dev/tty || true
+      printf '%s' "$model"
+      return
+    fi
+  fi
+  # Skip (default) — return empty
+  printf ''
 }
 
 _prompt_action_mappings() {
