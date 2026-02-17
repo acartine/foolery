@@ -632,6 +632,43 @@ setup_cmd() {
   foolery_setup "\$@"
 }
 
+doctor_cmd() {
+  local fix=0
+  while [[ \$# -gt 0 ]]; do
+    case "\$1" in
+      --fix) fix=1; shift ;;
+      *) shift ;;
+    esac
+  done
+
+  # Ensure the server is running so we can hit the API
+  clear_stale_pid
+  if ! is_running; then
+    fail "Foolery is not running. Start it first: foolery start"
+  fi
+
+  if ! command -v curl >/dev/null 2>&1; then
+    fail "curl is required for foolery doctor."
+  fi
+
+  local method="GET"
+  if [[ "\$fix" -eq 1 ]]; then
+    method="POST"
+  fi
+
+  local response
+  response="\$(curl --silent --show-error --max-time 60 -X "\$method" "\$URL/api/doctor" 2>&1)" || {
+    fail "Failed to reach Foolery API at \$URL/api/doctor"
+  }
+
+  # Pretty-print if jq is available, raw JSON otherwise
+  if command -v jq >/dev/null 2>&1; then
+    printf '%s\n' "\$response" | jq .
+  else
+    printf '%s\n' "\$response"
+  fi
+}
+
 usage() {
   cat <<USAGE
 Usage: foolery <command>
@@ -644,6 +681,7 @@ Commands:
   stop      Stop the background Foolery process
   restart   Restart Foolery
   status    Show process/log status
+  doctor    Run diagnostics (--fix to auto-fix issues)
   uninstall Remove Foolery runtime, logs/state, and launcher
   help      Show this help
 USAGE
@@ -677,6 +715,9 @@ main() {
       ;;
     status)
       status_cmd "\$@"
+      ;;
+    doctor)
+      doctor_cmd "\$@"
       ;;
     uninstall)
       uninstall_cmd "\$@"
