@@ -118,13 +118,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             <p className="text-sm text-muted-foreground">Loading settings...</p>
           ) : (
             <>
-              {/* Section: Repositories */}
-              <div ref={reposSectionRef}>
-                <SettingsReposSection />
-              </div>
-
-              <Separator />
-
               {/* Section 1: Agent Management */}
               <SettingsAgentsSection
                 agents={settings.agents}
