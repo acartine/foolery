@@ -87,7 +87,7 @@ function EditableSection({
           onKeyDown={(e) => {
             if (e.key === "Escape") onCancelEdit();
           }}
-          className="min-h-[88px] px-2 py-1.5 text-sm"
+          className="min-h-[88px] max-h-[40vh] overflow-y-auto px-2 py-1.5 text-sm [field-sizing:fixed]"
         />
       ) : (
         <p
