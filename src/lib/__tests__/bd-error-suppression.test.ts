@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BdResult } from "@/lib/types";
-import type { Bead } from "@/lib/types";
+import type { BdResult, Bead } from "@/lib/types";
 
 import {
   withErrorSuppression,
+  isSuppressibleError,
   DEGRADED_ERROR_MESSAGE,
   _resetCaches,
   _internals,
@@ -37,55 +37,40 @@ describe("bd-error-suppression", () => {
   it("passes through successful results and caches them", () => {
     const result = ok([STUB_BEAD]);
     const out = withErrorSuppression("listBeads", result);
-
     expect(out).toEqual(result);
     expect(_internals.resultCache.size).toBe(1);
   });
 
-  it("returns original error when no cache exists", () => {
-    const result = fail("bd list failed");
+  it("returns original error when no cache exists for lock errors", () => {
+    const result = fail("database is locked");
     const out = withErrorSuppression("listBeads", result);
-
     expect(out).toEqual(result);
   });
 
-  it("returns cached data on first failure after a success", () => {
-    const success = ok([STUB_BEAD]);
-    withErrorSuppression("listBeads", success);
-
-    const failure = fail("database locked");
-    const out = withErrorSuppression("listBeads", failure);
-
+  it("returns cached data on first lock failure after a success", () => {
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    const out = withErrorSuppression("listBeads", fail("database locked"));
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAD]);
     expect(_internals.failureState.size).toBe(1);
   });
 
   it("keeps returning cached data within suppression window", () => {
-    const success = ok([STUB_BEAD]);
-    withErrorSuppression("listBeads", success);
-
-    // First failure
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
     withErrorSuppression("listBeads", fail("locked"));
-
-    // Subsequent failure still within window
     const out = withErrorSuppression("listBeads", fail("locked again"));
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAD]);
   });
 
   it("returns degraded error after suppression window expires", () => {
-    const success = ok([STUB_BEAD]);
-    withErrorSuppression("listBeads", success);
-
-    // First failure -- sets firstFailedAt
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
     withErrorSuppression("listBeads", fail("locked"));
 
-    // Fast-forward past the suppression window
     const state = _internals.failureState.get(
       Array.from(_internals.failureState.keys())[0]
     )!;
-    state.firstFailedAt = Date.now() - 3 * 60 * 1000; // 3 minutes ago
+    state.firstFailedAt = Date.now() - 3 * 60 * 1000;
 
     const out = withErrorSuppression("listBeads", fail("locked"));
     expect(out.ok).toBe(false);
@@ -97,7 +82,6 @@ describe("bd-error-suppression", () => {
     withErrorSuppression("listBeads", fail("locked"));
     expect(_internals.failureState.size).toBe(1);
 
-    // Recovery
     withErrorSuppression("listBeads", ok([STUB_BEAD]));
     expect(_internals.failureState.size).toBe(0);
   });
@@ -109,24 +93,12 @@ describe("bd-error-suppression", () => {
     withErrorSuppression("listBeads", ok([beadA]), undefined, "/repo-a");
     withErrorSuppression("listBeads", ok([beadB]), undefined, "/repo-b");
 
-    // Fail repo-a, should get cached beadA
-    const outA = withErrorSuppression(
-      "listBeads",
-      fail("locked"),
-      undefined,
-      "/repo-a",
-    );
+    const outA = withErrorSuppression("listBeads", fail("locked"), undefined, "/repo-a");
     expect(outA.ok).toBe(true);
     expect(outA.data).toEqual([beadA]);
 
-    // repo-b still succeeding
     const freshB = ok([{ ...beadB, title: "fresh" } as Bead]);
-    const outB = withErrorSuppression(
-      "listBeads",
-      freshB,
-      undefined,
-      "/repo-b",
-    );
+    const outB = withErrorSuppression("listBeads", freshB, undefined, "/repo-b");
     expect(outB.ok).toBe(true);
     expect(outB.data?.[0].title).toBe("fresh");
   });
@@ -135,25 +107,50 @@ describe("bd-error-suppression", () => {
     withErrorSuppression("searchBeads", ok([STUB_BEAD]), undefined, undefined, "alpha");
     withErrorSuppression("searchBeads", ok([]), undefined, undefined, "beta");
 
-    const out = withErrorSuppression(
-      "searchBeads",
-      fail("locked"),
-      undefined,
-      undefined,
-      "alpha",
-    );
+    const out = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "alpha");
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAD]);
 
-    // beta cache returns empty array
-    const outBeta = withErrorSuppression(
-      "searchBeads",
-      fail("locked"),
-      undefined,
-      undefined,
-      "beta",
-    );
+    const outBeta = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "beta");
     expect(outBeta.ok).toBe(true);
     expect(outBeta.data).toEqual([]);
+  });
+
+  it("does NOT suppress non-lock errors like parse failures", () => {
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    const out = withErrorSuppression("listBeads", fail("Failed to parse bd list output"));
+    expect(out.ok).toBe(false);
+    expect(out.error).toBe("Failed to parse bd list output");
+  });
+
+  it("does NOT suppress generic bd failures", () => {
+    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    const out = withErrorSuppression("listBeads", fail("bd list failed"));
+    expect(out.ok).toBe(false);
+    expect(out.error).toBe("bd list failed");
+  });
+
+  it("evicts oldest entry when cache exceeds MAX_CACHE_ENTRIES", () => {
+    const max = _internals.MAX_CACHE_ENTRIES;
+    for (let i = 0; i <= max; i++) {
+      withErrorSuppression("listBeads", ok([STUB_BEAD]), undefined, `/repo-${i}`);
+    }
+    // Should have evicted the first entry, keeping size at max
+    expect(_internals.resultCache.size).toBe(max);
+  });
+});
+
+describe("isSuppressibleError", () => {
+  it("matches lock-related error messages", () => {
+    expect(isSuppressibleError("database is locked")).toBe(true);
+    expect(isSuppressibleError("could not obtain lock on table")).toBe(true);
+    expect(isSuppressibleError("Error: EACCES permission denied")).toBe(true);
+    expect(isSuppressibleError("resource busy")).toBe(true);
+  });
+
+  it("does not match unrelated errors", () => {
+    expect(isSuppressibleError("Failed to parse bd list output")).toBe(false);
+    expect(isSuppressibleError("bd list failed")).toBe(false);
+    expect(isSuppressibleError("unknown command")).toBe(false);
   });
 });

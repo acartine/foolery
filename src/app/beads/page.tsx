@@ -131,10 +131,14 @@ function BeadsPageInner() {
         return result;
       }
       if (registeredRepos.length > 0) {
+        let degradedError: DegradedStoreError | null = null;
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
             const result = await fetcher(params, repo.path);
-            throwIfDegraded(result);
+            if (!result.ok && result.error?.startsWith(DEGRADED_ERROR_PREFIX)) {
+              degradedError = new DegradedStoreError(result.error);
+              return [];
+            }
             if (!result.ok || !result.data) return [];
             return result.data.map((bead) => ({
               ...bead,
@@ -143,7 +147,9 @@ function BeadsPageInner() {
             }));
           })
         );
-        return { ok: true, data: results.flat() };
+        const merged = results.flat();
+        if (merged.length === 0 && degradedError) throw degradedError;
+        return { ok: true, data: merged };
       }
       const result = await fetcher(params);
       throwIfDegraded(result);
@@ -151,7 +157,7 @@ function BeadsPageInner() {
     },
     enabled: isListView && (Boolean(activeRepo) || registeredRepos.length > 0),
     refetchInterval: 10_000,
-    retry: false,
+    retry: (_, error) => !(error instanceof DegradedStoreError),
   });
 
   const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
