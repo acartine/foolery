@@ -192,10 +192,10 @@ function ScannedAgentsList({
           key={a.id}
           className="flex items-center justify-between text-sm"
         >
-          <div className="flex items-center gap-2">
-            <span>{a.id}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="shrink-0">{a.id}</span>
             {a.installed ? (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-[10px] max-w-[200px] truncate" title={a.path}>
                 {a.path}
               </Badge>
             ) : (
