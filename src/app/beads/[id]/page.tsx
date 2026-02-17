@@ -1,166 +1,19 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { use, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import { fetchBead, fetchDeps, updateBead, addDep } from "@/lib/api";
-import type { UpdateBeadInput } from "@/lib/schemas";
-import { BeadDetail } from "@/components/bead-detail";
-import { DepTree } from "@/components/dep-tree";
-import { RelationshipPicker } from "@/components/relationship-picker";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
-
-export default function BeadDetailPage({
+export default async function BeadDetailRedirect({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ repo?: string | string[] }>;
 }) {
-  const { id } = use(params);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const repo = searchParams.get("repo") || undefined;
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["bead", id, repo],
-    queryFn: () => fetchBead(id, repo),
-    refetchInterval: 10_000,
-  });
+  const query = new URLSearchParams({ bead: id });
+  const repo = resolvedSearchParams.repo;
+  const repoValue = Array.isArray(repo) ? repo[0] : repo;
+  if (repoValue) query.set("detailRepo", repoValue);
 
-  const { data: depsData } = useQuery({
-    queryKey: ["bead-deps", id, repo],
-    queryFn: () => fetchDeps(id, repo),
-    refetchInterval: 10_000,
-  });
-
-  const queryClient = useQueryClient();
-
-  const { mutateAsync: handleUpdate } = useMutation({
-    mutationFn: async (fields: UpdateBeadInput) => {
-      const result = await updateBead(id, fields, repo);
-      if (!result.ok) throw new Error(result.error ?? "Failed to update beat");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bead", id, repo] });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const bead = data?.ok ? data.data : undefined;
-  const deps = depsData?.ok ? (depsData.data ?? []) : [];
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="flex items-center justify-center py-12 text-muted-foreground">
-          Loading beat...
-        </div>
-      </div>
-    );
-  }
-
-  if (!bead) {
-    return (
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Beat not found</p>
-          <Button variant="ghost" className="mt-4" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Beats
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" onClick={() => router.back()}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <div className="flex gap-2">
-          <MoveToProjectDialog
-            bead={bead}
-            currentRepo={repo}
-            onMoved={(newId, targetRepo) => {
-              router.push(`/beads/${newId}?repo=${encodeURIComponent(targetRepo)}`);
-            }}
-          />
-        </div>
-      </div>
-
-      <BeadDetail bead={bead} onUpdate={async (fields) => { await handleUpdate(fields); }} />
-
-      <Separator className="my-6" />
-      <h2 className="text-lg font-semibold mb-4">Dependencies</h2>
-      {deps.length > 0 && <DepTree deps={deps} beadId={id} />}
-
-      <div className="mt-4">
-        <AddRelationshipSection beadId={id} repo={repo} />
-      </div>
-    </div>
-  );
-}
-
-function AddRelationshipSection({
-  beadId,
-  repo,
-}: {
-  beadId: string;
-  repo?: string;
-}) {
-  const [blocksIds, setBlocksIds] = useState<string[]>([]);
-  const [blockedByIds, setBlockedByIds] = useState<string[]>([]);
-  const queryClient = useQueryClient();
-
-  const { mutate: handleAddDep } = useMutation({
-    mutationFn: ({ source, target }: { source: string; target: string }) =>
-      addDep(source, { blocks: target }, repo),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bead-deps", beadId] });
-      toast.success("Dependency added");
-    },
-    onError: () => {
-      toast.error("Failed to add dependency");
-    },
-  });
-
-  return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-semibold">Add Relationship</h3>
-      <RelationshipPicker
-        label="This beat blocks"
-        selectedIds={blocksIds}
-        onAdd={(id) => {
-          handleAddDep({ source: beadId, target: id });
-          setBlocksIds((prev) => [...prev, id]);
-        }}
-        onRemove={(id) =>
-          setBlocksIds((prev) => prev.filter((x) => x !== id))
-        }
-        excludeId={beadId}
-        repo={repo}
-      />
-      <RelationshipPicker
-        label="This beat is blocked by"
-        selectedIds={blockedByIds}
-        onAdd={(id) => {
-          handleAddDep({ source: id, target: beadId });
-          setBlockedByIds((prev) => [...prev, id]);
-        }}
-        onRemove={(id) =>
-          setBlockedByIds((prev) => prev.filter((x) => x !== id))
-        }
-        excludeId={beadId}
-        repo={repo}
-      />
-    </div>
-  );
+  redirect(`/beads?${query.toString()}`);
 }

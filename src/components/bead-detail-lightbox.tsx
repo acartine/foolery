@@ -1,0 +1,195 @@
+"use client";
+
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { Bead } from "@/lib/types";
+import type { UpdateBeadInput } from "@/lib/schemas";
+import { fetchBead, fetchDeps, updateBead, addDep } from "@/lib/api";
+import { BeadDetail } from "@/components/bead-detail";
+import { DepTree } from "@/components/dep-tree";
+import { RelationshipPicker } from "@/components/relationship-picker";
+import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+interface BeadDetailLightboxProps {
+  open: boolean;
+  beadId: string | null;
+  repo?: string;
+  initialBead?: Bead | null;
+  onOpenChange: (open: boolean) => void;
+  onMoved: (newId: string, targetRepo: string) => void;
+}
+
+export function BeadDetailLightbox({
+  open,
+  beadId,
+  repo,
+  initialBead,
+  onOpenChange,
+  onMoved,
+}: BeadDetailLightboxProps) {
+  const [blocksIds, setBlocksIds] = useState<string[]>([]);
+  const [blockedByIds, setBlockedByIds] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
+  const detailId = beadId ?? "";
+
+  const { data: beadData, isLoading: isLoadingBead } = useQuery({
+    queryKey: ["bead", detailId, repo],
+    queryFn: () => fetchBead(detailId, repo),
+    enabled: open && detailId.length > 0,
+    placeholderData: initialBead ? { ok: true, data: initialBead } : undefined,
+  });
+
+  const { data: depsData } = useQuery({
+    queryKey: ["bead-deps", detailId, repo],
+    queryFn: () => fetchDeps(detailId, repo),
+    enabled: open && detailId.length > 0,
+  });
+
+  const { mutateAsync: handleUpdate } = useMutation({
+    mutationFn: async (fields: UpdateBeadInput) => {
+      const result = await updateBead(detailId, fields, repo);
+      if (!result.ok) throw new Error(result.error ?? "Failed to update beat");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["bead", detailId, repo] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { mutate: handleAddDep } = useMutation({
+    mutationFn: ({ source, target }: { source: string; target: string }) =>
+      addDep(source, { blocks: target }, repo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bead-deps", detailId, repo] });
+      toast.success("Dependency added");
+    },
+    onError: () => {
+      toast.error("Failed to add dependency");
+    },
+  });
+
+  const bead = beadData?.ok ? beadData.data : (initialBead ?? null);
+  const deps = depsData?.ok ? (depsData.data ?? []) : [];
+
+  if (!beadId) return null;
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          setBlocksIds([]);
+          setBlockedByIds([]);
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent
+        showCloseButton={false}
+        className="w-[96vw] max-w-[min(1120px,96vw)] gap-0 overflow-hidden p-0"
+      >
+        <DialogHeader className="border-b border-border/70 px-3 py-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <DialogTitle className="truncate text-base leading-tight">
+                {bead?.title ?? "Loading beat..."}
+              </DialogTitle>
+              <DialogDescription className="mt-0.5 font-mono text-[11px]">
+                {beadId}
+                {repo ? ` • ${repo}` : ""}
+              </DialogDescription>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {bead && (
+                <MoveToProjectDialog
+                  bead={bead}
+                  currentRepo={repo}
+                  onMoved={onMoved}
+                />
+              )}
+              <DialogClose asChild>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                  Close
+                </Button>
+              </DialogClose>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="grid max-h-[84vh] min-h-0 grid-cols-1 lg:grid-cols-[minmax(0,1.8fr)_minmax(18rem,1fr)]">
+          <div className="min-h-0 overflow-y-auto px-3 py-2">
+            {isLoadingBead && !bead ? (
+              <div className="py-6 text-sm text-muted-foreground">Loading beat...</div>
+            ) : bead ? (
+              <BeadDetail
+                bead={bead}
+                onUpdate={async (fields) => {
+                  await handleUpdate(fields);
+                }}
+              />
+            ) : (
+              <div className="py-6 text-sm text-muted-foreground">Beat not found.</div>
+            )}
+          </div>
+
+          <aside className="min-h-0 space-y-3 overflow-y-auto border-t border-border/70 bg-muted/20 px-3 py-2 lg:border-t-0 lg:border-l">
+            <section className="space-y-1.5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Dependencies
+              </h3>
+              <DepTree deps={deps} beadId={detailId} repo={repo} />
+            </section>
+
+            {bead && (
+              <section className="space-y-2">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Add Relationship
+                </h3>
+                <RelationshipPicker
+                  label="This beat blocks"
+                  selectedIds={blocksIds}
+                  onAdd={(id) => {
+                    handleAddDep({ source: detailId, target: id });
+                    setBlocksIds((prev) => [...prev, id]);
+                  }}
+                  onRemove={(id) => {
+                    setBlocksIds((prev) => prev.filter((x) => x !== id));
+                  }}
+                  excludeId={detailId}
+                  repo={repo}
+                />
+                <RelationshipPicker
+                  label="This beat is blocked by"
+                  selectedIds={blockedByIds}
+                  onAdd={(id) => {
+                    handleAddDep({ source: id, target: detailId });
+                    setBlockedByIds((prev) => [...prev, id]);
+                  }}
+                  onRemove={(id) => {
+                    setBlockedByIds((prev) => prev.filter((x) => x !== id));
+                  }}
+                  excludeId={detailId}
+                  repo={repo}
+                />
+              </section>
+            )}
+          </aside>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

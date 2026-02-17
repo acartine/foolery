@@ -128,6 +128,7 @@ export function BeadTable({
   onSelectionChange,
   selectionVersion,
   searchQuery,
+  onOpenBead,
   onShipBead,
   shippingByBeadId = {},
   onAbortShipping,
@@ -137,6 +138,7 @@ export function BeadTable({
   onSelectionChange?: (ids: string[]) => void;
   selectionVersion?: number;
   searchQuery?: string;
+  onOpenBead?: (bead: Bead) => void;
   onShipBead?: (bead: Bead) => void;
   shippingByBeadId?: Record<string, string>;
   onAbortShipping?: (beadId: string) => void;
@@ -259,9 +261,18 @@ export function BeadTable({
       showRepoColumn,
       onUpdateBead: (id, fields) => handleUpdateBead({ id, fields }),
       onTitleClick: (bead) => {
+        if (onOpenBead) {
+          onOpenBead(bead);
+          return;
+        }
+
         const repoPath = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-        const qs = repoPath ? `?repo=${encodeURIComponent(repoPath)}` : "";
-        router.push(`/beads/${bead.id}${qs}`);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("bead", bead.id);
+        if (repoPath) params.set("detailRepo", repoPath);
+        else params.delete("detailRepo");
+        const qs = params.toString();
+        router.push(`/beads${qs ? `?${qs}` : ""}`);
       },
       onShipBead,
       shippingByBeadId,
@@ -271,7 +282,7 @@ export function BeadTable({
       onApproveReview: handleApproveReview,
       onRejectReview: handleRejectReview,
     }),
-    [showRepoColumn, handleUpdateBead, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
+    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {

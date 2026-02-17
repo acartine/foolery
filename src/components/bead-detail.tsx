@@ -1,12 +1,6 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,6 +44,65 @@ interface BeadDetailProps {
   onUpdate?: (fields: UpdateBeadInput) => Promise<void>;
 }
 
+interface EditableSectionProps {
+  field: "description" | "notes" | "acceptance";
+  title: string;
+  value: string;
+  placeholder: string;
+  editingField: string | null;
+  editValue: string;
+  onStartEdit: (field: string, currentValue: string) => void;
+  onCancelEdit: () => void;
+  onChangeEditValue: (value: string) => void;
+  onSaveEdit: (field: string, value: string) => Promise<void>;
+  onUpdate?: (fields: UpdateBeadInput) => Promise<void>;
+}
+
+function EditableSection({
+  field,
+  title,
+  value,
+  placeholder,
+  editingField,
+  editValue,
+  onStartEdit,
+  onCancelEdit,
+  onChangeEditValue,
+  onSaveEdit,
+  onUpdate,
+}: EditableSectionProps) {
+  const isEditing = editingField === field;
+
+  return (
+    <section className="rounded-md border border-border/70 bg-muted/20 px-2 py-1.5">
+      <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </h3>
+      {isEditing ? (
+        <Textarea
+          autoFocus
+          value={editValue}
+          onChange={(e) => onChangeEditValue(e.target.value)}
+          onBlur={() => {
+            void onSaveEdit(field, editValue);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") onCancelEdit();
+          }}
+          className="min-h-[88px] px-2 py-1.5 text-sm"
+        />
+      ) : (
+        <p
+          className={`min-h-[20px] whitespace-pre-wrap text-sm leading-snug ${onUpdate ? "cursor-pointer rounded px-1 py-0.5 hover:bg-muted/70" : ""}`}
+          onClick={() => onUpdate && onStartEdit(field, value)}
+        >
+          {value || (onUpdate ? placeholder : "-")}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -87,7 +140,6 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
     }
   }, [onUpdate]);
 
-  /** Fire-and-forget update for Select dropdowns - does not return a Promise */
   const fireUpdate = useCallback((fields: UpdateBeadInput) => {
     if (!onUpdate) return;
     onUpdate(fields).catch(() => {
@@ -105,16 +157,16 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
       cancelEdit();
     } else if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      saveEdit(field, editValue);
+      void saveEdit(field, editValue);
     }
   }, [cancelEdit, saveEdit, editValue]);
 
   return (
-    <div className="space-y-1">
-      <div className="space-y-1">
+    <div className="space-y-2">
+      <section className="space-y-1.5 border-b border-border/70 pb-2">
         <div className="flex items-start gap-2">
           <code
-            className="text-xs text-muted-foreground cursor-pointer hover:text-foreground mt-1.5"
+            className="mt-1 cursor-pointer text-xs text-muted-foreground hover:text-foreground"
             onClick={() => {
               const shortId = bead.id.replace(/^[^-]+-/, "");
               navigator.clipboard.writeText(shortId);
@@ -129,13 +181,15 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
               autoFocus
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => saveEdit("title", editValue)}
+              onBlur={() => {
+                void saveEdit("title", editValue);
+              }}
               onKeyDown={(e) => handleKeyDown(e, "title")}
-              className="text-xl font-semibold"
+              className="h-8 text-base font-semibold"
             />
           ) : (
             <h2
-              className={`text-xl font-semibold ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded px-1" : ""}`}
+              className={`text-base leading-tight font-semibold ${onUpdate ? "cursor-pointer rounded px-1 py-0.5 hover:bg-muted/70" : ""}`}
               onClick={() => onUpdate && startEdit("title", bead.title)}
             >
               {bead.title}
@@ -143,7 +197,7 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           )}
         </div>
 
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-wrap gap-1.5">
           {onUpdate ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -202,18 +256,16 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
           )}
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          {bead.owner ?? "someone"} created this on {formatDate(bead.created)}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          last update {formatDate(bead.updated)}
-        </p>
+        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+          <span>{bead.owner ?? "someone"} created {formatDate(bead.created)}</span>
+          <span>updated {formatDate(bead.updated)}</span>
+        </div>
 
         {bead.labels.length > 0 && (() => {
           const isOrchestrated = bead.labels.some(isWaveLabel);
           const visibleLabels = bead.labels.filter((l) => !isInternalLabel(l));
           return (
-            <div className="flex gap-1 flex-wrap items-center">
+            <div className="flex flex-wrap items-center gap-1">
               {isOrchestrated && (
                 <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-600">
                   <Clapperboard className="size-2.5" />
@@ -226,7 +278,8 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
                   {onUpdate && !isReadOnlyLabel(label) && (
                     <button
                       type="button"
-                      title="Remove label" className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                      title="Remove label"
+                      className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20"
                       onClick={() => removeLabel(label)}
                     >
                       <X className="size-3" />
@@ -237,88 +290,49 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             </div>
           );
         })()}
-      </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Description</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {editingField === "description" ? (
-            <Textarea
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => saveEdit("description", editValue)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") cancelEdit();
-              }}
-              className="min-h-[60px]"
-            />
-          ) : (
-            <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
-              onClick={() => onUpdate && startEdit("description", bead.description ?? "")}
-            >
-              {bead.description || (onUpdate ? "Click to add description" : "-")}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <EditableSection
+        field="description"
+        title="Description"
+        value={bead.description ?? ""}
+        placeholder="Click to add description"
+        editingField={editingField}
+        editValue={editValue}
+        onStartEdit={startEdit}
+        onCancelEdit={cancelEdit}
+        onChangeEditValue={setEditValue}
+        onSaveEdit={saveEdit}
+        onUpdate={onUpdate}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Notes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {editingField === "notes" ? (
-            <Textarea
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => saveEdit("notes", editValue)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") cancelEdit();
-              }}
-              className="min-h-[60px]"
-            />
-          ) : (
-            <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
-              onClick={() => onUpdate && startEdit("notes", bead.notes ?? "")}
-            >
-              {bead.notes || (onUpdate ? "Click to add notes" : "-")}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <EditableSection
+        field="notes"
+        title="Notes"
+        value={bead.notes ?? ""}
+        placeholder="Click to add notes"
+        editingField={editingField}
+        editValue={editValue}
+        onStartEdit={startEdit}
+        onCancelEdit={cancelEdit}
+        onChangeEditValue={setEditValue}
+        onSaveEdit={saveEdit}
+        onUpdate={onUpdate}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Acceptance Criteria</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {editingField === "acceptance" ? (
-            <Textarea
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => saveEdit("acceptance", editValue)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") cancelEdit();
-              }}
-              className="min-h-[60px]"
-            />
-          ) : (
-            <p
-              className={`whitespace-pre-wrap text-sm ${onUpdate ? "cursor-pointer hover:bg-muted/50 rounded min-h-[24px]" : ""}`}
-              onClick={() => onUpdate && startEdit("acceptance", bead.acceptance ?? "")}
-            >
-              {bead.acceptance || (onUpdate ? "Click to add acceptance criteria" : "-")}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <EditableSection
+        field="acceptance"
+        title="Acceptance"
+        value={bead.acceptance ?? ""}
+        placeholder="Click to add acceptance criteria"
+        editingField={editingField}
+        editValue={editValue}
+        onStartEdit={startEdit}
+        onCancelEdit={cancelEdit}
+        onChangeEditValue={setEditValue}
+        onSaveEdit={saveEdit}
+        onUpdate={onUpdate}
+      />
     </div>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, useCallback, useMemo } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
 import { startSession, startSceneSession, abortSession } from "@/lib/terminal-api";
 import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
+import { BeadDetailLightbox } from "@/components/bead-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
 import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
@@ -28,7 +29,11 @@ export default function BeadsPage() {
 
 function BeadsPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchQuery = searchParams.get("q") ?? "";
+  const detailBeadId = searchParams.get("bead");
+  const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
   const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "breakdown" =
     viewParam === "orchestration"
@@ -126,7 +131,7 @@ function BeadsPageInner() {
     refetchInterval: 10_000,
   });
 
-  const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
+  const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
   const loadError = data && !data.ok ? data.error ?? "Failed to load beats." : null;
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
@@ -235,6 +240,43 @@ function BeadsPageInner() {
     [beads, activeRepo, upsertTerminal]
   );
 
+  const setBeadDetailParams = useCallback((id: string | null, repo: string | undefined, mode: "push" | "replace") => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (id) params.set("bead", id);
+    else params.delete("bead");
+
+    if (repo) params.set("detailRepo", repo);
+    else params.delete("detailRepo");
+
+    const qs = params.toString();
+    const nextUrl = `${pathname}${qs ? `?${qs}` : ""}`;
+    if (mode === "replace") router.replace(nextUrl);
+    else router.push(nextUrl);
+  }, [searchParams, pathname, router]);
+
+  const handleOpenBead = useCallback((bead: Bead) => {
+    const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
+    setBeadDetailParams(bead.id, repo, "push");
+  }, [setBeadDetailParams]);
+
+  const handleBeadLightboxOpenChange = useCallback((open: boolean) => {
+    if (!open) setBeadDetailParams(null, undefined, "replace");
+  }, [setBeadDetailParams]);
+
+  const handleMovedBead = useCallback((newId: string, targetRepo: string) => {
+    setBeadDetailParams(newId, targetRepo, "replace");
+    queryClient.invalidateQueries({ queryKey: ["beads"] });
+  }, [queryClient, setBeadDetailParams]);
+
+  const initialDetailBead = useMemo(() => {
+    if (!detailBeadId) return null;
+    return beads.find((bead) => {
+      if (bead.id !== detailBeadId) return false;
+      const beadRepo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
+      return !detailRepo || beadRepo === detailRepo;
+    }) ?? null;
+  }, [beads, detailBeadId, detailRepo]);
+
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
       {isListView && (
@@ -281,6 +323,7 @@ function BeadsPageInner() {
               onSelectionChange={handleSelectionChange}
               selectionVersion={selectionVersion}
               searchQuery={searchQuery}
+              onOpenBead={handleOpenBead}
               onShipBead={handleShipBead}
               shippingByBeadId={shippingByBeadId}
               onAbortShipping={handleAbortShipping}
@@ -288,6 +331,15 @@ function BeadsPageInner() {
           )}
         </div>
       </div>
+      <BeadDetailLightbox
+        key={`${detailBeadId ?? "none"}:${detailRepo ?? "none"}`}
+        open={Boolean(detailBeadId)}
+        beadId={detailBeadId}
+        repo={detailRepo}
+        initialBead={initialDetailBead}
+        onOpenChange={handleBeadLightboxOpenChange}
+        onMoved={handleMovedBead}
+      />
     </div>
   );
 }
