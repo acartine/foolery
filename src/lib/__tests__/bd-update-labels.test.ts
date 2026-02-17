@@ -112,4 +112,57 @@ describe("updateBead label transitions", () => {
     expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:verification", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "add", "foolery-456", "stage:retry", "--no-daemon"]);
   });
+
+  it("retries label add without --no-daemon when flag is unsupported", async () => {
+    queueExec(
+      { stderr: "unknown flag: --no-daemon", exitCode: 1 }, // add with --no-daemon
+      { stdout: "" } // add fallback without --no-daemon
+    );
+
+    const { updateBead } = await import("@/lib/bd");
+
+    const result = await updateBead("foolery-789", {
+      labels: ["orchestration:wave"],
+    });
+
+    expect(result).toEqual({ ok: true });
+    expect(execCalls).toContainEqual([
+      "label",
+      "add",
+      "foolery-789",
+      "orchestration:wave",
+      "--no-daemon",
+    ]);
+    expect(execCalls).toContainEqual([
+      "label",
+      "add",
+      "foolery-789",
+      "orchestration:wave",
+    ]);
+  });
+
+  it("retries sync without --no-daemon when flag is unsupported", async () => {
+    queueExec(
+      { stdout: "" }, // remove label with --no-daemon
+      { stderr: "unknown flag: --no-daemon", exitCode: 1 }, // sync with --no-daemon
+      { stdout: "" } // sync fallback without --no-daemon
+    );
+
+    const { updateBead } = await import("@/lib/bd");
+
+    const result = await updateBead("foolery-101", {
+      removeLabels: ["legacy:label"],
+    });
+
+    expect(result).toEqual({ ok: true });
+    expect(execCalls).toContainEqual([
+      "label",
+      "remove",
+      "foolery-101",
+      "legacy:label",
+      "--no-daemon",
+    ]);
+    expect(execCalls).toContainEqual(["sync", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["sync"]);
+  });
 });

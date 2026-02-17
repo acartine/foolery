@@ -5,6 +5,7 @@ import { withErrorSuppression } from "./bd-error-suppression";
 const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
 const OUT_OF_SYNC_SIGNATURE = "Database out of sync with JSONL";
+const NO_DAEMON_FLAG = "--no-daemon";
 
 function baseArgs(): string[] {
   const args: string[] = [];
@@ -16,6 +17,14 @@ type ExecResult = { stdout: string; stderr: string; exitCode: number };
 
 function isOutOfSyncError(result: ExecResult): boolean {
   return `${result.stderr}\n${result.stdout}`.includes(OUT_OF_SYNC_SIGNATURE);
+}
+
+function isUnknownNoDaemonFlagError(result: ExecResult): boolean {
+  return `${result.stderr}\n${result.stdout}`.includes(`unknown flag: ${NO_DAEMON_FLAG}`);
+}
+
+function stripNoDaemonFlag(args: string[]): string[] {
+  return args.filter((arg) => arg !== NO_DAEMON_FLAG);
 }
 
 async function execOnce(
@@ -48,6 +57,18 @@ async function exec(
   const syncResult = await execOnce(["sync", "--import-only"], options);
   if (syncResult.exitCode !== 0) return firstResult;
   return execOnce(args, options);
+}
+
+async function execWithNoDaemonFallback(
+  args: string[],
+  options?: { cwd?: string }
+): Promise<ExecResult> {
+  const firstResult = await exec(args, options);
+  if (firstResult.exitCode === 0) return firstResult;
+  if (!args.includes(NO_DAEMON_FLAG) || !isUnknownNoDaemonFlagError(firstResult)) {
+    return firstResult;
+  }
+  return exec(stripNoDaemonFlag(args), options);
 }
 
 function parseJson<T>(raw: string): T {
@@ -320,11 +341,19 @@ export async function updateBead(
   const labelOpDescs: string[] = [];
 
   for (const label of normalizedLabelsToRemove) {
-    labelOps.push(exec(["label", "remove", id, label, "--no-daemon"], { cwd: repoPath }));
+    labelOps.push(
+      execWithNoDaemonFallback(["label", "remove", id, label, NO_DAEMON_FLAG], {
+        cwd: repoPath,
+      })
+    );
     labelOpDescs.push(`remove ${label}`);
   }
   for (const label of normalizedLabelsToAdd) {
-    labelOps.push(exec(["label", "add", id, label, "--no-daemon"], { cwd: repoPath }));
+    labelOps.push(
+      execWithNoDaemonFallback(["label", "add", id, label, NO_DAEMON_FLAG], {
+        cwd: repoPath,
+      })
+    );
     labelOpDescs.push(`add ${label}`);
   }
 
@@ -340,7 +369,10 @@ export async function updateBead(
   // Flush to JSONL so the daemon's auto-import picks up the direct DB writes.
   // Only sync after label removals — the daemon persistence bug only affects removes.
   if (normalizedLabelsToRemove.length > 0) {
-    const { stderr, exitCode } = await exec(["sync", "--no-daemon"], { cwd: repoPath });
+    const { stderr, exitCode } = await execWithNoDaemonFallback(
+      ["sync", NO_DAEMON_FLAG],
+      { cwd: repoPath }
+    );
     if (exitCode !== 0) {
       return { ok: false, error: stderr || "bd sync failed after label update" };
     }
