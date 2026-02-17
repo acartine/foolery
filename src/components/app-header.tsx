@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/search-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { NotificationBell } from "@/components/notification-bell";
+import type { SettingsSection } from "@/components/settings-sheet";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,7 +47,11 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsParamOnMount = searchParams.get("settings");
+  const [settingsOpen, setSettingsOpen] = useState(settingsParamOnMount === "repos");
+  const [settingsSection, setSettingsSection] = useState<SettingsSection>(
+    settingsParamOnMount === "repos" ? "repos" : null
+  );
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
@@ -114,6 +119,26 @@ export function AppHeader() {
     void loadVersionBanner();
     return () => controller.abort();
   }, []);
+
+  // Clean up ?settings=repos from URL after initial render
+  useEffect(() => {
+    if (settingsParamOnMount !== "repos") return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("settings");
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleSettingsOpenChange(open: boolean) {
+    setSettingsOpen(open);
+    if (!open) setSettingsSection(null);
+  }
+
+  function openSettingsToRepos() {
+    setSettingsSection("repos");
+    setSettingsOpen(true);
+  }
 
   const openCreateDialog = (repo: string | null) => {
     setSelectedRepo(repo);
@@ -261,7 +286,7 @@ export function AppHeader() {
               variant="ghost"
               className="size-8 shrink-0"
               title="Settings"
-              onClick={() => setSettingsOpen(true)}
+              onClick={() => { setSettingsSection(null); setSettingsOpen(true); }}
             >
               <Settings className="size-4" />
             </Button>
@@ -332,8 +357,8 @@ export function AppHeader() {
                     </Button>
                   </div>
                 ) : (
-                  <Button size="lg" variant="outline" asChild title="Register a repository">
-                    <Link href="/registry">Add Repo</Link>
+                  <Button size="lg" variant="outline" title="Register a repository" onClick={openSettingsToRepos}>
+                    Add Repo
                   </Button>
                 )}
               </div>
@@ -355,7 +380,7 @@ export function AppHeader() {
         />
       ) : null}
 
-      <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <SettingsSheet open={settingsOpen} onOpenChange={handleSettingsOpenChange} initialSection={settingsSection} />
     </>
   );
 }
