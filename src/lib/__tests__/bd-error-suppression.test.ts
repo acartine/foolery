@@ -151,9 +151,15 @@ describe("bd-error-suppression", () => {
     const cacheKey = Array.from(_internals.resultCache.keys())[0];
     _internals.resultCache.get(cacheKey)!.timestamp = Date.now() - 11 * 60 * 1000;
 
-    const out = withErrorSuppression("listBeads", fail("locked"));
-    expect(out.ok).toBe(false);
-    expect(out.error).toBe(DEGRADED_ERROR_MESSAGE);
+    // First request after TTL -- should still return degraded
+    const out1 = withErrorSuppression("listBeads", fail("locked"));
+    expect(out1.ok).toBe(false);
+    expect(out1.error).toBe(DEGRADED_ERROR_MESSAGE);
+
+    // Subsequent request with no cache -- should still return degraded
+    const out2 = withErrorSuppression("listBeads", fail("locked"));
+    expect(out2.ok).toBe(false);
+    expect(out2.error).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("produces same cache key regardless of filter key order", () => {

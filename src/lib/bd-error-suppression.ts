@@ -104,17 +104,23 @@ export function withErrorSuppression(
   // Only suppress lock/access errors -- pass everything else through
   if (!isSuppressibleError(result.error ?? "")) return result;
 
-  const cached = resultCache.get(key);
   const failure = failureState.get(key);
 
-  // If the cache entry has expired, evict it. If we already know this key
-  // has been failing for longer than the suppression window, return degraded
-  // error instead of reverting to the raw error.
+  // If we're already past the suppression window, stay in degraded mode
+  // regardless of whether the cache entry still exists. This ensures
+  // consistent degraded behavior even after TTL eviction.
+  if (failure && Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
+    // Clean up the expired cache entry to free memory
+    resultCache.delete(key);
+    return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+  }
+
+  const cached = resultCache.get(key);
+
+  // Evict expired cache entries. Also clean up their failure state to
+  // prevent unbounded failureState growth for abandoned keys.
   if (cached && Date.now() - cached.timestamp > CACHE_TTL_MS) {
     resultCache.delete(key);
-    if (failure && Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
-      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
-    }
     failureState.delete(key);
     return result;
   }
@@ -127,14 +133,8 @@ export function withErrorSuppression(
     return cached.data;
   }
 
-  const elapsed = Date.now() - failure.firstFailedAt;
-  if (elapsed < SUPPRESSION_WINDOW_MS) {
-    // Still within suppression window -- serve stale data
-    return cached.data;
-  }
-
-  // Past suppression window -- return degraded error
-  return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+  // Within suppression window -- serve stale data
+  return cached.data;
 }
 
 /** Visible for testing -- clears all internal caches. */
