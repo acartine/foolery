@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readyBeads, listBeads } from "@/lib/bd";
-import { DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
+import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import type { Bead } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -8,10 +8,18 @@ export async function GET(request: NextRequest) {
   const repoPath = params._repo;
   delete params._repo;
 
-  const [readyResult, inProgressResult] = await Promise.all([
+  const [rawReady, rawInProgress] = await Promise.all([
     readyBeads(params, repoPath),
     listBeads({ ...params, status: "in_progress" }, repoPath),
   ]);
+
+  const readyResult = withErrorSuppression("readyBeads", rawReady, params, repoPath);
+  const inProgressResult = withErrorSuppression(
+    "listBeads",
+    rawInProgress,
+    { ...params, status: "in_progress" },
+    repoPath,
+  );
 
   if (!readyResult.ok) {
     const status = readyResult.error === DEGRADED_ERROR_MESSAGE ? 503 : 500;

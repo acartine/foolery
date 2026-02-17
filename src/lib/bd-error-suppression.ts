@@ -24,6 +24,7 @@ interface FailureState {
 
 const SUPPRESSION_WINDOW_MS = 2 * 60 * 1000; // 2 minutes
 const MAX_CACHE_ENTRIES = 64;
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 export const DEGRADED_ERROR_MESSAGE =
   "Unable to interact with beads store, try refreshing the page or restarting Foolery. If problems persist, investigate your beads install";
@@ -36,7 +37,7 @@ const SUPPRESSIBLE_PATTERNS = [
   "unable to open database",
   "could not obtain lock",
   "busy",
-  "EACCES",
+  "eacces",
   "permission denied",
 ];
 
@@ -49,7 +50,12 @@ function cacheKey(
   repoPath?: string,
   query?: string,
 ): string {
-  return `${fn}:${query ?? ""}:${JSON.stringify(filters ?? {})}:${repoPath ?? ""}`;
+  // Sort filter keys so equivalent sets with different key order produce the
+  // same cache key, improving hit rate.
+  const sorted = filters
+    ? JSON.stringify(filters, Object.keys(filters).sort())
+    : "{}";
+  return `${fn}:${query ?? ""}:${sorted}:${repoPath ?? ""}`;
 }
 
 /** Returns true if the error message looks like a lock/access issue. */
@@ -98,24 +104,37 @@ export function withErrorSuppression(
   // Only suppress lock/access errors -- pass everything else through
   if (!isSuppressibleError(result.error ?? "")) return result;
 
+  const failure = failureState.get(key);
+
+  // If we're already past the suppression window, stay in degraded mode
+  // regardless of whether the cache entry still exists. This ensures
+  // consistent degraded behavior even after TTL eviction.
+  if (failure && Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
+    // Clean up the expired cache entry to free memory
+    resultCache.delete(key);
+    return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+  }
+
   const cached = resultCache.get(key);
+
+  // Evict expired cache entries. Also clean up their failure state to
+  // prevent unbounded failureState growth for abandoned keys.
+  if (cached && Date.now() - cached.timestamp > CACHE_TTL_MS) {
+    resultCache.delete(key);
+    failureState.delete(key);
+    return result;
+  }
+
   if (!cached) return result; // No cache available -- cannot suppress
 
-  const failure = failureState.get(key);
   if (!failure) {
     // First failure -- start tracking, return cached result
     failureState.set(key, { firstFailedAt: Date.now() });
     return cached.data;
   }
 
-  const elapsed = Date.now() - failure.firstFailedAt;
-  if (elapsed < SUPPRESSION_WINDOW_MS) {
-    // Still within suppression window -- serve stale data
-    return cached.data;
-  }
-
-  // Past suppression window -- return degraded error
-  return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+  // Within suppression window -- serve stale data
+  return cached.data;
 }
 
 /** Visible for testing -- clears all internal caches. */

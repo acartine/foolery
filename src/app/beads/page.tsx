@@ -131,12 +131,14 @@ function BeadsPageInner() {
         return result;
       }
       if (registeredRepos.length > 0) {
-        let degradedError: DegradedStoreError | null = null;
+        let hasDegraded = false;
+        let degradedMsg = "";
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
             const result = await fetcher(params, repo.path);
             if (!result.ok && result.error?.startsWith(DEGRADED_ERROR_PREFIX)) {
-              degradedError = new DegradedStoreError(result.error);
+              hasDegraded = true;
+              degradedMsg = result.error;
               return [];
             }
             if (!result.ok || !result.data) return [];
@@ -148,8 +150,10 @@ function BeadsPageInner() {
           })
         );
         const merged = results.flat();
-        if (merged.length === 0 && degradedError) throw degradedError;
-        return { ok: true, data: merged };
+        if (merged.length === 0 && hasDegraded) {
+          throw new DegradedStoreError(degradedMsg);
+        }
+        return { ok: true as const, data: merged, _degraded: hasDegraded ? degradedMsg : undefined };
       }
       const result = await fetcher(params);
       throwIfDegraded(result);
@@ -157,16 +161,19 @@ function BeadsPageInner() {
     },
     enabled: isListView && (Boolean(activeRepo) || registeredRepos.length > 0),
     refetchInterval: 10_000,
-    retry: (_, error) => !(error instanceof DegradedStoreError),
+    retry: (count, error) => !(error instanceof DegradedStoreError) && count < 3,
   });
 
   const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
-  const isDegradedError = queryError instanceof DegradedStoreError;
-  const loadError = isDegradedError
+  const partialDegradedMsg = data?.ok ? (data as { _degraded?: string })._degraded : undefined;
+  const isDegradedError = queryError instanceof DegradedStoreError || Boolean(partialDegradedMsg);
+  const loadError = queryError instanceof DegradedStoreError
     ? queryError.message
-    : data && !data.ok
-      ? data.error ?? "Failed to load beats."
-      : null;
+    : partialDegradedMsg
+      ? partialDegradedMsg
+      : data && !data.ok
+        ? data.error ?? "Failed to load beats."
+        : null;
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   const { mutate: bulkUpdate } = useMutation({

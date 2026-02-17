@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listBeads, searchBeads, createBead } from "@/lib/bd";
-import { DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
+import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { createBeadSchema } from "@/lib/schemas";
 
 export async function GET(request: NextRequest) {
@@ -9,9 +9,11 @@ export async function GET(request: NextRequest) {
   delete params._repo;
   const query = params.q;
   delete params.q;
-  const result = query
+  const raw = query
     ? await searchBeads(query, params, repoPath)
     : await listBeads(params, repoPath);
+  const fn = query ? "searchBeads" : "listBeads";
+  const result = withErrorSuppression(fn, raw, params, repoPath, query);
   if (!result.ok) {
     const status = result.error === DEGRADED_ERROR_MESSAGE ? 503 : 500;
     return NextResponse.json({ error: result.error }, { status });
