@@ -237,16 +237,16 @@ function BeadsPageInner() {
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
-      {isListView && (
-        <div className="mb-2 flex min-h-9 items-center border-b border-border/60 pb-2">
+      <div className="mb-2 flex h-9 items-center overflow-hidden border-b border-border/60 pb-2">
+        {isListView && (
           <FilterBar
             selectedIds={selectedIds}
             onBulkUpdate={handleBulkUpdate}
             onClearSelection={handleClearSelection}
             onSceneBeads={handleSceneBeads}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="mt-0.5">
         <div className={isOrchestrationView ? "" : "hidden"}>
