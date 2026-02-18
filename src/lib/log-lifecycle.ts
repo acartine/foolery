@@ -181,13 +181,13 @@ function applyAgePolicies(
   now: number,
   compressDays: number,
   deleteDays: number,
-): { toCompress: FileEntry[]; toDelete: FileEntry[]; remaining: FileEntry[] } {
+): { toCompress: FileEntry[]; toDelete: FileEntry[]; kept: FileEntry[] } {
   const compressThreshold = now - compressDays * MS_PER_DAY;
   const deleteThreshold = now - deleteDays * MS_PER_DAY;
 
   const toDelete: FileEntry[] = [];
   const toCompress: FileEntry[] = [];
-  const remaining: FileEntry[] = [];
+  const kept: FileEntry[] = [];
 
   for (const entry of entries) {
     if (entry.mtimeMs < deleteThreshold) {
@@ -197,25 +197,28 @@ function applyAgePolicies(
       entry.path.endsWith(".jsonl")
     ) {
       toCompress.push(entry);
-      remaining.push(entry); // Will be replaced by .gz version
+      // Not added to kept -- compressed versions will be added separately
     } else {
-      remaining.push(entry);
+      kept.push(entry);
     }
   }
 
-  return { toCompress, toDelete, remaining };
+  return { toCompress, toDelete, kept };
 }
 
 /**
  * Enforce max total bytes by deleting oldest files first.
+ * Returns early without sorting if already under the cap.
  */
 function selectForSizeCap(
   entries: FileEntry[],
   maxBytes: number,
 ): FileEntry[] {
-  // Sort oldest-first so we delete the oldest first
+  let total = entries.reduce((sum, e) => sum + e.size, 0);
+  if (total <= maxBytes) return [];
+
+  // Only sort when we actually need to delete
   const sorted = [...entries].sort((a, b) => a.mtimeMs - b.mtimeMs);
-  let total = sorted.reduce((sum, e) => sum + e.size, 0);
   const toDelete: FileEntry[] = [];
 
   for (const entry of sorted) {
@@ -244,7 +247,7 @@ export async function cleanupLogs(options?: CleanupOptions): Promise<void> {
   const allEntries = await walkLogFiles(root);
 
   // Phase 1: Age-based deletion and compression
-  const { toCompress, toDelete, remaining } = applyAgePolicies(
+  const { toCompress, toDelete, kept } = applyAgePolicies(
     allEntries,
     now,
     compressDays,
@@ -260,34 +263,26 @@ export async function cleanupLogs(options?: CleanupOptions): Promise<void> {
     }
   }
 
-  // Compress old .jsonl files
-  const compressed: FileEntry[] = [];
+  // Compress old .jsonl files and collect their new entries
+  const afterCompress: FileEntry[] = [];
   for (const entry of toCompress) {
     try {
       const gzPath = await compressFile(entry.path);
       const gzStat = await stat(gzPath);
-      compressed.push({
+      afterCompress.push({
         path: gzPath,
         size: gzStat.size,
         mtimeMs: entry.mtimeMs,
       });
     } catch {
-      // Compression failed; leave file as-is for next cycle
-      compressed.push(entry);
+      // Compression failed; original file still exists, keep it
+      afterCompress.push(entry);
     }
   }
 
-  // Build final file list: remaining minus compressed originals + compressed versions
-  // Use a Map for O(1) lookup instead of linear scan per entry
-  const compressedByOriginal = new Map<string, FileEntry>();
-  for (const c of compressed) {
-    compressedByOriginal.set(c.path, c);
-  }
-  const finalEntries = remaining.map((e) => {
-    return compressedByOriginal.get(e.path + ".gz")
-      ?? compressedByOriginal.get(e.path)
-      ?? e;
-  });
+  // Final file list = kept (untouched) + afterCompress (newly compressed)
+  // No overlap possible: kept excludes files that were in toCompress
+  const finalEntries = [...kept, ...afterCompress];
 
   // Phase 2: Size-cap enforcement
   const sizeCapDeletes = selectForSizeCap(finalEntries, maxBytes);
