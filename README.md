@@ -78,6 +78,8 @@ bun run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
+See the **[Developer Guide](docs/DEVELOPING.md)** for architecture, conventions, testing, and contribution guidelines.
+
 ## Release
 
 Create and publish a GitHub release from `main`:
