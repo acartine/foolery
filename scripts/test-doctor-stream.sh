@@ -80,9 +80,11 @@ rl.on('line', (line) => {
     return;
   }
 
+  if (!ev.category && !ev.label) return;  // skip non-check events
+
   const icon = ICONS[ev.status] || ICONS.pass;
   const label = (ev.label || ev.category || '').padEnd(PAD);
-  process.stdout.write('  ' + icon + '  ' + label + DIM + ev.summary + RESET + '\n');
+  process.stdout.write('  ' + icon + '  ' + label + DIM + (ev.summary || '') + RESET + '\n');
 
   if (ev.status !== 'pass' && Array.isArray(ev.diagnostics)) {
     for (const d of ev.diagnostics) {

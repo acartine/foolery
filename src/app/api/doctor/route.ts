@@ -7,8 +7,7 @@ export const dynamic = "force-dynamic";
  *  Pass ?stream=1 for NDJSON streaming (one JSON line per check category).
  */
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const wantStream = url.searchParams.get("stream") === "1";
+  const wantStream = req.nextUrl.searchParams.get("stream") === "1";
 
   if (wantStream) {
     const encoder = new TextEncoder();
