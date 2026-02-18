@@ -1,6 +1,7 @@
 import { mkdir, appendFile } from "node:fs/promises";
 import { join, basename } from "node:path";
 import { homedir } from "node:os";
+import { cleanupLogs } from "@/lib/log-lifecycle";
 
 /**
  * Interaction logger for agent sessions.
@@ -89,7 +90,31 @@ export interface InteractionLog {
 }
 
 /**
+ * Throttle cleanup to run at most once per hour per process.
+ * Covers long-running dev servers where a single startup pass is insufficient.
+ *
+ * Note: The throttle is process-local. In multi-worker deployments each worker
+ * may run its own cleanup pass on startup. This is acceptable because cleanup
+ * is idempotent and typically completes in <100ms for normal log volumes.
+ */
+const CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+let lastCleanupMs = 0;
+
+function maybeScheduleCleanup(): void {
+  const now = Date.now();
+  if (now - lastCleanupMs < CLEANUP_INTERVAL_MS) return;
+  lastCleanupMs = now;
+  // Fire-and-forget: never blocks session logging, errors are swallowed.
+  cleanupLogs().catch((err) => {
+    console.error("[interaction-logger] Log cleanup failed:", err);
+  });
+}
+
+/**
  * Begin logging for an agent interaction session.
+ *
+ * Triggers a fire-and-forget log cleanup pass (at most once per hour)
+ * to compress old files, delete expired files, and enforce size cap.
  *
  * Returns an `InteractionLog` handle whose methods are fire-and-forget
  * (they never throw and never block the caller).
@@ -115,11 +140,18 @@ export async function startInteractionLog(
     beadIds: meta.beadIds,
   };
 
-  // Fire-and-forget the initial write; errors are swallowed to avoid
-  // impacting the main session flow.
-  writeLine(file, startLine).catch((err) => {
+  // Write session_start synchronously so the file exists before cleanup
+  // can prune the directory. Errors are swallowed to avoid impacting
+  // the main session flow.
+  try {
+    await writeLine(file, startLine);
+  } catch (err) {
     console.error(`[interaction-logger] Failed to write session_start:`, err);
-  });
+  }
+
+  // Schedule cleanup AFTER session file is established on disk, so
+  // pruneEmptyDateDirs will not remove this session's directory.
+  maybeScheduleCleanup();
 
   const write = (line: LogLine) => {
     writeLine(file, line).catch((err) => {
