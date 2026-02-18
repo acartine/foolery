@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readyBeads, listBeads } from "@/lib/bd";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
+import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
 import type { Bead } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
@@ -39,6 +40,9 @@ export async function GET(request: NextRequest) {
   let result = Array.from(merged.values()).filter(
     b => b.status !== "closed" && !b.labels?.includes("stage:verification")
   );
+
+  // Hide descendants whose parent chain is not in the ready/in-progress set.
+  result = filterByVisibleAncestorChain(result);
 
   // Client-side search filtering — bd ready doesn't support --q
   if (query) {
