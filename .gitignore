@@ -17,6 +17,12 @@
 /.next/
 /out/
 
+# test-doctor-stream.sh artifacts
+/.test-doctor/
+
+# build-cli.sh local state
+/.local-state/
+
 # production
 /build
 /dist

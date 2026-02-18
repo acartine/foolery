@@ -862,9 +862,11 @@ rl.on('line', (line) => {
     return;
   }
 
+  if (!ev.category && !ev.label) return;  // skip non-check events
+
   const icon = ICONS[ev.status] || ICONS.pass;
   const label = (ev.label || ev.category || '').padEnd(PAD);
-  process.stdout.write('  ' + icon + '  ' + label + DIM + ev.summary + RESET + '\n');
+  process.stdout.write('  ' + icon + '  ' + label + DIM + (ev.summary || '') + RESET + '\n');
 
   // Expand sub-items for failures and warnings
   if (ev.status !== 'pass' && Array.isArray(ev.diagnostics)) {
@@ -963,7 +965,8 @@ const DIM = '\x1b[2m';
 const GREEN = '\x1b[0;32m';
 const RESET = '\x1b[0m';
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stderr });
+const ttyIn = fs.createReadStream('/dev/tty');
+const rl = readline.createInterface({ input: ttyIn, output: process.stderr, terminal: false });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 
 function pickStrategy(options) {
@@ -1033,10 +1036,12 @@ async function main() {
   }
 
   rl.close();
+  ttyIn.destroy();
   process.stdout.write(JSON.stringify(strategies));
+  process.exit(0);
 }
 
-main().catch(() => { rl.close(); process.exit(1); });
+main().catch(() => { rl.close(); ttyIn.destroy(); process.exit(1); });
 NODE
 )" || {
     fail "Failed to process fix options."
