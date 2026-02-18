@@ -1,6 +1,7 @@
 import { mkdir, appendFile } from "node:fs/promises";
 import { join, basename } from "node:path";
 import { homedir } from "node:os";
+import { cleanupLogs } from "@/lib/log-lifecycle";
 
 /**
  * Interaction logger for agent sessions.
@@ -88,8 +89,23 @@ export interface InteractionLog {
   logEnd(exitCode: number | null, status: string): void;
 }
 
+/** Ensures log cleanup runs at most once per process lifetime. */
+let cleanupScheduled = false;
+
+function scheduleCleanupOnce(): void {
+  if (cleanupScheduled) return;
+  cleanupScheduled = true;
+  // Fire-and-forget: never blocks session logging, errors are swallowed.
+  cleanupLogs().catch((err) => {
+    console.error("[interaction-logger] Log cleanup failed:", err);
+  });
+}
+
 /**
  * Begin logging for an agent interaction session.
+ *
+ * On the first call, triggers a fire-and-forget log cleanup pass
+ * (compress old files, delete expired files, enforce size cap).
  *
  * Returns an `InteractionLog` handle whose methods are fire-and-forget
  * (they never throw and never block the caller).
@@ -97,6 +113,8 @@ export interface InteractionLog {
 export async function startInteractionLog(
   meta: SessionMeta,
 ): Promise<InteractionLog> {
+  scheduleCleanupOnce();
+
   const dir = sessionDir(meta);
   const file = sessionFile(meta);
 
