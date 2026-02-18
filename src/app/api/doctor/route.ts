@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runDoctor, runDoctorFix, streamDoctor, type FixStrategies } from "@/lib/doctor";
 
+export const dynamic = "force-dynamic";
+
 /** GET /api/doctor — run diagnostics and return the report.
  *  Pass ?stream=1 for NDJSON streaming (one JSON line per check category).
  */
 export async function GET(req: NextRequest) {
-  const wantStream = req.nextUrl.searchParams.get("stream") === "1";
+  const url = new URL(req.url);
+  const wantStream = url.searchParams.get("stream") === "1";
 
   if (wantStream) {
     const encoder = new TextEncoder();

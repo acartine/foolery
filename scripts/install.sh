@@ -820,7 +820,7 @@ render_doctor_stream() {
     return 1
   fi
 
-  curl --silent --show-error --no-buffer --max-time 60 "\$URL/api/doctor?stream=1" 2>/dev/null | node - <<'STREAM_NODE'
+  curl --silent --show-error --no-buffer --max-time 60 "\$URL/api/doctor?stream=1" 2>/dev/null | node /dev/fd/3 3<<'STREAM_NODE'
 const readline = require('node:readline');
 
 const GREEN = '\x1b[0;32m';
