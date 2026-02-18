@@ -1,4 +1,4 @@
-import { readdir, stat, unlink, rmdir } from "node:fs/promises";
+import { readdir, stat, unlink, rmdir, utimes } from "node:fs/promises";
 import { createReadStream, createWriteStream } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
@@ -107,14 +107,19 @@ async function collectFromDateDir(
 }
 
 /**
- * Compress a .jsonl file to .jsonl.gz and remove the original.
+ * Compress a .jsonl file to .jsonl.gz, preserving the original mtime,
+ * and remove the original. This ensures the compressed file's age is
+ * correctly evaluated by subsequent delete-after-days checks.
  */
 async function compressFile(filePath: string): Promise<string> {
+  const originalStat = await stat(filePath);
   const gzPath = filePath + ".gz";
   const source = createReadStream(filePath);
   const destination = createWriteStream(gzPath);
   const gzip = createGzip();
   await pipeline(source, gzip, destination);
+  // Preserve original timestamps so age-based deletion works correctly
+  await utimes(gzPath, originalStat.atime, originalStat.mtime);
   await unlink(filePath);
   return gzPath;
 }
@@ -273,11 +278,15 @@ export async function cleanupLogs(options?: CleanupOptions): Promise<void> {
   }
 
   // Build final file list: remaining minus compressed originals + compressed versions
+  // Use a Map for O(1) lookup instead of linear scan per entry
+  const compressedByOriginal = new Map<string, FileEntry>();
+  for (const c of compressed) {
+    compressedByOriginal.set(c.path, c);
+  }
   const finalEntries = remaining.map((e) => {
-    const replacement = compressed.find(
-      (c) => c.path === e.path + ".gz" || c.path === e.path,
-    );
-    return replacement ?? e;
+    return compressedByOriginal.get(e.path + ".gz")
+      ?? compressedByOriginal.get(e.path)
+      ?? e;
   });
 
   // Phase 2: Size-cap enforcement

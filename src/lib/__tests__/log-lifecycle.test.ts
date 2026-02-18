@@ -128,6 +128,14 @@ describe("cleanupLogs", () => {
     // Verify compressed content is correct
     const decompressed = await readGzFile(file + ".gz");
     expect(decompressed).toBe(content);
+
+    // Verify mtime is preserved so age-based deletion works correctly
+    const gzStat = await stat(file + ".gz");
+    const expectedAge = 5 * 24 * 60 * 60 * 1000;
+    const actualAge = Date.now() - gzStat.mtimeMs;
+    // Allow 60s tolerance for test execution time
+    expect(actualAge).toBeGreaterThan(expectedAge - 60_000);
+    expect(actualAge).toBeLessThan(expectedAge + 60_000);
   });
 
   it("does not re-compress already-compressed .jsonl.gz files", async () => {
