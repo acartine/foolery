@@ -1,8 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runDoctor, runDoctorFix, type FixStrategies } from "@/lib/doctor";
+import { runDoctor, runDoctorFix, streamDoctor, type FixStrategies } from "@/lib/doctor";
 
-/** GET /api/doctor — run diagnostics and return the report. */
-export async function GET() {
+/** GET /api/doctor — run diagnostics and return the report.
+ *  Pass ?stream=1 for NDJSON streaming (one JSON line per check category).
+ */
+export async function GET(req: NextRequest) {
+  const wantStream = req.nextUrl.searchParams.get("stream") === "1";
+
+  if (wantStream) {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of streamDoctor()) {
+            controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          controller.enqueue(encoder.encode(JSON.stringify({ error: msg }) + "\n"));
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "application/x-ndjson",
+        "Cache-Control": "no-cache",
+        "Transfer-Encoding": "chunked",
+      },
+    });
+  }
+
   try {
     const report = await runDoctor();
     return NextResponse.json({ ok: true, data: report });

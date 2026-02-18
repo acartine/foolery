@@ -815,6 +815,71 @@ process.stdout.write(lines.join('\n'));
 NODE
 }
 
+render_doctor_stream() {
+  if ! command -v node >/dev/null 2>&1; then
+    return 1
+  fi
+
+  curl --silent --show-error --no-buffer --max-time 60 "\$URL/api/doctor?stream=1" 2>/dev/null | node - <<'STREAM_NODE'
+const readline = require('node:readline');
+
+const GREEN = '\x1b[0;32m';
+const RED = '\x1b[0;31m';
+const YELLOW = '\x1b[0;33m';
+const BOLD = '\x1b[1m';
+const DIM = '\x1b[2m';
+const RESET = '\x1b[0m';
+
+const ICONS = { pass: GREEN + '✔' + RESET, fail: RED + '✘' + RESET, warning: YELLOW + '⚠' + RESET };
+const PAD = 24;
+
+process.stdout.write('\n' + BOLD + 'Foolery Doctor' + RESET + '\n\n');
+
+const rl = readline.createInterface({ input: process.stdin });
+
+rl.on('line', (line) => {
+  if (!line.trim()) return;
+  let ev;
+  try { ev = JSON.parse(line); } catch { return; }
+
+  if (ev.error) {
+    process.stdout.write('  ' + ICONS.fail + '  ' + RED + ev.error + RESET + '\n');
+    return;
+  }
+
+  if (ev.done) {
+    process.stdout.write('\n');
+    if (ev.failed > 0 || ev.warned > 0) {
+      let s = '  ' + RED + ev.failed + ' failed' + RESET + ', ' + YELLOW + ev.warned + ' warning' + (ev.warned !== 1 ? 's' : '') + RESET + ', ' + GREEN + ev.passed + ' passed' + RESET;
+      if (ev.fixable > 0) {
+        s += ' (' + ev.fixable + ' auto-fixable — run ' + BOLD + 'foolery doctor --fix' + RESET + ')';
+      }
+      process.stdout.write(s + '\n');
+    } else {
+      process.stdout.write('  ' + GREEN + BOLD + 'All clear!' + RESET + ' ' + (ev.passed) + ' checks passed.\n');
+    }
+    process.stdout.write('\n');
+    return;
+  }
+
+  const icon = ICONS[ev.status] || ICONS.pass;
+  const label = (ev.label || ev.category || '').padEnd(PAD);
+  process.stdout.write('  ' + icon + '  ' + label + DIM + ev.summary + RESET + '\n');
+
+  // Expand sub-items for failures and warnings
+  if (ev.status !== 'pass' && Array.isArray(ev.diagnostics)) {
+    for (const d of ev.diagnostics) {
+      if (d.severity === 'info') continue;
+      const sub = d.severity === 'error' ? ICONS.fail : ICONS.warning;
+      process.stdout.write('       ' + sub + '  ' + d.message + '\n');
+    }
+  }
+});
+
+rl.on('close', () => {});
+STREAM_NODE
+}
+
 doctor_cmd() {
   local fix=0
   while [[ \$# -gt 0 ]]; do
@@ -835,7 +900,10 @@ doctor_cmd() {
   fi
 
   if [[ "\$fix" -eq 0 ]]; then
-    # Diagnostic-only mode
+    # Diagnostic-only mode — prefer streaming, fall back to batch
+    if render_doctor_stream; then
+      return
+    fi
     local response
     response="\$(curl --silent --show-error --max-time 60 -X GET "\$URL/api/doctor" 2>&1)" || {
       fail "Failed to reach Foolery API at \$URL/api/doctor"

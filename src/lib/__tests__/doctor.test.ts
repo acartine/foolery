@@ -53,6 +53,10 @@ import {
   checkPromptGuidance,
   runDoctor,
   runDoctorFix,
+  streamDoctor,
+  type DoctorStreamEvent,
+  type DoctorCheckResult,
+  type DoctorStreamSummary,
 } from "@/lib/doctor";
 
 beforeEach(() => {
@@ -453,5 +457,136 @@ describe("runDoctorFix", () => {
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
     const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
     expect(verificationFix?.success).toBe(true);
+  });
+});
+
+// ── streamDoctor ────────────────────────────────────────
+
+describe("streamDoctor", () => {
+  async function collectStream(): Promise<DoctorStreamEvent[]> {
+    const events: DoctorStreamEvent[] = [];
+    for await (const event of streamDoctor()) {
+      events.push(event);
+    }
+    return events;
+  }
+
+  it("emits 5 check events plus 1 summary event", async () => {
+    mockGetRegisteredAgents.mockResolvedValue({
+      claude: { command: "claude", label: "Claude" },
+    });
+    mockExecFile.mockResolvedValue({ stdout: "1.2.3", stderr: "" });
+    mockListRepos.mockResolvedValue([]);
+    mockGetReleaseVersionStatus.mockResolvedValue({
+      installedVersion: "1.0.0",
+      latestVersion: "1.0.0",
+      updateAvailable: false,
+    });
+
+    const events = await collectStream();
+    expect(events).toHaveLength(6);
+
+    // First 5 are check results
+    for (let i = 0; i < 5; i++) {
+      const ev = events[i] as DoctorCheckResult;
+      expect(ev.done).toBeUndefined();
+      expect(ev.category).toBeTruthy();
+      expect(ev.label).toBeTruthy();
+      expect(["pass", "fail", "warning"]).toContain(ev.status);
+      expect(typeof ev.summary).toBe("string");
+      expect(Array.isArray(ev.diagnostics)).toBe(true);
+    }
+
+    // Last is summary
+    const summary = events[5] as DoctorStreamSummary;
+    expect(summary.done).toBe(true);
+    expect(typeof summary.passed).toBe("number");
+    expect(typeof summary.failed).toBe("number");
+    expect(typeof summary.warned).toBe("number");
+    expect(typeof summary.fixable).toBe("number");
+  });
+
+  it("emits events in correct category order", async () => {
+    mockGetRegisteredAgents.mockResolvedValue({});
+    mockListRepos.mockResolvedValue([]);
+
+    const events = await collectStream();
+    const categories = events
+      .filter((e): e is DoctorCheckResult => !("done" in e && e.done))
+      .map((e) => e.category);
+
+    expect(categories).toEqual([
+      "agents",
+      "updates",
+      "corrupt-beads",
+      "stale-parents",
+      "prompt-guidance",
+    ]);
+  });
+
+  it("reports fail status when agent check has errors", async () => {
+    mockGetRegisteredAgents.mockResolvedValue({
+      broken: { command: "broken-agent" },
+    });
+    mockExecFile.mockRejectedValue(new Error("command not found"));
+    mockListRepos.mockResolvedValue([]);
+
+    const events = await collectStream();
+    const agentEvent = events[0] as DoctorCheckResult;
+    expect(agentEvent.category).toBe("agents");
+    expect(agentEvent.status).toBe("fail");
+    expect(agentEvent.summary).toContain("issue");
+  });
+
+  it("reports warning status when update is available", async () => {
+    mockGetRegisteredAgents.mockResolvedValue({});
+    mockListRepos.mockResolvedValue([]);
+    mockGetReleaseVersionStatus.mockResolvedValue({
+      installedVersion: "1.0.0",
+      latestVersion: "2.0.0",
+      updateAvailable: true,
+    });
+
+    const events = await collectStream();
+    const updateEvent = events[1] as DoctorCheckResult;
+    expect(updateEvent.category).toBe("updates");
+    expect(updateEvent.status).toBe("warning");
+  });
+
+  it("counts fixable issues in summary", async () => {
+    const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
+    mockListRepos.mockResolvedValue(repos);
+    mockGetRegisteredAgents.mockResolvedValue({});
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        {
+          id: "b-1",
+          title: "Bad",
+          status: "open",
+          labels: ["stage:verification"],
+          type: "task",
+          priority: 2,
+          created: "2026-01-01",
+          updated: "2026-01-01",
+        },
+        {
+          id: "b-2",
+          title: "Also bad",
+          status: "closed",
+          labels: ["stage:verification"],
+          type: "task",
+          priority: 2,
+          created: "2026-01-01",
+          updated: "2026-01-01",
+        },
+      ],
+    });
+
+    const events = await collectStream();
+    const summary = events[events.length - 1] as DoctorStreamSummary;
+    expect(summary.done).toBe(true);
+    expect(summary.fixable).toBe(2);
+    expect(summary.failed).toBeGreaterThanOrEqual(1);
   });
 });

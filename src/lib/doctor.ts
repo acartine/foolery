@@ -56,6 +56,29 @@ export interface DoctorFixReport {
   };
 }
 
+// ── Streaming types ─────────────────────────────────────
+
+export type DoctorCheckStatus = "pass" | "fail" | "warning";
+
+export interface DoctorCheckResult {
+  done?: false;
+  category: string;
+  label: string;
+  status: DoctorCheckStatus;
+  summary: string;
+  diagnostics: Diagnostic[];
+}
+
+export interface DoctorStreamSummary {
+  done: true;
+  passed: number;
+  failed: number;
+  warned: number;
+  fixable: number;
+}
+
+export type DoctorStreamEvent = DoctorCheckResult | DoctorStreamSummary;
+
 const PROMPT_GUIDANCE_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
 
 // ── Agent health checks ────────────────────────────────────
@@ -358,6 +381,80 @@ export async function runDoctor(): Promise<DoctorReport> {
       fixable: diagnostics.filter((d) => d.fixable).length,
     },
   };
+}
+
+// ── Streaming generator ─────────────────────────────────
+
+function buildCategorySummary(diags: Diagnostic[]): { status: DoctorCheckStatus; summary: string } {
+  const errors = diags.filter((d) => d.severity === "error");
+  const warnings = diags.filter((d) => d.severity === "warning");
+
+  if (errors.length > 0) {
+    const count = errors.length;
+    return { status: "fail", summary: `${count} issue${count !== 1 ? "s" : ""}` };
+  }
+  if (warnings.length > 0) {
+    const count = warnings.length;
+    return { status: "warning", summary: `${count} warning${count !== 1 ? "s" : ""}` };
+  }
+
+  // All info — derive a short "happy" summary from the first diagnostic
+  if (diags.length > 0) {
+    const first = diags[0];
+    // Extract the interesting part from known messages
+    if (first.check === "agent-ping") {
+      const agents = diags.map((d) => d.context?.agentId).filter(Boolean);
+      return { status: "pass", summary: `${agents.join(", ")} ${agents.length === 1 ? "is" : "are"} healthy` };
+    }
+    if (first.check === "updates" && first.message.includes("up to date")) {
+      const versionMatch = first.message.match(/\(([^)]+)\)/);
+      return { status: "pass", summary: `up to date${versionMatch ? ` (${versionMatch[1]})` : ""}` };
+    }
+  }
+
+  return { status: "pass", summary: "no issues" };
+}
+
+export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
+  const repos = await listRepos();
+
+  const checks: Array<{
+    category: string;
+    label: string;
+    run: () => Promise<Diagnostic[]>;
+  }> = [
+    { category: "agents", label: "Agent connectivity", run: () => checkAgents() },
+    { category: "updates", label: "Version", run: () => checkUpdates() },
+    { category: "corrupt-beads", label: "Bead integrity", run: () => checkCorruptTickets(repos) },
+    { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
+    { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
+  ];
+
+  let passed = 0;
+  let failed = 0;
+  let warned = 0;
+  let fixable = 0;
+
+  for (const check of checks) {
+    let diags: Diagnostic[];
+    try {
+      diags = await check.run();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      diags = [{ check: check.category, severity: "error", message: msg, fixable: false }];
+    }
+
+    const { status, summary } = buildCategorySummary(diags);
+    fixable += diags.filter((d) => d.fixable).length;
+
+    if (status === "pass") passed++;
+    else if (status === "fail") failed++;
+    else warned++;
+
+    yield { category: check.category, label: check.label, status, summary, diagnostics: diags };
+  }
+
+  yield { done: true, passed, failed, warned, fixable };
 }
 
 // ── Fix ────────────────────────────────────────────────────
