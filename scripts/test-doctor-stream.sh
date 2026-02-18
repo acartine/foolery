@@ -39,15 +39,18 @@ mkdir -p "$TEST_DIR" "$STATE_DIR"
 echo "Building CLI from source..."
 bash "$ROOT_DIR/scripts/build-cli.sh" "$TEST_CLI"
 
-# 3. Start a test server if one isn't already listening on the port
-if curl -s --max-time 1 "http://localhost:$PORT" >/dev/null 2>&1; then
-  echo "Server already running on port $PORT."
-else
-  we_started=1
-  echo "Starting test server on port $PORT..."
-  FOOLERY_PORT="$PORT" FOOLERY_NO_BROWSER=1 FOOLERY_STATE_DIR="$STATE_DIR" \
-    FOOLERY_WAIT_FOR_READY=1 "$TEST_CLI" start
+# 3. Kill anything already on the test port, then start our server
+stale_pid="$(lsof -ti "tcp:$PORT" 2>/dev/null || true)"
+if [[ -n "$stale_pid" ]]; then
+  echo "Killing stale process on port $PORT (pid $stale_pid)..."
+  kill $stale_pid 2>/dev/null || true
+  sleep 1
 fi
+
+we_started=1
+echo "Starting test server on port $PORT..."
+FOOLERY_PORT="$PORT" FOOLERY_NO_BROWSER=1 FOOLERY_STATE_DIR="$STATE_DIR" \
+  FOOLERY_WAIT_FOR_READY=1 "$TEST_CLI" start
 
 # 4. Run the test
 echo ""
