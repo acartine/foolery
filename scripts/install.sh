@@ -1049,7 +1049,7 @@ async function main() {
   }
 
   rl.close();
-  process.stdout.write(JSON.stringify(strategies));
+  fs.writeSync(1, JSON.stringify(strategies));
   process.exit(0);
 }
 
