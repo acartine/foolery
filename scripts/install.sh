@@ -691,7 +691,7 @@ render_doctor_report() {
     return 0
   fi
 
-  printf '%s' "\$response" | node - "\$fix_mode" <<'NODE'
+  printf '%s' "\$response" | node /dev/fd/3 "\$fix_mode" 3<<'NODE'
 const fs = require('node:fs');
 
 const raw = fs.readFileSync(0, 'utf8');
@@ -932,11 +932,16 @@ doctor_cmd() {
 
   # Use node to extract fixable checks and their options, then prompt user
   local strategies_json
-  strategies_json="\$(printf '%s' "\$diag_response" | node /dev/fd/3 3<<'NODE'
+  local diag_json_file
+  diag_json_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-doctor-diag.XXXXXX")"
+  printf '%s' "\$diag_response" > "\$diag_json_file"
+  strategies_json="\$(node /dev/fd/3 "\$diag_json_file" 3<<'NODE'
 const fs = require('node:fs');
 const readline = require('node:readline');
 
-const raw = fs.readFileSync(0, 'utf8');
+const inputPath = process.argv[2];
+let raw = '';
+try { raw = fs.readFileSync(inputPath, 'utf8'); } catch { process.exit(0); }
 let payload;
 try { payload = JSON.parse(raw); } catch { process.exit(0); }
 
@@ -965,8 +970,16 @@ const DIM = '\x1b[2m';
 const GREEN = '\x1b[0;32m';
 const RESET = '\x1b[0m';
 
-const ttyIn = fs.createReadStream('/dev/tty');
-const rl = readline.createInterface({ input: ttyIn, output: process.stderr, terminal: false });
+if (!process.stdin.isTTY) {
+  const strategies = {};
+  for (const [check, info] of byCheck) {
+    strategies[check] = pickStrategy(info.fixOptions);
+  }
+  process.stdout.write(JSON.stringify(strategies));
+  process.exit(0);
+}
+
+const rl = readline.createInterface({ input: process.stdin, output: process.stderr, terminal: true });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 
 function pickStrategy(options) {
@@ -1043,8 +1056,10 @@ async function main() {
 main().catch(() => { process.exit(1); });
 NODE
 )" || {
+    rm -f "\$diag_json_file"
     fail "Failed to process fix options."
   }
+  rm -f "\$diag_json_file"
 
   # If no strategies selected (all skipped), report and exit
   if [[ -z "\$strategies_json" || "\$strategies_json" == "{}" ]]; then
