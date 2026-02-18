@@ -155,7 +155,7 @@ const GREEN = '\x1b[0;32m';
 const RESET = '\x1b[0m';
 
 const ttyIn = fs.createReadStream('/dev/tty');
-const rl = readline.createInterface({ input: ttyIn, output: process.stderr });
+const rl = readline.createInterface({ input: ttyIn, output: process.stderr, terminal: false });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 
 function pickStrategy(options) {
@@ -223,6 +223,7 @@ async function main() {
   rl.close();
   ttyIn.destroy();
   process.stdout.write(JSON.stringify(strategies));
+  process.exit(0);
 }
 
 main().catch(() => { rl.close(); process.exit(1); });
