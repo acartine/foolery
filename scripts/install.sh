@@ -1036,12 +1036,11 @@ async function main() {
   }
 
   rl.close();
-  ttyIn.destroy();
   process.stdout.write(JSON.stringify(strategies));
   process.exit(0);
 }
 
-main().catch(() => { rl.close(); ttyIn.destroy(); process.exit(1); });
+main().catch(() => { process.exit(1); });
 NODE
 )" || {
     fail "Failed to process fix options."
