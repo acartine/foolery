@@ -138,7 +138,8 @@ const DIM = '\x1b[2m';
 const GREEN = '\x1b[0;32m';
 const RESET = '\x1b[0m';
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stderr });
+const ttyIn = fs.createReadStream('/dev/tty');
+const rl = readline.createInterface({ input: ttyIn, output: process.stderr });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 
 function pickStrategy(options) {
@@ -204,6 +205,7 @@ async function main() {
   }
 
   rl.close();
+  ttyIn.destroy();
   process.stdout.write(JSON.stringify(strategies));
 }
 
