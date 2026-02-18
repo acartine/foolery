@@ -536,6 +536,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         const bead = row.original;
         if (bead.status === "closed" || bead.type === "gate") return null;
         const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
+        const hb = bead as unknown as { _hasChildren?: boolean };
+        const isParent = hb._hasChildren ?? false;
+        const actionLabel = isParent ? "Scene!" : "Take!";
 
         if (isActiveShipping) {
           return (
@@ -561,15 +564,15 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
-            title="Take!"
+            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${isParent ? "text-purple-700 hover:bg-purple-100" : "text-blue-700 hover:bg-blue-100"}`}
+            title={actionLabel}
             onClick={(e) => {
               e.stopPropagation();
               onShipBead(bead);
             }}
           >
             <Clapperboard className="size-3" />
-            Take!
+            {actionLabel}
           </button>
         );
       },

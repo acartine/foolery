@@ -571,6 +571,7 @@ export function ExistingOrchestrationsView() {
   } | null>(null);
   const [savingWaveId, setSavingWaveId] = useState<string | null>(null);
   const [triggeringWaveId, setTriggeringWaveId] = useState<string | null>(null);
+  const [shootingAll, setShootingAll] = useState(false);
   const [isRestaging, setIsRestaging] = useState(false);
   const [navigationLevel, setNavigationLevel] = useState<NavigationLevel>("tree");
   const [activeWaveIndexByTreeId, setActiveWaveIndexByTreeId] = useState<
@@ -1006,6 +1007,49 @@ export function ExistingOrchestrationsView() {
     [activeRepo, setActiveSession, terminals, upsertTerminal]
   );
 
+  const handleShootAll = useCallback(async () => {
+    if (!activeRepo || !activeTree) {
+      toast.error("No active tree to shoot");
+      return;
+    }
+    const wavesToShoot = activeTree.waves.filter(
+      (wave) => wave.bead.status !== "closed"
+    );
+    if (wavesToShoot.length === 0) {
+      toast.info("All scenes in this tree are already closed");
+      return;
+    }
+    setShootingAll(true);
+    let fired = 0;
+    for (const wave of wavesToShoot) {
+      const existingRunning = terminals.find(
+        (terminal) => terminal.beadId === wave.id && terminal.status === "running"
+      );
+      if (existingRunning) continue;
+
+      try {
+        const result = await startSession(wave.id, activeRepo);
+        if (result.ok && result.data) {
+          upsertTerminal({
+            sessionId: result.data.id,
+            beadId: wave.id,
+            beadTitle: wave.title,
+            repoPath: result.data.repoPath ?? activeRepo,
+            status: "running",
+            startedAt: new Date().toISOString(),
+          });
+          fired += 1;
+        }
+      } catch {
+        toast.error(`Failed to fire scene ${wave.slug}`);
+      }
+    }
+    setShootingAll(false);
+    if (fired > 0) {
+      toast.success(`Fired ${fired} scene${fired === 1 ? "" : "s"}`);
+    }
+  }, [activeRepo, activeTree, terminals, upsertTerminal]);
+
   const handleRewrite = useCallback(async () => {
     if (!activeRepo || !activeTree) {
       toast.error("No active tree to rewrite");
@@ -1148,6 +1192,21 @@ export function ExistingOrchestrationsView() {
                 <Clapperboard className="size-3.5" />
               )}
               Action!
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="gap-1.5"
+              onClick={() => void handleShootAll()}
+              disabled={shootingAll || !activeTree || activeTree.waves.length === 0}
+              title="Fire all scenes in this tree"
+            >
+              {shootingAll ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Clapperboard className="size-3.5" />
+              )}
+              Shoot Them All!
             </Button>
           </div>
         </div>

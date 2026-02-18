@@ -331,27 +331,28 @@ export async function createSession(
   }
   const bead = result.data;
   const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
+  // Check for children — both orchestrated waves and plain parent beads
   let waveBeatIds: string[] = [];
-  if (isWave) {
-    const childResult = await listBeads({ parent: bead.id }, repoPath);
-    if (childResult.ok && childResult.data) {
-      waveBeatIds = childResult.data
-        .filter((child) => child.status !== "closed")
-        .map((child) => child.id)
-        .sort((a, b) => a.localeCompare(b));
-    } else {
-      console.warn(
-        `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error ?? "unknown error"}`
-      );
-    }
+  const childResult = await listBeads({ parent: bead.id }, repoPath);
+  const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
+  if (hasChildren) {
+    waveBeatIds = childResult.data!
+      .filter((child) => child.status !== "closed")
+      .map((child) => child.id)
+      .sort((a, b) => a.localeCompare(b));
+  } else if (isWave) {
+    console.warn(
+      `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error ?? "no children found"}`
+    );
   }
+  const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
 
   const id = generateId();
   const prompt =
     customPrompt ??
-    (isWave
+    (isParent
       ? [
-          `You are executing a parent scene bead. You MUST edit source files directly — do not just describe what to do.`,
+          `You are executing a parent bead and its children. Implement the children beads and use the parent bead's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
           ``,
           `IMPORTANT INSTRUCTIONS:`,
           `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
@@ -411,9 +412,9 @@ export async function createSession(
 
   const interactionLog = await startInteractionLog({
     sessionId: id,
-    interactionType: isWave ? "scene" : "take",
+    interactionType: isParent ? "scene" : "take",
     repoPath: repoPath || process.cwd(),
-    beadIds: isWave ? waveBeatIds : [beadId],
+    beadIds: isParent ? waveBeatIds : [beadId],
   }).catch((err) => {
     console.error(`[terminal-manager] Failed to start interaction log:`, err);
     return noopInteractionLog();
@@ -477,7 +478,7 @@ export async function createSession(
     ? null
     : customPrompt
       ? null
-      : isWave
+      : isParent
         ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
         : buildSingleBeadCompletionFollowUp(bead.id);
   let executionPromptSent = true;

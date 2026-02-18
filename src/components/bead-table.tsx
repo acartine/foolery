@@ -445,14 +445,16 @@ export function BeadTable({
           setFocusedRowId(rows[currentIndex + 1].original.id);
         }
       } else if (e.key === "V" && e.shiftKey) {
-        // Shift-V: Open rejection notes dialog for focused bead with stage:verification.
+        // Shift-V: Verify focused bead — remove stage:* labels and close.
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
-        if (!bead.labels?.includes("stage:verification")) return;
+        if (bead.status === "closed") return;
         e.preventDefault();
-        setNotesBead(bead);
-        setNotesRejectionMode(true);
-        setNotesDialogOpen(true);
+        handleUpdateBead({ id: bead.id, fields: verifyBeadFields() });
+        const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
+        if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
+          setFocusedRowId(rows[nextFocusIdx].original.id);
+        }
       } else if (e.key === "F" && e.shiftKey) {
         // Shift-F: Open rejection notes dialog for focused bead with stage:verification.
         if (currentIndex < 0) return;
