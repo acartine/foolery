@@ -2,6 +2,11 @@
 
 **Product-focused agentic orchestration tool** — one layer up from managing 8 agent terminals, one level down from massively multi-agent chaos.
 
+[![Runtime Artifact](https://img.shields.io/github/actions/workflow/status/acartine/foolery/release-runtime-artifact.yml?branch=main&style=for-the-badge&label=runtime%20artifact)](https://github.com/acartine/foolery/actions/workflows/release-runtime-artifact.yml)
+[![Latest Release](https://img.shields.io/github/v/release/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/releases)
+[![License](https://img.shields.io/github/license/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/stargazers)
+
 Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking, giving you a visual control surface for organizing, orchestrating, and reviewing AI agent work across your repositories.
 
 ## Why Foolery?
@@ -109,13 +114,25 @@ Browse and manage your orchestration trees. Navigate dependency hierarchies with
 
 The planning room. Select a set of beats and ask Claude to organize them into dependency-aware scenes. Watch the plan stream in real time, edit wave names and agent counts, then apply the whole orchestration with one click.
 
-![Direct view](docs/screenshots/direct.png)
+![Direct workflow](docs/screenshots/new-beat.png)
 
 ### Final Cut
 
 The verification queue. Every beat labeled `stage:verification` lands here. Review each one, approve it, or reject it with notes — keeping your done list honest.
 
 ![Final Cut view](docs/screenshots/final-cut.png)
+
+### Hot Keys
+
+Need to stay in flow? Open the keyboard shortcut overlay for a quick map of navigation, actions, editing, and panel controls across views.
+
+![Keyboard shortcuts overlay](docs/screenshots/hot-keys.png)
+
+### Take! Terminal
+
+Launch an agent run from the table and monitor it live in the built-in terminal drawer without leaving the app context.
+
+![Take terminal panel](docs/screenshots/take.png)
 
 ## Foolery Prompt Guidance (Highly Recommended)
 
