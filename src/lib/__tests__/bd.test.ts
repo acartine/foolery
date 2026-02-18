@@ -611,19 +611,28 @@ describe("exec auto-sync on out-of-sync error", () => {
     expect(execCalls[1]).toContain("--import-only");
   });
 
-  it("returns original error if sync command itself is out-of-sync", async () => {
-    queueExec({
-      stderr: "Database out of sync with JSONL",
-      exitCode: 1,
-    });
+  it("returns original error when non-out-of-sync failure occurs", async () => {
+    queueExec({ stderr: "permission denied", exitCode: 1 });
     const { listBeads } = await import("@/lib/bd");
-    // The first call is "list". If it's a "sync" command, it should not
-    // auto-heal. But list is not sync, so it will try sync. Let's test
-    // directly with a failing command that is NOT sync.
-    // Already tested above; let's test non-out-of-sync error returns directly.
-    queueExec({ stderr: "some other error", exitCode: 1 });
-    const { listBeads: listBeads2 } = await import("@/lib/bd");
-    const result = await listBeads2();
+    const result = await listBeads();
     expect(result.ok).toBe(false);
+    expect(result.error).toBe("permission denied");
+    // Should NOT attempt sync for a non-out-of-sync error
+    expect(execCalls).toHaveLength(1);
+    expect(execCalls[0][0]).toBe("list");
+  });
+
+  it("returns original error when sync --import-only fails", async () => {
+    queueExec(
+      { stderr: "Database out of sync with JSONL", exitCode: 1 }, // list fails
+      { stderr: "sync import failed", exitCode: 1 } // sync --import-only fails
+    );
+    const { listBeads } = await import("@/lib/bd");
+    const result = await listBeads();
+    expect(result.ok).toBe(false);
+    // Should return the original list error, not the sync error
+    expect(result.error).toBe("Database out of sync with JSONL");
+    expect(execCalls).toHaveLength(2);
+    expect(execCalls[1]).toContain("sync");
   });
 });
