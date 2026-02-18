@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { constants as fsConstants } from "node:fs";
-import { access, readFile } from "node:fs/promises";
+import { access, appendFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { listBeads } from "./bd";
 import { getRegisteredAgents } from "./settings";
@@ -313,6 +313,10 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
+const PROMPT_GUIDANCE_FIX_OPTIONS: FixOption[] = [
+  { key: "append", label: "Append Foolery guidance prompt" },
+];
+
 /**
  * Warn when AGENTS.md/CLAUDE.md exists but is missing Foolery guidance prompt.
  */
@@ -330,7 +334,8 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
           diagnostics.push({
             check: "prompt-guidance",
             severity: "warning",
-            fixable: false,
+            fixable: true,
+            fixOptions: PROMPT_GUIDANCE_FIX_OPTIONS,
             message: `Repo "${repo.name}" has ${fileName} but it is missing Foolery guidance prompt. Run \`foolery prompt\` in ${repo.path}.`,
             context: { repoPath: repo.path, repoName: repo.name, file: fileName },
           });
@@ -460,11 +465,29 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
 // ── Fix ────────────────────────────────────────────────────
 
 /**
- * Strategies map: check name → chosen fix option key.
+ * Strategies map: check name → fix option key (applies to all), or
+ * an object with a strategy key and optional contexts array to target
+ * specific diagnostics.
+ *
+ * Examples:
+ *   { "corrupt-bead-verification": "set-in-progress" }           // fix all
+ *   { "prompt-guidance": { strategy: "append", contexts: [...] } } // fix specific
+ *
  * If a check is absent from the map, its diagnostics are skipped.
  * If strategies is undefined, all fixable diagnostics use their first (default) option.
  */
-export type FixStrategies = Record<string, string>;
+export type FixStrategyEntry = string | { strategy: string; contexts?: Record<string, string>[] };
+export type FixStrategies = Record<string, FixStrategyEntry>;
+
+function matchesAnyContext(
+  ctx: Record<string, string> | undefined,
+  targets: Record<string, string>[],
+): boolean {
+  if (!ctx) return false;
+  return targets.some((target) =>
+    Object.entries(target).every(([k, v]) => ctx[k] === v),
+  );
+}
 
 export async function runDoctorFix(strategies?: FixStrategies): Promise<DoctorFixReport> {
   const report = await runDoctor();
@@ -474,7 +497,17 @@ export async function runDoctorFix(strategies?: FixStrategies): Promise<DoctorFi
   for (const diag of fixable) {
     // When strategies are provided, skip checks the user didn't approve
     if (strategies && !(diag.check in strategies)) continue;
-    const strategy = strategies?.[diag.check] ?? diag.fixOptions?.[0]?.key;
+
+    const entry = strategies?.[diag.check];
+    let strategy: string | undefined;
+    if (typeof entry === "string") {
+      strategy = entry;
+    } else if (entry) {
+      strategy = entry.strategy;
+      if (entry.contexts && !matchesAnyContext(diag.context, entry.contexts)) continue;
+    }
+    strategy ??= diag.fixOptions?.[0]?.key;
+
     const result = await applyFix(diag, strategy);
     fixes.push(result);
   }
@@ -543,7 +576,47 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       }
     }
 
+    case "prompt-guidance": {
+      const { repoPath, file } = ctx;
+      if (!repoPath || !file) {
+        return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
+      }
+      try {
+        const templateContent = await readPromptTemplate();
+        if (!templateContent) {
+          return { check: diag.check, success: false, message: "PROMPT.md template not found.", context: ctx };
+        }
+        const filePath = join(repoPath, file);
+        await appendFile(filePath, "\n\n" + templateContent + "\n", "utf8");
+        return {
+          check: diag.check,
+          success: true,
+          message: `Appended Foolery guidance to ${file} in "${ctx.repoName}".`,
+          context: ctx,
+        };
+      } catch (e) {
+        return { check: diag.check, success: false, message: String(e), context: ctx };
+      }
+    }
+
     default:
       return { check: diag.check, success: false, message: "No fix available for this check.", context: ctx };
   }
+}
+
+async function readPromptTemplate(): Promise<string | null> {
+  // Try PROMPT.md relative to cwd (runtime or dev), then fallback to APP_DIR
+  const candidates = [
+    join(process.cwd(), "PROMPT.md"),
+    process.env.FOOLERY_APP_DIR ? join(process.env.FOOLERY_APP_DIR, "PROMPT.md") : null,
+  ].filter(Boolean) as string[];
+
+  for (const path of candidates) {
+    try {
+      return await readFile(path, "utf8");
+    } catch {
+      continue;
+    }
+  }
+  return null;
 }

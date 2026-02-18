@@ -346,6 +346,10 @@ describe("checkPromptGuidance", () => {
       expect(diags).toHaveLength(1);
       expect(diags[0].check).toBe("prompt-guidance");
       expect(diags[0].severity).toBe("warning");
+      expect(diags[0].fixable).toBe(true);
+      expect(diags[0].fixOptions).toEqual([
+        { key: "append", label: "Append Foolery guidance prompt" },
+      ]);
       expect(diags[0].message).toContain("missing Foolery guidance prompt");
       expect(diags[0].context?.file).toBe("AGENTS.md");
     } finally {

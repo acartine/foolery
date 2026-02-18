@@ -126,52 +126,79 @@ if (fixable.length === 0) {
 const byCheck = new Map();
 for (const d of fixable) {
   const key = d.check || 'unknown';
-  if (!byCheck.has(key)) byCheck.set(key, { count: 0, fixOptions: d.fixOptions || [] });
-  byCheck.get(key).count++;
+  if (!byCheck.has(key)) byCheck.set(key, { count: 0, fixOptions: d.fixOptions || [], items: [] });
+  const group = byCheck.get(key);
+  group.count++;
+  group.items.push(d);
 }
 
 const BOLD = '\x1b[1m';
 const CYAN = '\x1b[0;36m';
+const DIM = '\x1b[2m';
 const GREEN = '\x1b[0;32m';
 const RESET = '\x1b[0m';
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stderr });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
 
+function pickStrategy(options) {
+  if (options.length === 0) return 'default';
+  return options[0].key;
+}
+
+function describeItem(d) {
+  const ctx = d.context || {};
+  if (ctx.repoName && ctx.file) return ctx.repoName + '/' + ctx.file;
+  if (ctx.beadId) return ctx.beadId + (ctx.repoName ? ' in ' + ctx.repoName : '');
+  return d.message.slice(0, 80);
+}
+
 async function main() {
   const strategies = {};
 
   for (const [check, info] of byCheck) {
     const options = info.fixOptions;
+    const strategy = pickStrategy(options);
+    const fixLabel = options.length > 0 ? options[0].label : 'Apply fix';
 
     process.stderr.write('\n' + BOLD + 'Found ' + info.count + ' fixable issue' + (info.count !== 1 ? 's' : '') + ' for: ' + CYAN + check + RESET + '\n');
+    if (options.length > 0) {
+      process.stderr.write('  Fix: ' + GREEN + fixLabel + RESET + '\n');
+    }
 
-    if (options.length === 0) {
-      const ans = await ask('  Apply fix? [Y/n/s(kip)] ');
+    if (info.count === 1) {
+      process.stderr.write('  ' + DIM + describeItem(info.items[0]) + RESET + '\n');
+      const ans = await ask('  Apply? [Y/n] ');
       const lower = (ans || '').trim().toLowerCase();
-      if (lower === 's' || lower === 'skip') continue;
       if (lower === 'n' || lower === 'no') continue;
-      strategies[check] = 'default';
-    } else if (options.length === 1) {
-      process.stderr.write('  Fix: ' + GREEN + options[0].label + RESET + '\n');
-      const ans = await ask('  Apply? [Y/n/s(kip)] ');
-      const lower = (ans || '').trim().toLowerCase();
-      if (lower === 's' || lower === 'skip') continue;
-      if (lower === 'n' || lower === 'no') continue;
-      strategies[check] = options[0].key;
+      strategies[check] = strategy;
     } else {
-      for (let i = 0; i < options.length; i++) {
-        process.stderr.write('  [' + (i + 1) + '] ' + options[i].label + (i === 0 ? ' (default)' : '') + '\n');
-      }
+      process.stderr.write('  [a] Fix all ' + info.count + '\n');
+      process.stderr.write('  [i] Choose individually\n');
       process.stderr.write('  [s] Skip\n');
-      const ans = await ask('  Choice [1]: ');
+      const ans = await ask('  Choice [a]: ');
       const lower = (ans || '').trim().toLowerCase();
+
       if (lower === 's' || lower === 'skip') continue;
-      const idx = lower === '' ? 0 : parseInt(lower, 10) - 1;
-      if (isNaN(idx) || idx < 0 || idx >= options.length) {
-        strategies[check] = options[0].key;
+
+      if (lower === 'i' || lower === 'individual') {
+        const approved = [];
+        for (const item of info.items) {
+          const label = describeItem(item);
+          const itemAns = await ask('    Fix ' + label + '? [Y/n] ');
+          const itemLower = (itemAns || '').trim().toLowerCase();
+          if (itemLower !== 'n' && itemLower !== 'no') {
+            approved.push(item.context || {});
+          }
+        }
+        if (approved.length === 0) continue;
+        if (approved.length === info.count) {
+          strategies[check] = strategy;
+        } else {
+          strategies[check] = { strategy: strategy, contexts: approved };
+        }
       } else {
-        strategies[check] = options[idx].key;
+        strategies[check] = strategy;
       }
     }
   }
