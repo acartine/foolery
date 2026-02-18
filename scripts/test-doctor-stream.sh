@@ -13,33 +13,47 @@ for arg in "$@"; do
   esac
 done
 
+we_started_dev=0
+DEV_DIST_DIR="/tmp/foolery-dev-doctor-next"
+
 cleanup() {
-  local pid
-  if [[ -f /tmp/foolery-dev-doctor.pid ]]; then
-    pid="$(cat /tmp/foolery-dev-doctor.pid)"
-    kill "$pid" 2>/dev/null || true
-    rm -f /tmp/foolery-dev-doctor.pid
+  if ((we_started_dev)); then
+    local pid
+    if [[ -f /tmp/foolery-dev-doctor.pid ]]; then
+      pid="$(cat /tmp/foolery-dev-doctor.pid)"
+      kill "$pid" 2>/dev/null || true
+      rm -f /tmp/foolery-dev-doctor.pid
+    fi
+    rm -rf "$DEV_DIST_DIR"
   fi
 }
 trap cleanup EXIT
 
-echo "Starting dev server on port $PORT..."
-bun run dev --port "$PORT" &>/dev/null &
-echo $! > /tmp/foolery-dev-doctor.pid
+# Reuse an existing dev server on the test port if one is already running.
+if curl -s --max-time 1 "$URL" >/dev/null 2>&1; then
+  echo "Dev server already running on port $PORT."
+else
+  we_started_dev=1
+  echo "Starting dev server on port $PORT..."
+  # Use a separate distDir so the dev server doesn't conflict with the
+  # prod foolery instance's .next lock.
+  NEXT_DIST_DIR="$DEV_DIST_DIR" bun run dev --port "$PORT" &>/dev/null &
+  echo $! > /tmp/foolery-dev-doctor.pid
 
-# Wait for the dev server to be ready
-attempts=30
-while ((attempts > 0)); do
-  if curl -s --max-time 1 "$URL" >/dev/null 2>&1; then
-    break
+  # Wait for the dev server to be ready
+  attempts=30
+  while ((attempts > 0)); do
+    if curl -s --max-time 1 "$URL" >/dev/null 2>&1; then
+      break
+    fi
+    attempts=$((attempts - 1))
+    sleep 1
+  done
+
+  if ((attempts == 0)); then
+    echo "Dev server failed to start on port $PORT" >&2
+    exit 1
   fi
-  attempts=$((attempts - 1))
-  sleep 1
-done
-
-if ((attempts == 0)); then
-  echo "Dev server failed to start on port $PORT" >&2
-  exit 1
 fi
 
 if [[ "$fix" -eq 0 ]]; then
