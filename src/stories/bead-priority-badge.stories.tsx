@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadPriorityBadge } from '@/components/bead-priority-badge';
 import type { BeadPriority } from '@/lib/types';
 import '@/app/globals.css';

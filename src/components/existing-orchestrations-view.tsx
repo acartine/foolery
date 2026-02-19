@@ -123,13 +123,6 @@ function parseWaveName(title: string): string {
   return stripped || title;
 }
 
-function stripIssuePrefix(id: string): string {
-  const delimiterIndex = id.indexOf("-");
-  if (delimiterIndex < 0 || delimiterIndex === id.length - 1) return id;
-  return id.slice(delimiterIndex + 1);
-}
-
-
 function parseDescriptionLine(
   description: string | undefined,
   label: string
@@ -733,8 +726,6 @@ export function ExistingOrchestrationsView() {
         activeTree.maxDepth
       )
     : MIN_ZOOM_DEPTH;
-  const canZoomIn = Boolean(activeTree && zoomDepth < activeTree.maxDepth);
-  const canZoomOut = Boolean(activeTree && zoomDepth > MIN_ZOOM_DEPTH);
   const effectiveNavigationLevel: NavigationLevel =
     navigationLevel === "tree" && treeCount <= 1
       ? "wave"
@@ -895,13 +886,6 @@ export function ExistingOrchestrationsView() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [drillDown, drillUp, moveLaterally, setZoom]);
 
-  const lateralCount =
-    lateralLevel === "tree"
-      ? treeCount
-      : lateralLevel === "wave"
-        ? activeTree?.waves.length ?? 0
-        : activeWave?.children.length ?? 0;
-  const canMoveLaterally = lateralCount > 1;
   const navigationSummary =
     lateralLevel === "tree"
       ? `tree ${safeTreeIndex + 1}/${Math.max(treeCount, 1)}`

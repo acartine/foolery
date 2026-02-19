@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Folder,
   FolderCheck,
@@ -36,13 +36,7 @@ export function DirectoryBrowser({
   const [loading, setLoading] = useState(false);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open) {
-      loadDirectory();
-    }
-  }, [open]);
-
-  async function loadDirectory(path?: string) {
+  const loadDirectory = useCallback(async (path?: string) => {
     setLoading(true);
     setSelectedPath(null);
     const result = await browseDirectory(path);
@@ -53,7 +47,14 @@ export function DirectoryBrowser({
       setPathInput(displayPath);
     }
     setLoading(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on dialog open
+      loadDirectory();
+    }
+  }, [open, loadDirectory]);
 
   function navigateTo(path: string) {
     loadDirectory(path);

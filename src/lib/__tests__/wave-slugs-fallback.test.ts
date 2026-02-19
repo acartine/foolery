@@ -80,7 +80,7 @@ describe("allocateWaveSlug fallback path when all composed candidates exhausted"
     // Also add the fallbackBase candidate itself (composedCandidate(seed, maxAttempts))
     const fallbackActor = ACTOR_LAST_NAMES[(seed + maxAttempts) % actorCount];
     const fallbackMovie = MOVIE_TITLE_WORDS[(seed * 3 + maxAttempts) % movieCount];
-    const fallbackBase = `${fallbackActor}-${fallbackMovie}`;
+    void `${fallbackActor}-${fallbackMovie}`;
 
     // Now allocate -- should hit the suffix fallback path (lines 182-192)
     const slug = allocateWaveSlug(used);

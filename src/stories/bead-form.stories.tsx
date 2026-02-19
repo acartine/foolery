@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadForm } from '@/components/bead-form';
 import type { Bead } from '@/lib/types';
 import type { CreateBeadInput } from '@/lib/schemas';

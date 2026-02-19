@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { addDep, createBead, showBead, updateBead } from "@/lib/bd";
+import { addDep, createBead } from "@/lib/bd";
 import {
   startInteractionLog,
   noopInteractionLog,

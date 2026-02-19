@@ -14,7 +14,7 @@ import type { Bead } from "@/lib/types";
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
-  const [selectionVersion, setSelectionVersion] = useState(0);
+  const [selectionVersion] = useState(0);
 
   const shippingByBeadId = terminals.reduce<Record<string, string>>(
     (acc, terminal) => {
@@ -79,7 +79,8 @@ export function FinalCutView() {
   useVerificationNotifications(beads);
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
-  const handleSelectionChange = useCallback((ids: string[]) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSelectionChange = useCallback((_ids: string[]) => {
     // selection tracked for potential bulk actions
   }, []);
 

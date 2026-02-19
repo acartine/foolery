@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Nested project build artifacts
+    "codex-release-wrapper/**",
   ]),
   ...storybook.configs["flat/recommended"]
 ]);

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadTable } from '@/components/bead-table';
 import type { Bead } from '@/lib/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

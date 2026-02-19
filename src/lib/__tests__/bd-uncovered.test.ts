@@ -48,10 +48,6 @@ const BEAD_JSON = {
   updated_at: "2026-01-02T00:00:00Z",
 };
 
-function beadArrayStr(overrides: Record<string, unknown> = {}): string {
-  return JSON.stringify([{ ...BEAD_JSON, ...overrides }]);
-}
-
 describe("searchBeads skips empty filter values (line 185)", () => {
   beforeEach(() => {
     execCalls.length = 0;

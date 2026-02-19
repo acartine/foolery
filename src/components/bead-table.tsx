@@ -201,7 +201,7 @@ export function BeadTable({
         queryClient.invalidateQueries({ queryKey: ["bead", id] });
       }
     },
-    onError: (_err, { id }, context) => {
+    onError: (_err, _vars, context) => {
       toast.error("Failed to update beat");
       // Roll back optimistic update for verification
       if (context?.isVerify && context.previousFinalCut) {
