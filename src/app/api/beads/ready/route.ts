@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readyBeads, listBeads } from "@/lib/bd";
+import { listBeads } from "@/lib/bd";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
 import type { Bead } from "@/lib/types";
@@ -8,16 +8,17 @@ export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const repoPath = params._repo;
   delete params._repo;
-  // Strip search query — bd ready doesn't accept --q
   const query = params.q;
   delete params.q;
 
-  const [rawReady, rawInProgress] = await Promise.all([
-    readyBeads(params, repoPath),
+  // Query open + in_progress beads via bd list (which returns labels)
+  // instead of bd ready (which omits labels from its JSON output).
+  const [rawOpen, rawInProgress] = await Promise.all([
+    listBeads({ ...params, status: "open" }, repoPath),
     listBeads({ ...params, status: "in_progress" }, repoPath),
   ]);
 
-  const readyResult = withErrorSuppression("readyBeads", rawReady, params, repoPath);
+  const openResult = withErrorSuppression("listBeads", rawOpen, { ...params, status: "open" }, repoPath);
   const inProgressResult = withErrorSuppression(
     "listBeads",
     rawInProgress,
@@ -25,26 +26,26 @@ export async function GET(request: NextRequest) {
     repoPath,
   );
 
-  if (!readyResult.ok) {
-    const status = readyResult.error === DEGRADED_ERROR_MESSAGE ? 503 : 500;
-    return NextResponse.json({ error: readyResult.error }, { status });
+  if (!openResult.ok) {
+    const status = openResult.error === DEGRADED_ERROR_MESSAGE ? 503 : 500;
+    return NextResponse.json({ error: openResult.error }, { status });
   }
 
   const merged = new Map<string, Bead>();
-  for (const bead of readyResult.data ?? []) merged.set(bead.id, bead);
+  for (const bead of openResult.data ?? []) merged.set(bead.id, bead);
   for (const bead of (inProgressResult.ok ? inProgressResult.data ?? [] : [])) {
     if (!merged.has(bead.id)) merged.set(bead.id, bead);
   }
 
-  // Closed beads and those awaiting verification are never "ready"
+  // Beads awaiting verification are not "ready"
   let result = Array.from(merged.values()).filter(
-    b => b.status !== "closed" && !b.labels?.includes("stage:verification")
+    b => !b.labels?.includes("stage:verification")
   );
 
   // Hide descendants whose parent chain is not in the ready/in-progress set.
   result = filterByVisibleAncestorChain(result);
 
-  // Client-side search filtering — bd ready doesn't support --q
+  // Client-side search filtering
   if (query) {
     const q = query.toLowerCase();
     result = result.filter(b =>
