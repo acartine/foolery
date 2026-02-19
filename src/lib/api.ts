@@ -145,6 +145,19 @@ export function addDep(
   });
 }
 
+export function mergeBeads(
+  survivorId: string,
+  consumedId: string,
+  repo?: string
+): Promise<BdResult<{ survivorId: string; consumedId: string }>> {
+  const body: Record<string, string> = { survivorId, consumedId };
+  if (repo) body._repo = repo;
+  return request<{ survivorId: string; consumedId: string }>(`${BASE}/merge`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
 export async function fetchBeadsFromAllRepos(
   repos: RegisteredRepo[],
   params?: Record<string, string>

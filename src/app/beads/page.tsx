@@ -9,6 +9,7 @@ import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { BeadDetailLightbox } from "@/components/bead-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
+import { MergeBeadsDialog } from "@/components/merge-beads-dialog";
 import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
@@ -70,6 +71,8 @@ function BeadsPageInner() {
   const isBreakdownView = beadsView === "breakdown";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
+  const [mergeBeadIds, setMergeBeadIds] = useState<string[]>([]);
   const queryClient = useQueryClient();
   const { filters, activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
@@ -283,6 +286,18 @@ function BeadsPageInner() {
     [beads, activeRepo, upsertTerminal]
   );
 
+  const handleMergeBeads = useCallback(
+    (ids: string[]) => {
+      setMergeBeadIds(ids);
+      setMergeDialogOpen(true);
+    },
+    []
+  );
+
+  const handleMergeComplete = useCallback(() => {
+    setSelectionVersion((v) => v + 1);
+  }, []);
+
   const setBeadDetailParams = useCallback((id: string | null, repo: string | undefined, mode: "push" | "replace") => {
     const params = new URLSearchParams(searchParams.toString());
     if (id) params.set("bead", id);
@@ -330,6 +345,7 @@ function BeadsPageInner() {
               onBulkUpdate={handleBulkUpdate}
               onClearSelection={handleClearSelection}
               onSceneBeads={handleSceneBeads}
+              onMergeBeads={handleMergeBeads}
             />
           )}
         </div>
@@ -392,6 +408,12 @@ function BeadsPageInner() {
         initialBead={initialDetailBead}
         onOpenChange={handleBeadLightboxOpenChange}
         onMoved={handleMovedBead}
+      />
+      <MergeBeadsDialog
+        open={mergeDialogOpen}
+        onOpenChange={setMergeDialogOpen}
+        beads={beads.filter((b) => mergeBeadIds.includes(b.id))}
+        onMerged={handleMergeComplete}
       />
     </div>
   );

@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { X, Clapperboard } from "lucide-react";
+import { X, Clapperboard, Merge } from "lucide-react";
 import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 
@@ -44,6 +44,7 @@ interface FilterBarProps {
   onBulkUpdate?: (fields: UpdateBeadInput) => void;
   onClearSelection?: () => void;
   onSceneBeads?: (ids: string[]) => void;
+  onMergeBeads?: (ids: string[]) => void;
 }
 
 export function BulkEditControls({
@@ -51,8 +52,9 @@ export function BulkEditControls({
   onBulkUpdate,
   onClearSelection,
   onSceneBeads,
+  onMergeBeads,
 }: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
-  Pick<FilterBarProps, "onSceneBeads">) {
+  Pick<FilterBarProps, "onSceneBeads" | "onMergeBeads">) {
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <span className="text-sm font-medium whitespace-nowrap">
@@ -68,6 +70,18 @@ export function BulkEditControls({
         >
           <Clapperboard className="h-3.5 w-3.5" />
           Scene!
+        </Button>
+      )}
+      {onMergeBeads && selectedIds.length === 2 && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1"
+          title="Merge two beats into one"
+          onClick={() => onMergeBeads(selectedIds)}
+        >
+          <Merge className="h-3.5 w-3.5" />
+          Merge
         </Button>
       )}
       <Select
@@ -214,6 +228,7 @@ export function FilterBar({
   onBulkUpdate,
   onClearSelection,
   onSceneBeads,
+  onMergeBeads,
 }: FilterBarProps) {
   if (selectedIds && selectedIds.length > 0 && onBulkUpdate && onClearSelection) {
     return (
@@ -222,6 +237,7 @@ export function FilterBar({
         onBulkUpdate={onBulkUpdate}
         onClearSelection={onClearSelection}
         onSceneBeads={onSceneBeads}
+        onMergeBeads={onMergeBeads}
       />
     );
   }
