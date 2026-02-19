@@ -1,10 +1,12 @@
 import { execFile } from "node:child_process";
+import { resolve } from "node:path";
 import type { Bead, BeadDependency, BdResult } from "./types";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
 const OUT_OF_SYNC_SIGNATURE = "Database out of sync with JSONL";
 const NO_DAEMON_FLAG = "--no-daemon";
+const repoExecQueues = new Map<string, { tail: Promise<void>; pending: number }>();
 
 function baseArgs(): string[] {
   const args: string[] = [];
@@ -13,6 +15,45 @@ function baseArgs(): string[] {
 }
 
 type ExecResult = { stdout: string; stderr: string; exitCode: number };
+
+function repoQueueKey(cwd?: string): string {
+  return resolve(cwd ?? process.cwd());
+}
+
+async function withRepoSerialization<T>(
+  cwd: string | undefined,
+  run: () => Promise<T>
+): Promise<T> {
+  const key = repoQueueKey(cwd);
+  let state = repoExecQueues.get(key);
+  if (!state) {
+    state = { tail: Promise.resolve(), pending: 0 };
+    repoExecQueues.set(key, state);
+  }
+
+  let release!: () => void;
+  const gate = new Promise<void>((resolveGate) => {
+    release = resolveGate;
+  });
+
+  const waitForTurn = state.tail;
+  state.tail = waitForTurn.then(
+    () => gate,
+    () => gate
+  );
+  state.pending += 1;
+
+  try {
+    await waitForTurn;
+    return await run();
+  } finally {
+    release();
+    state.pending -= 1;
+    if (state.pending === 0) {
+      repoExecQueues.delete(key);
+    }
+  }
+}
 
 function isOutOfSyncError(result: ExecResult): boolean {
   return `${result.stderr}\n${result.stdout}`.includes(OUT_OF_SYNC_SIGNATURE);
@@ -45,17 +86,19 @@ async function exec(
   args: string[],
   options?: { cwd?: string }
 ): Promise<ExecResult> {
-  const firstResult = await execOnce(args, options);
-  if (firstResult.exitCode === 0) return firstResult;
-  if (args[0] === "sync" || !isOutOfSyncError(firstResult)) {
-    return firstResult;
-  }
+  return withRepoSerialization(options?.cwd, async () => {
+    const firstResult = await execOnce(args, options);
+    if (firstResult.exitCode === 0) return firstResult;
+    if (args[0] === "sync" || !isOutOfSyncError(firstResult)) {
+      return firstResult;
+    }
 
-  // Auto-heal stale bd SQLite metadata after repo switches/pulls by importing JSONL
-  // and retrying the original command once in the same repo.
-  const syncResult = await execOnce(["sync", "--import-only"], options);
-  if (syncResult.exitCode !== 0) return firstResult;
-  return execOnce(args, options);
+    // Auto-heal stale bd SQLite metadata after repo switches/pulls by importing JSONL
+    // and retrying the original command once in the same repo.
+    const syncResult = await execOnce(["sync", "--import-only"], options);
+    if (syncResult.exitCode !== 0) return firstResult;
+    return execOnce(args, options);
+  });
 }
 
 async function execWithNoDaemonFallback(
