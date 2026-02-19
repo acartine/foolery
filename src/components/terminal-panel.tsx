@@ -8,6 +8,10 @@ import { fetchBead } from "@/lib/api";
 import { useAgentInfo } from "@/hooks/use-agent-info";
 import { AgentInfoBar } from "@/components/agent-info-bar";
 import type { TerminalEvent } from "@/lib/types";
+import {
+  classifyTerminalFailure,
+  type TerminalFailureGuidance,
+} from "@/lib/terminal-failure";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
 import { toast } from "sonner";
@@ -85,6 +89,8 @@ export function TerminalPanel() {
   const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const autoCloseTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const recentOutputBySession = useRef<Map<string, string>>(new Map());
+  const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const isMaximized = panelHeight > 70;
   const agentAction = activeTerminal?.beadIds ? "scene" : "take";
   const agentInfo = useAgentInfo(agentAction);
@@ -102,7 +108,8 @@ export function TerminalPanel() {
   // Auto-close tabs after process completion
   useEffect(() => {
     for (const terminal of terminals) {
-      const isDone = terminal.status === "completed" || terminal.status === "error";
+      // Keep errored tabs open so users can inspect what failed.
+      const isDone = terminal.status === "completed";
       const alreadyPending = pendingClose.has(terminal.sessionId);
       const hasTimer = autoCloseTimers.current.has(terminal.sessionId);
 
@@ -135,15 +142,29 @@ export function TerminalPanel() {
         autoCloseTimers.current.delete(sessionId);
       }
     }
+
+    // Clean up per-session output/error hints for removed terminals.
+    for (const sessionId of recentOutputBySession.current.keys()) {
+      if (!terminals.some((t) => t.sessionId === sessionId)) {
+        recentOutputBySession.current.delete(sessionId);
+        failureHintBySession.current.delete(sessionId);
+      }
+    }
   }, [terminals, pendingClose, markPendingClose, removeTerminal]);
 
   // Cleanup all timers on unmount
   useEffect(() => {
+    const timers = autoCloseTimers.current;
+    const outputs = recentOutputBySession.current;
+    const hints = failureHintBySession.current;
+
     return () => {
-      for (const timer of autoCloseTimers.current.values()) {
+      for (const timer of timers.values()) {
         clearTimeout(timer);
       }
-      autoCloseTimers.current.clear();
+      timers.clear();
+      outputs.clear();
+      hints.clear();
     };
   }, []);
 
@@ -225,6 +246,16 @@ export function TerminalPanel() {
       liveTerm.writeln("");
 
       let recoveryInFlight = false;
+      const appendRecentOutput = (chunk: string) => {
+        if (!chunk) return;
+        const previous = recentOutputBySession.current.get(sessionId) ?? "";
+        const combined = previous + chunk;
+        // Keep a bounded tail to avoid unbounded memory growth.
+        recentOutputBySession.current.set(
+          sessionId,
+          combined.length > 16_000 ? combined.slice(-16_000) : combined
+        );
+      };
 
       const maybeRecoverSceneSession = async () => {
         if (recoveryInFlight) return;
@@ -289,8 +320,10 @@ export function TerminalPanel() {
         (event: TerminalEvent) => {
           if (disposed) return;
           if (event.type === "stdout") {
+            appendRecentOutput(event.data);
             liveTerm.write(event.data);
           } else if (event.type === "stderr") {
+            appendRecentOutput(event.data);
             liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
           } else if (event.type === "exit") {
             const code = parseInt(event.data, 10);
@@ -299,6 +332,22 @@ export function TerminalPanel() {
               liveTerm.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
             } else {
               liveTerm.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
+
+              const text = recentOutputBySession.current.get(sessionId) ?? "";
+              const failureHint =
+                failureHintBySession.current.get(sessionId) ??
+                classifyTerminalFailure(text, agentInfo?.command);
+
+              if (failureHint) {
+                failureHintBySession.current.set(sessionId, failureHint);
+                liveTerm.writeln(`\x1b[33m! ${failureHint.title}\x1b[0m`);
+                failureHint.steps.forEach((step, index) => {
+                  liveTerm.writeln(`\x1b[90m  ${index + 1}. ${step}\x1b[0m`);
+                });
+                toast.error(failureHint.toast);
+              } else {
+                toast.error(`Session failed (exit code ${code}). Open the terminal tab for details.`);
+              }
             }
             updateStatus(sessionId, code === 0 ? "completed" : "error");
           }
@@ -340,6 +389,7 @@ export function TerminalPanel() {
     removeTerminal,
     upsertTerminal,
     updateStatus,
+    agentInfo?.command,
   ]);
 
   useEffect(() => {
