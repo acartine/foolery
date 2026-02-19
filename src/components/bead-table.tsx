@@ -168,12 +168,54 @@ export function BeadTable({
       const repo = bead?._repoPath as string | undefined;
       return updateBead(id, fields, repo);
     },
-    onSuccess: (_data, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      queryClient.invalidateQueries({ queryKey: ["bead", id] });
+    onMutate: async ({ id, fields }) => {
+      const isVerify = fields.status === "closed" &&
+        fields.removeLabels?.includes("stage:verification");
+      if (!isVerify) return { isVerify: false as const };
+
+      // Show immediate feedback
+      const bead = data.find((b) => b.id === id);
+      toast.success(`Verified: ${bead?.title ?? id}`);
+
+      // Cancel outgoing finalcut refetches so they don't overwrite optimistic data
+      await queryClient.cancelQueries({ queryKey: ["beads", "finalcut"] });
+
+      // Snapshot current finalcut cache for rollback
+      const previousFinalCut = queryClient.getQueriesData({ queryKey: ["beads", "finalcut"] });
+
+      // Optimistically remove the verified bead from the finalcut cache
+      queryClient.setQueriesData(
+        { queryKey: ["beads", "finalcut"] },
+        (old: unknown) => {
+          const prev = old as { ok: boolean; data?: Bead[] } | undefined;
+          if (!prev?.data) return prev;
+          return { ...prev, data: prev.data.filter((b) => b.id !== id) };
+        }
+      );
+
+      return { isVerify: true as const, previousFinalCut };
     },
-    onError: () => {
+    onSuccess: (_data, { id }, context) => {
+      if (!context?.isVerify) {
+        queryClient.invalidateQueries({ queryKey: ["beads"] });
+        queryClient.invalidateQueries({ queryKey: ["bead", id] });
+      }
+    },
+    onError: (_err, { id }, context) => {
       toast.error("Failed to update beat");
+      // Roll back optimistic update for verification
+      if (context?.isVerify && context.previousFinalCut) {
+        for (const [key, snapData] of context.previousFinalCut) {
+          queryClient.setQueryData(key, snapData);
+        }
+      }
+    },
+    onSettled: (_data, _err, { id }, context) => {
+      if (context?.isVerify) {
+        // Re-validate after optimistic update to ensure consistency
+        queryClient.invalidateQueries({ queryKey: ["beads"] });
+        queryClient.invalidateQueries({ queryKey: ["bead", id] });
+      }
     },
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads } from "@/lib/api";
 import { startSession } from "@/lib/terminal-api";
 import { BeadTable } from "@/components/bead-table";
@@ -72,6 +72,7 @@ export function FinalCutView() {
     },
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
+    placeholderData: keepPreviousData,
   });
 
   const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
