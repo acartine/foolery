@@ -253,11 +253,13 @@ See `AGENTS.md` for the full bead lifecycle and handoff protocol.
 
 ## Release Process
 
+Create and publish a GitHub release from `main`:
+
 ```bash
-bun run release -- v0.1.16
+bun run release -- v0.1.1
 ```
 
-This creates a GitHub Release, triggers the `release-runtime-artifact` workflow (builds tarballs for macOS and Linux on both x64 and arm64), and blocks until assets are uploaded. Users get the update via `foolery update`.
+This runs `gh release create <tag> --target main --generate-notes --latest` and triggers the `release-runtime-artifact` workflow (builds tarballs for macOS and Linux on both x64 and arm64). The command blocks until the workflow completes, streaming status updates every 10 seconds, and fails if runtime tarball assets are missing. Users get the update via `foolery update`.
 
 ## Useful Links
 
