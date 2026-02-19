@@ -65,9 +65,11 @@
 
 Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking, giving you a visual control surface for organizing, orchestrating, and reviewing AI agent work across your repositories.
 
+[Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true). It won't make you dumber.
+
 ## Install
 
-**Prerequisites:** [Node.js](https://nodejs.org), [curl](https://curl.se), [tar](https://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
+**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
