@@ -569,6 +569,7 @@ STATE_DIR="\$2"
 LAUNCHER_PATH="\$3"
 BIN_DIR="\$4"
 INSTALL_ROOT="\$5"
+CONFIG_DIR="\$6"
 
 log() {
   printf '[foolery-uninstall] %s\n' "\$*"
@@ -597,9 +598,11 @@ remove_if_empty() {
 remove_path "\$APP_DIR"
 remove_path "\$STATE_DIR"
 remove_path "\$LAUNCHER_PATH"
+remove_path "\$CONFIG_DIR"
 
 remove_if_empty "\$INSTALL_ROOT"
 remove_if_empty "\$BIN_DIR"
+remove_if_empty "\$(dirname "\$CONFIG_DIR")"
 
   log "Uninstall complete."
 UNINSTALL
@@ -610,7 +613,7 @@ UNINSTALL
   fi
 
   chmod +x "\$tmp_script"
-  "\$tmp_script" "\$APP_DIR" "\$STATE_DIR" "\$LAUNCHER_PATH" "\$BIN_DIR" "\$INSTALL_ROOT"
+  "\$tmp_script" "\$APP_DIR" "\$STATE_DIR" "\$LAUNCHER_PATH" "\$BIN_DIR" "\$INSTALL_ROOT" "\$HOME/.config/foolery"
   rm -f "\$tmp_script"
 }
 
