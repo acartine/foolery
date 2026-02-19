@@ -114,7 +114,7 @@ Browse and manage your orchestration trees. Navigate dependency hierarchies with
 
 The planning room. Select a set of beats and ask Claude to organize them into dependency-aware scenes. Watch the plan stream in real time, edit wave names and agent counts, then apply the whole orchestration with one click.
 
-![Direct workflow](docs/screenshots/new-beat.png)
+![Direct workflow](docs/screenshots/direct.png)
 
 ### Final Cut
 
