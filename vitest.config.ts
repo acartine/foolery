@@ -16,6 +16,11 @@ export default defineConfig({
     alias: { '@': path.join(dirname, 'src') },
   },
   test: {
+    coverage: {
+      exclude: [
+        'src/components/**',
+      ],
+    },
     projects: [
       {
         extends: true,
