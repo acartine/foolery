@@ -198,7 +198,32 @@ export function BeadTable({
       const isReject = fields.status === "open" &&
         fields.removeLabels?.includes("stage:verification");
 
-      if (!isVerify && !isReject) return { isVerify: false as const, isReject: false as const };
+      // For ALL property changes: optimistically update the beads cache
+      await queryClient.cancelQueries({ queryKey: ["beads"] });
+      const previousBeads = queryClient.getQueriesData({ queryKey: ["beads"] });
+
+      queryClient.setQueriesData(
+        { queryKey: ["beads"] },
+        (old: unknown) => {
+          const prev = old as { ok: boolean; data?: Bead[] } | undefined;
+          if (!prev?.data) return prev;
+          if (isVerify || isReject) {
+            // Verify/reject: remove from list (existing behavior for finalcut)
+            return { ...prev, data: prev.data.filter((b) => b.id !== id) };
+          }
+          // Regular property change: merge fields into matching bead
+          return {
+            ...prev,
+            data: prev.data.map((b) =>
+              b.id === id ? { ...b, ...fields, updated: new Date().toISOString() } : b
+            ),
+          };
+        }
+      );
+
+      if (!isVerify && !isReject) {
+        return { isVerify: false as const, isReject: false as const, previousBeads };
+      }
 
       // Show immediate feedback and mark row for transition styling
       const bead = data.find((b) => b.id === id);
@@ -210,51 +235,32 @@ export function BeadTable({
         setRejectingIds((prev) => new Set(prev).add(id));
       }
 
-      // Cancel outgoing finalcut refetches so they don't overwrite optimistic data
-      await queryClient.cancelQueries({ queryKey: ["beads", "finalcut"] });
-
-      // Snapshot current finalcut cache for rollback
-      const previousFinalCut = queryClient.getQueriesData({ queryKey: ["beads", "finalcut"] });
-
-      // Optimistically remove the bead from the finalcut cache
-      queryClient.setQueriesData(
-        { queryKey: ["beads", "finalcut"] },
-        (old: unknown) => {
-          const prev = old as { ok: boolean; data?: Bead[] } | undefined;
-          if (!prev?.data) return prev;
-          return { ...prev, data: prev.data.filter((b) => b.id !== id) };
-        }
-      );
-
-      return { isVerify: isVerify as boolean, isReject: isReject as boolean, previousFinalCut };
+      return { isVerify: isVerify as boolean, isReject: isReject as boolean, previousBeads };
     },
-    onSuccess: (_data, { id }, context) => {
-      if (!context?.isVerify && !context?.isReject) {
-        queryClient.invalidateQueries({ queryKey: ["beads"] });
-        queryClient.invalidateQueries({ queryKey: ["bead", id] });
-      }
+    onSuccess: () => {
+      // Invalidation is handled in onSettled for all cases
     },
     onError: (_err, { id }, context) => {
       toast.error("Failed to update beat");
-      // Roll back optimistic update for verification or rejection
-      if ((context?.isVerify || context?.isReject) && context.previousFinalCut) {
-        if (context.isVerify) {
-          setVerifyingIds((prev) => {
-            const next = new Set(prev);
-            next.delete(id);
-            return next;
-          });
-        }
-        if (context.isReject) {
-          setRejectingIds((prev) => {
-            const next = new Set(prev);
-            next.delete(id);
-            return next;
-          });
-        }
-        for (const [key, snapData] of context.previousFinalCut) {
+      // Roll back optimistic cache update
+      if (context?.previousBeads) {
+        for (const [key, snapData] of context.previousBeads) {
           queryClient.setQueryData(key, snapData);
         }
+      }
+      if (context?.isVerify) {
+        setVerifyingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }
+      if (context?.isReject) {
+        setRejectingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
       }
     },
     onSettled: (_data, _err, { id }, context) => {
@@ -270,8 +276,8 @@ export function BeadTable({
         return next;
       });
       if (context?.isVerify || context?.isReject) {
-        // CRITICAL: Do NOT broadly invalidate ["beads"] here.
-        // The finalcut cache was already optimistically updated above.
+        // CRITICAL: Do NOT broadly invalidate ["beads"] here for verify/reject.
+        // The cache was already optimistically updated above.
         // Broad invalidation causes the finalcut query to refetch, and
         // during that refetch window the list can appear empty (the
         // regression this fixes). Instead, only refresh non-finalcut
@@ -281,6 +287,10 @@ export function BeadTable({
           predicate: (query) =>
             !(query.queryKey.length >= 2 && query.queryKey[1] === "finalcut"),
         });
+        queryClient.invalidateQueries({ queryKey: ["bead", id] });
+      } else {
+        // Regular property changes: refresh all beads and the individual bead
+        queryClient.invalidateQueries({ queryKey: ["beads"] });
         queryClient.invalidateQueries({ queryKey: ["bead", id] });
       }
     },

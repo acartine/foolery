@@ -66,12 +66,62 @@ export function BeadDetailLightbox({
       const result = await updateBead(detailId, fields, repo);
       if (!result.ok) throw new Error(result.error ?? "Failed to update beat");
     },
-    onSuccess: () => {
+    onMutate: async (fields) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic data
+      await queryClient.cancelQueries({ queryKey: ["bead", detailId, repo] });
+      await queryClient.cancelQueries({ queryKey: ["beads"] });
+
+      // Snapshot current caches for rollback
+      const previousBead = queryClient.getQueryData(["bead", detailId, repo]);
+      const previousBeads = queryClient.getQueriesData({ queryKey: ["beads"] });
+
+      // Optimistically update the individual bead query
+      queryClient.setQueryData(
+        ["bead", detailId, repo],
+        (old: unknown) => {
+          const prev = old as { ok: boolean; data?: Bead } | undefined;
+          if (!prev?.data) return prev;
+          return {
+            ...prev,
+            data: { ...prev.data, ...fields, updated: new Date().toISOString() },
+          };
+        }
+      );
+
+      // Optimistically update the beads list queries
+      queryClient.setQueriesData(
+        { queryKey: ["beads"] },
+        (old: unknown) => {
+          const prev = old as { ok: boolean; data?: Bead[] } | undefined;
+          if (!prev?.data) return prev;
+          return {
+            ...prev,
+            data: prev.data.map((b) =>
+              b.id === detailId
+                ? { ...b, ...fields, updated: new Date().toISOString() }
+                : b
+            ),
+          };
+        }
+      );
+
+      return { previousBead, previousBeads };
+    },
+    onError: (error: Error, _fields, context) => {
+      toast.error(error.message);
+      // Roll back optimistic updates
+      if (context?.previousBead) {
+        queryClient.setQueryData(["bead", detailId, repo], context.previousBead);
+      }
+      if (context?.previousBeads) {
+        for (const [key, snapData] of context.previousBeads) {
+          queryClient.setQueryData(key, snapData);
+        }
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["beads"] });
       queryClient.invalidateQueries({ queryKey: ["bead", detailId, repo] });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
     },
   });
 
