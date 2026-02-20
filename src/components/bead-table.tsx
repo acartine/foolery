@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowUpDown, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
@@ -157,6 +158,7 @@ export function BeadTable({
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
   const { togglePanel: toggleTerminalPanel } = useTerminalStore();
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
@@ -173,9 +175,10 @@ export function BeadTable({
         fields.removeLabels?.includes("stage:verification");
       if (!isVerify) return { isVerify: false as const };
 
-      // Show immediate feedback
+      // Show immediate feedback and mark row as verifying for transition
       const bead = data.find((b) => b.id === id);
       toast.success(`Verified: ${bead?.title ?? id}`);
+      setVerifyingIds((prev) => new Set(prev).add(id));
 
       // Cancel outgoing finalcut refetches so they don't overwrite optimistic data
       await queryClient.cancelQueries({ queryKey: ["beads", "finalcut"] });
@@ -201,19 +204,39 @@ export function BeadTable({
         queryClient.invalidateQueries({ queryKey: ["bead", id] });
       }
     },
-    onError: (_err, _vars, context) => {
+    onError: (_err, { id }, context) => {
       toast.error("Failed to update beat");
       // Roll back optimistic update for verification
       if (context?.isVerify && context.previousFinalCut) {
+        setVerifyingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
         for (const [key, snapData] of context.previousFinalCut) {
           queryClient.setQueryData(key, snapData);
         }
       }
     },
     onSettled: (_data, _err, { id }, context) => {
+      // Always clear verifying state
+      setVerifyingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
       if (context?.isVerify) {
-        // Re-validate after optimistic update to ensure consistency
-        queryClient.invalidateQueries({ queryKey: ["beads"] });
+        // CRITICAL: Do NOT broadly invalidate ["beads"] here.
+        // The finalcut cache was already optimistically updated above.
+        // Broad invalidation causes the finalcut query to refetch, and
+        // during that refetch window the list can appear empty (the
+        // regression this fixes). Instead, only refresh non-finalcut
+        // beads queries and the individual bead detail.
+        queryClient.invalidateQueries({
+          queryKey: ["beads"],
+          predicate: (query) =>
+            !(query.queryKey.length >= 2 && query.queryKey[1] === "finalcut"),
+        });
         queryClient.invalidateQueries({ queryKey: ["bead", id] });
       }
     },
@@ -587,10 +610,15 @@ export function BeadTable({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
+            table.getRowModel().rows.map((row) => {
+              const isVerifying = verifyingIds.has(row.original.id);
+              return (
               <TableRow
                 key={row.id}
-                className={focusedRowId === row.original.id ? "bg-muted/50" : ""}
+                className={cn(
+                  focusedRowId === row.original.id && "bg-muted/50",
+                  isVerifying && "bg-green-50 opacity-50 transition-all duration-300 dark:bg-green-950/30",
+                )}
                 onClick={() => handleRowFocus(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -608,7 +636,8 @@ export function BeadTable({
                   </TableCell>
                 ))}
               </TableRow>
-            ))
+              );
+            })
           ) : (
             <TableRow>
               <TableCell
