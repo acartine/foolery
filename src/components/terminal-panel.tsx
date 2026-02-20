@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useMemo } from "react";
-import { Square, Maximize2, Minimize2, X } from "lucide-react";
+import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession, startSceneSession, startSession } from "@/lib/terminal-api";
 import { fetchBead } from "@/lib/api";
@@ -571,6 +571,26 @@ export function TerminalPanel() {
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className="rounded p-1 text-white/60 hover:bg-white/10 hover:text-white"
+            title="Copy output"
+            onClick={() => {
+              const term = termRef.current;
+              if (!term) return;
+              const buffer = term.buffer.active;
+              const lines: string[] = [];
+              for (let i = 0; i <= buffer.length - 1; i++) {
+                const line = buffer.getLine(i);
+                if (line) lines.push(line.translateToString(true));
+              }
+              while (lines.length > 0 && lines[lines.length - 1].trim() === "") lines.pop();
+              navigator.clipboard.writeText(lines.join("\n"));
+              toast.success("Copied terminal output");
+            }}
+          >
+            <Copy className="size-3.5" />
+          </button>
           {activeTerminal?.status === "running" && (
             <button
               type="button"
