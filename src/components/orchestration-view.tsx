@@ -44,6 +44,7 @@ import type {
   OrchestrationSession,
 } from "@/lib/types";
 import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
+import { consumeDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { useAgentInfo } from "@/hooks/use-agent-info";
 import { AgentInfoLine } from "@/components/agent-info-line";
 
@@ -340,6 +341,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
   const terminalRef = useRef<HTMLDivElement>(null);
   const pendingLogRef = useRef("");
+  const autorunPendingRef = useRef(false);
   const sessionId = session?.id;
 
   const repoLabel = useMemo(() => {
@@ -385,7 +387,26 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
       }
     }
 
-    // 2. Restore saved view state (preserves state across view toggles)
+    // 2. Direct-prefill payload (Breakdown CTA or external link)
+    const prefill = consumeDirectPrefillPayload();
+    if (prefill) {
+      const prefillTimer = window.setTimeout(() => {
+        setObjective(prefill.prompt);
+        setSession(null);
+        setPlan(null);
+        setLogLines([]);
+        setApplyResult(null);
+        setWaveEdits({});
+        pendingLogRef.current = "";
+        setStatusText("Prompt prefilled — ready to plan");
+        if (prefill.autorun) {
+          autorunPendingRef.current = true;
+        }
+      }, 0);
+      return () => window.clearTimeout(prefillTimer);
+    }
+
+    // 3. Restore saved view state (preserves state across view toggles)
     const saved = loadOrchestrationViewState(activeRepo);
     if (!saved) return;
 
@@ -559,6 +580,18 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     setSession(result.data);
     setStatusText("The agent is organizing scenes...");
   };
+
+  // Auto-run after prefill hydration (one-shot, guarded by ref)
+  useEffect(() => {
+    if (!autorunPendingRef.current) return;
+    if (!activeRepo || isStarting || isRunning) return;
+    // Wait until objective is populated (hydration renders first)
+    if (!objective) return;
+
+    autorunPendingRef.current = false;
+    void handleStart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRepo, objective, isStarting, isRunning]);
 
   const handleAbort = async () => {
     if (!session) return;
