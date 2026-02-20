@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
 import { useVerificationCount } from "@/hooks/use-verification-count";
 
 type VersionBanner = {
@@ -57,6 +58,7 @@ export function AppHeader() {
   const [versionBanner, setVersionBanner] = useState<VersionBanner | null>(null);
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
+  const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
   const verificationCount = useVerificationCount(isBeadsRoute, beadsView === "finalcut");
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present
@@ -184,6 +186,22 @@ export function AppHeader() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeadsRoute, beadsView, setBeadsView]);
+
+  // Shift+T to toggle terminal panel (global — works in all views)
+  useEffect(() => {
+    if (!isBeadsRoute) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+      if (e.key === "T" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        toggleTerminalPanel();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isBeadsRoute, toggleTerminalPanel]);
 
   // Button config changes per view: hidden on Direct/Scenes/Breakdown, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beadsView === "list" || beadsView === "finalcut";

@@ -40,7 +40,6 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
-import { useTerminalStore } from "@/stores/terminal-store";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
@@ -159,7 +158,6 @@ export function BeadTable({
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
   const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
-  const { togglePanel: toggleTerminalPanel } = useTerminalStore();
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
   const filtersKey = JSON.stringify(filters);
@@ -536,10 +534,6 @@ export function BeadTable({
         if (bead.status === "closed" || bead.type === "gate") return;
         e.preventDefault();
         onShipBead(bead);
-      } else if (e.key === "T" && e.shiftKey) {
-        // Shift-T: Toggle terminal panel
-        e.preventDefault();
-        toggleTerminalPanel();
       } else if (e.key === "R" && e.shiftKey && (e.metaKey || e.ctrlKey)) {
         // Cmd+Shift+R: previous repo
         e.preventDefault();
@@ -571,7 +565,7 @@ export function BeadTable({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, toggleTerminalPanel, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl]);
+  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl]);
 
   return (
     <div ref={tableContainerRef} tabIndex={-1} className="space-y-1 outline-none">
