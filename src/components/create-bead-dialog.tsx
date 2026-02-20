@@ -15,6 +15,7 @@ import { BeadForm } from "@/components/bead-form";
 import type { RelationshipDeps } from "@/components/bead-form";
 import { createBead, addDep } from "@/lib/api";
 import type { CreateBeadInput } from "@/lib/schemas";
+import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
 
 async function addDepsForBead(
   beadId: string,
@@ -114,9 +115,14 @@ export function CreateBeadDialog({
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["beads"] });
 
+      setDirectPrefillPayload({
+        prompt: buildBeadBreakdownPrompt(result.data.id, data.title),
+        autorun: true,
+        sourceBeadId: result.data.id,
+      });
+
       const params = new URLSearchParams(searchParams.toString());
-      params.set("view", "breakdown");
-      params.set("parent", result.data.id);
+      params.set("view", "orchestration");
       router.push(`/beads?${params.toString()}`);
     } finally {
       submittingRef.current = false;
