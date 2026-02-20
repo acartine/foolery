@@ -20,6 +20,7 @@ interface AgentHistoryQuery {
   repoPath?: string;
   beadId?: string;
   beadRepoPath?: string;
+  sinceHours?: number;
   logRoot?: string;
 }
 
@@ -292,6 +293,14 @@ export async function readAgentHistory(
 
   const beatMap = new Map<string, AgentHistoryBeatSummary>();
   const selectedSessions: AgentHistorySession[] = [];
+  const sinceHours =
+    typeof query.sinceHours === "number" && Number.isFinite(query.sinceHours)
+      ? query.sinceHours
+      : undefined;
+  const recencyThresholdMs =
+    typeof sinceHours === "number" && sinceHours > 0
+      ? Date.now() - sinceHours * 60 * 60 * 1000
+      : undefined;
 
   for (const filePath of logFiles) {
     const content = await readLogFile(filePath);
@@ -348,8 +357,14 @@ export async function readAgentHistory(
     }
   }
 
+  const beats = Array.from(beatMap.values());
+  const filteredBeats =
+    recencyThresholdMs !== undefined
+      ? beats.filter((beat) => parseMillis(beat.lastWorkedAt) >= recencyThresholdMs)
+      : beats;
+
   return {
-    beats: sortBeats(Array.from(beatMap.values())),
+    beats: sortBeats(filteredBeats),
     sessions: sortSessions(selectedSessions),
     selectedBeadId: query.beadId,
     selectedRepoPath: query.beadRepoPath ?? query.repoPath,

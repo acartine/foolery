@@ -7,6 +7,7 @@ interface FetchAgentHistoryOptions {
   repoPath?: string;
   beadId?: string;
   beadRepoPath?: string;
+  sinceHours?: number;
 }
 
 function buildQuery(options: FetchAgentHistoryOptions): string {
@@ -14,6 +15,9 @@ function buildQuery(options: FetchAgentHistoryOptions): string {
   if (options.repoPath) params.set("_repo", options.repoPath);
   if (options.beadId) params.set("beadId", options.beadId);
   if (options.beadRepoPath) params.set("beadRepo", options.beadRepoPath);
+  if (typeof options.sinceHours === "number" && Number.isFinite(options.sinceHours)) {
+    params.set("sinceHours", String(options.sinceHours));
+  }
   const query = params.toString();
   return query ? `?${query}` : "";
 }

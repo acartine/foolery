@@ -198,4 +198,39 @@ describe("readAgentHistory", () => {
 
     expect(history.beats.map((beat) => beat.beadId)).toEqual(["bar-1"]);
   });
+
+  it("filters beat summaries by sinceHours when requested", async () => {
+    const now = Date.now();
+    const recentTs = new Date(now - 2 * 60 * 60 * 1000).toISOString();
+    const staleTs = new Date(now - 40 * 60 * 60 * 1000).toISOString();
+
+    await writeLog(tempDir, "repo-a/2026-02-20/term-recent.jsonl", [
+      {
+        kind: "session_start",
+        ts: recentTs,
+        sessionId: "term-recent",
+        interactionType: "take",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-recent"],
+      },
+    ]);
+
+    await writeLog(tempDir, "repo-a/2026-02-20/term-stale.jsonl", [
+      {
+        kind: "session_start",
+        ts: staleTs,
+        sessionId: "term-stale",
+        interactionType: "take",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-stale"],
+      },
+    ]);
+
+    const history = await readAgentHistory({
+      logRoot: tempDir,
+      sinceHours: 24,
+    });
+
+    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-recent"]);
+  });
 });
