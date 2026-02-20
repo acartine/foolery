@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchBeads, fetchDeps, updateBead, closeBead } from "@/lib/api";
+import { fetchBeads, fetchBatchDeps, updateBead, closeBead } from "@/lib/api";
 import { verifyBeadFields, rejectBeadFields } from "@/components/bead-columns";
 import { restageOrchestration } from "@/lib/orchestration-api";
 import {
@@ -417,17 +417,20 @@ async function loadExistingOrchestrations(
   const waves = beads.filter(
     (bead) => isWaveBead(bead) || parentIds.has(bead.id)
   );
-  const depResults = await Promise.all(
-    waves.map(async (wave) => {
-      const deps = await fetchDeps(wave.id, repoPath);
-      return [wave.id, deps.ok ? deps.data ?? [] : []] as const;
-    })
-  );
+  const waveIds = waves.map((w) => w.id);
+  const batchResult =
+    waveIds.length > 0
+      ? await fetchBatchDeps(waveIds, repoPath)
+      : { ok: true as const, data: {} as Record<string, BeadDependency[]> };
+  const depsByWaveId =
+    batchResult.ok && batchResult.data
+      ? batchResult.data
+      : Object.fromEntries(waveIds.map((id) => [id, []]));
 
   return {
     beads,
     waves,
-    depsByWaveId: Object.fromEntries(depResults),
+    depsByWaveId,
   };
 }
 
