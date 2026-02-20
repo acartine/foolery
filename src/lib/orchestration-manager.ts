@@ -241,17 +241,13 @@ function normalizeWave(
     beadList.push({ id, title });
   }
 
-  const beads = Array.from(beadIds)
-    .filter((id) => beadTitleMap.has(id))
-    .map((id) => {
-      const explicitTitle = beadList.find((entry) => entry.id === id)?.title;
-      return {
-        id,
-        title: explicitTitle ?? beadTitleMap.get(id) ?? id,
-      };
-    });
-
-  if (beads.length === 0) return null;
+  const beads = Array.from(beadIds).map((id) => {
+    const explicitTitle = beadList.find((entry) => entry.id === id)?.title;
+    return {
+      id,
+      title: explicitTitle ?? beadTitleMap.get(id) ?? id,
+    };
+  });
 
   return {
     waveIndex,

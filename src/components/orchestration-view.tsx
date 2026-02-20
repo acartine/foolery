@@ -875,20 +875,6 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                 </div>
               ))}
 
-              {plan.unassignedBeadIds.length > 0 && (
-                <div className="rounded-xl border border-amber-300 bg-amber-50 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">
-                    Unassigned
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {plan.unassignedBeadIds.map((id) => (
-                      <Badge key={id} variant="outline" className="font-mono text-[10px]">
-                        {id.replace(/^[^-]+-/, "")}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div className="flex h-[320px] items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
@@ -907,7 +893,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
             </div>
             <div
               ref={terminalRef}
-              className="h-[190px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
+              className="h-[380px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
             >
               {logLines.length > 0 ? (
                 <div className="space-y-1">
