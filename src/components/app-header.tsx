@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, PartyPopper, X } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, PartyPopper, X, History } from "lucide-react";
 import Image from "next/image";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
@@ -34,7 +34,7 @@ export function AppHeader() {
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
@@ -43,6 +43,8 @@ export function AppHeader() {
           ? "finalcut"
           : viewParam === "retakes"
             ? "retakes"
+            : viewParam === "history"
+              ? "history"
             : viewParam === "breakdown"
               ? "breakdown"
               : "list";
@@ -153,7 +155,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown") => {
+  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "history" | "breakdown") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
@@ -164,7 +166,7 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeadsRoute) return;
-    const views = ["list", "existing", "orchestration", "finalcut", "retakes"] as const;
+    const views = ["list", "existing", "orchestration", "finalcut", "retakes", "history"] as const;
     type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
@@ -203,7 +205,7 @@ export function AppHeader() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeadsRoute, toggleTerminalPanel]);
 
-  // Button config changes per view: hidden on Direct/Scenes/Breakdown, "Wrap!" on Final Cut, "Add" on Beats
+  // Button config changes per view: hidden on Direct/Scenes/Breakdown/History, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beadsView === "list" || beadsView === "finalcut";
 
   const actionButton = (() => {
@@ -384,6 +386,16 @@ export function AppHeader() {
                   >
                     <RotateCcw className="size-4" />
                     ReTakes
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={beadsView === "history" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    title="Take!/Scene agent history"
+                    onClick={() => setBeadsView("history")}
+                  >
+                    <History className="size-4" />
+                    History
                   </Button>
                 </div>
                 <div className="grid w-[88px]">

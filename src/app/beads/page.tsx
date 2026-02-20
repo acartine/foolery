@@ -15,6 +15,7 @@ import { ExistingOrchestrationsView } from "@/components/existing-orchestrations
 import { FinalCutView } from "@/components/final-cut-view";
 import { RetakesView } from "@/components/retakes-view";
 import { BreakdownView } from "@/components/breakdown-view";
+import { AgentHistoryView } from "@/components/agent-history-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { toast } from "sonner";
@@ -55,7 +56,7 @@ function BeadsPageInner() {
   const detailBeadId = searchParams.get("bead");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
@@ -64,6 +65,8 @@ function BeadsPageInner() {
           ? "finalcut"
           : viewParam === "retakes"
             ? "retakes"
+            : viewParam === "history"
+              ? "history"
             : viewParam === "breakdown"
               ? "breakdown"
               : "list";
@@ -72,6 +75,7 @@ function BeadsPageInner() {
   const isListView = beadsView === "list";
   const isFinalCutView = beadsView === "finalcut";
   const isRetakesView = beadsView === "retakes";
+  const isHistoryView = beadsView === "history";
   const isBreakdownView = beadsView === "breakdown";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
@@ -371,6 +375,9 @@ function BeadsPageInner() {
         </div>
         <div className={isRetakesView ? "" : "hidden"}>
           <RetakesView />
+        </div>
+        <div className={isHistoryView ? "" : "hidden"}>
+          <AgentHistoryView />
         </div>
         <div className={isBreakdownView ? "" : "hidden"}>
           <BreakdownView />

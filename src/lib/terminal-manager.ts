@@ -508,7 +508,7 @@ export async function createSession(
     }, INPUT_CLOSE_GRACE_MS);
   };
 
-  const sendUserTurn = (text: string): boolean => {
+  const sendUserTurn = (text: string, source = "manual"): boolean => {
     if (!child.stdin || child.stdin.destroyed || child.stdin.writableEnded || stdinClosed) {
       return false;
     }
@@ -516,6 +516,7 @@ export async function createSession(
     const line = makeUserMessageLine(text);
     try {
       child.stdin.write(line);
+      interactionLog.logPrompt(text, { source });
       return true;
     } catch {
       return false;
@@ -524,7 +525,7 @@ export async function createSession(
 
   const maybeSendExecutionPrompt = (): boolean => {
     if (!autoExecutionPrompt || executionPromptSent) return false;
-    const sent = sendUserTurn(autoExecutionPrompt);
+    const sent = sendUserTurn(autoExecutionPrompt, "execution_follow_up");
     if (sent) {
       executionPromptSent = true;
       pushEvent({
@@ -544,7 +545,7 @@ export async function createSession(
 
   const maybeSendShipCompletionPrompt = (): boolean => {
     if (!autoShipCompletionPrompt || !executionPromptSent || shipCompletionPromptSent) return false;
-    const sent = sendUserTurn(autoShipCompletionPrompt);
+    const sent = sendUserTurn(autoShipCompletionPrompt, "ship_completion_follow_up");
     if (sent) {
       shipCompletionPromptSent = true;
       pushEvent({
@@ -585,7 +586,7 @@ export async function createSession(
 
       autoAnsweredToolUseIds.add(toolUseId);
       const autoResponse = buildAutoAskUserResponse(block.input);
-      const sent = sendUserTurn(autoResponse);
+      const sent = sendUserTurn(autoResponse, "auto_ask_user_response");
 
       if (sent) {
         pushEvent({
@@ -742,8 +743,7 @@ export async function createSession(
     }, CLEANUP_DELAY_MS);
   });
 
-  interactionLog.logPrompt(prompt);
-  const initialPromptSent = sendUserTurn(prompt);
+  const initialPromptSent = sendUserTurn(prompt, "initial");
   if (!initialPromptSent) {
     closeInput();
     session.status = "error";
@@ -931,7 +931,7 @@ export async function createSceneSession(
     }, INPUT_CLOSE_GRACE_MS);
   };
 
-  const sendUserTurn = (text: string): boolean => {
+  const sendUserTurn = (text: string, source = "manual"): boolean => {
     if (!child.stdin || child.stdin.destroyed || child.stdin.writableEnded || stdinClosed) {
       return false;
     }
@@ -939,6 +939,7 @@ export async function createSceneSession(
     const line = makeUserMessageLine(text);
     try {
       child.stdin.write(line);
+      sceneInteractionLog.logPrompt(text, { source });
       return true;
     } catch {
       return false;
@@ -947,7 +948,7 @@ export async function createSceneSession(
 
   const maybeSendExecutionPrompt = (): boolean => {
     if (!autoExecutionPrompt || executionPromptSent) return false;
-    const sent = sendUserTurn(autoExecutionPrompt);
+    const sent = sendUserTurn(autoExecutionPrompt, "execution_follow_up");
     if (sent) {
       executionPromptSent = true;
       pushEvent({
@@ -967,7 +968,7 @@ export async function createSceneSession(
 
   const maybeSendShipCompletionPrompt = (): boolean => {
     if (!autoShipCompletionPrompt || !executionPromptSent || shipCompletionPromptSent) return false;
-    const sent = sendUserTurn(autoShipCompletionPrompt);
+    const sent = sendUserTurn(autoShipCompletionPrompt, "scene_completion_follow_up");
     if (sent) {
       shipCompletionPromptSent = true;
       pushEvent({
@@ -1008,7 +1009,7 @@ export async function createSceneSession(
 
       autoAnsweredToolUseIds.add(toolUseId);
       const autoResponse = buildAutoAskUserResponse(block.input);
-      const sent = sendUserTurn(autoResponse);
+      const sent = sendUserTurn(autoResponse, "auto_ask_user_response");
 
       if (sent) {
         pushEvent({
@@ -1164,8 +1165,7 @@ export async function createSceneSession(
     }, CLEANUP_DELAY_MS);
   });
 
-  sceneInteractionLog.logPrompt(prompt);
-  const initialPromptSent = sendUserTurn(prompt);
+  const initialPromptSent = sendUserTurn(prompt, "initial");
   if (!initialPromptSent) {
     closeInput();
     session.status = "error";

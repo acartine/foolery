@@ -31,6 +31,10 @@ interface SessionMeta {
   beadIds: string[];
 }
 
+export interface PromptLogMetadata {
+  source?: string;
+}
+
 interface LogLine {
   kind: string;
   ts: string;
@@ -42,7 +46,7 @@ function isDev(): boolean {
   return process.env.NODE_ENV === "development";
 }
 
-function logRoot(): string {
+export function resolveInteractionLogRoot(): string {
   if (isDev()) {
     return join(process.cwd(), ".foolery-logs");
   }
@@ -60,7 +64,7 @@ function dateStamp(): string {
 }
 
 function sessionDir(meta: SessionMeta): string {
-  return join(logRoot(), repoSlug(meta.repoPath), dateStamp());
+  return join(resolveInteractionLogRoot(), repoSlug(meta.repoPath), dateStamp());
 }
 
 function sessionFile(meta: SessionMeta): string {
@@ -82,7 +86,7 @@ async function writeLine(path: string, line: LogLine): Promise<void> {
  */
 export interface InteractionLog {
   /** Log the prompt sent to the agent. */
-  logPrompt(prompt: string): void;
+  logPrompt(prompt: string, metadata?: PromptLogMetadata): void;
   /** Log a raw NDJSON line received from the agent. */
   logResponse(rawLine: string): void;
   /** Log session completion. */
@@ -160,12 +164,13 @@ export async function startInteractionLog(
   };
 
   return {
-    logPrompt(prompt: string) {
+    logPrompt(prompt: string, metadata?: PromptLogMetadata) {
       write({
         kind: "prompt",
         ts: new Date().toISOString(),
         sessionId: meta.sessionId,
         prompt,
+        ...(metadata?.source ? { source: metadata.source } : {}),
       });
     },
 
