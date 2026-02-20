@@ -89,7 +89,7 @@ function buildBreakdownPrompt(
     "- Each task should be a concrete, independently implementable unit of work.",
     "- Group tasks into scenes where tasks within a scene can run in parallel.",
     "- Earlier scenes must complete before later scenes can start.",
-    "- For each task, specify: title, type (bug/feature/task/chore), priority (0-4), and a brief description.",
+    "- For each task, specify: title, type (bug/feature/task/chore — never use 'molecule'), priority (0-4), and a brief description.",
     "- Keep scene names short and concrete.",
     "",
     "Output protocol (strict):",
@@ -117,7 +117,7 @@ function normalizeBeadSpec(raw: unknown): BreakdownBeadSpec | null {
   const title = typeof obj.title === "string" ? obj.title.trim() : "";
   if (!title) return null;
 
-  const validTypes: BeadType[] = ["bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate"];
+  const validTypes: BeadType[] = ["bug", "feature", "task", "epic", "chore", "merge-request", "gate"];
   const rawType = typeof obj.type === "string" ? obj.type.trim().toLowerCase() : "task";
   const type = (validTypes.includes(rawType as BeadType) ? rawType : "task") as BeadType;
 
@@ -610,7 +610,7 @@ export async function applyBreakdownPlan(
     const waveResult = await createBead(
       {
         title: waveTitle,
-        type: "molecule",
+        type: "epic",
         priority: minPriority,
         labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
