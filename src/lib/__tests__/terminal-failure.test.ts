@@ -30,6 +30,34 @@ describe("classifyTerminalFailure", () => {
     expect(result).toBeNull();
   });
 
+  it("classifies missing worktree path failures and extracts prior session id", () => {
+    const text = [
+      "result | The CWD issue is because the worktree directory was already removed.",
+      "subtype: error_during_execution",
+      "session_id: ed7f6c56-ae2f-4cbf-81a4-37d6d878bc7e",
+      "errors: [\"Path \\\"/Users/cartine/foolery/.claude/worktrees/fix-shift-t-global\\\" does not exist\"]",
+    ].join("\n");
+
+    const result = classifyTerminalFailure(text, "claude");
+    expect(result).not.toBeNull();
+    expect(result?.kind).toBe("missing_cwd");
+    if (!result || result.kind !== "missing_cwd") return;
+    expect(result.missingPath).toContain(".claude/worktrees/fix-shift-t-global");
+    expect(result.previousSessionId).toBe("ed7f6c56-ae2f-4cbf-81a4-37d6d878bc7e");
+  });
+
+  it("detects missing worktree path failures with ANSI codes", () => {
+    const text =
+      "\u001b[90merrors: [\"Path \\\"/tmp/deleted-wt\\\" does not exist\"]\u001b[0m\n\u001b[90msubtype: error_during_execution\u001b[0m";
+
+    const result = classifyTerminalFailure(text, "claude");
+    expect(result).not.toBeNull();
+    expect(result?.kind).toBe("missing_cwd");
+    if (!result || result.kind !== "missing_cwd") return;
+    expect(result.missingPath).toBe("/tmp/deleted-wt");
+    expect(result.previousSessionId).toBeNull();
+  });
+
   it("classifies expired oauth token errors and includes guidance", () => {
     const text =
       'Failed to authenticate. API Error: 401 {"type":"error","error":{"type":"authentication_error","message":"OAuth token has expired."}}';

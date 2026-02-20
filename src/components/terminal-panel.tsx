@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback, useMemo } from "react";
 import { Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
-import { connectToSession, abortSession, startSceneSession } from "@/lib/terminal-api";
+import { connectToSession, abortSession, startSceneSession, startSession } from "@/lib/terminal-api";
 import { fetchBead } from "@/lib/api";
 import { useAgentInfo } from "@/hooks/use-agent-info";
 import { AgentInfoBar } from "@/components/agent-info-bar";
@@ -54,6 +54,20 @@ function buildSceneRecoveryPrompt(previousSessionId: string, beadIds: string[]):
     "If you believe work is complete, verify merge/push state and then run one verification command per bead:",
     ...beadIds.map((beadId) => `bd update ${JSON.stringify(beadId)} --status in_progress --add-label stage:verification`),
     "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, verification command result.",
+  ].join("\n");
+}
+
+function buildTakeRecoveryPrompt(beadId: string, previousSessionId: string | null): string {
+  return [
+    `Take recovery for bead ${beadId}.`,
+    previousSessionId
+      ? `Prior agent session id: ${previousSessionId}.`
+      : "No prior agent session id was captured from the failed run.",
+    "The previous run failed during a follow-up after primary work completed.",
+    "Use current repository state and avoid redoing completed changes.",
+    "Confirm merge/push state and run the verification-state command if not already applied:",
+    `bd update ${JSON.stringify(beadId)} --status in_progress --add-label stage:verification`,
+    "Finish with a concise summary: merged yes/no, pushed yes/no, verification command result.",
   ].join("\n");
 }
 
@@ -257,38 +271,86 @@ export function TerminalPanel() {
         );
       };
 
-      const maybeRecoverSceneSession = async () => {
+      const launchRecoverySession = async (
+        previousSessionId: string | null,
+        source: "disconnect" | "retry"
+      ) => {
         if (recoveryInFlight) return;
-        const sceneBeadIds = activeBeadIds;
-        if (!sceneBeadIds || sceneBeadIds.length === 0) return;
         recoveryInFlight = true;
 
-        liveTerm.writeln(
-          "\x1b[33m⚠ Scene stream disconnected. Checking verification state...\x1b[0m"
-        );
+        const sceneBeadIds = activeBeadIds;
+        if (sceneBeadIds && sceneBeadIds.length > 0) {
+          if (source === "disconnect") {
+            liveTerm.writeln(
+              "\x1b[33m⚠ Scene stream disconnected. Checking verification state...\x1b[0m"
+            );
 
-        const alreadyVerified = await allSceneBeadsInVerificationState(
-          sceneBeadIds,
-          activeRepoPath
-        );
-        if (disposed) return;
+            const alreadyVerified = await allSceneBeadsInVerificationState(
+              sceneBeadIds,
+              activeRepoPath
+            );
+            if (disposed) return;
 
-        if (alreadyVerified) {
-          liveTerm.writeln(
-            "\x1b[32m✓ All scene beads already in verification. Closing terminal tab.\x1b[0m"
+            if (alreadyVerified) {
+              liveTerm.writeln(
+                "\x1b[32m✓ All scene beads already in verification. Closing terminal tab.\x1b[0m"
+              );
+              updateStatus(sessionId, "completed");
+              removeTerminal(sessionId);
+              return;
+            }
+
+            liveTerm.writeln(
+              "\x1b[33m↻ Resuming scene to finish verification workflow...\x1b[0m"
+            );
+          } else {
+            liveTerm.writeln(
+              "\x1b[33m↻ Retrying scene with recovery prompt...\x1b[0m"
+            );
+          }
+
+          const recovery = await startSceneSession(
+            sceneBeadIds,
+            activeRepoPath,
+            buildSceneRecoveryPrompt(previousSessionId ?? sessionId, sceneBeadIds)
           );
-          updateStatus(sessionId, "completed");
+          if (disposed) return;
+
+          if (!recovery.ok || !recovery.data) {
+            liveTerm.writeln(
+              `\x1b[31m✗ Recovery launch failed: ${recovery.error ?? "unknown error"}\x1b[0m`
+            );
+            updateStatus(sessionId, "error");
+            toast.error(recovery.error ?? "Failed to launch recovery scene session");
+            recoveryInFlight = false;
+            return;
+          }
+
+          upsertTerminal({
+            sessionId: recovery.data.id,
+            beadId: recovery.data.beadId,
+            beadTitle: recovery.data.beadTitle,
+            beadIds: recovery.data.beadIds,
+            repoPath: recovery.data.repoPath ?? activeRepoPath,
+            status: "running",
+            startedAt: new Date().toISOString(),
+          });
           removeTerminal(sessionId);
+          toast.info(
+            source === "disconnect"
+              ? "Scene stream disconnected; started automatic recovery session."
+              : "Retry launched with scene recovery prompt."
+          );
           return;
         }
 
         liveTerm.writeln(
-          "\x1b[33m↻ Resuming scene to finish verification workflow...\x1b[0m"
+          "\x1b[33m↻ Retrying take with recovery prompt...\x1b[0m"
         );
-        const recovery = await startSceneSession(
-          sceneBeadIds,
+        const recovery = await startSession(
+          beadId,
           activeRepoPath,
-          buildSceneRecoveryPrompt(sessionId, sceneBeadIds)
+          buildTakeRecoveryPrompt(beadId, previousSessionId)
         );
         if (disposed) return;
 
@@ -297,7 +359,7 @@ export function TerminalPanel() {
             `\x1b[31m✗ Recovery launch failed: ${recovery.error ?? "unknown error"}\x1b[0m`
           );
           updateStatus(sessionId, "error");
-          toast.error(recovery.error ?? "Failed to launch recovery scene session");
+          toast.error(recovery.error ?? "Failed to launch recovery take session");
           recoveryInFlight = false;
           return;
         }
@@ -312,7 +374,7 @@ export function TerminalPanel() {
           startedAt: new Date().toISOString(),
         });
         removeTerminal(sessionId);
-        toast.info("Scene stream disconnected; started automatic recovery session.");
+        toast.info("Retry launched with take recovery prompt.");
       };
 
       const cleanup = connectToSession(
@@ -344,7 +406,24 @@ export function TerminalPanel() {
                 failureHint.steps.forEach((step, index) => {
                   liveTerm.writeln(`\x1b[90m  ${index + 1}. ${step}\x1b[0m`);
                 });
-                toast.error(failureHint.toast);
+                if (failureHint.kind === "missing_cwd") {
+                  const retryLabel =
+                    activeBeadIds && activeBeadIds.length > 0 ? "Retry Scene" : "Retry Take";
+                  liveTerm.writeln(
+                    "\x1b[33m? Use the retry action in the toast to relaunch with recovery context.\x1b[0m"
+                  );
+                  toast.error(failureHint.toast, {
+                    duration: 12_000,
+                    action: {
+                      label: retryLabel,
+                      onClick: () => {
+                        void launchRecoverySession(failureHint.previousSessionId, "retry");
+                      },
+                    },
+                  });
+                } else {
+                  toast.error(failureHint.toast);
+                }
               } else {
                 toast.error(`Session failed (exit code ${code}). Open the terminal tab for details.`);
               }
@@ -355,7 +434,7 @@ export function TerminalPanel() {
         () => {
           if (disposed) return;
           if (activeBeadIds && activeBeadIds.length > 0) {
-            void maybeRecoverSceneSession();
+            void launchRecoverySession(sessionId, "disconnect");
             return;
           }
           liveTerm.writeln(
