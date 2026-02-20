@@ -7,7 +7,6 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   flexRender,
   type SortingState,
   type RowSelectionState,
@@ -181,6 +180,7 @@ export function BeadTable({
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(getStoredExpandedIds);
   const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
+  const [manualPageIndex, setManualPageIndex] = useState(0);
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
   const filtersKey = JSON.stringify(filters);
@@ -315,6 +315,34 @@ export function BeadTable({
     return result;
   }, [hierarchyData, expandedIds]);
 
+  // Manual pagination: only top-level (depth 0) items count toward page size.
+  // Children travel with their parent on the same page.
+  const { paginatedData, manualPageCount } = useMemo(() => {
+    const groups: HierarchicalBead[][] = [];
+    let currentGroup: HierarchicalBead[] | null = null;
+
+    for (const bead of sortedData) {
+      if (bead._depth === 0) {
+        if (currentGroup) groups.push(currentGroup);
+        currentGroup = [bead];
+      } else {
+        if (currentGroup) currentGroup.push(bead);
+        else groups.push([bead]);
+      }
+    }
+    if (currentGroup) groups.push(currentGroup);
+
+    const pgCount = Math.max(1, Math.ceil(groups.length / pageSize));
+    const startGroup = manualPageIndex * pageSize;
+    const pageGroups = groups.slice(startGroup, startGroup + pageSize);
+    return { paginatedData: pageGroups.flat(), manualPageCount: pgCount };
+  }, [sortedData, pageSize, manualPageIndex]);
+
+  // Reset page index when data or filters change
+  useEffect(() => {
+    setManualPageIndex(0);
+  }, [sortedData.length, filtersKey]);
+
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
     data.forEach((bead) => bead.labels?.forEach((l) => {
@@ -377,11 +405,28 @@ export function BeadTable({
   }, []);
 
   const childCountMap = useMemo(() => {
-    const map = new Map<string, number>();
+    const childrenOf = new Map<string, string[]>();
     for (const bead of data) {
       if (bead.parent) {
-        map.set(bead.parent, (map.get(bead.parent) ?? 0) + 1);
+        const list = childrenOf.get(bead.parent) ?? [];
+        list.push(bead.id);
+        childrenOf.set(bead.parent, list);
       }
+    }
+    const map = new Map<string, number>();
+    function countDescendants(id: string): number {
+      const kids = childrenOf.get(id);
+      if (!kids) return 0;
+      let total = 0;
+      for (const kid of kids) {
+        if (!childrenOf.has(kid)) total += 1;
+        total += countDescendants(kid);
+      }
+      return total;
+    }
+    for (const pid of childrenOf.keys()) {
+      const count = countDescendants(pid);
+      if (count > 0) map.set(pid, count);
     }
     return map;
   }, [data]);
@@ -448,7 +493,7 @@ export function BeadTable({
   }, [activeRepo]);
 
   const table = useReactTable({
-    data: sortedData,
+    data: paginatedData,
     columns,
     state: { sorting, rowSelection },
     getRowId: (row) => row.id,
@@ -461,8 +506,6 @@ export function BeadTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize } },
   });
 
   const selectedIds = table.getFilteredSelectedRowModel().rows.map((r) => r.original.id);
@@ -699,7 +742,7 @@ export function BeadTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? undefined : "whitespace-normal overflow-hidden"}
+                    className={cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? undefined : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
@@ -747,18 +790,17 @@ export function BeadTable({
         </TableBody>
       </Table>
 
-      {table.getPageCount() > 1 && (
+      {manualPageCount > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {manualPageIndex + 1} of {manualPageCount}
           </div>
           <div className="flex items-center gap-1">
             <Select
-              value={String(table.getState().pagination.pageSize)}
+              value={String(pageSize)}
               onValueChange={(v) => {
                 const size = Number(v);
-                table.setPageSize(size);
+                setManualPageIndex(0);
                 updateUrl({ pageSize: size });
               }}
             >
@@ -777,8 +819,8 @@ export function BeadTable({
               variant="outline"
               size="sm"
               title="Previous page"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => setManualPageIndex((p) => Math.max(0, p - 1))}
+              disabled={manualPageIndex === 0}
             >
               Previous
             </Button>
@@ -786,8 +828,8 @@ export function BeadTable({
               variant="outline"
               size="sm"
               title="Next page"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              onClick={() => setManualPageIndex((p) => Math.min(manualPageCount - 1, p + 1))}
+              disabled={manualPageIndex >= manualPageCount - 1}
             >
               Next
             </Button>

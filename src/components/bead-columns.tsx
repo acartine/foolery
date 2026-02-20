@@ -424,24 +424,26 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
             {hasChildren ? (
-              <button
-                type="button"
-                title={isCollapsed ? "Expand children" : "Collapse children"}
-                className="p-0 mt-0.5 text-muted-foreground hover:text-foreground shrink-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleCollapse?.(row.original.id);
-                }}
-              >
-                <Chevron className="h-3.5 w-3.5" />
-              </button>
+              <div className="relative shrink-0 flex items-start w-3.5">
+                {isCollapsed && childCountMap.get(row.original.id) != null && (
+                  <span className="absolute right-full mr-0.5 text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-1.5 leading-none py-0.5 mt-0.5 whitespace-nowrap">
+                    {childCountMap.get(row.original.id)}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  title={isCollapsed ? "Expand children" : "Collapse children"}
+                  className="p-0 mt-0.5 text-muted-foreground hover:text-foreground shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleCollapse?.(row.original.id);
+                  }}
+                >
+                  <Chevron className="h-3.5 w-3.5" />
+                </button>
+              </div>
             ) : (
               <span className="inline-block w-3.5 shrink-0" />
-            )}
-            {isCollapsed && childCountMap.get(row.original.id) != null && (
-              <span className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-1.5 leading-none py-0.5 shrink-0 mt-0.5">
-                {childCountMap.get(row.original.id)}
-              </span>
             )}
             <TitleCell
               bead={row.original}
