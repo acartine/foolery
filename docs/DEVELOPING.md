@@ -22,6 +22,24 @@ Open [http://localhost:3000](http://localhost:3000). The dev server hot-reloads 
 
 The production app runs on port 3210 by default (`foolery start`). Dev and production can coexist since they use different ports.
 
+## Beads Dolt Hooks (v0.55.1)
+
+If your clone needs Dolt-native Beads sync hooks for `git push` and merge-style `git pull`, run:
+
+```bash
+bash scripts/setup-beads-dolt-hooks.sh
+```
+
+Then validate:
+
+```bash
+bd hooks list
+bd doctor
+.git/hooks/pre-push
+```
+
+This replaces only `pre-push`, `post-merge`, and `post-checkout` in local git hooks. It does not modify `pre-commit` or `prepare-commit-msg`.
+
 ## Project Layout
 
 ```
@@ -265,5 +283,6 @@ This runs `gh release create <tag> --target main --generate-notes --latest` and 
 
 - [Project Manifest](MANIFEST.md) -- architecture, API docs, component inventory
 - [Settings Guide](SETTINGS.md) -- how settings work and how to add new ones
+- [Beads Dolt Hook Setup](BEADS_DOLT_HOOKS.md) -- local hook setup for Dolt-native Beads sync
 - [Beads CLI](https://github.com/steveyegge/beads) -- the issue tracker Foolery wraps
 - [Beads Contributing Guide](https://github.com/steveyegge/beads/blob/main/CONTRIBUTING.md) -- upstream contribution standards

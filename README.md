@@ -143,6 +143,7 @@ Need to stay in flow? Open the keyboard shortcut overlay for a quick map of navi
 ## How to Contribute
 
 See the **[Developer Guide](docs/DEVELOPING.md)** for architecture, conventions, testing, and contribution guidelines.
+For clones that use Dolt-native Beads sync hooks, run `bash scripts/setup-beads-dolt-hooks.sh` once and see **[docs/BEADS_DOLT_HOOKS.md](docs/BEADS_DOLT_HOOKS.md)**.
 
 ## Foolery Prompt Guidance (Highly Recommended)
 
