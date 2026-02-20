@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors, Settings, PartyPopper, X } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, PartyPopper, X } from "lucide-react";
 import Image from "next/image";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
@@ -33,16 +33,18 @@ export function AppHeader() {
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "breakdown" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
         ? "existing"
         : viewParam === "finalcut"
           ? "finalcut"
-          : viewParam === "breakdown"
-            ? "breakdown"
-            : "list";
+          : viewParam === "retakes"
+            ? "retakes"
+            : viewParam === "breakdown"
+              ? "breakdown"
+              : "list";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -149,7 +151,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut" | "breakdown") => {
+  const setBeadsView = useCallback((view: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
@@ -160,7 +162,7 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeadsRoute) return;
-    const views = ["list", "existing", "orchestration", "finalcut"] as const;
+    const views = ["list", "existing", "orchestration", "finalcut", "retakes"] as const;
     type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
@@ -354,6 +356,16 @@ export function AppHeader() {
                         {verificationCount > 9 ? "9+" : verificationCount}
                       </span>
                     )}
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={beadsView === "retakes" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    title="Regression tracking for closed beats"
+                    onClick={() => setBeadsView("retakes")}
+                  >
+                    <RotateCcw className="size-4" />
+                    ReTakes
                   </Button>
                 </div>
                 <div className="grid w-[88px]">

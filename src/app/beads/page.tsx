@@ -13,6 +13,7 @@ import { MergeBeadsDialog } from "@/components/merge-beads-dialog";
 import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
+import { RetakesView } from "@/components/retakes-view";
 import { BreakdownView } from "@/components/breakdown-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
@@ -54,20 +55,23 @@ function BeadsPageInner() {
   const detailBeadId = searchParams.get("bead");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "breakdown" =
+  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "breakdown" =
     viewParam === "orchestration"
       ? "orchestration"
       : viewParam === "existing"
         ? "existing"
         : viewParam === "finalcut"
           ? "finalcut"
-          : viewParam === "breakdown"
-            ? "breakdown"
-            : "list";
+          : viewParam === "retakes"
+            ? "retakes"
+            : viewParam === "breakdown"
+              ? "breakdown"
+              : "list";
   const isOrchestrationView = beadsView === "orchestration";
   const isExistingOrchestrationView = beadsView === "existing";
   const isListView = beadsView === "list";
   const isFinalCutView = beadsView === "finalcut";
+  const isRetakesView = beadsView === "retakes";
   const isBreakdownView = beadsView === "breakdown";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
@@ -364,6 +368,9 @@ function BeadsPageInner() {
         </div>
         <div className={isFinalCutView ? "" : "hidden"}>
           <FinalCutView />
+        </div>
+        <div className={isRetakesView ? "" : "hidden"}>
+          <RetakesView />
         </div>
         <div className={isBreakdownView ? "" : "hidden"}>
           <BreakdownView />
