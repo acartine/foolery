@@ -433,9 +433,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
               >
                 <Chevron className="h-3.5 w-3.5" />
               </button>
-            ) : depth > 0 ? (
+            ) : (
               <span className="inline-block w-3.5 shrink-0" />
-            ) : null}
+            )}
             <TitleCell
               bead={row.original}
               onTitleClick={onTitleClick}
