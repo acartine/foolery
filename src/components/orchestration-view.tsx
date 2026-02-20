@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
   ChevronRight,
+  Copy,
   Loader2,
   Play,
   Clapperboard,
@@ -889,7 +890,27 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               <div className="font-mono uppercase tracking-wide text-slate-300">
                 Scene Console
               </div>
-              <div className="text-slate-400">live</div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">live</span>
+                <button
+                  type="button"
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-700 hover:text-slate-200"
+                  title="Copy console output"
+                  onClick={() => {
+                    const text = logLines
+                      .map((l) =>
+                        l.type === "structured"
+                          ? `${l.event ?? ""} | ${l.text}`
+                          : l.text
+                      )
+                      .join("\n");
+                    navigator.clipboard.writeText(text);
+                    toast.success("Copied console output");
+                  }}
+                >
+                  <Copy className="size-3.5" />
+                </button>
+              </div>
             </div>
             <div
               ref={terminalRef}

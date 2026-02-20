@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
+  Copy,
   Loader2,
   Square,
   Workflow,
@@ -296,9 +297,22 @@ export function BreakdownView() {
       <section className="rounded-xl border bg-zinc-950 p-3">
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs text-zinc-400 font-mono">Console</p>
-          {isRunning && (
-            <Loader2 className="size-3 animate-spin text-zinc-400" />
-          )}
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              className="rounded p-0.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+              title="Copy console output"
+              onClick={() => {
+                navigator.clipboard.writeText(logLines.join("\n"));
+                toast.success("Copied console output");
+              }}
+            >
+              <Copy className="size-3.5" />
+            </button>
+            {isRunning && (
+              <Loader2 className="size-3 animate-spin text-zinc-400" />
+            )}
+          </div>
         </div>
         <div
           ref={logRef}
