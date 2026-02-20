@@ -78,6 +78,7 @@ export interface BeadColumnOpts {
   onRejectBead?: (bead: Bead) => void;
   collapsedIds?: Set<string>;
   onToggleCollapse?: (id: string) => void;
+  childCountMap?: Map<string, number>;
 }
 
 function VerificationButtons({
@@ -360,6 +361,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onRejectBead = typeof opts === "boolean" ? undefined : opts.onRejectBead;
   const collapsedIds = typeof opts === "boolean" ? new Set<string>() : (opts.collapsedIds ?? new Set<string>());
   const onToggleCollapse = typeof opts === "boolean" ? undefined : opts.onToggleCollapse;
+  const childCountMap = typeof opts === "boolean" ? new Map<string, number>() : (opts.childCountMap ?? new Map<string, number>());
 
   const columns: ColumnDef<Bead>[] = [
     {
@@ -435,6 +437,11 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
               </button>
             ) : (
               <span className="inline-block w-3.5 shrink-0" />
+            )}
+            {isCollapsed && childCountMap.get(row.original.id) != null && (
+              <span className="text-[10px] font-medium text-muted-foreground bg-muted rounded-full px-1.5 leading-none py-0.5 shrink-0 mt-0.5">
+                {childCountMap.get(row.original.id)}
+              </span>
             )}
             <TitleCell
               bead={row.original}

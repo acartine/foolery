@@ -376,6 +376,16 @@ export function BeadTable({
     setNotesDialogOpen(true);
   }, []);
 
+  const childCountMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const bead of data) {
+      if (bead.parent) {
+        map.set(bead.parent, (map.get(bead.parent) ?? 0) + 1);
+      }
+    }
+    return map;
+  }, [data]);
+
   // Compute collapsedIds for column rendering (chevron direction)
   const collapsedIds = useMemo(() => {
     const parentIds = new Set<string>();
@@ -419,8 +429,9 @@ export function BeadTable({
       onRejectBead: handleRejectBead,
       collapsedIds,
       onToggleCollapse: handleToggleCollapse,
+      childCountMap,
     }),
-    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead, collapsedIds, handleToggleCollapse]
+    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead, collapsedIds, handleToggleCollapse, childCountMap]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
