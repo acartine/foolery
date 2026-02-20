@@ -693,7 +693,7 @@ export function BeadTable({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
                       cell.column.id === "title" && (
-                        <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16}px` }}>
+                        <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}>
                           <InlineSummary bead={row.original} />
                         </div>
                       )}
