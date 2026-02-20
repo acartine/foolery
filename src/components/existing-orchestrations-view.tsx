@@ -32,6 +32,7 @@ import {
   ORCHESTRATION_RESTAGE_DRAFT_KEY,
   type OrchestrationRestageDraft,
 } from "@/lib/orchestration-restage";
+import { naturalCompare } from "@/lib/bead-sort";
 import { startSession } from "@/lib/terminal-api";
 import type { Bead, BeadDependency, OrchestrationPlan } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
@@ -219,10 +220,7 @@ function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
   for (const [parent, list] of byParent.entries()) {
     byParent.set(
       parent,
-      list.slice().sort((a, b) => {
-        if (a.priority !== b.priority) return a.priority - b.priority;
-        return a.id.localeCompare(b.id);
-      })
+      list.slice().sort((a, b) => naturalCompare(a.id, b.id))
     );
   }
   return byParent;

@@ -17,7 +17,7 @@ import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { updateBead, closeBead } from "@/lib/api";
 import { buildHierarchy, type HierarchicalBead } from "@/lib/bead-hierarchy";
-import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
+import { compareBeadsByHierarchicalOrder } from "@/lib/bead-sort";
 import { getBeadColumns, rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
 import {
   Table,
@@ -265,7 +265,7 @@ export function BeadTable({
   }, []);
 
   const hierarchyData = useMemo(() => {
-    const sortFn = userSorted ? undefined : compareBeadsByPriorityThenStatus;
+    const sortFn = userSorted ? undefined : compareBeadsByHierarchicalOrder;
     return buildHierarchy(data, sortFn);
   }, [data, userSorted]);
 

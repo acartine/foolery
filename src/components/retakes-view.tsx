@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads, updateBead } from "@/lib/api";
+import { naturalCompare } from "@/lib/bead-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
@@ -172,12 +173,15 @@ export function RetakesView() {
     placeholderData: keepPreviousData,
   });
 
-  // Sort closed beads by updated timestamp descending (most recent first)
+  // Sort closed beads by updated timestamp descending (most recent first),
+  // with natural ID order as tiebreaker for deterministic sibling ordering.
   const beads = useMemo<Bead[]>(() => {
     if (!data?.ok || !data.data) return [];
-    return [...data.data].sort((a, b) =>
-      new Date(b.updated).getTime() - new Date(a.updated).getTime()
-    );
+    return [...data.data].sort((a, b) => {
+      const timeDiff = new Date(b.updated).getTime() - new Date(a.updated).getTime();
+      if (timeDiff !== 0) return timeDiff;
+      return naturalCompare(a.id, b.id);
+    });
   }, [data]);
 
   const { mutate: handleRetake, isPending: isRetaking } = useMutation({

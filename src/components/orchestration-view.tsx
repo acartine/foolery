@@ -43,6 +43,7 @@ import type {
   OrchestrationPlan,
   OrchestrationSession,
 } from "@/lib/types";
+import { naturalCompare } from "@/lib/bead-sort";
 import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
 import { consumeDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { useAgentInfo } from "@/hooks/use-agent-info";
@@ -862,7 +863,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                   </div>
 
                   <ul className="mt-2 space-y-1">
-                    {wave.beads.map((bead) => (
+                    {[...wave.beads].sort((a, b) => naturalCompare(a.id, b.id)).map((bead) => (
                       <li key={bead.id} className="rounded-md border bg-white px-2 py-1 text-xs">
                         <span className="font-mono text-[10px] text-muted-foreground">
                           {bead.id.replace(/^[^-]+-/, "")}
@@ -989,7 +990,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                         </div>
                         {wave.children.length > 0 && (
                           <ul className="ml-6 mt-1 space-y-0.5">
-                            {wave.children.map((child) => (
+                            {[...wave.children].sort((a, b) => naturalCompare(a.id, b.id)).map((child) => (
                               <li
                                 key={child.id}
                                 className="flex items-center gap-1.5 text-xs text-emerald-900/70"
