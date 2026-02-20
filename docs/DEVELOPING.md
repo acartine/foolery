@@ -72,7 +72,9 @@ docs/                   Project documentation
 | `bun run lint` | ESLint |
 | `bun run storybook` | Storybook dev on :6006 |
 | `bun run build:runtime` | Package runtime artifact for distribution |
-| `bun run release -- vX.Y.Z` | Create GitHub release and build artifacts |
+| `bun run changeset` | Create a release note + semver bump intent file |
+| `bun run version-packages` | Apply pending changesets to version/changelog files |
+| `bun run release` | Manual release helper (fallback) |
 
 ## Architecture
 
@@ -271,13 +273,41 @@ See `AGENTS.md` for the full bead lifecycle and handoff protocol.
 
 ## Release Process
 
-Create and publish a GitHub release from `main`:
+Foolery uses **Changesets** for release management.
+
+### 1) Add a changeset in feature/fix PRs
 
 ```bash
-bun run release -- v0.1.1
+bun run changeset
 ```
 
-This runs `gh release create <tag> --target main --generate-notes --latest` and triggers the `release-runtime-artifact` workflow (builds tarballs for macOS and Linux on both x64 and arm64). The command blocks until the workflow completes, streaming status updates every 10 seconds, and fails if runtime tarball assets are missing. Users get the update via `foolery update`.
+For this repo's single package (`foolery`), select:
+
+- `patch` for bug fixes and small backward-compatible changes.
+- `minor` for new backward-compatible features.
+- `major` for breaking changes.
+
+Changesets creates a markdown file in `.changeset/` with frontmatter like:
+
+```md
+---
+foolery: patch
+---
+
+Short user-facing summary of the change.
+```
+
+Commit that file with your code changes.
+
+### 2) Merge to `main`
+
+The `Changesets` GitHub workflow opens or updates a **release PR** (`chore: release`) that applies pending changesets (version bump + changelog updates).
+
+### 3) Merge the release PR
+
+When the release PR is merged, the same workflow tags/releases the new version on GitHub.
+
+Publishing a GitHub release triggers `release-runtime-artifact`, which builds and uploads runtime tarballs for supported OS/arch combinations. Users then receive the update via `foolery update`.
 
 ## Useful Links
 
