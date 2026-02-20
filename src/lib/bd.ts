@@ -6,6 +6,11 @@ const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
 const OUT_OF_SYNC_SIGNATURE = "Database out of sync with JSONL";
 const NO_DAEMON_FLAG = "--no-daemon";
+const BD_NO_DB_FLAG = "BD_NO_DB";
+const READ_NO_DB_DISABLE_FLAG = "FOOLERY_BD_READ_NO_DB";
+const DOLT_NIL_PANIC_SIGNATURE = "panic: runtime error: invalid memory address or nil pointer dereference";
+const DOLT_PANIC_STACK_SIGNATURE = "SetCrashOnFatalError";
+const READ_ONLY_BD_COMMANDS = new Set(["list", "ready", "search", "query", "show"]);
 const repoExecQueues = new Map<string, { tail: Promise<void>; pending: number }>();
 
 function baseArgs(): string[] {
@@ -15,6 +20,7 @@ function baseArgs(): string[] {
 }
 
 type ExecResult = { stdout: string; stderr: string; exitCode: number };
+type ExecOptions = { cwd?: string; forceNoDb?: boolean };
 
 function repoQueueKey(cwd?: string): string {
   return resolve(cwd ?? process.cwd());
@@ -67,16 +73,45 @@ function stripNoDaemonFlag(args: string[]): string[] {
   return args.filter((arg) => arg !== NO_DAEMON_FLAG);
 }
 
+function isTruthyEnvValue(value: string | undefined): boolean {
+  if (!value) return false;
+  const lower = value.toLowerCase();
+  return lower === "1" || lower === "true" || lower === "yes";
+}
+
+function isReadOnlyCommand(args: string[]): boolean {
+  if (args[0] === "dep") return args[1] === "list";
+  return READ_ONLY_BD_COMMANDS.has(args[0] ?? "");
+}
+
+function shouldUseNoDbByDefault(args: string[]): boolean {
+  if (isTruthyEnvValue(process.env[BD_NO_DB_FLAG])) return true;
+  if (process.env[READ_NO_DB_DISABLE_FLAG] === "0") return false;
+  return isReadOnlyCommand(args);
+}
+
+function isEmbeddedDoltPanic(result: ExecResult): boolean {
+  const combined = `${result.stderr}\n${result.stdout}`;
+  return combined.includes(DOLT_NIL_PANIC_SIGNATURE) || combined.includes(DOLT_PANIC_STACK_SIGNATURE);
+}
+
 async function execOnce(
   args: string[],
-  options?: { cwd?: string }
+  options?: ExecOptions
 ): Promise<ExecResult> {
+  const env = { ...process.env };
+  if (options?.forceNoDb) {
+    env[BD_NO_DB_FLAG] = "true";
+  }
+
   return new Promise((resolve) => {
-    execFile(BD_BIN, [...baseArgs(), ...args], { env: process.env, cwd: options?.cwd }, (error, stdout, stderr) => {
+    execFile(BD_BIN, [...baseArgs(), ...args], { env, cwd: options?.cwd }, (error, stdout, stderr) => {
+      const exitCode =
+        error && typeof error.code === "number" ? error.code : error ? 1 : 0;
       resolve({
         stdout: (stdout ?? "").trim(),
         stderr: (stderr ?? "").trim(),
-        exitCode: error ? (error.code as number) ?? 1 : 0,
+        exitCode,
       });
     });
   });
@@ -84,11 +119,21 @@ async function execOnce(
 
 async function exec(
   args: string[],
-  options?: { cwd?: string }
+  options?: ExecOptions
 ): Promise<ExecResult> {
   return withRepoSerialization(options?.cwd, async () => {
-    const firstResult = await execOnce(args, options);
+    const useNoDb = shouldUseNoDbByDefault(args);
+    const firstResult = await execOnce(args, { ...options, forceNoDb: useNoDb });
     if (firstResult.exitCode === 0) return firstResult;
+
+    // If read-mode DB bypass is explicitly disabled, still recover from the
+    // embedded Dolt nil-pointer panic by retrying once in JSONL mode.
+    if (!useNoDb && isReadOnlyCommand(args) && isEmbeddedDoltPanic(firstResult)) {
+      const fallbackResult = await execOnce(args, { ...options, forceNoDb: true });
+      if (fallbackResult.exitCode === 0) return fallbackResult;
+      return fallbackResult;
+    }
+
     if (args[0] === "sync" || !isOutOfSyncError(firstResult)) {
       return firstResult;
     }
