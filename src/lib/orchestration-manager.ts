@@ -211,14 +211,13 @@ function normalizeWave(
   const agents = normalizeAgents(obj.agents);
 
   const beadIds = new Set<string>();
-  const beadList: Array<{ id: string; title?: string }> = [];
+  const explicitTitles = new Map<string, string>();
 
   const rawBeadIds = Array.isArray(obj.bead_ids) ? obj.bead_ids : [];
   for (const value of rawBeadIds) {
     if (typeof value !== "string" || !value.trim()) continue;
     const id = value.trim();
     beadIds.add(id);
-    beadList.push({ id });
   }
 
   const rawBeads = Array.isArray(obj.beads) ? obj.beads : [];
@@ -226,7 +225,6 @@ function normalizeWave(
     if (typeof value === "string" && value.trim()) {
       const id = value.trim();
       beadIds.add(id);
-      beadList.push({ id });
       continue;
     }
 
@@ -238,16 +236,19 @@ function normalizeWave(
         ? beadObj.title.trim()
         : undefined;
     beadIds.add(id);
-    beadList.push({ id, title });
+    if (title) explicitTitles.set(id, title);
   }
 
-  const beads = Array.from(beadIds).map((id) => {
-    const explicitTitle = beadList.find((entry) => entry.id === id)?.title;
-    return {
-      id,
-      title: explicitTitle ?? beadTitleMap.get(id) ?? id,
-    };
-  });
+  const rawBeadsForWave = Array.from(beadIds).map((id) => ({
+    id,
+    title: explicitTitles.get(id) ?? beadTitleMap.get(id) ?? id,
+  }));
+
+  const knownBeads = rawBeadsForWave.filter((bead) => beadTitleMap.has(bead.id));
+
+  // Preserve the original behavior when known bead IDs are present.
+  // Fallback to raw wave beads only when the model emits layout-only IDs.
+  const beads = knownBeads.length > 0 ? knownBeads : rawBeadsForWave;
 
   return {
     waveIndex,
