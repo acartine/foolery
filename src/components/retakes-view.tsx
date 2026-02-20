@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads, updateBead } from "@/lib/api";
 import { naturalCompare } from "@/lib/bead-sort";
@@ -13,6 +13,15 @@ import { BeadTypeBadge } from "@/components/bead-type-badge";
 import { BeadPriorityBadge } from "@/components/bead-priority-badge";
 import { isWaveLabel, extractWaveSlug, isInternalLabel } from "@/lib/wave-slugs";
 import { Clapperboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useUpdateUrl } from "@/hooks/use-update-url";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -131,10 +140,12 @@ function RetakeRow({
 }
 
 export function RetakesView() {
-  const { activeRepo, registeredRepos } = useAppStore();
+  const { activeRepo, registeredRepos, pageSize } = useAppStore();
   const queryClient = useQueryClient();
+  const updateUrl = useUpdateUrl();
   const [retakeBead, setRetakeBead] = useState<Bead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["beads", "retakes", activeRepo, registeredRepos.length],
@@ -183,6 +194,18 @@ export function RetakesView() {
       return naturalCompare(a.id, b.id);
     });
   }, [data]);
+
+  const pageCount = Math.max(1, Math.ceil(beads.length / pageSize));
+  const paginatedBeads = useMemo(() => {
+    const start = pageIndex * pageSize;
+    return beads.slice(start, start + pageSize);
+  }, [beads, pageIndex, pageSize]);
+
+  // Reset page when data changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset pagination when dataset size changes; mirrors bead-table pattern.
+    setPageIndex(0);
+  }, [beads.length]);
 
   const { mutate: handleRetake, isPending: isRetaking } = useMutation({
     mutationFn: async ({ bead, notes }: { bead: Bead; notes: string }) => {
@@ -253,14 +276,62 @@ export function RetakesView() {
 
   return (
     <div>
-      <div className="mb-2 text-xs text-muted-foreground px-2">
-        {beads.length} closed beat{beads.length !== 1 ? "s" : ""} — most recently updated first
+      <div className="mb-2 flex items-center justify-between px-2">
+        <div className="text-xs text-muted-foreground">
+          {beads.length} closed beat{beads.length !== 1 ? "s" : ""} — most recently updated first
+        </div>
       </div>
       <div className="rounded-md border border-border/60">
-        {beads.map((bead) => (
+        {paginatedBeads.map((bead) => (
           <RetakeRow key={bead.id} bead={bead} onRetake={handleOpenRetake} />
         ))}
       </div>
+      {pageCount > 1 && (
+        <div className="mt-2 flex items-center justify-between px-2">
+          <div className="text-sm text-muted-foreground">
+            Page {pageIndex + 1} of {pageCount}
+          </div>
+          <div className="flex items-center gap-1">
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => {
+                const size = Number(v);
+                setPageIndex(0);
+                updateUrl({ pageSize: size });
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[25, 50, 100].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              title="Previous page"
+              onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
+              disabled={pageIndex === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              title="Next page"
+              onClick={() => setPageIndex((p) => Math.min(pageCount - 1, p + 1))}
+              disabled={pageIndex >= pageCount - 1}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
       <RetakeDialog
         bead={retakeBead}
         open={dialogOpen}
