@@ -15,10 +15,14 @@ vi.mock("@/lib/bd", () => ({
 const mockGetRegisteredAgents = vi.fn();
 const mockScanForAgents = vi.fn();
 const mockLoadSettings = vi.fn();
+const mockInspectSettingsDefaults = vi.fn();
+const mockBackfillMissingSettingsDefaults = vi.fn();
 vi.mock("@/lib/settings", () => ({
   getRegisteredAgents: () => mockGetRegisteredAgents(),
   scanForAgents: () => mockScanForAgents(),
   loadSettings: () => mockLoadSettings(),
+  inspectSettingsDefaults: () => mockInspectSettingsDefaults(),
+  backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
 }));
 
 const mockListRepos = vi.fn();
@@ -47,13 +51,81 @@ vi.mock("node:child_process", () => ({
 
 import { runDoctorFix } from "@/lib/doctor";
 
+const DEFAULT_SETTINGS = {
+  agent: { command: "claude" },
+  agents: {},
+  actions: {
+    take: "",
+    scene: "",
+    direct: "",
+    breakdown: "",
+  },
+  verification: { enabled: false, agent: "" },
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
+  mockListRepos.mockResolvedValue([]);
   mockGetRegisteredAgents.mockResolvedValue({});
+  mockInspectSettingsDefaults.mockResolvedValue({
+    settings: DEFAULT_SETTINGS,
+    missingPaths: [],
+    fileMissing: false,
+  });
+  mockBackfillMissingSettingsDefaults.mockResolvedValue({
+    settings: DEFAULT_SETTINGS,
+    missingPaths: [],
+    fileMissing: false,
+    changed: false,
+  });
   mockGetReleaseVersionStatus.mockResolvedValue({
     installedVersion: "1.0.0",
     latestVersion: "1.0.0",
     updateAvailable: false,
+  });
+});
+
+// ── applyFix: settings-defaults ────────────────────────────
+
+describe("applyFix: settings-defaults", () => {
+  it("backfills missing settings defaults when strategy is selected", async () => {
+    mockInspectSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: ["verification.enabled"],
+      fileMissing: false,
+    });
+    mockBackfillMissingSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: ["verification.enabled"],
+      fileMissing: false,
+      changed: true,
+    });
+
+    const fixReport = await runDoctorFix({ "settings-defaults": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "settings-defaults");
+    expect(fix?.success).toBe(true);
+    expect(fix?.message).toContain("Backfilled");
+    expect(mockBackfillMissingSettingsDefaults).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns failure when backfill reports an error", async () => {
+    mockInspectSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: ["verification.enabled"],
+      fileMissing: false,
+    });
+    mockBackfillMissingSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: [],
+      fileMissing: false,
+      changed: false,
+      error: "permission denied",
+    });
+
+    const fixReport = await runDoctorFix({ "settings-defaults": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "settings-defaults");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("permission denied");
   });
 });
 

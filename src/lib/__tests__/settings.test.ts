@@ -16,6 +16,8 @@ import {
   saveSettings,
   getAgentCommand,
   updateSettings,
+  inspectSettingsDefaults,
+  backfillMissingSettingsDefaults,
   getRegisteredAgents,
   getActionAgent,
   addRegisteredAgent,
@@ -74,6 +76,63 @@ describe("loadSettings", () => {
     await loadSettings();
     await loadSettings();
     expect(mockReadFile).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("inspectSettingsDefaults", () => {
+  it("reports missing default keys for partial files", async () => {
+    mockReadFile.mockResolvedValue('[agent]\ncommand = "claude"');
+    const result = await inspectSettingsDefaults();
+    expect(result.fileMissing).toBe(false);
+    expect(result.error).toBeUndefined();
+    expect(result.missingPaths).toContain("verification.enabled");
+    expect(result.missingPaths).toContain("actions.take");
+  });
+});
+
+describe("backfillMissingSettingsDefaults", () => {
+  it("creates settings.toml with defaults when file is missing", async () => {
+    const err = new Error("ENOENT") as NodeJS.ErrnoException;
+    err.code = "ENOENT";
+    mockReadFile.mockRejectedValue(err);
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.changed).toBe(true);
+    expect(result.fileMissing).toBe(true);
+    expect(mockWriteFile).toHaveBeenCalledTimes(1);
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain("[verification]");
+    expect(written).toContain('enabled = false');
+  });
+
+  it("writes missing defaults without clobbering existing values", async () => {
+    mockReadFile.mockResolvedValue('[agent]\ncommand = "codex"');
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.changed).toBe(true);
+    expect(mockWriteFile).toHaveBeenCalledTimes(1);
+
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain('command = "codex"');
+    expect(written).toContain("[verification]");
+  });
+
+  it("does not write when defaults are already present", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[agent]',
+        'command = "claude"',
+        '[actions]',
+        'take = ""',
+        'scene = ""',
+        'direct = ""',
+        'breakdown = ""',
+        '[verification]',
+        'enabled = false',
+        'agent = ""',
+      ].join("\n"),
+    );
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.changed).toBe(false);
+    expect(mockWriteFile).not.toHaveBeenCalled();
   });
 });
 

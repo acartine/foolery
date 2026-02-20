@@ -15,10 +15,14 @@ vi.mock("@/lib/bd", () => ({
 const mockGetRegisteredAgents = vi.fn();
 const mockScanForAgents = vi.fn();
 const mockLoadSettings = vi.fn();
+const mockInspectSettingsDefaults = vi.fn();
+const mockBackfillMissingSettingsDefaults = vi.fn();
 vi.mock("@/lib/settings", () => ({
   getRegisteredAgents: () => mockGetRegisteredAgents(),
   scanForAgents: () => mockScanForAgents(),
   loadSettings: () => mockLoadSettings(),
+  inspectSettingsDefaults: () => mockInspectSettingsDefaults(),
+  backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
 }));
 
 const mockListRepos = vi.fn();
@@ -48,6 +52,7 @@ vi.mock("node:child_process", () => ({
 import {
   checkAgents,
   checkUpdates,
+  checkSettingsDefaults,
   checkCorruptTickets,
   checkStaleParents,
   checkPromptGuidance,
@@ -59,14 +64,70 @@ import {
   type DoctorStreamSummary,
 } from "@/lib/doctor";
 
+const DEFAULT_SETTINGS = {
+  agent: { command: "claude" },
+  agents: {},
+  actions: {
+    take: "",
+    scene: "",
+    direct: "",
+    breakdown: "",
+  },
+  verification: { enabled: false, agent: "" },
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockListRepos.mockResolvedValue([]);
   mockGetRegisteredAgents.mockResolvedValue({});
+  mockInspectSettingsDefaults.mockResolvedValue({
+    settings: DEFAULT_SETTINGS,
+    missingPaths: [],
+    fileMissing: false,
+  });
+  mockBackfillMissingSettingsDefaults.mockResolvedValue({
+    settings: DEFAULT_SETTINGS,
+    missingPaths: [],
+    fileMissing: false,
+    changed: false,
+  });
   mockGetReleaseVersionStatus.mockResolvedValue({
     installedVersion: "1.0.0",
     latestVersion: "1.0.0",
     updateAvailable: false,
+  });
+});
+
+// ── checkSettingsDefaults ─────────────────────────────────
+
+describe("checkSettingsDefaults", () => {
+  it("reports info when settings defaults are present", async () => {
+    mockInspectSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: [],
+      fileMissing: false,
+    });
+    const diags = await checkSettingsDefaults();
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("info");
+    expect(diags[0].check).toBe("settings-defaults");
+    expect(diags[0].fixable).toBe(false);
+  });
+
+  it("reports warning and fix option when settings are missing", async () => {
+    mockInspectSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: ["verification.enabled", "verification.agent"],
+      fileMissing: false,
+    });
+    const diags = await checkSettingsDefaults();
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("warning");
+    expect(diags[0].check).toBe("settings-defaults");
+    expect(diags[0].fixable).toBe(true);
+    expect(diags[0].fixOptions).toEqual([
+      { key: "backfill", label: "Backfill missing settings defaults" },
+    ]);
   });
 });
 
@@ -475,7 +536,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 5 check events plus 1 summary event", async () => {
+  it("emits 6 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -488,10 +549,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(6);
+    expect(events).toHaveLength(7);
 
-    // First 5 are check results
-    for (let i = 0; i < 5; i++) {
+    // First 6 are check results
+    for (let i = 0; i < 6; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -502,7 +563,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[5] as DoctorStreamSummary;
+    const summary = events[6] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -522,6 +583,7 @@ describe("streamDoctor", () => {
     expect(categories).toEqual([
       "agents",
       "updates",
+      "settings-defaults",
       "corrupt-beads",
       "stale-parents",
       "prompt-guidance",

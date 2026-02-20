@@ -3,7 +3,11 @@ import { constants as fsConstants } from "node:fs";
 import { access, appendFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { listBeads } from "./bd";
-import { getRegisteredAgents } from "./settings";
+import {
+  getRegisteredAgents,
+  inspectSettingsDefaults,
+  backfillMissingSettingsDefaults,
+} from "./settings";
 import { listRepos, type RegisteredRepo } from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
 import type { Bead } from "./types";
@@ -184,6 +188,60 @@ export async function checkUpdates(): Promise<Diagnostic[]> {
   return diagnostics;
 }
 
+// ── Settings defaults checks ───────────────────────────────
+
+const SETTINGS_DEFAULTS_FIX_OPTIONS: FixOption[] = [
+  { key: "backfill", label: "Backfill missing settings defaults" },
+];
+
+function summarizeMissingSettings(paths: string[]): string {
+  const preview = paths.slice(0, 4).join(", ");
+  if (paths.length <= 4) return preview;
+  return `${preview} (+${paths.length - 4} more)`;
+}
+
+export async function checkSettingsDefaults(): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+  const result = await inspectSettingsDefaults();
+
+  if (result.error) {
+    diagnostics.push({
+      check: "settings-defaults",
+      severity: "warning",
+      message: `Could not inspect ~/.config/foolery/settings.toml: ${result.error}`,
+      fixable: false,
+    });
+    return diagnostics;
+  }
+
+  const missingPaths = Array.from(new Set(result.missingPaths));
+  if (result.fileMissing || missingPaths.length > 0) {
+    const message = result.fileMissing
+      ? "Settings file ~/.config/foolery/settings.toml is missing and should be created with defaults."
+      : `Settings file ~/.config/foolery/settings.toml is missing default values: ${summarizeMissingSettings(missingPaths)}.`;
+    diagnostics.push({
+      check: "settings-defaults",
+      severity: "warning",
+      message,
+      fixable: true,
+      fixOptions: SETTINGS_DEFAULTS_FIX_OPTIONS,
+      context: {
+        fileMissing: String(result.fileMissing),
+        missingPaths: missingPaths.join(","),
+      },
+    });
+    return diagnostics;
+  }
+
+  diagnostics.push({
+    check: "settings-defaults",
+    severity: "info",
+    message: "Settings defaults are present in ~/.config/foolery/settings.toml.",
+    fixable: false,
+  });
+  return diagnostics;
+}
+
 // ── Corrupt bead verification checks ──────────────────────
 
 const CORRUPT_BEAD_FIX_OPTIONS: FixOption[] = [
@@ -360,9 +418,17 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
 export async function runDoctor(): Promise<DoctorReport> {
   const repos = await listRepos();
 
-  const [agentDiags, updateDiags, corruptDiags, staleDiags, promptDiags] = await Promise.all([
+  const [
+    agentDiags,
+    updateDiags,
+    settingsDiags,
+    corruptDiags,
+    staleDiags,
+    promptDiags,
+  ] = await Promise.all([
     checkAgents(),
     checkUpdates(),
+    checkSettingsDefaults(),
     checkCorruptTickets(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
@@ -371,6 +437,7 @@ export async function runDoctor(): Promise<DoctorReport> {
   const diagnostics = [
     ...agentDiags,
     ...updateDiags,
+    ...settingsDiags,
     ...corruptDiags,
     ...staleDiags,
     ...promptDiags,
@@ -430,6 +497,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
   }> = [
     { category: "agents", label: "Agent connectivity", run: () => checkAgents() },
     { category: "updates", label: "Version", run: () => checkUpdates() },
+    { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
     { category: "corrupt-beads", label: "Bead integrity", run: () => checkCorruptTickets(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
@@ -527,6 +595,48 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
   const ctx = diag.context ?? {};
 
   switch (diag.check) {
+    case "settings-defaults": {
+      if (strategy && strategy !== "backfill" && strategy !== "default") {
+        return {
+          check: diag.check,
+          success: false,
+          message: `Unknown strategy "${strategy}" for settings defaults.`,
+          context: ctx,
+        };
+      }
+      try {
+        const result = await backfillMissingSettingsDefaults();
+        if (result.error) {
+          return {
+            check: diag.check,
+            success: false,
+            message: `Failed to backfill settings defaults: ${result.error}`,
+            context: ctx,
+          };
+        }
+        const count = result.missingPaths.length;
+        if (!result.changed) {
+          return {
+            check: diag.check,
+            success: true,
+            message: "Settings defaults already present; no changes needed.",
+            context: ctx,
+          };
+        }
+        return {
+          check: diag.check,
+          success: true,
+          message: `Backfilled ${count} missing setting${count === 1 ? "" : "s"} in ~/.config/foolery/settings.toml.`,
+          context: {
+            ...ctx,
+            missingPaths: result.missingPaths.join(","),
+          },
+        };
+      } catch (e) {
+        return { check: diag.check, success: false, message: String(e), context: ctx };
+      }
+    }
+
     case "corrupt-bead-verification": {
       const { beadId, repoPath } = ctx;
       if (!beadId || !repoPath) {
