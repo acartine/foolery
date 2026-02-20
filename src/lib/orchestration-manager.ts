@@ -5,7 +5,6 @@ import {
   closeBead,
   createBead,
   listBeads,
-  listDeps,
   removeDep,
   showBead,
   updateBead,
@@ -39,11 +38,6 @@ import {
   extractWaveSlug,
   isLegacyNumericWaveSlug,
 } from "@/lib/wave-slugs";
-
-interface DepEdge {
-  blocker: string;
-  blocked: string;
-}
 
 interface OrchestrationSessionEntry {
   session: OrchestrationSession;
@@ -93,48 +87,97 @@ function dedupeBeads(items: Bead[]): Bead[] {
   return Array.from(byId.values());
 }
 
+interface PromptScopeBead {
+  id: string;
+  title: string;
+  type: Bead["type"];
+  status: Bead["status"];
+  priority: Bead["priority"];
+}
+
+function extractObjectiveBeadIds(objective?: string): string[] {
+  if (!objective?.trim()) return [];
+
+  const beadIdPattern = /\b[a-z0-9]+-[a-z0-9]+(?:\.[0-9]+)*\b/gi;
+  const matches = objective.match(beadIdPattern) ?? [];
+  return Array.from(
+    new Set(matches.map((match) => match.trim().toLowerCase()))
+  );
+}
+
+function derivePromptScope(
+  beads: Bead[],
+  objective?: string
+): { scopedBeads: PromptScopeBead[]; unresolvedScopeIds: string[] } {
+  const normalizedToOriginal = new Map<string, string>();
+  const beadById = new Map<string, Bead>();
+
+  for (const bead of beads) {
+    const normalized = bead.id.toLowerCase();
+    normalizedToOriginal.set(normalized, bead.id);
+    beadById.set(normalized, bead);
+  }
+
+  const objectiveIds = extractObjectiveBeadIds(objective);
+  const scopedBeads: PromptScopeBead[] = [];
+  const unresolvedScopeIds: string[] = [];
+
+  for (const id of objectiveIds) {
+    const bead = beadById.get(id);
+    if (!bead) {
+      unresolvedScopeIds.push(normalizedToOriginal.get(id) ?? id);
+      continue;
+    }
+
+    scopedBeads.push({
+      id: bead.id,
+      title: bead.title,
+      type: bead.type,
+      status: bead.status,
+      priority: bead.priority,
+    });
+  }
+
+  scopedBeads.sort((a, b) => a.id.localeCompare(b.id));
+  unresolvedScopeIds.sort((a, b) => a.localeCompare(b));
+  return { scopedBeads, unresolvedScopeIds };
+}
+
 function buildPrompt(
   repoPath: string,
-  beads: Bead[],
-  deps: DepEdge[],
+  scopedBeads: PromptScopeBead[],
+  unresolvedScopeIds: string[],
   objective?: string
 ): string {
-  const payload = {
-    repo_path: repoPath,
-    beads: beads
-      .slice()
-      .sort((a, b) => {
-        if (a.priority !== b.priority) return a.priority - b.priority;
-        return a.id.localeCompare(b.id);
-      })
-      .map((bead) => ({
-        id: bead.id,
-        title: bead.title,
-        type: bead.type,
-        status: bead.status,
-        priority: bead.priority,
-        labels: bead.labels,
-        parent: bead.parent ?? null,
-      })),
-    dependencies: deps
-      .slice()
-      .sort((a, b) => {
-        if (a.blocker !== b.blocker) return a.blocker.localeCompare(b.blocker);
-        return a.blocked.localeCompare(b.blocked);
-      })
-      .map((dep) => ({ blocker: dep.blocker, blocked: dep.blocked })),
-  };
-
+  const hasExplicitScope = scopedBeads.length > 0 || unresolvedScopeIds.length > 0;
   return [
     "You are an orchestration planner for engineering work tracked as beads.",
     "Create execution waves that respect dependencies while maximizing useful parallelism.",
+    `Repository: ${repoPath}`,
     objective && objective.trim()
       ? `Planning objective: ${objective.trim()}`
       : "Planning objective: Minimize lead time while keeping waves coherent.",
     "",
+    "Scope guidance:",
+    hasExplicitScope
+      ? "Use the explicit bead IDs below as the in-scope planning set."
+      : "No explicit bead IDs were provided. Infer scope from the objective and inspect beads as needed.",
+    ...scopedBeads.map(
+      (bead) =>
+        `- ${bead.id} [${bead.type}, ${bead.status}, P${bead.priority}]: ${bead.title}`
+    ),
+    ...(unresolvedScopeIds.length > 0
+      ? [
+          "Objective mentioned IDs not present in open/in_progress/blocked beads:",
+          ...unresolvedScopeIds.map((id) => `- ${id}`),
+        ]
+      : []),
+    "",
+    "Use bd commands to inspect missing context instead of guessing.",
+    "",
     "Hard rules:",
-    "- Every bead ID must appear in exactly one wave or in unassigned_bead_ids.",
-    "- If blocker -> blocked, blocker must be in an earlier wave than blocked.",
+    "- Every in-scope bead ID must appear in exactly one wave or in unassigned_bead_ids.",
+    "- If blocker -> blocked, blocker must be in an earlier wave than blocked when both are in-scope.",
     "- For each wave, propose agent roles and count. Specialty is optional but useful.",
     "- Keep wave names short and concrete.",
     "- Do not hide execution structure only in notes: emit separate waves whenever possible.",
@@ -153,9 +196,6 @@ function buildPrompt(
     `</${ORCHESTRATION_JSON_TAG}>`,
     "",
     "Do not wrap output in Markdown code fences.",
-    "",
-    "Planning input JSON:",
-    JSON.stringify(payload),
   ]
     .filter(Boolean)
     .join("\n");
@@ -567,32 +607,11 @@ function finalizeSession(
 
 async function collectContext(repoPath: string): Promise<{
   beads: Bead[];
-  deps: DepEdge[];
 }> {
   const beads = await collectEligibleBeads(repoPath, {
     excludeOrchestrationWaves: true,
   });
-
-  const depResults = await Promise.allSettled(
-    beads.map((bead) => listDeps(bead.id, repoPath, { type: "blocks" }))
-  );
-  const deps: DepEdge[] = [];
-
-  for (const [index, result] of depResults.entries()) {
-    if (result.status !== "fulfilled" || !result.value.ok || !result.value.data) continue;
-
-    const blockedBeadId = beads[index]?.id;
-    if (!blockedBeadId) continue;
-
-    for (const dep of result.value.data) {
-      if (dep.dependency_type !== "blocks") continue;
-      const blockerId = dep.id;
-      if (!blockerId) continue;
-      deps.push({ blocker: blockerId, blocked: blockedBeadId });
-    }
-  }
-
-  return { beads, deps };
+  return { beads };
 }
 
 async function collectEligibleBeads(
@@ -626,7 +645,7 @@ export async function createOrchestrationSession(
   repoPath: string,
   objective?: string
 ): Promise<OrchestrationSession> {
-  const { beads, deps } = await collectContext(repoPath);
+  const { beads } = await collectContext(repoPath);
 
   if (beads.length === 0) {
     throw new Error("No open/in_progress/blocked beads available for orchestration");
@@ -665,15 +684,29 @@ export async function createOrchestrationSession(
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
-  const prompt = buildPrompt(repoPath, beads, deps, objective);
+  const scope = derivePromptScope(beads, objective);
+  const prompt = buildPrompt(
+    repoPath,
+    scope.scopedBeads,
+    scope.unresolvedScopeIds,
+    objective
+  );
   orchInteractionLog.logPrompt(prompt);
+  const scopeSummary =
+    scope.scopedBeads.length > 0
+      ? scope.scopedBeads.map((bead) => bead.id).join(", ")
+      : "inferred from objective";
   const promptLog = [
-    "prompt_initial | Full orchestration prompt",
-    "----- BEGIN PROMPT -----",
-    prompt,
-    "----- END PROMPT -----",
+    "prompt_initial | Orchestration prompt sent",
+    `scope | ${scopeSummary}`,
+    scope.unresolvedScopeIds.length > 0
+      ? `scope_unresolved | ${scope.unresolvedScopeIds.join(", ")}`
+      : "",
+    objective?.trim() ? `objective | ${objective.trim()}` : "",
     "",
-  ].join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
   pushEvent(entry, "log", promptLog);
   const agent = await getActionAgent("direct");
   const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
@@ -811,7 +844,11 @@ export async function createOrchestrationSession(
     finalizeSession(entry, isSuccess ? "completed" : "error", message);
   });
 
-  pushEvent(entry, "status", `Starting ${agent.label || agent.command} orchestration...`);
+  pushEvent(
+    entry,
+    "status",
+    `Waiting on ${agent.label || agent.command}...`
+  );
 
   return session;
 }

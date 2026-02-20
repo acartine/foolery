@@ -315,19 +315,17 @@ function parseInternalScenes(notes?: string): ParsedInternalScene[] {
   if (!notes || !notes.trim()) return [];
 
   const sceneHeaderPattern = /\b(?:scene|phase|step)\s+[A-Za-z0-9]+(?:\s*\([^)]*\))?/gi;
-  const matches = Array.from(notes.matchAll(sceneHeaderPattern)).filter(
-    (match): match is RegExpMatchArray & { index: number } =>
-      typeof match.index === "number"
-  );
+  const matches = Array.from(notes.matchAll(sceneHeaderPattern));
   if (matches.length < 2) return [];
 
   const scenes: ParsedInternalScene[] = [];
   for (let i = 0; i < matches.length; i += 1) {
     const current = matches[i];
     const next = matches[i + 1];
+    if (typeof current.index !== "number") continue;
     const header = current[0].trim();
     const start = current.index + current[0].length;
-    const end = next ? next.index : notes.length;
+    const end = typeof next?.index === "number" ? next.index : notes.length;
     const details = notes
       .slice(start, end)
       .replace(/^[\s:;\-–—]+/, "")
@@ -614,6 +612,18 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   }, [session, plan, objective, waveEdits, statusText, logLines, applyResult, activeRepo]);
 
   const isRunning = session?.status === "running";
+  const hasAgentOutput = logLines.some((line) => {
+    if (line.type === "structured") return true;
+    const text = line.text.trim().toLowerCase();
+    if (!text) return false;
+    return (
+      !text.startsWith("prompt_initial |") &&
+      !text.startsWith("scope |") &&
+      !text.startsWith("scope_unresolved |") &&
+      !text.startsWith("objective |")
+    );
+  });
+  const isWaitingOnAgent = isRunning && !plan && !hasAgentOutput;
   const canApply = Boolean(session && plan && activeRepo && !isRunning);
   const isSingleWaveDerivedPlan = (plan?.waves.length ?? 0) === 1;
 
@@ -642,7 +652,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     }
 
     setSession(result.data);
-    setStatusText("The agent is organizing scenes...");
+    setStatusText("Waiting on agent...");
   };
 
   // Auto-run after prefill hydration (one-shot, guarded by ref)
@@ -859,7 +869,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               </Badge>
             ) : (
               <Badge variant="outline" className="text-[11px]">
-                waiting for draft
+                {isWaitingOnAgent ? "waiting on agent..." : "waiting for draft"}
               </Badge>
             )}
           </div>
@@ -1031,6 +1041,12 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               ref={terminalRef}
               className="h-[380px] overflow-auto px-3 py-2 font-mono text-xs leading-relaxed"
             >
+              {isWaitingOnAgent && (
+                <div className="mb-2 flex items-center gap-2 text-sky-300">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>Waiting on agent...</span>
+                </div>
+              )}
               {logLines.length > 0 ? (
                 <div className="space-y-1">
                   {logLines.map((line) =>
@@ -1072,9 +1088,16 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                   )}
                 </div>
               ) : (
-                <p className="text-slate-500">
-                  No output yet. Start a planning run to stream agent output.
-                </p>
+                <div className="flex items-center gap-2 text-slate-500">
+                  {isWaitingOnAgent ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      <span>Waiting on agent...</span>
+                    </>
+                  ) : (
+                    <span>No output yet. Start a planning run to stream agent output.</span>
+                  )}
+                </div>
               )}
             </div>
           </section>
