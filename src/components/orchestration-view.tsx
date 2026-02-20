@@ -56,6 +56,16 @@ interface OrchestrationViewProps {
   onApplied?: () => void;
 }
 
+interface ParsedInternalScene {
+  name: string;
+  details: string;
+}
+
+type WaveNotesLayout =
+  | { mode: "none" }
+  | { mode: "plain"; notes: string }
+  | { mode: "internal-scenes"; scenes: ParsedInternalScene[] };
+
 export type ExtraValue =
   | { kind: "primitive"; text: string }
   | { kind: "object"; entries: { key: string; value: ExtraValue }[] }
@@ -298,6 +308,48 @@ function normalizeStatusText(message: string): string {
   const clean = message.replace(/\s+/g, " ").trim();
   if (clean.length <= 180) return clean;
   return `${clean.slice(0, 180)}...`;
+}
+
+function parseInternalScenes(notes?: string): ParsedInternalScene[] {
+  if (!notes || !notes.trim()) return [];
+
+  const sceneHeaderPattern = /\b(?:scene|phase|step)\s+[A-Za-z0-9]+(?:\s*\([^)]*\))?/gi;
+  const matches = Array.from(notes.matchAll(sceneHeaderPattern)).filter(
+    (match): match is RegExpMatchArray & { index: number } =>
+      typeof match.index === "number"
+  );
+  if (matches.length < 2) return [];
+
+  const scenes: ParsedInternalScene[] = [];
+  for (let i = 0; i < matches.length; i += 1) {
+    const current = matches[i];
+    const next = matches[i + 1];
+    const header = current[0].trim();
+    const start = current.index + current[0].length;
+    const end = next ? next.index : notes.length;
+    const details = notes
+      .slice(start, end)
+      .replace(/^[\s:;\-–—]+/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!details) continue;
+    scenes.push({ name: header, details });
+  }
+
+  return scenes;
+}
+
+function resolveWaveNotesLayout(
+  notes: string | undefined,
+  options: { allowInternalSceneDerivation: boolean }
+): WaveNotesLayout {
+  if (!notes || !notes.trim()) return { mode: "none" };
+  if (!options.allowInternalSceneDerivation) return { mode: "plain", notes };
+
+  const scenes = parseInternalScenes(notes);
+  if (scenes.length > 0) return { mode: "internal-scenes", scenes };
+  return { mode: "plain", notes };
 }
 
 function normalizeStoredWaveEdits(
@@ -562,6 +614,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
   const isRunning = session?.status === "running";
   const canApply = Boolean(session && plan && activeRepo && !isRunning);
+  const isSingleWaveDerivedPlan = (plan?.waves.length ?? 0) === 1;
 
   const handleStart = async () => {
     if (!activeRepo) {
@@ -792,89 +845,130 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
           {plan ? (
             <div className="space-y-3">
-              {plan.waves.map((wave, index) => (
-                <div
-                  key={`${wave.waveIndex}-${wave.name}`}
-                  className="relative rounded-xl border bg-slate-50 p-3"
-                >
-                  {index < plan.waves.length - 1 && (
-                    <div className="pointer-events-none absolute -bottom-3 left-4 h-3 border-l border-dashed border-slate-300" />
-                  )}
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <Badge variant="outline" className="font-mono text-[11px]">
-                      Scene {wave.waveIndex}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">{wave.beads.length} beats</span>
-                  </div>
-                  <div className="mt-1 space-y-1.5">
-                    <Input
-                      value={waveEdits[wave.waveIndex]?.name ?? wave.name}
-                      onChange={(event) =>
-                        setWaveEdits((prev) => ({
-                          ...prev,
-                          [wave.waveIndex]: {
-                            name: event.target.value,
-                            slug: prev[wave.waveIndex]?.slug ?? "",
-                          },
-                        }))
-                      }
-                      className="h-8 bg-white text-sm font-semibold"
-                      disabled={isRunning || isApplying}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                        slug
-                      </span>
+              {plan.waves.map((wave, index) => {
+                const notesLayout = resolveWaveNotesLayout(wave.notes, {
+                  allowInternalSceneDerivation: isSingleWaveDerivedPlan,
+                });
+
+                return (
+                  <div
+                    key={`${wave.waveIndex}-${wave.name}`}
+                    className="relative rounded-xl border bg-slate-50 p-3"
+                  >
+                    {index < plan.waves.length - 1 && (
+                      <div className="pointer-events-none absolute -bottom-3 left-4 h-3 border-l border-dashed border-slate-300" />
+                    )}
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <Badge variant="outline" className="font-mono text-[11px]">
+                        Scene {wave.waveIndex}
+                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        {notesLayout.mode === "internal-scenes" && (
+                          <Badge variant="secondary" className="text-[10px]">
+                            {notesLayout.scenes.length} internal
+                          </Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">{wave.beads.length} beats</span>
+                      </div>
+                    </div>
+                    <div className="mt-1 space-y-1.5">
                       <Input
-                        value={waveEdits[wave.waveIndex]?.slug ?? ""}
+                        value={waveEdits[wave.waveIndex]?.name ?? wave.name}
                         onChange={(event) =>
                           setWaveEdits((prev) => ({
                             ...prev,
                             [wave.waveIndex]: {
-                              name: prev[wave.waveIndex]?.name ?? wave.name,
-                              slug: event.target.value,
+                              name: event.target.value,
+                              slug: prev[wave.waveIndex]?.slug ?? "",
                             },
                           }))
                         }
-                        placeholder="auto-generated (e.g. streep-montage)"
-                        className="h-7 bg-white font-mono text-[11px]"
+                        className="h-8 bg-white text-sm font-semibold"
                         disabled={isRunning || isApplying}
                       />
-                    </div>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
-
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {wave.agents.length > 0 ? (
-                      wave.agents.map((agent) => (
-                        <Badge
-                          key={`${wave.waveIndex}-${agent.role}-${agent.specialty ?? "none"}`}
-                          variant="secondary"
-                          className="gap-1 text-[10px]"
-                        >
-                          <Users className="size-3" />
-                          {formatAgentLabel(agent)}
-                        </Badge>
-                      ))
-                    ) : (
-                      <Badge variant="secondary" className="text-[10px]">
-                        1 x generalist
-                      </Badge>
-                    )}
-                  </div>
-
-                  <ul className="mt-2 space-y-1">
-                    {[...wave.beads].sort((a, b) => naturalCompare(a.id, b.id)).map((bead) => (
-                      <li key={bead.id} className="rounded-md border bg-white px-2 py-1 text-xs">
-                        <span className="font-mono text-[10px] text-muted-foreground">
-                          {bead.id.replace(/^[^-]+-/, "")}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          slug
                         </span>
-                        <span className="ml-1.5">{bead.title}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                        <Input
+                          value={waveEdits[wave.waveIndex]?.slug ?? ""}
+                          onChange={(event) =>
+                            setWaveEdits((prev) => ({
+                              ...prev,
+                              [wave.waveIndex]: {
+                                name: prev[wave.waveIndex]?.name ?? wave.name,
+                                slug: event.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="auto-generated (e.g. streep-montage)"
+                          className="h-7 bg-white font-mono text-[11px]"
+                          disabled={isRunning || isApplying}
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{wave.objective}</p>
+
+                    {notesLayout.mode === "internal-scenes" ? (
+                      <div className="mt-2 rounded-md border bg-white/80 p-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+                          Internal Layout
+                        </p>
+                        <ul className="mt-1 space-y-1">
+                          {notesLayout.scenes.map((scene, sceneIndex) => (
+                            <li
+                              key={`${wave.waveIndex}-${sceneIndex}-${scene.name}`}
+                              className="rounded border border-slate-200 bg-slate-50 px-2 py-1"
+                            >
+                              <p className="text-[10px] font-semibold text-slate-700">
+                                {scene.name}
+                              </p>
+                              <p className="text-[11px] text-slate-600">{scene.details}</p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : notesLayout.mode === "plain" ? (
+                      <div className="mt-2 rounded-md border bg-white/80 px-2 py-1.5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+                          Notes
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-slate-600">{notesLayout.notes}</p>
+                      </div>
+                    ) : null}
+
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {wave.agents.length > 0 ? (
+                        wave.agents.map((agent) => (
+                          <Badge
+                            key={`${wave.waveIndex}-${agent.role}-${agent.specialty ?? "none"}`}
+                            variant="secondary"
+                            className="gap-1 text-[10px]"
+                          >
+                            <Users className="size-3" />
+                            {formatAgentLabel(agent)}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px]">
+                          1 x generalist
+                        </Badge>
+                      )}
+                    </div>
+
+                    <ul className="mt-2 space-y-1">
+                      {[...wave.beads].sort((a, b) => naturalCompare(a.id, b.id)).map((bead) => (
+                        <li key={bead.id} className="rounded-md border bg-white px-2 py-1 text-xs">
+                          <span className="font-mono text-[10px] text-muted-foreground">
+                            {bead.id.replace(/^[^-]+-/, "")}
+                          </span>
+                          <span className="ml-1.5">{bead.title}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
 
             </div>
           ) : (

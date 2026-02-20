@@ -137,6 +137,8 @@ function buildPrompt(
     "- If blocker -> blocked, blocker must be in an earlier wave than blocked.",
     "- For each wave, propose agent roles and count. Specialty is optional but useful.",
     "- Keep wave names short and concrete.",
+    "- Do not hide execution structure only in notes: emit separate waves whenever possible.",
+    "- If planning a single in-scope bead, put it in wave 1 and use later waves with empty bead lists for downstream phases.",
     "",
     "Output protocol (strict):",
     "1) Emit NDJSON progress lines while thinking:",
@@ -180,6 +182,19 @@ function normalizeAgents(raw: unknown): OrchestrationAgentSpec[] {
   }
 
   return normalized;
+}
+
+function selectKnownInputBeads(
+  rawBeadsForWave: Array<{ id: string; title: string }>,
+  beadTitleMap: Map<string, string>
+): Array<{ id: string; title: string }> {
+  return rawBeadsForWave.filter((bead) => beadTitleMap.has(bead.id));
+}
+
+function selectFallbackWaveBeads(
+  rawBeadsForWave: Array<{ id: string; title: string }>
+): Array<{ id: string; title: string }> {
+  return rawBeadsForWave;
 }
 
 function normalizeWave(
@@ -244,11 +259,12 @@ function normalizeWave(
     title: explicitTitles.get(id) ?? beadTitleMap.get(id) ?? id,
   }));
 
-  const knownBeads = rawBeadsForWave.filter((bead) => beadTitleMap.has(bead.id));
+  const knownBeads = selectKnownInputBeads(rawBeadsForWave, beadTitleMap);
 
   // Preserve the original behavior when known bead IDs are present.
   // Fallback to raw wave beads only when the model emits layout-only IDs.
-  const beads = knownBeads.length > 0 ? knownBeads : rawBeadsForWave;
+  const beads =
+    knownBeads.length > 0 ? knownBeads : selectFallbackWaveBeads(rawBeadsForWave);
 
   return {
     waveIndex,
