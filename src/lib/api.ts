@@ -133,6 +133,16 @@ export function fetchDeps(
   return request<BeadDependency[]>(`${BASE}/${id}/deps${qs}`);
 }
 
+export function fetchBatchDeps(
+  ids: string[],
+  repo?: string
+): Promise<BdResult<Record<string, BeadDependency[]>>> {
+  const qs = buildQs({ ids: ids.join(",") }, repo);
+  return request<Record<string, BeadDependency[]>>(
+    `${BASE}/batch-deps${qs}`
+  );
+}
+
 export function addDep(
   id: string,
   input: AddDepInput,
