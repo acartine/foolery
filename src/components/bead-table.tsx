@@ -123,6 +123,29 @@ function getStoredHotkeyHelp(): boolean {
   return stored !== "false";
 }
 
+const EXPANDED_PARENTS_KEY = "foolery:expandedParents";
+
+function getStoredExpandedIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const stored = localStorage.getItem(EXPANDED_PARENTS_KEY);
+    if (!stored) return new Set();
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed)) return new Set(parsed);
+    return new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function persistExpandedIds(ids: Set<string>) {
+  if (typeof window === "undefined") return;
+  try {
+    if (ids.size === 0) localStorage.removeItem(EXPANDED_PARENTS_KEY);
+    else localStorage.setItem(EXPANDED_PARENTS_KEY, JSON.stringify([...ids]));
+  } catch { /* localStorage unavailable */ }
+}
+
 export function BeadTable({
   data,
   showRepoColumn = false,
@@ -156,7 +179,7 @@ export function BeadTable({
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBead, setNotesBead] = useState<Bead | null>(null);
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(getStoredExpandedIds);
   const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
@@ -256,10 +279,11 @@ export function BeadTable({
   });
 
   const handleToggleCollapse = useCallback((id: string) => {
-    setCollapsedIds((prev) => {
+    setExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      persistExpandedIds(next);
       return next;
     });
   }, []);
@@ -270,19 +294,26 @@ export function BeadTable({
   }, [data, userSorted]);
 
   const sortedData = useMemo(() => {
-    if (collapsedIds.size === 0) return hierarchyData;
+    const parentIds = new Set<string>();
+    for (const bead of hierarchyData) {
+      if ((bead as unknown as { _hasChildren?: boolean })._hasChildren) {
+        parentIds.add(bead.id);
+      }
+    }
+
     const result: HierarchicalBead[] = [];
     let skipDepth: number | null = null;
     for (const bead of hierarchyData) {
       if (skipDepth !== null && bead._depth > skipDepth) continue;
       skipDepth = null;
       result.push(bead);
-      if (collapsedIds.has(bead.id)) {
+      // Collapse if this is a parent AND not in expandedIds
+      if (parentIds.has(bead.id) && !expandedIds.has(bead.id)) {
         skipDepth = bead._depth;
       }
     }
     return result;
-  }, [hierarchyData, collapsedIds]);
+  }, [hierarchyData, expandedIds]);
 
   const allLabels = useMemo(() => {
     const labelSet = new Set<string>();
@@ -344,6 +375,21 @@ export function BeadTable({
     setNotesRejectionMode(true);
     setNotesDialogOpen(true);
   }, []);
+
+  // Compute collapsedIds for column rendering (chevron direction)
+  const collapsedIds = useMemo(() => {
+    const parentIds = new Set<string>();
+    for (const bead of hierarchyData) {
+      if ((bead as unknown as { _hasChildren?: boolean })._hasChildren) {
+        parentIds.add(bead.id);
+      }
+    }
+    const collapsed = new Set<string>();
+    for (const id of parentIds) {
+      if (!expandedIds.has(id)) collapsed.add(id);
+    }
+    return collapsed;
+  }, [hierarchyData, expandedIds]);
 
   const columns = useMemo(
     () => getBeadColumns({
@@ -561,6 +607,30 @@ export function BeadTable({
         const currentIdx = activeRepo ? cycle.indexOf(activeRepo) : -1;
         const nextIdx = currentIdx < cycle.length - 1 ? currentIdx + 1 : 0;
         updateUrl({ repo: cycle[nextIdx] });
+      } else if (e.key === "<" && e.shiftKey) {
+        // Shift+<: Fold focused parent
+        if (currentIndex < 0) return;
+        const hb = rows[currentIndex].original as unknown as { _hasChildren?: boolean };
+        if (!hb._hasChildren) return;
+        e.preventDefault();
+        setExpandedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(rows[currentIndex].original.id);
+          persistExpandedIds(next);
+          return next;
+        });
+      } else if (e.key === ">" && e.shiftKey) {
+        // Shift+>: Unfold focused parent
+        if (currentIndex < 0) return;
+        const hb = rows[currentIndex].original as unknown as { _hasChildren?: boolean };
+        if (!hb._hasChildren) return;
+        e.preventDefault();
+        setExpandedIds((prev) => {
+          const next = new Set(prev);
+          next.add(rows[currentIndex].original.id);
+          persistExpandedIds(next);
+          return next;
+        });
       }
     };
     window.addEventListener("keydown", handleKeyDown);

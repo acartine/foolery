@@ -14,6 +14,8 @@ const HOTKEY_SECTIONS: HotkeySection[] = [
       { key: "Shift+[", description: "Previous view" },
       { key: "Shift+R", description: "Next repository" },
       { key: "⌘+Shift+R", description: "Previous repository" },
+      { key: "Shift+<", description: "Fold parent" },
+      { key: "Shift+>", description: "Unfold parent" },
     ],
   },
   {
