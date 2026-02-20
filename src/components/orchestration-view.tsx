@@ -11,6 +11,7 @@ import {
   Play,
   Clapperboard,
   Square,
+  Trash2,
   Users,
   Workflow,
   ArrowRight,
@@ -789,6 +790,26 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               )}
               Apply Scene Beats
             </Button>
+            {plan && !isRunning && !isApplying && (
+              <Button title="Discard the current plan"
+                variant="ghost"
+                className="gap-1.5"
+                onClick={() => {
+                  setPlan(null);
+                  setSession(null);
+                  setLogLines([]);
+                  setWaveEdits({});
+                  setApplyResult(null);
+                  pendingLogRef.current = "";
+                  setStatusText("Ready to ask the agent for a scene plan");
+                  clearOrchestrationViewState();
+                  toast.info("Plan discarded");
+                }}
+              >
+                <Trash2 className="size-4" />
+                Discard
+              </Button>
+            )}
             {isRunning && (
               <Button title="Abort the current planning session"
                 variant="destructive"
