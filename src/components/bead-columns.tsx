@@ -482,22 +482,24 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       minSize: 80,
       maxSize: 80,
       cell: ({ row }) => {
-        if (!onUpdateBead) return <BeadTypeBadge type={row.original.type} />;
+        if (!onUpdateBead) return <div className="flex items-center"><BeadTypeBadge type={row.original.type} /></div>;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" title="Change type" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
-                <BeadTypeBadge type={row.original.type} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuRadioGroup value={row.original.type} onValueChange={(v) => onUpdateBead(row.original.id, { type: v as BeadType })}>
-                {BEAD_TYPES.map((t) => (
-                  <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" title="Change type" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                  <BeadTypeBadge type={row.original.type} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup value={row.original.type} onValueChange={(v) => onUpdateBead(row.original.id, { type: v as BeadType })}>
+                  {BEAD_TYPES.map((t) => (
+                    <DropdownMenuRadioItem key={t} value={t}>{t}</DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         );
       },
     },
