@@ -3,32 +3,14 @@
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads } from "@/lib/api";
-import { startSession } from "@/lib/terminal-api";
 import { BeadTable } from "@/components/bead-table";
 import { useAppStore } from "@/stores/app-store";
-import { useTerminalStore } from "@/stores/terminal-store";
 import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
-import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
 
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
-  const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
   const [selectionVersion] = useState(0);
-
-  const shippingByBeadId = terminals.reduce<Record<string, string>>(
-    (acc, terminal) => {
-      if (terminal.status === "running") {
-        if (terminal.beadIds && terminal.beadIds.length > 0) {
-          for (const bid of terminal.beadIds) acc[bid] = terminal.sessionId;
-        } else {
-          acc[terminal.beadId] = terminal.sessionId;
-        }
-      }
-      return acc;
-    },
-    {}
-  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
@@ -84,34 +66,6 @@ export function FinalCutView() {
     // selection tracked for potential bulk actions
   }, []);
 
-  const handleShipBead = useCallback(
-    async (bead: Bead) => {
-      const existingRunning = terminals.find(
-        (terminal) => terminal.beadId === bead.id && terminal.status === "running"
-      );
-      if (existingRunning) {
-        setActiveSession(existingRunning.sessionId);
-        toast.info("Opened active session");
-        return;
-      }
-      const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      const result = await startSession(bead.id, repo ?? activeRepo ?? undefined);
-      if (!result.ok || !result.data) {
-        toast.error(result.error ?? "Failed to start terminal session");
-        return;
-      }
-      upsertTerminal({
-        sessionId: result.data.id,
-        beadId: bead.id,
-        beadTitle: bead.title,
-        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
-        status: "running",
-        startedAt: new Date().toISOString(),
-      });
-    },
-    [activeRepo, setActiveSession, terminals, upsertTerminal]
-  );
-
   return (
     <div>
       {isLoading ? (
@@ -124,8 +78,6 @@ export function FinalCutView() {
           showRepoColumn={showRepoColumn}
           onSelectionChange={handleSelectionChange}
           selectionVersion={selectionVersion}
-          onShipBead={handleShipBead}
-          shippingByBeadId={shippingByBeadId}
         />
       )}
     </div>
