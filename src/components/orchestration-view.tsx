@@ -322,6 +322,10 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
   const directAgentInfo = useAgentInfo("direct");
 
+  // Detect when this view becomes the active view so we can re-run hydration
+  // (the component is always mounted; CSS hides it when inactive).
+  const isActive = searchParams.get("view") === "orchestration";
+
   const [objective, setObjective] = useState("");
   const [session, setSession] = useState<OrchestrationSession | null>(null);
   const [plan, setPlan] = useState<OrchestrationPlan | null>(null);
@@ -352,7 +356,11 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   }, [activeRepo, registeredRepos]);
 
   useEffect(() => {
-    if (!activeRepo || typeof window === "undefined") return;
+    // Only hydrate when this view is the active view (component is always
+    // mounted; CSS hides it when inactive).  Adding `isActive` as a
+    // dependency ensures we re-check sessionStorage when the user navigates
+    // TO the orchestration view — fixing the Breakdown → Direct prefill bug.
+    if (!isActive || !activeRepo || typeof window === "undefined") return;
 
     // 1. Restage draft takes priority (intentional user action)
     const rawDraft = window.sessionStorage.getItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
@@ -423,7 +431,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     }, 0);
 
     return () => window.clearTimeout(restoreTimer);
-  }, [activeRepo]);
+  }, [activeRepo, isActive]);
 
   const nextWaveToTrigger = useMemo(() => {
     if (!applyResult || applyResult.applied.length === 0) return null;
