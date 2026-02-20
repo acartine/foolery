@@ -8,10 +8,6 @@ import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { fetchBead, fetchDeps, updateBead, addDep } from "@/lib/api";
-import {
-  buildBeadBreakdownPrompt,
-  setDirectPrefillPayload,
-} from "@/lib/breakdown-prompt";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
@@ -92,20 +88,17 @@ export function BeadDetailLightbox({
 
   const handleBreakdown = useCallback(() => {
     if (!beadId) return;
-    const title = (beadData?.ok ? beadData.data?.title : initialBead?.title) ?? beadId;
-    const prompt = buildBeadBreakdownPrompt(beadId, title);
 
-    setDirectPrefillPayload({ prompt, autorun: true, sourceBeadId: beadId });
-    console.info("[breakdown] Breakdown invoked", { beadId, prompt: prompt.slice(0, 80) });
-
-    // Close the lightbox, then navigate to Direct view
+    // Close the lightbox, then navigate to Breakdown view with the
+    // existing bead as parent — no new parent bead is created.
     onOpenChange(false);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", "orchestration");
+    params.set("view", "breakdown");
+    params.set("parent", beadId);
     params.delete("bead");
     params.delete("detailRepo");
     router.push(`/beads?${params.toString()}`);
-  }, [beadId, beadData, initialBead, onOpenChange, searchParams, router]);
+  }, [beadId, onOpenChange, searchParams, router]);
 
   const bead = beadData?.ok ? beadData.data : (initialBead ?? null);
   const deps = depsData?.ok ? (depsData.data ?? []) : [];
