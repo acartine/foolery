@@ -10,6 +10,7 @@ import {
   foolerySettingsSchema,
   type FoolerySettings,
   type RegisteredAgentConfig,
+  type VerificationSettings,
 } from "@/lib/schemas";
 import type {
   RegisteredAgent,
@@ -63,6 +64,7 @@ type SettingsPartial = Partial<{
   agent: Partial<FoolerySettings["agent"]>;
   agents: FoolerySettings["agents"];
   actions: Partial<FoolerySettings["actions"]>;
+  verification: Partial<FoolerySettings["verification"]>;
 }>;
 
 /**
@@ -77,6 +79,7 @@ export async function updateSettings(
     agent: { ...current.agent, ...partial.agent },
     agents: partial.agents !== undefined ? { ...current.agents, ...partial.agents } : current.agents,
     actions: { ...current.actions, ...partial.actions },
+    verification: { ...current.verification, ...partial.verification },
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -103,6 +106,23 @@ export async function getActionAgent(
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
   const agentId = settings.actions[action] ?? "";
+  if (agentId && agentId !== "default" && settings.agents[agentId]) {
+    const reg = settings.agents[agentId];
+    return { command: reg.command, model: reg.model, label: reg.label };
+  }
+  return { command: settings.agent.command };
+}
+
+/** Returns the verification settings. */
+export async function getVerificationSettings(): Promise<VerificationSettings> {
+  const settings = await loadSettings();
+  return settings.verification;
+}
+
+/** Resolves the verification agent config. Falls back to default agent. */
+export async function getVerificationAgent(): Promise<RegisteredAgent> {
+  const settings = await loadSettings();
+  const agentId = settings.verification.agent ?? "";
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
     const reg = settings.agents[agentId];
     return { command: reg.command, model: reg.model, label: reg.label };

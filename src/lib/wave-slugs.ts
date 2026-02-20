@@ -115,12 +115,17 @@ export function isWaveLabel(label: string): boolean {
 
 /** Labels that are internal bookkeeping and should not render as user-visible tag badges. */
 export function isInternalLabel(label: string): boolean {
-  return isWaveLabel(label) || label.startsWith("stage:");
+  return isWaveLabel(label) || label.startsWith("stage:") || label.startsWith("transition:");
 }
 
 /** Labels that should render but cannot be removed by the user (no X button). */
 export function isReadOnlyLabel(label: string): boolean {
-  return label.startsWith("attempts:");
+  return label.startsWith("attempts:") || label.startsWith("commit:");
+}
+
+/** Check if a bead is currently locked for verification transition. */
+export function isTransitionLocked(labels: string[]): boolean {
+  return labels.includes("transition:verification");
 }
 
 export function isWaveSlugLabel(label: string): boolean {

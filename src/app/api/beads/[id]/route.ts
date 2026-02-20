@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { showBead, updateBead, deleteBead } from "@/lib/bd";
 import { updateBeadSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
+import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
 
 export async function GET(
   request: NextRequest,
@@ -30,6 +31,19 @@ export async function PATCH(
       { status: 400 }
     );
   }
+
+  // Enforce edit lock: reject mutations when transition:verification is active
+  const current = await showBead(id, repoPath);
+  if (current.ok && current.data) {
+    const labels = current.data.labels ?? [];
+    if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
+      return NextResponse.json(
+        { error: "Bead is locked during auto-verification. Edits are disabled until verification completes." },
+        { status: 409 }
+      );
+    }
+  }
+
   const fields: Record<string, string | string[] | number | undefined> = {};
   for (const [key, val] of Object.entries(parsed.data)) {
     if (val !== undefined) {
@@ -63,6 +77,19 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
+
+  // Enforce edit lock: reject deletes when transition:verification is active
+  const currentBead = await showBead(id, repoPath);
+  if (currentBead.ok && currentBead.data) {
+    const labels = currentBead.data.labels ?? [];
+    if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
+      return NextResponse.json(
+        { error: "Bead is locked during auto-verification. Deletion is disabled until verification completes." },
+        { status: 409 }
+      );
+    }
+  }
+
   const result = await deleteBead(id, repoPath);
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });

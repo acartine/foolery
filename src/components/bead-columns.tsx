@@ -17,8 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye } from "lucide-react";
-import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug } from "@/lib/wave-slugs";
+import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck } from "lucide-react";
+import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
 
 const BEAD_TYPES: BeadType[] = [
   "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
@@ -90,6 +90,21 @@ function VerificationButtons({
   isRolling?: boolean;
 }) {
   const hasVerification = bead.labels?.includes("stage:verification");
+  const hasTransition = isTransitionLocked(bead.labels ?? []);
+
+  // Show auto-verification indicator when transition:verification is present
+  if (hasTransition) {
+    return (
+      <span
+        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700 animate-pulse"
+        title="Auto-verification in progress"
+      >
+        <ShieldCheck className="size-3 animate-spin" style={{ animationDuration: "3s" }} />
+        Verifying
+      </span>
+    );
+  }
+
   if (!hasVerification || !onUpdateBead || isRolling) return null;
 
   return (
@@ -238,8 +253,11 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
 }) {
   const labels = bead.labels ?? [];
   const isOrchestrated = labels.some(isWaveLabel);
+  const isLocked = isTransitionLocked(labels);
   const waveSlug = extractWaveSlug(labels);
   const visibleLabels = labels.filter((l) => !isInternalLabel(l));
+  // Disable editing when transition:verification is active
+  const effectiveOnUpdateBead = isLocked ? undefined : onUpdateBead;
   return (
     <div className="flex flex-col gap-0.5">
       {onTitleClick ? (
@@ -305,14 +323,14 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
             className={`inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
           >
             {label}
-            {onUpdateBead && !isReadOnlyLabel(label) && (
+            {effectiveOnUpdateBead && !isReadOnlyLabel(label) && (
               <button
                 type="button"
                 className="ml-0.5 rounded-full hover:bg-black/10 p-0.5 leading-none"
                 title={`Remove ${label}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onUpdateBead(bead.id, { removeLabels: [label] });
+                  effectiveOnUpdateBead(bead.id, { removeLabels: [label] });
                 }}
               >
                 <X className="size-3" />
@@ -320,8 +338,8 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
             )}
           </span>
         ))}
-        {onUpdateBead && (
-          <AddLabelDropdown beadId={bead.id} existingLabels={labels} onUpdateBead={onUpdateBead} allLabels={allLabels} />
+        {effectiveOnUpdateBead && (
+          <AddLabelDropdown beadId={bead.id} existingLabels={labels} onUpdateBead={effectiveOnUpdateBead} allLabels={allLabels} />
         )}
       </div>
     </div>
@@ -491,6 +509,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       maxSize: 130,
       cell: ({ row }) => {
         const isRolling = Boolean(shippingByBeadId[row.original.id]);
+        const isLocked = isTransitionLocked(row.original.labels ?? []);
         const pulseClass = isRolling && row.original.status === "in_progress" ? "animate-pulse" : "";
         return (
           <div className="flex items-center gap-0.5">
@@ -499,7 +518,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
               onUpdateBead={onUpdateBead}
               isRolling={isRolling}
             />
-            {onUpdateBead ? (
+            {onUpdateBead && !isLocked ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button type="button" title="Change status" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
@@ -535,6 +554,8 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
       cell: ({ row }) => {
         const bead = row.original;
         if (bead.status === "closed" || bead.type === "gate") return null;
+        // Disable Ship button during auto-verification
+        if (isTransitionLocked(bead.labels ?? [])) return null;
         const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
         const hb = bead as unknown as { _hasChildren?: boolean };
         const isParent = hb._hasChildren ?? false;

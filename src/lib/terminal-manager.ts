@@ -15,6 +15,7 @@ import {
 } from "@/lib/agent-adapter";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
+import { onAgentComplete } from "@/lib/verification-orchestrator";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -692,6 +693,12 @@ export async function createSession(
       regroomAncestors(beadId, cwd).catch((err) => {
         console.error(`[terminal-manager] regroom failed for ${beadId}:`, err);
       });
+
+      // Trigger auto-verification workflow for code-producing actions
+      const actionBeadIds = isParent ? waveBeatIds : [beadId];
+      onAgentComplete(actionBeadIds, "take", cwd, code ?? 1).catch((err) => {
+        console.error(`[terminal-manager] verification hook failed for ${beadId}:`, err);
+      });
     }
 
     // Remove all emitter listeners after a short drain window so
@@ -1108,6 +1115,11 @@ export async function createSceneSession(
         beadIds.map((bid) => regroomAncestors(bid, cwd))
       ).catch((err) => {
         console.error(`[terminal-manager] regroom failed for scene:`, err);
+      });
+
+      // Trigger auto-verification workflow for scene beads
+      onAgentComplete(beadIds, "scene", cwd, code ?? 1).catch((err) => {
+        console.error(`[terminal-manager] verification hook failed for scene:`, err);
       });
     }
 

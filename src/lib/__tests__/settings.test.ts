@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS = {
   agent: { command: "claude" },
   agents: {},
   actions: DEFAULT_ACTIONS,
+  verification: { enabled: false, agent: "" },
 };
 
 beforeEach(() => {
@@ -82,6 +83,7 @@ describe("saveSettings", () => {
       agent: { command: "my-agent" },
       agents: {},
       actions: DEFAULT_ACTIONS,
+      verification: { enabled: false, agent: "" },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

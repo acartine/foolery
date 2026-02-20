@@ -17,9 +17,10 @@ import { Separator } from "@/components/ui/separator";
 import { SettingsAgentsSection } from "@/components/settings-agents-section";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsReposSection } from "@/components/settings-repos-section";
+import { SettingsVerificationSection } from "@/components/settings-verification-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
-import type { ActionAgentMappings } from "@/lib/schemas";
+import type { ActionAgentMappings, VerificationSettings } from "@/lib/schemas";
 
 export type SettingsSection = "repos" | null;
 
@@ -33,6 +34,7 @@ interface SettingsData {
   agent: { command: string };
   agents: Record<string, RegisteredAgent>;
   actions: ActionAgentMappings;
+  verification: VerificationSettings;
 }
 
 const DEFAULTS: SettingsData = {
@@ -43,6 +45,10 @@ const DEFAULTS: SettingsData = {
     scene: "",
     direct: "",
     breakdown: "",
+  },
+  verification: {
+    enabled: false,
+    agent: "",
   },
 };
 
@@ -68,6 +74,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             agent: res.data.agent ?? DEFAULTS.agent,
             agents: res.data.agents ?? DEFAULTS.agents,
             actions: res.data.actions ?? DEFAULTS.actions,
+            verification: res.data.verification ?? DEFAULTS.verification,
           });
         }
       })
@@ -138,7 +145,18 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
               <Separator />
 
-              {/* Section 3: Legacy / Default Agent */}
+              {/* Section 3: Auto-Verification */}
+              <SettingsVerificationSection
+                verification={settings.verification}
+                agents={settings.agents}
+                onVerificationChange={(verification) =>
+                  setSettings((prev) => ({ ...prev, verification }))
+                }
+              />
+
+              <Separator />
+
+              {/* Section 4: Legacy / Default Agent */}
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Default Agent Command</h3>
                 <div className="space-y-2">

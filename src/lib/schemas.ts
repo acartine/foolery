@@ -120,13 +120,25 @@ export const actionAgentMappingsSchema = z
     breakdown: "",
   });
 
+// Auto-verification settings
+export const verificationSettingsSchema = z
+  .object({
+    /** Whether auto-verification is enabled after code-producing actions. */
+    enabled: z.boolean().default(false),
+    /** Agent ID to use for verification (empty string = use default agent). */
+    agent: z.string().default(""),
+  })
+  .default({ enabled: false, agent: "" });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
   actions: actionAgentMappingsSchema,
+  verification: verificationSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
 export type AgentSettings = z.infer<typeof agentSettingsSchema>;
 export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
+export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
