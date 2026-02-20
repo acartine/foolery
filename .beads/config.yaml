@@ -65,3 +65,5 @@ sync-branch: "beads-sync"
 # - linear.api-key
 # - github.org
 # - github.repo
+
+sync.git-remote: "https://github.com/acartine/foolery.git"
