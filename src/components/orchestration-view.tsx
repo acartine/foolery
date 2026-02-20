@@ -859,7 +859,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
         <p className="mt-2 text-xs text-muted-foreground">{statusText}</p>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
+      <div className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
         <section className="rounded-2xl border bg-card p-3">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold">Scene Diagram</h3>
