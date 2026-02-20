@@ -180,6 +180,7 @@ export function BeadTable({
   const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(getStoredExpandedIds);
   const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
+  const [rejectingIds, setRejectingIds] = useState<Set<string>>(new Set());
   const [manualPageIndex, setManualPageIndex] = useState(0);
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
@@ -194,12 +195,20 @@ export function BeadTable({
     onMutate: async ({ id, fields }) => {
       const isVerify = fields.status === "closed" &&
         fields.removeLabels?.includes("stage:verification");
-      if (!isVerify) return { isVerify: false as const };
+      const isReject = fields.status === "open" &&
+        fields.removeLabels?.includes("stage:verification");
 
-      // Show immediate feedback and mark row as verifying for transition
+      if (!isVerify && !isReject) return { isVerify: false as const, isReject: false as const };
+
+      // Show immediate feedback and mark row for transition styling
       const bead = data.find((b) => b.id === id);
-      toast.success(`Verified: ${bead?.title ?? id}`);
-      setVerifyingIds((prev) => new Set(prev).add(id));
+      if (isVerify) {
+        toast.success(`Verified: ${bead?.title ?? id}`);
+        setVerifyingIds((prev) => new Set(prev).add(id));
+      } else {
+        toast.info(`Rejected: ${bead?.title ?? id}`);
+        setRejectingIds((prev) => new Set(prev).add(id));
+      }
 
       // Cancel outgoing finalcut refetches so they don't overwrite optimistic data
       await queryClient.cancelQueries({ queryKey: ["beads", "finalcut"] });
@@ -207,7 +216,7 @@ export function BeadTable({
       // Snapshot current finalcut cache for rollback
       const previousFinalCut = queryClient.getQueriesData({ queryKey: ["beads", "finalcut"] });
 
-      // Optimistically remove the verified bead from the finalcut cache
+      // Optimistically remove the bead from the finalcut cache
       queryClient.setQueriesData(
         { queryKey: ["beads", "finalcut"] },
         (old: unknown) => {
@@ -217,36 +226,50 @@ export function BeadTable({
         }
       );
 
-      return { isVerify: true as const, previousFinalCut };
+      return { isVerify: isVerify as boolean, isReject: isReject as boolean, previousFinalCut };
     },
     onSuccess: (_data, { id }, context) => {
-      if (!context?.isVerify) {
+      if (!context?.isVerify && !context?.isReject) {
         queryClient.invalidateQueries({ queryKey: ["beads"] });
         queryClient.invalidateQueries({ queryKey: ["bead", id] });
       }
     },
     onError: (_err, { id }, context) => {
       toast.error("Failed to update beat");
-      // Roll back optimistic update for verification
-      if (context?.isVerify && context.previousFinalCut) {
-        setVerifyingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(id);
-          return next;
-        });
+      // Roll back optimistic update for verification or rejection
+      if ((context?.isVerify || context?.isReject) && context.previousFinalCut) {
+        if (context.isVerify) {
+          setVerifyingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        }
+        if (context.isReject) {
+          setRejectingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        }
         for (const [key, snapData] of context.previousFinalCut) {
           queryClient.setQueryData(key, snapData);
         }
       }
     },
     onSettled: (_data, _err, { id }, context) => {
-      // Always clear verifying state
+      // Always clear verifying/rejecting state
       setVerifyingIds((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
       });
-      if (context?.isVerify) {
+      setRejectingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      if (context?.isVerify || context?.isReject) {
         // CRITICAL: Do NOT broadly invalidate ["beads"] here.
         // The finalcut cache was already optimistically updated above.
         // Broad invalidation causes the finalcut query to refetch, and
@@ -730,12 +753,14 @@ export function BeadTable({
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => {
               const isVerifying = verifyingIds.has(row.original.id);
+              const isRejecting = rejectingIds.has(row.original.id);
               return (
               <TableRow
                 key={row.id}
                 className={cn(
                   focusedRowId === row.original.id && "bg-muted/50",
                   isVerifying && "bg-green-50 opacity-50 transition-all duration-300 dark:bg-green-950/30",
+                  isRejecting && "bg-red-50 opacity-50 transition-all duration-300 dark:bg-red-950/30",
                 )}
                 onClick={() => handleRowFocus(row.original)}
               >
