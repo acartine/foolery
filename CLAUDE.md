@@ -35,6 +35,16 @@ Each Git worktree is a separate checkout and does not share `node_modules`.
 3. Prefer `bun run <script>` over `bunx <tool>` so plugins resolve from local project dependencies.
 4. If `node_modules` is missing in the worktree, treat lint/typecheck results as invalid until install completes.
 
+## Quality Gates
+
+Before committing changes, ensure that the codebase passes all quality checks. Run the following commands:
+- **Linting:** `bun run lint`
+- **Type Checking:** `bunx tsc --noEmit`
+- **Testing:** `bun run test` (or `bun run test:all` to run all tests)
+- **Building:** `bun run build`
+
+Do not push code that fails these checks unless explicitly instructed.
+
 
 
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
