@@ -2,7 +2,9 @@
 
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { Scissors } from "lucide-react";
 import { fetchBeads } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
 import { BeadTable } from "@/components/bead-table";
 import { useAppStore } from "@/stores/app-store";
 import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
@@ -57,7 +59,13 @@ export function FinalCutView() {
     placeholderData: keepPreviousData,
   });
 
-  const beads: Bead[] = data?.ok ? (data.data ?? []) : [];
+  const allBeads: Bead[] = data?.ok ? (data.data ?? []) : [];
+
+  // Only show top-level beads (no parent) and parent beads (have children).
+  // Leaf children are excluded to reduce clutter in the Final Cut view.
+  const parentIds = new Set(allBeads.map((b) => b.parent).filter(Boolean));
+  const beads = allBeads.filter((b) => !b.parent || parentIds.has(b.id));
+
   useVerificationNotifications(beads);
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
@@ -67,7 +75,25 @@ export function FinalCutView() {
   }, []);
 
   return (
-    <div>
+    <div className="space-y-4 pb-4">
+      <section className="rounded-2xl border bg-gradient-to-br from-slate-50 via-amber-50 to-orange-50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
+              <Scissors className="size-4" />
+              Final Cut
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Review features that agents believe they have completed and
+              pushed. Everything here is ready for human verification.
+            </p>
+          </div>
+          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
+            {beads.length} {beads.length === 1 ? "bead" : "beads"}
+          </Badge>
+        </div>
+      </section>
+
       {isLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
           Loading final cut...
