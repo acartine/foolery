@@ -29,7 +29,13 @@ export function useVerificationCount(
   const { data } = useQuery<BdResult<Bead[]>, Error, number>({
     queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
     queryFn: () => fetchVerificationBeads(activeRepo, registeredRepos),
-    select: (result) => (result.ok ? (result.data?.length ?? 0) : 0),
+    select: (result) => {
+      if (!result.ok || !result.data) return 0;
+      const beads = result.data;
+      // Exclude leaf children: only count top-level (no parent) or parent beads.
+      const parentIds = new Set(beads.map((b) => b.parent).filter(Boolean));
+      return beads.filter((b) => !b.parent || parentIds.has(b.id)).length;
+    },
     enabled: enabled && hasRepos,
     // When FinalCutView is active it drives the same cache at 10s;
     // on other views, poll at a relaxed 30s for the header badge.
