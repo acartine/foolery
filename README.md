@@ -36,8 +36,6 @@
       <br />
       <sub><b>Scenes</b></sub>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <a href="docs/screenshots/direct.png">
         <img src="docs/screenshots/direct.png" width="160" alt="Direct Planning" />
@@ -45,6 +43,8 @@
       <br />
       <sub><b>Direct</b></sub>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <a href="docs/screenshots/final-cut.png">
         <img src="docs/screenshots/final-cut.png" width="160" alt="Final Cut" />
@@ -58,6 +58,20 @@
       </a>
       <br />
       <sub><b>Hot Keys</b></sub>
+    </td>
+    <td align="center">
+      <a href="docs/screenshots/agent-history.png">
+        <img src="docs/screenshots/agent-history.png" width="160" alt="Agent History" />
+      </a>
+      <br />
+      <sub><b>Agent History</b></sub>
+    </td>
+    <td align="center">
+      <a href="docs/screenshots/retake.png">
+        <img src="docs/screenshots/retake.png" width="160" alt="ReTake" />
+      </a>
+      <br />
+      <sub><b>ReTake</b></sub>
     </td>
     <td></td>
   </tr>
@@ -124,6 +138,18 @@ The planning room. Select a set of beats and ask Claude to organize them into de
 The verification queue. Every beat labeled `stage:verification` lands here. Review each one, approve it, or reject it with notes — keeping your done list honest.
 
 ![Final Cut view](docs/screenshots/final-cut.png)
+
+### Agent History
+
+A focused history feed for agent implementation sessions. Browse recent beat activity, inspect beat metadata, and review app-to-agent and agent-to-app messages in one timeline.
+
+![Agent History view](docs/screenshots/agent-history.png)
+
+### ReTake
+
+The redo lane for follow-up agent passes. Re-run work with tighter prompts, keep retries visible, and iterate without losing the original beat context.
+
+![ReTake view](docs/screenshots/retake.png)
 
 ### Hot Keys
 
