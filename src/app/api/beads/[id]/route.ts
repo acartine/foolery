@@ -3,6 +3,57 @@ import { showBead, updateBead, deleteBead } from "@/lib/bd";
 import { updateBeadSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
+import {
+  DEGRADED_ERROR_MESSAGE,
+  isSuppressibleError,
+} from "@/lib/bd-error-suppression";
+import type { Bead } from "@/lib/types";
+
+const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
+const NOT_FOUND_PATTERNS = [
+  "no issue found",
+  "no issues found",
+  "not found",
+];
+
+interface DetailCacheEntry {
+  bead: Bead;
+  cachedAtMs: number;
+}
+
+const detailCache = new Map<string, DetailCacheEntry>();
+
+function cacheKey(id: string, repoPath?: string): string {
+  return `${repoPath ?? ""}::${id}`;
+}
+
+function cacheDetail(id: string, repoPath: string | undefined, bead: Bead): void {
+  detailCache.set(cacheKey(id, repoPath), {
+    bead,
+    cachedAtMs: Date.now(),
+  });
+}
+
+function clearCachedDetail(id: string, repoPath?: string): void {
+  detailCache.delete(cacheKey(id, repoPath));
+}
+
+function getCachedDetail(id: string, repoPath?: string): DetailCacheEntry | null {
+  const key = cacheKey(id, repoPath);
+  const cached = detailCache.get(key);
+  if (!cached) return null;
+  if (Date.now() - cached.cachedAtMs > DETAIL_CACHE_TTL_MS) {
+    detailCache.delete(key);
+    return null;
+  }
+  return cached;
+}
+
+function isNotFoundError(errorMsg: string | undefined): boolean {
+  if (!errorMsg) return false;
+  const lower = errorMsg.toLowerCase();
+  return NOT_FOUND_PATTERNS.some((pattern) => lower.includes(pattern));
+}
 
 export async function GET(
   request: NextRequest,
@@ -11,10 +62,31 @@ export async function GET(
   const { id } = await params;
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
   const result = await showBead(id, repoPath);
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 404 });
+  if (result.ok && result.data) {
+    cacheDetail(id, repoPath, result.data);
+    return NextResponse.json({
+      data: result.data,
+      cached: false,
+    });
   }
-  return NextResponse.json({ data: result.data });
+
+  const error = result.error ?? "bd show failed";
+  if (isSuppressibleError(error)) {
+    const cached = getCachedDetail(id, repoPath);
+    if (cached) {
+      return NextResponse.json({
+        data: cached.bead,
+        cached: true,
+        cachedAt: new Date(cached.cachedAtMs).toISOString(),
+      });
+    }
+    return NextResponse.json({ error: DEGRADED_ERROR_MESSAGE }, { status: 503 });
+  }
+
+  if (isNotFoundError(error)) {
+    return NextResponse.json({ error }, { status: 404 });
+  }
+  return NextResponse.json({ error }, { status: 500 });
 }
 
 export async function PATCH(
@@ -54,6 +126,7 @@ export async function PATCH(
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
+  clearCachedDetail(id, repoPath);
 
   // Regroom ancestors when verification is removed (rejection may unblock parent close)
   const removedLabels = parsed.data.removeLabels;
@@ -94,5 +167,6 @@ export async function DELETE(
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
+  clearCachedDetail(id, repoPath);
   return NextResponse.json({ ok: true });
 }

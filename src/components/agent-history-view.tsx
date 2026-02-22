@@ -359,6 +359,7 @@ export function AgentHistoryView() {
       }),
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
+    refetchOnWindowFocus: false,
   });
 
   const beats = useMemo(() => {
@@ -441,7 +442,9 @@ export function AgentHistoryView() {
     queryKey: ["agent-history-bead-detail", focusedSummary?.repoPath ?? null, focusedSummary?.beadId ?? null],
     queryFn: () => fetchBead(focusedSummary!.beadId, focusedSummary!.repoPath),
     enabled: Boolean(focusedSummary),
-    refetchInterval: 10_000,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   const beadDetail = detailQuery.data?.ok ? detailQuery.data.data ?? null : null;
@@ -461,6 +464,8 @@ export function AgentHistoryView() {
         beadRepoPath: loadedBead!.repoPath,
       }),
     enabled: Boolean(loadedBead),
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   const sessions = useMemo(() => {
@@ -477,6 +482,25 @@ export function AgentHistoryView() {
   );
 
   const showRepoName = !activeRepo && registeredRepos.length > 1;
+
+  const getBeatTitle = useCallback(
+    (summary: AgentHistoryBeatSummary | null): string => {
+      if (!summary) return "";
+      const hinted = summary.title?.trim();
+      if (hinted) return hinted;
+      const focusedMatches =
+        focusedSummary &&
+        summary.beadId === focusedSummary.beadId &&
+        summary.repoPath === focusedSummary.repoPath;
+      const focusedDetailTitle = beadDetail?.title?.trim();
+      if (focusedMatches && focusedDetailTitle) return focusedDetailTitle;
+      return summary.beadId;
+    },
+    [focusedSummary, beadDetail],
+  );
+
+  const focusedTitle = focusedSummary ? getBeatTitle(focusedSummary) : "Beat details";
+  const loadedTitle = loadedSummary ? getBeatTitle(loadedSummary) : null;
 
   if (!activeRepo && registeredRepos.length === 0) {
     return (
@@ -584,7 +608,7 @@ export function AgentHistoryView() {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <p className="min-w-0 truncate text-xs font-medium">
-                        {beat.title?.trim() || beat.beadId}
+                        {getBeatTitle(beat)}
                       </p>
                       <span className="shrink-0 text-[10px] text-muted-foreground">
                         {relativeTime(beat.lastWorkedAt)}
@@ -625,7 +649,7 @@ export function AgentHistoryView() {
             <FileText className="size-3.5 text-muted-foreground" />
             <div className="min-w-0">
               <p className="truncate text-xs font-semibold">
-                {focusedSummary ? focusedSummary.title?.trim() || focusedSummary.beadId : "Beat details"}
+                {focusedTitle}
               </p>
               <p className="truncate text-[9px] text-muted-foreground">
                 {focusedSummary
@@ -664,7 +688,7 @@ export function AgentHistoryView() {
           <p className="text-xs font-semibold text-slate-100">Conversation Log</p>
           {loadedSummary ? (
             <span className="max-w-[40ch] truncate text-[10px] text-slate-200">
-              {loadedSummary.title?.trim() || loadedSummary.beadId}
+              {loadedTitle}
             </span>
           ) : null}
           {loadedSummary ? (
