@@ -41,6 +41,7 @@ export interface MessageNavigationState {
   navigateNext: () => void;
   navigatePrev: () => void;
   entryRefCallback: (id: string, node: HTMLDivElement | null) => void;
+  jumpInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export function useMessageNavigation(
@@ -48,6 +49,7 @@ export function useMessageNavigation(
 ): MessageNavigationState {
   const entryRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const jumpInputRef = useRef<HTMLInputElement | null>(null);
 
   const [messageFilter, setMessageFilter] = useState<MessageFilter>("all");
   const [currentNavIndex, setCurrentNavIndex] = useState<number>(-1);
@@ -158,6 +160,7 @@ export function useMessageNavigation(
     navigateNext,
     navigatePrev,
     entryRefCallback,
+    jumpInputRef,
   };
 }
 
@@ -185,9 +188,8 @@ export function MessageNavigator({
     navigateTo,
     navigateNext,
     navigatePrev,
+    jumpInputRef,
   } = nav;
-
-  const jumpInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1 text-[10px]">
@@ -268,13 +270,13 @@ export function MessageNavigator({
         placeholder="#"
         className="w-12 rounded border border-slate-600 bg-slate-800 px-1 py-0.5 text-center text-[10px] text-slate-200 placeholder:text-slate-500"
         onKeyDown={(e) => {
+          e.stopPropagation();
           if (e.key === "Enter") {
-            const value = parseInt(
-              (e.target as HTMLInputElement).value,
-              10,
-            );
+            const input = e.target as HTMLInputElement;
+            const value = parseInt(input.value, 10);
             if (value >= 1 && value <= filteredEntries.length) {
               navigateTo(value - 1);
+              input.value = "";
             }
           }
         }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   ArrowDown,
@@ -18,6 +18,7 @@ import { fetchBead } from "@/lib/api";
 import type {
   AgentHistoryBeatSummary,
   AgentHistoryEntry,
+  AgentHistoryInteractionType,
   AgentHistorySession,
 } from "@/lib/agent-history-types";
 import { fetchAgentHistory } from "@/lib/agent-history-api";
@@ -27,10 +28,11 @@ import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
 import { MessageNavigator, useMessageNavigation } from "@/components/message-navigator";
 
-const TITLE_VISIBLE_COUNT = 5;
+const WINDOW_SIZE = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
 const TOP_PANEL_HEADER_HEIGHT_PX = 62;
-const TOP_PANEL_HEIGHT_PX = TITLE_VISIBLE_COUNT * TITLE_ROW_HEIGHT_PX + TOP_PANEL_HEADER_HEIGHT_PX;
+const TOP_PANEL_HEIGHT_PX = WINDOW_SIZE * TITLE_ROW_HEIGHT_PX + TOP_PANEL_HEADER_HEIGHT_PX;
+const CACHE_MAX = 10;
 
 function beadKey(beadId: string, repoPath: string): string {
   return `${repoPath}::${beadId}`;
@@ -217,7 +219,17 @@ function BeadMetaItem({ label, value }: { label: string; value?: string | null }
   );
 }
 
-function SessionEntryRow({ entry, agentLabel }: { entry: AgentHistoryEntry; agentLabel?: string }) {
+function SessionEntryRow({
+  entry,
+  agentLabel,
+  interactionType,
+  precedingPromptSource,
+}: {
+  entry: AgentHistoryEntry;
+  agentLabel?: string;
+  interactionType?: AgentHistoryInteractionType;
+  precedingPromptSource?: string;
+}) {
   if (entry.kind === "session_start") {
     return (
       <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[10px] text-slate-300">
@@ -241,7 +253,7 @@ function SessionEntryRow({ entry, agentLabel }: { entry: AgentHistoryEntry; agen
       <div className="rounded border border-sky-500/50 bg-sky-950/35 px-2.5 py-1.5">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-sky-200">
           <MessageSquareText className="size-3.5" />
-          <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` ${agentLabel}` : ""}</span>
+          <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` · ${agentLabel}` : ""}</span>
           <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[10px] font-normal text-sky-100">
             {promptSourceLabel(entry.promptSource)}
           </Badge>
@@ -262,7 +274,17 @@ function SessionEntryRow({ entry, agentLabel }: { entry: AgentHistoryEntry; agen
     <div className="rounded border border-slate-700 bg-slate-900/60 px-2.5 py-1.5">
       <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-slate-300">
         <Bot className="size-3.5" />
-        <span className="font-semibold uppercase tracking-wide text-slate-100">Agent{agentLabel ? ` ${agentLabel}` : ""} -&gt; App</span>
+        <span className="font-semibold uppercase tracking-wide text-slate-100">Agent{agentLabel ? ` · ${agentLabel}` : ""} -&gt; App</span>
+        {interactionType ? (
+          <Badge variant="outline" className={`text-[10px] font-normal ${interactionTypeTone(interactionType)}`}>
+            {interactionTypeLabel(interactionType)}
+          </Badge>
+        ) : null}
+        {precedingPromptSource ? (
+          <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[10px] font-normal text-slate-300">
+            {promptSourceLabel(precedingPromptSource)}
+          </Badge>
+        ) : null}
         <span>{formatTime(entry.ts)}</span>
       </div>
       <pre className="whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-slate-100">
@@ -285,7 +307,7 @@ function buildAgentLabel(session: AgentHistorySession): string | undefined {
   if (session.agentName) parts.push(session.agentName);
   const modelDisplay = formatModelDisplay(session.agentModel);
   if (modelDisplay) parts.push(modelDisplay);
-  return parts.length > 0 ? parts.join(" ") : undefined;
+  return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
 function SessionCard({
@@ -298,6 +320,22 @@ function SessionCard({
   highlightedEntryId?: string | null;
 }) {
   const agentLabel = useMemo(() => buildAgentLabel(session), [session]);
+
+  const enrichedEntries = useMemo(() => {
+    const result: Array<{ entry: AgentHistoryEntry; precedingPromptSource?: string }> = [];
+    let tracking: string | undefined;
+    for (const entry of session.entries) {
+      result.push({
+        entry,
+        precedingPromptSource: entry.kind === "response" ? tracking : undefined,
+      });
+      if (entry.kind === "prompt") {
+        tracking = entry.promptSource;
+      }
+    }
+    return result;
+  }, [session.entries]);
+
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">
       <header className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
@@ -317,12 +355,12 @@ function SessionCard({
         <span className="ml-auto text-[10px] text-slate-400">{formatTime(session.updatedAt)}</span>
       </header>
       <div className="space-y-1.5 p-2.5">
-        {session.entries.length === 0 ? (
+        {enrichedEntries.length === 0 ? (
           <div className="rounded border border-slate-700 bg-slate-900/70 px-2.5 py-1.5 text-[10px] text-slate-300">
             No log entries captured for this session.
           </div>
         ) : (
-          session.entries.map((entry) => (
+          enrichedEntries.map(({ entry, precedingPromptSource }) => (
             <div
               key={entry.id}
               ref={(node) => entryRefCallback?.(entry.id, node)}
@@ -332,7 +370,12 @@ function SessionCard({
                   : "transition-all duration-300"
               }
             >
-              <SessionEntryRow entry={entry} agentLabel={agentLabel} />
+              <SessionEntryRow
+                entry={entry}
+                agentLabel={agentLabel}
+                interactionType={session.interactionType}
+                precedingPromptSource={precedingPromptSource}
+              />
             </div>
           ))
         )}
@@ -397,11 +440,15 @@ function BeadDetailContent({ bead, summary }: { bead: Bead | null; summary: Agen
 
 export function AgentHistoryView() {
   const { activeRepo, registeredRepos } = useAppStore();
+  const queryClient = useQueryClient();
   const [focusedBeadKey, setFocusedBeadKey] = useState<string | null>(null);
   const [loadedBeadKey, setLoadedBeadKey] = useState<string | null>(null);
+  const [windowStart, setWindowStart] = useState(0);
   const beatButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const beatListRef = useRef<HTMLDivElement | null>(null);
   const consolePanelRef = useRef<HTMLDivElement | null>(null);
+  const cachedBeadKeysRef = useRef<string[]>([]);
+  const lastScrollDirectionRef = useRef<1 | -1>(1);
 
   const loadedBead = useMemo(() => parseBeadKey(loadedBeadKey), [loadedBeadKey]);
 
@@ -419,10 +466,15 @@ export function AgentHistoryView() {
   const beats = useMemo(() => {
     if (!beatsQuery.data?.ok) return [];
     return (beatsQuery.data.data?.beats ?? [])
-      .sort((a, b) => parseMillis(b.lastWorkedAt) - parseMillis(a.lastWorkedAt))
-      .slice(0, TITLE_VISIBLE_COUNT);
+      .sort((a, b) => parseMillis(b.lastWorkedAt) - parseMillis(a.lastWorkedAt));
   }, [beatsQuery.data]);
 
+  const visibleBeats = useMemo(
+    () => beats.slice(windowStart, windowStart + WINDOW_SIZE),
+    [beats, windowStart],
+  );
+
+  /* Keep focus and loaded in sync with beat list membership */
   useEffect(() => {
     if (beats.length === 0) {
       if (focusedBeadKey !== null) {
@@ -432,6 +484,7 @@ export function AgentHistoryView() {
       if (loadedBeadKey !== null) {
         setLoadedBeadKey(null);
       }
+      setWindowStart(0);
       return;
     }
 
@@ -450,6 +503,20 @@ export function AgentHistoryView() {
     }
   }, [beats, focusedBeadKey, loadedBeadKey]);
 
+  /* Keep window aligned with focused beat */
+  useEffect(() => {
+    if (!focusedBeadKey || beats.length === 0) return;
+    const idx = beats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey);
+    if (idx < 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Window position must stay in sync with focused beat index after beats list changes.
+    setWindowStart((prev) => {
+      if (idx < prev) return idx;
+      if (idx >= prev + WINDOW_SIZE) return Math.max(0, idx - WINDOW_SIZE + 1);
+      const maxStart = Math.max(0, beats.length - WINDOW_SIZE);
+      return Math.min(prev, maxStart);
+    });
+  }, [focusedBeadKey, beats]);
+
   useEffect(() => {
     if (!focusedBeadKey) return;
     const node = beatButtonRefs.current[focusedBeadKey];
@@ -460,6 +527,7 @@ export function AgentHistoryView() {
   const moveFocusedBeat = useCallback(
     (direction: -1 | 1) => {
       if (beats.length === 0) return;
+      lastScrollDirectionRef.current = direction;
       const currentIndex = focusedBeadKey
         ? beats.findIndex((beat) => beadKey(beat.beadId, beat.repoPath) === focusedBeadKey)
         : -1;
@@ -492,16 +560,79 @@ export function AgentHistoryView() {
     consolePanelRef.current?.focus();
   }, []);
 
-  const detailQuery = useQuery({
-    queryKey: ["agent-history-bead-detail", focusedSummary?.repoPath ?? null, focusedSummary?.beadId ?? null],
-    queryFn: () => fetchBead(focusedSummary!.beadId, focusedSummary!.repoPath),
-    enabled: Boolean(focusedSummary),
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-    retry: 1,
+  /* Fetch bead details for all visible beats */
+  const detailQueries = useQueries({
+    queries: visibleBeats.map((beat) => ({
+      queryKey: ["agent-history-bead-detail", beat.repoPath, beat.beadId] as const,
+      queryFn: () => fetchBead(beat.beadId, beat.repoPath),
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    })),
   });
 
-  const beadDetail = detailQuery.data?.ok ? detailQuery.data.data ?? null : null;
+  const beadDetailMap = useMemo(() => {
+    const map = new Map<string, Bead>();
+    for (let i = 0; i < detailQueries.length; i++) {
+      const q = detailQueries[i];
+      const beat = visibleBeats[i];
+      if (q?.data?.ok && q.data.data && beat) {
+        map.set(beadKey(beat.beadId, beat.repoPath), q.data.data);
+      }
+    }
+    return map;
+  }, [detailQueries, visibleBeats]);
+
+  /* Focused beat detail state for the right panel */
+  const focusedDetail = useMemo(() => {
+    if (!focusedBeadKey) return { loading: false, error: null as string | null, bead: null as Bead | null };
+    const idx = visibleBeats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey);
+    if (idx < 0) return { loading: false, error: null, bead: null };
+    const q = detailQueries[idx];
+    if (q.isLoading) return { loading: true, error: null, bead: null };
+    if (q.data && !q.data.ok) return { loading: false, error: q.data.error ?? "Failed to load", bead: null };
+    return { loading: false, error: null, bead: q.data?.data ?? null };
+  }, [focusedBeadKey, visibleBeats, detailQueries]);
+
+  /* Pre-cache next batch of beats when focus is near bottom of window */
+  useEffect(() => {
+    const focusedIndexInWindow = focusedBeadKey
+      ? visibleBeats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey)
+      : -1;
+    if (focusedIndexInWindow < Math.floor(WINDOW_SIZE / 2)) return;
+
+    const prefetchStart = windowStart + WINDOW_SIZE;
+    const prefetchEnd = Math.min(beats.length, prefetchStart + WINDOW_SIZE);
+    for (let i = prefetchStart; i < prefetchEnd; i++) {
+      const beat = beats[i];
+      void queryClient.prefetchQuery({
+        queryKey: ["agent-history-bead-detail", beat.repoPath, beat.beadId],
+        queryFn: () => fetchBead(beat.beadId, beat.repoPath),
+        staleTime: 60_000,
+      });
+    }
+  }, [windowStart, focusedBeadKey, beats, visibleBeats, queryClient]);
+
+  /* Cache eviction: keep at most CACHE_MAX bead detail queries */
+  useEffect(() => {
+    const cached = cachedBeadKeysRef.current;
+    for (const beat of visibleBeats) {
+      const key = beadKey(beat.beadId, beat.repoPath);
+      const idx = cached.indexOf(key);
+      if (idx >= 0) cached.splice(idx, 1);
+      cached.push(key);
+    }
+    while (cached.length > CACHE_MAX) {
+      const direction = lastScrollDirectionRef.current;
+      const evicted = direction === 1 ? cached.shift()! : cached.pop()!;
+      const parsed = parseBeadKey(evicted);
+      if (parsed) {
+        queryClient.removeQueries({
+          queryKey: ["agent-history-bead-detail", parsed.repoPath, parsed.beadId],
+        });
+      }
+    }
+  }, [visibleBeats, queryClient]);
 
   const sessionsQuery = useQuery({
     queryKey: [
@@ -544,15 +675,12 @@ export function AgentHistoryView() {
       if (!summary) return "";
       const hinted = summary.title?.trim();
       if (hinted) return hinted;
-      const focusedMatches =
-        focusedSummary &&
-        summary.beadId === focusedSummary.beadId &&
-        summary.repoPath === focusedSummary.repoPath;
-      const focusedDetailTitle = beadDetail?.title?.trim();
-      if (focusedMatches && focusedDetailTitle) return focusedDetailTitle;
+      const key = beadKey(summary.beadId, summary.repoPath);
+      const detail = beadDetailMap.get(key);
+      if (detail?.title?.trim()) return detail.title.trim();
       return summary.beadId;
     },
-    [focusedSummary, beadDetail],
+    [beadDetailMap],
   );
 
   const focusedTitle = focusedSummary ? getBeatTitle(focusedSummary) : "Beat details";
@@ -576,7 +704,9 @@ export function AgentHistoryView() {
           <div className="border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
             <p className="text-xs font-semibold">Recent Take!/Scene Beats</p>
             <p className="text-[10px] text-muted-foreground">
-              Last {TITLE_VISIBLE_COUNT}, newest first.
+              {beats.length > 0
+                ? `Showing ${windowStart + 1}–${Math.min(windowStart + WINDOW_SIZE, beats.length)} of ${beats.length}, newest first.`
+                : "Newest first."}
             </p>
             <div className="mt-1 inline-flex items-center gap-2 text-[9px] text-muted-foreground">
               <span className="inline-flex items-center gap-1"><ArrowUp className="size-3" />/<ArrowDown className="size-3" /> navigate</span>
@@ -617,7 +747,7 @@ export function AgentHistoryView() {
                 return;
               }
             }}
-            style={{ height: `${TITLE_VISIBLE_COUNT * TITLE_ROW_HEIGHT_PX}px` }}
+            style={{ height: `${WINDOW_SIZE * TITLE_ROW_HEIGHT_PX}px` }}
             className="overflow-y-auto outline-none focus-visible:ring-1 focus-visible:ring-sky-500/70"
           >
             {beatsQuery.isLoading ? (
@@ -631,7 +761,7 @@ export function AgentHistoryView() {
                 No beats with Take!/Scene activity.
               </div>
             ) : (
-              beats.map((beat) => {
+              visibleBeats.map((beat) => {
                 const key = beadKey(beat.beadId, beat.repoPath);
                 const focused = focusedBeadKey === key;
                 const loaded = loadedBeadKey === key;
@@ -718,21 +848,21 @@ export function AgentHistoryView() {
             ) : null}
           </div>
 
-          <div className="overflow-y-auto p-2" style={{ height: `${TITLE_VISIBLE_COUNT * TITLE_ROW_HEIGHT_PX}px` }}>
+          <div className="overflow-y-auto p-2" style={{ height: `${WINDOW_SIZE * TITLE_ROW_HEIGHT_PX}px` }}>
             {!focusedSummary ? (
               <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
                 Select a beat to inspect details.
               </div>
-            ) : detailQuery.isLoading ? (
+            ) : focusedDetail.loading ? (
               <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
                 Loading beat details...
               </div>
-            ) : detailQuery.data && !detailQuery.data.ok ? (
+            ) : focusedDetail.error ? (
               <div className="px-0.5 py-2 text-center text-[10px] text-destructive">
-                {detailQuery.data.error ?? "Failed to load beat details"}
+                {focusedDetail.error}
               </div>
             ) : (
-              <BeadDetailContent bead={beadDetail} summary={focusedSummary} />
+              <BeadDetailContent bead={focusedDetail.bead} summary={focusedSummary} />
             )}
           </div>
         </section>
@@ -769,6 +899,10 @@ export function AgentHistoryView() {
             if (event.key === "Tab" && event.shiftKey) {
               event.preventDefault();
               beatListRef.current?.focus();
+            }
+            if (event.key === "/") {
+              event.preventDefault();
+              msgNav.jumpInputRef.current?.focus();
             }
           }}
           className="max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60"
