@@ -364,16 +364,11 @@ export async function createSession(
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
-          `Parent ID: ${bead.id}`,
-          `Parent Title: ${bead.title}`,
-          `Type: ${bead.type}`,
-          `Priority: P${bead.priority}`,
+          `Parent bead ID: ${bead.id}`,
           waveBeatIds.length > 0
             ? `Open child bead IDs:\n${waveBeatIds.map((id) => `- ${id}`).join("\n")}`
             : "Open child bead IDs: (none loaded)",
-          bead.description ? `\nDescription:\n${bead.description}` : "",
-          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
-          bead.notes ? `\nNotes:\n${bead.notes}` : "",
+          `Use \`bd show ${bead.id}\` and \`bd show <child-id>\` to inspect full details before starting.`,
         ]
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
@@ -386,13 +381,8 @@ export async function createSession(
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
-          `ID: ${bead.id}`,
-          `Title: ${bead.title}`,
-          `Type: ${bead.type}`,
-          `Priority: P${bead.priority}`,
-          bead.description ? `\nDescription:\n${bead.description}` : "",
-          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
-          bead.notes ? `\nNotes:\n${bead.notes}` : "",
+          `Bead ID: ${bead.id}`,
+          `Use \`bd show ${bead.id}\` to inspect full details before starting.`,
         ]
     )
       .filter(Boolean)
@@ -786,22 +776,11 @@ export async function createSceneSession(
 
   const id = generateId();
 
-  // Build combined prompt with all bead details
+  // Build combined prompt with bead IDs only (agents query details themselves)
   const beadBlocks = beads
     .map(
       (bead, i) =>
-        [
-          `--- Bead ${i + 1} of ${beads.length} ---`,
-          `ID: ${bead.id}`,
-          `Title: ${bead.title}`,
-          `Type: ${bead.type}`,
-          `Priority: P${bead.priority}`,
-          bead.description ? `\nDescription:\n${bead.description}` : "",
-          bead.acceptance ? `\nAcceptance Criteria:\n${bead.acceptance}` : "",
-          bead.notes ? `\nNotes:\n${bead.notes}` : "",
-        ]
-          .filter(Boolean)
-          .join("\n")
+        `--- Bead ${i + 1} of ${beads.length} ---\nID: ${bead.id}`
     )
     .join("\n\n");
 
@@ -812,7 +791,7 @@ export async function createSceneSession(
       ``,
       `IMPORTANT INSTRUCTIONS:`,
       `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-      `2. Use the bead descriptions/acceptance/notes below as your source of truth for sequencing and agent assignment.`,
+      `2. Use \`bd show <id>\` to inspect full bead details before starting implementation.`,
       `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
       `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
       `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
@@ -823,6 +802,7 @@ export async function createSceneSession(
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
       beadBlocks,
+      `\nUse \`bd show <id>\` to inspect full bead details before starting implementation.`,
     ].join("\n");
 
   const session: TerminalSession = {

@@ -345,17 +345,15 @@ function BeadsPageInner() {
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
-      {(isListView || isFinalCutView) && (
+      {isListView && (
         <div className="mb-2 flex h-10 items-center border-b border-border/60 pb-2">
-          {isListView && (
-            <FilterBar
-              selectedIds={selectedIds}
-              onBulkUpdate={handleBulkUpdate}
-              onClearSelection={handleClearSelection}
-              onSceneBeads={handleSceneBeads}
-              onMergeBeads={handleMergeBeads}
-            />
-          )}
+          <FilterBar
+            selectedIds={selectedIds}
+            onBulkUpdate={handleBulkUpdate}
+            onClearSelection={handleClearSelection}
+            onSceneBeads={handleSceneBeads}
+            onMergeBeads={handleMergeBeads}
+          />
         </div>
       )}
 

@@ -1,5 +1,8 @@
 import { execFile } from "node:child_process";
-import { resolve } from "node:path";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import type { Bead, BeadDependency, BdResult } from "./types";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
@@ -12,6 +15,23 @@ const DOLT_NIL_PANIC_SIGNATURE = "panic: runtime error: invalid memory address o
 const DOLT_PANIC_STACK_SIGNATURE = "SetCrashOnFatalError";
 const READ_ONLY_BD_COMMANDS = new Set(["list", "ready", "search", "query", "show"]);
 const repoExecQueues = new Map<string, { tail: Promise<void>; pending: number }>();
+const LOCKS_ROOT_DIR = join(tmpdir(), "foolery-bd-locks");
+const LOCK_FILE_NAME = "owner.json";
+const LOCK_TIMEOUT_SIGNATURE = "Timed out waiting for bd repo lock";
+const COMMAND_TIMEOUT_SIGNATURE = "bd command timed out after";
+const COMMAND_TIMEOUT_MS = envInt("FOOLERY_BD_COMMAND_TIMEOUT_MS", 5_000);
+const LOCK_WAIT_TIMEOUT_MS = envInt("FOOLERY_BD_LOCK_WAIT_TIMEOUT_MS", COMMAND_TIMEOUT_MS);
+const LOCK_POLL_MS = envInt("FOOLERY_BD_LOCK_POLL_MS", 50);
+const LOCK_STALE_MS = envInt("FOOLERY_BD_LOCK_STALE_MS", 10 * 60_000);
+const READ_COMMAND_TIMEOUT_MS = envInt("FOOLERY_BD_READ_TIMEOUT_MS", COMMAND_TIMEOUT_MS);
+const WRITE_COMMAND_TIMEOUT_MS = envInt("FOOLERY_BD_WRITE_TIMEOUT_MS", COMMAND_TIMEOUT_MS);
+const MAX_TIMEOUT_RETRIES = 1;
+
+interface RepoLockOwner {
+  pid: number;
+  repoPath: string;
+  acquiredAt: string;
+}
 
 function baseArgs(): string[] {
   const args: string[] = [];
@@ -19,11 +39,138 @@ function baseArgs(): string[] {
   return args;
 }
 
-type ExecResult = { stdout: string; stderr: string; exitCode: number };
+type ExecResult = { stdout: string; stderr: string; exitCode: number; timedOut: boolean };
 type ExecOptions = { cwd?: string; forceNoDb?: boolean };
 
 function repoQueueKey(cwd?: string): string {
   return resolve(cwd ?? process.cwd());
+}
+
+function envInt(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (!raw) return fallback;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolveSleep) => setTimeout(resolveSleep, ms));
+}
+
+function isAlreadyExistsError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as NodeJS.ErrnoException).code === "EEXIST"
+  );
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as NodeJS.ErrnoException).code === "ENOENT"
+  );
+}
+
+function isPidAlive(pid: number): boolean {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function lockDirForRepo(repoPath: string): string {
+  const digest = createHash("sha1").update(repoPath).digest("hex");
+  return join(LOCKS_ROOT_DIR, digest);
+}
+
+async function readLockOwner(lockDir: string): Promise<RepoLockOwner | null> {
+  const ownerPath = join(lockDir, LOCK_FILE_NAME);
+  try {
+    const raw = await readFile(ownerPath, "utf8");
+    const parsed = JSON.parse(raw) as Partial<RepoLockOwner>;
+    if (
+      typeof parsed.pid === "number" &&
+      typeof parsed.repoPath === "string" &&
+      typeof parsed.acquiredAt === "string"
+    ) {
+      return {
+        pid: parsed.pid,
+        repoPath: parsed.repoPath,
+        acquiredAt: parsed.acquiredAt,
+      };
+    }
+    return null;
+  } catch (error) {
+    if (isNotFoundError(error)) return null;
+    return null;
+  }
+}
+
+async function evictStaleRepoLock(lockDir: string): Promise<boolean> {
+  const owner = await readLockOwner(lockDir);
+  if (owner && !isPidAlive(owner.pid)) {
+    await rm(lockDir, { recursive: true, force: true });
+    return true;
+  }
+
+  try {
+    const lockStat = await stat(lockDir);
+    if (Date.now() - lockStat.mtimeMs > LOCK_STALE_MS) {
+      await rm(lockDir, { recursive: true, force: true });
+      return true;
+    }
+  } catch (error) {
+    if (isNotFoundError(error)) return true;
+  }
+
+  return false;
+}
+
+async function acquireRepoProcessLock(cwd?: string): Promise<() => Promise<void>> {
+  const repoPath = repoQueueKey(cwd);
+  const lockDir = lockDirForRepo(repoPath);
+  const waitStart = Date.now();
+
+  await mkdir(LOCKS_ROOT_DIR, { recursive: true });
+
+  while (true) {
+    try {
+      await mkdir(lockDir);
+      const owner: RepoLockOwner = {
+        pid: process.pid,
+        repoPath,
+        acquiredAt: new Date().toISOString(),
+      };
+      await writeFile(join(lockDir, LOCK_FILE_NAME), JSON.stringify(owner), "utf8");
+      return async () => {
+        await rm(lockDir, { recursive: true, force: true });
+      };
+    } catch (error) {
+      if (!isAlreadyExistsError(error)) throw error;
+
+      const evicted = await evictStaleRepoLock(lockDir);
+      if (evicted) continue;
+
+      if (Date.now() - waitStart >= LOCK_WAIT_TIMEOUT_MS) {
+        const owner = await readLockOwner(lockDir);
+        const ownerDetails = owner
+          ? ` (owner pid=${owner.pid}, acquiredAt=${owner.acquiredAt})`
+          : "";
+        throw new Error(
+          `Timed out waiting for bd repo lock for ${repoPath} after ${LOCK_WAIT_TIMEOUT_MS}ms${ownerDetails}`
+        );
+      }
+
+      await sleep(LOCK_POLL_MS);
+    }
+  }
 }
 
 async function withRepoSerialization<T>(
@@ -37,9 +184,9 @@ async function withRepoSerialization<T>(
     repoExecQueues.set(key, state);
   }
 
-  let release!: () => void;
+  let releaseQueue!: () => void;
   const gate = new Promise<void>((resolveGate) => {
-    release = resolveGate;
+    releaseQueue = resolveGate;
   });
 
   const waitForTurn = state.tail;
@@ -49,11 +196,20 @@ async function withRepoSerialization<T>(
   );
   state.pending += 1;
 
+  let releaseRepoLock: (() => Promise<void>) | null = null;
   try {
     await waitForTurn;
+    releaseRepoLock = await acquireRepoProcessLock(cwd);
     return await run();
   } finally {
-    release();
+    if (releaseRepoLock) {
+      try {
+        await releaseRepoLock();
+      } catch {
+        // Best effort unlock; stale lock eviction handles orphaned locks.
+      }
+    }
+    releaseQueue();
     state.pending -= 1;
     if (state.pending === 0) {
       repoExecQueues.delete(key);
@@ -84,6 +240,24 @@ function isReadOnlyCommand(args: string[]): boolean {
   return READ_ONLY_BD_COMMANDS.has(args[0] ?? "");
 }
 
+function isIdempotentWriteCommand(args: string[]): boolean {
+  const [command, subcommand] = args;
+  if (isReadOnlyCommand(args)) return false;
+  if (command === "update") return true;
+  if (command === "label" && (subcommand === "add" || subcommand === "remove")) return true;
+  if (command === "sync") return true;
+  if (command === "dep" && subcommand === "remove") return true;
+  return false;
+}
+
+function canRetryAfterTimeout(args: string[]): boolean {
+  return isReadOnlyCommand(args) || isIdempotentWriteCommand(args);
+}
+
+function commandTimeoutMs(args: string[]): number {
+  return isReadOnlyCommand(args) ? READ_COMMAND_TIMEOUT_MS : WRITE_COMMAND_TIMEOUT_MS;
+}
+
 function shouldUseNoDbByDefault(args: string[]): boolean {
   if (isTruthyEnvValue(process.env[BD_NO_DB_FLAG])) return true;
   if (process.env[READ_NO_DB_DISABLE_FLAG] === "0") return false;
@@ -95,6 +269,14 @@ function isEmbeddedDoltPanic(result: ExecResult): boolean {
   return combined.includes(DOLT_NIL_PANIC_SIGNATURE) || combined.includes(DOLT_PANIC_STACK_SIGNATURE);
 }
 
+function isLockWaitTimeoutMessage(message: string): boolean {
+  return message.includes(LOCK_TIMEOUT_SIGNATURE);
+}
+
+function isTimeoutFailure(result: ExecResult): boolean {
+  return result.timedOut || result.stderr.includes(COMMAND_TIMEOUT_SIGNATURE);
+}
+
 async function execOnce(
   args: string[],
   options?: ExecOptions
@@ -103,21 +285,34 @@ async function execOnce(
   if (options?.forceNoDb) {
     env[BD_NO_DB_FLAG] = "true";
   }
+  const timeoutMs = commandTimeoutMs(args);
 
   return new Promise((resolve) => {
-    execFile(BD_BIN, [...baseArgs(), ...args], { env, cwd: options?.cwd }, (error, stdout, stderr) => {
-      const exitCode =
-        error && typeof error.code === "number" ? error.code : error ? 1 : 0;
-      resolve({
-        stdout: (stdout ?? "").trim(),
-        stderr: (stderr ?? "").trim(),
-        exitCode,
-      });
-    });
+    execFile(
+      BD_BIN,
+      [...baseArgs(), ...args],
+      { env, cwd: options?.cwd, timeout: timeoutMs, killSignal: "SIGKILL" },
+      (error, stdout, stderr) => {
+        const execError = error as (NodeJS.ErrnoException & { killed?: boolean }) | null;
+        let stderrText = (stderr ?? "").trim();
+        if (execError?.killed) {
+          const timeoutMsg = `bd command timed out after ${timeoutMs}ms`;
+          stderrText = stderrText ? `${timeoutMsg}\n${stderrText}` : timeoutMsg;
+        }
+        const exitCode =
+          execError && typeof execError.code === "number" ? execError.code : execError ? 1 : 0;
+        resolve({
+          stdout: (stdout ?? "").trim(),
+          stderr: stderrText,
+          exitCode,
+          timedOut: Boolean(execError?.killed),
+        });
+      }
+    );
   });
 }
 
-async function exec(
+async function execSerializedAttempt(
   args: string[],
   options?: ExecOptions
 ): Promise<ExecResult> {
@@ -144,6 +339,40 @@ async function exec(
     if (syncResult.exitCode !== 0) return firstResult;
     return execOnce(args, options);
   });
+}
+
+async function exec(
+  args: string[],
+  options?: ExecOptions
+): Promise<ExecResult> {
+  const maxAttempts = canRetryAfterTimeout(args) ? 1 + MAX_TIMEOUT_RETRIES : 1;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let result: ExecResult;
+    try {
+      result = await execSerializedAttempt(args, options);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to run bd command";
+      result = {
+        stdout: "",
+        stderr: message,
+        exitCode: 1,
+        timedOut: isLockWaitTimeoutMessage(message),
+      };
+    }
+
+    if (result.exitCode === 0) return result;
+
+    const shouldRetry = attempt < maxAttempts && isTimeoutFailure(result);
+    if (shouldRetry) continue;
+    return result;
+  }
+
+  return {
+    stdout: "",
+    stderr: "Failed to run bd command",
+    exitCode: 1,
+    timedOut: false,
+  };
 }
 
 async function execWithNoDaemonFallback(

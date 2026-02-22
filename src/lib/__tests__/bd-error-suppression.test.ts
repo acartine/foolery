@@ -178,6 +178,8 @@ describe("isSuppressibleError", () => {
   it("matches lock-related error messages", () => {
     expect(isSuppressibleError("database is locked")).toBe(true);
     expect(isSuppressibleError("could not obtain lock on table")).toBe(true);
+    expect(isSuppressibleError("Timed out waiting for bd repo lock for /repo after 15000ms")).toBe(true);
+    expect(isSuppressibleError("bd command timed out after 15000ms")).toBe(true);
     expect(isSuppressibleError("Error: EACCES permission denied")).toBe(true);
     expect(isSuppressibleError("resource busy")).toBe(true);
   });

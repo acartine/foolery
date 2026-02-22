@@ -33,6 +33,8 @@ export const DEGRADED_ERROR_MESSAGE =
 const SUPPRESSIBLE_PATTERNS = [
   "lock",
   "locked",
+  "timed out waiting for bd repo lock",
+  "bd command timed out",
   "database is locked",
   "unable to open database",
   "could not obtain lock",
