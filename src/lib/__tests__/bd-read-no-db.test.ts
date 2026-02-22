@@ -21,7 +21,7 @@ const execFileMock = vi.fn(
     options: { env?: NodeJS.ProcessEnv },
     callback: (error: Error | null, stdout: string, stderr: string) => void
   ) => {
-    execInvocations.push({ args, env: options.env ?? {} });
+    execInvocations.push({ args, env: options.env ?? ({} as NodeJS.ProcessEnv) });
     const next = execQueue.shift() ?? { exitCode: 0, stdout: "", stderr: "" };
     const code = next.exitCode ?? 0;
     const error =

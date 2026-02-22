@@ -15,7 +15,11 @@ const DOLT_NIL_PANIC_SIGNATURE = "panic: runtime error: invalid memory address o
 const DOLT_PANIC_STACK_SIGNATURE = "SetCrashOnFatalError";
 const READ_ONLY_BD_COMMANDS = new Set(["list", "ready", "search", "query", "show"]);
 const repoExecQueues = new Map<string, { tail: Promise<void>; pending: number }>();
-const LOCKS_ROOT_DIR = join(tmpdir(), "foolery-bd-locks");
+const LOCKS_ROOT_DIR =
+  process.env.FOOLERY_BD_LOCK_DIR ??
+  (process.env.VITEST
+    ? join(tmpdir(), `foolery-bd-locks-test-${process.pid}`)
+    : join(tmpdir(), "foolery-bd-locks"));
 const LOCK_FILE_NAME = "owner.json";
 const LOCK_TIMEOUT_SIGNATURE = "Timed out waiting for bd repo lock";
 const COMMAND_TIMEOUT_SIGNATURE = "bd command timed out after";

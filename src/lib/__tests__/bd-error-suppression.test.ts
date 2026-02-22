@@ -41,10 +41,11 @@ describe("bd-error-suppression", () => {
     expect(_internals.resultCache.size).toBe(1);
   });
 
-  it("returns original error when no cache exists for lock errors", () => {
+  it("returns degraded error when no cache exists for lock errors", () => {
     const result = fail("database is locked");
     const out = withErrorSuppression("listBeads", result);
-    expect(out).toEqual(result);
+    expect(out.ok).toBe(false);
+    expect(out.error).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("returns cached data on first lock failure after a success", () => {

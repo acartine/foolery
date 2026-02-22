@@ -101,7 +101,7 @@ describe("getBeadColumns", () => {
 
   it("always includes select, id, title, priority, type, status columns", () => {
     const cols = getBeadColumns();
-    const ids = cols.map((c) => c.id ?? (c as Record<string, string>).accessorKey);
+    const ids = cols.map((c) => c.id ?? (c as unknown as { accessorKey?: string }).accessorKey);
     expect(ids).toContain("select");
     expect(ids).toContain("id");
     expect(ids).toContain("title");

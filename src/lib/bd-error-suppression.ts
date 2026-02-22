@@ -127,7 +127,18 @@ export function withErrorSuppression(
     return result;
   }
 
-  if (!cached) return result; // No cache available -- cannot suppress
+  if (!cached) {
+    // No cached data to serve, but still surface this as a degraded lock
+    // condition (503) instead of a hard 500 with raw backend internals.
+    if (!failure) {
+      failureState.set(key, { firstFailedAt: Date.now() });
+      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+    }
+    if (Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
+      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+    }
+    return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+  }
 
   if (!failure) {
     // First failure -- start tracking, return cached result
