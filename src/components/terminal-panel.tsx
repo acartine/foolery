@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession, startSceneSession, startSession } from "@/lib/terminal-api";
@@ -88,6 +89,8 @@ export function TerminalPanel() {
     cancelPendingClose,
   } = useTerminalStore();
 
+  const queryClient = useQueryClient();
+
   const activeTerminal = useMemo(
     () => getActiveTerminal(terminals, activeSessionId),
     [activeSessionId, terminals]
@@ -102,6 +105,8 @@ export function TerminalPanel() {
   const termRef = useRef<XtermTerminal | null>(null);
   const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
+  const queryClientRef = useRef(queryClient);
+  queryClientRef.current = queryClient;
   const autoCloseTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
@@ -429,6 +434,15 @@ export function TerminalPanel() {
               }
             }
             updateStatus(sessionId, code === 0 ? "completed" : "error");
+
+            // On successful completion, immediately invalidate bead
+            // queries so Final Cut badges and notifications refresh
+            // without waiting for the next polling interval.
+            if (code === 0) {
+              queryClientRef.current.invalidateQueries({
+                queryKey: ["beads"],
+              });
+            }
           }
         },
         () => {
