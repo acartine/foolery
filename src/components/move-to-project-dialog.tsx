@@ -46,6 +46,8 @@ export function MoveToProjectDialog({
   const { data: registryData } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

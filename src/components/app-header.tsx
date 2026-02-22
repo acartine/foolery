@@ -61,7 +61,8 @@ export function AppHeader() {
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
   const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
-  const verificationCount = useVerificationCount(isBeadsRoute, beadsView === "finalcut");
+  const isFinalCutActive = beadsView === "finalcut";
+  const verificationCount = useVerificationCount(isBeadsRoute && isFinalCutActive, isFinalCutActive);
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present
   const effectiveSettingsOpen = settingsOpen || settingsOpenFromUrl;

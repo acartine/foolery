@@ -180,7 +180,7 @@ export function RetakesView() {
       return fetchBeads(params);
     },
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
-    refetchInterval: 10_000,
+    refetchInterval: 30_000,
     placeholderData: keepPreviousData,
   });
 

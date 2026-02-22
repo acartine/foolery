@@ -25,6 +25,8 @@ export function SettingsReposSection() {
   const { data, isLoading } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const repos = data?.ok ? (data.data ?? []) : [];

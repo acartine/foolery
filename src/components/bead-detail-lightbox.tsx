@@ -53,12 +53,16 @@ export function BeadDetailLightbox({
     queryFn: () => fetchBead(detailId, repo),
     enabled: open && detailId.length > 0,
     placeholderData: initialBead ? { ok: true, data: initialBead } : undefined,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   const { data: depsData } = useQuery({
     queryKey: ["bead-deps", detailId, repo],
     queryFn: () => fetchDeps(detailId, repo),
     enabled: open && detailId.length > 0,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 
   const { mutateAsync: handleUpdate } = useMutation({

@@ -5,7 +5,6 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
 import { startSession, startSceneSession, abortSession } from "@/lib/terminal-api";
-import { fetchRegistry } from "@/lib/registry-api";
 import { BeadTable } from "@/components/bead-table";
 import { BeadDetailLightbox } from "@/components/bead-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
@@ -82,8 +81,7 @@ function BeadsPageInner() {
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [mergeBeadIds, setMergeBeadIds] = useState<string[]>([]);
   const queryClient = useQueryClient();
-  const { filters, activeRepo, registeredRepos, setRegisteredRepos } =
-    useAppStore();
+  const { filters, activeRepo, registeredRepos } = useAppStore();
   const {
     terminals,
     setActiveSession,
@@ -105,17 +103,6 @@ function BeadsPageInner() {
     },
     {}
   );
-
-  const { data: registryData } = useQuery({
-    queryKey: ["registry"],
-    queryFn: fetchRegistry,
-  });
-
-  useEffect(() => {
-    if (registryData?.ok && registryData.data) {
-      setRegisteredRepos(registryData.data);
-    }
-  }, [registryData, setRegisteredRepos]);
 
   const isReadyFilter = filters.status === "ready";
   const params: Record<string, string> = {};
@@ -320,6 +307,12 @@ function BeadsPageInner() {
     else router.push(nextUrl);
   }, [searchParams, pathname, router]);
 
+  useEffect(() => {
+    if (!isListView && detailBeadId) {
+      setBeadDetailParams(null, undefined, "replace");
+    }
+  }, [isListView, detailBeadId, setBeadDetailParams]);
+
   const handleOpenBead = useCallback((bead: Bead) => {
     const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
     setBeadDetailParams(bead.id, repo, "push");
@@ -358,29 +351,24 @@ function BeadsPageInner() {
       )}
 
       <div className="mt-0.5">
-        <div className={isOrchestrationView ? "" : "hidden"}>
+        {isOrchestrationView ? (
           <OrchestrationView
             onApplied={() => {
               queryClient.invalidateQueries({ queryKey: ["beads"] });
             }}
           />
-        </div>
-        <div className={isExistingOrchestrationView ? "" : "hidden"}>
+        ) : isExistingOrchestrationView ? (
           <ExistingOrchestrationsView />
-        </div>
-        <div className={isFinalCutView ? "" : "hidden"}>
+        ) : isFinalCutView ? (
           <FinalCutView />
-        </div>
-        <div className={isRetakesView ? "" : "hidden"}>
+        ) : isRetakesView ? (
           <RetakesView />
-        </div>
-        <div className={isHistoryView ? "" : "hidden"}>
+        ) : isHistoryView ? (
           <AgentHistoryView />
-        </div>
-        <div className={isBreakdownView ? "" : "hidden"}>
+        ) : isBreakdownView ? (
           <BreakdownView />
-        </div>
-        <div className={isListView ? "overflow-x-auto" : "hidden"}>
+        ) : (
+          <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-6 text-muted-foreground">
               Loading beats...
@@ -410,23 +398,28 @@ function BeadsPageInner() {
               />
             </>
           )}
-        </div>
+          </div>
+        )}
       </div>
-      <BeadDetailLightbox
-        key={`${detailBeadId ?? "none"}:${detailRepo ?? "none"}`}
-        open={Boolean(detailBeadId)}
-        beadId={detailBeadId}
-        repo={detailRepo}
-        initialBead={initialDetailBead}
-        onOpenChange={handleBeadLightboxOpenChange}
-        onMoved={handleMovedBead}
-      />
-      <MergeBeadsDialog
-        open={mergeDialogOpen}
-        onOpenChange={setMergeDialogOpen}
-        beads={beads.filter((b) => mergeBeadIds.includes(b.id))}
-        onMerged={handleMergeComplete}
-      />
+      {isListView && (
+        <BeadDetailLightbox
+          key={`${detailBeadId ?? "none"}:${detailRepo ?? "none"}`}
+          open={Boolean(detailBeadId)}
+          beadId={detailBeadId}
+          repo={detailRepo}
+          initialBead={initialDetailBead}
+          onOpenChange={handleBeadLightboxOpenChange}
+          onMoved={handleMovedBead}
+        />
+      )}
+      {isListView && (
+        <MergeBeadsDialog
+          open={mergeDialogOpen}
+          onOpenChange={setMergeDialogOpen}
+          beads={beads.filter((b) => mergeBeadIds.includes(b.id))}
+          onMerged={handleMergeComplete}
+        />
+      )}
     </div>
   );
 }

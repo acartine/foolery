@@ -27,6 +27,8 @@ export function RepoSwitcher() {
   const { data } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
