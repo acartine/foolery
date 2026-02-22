@@ -1,0 +1,152 @@
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import type { Bead } from "@/lib/types";
+
+// Mock bd.ts before importing cascade-close
+vi.mock("@/lib/bd", () => ({
+  listBeads: vi.fn(),
+  closeBead: vi.fn(),
+}));
+
+import { getOpenDescendants, cascadeClose } from "@/lib/cascade-close";
+import { listBeads, closeBead } from "@/lib/bd";
+
+const mockListBeads = vi.mocked(listBeads);
+const mockCloseBead = vi.mocked(closeBead);
+
+function makeBead(overrides: Partial<Bead>): Bead {
+  return {
+    id: "test",
+    title: "Test",
+    description: "",
+    status: "open",
+    priority: 2,
+    type: "task",
+    labels: [],
+    created: "2026-02-22T00:00:00Z",
+    updated: "2026-02-22T00:00:00Z",
+    ...overrides,
+  };
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe("getOpenDescendants", () => {
+  it("returns empty list when parent has no children", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [makeBead({ id: "parent", status: "open" })],
+    });
+
+    const result = await getOpenDescendants("parent");
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual([]);
+  });
+
+  it("returns open children in leaf-first order", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        makeBead({ id: "parent", status: "open" }),
+        makeBead({ id: "child-a", parent: "parent", status: "open", title: "Child A" }),
+        makeBead({ id: "child-b", parent: "parent", status: "in_progress", title: "Child B" }),
+      ],
+    });
+
+    const result = await getOpenDescendants("parent");
+    expect(result.ok).toBe(true);
+    expect(result.data).toHaveLength(2);
+    expect(result.data![0].id).toBe("child-a");
+    expect(result.data![1].id).toBe("child-b");
+  });
+
+  it("excludes already-closed children", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        makeBead({ id: "parent", status: "open" }),
+        makeBead({ id: "child-a", parent: "parent", status: "closed", title: "Closed" }),
+        makeBead({ id: "child-b", parent: "parent", status: "open", title: "Open" }),
+      ],
+    });
+
+    const result = await getOpenDescendants("parent");
+    expect(result.ok).toBe(true);
+    expect(result.data).toHaveLength(1);
+    expect(result.data![0].id).toBe("child-b");
+  });
+
+  it("collects nested grandchildren leaf-first", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        makeBead({ id: "gp", status: "open" }),
+        makeBead({ id: "parent", parent: "gp", status: "open", title: "Parent" }),
+        makeBead({ id: "leaf", parent: "parent", status: "open", title: "Leaf" }),
+      ],
+    });
+
+    const result = await getOpenDescendants("gp");
+    expect(result.ok).toBe(true);
+    // Leaf should appear before parent (post-order traversal)
+    expect(result.data!.map((d) => d.id)).toEqual(["leaf", "parent"]);
+  });
+});
+
+describe("cascadeClose", () => {
+  it("closes leaf children before parent", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        makeBead({ id: "parent", status: "open" }),
+        makeBead({ id: "child", parent: "parent", status: "open", title: "Child" }),
+      ],
+    });
+    mockCloseBead.mockResolvedValue({ ok: true });
+
+    const result = await cascadeClose("parent", "done");
+    expect(result.ok).toBe(true);
+    expect(result.data!.closed).toEqual(["child", "parent"]);
+
+    // Verify close order: child first, then parent
+    const calls = mockCloseBead.mock.calls;
+    expect(calls[0][0]).toBe("child");
+    expect(calls[1][0]).toBe("parent");
+  });
+
+  it("collects errors without blocking siblings", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [
+        makeBead({ id: "parent", status: "open" }),
+        makeBead({ id: "fail-child", parent: "parent", status: "open", title: "Fail" }),
+        makeBead({ id: "ok-child", parent: "parent", status: "open", title: "OK" }),
+      ],
+    });
+    mockCloseBead.mockImplementation(async (id: string) => {
+      if (id === "fail-child") return { ok: false, error: "mock error" };
+      return { ok: true };
+    });
+
+    const result = await cascadeClose("parent");
+    expect(result.ok).toBe(true);
+    expect(result.data!.closed).toContain("ok-child");
+    expect(result.data!.closed).toContain("parent");
+    expect(result.data!.errors).toHaveLength(1);
+    expect(result.data!.errors[0]).toContain("fail-child");
+  });
+
+  it("closes only the parent when no children exist", async () => {
+    mockListBeads.mockResolvedValue({
+      ok: true,
+      data: [makeBead({ id: "solo", status: "open" })],
+    });
+    mockCloseBead.mockResolvedValue({ ok: true });
+
+    const result = await cascadeClose("solo");
+    expect(result.ok).toBe(true);
+    expect(result.data!.closed).toEqual(["solo"]);
+    expect(mockCloseBead).toHaveBeenCalledTimes(1);
+  });
+});

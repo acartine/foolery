@@ -61,6 +61,11 @@ export const closeBeadSchema = z.object({
   reason: z.string().optional(),
 });
 
+export const cascadeCloseSchema = z.object({
+  confirmed: z.boolean().default(false),
+  reason: z.string().optional(),
+});
+
 export const queryBeadSchema = z.object({
   expression: z.string().min(1, "Query expression is required"),
   limit: z.number().int().positive().default(50),
@@ -82,6 +87,7 @@ export const removeRepoSchema = z.object({
 export type CreateBeadInput = z.infer<typeof createBeadSchema>;
 export type UpdateBeadInput = z.infer<typeof updateBeadSchema>;
 export type CloseBeadInput = z.infer<typeof closeBeadSchema>;
+export type CascadeCloseInput = z.infer<typeof cascadeCloseSchema>;
 export type QueryBeadInput = z.infer<typeof queryBeadSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;
 export type AddRepoInput = z.infer<typeof addRepoSchema>;
