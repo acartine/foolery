@@ -130,11 +130,20 @@ export const verificationSettingsSchema = z
   })
   .default({ enabled: false, agent: "" });
 
+// Backend selection (internal, non-user-facing)
+export const backendSettingsSchema = z
+  .object({
+    /** Backend implementation to use: "cli" (default) or "stub". */
+    type: z.enum(["cli", "stub"]).default("cli"),
+  })
+  .default({ type: "cli" });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
   actions: actionAgentMappingsSchema,
   verification: verificationSettingsSchema,
+  backend: backendSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -142,3 +151,4 @@ export type AgentSettings = z.infer<typeof agentSettingsSchema>;
 export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
+export type BackendSettings = z.infer<typeof backendSettingsSchema>;

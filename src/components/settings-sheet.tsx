@@ -20,7 +20,7 @@ import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsVerificationSection } from "@/components/settings-verification-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
-import type { ActionAgentMappings, VerificationSettings } from "@/lib/schemas";
+import type { ActionAgentMappings, VerificationSettings, BackendSettings } from "@/lib/schemas";
 
 export type SettingsSection = "repos" | null;
 
@@ -35,6 +35,7 @@ interface SettingsData {
   agents: Record<string, RegisteredAgent>;
   actions: ActionAgentMappings;
   verification: VerificationSettings;
+  backend: BackendSettings;
 }
 
 const DEFAULTS: SettingsData = {
@@ -49,6 +50,9 @@ const DEFAULTS: SettingsData = {
   verification: {
     enabled: false,
     agent: "",
+  },
+  backend: {
+    type: "cli",
   },
 };
 
@@ -75,6 +79,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             agents: res.data.agents ?? DEFAULTS.agents,
             actions: res.data.actions ?? DEFAULTS.actions,
             verification: res.data.verification ?? DEFAULTS.verification,
+            backend: res.data.backend ?? DEFAULTS.backend,
           });
         }
       })

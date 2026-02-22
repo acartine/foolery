@@ -228,6 +228,7 @@ type SettingsPartial = Partial<{
   agents: FoolerySettings["agents"];
   actions: Partial<FoolerySettings["actions"]>;
   verification: Partial<FoolerySettings["verification"]>;
+  backend: Partial<FoolerySettings["backend"]>;
 }>;
 
 /**
@@ -243,6 +244,7 @@ export async function updateSettings(
     agents: partial.agents !== undefined ? { ...current.agents, ...partial.agents } : current.agents,
     actions: { ...current.actions, ...partial.actions },
     verification: { ...current.verification, ...partial.verification },
+    backend: { ...current.backend, ...partial.backend },
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -291,6 +293,19 @@ export async function getVerificationAgent(): Promise<RegisteredAgent> {
     return { command: reg.command, model: reg.model, label: reg.label };
   }
   return { command: settings.agent.command };
+}
+
+/**
+ * Resolve the backend type to use. Priority:
+ * 1. FOOLERY_BACKEND environment variable
+ * 2. settings.toml backend.type
+ * 3. Default: "cli"
+ */
+export async function getBackendType(): Promise<string> {
+  const envType = process.env.FOOLERY_BACKEND;
+  if (envType) return envType;
+  const settings = await loadSettings();
+  return settings.backend.type;
 }
 
 /** Adds or updates a registered agent. */

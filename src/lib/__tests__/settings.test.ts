@@ -37,6 +37,7 @@ const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
   verification: { enabled: false, agent: "" },
+  backend: { type: "cli" },
 };
 
 beforeEach(() => {
@@ -128,6 +129,8 @@ describe("backfillMissingSettingsDefaults", () => {
         '[verification]',
         'enabled = false',
         'agent = ""',
+        '[backend]',
+        'type = "cli"',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
@@ -143,6 +146,7 @@ describe("saveSettings", () => {
       agents: {},
       actions: DEFAULT_ACTIONS,
       verification: { enabled: false, agent: "" },
+      backend: { type: "cli" as const },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
