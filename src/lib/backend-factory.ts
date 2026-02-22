@@ -9,6 +9,7 @@
 import type { BackendPort } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import { BdCliBackend } from "@/lib/backends/bd-cli-backend";
+import { StubBackend } from "@/lib/backends/stub-backend";
 
 // ── Public types ─────────────────────────────────────────────────
 
@@ -31,8 +32,10 @@ export function createBackend(type: BackendType = "cli"): BackendEntry {
       const backend = new BdCliBackend();
       return { port: backend, capabilities: backend.capabilities };
     }
-    case "stub":
-      throw new Error(`Backend type "${type}" is not yet implemented`);
+    case "stub": {
+      const backend = new StubBackend();
+      return { port: backend, capabilities: backend.capabilities };
+    }
     default: {
       const _exhaustive: never = type;
       throw new Error(`Unknown backend type: ${_exhaustive}`);
