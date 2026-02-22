@@ -25,7 +25,6 @@ import type { Bead } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
 
-const RECENT_HOURS = 24;
 const TITLE_VISIBLE_COUNT = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
 const TOP_PANEL_HEADER_HEIGHT_PX = 62;
@@ -48,13 +47,6 @@ function parseBeadKey(value: string | null): { beadId: string; repoPath: string 
 function parseMillis(value: string): number {
   const ms = Date.parse(value);
   return Number.isFinite(ms) ? ms : 0;
-}
-
-function isRecent(value: string, hours: number): boolean {
-  if (!hours || hours <= 0) return true;
-  const ts = parseMillis(value);
-  if (!ts) return false;
-  return ts >= Date.now() - hours * 60 * 60 * 1000;
 }
 
 function formatTime(value: string | undefined): string {
@@ -360,11 +352,10 @@ export function AgentHistoryView() {
   const loadedBead = useMemo(() => parseBeadKey(loadedBeadKey), [loadedBeadKey]);
 
   const beatsQuery = useQuery({
-    queryKey: ["agent-history", "beats", activeRepo, RECENT_HOURS],
+    queryKey: ["agent-history", "beats", activeRepo],
     queryFn: () =>
       fetchAgentHistory({
         repoPath: activeRepo ?? undefined,
-        sinceHours: RECENT_HOURS,
       }),
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
@@ -372,9 +363,9 @@ export function AgentHistoryView() {
 
   const beats = useMemo(() => {
     if (!beatsQuery.data?.ok) return [];
-    return (beatsQuery.data.data?.beats ?? []).filter((beat) =>
-      isRecent(beat.lastWorkedAt, RECENT_HOURS),
-    );
+    return (beatsQuery.data.data?.beats ?? [])
+      .sort((a, b) => parseMillis(b.lastWorkedAt) - parseMillis(a.lastWorkedAt))
+      .slice(0, TITLE_VISIBLE_COUNT);
   }, [beatsQuery.data]);
 
   useEffect(() => {
@@ -462,14 +453,12 @@ export function AgentHistoryView() {
       activeRepo,
       loadedBead?.repoPath ?? null,
       loadedBead?.beadId ?? null,
-      RECENT_HOURS,
     ],
     queryFn: () =>
       fetchAgentHistory({
         repoPath: activeRepo ?? undefined,
         beadId: loadedBead!.beadId,
         beadRepoPath: loadedBead!.repoPath,
-        sinceHours: RECENT_HOURS,
       }),
     enabled: Boolean(loadedBead),
   });
@@ -507,11 +496,11 @@ export function AgentHistoryView() {
           <div className="border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
             <p className="text-xs font-semibold">Recent Take!/Scene Beats</p>
             <p className="text-[10px] text-muted-foreground">
-              Last {RECENT_HOURS}h, newest first. Showing {TITLE_VISIBLE_COUNT} at a time.
+              Last {TITLE_VISIBLE_COUNT}, newest first.
             </p>
             <div className="mt-1 inline-flex items-center gap-2 text-[9px] text-muted-foreground">
               <span className="inline-flex items-center gap-1"><ArrowUp className="size-3" />/<ArrowDown className="size-3" /> navigate</span>
-              <span className="inline-flex items-center gap-1"><CornerDownLeft className="size-3" /> load logs</span>
+              <span className="inline-flex items-center gap-1"><CornerDownLeft className="size-3" />/<span className="text-[8px] font-semibold">Space</span> load logs</span>
               <span className="inline-flex items-center gap-1"><span className="text-[8px] font-semibold">Tab</span> console focus</span>
             </div>
           </div>
@@ -540,6 +529,13 @@ export function AgentHistoryView() {
                 event.preventDefault();
                 focusConsolePanel();
               }
+              if (event.key === " ") {
+                event.preventDefault();
+                if (focusedBeadKey) {
+                  setLoadedBeadKey(focusedBeadKey);
+                }
+                return;
+              }
             }}
             style={{ height: `${TITLE_VISIBLE_COUNT * TITLE_ROW_HEIGHT_PX}px` }}
             className="overflow-y-auto outline-none focus-visible:ring-1 focus-visible:ring-sky-500/70"
@@ -552,7 +548,7 @@ export function AgentHistoryView() {
               </div>
             ) : beats.length === 0 ? (
               <div className="px-2.5 py-3 text-xs text-muted-foreground">
-                No beats with Take!/Scene activity in the last 24 hours.
+                No beats with Take!/Scene activity.
               </div>
             ) : (
               beats.map((beat) => {
