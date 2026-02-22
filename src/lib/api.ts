@@ -12,6 +12,7 @@ import type {
   QueryBeadInput,
   AddDepInput,
 } from "./schemas";
+import type { CascadeDescendant } from "./cascade-close";
 
 const BASE = "/api/beads";
 
@@ -120,6 +121,37 @@ export function closeBead(
 ): Promise<BdResult<void>> {
   const body = repo ? { ...input, _repo: repo } : input;
   return request<void>(`${BASE}/${id}/close`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Preview which descendants would be closed if a cascade close is performed.
+ */
+export function previewCascadeClose(
+  id: string,
+  repo?: string
+): Promise<BdResult<{ descendants: CascadeDescendant[] }>> {
+  const body: Record<string, unknown> = { confirmed: false };
+  if (repo) body._repo = repo;
+  return request<{ descendants: CascadeDescendant[] }>(`${BASE}/${id}/close-cascade`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Close a parent bead and all its open descendants recursively.
+ */
+export function cascadeCloseBead(
+  id: string,
+  input: CloseBeadInput,
+  repo?: string
+): Promise<BdResult<{ closed: string[]; errors: string[] }>> {
+  const body: Record<string, unknown> = { ...input, confirmed: true };
+  if (repo) body._repo = repo;
+  return request<{ closed: string[]; errors: string[] }>(`${BASE}/${id}/close-cascade`, {
     method: "POST",
     body: JSON.stringify(body),
   });

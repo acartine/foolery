@@ -14,7 +14,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
-import { updateBead, closeBead } from "@/lib/api";
+import { updateBead, closeBead, previewCascadeClose, cascadeCloseBead } from "@/lib/api";
 import { buildHierarchy, type HierarchicalBead } from "@/lib/bead-hierarchy";
 import { compareBeadsByHierarchicalOrder } from "@/lib/bead-sort";
 import { getBeadColumns, rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
@@ -42,6 +42,8 @@ import { NotesDialog } from "@/components/notes-dialog";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
+import { CascadeCloseDialog } from "@/components/cascade-close-dialog";
+import type { CascadeDescendant } from "@/lib/cascade-close";
 
 function SummaryColumn({
   text,
@@ -182,6 +184,10 @@ export function BeadTable({
   const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
   const [rejectingIds, setRejectingIds] = useState<Set<string>>(new Set());
   const [manualPageIndex, setManualPageIndex] = useState(0);
+  const [cascadeDialogOpen, setCascadeDialogOpen] = useState(false);
+  const [cascadeBead, setCascadeBead] = useState<Bead | null>(null);
+  const [cascadeDescendants, setCascadeDescendants] = useState<CascadeDescendant[]>([]);
+  const [cascadeLoading, setCascadeLoading] = useState(false);
   const { activeRepo, registeredRepos, filters, pageSize } = useAppStore();
   const updateUrl = useUpdateUrl();
   const filtersKey = JSON.stringify(filters);
@@ -310,6 +316,48 @@ export function BeadTable({
       toast.error("Failed to close beat");
     },
   });
+
+  const { mutate: handleCascadeClose } = useMutation({
+    mutationFn: (id: string) => {
+      const bead = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
+      const repo = bead?._repoPath as string | undefined;
+      return cascadeCloseBead(id, {}, repo);
+    },
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      const bead = data.find((b) => b.id === id);
+      toast.success(`Closed ${bead?.title ?? id} and all children`);
+      setCascadeDialogOpen(false);
+      setCascadeBead(null);
+      setCascadeDescendants([]);
+    },
+    onError: () => {
+      toast.error("Failed to cascade close");
+    },
+  });
+
+  /** Check if a bead has open children; if so, show cascade dialog. */
+  const initiateClose = useCallback(
+    async (beadId: string) => {
+      const hasChildren = data.some((b) => b.parent === beadId && b.status !== "closed");
+      if (!hasChildren) {
+        handleCloseBead(beadId);
+        return;
+      }
+      const bead = data.find((b) => b.id === beadId);
+      if (!bead) return;
+      setCascadeBead(bead);
+      setCascadeLoading(true);
+      setCascadeDialogOpen(true);
+      const repo = (bead as unknown as Record<string, unknown>)?._repoPath as string | undefined;
+      const result = await previewCascadeClose(beadId, repo);
+      setCascadeLoading(false);
+      if (result.ok && result.data) {
+        setCascadeDescendants(result.data.descendants);
+      }
+    },
+    [data, handleCloseBead],
+  );
 
   const handleToggleCollapse = useCallback((id: string) => {
     setExpandedIds((prev) => {
@@ -505,11 +553,12 @@ export function BeadTable({
       onApproveReview: handleApproveReview,
       onRejectReview: handleRejectReview,
       onRejectBead: handleRejectBead,
+      onCloseBead: initiateClose,
       collapsedIds,
       onToggleCollapse: handleToggleCollapse,
       childCountMap,
     }),
-    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead, collapsedIds, handleToggleCollapse, childCountMap]
+    [showRepoColumn, handleUpdateBead, onOpenBead, searchParams, router, onShipBead, shippingByBeadId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBead, initiateClose, collapsedIds, handleToggleCollapse, childCountMap]
   );
 
   const handleRowFocus = useCallback((bead: Bead) => {
@@ -676,12 +725,12 @@ export function BeadTable({
         const prevIdx = currentIdx <= 0 ? cycle.length - 1 : currentIdx - 1;
         updateUrl({ repo: cycle[prevIdx] });
       } else if (e.key === "C" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
-        // Shift+C: Close focused bead
+        // Shift+C: Close focused bead (cascade-prompts if parent)
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
         if (bead.status === "closed") return;
         e.preventDefault();
-        handleCloseBead(bead.id);
+        initiateClose(bead.id);
         const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
         if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== bead.id) {
           setFocusedRowId(rows[nextFocusIdx].original.id);
@@ -722,7 +771,7 @@ export function BeadTable({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBead, handleCloseBead, onShipBead, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl]);
+  }, [focusedRowId, table, handleUpdateBead, initiateClose, onShipBead, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl]);
 
   return (
     <div ref={tableContainerRef} tabIndex={-1} className="space-y-1 outline-none">
@@ -882,6 +931,22 @@ export function BeadTable({
           if (!open) setNotesRejectionMode(false);
         }}
         onUpdate={(id, fields) => handleUpdateBead({ id, fields })}
+      />
+      <CascadeCloseDialog
+        open={cascadeDialogOpen}
+        onOpenChange={(open) => {
+          setCascadeDialogOpen(open);
+          if (!open) {
+            setCascadeBead(null);
+            setCascadeDescendants([]);
+          }
+        }}
+        parentTitle={cascadeBead?.title ?? ""}
+        descendants={cascadeDescendants}
+        loading={cascadeLoading}
+        onConfirm={() => {
+          if (cascadeBead) handleCascadeClose(cascadeBead.id);
+        }}
       />
     </div>
   );

@@ -76,6 +76,8 @@ export interface BeadColumnOpts {
   onRejectReview?: (parentId: string) => void;
   /** Opens the rejection notes dialog for a bead instead of directly rejecting. */
   onRejectBead?: (bead: Bead) => void;
+  /** Called when a bead should be closed (checks for children / cascade). */
+  onCloseBead?: (beadId: string) => void;
   collapsedIds?: Set<string>;
   onToggleCollapse?: (id: string) => void;
   childCountMap?: Map<string, number>;
@@ -359,6 +361,7 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
   const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
   const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
   const onRejectBead = typeof opts === "boolean" ? undefined : opts.onRejectBead;
+  const onCloseBead = typeof opts === "boolean" ? undefined : opts.onCloseBead;
   const collapsedIds = typeof opts === "boolean" ? new Set<string>() : (opts.collapsedIds ?? new Set<string>());
   const onToggleCollapse = typeof opts === "boolean" ? undefined : opts.onToggleCollapse;
   const childCountMap = typeof opts === "boolean" ? new Map<string, number>() : (opts.childCountMap ?? new Map<string, number>());
@@ -537,7 +540,13 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  <DropdownMenuRadioGroup value={row.original.status} onValueChange={(v) => onUpdateBead(row.original.id, { status: v as BeadStatus })}>
+                  <DropdownMenuRadioGroup value={row.original.status} onValueChange={(v) => {
+                    if (v === "closed" && onCloseBead) {
+                      onCloseBead(row.original.id);
+                    } else {
+                      onUpdateBead(row.original.id, { status: v as BeadStatus });
+                    }
+                  }}>
                     {BEAD_STATUSES.map((s) => (
                       <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
                     ))}
