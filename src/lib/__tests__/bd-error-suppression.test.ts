@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BdResult, Bead } from "@/lib/types";
+import type { Bead } from "@/lib/types";
+import type { BackendResult } from "@/lib/backend-port";
 
 import {
   withErrorSuppression,
@@ -9,12 +10,12 @@ import {
   _internals,
 } from "@/lib/bd-error-suppression";
 
-function ok(data: Bead[]): BdResult<Bead[]> {
+function ok(data: Bead[]): BackendResult<Bead[]> {
   return { ok: true, data };
 }
 
-function fail(error: string): BdResult<Bead[]> {
-  return { ok: false, error };
+function fail(error: string): BackendResult<Bead[]> {
+  return { ok: false, error: { code: "BACKEND_ERROR", message: error, retryable: false } };
 }
 
 const STUB_BEAD = {
@@ -45,7 +46,7 @@ describe("bd-error-suppression", () => {
     const result = fail("database is locked");
     const out = withErrorSuppression("listBeads", result);
     expect(out.ok).toBe(false);
-    expect(out.error).toBe(DEGRADED_ERROR_MESSAGE);
+    expect(out.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("returns cached data on first lock failure after a success", () => {
@@ -75,7 +76,7 @@ describe("bd-error-suppression", () => {
 
     const out = withErrorSuppression("listBeads", fail("locked"));
     expect(out.ok).toBe(false);
-    expect(out.error).toBe(DEGRADED_ERROR_MESSAGE);
+    expect(out.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("clears failure state on recovery", () => {
@@ -121,14 +122,14 @@ describe("bd-error-suppression", () => {
     withErrorSuppression("listBeads", ok([STUB_BEAD]));
     const out = withErrorSuppression("listBeads", fail("Failed to parse bd list output"));
     expect(out.ok).toBe(false);
-    expect(out.error).toBe("Failed to parse bd list output");
+    expect(out.error?.message).toBe("Failed to parse bd list output");
   });
 
   it("does NOT suppress generic bd failures", () => {
     withErrorSuppression("listBeads", ok([STUB_BEAD]));
     const out = withErrorSuppression("listBeads", fail("bd list failed"));
     expect(out.ok).toBe(false);
-    expect(out.error).toBe("bd list failed");
+    expect(out.error?.message).toBe("bd list failed");
   });
 
   it("evicts oldest entry when cache exceeds MAX_CACHE_ENTRIES", () => {
@@ -155,12 +156,12 @@ describe("bd-error-suppression", () => {
     // First request after TTL -- should still return degraded
     const out1 = withErrorSuppression("listBeads", fail("locked"));
     expect(out1.ok).toBe(false);
-    expect(out1.error).toBe(DEGRADED_ERROR_MESSAGE);
+    expect(out1.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
 
     // Subsequent request with no cache -- should still return degraded
     const out2 = withErrorSuppression("listBeads", fail("locked"));
     expect(out2.ok).toBe(false);
-    expect(out2.error).toBe(DEGRADED_ERROR_MESSAGE);
+    expect(out2.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("produces same cache key regardless of filter key order", () => {

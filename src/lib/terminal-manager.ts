@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { listBeads, showBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -340,15 +340,15 @@ export async function createSession(
   }
 
   // Fetch bead details for prompt
-  const result = await showBead(beadId, repoPath);
+  const result = await getBackend().get(beadId, repoPath);
   if (!result.ok || !result.data) {
-    throw new Error(result.error ?? "Failed to fetch bead");
+    throw new Error(result.error?.message ?? "Failed to fetch bead");
   }
   const bead = result.data;
   const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
   // Check for children — both orchestrated waves and plain parent beads
   let waveBeatIds: string[] = [];
-  const childResult = await listBeads({ parent: bead.id }, repoPath);
+  const childResult = await getBackend().list({ parent: bead.id }, repoPath);
   const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
   if (hasChildren) {
     waveBeatIds = childResult.data!
@@ -357,7 +357,7 @@ export async function createSession(
       .sort((a, b) => a.localeCompare(b));
   } else if (isWave) {
     console.warn(
-      `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error ?? "no children found"}`
+      `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error?.message ?? "no children found"}`
     );
   }
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
@@ -782,11 +782,11 @@ export async function createSceneSession(
 
   // Fetch all bead details in parallel
   const beadResults = await Promise.all(
-    beadIds.map((bid) => showBead(bid, repoPath))
+    beadIds.map((bid) => getBackend().get(bid, repoPath))
   );
   const beads = beadResults.map((r, i) => {
     if (!r.ok || !r.data) {
-      throw new Error(`Failed to fetch bead ${beadIds[i]}: ${r.error ?? "unknown error"}`);
+      throw new Error(`Failed to fetch bead ${beadIds[i]}: ${r.error?.message ?? "unknown error"}`);
     }
     return r.data;
   });

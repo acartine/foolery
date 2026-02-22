@@ -1,14 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import {
-  addDep,
-  closeBead,
-  createBead,
-  listBeads,
-  removeDep,
-  showBead,
-  updateBead,
-} from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
+import type { CreateBeadInput, UpdateBeadInput } from "@/lib/backend-port";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -619,14 +612,14 @@ async function collectEligibleBeads(
   options?: { excludeOrchestrationWaves?: boolean }
 ): Promise<Bead[]> {
   const [open, inProgress, blocked] = await Promise.all([
-    listBeads({ status: "open" }, repoPath),
-    listBeads({ status: "in_progress" }, repoPath),
-    listBeads({ status: "blocked" }, repoPath),
+    getBackend().list({ status: "open" }, repoPath),
+    getBackend().list({ status: "in_progress" }, repoPath),
+    getBackend().list({ status: "blocked" }, repoPath),
   ]);
 
   for (const result of [open, inProgress, blocked]) {
     if (!result.ok) {
-      throw new Error(result.error ?? "Failed to load beads for orchestration");
+      throw new Error(result.error?.message ?? "Failed to load beads for orchestration");
     }
   }
 
@@ -1043,9 +1036,9 @@ export async function applyOrchestrationSession(
   const createdWaveIds = new Set<string>();
 
   let previousWaveId: string | null = null;
-  const existing = await listBeads(undefined, repoPath);
+  const existing = await getBackend().list(undefined, repoPath);
   if (!existing.ok || !existing.data) {
-    throw new Error(existing.error ?? "Failed to load existing scenes");
+    throw new Error(existing.error?.message ?? "Failed to load existing scenes");
   }
   const usedWaveSlugs = new Set<string>();
   for (const bead of existing.data) {
@@ -1100,19 +1093,19 @@ export async function applyOrchestrationSession(
     const waveSlug = allocateWaveSlug(usedWaveSlugs, overrideSlug);
     const waveTitle = buildWaveTitle(waveSlug, waveName);
 
-    const createResult = await createBead(
+    const createResult = await getBackend().create(
       {
         title: waveTitle,
         type: "epic",
         priority: wavePriority,
         labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
-      },
-      repoPath
+      } as CreateBeadInput,
+      repoPath,
     );
 
     if (!createResult.ok || !createResult.data?.id) {
-      throw new Error(createResult.error ?? `Failed to create scene ${wave.waveIndex}`);
+      throw new Error(createResult.error?.message ?? `Failed to create scene ${wave.waveIndex}`);
     }
 
     const waveId = createResult.data.id;
@@ -1122,16 +1115,16 @@ export async function applyOrchestrationSession(
       const currentParentId = entry.allBeads.get(child.id)?.parent;
       if (currentParentId) sourceParentIds.add(currentParentId);
 
-      const updateResult = await updateBead(
+      const updateResult = await getBackend().update(
         child.id,
-        { parent: waveId },
-        repoPath
+        { parent: waveId } as UpdateBeadInput,
+        repoPath,
       );
       if (!updateResult.ok) {
-        throw new Error(updateResult.error ?? `Failed to reparent ${child.id}`);
+        throw new Error(updateResult.error?.message ?? `Failed to reparent ${child.id}`);
       }
 
-      const refreshed = await showBead(child.id, repoPath);
+      const refreshed = await getBackend().get(child.id, repoPath);
       if (!refreshed.ok || refreshed.data?.parent !== waveId) {
         throw new Error(`Failed to confirm ${child.id} parent relationship to ${waveId}`);
       }
@@ -1143,30 +1136,30 @@ export async function applyOrchestrationSession(
 
       // Rewrites move children to a new wave; prune old wave->child edge if present.
       if (currentParentId && currentParentId !== waveId) {
-        const removeResult = await removeDep(currentParentId, child.id, repoPath);
-        if (!removeResult.ok && !isMissingDependencyError(removeResult.error)) {
+        const removeResult = await getBackend().removeDependency(currentParentId, child.id, repoPath);
+        if (!removeResult.ok && !isMissingDependencyError(removeResult.error?.message)) {
           throw new Error(
-            removeResult.error ??
+            removeResult.error?.message ??
               `Failed to remove dependency ${currentParentId} -> ${child.id}`
           );
         }
       }
 
-      const relationDep = await addDep(waveId, child.id, repoPath);
+      const relationDep = await getBackend().addDependency(waveId, child.id, repoPath);
       if (
         !relationDep.ok &&
-        !/already exists|duplicate|exists/i.test(relationDep.error ?? "")
+        !/already exists|duplicate|exists/i.test(relationDep.error?.message ?? "")
       ) {
         throw new Error(
-          relationDep.error ?? `Failed to link scene ${waveId} to ${child.id}`
+          relationDep.error?.message ?? `Failed to link scene ${waveId} to ${child.id}`
         );
       }
     }
 
     if (previousWaveId) {
-      const depResult = await addDep(previousWaveId, waveId, repoPath);
+      const depResult = await getBackend().addDependency(previousWaveId, waveId, repoPath);
       if (!depResult.ok) {
-        throw new Error(depResult.error ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
+        throw new Error(depResult.error?.message ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
       }
     }
     previousWaveId = waveId;
@@ -1182,10 +1175,10 @@ export async function applyOrchestrationSession(
   }
 
   if (sourceParentIds.size > 0) {
-    const refreshed = await listBeads(undefined, repoPath);
+    const refreshed = await getBackend().list(undefined, repoPath);
     if (!refreshed.ok || !refreshed.data) {
       throw new Error(
-        refreshed.error ?? "Failed to refresh beads before closing rewritten source scenes"
+        refreshed.error?.message ?? "Failed to refresh beads before closing rewritten source scenes"
       );
     }
 
@@ -1201,13 +1194,13 @@ export async function applyOrchestrationSession(
       const activeChildren = activeChildCounts.get(parentId) ?? 0;
       if (activeChildren > 0) continue;
 
-      const closeResult = await closeBead(
+      const closeResult = await getBackend().close(
         parentId,
         `Rewritten by orchestration session ${sessionId}`,
-        repoPath
+        repoPath,
       );
       if (!closeResult.ok) {
-        throw new Error(closeResult.error ?? `Failed to close emptied source scene ${parentId}`);
+        throw new Error(closeResult.error?.message ?? `Failed to close emptied source scene ${parentId}`);
       }
     }
   }

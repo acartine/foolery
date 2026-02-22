@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { showBead, updateBead, closeBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 import { z } from "zod/v4";
 
 const mergeBeadsSchema = z.object({
@@ -22,19 +22,19 @@ export async function POST(request: NextRequest) {
 
   // Fetch both beads in parallel
   const [survivorResult, consumedResult] = await Promise.all([
-    showBead(survivorId, repoPath),
-    showBead(consumedId, repoPath),
+    getBackend().get(survivorId, repoPath),
+    getBackend().get(consumedId, repoPath),
   ]);
 
   if (!survivorResult.ok || !survivorResult.data) {
     return NextResponse.json(
-      { error: survivorResult.error ?? `Survivor bead ${survivorId} not found` },
+      { error: survivorResult.error?.message ?? `Survivor bead ${survivorId} not found` },
       { status: 404 }
     );
   }
   if (!consumedResult.ok || !consumedResult.data) {
     return NextResponse.json(
-      { error: consumedResult.error ?? `Consumed bead ${consumedId} not found` },
+      { error: consumedResult.error?.message ?? `Consumed bead ${consumedId} not found` },
       { status: 404 }
     );
   }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
   const consumed = consumedResult.data;
 
   // Build merged fields: append consumed's description, notes, and labels to survivor
-  const fields: Record<string, string | string[] | number | undefined> = {};
+  const fields: Record<string, string | string[] | undefined> = {};
 
   // Append description
   const consumedDesc = consumed.description?.trim();
@@ -74,24 +74,28 @@ export async function POST(request: NextRequest) {
 
   // Update survivor with merged content (if there's anything to merge)
   if (Object.keys(fields).length > 0) {
-    const updateResult = await updateBead(survivorId, fields, repoPath);
+    const updateResult = await getBackend().update(
+      survivorId,
+      fields as import("@/lib/backend-port").UpdateBeadInput,
+      repoPath,
+    );
     if (!updateResult.ok) {
       return NextResponse.json(
-        { error: updateResult.error ?? "Failed to update survivor bead" },
+        { error: updateResult.error?.message ?? "Failed to update survivor bead" },
         { status: 500 }
       );
     }
   }
 
   // Close the consumed bead
-  const closeResult = await closeBead(
+  const closeResult = await getBackend().close(
     consumedId,
     `Merged into ${survivorId}`,
-    repoPath
+    repoPath,
   );
   if (!closeResult.ok) {
     return NextResponse.json(
-      { error: closeResult.error ?? "Failed to close consumed bead" },
+      { error: closeResult.error?.message ?? "Failed to close consumed bead" },
       { status: 500 }
     );
   }

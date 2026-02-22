@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { addDep, createBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
+import type { CreateBeadInput } from "@/lib/backend-port";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -30,7 +31,6 @@ import {
   extractWaveSlug,
   isLegacyNumericWaveSlug,
 } from "@/lib/wave-slugs";
-import { listBeads } from "@/lib/bd";
 
 interface BreakdownSessionEntry {
   session: BreakdownSession;
@@ -579,9 +579,9 @@ export async function applyBreakdownPlan(
   const parentBeadId = entry.session.parentBeadId;
   const createdBeadIds: string[] = [];
 
-  const existing = await listBeads(undefined, repoPath);
+  const existing = await getBackend().list(undefined, repoPath);
   if (!existing.ok || !existing.data) {
-    throw new Error(existing.error ?? "Failed to load existing beads");
+    throw new Error(existing.error?.message ?? "Failed to load existing beads");
   }
   const usedWaveSlugs = new Set<string>();
   for (const bead of existing.data) {
@@ -609,7 +609,7 @@ export async function applyBreakdownPlan(
       .filter((line): line is string => line !== null)
       .join("\n");
 
-    const waveResult = await createBead(
+    const waveResult = await getBackend().create(
       {
         title: waveTitle,
         type: "epic",
@@ -617,39 +617,39 @@ export async function applyBreakdownPlan(
         labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
         parent: parentBeadId,
-      },
-      repoPath
+      } as CreateBeadInput,
+      repoPath,
     );
 
     if (!waveResult.ok || !waveResult.data?.id) {
-      throw new Error(waveResult.error ?? `Failed to create scene ${wave.waveIndex}`);
+      throw new Error(waveResult.error?.message ?? `Failed to create scene ${wave.waveIndex}`);
     }
 
     const waveId = waveResult.data.id;
     createdBeadIds.push(waveId);
 
     if (previousWaveId) {
-      const depResult = await addDep(previousWaveId, waveId, repoPath);
+      const depResult = await getBackend().addDependency(previousWaveId, waveId, repoPath);
       if (!depResult.ok) {
-        throw new Error(depResult.error ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
+        throw new Error(depResult.error?.message ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
       }
     }
     previousWaveId = waveId;
 
     for (const spec of wave.beads) {
-      const beadResult = await createBead(
+      const beadResult = await getBackend().create(
         {
           title: spec.title,
           type: spec.type,
           priority: spec.priority,
           description: spec.description,
           parent: waveId,
-        },
-        repoPath
+        } as CreateBeadInput,
+        repoPath,
       );
 
       if (!beadResult.ok || !beadResult.data?.id) {
-        throw new Error(beadResult.error ?? `Failed to create bead: ${spec.title}`);
+        throw new Error(beadResult.error?.message ?? `Failed to create bead: ${spec.title}`);
       }
 
       createdBeadIds.push(beadResult.data.id);

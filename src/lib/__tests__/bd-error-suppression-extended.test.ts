@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BdResult, Bead } from "@/lib/types";
+import type { Bead } from "@/lib/types";
+import type { BackendResult } from "@/lib/backend-port";
 
 import {
   withErrorSuppression,
@@ -7,12 +8,12 @@ import {
   _internals,
 } from "@/lib/bd-error-suppression";
 
-function ok(data: Bead[]): BdResult<Bead[]> {
+function ok(data: Bead[]): BackendResult<Bead[]> {
   return { ok: true, data };
 }
 
-function fail(error: string): BdResult<Bead[]> {
-  return { ok: false, error };
+function fail(error: string): BackendResult<Bead[]> {
+  return { ok: false, error: { code: "BACKEND_ERROR", message: error, retryable: false } };
 }
 
 const STUB_BEAD = {
@@ -54,7 +55,7 @@ describe("bd-error-suppression cache TTL expiry", () => {
     // cache entry is expired, so it gets evicted and the raw error is returned
     const out = withErrorSuppression("listBeads", fail("locked"));
     expect(out.ok).toBe(false);
-    expect(out.error).toBe("locked");
+    expect(out.error?.message).toBe("locked");
 
     // Cache and failure state should be cleaned up
     expect(_internals.resultCache.has(cacheKey)).toBe(false);

@@ -1,4 +1,5 @@
-import type { Bead, BdResult } from "./types";
+import type { Bead } from "./types";
+import type { BackendResult } from "./backend-port";
 
 /**
  * Error-suppression cache for bd list/ready/search operations.
@@ -14,7 +15,7 @@ import type { Bead, BdResult } from "./types";
  */
 
 interface CacheEntry {
-  data: BdResult<Bead[]>;
+  data: BackendResult<Bead[]>;
   timestamp: number;
 }
 
@@ -84,16 +85,16 @@ function evictIfNeeded(): void {
 }
 
 /**
- * Wrap a BdResult from a list-type operation with error suppression.
- * Call this with the raw result from listBeads/readyBeads/searchBeads.
+ * Wrap a BackendResult from a list-type operation with error suppression.
+ * Call this with the raw result from backend.list/listReady/search.
  */
 export function withErrorSuppression(
   fn: string,
-  result: BdResult<Bead[]>,
+  result: BackendResult<Bead[]>,
   filters?: Record<string, string>,
   repoPath?: string,
   query?: string,
-): BdResult<Bead[]> {
+): BackendResult<Bead[]> {
   const key = cacheKey(fn, filters, repoPath, query);
 
   if (result.ok) {
@@ -104,7 +105,7 @@ export function withErrorSuppression(
   }
 
   // Only suppress lock/access errors -- pass everything else through
-  if (!isSuppressibleError(result.error ?? "")) return result;
+  if (!isSuppressibleError(result.error?.message ?? "")) return result;
 
   const failure = failureState.get(key);
 
@@ -114,7 +115,7 @@ export function withErrorSuppression(
   if (failure && Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
     // Clean up the expired cache entry to free memory
     resultCache.delete(key);
-    return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+    return { ok: false, error: { code: "UNAVAILABLE", message: DEGRADED_ERROR_MESSAGE, retryable: true } };
   }
 
   const cached = resultCache.get(key);
@@ -132,12 +133,12 @@ export function withErrorSuppression(
     // condition (503) instead of a hard 500 with raw backend internals.
     if (!failure) {
       failureState.set(key, { firstFailedAt: Date.now() });
-      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+      return { ok: false, error: { code: "UNAVAILABLE", message: DEGRADED_ERROR_MESSAGE, retryable: true } };
     }
     if (Date.now() - failure.firstFailedAt >= SUPPRESSION_WINDOW_MS) {
-      return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+      return { ok: false, error: { code: "UNAVAILABLE", message: DEGRADED_ERROR_MESSAGE, retryable: true } };
     }
-    return { ok: false, error: DEGRADED_ERROR_MESSAGE };
+    return { ok: false, error: { code: "UNAVAILABLE", message: DEGRADED_ERROR_MESSAGE, retryable: true } };
   }
 
   if (!failure) {

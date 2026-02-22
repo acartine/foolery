@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listBeads, listDeps } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
+import type { BeadListFilters } from "@/lib/backend-port";
 import { computeWaves } from "@/lib/wave-planner";
 import type {
   WaveBead,
@@ -144,13 +145,13 @@ export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
 
   // Fetch all non-closed beads
-  const beadsResult = await listBeads({ status: "open" }, repoPath);
-  const inProgressResult = await listBeads({ status: "in_progress" }, repoPath);
-  const blockedResult = await listBeads({ status: "blocked" }, repoPath);
+  const beadsResult = await getBackend().list({ status: "open" } as BeadListFilters, repoPath);
+  const inProgressResult = await getBackend().list({ status: "in_progress" } as BeadListFilters, repoPath);
+  const blockedResult = await getBackend().list({ status: "blocked" } as BeadListFilters, repoPath);
 
   if (!beadsResult.ok) {
     return NextResponse.json(
-      { error: beadsResult.error ?? "Failed to fetch beads" },
+      { error: beadsResult.error?.message ?? "Failed to fetch beads" },
       { status: 500 }
     );
   }
@@ -171,7 +172,7 @@ export async function GET(request: NextRequest) {
 
   // Fetch deps for all beads in parallel
   const depResults = await Promise.allSettled(
-    beads.map((b) => listDeps(b.id, repoPath))
+    beads.map((b) => getBackend().listDependencies(b.id, repoPath))
   );
 
   // Collect all dep edges

@@ -11,7 +11,8 @@
  */
 
 import { spawn } from "node:child_process";
-import { showBead, updateBead, closeBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
+import type { UpdateBeadInput } from "@/lib/backend-port";
 import { getVerificationSettings, getVerificationAgent } from "@/lib/settings";
 import { startInteractionLog, noopInteractionLog } from "@/lib/interaction-logger";
 import {
@@ -142,9 +143,9 @@ async function runVerificationWorkflow(
 async function enterVerification(beadId: string, repoPath: string): Promise<void> {
   logEvent("queued", beadId);
 
-  const beadResult = await showBead(beadId, repoPath);
+  const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId}: ${beadResult.error}`);
+    throw new Error(`Failed to load bead ${beadId}: ${beadResult.error?.message}`);
   }
 
   const bead = beadResult.data;
@@ -157,14 +158,14 @@ async function enterVerification(beadId: string, repoPath: string): Promise<void
 
   const mutations = computeEntryLabels(labels);
   if (mutations.add.length > 0 || mutations.remove.length > 0) {
-    const updateFields: Record<string, string | string[] | number | undefined> = {};
+    const updateFields: UpdateBeadInput = {};
     if (mutations.add.length > 0) updateFields.labels = mutations.add;
     if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;
     // Ensure status is in_progress for verification
     if (bead.status !== "in_progress") {
       updateFields.status = "in_progress";
     }
-    await updateBead(beadId, updateFields, repoPath);
+    await getBackend().update(beadId, updateFields, repoPath);
   }
 }
 
@@ -175,7 +176,7 @@ async function ensureCommitLabel(
   repoPath: string,
 ): Promise<string | null> {
   // Check if commit label already exists
-  const beadResult = await showBead(beadId, repoPath);
+  const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) return null;
 
   let sha = extractCommitLabel(beadResult.data.labels ?? []);
@@ -187,7 +188,7 @@ async function ensureCommitLabel(
   // (the producing agent may still be labeling beads)
   for (let attempt = 0; attempt < MAX_COMMIT_REMEDIATION_ATTEMPTS; attempt++) {
     await sleep(3000);
-    const refreshed = await showBead(beadId, repoPath);
+    const refreshed = await getBackend().get(beadId, repoPath);
     if (!refreshed.ok || !refreshed.data) continue;
     sha = extractCommitLabel(refreshed.data.labels ?? []);
     if (sha) return sha;
@@ -206,9 +207,9 @@ async function launchVerifier(
 ): Promise<VerificationOutcome> {
   logEvent("verifier-started", beadId, `commit=${commitSha}`);
 
-  const beadResult = await showBead(beadId, repoPath);
+  const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId} for verifier prompt`);
+    throw new Error(`Failed to load bead ${beadId} for verifier prompt: ${beadResult.error?.message}`);
   }
   const bead = beadResult.data;
 
@@ -338,9 +339,9 @@ async function applyOutcome(
   repoPath: string,
   outcome: VerificationOutcome,
 ): Promise<void> {
-  const beadResult = await showBead(beadId, repoPath);
+  const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId} for outcome application`);
+    throw new Error(`Failed to load bead ${beadId} for outcome application: ${beadResult.error?.message}`);
   }
 
   const labels = beadResult.data.labels ?? [];
@@ -349,9 +350,9 @@ async function applyOutcome(
     // Pass: remove verification labels and close
     const mutations = computePassLabels(labels);
     if (mutations.remove.length > 0) {
-      await updateBead(beadId, { removeLabels: mutations.remove }, repoPath);
+      await getBackend().update(beadId, { removeLabels: mutations.remove }, repoPath);
     }
-    await closeBead(beadId, "Auto-verification passed", repoPath);
+    await getBackend().close(beadId, "Auto-verification passed", repoPath);
     logEvent("closed", beadId);
   } else {
     // Fail: transition to retry
@@ -363,19 +364,19 @@ async function applyOutcome(
 // ── Helper: transition to retry ─────────────────────────────
 
 async function transitionToRetry(beadId: string, repoPath: string): Promise<void> {
-  const beadResult = await showBead(beadId, repoPath);
+  const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) return;
 
   const labels = beadResult.data.labels ?? [];
   const mutations = computeRetryLabels(labels);
 
-  const updateFields: Record<string, string | string[] | number | undefined> = {
+  const updateFields: UpdateBeadInput = {
     status: "open",
   };
   if (mutations.add.length > 0) updateFields.labels = mutations.add;
   if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;
 
-  await updateBead(beadId, updateFields, repoPath);
+  await getBackend().update(beadId, updateFields, repoPath);
 }
 
 // ── Utilities ───────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { showBead, updateBead, deleteBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 import { updateBeadSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
@@ -61,7 +61,7 @@ export async function GET(
 ) {
   const { id } = await params;
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
-  const result = await showBead(id, repoPath);
+  const result = await getBackend().get(id, repoPath);
   if (result.ok && result.data) {
     cacheDetail(id, repoPath, result.data);
     return NextResponse.json({
@@ -70,7 +70,7 @@ export async function GET(
     });
   }
 
-  const error = result.error ?? "bd show failed";
+  const error = result.error?.message ?? "bd show failed";
   if (isSuppressibleError(error)) {
     const cached = getCachedDetail(id, repoPath);
     if (cached) {
@@ -105,7 +105,7 @@ export async function PATCH(
   }
 
   // Enforce edit lock: reject mutations when transition:verification is active
-  const current = await showBead(id, repoPath);
+  const current = await getBackend().get(id, repoPath);
   if (current.ok && current.data) {
     const labels = current.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
@@ -116,15 +116,9 @@ export async function PATCH(
     }
   }
 
-  const fields: Record<string, string | string[] | number | undefined> = {};
-  for (const [key, val] of Object.entries(parsed.data)) {
-    if (val !== undefined) {
-      fields[key] = val as string | string[] | number;
-    }
-  }
-  const result = await updateBead(id, fields, repoPath);
+  const result = await getBackend().update(id, parsed.data, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 500 });
+    return NextResponse.json({ error: result.error?.message }, { status: 500 });
   }
   clearCachedDetail(id, repoPath);
 
@@ -152,7 +146,7 @@ export async function DELETE(
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
 
   // Enforce edit lock: reject deletes when transition:verification is active
-  const currentBead = await showBead(id, repoPath);
+  const currentBead = await getBackend().get(id, repoPath);
   if (currentBead.ok && currentBead.data) {
     const labels = currentBead.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
@@ -163,9 +157,9 @@ export async function DELETE(
     }
   }
 
-  const result = await deleteBead(id, repoPath);
+  const result = await getBackend().delete(id, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 500 });
+    return NextResponse.json({ error: result.error?.message }, { status: 500 });
   }
   clearCachedDetail(id, repoPath);
   return NextResponse.json({ ok: true });

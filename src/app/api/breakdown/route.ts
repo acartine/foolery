@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { showBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 import {
   abortBreakdownSession,
   createBreakdownSession,
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const parentResult = await showBead(parentBeadId, repoPath);
+    const parentResult = await getBackend().get(parentBeadId, repoPath);
     if (!parentResult.ok || !parentResult.data) {
       return NextResponse.json(
         { error: `Parent bead not found: ${parentBeadId}` },

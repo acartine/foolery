@@ -1,4 +1,4 @@
-import { listBeads, closeBead } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 import type { Bead } from "@/lib/types";
 
 /**
@@ -45,7 +45,7 @@ export async function regroomAncestors(
 ): Promise<void> {
   try {
     // Single call with no status filter gets --all (see bd.ts listBeads)
-    const allResult = await listBeads({}, repoPath);
+    const allResult = await getBackend().list({}, repoPath);
     const allBeads: Bead[] = allResult.ok && allResult.data ? allResult.data : [];
 
     // Deduplicate by ID
@@ -69,10 +69,10 @@ export async function regroomAncestors(
       console.log(
         `[regroom] Auto-closing ${ancestorId} — all ${children.length} children closed`
       );
-      const result = await closeBead(ancestorId, undefined, repoPath);
+      const result = await getBackend().close(ancestorId, undefined, repoPath);
       if (!result.ok) {
         console.error(
-          `[regroom] Failed to close ${ancestorId}: ${result.error}`
+          `[regroom] Failed to close ${ancestorId}: ${result.error?.message}`
         );
         break;
       }

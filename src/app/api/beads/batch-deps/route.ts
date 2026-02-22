@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listDeps } from "@/lib/bd";
+import { getBackend } from "@/lib/backend-instance";
 
 export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   const results = await Promise.all(
     ids.map(async (id) => {
-      const result = await listDeps(id, repoPath);
+      const result = await getBackend().listDependencies(id, repoPath);
       return [id, result.ok ? result.data ?? [] : []] as const;
     })
   );
