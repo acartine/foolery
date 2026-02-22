@@ -1,4 +1,4 @@
-export type AgentHistoryInteractionType = "take" | "scene";
+export type AgentHistoryInteractionType = "take" | "scene" | "verification";
 
 export interface AgentHistoryEntry {
   id: string;

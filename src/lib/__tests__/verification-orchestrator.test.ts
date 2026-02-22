@@ -21,6 +21,20 @@ vi.mock("@/lib/settings", () => ({
   getVerificationAgent: () => getVerificationAgentMock(),
 }));
 
+// Mock interaction logger
+const startInteractionLogMock = vi.fn();
+const logPromptMock = vi.fn();
+const logResponseMock = vi.fn();
+const logEndMock = vi.fn();
+vi.mock("@/lib/interaction-logger", () => ({
+  startInteractionLog: (...args: unknown[]) => startInteractionLogMock(...args),
+  noopInteractionLog: () => ({
+    logPrompt: logPromptMock,
+    logResponse: logResponseMock,
+    logEnd: logEndMock,
+  }),
+}));
+
 // Mock agent-adapter (prevent real process spawning)
 vi.mock("@/lib/agent-adapter", () => ({
   buildPromptModeArgs: (_agent: unknown, prompt: string) => ({
@@ -90,6 +104,11 @@ function createMockProcess(output: string, exitCode = 0) {
 beforeEach(() => {
   vi.clearAllMocks();
   _clearAllLocks();
+  startInteractionLogMock.mockResolvedValue({
+    logPrompt: logPromptMock,
+    logResponse: logResponseMock,
+    logEnd: logEndMock,
+  });
 
   // Default: verification disabled
   getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "" });
@@ -167,6 +186,20 @@ describe("pass path", () => {
       "Auto-verification passed",
       "/repo"
     );
+
+    expect(startInteractionLogMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        interactionType: "verification",
+        repoPath: "/repo",
+        beadIds: ["foolery-test"],
+      }),
+    );
+    expect(logPromptMock).toHaveBeenCalledWith(
+      expect.any(String),
+      { source: "verification_review" },
+    );
+    expect(logResponseMock).toHaveBeenCalledWith("VERIFICATION_RESULT:pass");
+    expect(logEndMock).toHaveBeenCalledWith(0, "completed");
   });
 });
 

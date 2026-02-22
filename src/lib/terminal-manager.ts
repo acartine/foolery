@@ -122,6 +122,20 @@ function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string 
   ].join("\n");
 }
 
+function buildSceneCompletionFollowUp(beatIds: string[]): string {
+  const targets = beatIds.length > 0 ? beatIds : ["(none provided)"];
+  return [
+    "Scene completion follow-up:",
+    "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
+    "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
+    "For each beat after merge confirmation, run exactly one command to set verification state:",
+    ...targets.map((id) => buildVerificationStateCommand(id)),
+    "Beats in this scene:",
+    ...targets.map((id) => `- ${id}`),
+    "Then summarize per beat: merged yes/no and verification-state command result.",
+  ].join("\n");
+}
+
 function makeUserMessageLine(text: string): string {
   return JSON.stringify({
     type: "user",
@@ -882,9 +896,11 @@ export async function createSceneSession(
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
-  // Scene prompts now include explicit verification-state commands, so a forced
-  // second completion turn is unnecessary and can leave sessions hanging.
-  const autoShipCompletionPrompt: string | null = null;
+  const autoShipCompletionPrompt = !sceneIsInteractive
+    ? null
+    : customPrompt
+      ? null
+      : buildSceneCompletionFollowUp(beadIds);
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 

@@ -76,6 +76,7 @@ function promptSourceLabel(source?: string): string {
   if (source === "execution_follow_up") return "Execution follow-up";
   if (source === "ship_completion_follow_up") return "Ship follow-up";
   if (source === "scene_completion_follow_up") return "Scene follow-up";
+  if (source === "verification_review") return "Verification prompt";
   if (source === "auto_ask_user_response") return "Auto AskUser response";
   return source.replace(/_/g, " ");
 }
@@ -189,6 +190,22 @@ function statusTone(status?: string): string {
   return "border-slate-600 bg-slate-800 text-slate-200";
 }
 
+function interactionTypeTone(interactionType: AgentHistorySession["interactionType"]): string {
+  if (interactionType === "scene") {
+    return "border-violet-500/40 bg-violet-500/20 text-violet-100";
+  }
+  if (interactionType === "verification") {
+    return "border-amber-500/40 bg-amber-500/20 text-amber-100";
+  }
+  return "border-cyan-500/40 bg-cyan-500/20 text-cyan-100";
+}
+
+function interactionTypeLabel(interactionType: AgentHistorySession["interactionType"]): string {
+  if (interactionType === "scene") return "Scene!";
+  if (interactionType === "verification") return "Auto-review";
+  return "Take!";
+}
+
 function BeadMetaItem({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="px-0.5 py-0.5">
@@ -265,8 +282,11 @@ function SessionCard({ session }: { session: AgentHistorySession }) {
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">
       <header className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
-        <Badge variant="outline" className="border-violet-500/40 bg-violet-500/20 text-[10px] uppercase text-violet-100">
-          {session.interactionType === "scene" ? "Scene!" : "Take!"}
+        <Badge
+          variant="outline"
+          className={`text-[10px] uppercase ${interactionTypeTone(session.interactionType)}`}
+        >
+          {interactionTypeLabel(session.interactionType)}
         </Badge>
         <Badge variant="outline" className={`text-[10px] ${statusTone(session.status)}`}>
           {session.status ?? "unknown"}

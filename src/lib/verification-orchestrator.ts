@@ -13,6 +13,7 @@
 import { spawn } from "node:child_process";
 import { showBead, updateBead, closeBead } from "@/lib/bd";
 import { getVerificationSettings, getVerificationAgent } from "@/lib/settings";
+import { startInteractionLog, noopInteractionLog } from "@/lib/interaction-logger";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -20,8 +21,6 @@ import {
 } from "@/lib/agent-adapter";
 import {
   LABEL_TRANSITION_VERIFICATION,
-  LABEL_STAGE_VERIFICATION,
-  LABEL_STAGE_RETRY,
   extractCommitLabel,
   computeEntryLabels,
   computePassLabels,
@@ -35,7 +34,7 @@ import {
   type VerificationEvent,
   type VerificationEventType,
 } from "@/lib/verification-workflow";
-import type { ActionName, Bead } from "@/lib/types";
+import type { ActionName } from "@/lib/types";
 
 // ── Configuration ───────────────────────────────────────────
 
@@ -226,6 +225,16 @@ async function launchVerifier(
   const { command, args } = buildPromptModeArgs(agent, prompt);
   const dialect = resolveDialect(agent.command);
   const normalizer = createLineNormalizer(dialect);
+  const interactionLog = await startInteractionLog({
+    sessionId: generateVerifierSessionId(),
+    interactionType: "verification",
+    repoPath,
+    beadIds: [beadId],
+  }).catch((err) => {
+    console.error(`[verification] Failed to start interaction log for ${beadId}:`, err);
+    return noopInteractionLog();
+  });
+  interactionLog.logPrompt(prompt, { source: "verification_review" });
 
   return new Promise<VerificationOutcome>((resolve, reject) => {
     const child = spawn(command, args, {
@@ -236,6 +245,12 @@ async function launchVerifier(
 
     let output = "";
     let lineBuffer = "";
+    let ended = false;
+    const logEnd = (exitCode: number | null, status: string) => {
+      if (ended) return;
+      ended = true;
+      interactionLog.logEnd(exitCode, status);
+    };
 
     child.stdout?.on("data", (chunk: Buffer) => {
       lineBuffer += chunk.toString();
@@ -244,6 +259,7 @@ async function launchVerifier(
 
       for (const line of lines) {
         if (!line.trim()) continue;
+        interactionLog.logResponse(line);
         try {
           const raw = JSON.parse(line) as Record<string, unknown>;
           const normalized = normalizer(raw);
@@ -277,6 +293,7 @@ async function launchVerifier(
     child.on("close", (code) => {
       // Flush remaining buffer
       if (lineBuffer.trim()) {
+        interactionLog.logResponse(lineBuffer);
         try {
           const raw = JSON.parse(lineBuffer) as Record<string, unknown>;
           const normalized = normalizer(raw);
@@ -290,19 +307,23 @@ async function launchVerifier(
 
       const result = parseVerifierResult(output);
       if (result) {
+        logEnd(code ?? 0, "completed");
         logEvent("verifier-completed", beadId, `outcome=${result}`);
         resolve(result);
       } else if (code === 0) {
         // Agent completed successfully but no explicit result marker
         // Default to pass if exit code is 0
+        logEnd(0, "completed");
         logEvent("verifier-completed", beadId, "outcome=pass (implicit)");
         resolve("pass");
       } else {
+        logEnd(code ?? 1, "error");
         reject(new Error(`Verifier exited with code ${code}, no result marker found`));
       }
     });
 
     child.on("error", (err) => {
+      logEnd(1, "error");
       reject(new Error(`Verifier spawn error: ${err.message}`));
     });
   });
@@ -359,4 +380,8 @@ async function transitionToRetry(beadId: string, repoPath: string): Promise<void
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function generateVerifierSessionId(): string {
+  return `verify-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }

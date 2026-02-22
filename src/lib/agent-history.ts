@@ -145,7 +145,11 @@ function parseSession(
 
     if (kind === "session_start") {
       const interactionType = parsed.interactionType;
-      if (interactionType !== "take" && interactionType !== "scene") {
+      if (
+        interactionType !== "take" &&
+        interactionType !== "scene" &&
+        interactionType !== "verification"
+      ) {
         return null;
       }
 
@@ -318,7 +322,7 @@ export async function readAgentHistory(
         existing.lastWorkedAt = newerTimestamp(existing.lastWorkedAt, updatedAt);
         existing.sessionCount += 1;
         if (start.interactionType === "take") existing.takeCount += 1;
-        else existing.sceneCount += 1;
+        else if (start.interactionType === "scene") existing.sceneCount += 1;
         if (!existing.title && titleHints.has(beadId)) {
           existing.title = titleHints.get(beadId);
         }
