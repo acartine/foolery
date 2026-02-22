@@ -333,15 +333,18 @@ export function runBackendContractTests(
   name: string,
   factory: () => ContractTestFactory,
 ): void {
+  // Call factory once upfront to read capabilities for describe.skipIf
+  // decisions. Capabilities are constant across all tests for a given backend.
+  const initial = factory();
+  const caps = initial.capabilities;
+
   describe(name, () => {
     let port: BackendPort;
-    let caps: BackendCapabilities;
     let cleanup: () => Promise<void>;
 
     beforeEach(() => {
       const ctx = factory();
       port = ctx.port;
-      caps = ctx.capabilities;
       cleanup = ctx.cleanup;
     });
 

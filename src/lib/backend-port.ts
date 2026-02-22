@@ -29,10 +29,16 @@ export interface BackendError {
 /**
  * Enhanced result envelope replacing BdResult. Carries either a typed
  * data payload on success or a structured BackendError on failure.
+ *
+ * Uses optional fields (rather than a discriminated union) to match the
+ * existing BdResult pattern and allow ergonomic access in test code that
+ * asserts `ok` at runtime rather than narrowing at compile time.
  */
-export type BackendResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: BackendError };
+export interface BackendResult<T> {
+  ok: boolean;
+  data?: T;
+  error?: BackendError;
+}
 
 // ── Request DTOs ────────────────────────────────────────────
 

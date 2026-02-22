@@ -156,7 +156,7 @@ export class MockBackendPort implements BackendPort {
     if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
     applyUpdate(bead, input);
     bead.updated = isoNow();
-    return ok(undefined as unknown as void);
+    return { ok: true };
   }
 
   async delete(
@@ -170,7 +170,7 @@ export class MockBackendPort implements BackendPort {
     this.deps = this.deps.filter(
       (d) => d.blockerId !== id && d.blockedId !== id,
     );
-    return ok(undefined as unknown as void);
+    return { ok: true };
   }
 
   async close(
@@ -183,7 +183,7 @@ export class MockBackendPort implements BackendPort {
     bead.status = "closed";
     bead.closed = isoNow();
     bead.updated = isoNow();
-    return ok(undefined as unknown as void);
+    return { ok: true };
   }
 
   // -- Dependency operations ------------------------------------------------
@@ -232,7 +232,7 @@ export class MockBackendPort implements BackendPort {
       );
     }
     this.deps.push({ blockerId, blockedId });
-    return ok(undefined as unknown as void);
+    return { ok: true };
   }
 
   async removeDependency(
@@ -250,7 +250,7 @@ export class MockBackendPort implements BackendPort {
       );
     }
     this.deps.splice(idx, 1);
-    return ok(undefined as unknown as void);
+    return { ok: true };
   }
 
   // -- Test utilities -------------------------------------------------------
@@ -290,7 +290,7 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
   return beads.filter((b) => {
     if (filters.type && b.type !== filters.type) return false;
     if (filters.status && b.status !== filters.status) return false;
-    if (filters.priority && String(b.priority) !== filters.priority)
+    if (filters.priority !== undefined && b.priority !== filters.priority)
       return false;
     if (filters.assignee && b.assignee !== filters.assignee) return false;
     return true;
