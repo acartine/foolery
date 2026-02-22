@@ -139,8 +139,8 @@ export const verificationSettingsSchema = z
 // Backend selection (internal, non-user-facing)
 export const backendSettingsSchema = z
   .object({
-    /** Backend implementation to use: "cli" (default) or "stub". */
-    type: z.enum(["cli", "stub"]).default("cli"),
+    /** Backend implementation to use: "cli" (default), "stub", or "beads". */
+    type: z.enum(["cli", "stub", "beads"]).default("cli"),
   })
   .default({ type: "cli" });
 

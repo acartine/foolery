@@ -10,10 +10,11 @@ import type { BackendPort } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import { BdCliBackend } from "@/lib/backends/bd-cli-backend";
 import { StubBackend } from "@/lib/backends/stub-backend";
+import { BeadsBackend, BEADS_CAPABILITIES } from "@/lib/backends/beads-backend";
 
 // ── Public types ─────────────────────────────────────────────────
 
-export type BackendType = "cli" | "stub";
+export type BackendType = "cli" | "stub" | "beads";
 
 export interface BackendEntry {
   port: BackendPort;
@@ -35,6 +36,10 @@ export function createBackend(type: BackendType = "cli"): BackendEntry {
     case "stub": {
       const backend = new StubBackend();
       return { port: backend, capabilities: backend.capabilities };
+    }
+    case "beads": {
+      const backend = new BeadsBackend();
+      return { port: backend, capabilities: BEADS_CAPABILITIES };
     }
     default: {
       const _exhaustive: never = type;
