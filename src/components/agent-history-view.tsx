@@ -24,6 +24,7 @@ import { fetchAgentHistory } from "@/lib/agent-history-api";
 import type { Bead } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
+import { MessageNavigator, useMessageNavigation } from "@/components/message-navigator";
 
 const TITLE_VISIBLE_COUNT = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
@@ -278,7 +279,15 @@ function SessionEntryRow({ entry }: { entry: AgentHistoryEntry }) {
   );
 }
 
-function SessionCard({ session }: { session: AgentHistorySession }) {
+function SessionCard({
+  session,
+  entryRefCallback,
+  highlightedEntryId,
+}: {
+  session: AgentHistorySession;
+  entryRefCallback?: (id: string, node: HTMLDivElement | null) => void;
+  highlightedEntryId?: string | null;
+}) {
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">
       <header className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
@@ -300,7 +309,19 @@ function SessionCard({ session }: { session: AgentHistorySession }) {
             No log entries captured for this session.
           </div>
         ) : (
-          session.entries.map((entry) => <SessionEntryRow key={entry.id} entry={entry} />)
+          session.entries.map((entry) => (
+            <div
+              key={entry.id}
+              ref={(node) => entryRefCallback?.(entry.id, node)}
+              className={
+                highlightedEntryId === entry.id
+                  ? "rounded ring-2 ring-sky-400/70 transition-all duration-300"
+                  : "transition-all duration-300"
+              }
+            >
+              <SessionEntryRow entry={entry} />
+            </div>
+          ))
         )}
       </div>
     </section>
@@ -492,6 +513,8 @@ export function AgentHistoryView() {
     if (!sessionsQuery.data?.ok) return [];
     return sessionsQuery.data.data?.sessions ?? [];
   }, [sessionsQuery.data]);
+
+  const msgNav = useMessageNavigation(sessions);
 
   const repoNames = useMemo(
     () =>
@@ -722,6 +745,10 @@ export function AgentHistoryView() {
           ) : null}
         </div>
 
+        {loadedSummary && sessions.length > 0 && msgNav.navigableEntries.entries.length > 0 ? (
+          <MessageNavigator nav={msgNav} />
+        ) : null}
+
         <div
           ref={consolePanelRef}
           tabIndex={0}
@@ -753,7 +780,12 @@ export function AgentHistoryView() {
                 {sessions.length} session{sessions.length === 1 ? "" : "s"}
               </div>
               {sessions.map((session) => (
-                <SessionCard key={session.sessionId} session={session} />
+                <SessionCard
+                  key={session.sessionId}
+                  session={session}
+                  entryRefCallback={msgNav.entryRefCallback}
+                  highlightedEntryId={msgNav.highlightedEntryId}
+                />
               ))}
             </div>
           )}
