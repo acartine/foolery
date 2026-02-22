@@ -29,6 +29,8 @@ interface SessionMeta {
   interactionType: InteractionType;
   repoPath: string;
   beadIds: string[];
+  agentName?: string;
+  agentModel?: string;
 }
 
 export interface PromptLogMetadata {
@@ -142,6 +144,8 @@ export async function startInteractionLog(
     interactionType: meta.interactionType,
     repoPath: meta.repoPath,
     beadIds: meta.beadIds,
+    ...(meta.agentName ? { agentName: meta.agentName } : {}),
+    ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
   };
 
   // Write session_start synchronously so the file exists before cleanup

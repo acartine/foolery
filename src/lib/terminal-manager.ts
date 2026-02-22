@@ -415,11 +415,15 @@ export async function createSession(
   emitter.setMaxListeners(20);
   const buffer: TerminalEvent[] = [];
 
+  const agent = await getActionAgent("take");
+
   const interactionLog = await startInteractionLog({
     sessionId: id,
     interactionType: isParent ? "scene" : "take",
     repoPath: repoPath || process.cwd(),
     beadIds: isParent ? waveBeatIds : [beadId],
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
   }).catch((err) => {
     console.error(`[terminal-manager] Failed to start interaction log:`, err);
     return noopInteractionLog();
@@ -435,7 +439,6 @@ export async function createSession(
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
-  const agent = await getActionAgent("take");
   const dialect = resolveDialect(agent.command);
   const isInteractive = dialect === "claude";
 
@@ -833,11 +836,15 @@ export async function createSceneSession(
   emitter.setMaxListeners(20);
   const buffer: TerminalEvent[] = [];
 
+  const agent = await getActionAgent("scene");
+
   const sceneInteractionLog = await startInteractionLog({
     sessionId: id,
     interactionType: "scene",
     repoPath: repoPath || process.cwd(),
     beadIds,
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
   }).catch((err) => {
     console.error(`[terminal-manager] Failed to start interaction log:`, err);
     return noopInteractionLog();
@@ -852,8 +859,6 @@ export async function createSceneSession(
   console.log(`[terminal-manager]   beadIds: ${beadIds.join(", ")}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
-
-  const agent = await getActionAgent("scene");
   const sceneDialect = resolveDialect(agent.command);
   const sceneIsInteractive = sceneDialect === "claude";
 

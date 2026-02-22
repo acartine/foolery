@@ -22,6 +22,8 @@ export interface AgentHistorySession {
   status?: string;
   exitCode?: number | null;
   entries: AgentHistoryEntry[];
+  agentName?: string;
+  agentModel?: string;
 }
 
 export interface AgentHistoryBeatSummary {

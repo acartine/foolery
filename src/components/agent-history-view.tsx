@@ -21,6 +21,7 @@ import type {
   AgentHistorySession,
 } from "@/lib/agent-history-types";
 import { fetchAgentHistory } from "@/lib/agent-history-api";
+import { formatModelDisplay } from "@/hooks/use-agent-info";
 import type { Bead } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
@@ -216,7 +217,7 @@ function BeadMetaItem({ label, value }: { label: string; value?: string | null }
   );
 }
 
-function SessionEntryRow({ entry }: { entry: AgentHistoryEntry }) {
+function SessionEntryRow({ entry, agentLabel }: { entry: AgentHistoryEntry; agentLabel?: string }) {
   if (entry.kind === "session_start") {
     return (
       <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[10px] text-slate-300">
@@ -240,7 +241,7 @@ function SessionEntryRow({ entry }: { entry: AgentHistoryEntry }) {
       <div className="rounded border border-sky-500/50 bg-sky-950/35 px-2.5 py-1.5">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-sky-200">
           <MessageSquareText className="size-3.5" />
-          <span className="font-semibold uppercase tracking-wide">App -&gt; Agent</span>
+          <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` ${agentLabel}` : ""}</span>
           <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[10px] font-normal text-sky-100">
             {promptSourceLabel(entry.promptSource)}
           </Badge>
@@ -261,7 +262,7 @@ function SessionEntryRow({ entry }: { entry: AgentHistoryEntry }) {
     <div className="rounded border border-slate-700 bg-slate-900/60 px-2.5 py-1.5">
       <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-slate-300">
         <Bot className="size-3.5" />
-        <span className="font-semibold uppercase tracking-wide text-slate-100">Agent -&gt; App</span>
+        <span className="font-semibold uppercase tracking-wide text-slate-100">Agent{agentLabel ? ` ${agentLabel}` : ""} -&gt; App</span>
         <span>{formatTime(entry.ts)}</span>
       </div>
       <pre className="whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-slate-100">
@@ -279,6 +280,14 @@ function SessionEntryRow({ entry }: { entry: AgentHistoryEntry }) {
   );
 }
 
+function buildAgentLabel(session: AgentHistorySession): string | undefined {
+  const parts: string[] = [];
+  if (session.agentName) parts.push(session.agentName);
+  const modelDisplay = formatModelDisplay(session.agentModel);
+  if (modelDisplay) parts.push(modelDisplay);
+  return parts.length > 0 ? parts.join(" ") : undefined;
+}
+
 function SessionCard({
   session,
   entryRefCallback,
@@ -288,6 +297,7 @@ function SessionCard({
   entryRefCallback?: (id: string, node: HTMLDivElement | null) => void;
   highlightedEntryId?: string | null;
 }) {
+  const agentLabel = useMemo(() => buildAgentLabel(session), [session]);
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">
       <header className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
@@ -300,6 +310,9 @@ function SessionCard({
         <Badge variant="outline" className={`text-[10px] ${statusTone(session.status)}`}>
           {session.status ?? "unknown"}
         </Badge>
+        {agentLabel ? (
+          <span className="font-mono text-[10px] text-slate-300">{agentLabel}</span>
+        ) : null}
         <span className="font-mono text-[10px] text-slate-400">{session.sessionId}</span>
         <span className="ml-auto text-[10px] text-slate-400">{formatTime(session.updatedAt)}</span>
       </header>
@@ -319,7 +332,7 @@ function SessionCard({
                   : "transition-all duration-300"
               }
             >
-              <SessionEntryRow entry={entry} />
+              <SessionEntryRow entry={entry} agentLabel={agentLabel} />
             </div>
           ))
         )}

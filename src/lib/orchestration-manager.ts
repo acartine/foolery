@@ -659,11 +659,15 @@ export async function createOrchestrationSession(
     objective: objective?.trim() || undefined,
   };
 
+  const agent = await getActionAgent("direct");
+
   const orchInteractionLog = await startInteractionLog({
     sessionId: session.id,
     interactionType: "direct",
     repoPath,
     beadIds: beads.map((b) => b.id),
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
   }).catch((err) => {
     console.error(`[orchestration-manager] Failed to start interaction log:`, err);
     return noopInteractionLog();
@@ -708,7 +712,6 @@ export async function createOrchestrationSession(
     .filter(Boolean)
     .join("\n");
   pushEvent(entry, "log", promptLog);
-  const agent = await getActionAgent("direct");
   const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
   const dialect = resolveDialect(agent.command);
   const normalizeEvent = createLineNormalizer(dialect);

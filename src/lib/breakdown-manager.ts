@@ -377,11 +377,15 @@ export async function createBreakdownSession(
     startedAt: new Date().toISOString(),
   };
 
+  const agent = await getActionAgent("breakdown");
+
   const bkdnInteractionLog = await startInteractionLog({
     sessionId: session.id,
     interactionType: "breakdown",
     repoPath,
     beadIds: [parentBeadId],
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
   }).catch((err) => {
     console.error(`[breakdown-manager] Failed to start interaction log:`, err);
     return noopInteractionLog();
@@ -404,8 +408,6 @@ export async function createBreakdownSession(
   const prompt = buildBreakdownPrompt(parentTitle, parentDescription, repoPath);
   bkdnInteractionLog.logPrompt(prompt);
   pushEvent(entry, "log", `Starting breakdown for: ${parentTitle}\n`);
-
-  const agent = await getActionAgent("breakdown");
   const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
   const dialect = resolveDialect(agent.command);
   const normalizeEvent = createLineNormalizer(dialect);

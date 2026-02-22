@@ -230,6 +230,8 @@ async function launchVerifier(
     interactionType: "verification",
     repoPath,
     beadIds: [beadId],
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
   }).catch((err) => {
     console.error(`[verification] Failed to start interaction log for ${beadId}:`, err);
     return noopInteractionLog();

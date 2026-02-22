@@ -30,6 +30,8 @@ interface SessionStartLine {
   repoPath: string;
   beadIds: string[];
   ts: string;
+  agentName?: string;
+  agentModel?: string;
 }
 
 interface SessionParseResult {
@@ -168,6 +170,8 @@ function parseSession(
         repoPath,
         beadIds,
         ts: ts || new Date(0).toISOString(),
+        agentName: typeof parsed.agentName === "string" ? parsed.agentName : undefined,
+        agentModel: typeof parsed.agentModel === "string" ? parsed.agentModel : undefined,
       };
 
       updatedAt = newerTimestamp(updatedAt, start.ts);
@@ -357,6 +361,8 @@ export async function readAgentHistory(
         status,
         exitCode,
         entries: sortEntries(entries),
+        agentName: start.agentName,
+        agentModel: start.agentModel,
       });
     }
   }
