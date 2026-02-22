@@ -1,17 +1,20 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Bead } from "@/lib/types";
+import type { BackendPort, BackendResult } from "@/lib/backend-port";
 
-// Mock bd.ts before importing cascade-close
-vi.mock("@/lib/bd", () => ({
-  listBeads: vi.fn(),
-  closeBead: vi.fn(),
+// Mock backend-instance before importing cascade-close
+const mockList = vi.fn();
+const mockClose = vi.fn();
+
+vi.mock("@/lib/backend-instance", () => ({
+  getBackend: () =>
+    ({
+      list: mockList,
+      close: mockClose,
+    }) as unknown as BackendPort,
 }));
 
 import { getOpenDescendants, cascadeClose } from "@/lib/cascade-close";
-import { listBeads, closeBead } from "@/lib/bd";
-
-const mockListBeads = vi.mocked(listBeads);
-const mockCloseBead = vi.mocked(closeBead);
 
 function makeBead(overrides: Partial<Bead>): Bead {
   return {
@@ -34,7 +37,7 @@ beforeEach(() => {
 
 describe("getOpenDescendants", () => {
   it("returns empty list when parent has no children", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [makeBead({ id: "parent", status: "open" })],
     });
@@ -45,7 +48,7 @@ describe("getOpenDescendants", () => {
   });
 
   it("returns open children in leaf-first order", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         makeBead({ id: "parent", status: "open" }),
@@ -62,7 +65,7 @@ describe("getOpenDescendants", () => {
   });
 
   it("excludes already-closed children", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         makeBead({ id: "parent", status: "open" }),
@@ -78,7 +81,7 @@ describe("getOpenDescendants", () => {
   });
 
   it("collects nested grandchildren leaf-first", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         makeBead({ id: "gp", status: "open" }),
@@ -96,27 +99,27 @@ describe("getOpenDescendants", () => {
 
 describe("cascadeClose", () => {
   it("closes leaf children before parent", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         makeBead({ id: "parent", status: "open" }),
         makeBead({ id: "child", parent: "parent", status: "open", title: "Child" }),
       ],
     });
-    mockCloseBead.mockResolvedValue({ ok: true });
+    mockClose.mockResolvedValue({ ok: true });
 
     const result = await cascadeClose("parent", "done");
     expect(result.ok).toBe(true);
     expect(result.data!.closed).toEqual(["child", "parent"]);
 
     // Verify close order: child first, then parent
-    const calls = mockCloseBead.mock.calls;
+    const calls = mockClose.mock.calls;
     expect(calls[0][0]).toBe("child");
     expect(calls[1][0]).toBe("parent");
   });
 
   it("collects errors without blocking siblings", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         makeBead({ id: "parent", status: "open" }),
@@ -124,8 +127,8 @@ describe("cascadeClose", () => {
         makeBead({ id: "ok-child", parent: "parent", status: "open", title: "OK" }),
       ],
     });
-    mockCloseBead.mockImplementation(async (id: string) => {
-      if (id === "fail-child") return { ok: false, error: "mock error" };
+    mockClose.mockImplementation(async (id: string): Promise<BackendResult<void>> => {
+      if (id === "fail-child") return { ok: false, error: { code: "INTERNAL", message: "mock error", retryable: false } };
       return { ok: true };
     });
 
@@ -138,15 +141,15 @@ describe("cascadeClose", () => {
   });
 
   it("closes only the parent when no children exist", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [makeBead({ id: "solo", status: "open" })],
     });
-    mockCloseBead.mockResolvedValue({ ok: true });
+    mockClose.mockResolvedValue({ ok: true });
 
     const result = await cascadeClose("solo");
     expect(result.ok).toBe(true);
     expect(result.data!.closed).toEqual(["solo"]);
-    expect(mockCloseBead).toHaveBeenCalledTimes(1);
+    expect(mockClose).toHaveBeenCalledTimes(1);
   });
 });
