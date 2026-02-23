@@ -355,6 +355,9 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
     if (filters.priority !== undefined && b.priority !== filters.priority)
       return false;
     if (filters.assignee && b.assignee !== filters.assignee) return false;
+    if (filters.label && !b.labels.includes(filters.label)) return false;
+    if (filters.owner && b.owner !== filters.owner) return false;
+    if (filters.parent && b.parent !== filters.parent) return false;
     return true;
   });
 }
@@ -393,6 +396,12 @@ function matchExpression(bead: Bead, expression: string): boolean {
         return String(bead.priority) === value;
       case "assignee":
         return bead.assignee === value;
+      case "label":
+        return bead.labels.includes(value);
+      case "owner":
+        return bead.owner === value;
+      case "parent":
+        return bead.parent === value;
       default:
         return true;
     }
