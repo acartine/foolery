@@ -186,7 +186,8 @@ export function computePassLabels(currentLabels: string[]): VerificationTransiti
 
 /**
  * Compute the label mutations for a failed verification (retry).
- * Removes transition + stage:verification, adds stage:retry + incremented attempt.
+ * Removes transition + stage:verification + old commit label,
+ * adds stage:retry + incremented attempt.
  */
 export function computeRetryLabels(currentLabels: string[]): VerificationTransitionLabels {
   const remove: string[] = [];
@@ -197,6 +198,12 @@ export function computeRetryLabels(currentLabels: string[]): VerificationTransit
   }
   if (currentLabels.includes(LABEL_STAGE_VERIFICATION)) {
     remove.push(LABEL_STAGE_VERIFICATION);
+  }
+
+  // Remove stale commit label so the next implementation can set a fresh one
+  const prevCommitLabel = findCommitLabelRaw(currentLabels);
+  if (prevCommitLabel) {
+    remove.push(prevCommitLabel);
   }
 
   // Increment attempt counter
@@ -332,7 +339,9 @@ export type VerificationEventType =
   | "verifier-started"
   | "verifier-completed"
   | "retry"
-  | "closed";
+  | "closed"
+  | "notes-updated"
+  | "retry-session-started";
 
 export interface VerificationEvent {
   type: VerificationEventType;

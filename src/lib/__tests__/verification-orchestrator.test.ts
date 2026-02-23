@@ -55,6 +55,14 @@ vi.mock("node:child_process", () => ({
   spawn: (...args: unknown[]) => spawnMock(...args),
 }));
 
+// Mock terminal-manager (dynamically imported for auto-retry)
+const createSessionMock = vi.fn();
+const createSceneSessionMock = vi.fn();
+vi.mock("@/lib/terminal-manager", () => ({
+  createSession: (...args: unknown[]) => createSessionMock(...args),
+  createSceneSession: (...args: unknown[]) => createSceneSessionMock(...args),
+}));
+
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import {
   _clearAllLocks,
@@ -115,30 +123,32 @@ beforeEach(() => {
   });
 
   // Default: verification disabled
-  getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "" });
+  getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "", maxRetries: 3 });
   getVerificationAgentMock.mockResolvedValue({ command: "claude" });
   mockGet.mockResolvedValue({ ok: true, data: makeBead() });
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
+  createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
+  createSceneSessionMock.mockResolvedValue({ id: "mock-scene-session", status: "running" });
 });
 
 // ── Test: disabled verification ─────────────────────────────
 
 describe("onAgentComplete", () => {
   it("does nothing when verification is disabled", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "", maxRetries: 3 });
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("does nothing for non-eligible actions", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
     await onAgentComplete(["foolery-test"], "breakdown", "/repo", 0);
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("does nothing for failed agent exit", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
     await onAgentComplete(["foolery-test"], "take", "/repo", 1);
     expect(mockUpdate).not.toHaveBeenCalled();
   });
@@ -148,7 +158,7 @@ describe("onAgentComplete", () => {
 
 describe("pass path", () => {
   it("enters verification, launches verifier, and closes bead on pass", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     // First show: fresh bead (no labels)
     // Second show: after entry labels applied (for commit check)
@@ -211,7 +221,7 @@ describe("pass path", () => {
 
 describe("retry paths", () => {
   it("transitions to retry when no commit label found", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     // Always return bead with no commit label
     mockGet.mockResolvedValue({
@@ -234,7 +244,7 @@ describe("retry paths", () => {
   });
 
   it("transitions to retry on verifier fail-requirements", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     mockGet.mockResolvedValue({
       ok: true,
@@ -271,7 +281,7 @@ describe("retry paths", () => {
 
 describe("idempotency", () => {
   it("deduplicates concurrent verification requests", async () => {
-    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     // Bead with commit label ready to go
     mockGet.mockResolvedValue({
@@ -315,5 +325,138 @@ describe("edit lock labels", () => {
   it("retry labels remove transition:verification", () => {
     const result = computeRetryLabels(["transition:verification", "stage:verification"]);
     expect(result.remove).toContain("transition:verification");
+  });
+});
+
+// ── Test: notes update on failure (xmg8.4.5) ───────────────
+
+describe("verifier output capture on failure", () => {
+  it("updates bead notes with verifier output on fail-requirements", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        notes: "Existing notes here",
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("The code does not implement the required feature.\nVERIFICATION_RESULT:fail-requirements\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "take", "/repo", 0);
+
+    // Should have updated notes with verifier output
+    const notesCall = mockUpdate.mock.calls.find(
+      (call: unknown[]) => {
+        const fields = call[1] as Record<string, unknown>;
+        return typeof fields.notes === "string" && (fields.notes as string).includes("Verification attempt");
+      }
+    );
+    expect(notesCall).toBeDefined();
+    const notesFields = notesCall![1] as Record<string, unknown>;
+    expect(notesFields.notes).toContain("Existing notes here");
+    expect(notesFields.notes).toContain("fail-requirements");
+    expect(notesFields.notes).toContain("Verification attempt 1 failed");
+  });
+
+  it("auto-launches new take session on retry when within maxRetries", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("VERIFICATION_RESULT:fail-requirements\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "take", "/repo", 0);
+
+    expect(createSessionMock).toHaveBeenCalledWith("foolery-test", "/repo");
+  });
+
+  it("auto-launches scene session for scene action on retry", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("VERIFICATION_RESULT:fail-bugs\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "scene", "/repo", 0);
+
+    expect(createSceneSessionMock).toHaveBeenCalledWith(["foolery-test"], "/repo");
+  });
+
+  it("does not auto-retry when maxRetries is 0", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 0 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("VERIFICATION_RESULT:fail-requirements\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "take", "/repo", 0);
+
+    expect(createSessionMock).not.toHaveBeenCalled();
+  });
+
+  it("does not auto-retry when attempt exceeds maxRetries", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 2 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+          "attempt:2",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("VERIFICATION_RESULT:fail-requirements\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "take", "/repo", 0);
+
+    // attempt 2 + 1 = 3, which exceeds maxRetries of 2
+    expect(createSessionMock).not.toHaveBeenCalled();
   });
 });

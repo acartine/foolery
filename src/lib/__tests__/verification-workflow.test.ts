@@ -204,6 +204,30 @@ describe("computeRetryLabels", () => {
     expect(result.add).toContain("attempt:1");
     expect(result.add).toContain(LABEL_STAGE_RETRY);
   });
+
+  it("removes existing commit label on retry", () => {
+    const result = computeRetryLabels([
+      LABEL_TRANSITION_VERIFICATION,
+      LABEL_STAGE_VERIFICATION,
+      "commit:abc123",
+    ]);
+    expect(result.remove).toContain("commit:abc123");
+    expect(result.add).toContain(LABEL_STAGE_RETRY);
+    expect(result.add).toContain("attempt:1");
+  });
+
+  it("handles retry with both commit and attempt labels", () => {
+    const result = computeRetryLabels([
+      LABEL_TRANSITION_VERIFICATION,
+      LABEL_STAGE_VERIFICATION,
+      "commit:def456",
+      "attempt:2",
+    ]);
+    expect(result.remove).toContain("commit:def456");
+    expect(result.remove).toContain("attempt:2");
+    expect(result.add).toContain("attempt:3");
+    expect(result.add).toContain(LABEL_STAGE_RETRY);
+  });
 });
 
 // ── Verifier prompt ─────────────────────────────────────────

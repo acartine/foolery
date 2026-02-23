@@ -133,8 +133,10 @@ export const verificationSettingsSchema = z
     enabled: z.boolean().default(false),
     /** Agent ID to use for verification (empty string = use default agent). */
     agent: z.string().default(""),
+    /** Maximum automatic retry attempts before stopping. 0 = no auto-retry. */
+    maxRetries: z.number().int().min(0).default(3),
   })
-  .default({ enabled: false, agent: "" });
+  .default({ enabled: false, agent: "", maxRetries: 3 });
 
 // Backend selection (internal, non-user-facing)
 export const backendSettingsSchema = z

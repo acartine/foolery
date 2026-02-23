@@ -50,6 +50,7 @@ const DEFAULTS: SettingsData = {
   verification: {
     enabled: false,
     agent: "",
+    maxRetries: 3,
   },
   backend: {
     type: "cli",

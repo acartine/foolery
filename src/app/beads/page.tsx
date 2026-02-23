@@ -17,6 +17,7 @@ import { BreakdownView } from "@/components/breakdown-view";
 import { AgentHistoryView } from "@/components/agent-history-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
+import { useRetryNotifications } from "@/hooks/use-retry-notifications";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import type { Bead } from "@/lib/types";
@@ -163,6 +164,7 @@ function BeadsPageInner() {
   });
 
   const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
+  useRetryNotifications(beads);
   const partialDegradedMsg = data?.ok ? (data as { _degraded?: string })._degraded : undefined;
   const isDegradedError = queryError instanceof DegradedStoreError || Boolean(partialDegradedMsg);
   const loadError = queryError instanceof DegradedStoreError

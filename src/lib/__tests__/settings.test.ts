@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS = {
   agent: { command: "claude" },
   agents: {},
   actions: DEFAULT_ACTIONS,
-  verification: { enabled: false, agent: "" },
+  verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "cli" },
 };
 
@@ -129,6 +129,7 @@ describe("backfillMissingSettingsDefaults", () => {
         '[verification]',
         'enabled = false',
         'agent = ""',
+        'maxRetries = 3',
         '[backend]',
         'type = "cli"',
       ].join("\n"),
@@ -145,7 +146,7 @@ describe("saveSettings", () => {
       agent: { command: "my-agent" },
       agents: {},
       actions: DEFAULT_ACTIONS,
-      verification: { enabled: false, agent: "" },
+      verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "cli" as const },
     };
     await saveSettings(settings);

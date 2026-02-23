@@ -23,6 +23,7 @@ import {
 import {
   LABEL_TRANSITION_VERIFICATION,
   extractCommitLabel,
+  extractAttemptNumber,
   computeEntryLabels,
   computePassLabels,
   computeRetryLabels,
@@ -40,6 +41,7 @@ import type { ActionName } from "@/lib/types";
 // ── Configuration ───────────────────────────────────────────
 
 const MAX_COMMIT_REMEDIATION_ATTEMPTS = 1;
+const MAX_VERIFIER_OUTPUT_CHARS = 2000;
 
 // ── Lifecycle event log (xmg8.2.6) ─────────────────────────
 
@@ -90,7 +92,7 @@ export async function onAgentComplete(
 
   // Process each bead in parallel
   await Promise.allSettled(
-    beadIds.map((beadId) => runVerificationWorkflow(beadId, repoPath)),
+    beadIds.map((beadId) => runVerificationWorkflow(beadId, action, repoPath)),
   );
 }
 
@@ -98,6 +100,7 @@ export async function onAgentComplete(
 
 async function runVerificationWorkflow(
   beadId: string,
+  action: ActionName,
   repoPath: string,
 ): Promise<void> {
   // Idempotency: acquire lock (xmg8.2.5)
@@ -120,10 +123,10 @@ async function runVerificationWorkflow(
     }
 
     // Step 3: Launch verifier agent (xmg8.2.3)
-    const outcome = await launchVerifier(beadId, repoPath, commitSha);
+    const { outcome, output } = await launchVerifier(beadId, repoPath, commitSha);
 
     // Step 4: Apply outcome (xmg8.2.4)
-    await applyOutcome(beadId, repoPath, outcome);
+    await applyOutcome(beadId, action, repoPath, outcome, output);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logEvent("remediation-failed", beadId, msg);
@@ -204,7 +207,7 @@ async function launchVerifier(
   beadId: string,
   repoPath: string,
   commitSha: string,
-): Promise<VerificationOutcome> {
+): Promise<{ outcome: VerificationOutcome; output: string }> {
   logEvent("verifier-started", beadId, `commit=${commitSha}`);
 
   const beadResult = await getBackend().get(beadId, repoPath);
@@ -239,7 +242,7 @@ async function launchVerifier(
   });
   interactionLog.logPrompt(prompt, { source: "verification_review" });
 
-  return new Promise<VerificationOutcome>((resolve, reject) => {
+  return new Promise<{ outcome: VerificationOutcome; output: string }>((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: repoPath,
       env: { ...process.env },
@@ -312,13 +315,13 @@ async function launchVerifier(
       if (result) {
         logEnd(code ?? 0, "completed");
         logEvent("verifier-completed", beadId, `outcome=${result}`);
-        resolve(result);
+        resolve({ outcome: result, output });
       } else if (code === 0) {
         // Agent completed successfully but no explicit result marker
         // Default to pass if exit code is 0
         logEnd(0, "completed");
         logEvent("verifier-completed", beadId, "outcome=pass (implicit)");
-        resolve("pass");
+        resolve({ outcome: "pass", output });
       } else {
         logEnd(code ?? 1, "error");
         reject(new Error(`Verifier exited with code ${code}, no result marker found`));
@@ -336,15 +339,18 @@ async function launchVerifier(
 
 async function applyOutcome(
   beadId: string,
+  action: ActionName,
   repoPath: string,
   outcome: VerificationOutcome,
+  verifierOutput: string,
 ): Promise<void> {
   const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) {
     throw new Error(`Failed to load bead ${beadId} for outcome application: ${beadResult.error?.message}`);
   }
 
-  const labels = beadResult.data.labels ?? [];
+  const bead = beadResult.data;
+  const labels = bead.labels ?? [];
 
   if (outcome === "pass") {
     // Pass: remove verification labels and close
@@ -355,9 +361,76 @@ async function applyOutcome(
     await getBackend().close(beadId, "Auto-verification passed", repoPath);
     logEvent("closed", beadId);
   } else {
-    // Fail: transition to retry
+    // Fail: capture verifier feedback in bead notes
     logEvent("retry", beadId, `reason=${outcome}`);
+    const attemptNum = extractAttemptNumber(labels) + 1;
+    await appendVerifierNotes(beadId, repoPath, bead.notes, outcome, verifierOutput, attemptNum);
     await transitionToRetry(beadId, repoPath);
+
+    // Auto-launch a new implementation session if within retry limit
+    await maybeAutoRetry(beadId, action, repoPath, attemptNum);
+  }
+}
+
+// ── Helper: append verifier feedback to bead notes ──────────
+
+async function appendVerifierNotes(
+  beadId: string,
+  repoPath: string,
+  existingNotes: string | undefined,
+  outcome: VerificationOutcome,
+  verifierOutput: string,
+  attemptNum: number,
+): Promise<void> {
+  const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
+  const trimmedOutput = verifierOutput.length > MAX_VERIFIER_OUTPUT_CHARS
+    ? verifierOutput.slice(0, MAX_VERIFIER_OUTPUT_CHARS) + "\n...(truncated)"
+    : verifierOutput;
+
+  const section = [
+    "",
+    "---",
+    `**Verification attempt ${attemptNum} failed (${timestamp})** — reason: ${outcome}`,
+    "",
+    trimmedOutput,
+  ].join("\n");
+
+  const updatedNotes = (existingNotes ?? "") + section;
+  await getBackend().update(beadId, { notes: updatedNotes }, repoPath);
+  logEvent("notes-updated", beadId, `attempt=${attemptNum}`);
+}
+
+// ── Helper: auto-retry implementation session ───────────────
+
+async function maybeAutoRetry(
+  beadId: string,
+  action: ActionName,
+  repoPath: string,
+  attemptNum: number,
+): Promise<void> {
+  const settings = await getVerificationSettings();
+  if (settings.maxRetries <= 0 || attemptNum > settings.maxRetries) {
+    console.log(
+      `[verification] Skipping auto-retry for ${beadId}: attempt ${attemptNum} exceeds maxRetries ${settings.maxRetries}`,
+    );
+    return;
+  }
+
+  try {
+    // Dynamic import to avoid circular dependency (terminal-manager imports us)
+    const { createSession, createSceneSession } = await import(
+      "@/lib/terminal-manager"
+    );
+
+    if (action === "scene") {
+      await createSceneSession([beadId], repoPath);
+    } else {
+      await createSession(beadId, repoPath);
+    }
+    logEvent("retry-session-started", beadId, `attempt=${attemptNum} action=${action}`);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[verification] Failed to auto-retry ${beadId}: ${msg}`);
   }
 }
 
