@@ -409,10 +409,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   }, [activeRepo, registeredRepos]);
 
   useEffect(() => {
-    // Only hydrate when this view is the active view (component is always
-    // mounted; CSS hides it when inactive).  Adding `isActive` as a
-    // dependency ensures we re-check sessionStorage when the user navigates
-    // TO the orchestration view — fixing the Breakdown → Direct prefill bug.
+    // Hydrate view state when this view becomes active.  Adding `isActive`
+    // as a dependency ensures we re-check sessionStorage when the user
+    // navigates TO the orchestration view.
     if (!isActive || !activeRepo || typeof window === "undefined") return;
 
     // 1. Restage draft takes priority (intentional user action)
@@ -447,6 +446,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     }
 
     // 2. Direct-prefill payload (Breakdown CTA or external link)
+    // State updates are applied directly (no setTimeout) so that
+    // consuming the destructive sessionStorage payload is never lost
+    // if the effect re-fires (e.g. StrictMode double-render).
     const prefill = consumeDirectPrefillPayload();
     if (prefill) {
       setObjective(prefill.prompt);
@@ -468,18 +470,14 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     if (!saved) return;
 
     clearOrchestrationViewState();
-    const restoreTimer = window.setTimeout(() => {
-      setSession(saved.session);
-      setPlan(saved.plan);
-      setWaveEdits(saved.waveEdits);
-      setObjective(saved.objective);
-      setStatusText(saved.statusText);
-      setLogLines(saved.logLines);
-      setApplyResult(saved.applyResult);
-      pendingLogRef.current = "";
-    }, 0);
-
-    return () => window.clearTimeout(restoreTimer);
+    setSession(saved.session);
+    setPlan(saved.plan);
+    setWaveEdits(saved.waveEdits);
+    setObjective(saved.objective);
+    setStatusText(saved.statusText);
+    setLogLines(saved.logLines);
+    setApplyResult(saved.applyResult);
+    pendingLogRef.current = "";
   }, [activeRepo, isActive]);
 
   const nextWaveToTrigger = useMemo(() => {

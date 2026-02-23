@@ -203,8 +203,9 @@ export function BeadDetailLightbox({
                   value={editTitleValue}
                   onChange={(e) => setEditTitleValue(e.target.value)}
                   onBlur={() => {
-                    if (editTitleValue.trim() && editTitleValue !== bead?.title) {
-                      handleUpdate({ title: editTitleValue.trim() });
+                    const trimmed = editTitleValue.trim();
+                    if (trimmed && trimmed !== bead?.title) {
+                      void handleUpdate({ title: trimmed });
                     }
                     setIsEditingTitle(false);
                   }}

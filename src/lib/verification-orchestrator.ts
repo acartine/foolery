@@ -126,7 +126,7 @@ async function runVerificationWorkflow(
     const { outcome, output } = await launchVerifier(beadId, repoPath, commitSha);
 
     // Step 4: Apply outcome (xmg8.2.4)
-    await applyOutcome(beadId, action, repoPath, outcome, output);
+    await applyOutcome(beadId, action, repoPath, outcome, output, commitSha);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logEvent("remediation-failed", beadId, msg);
@@ -343,6 +343,7 @@ async function applyOutcome(
   repoPath: string,
   outcome: VerificationOutcome,
   verifierOutput: string,
+  commitSha: string,
 ): Promise<void> {
   const beadResult = await getBackend().get(beadId, repoPath);
   if (!beadResult.ok || !beadResult.data) {
@@ -364,7 +365,15 @@ async function applyOutcome(
     // Fail: capture verifier feedback in bead notes
     logEvent("retry", beadId, `reason=${outcome}`);
     const attemptNum = extractAttemptNumber(labels) + 1;
-    await appendVerifierNotes(beadId, repoPath, bead.notes, outcome, verifierOutput, attemptNum);
+
+    // Notes are best-effort — don't let failure block retry transition
+    try {
+      await appendVerifierNotes(beadId, repoPath, bead.notes, outcome, verifierOutput, attemptNum, commitSha);
+    } catch (noteErr) {
+      const msg = noteErr instanceof Error ? noteErr.message : String(noteErr);
+      console.error(`[verification] Failed to append verifier notes for ${beadId}: ${msg}`);
+    }
+
     await transitionToRetry(beadId, repoPath);
 
     // Auto-launch a new implementation session if within retry limit
@@ -381,6 +390,7 @@ async function appendVerifierNotes(
   outcome: VerificationOutcome,
   verifierOutput: string,
   attemptNum: number,
+  commitSha: string,
 ): Promise<void> {
   const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
   const trimmedOutput = verifierOutput.length > MAX_VERIFIER_OUTPUT_CHARS
@@ -390,14 +400,14 @@ async function appendVerifierNotes(
   const section = [
     "",
     "---",
-    `**Verification attempt ${attemptNum} failed (${timestamp})** — reason: ${outcome}`,
+    `**Verification attempt ${attemptNum} failed (${timestamp})** — commit: ${commitSha}, reason: ${outcome}`,
     "",
     trimmedOutput,
   ].join("\n");
 
   const updatedNotes = (existingNotes ?? "") + section;
   await getBackend().update(beadId, { notes: updatedNotes }, repoPath);
-  logEvent("notes-updated", beadId, `attempt=${attemptNum}`);
+  logEvent("notes-updated", beadId, `attempt=${attemptNum} commit=${commitSha}`);
 }
 
 // ── Helper: auto-retry implementation session ───────────────
