@@ -14,6 +14,7 @@ import {
   scanAgents,
   saveActions,
 } from "@/lib/settings-api";
+import { formatModelDisplay } from "@/hooks/use-agent-info";
 import type { ActionAgentMappings } from "@/lib/schemas";
 
 async function setDefaultAgentForActions(agentId: string) {
@@ -415,7 +416,7 @@ function AgentRow({
         </Badge>
         {agent.model && (
           <Badge variant="secondary" className="text-[10px] shrink-0">
-            {agent.model}
+            {formatModelDisplay(agent.model)}
           </Badge>
         )}
       </div>
