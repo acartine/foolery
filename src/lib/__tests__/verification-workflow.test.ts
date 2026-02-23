@@ -268,6 +268,23 @@ describe("buildVerifierPrompt", () => {
     expect(prompt).toContain("Login works on all browsers");
     expect(prompt).toContain("Check Safari specifically");
   });
+
+  it("renders knots commands when trackerType=knots", () => {
+    const prompt = buildVerifierPrompt({
+      beadId: "foolery-abc",
+      title: "Fix login bug",
+      commitSha: "def456",
+      trackerType: "knots",
+    });
+
+    expect(prompt).toContain(
+      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --add-tag stage:retry'
+    );
+    expect(prompt).toContain(
+      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --status shipped --force'
+    );
+    expect(prompt).not.toContain("bd label remove");
+  });
 });
 
 // ── Verifier result parser ──────────────────────────────────

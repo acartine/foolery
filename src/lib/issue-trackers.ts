@@ -5,7 +5,7 @@
  * be used by both server and client code.
  */
 
-export type IssueTrackerType = "beads";
+export type IssueTrackerType = "beads" | "knots";
 
 export interface IssueTrackerImplementation {
   type: IssueTrackerType;
@@ -14,6 +14,11 @@ export interface IssueTrackerImplementation {
 }
 
 const KNOWN_ISSUE_TRACKERS: ReadonlyArray<IssueTrackerImplementation> = Object.freeze([
+  {
+    type: "knots",
+    label: "Knots",
+    markerDirectory: ".knots",
+  },
   {
     type: "beads",
     label: "Beads",

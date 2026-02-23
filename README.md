@@ -77,13 +77,15 @@
   </tr>
 </table>
 
-Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking and turns it into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
+Foolery is a local web UI that sits on top of local issue trackers ([Beads](https://github.com/steveyegge/beads) and Knots) and turns them into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
 
 [Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true) It won't make you dumber.
 
 ## Install
 
-**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), and [Beads](https://github.com/steveyegge/beads) (`bd` CLI).
+**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), plus at least one supported tracker CLI:
+- [Beads](https://github.com/steveyegge/beads) (`bd`)
+- Knots (`knots`)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
@@ -170,6 +172,7 @@ Need to stay in flow? Open the keyboard shortcut overlay for a quick map of navi
 
 See the **[Developer Guide](docs/DEVELOPING.md)** for architecture, conventions, testing, and contribution guidelines.
 For backend authors, see **[Foolery Agent Memory Contract](docs/FOOLERY_AGENT_MEMORY_CONTRACT.md)**.
+For Knots compatibility decisions, see **[Knots Compatibility ADR](docs/adr-knots-compatibility.md)**.
 For clones that use Dolt-native Beads sync hooks, run `bash scripts/setup-beads-dolt-hooks.sh` once and see **[docs/BEADS_DOLT_HOOKS.md](docs/BEADS_DOLT_HOOKS.md)**.
 
 ## Foolery Prompt Guidance (Highly Recommended)
@@ -239,7 +242,10 @@ FOOLERY_RELEASE_TAG=v0.1.0 curl -fsSL https://raw.githubusercontent.com/acartine
 
 Re-run the same install command to upgrade/reinstall.
 
-Foolery reads from whatever Beads-enabled repos you register. If you don't have one yet:
+Foolery reads from registered repos that contain `.beads` or `.knots` tracker markers.
+If both markers are present, Foolery treats the repo as Knots-backed.
+
+If you need to bootstrap a new Beads repo:
 
 ```bash
 cd your-project

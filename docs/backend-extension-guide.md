@@ -210,7 +210,7 @@ Edit `src/lib/backend-factory.ts`:
 import { MyBackend, MY_CAPABILITIES } from "@/lib/backends/my-backend";
 
 // Expand the union
-export type BackendType = "cli" | "stub" | "beads" | "my-backend";
+export type BackendType = "auto" | "cli" | "stub" | "beads" | "knots" | "my-backend";
 
 // Add case
 case "my-backend": {
@@ -231,7 +231,7 @@ backend to create. Set it to your new type string:
 FOOLERY_BACKEND=my-backend bun run dev
 ```
 
-The default when unset is `"cli"`.
+The default when unset is `"auto"` (per-repo tracker auto-routing).
 
 You can also configure the backend in the settings schema
 (`src/lib/schemas.ts`) by adding your type to the `backendSettingsSchema` enum:
@@ -239,9 +239,9 @@ You can also configure the backend in the settings schema
 ```ts
 export const backendSettingsSchema = z
   .object({
-    type: z.enum(["cli", "stub", "beads", "my-backend"]).default("cli"),
+    type: z.enum(["auto", "cli", "stub", "beads", "knots", "my-backend"]).default("auto"),
   })
-  .default({ type: "cli" });
+  .default({ type: "auto" });
 ```
 
 ## Contract compliance

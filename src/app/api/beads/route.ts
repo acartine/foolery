@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import type { BeadListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
+import { backendErrorStatus } from "@/lib/backend-http";
 import { createBeadSchema } from "@/lib/schemas";
 
 export async function GET(request: NextRequest) {
@@ -16,7 +17,9 @@ export async function GET(request: NextRequest) {
   const fn = query ? "searchBeads" : "listBeads";
   const result = withErrorSuppression(fn, raw, params, repoPath, query);
   if (!result.ok) {
-    const status = result.error?.message === DEGRADED_ERROR_MESSAGE ? 503 : 500;
+    const status = result.error?.message === DEGRADED_ERROR_MESSAGE
+      ? 503
+      : backendErrorStatus(result.error);
     return NextResponse.json({ error: result.error?.message }, { status });
   }
   return NextResponse.json({ data: result.data });
@@ -34,7 +37,10 @@ export async function POST(request: NextRequest) {
   }
   const result = await getBackend().create(parsed.data, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error?.message }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error?.message },
+      { status: backendErrorStatus(result.error) },
+    );
   }
   return NextResponse.json({ data: result.data }, { status: 201 });
 }

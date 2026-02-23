@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { backendErrorStatus } from "@/lib/backend-http";
 import type { BeadListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
@@ -12,8 +13,8 @@ export async function GET(request: NextRequest) {
   const query = params.q;
   delete params.q;
 
-  // Query open + in_progress beads via bd list (which returns labels)
-  // instead of bd ready (which omits labels from its JSON output).
+  // Query open + in_progress items via backend.list (which returns labels)
+  // instead of backend.listReady (which can omit labels depending on backend).
   const [rawOpen, rawInProgress] = await Promise.all([
     getBackend().list({ ...params, status: "open" } as BeadListFilters, repoPath),
     getBackend().list({ ...params, status: "in_progress" } as BeadListFilters, repoPath),
@@ -28,7 +29,9 @@ export async function GET(request: NextRequest) {
   );
 
   if (!openResult.ok) {
-    const status = openResult.error?.message === DEGRADED_ERROR_MESSAGE ? 503 : 500;
+    const status = openResult.error?.message === DEGRADED_ERROR_MESSAGE
+      ? 503
+      : backendErrorStatus(openResult.error);
     return NextResponse.json({ error: openResult.error?.message }, { status });
   }
 

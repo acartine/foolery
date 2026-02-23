@@ -4,15 +4,19 @@ User-level configuration stored as TOML at `~/.config/foolery/settings.toml`.
 
 ## Current Settings
 
-| Key             | Type   | Default   | Description                              |
-|-----------------|--------|-----------|------------------------------------------|
-| `agent.command` | string | `"claude"` | CLI command used to spawn agent sessions |
+| Key             | Type   | Default    | Description                                               |
+|-----------------|--------|------------|-----------------------------------------------------------|
+| `agent.command` | string | `"claude"` | CLI command used to spawn agent sessions                  |
+| `backend.type`  | enum   | `"auto"`   | Backend selection (`auto`, `cli`, `stub`, `beads`, `knots`) |
 
 ## File Format
 
 ```toml
 [agent]
 command = "claude"
+
+[backend]
+type = "auto"
 ```
 
 Settings use TOML sections (e.g. `[agent]`) for namespacing. New categories of settings get their own section.

@@ -144,7 +144,7 @@ function buildPrompt(
 ): string {
   const hasExplicitScope = scopedBeads.length > 0 || unresolvedScopeIds.length > 0;
   return [
-    "You are an orchestration planner for engineering work tracked as beads.",
+    "You are an orchestration planner for engineering work tracked as issues/work items.",
     "Create execution waves that respect dependencies while maximizing useful parallelism.",
     `Repository: ${repoPath}`,
     objective && objective.trim()
@@ -153,7 +153,7 @@ function buildPrompt(
     "",
     "Scope guidance:",
     hasExplicitScope
-      ? "Use the explicit bead IDs below as the in-scope planning set."
+      ? "Use the explicit work-item IDs below as the in-scope planning set."
       : "No explicit bead IDs were provided. Infer scope from the objective and inspect beads as needed.",
     ...scopedBeads.map(
       (bead) =>
@@ -161,12 +161,12 @@ function buildPrompt(
     ),
     ...(unresolvedScopeIds.length > 0
       ? [
-          "Objective mentioned IDs not present in open/in_progress/blocked beads:",
+          "Objective mentioned IDs not present in open/in_progress/blocked work items:",
           ...unresolvedScopeIds.map((id) => `- ${id}`),
         ]
       : []),
     "",
-    "Use bd commands to inspect missing context instead of guessing.",
+    "Use your tracker CLI commands to inspect missing context instead of guessing.",
     "",
     "Hard rules:",
     "- Every in-scope bead ID must appear in exactly one wave or in unassigned_bead_ids.",

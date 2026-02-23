@@ -46,6 +46,25 @@ describe("listRepos", () => {
     expect(repos).toHaveLength(1);
     expect(repos[0].trackerType).toBe("beads");
   });
+
+  it("infers knots trackerType when detection finds .knots", async () => {
+    mockDetectIssueTrackerType.mockReturnValue("knots");
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({
+        repos: [
+          {
+            path: "/repo-knots",
+            name: "repo-knots",
+            addedAt: "2026-01-01T00:00:00.000Z",
+          },
+        ],
+      }),
+    );
+
+    const repos = await listRepos();
+    expect(repos).toHaveLength(1);
+    expect(repos[0].trackerType).toBe("knots");
+  });
 });
 
 describe("inspectMissingRepoTrackerTypes", () => {

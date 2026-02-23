@@ -77,7 +77,7 @@ function buildBreakdownPrompt(
   repoPath: string
 ): string {
   return [
-    "You are a task decomposition planner for engineering work tracked as beads.",
+    "You are a task decomposition planner for engineering work tracked as issues/work items.",
     "Break down the following feature/epic into concrete implementation tasks,",
     "grouped into dependency-aware scenes (waves) that maximize useful parallelism.",
     "",

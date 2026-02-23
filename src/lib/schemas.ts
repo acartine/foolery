@@ -141,10 +141,10 @@ export const verificationSettingsSchema = z
 // Backend selection (internal, non-user-facing)
 export const backendSettingsSchema = z
   .object({
-    /** Backend implementation to use: "cli" (default), "stub", or "beads". */
-    type: z.enum(["cli", "stub", "beads"]).default("cli"),
+    /** Backend implementation to use: "auto" (default), "cli", "stub", "beads", or "knots". */
+    type: z.enum(["auto", "cli", "stub", "beads", "knots"]).default("auto"),
   })
-  .default({ type: "cli" });
+  .default({ type: "auto" });
 
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),

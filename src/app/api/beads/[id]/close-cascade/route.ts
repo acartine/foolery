@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { backendErrorStatus } from "@/lib/backend-http";
 import { cascadeCloseSchema } from "@/lib/schemas";
 import { getOpenDescendants, cascadeClose } from "@/lib/cascade-close";
 
@@ -21,7 +22,10 @@ export async function POST(
     // Preview mode: return the list of descendants that would be closed
     const result = await getOpenDescendants(id, repoPath);
     if (!result.ok) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error?.message ?? "Failed to list descendants" },
+        { status: backendErrorStatus(result.error) },
+      );
     }
     return NextResponse.json({ ok: true, data: { descendants: result.data } });
   }
@@ -29,7 +33,10 @@ export async function POST(
   // Confirmed: close all descendants then the parent
   const result = await cascadeClose(id, parsed.data.reason, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error?.message ?? "Failed to close descendants" },
+      { status: backendErrorStatus(result.error) },
+    );
   }
   return NextResponse.json({ ok: true, data: result.data });
 }

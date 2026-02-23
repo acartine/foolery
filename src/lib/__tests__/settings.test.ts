@@ -37,7 +37,7 @@ const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
   verification: { enabled: false, agent: "", maxRetries: 3 },
-  backend: { type: "cli" },
+  backend: { type: "auto" },
 };
 
 beforeEach(() => {
@@ -147,7 +147,7 @@ describe("saveSettings", () => {
       agents: {},
       actions: DEFAULT_ACTIONS,
       verification: { enabled: false, agent: "", maxRetries: 3 },
-      backend: { type: "cli" as const },
+      backend: { type: "auto" as const },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

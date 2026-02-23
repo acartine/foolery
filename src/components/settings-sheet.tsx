@@ -53,7 +53,7 @@ const DEFAULTS: SettingsData = {
     maxRetries: 3,
   },
   backend: {
-    type: "cli",
+    type: "auto",
   },
 };
 

@@ -2,7 +2,7 @@
  * Singleton access point for the application backend.
  *
  * Lazily creates a backend on first access using the FOOLERY_BACKEND
- * environment variable (defaults to "cli").  Test code can call
+ * environment variable (defaults to "auto").  Test code can call
  * _resetBackend() to clear the cached instance between runs.
  */
 
@@ -19,7 +19,7 @@ let instance: { port: BackendPort; capabilities: BackendCapabilities } | null =
  */
 export function getBackend(): BackendPort {
   if (!instance) {
-    const type = (process.env.FOOLERY_BACKEND as BackendType) ?? "cli";
+    const type = (process.env.FOOLERY_BACKEND as BackendType) ?? "auto";
     instance = createBackend(type);
   }
   return instance.port;

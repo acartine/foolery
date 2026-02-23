@@ -106,10 +106,14 @@ See presets and helpers in [src/lib/backend-capabilities.ts](https://github.com/
 Factory pattern used today:
 
 ```ts
-export type BackendType = "cli" | "stub" | "beads";
+export type BackendType = "auto" | "cli" | "stub" | "beads" | "knots";
 
-export function createBackend(type: BackendType = "cli"): BackendEntry {
+export function createBackend(type: BackendType = "auto"): BackendEntry {
   switch (type) {
+    case "auto": {
+      const backend = new AutoRoutingBackend("cli");
+      return { port: backend, capabilities: FULL_CAPABILITIES };
+    }
     case "cli": {
       const backend = new BdCliBackend();
       return { port: backend, capabilities: backend.capabilities };
@@ -122,15 +126,23 @@ export function createBackend(type: BackendType = "cli"): BackendEntry {
       const backend = new BeadsBackend();
       return { port: backend, capabilities: BEADS_CAPABILITIES };
     }
+    case "knots": {
+      const backend = new KnotsBackend();
+      return { port: backend, capabilities: KNOTS_CAPABILITIES };
+    }
   }
 }
 ```
+
+With `type: "auto"`, backend selection is resolved per repo by marker detection:
+`.knots` routes to Knots, `.beads` routes to Beads/CLI, and `.knots` wins when both exist.
 
 ## 5. Implementation Example: `BeadsBackend` (JSONL)
 
 Reference implementation:
 
 - [src/lib/backends/beads-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/beads-backend.ts)
+- [src/lib/backends/knots-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/knots-backend.ts)
 
 Capability declaration:
 

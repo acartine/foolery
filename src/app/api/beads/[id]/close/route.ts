@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { backendErrorStatus } from "@/lib/backend-http";
 import { closeBeadSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 
@@ -19,7 +20,10 @@ export async function POST(
   }
   const result = await getBackend().close(id, parsed.data.reason, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error?.message }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error?.message },
+      { status: backendErrorStatus(result.error) },
+    );
   }
 
   // Auto-close ancestors whose children are all closed

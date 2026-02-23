@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { backendErrorStatus } from "@/lib/backend-http";
 import { z } from "zod/v4";
 
 const mergeBeadsSchema = z.object({
@@ -29,13 +30,13 @@ export async function POST(request: NextRequest) {
   if (!survivorResult.ok || !survivorResult.data) {
     return NextResponse.json(
       { error: survivorResult.error?.message ?? `Survivor bead ${survivorId} not found` },
-      { status: 404 }
+      { status: backendErrorStatus(survivorResult.error) }
     );
   }
   if (!consumedResult.ok || !consumedResult.data) {
     return NextResponse.json(
       { error: consumedResult.error?.message ?? `Consumed bead ${consumedId} not found` },
-      { status: 404 }
+      { status: backendErrorStatus(consumedResult.error) }
     );
   }
 
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
     if (!updateResult.ok) {
       return NextResponse.json(
         { error: updateResult.error?.message ?? "Failed to update survivor bead" },
-        { status: 500 }
+        { status: backendErrorStatus(updateResult.error) }
       );
     }
   }
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
   if (!closeResult.ok) {
     return NextResponse.json(
       { error: closeResult.error?.message ?? "Failed to close consumed bead" },
-      { status: 500 }
+      { status: backendErrorStatus(closeResult.error) }
     );
   }
 

@@ -13,6 +13,12 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import type { IssueTrackerType } from "@/lib/issue-trackers";
+import {
+  buildShowIssueCommand,
+  buildVerificationStageCommand,
+  resolveIssueTrackerType,
+} from "@/lib/tracker-commands";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
@@ -88,26 +94,26 @@ function buildAutoAskUserResponse(input: unknown): string {
   return lines.join("\n");
 }
 
-function quoteId(id: string): string {
-  return JSON.stringify(id);
+function buildVerificationStateCommand(id: string, trackerType: IssueTrackerType): string {
+  return buildVerificationStageCommand(id, trackerType);
 }
 
-function buildVerificationStateCommand(id: string): string {
-  return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification`;
-}
-
-function buildSingleBeadCompletionFollowUp(beadId: string): string {
+function buildSingleBeadCompletionFollowUp(beadId: string, trackerType: IssueTrackerType): string {
   return [
     "Ship completion follow-up:",
     `Confirm that changes for ${beadId} are merged according to your normal shipping guidelines.`,
     "Do not ask for another follow-up prompt until that merge confirmation is done (or blocked by a hard error).",
     "After confirming merge, run this command to set verification state:",
-    buildVerificationStateCommand(beadId),
+    buildVerificationStateCommand(beadId, trackerType),
     "Then summarize merge confirmation and command result.",
   ].join("\n");
 }
 
-function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string {
+function buildWaveCompletionFollowUp(
+  waveId: string,
+  beatIds: string[],
+  trackerType: IssueTrackerType,
+): string {
   const targets = beatIds.length > 0 ? beatIds : [waveId];
   return [
     "Scene completion follow-up:",
@@ -115,21 +121,21 @@ function buildWaveCompletionFollowUp(waveId: string, beatIds: string[]): string 
     "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id)),
+    ...targets.map((id) => buildVerificationStateCommand(id, trackerType)),
     "Beats in this scene:",
     ...targets.map((id) => `- ${id}`),
     "Then summarize per beat: merged yes/no and verification-state command result.",
   ].join("\n");
 }
 
-function buildSceneCompletionFollowUp(beatIds: string[]): string {
+function buildSceneCompletionFollowUp(beatIds: string[], trackerType: IssueTrackerType): string {
   const targets = beatIds.length > 0 ? beatIds : ["(none provided)"];
   return [
     "Scene completion follow-up:",
     "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id)),
+    ...targets.map((id) => buildVerificationStateCommand(id, trackerType)),
     "Beats in this scene:",
     ...targets.map((id) => `- ${id}`),
     "Then summarize per beat: merged yes/no and verification-state command result.",
@@ -361,6 +367,9 @@ export async function createSession(
     );
   }
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
+  const trackerType = resolveIssueTrackerType(repoPath || process.cwd());
+  const showSelfCommand = buildShowIssueCommand(bead.id, trackerType);
+  const showChildCommand = buildShowIssueCommand("<child-id>", trackerType);
 
   const id = generateId();
   const prompt =
@@ -382,7 +391,7 @@ export async function createSession(
           waveBeatIds.length > 0
             ? `Open child bead IDs:\n${waveBeatIds.map((id) => `- ${id}`).join("\n")}`
             : "Open child bead IDs: (none loaded)",
-          `Use \`bd show ${bead.id}\` and \`bd show <child-id>\` to inspect full details before starting.`,
+          `Use \`${showSelfCommand}\` and \`${showChildCommand}\` to inspect full details before starting.`,
         ]
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
@@ -396,7 +405,7 @@ export async function createSession(
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
           `Bead ID: ${bead.id}`,
-          `Use \`bd show ${bead.id}\` to inspect full details before starting.`,
+          `Use \`${showSelfCommand}\` to inspect full details before starting.`,
         ]
     )
       .filter(Boolean)
@@ -487,8 +496,8 @@ export async function createSession(
     : customPrompt
       ? null
       : isParent
-        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds)
-        : buildSingleBeadCompletionFollowUp(bead.id);
+        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds, trackerType)
+        : buildSingleBeadCompletionFollowUp(bead.id, trackerType);
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
@@ -792,6 +801,8 @@ export async function createSceneSession(
   });
 
   const id = generateId();
+  const trackerType = resolveIssueTrackerType(repoPath || process.cwd());
+  const showAnyCommand = buildShowIssueCommand("<id>", trackerType);
 
   // Build combined prompt with bead IDs only (agents query details themselves)
   const beadBlocks = beads
@@ -808,18 +819,18 @@ export async function createSceneSession(
       ``,
       `IMPORTANT INSTRUCTIONS:`,
       `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-      `2. Use \`bd show <id>\` to inspect full bead details before starting implementation.`,
+      `2. Use \`${showAnyCommand}\` to inspect full bead details before starting implementation.`,
       `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
       `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
       `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
       `6. For each bead, once merge/push is confirmed, run exactly one verification command:`,
-      ...beadIds.map((id) => buildVerificationStateCommand(id)),
+      ...beadIds.map((id) => buildVerificationStateCommand(id, trackerType)),
       `7. In your final summary, report per bead: merged yes/no and verification command result.`,
       ``,
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
       beadBlocks,
-      `\nUse \`bd show <id>\` to inspect full bead details before starting implementation.`,
+      `\nUse \`${showAnyCommand}\` to inspect full bead details before starting implementation.`,
     ].join("\n");
 
   const session: TerminalSession = {
@@ -905,7 +916,7 @@ export async function createSceneSession(
     ? null
     : customPrompt
       ? null
-      : buildSceneCompletionFollowUp(beadIds);
+      : buildSceneCompletionFollowUp(beadIds, trackerType);
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 

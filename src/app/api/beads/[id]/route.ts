@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
+import { backendErrorStatus } from "@/lib/backend-http";
 import { updateBeadSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
@@ -70,7 +71,7 @@ export async function GET(
     });
   }
 
-  const error = result.error?.message ?? "bd show failed";
+  const error = result.error?.message ?? "Failed to fetch bead";
   if (isSuppressibleError(error)) {
     const cached = getCachedDetail(id, repoPath);
     if (cached) {
@@ -83,10 +84,10 @@ export async function GET(
     return NextResponse.json({ error: DEGRADED_ERROR_MESSAGE }, { status: 503 });
   }
 
-  if (isNotFoundError(error)) {
+  if (result.error?.code === "NOT_FOUND" || isNotFoundError(error)) {
     return NextResponse.json({ error }, { status: 404 });
   }
-  return NextResponse.json({ error }, { status: 500 });
+  return NextResponse.json({ error }, { status: backendErrorStatus(result.error) });
 }
 
 export async function PATCH(
@@ -118,7 +119,10 @@ export async function PATCH(
 
   const result = await getBackend().update(id, parsed.data, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error?.message }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error?.message },
+      { status: backendErrorStatus(result.error) },
+    );
   }
   clearCachedDetail(id, repoPath);
 
@@ -159,7 +163,10 @@ export async function DELETE(
 
   const result = await getBackend().delete(id, repoPath);
   if (!result.ok) {
-    return NextResponse.json({ error: result.error?.message }, { status: 500 });
+    return NextResponse.json(
+      { error: result.error?.message },
+      { status: backendErrorStatus(result.error) },
+    );
   }
   clearCachedDetail(id, repoPath);
   return NextResponse.json({ ok: true });
