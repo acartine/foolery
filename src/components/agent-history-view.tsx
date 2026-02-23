@@ -9,6 +9,7 @@ import {
   Clock3,
   CornerDownLeft,
   FileText,
+  Loader2,
   MessageSquareText,
   Sparkles,
   TerminalSquare,
@@ -33,6 +34,10 @@ const TITLE_ROW_HEIGHT_PX = 48;
 const TOP_PANEL_HEADER_HEIGHT_PX = 62;
 const TOP_PANEL_HEIGHT_PX = WINDOW_SIZE * TITLE_ROW_HEIGHT_PX + TOP_PANEL_HEADER_HEIGHT_PX;
 const CACHE_MAX = 10;
+
+function Spinner({ className = "" }: { className?: string }) {
+  return <Loader2 className={`animate-spin ${className}`} />;
+}
 
 function beadKey(beadId: string, repoPath: string): string {
   return `${repoPath}::${beadId}`;
@@ -751,7 +756,10 @@ export function AgentHistoryView() {
             className="overflow-y-auto outline-none focus-visible:ring-1 focus-visible:ring-sky-500/70"
           >
             {beatsQuery.isLoading ? (
-              <div className="px-2.5 py-3 text-xs text-muted-foreground">Loading history...</div>
+              <div className="flex items-center gap-2 px-2.5 py-3 text-xs text-muted-foreground">
+                <Spinner className="size-3.5" />
+                <span>Loading history… prompt histories are BIG, please be patient :-)</span>
+              </div>
             ) : beatsQuery.data && !beatsQuery.data.ok ? (
               <div className="px-2.5 py-3 text-xs text-destructive">
                 {beatsQuery.data.error ?? "Failed to load history"}
@@ -854,8 +862,9 @@ export function AgentHistoryView() {
                 Select a beat to inspect details.
               </div>
             ) : focusedDetail.loading ? (
-              <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
-                Loading beat details...
+              <div className="flex items-center justify-center gap-1.5 px-0.5 py-2 text-[10px] text-muted-foreground">
+                <Spinner className="size-3" />
+                <span>Loading beat details…</span>
               </div>
             ) : focusedDetail.error ? (
               <div className="px-0.5 py-2 text-center text-[10px] text-destructive">
@@ -912,8 +921,10 @@ export function AgentHistoryView() {
               Use click or Enter on a focused beat to load app and agent logs.
             </div>
           ) : sessionsQuery.isLoading && sessions.length === 0 ? (
-            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[10px] text-slate-400">
-              Loading logs for {loadedSummary.beadId}...
+            <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[10px] text-slate-400">
+              <Spinner className="size-4" />
+              <span>Loading logs for {loadedSummary.beadId}…</span>
+              <span className="text-[9px]">prompt histories are BIG, please be patient :-)</span>
             </div>
           ) : sessions.length === 0 ? (
             <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[10px] text-slate-400">
@@ -921,6 +932,12 @@ export function AgentHistoryView() {
             </div>
           ) : (
             <div className="space-y-2">
+              {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
+                <div className="flex items-center gap-1.5 text-[9px] text-slate-500">
+                  <Spinner className="size-3" />
+                  <span>Refreshing…</span>
+                </div>
+              ) : null}
               <div className="flex items-center gap-2 text-[10px] text-slate-400">
                 <Workflow className="size-3.5" />
                 <Sparkles className="size-3.5" />
