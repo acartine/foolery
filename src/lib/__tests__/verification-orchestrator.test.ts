@@ -347,7 +347,7 @@ describe("verifier output capture on failure", () => {
     });
 
     spawnMock.mockReturnValue(
-      createMockProcess("The code does not implement the required feature.\nVERIFICATION_RESULT:fail-requirements\n", 0)
+      createMockProcess("Some analysis here.\nREJECTION_SUMMARY: The login form does not handle OAuth redirects. Update LoginForm.tsx to use dynamic config.\nVERIFICATION_RESULT:fail-requirements\n", 0)
     );
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
@@ -364,6 +364,7 @@ describe("verifier output capture on failure", () => {
     expect(notesFields.notes).toContain("Existing notes here");
     expect(notesFields.notes).toContain("fail-requirements");
     expect(notesFields.notes).toContain("Verification attempt 1 failed");
+    expect(notesFields.notes).toContain("The login form does not handle OAuth redirects");
   });
 
   it("auto-launches new take session on retry when within maxRetries", async () => {
@@ -458,5 +459,38 @@ describe("verifier output capture on failure", () => {
 
     // attempt 2 + 1 = 3, which exceeds maxRetries of 2
     expect(createSessionMock).not.toHaveBeenCalled();
+  });
+
+  it("captures verifier output near VERIFICATION_RESULT when no REJECTION_SUMMARY present", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBead({
+        notes: "",
+        labels: [
+          "transition:verification",
+          "stage:verification",
+          "commit:abc123",
+        ],
+      }),
+    });
+
+    spawnMock.mockReturnValue(
+      createMockProcess("Checking requirements...\nThe feature is incomplete.\nVERIFICATION_RESULT:fail-requirements\n", 0)
+    );
+
+    await onAgentComplete(["foolery-test"], "take", "/repo", 0);
+
+    const notesCall = mockUpdate.mock.calls.find(
+      (call: unknown[]) => {
+        const fields = call[1] as Record<string, unknown>;
+        return typeof fields.notes === "string" && (fields.notes as string).includes("Verification attempt");
+      }
+    );
+    expect(notesCall).toBeDefined();
+    const notesFields = notesCall![1] as Record<string, unknown>;
+    // Should contain the text before VERIFICATION_RESULT (fallback extraction)
+    expect(notesFields.notes).toContain("The feature is incomplete");
   });
 });

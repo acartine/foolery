@@ -262,9 +262,12 @@ export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
     `     bd label remove ${ctx.beadId} stage:verification --no-daemon`,
     `     bd label remove ${ctx.beadId} transition:verification --no-daemon`,
     `     bd label add ${ctx.beadId} stage:retry --no-daemon`,
+    `     Then output a brief rejection summary (2-4 sentences) explaining what is wrong and what needs to change, prefixed with REJECTION_SUMMARY:`,
+    `     Example: REJECTION_SUMMARY: The login form component was not updated to handle the new OAuth flow. The redirect URL is still hardcoded. Update src/components/LoginForm.tsx to use the dynamic redirect from config.`,
     `     Then output: VERIFICATION_RESULT:fail-requirements`,
     `3. Check: Does the commit introduce bugs that require correction?`,
     `   - If YES: run the same bd commands as step 2 and stop.`,
+    `     Then output a brief rejection summary explaining the bugs found, prefixed with REJECTION_SUMMARY:`,
     `     Then output: VERIFICATION_RESULT:fail-bugs`,
     `4. If both checks pass (code satisfies requirements, no bugs):`,
     `     bd label remove ${ctx.beadId} stage:verification --no-daemon`,
@@ -272,8 +275,10 @@ export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
     `     bd close ${ctx.beadId}`,
     `     Then output: VERIFICATION_RESULT:pass`,
     ``,
-    `IMPORTANT: You MUST output exactly one VERIFICATION_RESULT line at the end.`,
-    `Use the format: VERIFICATION_RESULT:<pass|fail-requirements|fail-bugs>`,
+    `IMPORTANT: On failure, you MUST output a REJECTION_SUMMARY line followed by a VERIFICATION_RESULT line.`,
+    `Use the format: REJECTION_SUMMARY: <2-4 sentence explanation of what failed and what to fix>`,
+    `Then: VERIFICATION_RESULT:<pass|fail-requirements|fail-bugs>`,
+    `On pass, output only: VERIFICATION_RESULT:pass`,
   );
 
   return lines.join("\n");

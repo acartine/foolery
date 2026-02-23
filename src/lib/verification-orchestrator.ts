@@ -43,6 +43,36 @@ import type { ActionName } from "@/lib/types";
 const MAX_COMMIT_REMEDIATION_ATTEMPTS = 1;
 const MAX_VERIFIER_OUTPUT_CHARS = 2000;
 
+// ── Rejection summary extraction ─────────────────────────────
+
+/**
+ * Extract a structured rejection summary from verifier output.
+ * Looks for REJECTION_SUMMARY: prefix first, then falls back to
+ * extracting text near the VERIFICATION_RESULT marker.
+ */
+function extractRejectionSummary(output: string): string {
+  // Try structured extraction: REJECTION_SUMMARY: <text>
+  const summaryMatch = output.match(/REJECTION_SUMMARY:\s*([\s\S]+?)(?=\s*VERIFICATION_RESULT:|$)/);
+  if (summaryMatch?.[1]?.trim()) {
+    return summaryMatch[1].trim();
+  }
+
+  // Fallback: take the last portion before VERIFICATION_RESULT marker
+  const resultIdx = output.lastIndexOf("VERIFICATION_RESULT:");
+  if (resultIdx > 0) {
+    // Take up to 1500 chars before the result marker
+    const start = Math.max(0, resultIdx - 1500);
+    const excerpt = output.slice(start, resultIdx).trim();
+    if (excerpt) return excerpt;
+  }
+
+  // Last resort: take the tail of the output
+  if (output.length > MAX_VERIFIER_OUTPUT_CHARS) {
+    return output.slice(-MAX_VERIFIER_OUTPUT_CHARS).trim();
+  }
+  return output.trim();
+}
+
 // ── Lifecycle event log (xmg8.2.6) ─────────────────────────
 
 const eventLog: VerificationEvent[] = [];
@@ -393,16 +423,17 @@ async function appendVerifierNotes(
   commitSha: string,
 ): Promise<void> {
   const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
-  const trimmedOutput = verifierOutput.length > MAX_VERIFIER_OUTPUT_CHARS
-    ? verifierOutput.slice(0, MAX_VERIFIER_OUTPUT_CHARS) + "\n...(truncated)"
-    : verifierOutput;
+  const summary = extractRejectionSummary(verifierOutput);
+  const trimmedSummary = summary.length > MAX_VERIFIER_OUTPUT_CHARS
+    ? summary.slice(0, MAX_VERIFIER_OUTPUT_CHARS) + "\n...(truncated)"
+    : summary;
 
   const section = [
     "",
     "---",
     `**Verification attempt ${attemptNum} failed (${timestamp})** — commit: ${commitSha}, reason: ${outcome}`,
     "",
-    trimmedOutput,
+    trimmedSummary,
   ].join("\n");
 
   const updatedNotes = (existingNotes ?? "") + section;

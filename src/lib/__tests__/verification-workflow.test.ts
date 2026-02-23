@@ -245,6 +245,16 @@ describe("buildVerifierPrompt", () => {
     expect(prompt).toContain("VERIFICATION_RESULT");
   });
 
+  it("includes REJECTION_SUMMARY instructions for failure cases", () => {
+    const prompt = buildVerifierPrompt({
+      beadId: "foolery-abc",
+      title: "Fix login bug",
+      commitSha: "def456",
+    });
+    expect(prompt).toContain("REJECTION_SUMMARY:");
+    expect(prompt).toContain("VERIFICATION_RESULT");
+  });
+
   it("includes optional fields when provided", () => {
     const prompt = buildVerifierPrompt({
       beadId: "foolery-abc",

@@ -26,6 +26,26 @@ function extractCommitSha(labels: string[]): string | null {
   return null;
 }
 
+/** Extract the latest rejection reason from bead notes (last verification section). */
+function extractLatestRejectionReason(notes: string | undefined): string | null {
+  if (!notes) return null;
+  // Find the last verification failure section
+  const sections = notes.split("---");
+  const lastSection = sections[sections.length - 1];
+  if (!lastSection || !lastSection.includes("Verification attempt")) return null;
+
+  // Extract text after the header line
+  const lines = lastSection.trim().split("\n");
+  // Skip the header line (starts with **)
+  const bodyLines = lines.filter((l) => !l.startsWith("**"));
+  const body = bodyLines.join(" ").trim();
+  if (!body) return null;
+
+  // Truncate for notification display
+  const maxLen = 200;
+  return body.length > maxLen ? body.slice(0, maxLen) + "..." : body;
+}
+
 /** Build a human-readable notification message for a retry bead. */
 function buildRetryMessage(bead: Bead): string {
   const labels = bead.labels ?? [];
@@ -33,7 +53,9 @@ function buildRetryMessage(bead: Bead): string {
   const commitSha = extractCommitSha(labels);
   const attemptSuffix = attempt !== null ? ` (attempt ${attempt})` : "";
   const commitSuffix = commitSha ? ` [commit: ${commitSha}]` : "";
-  return `"${bead.title}" was rejected by verification${attemptSuffix}${commitSuffix} and is ready for retry`;
+  const reason = extractLatestRejectionReason(bead.notes);
+  const reasonSuffix = reason ? `\n${reason}` : "";
+  return `"${bead.title}" was rejected by verification${attemptSuffix}${commitSuffix} and is ready for retry${reasonSuffix}`;
 }
 
 /**
