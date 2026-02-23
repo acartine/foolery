@@ -1,3 +1,5 @@
+import type { IssueTrackerType } from "@/lib/issue-trackers";
+
 export type BeadType =
   | "bug"
   | "feature"
@@ -62,12 +64,14 @@ export interface RegisteredRepo {
   path: string;
   name: string;
   addedAt: string;
+  trackerType?: IssueTrackerType;
 }
 
 export interface DirEntry {
   name: string;
   path: string;
-  isBeadsRepo: boolean;
+  trackerType?: IssueTrackerType;
+  isCompatible: boolean;
 }
 
 export interface BeadWithRepo extends Bead {

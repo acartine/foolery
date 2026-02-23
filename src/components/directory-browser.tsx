@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { browseDirectory } from "@/lib/registry-api";
 import type { DirEntry } from "@/lib/types";
+import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
 
 interface DirectoryBrowserProps {
   open: boolean;
@@ -35,6 +36,7 @@ export function DirectoryBrowser({
   const [entries, setEntries] = useState<DirEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const loadDirectory = useCallback(async (path?: string) => {
     setLoading(true);
@@ -79,12 +81,27 @@ export function DirectoryBrowser({
   }
 
   const pathSegments = currentPath.split("/").filter(Boolean);
+  const supported = listKnownIssueTrackers()
+    .map((tracker) => tracker.type)
+    .join(", ");
+  const filteredEntries = entries.filter((entry) => {
+    if (!search) return true;
+    const needle = search.toLowerCase();
+    return (
+      entry.name.toLowerCase().includes(needle) ||
+      entry.path.toLowerCase().includes(needle) ||
+      (entry.trackerType ?? "").toLowerCase().includes(needle)
+    );
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Browse for Repository</DialogTitle>
+          <p className="text-xs text-muted-foreground">
+            Supported tracker implementations: {supported}
+          </p>
         </DialogHeader>
 
         <form onSubmit={handlePathSubmit} className="flex gap-2">
@@ -98,6 +115,12 @@ export function DirectoryBrowser({
             Go
           </Button>
         </form>
+
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Filter directories or tracker type..."
+        />
 
         <div className="flex items-center gap-1 text-sm text-muted-foreground overflow-x-auto">
           <button
@@ -136,13 +159,13 @@ export function DirectoryBrowser({
             <div className="flex items-center justify-center py-12 text-muted-foreground">
               Loading...
             </div>
-          ) : entries.length === 0 ? (
+          ) : filteredEntries.length === 0 ? (
             <div className="flex items-center justify-center py-12 text-muted-foreground">
-              No directories found
+              No matching directories found
             </div>
           ) : (
             <div className="divide-y">
-              {entries.map((entry) => (
+              {filteredEntries.map((entry) => (
                 <button
                   key={entry.path}
                   type="button"
@@ -150,26 +173,33 @@ export function DirectoryBrowser({
                     selectedPath === entry.path ? "bg-muted" : ""
                   }`}
                   onClick={() => {
-                    if (entry.isBeadsRepo) {
+                    if (entry.isCompatible) {
                       setSelectedPath(entry.path);
                     } else {
                       navigateTo(entry.path);
                     }
                   }}
-                  onDoubleClick={() => navigateTo(entry.path)}
+                  onDoubleClick={() => {
+                    if (entry.isCompatible) setSelectedPath(entry.path);
+                    else navigateTo(entry.path);
+                  }}
                 >
-                  {entry.isBeadsRepo ? (
+                  {entry.isCompatible ? (
                     <FolderCheck className="size-5 text-green-500 shrink-0" />
                   ) : (
                     <Folder className="size-5 text-muted-foreground shrink-0" />
                   )}
                   <span className="flex-1 truncate">{entry.name}</span>
-                  {entry.isBeadsRepo ? (
+                  {entry.isCompatible ? (
                     <span className="text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full">
-                      beads
+                      {entry.trackerType}
                     </span>
                   ) : (
-                    <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      {entry.trackerType
+                        ? getIssueTrackerLabel(entry.trackerType)
+                        : "unsupported"}
+                    </span>
                   )}
                 </button>
               ))}

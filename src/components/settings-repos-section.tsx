@@ -13,6 +13,7 @@ import {
 import { DirectoryBrowser } from "@/components/directory-browser";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
+import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
 
 export function SettingsReposSection() {
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -96,12 +97,17 @@ export function SettingsReposSection() {
 }
 
 function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
+  const supported = listKnownIssueTrackers()
+    .map((tracker) => tracker.type)
+    .join(", ");
+
   return (
     <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-8 text-center">
       <Database className="size-8 text-muted-foreground mb-3" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
-        Add a directory containing a .beads/ folder to get started.
+        Add a repository with a supported issue tracker ({supported}) to get
+        started.
       </p>
       <Button size="sm" onClick={onBrowse}>
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
@@ -112,7 +118,7 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
 }
 
 interface RepoListProps {
-  repos: { path: string; name: string }[];
+  repos: { path: string; name: string; trackerType?: string }[];
   onRemove: (path: string) => void;
 }
 
@@ -126,6 +132,9 @@ function RepoList({ repos, onRemove }: RepoListProps) {
         >
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium truncate">{repo.name}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Tracker: {getIssueTrackerLabel(repo.trackerType)}
+            </p>
             <p className="font-mono text-xs text-muted-foreground truncate">
               {repo.path}
             </p>

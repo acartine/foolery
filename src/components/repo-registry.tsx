@@ -19,6 +19,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
 
 export function RepoRegistry() {
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -32,6 +33,9 @@ export function RepoRegistry() {
   });
 
   const repos = data?.ok ? (data.data ?? []) : [];
+  const supported = listKnownIssueTrackers()
+    .map((tracker) => tracker.type)
+    .join(", ");
 
   async function handleAdd(path: string) {
     const result = await addRepoToRegistry(path);
@@ -76,7 +80,7 @@ export function RepoRegistry() {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Repositories</h2>
             <p className="text-muted-foreground mt-1">
-              Manage your registered beads repositories
+              Manage your registered repositories and their issue trackers
             </p>
           </div>
         </div>
@@ -95,7 +99,7 @@ export function RepoRegistry() {
             </h3>
             <p className="text-muted-foreground mb-4 max-w-md">
               Add a repository to get started. Browse your filesystem to find
-              directories that contain a .beads/ folder.
+              directories with supported issue trackers ({supported}).
             </p>
             <Button onClick={() => setBrowseOpen(true)}>
               <FolderOpen className="mr-2 h-4 w-4" />
@@ -113,6 +117,9 @@ export function RepoRegistry() {
                     <CardTitle className="text-base truncate">
                       {repo.name}
                     </CardTitle>
+                    <CardDescription className="text-xs mt-1">
+                      Tracker: {getIssueTrackerLabel(repo.trackerType)}
+                    </CardDescription>
                     <CardDescription className="font-mono text-xs mt-1 truncate">
                       {repo.path}
                     </CardDescription>
