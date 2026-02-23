@@ -49,6 +49,7 @@ import { naturalCompare } from "@/lib/bead-sort";
 import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
 import { consumeDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { useAgentInfo } from "@/hooks/use-agent-info";
+import { useWaitSpinner } from "@/hooks/use-wait-spinner";
 import { AgentInfoLine } from "@/components/agent-info-line";
 
 const MAX_LOG_LINES = 900;
@@ -624,6 +625,9 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
     );
   });
   const isWaitingOnAgent = isRunning && !plan && !hasAgentOutput;
+  const waitSpinnerLabel = useWaitSpinner({ enabled: isWaitingOnAgent });
+  const waitingOnAgentText = `Waiting on agent | ${waitSpinnerLabel}`;
+  const liveStatusText = isWaitingOnAgent ? waitingOnAgentText : statusText;
   const canApply = Boolean(session && plan && activeRepo && !isRunning);
   const isSingleWaveDerivedPlan = (plan?.waves.length ?? 0) === 1;
 
@@ -856,7 +860,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
           </div>
         )}
 
-        <p className="mt-2 text-xs text-muted-foreground">{statusText}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{liveStatusText}</p>
       </section>
 
       <div className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
@@ -868,8 +872,11 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                 {plan.waves.length} scene{plan.waves.length === 1 ? "" : "s"}
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-[11px]">
-                {isWaitingOnAgent ? "waiting on agent..." : "waiting for draft"}
+              <Badge
+                variant="outline"
+                className={`text-[11px] ${isWaitingOnAgent ? "motion-safe:animate-pulse" : ""}`}
+              >
+                {isWaitingOnAgent ? waitingOnAgentText : "waiting for draft"}
               </Badge>
             )}
           </div>
@@ -1044,7 +1051,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
               {isWaitingOnAgent && (
                 <div className="mb-2 flex items-center gap-2 text-sky-300">
                   <Loader2 className="size-3.5 animate-spin" />
-                  <span>Waiting on agent...</span>
+                  <span className="motion-safe:animate-pulse">{waitingOnAgentText}</span>
                 </div>
               )}
               {logLines.length > 0 ? (
@@ -1092,7 +1099,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                   {isWaitingOnAgent ? (
                     <>
                       <Loader2 className="size-3.5 animate-spin" />
-                      <span>Waiting on agent...</span>
+                      <span className="motion-safe:animate-pulse">{waitingOnAgentText}</span>
                     </>
                   ) : (
                     <span>No output yet. Start a planning run to stream agent output.</span>

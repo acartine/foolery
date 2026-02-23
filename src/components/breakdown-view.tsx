@@ -20,6 +20,7 @@ import {
   connectToBreakdown,
   startBreakdown,
 } from "@/lib/breakdown-api";
+import { useWaitSpinner } from "@/hooks/use-wait-spinner";
 import { useAppStore } from "@/stores/app-store";
 import type {
   BreakdownEvent,
@@ -160,6 +161,9 @@ export function BreakdownView() {
 
   const status = session?.status ?? "idle";
   const isRunning = status === "running";
+  const isWaitingOnAgent = isRunning && logLines.length === 0;
+  const waitSpinnerLabel = useWaitSpinner({ enabled: isWaitingOnAgent });
+  const waitingOnAgentText = `Waiting on agent | ${waitSpinnerLabel}`;
   const isDone = status === "completed";
   const canApply = isDone && plan && plan.waves.length > 0 && !isApplying;
 
@@ -309,6 +313,11 @@ export function BreakdownView() {
             >
               <Copy className="size-3.5" />
             </button>
+            {isWaitingOnAgent && (
+              <span className="text-[10px] text-sky-300 motion-safe:animate-pulse">
+                {waitSpinnerLabel}
+              </span>
+            )}
             {isRunning && (
               <Loader2 className="size-3 animate-spin text-zinc-400" />
             )}
@@ -319,7 +328,11 @@ export function BreakdownView() {
           className="max-h-60 overflow-y-auto font-mono text-[11px] text-zinc-300 whitespace-pre-wrap"
         >
           {logLines.length === 0 ? (
-            <span className="text-zinc-500">Waiting for output...</span>
+            <span
+              className={isRunning ? "text-sky-300 motion-safe:animate-pulse" : "text-zinc-500"}
+            >
+              {isRunning ? waitingOnAgentText : "Waiting for output..."}
+            </span>
           ) : (
             logLines.map((line, index) => (
               <div key={index}>{line}</div>
