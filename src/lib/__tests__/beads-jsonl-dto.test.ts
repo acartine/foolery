@@ -88,7 +88,7 @@ describe("normalizeFromJsonl", () => {
     expect(bead.created).toBe("2026-01-01T00:00:00Z");
     expect(bead.updated).toBe("2026-02-01T00:00:00Z");
     expect(bead.closed).toBe("2026-02-15T00:00:00Z");
-    expect(bead.metadata).toEqual({ source: "import" });
+    expect(bead.metadata).toEqual({ source: "import", close_reason: "completed" });
   });
 
   it("infers parent from dotted ID when no explicit parent", () => {
