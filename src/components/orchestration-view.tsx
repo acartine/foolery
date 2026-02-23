@@ -376,8 +376,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
   const directAgentInfo = useAgentInfo("direct");
 
-  // Detect when this view becomes the active view so we can re-run hydration
-  // (the component is always mounted; CSS hides it when inactive).
+  // Detect when this view becomes the active view for hydration purposes.
   const isActive = searchParams.get("view") === "orchestration";
 
   const [objective, setObjective] = useState("");
@@ -428,44 +427,40 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
       if (draft && draft.repoPath === activeRepo && isPlanPayload(draft.plan)) {
         window.sessionStorage.removeItem(ORCHESTRATION_RESTAGE_DRAFT_KEY);
-        const restoreTimer = window.setTimeout(() => {
-          setSession(draft.session);
-          setPlan(draft.plan);
-          setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
-          setApplyResult(null);
-          setLogLines([]);
-          pendingLogRef.current = "";
-          if (draft.objective) setObjective(draft.objective);
-          setStatusText(
-            draft.statusText ?? "Restaged existing groups into Scene view"
-          );
-          toast.success(
-            `Restaged ${draft.plan.waves.length} scene${
-              draft.plan.waves.length === 1 ? "" : "s"
-            } into Scene view`
-          );
-        }, 0);
-        return () => window.clearTimeout(restoreTimer);
+        setSession(draft.session);
+        setPlan(draft.plan);
+        setWaveEdits(normalizeStoredWaveEdits(draft.waveEdits));
+        setApplyResult(null);
+        setLogLines([]);
+        pendingLogRef.current = "";
+        if (draft.objective) setObjective(draft.objective);
+        setStatusText(
+          draft.statusText ?? "Restaged existing groups into Scene view"
+        );
+        toast.success(
+          `Restaged ${draft.plan.waves.length} scene${
+            draft.plan.waves.length === 1 ? "" : "s"
+          } into Scene view`
+        );
+        return;
       }
     }
 
     // 2. Direct-prefill payload (Breakdown CTA or external link)
     const prefill = consumeDirectPrefillPayload();
     if (prefill) {
-      const prefillTimer = window.setTimeout(() => {
-        setObjective(prefill.prompt);
-        setSession(null);
-        setPlan(null);
-        setLogLines([]);
-        setApplyResult(null);
-        setWaveEdits({});
-        pendingLogRef.current = "";
-        setStatusText("Prompt prefilled — ready to plan");
-        if (prefill.autorun) {
-          autorunPendingRef.current = true;
-        }
-      }, 0);
-      return () => window.clearTimeout(prefillTimer);
+      setObjective(prefill.prompt);
+      setSession(null);
+      setPlan(null);
+      setLogLines([]);
+      setApplyResult(null);
+      setWaveEdits({});
+      pendingLogRef.current = "";
+      setStatusText("Prompt prefilled — ready to plan");
+      if (prefill.autorun) {
+        autorunPendingRef.current = true;
+      }
+      return;
     }
 
     // 3. Restore saved view state (preserves state across view toggles)
