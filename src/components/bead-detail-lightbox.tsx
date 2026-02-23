@@ -46,6 +46,8 @@ export function BeadDetailLightbox({
   const searchParams = useSearchParams();
   const [blocksIds, setBlocksIds] = useState<string[]>([]);
   const [blockedByIds, setBlockedByIds] = useState<string[]>([]);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editTitleValue, setEditTitleValue] = useState("");
   const queryClient = useQueryClient();
 
   const detailId = beadId ?? "";
@@ -195,9 +197,39 @@ export function BeadDetailLightbox({
               >
                 {beadId.replace(/^[^-]+-/, "")}
               </DialogDescription>
-              <DialogTitle className="truncate text-base leading-tight">
-                {bead?.title ?? "Loading beat..."}
-              </DialogTitle>
+              {isEditingTitle ? (
+                <input
+                  autoFocus
+                  value={editTitleValue}
+                  onChange={(e) => setEditTitleValue(e.target.value)}
+                  onBlur={() => {
+                    if (editTitleValue.trim() && editTitleValue !== bead?.title) {
+                      handleUpdate({ title: editTitleValue.trim() });
+                    }
+                    setIsEditingTitle(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    } else if (e.key === "Escape") {
+                      setIsEditingTitle(false);
+                    }
+                  }}
+                  className="min-w-0 flex-1 truncate rounded border border-border bg-background px-1.5 py-0.5 text-base font-semibold leading-tight outline-none focus:ring-1 focus:ring-ring"
+                />
+              ) : (
+                <DialogTitle
+                  className="truncate text-base leading-tight cursor-pointer rounded px-0.5 hover:bg-muted/70"
+                  onClick={() => {
+                    if (bead) {
+                      setEditTitleValue(bead.title);
+                      setIsEditingTitle(true);
+                    }
+                  }}
+                >
+                  {bead?.title ?? "Loading beat..."}
+                </DialogTitle>
+              )}
             </div>
             <DialogClose asChild>
               <Button variant="ghost" size="xs">
