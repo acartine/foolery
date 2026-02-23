@@ -1,6 +1,6 @@
 # Foolery
 
-**Product-focused agentic orchestration tool** — one layer up from managing 8 agent terminals, one level down from massively multi-agent chaos.
+**Agent Memory Engagement tool** — one layer up from managing 8 agent terminals, one level down from massively multi-agent chaos.
 
 
 [![Latest Release](https://img.shields.io/github/v/release/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/releases)
@@ -77,7 +77,7 @@
   </tr>
 </table>
 
-Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking, giving you a visual control surface for organizing, orchestrating, and reviewing AI agent work across your repositories.
+Foolery is a local web UI that sits on top of [Beads](https://github.com/steveyegge/beads) issue tracking and turns it into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
 
 [Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true) It won't make you dumber.
 
@@ -169,7 +169,7 @@ Need to stay in flow? Open the keyboard shortcut overlay for a quick map of navi
 ## How to Contribute
 
 See the **[Developer Guide](docs/DEVELOPING.md)** for architecture, conventions, testing, and contribution guidelines.
-For backend authors, see **[Foolery Issue Tracker Integration API](docs/FOOLERY_ISSUE_TRACKER_INTEGRATION_API.md)**.
+For backend authors, see **[Foolery Agent Memory Contract](docs/FOOLERY_AGENT_MEMORY_CONTRACT.md)**.
 For clones that use Dolt-native Beads sync hooks, run `bash scripts/setup-beads-dolt-hooks.sh` once and see **[docs/BEADS_DOLT_HOOKS.md](docs/BEADS_DOLT_HOOKS.md)**.
 
 ## Foolery Prompt Guidance (Highly Recommended)
