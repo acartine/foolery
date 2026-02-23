@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
+import { FolderOpen, Plus, Trash2, Database, CircleDot } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -122,6 +122,23 @@ interface RepoListProps {
   onRemove: (path: string) => void;
 }
 
+function TrackerBadge({ type }: { type?: string }) {
+  const label = getIssueTrackerLabel(type);
+  const isKnown = type && label !== "Unknown";
+  return (
+    <span
+      className={
+        isKnown
+          ? "inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0"
+          : "inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0"
+      }
+    >
+      <CircleDot className="size-3" />
+      {label}
+    </span>
+  );
+}
+
 function RepoList({ repos, onRemove }: RepoListProps) {
   return (
     <div className="space-y-2">
@@ -131,10 +148,10 @@ function RepoList({ repos, onRemove }: RepoListProps) {
           className="flex items-center justify-between rounded-md border px-3 py-2"
         >
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium truncate">{repo.name}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Tracker: {getIssueTrackerLabel(repo.trackerType)}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium truncate">{repo.name}</p>
+              <TrackerBadge type={repo.trackerType} />
+            </div>
             <p className="font-mono text-xs text-muted-foreground truncate">
               {repo.path}
             </p>

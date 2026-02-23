@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, FolderOpen, Plus, Trash2, Database } from "lucide-react";
+import { ArrowLeft, FolderOpen, Plus, Trash2, Database, CircleDot } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -20,6 +20,23 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
+
+function TrackerBadge({ type }: { type?: string }) {
+  const label = getIssueTrackerLabel(type);
+  const isKnown = type && label !== "Unknown";
+  return (
+    <span
+      className={
+        isKnown
+          ? "inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0"
+          : "inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0"
+      }
+    >
+      <CircleDot className="size-3" />
+      {label}
+    </span>
+  );
+}
 
 export function RepoRegistry() {
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -114,12 +131,12 @@ export function RepoRegistry() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-base truncate">
-                      {repo.name}
-                    </CardTitle>
-                    <CardDescription className="text-xs mt-1">
-                      Tracker: {getIssueTrackerLabel(repo.trackerType)}
-                    </CardDescription>
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-base truncate">
+                        {repo.name}
+                      </CardTitle>
+                      <TrackerBadge type={repo.trackerType} />
+                    </div>
                     <CardDescription className="font-mono text-xs mt-1 truncate">
                       {repo.path}
                     </CardDescription>
