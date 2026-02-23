@@ -16,6 +16,7 @@ import {
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
 import { toast } from "sonner";
+import { MinimizedTerminalBar } from "@/components/minimized-terminal-bar";
 
 const STATUS_COLORS: Record<string, string> = {
   running: "bg-blue-400",
@@ -498,7 +499,11 @@ export function TerminalPanel() {
     return () => window.removeEventListener("resize", handleResize);
   }, [panelOpen]);
 
-  if (!panelOpen || terminals.length === 0) return null;
+  if (terminals.length === 0) return null;
+
+  if (!panelOpen) {
+    return <MinimizedTerminalBar />;
+  }
 
   return (
     <div

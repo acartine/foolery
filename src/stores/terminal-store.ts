@@ -13,6 +13,7 @@ export interface ActiveTerminal {
 
 interface TerminalState {
   panelOpen: boolean;
+  panelMinimized: boolean;
   panelHeight: number; // vh percentage
   terminals: ActiveTerminal[];
   activeSessionId: string | null;
@@ -21,6 +22,8 @@ interface TerminalState {
   closePanel: () => void;
   clearTerminals: () => void;
   togglePanel: () => void;
+  minimizePanel: () => void;
+  restorePanel: () => void;
   setPanelHeight: (height: number) => void;
   upsertTerminal: (terminal: ActiveTerminal) => void;
   removeTerminal: (sessionId: string) => void;
@@ -32,14 +35,38 @@ interface TerminalState {
 
 export const useTerminalStore = create<TerminalState>((set) => ({
   panelOpen: false,
+  panelMinimized: false,
   panelHeight: 35,
   terminals: [],
   activeSessionId: null,
   pendingClose: new Set<string>(),
-  openPanel: () => set({ panelOpen: true }),
-  closePanel: () => set({ panelOpen: false }),
-  clearTerminals: () => set({ terminals: [], activeSessionId: null, pendingClose: new Set() }),
-  togglePanel: () => set((s) => ({ panelOpen: !s.panelOpen })),
+  openPanel: () => set({ panelOpen: true, panelMinimized: false }),
+  closePanel: () =>
+    set((s) => {
+      const hasRunning = s.terminals.some((t) => t.status === "running");
+      if (hasRunning) {
+        return { panelOpen: false, panelMinimized: true };
+      }
+      return { panelOpen: false, panelMinimized: false };
+    }),
+  clearTerminals: () =>
+    set({ terminals: [], activeSessionId: null, panelMinimized: false, pendingClose: new Set() }),
+  togglePanel: () =>
+    set((s) => {
+      if (s.panelMinimized) {
+        return { panelOpen: true, panelMinimized: false };
+      }
+      if (s.panelOpen) {
+        const hasRunning = s.terminals.some((t) => t.status === "running");
+        if (hasRunning) {
+          return { panelOpen: false, panelMinimized: true };
+        }
+        return { panelOpen: false, panelMinimized: false };
+      }
+      return { panelOpen: true, panelMinimized: false };
+    }),
+  minimizePanel: () => set({ panelOpen: false, panelMinimized: true }),
+  restorePanel: () => set({ panelOpen: true, panelMinimized: false }),
   setPanelHeight: (height) => set({ panelHeight: Math.max(15, Math.min(80, height)) }),
   upsertTerminal: (terminal) =>
     set((state) => {
@@ -56,6 +83,7 @@ export const useTerminalStore = create<TerminalState>((set) => ({
         terminals,
         activeSessionId: terminal.sessionId,
         panelOpen: true,
+        panelMinimized: false,
       };
     }),
   removeTerminal: (sessionId) =>
@@ -74,6 +102,7 @@ export const useTerminalStore = create<TerminalState>((set) => ({
         terminals,
         activeSessionId: nextActiveSessionId,
         panelOpen: terminals.length > 0 && state.panelOpen,
+        panelMinimized: terminals.length > 0 && state.panelMinimized,
         pendingClose,
       };
     }),
@@ -86,6 +115,7 @@ export const useTerminalStore = create<TerminalState>((set) => ({
       return {
         activeSessionId: sessionId,
         panelOpen: true,
+        panelMinimized: false,
         pendingClose,
       };
     }),
