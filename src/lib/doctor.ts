@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { constants as fsConstants } from "node:fs";
 import { access, appendFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { listBeads } from "./bd";
+import { getBackend } from "./backend-instance";
 import {
   getRegisteredAgents,
   inspectSettingsDefaults,
@@ -259,7 +259,7 @@ export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diag
   for (const repo of repos) {
     let beads: Bead[];
     try {
-      const result = await listBeads(undefined, repo.path);
+      const result = await getBackend().list(undefined, repo.path);
       if (!result.ok || !result.data) continue;
       beads = result.data;
     } catch {
@@ -312,7 +312,7 @@ export async function checkStaleParents(repos: RegisteredRepo[]): Promise<Diagno
   for (const repo of repos) {
     let beads: Bead[];
     try {
-      const result = await listBeads(undefined, repo.path);
+      const result = await getBackend().list(undefined, repo.path);
       if (!result.ok || !result.data) continue;
       beads = result.data;
     } catch {
@@ -643,19 +643,18 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
-        const { updateBead } = await import("./bd");
         if (strategy === "remove-label") {
           // Fix: remove the stage:verification label to match the current status
-          const result = await updateBead(beadId, { removeLabels: ["stage:verification"] }, repoPath);
+          const result = await getBackend().update(beadId, { removeLabels: ["stage:verification"] }, repoPath);
           if (!result.ok) {
-            return { check: diag.check, success: false, message: result.error ?? "bd update failed", context: ctx };
+            return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
           }
           return { check: diag.check, success: true, message: `Removed stage:verification from ${beadId}.`, context: ctx };
         }
         // Default: set status to in_progress to match the verification label
-        const result = await updateBead(beadId, { status: "in_progress" }, repoPath);
+        const result = await getBackend().update(beadId, { status: "in_progress" }, repoPath);
         if (!result.ok) {
-          return { check: diag.check, success: false, message: result.error ?? "bd update failed", context: ctx };
+          return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
         }
         return { check: diag.check, success: true, message: `Set ${beadId} status to in_progress.`, context: ctx };
       } catch (e) {
@@ -670,10 +669,9 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
-        const { updateBead } = await import("./bd");
-        const result = await updateBead(beadId, { labels: ["stage:verification"], status: "in_progress" }, repoPath);
+        const result = await getBackend().update(beadId, { labels: ["stage:verification"], status: "in_progress" }, repoPath);
         if (!result.ok) {
-          return { check: diag.check, success: false, message: result.error ?? "bd update failed", context: ctx };
+          return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
         }
         return {
           check: diag.check,

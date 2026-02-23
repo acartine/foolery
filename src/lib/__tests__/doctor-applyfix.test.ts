@@ -5,11 +5,13 @@ import { join } from "node:path";
 
 // ── Mocks ──────────────────────────────────────────────────
 
-const mockListBeads = vi.fn();
-const mockUpdateBead = vi.fn();
-vi.mock("@/lib/bd", () => ({
-  listBeads: (...args: unknown[]) => mockListBeads(...args),
-  updateBead: (...args: unknown[]) => mockUpdateBead(...args),
+const mockList = vi.fn();
+const mockUpdate = vi.fn();
+vi.mock("@/lib/backend-instance", () => ({
+  getBackend: () => ({
+    list: (...args: unknown[]) => mockList(...args),
+    update: (...args: unknown[]) => mockUpdate(...args),
+  }),
 }));
 
 const mockGetRegisteredAgents = vi.fn();
@@ -136,7 +138,7 @@ describe("applyFix: stale-parent", () => {
 
   function setupStaleParent() {
     mockListRepos.mockResolvedValue(repos);
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -162,7 +164,7 @@ describe("applyFix: stale-parent", () => {
         },
       ],
     });
-    mockUpdateBead.mockResolvedValue({ ok: true });
+    mockUpdate.mockResolvedValue({ ok: true });
   }
 
   it("fixes stale parent by setting in_progress with verification label", async () => {
@@ -173,7 +175,7 @@ describe("applyFix: stale-parent", () => {
     expect(fix?.success).toBe(true);
     expect(fix?.message).toContain("in_progress");
     expect(fix?.message).toContain("parent-1");
-    expect(mockUpdateBead).toHaveBeenCalledWith(
+    expect(mockUpdate).toHaveBeenCalledWith(
       "parent-1",
       { labels: ["stage:verification"], status: "in_progress" },
       "/repo",
@@ -182,7 +184,7 @@ describe("applyFix: stale-parent", () => {
 
   it("returns failure when updateBead fails for stale parent", async () => {
     setupStaleParent();
-    mockUpdateBead.mockResolvedValue({ ok: false, error: "bd broke" });
+    mockUpdate.mockResolvedValue({ ok: false, error: { code: "UNKNOWN", message: "bd broke", retryable: false } });
 
     const fixReport = await runDoctorFix({ "stale-parent": "default" });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
@@ -192,7 +194,7 @@ describe("applyFix: stale-parent", () => {
 
   it("returns failure when updateBead throws for stale parent", async () => {
     setupStaleParent();
-    mockUpdateBead.mockRejectedValue(new Error("network timeout"));
+    mockUpdate.mockRejectedValue(new Error("network timeout"));
 
     const fixReport = await runDoctorFix({ "stale-parent": "default" });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
@@ -208,7 +210,7 @@ describe("applyFix: corrupt-bead-verification error paths", () => {
 
   function setupCorruptBead() {
     mockListRepos.mockResolvedValue(repos);
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -227,7 +229,7 @@ describe("applyFix: corrupt-bead-verification error paths", () => {
 
   it("returns failure when updateBead fails for set-in-progress", async () => {
     setupCorruptBead();
-    mockUpdateBead.mockResolvedValue({ ok: false, error: "bd update failed" });
+    mockUpdate.mockResolvedValue({ ok: false, error: { code: "UNKNOWN", message: "bd update failed", retryable: false } });
 
     const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
     const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
@@ -237,7 +239,7 @@ describe("applyFix: corrupt-bead-verification error paths", () => {
 
   it("returns failure when updateBead fails for remove-label", async () => {
     setupCorruptBead();
-    mockUpdateBead.mockResolvedValue({ ok: false });
+    mockUpdate.mockResolvedValue({ ok: false });
 
     const fixReport = await runDoctorFix({ "corrupt-bead-verification": "remove-label" });
     const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
@@ -246,7 +248,7 @@ describe("applyFix: corrupt-bead-verification error paths", () => {
 
   it("returns failure when updateBead throws", async () => {
     setupCorruptBead();
-    mockUpdateBead.mockRejectedValue(new Error("crash"));
+    mockUpdate.mockRejectedValue(new Error("crash"));
 
     const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
     const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
@@ -271,7 +273,7 @@ describe("applyFix: prompt-guidance", () => {
       mockListRepos.mockResolvedValue([
         { path: repoPath, name: "test-repo", addedAt: "2026-01-01" },
       ]);
-      mockListBeads.mockResolvedValue({ ok: true, data: [] });
+      mockList.mockResolvedValue({ ok: true, data: [] });
 
       const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
       const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
@@ -304,7 +306,7 @@ describe("applyFix: prompt-guidance", () => {
       mockListRepos.mockResolvedValue([
         { path: repoPath, name: "test-repo", addedAt: "2026-01-01" },
       ]);
-      mockListBeads.mockResolvedValue({ ok: true, data: [] });
+      mockList.mockResolvedValue({ ok: true, data: [] });
 
       const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
       const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
@@ -326,7 +328,7 @@ describe("applyFix: context filtering", () => {
   it("filters fixes by context when strategies include contexts", async () => {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -341,7 +343,7 @@ describe("applyFix: context filtering", () => {
         },
       ],
     });
-    mockUpdateBead.mockResolvedValue({ ok: true });
+    mockUpdate.mockResolvedValue({ ok: true });
 
     // Use context filter that matches
     const fixReport = await runDoctorFix({
@@ -357,7 +359,7 @@ describe("applyFix: context filtering", () => {
   it("skips fix when context does not match", async () => {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -372,7 +374,7 @@ describe("applyFix: context filtering", () => {
         },
       ],
     });
-    mockUpdateBead.mockResolvedValue({ ok: true });
+    mockUpdate.mockResolvedValue({ ok: true });
 
     const fixReport = await runDoctorFix({
       "corrupt-bead-verification": {

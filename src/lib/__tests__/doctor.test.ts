@@ -5,11 +5,13 @@ import { join } from "node:path";
 
 // ── Mocks ──────────────────────────────────────────────────
 
-const mockListBeads = vi.fn();
-const mockUpdateBead = vi.fn();
-vi.mock("@/lib/bd", () => ({
-  listBeads: (...args: unknown[]) => mockListBeads(...args),
-  updateBead: (...args: unknown[]) => mockUpdateBead(...args),
+const mockList = vi.fn();
+const mockUpdate = vi.fn();
+vi.mock("@/lib/backend-instance", () => ({
+  getBackend: () => ({
+    list: (...args: unknown[]) => mockList(...args),
+    update: (...args: unknown[]) => mockUpdate(...args),
+  }),
 }));
 
 const mockGetRegisteredAgents = vi.fn();
@@ -213,13 +215,13 @@ describe("checkCorruptTickets", () => {
   const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
 
   it("returns nothing when no beads", async () => {
-    mockListBeads.mockResolvedValue({ ok: true, data: [] });
+    mockList.mockResolvedValue({ ok: true, data: [] });
     const diags = await checkCorruptTickets(repos);
     expect(diags).toHaveLength(0);
   });
 
   it("detects verification label with wrong status", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -247,7 +249,7 @@ describe("checkCorruptTickets", () => {
   });
 
   it("ignores verification bead already in_progress", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -273,7 +275,7 @@ describe("checkStaleParents", () => {
   const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
 
   it("detects parent with all children closed", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -319,7 +321,7 @@ describe("checkStaleParents", () => {
   });
 
   it("ignores parent when some children are open", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -361,7 +363,7 @@ describe("checkStaleParents", () => {
   });
 
   it("ignores already-closed parent", async () => {
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
@@ -481,8 +483,8 @@ describe("runDoctorFix", () => {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
     mockGetRegisteredAgents.mockResolvedValue({});
-    mockListBeads.mockResolvedValue(corruptBeadData);
-    mockUpdateBead.mockResolvedValue({ ok: true });
+    mockList.mockResolvedValue(corruptBeadData);
+    mockUpdate.mockResolvedValue({ ok: true });
   }
 
   it("fixes corrupt verification bead with default strategy (set-in-progress)", async () => {
@@ -493,7 +495,7 @@ describe("runDoctorFix", () => {
     const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
     expect(verificationFix?.success).toBe(true);
     expect(verificationFix?.message).toContain("in_progress");
-    expect(mockUpdateBead).toHaveBeenCalledWith("b-fix", { status: "in_progress" }, "/repo");
+    expect(mockUpdate).toHaveBeenCalledWith("b-fix", { status: "in_progress" }, "/repo");
   });
 
   it("fixes corrupt verification bead with remove-label strategy", async () => {
@@ -504,7 +506,7 @@ describe("runDoctorFix", () => {
     const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
     expect(verificationFix?.success).toBe(true);
     expect(verificationFix?.message).toContain("Removed stage:verification");
-    expect(mockUpdateBead).toHaveBeenCalledWith("b-fix", { removeLabels: ["stage:verification"] }, "/repo");
+    expect(mockUpdate).toHaveBeenCalledWith("b-fix", { removeLabels: ["stage:verification"] }, "/repo");
   });
 
   it("skips checks not included in strategies", async () => {
@@ -623,7 +625,7 @@ describe("streamDoctor", () => {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
     mockGetRegisteredAgents.mockResolvedValue({});
-    mockListBeads.mockResolvedValue({
+    mockList.mockResolvedValue({
       ok: true,
       data: [
         {
