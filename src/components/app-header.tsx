@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, PartyPopper, X, History } from "lucide-react";
 import Image from "next/image";
+import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
 import { CreateBeadDialog } from "@/components/create-bead-dialog";
@@ -307,6 +308,7 @@ export function AppHeader() {
                   className="rounded-md"
                 />
               </button>
+              <VersionBadge />
               <RepoSwitcher />
             </div>
 
