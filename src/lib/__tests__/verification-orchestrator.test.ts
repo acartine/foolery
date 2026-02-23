@@ -1,16 +1,20 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Bead } from "@/lib/types";
+import type { BackendPort } from "@/lib/backend-port";
 
 // ── Mock setup ──────────────────────────────────────────────
 
-// Mock bd.ts
-const showBeadMock = vi.fn();
-const updateBeadMock = vi.fn();
-const closeBeadMock = vi.fn();
-vi.mock("@/lib/bd", () => ({
-  showBead: (...args: unknown[]) => showBeadMock(...args),
-  updateBead: (...args: unknown[]) => updateBeadMock(...args),
-  closeBead: (...args: unknown[]) => closeBeadMock(...args),
+// Mock backend-instance (BackendPort abstraction)
+const mockGet = vi.fn();
+const mockUpdate = vi.fn();
+const mockClose = vi.fn();
+vi.mock("@/lib/backend-instance", () => ({
+  getBackend: () =>
+    ({
+      get: mockGet,
+      update: mockUpdate,
+      close: mockClose,
+    }) as unknown as BackendPort,
 }));
 
 // Mock settings
@@ -113,9 +117,9 @@ beforeEach(() => {
   // Default: verification disabled
   getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "" });
   getVerificationAgentMock.mockResolvedValue({ command: "claude" });
-  showBeadMock.mockResolvedValue({ ok: true, data: makeBead() });
-  updateBeadMock.mockResolvedValue({ ok: true });
-  closeBeadMock.mockResolvedValue({ ok: true });
+  mockGet.mockResolvedValue({ ok: true, data: makeBead() });
+  mockUpdate.mockResolvedValue({ ok: true });
+  mockClose.mockResolvedValue({ ok: true });
 });
 
 // ── Test: disabled verification ─────────────────────────────
@@ -124,19 +128,19 @@ describe("onAgentComplete", () => {
   it("does nothing when verification is disabled", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "" });
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
-    expect(updateBeadMock).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("does nothing for non-eligible actions", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
     await onAgentComplete(["foolery-test"], "breakdown", "/repo", 0);
-    expect(updateBeadMock).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("does nothing for failed agent exit", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
     await onAgentComplete(["foolery-test"], "take", "/repo", 1);
-    expect(updateBeadMock).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
 
@@ -152,7 +156,7 @@ describe("pass path", () => {
     // Fourth show: for verifier prompt build
     // Fifth show: for outcome application
     let showCallCount = 0;
-    showBeadMock.mockImplementation(() => {
+    mockGet.mockImplementation(() => {
       showCallCount++;
       if (showCallCount <= 1) {
         return { ok: true, data: makeBead({ labels: [] }) };
@@ -178,10 +182,10 @@ describe("pass path", () => {
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
     // Should have called updateBead to set entry labels
-    expect(updateBeadMock).toHaveBeenCalled();
+    expect(mockUpdate).toHaveBeenCalled();
 
     // Should have called closeBead for the pass outcome
-    expect(closeBeadMock).toHaveBeenCalledWith(
+    expect(mockClose).toHaveBeenCalledWith(
       "foolery-test",
       "Auto-verification passed",
       "/repo"
@@ -210,7 +214,7 @@ describe("retry paths", () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
 
     // Always return bead with no commit label
-    showBeadMock.mockResolvedValue({
+    mockGet.mockResolvedValue({
       ok: true,
       data: makeBead({
         labels: ["transition:verification", "stage:verification"],
@@ -220,7 +224,7 @@ describe("retry paths", () => {
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
     // Should have called updateBead to transition to retry
-    const retryCall = updateBeadMock.mock.calls.find(
+    const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
         return fields.status === "open" && Array.isArray(fields.labels) && (fields.labels as string[]).includes("stage:retry");
@@ -232,7 +236,7 @@ describe("retry paths", () => {
   it("transitions to retry on verifier fail-requirements", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
 
-    showBeadMock.mockResolvedValue({
+    mockGet.mockResolvedValue({
       ok: true,
       data: makeBead({
         labels: [
@@ -250,10 +254,10 @@ describe("retry paths", () => {
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
     // Should NOT have called closeBead
-    expect(closeBeadMock).not.toHaveBeenCalled();
+    expect(mockClose).not.toHaveBeenCalled();
 
     // Should have called updateBead with retry labels
-    const retryCall = updateBeadMock.mock.calls.find(
+    const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
         return fields.status === "open";
@@ -270,7 +274,7 @@ describe("idempotency", () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "" });
 
     // Bead with commit label ready to go
-    showBeadMock.mockResolvedValue({
+    mockGet.mockResolvedValue({
       ok: true,
       data: makeBead({
         labels: [
