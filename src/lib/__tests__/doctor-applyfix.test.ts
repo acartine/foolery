@@ -28,8 +28,12 @@ vi.mock("@/lib/settings", () => ({
 }));
 
 const mockListRepos = vi.fn();
+const mockInspectMissingRepoTrackerTypes = vi.fn();
+const mockBackfillMissingRepoTrackerTypes = vi.fn();
 vi.mock("@/lib/registry", () => ({
   listRepos: () => mockListRepos(),
+  inspectMissingRepoTrackerTypes: () => mockInspectMissingRepoTrackerTypes(),
+  backfillMissingRepoTrackerTypes: () => mockBackfillMissingRepoTrackerTypes(),
 }));
 
 const mockGetReleaseVersionStatus = vi.fn();
@@ -80,6 +84,15 @@ beforeEach(() => {
     fileMissing: false,
     changed: false,
   });
+  mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+    missingRepoPaths: [],
+    fileMissing: false,
+  });
+  mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+    changed: false,
+    migratedRepoPaths: [],
+    fileMissing: false,
+  });
   mockGetReleaseVersionStatus.mockResolvedValue({
     installedVersion: "1.0.0",
     latestVersion: "1.0.0",
@@ -126,6 +139,46 @@ describe("applyFix: settings-defaults", () => {
 
     const fixReport = await runDoctorFix({ "settings-defaults": "backfill" });
     const fix = fixReport.fixes.find((f) => f.check === "settings-defaults");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("permission denied");
+  });
+});
+
+// ── applyFix: repo-trackers ────────────────────────────────
+
+describe("applyFix: repo-trackers", () => {
+  it("backfills missing repo tracker metadata when strategy is selected", async () => {
+    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+      missingRepoPaths: ["/repo-a"],
+      fileMissing: false,
+    });
+    mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+      changed: true,
+      migratedRepoPaths: ["/repo-a"],
+      fileMissing: false,
+    });
+
+    const fixReport = await runDoctorFix({ "repo-trackers": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "repo-trackers");
+    expect(fix?.success).toBe(true);
+    expect(fix?.message).toContain("Backfilled issue tracker metadata");
+    expect(mockBackfillMissingRepoTrackerTypes).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns failure when repo tracker backfill reports an error", async () => {
+    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+      missingRepoPaths: ["/repo-a"],
+      fileMissing: false,
+    });
+    mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: false,
+      error: "permission denied",
+    });
+
+    const fixReport = await runDoctorFix({ "repo-trackers": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "repo-trackers");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("permission denied");
   });

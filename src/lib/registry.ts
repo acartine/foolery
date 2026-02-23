@@ -16,11 +16,29 @@ interface Registry {
   repos: RegisteredRepo[];
 }
 
+export interface RepoTrackerAuditResult {
+  missingRepoPaths: string[];
+  fileMissing: boolean;
+  error?: string;
+}
+
+export interface RepoTrackerBackfillResult {
+  changed: boolean;
+  migratedRepoPaths: string[];
+  fileMissing: boolean;
+  error?: string;
+}
+
 const CONFIG_DIR = `${homedir()}/.config/foolery`;
 const REGISTRY_FILE = `${CONFIG_DIR}/registry.json`;
 
 function defaultTrackerType(repoPath: string): IssueTrackerType {
   return detectIssueTrackerType(repoPath) ?? "beads";
+}
+
+function formatError(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
 }
 
 function normalizeRepo(raw: unknown): RegisteredRepo | null {
@@ -55,6 +73,46 @@ function normalizeRegistry(raw: unknown): Registry {
       .filter((repo): repo is RegisteredRepo => repo !== null)
     : [];
   return { repos };
+}
+
+async function readRawRegistry(): Promise<{
+  parsed: unknown;
+  fileMissing: boolean;
+  error?: string;
+}> {
+  let raw: string;
+  try {
+    raw = await readFile(REGISTRY_FILE, "utf-8");
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") {
+      return { parsed: {}, fileMissing: true };
+    }
+    return { parsed: {}, fileMissing: false, error: formatError(error) };
+  }
+
+  try {
+    return { parsed: JSON.parse(raw) as unknown, fileMissing: false };
+  } catch (error) {
+    return { parsed: {}, fileMissing: false, error: formatError(error) };
+  }
+}
+
+function collectMissingTrackerRepoPaths(raw: unknown): string[] {
+  if (typeof raw !== "object" || raw === null) return [];
+  const record = raw as Record<string, unknown>;
+  if (!Array.isArray(record.repos)) return [];
+
+  return record.repos.flatMap((entry) => {
+    if (typeof entry !== "object" || entry === null) return [];
+    const repo = entry as Record<string, unknown>;
+    if (typeof repo.path !== "string" || repo.path.length === 0) return [];
+
+    const configuredTracker = repo.trackerType;
+    const hasTracker =
+      typeof configuredTracker === "string" && configuredTracker.length > 0;
+    return hasTracker ? [] : [repo.path];
+  });
 }
 
 export async function loadRegistry(): Promise<Registry> {
@@ -106,4 +164,87 @@ export async function removeRepo(repoPath: string): Promise<void> {
 export async function listRepos(): Promise<RegisteredRepo[]> {
   const registry = await loadRegistry();
   return registry.repos;
+}
+
+export async function inspectMissingRepoTrackerTypes(): Promise<RepoTrackerAuditResult> {
+  const raw = await readRawRegistry();
+  return {
+    missingRepoPaths: raw.error ? [] : collectMissingTrackerRepoPaths(raw.parsed),
+    fileMissing: raw.fileMissing,
+    error: raw.error,
+  };
+}
+
+export async function backfillMissingRepoTrackerTypes(): Promise<RepoTrackerBackfillResult> {
+  const raw = await readRawRegistry();
+  if (raw.error) {
+    return {
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: raw.fileMissing,
+      error: raw.error,
+    };
+  }
+
+  if (raw.fileMissing) {
+    return {
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: true,
+    };
+  }
+
+  if (typeof raw.parsed !== "object" || raw.parsed === null) {
+    return {
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: false,
+    };
+  }
+
+  const record = raw.parsed as Record<string, unknown>;
+  if (!Array.isArray(record.repos)) {
+    return {
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: false,
+    };
+  }
+
+  const migratedRepoPaths: string[] = [];
+  const repos = record.repos.map((rawRepo) => {
+    if (typeof rawRepo !== "object" || rawRepo === null) return rawRepo;
+    const repo = rawRepo as Record<string, unknown>;
+    if (typeof repo.path !== "string" || repo.path.length === 0) return rawRepo;
+
+    const configuredTracker = repo.trackerType;
+    if (typeof configuredTracker === "string" && configuredTracker.length > 0) {
+      return rawRepo;
+    }
+
+    const trackerType = defaultTrackerType(repo.path);
+    migratedRepoPaths.push(repo.path);
+    return { ...repo, trackerType };
+  });
+
+  if (migratedRepoPaths.length === 0) {
+    return {
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: false,
+    };
+  }
+
+  await mkdir(CONFIG_DIR, { recursive: true });
+  await writeFile(
+    REGISTRY_FILE,
+    JSON.stringify({ ...record, repos }, null, 2),
+    "utf-8",
+  );
+
+  return {
+    changed: true,
+    migratedRepoPaths,
+    fileMissing: false,
+  };
 }

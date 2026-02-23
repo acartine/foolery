@@ -8,7 +8,12 @@ import {
   inspectSettingsDefaults,
   backfillMissingSettingsDefaults,
 } from "./settings";
-import { listRepos, type RegisteredRepo } from "./registry";
+import {
+  listRepos,
+  inspectMissingRepoTrackerTypes,
+  backfillMissingRepoTrackerTypes,
+  type RegisteredRepo,
+} from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
 import type { Bead } from "./types";
 
@@ -194,10 +199,20 @@ const SETTINGS_DEFAULTS_FIX_OPTIONS: FixOption[] = [
   { key: "backfill", label: "Backfill missing settings defaults" },
 ];
 
+const REPO_TRACKERS_FIX_OPTIONS: FixOption[] = [
+  { key: "backfill", label: "Backfill missing repository tracker metadata" },
+];
+
 function summarizeMissingSettings(paths: string[]): string {
   const preview = paths.slice(0, 4).join(", ");
   if (paths.length <= 4) return preview;
   return `${preview} (+${paths.length - 4} more)`;
+}
+
+function summarizePaths(paths: string[]): string {
+  const preview = paths.slice(0, 3).join(", ");
+  if (paths.length <= 3) return preview;
+  return `${preview} (+${paths.length - 3} more)`;
 }
 
 export async function checkSettingsDefaults(): Promise<Diagnostic[]> {
@@ -237,6 +252,56 @@ export async function checkSettingsDefaults(): Promise<Diagnostic[]> {
     check: "settings-defaults",
     severity: "info",
     message: "Settings defaults are present in ~/.config/foolery/settings.toml.",
+    fixable: false,
+  });
+  return diagnostics;
+}
+
+// ── Registry tracker metadata checks ────────────────────────
+
+export async function checkRepoTrackerTypes(): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+  const result = await inspectMissingRepoTrackerTypes();
+
+  if (result.error) {
+    diagnostics.push({
+      check: "repo-trackers",
+      severity: "warning",
+      message: `Could not inspect ~/.config/foolery/registry.json: ${result.error}`,
+      fixable: false,
+    });
+    return diagnostics;
+  }
+
+  const missingRepoPaths = Array.from(new Set(result.missingRepoPaths));
+  if (result.fileMissing) {
+    diagnostics.push({
+      check: "repo-trackers",
+      severity: "info",
+      message: "Repository registry ~/.config/foolery/registry.json does not exist yet.",
+      fixable: false,
+    });
+    return diagnostics;
+  }
+
+  if (missingRepoPaths.length > 0) {
+    diagnostics.push({
+      check: "repo-trackers",
+      severity: "warning",
+      message: `Repository registry is missing issue tracker metadata for ${missingRepoPaths.length} repo${missingRepoPaths.length === 1 ? "" : "s"}: ${summarizePaths(missingRepoPaths)}.`,
+      fixable: true,
+      fixOptions: REPO_TRACKERS_FIX_OPTIONS,
+      context: {
+        missingRepoPaths: missingRepoPaths.join(","),
+      },
+    });
+    return diagnostics;
+  }
+
+  diagnostics.push({
+    check: "repo-trackers",
+    severity: "info",
+    message: "Repository tracker metadata is present in ~/.config/foolery/registry.json.",
     fixable: false,
   });
   return diagnostics;
@@ -422,6 +487,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     agentDiags,
     updateDiags,
     settingsDiags,
+    repoTrackerDiags,
     corruptDiags,
     staleDiags,
     promptDiags,
@@ -429,6 +495,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkAgents(),
     checkUpdates(),
     checkSettingsDefaults(),
+    checkRepoTrackerTypes(),
     checkCorruptTickets(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
@@ -438,6 +505,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...agentDiags,
     ...updateDiags,
     ...settingsDiags,
+    ...repoTrackerDiags,
     ...corruptDiags,
     ...staleDiags,
     ...promptDiags,
@@ -498,6 +566,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "agents", label: "Agent connectivity", run: () => checkAgents() },
     { category: "updates", label: "Version", run: () => checkUpdates() },
     { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
+    { category: "repo-trackers", label: "Repo trackers", run: () => checkRepoTrackerTypes() },
     { category: "corrupt-beads", label: "Bead integrity", run: () => checkCorruptTickets(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
@@ -630,6 +699,48 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
           context: {
             ...ctx,
             missingPaths: result.missingPaths.join(","),
+          },
+        };
+      } catch (e) {
+        return { check: diag.check, success: false, message: String(e), context: ctx };
+      }
+    }
+
+    case "repo-trackers": {
+      if (strategy && strategy !== "backfill" && strategy !== "default") {
+        return {
+          check: diag.check,
+          success: false,
+          message: `Unknown strategy "${strategy}" for repo tracker metadata.`,
+          context: ctx,
+        };
+      }
+      try {
+        const result = await backfillMissingRepoTrackerTypes();
+        if (result.error) {
+          return {
+            check: diag.check,
+            success: false,
+            message: `Failed to backfill repository tracker metadata: ${result.error}`,
+            context: ctx,
+          };
+        }
+        const count = result.migratedRepoPaths.length;
+        if (!result.changed) {
+          return {
+            check: diag.check,
+            success: true,
+            message: "Repository tracker metadata already present; no changes needed.",
+            context: ctx,
+          };
+        }
+        return {
+          check: diag.check,
+          success: true,
+          message: `Backfilled issue tracker metadata for ${count} repo${count === 1 ? "" : "s"} in ~/.config/foolery/registry.json.`,
+          context: {
+            ...ctx,
+            migratedRepoPaths: result.migratedRepoPaths.join(","),
           },
         };
       } catch (e) {

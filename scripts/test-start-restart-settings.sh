@@ -16,6 +16,7 @@ TEST_HOME="$TEST_DIR/home"
 STATE_DIR="$TEST_DIR/state"
 CONFIG_DIR="$TEST_HOME/.config/foolery"
 SETTINGS_FILE="$CONFIG_DIR/settings.toml"
+REGISTRY_FILE="$CONFIG_DIR/registry.json"
 
 we_started=0
 
@@ -61,11 +62,31 @@ breakdown = ""
 TOML
 }
 
+write_legacy_registry() {
+  mkdir -p "$CONFIG_DIR"
+  cat >"$REGISTRY_FILE" <<JSON
+{
+  "repos": [
+    {
+      "path": "$ROOT_DIR",
+      "name": "$(basename "$ROOT_DIR")",
+      "addedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}
+JSON
+}
+
 verify_backfilled_settings() {
   [[ -f "$SETTINGS_FILE" ]] || fail "Missing settings file: $SETTINGS_FILE"
   assert_contains "[verification]" "$SETTINGS_FILE"
   assert_contains "enabled = false" "$SETTINGS_FILE"
   assert_contains 'agent = ""' "$SETTINGS_FILE"
+}
+
+verify_backfilled_registry() {
+  [[ -f "$REGISTRY_FILE" ]] || fail "Missing registry file: $REGISTRY_FILE"
+  assert_contains '"trackerType": "beads"' "$REGISTRY_FILE"
 }
 
 log "Preparing isolated test dirs..."
@@ -85,8 +106,9 @@ if [[ -n "$stale_pid" ]]; then
   sleep 1
 fi
 
-log "Writing settings file with missing verification settings..."
+log "Writing legacy settings and registry files with missing defaults..."
 write_partial_settings
+write_legacy_registry
 
 log "Running start and waiting for readiness..."
 we_started=1
@@ -95,9 +117,11 @@ HOME="$TEST_HOME" FOOLERY_PORT="$PORT" FOOLERY_NO_BROWSER=1 FOOLERY_WAIT_FOR_REA
 
 log "Verifying start backfilled missing settings..."
 verify_backfilled_settings
+verify_backfilled_registry
 
-log "Removing verification settings again to test restart path..."
+log "Removing defaults again to test restart path..."
 write_partial_settings
+write_legacy_registry
 
 log "Running restart and waiting for readiness..."
 HOME="$TEST_HOME" FOOLERY_PORT="$PORT" FOOLERY_NO_BROWSER=1 FOOLERY_WAIT_FOR_READY=1 FOOLERY_STATE_DIR="$STATE_DIR" \
@@ -105,5 +129,6 @@ HOME="$TEST_HOME" FOOLERY_PORT="$PORT" FOOLERY_NO_BROWSER=1 FOOLERY_WAIT_FOR_REA
 
 log "Verifying restart backfilled missing settings..."
 verify_backfilled_settings
+verify_backfilled_registry
 
-log "PASS: start/restart backfilled missing settings in $SETTINGS_FILE"
+log "PASS: start/restart backfilled missing settings and tracker metadata in $CONFIG_DIR"
