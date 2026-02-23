@@ -19,7 +19,14 @@ import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type { Bead, BeadDependency } from "@/lib/types";
 import { normalizeFromJsonl, denormalizeToJsonl } from "./beads-jsonl-dto";
 import type { RawBead } from "./beads-jsonl-dto";
-import { readJsonlFile, writeJsonlFile, resolveJsonlPath } from "./beads-jsonl-io";
+import {
+  readJsonlFile,
+  writeJsonlFile,
+  resolveJsonlPath,
+  resolveDepsPath,
+  readJsonlRecords,
+  writeJsonlRecords,
+} from "./beads-jsonl-io";
 
 // ── Capabilities ────────────────────────────────────────────────
 
@@ -105,7 +112,11 @@ export class BeadsBackend implements BackendPort {
       const bead = normalizeFromJsonl(raw);
       beads.set(bead.id, bead);
     }
-    const entry: RepoCache = { beads, deps: [], loaded: true };
+
+    const depsPath = resolveDepsPath(repoPath);
+    const deps = await readJsonlRecords<DepRecord>(depsPath);
+
+    const entry: RepoCache = { beads, deps, loaded: true };
     this.cache.set(repoPath, entry);
     return entry;
   }
@@ -116,6 +127,9 @@ export class BeadsBackend implements BackendPort {
     const filePath = resolveJsonlPath(repoPath);
     const records: RawBead[] = Array.from(entry.beads.values()).map(denormalizeToJsonl);
     await writeJsonlFile(filePath, records);
+
+    const depsPath = resolveDepsPath(repoPath);
+    await writeJsonlRecords(depsPath, entry.deps);
   }
 
   /** Clear all cached state. Exposed for test teardown. */
@@ -257,7 +271,7 @@ export class BeadsBackend implements BackendPort {
 
   async close(
     id: string,
-    _reason?: string,
+    reason?: string,
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
@@ -267,6 +281,9 @@ export class BeadsBackend implements BackendPort {
     bead.status = "closed";
     bead.closed = isoNow();
     bead.updated = isoNow();
+    if (reason) {
+      bead.metadata = { ...bead.metadata, close_reason: reason };
+    }
     await this.flush(rp);
     return { ok: true };
   }
@@ -321,6 +338,7 @@ export class BeadsBackend implements BackendPort {
       );
     }
     entry.deps.push({ blockerId, blockedId });
+    await this.flush(rp);
     return { ok: true };
   }
 
@@ -341,6 +359,7 @@ export class BeadsBackend implements BackendPort {
       );
     }
     entry.deps.splice(idx, 1);
+    await this.flush(rp);
     return { ok: true };
   }
 }

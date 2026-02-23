@@ -76,6 +76,15 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
     ? rawPriority
     : 2) as BeadPriority;
 
+  // Merge close_reason from top-level JSONL field into metadata
+  const baseMetadata = raw.metadata ?? {};
+  const closeReason = raw.close_reason;
+  const metadata = closeReason
+    ? { ...baseMetadata, close_reason: closeReason }
+    : Object.keys(baseMetadata).length > 0
+      ? baseMetadata
+      : undefined;
+
   return {
     id,
     title: raw.title,
@@ -94,7 +103,7 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
     created: (raw.created_at ?? (raw as Record<string, unknown>).created ?? new Date().toISOString()) as string,
     updated: (raw.updated_at ?? (raw as Record<string, unknown>).updated ?? new Date().toISOString()) as string,
     closed: raw.closed_at ?? (raw as Record<string, unknown>).closed as string | undefined,
-    metadata: raw.metadata,
+    metadata,
   };
 }
 
@@ -121,6 +130,9 @@ export function denormalizeToJsonl(bead: Bead): RawBead {
   if (bead.due !== undefined) raw.due = bead.due;
   if (bead.estimate !== undefined) raw.estimated_minutes = bead.estimate;
   if (bead.closed !== undefined) raw.closed_at = bead.closed;
+  if (bead.metadata?.close_reason !== undefined) {
+    raw.close_reason = bead.metadata.close_reason as string;
+  }
   if (bead.metadata !== undefined) raw.metadata = bead.metadata;
 
   return raw;
