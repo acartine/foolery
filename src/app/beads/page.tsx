@@ -410,6 +410,7 @@ function BeadsPageInner() {
           initialBead={initialDetailBead}
           onOpenChange={handleBeadLightboxOpenChange}
           onMoved={handleMovedBead}
+          onShipBead={handleShipBead}
         />
       )}
       {isListView && (

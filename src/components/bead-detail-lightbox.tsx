@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Zap } from "lucide-react";
+import { Clapperboard, Zap } from "lucide-react";
 import { toast } from "sonner";
 import type { Bead } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
@@ -30,6 +30,7 @@ interface BeadDetailLightboxProps {
   initialBead?: Bead | null;
   onOpenChange: (open: boolean) => void;
   onMoved: (newId: string, targetRepo: string) => void;
+  onShipBead?: (bead: Bead) => void;
 }
 
 export function BeadDetailLightbox({
@@ -39,6 +40,7 @@ export function BeadDetailLightbox({
   initialBead,
   onOpenChange,
   onMoved,
+  onShipBead,
 }: BeadDetailLightboxProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -180,7 +182,7 @@ export function BeadDetailLightbox({
         showCloseButton={false}
         className="flex h-[92vh] max-h-[calc(100vh-1rem)] w-[96vw] max-w-[min(1120px,96vw)] flex-col gap-0 overflow-hidden p-0"
       >
-        <DialogHeader className="border-b border-border/70 px-3 py-2">
+        <DialogHeader className="border-b border-border/70 px-3 py-2 space-y-1.5">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-baseline gap-2">
               <DialogDescription
@@ -197,33 +199,40 @@ export function BeadDetailLightbox({
                 {bead?.title ?? "Loading beat..."}
               </DialogTitle>
             </div>
-            <div className="flex shrink-0 items-center gap-1.5">
-              {bead && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 gap-1 px-2 text-xs"
-                  title="Break this beat down into hierarchical tasks via Direct"
-                  onClick={handleBreakdown}
-                >
-                  <Zap className="size-3" />
-                  Breakdown
-                </Button>
-              )}
-              {bead && (
-                <MoveToProjectDialog
-                  bead={bead}
-                  currentRepo={repo}
-                  onMoved={onMoved}
-                />
-              )}
-              <DialogClose asChild>
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                  Close
-                </Button>
-              </DialogClose>
-            </div>
+            <DialogClose asChild>
+              <Button variant="ghost" size="xs">
+                Close
+              </Button>
+            </DialogClose>
           </div>
+          {bead && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="xs"
+                title="Take! — start a session for this beat"
+                disabled={bead.status !== "open" || !onShipBead}
+                onClick={() => onShipBead?.(bead)}
+              >
+                <Clapperboard className="size-3" />
+                Take!
+              </Button>
+              <Button
+                variant="outline"
+                size="xs"
+                title="Break this beat down into hierarchical tasks via Direct"
+                onClick={handleBreakdown}
+              >
+                <Zap className="size-3" />
+                Breakdown
+              </Button>
+              <MoveToProjectDialog
+                bead={bead}
+                currentRepo={repo}
+                onMoved={onMoved}
+              />
+            </div>
+          )}
         </DialogHeader>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] overflow-hidden lg:grid-cols-[minmax(0,1.8fr)_minmax(18rem,1fr)] lg:grid-rows-1">

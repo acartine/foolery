@@ -106,8 +106,8 @@ export function MoveToProjectDialog({
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTargetRepo(""); }}>
       <DialogTrigger asChild>
-        <Button variant="outline" title="Move this beat to another project" size="sm">
-          <ArrowRightLeft className="mr-2 h-4 w-4" />
+        <Button variant="outline" title="Move this beat to another project" size="xs">
+          <ArrowRightLeft />
           Move
         </Button>
       </DialogTrigger>
