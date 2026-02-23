@@ -117,6 +117,7 @@ export function denormalizeToJsonl(bead: Bead): RawBead {
   if (bead.acceptance !== undefined) raw.acceptance_criteria = bead.acceptance;
   if (bead.assignee !== undefined) raw.assignee = bead.assignee;
   if (bead.owner !== undefined) raw.owner = bead.owner;
+  if (bead.parent !== undefined) raw.parent = bead.parent;
   if (bead.due !== undefined) raw.due = bead.due;
   if (bead.estimate !== undefined) raw.estimated_minutes = bead.estimate;
   if (bead.closed !== undefined) raw.closed_at = bead.closed;
