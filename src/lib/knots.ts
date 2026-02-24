@@ -141,9 +141,10 @@ export async function newKnot(
   options?: { body?: string; state?: string },
   repoPath?: string,
 ): Promise<BdResult<{ id: string }>> {
-  const args = ["new", title];
+  const args = ["new"];
   if (options?.body) args.push("--body", options.body);
   if (options?.state) args.push("--state", options.state);
+  args.push("--", title);
 
   const { stdout, stderr, exitCode } = await exec(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots new failed" };
