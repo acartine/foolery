@@ -765,13 +765,21 @@ export async function createOrchestrationSession(
           .join("");
 
         if (text) {
-          entry.assistantText = text;
-          if (entry.lineBuffer.trim()) {
-            const pending = entry.lineBuffer;
-            entry.lineBuffer = "";
-            for (const pendingLine of pending.split("\n")) {
-              applyLineEvent(entry, pendingLine);
-            }
+          // Accumulate rather than replace — crucial for Codex where multiple
+          // agent_message events deliver distinct content. For Claude the
+          // assistant event repeats streamed content; appending is harmless
+          // since extractPlanFromTaggedJson matches the first occurrence.
+          entry.assistantText += (entry.assistantText ? "\n" : "") + text;
+
+          // Stale partial line from prior stream_event deltas is superseded.
+          entry.lineBuffer = "";
+
+          // Parse the full text line-by-line for NDJSON plan events.
+          // For Claude this re-parses already-processed lines (idempotent).
+          // For Codex this is the first — and only — parse of agent_message
+          // content that may contain wave_draft / plan_final events.
+          for (const line of text.split("\n")) {
+            applyLineEvent(entry, line);
           }
         }
         continue;
