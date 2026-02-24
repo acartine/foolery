@@ -64,6 +64,8 @@ export function AppHeader() {
   const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
   const isFinalCutActive = beadsView === "finalcut";
   const verificationCount = useVerificationCount(isBeadsRoute, isFinalCutActive);
+  const activeBeadId = searchParams.get("bead");
+  const activeBeadShortId = activeBeadId?.replace(/^[^-]+-/, "") ?? null;
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present
   const effectiveSettingsOpen = settingsOpen || settingsOpenFromUrl;
@@ -310,6 +312,20 @@ export function AppHeader() {
               </button>
               <VersionBadge />
               <RepoSwitcher />
+              {activeBeadShortId && (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  title={`Viewing ${activeBeadId} — click to focus in list`}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set("bead", activeBeadId!);
+                    router.push(`/beads?${params.toString()}`);
+                  }}
+                >
+                  {activeBeadShortId}
+                </button>
+              )}
             </div>
 
             <SearchBar

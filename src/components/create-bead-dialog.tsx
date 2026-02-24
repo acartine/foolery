@@ -65,7 +65,20 @@ export function CreateBeadDialog({
         if (deps && result.data?.id) {
           await addDepsForBead(result.data.id, deps, repo ?? undefined);
         }
-        toast.success("Created");
+        const createdId = result.data?.id;
+        const shortId = createdId?.replace(/^[^-]+-/, "") ?? "";
+        toast.success(`Created ${shortId}`, {
+          action: createdId
+            ? {
+                label: "Open",
+                onClick: () => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set("bead", createdId);
+                  router.push(`/beads?${params.toString()}`);
+                },
+              }
+            : undefined,
+        });
         onCreated();
       } else {
         toast.error(result.error ?? "Failed to create");
@@ -89,7 +102,20 @@ export function CreateBeadDialog({
         if (deps && result.data?.id) {
           await addDepsForBead(result.data.id, deps, repo ?? undefined);
         }
-        toast.success("Created — ready for another");
+        const createdId2 = result.data?.id;
+        const shortId2 = createdId2?.replace(/^[^-]+-/, "") ?? "";
+        toast.success(`Created ${shortId2} — ready for another`, {
+          action: createdId2
+            ? {
+                label: "Open",
+                onClick: () => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set("bead", createdId2);
+                  router.push(`/beads?${params.toString()}`);
+                },
+              }
+            : undefined,
+        });
         setFormKey((k) => k + 1);
         queryClient.invalidateQueries({ queryKey: ["beads"] });
       } else {
@@ -111,7 +137,8 @@ export function CreateBeadDialog({
         toast.error(result.error ?? "Failed to create parent beat");
         return;
       }
-      toast.success("Created — starting breakdown...");
+      const shortId3 = result.data.id.replace(/^[^-]+-/, "");
+      toast.success(`Created ${shortId3} — starting breakdown...`);
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["beads"] });
 
