@@ -27,7 +27,10 @@ import { formatModelDisplay } from "@/hooks/use-agent-info";
 import type { Bead } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
-import { MessageNavigator, useMessageNavigation } from "@/components/message-navigator";
+import {
+  InteractionPicker,
+  useInteractionPicker,
+} from "@/components/interaction-picker";
 
 const WINDOW_SIZE = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
@@ -319,10 +322,12 @@ function SessionCard({
   session,
   entryRefCallback,
   highlightedEntryId,
+  filterEntry,
 }: {
   session: AgentHistorySession;
   entryRefCallback?: (id: string, node: HTMLDivElement | null) => void;
   highlightedEntryId?: string | null;
+  filterEntry?: (entry: AgentHistoryEntry) => boolean;
 }) {
   const agentLabel = useMemo(() => buildAgentLabel(session), [session]);
 
@@ -340,6 +345,11 @@ function SessionCard({
     }
     return result;
   }, [session.entries]);
+
+  const filteredEntries = useMemo(() => {
+    if (!filterEntry) return enrichedEntries;
+    return enrichedEntries.filter(({ entry }) => filterEntry(entry));
+  }, [enrichedEntries, filterEntry]);
 
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">
@@ -360,12 +370,14 @@ function SessionCard({
         <span className="ml-auto text-[10px] text-slate-400">{formatTime(session.updatedAt)}</span>
       </header>
       <div className="space-y-1.5 p-2.5">
-        {enrichedEntries.length === 0 ? (
+        {filteredEntries.length === 0 ? (
           <div className="rounded border border-slate-700 bg-slate-900/70 px-2.5 py-1.5 text-[10px] text-slate-300">
-            No log entries captured for this session.
+            {enrichedEntries.length === 0
+              ? "No log entries captured for this session."
+              : "No entries match the active filters."}
           </div>
         ) : (
-          enrichedEntries.map(({ entry, precedingPromptSource }) => (
+          filteredEntries.map(({ entry, precedingPromptSource }) => (
             <div
               key={entry.id}
               ref={(node) => entryRefCallback?.(entry.id, node)}
@@ -663,7 +675,7 @@ export function AgentHistoryView() {
     return sessionsQuery.data.data?.sessions ?? [];
   }, [sessionsQuery.data]);
 
-  const msgNav = useMessageNavigation(sessions);
+  const picker = useInteractionPicker(sessions);
 
   const repoNames = useMemo(
     () =>
@@ -897,8 +909,8 @@ export function AgentHistoryView() {
           ) : null}
         </div>
 
-        {loadedSummary && sessions.length > 0 && msgNav.navigableEntries.entries.length > 0 ? (
-          <MessageNavigator nav={msgNav} />
+        {loadedSummary && sessions.length > 0 ? (
+          <InteractionPicker picker={picker} />
         ) : null}
 
         <div
@@ -908,10 +920,6 @@ export function AgentHistoryView() {
             if (event.key === "Tab" && event.shiftKey) {
               event.preventDefault();
               beatListRef.current?.focus();
-            }
-            if (event.key === "/") {
-              event.preventDefault();
-              msgNav.jumpInputRef.current?.focus();
             }
           }}
           className="max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60"
@@ -947,8 +955,9 @@ export function AgentHistoryView() {
                 <SessionCard
                   key={session.sessionId}
                   session={session}
-                  entryRefCallback={msgNav.entryRefCallback}
-                  highlightedEntryId={msgNav.highlightedEntryId}
+                  entryRefCallback={picker.entryRefCallback}
+                  highlightedEntryId={picker.highlightedEntryId}
+                  filterEntry={picker.filterEntry}
                 />
               ))}
             </div>
