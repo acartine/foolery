@@ -393,9 +393,9 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "id",
       header: "",
-      size: 60,
-      minSize: 60,
-      maxSize: 60,
+      size: 75,
+      minSize: 75,
+      maxSize: 75,
       enableSorting: false,
       cell: ({ row }) => {
         const shortId = row.original.id.replace(/^[^-]+-/, "");
