@@ -96,6 +96,16 @@ export function findCommitLabelRaw(labels: string[]): string | null {
   return labels.find((l) => l.startsWith(LABEL_PREFIX_COMMIT)) ?? null;
 }
 
+/** Find ALL commit label strings in the labels array. */
+export function findAllCommitLabels(labels: string[]): string[] {
+  return labels.filter((l) => l.startsWith(LABEL_PREFIX_COMMIT));
+}
+
+/** Find ALL stage label strings (stage:*) in the labels array. */
+export function findAllStageLabels(labels: string[]): string[] {
+  return labels.filter((l) => l.startsWith("stage:"));
+}
+
 /** Check if a bead has the transition:verification lock. */
 export function hasTransitionLock(bead: Bead): boolean {
   return (bead.labels ?? []).includes(LABEL_TRANSITION_VERIFICATION);
@@ -166,9 +176,11 @@ export function computeEntryLabels(currentLabels: string[]): VerificationTransit
     add.push(LABEL_STAGE_VERIFICATION);
   }
 
-  // Remove stage:retry if present (re-entering verification from a retry)
-  if (currentLabels.includes(LABEL_STAGE_RETRY)) {
-    remove.push(LABEL_STAGE_RETRY);
+  // Remove ALL other stage labels (e.g., stage:retry, stage:custom)
+  for (const label of findAllStageLabels(currentLabels)) {
+    if (label !== LABEL_STAGE_VERIFICATION) {
+      remove.push(label);
+    }
   }
 
   return { add, remove };
@@ -180,12 +192,27 @@ export function computeEntryLabels(currentLabels: string[]): VerificationTransit
  */
 export function computePassLabels(currentLabels: string[]): VerificationTransitionLabels {
   const remove: string[] = [];
+
   if (currentLabels.includes(LABEL_TRANSITION_VERIFICATION)) {
     remove.push(LABEL_TRANSITION_VERIFICATION);
   }
-  if (currentLabels.includes(LABEL_STAGE_VERIFICATION)) {
-    remove.push(LABEL_STAGE_VERIFICATION);
+
+  // Remove all stage labels
+  for (const label of findAllStageLabels(currentLabels)) {
+    if (!remove.includes(label)) remove.push(label);
   }
+
+  // Remove all commit labels (clean close)
+  for (const label of findAllCommitLabels(currentLabels)) {
+    remove.push(label);
+  }
+
+  // Remove attempt label (clean close)
+  const attemptLabel = findAttemptLabel(currentLabels);
+  if (attemptLabel) {
+    remove.push(attemptLabel);
+  }
+
   return { add: [], remove };
 }
 
@@ -201,14 +228,15 @@ export function computeRetryLabels(currentLabels: string[]): VerificationTransit
   if (currentLabels.includes(LABEL_TRANSITION_VERIFICATION)) {
     remove.push(LABEL_TRANSITION_VERIFICATION);
   }
-  if (currentLabels.includes(LABEL_STAGE_VERIFICATION)) {
-    remove.push(LABEL_STAGE_VERIFICATION);
+
+  // Remove ALL stage labels (stage:retry replaces them all)
+  for (const label of findAllStageLabels(currentLabels)) {
+    remove.push(label);
   }
 
-  // Remove stale commit label so the next implementation can set a fresh one
-  const prevCommitLabel = findCommitLabelRaw(currentLabels);
-  if (prevCommitLabel) {
-    remove.push(prevCommitLabel);
+  // Remove ALL stale commit labels so the next implementation can set a fresh one
+  for (const label of findAllCommitLabels(currentLabels)) {
+    remove.push(label);
   }
 
   // Increment attempt counter

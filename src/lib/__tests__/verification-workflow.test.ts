@@ -7,6 +7,8 @@ import {
   buildAttemptLabel,
   findAttemptLabel,
   findCommitLabelRaw,
+  findAllCommitLabels,
+  findAllStageLabels,
   hasTransitionLock,
   isInVerification,
   isInRetry,
@@ -98,6 +100,22 @@ describe("findAttemptLabel / findCommitLabelRaw", () => {
   it("finds commit label", () => {
     expect(findCommitLabelRaw(["commit:abc", "foo"])).toBe("commit:abc");
   });
+
+  it("finds all commit labels", () => {
+    expect(findAllCommitLabels(["commit:abc", "commit:def", "foo"])).toEqual(["commit:abc", "commit:def"]);
+  });
+
+  it("returns empty array when no commit labels", () => {
+    expect(findAllCommitLabels(["foo", "bar"])).toEqual([]);
+  });
+
+  it("finds all stage labels", () => {
+    expect(findAllStageLabels(["stage:verification", "stage:retry", "foo"])).toEqual(["stage:verification", "stage:retry"]);
+  });
+
+  it("returns empty array when no stage labels", () => {
+    expect(findAllStageLabels(["foo", "bar"])).toEqual([]);
+  });
 });
 
 // ── Bead state checks ───────────────────────────────────────
@@ -168,6 +186,14 @@ describe("computeEntryLabels", () => {
     expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
     expect(result.add).not.toContain(LABEL_STAGE_VERIFICATION);
   });
+
+  it("removes all stage labels when entering verification", () => {
+    const result = computeEntryLabels(["stage:retry", "stage:custom"]);
+    expect(result.remove).toContain("stage:retry");
+    expect(result.remove).toContain("stage:custom");
+    expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
+    expect(result.add).toContain(LABEL_STAGE_VERIFICATION);
+  });
 });
 
 describe("computePassLabels", () => {
@@ -180,8 +206,32 @@ describe("computePassLabels", () => {
 
   it("handles partial label state gracefully", () => {
     const result = computePassLabels([LABEL_STAGE_VERIFICATION]);
-    expect(result.remove).toEqual([LABEL_STAGE_VERIFICATION]);
+    expect(result.remove).toContain(LABEL_STAGE_VERIFICATION);
     expect(result.add).toEqual([]);
+  });
+
+  it("removes commit and attempt labels on pass for clean close", () => {
+    const result = computePassLabels([
+      "transition:verification",
+      "stage:verification",
+      "commit:abc123",
+      "attempt:2",
+    ]);
+    expect(result.remove).toContain("transition:verification");
+    expect(result.remove).toContain("stage:verification");
+    expect(result.remove).toContain("commit:abc123");
+    expect(result.remove).toContain("attempt:2");
+  });
+
+  it("removes multiple commit labels on pass", () => {
+    const result = computePassLabels([
+      "transition:verification",
+      "stage:verification",
+      "commit:abc",
+      "commit:def",
+    ]);
+    expect(result.remove).toContain("commit:abc");
+    expect(result.remove).toContain("commit:def");
   });
 });
 
@@ -226,6 +276,32 @@ describe("computeRetryLabels", () => {
     expect(result.remove).toContain("commit:def456");
     expect(result.remove).toContain("attempt:2");
     expect(result.add).toContain("attempt:3");
+    expect(result.add).toContain(LABEL_STAGE_RETRY);
+  });
+
+  it("removes ALL commit labels when multiple exist", () => {
+    const result = computeRetryLabels([
+      LABEL_TRANSITION_VERIFICATION,
+      LABEL_STAGE_VERIFICATION,
+      "commit:abc123",
+      "commit:def456",
+      "commit:ghi789",
+    ]);
+    expect(result.remove).toContain("commit:abc123");
+    expect(result.remove).toContain("commit:def456");
+    expect(result.remove).toContain("commit:ghi789");
+    expect(result.add).toContain(LABEL_STAGE_RETRY);
+    expect(result.add).toContain("attempt:1");
+  });
+
+  it("removes all stage labels not just stage:verification", () => {
+    const result = computeRetryLabels([
+      LABEL_TRANSITION_VERIFICATION,
+      LABEL_STAGE_VERIFICATION,
+      "stage:custom",
+    ]);
+    expect(result.remove).toContain(LABEL_STAGE_VERIFICATION);
+    expect(result.remove).toContain("stage:custom");
     expect(result.add).toContain(LABEL_STAGE_RETRY);
   });
 });
