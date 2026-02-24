@@ -1,7 +1,7 @@
-import { detectIssueTrackerType } from "@/lib/issue-tracker-detection";
-import type { IssueTrackerType } from "@/lib/issue-trackers";
+import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
+import type { MemoryManagerType } from "@/lib/memory-managers";
 
-interface TrackerCommandOptions {
+interface MemoryManagerCommandOptions {
   noDaemon?: boolean;
 }
 
@@ -9,26 +9,26 @@ function quoteId(id: string): string {
   return JSON.stringify(id);
 }
 
-function beadsNoDaemonFlag(options?: TrackerCommandOptions): string {
+function beadsNoDaemonFlag(options?: MemoryManagerCommandOptions): string {
   return options?.noDaemon ? " --no-daemon" : "";
 }
 
-export function resolveIssueTrackerType(repoPath?: string): IssueTrackerType {
+export function resolveMemoryManagerType(repoPath?: string): MemoryManagerType {
   if (!repoPath) return "beads";
-  return detectIssueTrackerType(repoPath) ?? "beads";
+  return detectMemoryManagerType(repoPath) ?? "beads";
 }
 
-export function buildShowIssueCommand(id: string, trackerType: IssueTrackerType): string {
-  if (trackerType === "knots") return `knots show ${quoteId(id)}`;
+export function buildShowIssueCommand(id: string, memoryManagerType: MemoryManagerType): string {
+  if (memoryManagerType === "knots") return `knots show ${quoteId(id)}`;
   return `bd show ${quoteId(id)}`;
 }
 
 export function buildVerificationStageCommand(
   id: string,
-  trackerType: IssueTrackerType,
-  options?: TrackerCommandOptions,
+  memoryManagerType: MemoryManagerType,
+  options?: MemoryManagerCommandOptions,
 ): string {
-  if (trackerType === "knots") {
+  if (memoryManagerType === "knots") {
     return `knots update ${quoteId(id)} --status implementing --add-tag stage:verification`;
   }
   return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification${beadsNoDaemonFlag(options)}`;
@@ -36,10 +36,10 @@ export function buildVerificationStageCommand(
 
 export function buildVerificationRetryCommands(
   id: string,
-  trackerType: IssueTrackerType,
-  options?: TrackerCommandOptions,
+  memoryManagerType: MemoryManagerType,
+  options?: MemoryManagerCommandOptions,
 ): string[] {
-  if (trackerType === "knots") {
+  if (memoryManagerType === "knots") {
     return [
       `knots update ${quoteId(id)} --remove-tag stage:verification --remove-tag transition:verification --add-tag stage:retry`,
     ];
@@ -55,10 +55,10 @@ export function buildVerificationRetryCommands(
 
 export function buildVerificationPassCommands(
   id: string,
-  trackerType: IssueTrackerType,
-  options?: TrackerCommandOptions,
+  memoryManagerType: MemoryManagerType,
+  options?: MemoryManagerCommandOptions,
 ): string[] {
-  if (trackerType === "knots") {
+  if (memoryManagerType === "knots") {
     return [
       `knots update ${quoteId(id)} --remove-tag stage:verification --remove-tag transition:verification --status shipped --force`,
     ];

@@ -5,9 +5,9 @@ vi.mock("@/lib/settings", () => ({
   backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
 }));
 
-const mockBackfillMissingRepoTrackerTypes = vi.fn();
+const mockBackfillMissingRepoMemoryManagerTypes = vi.fn();
 vi.mock("@/lib/registry", () => ({
-  backfillMissingRepoTrackerTypes: () => mockBackfillMissingRepoTrackerTypes(),
+  backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
 }));
 
 import { register } from "@/instrumentation";
@@ -22,7 +22,7 @@ describe("register startup backfills", () => {
       fileMissing: false,
       changed: false,
     });
-    mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+    mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
       changed: false,
       migratedRepoPaths: [],
       fileMissing: false,
@@ -32,7 +32,7 @@ describe("register startup backfills", () => {
   it("runs both settings and registry backfills", async () => {
     await register();
     expect(mockBackfillMissingSettingsDefaults).toHaveBeenCalledTimes(1);
-    expect(mockBackfillMissingRepoTrackerTypes).toHaveBeenCalledTimes(1);
+    expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
   });
 
   it("still runs registry backfill when settings backfill reports an error", async () => {
@@ -46,6 +46,6 @@ describe("register startup backfills", () => {
 
     await register();
     expect(mockBackfillMissingSettingsDefaults).toHaveBeenCalledTimes(1);
-    expect(mockBackfillMissingRepoTrackerTypes).toHaveBeenCalledTimes(1);
+    expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
   });
 });

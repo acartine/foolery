@@ -1,13 +1,13 @@
 import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import type { IssueTrackerType } from "@/lib/issue-trackers";
-import { detectIssueTrackerType } from "@/lib/issue-tracker-detection";
+import type { MemoryManagerType } from "@/lib/memory-managers";
+import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 
 export interface DirEntry {
   name: string;
   path: string;
-  trackerType?: IssueTrackerType;
+  memoryManagerType?: MemoryManagerType;
   isCompatible: boolean;
 }
 
@@ -30,12 +30,12 @@ export async function listDirectory(dirPath?: string): Promise<DirEntry[]> {
 
     try {
       await stat(fullPath);
-      const trackerType = detectIssueTrackerType(fullPath);
+      const memoryManagerType = detectMemoryManagerType(fullPath);
       entries.push({
         name: dirent.name,
         path: fullPath,
-        trackerType,
-        isCompatible: Boolean(trackerType),
+        memoryManagerType,
+        isCompatible: Boolean(memoryManagerType),
       });
     } catch {
       // permission error or similar, skip

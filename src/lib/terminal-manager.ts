@@ -13,12 +13,12 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
-import type { IssueTrackerType } from "@/lib/issue-trackers";
+import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
   buildShowIssueCommand,
   buildVerificationStageCommand,
-  resolveIssueTrackerType,
-} from "@/lib/tracker-commands";
+  resolveMemoryManagerType,
+} from "@/lib/memory-manager-commands";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
@@ -94,17 +94,17 @@ function buildAutoAskUserResponse(input: unknown): string {
   return lines.join("\n");
 }
 
-function buildVerificationStateCommand(id: string, trackerType: IssueTrackerType): string {
-  return buildVerificationStageCommand(id, trackerType);
+function buildVerificationStateCommand(id: string, memoryManagerType: MemoryManagerType): string {
+  return buildVerificationStageCommand(id, memoryManagerType);
 }
 
-function buildSingleBeadCompletionFollowUp(beadId: string, trackerType: IssueTrackerType): string {
+function buildSingleBeadCompletionFollowUp(beadId: string, memoryManagerType: MemoryManagerType): string {
   return [
     "Ship completion follow-up:",
     `Confirm that changes for ${beadId} are merged according to your normal shipping guidelines.`,
     "Do not ask for another follow-up prompt until that merge confirmation is done (or blocked by a hard error).",
     "After confirming merge, run this command to set verification state:",
-    buildVerificationStateCommand(beadId, trackerType),
+    buildVerificationStateCommand(beadId, memoryManagerType),
     "Then summarize merge confirmation and command result.",
   ].join("\n");
 }
@@ -112,7 +112,7 @@ function buildSingleBeadCompletionFollowUp(beadId: string, trackerType: IssueTra
 function buildWaveCompletionFollowUp(
   waveId: string,
   beatIds: string[],
-  trackerType: IssueTrackerType,
+  memoryManagerType: MemoryManagerType,
 ): string {
   const targets = beatIds.length > 0 ? beatIds : [waveId];
   return [
@@ -121,21 +121,21 @@ function buildWaveCompletionFollowUp(
     "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id, trackerType)),
+    ...targets.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
     "Beats in this scene:",
     ...targets.map((id) => `- ${id}`),
     "Then summarize per beat: merged yes/no and verification-state command result.",
   ].join("\n");
 }
 
-function buildSceneCompletionFollowUp(beatIds: string[], trackerType: IssueTrackerType): string {
+function buildSceneCompletionFollowUp(beatIds: string[], memoryManagerType: MemoryManagerType): string {
   const targets = beatIds.length > 0 ? beatIds : ["(none provided)"];
   return [
     "Scene completion follow-up:",
     "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id, trackerType)),
+    ...targets.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
     "Beats in this scene:",
     ...targets.map((id) => `- ${id}`),
     "Then summarize per beat: merged yes/no and verification-state command result.",
@@ -367,9 +367,9 @@ export async function createSession(
     );
   }
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
-  const trackerType = resolveIssueTrackerType(repoPath || process.cwd());
-  const showSelfCommand = buildShowIssueCommand(bead.id, trackerType);
-  const showChildCommand = buildShowIssueCommand("<child-id>", trackerType);
+  const memoryManagerType = resolveMemoryManagerType(repoPath || process.cwd());
+  const showSelfCommand = buildShowIssueCommand(bead.id, memoryManagerType);
+  const showChildCommand = buildShowIssueCommand("<child-id>", memoryManagerType);
 
   const id = generateId();
   const prompt =
@@ -496,8 +496,8 @@ export async function createSession(
     : customPrompt
       ? null
       : isParent
-        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds, trackerType)
-        : buildSingleBeadCompletionFollowUp(bead.id, trackerType);
+        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds, memoryManagerType)
+        : buildSingleBeadCompletionFollowUp(bead.id, memoryManagerType);
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
@@ -801,8 +801,8 @@ export async function createSceneSession(
   });
 
   const id = generateId();
-  const trackerType = resolveIssueTrackerType(repoPath || process.cwd());
-  const showAnyCommand = buildShowIssueCommand("<id>", trackerType);
+  const memoryManagerType = resolveMemoryManagerType(repoPath || process.cwd());
+  const showAnyCommand = buildShowIssueCommand("<id>", memoryManagerType);
 
   // Build combined prompt with bead IDs only (agents query details themselves)
   const beadBlocks = beads
@@ -824,7 +824,7 @@ export async function createSceneSession(
       `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
       `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
       `6. For each bead, once merge/push is confirmed, run exactly one verification command:`,
-      ...beadIds.map((id) => buildVerificationStateCommand(id, trackerType)),
+      ...beadIds.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
       `7. In your final summary, report per bead: merged yes/no and verification command result.`,
       ``,
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
@@ -916,7 +916,7 @@ export async function createSceneSession(
     ? null
     : customPrompt
       ? null
-      : buildSceneCompletionFollowUp(beadIds, trackerType);
+      : buildSceneCompletionFollowUp(beadIds, memoryManagerType);
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 

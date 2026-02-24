@@ -28,12 +28,12 @@ vi.mock("@/lib/settings", () => ({
 }));
 
 const mockListRepos = vi.fn();
-const mockInspectMissingRepoTrackerTypes = vi.fn();
-const mockBackfillMissingRepoTrackerTypes = vi.fn();
+const mockInspectMissingRepoMemoryManagerTypes = vi.fn();
+const mockBackfillMissingRepoMemoryManagerTypes = vi.fn();
 vi.mock("@/lib/registry", () => ({
   listRepos: () => mockListRepos(),
-  inspectMissingRepoTrackerTypes: () => mockInspectMissingRepoTrackerTypes(),
-  backfillMissingRepoTrackerTypes: () => mockBackfillMissingRepoTrackerTypes(),
+  inspectMissingRepoMemoryManagerTypes: () => mockInspectMissingRepoMemoryManagerTypes(),
+  backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
 }));
 
 const mockGetReleaseVersionStatus = vi.fn();
@@ -84,11 +84,11 @@ beforeEach(() => {
     fileMissing: false,
     changed: false,
   });
-  mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+  mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
     missingRepoPaths: [],
     fileMissing: false,
   });
-  mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+  mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
     changed: false,
     migratedRepoPaths: [],
     fileMissing: false,
@@ -144,41 +144,41 @@ describe("applyFix: settings-defaults", () => {
   });
 });
 
-// ── applyFix: repo-trackers ────────────────────────────────
+// ── applyFix: repo-memory-managers ────────────────────────────────
 
-describe("applyFix: repo-trackers", () => {
-  it("backfills missing repo tracker metadata when strategy is selected", async () => {
-    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+describe("applyFix: repo-memory-managers", () => {
+  it("backfills missing repo memory manager metadata when strategy is selected", async () => {
+    mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
       missingRepoPaths: ["/repo-a"],
       fileMissing: false,
     });
-    mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+    mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
       changed: true,
       migratedRepoPaths: ["/repo-a"],
       fileMissing: false,
     });
 
-    const fixReport = await runDoctorFix({ "repo-trackers": "backfill" });
-    const fix = fixReport.fixes.find((f) => f.check === "repo-trackers");
+    const fixReport = await runDoctorFix({ "repo-memory-managers": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "repo-memory-managers");
     expect(fix?.success).toBe(true);
-    expect(fix?.message).toContain("Backfilled issue tracker metadata");
-    expect(mockBackfillMissingRepoTrackerTypes).toHaveBeenCalledTimes(1);
+    expect(fix?.message).toContain("Backfilled memory manager metadata");
+    expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
   });
 
-  it("returns failure when repo tracker backfill reports an error", async () => {
-    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+  it("returns failure when repo memory manager backfill reports an error", async () => {
+    mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
       missingRepoPaths: ["/repo-a"],
       fileMissing: false,
     });
-    mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+    mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
       changed: false,
       migratedRepoPaths: [],
       fileMissing: false,
       error: "permission denied",
     });
 
-    const fixReport = await runDoctorFix({ "repo-trackers": "backfill" });
-    const fix = fixReport.fixes.find((f) => f.check === "repo-trackers");
+    const fixReport = await runDoctorFix({ "repo-memory-managers": "backfill" });
+    const fix = fixReport.fixes.find((f) => f.check === "repo-memory-managers");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("permission denied");
   });

@@ -4,7 +4,7 @@ This tutorial defines how Foolery talks to an agent-memory backend (Beads today,
 
 ## What This Contract Does
 
-Foolery's UI, API routes, and orchestration logic call one backend contract instead of tracker-specific code.
+Foolery's UI, API routes, and orchestration logic call one backend contract instead of memory-manager-specific code.
 
 Core source files:
 
@@ -233,18 +233,18 @@ await port.addDependency("foolery-1", created.data!.id);
 const ready = await port.listReady();
 ```
 
-## 6. Register Tracker Metadata + Detection
+## 6. Register Memory Manager Metadata + Detection
 
-If your backend maps to a discoverable repository tracker, update:
+If your backend maps to a discoverable repository memory manager, update:
 
-- [src/lib/issue-trackers.ts](https://github.com/acartine/foolery/blob/main/src/lib/issue-trackers.ts)
-- [src/lib/issue-tracker-detection.ts](https://github.com/acartine/foolery/blob/main/src/lib/issue-tracker-detection.ts)
+- [src/lib/memory-managers.ts](https://github.com/acartine/foolery/blob/main/src/lib/memory-managers.ts)
+- [src/lib/memory-manager-detection.ts](https://github.com/acartine/foolery/blob/main/src/lib/memory-manager-detection.ts)
 
-Current tracker metadata shape:
+Current memory manager metadata shape:
 
 ```ts
-export interface IssueTrackerImplementation {
-  type: IssueTrackerType;
+export interface MemoryManagerImplementation {
+  type: MemoryManagerType;
   label: string;
   markerDirectory: string;
 }
@@ -290,6 +290,6 @@ bun run build
 - [ ] Error codes and retryability are standardized
 - [ ] Capabilities declared accurately
 - [ ] Factory + singleton wiring updated
-- [ ] Tracker detection/metadata updated (if needed)
+- [ ] Memory manager detection/metadata updated (if needed)
 - [ ] Contract test harness passes
 - [ ] Full quality gates pass

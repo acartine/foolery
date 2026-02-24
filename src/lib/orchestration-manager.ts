@@ -166,7 +166,7 @@ function buildPrompt(
         ]
       : []),
     "",
-    "Use your tracker CLI commands to inspect missing context instead of guessing.",
+    "Use your memory manager CLI commands to inspect missing context instead of guessing.",
     "",
     "Hard rules:",
     "- Every in-scope bead ID must appear in exactly one wave or in unassigned_bead_ids.",

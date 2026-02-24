@@ -1,4 +1,4 @@
-import type { IssueTrackerType } from "@/lib/issue-trackers";
+import type { MemoryManagerType } from "@/lib/memory-managers";
 
 export type BeadType =
   | "bug"
@@ -64,13 +64,13 @@ export interface RegisteredRepo {
   path: string;
   name: string;
   addedAt: string;
-  trackerType?: IssueTrackerType;
+  memoryManagerType?: MemoryManagerType;
 }
 
 export interface DirEntry {
   name: string;
   path: string;
-  trackerType?: IssueTrackerType;
+  memoryManagerType?: MemoryManagerType;
   isCompatible: boolean;
 }
 

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockDetectIssueTrackerType = vi.fn();
+const mockDetectMemoryManagerType = vi.fn();
 
-vi.mock("@/lib/issue-tracker-detection", () => ({
-  detectIssueTrackerType: (...args: unknown[]) => mockDetectIssueTrackerType(...args),
+vi.mock("@/lib/memory-manager-detection", () => ({
+  detectMemoryManagerType: (...args: unknown[]) => mockDetectMemoryManagerType(...args),
 }));
 
 import {
@@ -11,26 +11,26 @@ import {
   buildVerificationPassCommands,
   buildVerificationRetryCommands,
   buildVerificationStageCommand,
-  resolveIssueTrackerType,
-} from "@/lib/tracker-commands";
+  resolveMemoryManagerType,
+} from "@/lib/memory-manager-commands";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("resolveIssueTrackerType", () => {
+describe("resolveMemoryManagerType", () => {
   it("defaults to beads when repoPath is missing", () => {
-    expect(resolveIssueTrackerType()).toBe("beads");
+    expect(resolveMemoryManagerType()).toBe("beads");
   });
 
-  it("falls back to beads when tracker detection returns undefined", () => {
-    mockDetectIssueTrackerType.mockReturnValue(undefined);
-    expect(resolveIssueTrackerType("/repo")).toBe("beads");
+  it("falls back to beads when memory manager detection returns undefined", () => {
+    mockDetectMemoryManagerType.mockReturnValue(undefined);
+    expect(resolveMemoryManagerType("/repo")).toBe("beads");
   });
 
-  it("uses detected knots tracker when available", () => {
-    mockDetectIssueTrackerType.mockReturnValue("knots");
-    expect(resolveIssueTrackerType("/repo")).toBe("knots");
+  it("uses detected knots memory manager when available", () => {
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+    expect(resolveMemoryManagerType("/repo")).toBe("knots");
   });
 });
 

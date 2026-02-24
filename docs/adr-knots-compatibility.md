@@ -11,10 +11,10 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 ## Decision
 
 1. Backend routing is per-repo and automatic.
-2. Tracker marker precedence is `.knots` over `.beads` when both exist.
+2. Memory manager marker precedence is `.knots` over `.beads` when both exist.
 3. Keep current Foolery status model in this epic; map Knots states into it.
 4. `BackendPort.close()` maps to Knots `shipped`.
-5. Keep verification lifecycle labels/stages and make prompts tracker-aware.
+5. Keep verification lifecycle labels/stages and make prompts memory-manager-aware.
 6. Unsupported operations must return explicit capability-aligned API responses (not generic 500s).
 
 ## Locked Mappings
@@ -30,6 +30,6 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 
 ## Consequences
 
-1. Mixed tracker repos are supported in one Foolery session.
+1. Mixed memory manager repos are supported in one Foolery session.
 2. Existing Beads behavior remains unchanged.
 3. A follow-up epic is required for full Knots-native UX/API model realignment.

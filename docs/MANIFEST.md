@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Foolery** is a modern web UI for the Beads issue tracker—a git-based issue management system. The application provides an intuitive interface for viewing, creating, and managing Beads (issues) through a Next.js-based web application that leverages the `bd` CLI v0.49.6 as its backend service layer.
+**Foolery** is a modern web UI for the Beads memory manager—a git-based issue management system. The application provides an intuitive interface for viewing, creating, and managing Beads (issues) through a Next.js-based web application that leverages the `bd` CLI v0.49.6 as its backend service layer.
 
 ### Purpose
 
@@ -32,7 +32,7 @@ Next.js API Routes (Backend Gateway)
     ↓
 Bun.spawn() Process
     ↓
-bd CLI v0.49.6 (Issue Tracker)
+bd CLI v0.49.6 (Issue Memory Manager)
     ↓
 Git Repository (Data Storage)
 ```
@@ -706,7 +706,7 @@ foolery/
 **A:** API routes catch stderr output, parse error messages, and return appropriate HTTP status codes. UI shows toast notifications for user-facing errors.
 
 ### Q: Can I use Foolery without the `bd` CLI installed?
-**A:** No. The `bd` CLI v0.49.6 must be installed and accessible in the system PATH. Foolery is a UI wrapper, not a standalone issue tracker.
+**A:** No. The `bd` CLI v0.49.6 must be installed and accessible in the system PATH. Foolery is a UI wrapper, not a standalone memory manager.
 
 ### Q: How do I extend the data model?
 **A:** Add new fields to the `Bead` interface in `src/lib/types.ts`. Update forms, tables, and API routes to handle the new fields. The `metadata` field is available for custom data.
@@ -716,7 +716,7 @@ foolery/
 ## Glossary
 
 - **Bead**: A single issue, task, or work item managed by the `bd` CLI
-- **bd CLI**: Command-line issue tracker that stores data in Git
+- **bd CLI**: Command-line memory manager that stores data in Git
 - **Foolery**: Web UI for browsing and managing Beads
 - **React Query**: Server state synchronization library
 - **Zustand**: Lightweight state management

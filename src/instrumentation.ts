@@ -26,18 +26,18 @@ export async function register(): Promise<void> {
   }
 
   try {
-    const { backfillMissingRepoTrackerTypes } = await import("@/lib/registry");
-    const result = await backfillMissingRepoTrackerTypes();
+    const { backfillMissingRepoMemoryManagerTypes } = await import("@/lib/registry");
+    const result = await backfillMissingRepoMemoryManagerTypes();
     if (result.error) {
-      console.warn(`[registry] startup tracker backfill skipped: ${result.error}`);
+      console.warn(`[registry] startup memory manager backfill skipped: ${result.error}`);
     } else if (result.changed) {
       const count = result.migratedRepoPaths.length;
       console.log(
-        `[registry] backfilled issue tracker metadata for ${count} repos in ~/.config/foolery/registry.json.`,
+        `[registry] backfilled memory manager metadata for ${count} repos in ~/.config/foolery/registry.json.`,
       );
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.warn(`[registry] startup tracker backfill failed: ${message}`);
+    console.warn(`[registry] startup memory manager backfill failed: ${message}`);
   }
 }

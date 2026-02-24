@@ -1,28 +1,28 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { basename } from "node:path";
 import { homedir } from "node:os";
-import type { IssueTrackerType } from "@/lib/issue-trackers";
-import { getKnownTrackerMarkers, isKnownIssueTrackerType } from "@/lib/issue-trackers";
-import { detectIssueTrackerType } from "@/lib/issue-tracker-detection";
+import type { MemoryManagerType } from "@/lib/memory-managers";
+import { getKnownMemoryManagerMarkers, isKnownMemoryManagerType } from "@/lib/memory-managers";
+import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 
 export interface RegisteredRepo {
   path: string;
   name: string;
   addedAt: string;
-  trackerType?: IssueTrackerType;
+  memoryManagerType?: MemoryManagerType;
 }
 
 interface Registry {
   repos: RegisteredRepo[];
 }
 
-export interface RepoTrackerAuditResult {
+export interface RepoMemoryManagerAuditResult {
   missingRepoPaths: string[];
   fileMissing: boolean;
   error?: string;
 }
 
-export interface RepoTrackerBackfillResult {
+export interface RepoMemoryManagerBackfillResult {
   changed: boolean;
   migratedRepoPaths: string[];
   fileMissing: boolean;
@@ -32,8 +32,8 @@ export interface RepoTrackerBackfillResult {
 const CONFIG_DIR = `${homedir()}/.config/foolery`;
 const REGISTRY_FILE = `${CONFIG_DIR}/registry.json`;
 
-function defaultTrackerType(repoPath: string): IssueTrackerType {
-  return detectIssueTrackerType(repoPath) ?? "beads";
+function defaultMemoryManagerType(repoPath: string): MemoryManagerType {
+  return detectMemoryManagerType(repoPath) ?? "beads";
 }
 
 function formatError(error: unknown): string {
@@ -56,12 +56,12 @@ function normalizeRepo(raw: unknown): RegisteredRepo | null {
       ? record.addedAt
       : new Date(0).toISOString();
 
-  const configuredTracker =
-    typeof record.trackerType === "string" ? record.trackerType : undefined;
-  const trackerType = isKnownIssueTrackerType(configuredTracker)
-    ? configuredTracker
-    : defaultTrackerType(path);
-  return { path, name, addedAt, trackerType };
+  const configuredMemoryManager =
+    typeof record.memoryManagerType === "string" ? record.memoryManagerType : undefined;
+  const memoryManagerType = isKnownMemoryManagerType(configuredMemoryManager)
+    ? configuredMemoryManager
+    : defaultMemoryManagerType(path);
+  return { path, name, addedAt, memoryManagerType };
 }
 
 function normalizeRegistry(raw: unknown): Registry {
@@ -98,7 +98,7 @@ async function readRawRegistry(): Promise<{
   }
 }
 
-function collectMissingTrackerRepoPaths(raw: unknown): string[] {
+function collectMissingMemoryManagerRepoPaths(raw: unknown): string[] {
   if (typeof raw !== "object" || raw === null) return [];
   const record = raw as Record<string, unknown>;
   if (!Array.isArray(record.repos)) return [];
@@ -108,10 +108,10 @@ function collectMissingTrackerRepoPaths(raw: unknown): string[] {
     const repo = entry as Record<string, unknown>;
     if (typeof repo.path !== "string" || repo.path.length === 0) return [];
 
-    const configuredTracker = repo.trackerType;
-    const hasTracker =
-      typeof configuredTracker === "string" && configuredTracker.length > 0;
-    return hasTracker ? [] : [repo.path];
+    const configuredMemoryManager = repo.memoryManagerType;
+    const hasMemoryManager =
+      typeof configuredMemoryManager === "string" && configuredMemoryManager.length > 0;
+    return hasMemoryManager ? [] : [repo.path];
   });
 }
 
@@ -131,11 +131,11 @@ export async function saveRegistry(registry: Registry): Promise<void> {
 }
 
 export async function addRepo(repoPath: string): Promise<RegisteredRepo> {
-  const trackerType = detectIssueTrackerType(repoPath);
-  if (!trackerType) {
-    const expected = getKnownTrackerMarkers().join(", ");
+  const memoryManagerType = detectMemoryManagerType(repoPath);
+  if (!memoryManagerType) {
+    const expected = getKnownMemoryManagerMarkers().join(", ");
     throw new Error(
-      `No supported issue tracker found at ${repoPath}. Expected one of: ${expected}`,
+      `No supported memory manager found at ${repoPath}. Expected one of: ${expected}`,
     );
   }
 
@@ -148,7 +148,7 @@ export async function addRepo(repoPath: string): Promise<RegisteredRepo> {
     path: repoPath,
     name: basename(repoPath),
     addedAt: new Date().toISOString(),
-    trackerType,
+    memoryManagerType,
   };
   registry.repos.push(repo);
   await saveRegistry(registry);
@@ -166,16 +166,16 @@ export async function listRepos(): Promise<RegisteredRepo[]> {
   return registry.repos;
 }
 
-export async function inspectMissingRepoTrackerTypes(): Promise<RepoTrackerAuditResult> {
+export async function inspectMissingRepoMemoryManagerTypes(): Promise<RepoMemoryManagerAuditResult> {
   const raw = await readRawRegistry();
   return {
-    missingRepoPaths: raw.error ? [] : collectMissingTrackerRepoPaths(raw.parsed),
+    missingRepoPaths: raw.error ? [] : collectMissingMemoryManagerRepoPaths(raw.parsed),
     fileMissing: raw.fileMissing,
     error: raw.error,
   };
 }
 
-export async function backfillMissingRepoTrackerTypes(): Promise<RepoTrackerBackfillResult> {
+export async function backfillMissingRepoMemoryManagerTypes(): Promise<RepoMemoryManagerBackfillResult> {
   const raw = await readRawRegistry();
   if (raw.error) {
     return {
@@ -217,14 +217,14 @@ export async function backfillMissingRepoTrackerTypes(): Promise<RepoTrackerBack
     const repo = rawRepo as Record<string, unknown>;
     if (typeof repo.path !== "string" || repo.path.length === 0) return rawRepo;
 
-    const configuredTracker = repo.trackerType;
-    if (typeof configuredTracker === "string" && configuredTracker.length > 0) {
+    const configuredMemoryManager = repo.memoryManagerType;
+    if (typeof configuredMemoryManager === "string" && configuredMemoryManager.length > 0) {
       return rawRepo;
     }
 
-    const trackerType = defaultTrackerType(repo.path);
+    const memoryManagerType = defaultMemoryManagerType(repo.path);
     migratedRepoPaths.push(repo.path);
-    return { ...repo, trackerType };
+    return { ...repo, memoryManagerType };
   });
 
   if (migratedRepoPaths.length === 0) {

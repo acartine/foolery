@@ -86,7 +86,7 @@ verify_backfilled_settings() {
 
 verify_backfilled_registry() {
   [[ -f "$REGISTRY_FILE" ]] || fail "Missing registry file: $REGISTRY_FILE"
-  assert_contains '"trackerType": "beads"' "$REGISTRY_FILE"
+  assert_contains '"memoryManagerType": "beads"' "$REGISTRY_FILE"
 }
 
 log "Preparing isolated test dirs..."
@@ -131,4 +131,4 @@ log "Verifying restart backfilled missing settings..."
 verify_backfilled_settings
 verify_backfilled_registry
 
-log "PASS: start/restart backfilled missing settings and tracker metadata in $CONFIG_DIR"
+log "PASS: start/restart backfilled missing settings and memory manager metadata in $CONFIG_DIR"

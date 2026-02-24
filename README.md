@@ -77,13 +77,13 @@
   </tr>
 </table>
 
-Foolery is a local web UI that sits on top of local issue trackers ([Beads](https://github.com/steveyegge/beads) and Knots) and turns them into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
+Foolery is a local web UI that sits on top of local memory managers ([Beads](https://github.com/steveyegge/beads) and Knots) and turns them into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
 
 [Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true) It won't make you dumber.
 
 ## Install
 
-**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), plus at least one supported tracker CLI:
+**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), plus at least one supported memory manager CLI:
 - [Beads](https://github.com/steveyegge/beads) (`bd`)
 - Knots (`knots`)
 
@@ -242,7 +242,7 @@ FOOLERY_RELEASE_TAG=v0.1.0 curl -fsSL https://raw.githubusercontent.com/acartine
 
 Re-run the same install command to upgrade/reinstall.
 
-Foolery reads from registered repos that contain `.beads` or `.knots` tracker markers.
+Foolery reads from registered repos that contain `.beads` or `.knots` memory manager markers.
 If both markers are present, Foolery treats the repo as Knots-backed.
 
 If you need to bootstrap a new Beads repo:

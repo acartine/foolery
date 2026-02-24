@@ -10,8 +10,8 @@ import {
 } from "./settings";
 import {
   listRepos,
-  inspectMissingRepoTrackerTypes,
-  backfillMissingRepoTrackerTypes,
+  inspectMissingRepoMemoryManagerTypes,
+  backfillMissingRepoMemoryManagerTypes,
   type RegisteredRepo,
 } from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
@@ -199,8 +199,8 @@ const SETTINGS_DEFAULTS_FIX_OPTIONS: FixOption[] = [
   { key: "backfill", label: "Backfill missing settings defaults" },
 ];
 
-const REPO_TRACKERS_FIX_OPTIONS: FixOption[] = [
-  { key: "backfill", label: "Backfill missing repository tracker metadata" },
+const REPO_MEMORY_MANAGERS_FIX_OPTIONS: FixOption[] = [
+  { key: "backfill", label: "Backfill missing repository memory manager metadata" },
 ];
 
 function summarizeMissingSettings(paths: string[]): string {
@@ -257,15 +257,15 @@ export async function checkSettingsDefaults(): Promise<Diagnostic[]> {
   return diagnostics;
 }
 
-// ── Registry tracker metadata checks ────────────────────────
+// ── Registry memory manager metadata checks ────────────────────────
 
-export async function checkRepoTrackerTypes(): Promise<Diagnostic[]> {
+export async function checkRepoMemoryManagerTypes(): Promise<Diagnostic[]> {
   const diagnostics: Diagnostic[] = [];
-  const result = await inspectMissingRepoTrackerTypes();
+  const result = await inspectMissingRepoMemoryManagerTypes();
 
   if (result.error) {
     diagnostics.push({
-      check: "repo-trackers",
+      check: "repo-memory-managers",
       severity: "warning",
       message: `Could not inspect ~/.config/foolery/registry.json: ${result.error}`,
       fixable: false,
@@ -276,7 +276,7 @@ export async function checkRepoTrackerTypes(): Promise<Diagnostic[]> {
   const missingRepoPaths = Array.from(new Set(result.missingRepoPaths));
   if (result.fileMissing) {
     diagnostics.push({
-      check: "repo-trackers",
+      check: "repo-memory-managers",
       severity: "info",
       message: "Repository registry ~/.config/foolery/registry.json does not exist yet.",
       fixable: false,
@@ -286,11 +286,11 @@ export async function checkRepoTrackerTypes(): Promise<Diagnostic[]> {
 
   if (missingRepoPaths.length > 0) {
     diagnostics.push({
-      check: "repo-trackers",
+      check: "repo-memory-managers",
       severity: "warning",
-      message: `Repository registry is missing issue tracker metadata for ${missingRepoPaths.length} repo${missingRepoPaths.length === 1 ? "" : "s"}: ${summarizePaths(missingRepoPaths)}.`,
+      message: `Repository registry is missing memory manager metadata for ${missingRepoPaths.length} repo${missingRepoPaths.length === 1 ? "" : "s"}: ${summarizePaths(missingRepoPaths)}.`,
       fixable: true,
-      fixOptions: REPO_TRACKERS_FIX_OPTIONS,
+      fixOptions: REPO_MEMORY_MANAGERS_FIX_OPTIONS,
       context: {
         missingRepoPaths: missingRepoPaths.join(","),
       },
@@ -299,9 +299,9 @@ export async function checkRepoTrackerTypes(): Promise<Diagnostic[]> {
   }
 
   diagnostics.push({
-    check: "repo-trackers",
+    check: "repo-memory-managers",
     severity: "info",
-    message: "Repository tracker metadata is present in ~/.config/foolery/registry.json.",
+    message: "Repository memory manager metadata is present in ~/.config/foolery/registry.json.",
     fixable: false,
   });
   return diagnostics;
@@ -487,7 +487,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     agentDiags,
     updateDiags,
     settingsDiags,
-    repoTrackerDiags,
+    repoMemoryManagerDiags,
     corruptDiags,
     staleDiags,
     promptDiags,
@@ -495,7 +495,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkAgents(),
     checkUpdates(),
     checkSettingsDefaults(),
-    checkRepoTrackerTypes(),
+    checkRepoMemoryManagerTypes(),
     checkCorruptTickets(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
@@ -505,7 +505,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...agentDiags,
     ...updateDiags,
     ...settingsDiags,
-    ...repoTrackerDiags,
+    ...repoMemoryManagerDiags,
     ...corruptDiags,
     ...staleDiags,
     ...promptDiags,
@@ -566,7 +566,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "agents", label: "Agent connectivity", run: () => checkAgents() },
     { category: "updates", label: "Version", run: () => checkUpdates() },
     { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
-    { category: "repo-trackers", label: "Repo trackers", run: () => checkRepoTrackerTypes() },
+    { category: "repo-memory-managers", label: "Repo memory managers", run: () => checkRepoMemoryManagerTypes() },
     { category: "corrupt-beads", label: "Bead integrity", run: () => checkCorruptTickets(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
@@ -706,22 +706,22 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       }
     }
 
-    case "repo-trackers": {
+    case "repo-memory-managers": {
       if (strategy && strategy !== "backfill" && strategy !== "default") {
         return {
           check: diag.check,
           success: false,
-          message: `Unknown strategy "${strategy}" for repo tracker metadata.`,
+          message: `Unknown strategy "${strategy}" for repo memory manager metadata.`,
           context: ctx,
         };
       }
       try {
-        const result = await backfillMissingRepoTrackerTypes();
+        const result = await backfillMissingRepoMemoryManagerTypes();
         if (result.error) {
           return {
             check: diag.check,
             success: false,
-            message: `Failed to backfill repository tracker metadata: ${result.error}`,
+            message: `Failed to backfill repository memory manager metadata: ${result.error}`,
             context: ctx,
           };
         }
@@ -730,14 +730,14 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
           return {
             check: diag.check,
             success: true,
-            message: "Repository tracker metadata already present; no changes needed.",
+            message: "Repository memory manager metadata already present; no changes needed.",
             context: ctx,
           };
         }
         return {
           check: diag.check,
           success: true,
-          message: `Backfilled issue tracker metadata for ${count} repo${count === 1 ? "" : "s"} in ~/.config/foolery/registry.json.`,
+          message: `Backfilled memory manager metadata for ${count} repo${count === 1 ? "" : "s"} in ~/.config/foolery/registry.json.`,
           context: {
             ...ctx,
             migratedRepoPaths: result.migratedRepoPaths.join(","),

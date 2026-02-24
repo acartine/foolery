@@ -13,7 +13,7 @@ import {
 import { DirectoryBrowser } from "@/components/directory-browser";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
-import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
+import { getMemoryManagerLabel, listKnownMemoryManagers } from "@/lib/memory-managers";
 
 export function SettingsReposSection() {
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -97,8 +97,8 @@ export function SettingsReposSection() {
 }
 
 function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
-  const supported = listKnownIssueTrackers()
-    .map((tracker) => tracker.type)
+  const supported = listKnownMemoryManagers()
+    .map((memoryManager) => memoryManager.type)
     .join(", ");
 
   return (
@@ -106,7 +106,7 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
       <Database className="size-8 text-muted-foreground mb-3" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
-        Add a repository with a supported issue tracker ({supported}) to get
+        Add a repository with a supported memory manager ({supported}) to get
         started.
       </p>
       <Button size="sm" onClick={onBrowse}>
@@ -118,12 +118,12 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
 }
 
 interface RepoListProps {
-  repos: { path: string; name: string; trackerType?: string }[];
+  repos: { path: string; name: string; memoryManagerType?: string }[];
   onRemove: (path: string) => void;
 }
 
-function TrackerBadge({ type }: { type?: string }) {
-  const label = getIssueTrackerLabel(type);
+function MemoryManagerBadge({ type }: { type?: string }) {
+  const label = getMemoryManagerLabel(type);
   const isKnown = type && label !== "Unknown";
   return (
     <span
@@ -150,7 +150,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="text-sm font-medium truncate">{repo.name}</p>
-              <TrackerBadge type={repo.trackerType} />
+              <MemoryManagerBadge type={repo.memoryManagerType} />
             </div>
             <p className="font-mono text-xs text-muted-foreground truncate">
               {repo.path}

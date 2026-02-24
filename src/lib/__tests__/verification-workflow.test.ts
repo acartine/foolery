@@ -269,12 +269,12 @@ describe("buildVerifierPrompt", () => {
     expect(prompt).toContain("Check Safari specifically");
   });
 
-  it("renders knots commands when trackerType=knots", () => {
+  it("renders knots commands when memoryManagerType=knots", () => {
     const prompt = buildVerifierPrompt({
       beadId: "foolery-abc",
       title: "Fix login bug",
       commitSha: "def456",
-      trackerType: "knots",
+      memoryManagerType: "knots",
     });
 
     expect(prompt).toContain(

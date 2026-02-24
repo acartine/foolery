@@ -28,12 +28,12 @@ vi.mock("@/lib/settings", () => ({
 }));
 
 const mockListRepos = vi.fn();
-const mockInspectMissingRepoTrackerTypes = vi.fn();
-const mockBackfillMissingRepoTrackerTypes = vi.fn();
+const mockInspectMissingRepoMemoryManagerTypes = vi.fn();
+const mockBackfillMissingRepoMemoryManagerTypes = vi.fn();
 vi.mock("@/lib/registry", () => ({
   listRepos: () => mockListRepos(),
-  inspectMissingRepoTrackerTypes: () => mockInspectMissingRepoTrackerTypes(),
-  backfillMissingRepoTrackerTypes: () => mockBackfillMissingRepoTrackerTypes(),
+  inspectMissingRepoMemoryManagerTypes: () => mockInspectMissingRepoMemoryManagerTypes(),
+  backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
 }));
 
 const mockGetReleaseVersionStatus = vi.fn();
@@ -59,7 +59,7 @@ import {
   checkAgents,
   checkUpdates,
   checkSettingsDefaults,
-  checkRepoTrackerTypes,
+  checkRepoMemoryManagerTypes,
   checkCorruptTickets,
   checkStaleParents,
   checkPromptGuidance,
@@ -98,11 +98,11 @@ beforeEach(() => {
     fileMissing: false,
     changed: false,
   });
-  mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+  mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
     missingRepoPaths: [],
     fileMissing: false,
   });
-  mockBackfillMissingRepoTrackerTypes.mockResolvedValue({
+  mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
     changed: false,
     migratedRepoPaths: [],
     fileMissing: false,
@@ -147,33 +147,33 @@ describe("checkSettingsDefaults", () => {
   });
 });
 
-// ── checkRepoTrackerTypes ─────────────────────────────────
+// ── checkRepoMemoryManagerTypes ─────────────────────────────────
 
-describe("checkRepoTrackerTypes", () => {
-  it("reports info when repo tracker metadata is present", async () => {
-    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+describe("checkRepoMemoryManagerTypes", () => {
+  it("reports info when repo memory manager metadata is present", async () => {
+    mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
       missingRepoPaths: [],
       fileMissing: false,
     });
-    const diags = await checkRepoTrackerTypes();
+    const diags = await checkRepoMemoryManagerTypes();
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("info");
-    expect(diags[0].check).toBe("repo-trackers");
+    expect(diags[0].check).toBe("repo-memory-managers");
     expect(diags[0].fixable).toBe(false);
   });
 
-  it("reports warning and fix option when repo tracker metadata is missing", async () => {
-    mockInspectMissingRepoTrackerTypes.mockResolvedValue({
+  it("reports warning and fix option when repo memory manager metadata is missing", async () => {
+    mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
       missingRepoPaths: ["/repo-a", "/repo-b"],
       fileMissing: false,
     });
-    const diags = await checkRepoTrackerTypes();
+    const diags = await checkRepoMemoryManagerTypes();
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("warning");
-    expect(diags[0].check).toBe("repo-trackers");
+    expect(diags[0].check).toBe("repo-memory-managers");
     expect(diags[0].fixable).toBe(true);
     expect(diags[0].fixOptions).toEqual([
-      { key: "backfill", label: "Backfill missing repository tracker metadata" },
+      { key: "backfill", label: "Backfill missing repository memory manager metadata" },
     ]);
   });
 });
@@ -631,7 +631,7 @@ describe("streamDoctor", () => {
       "agents",
       "updates",
       "settings-defaults",
-      "repo-trackers",
+      "repo-memory-managers",
       "corrupt-beads",
       "stale-parents",
       "prompt-guidance",

@@ -36,7 +36,7 @@ import {
   type VerificationEvent,
   type VerificationEventType,
 } from "@/lib/verification-workflow";
-import { resolveIssueTrackerType } from "@/lib/tracker-commands";
+import { resolveMemoryManagerType } from "@/lib/memory-manager-commands";
 import type { ActionName } from "@/lib/types";
 
 // ── Configuration ───────────────────────────────────────────
@@ -246,7 +246,7 @@ async function launchVerifier(
     throw new Error(`Failed to load bead ${beadId} for verifier prompt: ${beadResult.error?.message}`);
   }
   const bead = beadResult.data;
-  const trackerType = resolveIssueTrackerType(repoPath);
+  const memoryManagerType = resolveMemoryManagerType(repoPath);
 
   const prompt = buildVerifierPrompt({
     beadId,
@@ -255,7 +255,7 @@ async function launchVerifier(
     acceptance: bead.acceptance,
     notes: bead.notes,
     commitSha,
-    trackerType,
+    memoryManagerType,
   });
 
   const agent = await getVerificationAgent();

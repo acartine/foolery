@@ -13,7 +13,7 @@ import { BdCliBackend } from "@/lib/backends/bd-cli-backend";
 import { StubBackend } from "@/lib/backends/stub-backend";
 import { BeadsBackend, BEADS_CAPABILITIES } from "@/lib/backends/beads-backend";
 import { KnotsBackend, KNOTS_CAPABILITIES } from "@/lib/backends/knots-backend";
-import { detectIssueTrackerType } from "@/lib/issue-tracker-detection";
+import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 
 // ── Public types ─────────────────────────────────────────────────
 
@@ -34,9 +34,9 @@ class AutoRoutingBackend implements BackendPort {
 
   private resolveType(repoPath?: string): Exclude<BackendType, "auto"> {
     if (!repoPath) return this.fallbackType;
-    const tracker = detectIssueTrackerType(repoPath);
-    if (tracker === "knots") return "knots";
-    if (tracker === "beads") return "cli";
+    const memoryManager = detectMemoryManagerType(repoPath);
+    if (memoryManager === "knots") return "knots";
+    if (memoryManager === "beads") return "cli";
     return this.fallbackType;
   }
 

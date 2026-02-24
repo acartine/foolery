@@ -314,5 +314,5 @@ Publishing a GitHub release triggers `release-runtime-artifact`, which builds an
 - [Project Manifest](MANIFEST.md) -- architecture, API docs, component inventory
 - [Settings Guide](SETTINGS.md) -- how settings work and how to add new ones
 - [Beads Dolt Hook Setup](BEADS_DOLT_HOOKS.md) -- local hook setup for Dolt-native Beads sync
-- [Beads CLI](https://github.com/steveyegge/beads) -- the issue tracker Foolery wraps
+- [Beads CLI](https://github.com/steveyegge/beads) -- the memory manager Foolery wraps
 - [Beads Contributing Guide](https://github.com/steveyegge/beads/blob/main/CONTRIBUTING.md) -- upstream contribution standards

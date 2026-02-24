@@ -37,11 +37,11 @@
  */
 
 import type { Bead } from "@/lib/types";
-import type { IssueTrackerType } from "@/lib/issue-trackers";
+import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
   buildVerificationPassCommands,
   buildVerificationRetryCommands,
-} from "@/lib/tracker-commands";
+} from "@/lib/memory-manager-commands";
 
 // ── Label constants ─────────────────────────────────────────
 
@@ -231,7 +231,7 @@ export interface VerifierPromptContext {
   acceptance?: string;
   notes?: string;
   commitSha: string;
-  trackerType?: IssueTrackerType;
+  memoryManagerType?: MemoryManagerType;
 }
 
 /**
@@ -239,9 +239,9 @@ export interface VerifierPromptContext {
  * This prompt instructs the agent to verify the commit against bead requirements.
  */
 export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
-  const trackerType = ctx.trackerType ?? "beads";
-  const retryCommands = buildVerificationRetryCommands(ctx.beadId, trackerType, { noDaemon: true });
-  const passCommands = buildVerificationPassCommands(ctx.beadId, trackerType, { noDaemon: true });
+  const memoryManagerType = ctx.memoryManagerType ?? "beads";
+  const retryCommands = buildVerificationRetryCommands(ctx.beadId, memoryManagerType, { noDaemon: true });
+  const passCommands = buildVerificationPassCommands(ctx.beadId, memoryManagerType, { noDaemon: true });
 
   const lines: string[] = [
     `Bead ${ctx.beadId} has just been queued for verification. You are going to verify it with the following steps:`,
@@ -268,13 +268,13 @@ export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
     ``,
     `1. Use commit ${ctx.commitSha} as a basis for reference.`,
     `2. Check: Does the code on main satisfy the requirements of the bead?`,
-    `   - If NO: run the following tracker commands and stop:`,
+    `   - If NO: run the following memory manager commands and stop:`,
     ...retryCommands.map((command) => `     ${command}`),
     `     Then output a brief rejection summary (2-4 sentences) explaining what is wrong and what needs to change, prefixed with REJECTION_SUMMARY:`,
     `     Example: REJECTION_SUMMARY: The login form component was not updated to handle the new OAuth flow. The redirect URL is still hardcoded. Update src/components/LoginForm.tsx to use the dynamic redirect from config.`,
     `     Then output: VERIFICATION_RESULT:fail-requirements`,
     `3. Check: Does the commit introduce bugs that require correction?`,
-    `   - If YES: run the same tracker commands as step 2 and stop.`,
+    `   - If YES: run the same memory manager commands as step 2 and stop.`,
     `     Then output a brief rejection summary explaining the bugs found, prefixed with REJECTION_SUMMARY:`,
     `     Then output: VERIFICATION_RESULT:fail-bugs`,
     `4. If both checks pass (code satisfies requirements, no bugs):`,

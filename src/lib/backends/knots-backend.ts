@@ -290,7 +290,7 @@ function matchExpression(bead: Bead, expression: string): boolean {
   });
 }
 
-function trackerKey(repoPath?: string): string {
+function memoryManagerKey(repoPath?: string): string {
   return repoPath ?? process.cwd();
 }
 
@@ -309,12 +309,12 @@ export class KnotsBackend implements BackendPort {
   }
 
   private edgeCacheKey(id: string, repoPath: string): string {
-    return `${trackerKey(repoPath)}::${id}`;
+    return `${memoryManagerKey(repoPath)}::${id}`;
   }
 
   private invalidateEdgeCache(repoPath: string, id?: string): void {
     if (!id) {
-      const prefix = `${trackerKey(repoPath)}::`;
+      const prefix = `${memoryManagerKey(repoPath)}::`;
       for (const key of this.edgeCache.keys()) {
         if (key.startsWith(prefix)) this.edgeCache.delete(key);
       }

@@ -77,23 +77,23 @@ _discover_models() {
 
 REGISTRY_DIR="${HOME}/.config/foolery"
 REGISTRY_FILE="${REGISTRY_DIR}/registry.json"
-KNOWN_TRACKERS=(beads)
+KNOWN_MEMORY_MANAGERS=(beads)
 
-_tracker_marker_dir() {
+_memory_manager_marker_dir() {
   case "$1" in
     beads) printf '.beads' ;;
     *) return 1 ;;
   esac
 }
 
-_supported_trackers_csv() {
+_supported_memory_managers_csv() {
   local joined=""
-  local tracker
-  for tracker in "${KNOWN_TRACKERS[@]}"; do
+  local memory_manager
+  for memory_manager in "${KNOWN_MEMORY_MANAGERS[@]}"; do
     if [[ -z "$joined" ]]; then
-      joined="$tracker"
+      joined="$memory_manager"
     else
-      joined="${joined}, $tracker"
+      joined="${joined}, $memory_manager"
     fi
   done
   printf '%s' "$joined"
@@ -101,9 +101,9 @@ _supported_trackers_csv() {
 
 _supported_markers_csv() {
   local joined=""
-  local tracker marker
-  for tracker in "${KNOWN_TRACKERS[@]}"; do
-    marker="$(_tracker_marker_dir "$tracker")"
+  local memory_manager marker
+  for memory_manager in "${KNOWN_MEMORY_MANAGERS[@]}"; do
+    marker="$(_memory_manager_marker_dir "$memory_manager")"
     if [[ -z "$joined" ]]; then
       joined="$marker"
     else
@@ -113,13 +113,13 @@ _supported_markers_csv() {
   printf '%s' "$joined"
 }
 
-_detect_tracker_for_repo() {
+_detect_memory_manager_for_repo() {
   local repo_path="$1"
-  local tracker marker
-  for tracker in "${KNOWN_TRACKERS[@]}"; do
-    marker="$(_tracker_marker_dir "$tracker")"
+  local memory_manager marker
+  for memory_manager in "${KNOWN_MEMORY_MANAGERS[@]}"; do
+    marker="$(_memory_manager_marker_dir "$memory_manager")"
     if [[ -d "$repo_path/$marker" ]]; then
-      printf '%s' "$tracker"
+      printf '%s' "$memory_manager"
       return 0
     fi
   done
@@ -198,28 +198,28 @@ _escape_json_string() {
 }
 
 _write_registry_entry_jq() {
-  local repo_path="$1" repo_name="$2" now="$3" tracker_type="$4"
+  local repo_path="$1" repo_name="$2" now="$3" memory_manager_type="$4"
   local tmp_file="${REGISTRY_FILE}.tmp.$$"
 
   if [[ -f "$REGISTRY_FILE" ]]; then
-    jq --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" --arg t "$tracker_type" \
-      '.repos += [{"path": $p, "name": $n, "addedAt": $d, "trackerType": $t}]' \
+    jq --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" --arg t "$memory_manager_type" \
+      '.repos += [{"path": $p, "name": $n, "addedAt": $d, "memoryManagerType": $t}]' \
       "$REGISTRY_FILE" >"$tmp_file" 2>/dev/null
   else
-    jq -n --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" --arg t "$tracker_type" \
-      '{"repos": [{"path": $p, "name": $n, "addedAt": $d, "trackerType": $t}]}' \
+    jq -n --arg p "$repo_path" --arg n "$repo_name" --arg d "$now" --arg t "$memory_manager_type" \
+      '{"repos": [{"path": $p, "name": $n, "addedAt": $d, "memoryManagerType": $t}]}' \
       >"$tmp_file" 2>/dev/null
   fi
   mv "$tmp_file" "$REGISTRY_FILE"
 }
 
 _write_registry_entry_sed() {
-  local repo_path="$1" repo_name="$2" now="$3" tracker_type="$4"
-  local safe_path safe_name safe_tracker entry
+  local repo_path="$1" repo_name="$2" now="$3" memory_manager_type="$4"
+  local safe_path safe_name safe_memory_manager entry
   safe_path="$(_escape_json_string "$repo_path")"
   safe_name="$(_escape_json_string "$repo_name")"
-  safe_tracker="$(_escape_json_string "$tracker_type")"
-  entry="$(printf '{"path": "%s", "name": "%s", "addedAt": "%s", "trackerType": "%s"}' "$safe_path" "$safe_name" "$now" "$safe_tracker")"
+  safe_memory_manager="$(_escape_json_string "$memory_manager_type")"
+  entry="$(printf '{"path": "%s", "name": "%s", "addedAt": "%s", "memoryManagerType": "%s"}' "$safe_path" "$safe_name" "$now" "$safe_memory_manager")"
 
   if [[ ! -f "$REGISTRY_FILE" ]]; then
     printf '{"repos": [%s]}\n' "$entry" >"$REGISTRY_FILE"
@@ -238,16 +238,16 @@ _write_registry_entry_sed() {
 }
 
 _write_registry_entry() {
-  local repo_path="$1" tracker_type="$2"
+  local repo_path="$1" memory_manager_type="$2"
   local repo_name now
   repo_name="$(basename "$repo_path")"
   now="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S 2>/dev/null || date +%s)"
   mkdir -p "$REGISTRY_DIR"
 
   if command -v jq >/dev/null 2>&1; then
-    _write_registry_entry_jq "$repo_path" "$repo_name" "$now" "$tracker_type"
+    _write_registry_entry_jq "$repo_path" "$repo_name" "$now" "$memory_manager_type"
   else
-    _write_registry_entry_sed "$repo_path" "$repo_name" "$now" "$tracker_type"
+    _write_registry_entry_sed "$repo_path" "$repo_name" "$now" "$memory_manager_type"
   fi
   _append_to_registry_cache "$repo_path"
 }
@@ -257,14 +257,14 @@ _display_scan_results() {
   printf '\nFound repositories:\n' >&2
   while IFS= read -r record; do
     [[ -z "$record" ]] && continue
-    local tracker_type repo_dir
-    tracker_type="${record%%|*}"
+    local memory_manager_type repo_dir
+    memory_manager_type="${record%%|*}"
     repo_dir="${record#*|}"
     i=$((i + 1))
     if _is_path_registered "$repo_dir"; then
-      printf '  %d) %s [%s] (already mounted)\n' "$i" "$repo_dir" "$tracker_type" >&2
+      printf '  %d) %s [%s] (already mounted)\n' "$i" "$repo_dir" "$memory_manager_type" >&2
     else
-      printf '  %d) %s [%s]\n' "$i" "$repo_dir" "$tracker_type" >&2
+      printf '  %d) %s [%s]\n' "$i" "$repo_dir" "$memory_manager_type" >&2
       new_count=$((new_count + 1))
     fi
   done <<EOF
@@ -282,8 +282,8 @@ _mount_selected_repos() {
   local i=0
   while IFS= read -r record; do
     [[ -z "$record" ]] && continue
-    local tracker_type repo_dir
-    tracker_type="${record%%|*}"
+    local memory_manager_type repo_dir
+    memory_manager_type="${record%%|*}"
     repo_dir="${record#*|}"
     i=$((i + 1))
 
@@ -292,8 +292,8 @@ _mount_selected_repos() {
     fi
 
     if [[ "$choice" == "all" ]] || printf ',%s,' ",$choice," | grep -q ",$i,"; then
-      _write_registry_entry "$repo_dir" "$tracker_type"
-      _setup_log "Mounted: $repo_dir [$tracker_type]"
+      _write_registry_entry "$repo_dir" "$memory_manager_type"
+      _setup_log "Mounted: $repo_dir [$memory_manager_type]"
     fi
   done <<EOF
 $found_repos
@@ -308,21 +308,21 @@ _scan_and_mount_repos() {
   fi
 
   local found_repos=""
-  local tracker marker marker_dirs marker_dir repo_dir
-  for tracker in "${KNOWN_TRACKERS[@]}"; do
-    marker="$(_tracker_marker_dir "$tracker")"
+  local memory_manager marker marker_dirs marker_dir repo_dir
+  for memory_manager in "${KNOWN_MEMORY_MANAGERS[@]}"; do
+    marker="$(_memory_manager_marker_dir "$memory_manager")"
     marker_dirs="$(find "$scan_dir" -maxdepth 3 -type d -name "$marker" 2>/dev/null | sort)"
     while IFS= read -r marker_dir; do
       [[ -z "$marker_dir" ]] && continue
       repo_dir="$(dirname "$marker_dir")"
-      found_repos="$(printf '%s\n%s|%s' "$found_repos" "$tracker" "$repo_dir")"
+      found_repos="$(printf '%s\n%s|%s' "$found_repos" "$memory_manager" "$repo_dir")"
     done <<EOF
 $marker_dirs
 EOF
   done
   found_repos="$(printf '%s\n' "$found_repos" | sed '/^$/d' | sort -u)"
   if [[ -z "$found_repos" ]]; then
-    _setup_log "No compatible repositories found under $scan_dir (supported trackers: $(_supported_trackers_csv); markers: $(_supported_markers_csv))"
+    _setup_log "No compatible repositories found under $scan_dir (supported memory managers: $(_supported_memory_managers_csv); markers: $(_supported_markers_csv))"
     return 0
   fi
 
@@ -353,10 +353,10 @@ _handle_manual_entry() {
       _setup_log "Path does not exist or is not a directory: $repo_path"
       continue
     fi
-    local tracker_type
-    tracker_type="$(_detect_tracker_for_repo "$repo_path" || true)"
-    if [[ -z "$tracker_type" ]]; then
-      _setup_log "No supported issue tracker found in: $repo_path (expected markers: $(_supported_markers_csv))"
+    local memory_manager_type
+    memory_manager_type="$(_detect_memory_manager_for_repo "$repo_path" || true)"
+    if [[ -z "$memory_manager_type" ]]; then
+      _setup_log "No supported memory manager found in: $repo_path (expected markers: $(_supported_markers_csv))"
       continue
     fi
     if _is_path_registered "$repo_path"; then
@@ -364,14 +364,14 @@ _handle_manual_entry() {
       continue
     fi
 
-    _write_registry_entry "$repo_path" "$tracker_type"
-    _setup_log "Mounted: $repo_path [$tracker_type]"
+    _write_registry_entry "$repo_path" "$memory_manager_type"
+    _setup_log "Mounted: $repo_path [$memory_manager_type]"
   done
 }
 
 _prompt_scan_method() {
   printf '\nHow would you like to find repositories?\n'
-  printf '  1) Scan a directory for supported trackers (default: ~, up to 2 levels deep)\n'
+  printf '  1) Scan a directory for supported memory managers (default: ~, up to 2 levels deep)\n'
   printf '  2) Manually specify paths\n'
   local method
   read -r -p "Choice [1]: " method </dev/tty || method=""

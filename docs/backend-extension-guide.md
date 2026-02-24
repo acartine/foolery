@@ -231,7 +231,7 @@ backend to create. Set it to your new type string:
 FOOLERY_BACKEND=my-backend bun run dev
 ```
 
-The default when unset is `"auto"` (per-repo tracker auto-routing).
+The default when unset is `"auto"` (per-repo memory manager auto-routing).
 
 You can also configure the backend in the settings schema
 (`src/lib/schemas.ts`) by adding your type to the `backendSettingsSchema` enum:

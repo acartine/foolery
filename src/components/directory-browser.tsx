@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { browseDirectory } from "@/lib/registry-api";
 import type { DirEntry } from "@/lib/types";
-import { getIssueTrackerLabel, listKnownIssueTrackers } from "@/lib/issue-trackers";
+import { getMemoryManagerLabel, listKnownMemoryManagers } from "@/lib/memory-managers";
 
 interface DirectoryBrowserProps {
   open: boolean;
@@ -81,8 +81,8 @@ export function DirectoryBrowser({
   }
 
   const pathSegments = currentPath.split("/").filter(Boolean);
-  const supported = listKnownIssueTrackers()
-    .map((tracker) => tracker.type)
+  const supported = listKnownMemoryManagers()
+    .map((memoryManager) => memoryManager.type)
     .join(", ");
   const filteredEntries = entries.filter((entry) => {
     if (!search) return true;
@@ -90,7 +90,7 @@ export function DirectoryBrowser({
     return (
       entry.name.toLowerCase().includes(needle) ||
       entry.path.toLowerCase().includes(needle) ||
-      (entry.trackerType ?? "").toLowerCase().includes(needle)
+      (entry.memoryManagerType ?? "").toLowerCase().includes(needle)
     );
   });
 
@@ -100,7 +100,7 @@ export function DirectoryBrowser({
         <DialogHeader>
           <DialogTitle>Browse for Repository</DialogTitle>
           <p className="text-xs text-muted-foreground">
-            Supported tracker implementations: {supported}
+            Supported memory manager implementations: {supported}
           </p>
         </DialogHeader>
 
@@ -119,7 +119,7 @@ export function DirectoryBrowser({
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Filter directories or tracker type..."
+          placeholder="Filter directories or memory manager type..."
         />
 
         <div className="flex items-center gap-1 text-sm text-muted-foreground overflow-x-auto">
@@ -192,12 +192,12 @@ export function DirectoryBrowser({
                   <span className="flex-1 truncate">{entry.name}</span>
                   {entry.isCompatible ? (
                     <span className="text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full">
-                      {entry.trackerType}
+                      {entry.memoryManagerType}
                     </span>
                   ) : (
                     <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                      {entry.trackerType
-                        ? getIssueTrackerLabel(entry.trackerType)
+                      {entry.memoryManagerType
+                        ? getMemoryManagerLabel(entry.memoryManagerType)
                         : "unsupported"}
                     </span>
                   )}
