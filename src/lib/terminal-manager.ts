@@ -19,6 +19,7 @@ import {
   buildVerificationStageCommand,
   resolveMemoryManagerType,
 } from "@/lib/memory-manager-commands";
+import { validateCwd } from "@/lib/validate-cwd";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
@@ -443,6 +444,26 @@ export async function createSession(
 
   const cwd = repoPath || process.cwd();
 
+  const pushEvent = (evt: TerminalEvent) => {
+    if (buffer.length >= MAX_BUFFER) buffer.shift();
+    buffer.push(evt);
+    emitter.emit("data", evt);
+  };
+
+  // Validate CWD exists before spawning — emit structured error on failure
+  // so classifyTerminalFailure detects it as a missing_cwd failure.
+  const cwdError = await validateCwd(cwd);
+  if (cwdError) {
+    console.error(`[terminal-manager] CWD validation failed for session ${id}: ${cwd}`);
+    session.status = "error";
+    interactionLog.logEnd(1, "error");
+    pushEvent({ type: "stderr", data: `${cwdError}\n`, timestamp: Date.now() });
+    pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    setTimeout(() => { emitter.removeAllListeners(); }, 2000);
+    setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
+    return session;
+  }
+
   console.log(`[terminal-manager] Creating session ${id}`);
   console.log(`[terminal-manager]   beadId: ${beadId}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
@@ -481,11 +502,6 @@ export async function createSession(
   console.log(`[terminal-manager]   agent: ${agent.command}${agent.model ? ` (model: ${agent.model})` : ""}`);
   console.log(`[terminal-manager]   pid: ${child.pid ?? "failed to spawn"}`);
 
-  const pushEvent = (evt: TerminalEvent) => {
-    if (buffer.length >= MAX_BUFFER) buffer.shift();
-    buffer.push(evt);
-    emitter.emit("data", evt);
-  };
 
   let stdinClosed = !isInteractive;
   let closeInputTimer: NodeJS.Timeout | null = null;
@@ -866,6 +882,26 @@ export async function createSceneSession(
 
   const cwd = repoPath || process.cwd();
 
+  const pushEvent = (evt: TerminalEvent) => {
+    if (buffer.length >= MAX_BUFFER) buffer.shift();
+    buffer.push(evt);
+    emitter.emit("data", evt);
+  };
+
+  // Validate CWD exists before spawning — emit structured error on failure
+  // so classifyTerminalFailure detects it as a missing_cwd failure.
+  const sceneCwdError = await validateCwd(cwd);
+  if (sceneCwdError) {
+    console.error(`[terminal-manager] CWD validation failed for scene session ${id}: ${cwd}`);
+    session.status = "error";
+    sceneInteractionLog.logEnd(1, "error");
+    pushEvent({ type: "stderr", data: `${sceneCwdError}\n`, timestamp: Date.now() });
+    pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    setTimeout(() => { emitter.removeAllListeners(); }, 2000);
+    setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
+    return session;
+  }
+
   console.log(`[terminal-manager] Creating scene session ${id}`);
   console.log(`[terminal-manager]   beadIds: ${beadIds.join(", ")}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
@@ -901,12 +937,6 @@ export async function createSceneSession(
 
   console.log(`[terminal-manager]   agent: ${agent.command}${agent.model ? ` (model: ${agent.model})` : ""}`);
   console.log(`[terminal-manager]   pid: ${child.pid ?? "failed to spawn"}`);
-
-  const pushEvent = (evt: TerminalEvent) => {
-    if (buffer.length >= MAX_BUFFER) buffer.shift();
-    buffer.push(evt);
-    emitter.emit("data", evt);
-  };
 
   let stdinClosed = !sceneIsInteractive;
   let closeInputTimer: NodeJS.Timeout | null = null;

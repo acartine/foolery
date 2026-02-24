@@ -122,7 +122,12 @@ function extractPreviousSessionId(text: string): string | null {
 function isMissingCwdFailure(text: string): boolean {
   const hasMissingPath = MISSING_CWD_PATH_PATTERNS.some((pattern) => pattern.test(text));
   if (!hasMissingPath) return false;
-  return /\berror_during_execution\b/i.test(text) || /\bworktree\b/i.test(text) || /\bcwd\b/i.test(text);
+  return (
+    /\berror_during_execution\b/i.test(text) ||
+    /\bworktree\b/i.test(text) ||
+    /\bcwd\b/i.test(text) ||
+    /\bchdir\b/i.test(text)
+  );
 }
 
 export function classifyTerminalFailure(

@@ -79,4 +79,45 @@ describe("classifyTerminalFailure", () => {
     expect(result).not.toBeNull();
     expect(result?.steps[0]).toContain("`custom-agent`");
   });
+
+  it("detects Node.js spawn ENOENT with chdir syscall as missing_cwd", () => {
+    // Node.js emits this kind of error when spawn({cwd}) references a missing directory
+    const text = [
+      'ENOENT: no such file or directory, chdir',
+      'Path "/Users/cartine/foolery/.claude/worktrees/old-branch" does not exist',
+    ].join("\n");
+
+    const result = classifyTerminalFailure(text, "claude");
+    expect(result).not.toBeNull();
+    expect(result?.kind).toBe("missing_cwd");
+    if (!result || result.kind !== "missing_cwd") return;
+    expect(result.missingPath).toContain(".claude/worktrees/old-branch");
+  });
+
+  it("detects proactive CWD validation error message as missing_cwd", () => {
+    // This is the structured error emitted by terminal-manager when CWD
+    // validation fails before spawn.
+    const text = [
+      "error_during_execution: cwd path missing",
+      'Path "/tmp/removed-worktree" does not exist. The worktree or working directory was removed before the session could start.',
+    ].join("\n");
+
+    const result = classifyTerminalFailure(text, "claude");
+    expect(result).not.toBeNull();
+    expect(result?.kind).toBe("missing_cwd");
+    if (!result || result.kind !== "missing_cwd") return;
+    expect(result.missingPath).toBe("/tmp/removed-worktree");
+    expect(result.previousSessionId).toBeNull();
+  });
+
+  it("detects enoent with cwd in a single-line spawn error", () => {
+    // Compact single-line error that Node.js may emit
+    const text = 'Process error: spawn claude ENOENT: cwd "/gone/path" does not exist';
+
+    const result = classifyTerminalFailure(text, "claude");
+    expect(result).not.toBeNull();
+    expect(result?.kind).toBe("missing_cwd");
+    if (!result || result.kind !== "missing_cwd") return;
+    expect(result.missingPath).toBe("/gone/path");
+  });
 });
