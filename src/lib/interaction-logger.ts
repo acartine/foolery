@@ -87,6 +87,8 @@ async function writeLine(path: string, line: LogLine): Promise<void> {
  * Callers use `logPrompt`, `logResponse`, and `logEnd` to append entries.
  */
 export interface InteractionLog {
+  /** Path to the log file on disk. Empty string for no-op loggers. */
+  readonly filePath: string;
   /** Log the prompt sent to the agent. */
   logPrompt(prompt: string, metadata?: PromptLogMetadata): void;
   /** Log a raw NDJSON line received from the agent. */
@@ -168,6 +170,7 @@ export async function startInteractionLog(
   };
 
   return {
+    filePath: file,
     logPrompt(prompt: string, metadata?: PromptLogMetadata) {
       write({
         kind: "prompt",
@@ -211,6 +214,7 @@ export async function startInteractionLog(
 /** A no-op logger for cases where logging setup fails. */
 export function noopInteractionLog(): InteractionLog {
   return {
+    filePath: "",
     logPrompt() {},
     logResponse() {},
     logEnd() {},

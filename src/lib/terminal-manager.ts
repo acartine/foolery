@@ -23,6 +23,7 @@ import { validateCwd } from "@/lib/validate-cwd";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
+import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -732,6 +733,18 @@ export async function createSession(
       onAgentComplete(actionBeadIds, "take", cwd, code ?? 1).catch((err) => {
         console.error(`[terminal-manager] verification hook failed for ${beadId}:`, err);
       });
+
+      // Update message type index with types from this session
+      const logFile = interactionLog.filePath;
+      if (logFile) {
+        updateMessageTypeIndexFromSession(
+          logFile,
+          agent.label || agent.command,
+          agent.model,
+        ).catch((err) => {
+          console.error(`[terminal-manager] message type index update failed:`, err);
+        });
+      }
     }
 
     // Remove all emitter listeners after a short drain window so
@@ -1164,6 +1177,18 @@ export async function createSceneSession(
       onAgentComplete(beadIds, "scene", cwd, code ?? 1).catch((err) => {
         console.error(`[terminal-manager] verification hook failed for scene:`, err);
       });
+
+      // Update message type index with types from this scene session
+      const sceneLogFile = sceneInteractionLog.filePath;
+      if (sceneLogFile) {
+        updateMessageTypeIndexFromSession(
+          sceneLogFile,
+          agent.label || agent.command,
+          agent.model,
+        ).catch((err) => {
+          console.error(`[terminal-manager] message type index update failed for scene:`, err);
+        });
+      }
     }
 
     // Remove all emitter listeners after a short drain window so
