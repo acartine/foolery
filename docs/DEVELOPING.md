@@ -75,6 +75,8 @@ docs/                   Project documentation
 | `bun run changeset` | Create a release note + semver bump intent file |
 | `bun run version-packages` | Apply pending changesets to version/changelog files |
 | `bun run release` | Manual release helper (fallback) |
+| `bash scripts/release/channel-install.sh release\|local [--activate]` | Install release/local channel launcher and runtime |
+| `bash scripts/release/channel-use.sh release\|local\|show` | Switch or inspect active `foolery` channel symlink |
 
 ## Architecture
 
