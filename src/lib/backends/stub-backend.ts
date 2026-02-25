@@ -13,7 +13,8 @@ import type {
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
-import type { Bead, BeadDependency } from "@/lib/types";
+import type { Bead, BeadDependency, MemoryWorkflowDescriptor } from "@/lib/types";
+import { beadsCoarseWorkflowDescriptor } from "@/lib/workflows";
 
 // ── Capabilities ──────────────────────────────────────────────
 
@@ -48,6 +49,12 @@ function unavailableError(op: string): BackendResult<never> {
 
 export class StubBackend implements BackendPort {
   readonly capabilities: BackendCapabilities = STUB_CAPABILITIES;
+
+  async listWorkflows(
+    _repoPath?: string,
+  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+    return { ok: true, data: [beadsCoarseWorkflowDescriptor()] };
+  }
 
   async list(
     _filters?: BeadListFilters,

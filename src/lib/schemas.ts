@@ -19,6 +19,17 @@ export const beadStatusSchema = z.enum([
   "closed",
 ]);
 
+export const workflowModeSchema = z.enum([
+  "granular_autonomous",
+  "coarse_human_gated",
+]);
+
+export const coarsePrPreferenceSchema = z.enum([
+  "soft_required",
+  "preferred",
+  "none",
+]);
+
 export const beadPrioritySchema = z.union([
   z.literal(0),
   z.literal(1),
@@ -39,6 +50,7 @@ export const createBeadSchema = z.object({
   notes: z.string().optional(),
   parent: z.string().optional(),
   estimate: z.number().int().positive().optional(),
+  workflowId: z.string().min(1).optional(),
 });
 
 export const updateBeadSchema = z.object({
@@ -46,6 +58,7 @@ export const updateBeadSchema = z.object({
   description: z.string().optional(),
   type: beadTypeSchema.optional(),
   status: beadStatusSchema.optional(),
+  workflowState: z.string().min(1).optional(),
   priority: beadPrioritySchema.optional(),
   parent: z.string().optional(),
   labels: z.array(z.string()).optional(),
@@ -146,12 +159,21 @@ export const backendSettingsSchema = z
   })
   .default({ type: "auto" });
 
+export const workflowSettingsSchema = z
+  .object({
+    coarsePrPreferenceOverrides: z
+      .record(z.string(), coarsePrPreferenceSchema)
+      .default({}),
+  })
+  .default({ coarsePrPreferenceOverrides: {} });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
   actions: actionAgentMappingsSchema,
   verification: verificationSettingsSchema,
   backend: backendSettingsSchema,
+  workflow: workflowSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -160,3 +182,4 @@ export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
+export type WorkflowSettings = z.infer<typeof workflowSettingsSchema>;

@@ -7,6 +7,7 @@ import {
   getRegisteredAgents,
   inspectSettingsDefaults,
   backfillMissingSettingsDefaults,
+  loadSettings,
 } from "./settings";
 import {
   listRepos,
@@ -15,7 +16,8 @@ import {
   type RegisteredRepo,
 } from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
-import type { Bead } from "./types";
+import type { Bead, MemoryWorkflowDescriptor } from "./types";
+import { detectMemoryManagerType } from "./memory-manager-detection";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -89,6 +91,35 @@ export interface DoctorStreamSummary {
 export type DoctorStreamEvent = DoctorCheckResult | DoctorStreamSummary;
 
 const PROMPT_GUIDANCE_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
+const PROMPT_PROFILE_MARKER = "FOOLERY_PROMPT_PROFILE:";
+
+function promptProfileTemplateFor(profileId: string): string {
+  if (profileId.startsWith("knots-")) return "PROMPT_KNOTS.md";
+  return "PROMPT_BEADS.md";
+}
+
+function fallbackPromptProfileForRepoPath(repoPath: string): string {
+  return detectMemoryManagerType(repoPath) === "knots"
+    ? "knots-granular-autonomous"
+    : "beads-coarse-human-gated";
+}
+
+async function listWorkflowsSafe(repoPath: string): Promise<MemoryWorkflowDescriptor[]> {
+  try {
+    const backend = getBackend() as {
+      listWorkflows?: (repoPath?: string) => Promise<{
+        ok: boolean;
+        data?: MemoryWorkflowDescriptor[];
+      }>;
+    };
+    if (typeof backend.listWorkflows !== "function") return [];
+    const result = await backend.listWorkflows(repoPath);
+    if (!result.ok) return [];
+    return result.data ?? [];
+  } catch {
+    return [];
+  }
+}
 
 // ── Agent health checks ────────────────────────────────────
 
@@ -307,6 +338,60 @@ export async function checkRepoMemoryManagerTypes(): Promise<Diagnostic[]> {
   return diagnostics;
 }
 
+export async function checkMemoryImplementationCompatibility(
+  repos: RegisteredRepo[],
+): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+
+  for (const repo of repos) {
+    const detected = detectMemoryManagerType(repo.path);
+    if (!detected) {
+      diagnostics.push({
+        check: "memory-implementation",
+        severity: "error",
+        fixable: false,
+        message: `Repo "${repo.name}" is missing a compatible memory manager marker (.beads or .knots).`,
+        context: { repoPath: repo.path, repoName: repo.name },
+      });
+      continue;
+    }
+
+    const workflows = await listWorkflowsSafe(repo.path);
+    if (workflows.length === 0) {
+      const fallbackProfile = fallbackPromptProfileForRepoPath(repo.path);
+      diagnostics.push({
+        check: "memory-implementation",
+        severity: "warning",
+        fixable: false,
+        message: `Repo "${repo.name}" could not enumerate workflows; falling back to ${fallbackProfile}.`,
+        context: {
+          repoPath: repo.path,
+          repoName: repo.name,
+          memoryManagerType: detected,
+          fallbackProfile,
+        },
+      });
+      continue;
+    }
+
+    const supportedModes = Array.from(new Set(workflows.map((workflow) => workflow.mode)));
+    diagnostics.push({
+      check: "memory-implementation",
+      severity: "info",
+      fixable: false,
+      message: `Repo "${repo.name}" uses ${detected} with ${workflows.length} workflow${workflows.length === 1 ? "" : "s"} (${supportedModes.join(", ")}).`,
+      context: {
+        repoPath: repo.path,
+        repoName: repo.name,
+        memoryManagerType: detected,
+        workflowIds: workflows.map((workflow) => workflow.id).join(","),
+      },
+    });
+  }
+
+  return diagnostics;
+}
+
 // ── Corrupt bead verification checks ──────────────────────
 
 const CORRUPT_BEAD_FIX_OPTIONS: FixOption[] = [
@@ -364,7 +449,7 @@ export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diag
 // ── Stale parent checks ────────────────────────────────────
 
 const STALE_PARENT_FIX_OPTIONS: FixOption[] = [
-  { key: "mark-verification", label: "Move to in_progress with stage:verification" },
+  { key: "mark-verification", label: "Move to in_progress with workflowState=verification" },
 ];
 
 /**
@@ -440,6 +525,101 @@ const PROMPT_GUIDANCE_FIX_OPTIONS: FixOption[] = [
   { key: "append", label: "Append Foolery guidance prompt" },
 ];
 
+const COARSE_PR_PREFERENCE_VALUES = new Set(["soft_required", "preferred", "none"]);
+
+function parseOverrideKey(key: string): { repoPath: string; workflowId: string } | null {
+  const separator = key.lastIndexOf("::");
+  if (separator <= 0 || separator >= key.length - 2) return null;
+  const repoPath = key.slice(0, separator).trim();
+  const workflowId = key.slice(separator + 2).trim();
+  if (!repoPath || !workflowId) return null;
+  return { repoPath, workflowId };
+}
+
+export async function checkWorkflowPrPreferenceOverrides(
+  repos: RegisteredRepo[],
+): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+  const settings = await loadSettings();
+  const overrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
+  const entries = Object.entries(overrides as Record<string, string>);
+
+  if (entries.length === 0) {
+    diagnostics.push({
+      check: "workflow-pr-policy",
+      severity: "info",
+      fixable: false,
+      message: "No coarse workflow PR preference overrides configured.",
+    });
+    return diagnostics;
+  }
+
+  const knownRepoPaths = new Set(repos.map((repo) => repo.path));
+  const workflowIdsByRepo = new Map<string, Set<string>>();
+  for (const repo of repos) {
+    const workflows = await listWorkflowsSafe(repo.path);
+    workflowIdsByRepo.set(repo.path, new Set(workflows.map((workflow) => workflow.id)));
+  }
+
+  for (const [key, value] of entries) {
+    const parsedKey = parseOverrideKey(key);
+    if (!parsedKey) {
+      diagnostics.push({
+        check: "workflow-pr-policy",
+        severity: "warning",
+        fixable: false,
+        message: `Workflow PR override key "${key}" is invalid. Expected "<repoPath>::<workflowDescriptorId>".`,
+        context: { key },
+      });
+      continue;
+    }
+
+    if (!COARSE_PR_PREFERENCE_VALUES.has(value)) {
+      diagnostics.push({
+        check: "workflow-pr-policy",
+        severity: "warning",
+        fixable: false,
+        message: `Workflow PR override "${key}" has invalid value "${value}".`,
+        context: { key, value },
+      });
+      continue;
+    }
+
+    if (!knownRepoPaths.has(parsedKey.repoPath)) {
+      diagnostics.push({
+        check: "workflow-pr-policy",
+        severity: "warning",
+        fixable: false,
+        message: `Workflow PR override "${key}" references unknown repo "${parsedKey.repoPath}".`,
+        context: { key, repoPath: parsedKey.repoPath, workflowId: parsedKey.workflowId },
+      });
+      continue;
+    }
+
+    const workflowIds = workflowIdsByRepo.get(parsedKey.repoPath) ?? new Set<string>();
+    if (!workflowIds.has(parsedKey.workflowId)) {
+      diagnostics.push({
+        check: "workflow-pr-policy",
+        severity: "warning",
+        fixable: false,
+        message: `Workflow PR override "${key}" references unknown workflow "${parsedKey.workflowId}" for repo "${parsedKey.repoPath}".`,
+        context: { key, repoPath: parsedKey.repoPath, workflowId: parsedKey.workflowId },
+      });
+    }
+  }
+
+  if (diagnostics.length === 0) {
+    diagnostics.push({
+      check: "workflow-pr-policy",
+      severity: "info",
+      fixable: false,
+      message: `Workflow PR overrides are valid (${entries.length} configured).`,
+    });
+  }
+
+  return diagnostics;
+}
+
 /**
  * Warn when AGENTS.md/CLAUDE.md exists but is missing Foolery guidance prompt.
  */
@@ -447,6 +627,13 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
   const diagnostics: Diagnostic[] = [];
 
   for (const repo of repos) {
+    const workflows = await listWorkflowsSafe(repo.path);
+    const expectedProfiles = Array.from(
+      new Set(workflows.map((workflow) => workflow.promptProfileId)),
+    );
+    const fallbackProfile = fallbackPromptProfileForRepoPath(repo.path);
+    if (expectedProfiles.length === 0) expectedProfiles.push(fallbackProfile);
+
     for (const fileName of ["AGENTS.md", "CLAUDE.md"]) {
       const filePath = join(repo.path, fileName);
       if (!(await fileExists(filePath))) continue;
@@ -460,7 +647,33 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
             fixable: true,
             fixOptions: PROMPT_GUIDANCE_FIX_OPTIONS,
             message: `Repo "${repo.name}" has ${fileName} but it is missing Foolery guidance prompt. Run \`foolery prompt\` in ${repo.path}.`,
-            context: { repoPath: repo.path, repoName: repo.name, file: fileName },
+            context: {
+              repoPath: repo.path,
+              repoName: repo.name,
+              file: fileName,
+              expectedProfiles: expectedProfiles.join(","),
+              expectedProfile: expectedProfiles[0]!,
+            },
+          });
+          continue;
+        }
+
+        const profileMatch = content.match(/FOOLERY_PROMPT_PROFILE:\s*([A-Za-z0-9._-]+)/);
+        const actualProfile = profileMatch?.[1];
+        if (!actualProfile || !expectedProfiles.includes(actualProfile)) {
+          diagnostics.push({
+            check: "prompt-guidance",
+            severity: "warning",
+            fixable: true,
+            fixOptions: PROMPT_GUIDANCE_FIX_OPTIONS,
+            message: `Repo "${repo.name}" has ${fileName} with mismatched prompt profile${actualProfile ? ` (${actualProfile})` : ""}. Expected one of: ${expectedProfiles.join(", ")}.`,
+            context: {
+              repoPath: repo.path,
+              repoName: repo.name,
+              file: fileName,
+              expectedProfiles: expectedProfiles.join(","),
+              expectedProfile: expectedProfiles[0]!,
+            },
           });
         }
       } catch {
@@ -488,7 +701,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     updateDiags,
     settingsDiags,
     repoMemoryManagerDiags,
-    corruptDiags,
+    memoryCompatibilityDiags,
+    workflowPrPolicyDiags,
     staleDiags,
     promptDiags,
   ] = await Promise.all([
@@ -496,7 +710,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkUpdates(),
     checkSettingsDefaults(),
     checkRepoMemoryManagerTypes(),
-    checkCorruptTickets(repos),
+    checkMemoryImplementationCompatibility(repos),
+    checkWorkflowPrPreferenceOverrides(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
   ]);
@@ -506,7 +721,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...updateDiags,
     ...settingsDiags,
     ...repoMemoryManagerDiags,
-    ...corruptDiags,
+    ...memoryCompatibilityDiags,
+    ...workflowPrPolicyDiags,
     ...staleDiags,
     ...promptDiags,
   ];
@@ -567,7 +783,8 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "updates", label: "Version", run: () => checkUpdates() },
     { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
     { category: "repo-memory-managers", label: "Repo memory managers", run: () => checkRepoMemoryManagerTypes() },
-    { category: "corrupt-beads", label: "Bead integrity", run: () => checkCorruptTickets(repos) },
+    { category: "memory-implementation", label: "Memory implementation", run: () => checkMemoryImplementationCompatibility(repos) },
+    { category: "workflow-pr-policy", label: "Workflow PR policy", run: () => checkWorkflowPrPreferenceOverrides(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
   ];
@@ -774,20 +991,24 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
     }
 
     case "stale-parent": {
-      // Fix: add stage:verification label to the parent (don't close — per project rules)
+      // Fix: move parent into verification workflow state (don't close — per project rules)
       const { beadId, repoPath } = ctx;
       if (!beadId || !repoPath) {
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
-        const result = await getBackend().update(beadId, { labels: ["stage:verification"], status: "in_progress" }, repoPath);
+        const result = await getBackend().update(
+          beadId,
+          { status: "in_progress", workflowState: "verification" },
+          repoPath,
+        );
         if (!result.ok) {
           return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
         }
         return {
           check: diag.check,
           success: true,
-          message: `Moved ${beadId} to in_progress with stage:verification label.`,
+          message: `Moved ${beadId} to in_progress with workflowState=verification.`,
           context: ctx,
         };
       } catch (e) {
@@ -801,9 +1022,18 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
-        const templateContent = await readPromptTemplate();
+        const expectedProfile = ctx.expectedProfile;
+        const templateCandidates = expectedProfile
+          ? [promptProfileTemplateFor(expectedProfile), "PROMPT.md"]
+          : ["PROMPT.md"];
+        const templateContent = await readPromptTemplate(templateCandidates);
         if (!templateContent) {
-          return { check: diag.check, success: false, message: "PROMPT.md template not found.", context: ctx };
+          return {
+            check: diag.check,
+            success: false,
+            message: `Prompt template not found (${templateCandidates.join(", ")}).`,
+            context: ctx,
+          };
         }
         const filePath = join(repoPath, file);
         await appendFile(filePath, "\n\n" + templateContent + "\n", "utf8");
@@ -823,12 +1053,22 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
   }
 }
 
-async function readPromptTemplate(): Promise<string | null> {
-  // Try PROMPT.md relative to cwd (runtime or dev), then fallback to APP_DIR
-  const candidates = [
-    join(process.cwd(), "PROMPT.md"),
-    process.env.FOOLERY_APP_DIR ? join(process.env.FOOLERY_APP_DIR, "PROMPT.md") : null,
-  ].filter(Boolean) as string[];
+async function readPromptTemplate(
+  fileNames: string[] = ["PROMPT.md"],
+): Promise<string | null> {
+  const appDir = process.env.FOOLERY_APP_DIR;
+  const candidates = fileNames.flatMap((fileName) => {
+    const paths: string[] = [];
+    try {
+      paths.push(join(process.cwd(), fileName));
+    } catch {
+      // process.cwd() can throw in isolated temp directories during tests.
+    }
+    if (appDir) {
+      paths.push(join(appDir, fileName));
+    }
+    return paths;
+  });
 
   for (const path of candidates) {
     try {

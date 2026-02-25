@@ -5,6 +5,7 @@ interface MockKnot {
   id: string;
   title: string;
   state: string;
+  workflow_id?: string;
   updated_at: string;
   body: string | null;
   description: string | null;
@@ -59,7 +60,7 @@ const mockShowKnot = vi.fn(async (id: string, _repoPath?: string) => {
 const mockNewKnot = vi.fn(
   async (
     title: string,
-    options?: { body?: string; state?: string },
+    options?: { body?: string; state?: string; workflow?: string },
     _repoPath?: string,
   ) => {
     const id = nextId();
@@ -68,6 +69,7 @@ const mockNewKnot = vi.fn(
       id,
       title,
       state: options?.state ?? "work_item",
+      workflow_id: options?.workflow ?? "granular",
       updated_at: now,
       body: options?.body ?? null,
       description: options?.body ?? null,
@@ -82,6 +84,28 @@ const mockNewKnot = vi.fn(
     return { ok: true as const, data: { id } };
   },
 );
+
+const mockListWorkflows = vi.fn(async (_repoPath?: string) => {
+  return {
+    ok: true as const,
+    data: [
+      {
+        id: "granular",
+        description: "Highly automated granular workflow",
+        initial_state: "work_item",
+        states: ["work_item", "implementing", "shipped"],
+        terminal_states: ["shipped"],
+      },
+      {
+        id: "coarse",
+        description: "Human gated coarse workflow",
+        initial_state: "work_item",
+        states: ["work_item", "implementing", "reviewing", "shipped"],
+        terminal_states: ["shipped"],
+      },
+    ],
+  };
+});
 
 const mockUpdateKnot = vi.fn(async (id: string, input: Record<string, unknown>, _repoPath?: string) => {
   const knot = store.knots.get(id);
@@ -172,9 +196,10 @@ const mockRemoveEdge = vi.fn(async (src: string, kind: string, dst: string, _rep
 });
 
 vi.mock("@/lib/knots", () => ({
+  listWorkflows: (repoPath?: string) => mockListWorkflows(repoPath),
   listKnots: (repoPath?: string) => mockListKnots(repoPath),
   showKnot: (id: string, repoPath?: string) => mockShowKnot(id, repoPath),
-  newKnot: (title: string, options?: { body?: string; state?: string }, repoPath?: string) =>
+  newKnot: (title: string, options?: { body?: string; state?: string; workflow?: string }, repoPath?: string) =>
     mockNewKnot(title, options, repoPath),
   updateKnot: (id: string, input: Record<string, unknown>, repoPath?: string) =>
     mockUpdateKnot(id, input, repoPath),

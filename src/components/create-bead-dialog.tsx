@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { BeadForm } from "@/components/bead-form";
 import type { RelationshipDeps } from "@/components/bead-form";
-import { createBead, addDep } from "@/lib/api";
+import { createBead, addDep, fetchWorkflows } from "@/lib/api";
 import type { CreateBeadInput } from "@/lib/schemas";
 import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
+import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 async function addDepsForBead(
   beadId: string,
@@ -51,6 +52,25 @@ export function CreateBeadDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const queryClient = useQueryClient();
+  const { data: workflowResult } = useQuery({
+    queryKey: ["workflows", repo ?? "__default__"],
+    queryFn: () => fetchWorkflows(repo ?? undefined),
+    enabled: open,
+  });
+  const workflows: MemoryWorkflowDescriptor[] =
+    workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+
+  function withSelectedWorkflow(input: CreateBeadInput): CreateBeadInput | null {
+    if (workflows.length <= 1) {
+      if (input.workflowId) return input;
+      if (workflows.length === 1) {
+        return { ...input, workflowId: workflows[0]!.id };
+      }
+      return input;
+    }
+    if (!input.workflowId) return null;
+    return input;
+  }
 
   async function handleSubmit(
     data: CreateBeadInput,
@@ -60,7 +80,13 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const result = await createBead(data, repo ?? undefined);
+      const payload = withSelectedWorkflow(data);
+      if (!payload) {
+        toast.error("Select a workflow before creating this beat.");
+        return;
+      }
+
+      const result = await createBead(payload, repo ?? undefined);
       if (result.ok) {
         if (deps && result.data?.id) {
           await addDepsForBead(result.data.id, deps, repo ?? undefined);
@@ -97,7 +123,13 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const result = await createBead(data, repo ?? undefined);
+      const payload = withSelectedWorkflow(data);
+      if (!payload) {
+        toast.error("Select a workflow before creating this beat.");
+        return;
+      }
+
+      const result = await createBead(payload, repo ?? undefined);
       if (result.ok) {
         if (deps && result.data?.id) {
           await addDepsForBead(result.data.id, deps, repo ?? undefined);
@@ -132,7 +164,13 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const result = await createBead(data, repo ?? undefined);
+      const payload = withSelectedWorkflow(data);
+      if (!payload) {
+        toast.error("Select a workflow before creating this beat.");
+        return;
+      }
+
+      const result = await createBead(payload, repo ?? undefined);
       if (!result.ok || !result.data?.id) {
         toast.error(result.error ?? "Failed to create parent beat");
         return;
@@ -169,6 +207,11 @@ export function CreateBeadDialog({
         <BeadForm
           key={formKey}
           mode="create"
+          workflows={workflows}
+          defaultValues={{
+            workflowId:
+              workflows.length === 1 ? workflows[0]!.id : undefined,
+          }}
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
           onBreakdown={handleBreakdown}

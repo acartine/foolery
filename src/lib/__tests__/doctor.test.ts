@@ -7,10 +7,12 @@ import { join } from "node:path";
 
 const mockList = vi.fn();
 const mockUpdate = vi.fn();
+const mockListWorkflows = vi.fn();
 vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({
     list: (...args: unknown[]) => mockList(...args),
     update: (...args: unknown[]) => mockUpdate(...args),
+    listWorkflows: (...args: unknown[]) => mockListWorkflows(...args),
   }),
 }));
 
@@ -80,13 +82,33 @@ const DEFAULT_SETTINGS = {
     direct: "",
     breakdown: "",
   },
-  verification: { enabled: false, agent: "" },
+  verification: { enabled: false, agent: "", maxRetries: 3 },
+  backend: { type: "auto" as const },
+  workflow: { coarsePrPreferenceOverrides: {} },
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
   mockListRepos.mockResolvedValue([]);
   mockGetRegisteredAgents.mockResolvedValue({});
+  mockLoadSettings.mockResolvedValue(DEFAULT_SETTINGS);
+  mockListWorkflows.mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        id: "beads-coarse",
+        backingWorkflowId: "beads-coarse",
+        label: "Beads (Coarse)",
+        mode: "coarse_human_gated",
+        initialState: "open",
+        states: ["open", "in_progress", "verification", "retake", "closed"],
+        terminalStates: ["closed"],
+        finalCutState: "verification",
+        retakeState: "retake",
+        promptProfileId: "beads-coarse-human-gated",
+      },
+    ],
+  });
   mockInspectSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
@@ -470,7 +492,7 @@ describe("checkPromptGuidance", () => {
     try {
       await writeFile(
         join(repoPath, "CLAUDE.md"),
-        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\n## rules\n"
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: beads-coarse-human-gated\n## rules\n"
       );
 
       const diags = await checkPromptGuidance([
@@ -508,54 +530,58 @@ describe("runDoctor", () => {
 // ── runDoctorFix ───────────────────────────────────────────
 
 describe("runDoctorFix", () => {
-  const corruptBeadData = {
+  const staleParentData = {
     ok: true,
     data: [
       {
-        id: "b-fix",
-        title: "Fixable",
+        id: "parent-fix",
+        title: "Parent",
         status: "open",
-        labels: ["stage:verification"],
+        labels: [],
+        type: "epic",
+        priority: 2,
+        created: "2026-01-01",
+        updated: "2026-01-01",
+      },
+      {
+        id: "child-fix",
+        title: "Child",
+        status: "closed",
+        labels: [],
         type: "task",
         priority: 2,
+        parent: "parent-fix",
         created: "2026-01-01",
         updated: "2026-01-01",
       },
     ],
   };
 
-  function setupCorruptBead() {
+  function setupStaleParent() {
     const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
     mockListRepos.mockResolvedValue(repos);
     mockGetRegisteredAgents.mockResolvedValue({});
-    mockList.mockResolvedValue(corruptBeadData);
+    mockList.mockResolvedValue(staleParentData);
     mockUpdate.mockResolvedValue({ ok: true });
   }
 
-  it("fixes corrupt verification bead with default strategy (set-in-progress)", async () => {
-    setupCorruptBead();
+  it("fixes stale parent with default strategy", async () => {
+    setupStaleParent();
 
-    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
+    const fixReport = await runDoctorFix({ "stale-parent": "mark-verification" });
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    const verificationFix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(verificationFix?.success).toBe(true);
-    expect(verificationFix?.message).toContain("in_progress");
-    expect(mockUpdate).toHaveBeenCalledWith("b-fix", { status: "in_progress" }, "/repo");
-  });
-
-  it("fixes corrupt verification bead with remove-label strategy", async () => {
-    setupCorruptBead();
-
-    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "remove-label" });
-    expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
-    expect(verificationFix?.success).toBe(true);
-    expect(verificationFix?.message).toContain("Removed stage:verification");
-    expect(mockUpdate).toHaveBeenCalledWith("b-fix", { removeLabels: ["stage:verification"] }, "/repo");
+    expect(verificationFix?.message).toContain("workflowState=verification");
+    expect(mockUpdate).toHaveBeenCalledWith(
+      "parent-fix",
+      { status: "in_progress", workflowState: "verification" },
+      "/repo",
+    );
   });
 
   it("skips checks not included in strategies", async () => {
-    setupCorruptBead();
+    setupStaleParent();
 
     const fixReport = await runDoctorFix({});
     expect(fixReport.fixes).toHaveLength(0);
@@ -563,11 +589,11 @@ describe("runDoctorFix", () => {
   });
 
   it("uses default first option when no strategies provided (backwards compat)", async () => {
-    setupCorruptBead();
+    setupStaleParent();
 
     const fixReport = await runDoctorFix();
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    const verificationFix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(verificationFix?.success).toBe(true);
   });
 });
@@ -583,7 +609,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 7 check events plus 1 summary event", async () => {
+  it("emits 8 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -596,10 +622,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(8);
+    expect(events).toHaveLength(9);
 
-    // First 7 are check results
-    for (let i = 0; i < 7; i++) {
+    // First 8 are check results
+    for (let i = 0; i < 8; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -610,7 +636,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[7] as DoctorStreamSummary;
+    const summary = events[8] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -632,7 +658,8 @@ describe("streamDoctor", () => {
       "updates",
       "settings-defaults",
       "repo-memory-managers",
-      "corrupt-beads",
+      "memory-implementation",
+      "workflow-pr-policy",
       "stale-parents",
       "prompt-guidance",
     ]);
@@ -675,22 +702,23 @@ describe("streamDoctor", () => {
       ok: true,
       data: [
         {
-          id: "b-1",
-          title: "Bad",
+          id: "parent-1",
+          title: "Parent",
           status: "open",
-          labels: ["stage:verification"],
-          type: "task",
+          labels: [],
+          type: "epic",
           priority: 2,
           created: "2026-01-01",
           updated: "2026-01-01",
         },
         {
-          id: "b-2",
-          title: "Also bad",
+          id: "child-1",
+          title: "Child",
           status: "closed",
-          labels: ["stage:verification"],
+          labels: [],
           type: "task",
           priority: 2,
+          parent: "parent-1",
           created: "2026-01-01",
           updated: "2026-01-01",
         },
@@ -700,7 +728,7 @@ describe("streamDoctor", () => {
     const events = await collectStream();
     const summary = events[events.length - 1] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
-    expect(summary.fixable).toBe(2);
-    expect(summary.failed).toBeGreaterThanOrEqual(1);
+    expect(summary.fixable).toBe(1);
+    expect(summary.warned).toBeGreaterThanOrEqual(1);
   });
 });

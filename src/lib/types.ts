@@ -17,6 +17,29 @@ export type BeadStatus =
   | "deferred"
   | "closed";
 
+export type WorkflowMode =
+  | "granular_autonomous"
+  | "coarse_human_gated";
+
+export type CoarsePrPreference =
+  | "soft_required"
+  | "preferred"
+  | "none";
+
+export interface MemoryWorkflowDescriptor {
+  id: string;
+  backingWorkflowId: string;
+  label: string;
+  mode: WorkflowMode;
+  initialState: string;
+  states: string[];
+  terminalStates: string[];
+  finalCutState: string | null;
+  retakeState: string;
+  promptProfileId: string;
+  coarsePrPreferenceDefault?: CoarsePrPreference;
+}
+
 export type BeadPriority = 0 | 1 | 2 | 3 | 4;
 
 export interface Bead {
@@ -27,6 +50,10 @@ export interface Bead {
   acceptance?: string;
   type: BeadType;
   status: BeadStatus;
+  compatStatus?: BeadStatus;
+  workflowId?: string;
+  workflowMode?: WorkflowMode;
+  workflowState?: string;
   priority: BeadPriority;
   labels: string[];
   assignee?: string;

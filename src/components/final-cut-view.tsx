@@ -3,12 +3,13 @@
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Scissors } from "lucide-react";
-import { fetchBeads } from "@/lib/api";
+import { fetchBeads, fetchWorkflows } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeadTable } from "@/components/bead-table";
 import { useAppStore } from "@/stores/app-store";
 import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
 import type { Bead } from "@/lib/types";
+import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
@@ -19,11 +20,17 @@ export function FinalCutView() {
     queryFn: async () => {
       const params: Record<string, string> = { status: "in_progress" };
       if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
+        const [result, workflowsResult] = await Promise.all([
+          fetchBeads(params, activeRepo),
+          fetchWorkflows(activeRepo),
+        ]);
         if (result.ok && result.data) {
+          const workflowsById = workflowDescriptorById(
+            workflowsResult.ok ? workflowsResult.data ?? [] : [],
+          );
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .filter((b) => b.labels?.includes("stage:verification"))
+            .filter((bead) => beadInFinalCut(bead, workflowsById))
             .map((bead) => ({
               ...bead,
               _repoPath: activeRepo,
@@ -35,10 +42,16 @@ export function FinalCutView() {
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const result = await fetchBeads(params, repo.path);
+            const [result, workflowsResult] = await Promise.all([
+              fetchBeads(params, repo.path),
+              fetchWorkflows(repo.path),
+            ]);
             if (!result.ok || !result.data) return [];
+            const workflowsById = workflowDescriptorById(
+              workflowsResult.ok ? workflowsResult.data ?? [] : [],
+            );
             return result.data
-              .filter((b) => b.labels?.includes("stage:verification"))
+              .filter((bead) => beadInFinalCut(bead, workflowsById))
               .map((bead) => ({
                 ...bead,
                 _repoPath: repo.path,
@@ -48,9 +61,15 @@ export function FinalCutView() {
         );
         return { ok: true, data: results.flat() };
       }
-      const result = await fetchBeads(params);
+      const [result, workflowsResult] = await Promise.all([
+        fetchBeads(params),
+        fetchWorkflows(),
+      ]);
       if (result.ok && result.data) {
-        result.data = result.data.filter((b) => b.labels?.includes("stage:verification"));
+        const workflowsById = workflowDescriptorById(
+          workflowsResult.ok ? workflowsResult.data ?? [] : [],
+        );
+        result.data = result.data.filter((bead) => beadInFinalCut(bead, workflowsById));
       }
       return result;
     },

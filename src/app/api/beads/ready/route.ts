@@ -5,6 +5,7 @@ import type { BeadListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
 import type { Bead } from "@/lib/types";
+import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -41,10 +42,15 @@ export async function GET(request: NextRequest) {
     if (!merged.has(bead.id)) merged.set(bead.id, bead);
   }
 
-  // Beads awaiting verification are not "ready"
-  let result = Array.from(merged.values()).filter(
-    b => !b.labels?.includes("stage:verification")
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  const workflowsById = workflowDescriptorById(
+    workflowsResult.ok ? workflowsResult.data ?? [] : [],
   );
+
+  // Beads in Final Cut are not "ready".
+  let result = Array.from(merged.values()).filter((bead) => {
+    return !beadInFinalCut(bead, workflowsById);
+  });
 
   // Hide descendants whose parent chain is not in the ready/in-progress set.
   result = filterByVisibleAncestorChain(result);

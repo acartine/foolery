@@ -6,6 +6,13 @@
  */
 
 import type { Bead, BeadPriority, BeadStatus, BeadType } from "@/lib/types";
+import { recordCompatStatusConsumed } from "@/lib/compat-status-usage";
+import {
+  BEADS_COARSE_WORKFLOW_ID,
+  deriveBeadsWorkflowState,
+  mapWorkflowStateToCompatStatus,
+  withWorkflowStateLabel,
+} from "@/lib/workflows";
 
 // ── Raw JSONL record shape ──────────────────────────────────────
 
@@ -71,6 +78,12 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
   const type = (VALID_TYPES.has(rawType as string) ? rawType : "task") as BeadType;
   const rawStatus = raw.status ?? "open";
   const status = (VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open") as BeadStatus;
+  const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
+  const workflowState = deriveBeadsWorkflowState(status, labels);
+  const compatStatus = mapWorkflowStateToCompatStatus(
+    workflowState,
+    "beads-jsonl-dto:normalize",
+  );
   const rawPriority = raw.priority ?? 2;
   const priority = (typeof rawPriority === "number" && rawPriority >= 0 && rawPriority <= 4
     ? rawPriority
@@ -92,9 +105,13 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
     notes: raw.notes,
     acceptance: raw.acceptance_criteria ?? (raw as Record<string, unknown>).acceptance as string | undefined,
     type,
-    status,
+    status: compatStatus,
+    compatStatus,
+    workflowId: BEADS_COARSE_WORKFLOW_ID,
+    workflowMode: "coarse_human_gated",
+    workflowState,
     priority,
-    labels: (raw.labels ?? []).filter((l) => l.trim() !== ""),
+    labels,
     assignee: raw.assignee,
     owner: raw.owner,
     parent: inferParent(id, raw.parent),
@@ -110,13 +127,21 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
 // ── Denormalize: Domain → JSONL ─────────────────────────────────
 
 export function denormalizeToJsonl(bead: Bead): RawBead {
+  const workflowState = bead.workflowState || "open";
+  const status = bead.compatStatus
+    ? (() => {
+        recordCompatStatusConsumed("beads-jsonl-dto:denormalize");
+        return bead.compatStatus as BeadStatus;
+      })()
+    : bead.status ?? mapWorkflowStateToCompatStatus(workflowState, "beads-jsonl-dto:denormalize-fallback");
+  const labels = withWorkflowStateLabel(bead.labels ?? [], workflowState);
   const raw: RawBead = {
     id: bead.id,
     title: bead.title,
-    status: bead.status,
+    status,
     priority: bead.priority,
     issue_type: bead.type,
-    labels: bead.labels,
+    labels,
     created_at: bead.created,
     updated_at: bead.updated,
   };

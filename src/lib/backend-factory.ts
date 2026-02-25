@@ -53,6 +53,10 @@ class AutoRoutingBackend implements BackendPort {
     return this.getBackend(type).port;
   }
 
+  async listWorkflows(...args: Parameters<BackendPort["listWorkflows"]>): ReturnType<BackendPort["listWorkflows"]> {
+    return this.backendFor(args[0]).listWorkflows(...args);
+  }
+
   async list(...args: Parameters<BackendPort["list"]>): ReturnType<BackendPort["list"]> {
     return this.backendFor(args[1]).list(...args);
   }

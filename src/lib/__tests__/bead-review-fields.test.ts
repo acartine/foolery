@@ -21,7 +21,7 @@ describe("review field builders", () => {
   it("builds atomic verify fields", () => {
     expect(verifyBeadFields()).toEqual({
       status: "closed",
-      removeLabels: ["stage:verification"],
+      workflowState: "closed",
     });
   });
 
@@ -30,8 +30,9 @@ describe("review field builders", () => {
 
     expect(rejectBeadFields(bead)).toEqual({
       status: "open",
-      removeLabels: ["stage:verification", "attempts:3"],
-      labels: ["stage:retry", "attempts:4"],
+      workflowState: "retake",
+      removeLabels: ["attempts:3"],
+      labels: ["attempts:4"],
     });
   });
 });

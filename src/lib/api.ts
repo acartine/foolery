@@ -3,6 +3,7 @@ import type {
   BeadDependency,
   BeadWithRepo,
   BdResult,
+  MemoryWorkflowDescriptor,
   RegisteredRepo,
 } from "./types";
 import type {
@@ -92,6 +93,13 @@ export function createBead(
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+export function fetchWorkflows(
+  repo?: string
+): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
+  const qs = repoQs(repo);
+  return request<MemoryWorkflowDescriptor[]>(`/api/workflows${qs}`);
 }
 
 export function updateBead(

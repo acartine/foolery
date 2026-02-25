@@ -35,7 +35,43 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  const result = await getBackend().create(parsed.data, repoPath);
+
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  if (!workflowsResult.ok) {
+    return NextResponse.json(
+      { error: workflowsResult.error?.message ?? "Failed to list workflows" },
+      { status: backendErrorStatus(workflowsResult.error) },
+    );
+  }
+
+  const workflows = workflowsResult.data ?? [];
+  if (workflows.length === 0) {
+    return NextResponse.json(
+      { error: "Repository does not expose any supported workflows." },
+      { status: 400 },
+    );
+  }
+
+  const selectedWorkflowId = parsed.data.workflowId;
+  if (workflows.length > 1 && !selectedWorkflowId) {
+    return NextResponse.json(
+      { error: "workflowId is required when multiple workflows are available." },
+      { status: 400 },
+    );
+  }
+
+  if (selectedWorkflowId && !workflows.some((workflow) => workflow.id === selectedWorkflowId)) {
+    return NextResponse.json(
+      { error: `Unknown workflowId "${selectedWorkflowId}".` },
+      { status: 400 },
+    );
+  }
+
+  const input = selectedWorkflowId
+    ? parsed.data
+    : { ...parsed.data, workflowId: workflows[0]!.id };
+
+  const result = await getBackend().create(input, repoPath);
   if (!result.ok) {
     return NextResponse.json(
       { error: result.error?.message },

@@ -1,30 +1,30 @@
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
 ## Foolery Agent Handoff Contract
-FOOLERY_PROMPT_PROFILE: beads-coarse-human-gated
+FOOLERY_PROMPT_PROFILE: knots-granular-autonomous
 
-This repository uses `bd` (Beads) as the source of truth for work tracking and `foolery` for tracking visibility.
+This repository uses `knots` as the source of truth for work tracking and `foolery` for tracking visibility.
 
 Required workflow:
-1. Pick a bead and inspect scope with `bd show <id>`.
-2. Before any code/doc/commit, set status:
-   `bd update <id> --status in_progress`
+1. Pick a knot and inspect scope with `knots show <id>`.
+2. Before any code/doc/commit, move to active state:
+   `knots update <id> --status implementing`
 3. Implement and validate changes in a dedicated git worktree.
 4. **Run quality gates** (if code changed) - Tests, linters, builds
 5. Commit and capture short hash:
    `SHORT_SHA=$(git rev-parse --short HEAD)`
-6. Add handoff labels in this order:
-   `bd update <id> --add-label commit:$SHORT_SHA`
-   `bd update <id> --add-label wf:state:verification`
-7. Do **not** close the bead unless explicitly instructed.
+6. Add handoff tags in this order:
+   `knots update <id> --add-tag commit:$SHORT_SHA`
+   `knots update <id> --status reviewing`
+7. Do **not** close the knot unless explicitly instructed.
 8. Push work to remote before ending session:
-   `git pull --rebase && bd sync && git push`
+   `git pull --rebase && knots sync && git push`
 9. **Clean up** - Clear stashes, worktrees, prune remote branches
 10. **Verify** - All changes committed AND pushed
-11. **Hand off** - Provide context for next session as handoff capsule in the bead.
+11. **Hand off** - Provide context for next session as handoff capsule on the knot.
 
 Rules:
-- Never add `wf:state:verification` without `commit:<short-sha>`.
-- Keep beads open for verification handoff.
+- Never move to `reviewing` without `commit:<short-sha>`.
+- Keep knots open for verification handoff.
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds

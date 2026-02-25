@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { fetchBeads, updateBead } from "@/lib/api";
+import { fetchBeads, fetchWorkflows, updateBead } from "@/lib/api";
 import { naturalCompare } from "@/lib/bead-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUpdateUrl } from "@/hooks/use-update-url";
+import { beadInRetake, workflowDescriptorById } from "@/lib/workflows";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -150,34 +151,60 @@ export function RetakesView() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["beads", "retakes", activeRepo, registeredRepos.length],
     queryFn: async () => {
-      const params: Record<string, string> = { status: "closed" };
+      const params: Record<string, string> = {};
       if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
+        const [result, workflowsResult] = await Promise.all([
+          fetchBeads(params, activeRepo),
+          fetchWorkflows(activeRepo),
+        ]);
         if (result.ok && result.data) {
+          const workflowsById = workflowDescriptorById(
+            workflowsResult.ok ? workflowsResult.data ?? [] : [],
+          );
           const repo = registeredRepos.find((r) => r.path === activeRepo);
-          result.data = result.data.map((bead) => ({
-            ...bead,
-            _repoPath: activeRepo,
-            _repoName: repo?.name ?? activeRepo,
-          })) as typeof result.data;
+          result.data = result.data
+            .filter((bead) => beadInRetake(bead, workflowsById))
+            .map((bead) => ({
+              ...bead,
+              _repoPath: activeRepo,
+              _repoName: repo?.name ?? activeRepo,
+            })) as typeof result.data;
         }
         return result;
       }
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const result = await fetchBeads(params, repo.path);
+            const [result, workflowsResult] = await Promise.all([
+              fetchBeads(params, repo.path),
+              fetchWorkflows(repo.path),
+            ]);
             if (!result.ok || !result.data) return [];
-            return result.data.map((bead) => ({
-              ...bead,
-              _repoPath: repo.path,
-              _repoName: repo.name,
-            }));
+            const workflowsById = workflowDescriptorById(
+              workflowsResult.ok ? workflowsResult.data ?? [] : [],
+            );
+            return result.data
+              .filter((bead) => beadInRetake(bead, workflowsById))
+              .map((bead) => ({
+                ...bead,
+                _repoPath: repo.path,
+                _repoName: repo.name,
+              }));
           })
         );
         return { ok: true as const, data: results.flat() };
       }
-      return fetchBeads(params);
+      const [result, workflowsResult] = await Promise.all([
+        fetchBeads(params),
+        fetchWorkflows(),
+      ]);
+      if (result.ok && result.data) {
+        const workflowsById = workflowDescriptorById(
+          workflowsResult.ok ? workflowsResult.data ?? [] : [],
+        );
+        result.data = result.data.filter((bead) => beadInRetake(bead, workflowsById));
+      }
+      return result;
     },
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 30_000,

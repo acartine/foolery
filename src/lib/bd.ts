@@ -3,7 +3,17 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { Bead, BeadDependency, BdResult } from "./types";
+import type { Bead, BeadDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
+import { recordCompatStatusConsumed } from "./compat-status-usage";
+import {
+  BEADS_COARSE_WORKFLOW_ID,
+  beadsCoarseWorkflowDescriptor,
+  deriveBeadsWorkflowState,
+  isWorkflowStateLabel,
+  mapStatusToDefaultWorkflowState,
+  mapWorkflowStateToCompatStatus,
+  withWorkflowStateLabel,
+} from "./workflows";
 
 const BD_BIN = process.env.BD_BIN ?? "bd";
 const BD_DB = process.env.BD_DB;
@@ -416,23 +426,43 @@ function inferParent(id: string, explicit?: unknown, dependencies?: unknown): st
 /** Map bd CLI JSON field names to our Bead interface field names. */
 function normalizeBead(raw: Record<string, unknown>): Bead {
   const id = raw.id as string;
+  const labels = ((raw.labels ?? []) as string[]).filter(l => l.trim() !== "");
+  const rawStatus = (raw.status ?? "open") as Bead["status"];
+  const workflowState = deriveBeadsWorkflowState(rawStatus, labels);
+  const compatStatus = mapWorkflowStateToCompatStatus(workflowState, "bd:normalize-bead");
   return {
     ...raw,
     type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
-    status: (raw.status ?? "open") as Bead["status"],
+    status: compatStatus,
+    compatStatus,
+    workflowId: BEADS_COARSE_WORKFLOW_ID,
+    workflowMode: "coarse_human_gated",
+    workflowState,
     priority: (raw.priority ?? 2) as Bead["priority"],
     acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
     parent: inferParent(id, raw.parent, raw.dependencies),
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
-    labels: ((raw.labels ?? []) as string[]).filter(l => l.trim() !== ""),
+    labels,
   } as Bead;
 }
 
 function normalizeBeads(raw: string): Bead[] {
   const items = JSON.parse(raw) as Record<string, unknown>[];
   return items.map(normalizeBead);
+}
+
+function applyWorkflowFilters(
+  beads: Bead[],
+  filters?: Record<string, string>,
+): Bead[] {
+  if (!filters) return beads;
+  return beads.filter((bead) => {
+    if (filters.workflowId && bead.workflowId !== filters.workflowId) return false;
+    if (filters.workflowState && bead.workflowState !== filters.workflowState) return false;
+    return true;
+  });
 }
 
 function normalizeLabels(labels: string[]): string[] {
@@ -449,6 +479,12 @@ function isStageLabel(label: string): boolean {
   return label.startsWith("stage:");
 }
 
+export async function listWorkflows(
+  _repoPath?: string
+): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
+  return { ok: true, data: [beadsCoarseWorkflowDescriptor()] };
+}
+
 export async function listBeads(
   filters?: Record<string, string>,
   repoPath?: string
@@ -457,6 +493,7 @@ export async function listBeads(
   const hasStatusFilter = filters && filters.status;
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
+      if (key === "workflowId" || key === "workflowState") continue;
       if (val) args.push(`--${key}`, val);
     }
   }
@@ -466,7 +503,7 @@ export async function listBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
   try {
-    return { ok: true, data: normalizeBeads(stdout) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd list output" };
   }
@@ -479,13 +516,14 @@ export async function readyBeads(
   const args = ["ready", "--json", "--limit", "0"];
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
+      if (key === "workflowId" || key === "workflowState") continue;
       if (val) args.push(`--${key}`, val);
     }
   }
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd ready failed" };
   try {
-    return { ok: true, data: normalizeBeads(stdout) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd ready output" };
   }
@@ -500,6 +538,7 @@ export async function searchBeads(
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
       if (!val) continue;
+      if (key === "workflowId" || key === "workflowState") continue;
       if (key === "priority") {
         args.push("--priority-min", val, "--priority-max", val);
       } else {
@@ -510,7 +549,7 @@ export async function searchBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd search failed" };
   try {
-    return { ok: true, data: normalizeBeads(stdout) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd search output" };
   }
@@ -550,8 +589,32 @@ export async function createBead(
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
 ): Promise<BdResult<{ id: string }>> {
+  const nextFields: Record<string, string | string[] | number | undefined> = { ...fields };
+  delete nextFields.workflowId;
+
+  const explicitWorkflowState =
+    typeof nextFields.workflowState === "string"
+      ? nextFields.workflowState.trim().toLowerCase()
+      : undefined;
+  delete nextFields.workflowState;
+
+  const explicitStatus = typeof nextFields.status === "string"
+    ? (nextFields.status as Bead["status"])
+    : undefined;
+  if (explicitStatus !== undefined) {
+    recordCompatStatusConsumed("bd:create-input-status");
+  }
+  const workflowState = explicitWorkflowState || (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus) : "open");
+  const compatStatus = explicitStatus ?? mapWorkflowStateToCompatStatus(workflowState, "bd:create");
+  nextFields.status = compatStatus;
+
+  const existingLabels = Array.isArray(nextFields.labels)
+    ? nextFields.labels.filter((label): label is string => typeof label === "string")
+    : [];
+  nextFields.labels = withWorkflowStateLabel(existingLabels, workflowState);
+
   const args = ["create", "--json"];
-  for (const [key, val] of Object.entries(fields)) {
+  for (const [key, val] of Object.entries(nextFields)) {
     if (val === undefined || val === "") continue;
     if (key === "labels" && Array.isArray(val)) {
       args.push("--labels", val.join(","));
@@ -577,6 +640,30 @@ export async function updateBead(
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
 ): Promise<BdResult<void>> {
+  const nextFields: Record<string, string | string[] | number | undefined> = { ...fields };
+  delete nextFields.workflowId;
+
+  const explicitWorkflowState =
+    typeof nextFields.workflowState === "string"
+      ? nextFields.workflowState.trim().toLowerCase()
+      : undefined;
+  delete nextFields.workflowState;
+
+  const explicitStatus = typeof nextFields.status === "string"
+    ? (nextFields.status as Bead["status"])
+    : undefined;
+  if (explicitStatus !== undefined) {
+    recordCompatStatusConsumed("bd:update-input-status");
+  }
+  const workflowState = explicitWorkflowState || (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus) : undefined);
+  if (workflowState) {
+    nextFields.status = explicitStatus ?? mapWorkflowStateToCompatStatus(workflowState, "bd:update");
+    const existingLabels = Array.isArray(nextFields.labels)
+      ? nextFields.labels.filter((label): label is string => typeof label === "string")
+      : [];
+    nextFields.labels = withWorkflowStateLabel(existingLabels, workflowState);
+  }
+
   // Separate label operations from field updates because
   // bd update --remove-label / --set-labels are broken;
   // only bd label add/remove actually persists.
@@ -585,7 +672,7 @@ export async function updateBead(
   const args = ["update", id];
   let hasUpdateFields = false;
 
-  for (const [key, val] of Object.entries(fields)) {
+  for (const [key, val] of Object.entries(nextFields)) {
     if (val === undefined) continue;
     if (key === "removeLabels" && Array.isArray(val)) {
       labelsToRemove.push(...val);
@@ -608,16 +695,19 @@ export async function updateBead(
   // Stage labels are mutually exclusive in this workflow. If callers add any
   // stage:* label, automatically remove other current stage:* labels so
   // regressions in frontend payload construction can't leave stale stage labels.
-  if (
+  const mutatesStageLabels =
     normalizedLabelsToAdd.some(isStageLabel) ||
-    normalizedLabelsToRemove.some(isStageLabel)
-  ) {
+    normalizedLabelsToRemove.some(isStageLabel);
+  const mutatesWorkflowLabels =
+    normalizedLabelsToAdd.some(isWorkflowStateLabel) ||
+    normalizedLabelsToRemove.some(isWorkflowStateLabel);
+  if (mutatesStageLabels || mutatesWorkflowLabels) {
     const current = await showBead(id, repoPath);
     if (!current.ok || !current.data) {
       return { ok: false, error: current.error || "Failed to load bead before label update" };
     }
 
-    if (normalizedLabelsToAdd.some(isStageLabel)) {
+    if (mutatesStageLabels && normalizedLabelsToAdd.some(isStageLabel)) {
       const stageLabelsToKeep = new Set(
         normalizedLabelsToAdd.filter(isStageLabel)
       );
@@ -627,6 +717,19 @@ export async function updateBead(
       normalizedLabelsToRemove = normalizeLabels([
         ...normalizedLabelsToRemove,
         ...extraStageLabels,
+      ]);
+    }
+
+    if (mutatesWorkflowLabels && normalizedLabelsToAdd.some(isWorkflowStateLabel)) {
+      const workflowLabelsToKeep = new Set(
+        normalizedLabelsToAdd.filter(isWorkflowStateLabel)
+      );
+      const extraWorkflowLabels = (current.data.labels ?? []).filter(
+        (label) => isWorkflowStateLabel(label) && !workflowLabelsToKeep.has(label)
+      );
+      normalizedLabelsToRemove = normalizeLabels([
+        ...normalizedLabelsToRemove,
+        ...extraWorkflowLabels,
       ]);
     }
   }

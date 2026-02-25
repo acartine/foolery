@@ -38,6 +38,7 @@ const DEFAULT_SETTINGS = {
   actions: DEFAULT_ACTIONS,
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" },
+  workflow: { coarsePrPreferenceOverrides: {} },
 };
 
 beforeEach(() => {
@@ -148,6 +149,7 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
+      workflow: { coarsePrPreferenceOverrides: {} },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

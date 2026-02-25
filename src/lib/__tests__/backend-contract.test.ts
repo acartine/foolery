@@ -67,6 +67,18 @@ function registerReadTests(
   getCaps: () => BackendCapabilities,
 ): void {
   describe("read operations", () => {
+    it("listWorkflows() returns at least one workflow descriptor", async () => {
+      const result = await getPort().listWorkflows();
+      expect(result.ok).toBe(true);
+      expect(Array.isArray(result.data)).toBe(true);
+      expect((result.data ?? []).length).toBeGreaterThan(0);
+      for (const workflow of result.data ?? []) {
+        expect(typeof workflow.id).toBe("string");
+        expect(typeof workflow.mode).toBe("string");
+        expect(typeof workflow.retakeState).toBe("string");
+      }
+    });
+
     it("list() returns ok:true with an array", async () => {
       const result = await getPort().list();
       expect(result.ok).toBe(true);

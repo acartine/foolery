@@ -74,7 +74,34 @@ describe("bd command timeout handling", () => {
   });
 
   it("retries idempotent write commands once and succeeds", async () => {
-    queueExec({ killed: true }, { stdout: "" });
+    queueExec(
+      { killed: true },
+      {
+        stdout: JSON.stringify({
+          id: "foolery-123",
+          title: "Retry timeout",
+          status: "open",
+          issue_type: "task",
+          priority: 2,
+          labels: [],
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-01T00:00:00Z",
+        }),
+      },
+      {
+        stdout: JSON.stringify({
+          id: "foolery-123",
+          title: "Retry timeout",
+          status: "open",
+          issue_type: "task",
+          priority: 2,
+          labels: [],
+          created_at: "2026-01-01T00:00:00Z",
+          updated_at: "2026-01-01T00:00:00Z",
+        }),
+      },
+      { stdout: "" },
+    );
 
     const { updateBead } = await import("@/lib/bd");
     const result = await updateBead(
@@ -84,9 +111,10 @@ describe("bd command timeout handling", () => {
     );
 
     expect(result.ok).toBe(true);
-    expect(execInvocations).toHaveLength(2);
+    expect(execInvocations.length).toBeGreaterThanOrEqual(4);
     expect(execInvocations[0].args[0]).toBe("update");
-    expect(execInvocations[1].args[0]).toBe("update");
+    expect(execInvocations.some((call) => call.args[0] === "show")).toBe(true);
+    expect(execInvocations.some((call) => call.args[0] === "label")).toBe(true);
   });
 
   it("does not retry non-idempotent writes after timeout", async () => {

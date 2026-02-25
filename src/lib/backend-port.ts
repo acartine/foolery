@@ -6,7 +6,14 @@
  * contain no runtime code.
  */
 
-import type { Bead, BeadDependency, BeadPriority, BeadStatus, BeadType } from "./types";
+import type {
+  Bead,
+  BeadDependency,
+  BeadPriority,
+  BeadStatus,
+  BeadType,
+  MemoryWorkflowDescriptor,
+} from "./types";
 import type { CreateBeadInput, UpdateBeadInput } from "./schemas";
 
 // ── Structured error ────────────────────────────────────────
@@ -46,6 +53,8 @@ export interface BackendResult<T> {
 export interface BeadListFilters {
   type?: BeadType;
   status?: BeadStatus;
+  workflowId?: string;
+  workflowState?: string;
   priority?: BeadPriority;
   label?: string;
   assignee?: string;
@@ -70,6 +79,11 @@ export interface BeadQueryOptions {
  * success and failure uniformly without exceptions.
  */
 export interface BackendPort {
+  /** List workflow descriptors exposed by this backend/repository. */
+  listWorkflows(
+    repoPath?: string,
+  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>>;
+
   /** List all beads, optionally filtered. */
   list(
     filters?: BeadListFilters,
@@ -153,4 +167,5 @@ export interface BackendPort {
 // ── Re-exports ──────────────────────────────────────────────
 
 export type { Bead, BeadDependency, BeadType, BeadStatus, BeadPriority } from "./types";
+export type { MemoryWorkflowDescriptor } from "./types";
 export type { CreateBeadInput, UpdateBeadInput } from "./schemas";

@@ -20,6 +20,7 @@ export interface KnotRecord {
   id: string;
   title: string;
   state: string;
+  workflow_id?: string;
   updated_at: string;
   body?: string | null;
   description?: string | null;
@@ -30,6 +31,15 @@ export interface KnotRecord {
   handoff_capsules?: Array<Record<string, unknown>>;
   workflow_etag?: string | null;
   created_at?: string | null;
+}
+
+export interface KnotWorkflowDefinition {
+  id: string;
+  description?: string | null;
+  initial_state: string;
+  states: string[];
+  terminal_states: string[];
+  transitions?: Array<{ from: string; to: string }>;
 }
 
 export interface KnotEdge {
@@ -126,6 +136,28 @@ export async function listKnots(repoPath?: string): Promise<BdResult<KnotRecord[
   }
 }
 
+export async function listWorkflows(repoPath?: string): Promise<BdResult<KnotWorkflowDefinition[]>> {
+  const listResult = await exec(["workflow", "list", "--json"], { repoPath });
+  if (listResult.exitCode === 0) {
+    try {
+      return { ok: true, data: parseJson<KnotWorkflowDefinition[]>(listResult.stdout) };
+    } catch {
+      return { ok: false, error: "Failed to parse knots workflow list output" };
+    }
+  }
+
+  const fallbackResult = await exec(["workflow", "ls", "--json"], { repoPath });
+  if (fallbackResult.exitCode !== 0) {
+    return { ok: false, error: fallbackResult.stderr || listResult.stderr || "knots workflow list failed" };
+  }
+
+  try {
+    return { ok: true, data: parseJson<KnotWorkflowDefinition[]>(fallbackResult.stdout) };
+  } catch {
+    return { ok: false, error: "Failed to parse knots workflow list output" };
+  }
+}
+
 export async function showKnot(id: string, repoPath?: string): Promise<BdResult<KnotRecord>> {
   const { stdout, stderr, exitCode } = await exec(["show", id, "--json"], { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots show failed" };
@@ -138,12 +170,13 @@ export async function showKnot(id: string, repoPath?: string): Promise<BdResult<
 
 export async function newKnot(
   title: string,
-  options?: { body?: string; state?: string },
+  options?: { body?: string; state?: string; workflow?: string },
   repoPath?: string,
 ): Promise<BdResult<{ id: string }>> {
   const args = ["new"];
   if (options?.body) args.push("--body", options.body);
   if (options?.state) args.push("--state", options.state);
+  if (options?.workflow) args.push("--workflow", options.workflow);
   args.push("--", title);
 
   const { stdout, stderr, exitCode } = await exec(args, { repoPath });

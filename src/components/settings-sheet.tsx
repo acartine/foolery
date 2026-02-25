@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -14,13 +14,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SettingsAgentsSection } from "@/components/settings-agents-section";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsVerificationSection } from "@/components/settings-verification-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
+import { fetchRegistry } from "@/lib/registry-api";
+import { fetchWorkflows } from "@/lib/api";
 import type { RegisteredAgent } from "@/lib/types";
-import type { ActionAgentMappings, VerificationSettings, BackendSettings } from "@/lib/schemas";
+import type {
+  ActionAgentMappings,
+  VerificationSettings,
+  BackendSettings,
+  WorkflowSettings,
+} from "@/lib/schemas";
+import type {
+  CoarsePrPreference,
+  MemoryWorkflowDescriptor,
+  RegisteredRepo,
+} from "@/lib/types";
 
 export type SettingsSection = "repos" | null;
 
@@ -36,6 +55,7 @@ interface SettingsData {
   actions: ActionAgentMappings;
   verification: VerificationSettings;
   backend: BackendSettings;
+  workflow: WorkflowSettings;
 }
 
 const DEFAULTS: SettingsData = {
@@ -55,12 +75,19 @@ const DEFAULTS: SettingsData = {
   backend: {
     type: "auto",
   },
+  workflow: {
+    coarsePrPreferenceOverrides: {},
+  },
 };
 
 export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSheetProps) {
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [repos, setRepos] = useState<RegisteredRepo[]>([]);
+  const [selectedPolicyRepoPath, setSelectedPolicyRepoPath] = useState("");
+  const [workflows, setWorkflows] = useState<MemoryWorkflowDescriptor[]>([]);
+  const [loadingWorkflows, setLoadingWorkflows] = useState(false);
   const reposSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,21 +99,74 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    fetchSettings()
-      .then((res) => {
-        if (res.ok && res.data) {
+    Promise.all([fetchSettings(), fetchRegistry()])
+      .then(([settingsResult, registryResult]) => {
+        if (settingsResult.ok && settingsResult.data) {
           setSettings({
-            agent: res.data.agent ?? DEFAULTS.agent,
-            agents: res.data.agents ?? DEFAULTS.agents,
-            actions: res.data.actions ?? DEFAULTS.actions,
-            verification: res.data.verification ?? DEFAULTS.verification,
-            backend: res.data.backend ?? DEFAULTS.backend,
+            agent: settingsResult.data.agent ?? DEFAULTS.agent,
+            agents: settingsResult.data.agents ?? DEFAULTS.agents,
+            actions: settingsResult.data.actions ?? DEFAULTS.actions,
+            verification: settingsResult.data.verification ?? DEFAULTS.verification,
+            backend: settingsResult.data.backend ?? DEFAULTS.backend,
+            workflow: settingsResult.data.workflow ?? DEFAULTS.workflow,
           });
+        }
+        if (registryResult.ok) {
+          const registryRepos = registryResult.data ?? [];
+          setRepos(registryRepos);
+          setSelectedPolicyRepoPath((prev) =>
+            prev || registryRepos[0]?.path || ""
+          );
         }
       })
       .catch(() => toast.error("Failed to load settings"))
       .finally(() => setLoading(false));
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!selectedPolicyRepoPath) {
+      setWorkflows([]);
+      return;
+    }
+    setLoadingWorkflows(true);
+    fetchWorkflows(selectedPolicyRepoPath)
+      .then((result) => {
+        if (result.ok && result.data) {
+          setWorkflows(result.data);
+        } else {
+          setWorkflows([]);
+        }
+      })
+      .catch(() => setWorkflows([]))
+      .finally(() => setLoadingWorkflows(false));
+  }, [open, selectedPolicyRepoPath]);
+
+  const coarseWorkflows = useMemo(
+    () => workflows.filter((workflow) => workflow.mode === "coarse_human_gated"),
+    [workflows],
+  );
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState("");
+
+  useEffect(() => {
+    if (coarseWorkflows.length === 0) {
+      setSelectedWorkflowId("");
+      return;
+    }
+    if (!coarseWorkflows.some((workflow) => workflow.id === selectedWorkflowId)) {
+      setSelectedWorkflowId(coarseWorkflows[0]?.id ?? "");
+    }
+  }, [coarseWorkflows, selectedWorkflowId]);
+
+  const selectedWorkflow = coarseWorkflows.find((workflow) => workflow.id === selectedWorkflowId);
+  const selectedOverrideKey = selectedPolicyRepoPath && selectedWorkflowId
+    ? `${selectedPolicyRepoPath}::${selectedWorkflowId}`
+    : "";
+  const defaultPolicy: CoarsePrPreference =
+    selectedWorkflow?.coarsePrPreferenceDefault ?? "soft_required";
+  const effectivePolicy: CoarsePrPreference = selectedOverrideKey
+    ? settings.workflow.coarsePrPreferenceOverrides[selectedOverrideKey] ?? defaultPolicy
+    : defaultPolicy;
 
   async function handleSave() {
     setSaving(true);
@@ -107,6 +187,25 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
   function handleReset() {
     setSettings(DEFAULTS);
+  }
+
+  function updateCoarsePolicy(policy: CoarsePrPreference) {
+    if (!selectedOverrideKey) return;
+    setSettings((prev) => {
+      const next = { ...prev.workflow.coarsePrPreferenceOverrides };
+      if (policy === defaultPolicy) {
+        delete next[selectedOverrideKey];
+      } else {
+        next[selectedOverrideKey] = policy;
+      }
+      return {
+        ...prev,
+        workflow: {
+          ...prev.workflow,
+          coarsePrPreferenceOverrides: next,
+        },
+      };
+    });
   }
 
   return (
@@ -162,7 +261,94 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
               <Separator />
 
-              {/* Section 4: Legacy / Default Agent */}
+              {/* Section 4: Workflow PR policy */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Verification PR Policy</h3>
+                {repos.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    Add a repository to configure coarse workflow PR preferences.
+                  </p>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="workflow-policy-repo">Repository</Label>
+                      <Select
+                        value={selectedPolicyRepoPath || "__none__"}
+                        onValueChange={(value) =>
+                          setSelectedPolicyRepoPath(value === "__none__" ? "" : value)
+                        }
+                      >
+                        <SelectTrigger id="workflow-policy-repo" className="w-full">
+                          <SelectValue placeholder="Select repository" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">Select repository</SelectItem>
+                          {repos.map((repo) => (
+                            <SelectItem key={repo.path} value={repo.path}>
+                              {repo.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="workflow-policy-workflow">Coarse Workflow</Label>
+                      <Select
+                        value={selectedWorkflowId || "__none__"}
+                        onValueChange={(value) =>
+                          setSelectedWorkflowId(value === "__none__" ? "" : value)
+                        }
+                        disabled={!selectedPolicyRepoPath || loadingWorkflows}
+                      >
+                        <SelectTrigger id="workflow-policy-workflow" className="w-full">
+                          <SelectValue
+                            placeholder={
+                              loadingWorkflows ? "Loading workflows..." : "Select workflow"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__none__">Select workflow</SelectItem>
+                          {coarseWorkflows.map((workflow) => (
+                            <SelectItem key={workflow.id} value={workflow.id}>
+                              {workflow.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="workflow-policy-value">PR Preference</Label>
+                      <Select
+                        value={effectivePolicy}
+                        onValueChange={(value) =>
+                          updateCoarsePolicy(value as CoarsePrPreference)
+                        }
+                        disabled={!selectedOverrideKey}
+                      >
+                        <SelectTrigger id="workflow-policy-value" className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="soft_required">Soft required</SelectItem>
+                          <SelectItem value="preferred">Preferred</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Defaults to <span className="font-mono">{defaultPolicy}</span>. Picking
+                        the default removes the override.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Section 5: Legacy / Default Agent */}
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Default Agent Command</h3>
                 <div className="space-y-2">

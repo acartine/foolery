@@ -9,6 +9,7 @@ import type {
   WaveReadiness,
   WaveSummary,
 } from "@/lib/types";
+import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 interface DepEdge {
   source: string; // blocker
@@ -21,7 +22,8 @@ function shortId(id: string): string {
 
 function inferReadiness(
   bead: WaveBead,
-  isUnschedulable: boolean
+  isUnschedulable: boolean,
+  isInFinalCut: boolean,
 ): { readiness: WaveReadiness; reason: string } {
   if (isUnschedulable) {
     return {
@@ -37,7 +39,7 @@ function inferReadiness(
     };
   }
 
-  if (bead.labels.includes("stage:verification")) {
+  if (isInFinalCut) {
     return {
       readiness: "verification",
       reason: "Awaiting verification. Not eligible for shipping.",
@@ -143,6 +145,10 @@ function computeRunnableQueue(plan: WavePlan): WaveRecommendation[] {
 
 export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  const workflowsById = workflowDescriptorById(
+    workflowsResult.ok ? workflowsResult.data ?? [] : [],
+  );
 
   // Fetch all non-closed beads
   const beadsResult = await getBackend().list({ status: "open" } as BeadListFilters, repoPath);
@@ -169,6 +175,11 @@ export async function GET(request: NextRequest) {
     seen.add(b.id);
     return true;
   });
+  const finalCutIds = new Set(
+    beads
+      .filter((bead) => beadInFinalCut(bead, workflowsById))
+      .map((bead) => bead.id),
+  );
 
   // Fetch deps for all beads in parallel
   const depResults = await Promise.allSettled(
@@ -212,13 +223,13 @@ export async function GET(request: NextRequest) {
 
   for (const wave of basePlan.waves) {
     for (const bead of wave.beads) {
-      const { readiness, reason } = inferReadiness(bead, false);
+      const { readiness, reason } = inferReadiness(bead, false, finalCutIds.has(bead.id));
       bead.readiness = readiness;
       bead.readinessReason = reason;
       bead.waveLevel = wave.level;
     }
     if (wave.gate) {
-      const { readiness, reason } = inferReadiness(wave.gate, false);
+      const { readiness, reason } = inferReadiness(wave.gate, false, finalCutIds.has(wave.gate.id));
       wave.gate.readiness = readiness;
       wave.gate.readinessReason = reason;
       wave.gate.waveLevel = wave.level;
@@ -226,7 +237,11 @@ export async function GET(request: NextRequest) {
   }
 
   for (const bead of basePlan.unschedulable) {
-    const { readiness, reason } = inferReadiness(bead, unschedulableIds.has(bead.id));
+    const { readiness, reason } = inferReadiness(
+      bead,
+      unschedulableIds.has(bead.id),
+      finalCutIds.has(bead.id),
+    );
     bead.readiness = readiness;
     bead.readinessReason = reason;
   }

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createBeadSchema, updateBeadSchema } from "@/lib/schemas";
 import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
+import type { MemoryWorkflowDescriptor } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ type BeadFormProps =
   | {
       mode: "create";
       defaultValues?: Partial<CreateBeadInput>;
+      workflows?: MemoryWorkflowDescriptor[];
       onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onBreakdown?: (data: CreateBeadInput) => void;
@@ -57,6 +59,7 @@ export function BeadForm(props: BeadFormProps) {
   const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
   const onBreakdown = props.mode === "create" ? props.onBreakdown : undefined;
   const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
+  const workflows = props.mode === "create" ? (props.workflows ?? []) : [];
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blockedBy, setBlockedBy] = useState<string[]>([]);
@@ -72,6 +75,14 @@ export function BeadForm(props: BeadFormProps) {
       ...defaultValues,
     },
   });
+  const workflowError =
+    mode === "create"
+      ? (
+          formErrorMap(form.formState.errors) as Partial<
+            Record<keyof CreateBeadInput, { message?: string }>
+          >
+        ).workflowId?.message
+      : undefined;
 
   const handleFormSubmit = form.handleSubmit((data) => {
     if (mode === "create") {
@@ -110,6 +121,29 @@ export function BeadForm(props: BeadFormProps) {
           {...form.register("description")}
         />
       </FormField>
+
+      {mode === "create" && workflows.length > 1 && (
+        <FormField
+          label="Workflow"
+          error={workflowError}
+        >
+          <Select
+            value={form.watch("workflowId")}
+            onValueChange={(v) => form.setValue("workflowId", v as never)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select workflow" />
+            </SelectTrigger>
+            <SelectContent>
+              {workflows.map((workflow) => (
+                <SelectItem key={workflow.id} value={workflow.id}>
+                  {workflow.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormField>
+      )}
 
       <div className="grid grid-cols-2 gap-2">
         <FormField label="Type">
@@ -223,6 +257,13 @@ export function BeadForm(props: BeadFormProps) {
       </div>
     </form>
   );
+}
+
+function formErrorMap(
+  errors: unknown,
+): Record<string, { message?: string } | undefined> {
+  if (!errors || typeof errors !== "object") return {};
+  return errors as Record<string, { message?: string } | undefined>;
 }
 
 function FormField({

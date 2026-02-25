@@ -57,7 +57,7 @@ export function NotesDialog({ bead, open, rejectionMode, onOpenChange, onUpdate 
 
   if (!bead) return null;
 
-  const hasVerification = bead.labels?.includes("stage:verification");
+  const hasVerification = bead.workflowState === "verification";
 
   const handleSave = () => {
     onUpdate(bead.id, { notes });

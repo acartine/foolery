@@ -41,8 +41,7 @@ async function allSceneBeadsInVerificationState(
     if (!result.ok || !result.data) return false;
     return (
       result.data.status === "in_progress" &&
-      Array.isArray(result.data.labels) &&
-      result.data.labels.includes("stage:verification")
+      result.data.workflowState === "verification"
     );
   });
 }
@@ -53,9 +52,8 @@ function buildSceneRecoveryPrompt(previousSessionId: string, beadIds: string[]):
     "The previous scene stream disconnected before verification state was confirmed.",
     "Use current repository state. Do not redo already-completed work.",
     "If any listed bead is incomplete, finish it and land changes on main per project rules.",
-    "If you believe work is complete, verify merge/push state and then run one verification command per bead:",
-    ...beadIds.map((beadId) => `bd update ${JSON.stringify(beadId)} --status in_progress --add-label stage:verification`),
-    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, verification command result.",
+    "If you believe work is complete, verify merge/push state and transition each bead into its workflow's Final Cut/review state.",
+    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, workflow transition command result.",
   ].join("\n");
 }
 
@@ -67,9 +65,8 @@ function buildTakeRecoveryPrompt(beadId: string, previousSessionId: string | nul
       : "No prior agent session id was captured from the failed run.",
     "The previous run failed during a follow-up after primary work completed.",
     "Use current repository state and avoid redoing completed changes.",
-    "Confirm merge/push state and run the verification-state command if not already applied:",
-    `bd update ${JSON.stringify(beadId)} --status in_progress --add-label stage:verification`,
-    "Finish with a concise summary: merged yes/no, pushed yes/no, verification command result.",
+    "Confirm merge/push state and apply the workflow transition command for this bead if not already applied.",
+    "Finish with a concise summary: merged yes/no, pushed yes/no, workflow transition command result.",
   ].join("\n");
 }
 

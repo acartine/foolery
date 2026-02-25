@@ -126,13 +126,11 @@ export async function PATCH(
   }
   clearCachedDetail(id, repoPath);
 
-  // Regroom ancestors when verification is removed (rejection may unblock parent close)
-  const removedLabels = parsed.data.removeLabels;
-  if (
-    removedLabels &&
-    Array.isArray(removedLabels) &&
-    removedLabels.includes("stage:verification")
-  ) {
+  // Regroom ancestors when a bead leaves verification state.
+  const transitionedOutOfVerification =
+    typeof parsed.data.workflowState === "string" &&
+    parsed.data.workflowState.trim().toLowerCase() !== "verification";
+  if (transitionedOutOfVerification) {
     // Fire-and-forget: don't block the HTTP response on ancestor regroom
     regroomAncestors(id, repoPath).catch((err) =>
       console.error(`[regroom] background error for ${id}:`, err)

@@ -639,25 +639,63 @@ setup_cmd() {
 
 append_guidance_prompt() {
   local target_file="\$1"
+  local prompt_template_file="\$2"
 
   if grep -Fq "\$PROMPT_MARKER" "\$target_file" 2>/dev/null; then
     return 2
   fi
 
   printf '\n\n' >>"\$target_file"
-  cat "\$PROMPT_TEMPLATE_FILE" >>"\$target_file"
+  cat "\$prompt_template_file" >>"\$target_file"
   printf '\n' >>"\$target_file"
   return 0
 }
 
+detect_repo_prompt_profile() {
+  local repo_path="\$1"
+  if [[ -d "\$repo_path/.knots" ]]; then
+    printf '%s' "knots"
+    return 0
+  fi
+  if [[ -d "\$repo_path/.beads" ]]; then
+    printf '%s' "beads"
+    return 0
+  fi
+  printf '%s' "beads"
+}
+
+resolve_prompt_template_for_profile() {
+  local profile="\$1"
+  local upper_profile
+  upper_profile="\$(printf '%s' "\$profile" | tr '[:lower:]' '[:upper:]')"
+
+  if [[ -n "\${FOOLERY_PROMPT_TEMPLATE_FILE:-}" && -f "\$FOOLERY_PROMPT_TEMPLATE_FILE" ]]; then
+    printf '%s\n' "\$FOOLERY_PROMPT_TEMPLATE_FILE"
+    return 0
+  fi
+
+  local candidate="\$APP_DIR/PROMPT_\${upper_profile}.md"
+  if [[ -f "\$candidate" ]]; then
+    printf '%s\n' "\$candidate"
+    return 0
+  fi
+
+  if [[ -f "\$PROMPT_TEMPLATE_FILE" ]]; then
+    printf '%s\n' "\$PROMPT_TEMPLATE_FILE"
+    return 0
+  fi
+
+  return 1
+}
+
 prompt_cmd() {
-  local cwd target_file
+  local cwd target_file prompt_template_file profile
   local found=0 updated=0 skipped=0
   cwd="\$(pwd)"
-
-  if [[ ! -f "\$PROMPT_TEMPLATE_FILE" ]]; then
-    fail "Guidance prompt template not found at \$PROMPT_TEMPLATE_FILE. Run foolery update."
-  fi
+  profile="\$(detect_repo_prompt_profile "\$cwd")"
+  prompt_template_file="\$(resolve_prompt_template_for_profile "\$profile")" || {
+    fail "Guidance prompt template not found for profile \$profile. Run foolery update."
+  }
 
   for target_file in "\$cwd/AGENTS.md" "\$cwd/CLAUDE.md"; do
     if [[ ! -f "\$target_file" ]]; then
@@ -665,7 +703,7 @@ prompt_cmd() {
     fi
 
     found=\$((found + 1))
-    if append_guidance_prompt "\$target_file"; then
+    if append_guidance_prompt "\$target_file" "\$prompt_template_file"; then
       log "Updated: \$target_file"
       updated=\$((updated + 1))
     else

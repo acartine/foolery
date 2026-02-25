@@ -29,13 +29,26 @@ _setup_confirm() {
 _PROMPT_MARKER="FOOLERY_GUIDANCE_PROMPT_START"
 
 _resolve_prompt_template() {
+  local memory_manager="${1:-beads}"
+  local manager_upper
+  manager_upper="$(printf '%s' "$memory_manager" | tr '[:lower:]' '[:upper:]')"
+
+  if [[ -n "${APP_DIR:-}" && -f "${APP_DIR}/PROMPT_${manager_upper}.md" ]]; then
+    printf '%s\n' "${APP_DIR}/PROMPT_${manager_upper}.md"
+    return 0
+  fi
   if [[ -n "${APP_DIR:-}" && -f "${APP_DIR}/PROMPT.md" ]]; then
     printf '%s\n' "${APP_DIR}/PROMPT.md"
     return 0
   fi
 
-  local script_dir repo_prompt
+  local script_dir repo_prompt repo_manager_prompt
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  repo_manager_prompt="$(cd "$script_dir/.." && pwd)/PROMPT_${manager_upper}.md"
+  if [[ -f "$repo_manager_prompt" ]]; then
+    printf '%s\n' "$repo_manager_prompt"
+    return 0
+  fi
   repo_prompt="$(cd "$script_dir/.." && pwd)/PROMPT.md"
   if [[ -f "$repo_prompt" ]]; then
     printf '%s\n' "$repo_prompt"
@@ -77,10 +90,11 @@ _discover_models() {
 
 REGISTRY_DIR="${HOME}/.config/foolery"
 REGISTRY_FILE="${REGISTRY_DIR}/registry.json"
-KNOWN_MEMORY_MANAGERS=(beads)
+KNOWN_MEMORY_MANAGERS=(knots beads)
 
 _memory_manager_marker_dir() {
   case "$1" in
+    knots) printf '.knots' ;;
     beads) printf '.beads' ;;
     *) return 1 ;;
   esac
@@ -425,12 +439,7 @@ _append_guidance_prompt_to_file() {
 }
 
 _prompt_guidance_wizard() {
-  local prompt_file mounted
-  if ! prompt_file="$(_resolve_prompt_template)"; then
-    _setup_log "Guidance prompt template unavailable; skipping prompt update."
-    return 0
-  fi
-
+  local mounted
   mounted="$(_read_registry_paths)"
   if [[ -z "$mounted" ]]; then
     return 0
@@ -443,6 +452,14 @@ _prompt_guidance_wizard() {
   local updated=0 already=0 missing=0
   while IFS= read -r repo_path; do
     [[ -z "$repo_path" ]] && continue
+
+    local memory_manager_type prompt_file
+    memory_manager_type="$(_detect_memory_manager_for_repo "$repo_path" || true)"
+    memory_manager_type="${memory_manager_type:-beads}"
+    if ! prompt_file="$(_resolve_prompt_template "$memory_manager_type")"; then
+      _setup_log "Guidance prompt template unavailable for $memory_manager_type; skipping $repo_path."
+      continue
+    fi
 
     local found_in_repo=0
     local target_file

@@ -83,6 +83,10 @@ export interface BeadColumnOpts {
   childCountMap?: Map<string, number>;
 }
 
+function isVerificationState(bead: Bead): boolean {
+  return bead.workflowState === "verification";
+}
+
 function VerificationButtons({
   bead,
   onUpdateBead,
@@ -92,7 +96,7 @@ function VerificationButtons({
   onUpdateBead?: (id: string, fields: UpdateBeadInput) => void;
   isRolling?: boolean;
 }) {
-  const hasVerification = bead.labels?.includes("stage:verification");
+  const hasVerification = isVerificationState(bead);
   const hasTransition = isTransitionLocked(bead.labels ?? []);
 
   // Show auto-verification indicator when transition:verification is present
@@ -133,7 +137,7 @@ function VerificationButtons({
 export function verifyBeadFields(): UpdateBeadInput {
   return {
     status: "closed",
-    removeLabels: ["stage:verification"],
+    workflowState: "closed",
   };
 }
 
@@ -141,12 +145,12 @@ export function rejectBeadFields(bead: Bead): UpdateBeadInput {
   const currentLabels = bead.labels ?? [];
   const prev = currentLabels.find((l) => l.startsWith("attempts:"));
   const attemptNum = prev ? parseInt(prev.split(":")[1], 10) + 1 : 1;
-  const removeLabels = ["stage:verification"];
-  if (prev) removeLabels.push(prev);
+  const removeLabels = prev ? [prev] : undefined;
   return {
     status: "open",
+    workflowState: "retake",
     removeLabels,
-    labels: ["stage:retry", `attempts:${attemptNum}`],
+    labels: [`attempts:${attemptNum}`],
   };
 }
 
@@ -161,7 +165,7 @@ function RejectButton({
   onRejectBead?: (bead: Bead) => void;
   isRolling?: boolean;
 }) {
-  const hasVerification = bead.labels?.includes("stage:verification");
+  const hasVerification = isVerificationState(bead);
   if (!hasVerification || (!onUpdateBead && !onRejectBead) || isRolling) return null;
 
   return (

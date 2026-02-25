@@ -6,11 +6,12 @@
  *  2. Self-test target for the contract test harness.
  */
 
-import type { Bead, BeadDependency, BeadStatus } from "@/lib/types";
+import type { Bead, BeadDependency, BeadStatus, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type { BackendPort, BackendResult, BeadListFilters } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
+import { beadsCoarseWorkflowDescriptor, mapStatusToDefaultWorkflowState } from "@/lib/workflows";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -59,6 +60,12 @@ interface DepRecord {
 export class MockBackendPort implements BackendPort {
   private beads = new Map<string, Bead>();
   private deps: DepRecord[] = [];
+
+  async listWorkflows(
+    _repoPath?: string,
+  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+    return ok([beadsCoarseWorkflowDescriptor()]);
+  }
 
   // -- Read operations ------------------------------------------------------
 
@@ -132,6 +139,10 @@ export class MockBackendPort implements BackendPort {
       description: input.description,
       type: input.type ?? "task",
       status: "open",
+      compatStatus: "open",
+      workflowId: beadsCoarseWorkflowDescriptor().id,
+      workflowMode: "coarse_human_gated",
+      workflowState: mapStatusToDefaultWorkflowState("open"),
       priority: input.priority ?? 2,
       labels: input.labels ?? [],
       assignee: input.assignee,
@@ -181,6 +192,8 @@ export class MockBackendPort implements BackendPort {
     const bead = this.beads.get(id);
     if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
     bead.status = "closed";
+    bead.compatStatus = "closed";
+    bead.workflowState = mapStatusToDefaultWorkflowState("closed");
     bead.closed = isoNow();
     bead.updated = isoNow();
     return { ok: true };

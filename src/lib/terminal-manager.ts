@@ -7,7 +7,7 @@ import {
   type InteractionLog,
 } from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
-import { getActionAgent } from "@/lib/settings";
+import { getActionAgent, loadSettings } from "@/lib/settings";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -16,7 +16,7 @@ import {
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
   buildShowIssueCommand,
-  buildVerificationStageCommand,
+  buildWorkflowStateCommand,
   resolveMemoryManagerType,
 } from "@/lib/memory-manager-commands";
 import { validateCwd } from "@/lib/validate-cwd";
@@ -24,6 +24,12 @@ import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
+import type { Bead, CoarsePrPreference, MemoryWorkflowDescriptor } from "@/lib/types";
+import {
+  beadsCoarseWorkflowDescriptor,
+  resolveCoarsePrPreference,
+  workflowDescriptorById,
+} from "@/lib/workflows";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -96,52 +102,162 @@ function buildAutoAskUserResponse(input: unknown): string {
   return lines.join("\n");
 }
 
-function buildVerificationStateCommand(id: string, memoryManagerType: MemoryManagerType): string {
-  return buildVerificationStageCommand(id, memoryManagerType);
+interface WorkflowPromptTarget {
+  id: string;
+  workflow: MemoryWorkflowDescriptor;
+  workflowState?: string;
 }
 
-function buildSingleBeadCompletionFollowUp(beadId: string, memoryManagerType: MemoryManagerType): string {
+function buildCoarsePolicyLines(policy: CoarsePrPreference): string[] {
+  switch (policy) {
+    case "soft_required":
+      return [
+        "PR policy: soft-required.",
+        "Open a PR before moving to Final Cut. If impossible, explicitly state why and continue only with that explicit exception.",
+      ];
+    case "preferred":
+      return [
+        "PR policy: preferred.",
+        "Open a PR when practical, then continue.",
+      ];
+    case "none":
+      return [
+        "PR policy: none.",
+      ];
+    default:
+      return [];
+  }
+}
+
+function normalizeWorkflowState(value: string | undefined): string | null {
+  const normalized = value?.trim().toLowerCase();
+  return normalized ? normalized : null;
+}
+
+function buildGranularProgressionCommands(
+  target: WorkflowPromptTarget,
+  memoryManagerType: MemoryManagerType,
+): string[] {
+  const nonTerminalStates = target.workflow.states.filter(
+    (state) => !target.workflow.terminalStates.includes(state),
+  );
+  if (nonTerminalStates.length === 0) return [];
+
+  const current = normalizeWorkflowState(target.workflowState);
+  const currentIndex = current ? nonTerminalStates.indexOf(current) : -1;
+  const progression =
+    currentIndex >= 0 && currentIndex + 1 < nonTerminalStates.length
+      ? nonTerminalStates.slice(currentIndex + 1)
+      : nonTerminalStates;
+
+  return progression.map((state) =>
+    buildWorkflowStateCommand(target.id, state, memoryManagerType),
+  );
+}
+
+function buildSingleTargetFollowUpLines(
+  target: WorkflowPromptTarget,
+  memoryManagerType: MemoryManagerType,
+  coarsePrPolicy: CoarsePrPreference,
+): string[] {
+  const lines: string[] = [
+    `Bead ${target.id} (${target.workflow.mode}):`,
+  ];
+
+  if (target.workflow.mode === "granular_autonomous") {
+    const commands = buildGranularProgressionCommands(target, memoryManagerType);
+    lines.push("Progress through workflow states in order after merge/push:");
+    if (commands.length > 0) {
+      lines.push(...commands.map((command) => `- ${command}`));
+    } else {
+      lines.push("- No non-terminal progression states configured.");
+    }
+    return lines;
+  }
+
+  lines.push(...buildCoarsePolicyLines(coarsePrPolicy));
+  lines.push("Human review is required: either review manually or delegate review to an agent.");
+  if (target.workflow.finalCutState) {
+    lines.push("After merge/PR handling, move bead to Final Cut:");
+    lines.push(`- ${buildWorkflowStateCommand(target.id, target.workflow.finalCutState, memoryManagerType)}`);
+  } else {
+    lines.push("This workflow does not define a Final Cut state.");
+  }
+  return lines;
+}
+
+function buildSingleBeadCompletionFollowUp(
+  target: WorkflowPromptTarget,
+  memoryManagerType: MemoryManagerType,
+  coarsePrPolicy: CoarsePrPreference,
+): string {
   return [
     "Ship completion follow-up:",
-    `Confirm that changes for ${beadId} are merged according to your normal shipping guidelines.`,
-    "Do not ask for another follow-up prompt until that merge confirmation is done (or blocked by a hard error).",
-    "After confirming merge, run this command to set verification state:",
-    buildVerificationStateCommand(beadId, memoryManagerType),
-    "Then summarize merge confirmation and command result.",
+    `Confirm that changes for ${target.id} are merged and pushed according to your normal shipping guidelines.`,
+    "Do not ask for another follow-up prompt until merge/push confirmation is done (or blocked by a hard error).",
+    ...buildSingleTargetFollowUpLines(target, memoryManagerType, coarsePrPolicy),
+    "Then summarize merge/push confirmation and workflow command results.",
   ].join("\n");
 }
 
 function buildWaveCompletionFollowUp(
   waveId: string,
-  beatIds: string[],
+  targets: WorkflowPromptTarget[],
   memoryManagerType: MemoryManagerType,
+  coarsePolicyByWorkflowId: Map<string, CoarsePrPreference>,
 ): string {
-  const targets = beatIds.length > 0 ? beatIds : [waveId];
+  const safeTargets = targets.length > 0
+    ? targets
+    : [{ id: waveId, workflow: beadsCoarseWorkflowDescriptor() }];
   return [
     "Scene completion follow-up:",
     `Handle this in one pass for scene ${waveId}.`,
-    "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
+    "For EACH bead below, confirm merge/push status before workflow transitions.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
-    "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
-    "Beats in this scene:",
-    ...targets.map((id) => `- ${id}`),
-    "Then summarize per beat: merged yes/no and verification-state command result.",
+    ...safeTargets.flatMap((target) => buildSingleTargetFollowUpLines(
+      target,
+      memoryManagerType,
+      coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
+    )),
+    "Then summarize per bead: merged yes/no, pushed yes/no, workflow command results, and PR/review notes when applicable.",
   ].join("\n");
 }
 
-function buildSceneCompletionFollowUp(beatIds: string[], memoryManagerType: MemoryManagerType): string {
-  const targets = beatIds.length > 0 ? beatIds : ["(none provided)"];
-  return [
-    "Scene completion follow-up:",
-    "For EACH beat below, confirm its changes are merged according to your normal shipping guidelines.",
-    "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
-    "For each beat after merge confirmation, run exactly one command to set verification state:",
-    ...targets.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
-    "Beats in this scene:",
-    ...targets.map((id) => `- ${id}`),
-    "Then summarize per beat: merged yes/no and verification-state command result.",
-  ].join("\n");
+function buildSceneCompletionFollowUp(
+  targets: WorkflowPromptTarget[],
+  memoryManagerType: MemoryManagerType,
+  coarsePolicyByWorkflowId: Map<string, CoarsePrPreference>,
+): string {
+  return buildWaveCompletionFollowUp(
+    "scene",
+    targets,
+    memoryManagerType,
+    coarsePolicyByWorkflowId,
+  );
+}
+
+function resolveWorkflowForBead(
+  bead: Bead,
+  workflowsById: Map<string, MemoryWorkflowDescriptor>,
+  fallbackWorkflow: MemoryWorkflowDescriptor,
+): MemoryWorkflowDescriptor {
+  if (bead.workflowId) {
+    const matched = workflowsById.get(bead.workflowId);
+    if (matched) return matched;
+  }
+  return fallbackWorkflow;
+}
+
+function toWorkflowPromptTarget(
+  bead: Bead,
+  workflowsById: Map<string, MemoryWorkflowDescriptor>,
+  fallbackWorkflow: MemoryWorkflowDescriptor,
+): WorkflowPromptTarget {
+  return {
+    id: bead.id,
+    workflow: resolveWorkflowForBead(bead, workflowsById, fallbackWorkflow),
+    workflowState: bead.workflowState,
+  };
 }
 
 function makeUserMessageLine(text: string): string {
@@ -356,20 +472,45 @@ export async function createSession(
   const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
   // Check for children — both orchestrated waves and plain parent beads
   let waveBeatIds: string[] = [];
+  let waveBeats: Bead[] = [];
   const childResult = await getBackend().list({ parent: bead.id }, repoPath);
   const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
   if (hasChildren) {
-    waveBeatIds = childResult.data!
+    waveBeats = childResult.data!
       .filter((child) => child.status !== "closed")
-      .map((child) => child.id)
-      .sort((a, b) => a.localeCompare(b));
+      .sort((a, b) => a.id.localeCompare(b.id));
+    waveBeatIds = waveBeats.map((child) => child.id);
   } else if (isWave) {
     console.warn(
       `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error?.message ?? "no children found"}`
     );
   }
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
-  const memoryManagerType = resolveMemoryManagerType(repoPath || process.cwd());
+  const resolvedRepoPath = repoPath || process.cwd();
+  const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
+  const workflowsById = workflowDescriptorById(workflows);
+  const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
+  const settings = await loadSettings();
+  const coarseOverrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
+  const coarsePolicyByWorkflowId = new Map<string, CoarsePrPreference>();
+  for (const workflow of workflows) {
+    coarsePolicyByWorkflowId.set(
+      workflow.id,
+      resolveCoarsePrPreference(resolvedRepoPath, workflow, coarseOverrides),
+    );
+  }
+  if (!coarsePolicyByWorkflowId.has(fallbackWorkflow.id)) {
+    coarsePolicyByWorkflowId.set(
+      fallbackWorkflow.id,
+      resolveCoarsePrPreference(resolvedRepoPath, fallbackWorkflow, coarseOverrides),
+    );
+  }
+  const primaryTarget = toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow);
+  const sceneTargets = waveBeats.map((child) =>
+    toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
+  );
   const showSelfCommand = buildShowIssueCommand(bead.id, memoryManagerType);
   const showChildCommand = buildShowIssueCommand("<child-id>", memoryManagerType);
 
@@ -417,7 +558,7 @@ export async function createSession(
     id,
     beadId: bead.id,
     beadTitle: bead.title,
-    repoPath: repoPath || process.cwd(),
+    repoPath: resolvedRepoPath,
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -431,7 +572,7 @@ export async function createSession(
   const interactionLog = await startInteractionLog({
     sessionId: id,
     interactionType: isParent ? "scene" : "take",
-    repoPath: repoPath || process.cwd(),
+    repoPath: resolvedRepoPath,
     beadIds: isParent ? waveBeatIds : [beadId],
     agentName: agent.label || agent.command,
     agentModel: agent.model,
@@ -443,7 +584,7 @@ export async function createSession(
   const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog };
   sessions.set(id, entry);
 
-  const cwd = repoPath || process.cwd();
+  const cwd = resolvedRepoPath;
 
   const pushEvent = (evt: TerminalEvent) => {
     if (buffer.length >= MAX_BUFFER) buffer.shift();
@@ -508,13 +649,24 @@ export async function createSession(
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
+  const primaryCoarsePolicy =
+    coarsePolicyByWorkflowId.get(primaryTarget.workflow.id) ?? "soft_required";
   const autoShipCompletionPrompt = !isInteractive
     ? null
     : customPrompt
       ? null
       : isParent
-        ? buildWaveCompletionFollowUp(bead.id, waveBeatIds, memoryManagerType)
-        : buildSingleBeadCompletionFollowUp(bead.id, memoryManagerType);
+        ? buildWaveCompletionFollowUp(
+          bead.id,
+          sceneTargets,
+          memoryManagerType,
+          coarsePolicyByWorkflowId,
+        )
+        : buildSingleBeadCompletionFollowUp(
+          primaryTarget,
+          memoryManagerType,
+          primaryCoarsePolicy,
+        );
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 
@@ -830,7 +982,30 @@ export async function createSceneSession(
   });
 
   const id = generateId();
-  const memoryManagerType = resolveMemoryManagerType(repoPath || process.cwd());
+  const resolvedRepoPath = repoPath || process.cwd();
+  const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
+  const workflowsById = workflowDescriptorById(workflows);
+  const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
+  const settings = await loadSettings();
+  const coarseOverrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
+  const coarsePolicyByWorkflowId = new Map<string, CoarsePrPreference>();
+  for (const workflow of workflows) {
+    coarsePolicyByWorkflowId.set(
+      workflow.id,
+      resolveCoarsePrPreference(resolvedRepoPath, workflow, coarseOverrides),
+    );
+  }
+  if (!coarsePolicyByWorkflowId.has(fallbackWorkflow.id)) {
+    coarsePolicyByWorkflowId.set(
+      fallbackWorkflow.id,
+      resolveCoarsePrPreference(resolvedRepoPath, fallbackWorkflow, coarseOverrides),
+    );
+  }
+  const sceneTargets = beads.map((bead) =>
+    toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow),
+  );
   const showAnyCommand = buildShowIssueCommand("<id>", memoryManagerType);
 
   // Build combined prompt with bead IDs only (agents query details themselves)
@@ -852,9 +1027,15 @@ export async function createSceneSession(
       `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
       `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
       `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-      `6. For each bead, once merge/push is confirmed, run exactly one verification command:`,
-      ...beadIds.map((id) => buildVerificationStateCommand(id, memoryManagerType)),
-      `7. In your final summary, report per bead: merged yes/no and verification command result.`,
+      `6. For each bead, once merge/push is confirmed, apply workflow transitions according to its assigned workflow:`,
+      ...sceneTargets.flatMap((target) =>
+        buildSingleTargetFollowUpLines(
+          target,
+          memoryManagerType,
+          coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
+        )
+      ),
+      `7. In your final summary, report per bead: merged yes/no, pushed yes/no, workflow command result, and PR/review status when applicable.`,
       ``,
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
@@ -867,7 +1048,7 @@ export async function createSceneSession(
     beadId: "scene",
     beadTitle: `Scene: ${beads.length} beads`,
     beadIds,
-    repoPath: repoPath || process.cwd(),
+    repoPath: resolvedRepoPath,
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -881,7 +1062,7 @@ export async function createSceneSession(
   const sceneInteractionLog = await startInteractionLog({
     sessionId: id,
     interactionType: "scene",
-    repoPath: repoPath || process.cwd(),
+    repoPath: resolvedRepoPath,
     beadIds,
     agentName: agent.label || agent.command,
     agentModel: agent.model,
@@ -893,7 +1074,7 @@ export async function createSceneSession(
   const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog: sceneInteractionLog };
   sessions.set(id, entry);
 
-  const cwd = repoPath || process.cwd();
+  const cwd = resolvedRepoPath;
 
   const pushEvent = (evt: TerminalEvent) => {
     if (buffer.length >= MAX_BUFFER) buffer.shift();
@@ -959,7 +1140,11 @@ export async function createSceneSession(
     ? null
     : customPrompt
       ? null
-      : buildSceneCompletionFollowUp(beadIds, memoryManagerType);
+      : buildSceneCompletionFollowUp(
+        sceneTargets,
+        memoryManagerType,
+        coarsePolicyByWorkflowId,
+      );
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
 

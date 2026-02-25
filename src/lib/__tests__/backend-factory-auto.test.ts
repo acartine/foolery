@@ -49,6 +49,7 @@ const mockListKnots = vi.fn(async () => ({
       tags: [],
       notes: [],
       handoff_capsules: [],
+      workflow_id: "granular",
       workflow_etag: "etag",
       created_at: "2026-01-01T00:00:00Z",
     },
@@ -56,8 +57,28 @@ const mockListKnots = vi.fn(async () => ({
 }));
 
 const mockListEdges = vi.fn(async () => ({ ok: true as const, data: [] }));
+const mockListWorkflows = vi.fn(async () => ({
+  ok: true as const,
+  data: [
+    {
+      id: "granular",
+      description: "Automated granular workflow",
+      initial_state: "work_item",
+      states: ["work_item", "implementing", "shipped"],
+      terminal_states: ["shipped"],
+    },
+    {
+      id: "coarse",
+      description: "Human gated coarse workflow",
+      initial_state: "work_item",
+      states: ["work_item", "implementing", "reviewing", "shipped"],
+      terminal_states: ["shipped"],
+    },
+  ],
+}));
 
 vi.mock("@/lib/knots", () => ({
+  listWorkflows: () => mockListWorkflows(),
   listKnots: () => mockListKnots(),
   showKnot: vi.fn(async () => ({ ok: false, error: "not found" })),
   newKnot: vi.fn(async () => ({ ok: false, error: "not implemented" })),

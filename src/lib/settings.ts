@@ -229,6 +229,7 @@ type SettingsPartial = Partial<{
   actions: Partial<FoolerySettings["actions"]>;
   verification: Partial<FoolerySettings["verification"]>;
   backend: Partial<FoolerySettings["backend"]>;
+  workflow: Partial<FoolerySettings["workflow"]>;
 }>;
 
 /**
@@ -245,6 +246,14 @@ export async function updateSettings(
     actions: { ...current.actions, ...partial.actions },
     verification: { ...current.verification, ...partial.verification },
     backend: { ...current.backend, ...partial.backend },
+    workflow: {
+      ...current.workflow,
+      ...partial.workflow,
+      coarsePrPreferenceOverrides: {
+        ...current.workflow.coarsePrPreferenceOverrides,
+        ...(partial.workflow?.coarsePrPreferenceOverrides ?? {}),
+      },
+    },
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);

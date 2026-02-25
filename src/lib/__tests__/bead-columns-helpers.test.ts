@@ -21,20 +21,20 @@ function makeBead(overrides: Partial<Bead> = {}): Bead {
 }
 
 describe("verifyBeadFields", () => {
-  it("returns status closed and removes stage:verification", () => {
+  it("returns status closed with workflow state closed", () => {
     const result = verifyBeadFields();
     expect(result.status).toBe("closed");
-    expect(result.removeLabels).toEqual(["stage:verification"]);
+    expect(result.workflowState).toBe("closed");
   });
 });
 
 describe("rejectBeadFields", () => {
-  it("returns open status with retry label and attempt count 1 for first rejection", () => {
+  it("returns open status with retake workflow state and attempt count 1 for first rejection", () => {
     const bead = makeBead({ labels: ["stage:verification", "foo"] });
     const result = rejectBeadFields(bead);
     expect(result.status).toBe("open");
-    expect(result.removeLabels).toEqual(["stage:verification"]);
-    expect(result.labels).toContain("stage:retry");
+    expect(result.workflowState).toBe("retake");
+    expect(result.removeLabels).toBeUndefined();
     expect(result.labels).toContain("attempts:1");
   });
 
@@ -44,7 +44,7 @@ describe("rejectBeadFields", () => {
     });
     const result = rejectBeadFields(bead);
     expect(result.status).toBe("open");
-    expect(result.removeLabels).toContain("stage:verification");
+    expect(result.removeLabels).not.toContain("stage:verification");
     expect(result.removeLabels).toContain("attempts:2");
     expect(result.labels).toContain("attempts:3");
   });

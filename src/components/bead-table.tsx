@@ -45,6 +45,10 @@ import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import { CascadeCloseDialog } from "@/components/cascade-close-dialog";
 import type { CascadeDescendant } from "@/lib/cascade-close";
 
+function isVerificationState(bead: Bead): boolean {
+  return bead.workflowState === "verification";
+}
+
 function SummaryColumn({
   text,
   bg,
@@ -199,10 +203,12 @@ export function BeadTable({
       return updateBead(id, fields, repo);
     },
     onMutate: async ({ id, fields }) => {
-      const isVerify = fields.status === "closed" &&
-        fields.removeLabels?.includes("stage:verification");
-      const isReject = fields.status === "open" &&
-        fields.removeLabels?.includes("stage:verification");
+      const isVerify = fields.status === "closed" && (
+        fields.workflowState === "closed"
+      );
+      const isReject = fields.status === "open" && (
+        fields.workflowState === "retake"
+      );
 
       // For ALL property changes: optimistically update the beads cache
       await queryClient.cancelQueries({ queryKey: ["beads"] });
@@ -444,13 +450,13 @@ export function BeadTable({
     const result = new Set<string>();
     for (const [parentId, children] of byParent) {
       const hasVerification = children.some(
-        (c) => c.status === "in_progress" && c.labels?.includes("stage:verification")
+        (c) => c.status === "in_progress" && isVerificationState(c)
       );
       if (!hasVerification) continue;
       const allSettled = children.every(
         (c) =>
           c.status === "closed" ||
-          (c.status === "in_progress" && c.labels?.includes("stage:verification"))
+          (c.status === "in_progress" && isVerificationState(c))
       );
       if (allSettled) result.add(parentId);
     }
@@ -460,7 +466,7 @@ export function BeadTable({
   // Approve all verification children under a parent and close the parent
   const handleApproveReview = useCallback((parentId: string) => {
     const children = data.filter(
-      (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
+      (b) => b.parent === parentId && b.status === "in_progress" && isVerificationState(b)
     );
     for (const child of children) {
       // Use the shared atomic verify payload to avoid split-update regressions.
@@ -472,7 +478,7 @@ export function BeadTable({
   // Reject all verification children under a parent back to open
   const handleRejectReview = useCallback((parentId: string) => {
     const children = data.filter(
-      (b) => b.parent === parentId && b.status === "in_progress" && b.labels?.includes("stage:verification")
+      (b) => b.parent === parentId && b.status === "in_progress" && isVerificationState(b)
     );
     for (const child of children) {
       handleUpdateBead({ id: child.id, fields: rejectBeadFields(child) });
@@ -701,10 +707,10 @@ export function BeadTable({
           setFocusedRowId(rows[nextFocusIdx].original.id);
         }
       } else if (e.key === "F" && e.shiftKey) {
-        // Shift-F: Open rejection notes dialog for focused bead with stage:verification.
+        // Shift-F: Open rejection notes dialog for focused bead in Final Cut.
         if (currentIndex < 0) return;
         const bead = rows[currentIndex].original;
-        if (!bead.labels?.includes("stage:verification")) return;
+        if (!isVerificationState(bead)) return;
         e.preventDefault();
         setNotesBead(bead);
         setNotesRejectionMode(true);

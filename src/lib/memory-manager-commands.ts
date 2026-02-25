@@ -1,5 +1,6 @@
 import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 import type { MemoryManagerType } from "@/lib/memory-managers";
+import { mapWorkflowStateToCompatStatus } from "@/lib/workflows";
 
 interface MemoryManagerCommandOptions {
   noDaemon?: boolean;
@@ -7,6 +8,10 @@ interface MemoryManagerCommandOptions {
 
 function quoteId(id: string): string {
   return JSON.stringify(id);
+}
+
+function quoteArg(value: string): string {
+  return JSON.stringify(value);
 }
 
 function beadsNoDaemonFlag(options?: MemoryManagerCommandOptions): string {
@@ -21,6 +26,20 @@ export function resolveMemoryManagerType(repoPath?: string): MemoryManagerType {
 export function buildShowIssueCommand(id: string, memoryManagerType: MemoryManagerType): string {
   if (memoryManagerType === "knots") return `knots show ${quoteId(id)}`;
   return `bd show ${quoteId(id)}`;
+}
+
+export function buildWorkflowStateCommand(
+  id: string,
+  workflowState: string,
+  memoryManagerType: MemoryManagerType,
+  options?: MemoryManagerCommandOptions,
+): string {
+  const normalizedState = workflowState.trim().toLowerCase();
+  if (memoryManagerType === "knots") {
+    return `knots update ${quoteId(id)} --status ${quoteArg(normalizedState)}`;
+  }
+  const compatStatus = mapWorkflowStateToCompatStatus(normalizedState, "memory-manager-commands");
+  return `bd update ${quoteId(id)} --status ${quoteArg(compatStatus)} --add-label ${quoteArg(`wf:state:${normalizedState}`)}${beadsNoDaemonFlag(options)}`;
 }
 
 export function buildVerificationStageCommand(

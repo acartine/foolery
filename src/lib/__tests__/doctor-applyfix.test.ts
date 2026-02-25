@@ -7,10 +7,12 @@ import { join } from "node:path";
 
 const mockList = vi.fn();
 const mockUpdate = vi.fn();
+const mockListWorkflows = vi.fn();
 vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({
     list: (...args: unknown[]) => mockList(...args),
     update: (...args: unknown[]) => mockUpdate(...args),
+    listWorkflows: (...args: unknown[]) => mockListWorkflows(...args),
   }),
 }));
 
@@ -66,13 +68,33 @@ const DEFAULT_SETTINGS = {
     direct: "",
     breakdown: "",
   },
-  verification: { enabled: false, agent: "" },
+  verification: { enabled: false, agent: "", maxRetries: 3 },
+  backend: { type: "auto" as const },
+  workflow: { coarsePrPreferenceOverrides: {} },
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
   mockListRepos.mockResolvedValue([]);
   mockGetRegisteredAgents.mockResolvedValue({});
+  mockLoadSettings.mockResolvedValue(DEFAULT_SETTINGS);
+  mockListWorkflows.mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        id: "beads-coarse",
+        backingWorkflowId: "beads-coarse",
+        label: "Beads (Coarse)",
+        mode: "coarse_human_gated",
+        initialState: "open",
+        states: ["open", "in_progress", "verification", "retake", "closed"],
+        terminalStates: ["closed"],
+        finalCutState: "verification",
+        retakeState: "retake",
+        promptProfileId: "beads-coarse-human-gated",
+      },
+    ],
+  });
   mockInspectSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
@@ -220,7 +242,7 @@ describe("applyFix: stale-parent", () => {
     mockUpdate.mockResolvedValue({ ok: true });
   }
 
-  it("fixes stale parent by setting in_progress with verification label", async () => {
+  it("fixes stale parent by setting in_progress with verification workflow state", async () => {
     setupStaleParent();
 
     const fixReport = await runDoctorFix({ "stale-parent": "default" });
@@ -230,7 +252,7 @@ describe("applyFix: stale-parent", () => {
     expect(fix?.message).toContain("parent-1");
     expect(mockUpdate).toHaveBeenCalledWith(
       "parent-1",
-      { labels: ["stage:verification"], status: "in_progress" },
+      { status: "in_progress", workflowState: "verification" },
       "/repo",
     );
   });
@@ -253,60 +275,6 @@ describe("applyFix: stale-parent", () => {
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("network timeout");
-  });
-});
-
-// ── applyFix: corrupt-bead-verification error paths ─────────
-
-describe("applyFix: corrupt-bead-verification error paths", () => {
-  const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
-
-  function setupCorruptBead() {
-    mockListRepos.mockResolvedValue(repos);
-    mockList.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "b-fix",
-          title: "Fixable",
-          status: "open",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-      ],
-    });
-  }
-
-  it("returns failure when updateBead fails for set-in-progress", async () => {
-    setupCorruptBead();
-    mockUpdate.mockResolvedValue({ ok: false, error: { code: "UNKNOWN", message: "bd update failed", retryable: false } });
-
-    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
-    const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
-    expect(fix?.success).toBe(false);
-    expect(fix?.message).toContain("bd update failed");
-  });
-
-  it("returns failure when updateBead fails for remove-label", async () => {
-    setupCorruptBead();
-    mockUpdate.mockResolvedValue({ ok: false });
-
-    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "remove-label" });
-    const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
-    expect(fix?.success).toBe(false);
-  });
-
-  it("returns failure when updateBead throws", async () => {
-    setupCorruptBead();
-    mockUpdate.mockRejectedValue(new Error("crash"));
-
-    const fixReport = await runDoctorFix({ "corrupt-bead-verification": "set-in-progress" });
-    const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
-    expect(fix?.success).toBe(false);
-    expect(fix?.message).toContain("crash");
   });
 });
 
@@ -364,7 +332,7 @@ describe("applyFix: prompt-guidance", () => {
       const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
       const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
       expect(fix?.success).toBe(false);
-      expect(fix?.message).toContain("PROMPT.md template not found");
+      expect(fix?.message).toContain("Prompt template not found");
 
       process.chdir(originalCwd);
       if (originalEnv) process.env.FOOLERY_APP_DIR = originalEnv;
@@ -385,12 +353,23 @@ describe("applyFix: context filtering", () => {
       ok: true,
       data: [
         {
-          id: "b-1",
-          title: "Bad bead",
+          id: "parent-1",
+          title: "Parent bead",
           status: "open",
-          labels: ["stage:verification"],
+          labels: [],
+          type: "epic",
+          priority: 2,
+          created: "2026-01-01",
+          updated: "2026-01-01",
+        },
+        {
+          id: "child-1",
+          title: "Child bead",
+          status: "closed",
+          labels: [],
           type: "task",
           priority: 2,
+          parent: "parent-1",
           created: "2026-01-01",
           updated: "2026-01-01",
         },
@@ -400,12 +379,12 @@ describe("applyFix: context filtering", () => {
 
     // Use context filter that matches
     const fixReport = await runDoctorFix({
-      "corrupt-bead-verification": {
-        strategy: "set-in-progress",
-        contexts: [{ beadId: "b-1", repoPath: "/repo" }],
+      "stale-parent": {
+        strategy: "mark-verification",
+        contexts: [{ beadId: "parent-1", repoPath: "/repo" }],
       },
     });
-    const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(fix?.success).toBe(true);
   });
 
@@ -416,12 +395,23 @@ describe("applyFix: context filtering", () => {
       ok: true,
       data: [
         {
-          id: "b-1",
-          title: "Bad bead",
+          id: "parent-1",
+          title: "Parent bead",
           status: "open",
-          labels: ["stage:verification"],
+          labels: [],
+          type: "epic",
+          priority: 2,
+          created: "2026-01-01",
+          updated: "2026-01-01",
+        },
+        {
+          id: "child-1",
+          title: "Child bead",
+          status: "closed",
+          labels: [],
           type: "task",
           priority: 2,
+          parent: "parent-1",
           created: "2026-01-01",
           updated: "2026-01-01",
         },
@@ -430,12 +420,12 @@ describe("applyFix: context filtering", () => {
     mockUpdate.mockResolvedValue({ ok: true });
 
     const fixReport = await runDoctorFix({
-      "corrupt-bead-verification": {
-        strategy: "set-in-progress",
+      "stale-parent": {
+        strategy: "mark-verification",
         contexts: [{ beadId: "other-bead", repoPath: "/other-repo" }],
       },
     });
-    const fix = fixReport.fixes.find((f) => f.check === "corrupt-bead-verification");
+    const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(fix).toBeUndefined();
   });
 });

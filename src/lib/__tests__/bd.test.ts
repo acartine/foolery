@@ -332,7 +332,7 @@ describe("createBead", () => {
     const { createBead } = await import("@/lib/bd");
     await createBead({ title: "T", labels: ["a", "b"] });
     expect(execCalls[0]).toContain("--labels");
-    expect(execCalls[0]).toContain("a,b");
+    expect(execCalls[0]).toContain("a,b,wf:state:open");
   });
 
   it("skips undefined and empty fields", async () => {
