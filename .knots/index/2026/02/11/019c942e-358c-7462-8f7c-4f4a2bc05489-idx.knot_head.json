@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-358c-7462-8f7c-4f4a2bc05489",
+  "occurred_at": "2026-02-11T17:16:29Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kyo",
+    "state": "shipped",
+    "terminal": true,
+    "title": "slight filter pull downs to the right, next to the new button",
+    "updated_at": "2026-02-11T17:16:29Z",
+    "workflow_id": "default"
+  }
+}

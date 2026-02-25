@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4ce4-7fa1-9388-c75dc2ad01af",
+  "occurred_at": "2026-02-13T11:57:12Z",
+  "knot_id": "foolery-z9y",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in both the terminal and the claude console, parse event in a color, followed by a separater (-, |, =>, or an icon even), followed by the text.  if there are more keys in the response, parse them but append them below the text"
+  }
+}

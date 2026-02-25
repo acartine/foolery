@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-311b-75e1-b27a-2b691e1905fe",
+  "occurred_at": "2026-02-17T15:19:56Z",
+  "knot_id": "foolery-hdtj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "it's just json diarrhea\n\ninstead we should have a nicely color coded, formatted output for each check, with a green checkbox for good, red checkbox for bad.\n\nfor itemized problems like corrupt beats - don't list all of them, just show how many."
+  }
+}

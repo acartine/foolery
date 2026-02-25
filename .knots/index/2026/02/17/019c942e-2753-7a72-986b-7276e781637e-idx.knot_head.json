@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2753-7a72-986b-7276e781637e",
+  "occurred_at": "2026-02-17T08:13:43Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cxcv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "auto scan for repos during install",
+    "updated_at": "2026-02-17T08:13:43Z",
+    "workflow_id": "default"
+  }
+}

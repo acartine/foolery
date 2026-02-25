@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1735-7950-be1d-f7bf783a6996",
+  "occurred_at": "2026-02-18T12:03:26Z",
+  "knot_id": "foolery-2qv7",
+  "type": "knot.created",
+  "data": {
+    "body": "The streaming renderer in the CLI receives batch JSON when stream param not recognized. Fix: (1) add defensive guard skipping events without category/label, (2) guard ev.summary with || '' to prevent undefined coercion, (3) use req.nextUrl instead of new URL(req.url) in route.ts",
+    "description": "The streaming renderer in the CLI receives batch JSON when stream param not recognized. Fix: (1) add defensive guard skipping events without category/label, (2) guard ev.summary with || '' to prevent undefined coercion, (3) use req.nextUrl instead of new URL(req.url) in route.ts",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix foolery doctor showing undefined instead of check results",
+    "workflow_id": "default"
+  }
+}

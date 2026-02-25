@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1325-7960-bb0a-59f55c2403cb",
+  "occurred_at": "2026-02-22T09:27:10Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.2.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Build reusable backend contract test harness",
+    "updated_at": "2026-02-22T09:27:10Z",
+    "workflow_id": "default"
+  }
+}

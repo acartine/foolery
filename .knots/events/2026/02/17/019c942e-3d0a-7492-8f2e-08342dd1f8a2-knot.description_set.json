@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3d0a-7492-8f2e-08342dd1f8a2",
+  "occurred_at": "2026-02-17T21:28:58Z",
+  "knot_id": "foolery-qqla.3.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "If autorun is set, automatically invoke the same action path as the Run Now button after prompt hydration, guarded to prevent duplicate execution on re-render/navigation."
+  }
+}

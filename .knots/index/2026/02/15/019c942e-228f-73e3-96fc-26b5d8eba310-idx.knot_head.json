@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-228f-73e3-96fc-26b5d8eba310",
+  "occurred_at": "2026-02-15T13:52:36Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9v09.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Replace MANIFEST.md API section with canonical links",
+    "updated_at": "2026-02-15T13:52:36Z",
+    "workflow_id": "default"
+  }
+}

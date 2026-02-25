@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-236f-7e93-a6c6-e21b265a939d",
+  "occurred_at": "2026-02-11T06:52:43Z",
+  "knot_id": "foolery-akj",
+  "type": "knot.created",
+  "data": {
+    "body": "replace assignee / owner / created with two flush lines under type/status/priority\n\n{owner} created this on {full creation datetime}\nlast update {full update time}\n\nremove surrounding border shape\nremove 2 horizontal separation bars.\nremove +Add",
+    "description": "replace assignee / owner / created with two flush lines under type/status/priority\n\n{owner} created this on {full creation datetime}\nlast update {full update time}\n\nremove surrounding border shape\nremove 2 horizontal separation bars.\nremove +Add",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "detail page overview section tightening",
+    "workflow_id": "default"
+  }
+}

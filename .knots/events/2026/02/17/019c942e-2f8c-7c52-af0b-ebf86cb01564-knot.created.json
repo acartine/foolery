@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2f8c-7c52-af0b-ebf86cb01564",
+  "occurred_at": "2026-02-17T15:21:52Z",
+  "knot_id": "foolery-g45w",
+  "type": "knot.created",
+  "data": {
+    "body": "seems to reload the beats page of some arbitrary repository.\n\nthe repository should never change unless the user explicitly changes it.  the selected repository should be stateful either in the url or in backend.",
+    "description": "seems to reload the beats page of some arbitrary repository.\n\nthe repository should never change unless the user explicitly changes it.  the selected repository should be stateful either in the url or in backend.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "clicking on the foolery icon should never change the repository",
+    "workflow_id": "default"
+  }
+}

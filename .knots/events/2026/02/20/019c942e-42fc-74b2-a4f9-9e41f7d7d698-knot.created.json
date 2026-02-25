@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-42fc-74b2-a4f9-9e41f7d7d698",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "knot_id": "foolery-vdk0.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Add OpenRouter configuration contracts and persistence behavior without changing runtime execution.\n\nNotes: Foundation wave; all later waves depend on stable settings shape and persistence semantics.\n\nAssigned tasks:\n- Extend settings schema with OpenRouter section\n- Update settings merge logic for OpenRouter partial updates\n- Add settings tests for OpenRouter defaults and TOML round-trip",
+    "description": "Objective: Add OpenRouter configuration contracts and persistence behavior without changing runtime execution.\n\nNotes: Foundation wave; all later waves depend on stable settings shape and persistence semantics.\n\nAssigned tasks:\n- Extend settings schema with OpenRouter section\n- Update settings merge logic for OpenRouter partial updates\n- Add settings tests for OpenRouter defaults and TOML round-trip",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene freeman-vertigo: Settings Contract",
+    "workflow_id": "default"
+  }
+}

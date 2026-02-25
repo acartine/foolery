@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3761-7ab1-8635-ffeb61fde54e",
+  "occurred_at": "2026-02-22T08:50:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene mckellen-gladiator: Foolery Orchestration: Ship Now + Wave Planner",
+    "updated_at": "2026-02-22T08:50:53Z",
+    "workflow_id": "default"
+  }
+}

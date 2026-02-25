@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2ec0-7642-a0f3-b084c3e7c824",
+  "occurred_at": "2026-02-23T17:12:58Z",
+  "knot_id": "foolery-g3y1.6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Close parity gaps, add integration coverage, and finalize docs + rollout handoff."
+  }
+}

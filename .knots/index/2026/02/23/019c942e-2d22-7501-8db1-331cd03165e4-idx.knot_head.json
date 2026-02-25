@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2d22-7501-8db1-331cd03165e4",
+  "occurred_at": "2026-02-23T17:12:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.3.3",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Implement KnotsBackend mutation paths",
+    "updated_at": "2026-02-23T17:12:51Z",
+    "workflow_id": "default"
+  }
+}

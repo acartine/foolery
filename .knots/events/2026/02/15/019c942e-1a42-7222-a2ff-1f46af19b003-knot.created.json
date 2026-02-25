@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1a42-7222-a2ff-1f46af19b003",
+  "occurred_at": "2026-02-15T05:54:44Z",
+  "knot_id": "foolery-4gp",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  when Take! or Action! is called and the console pops up, let's show a big chunk of the title, first 40 chars.",
+    "description": "as title says.  when Take! or Action! is called and the console pops up, let's show a big chunk of the title, first 40 chars.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "beat console/terminal should show first 40 characters of title after bead id",
+    "workflow_id": "default"
+  }
+}

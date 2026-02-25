@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-45e8-7ce0-bcb4-d10e4093ff3c",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "knot_id": "foolery-vdk0.5.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Surface clear errors/warnings for missing API key, invalid model id, auth failures, and rate-limit conditions in runtime/doctor paths.",
+    "description": "Surface clear errors/warnings for missing API key, invalid model id, auth failures, and rate-limit conditions in runtime/doctor paths.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add diagnostics for OpenRouter misconfiguration",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1347-7e02-ac82-082fa45da964",
+  "occurred_at": "2026-02-22T18:58:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene titanic-lens: Core Seams",
+    "updated_at": "2026-02-22T18:58:51Z",
+    "workflow_id": "default"
+  }
+}

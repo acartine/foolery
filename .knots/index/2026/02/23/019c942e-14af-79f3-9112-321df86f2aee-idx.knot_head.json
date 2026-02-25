@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-14af-79f3-9112-321df86f2aee",
+  "occurred_at": "2026-02-23T07:23:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Migrate remaining CLI and service callsites to BackendPort",
+    "updated_at": "2026-02-23T07:23:51Z",
+    "workflow_id": "default"
+  }
+}

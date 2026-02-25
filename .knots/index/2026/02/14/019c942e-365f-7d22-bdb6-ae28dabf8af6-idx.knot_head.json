@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-365f-7d22-bdb6-ae28dabf8af6",
+  "occurred_at": "2026-02-14T09:11:03Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-l8n",
+    "state": "shipped",
+    "terminal": true,
+    "title": "toggling between orchestrate and list throws away all the orchestration state",
+    "updated_at": "2026-02-14T09:11:03Z",
+    "workflow_id": "default"
+  }
+}

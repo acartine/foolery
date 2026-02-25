@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-34da-7a73-873c-57edb268b0f0",
+  "occurred_at": "2026-02-13T07:08:45Z",
+  "knot_id": "foolery-kri",
+  "type": "knot.type_set",
+  "data": {
+    "type": "feature"
+  }
+}

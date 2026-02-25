@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3e1a-7600-8df0-13651bfe30d3",
+  "occurred_at": "2026-02-19T09:32:43Z",
+  "knot_id": "foolery-qym6",
+  "type": "knot.created",
+  "data": {
+    "body": "uninstall_cmd() in scripts/install.sh only removes runtime, state, and launcher paths but not ~/.config/foolery/ which contains registry.json, settings.toml, logs/, and version-check.json. This causes stale state to persist across uninstall/reinstall cycles.",
+    "description": "uninstall_cmd() in scripts/install.sh only removes runtime, state, and launcher paths but not ~/.config/foolery/ which contains registry.json, settings.toml, logs/, and version-check.json. This causes stale state to persist across uninstall/reinstall cycles.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix foolery uninstall to clean up app state data (~/.config/foolery)",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2276-7a62-a9c7-7c6456b41eb9",
+  "occurred_at": "2026-02-15T13:52:36Z",
+  "knot_id": "foolery-9v09.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove stale API details from MANIFEST.md and replace with links to the canonical OpenAPI document and /docs/API.md guide.",
+    "description": "Remove stale API details from MANIFEST.md and replace with links to the canonical OpenAPI document and /docs/API.md guide.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Replace MANIFEST.md API section with canonical links",
+    "workflow_id": "default"
+  }
+}

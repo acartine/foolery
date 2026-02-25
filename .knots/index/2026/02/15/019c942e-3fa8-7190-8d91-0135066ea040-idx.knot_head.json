@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3fa8-7190-8d91-0135066ea040",
+  "occurred_at": "2026-02-15T16:11:12Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-s2vh",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Descriptive mouse overs",
+    "updated_at": "2026-02-15T16:11:12Z",
+    "workflow_id": "default"
+  }
+}

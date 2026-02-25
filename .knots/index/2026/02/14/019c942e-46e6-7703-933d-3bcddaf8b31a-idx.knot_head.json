@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-46e6-7703-933d-3bcddaf8b31a",
+  "occurred_at": "2026-02-14T18:00:34Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-w5u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Directory browser logic (src/lib/browse.ts)",
+    "updated_at": "2026-02-14T18:00:34Z",
+    "workflow_id": "default"
+  }
+}

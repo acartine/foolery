@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-33d2-77d1-8302-132d8338468e",
+  "occurred_at": "2026-02-25T08:09:40Z",
+  "knot_id": "foolery-jzww",
+  "type": "knot.created",
+  "data": {
+    "body": "stage is set to verifying but console just closes",
+    "description": "stage is set to verifying but console just closes",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Verification stage is broken with knots",
+    "workflow_id": "default"
+  }
+}

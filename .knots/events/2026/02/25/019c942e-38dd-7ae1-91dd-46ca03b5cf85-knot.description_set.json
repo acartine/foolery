@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-38dd-7ae1-91dd-46ca03b5cf85",
+  "occurred_at": "2026-02-25T08:19:38Z",
+  "knot_id": "foolery-nh8w",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Mirror the ~/knots multi-channel workflow in foolery: scripts for installing from local source, switching between release and local channels, and related helper commands/documentation."
+  }
+}

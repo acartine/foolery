@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2a99-7da1-be6b-255db180ebe3",
+  "occurred_at": "2026-02-15T05:36:17Z",
+  "knot_id": "foolery-fo1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Creating a beat can be submitted multiple times if user clicks Done again while first submission is still in flight, producing duplicate beats.\\n\\nRepro:\\n1) Create a new beat.\\n2) Click Done.\\n3) During latency, click Done again.\\n4) Duplicate beat is created.\\n\\nExpected:\\n- Done is disabled immediately on first submit.\\n- Submission is idempotent from the client perspective (single creation per user action).\\n- Clear loading state is shown until request resolves."
+  }
+}

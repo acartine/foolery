@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2998-7ce2-926f-e745d270c95f",
+  "occurred_at": "2026-02-11T12:18:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-eno",
+    "state": "shipped",
+    "terminal": true,
+    "title": "enhance creation flow",
+    "updated_at": "2026-02-11T12:18:53Z",
+    "workflow_id": "default"
+  }
+}

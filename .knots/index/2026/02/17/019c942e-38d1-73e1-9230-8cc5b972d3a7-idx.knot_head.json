@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-38d1-73e1-9230-8cc5b972d3a7",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-nex",
+    "state": "shipped",
+    "terminal": true,
+    "title": "verification stage beads at top of /beads table",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

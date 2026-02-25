@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-49b8-7071-b4c4-03645acbabd3",
+  "occurred_at": "2026-02-20T07:28:24Z",
+  "knot_id": "foolery-xmg8.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Expose controls/status for auto-verification and enforce non-editable verification-transition beads.\n\nNotes: After Wave 1 contracts exist, settings and status UI tasks can proceed in parallel with server/API lock enforcement.\n\nAssigned tasks:\n- Add auto-verification settings toggle with info icon\n- Add verification-agent selector in settings\n- Render transition:verification status treatment\n- Disable editing interactions during verification\n- Enforce edit lock on server/API"
+  }
+}

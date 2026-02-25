@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2ebb-7db2-b3a6-b81be0fe6309",
+  "occurred_at": "2026-02-23T17:12:58Z",
+  "knot_id": "foolery-g3y1.6",
+  "type": "knot.created",
+  "data": {
+    "body": "Close parity gaps, add integration coverage, and finalize docs + rollout handoff.",
+    "description": "Close parity gaps, add integration coverage, and finalize docs + rollout handoff.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Validation, docs, and rollout hardening",
+    "workflow_id": "default"
+  }
+}

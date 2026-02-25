@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1e44-7521-8898-dad92aebd4d4",
+  "occurred_at": "2026-02-13T10:24:10Z",
+  "knot_id": "foolery-75n",
+  "type": "knot.description_set",
+  "data": {
+    "description": "shift o should launch a lightbox with a notes management UI. you can reorder, delete, create new, etc.\n\nif the ticket is in stage:verification (the label), the note management ui should offer a \"Reject Work?\" button that works similarly to thumbs down."
+  }
+}

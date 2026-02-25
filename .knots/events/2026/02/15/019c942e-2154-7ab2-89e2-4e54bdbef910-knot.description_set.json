@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2154-7ab2-89e2-4e54bdbef910",
+  "occurred_at": "2026-02-15T05:07:31Z",
+  "knot_id": "foolery-98w",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we are using shift [] to toggle between views, lets dump the legacy navigation and it's mention in Existing Orchestrations."
+  }
+}

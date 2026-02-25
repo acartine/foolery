@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1c19-71e2-87e6-35ddcb9c1dc1",
+  "occurred_at": "2026-02-14T08:50:38Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5mt",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave hoffman-rocky: Hotkey features + unblock terminal/orchestration",
+    "updated_at": "2026-02-14T08:50:38Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-23a7-7540-8053-fd6995e14444",
+  "occurred_at": "2026-02-11T12:19:29Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ary",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove horizontal rule under logo",
+    "updated_at": "2026-02-11T12:19:29Z",
+    "workflow_id": "default"
+  }
+}

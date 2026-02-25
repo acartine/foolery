@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-205d-7782-9da5-55bac972cbbd",
+  "occurred_at": "2026-02-18T04:47:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8eob",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix Codex CLI integration for Direct & Breakdown actions",
+    "updated_at": "2026-02-18T04:47:31Z",
+    "workflow_id": "default"
+  }
+}

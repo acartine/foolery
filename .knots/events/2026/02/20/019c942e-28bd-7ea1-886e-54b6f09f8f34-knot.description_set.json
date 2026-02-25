@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-28bd-7ea1-886e-54b6f09f8f34",
+  "occurred_at": "2026-02-20T11:41:00Z",
+  "knot_id": "foolery-dz4j",
+  "type": "knot.description_set",
+  "data": {
+    "description": "it's only counting the direct descendants - it should be the sum of all descendants at any level, with the exception of descendants that are parents."
+  }
+}

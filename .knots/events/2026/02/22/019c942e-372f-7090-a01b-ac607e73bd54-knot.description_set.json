@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-372f-7090-a01b-ac607e73bd54",
+  "occurred_at": "2026-02-22T08:44:55Z",
+  "knot_id": "foolery-mm5n",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when the app sends a message in the history log and it says APP -> AGENT, also show the agent/model name like:\n\nAPP -> AGENT OpenAI Codex 5.3\n\netc."
+  }
+}

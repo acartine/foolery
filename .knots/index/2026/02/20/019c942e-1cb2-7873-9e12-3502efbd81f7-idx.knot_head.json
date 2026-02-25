@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1cb2-7873-9e12-3502efbd81f7",
+  "occurred_at": "2026-02-20T05:36:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6h4u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "get ci tests running in remote workflow",
+    "updated_at": "2026-02-20T05:36:52Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1709-7c42-847b-edbd4ae7e4c5",
+  "occurred_at": "2026-02-11T07:43:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2j3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove id header",
+    "updated_at": "2026-02-11T07:43:23Z",
+    "workflow_id": "default"
+  }
+}

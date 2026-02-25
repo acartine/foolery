@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-0ff1-7612-a655-2402aa1c137c",
+  "occurred_at": "2026-02-11T17:16:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-090",
+    "state": "shipped",
+    "terminal": true,
+    "title": "top align id column so the id doesn't move when cycle",
+    "updated_at": "2026-02-11T17:16:41Z",
+    "workflow_id": "default"
+  }
+}

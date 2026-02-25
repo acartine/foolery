@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-21a7-71d0-960e-22ba23870bfb",
+  "occurred_at": "2026-02-21T14:51:47Z",
+  "knot_id": "foolery-9gl7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-21, commit b2f327b):\\n- Added two new README feature sections: Agent History and ReTake, each with descriptive copy and embedded screenshots.\\n- Updated the top README thumbnail table to include Agent History and ReTake tiles with the existing screenshot thumbnails.\\n- Added optimized screenshot assets at docs/screenshots/agent-history.png and docs/screenshots/retake.png.\\n- Resized both new screenshots to 1024px width to match existing screenshot sizing conventions.\\n- Pushed directly to origin/main (080f716 -> b2f327b).\\n- Verification: no code-path changes; tests/lint/build not run for docs+image-only update.",
+    "datetime": "2026-02-21T14:51:47Z",
+    "entry_id": "5d75ca88b75a9471999d27aaad313cd35e020207f4fb2ea94a1b6efa054d5775",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

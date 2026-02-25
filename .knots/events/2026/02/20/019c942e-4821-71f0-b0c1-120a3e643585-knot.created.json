@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4821-71f0-b0c1-120a3e643585",
+  "occurred_at": "2026-02-20T07:28:20Z",
+  "knot_id": "foolery-xmg8.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Define the verification state machine and shared data/config contracts needed by backend and UI.\n\nNotes: This wave unblocks all later implementation and allows backend/UI teams to work against one contract.\n\nAssigned tasks:\n- Define verification state machine and label invariants\n- Classify eligible post-run actions\n- Extend settings schema for auto-verification\n- Add bead label parsing/mutation helpers",
+    "description": "Objective: Define the verification state machine and shared data/config contracts needed by backend and UI.\n\nNotes: This wave unblocks all later implementation and allows backend/UI teams to work against one contract.\n\nAssigned tasks:\n- Define verification state machine and label invariants\n- Classify eligible post-run actions\n- Extend settings schema for auto-verification\n- Add bead label parsing/mutation helpers",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene hamill-prestige: Workflow Contract",
+    "workflow_id": "default"
+  }
+}

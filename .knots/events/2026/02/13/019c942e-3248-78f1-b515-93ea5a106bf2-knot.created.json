@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3248-78f1-b515-93ea5a106bf2",
+  "occurred_at": "2026-02-13T08:53:08Z",
+  "knot_id": "foolery-iki",
+  "type": "knot.created",
+  "data": {
+    "body": "we want it to reverse cycle.  whatever direction shift R goes in, cmd shift R cycles in the opposite direction.  right now it just goes to All Repositories.",
+    "description": "we want it to reverse cycle.  whatever direction shift R goes in, cmd shift R cycles in the opposite direction.  right now it just goes to All Repositories.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "cmd shift R should not go to All Repositories",
+    "workflow_id": "default"
+  }
+}

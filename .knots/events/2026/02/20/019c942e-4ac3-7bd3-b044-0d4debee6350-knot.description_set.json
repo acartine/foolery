@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4ac3-7bd3-b044-0d4debee6350",
+  "occurred_at": "2026-02-20T07:28:27Z",
+  "knot_id": "foolery-xmg8.4.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Cover missing commit handling, failed requirement checks, and bug-detection outcomes that transition to stage:retry with incremented attempt."
+  }
+}

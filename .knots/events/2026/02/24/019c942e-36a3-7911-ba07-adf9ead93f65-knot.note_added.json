@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-36a3-7911-ba07-adf9ead93f65",
+  "occurred_at": "2026-02-24T09:05:33Z",
+  "knot_id": "foolery-lxpz",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Fix Summary\n\nThe dependency creation logic (`addDepsForBead` in `create-bead-dialog.tsx`) was traced through all layers (API client → route handler → backend → CLI) and verified correct at every step.\n\nThe actual bug was in **DepTree display** (`dep-tree.tsx`): the component always showed \"blocks\" as the badge label for ALL dependencies regardless of direction. When viewing from the blocked bead's perspective (e.g., viewing bead 9wk7 which is blocked by ioos), it showed \"[blocks] ioos\" — making it appear the dependency was reversed.\n\n**Fix**: DepTree now checks `dep.source`/`dep.target` against the current `beadId` to show direction-aware labels:\n- `dep.source === beadId` → \"blocks\" (this bead is the blocker)\n- `dep.target === beadId` → \"blocked by\" (this bead is blocked)\n\nCommit: 11e3120",
+    "datetime": "2026-02-24T09:05:33Z",
+    "entry_id": "77c38bc25a0d53b14539732d8e3611ba810ee7d169a34c287593f7cabe9f2ced",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

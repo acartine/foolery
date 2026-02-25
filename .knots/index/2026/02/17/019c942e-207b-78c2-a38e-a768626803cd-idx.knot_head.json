@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-207b-78c2-a38e-a768626803cd",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8ftr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "spacebar checks active row in list view",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

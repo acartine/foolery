@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3800-7861-9e98-ec5c7ef551d4",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Capture UI direction with references to strong open-source workflow UIs and define Foolery-specific interaction patterns (hierarchy, motion, CTA behavior, failure states)."
+  }
+}

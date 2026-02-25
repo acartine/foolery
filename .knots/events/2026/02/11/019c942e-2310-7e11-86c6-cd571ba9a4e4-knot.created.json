@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2310-7e11-86c6-cd571ba9a4e4",
+  "occurred_at": "2026-02-11T07:10:19Z",
+  "knot_id": "foolery-ad6",
+  "type": "knot.created",
+  "data": {
+    "body": "given that the application is stateful - how does it handle multiple clients?  does it namespace things like \"selected repo?\"",
+    "description": "given that the application is stateful - how does it handle multiple clients?  does it namespace things like \"selected repo?\"",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Investigate how application handles multiple open clients",
+    "workflow_id": "default"
+  }
+}

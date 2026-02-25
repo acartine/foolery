@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2fe9-7030-9314-c80fefc62a05",
+  "occurred_at": "2026-02-20T18:47:05Z",
+  "knot_id": "foolery-ghqh",
+  "type": "knot.created",
+  "data": {
+    "body": "Something like - review the app to see if the feature has been implemented according to plan.  Everything here is something an agent believes it has completed and pushed.",
+    "description": "Something like - review the app to see if the feature has been implemented according to plan.  Everything here is something an agent believes it has completed and pushed.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "FInal Cut View:  Needs a description header like Direct",
+    "workflow_id": "default"
+  }
+}

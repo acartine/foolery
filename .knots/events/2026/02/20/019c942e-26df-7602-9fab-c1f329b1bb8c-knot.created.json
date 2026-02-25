@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-26df-7602-9fab-c1f329b1bb8c",
+  "occurred_at": "2026-02-20T10:35:39Z",
+  "knot_id": "foolery-ctup",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, it's helpful for understanding pagination to know that 1 parent actually has 25 subtasks and that's why you're not seeing 50 on the screen or whatever.",
+    "description": "as title says, it's helpful for understanding pagination to know that 1 parent actually has 25 subtasks and that's why you're not seeing 50 on the screen or whatever.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "show child task count in pill next to > when parent task is folded",
+    "workflow_id": "default"
+  }
+}

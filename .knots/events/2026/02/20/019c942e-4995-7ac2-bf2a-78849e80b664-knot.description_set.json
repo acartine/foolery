@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4995-7ac2-bf2a-78849e80b664",
+  "occurred_at": "2026-02-20T07:28:24Z",
+  "knot_id": "foolery-xmg8.2.6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Record workflow milestones and failures for diagnosability (queued, missing commit, verifier started, retry, closed)."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3743-7283-8a4b-fe91bd6e5bf8",
+  "occurred_at": "2026-02-22T09:21:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mm5n",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent History:  Show agent/model in title when APP sends messages",
+    "updated_at": "2026-02-22T09:21:24Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-158e-77e0-ba66-ffd9ac316a77",
+  "occurred_at": "2026-02-15T05:31:39Z",
+  "knot_id": "foolery-1ng",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a Plan Waves run starts, emit the full initial prompt into the orchestration console so users can see exactly what was sent to Claude."
+  }
+}

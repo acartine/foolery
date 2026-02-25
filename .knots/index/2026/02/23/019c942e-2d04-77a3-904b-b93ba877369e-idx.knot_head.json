@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2d04-77a3-904b-b93ba877369e",
+  "occurred_at": "2026-02-23T17:12:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.3.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Implement KnotsBackend read paths",
+    "updated_at": "2026-02-23T17:12:50Z",
+    "workflow_id": "default"
+  }
+}

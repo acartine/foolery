@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-28d7-7693-8b80-a203c34c2f60",
+  "occurred_at": "2026-02-17T08:12:49Z",
+  "knot_id": "foolery-e32l",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace manual tag argument with interactive selection and --patch/--minor/--major flags. Add semver helpers, interactive prompt, package.json version management.",
+    "description": "Replace manual tag argument with interactive selection and --patch/--minor/--major flags. Add semver helpers, interactive prompt, package.json version management.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Improve release script UX with interactive version bumping",
+    "workflow_id": "default"
+  }
+}

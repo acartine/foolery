@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-126d-79d3-8c1c-019dfeac1263",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.1.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Define and scaffold parity tests that lock required behavior before the separation work.",
+    "description": "Define and scaffold parity tests that lock required behavior before the separation work.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Create characterization test matrix for current behavior",
+    "workflow_id": "default"
+  }
+}

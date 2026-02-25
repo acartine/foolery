@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-46b2-70d2-b739-85a82ea3c07e",
+  "occurred_at": "2026-02-15T04:59:58Z",
+  "knot_id": "foolery-w3r",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Document that each git worktree needs dependency bootstrap (bun install --frozen-lockfile) before lint/typecheck/test, and prefer bun run over bunx for local plugin resolution."
+  }
+}

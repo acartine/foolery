@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2fca-72c2-98ec-c5f57771ec12",
+  "occurred_at": "2026-02-10T09:58:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g5g",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix Bun.spawn -> Node execFile in bd.ts",
+    "updated_at": "2026-02-10T09:58:42Z",
+    "workflow_id": "default"
+  }
+}

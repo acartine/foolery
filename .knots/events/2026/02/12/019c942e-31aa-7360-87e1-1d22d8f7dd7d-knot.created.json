@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-31aa-7360-87e1-1d22d8f7dd7d",
+  "occurred_at": "2026-02-12T11:53:45Z",
+  "knot_id": "foolery-hwj",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "fix: thumbs down (reject) button broken — bd label add never implemented",
+    "workflow_id": "default"
+  }
+}

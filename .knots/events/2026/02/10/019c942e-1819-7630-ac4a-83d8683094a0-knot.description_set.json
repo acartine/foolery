@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1819-7630-ac4a-83d8683094a0",
+  "occurred_at": "2026-02-10T09:58:18Z",
+  "knot_id": "foolery-3e8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create API routes: src/app/api/registry/route.ts (GET/POST/DELETE for registry CRUD) and src/app/api/registry/browse/route.ts (GET with ?path= for directory listing). Add registry schemas to src/lib/schemas.ts. Add RegisteredRepo and DirEntry types to src/lib/types.ts."
+  }
+}

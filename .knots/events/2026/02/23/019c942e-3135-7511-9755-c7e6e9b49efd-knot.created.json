@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3135-7511-9755-c7e6e9b49efd",
+  "occurred_at": "2026-02-23T11:13:18Z",
+  "knot_id": "foolery-hh7o",
+  "type": "knot.created",
+  "data": {
+    "body": "Follow repository release cheatsheet, verify quality gates, and produce polished release summary from merged changes on main.",
+    "description": "Follow repository release cheatsheet, verify quality gates, and produce polished release summary from merged changes on main.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Prepare release summary and run release checklist",
+    "workflow_id": "default"
+  }
+}

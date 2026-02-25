@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-30da-71f0-89ae-f4054d5f8be7",
+  "occurred_at": "2026-02-13T06:47:23Z",
+  "knot_id": "foolery-hbf",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when user hits shift-r from /beads, it should toggle to the next repo\ncmd-shift-r toggles to the previous repo"
+  }
+}

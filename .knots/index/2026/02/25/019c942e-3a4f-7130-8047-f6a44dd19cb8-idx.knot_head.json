@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3a4f-7130-8047-f6a44dd19cb8",
+  "occurred_at": "2026-02-25T08:07:34Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-p0bo",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Final Cut View:  status column is overloaded incorrectly when setatus is knots:verifying",
+    "updated_at": "2026-02-25T08:07:34Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3cd8-7c50-80f0-24f7ef9f547d",
+  "occurred_at": "2026-02-17T21:28:58Z",
+  "knot_id": "foolery-qqla.3.1",
+  "type": "knot.created",
+  "data": {
+    "body": "On Direct page load, detect prompt payload and prefill the composer/input exactly once without clobbering manual edits.",
+    "description": "On Direct page load, detect prompt payload and prefill the composer/input exactly once without clobbering manual edits.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Hydrate Direct input from incoming prompt payload",
+    "workflow_id": "default"
+  }
+}

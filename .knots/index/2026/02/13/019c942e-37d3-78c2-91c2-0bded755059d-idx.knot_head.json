@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-37d3-78c2-91c2-0bded755059d",
+  "occurred_at": "2026-02-13T15:44:30Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv.2.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave planner data model v2 (readiness + blockers + diagnostics)",
+    "updated_at": "2026-02-13T15:44:30Z",
+    "workflow_id": "default"
+  }
+}

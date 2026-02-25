@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-392a-78a2-8b93-6977400bd7e1",
+  "occurred_at": "2026-02-20T10:10:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-njng",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix hierarchical bead ordering in all views",
+    "updated_at": "2026-02-20T10:10:53Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2237-7412-902f-07bc0a3c1a5d",
+  "occurred_at": "2026-02-15T13:52:36Z",
+  "knot_id": "foolery-9v09.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Expose the generated or maintained OpenAPI JSON at a stable endpoint (`/api/openapi.json` or `/.well-known/openapi.json`) and ensure it stays in sync with route changes.",
+    "description": "Expose the generated or maintained OpenAPI JSON at a stable endpoint (`/api/openapi.json` or `/.well-known/openapi.json`) and ensure it stays in sync with route changes.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Publish OpenAPI document endpoint",
+    "workflow_id": "default"
+  }
+}

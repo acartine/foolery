@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3550-7cf0-9071-04a1e9d0d7b3",
+  "occurred_at": "2026-02-21T14:35:54Z",
+  "knot_id": "foolery-kyfp",
+  "type": "knot.created",
+  "data": {
+    "body": "currently history view only shows items from < 24 hours ago.\n\nthis is kind of silly, just show the last 5.",
+    "description": "currently history view only shows items from < 24 hours ago.\n\nthis is kind of silly, just show the last 5.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "history view should just show the last 5 items, regardless of when they happened",
+    "workflow_id": "default"
+  }
+}

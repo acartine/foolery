@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4479-7190-b27e-489f7930eee3",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Introduce a dedicated settings section with enable toggle, masked API key input, and selected model state bound to saved settings.",
+    "description": "Introduce a dedicated settings section with enable toggle, masked API key input, and selected model state bound to saved settings.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add OpenRouter section to Settings sheet",
+    "workflow_id": "default"
+  }
+}

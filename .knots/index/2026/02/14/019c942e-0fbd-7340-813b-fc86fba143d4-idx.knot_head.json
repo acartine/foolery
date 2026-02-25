@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-0fbd-7340-813b-fc86fba143d4",
+  "occurred_at": "2026-02-14T08:49:22Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-060",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave clooney-heat: Verify in-flight + quick UI fixes",
+    "updated_at": "2026-02-14T08:49:22Z",
+    "workflow_id": "default"
+  }
+}

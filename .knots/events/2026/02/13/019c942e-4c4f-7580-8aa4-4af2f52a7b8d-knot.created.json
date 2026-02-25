@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4c4f-7580-8aa4-4af2f52a7b8d",
+  "occurred_at": "2026-02-13T15:47:03Z",
+  "knot_id": "foolery-yp0",
+  "type": "knot.created",
+  "data": {
+    "body": "## Error Type\nConsole Error\n\n## Error Message\nEncountered two children with the same key, `foolery-53d`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n\n    at li (<anonymous>:null:null)\n    at <unknown> (src/components/dep-tree.tsx:31:11)\n    at Array.map (<anonymous>:null:null)\n    at DepTree (src/components/dep-tree.tsx:19:13)\n    at BeadDetailPage (src/app/beads/[id]/page.tsx:103:27)\n\n## Code Frame\n  29 |         const depType = dep.type ?? dep.dependency_type ?? \"depends\";\n  30 |         return (\n> 31 |           <li key={dep.id} className=\"flex items-center gap-2 text-sm\">\n     |           ^\n  32 |             <Badge variant=\"outline\">{depType}</Badge>\n  33 |             <Link\n  34 |               href={`/beads/${linkedId}`}\n\nNext.js version: 16.1.6 (Turbopack)",
+    "description": "## Error Type\nConsole Error\n\n## Error Message\nEncountered two children with the same key, `foolery-53d`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n\n    at li (<anonymous>:null:null)\n    at <unknown> (src/components/dep-tree.tsx:31:11)\n    at Array.map (<anonymous>:null:null)\n    at DepTree (src/components/dep-tree.tsx:19:13)\n    at BeadDetailPage (src/app/beads/[id]/page.tsx:103:27)\n\n## Code Frame\n  29 |         const depType = dep.type ?? dep.dependency_type ?? \"depends\";\n  30 |         return (\n> 31 |           <li key={dep.id} className=\"flex items-center gap-2 text-sm\">\n     |           ^\n  32 |             <Badge variant=\"outline\">{depType}</Badge>\n  33 |             <Link\n  34 |               href={`/beads/${linkedId}`}\n\nNext.js version: 16.1.6 (Turbopack)",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "error when accepting/rejecting verification in /beads",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-297c-7993-b801-8188d2b50f7e",
+  "occurred_at": "2026-02-11T11:37:52Z",
+  "knot_id": "foolery-eno",
+  "type": "knot.created",
+  "data": {
+    "body": "new bead dialogue uses bead in title and in button, remove the word bead.  Change button text to to Done.  To the right of Done add a button \"Create More\", which saves the new bead and initiates a new create new bead flow",
+    "description": "new bead dialogue uses bead in title and in button, remove the word bead.  Change button text to to Done.  To the right of Done add a button \"Create More\", which saves the new bead and initiates a new create new bead flow",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "enhance creation flow",
+    "workflow_id": "default"
+  }
+}

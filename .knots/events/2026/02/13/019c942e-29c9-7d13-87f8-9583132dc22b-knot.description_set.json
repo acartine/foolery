@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-29c9-7d13-87f8-9583132dc22b",
+  "occurred_at": "2026-02-13T06:27:08Z",
+  "knot_id": "foolery-ez2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ship Now terminal spawns Claude CLI but output wasn't visible and no work was done. Three root causes found and fixed in this session."
+  }
+}

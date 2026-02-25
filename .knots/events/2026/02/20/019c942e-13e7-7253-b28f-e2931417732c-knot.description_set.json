@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-13e7-7253-b28f-e2931417732c",
+  "occurred_at": "2026-02-20T09:26:36Z",
+  "knot_id": "foolery-1guy.4.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Implement all contract read paths using beads internals behind the adapter boundary."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4b92-7330-b51a-083adc2c8572",
+  "occurred_at": "2026-02-18T19:11:48Z",
+  "knot_id": "foolery-y7rj",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - it's not on same y axis as priority or status",
+    "description": "as title says - it's not on same y axis as priority or status",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "in list and final cut views, beat type appears to be slightly misaligned vertically.",
+    "workflow_id": "default"
+  }
+}

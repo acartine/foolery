@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4281-79a2-a6e0-304c834d4352",
+  "occurred_at": "2026-02-16T19:52:08Z",
+  "knot_id": "foolery-v1dg",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, if we have an agent, we no longer need an ad-hoc command.  we should grey it out and clear it out.  make sure that the backend uses the agent's that are selected for each path, and that the configs are not bullshit",
+    "description": "as title says, if we have an agent, we no longer need an ad-hoc command.  we should grey it out and clear it out.  make sure that the backend uses the agent's that are selected for each path, and that the configs are not bullshit",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "once agents are registered, the 'agent command' should be grayed out",
+    "workflow_id": "default"
+  }
+}

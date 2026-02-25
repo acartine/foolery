@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4cde-7712-ab23-b79945fba364",
+  "occurred_at": "2026-02-13T11:57:12Z",
+  "knot_id": "foolery-z9y",
+  "type": "knot.created",
+  "data": {
+    "body": "in both the terminal and the claude console, parse event in a color, followed by a separater (-, |, =>, or an icon even), followed by the text.  if there are more keys in the response, parse them but append them below the text",
+    "description": "in both the terminal and the claude console, parse event in a color, followed by a separater (-, |, =>, or an icon even), followed by the text.  if there are more keys in the response, parse them but append them below the text",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "parse \"event\" and \"text\" and other keys in claude stream",
+    "workflow_id": "default"
+  }
+}

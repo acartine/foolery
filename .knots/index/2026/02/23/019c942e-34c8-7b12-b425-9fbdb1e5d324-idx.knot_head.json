@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-34c8-7b12-b425-9fbdb1e5d324",
+  "occurred_at": "2026-02-23T17:14:19Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-knots-native",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Knots-native Foolery workflow + Memory API realignment",
+    "updated_at": "2026-02-23T17:14:19Z",
+    "workflow_id": "default"
+  }
+}

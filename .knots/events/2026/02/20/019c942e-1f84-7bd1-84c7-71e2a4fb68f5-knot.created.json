@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1f84-7bd1-84c7-71e2a4fb68f5",
+  "occurred_at": "2026-02-20T12:08:05Z",
+  "knot_id": "foolery-7wrg",
+  "type": "knot.created",
+  "data": {
+    "body": "after the agent has generated the plan, but before the beats have been created, the user should be able to \"discard\" the current plan.  you can put the button right next to the others.",
+    "description": "after the agent has generated the plan, but before the beats have been created, the user should be able to \"discard\" the current plan.  you can put the button right next to the others.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Direct:  Add Discard button",
+    "workflow_id": "default"
+  }
+}

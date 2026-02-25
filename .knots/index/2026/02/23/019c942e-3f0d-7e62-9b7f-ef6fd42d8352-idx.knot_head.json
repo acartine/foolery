@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3f0d-7e62-9b7f-ef6fd42d8352",
+  "occurred_at": "2026-02-23T12:38:46Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-rhre",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add Foolery Issue Tracker Integration API doc",
+    "updated_at": "2026-02-23T12:38:46Z",
+    "workflow_id": "default"
+  }
+}

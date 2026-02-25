@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-141f-7c31-8efa-8f8b208ebe6b",
+  "occurred_at": "2026-02-20T09:26:36Z",
+  "knot_id": "foolery-1guy.4.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover synchronization, history, and lifecycle operations required by existing workflows.",
+    "description": "Cover synchronization, history, and lifecycle operations required by existing workflows.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Implement beads adapter sync/history/lifecycle operations",
+    "workflow_id": "default"
+  }
+}

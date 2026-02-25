@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-176c-7071-a4bc-b42e83859493",
+  "occurred_at": "2026-02-12T12:03:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2vu",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Multi-repo bd.ts support",
+    "updated_at": "2026-02-12T12:03:15Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-470b-7f43-b21b-aa28f76b55bd",
+  "occurred_at": "2026-02-18T04:52:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-w6b8",
+    "state": "shipped",
+    "terminal": true,
+    "title": "fix hierarchy display on list and final cut views",
+    "updated_at": "2026-02-18T04:52:53Z",
+    "workflow_id": "default"
+  }
+}

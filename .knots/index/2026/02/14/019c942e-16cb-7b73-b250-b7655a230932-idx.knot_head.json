@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-16cb-7b73-b250-b7655a230932",
+  "occurred_at": "2026-02-14T17:41:34Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2eh",
+    "state": "shipped",
+    "terminal": true,
+    "title": "in list view, child task overview under title is not aligned with the title",
+    "updated_at": "2026-02-14T17:41:34Z",
+    "workflow_id": "default"
+  }
+}

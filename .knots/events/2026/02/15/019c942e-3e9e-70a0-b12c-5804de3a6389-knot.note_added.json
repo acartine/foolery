@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3e9e-70a0-b12c-5804de3a6389",
+  "occurred_at": "2026-02-15T07:27:58Z",
+  "knot_id": "foolery-ra5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "this does not work, an attempt was made to fix this already.",
+    "datetime": "2026-02-15T07:27:58Z",
+    "entry_id": "c2c87fbad1d5457536ba7d380c68e6face21460d808f7cd530d4a6287b37fcec",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

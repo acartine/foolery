@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-24aa-75e1-9bae-91b6834b176b",
+  "occurred_at": "2026-02-15T06:01:07Z",
+  "knot_id": "foolery-brt",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - it should turn into a green X that can be clicked on to close the tap."
+  }
+}

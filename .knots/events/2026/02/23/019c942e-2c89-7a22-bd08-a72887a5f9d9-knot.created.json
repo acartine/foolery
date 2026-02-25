@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2c89-7a22-bd08-a72887a5f9d9",
+  "occurred_at": "2026-02-23T17:12:48Z",
+  "knot_id": "foolery-g3y1.2.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Update tracker metadata backfill and doctor checks for Knots-aware repos.",
+    "description": "Update tracker metadata backfill and doctor checks for Knots-aware repos.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Backfill and doctor checks for Knots-aware repo metadata",
+    "workflow_id": "default"
+  }
+}

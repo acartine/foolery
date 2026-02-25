@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4862-7ec2-9b66-108b630f5104",
+  "occurred_at": "2026-02-20T07:28:21Z",
+  "knot_id": "foolery-xmg8.1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement/define the filter for actions like Take!/Scene! that write code, excluding bead-creation-only actions from auto-verification.",
+    "description": "Implement/define the filter for actions like Take!/Scene! that write code, excluding bead-creation-only actions from auto-verification.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Classify eligible post-run actions",
+    "workflow_id": "default"
+  }
+}

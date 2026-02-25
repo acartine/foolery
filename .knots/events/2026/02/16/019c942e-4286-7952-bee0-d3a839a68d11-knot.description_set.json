@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4286-7952-bee0-d3a839a68d11",
+  "occurred_at": "2026-02-16T19:52:08Z",
+  "knot_id": "foolery-v1dg",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, if we have an agent, we no longer need an ad-hoc command.  we should grey it out and clear it out.  make sure that the backend uses the agent's that are selected for each path, and that the configs are not bullshit"
+  }
+}

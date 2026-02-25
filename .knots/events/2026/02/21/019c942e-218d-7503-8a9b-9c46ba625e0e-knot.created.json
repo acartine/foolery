@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-218d-7503-8a9b-9c46ba625e0e",
+  "occurred_at": "2026-02-21T07:32:26Z",
+  "knot_id": "foolery-9gl7",
+  "type": "knot.created",
+  "data": {
+    "body": "Update README with new Agent History and ReTake sections, add top thumbnail links, and optimize the new screenshot assets to match existing screenshot sizing approach.",
+    "description": "Update README with new Agent History and ReTake sections, add top thumbnail links, and optimize the new screenshot assets to match existing screenshot sizing approach.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add Agent History and ReTake screenshots to README",
+    "workflow_id": "default"
+  }
+}

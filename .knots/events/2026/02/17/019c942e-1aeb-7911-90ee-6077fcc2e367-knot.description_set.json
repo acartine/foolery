@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1aeb-7911-90ee-6077fcc2e367",
+  "occurred_at": "2026-02-17T08:52:18Z",
+  "knot_id": "foolery-50u7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when you hit back, it changes your repo to go back to the beats page.\n\nthe back button should actually use navigation semantics.  the selected repo should never change when navigating."
+  }
+}

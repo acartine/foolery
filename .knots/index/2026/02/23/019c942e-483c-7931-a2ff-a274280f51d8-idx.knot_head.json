@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-483c-7931-a2ff-a274280f51d8",
+  "occurred_at": "2026-02-23T12:40:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene hamill-prestige: Workflow Contract",
+    "updated_at": "2026-02-23T12:40:02Z",
+    "workflow_id": "default"
+  }
+}

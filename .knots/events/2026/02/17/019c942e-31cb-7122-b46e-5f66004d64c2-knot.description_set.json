@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-31cb-7122-b46e-5f66004d64c2",
+  "occurred_at": "2026-02-17T09:24:30Z",
+  "knot_id": "foolery-hzii",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we need notifications for when all the agent actions are completed.\nno new screen necessary, just add badges to the final cut screen when a beat has been marked for verification.  the badge should clear out when the user clicks on final cut.\n\nalso a little envelope from the view headers showing the number of notifications, opening a lightbox with the notification message."
+  }
+}

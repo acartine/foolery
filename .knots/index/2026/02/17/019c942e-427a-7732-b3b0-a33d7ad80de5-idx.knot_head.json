@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-427a-7732-b3b0-a33d7ad80de5",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-uqg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ignore .playwright-mcp directory in git",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

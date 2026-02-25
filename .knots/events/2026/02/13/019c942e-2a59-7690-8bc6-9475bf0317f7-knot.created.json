@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2a59-7690-8bc6-9475bf0317f7",
+  "occurred_at": "2026-02-13T14:05:51Z",
+  "knot_id": "foolery-fhc",
+  "type": "knot.created",
+  "data": {
+    "body": "closed beads should always come after open/inprogress",
+    "description": "closed beads should always come after open/inprogress",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "bead sort order",
+    "workflow_id": "default"
+  }
+}

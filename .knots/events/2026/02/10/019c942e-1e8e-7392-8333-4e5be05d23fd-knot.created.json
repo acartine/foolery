@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1e8e-7392-8333-4e5be05d23fd",
+  "occurred_at": "2026-02-10T13:50:17Z",
+  "knot_id": "foolery-79u",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, except only certain things are editable\n- title\n- description\n- acceptance critiera\n- priority\n- labels\n- status",
+    "description": "as title says, except only certain things are editable\n- title\n- description\n- acceptance critiera\n- priority\n- labels\n- status",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "make bead details editable on bead detail page",
+    "workflow_id": "default"
+  }
+}

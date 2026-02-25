@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1c60-7be0-94f0-b4a8bdbe14ca",
+  "occurred_at": "2026-02-17T12:17:52Z",
+  "knot_id": "foolery-6ego",
+  "type": "knot.description_set",
+  "data": {
+    "description": "- merge top two rows - we have title and ticket id twice.  just once is enough (do not show project prefix on id)\n- Change 'Move to Project' to 'Move'\n- don't show the project path, it's redundant.\n- show all labels regardless of how they are shown in list view.  in detail view we see them all."
+  }
+}

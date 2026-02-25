@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-151e-7d71-a227-b9dfb5ed2031",
+  "occurred_at": "2026-02-23T07:23:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enforce adapter boundary with static check",
+    "updated_at": "2026-02-23T07:23:58Z",
+    "workflow_id": "default"
+  }
+}

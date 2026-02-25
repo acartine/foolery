@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-164e-7a91-ae5f-d95663f4a114",
+  "occurred_at": "2026-02-11T17:16:13Z",
+  "knot_id": "foolery-26y",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in /beads, label have an x on the right (make sure there is space between the text, or better yet, use a tiny icon).\n\nif you click on the x, the label is removed."
+  }
+}

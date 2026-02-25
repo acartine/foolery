@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-487c-7ff3-b642-50bbf3580cc8",
+  "occurred_at": "2026-02-23T12:40:01Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.1.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Classify eligible post-run actions",
+    "updated_at": "2026-02-23T12:40:01Z",
+    "workflow_id": "default"
+  }
+}

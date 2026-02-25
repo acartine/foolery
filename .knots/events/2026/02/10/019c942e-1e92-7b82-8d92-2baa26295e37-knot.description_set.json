@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1e92-7b82-8d92-2baa26295e37",
+  "occurred_at": "2026-02-10T13:50:17Z",
+  "knot_id": "foolery-79u",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, except only certain things are editable\n- title\n- description\n- acceptance critiera\n- priority\n- labels\n- status"
+  }
+}

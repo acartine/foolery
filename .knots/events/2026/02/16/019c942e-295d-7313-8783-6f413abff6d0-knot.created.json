@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-295d-7313-8783-6f413abff6d0",
+  "occurred_at": "2026-02-16T16:56:59Z",
+  "knot_id": "foolery-en5d",
+  "type": "knot.created",
+  "data": {
+    "body": "we don't want to hide the 'attempts' label but it shouldn't be removable either",
+    "description": "we don't want to hide the 'attempts' label but it shouldn't be removable either",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "show the attempts: label in disabled label (no x)",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-41a3-7bf0-92dc-475bf3313a06",
+  "occurred_at": "2026-02-23T12:57:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-tm5f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "detail view: standardize buttons, move to second row",
+    "updated_at": "2026-02-23T12:57:59Z",
+    "workflow_id": "default"
+  }
+}

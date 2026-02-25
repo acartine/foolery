@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-34a7-7e80-8828-513ceaa24255",
+  "occurred_at": "2026-02-18T10:14:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kmof",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Coverage analysis: path to 70%",
+    "updated_at": "2026-02-18T10:14:13Z",
+    "workflow_id": "default"
+  }
+}

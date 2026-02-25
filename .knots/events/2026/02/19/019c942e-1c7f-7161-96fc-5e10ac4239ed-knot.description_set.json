@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1c7f-7161-96fc-5e10ac4239ed",
+  "occurred_at": "2026-02-19T19:40:57Z",
+  "knot_id": "foolery-6gcd",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Github build is failing"
+  }
+}

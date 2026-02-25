@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-441a-7a42-be68-764e32516438",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Provide a lightweight server route to validate API key/config and return actionable errors for the settings screen."
+  }
+}

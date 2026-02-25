@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3adc-7690-b8a1-20e6788d45e4",
+  "occurred_at": "2026-02-18T09:14:02Z",
+  "knot_id": "foolery-pqvx",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, we want a way to trigger a massive shoot.\n\nUse the same agent as the one configured for Scene",
+    "description": "as title says, we want a way to trigger a massive shoot.\n\nUse the same agent as the one configured for Scene",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "scenes screen should have Shoot Them All! button",
+    "workflow_id": "default"
+  }
+}

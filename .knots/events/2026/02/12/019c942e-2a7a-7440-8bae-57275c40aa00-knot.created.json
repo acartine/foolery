@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2a7a-7440-8bae-57275c40aa00",
+  "occurred_at": "2026-02-12T13:56:33Z",
+  "knot_id": "foolery-fij",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "fix: status/label updates fail after switching active repo",
+    "workflow_id": "default"
+  }
+}

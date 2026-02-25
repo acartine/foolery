@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-117e-7850-a457-b40e1d112523",
+  "occurred_at": "2026-02-22T02:47:03Z",
+  "knot_id": "foolery-10bd",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  should check the checkbox.",
+    "description": "as title says.  should check the checkbox.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "spacebar selects active row in beats view",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-143c-7a02-b568-d86ca70b2c98",
+  "occurred_at": "2026-02-20T09:26:37Z",
+  "knot_id": "foolery-1guy.4.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Normalize beads responses/errors into contract DTOs and taxonomy consistently.",
+    "description": "Normalize beads responses/errors into contract DTOs and taxonomy consistently.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add beads-to-domain translation for DTOs and errors",
+    "workflow_id": "default"
+  }
+}

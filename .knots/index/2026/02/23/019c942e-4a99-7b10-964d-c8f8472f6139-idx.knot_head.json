@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4a99-7b10-964d-c8f8472f6139",
+  "occurred_at": "2026-02-23T12:40:09Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene streep-arrival: Validation & Rollout",
+    "updated_at": "2026-02-23T12:40:09Z",
+    "workflow_id": "default"
+  }
+}

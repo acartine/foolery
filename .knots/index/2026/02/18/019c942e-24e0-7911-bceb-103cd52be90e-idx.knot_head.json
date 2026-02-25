@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-24e0-7911-bceb-103cd52be90e",
+  "occurred_at": "2026-02-18T10:14:30Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bso3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Doctor --fix should prompt user before applying fixes",
+    "updated_at": "2026-02-18T10:14:30Z",
+    "workflow_id": "default"
+  }
+}

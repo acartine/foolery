@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-37a6-7ee3-b5fd-3cb2e34c02d0",
+  "occurred_at": "2026-02-22T08:50:53Z",
+  "knot_id": "foolery-mqv.2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Feedback from verification:\n\n- Remove redundant `Wave {name}:` text from each group card; the top-left wave label already provides the name and this is clutter.\n- `Shift+[` / `Shift+]` navigation is not behaving as expected.\n- With a single tree, cycling should still work: treat that tree as a master root and cycle across its first-level children.\n- With multiple trees (e.g., 8), treat a master root as implicit and cycle across trees.\n- Users should be able to drill down one level and still move across siblings with `Shift+[` / `Shift+]`.\n- Prefer replacing this model with arrow-key navigation (`Up` / `Down` / `Left` / `Right`) for simpler mental mapping.\n- Never allow navigating so far \"up\" that lateral movement across siblings is impossible.",
+    "datetime": "2026-02-22T08:50:53Z",
+    "entry_id": "ee765d4f1764df8af7046446d746507c8f67453999cd7c844d07f050048f5f7d",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

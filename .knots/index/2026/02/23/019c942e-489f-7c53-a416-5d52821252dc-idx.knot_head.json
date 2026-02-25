@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-489f-7c53-a416-5d52821252dc",
+  "occurred_at": "2026-02-23T12:40:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.1.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Extend settings schema for auto-verification",
+    "updated_at": "2026-02-23T12:40:02Z",
+    "workflow_id": "default"
+  }
+}

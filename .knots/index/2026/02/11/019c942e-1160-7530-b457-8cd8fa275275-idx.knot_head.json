@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1160-7530-b457-8cd8fa275275",
+  "occurred_at": "2026-02-11T17:17:30Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0xl",
+    "state": "shipped",
+    "terminal": true,
+    "title": "button colors",
+    "updated_at": "2026-02-11T17:17:30Z",
+    "workflow_id": "default"
+  }
+}

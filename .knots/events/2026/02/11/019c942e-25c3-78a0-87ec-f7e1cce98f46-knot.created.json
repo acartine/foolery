@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-25c3-78a0-87ec-f7e1cce98f46",
+  "occurred_at": "2026-02-11T06:47:06Z",
+  "knot_id": "foolery-ccu",
+  "type": "knot.created",
+  "data": {
+    "body": "strip project suffix from bead-id\nmove bead id to left of title\nmove type, status, priority flush under title",
+    "description": "strip project suffix from bead-id\nmove bead id to left of title\nmove type, status, priority flush under title",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "detail page clean up",
+    "workflow_id": "default"
+  }
+}

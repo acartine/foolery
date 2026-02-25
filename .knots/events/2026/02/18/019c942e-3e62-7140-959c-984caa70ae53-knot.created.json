@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3e62-7140-959c-984caa70ae53",
+  "occurred_at": "2026-02-18T09:14:12Z",
+  "knot_id": "foolery-r57u",
+  "type": "knot.created",
+  "data": {
+    "body": "make sure that Take! and Scene! actions on parent beats triggers a prompt that says stuff like:\n- execute this parent bead and it's children.  implement the children and use the parent bead notes for context and guidance.",
+    "description": "make sure that Take! and Scene! actions on parent beats triggers a prompt that says stuff like:\n- execute this parent bead and it's children.  implement the children and use the parent bead notes for context and guidance.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Take! on parent should prompt agent with children also",
+    "workflow_id": "default"
+  }
+}

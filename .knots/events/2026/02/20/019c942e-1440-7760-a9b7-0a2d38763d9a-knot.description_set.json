@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1440-7760-a9b7-0a2d38763d9a",
+  "occurred_at": "2026-02-20T09:26:37Z",
+  "knot_id": "foolery-1guy.4.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Normalize beads responses/errors into contract DTOs and taxonomy consistently."
+  }
+}

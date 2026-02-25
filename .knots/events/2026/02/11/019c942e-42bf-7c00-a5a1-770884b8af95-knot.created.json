@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-42bf-7c00-a5a1-770884b8af95",
+  "occurred_at": "2026-02-11T12:25:26Z",
+  "knot_id": "foolery-v3u",
+  "type": "knot.created",
+  "data": {
+    "body": "the pulldowns and buttons are all bloaty, let's get their internal padding in half for a sleeker feel",
+    "description": "the pulldowns and buttons are all bloaty, let's get their internal padding in half for a sleeker feel",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "reduce button and pulldown component internal padding",
+    "workflow_id": "default"
+  }
+}

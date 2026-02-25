@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2b4a-7b91-b66a-094108f0d1ef",
+  "occurred_at": "2026-02-23T14:20:30Z",
+  "knot_id": "foolery-g3y1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "We want to support Knots.  This means following the API tutorial step by step."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1c74-71d2-9edd-5885b5799493",
+  "occurred_at": "2026-02-17T21:11:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6ego",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Detail Page:  clean up",
+    "updated_at": "2026-02-17T21:11:51Z",
+    "workflow_id": "default"
+  }
+}

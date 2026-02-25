@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-36a9-7b90-95e6-d9c2bc88dca6",
+  "occurred_at": "2026-02-24T09:05:33Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-lxpz",
+    "state": "shipped",
+    "terminal": true,
+    "title": "dependency application is reversed in create dialogue",
+    "updated_at": "2026-02-24T09:05:33Z",
+    "workflow_id": "default"
+  }
+}

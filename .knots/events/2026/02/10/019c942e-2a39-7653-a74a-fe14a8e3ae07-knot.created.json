@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2a39-7653-a74a-fe14a8e3ae07",
+  "occurred_at": "2026-02-10T09:58:25Z",
+  "knot_id": "foolery-fcr",
+  "type": "knot.created",
+  "data": {
+    "body": "Create src/lib/registry-api.ts with client fetch wrappers (fetchRegistry, addRepoToRegistry, removeRepoFromRegistry, browseDirectory). Modify src/lib/api.ts to add repo param to all functions + fetchBeadsFromAllRepos aggregation. Modify src/stores/app-store.ts to add activeRepo and registeredRepos state.",
+    "description": "Create src/lib/registry-api.ts with client fetch wrappers (fetchRegistry, addRepoToRegistry, removeRepoFromRegistry, browseDirectory). Modify src/lib/api.ts to add repo param to all functions + fetchBeadsFromAllRepos aggregation. Modify src/stores/app-store.ts to add activeRepo and registeredRepos state.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Client-side registry API and store",
+    "workflow_id": "default"
+  }
+}

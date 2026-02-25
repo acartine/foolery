@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4bb3-7271-80be-832c7065f5f1",
+  "occurred_at": "2026-02-20T10:41:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-y7rj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "in list and final cut views, beat type appears to be slightly misaligned vertically.",
+    "updated_at": "2026-02-20T10:41:42Z",
+    "workflow_id": "default"
+  }
+}

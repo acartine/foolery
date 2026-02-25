@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4cb3-7ea3-a8bb-6fa587f3a25d",
+  "occurred_at": "2026-02-20T07:29:43Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-z51l",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene memento-gaffer: ReTakes Build",
+    "updated_at": "2026-02-20T07:29:43Z",
+    "workflow_id": "default"
+  }
+}

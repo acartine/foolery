@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1aa3-7440-9c1a-7a0c5d141768",
+  "occurred_at": "2026-02-11T06:57:32Z",
+  "knot_id": "foolery-4ue",
+  "type": "knot.created",
+  "data": {
+    "body": "right now if you click anywhere on the table row it will open the detail screen.  this creates annoying mis-clicks if you are trying to change priority / type / status.\n\nchange it so that you can only open the detail page by clicking on the title.",
+    "description": "right now if you click anywhere on the table row it will open the detail screen.  this creates annoying mis-clicks if you are trying to change priority / type / status.\n\nchange it so that you can only open the detail page by clicking on the title.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "stricter clicking on table rows",
+    "workflow_id": "default"
+  }
+}

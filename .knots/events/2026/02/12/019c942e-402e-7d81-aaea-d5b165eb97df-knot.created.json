@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-402e-7d81-aaea-d5b165eb97df",
+  "occurred_at": "2026-02-12T10:36:18Z",
+  "knot_id": "foolery-se1",
+  "type": "knot.created",
+  "data": {
+    "body": "in addition to removing stage:verification, the thumbs down should add/replace the following labels\n\nstage:retry\nattempts:{number of attempts}\n\nfor example, if bead only has\n\nstage:verification\n\nthumbs down would change labels to\n\nstage:retry \nattempts:1\n\nif bead has\n\nstage:verification\nattempts:2\n\nthums down would change labels to\n\nstage:retry\nattempts:3",
+    "description": "in addition to removing stage:verification, the thumbs down should add/replace the following labels\n\nstage:retry\nattempts:{number of attempts}\n\nfor example, if bead only has\n\nstage:verification\n\nthumbs down would change labels to\n\nstage:retry \nattempts:1\n\nif bead has\n\nstage:verification\nattempts:2\n\nthums down would change labels to\n\nstage:retry\nattempts:3",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "reject thumbs down should add labels",
+    "workflow_id": "default"
+  }
+}

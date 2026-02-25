@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-39c0-75a1-9842-f8ece2095666",
+  "occurred_at": "2026-02-22T09:22:26Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-odiq",
+    "state": "shipped",
+    "terminal": true,
+    "title": "in History View: add a way to cycle to different messages",
+    "updated_at": "2026-02-22T09:22:26Z",
+    "workflow_id": "default"
+  }
+}

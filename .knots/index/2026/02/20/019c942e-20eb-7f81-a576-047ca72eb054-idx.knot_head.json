@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-20eb-7f81-a576-047ca72eb054",
+  "occurred_at": "2026-02-20T10:14:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8t9j",
+    "state": "shipped",
+    "terminal": true,
+    "title": "shift-T should work in all views",
+    "updated_at": "2026-02-20T10:14:24Z",
+    "workflow_id": "default"
+  }
+}

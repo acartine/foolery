@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2bc9-7581-97d5-1deb7bf26ee0",
+  "occurred_at": "2026-02-23T17:12:45Z",
+  "knot_id": "foolery-g3y1.1.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Define unsupported-op policy, capabilities, and delete-handling behavior for Knots backend.",
+    "description": "Define unsupported-op policy, capabilities, and delete-handling behavior for Knots backend.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Define unsupported operation policy and capability behavior",
+    "workflow_id": "default"
+  }
+}

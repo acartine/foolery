@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-49ff-7383-b23b-6f8381f6a184",
+  "occurred_at": "2026-02-20T07:28:25Z",
+  "knot_id": "foolery-xmg8.3.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Provide selectable agent option for verification workflow and persist to settings model."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-38af-7882-a290-05c45de65ae3",
+  "occurred_at": "2026-02-23T14:55:16Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ncho",
+    "state": "shipped",
+    "terminal": true,
+    "title": "can't edit beat title from beat detail  view",
+    "updated_at": "2026-02-23T14:55:16Z",
+    "workflow_id": "default"
+  }
+}

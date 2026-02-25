@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3cd1-79e0-b161-278898f8472a",
+  "occurred_at": "2026-02-22T08:50:57Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene poitier-inception: Direct Autorun",
+    "updated_at": "2026-02-22T08:50:57Z",
+    "workflow_id": "default"
+  }
+}

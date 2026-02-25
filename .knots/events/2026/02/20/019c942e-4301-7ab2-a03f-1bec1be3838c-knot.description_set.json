@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4301-7ab2-a03f-1bec1be3838c",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "knot_id": "foolery-vdk0.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Add OpenRouter configuration contracts and persistence behavior without changing runtime execution.\n\nNotes: Foundation wave; all later waves depend on stable settings shape and persistence semantics.\n\nAssigned tasks:\n- Extend settings schema with OpenRouter section\n- Update settings merge logic for OpenRouter partial updates\n- Add settings tests for OpenRouter defaults and TOML round-trip"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-24c6-7202-96c8-2e777210d715",
+  "occurred_at": "2026-02-17T21:23:54Z",
+  "knot_id": "foolery-bso3",
+  "type": "knot.created",
+  "data": {
+    "body": "The doctor --fix command applies all fixes silently without user confirmation. It should: (1) rename corrupt-ticket-verification to corrupt-bead-verification, (2) prompt the user once per check type before applying fixes, (3) for corrupt-bead-verification specifically, offer choice between setting status to in_progress or removing stage:verification label.",
+    "description": "The doctor --fix command applies all fixes silently without user confirmation. It should: (1) rename corrupt-ticket-verification to corrupt-bead-verification, (2) prompt the user once per check type before applying fixes, (3) for corrupt-bead-verification specifically, offer choice between setting status to in_progress or removing stage:verification label.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Doctor --fix should prompt user before applying fixes",
+    "workflow_id": "default"
+  }
+}

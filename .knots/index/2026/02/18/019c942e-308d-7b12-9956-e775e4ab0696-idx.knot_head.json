@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-308d-7b12-9956-e775e4ab0696",
+  "occurred_at": "2026-02-18T09:32:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-gv86",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Quick Direct tightening",
+    "updated_at": "2026-02-18T09:32:50Z",
+    "workflow_id": "default"
+  }
+}

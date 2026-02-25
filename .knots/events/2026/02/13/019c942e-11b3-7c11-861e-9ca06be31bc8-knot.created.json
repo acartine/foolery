@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-11b3-7c11-861e-9ca06be31bc8",
+  "occurred_at": "2026-02-13T07:03:40Z",
+  "knot_id": "foolery-11j",
+  "type": "knot.created",
+  "data": {
+    "body": "the third button from the right in the upper right corner appears to be a 'stop' button control.  make it a typical bright red so it is clear to the user what it is.  make a mouseover that says 'terminate'",
+    "description": "the third button from the right in the upper right corner appears to be a 'stop' button control.  make it a typical bright red so it is clear to the user what it is.  make a mouseover that says 'terminate'",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "console 'stop' button",
+    "workflow_id": "default"
+  }
+}

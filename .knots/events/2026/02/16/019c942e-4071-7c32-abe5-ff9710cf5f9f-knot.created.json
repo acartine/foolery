@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4071-7c32-abe5-ff9710cf5f9f",
+  "occurred_at": "2026-02-16T14:59:18Z",
+  "knot_id": "foolery-sftb",
+  "type": "knot.created",
+  "data": {
+    "body": "if you add a new beat while items are checked, the checks remain bound to the index they were at before, not the list items they meant to check.",
+    "description": "if you add a new beat while items are checked, the checks remain bound to the index they were at before, not the list items they meant to check.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "list checkbox state not mapped to item",
+    "workflow_id": "default"
+  }
+}

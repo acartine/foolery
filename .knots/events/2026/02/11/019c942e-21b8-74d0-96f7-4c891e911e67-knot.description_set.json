@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-21b8-74d0-96f7-4c891e911e67",
+  "occurred_at": "2026-02-11T18:09:22Z",
+  "knot_id": "foolery-9j4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in both create flow and detail flows, there should be a mechanism to add blocks / blocked by and a smart way to pick the associated bead - something that works for either bead it or title search."
+  }
+}

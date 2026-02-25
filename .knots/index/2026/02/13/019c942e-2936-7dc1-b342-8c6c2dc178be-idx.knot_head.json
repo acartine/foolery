@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2936-7dc1-b342-8c6c2dc178be",
+  "occurred_at": "2026-02-13T06:41:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-edn",
+    "state": "shipped",
+    "terminal": true,
+    "title": "'Add' label",
+    "updated_at": "2026-02-13T06:41:31Z",
+    "workflow_id": "default"
+  }
+}

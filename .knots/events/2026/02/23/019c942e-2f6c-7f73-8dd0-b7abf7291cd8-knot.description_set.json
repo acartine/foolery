@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2f6c-7f73-8dd0-b7abf7291cd8",
+  "occurred_at": "2026-02-23T17:13:01Z",
+  "knot_id": "foolery-g3y1.7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create follow-up epic outside g3y1 for full Knots-native workflow and memory API realignment."
+  }
+}

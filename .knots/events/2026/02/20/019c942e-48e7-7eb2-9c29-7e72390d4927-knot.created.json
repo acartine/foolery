@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-48e7-7eb2-9c29-7e72390d4927",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.1",
+  "type": "knot.created",
+  "data": {
+    "body": "On successful eligible invocation completion, enqueue workflow and set transition:verification; ensure stage is set to stage:verification when missing.",
+    "description": "On successful eligible invocation completion, enqueue workflow and set transition:verification; ensure stage is set to stage:verification when missing.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Hook agent completion to verification transition",
+    "workflow_id": "default"
+  }
+}

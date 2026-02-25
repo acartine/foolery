@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-43b0-7ba3-988a-9eaea091272a",
+  "occurred_at": "2026-02-22T08:51:01Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Scene foster-uncut: Provider Backend",
+    "updated_at": "2026-02-22T08:51:01Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-496d-74c3-be1c-2eabab8e84c4",
+  "occurred_at": "2026-02-20T07:28:24Z",
+  "knot_id": "foolery-xmg8.2.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Prevent duplicate verifier launches and conflicting label mutations when completion events fire multiple times.",
+    "description": "Prevent duplicate verifier launches and conflicting label mutations when completion events fire multiple times.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add orchestration idempotency and dedupe locks",
+    "workflow_id": "default"
+  }
+}

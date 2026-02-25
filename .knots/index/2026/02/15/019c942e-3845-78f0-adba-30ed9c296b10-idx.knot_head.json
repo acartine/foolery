@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3845-78f0-adba-30ed9c296b10",
+  "occurred_at": "2026-02-15T07:01:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mr0",
+    "state": "shipped",
+    "terminal": true,
+    "title": "wave view, child beats shouldn't show project prefix in front of beat id",
+    "updated_at": "2026-02-15T07:01:04Z",
+    "workflow_id": "default"
+  }
+}

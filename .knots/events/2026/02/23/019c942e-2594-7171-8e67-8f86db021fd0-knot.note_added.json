@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2594-7171-8e67-8f86db021fd0",
+  "occurred_at": "2026-02-23T12:40:51Z",
+  "knot_id": "foolery-c23y",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff: Repo discovery is tracker-aware in scripts/setup.sh and settings directory browser now supports compatibility filtering/search for known tracker implementations (currently beads). Commit: b8223f5. Quality gates passed (lint, tsc --noEmit, test, build).",
+    "datetime": "2026-02-23T12:40:51Z",
+    "entry_id": "1565482c2e68b9e8e75d84caf8867ba44c1eab36a4be30b3a8a727ef453658b4",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

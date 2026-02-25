@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2c46-7ab3-923b-52cf2c730a97",
+  "occurred_at": "2026-02-23T17:12:47Z",
+  "knot_id": "foolery-g3y1.2.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Update registry, browse, and settings tracker labels and compatibility messaging for Knots.",
+    "description": "Update registry, browse, and settings tracker labels and compatibility messaging for Knots.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Update tracker labels and compatibility messaging",
+    "workflow_id": "default"
+  }
+}

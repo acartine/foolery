@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-10ee-7e81-9569-7a3da99f0022",
+  "occurred_at": "2026-02-15T13:54:03Z",
+  "knot_id": "foolery-0ku8",
+  "type": "knot.created",
+  "data": {
+    "body": "when a beat is \"rolling', the in progress status should flicker/pulsate slowly.  the checkmark/thumbsdown should not be shown (while the beat is rolling)\n\nonce the process completes and the beat is no longer rolling, it can go back to showing the static inprogress and checkmark/thumbsdown like it does today.",
+    "description": "when a beat is \"rolling', the in progress status should flicker/pulsate slowly.  the checkmark/thumbsdown should not be shown (while the beat is rolling)\n\nonce the process completes and the beat is no longer rolling, it can go back to showing the static inprogress and checkmark/thumbsdown like it does today.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "custom behavior for beats that are rolling/running",
+    "workflow_id": "default"
+  }
+}

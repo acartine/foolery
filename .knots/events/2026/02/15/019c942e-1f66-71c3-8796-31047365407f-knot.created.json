@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1f66-71c3-8796-31047365407f",
+  "occurred_at": "2026-02-15T04:52:58Z",
+  "knot_id": "foolery-7u0",
+  "type": "knot.created",
+  "data": {
+    "body": "When using Scenes -> Rewrite and then Direct -> Apply Wave Beats, children are reparented to new waves but source wave parents can remain open and orphaned. After reparenting, auto-close source orchestration wave parents when they have no remaining non-closed children.",
+    "description": "When using Scenes -> Rewrite and then Direct -> Apply Wave Beats, children are reparented to new waves but source wave parents can remain open and orphaned. After reparenting, auto-close source orchestration wave parents when they have no remaining non-closed children.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Rewrite apply should auto-close emptied source wave parents",
+    "workflow_id": "default"
+  }
+}

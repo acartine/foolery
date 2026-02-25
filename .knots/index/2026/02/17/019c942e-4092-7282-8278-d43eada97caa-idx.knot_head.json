@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4092-7282-8278-d43eada97caa",
+  "occurred_at": "2026-02-17T09:12:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-sftb",
+    "state": "shipped",
+    "terminal": true,
+    "title": "list checkbox state not mapped to item",
+    "updated_at": "2026-02-17T09:12:42Z",
+    "workflow_id": "default"
+  }
+}

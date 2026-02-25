@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-33ed-7e12-bf9b-0704c6ecee6a",
+  "occurred_at": "2026-02-25T08:09:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-jzww",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Verification stage is broken with knots",
+    "updated_at": "2026-02-25T08:09:40Z",
+    "workflow_id": "default"
+  }
+}

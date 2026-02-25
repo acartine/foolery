@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3dc4-7e32-ae0f-3709712a0d23",
+  "occurred_at": "2026-02-20T06:09:37Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.4.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add regression tests for non-autorun Direct usage",
+    "updated_at": "2026-02-20T06:09:37Z",
+    "workflow_id": "default"
+  }
+}

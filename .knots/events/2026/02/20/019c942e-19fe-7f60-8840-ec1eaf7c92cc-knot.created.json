@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-19fe-7f60-8840-ec1eaf7c92cc",
+  "occurred_at": "2026-02-20T12:24:31Z",
+  "knot_id": "foolery-49zm",
+  "type": "knot.created",
+  "data": {
+    "body": "Instead, the UI is hanging for 5 seconds until an update which is super fucking annoying.  Provide some sort of transition handling.",
+    "description": "Instead, the UI is hanging for 5 seconds until an update which is super fucking annoying.  Provide some sort of transition handling.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Beat view:  Changing beat property pulldown values should have feedback",
+    "workflow_id": "default"
+  }
+}

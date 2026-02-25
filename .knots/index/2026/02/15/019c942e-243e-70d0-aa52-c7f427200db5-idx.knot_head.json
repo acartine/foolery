@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-243e-70d0-aa52-c7f427200db5",
+  "occurred_at": "2026-02-15T05:51:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-b9r",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave winslet-gladiator: verify-in-progress",
+    "updated_at": "2026-02-15T05:51:04Z",
+    "workflow_id": "default"
+  }
+}

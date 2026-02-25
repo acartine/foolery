@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-460b-7c31-8400-092d047ac944",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "knot_id": "foolery-vdk0.5.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Update `docs/SETTINGS.md` and `README.md` with configuration steps, model-cost interpretation, and fallback behavior.",
+    "description": "Update `docs/SETTINGS.md` and `README.md` with configuration steps, model-cost interpretation, and fallback behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Document OpenRouter setup and pricing behavior",
+    "workflow_id": "default"
+  }
+}

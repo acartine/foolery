@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-45a6-7a41-84bf-3b494cdcfd40",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Mock OpenRouter streaming for success and failure paths and assert plan capture, session status transitions, and error messages."
+  }
+}

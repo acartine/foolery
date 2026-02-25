@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2b46-7933-8bc1-ae825953f390",
+  "occurred_at": "2026-02-23T14:20:30Z",
+  "knot_id": "foolery-g3y1",
+  "type": "knot.created",
+  "data": {
+    "body": "We want to support Knots.  This means following the API tutorial step by step.",
+    "description": "We want to support Knots.  This means following the API tutorial step by step.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Knots implementation for Foolery Agent Memory API",
+    "workflow_id": "default"
+  }
+}

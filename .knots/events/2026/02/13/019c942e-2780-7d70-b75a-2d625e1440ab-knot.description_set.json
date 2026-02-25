@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2780-7d70-b75a-2d625e1440ab",
+  "occurred_at": "2026-02-13T11:54:41Z",
+  "knot_id": "foolery-d2l",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in the orchestrate page, once the orchestration prompt is complete, the top light green component gets filled with lots of noise (not sure what the characters/text is)\n\nsuppress this"
+  }
+}

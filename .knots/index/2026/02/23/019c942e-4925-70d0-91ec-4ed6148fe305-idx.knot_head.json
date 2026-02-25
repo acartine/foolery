@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4925-70d0-91ec-4ed6148fe305",
+  "occurred_at": "2026-02-23T12:40:03Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement commit-label remediation loop",
+    "updated_at": "2026-02-23T12:40:03Z",
+    "workflow_id": "default"
+  }
+}

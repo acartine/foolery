@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2962-7a13-adc4-40d6aa42d686",
+  "occurred_at": "2026-02-16T16:56:59Z",
+  "knot_id": "foolery-en5d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we don't want to hide the 'attempts' label but it shouldn't be removable either"
+  }
+}

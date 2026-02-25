@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-36e7-74e1-a3ec-5dca1bfeb362",
+  "occurred_at": "2026-02-18T04:41:25Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mec",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Breakdown Feature",
+    "updated_at": "2026-02-18T04:41:25Z",
+    "workflow_id": "default"
+  }
+}

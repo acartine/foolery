@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2d8a-7383-ba1f-acfd66a5c134",
+  "occurred_at": "2026-02-23T17:12:53Z",
+  "knot_id": "foolery-g3y1.4.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Replace hardcoded bd prompt commands with tracker-aware command rendering in terminal flows."
+  }
+}

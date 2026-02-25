@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-44fb-7623-a8de-d7689aab1de9",
+  "occurred_at": "2026-02-20T05:23:54Z",
+  "knot_id": "foolery-vdk0.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Enable Direct/Breakdown planning runs to execute through OpenRouter with existing event semantics.\n\nNotes: Depends on waves 1-2 (and UI from wave 3 for operability). Orchestration and breakdown routing tasks can run in parallel.\n\nAssigned tasks:\n- Add planner provider selection for Direct and Breakdown\n- Implement OpenRouter planning executor with stream normalization\n- Integrate provider routing in orchestration manager\n- Integrate provider routing in breakdown manager\n- Add integration tests for OpenRouter planner sessions",
+    "description": "Objective: Enable Direct/Breakdown planning runs to execute through OpenRouter with existing event semantics.\n\nNotes: Depends on waves 1-2 (and UI from wave 3 for operability). Orchestration and breakdown routing tasks can run in parallel.\n\nAssigned tasks:\n- Add planner provider selection for Direct and Breakdown\n- Implement OpenRouter planning executor with stream normalization\n- Integrate provider routing in orchestration manager\n- Integrate provider routing in breakdown manager\n- Add integration tests for OpenRouter planner sessions",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene redmayne-noir: Planner Integration",
+    "workflow_id": "default"
+  }
+}

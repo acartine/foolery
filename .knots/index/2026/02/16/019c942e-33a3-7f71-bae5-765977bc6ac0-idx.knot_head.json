@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-33a3-7f71-bae5-765977bc6ac0",
+  "occurred_at": "2026-02-16T16:57:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-jurb",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add open command and update notice banner",
+    "updated_at": "2026-02-16T16:57:41Z",
+    "workflow_id": "default"
+  }
+}

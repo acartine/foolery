@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2fb4-7eb2-bdc7-101f5d2b8697",
+  "occurred_at": "2026-02-10T09:58:35Z",
+  "knot_id": "foolery-g5g",
+  "type": "knot.description_set",
+  "data": {
+    "description": "bd.ts was using Bun.spawn but the app runs under Node.js. Already fixed by replacing with node:child_process execFile. Close this bead."
+  }
+}

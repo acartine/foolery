@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-40b2-7301-920b-ff71501ddae7",
+  "occurred_at": "2026-02-16T21:47:05Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-sgue",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enhance settings",
+    "updated_at": "2026-02-16T21:47:05Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2fe3-70f2-bb80-c19ba44f1ffe",
+  "occurred_at": "2026-02-16T15:09:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-gcvf",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add bun release wrapper for GitHub release publishing",
+    "updated_at": "2026-02-16T15:09:17Z",
+    "workflow_id": "default"
+  }
+}

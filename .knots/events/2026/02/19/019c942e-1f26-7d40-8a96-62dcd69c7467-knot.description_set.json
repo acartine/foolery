@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1f26-7d40-8a96-62dcd69c7467",
+  "occurred_at": "2026-02-19T16:19:53Z",
+  "knot_id": "foolery-7qvg",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you should be able to merge beads when only two are selected - the user should be prompted to pick the \"survivor\".  The labels, description, and notes of the non-survivor are APPENDED to the survivor's.  The survivor's title, type, priority, and dependencies remain unchanged."
+  }
+}

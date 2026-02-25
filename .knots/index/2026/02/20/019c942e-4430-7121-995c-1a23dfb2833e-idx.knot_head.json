@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4430-7121-995c-1a23dfb2833e",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add OpenRouter connectivity-check endpoint",
+    "updated_at": "2026-02-20T05:23:51Z",
+    "workflow_id": "default"
+  }
+}

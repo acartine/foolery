@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3482-7280-8fe9-74c697726363",
+  "occurred_at": "2026-02-24T07:48:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kcxj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Capture verifier output and update notes on failure",
+    "updated_at": "2026-02-24T07:48:55Z",
+    "workflow_id": "default"
+  }
+}

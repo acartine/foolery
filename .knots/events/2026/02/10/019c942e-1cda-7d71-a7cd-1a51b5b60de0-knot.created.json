@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1cda-7d71-a7cd-1a51b5b60de0",
+  "occurred_at": "2026-02-10T16:12:33Z",
+  "knot_id": "foolery-6p6",
+  "type": "knot.created",
+  "data": {
+    "body": "group related beads together in hierarchy order.  each level of hierarchy should be indicated with a right arrow in the title field as a prefix to the title, something like\n\ntop level\n-> next level\n\nexcept don't use a fucking character arrow, use a cool thin image",
+    "description": "group related beads together in hierarchy order.  each level of hierarchy should be indicated with a right arrow in the title field as a prefix to the title, something like\n\ntop level\n-> next level\n\nexcept don't use a fucking character arrow, use a cool thin image",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "hierarchical beads view in table",
+    "workflow_id": "default"
+  }
+}

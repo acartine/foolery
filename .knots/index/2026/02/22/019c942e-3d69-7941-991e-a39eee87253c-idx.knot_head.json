@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3d69-7941-991e-a39eee87253c",
+  "occurred_at": "2026-02-22T08:50:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene swank-heat: Validation & Polish",
+    "updated_at": "2026-02-22T08:50:58Z",
+    "workflow_id": "default"
+  }
+}

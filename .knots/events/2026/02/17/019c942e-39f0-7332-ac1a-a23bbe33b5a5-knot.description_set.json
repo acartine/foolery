@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-39f0-7332-ac1a-a23bbe33b5a5",
+  "occurred_at": "2026-02-17T11:05:42Z",
+  "knot_id": "foolery-oxud",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - should create a parent bead where the selected beads are the descendants, should be visible from the Scenes screen.\n\nWe are having issues where the scenes fail and then we don't know what was done and what wasn't.  we want to be able to pick up where we left off."
+  }
+}

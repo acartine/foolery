@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-12ae-77d3-bb37-71fef35c6d7e",
+  "occurred_at": "2026-02-23T12:37:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene clooney-heat: Contract Spec",
+    "updated_at": "2026-02-23T12:37:40Z",
+    "workflow_id": "default"
+  }
+}

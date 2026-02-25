@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2759-7d11-98cf-dc439691d611",
+  "occurred_at": "2026-02-10T18:28:57Z",
+  "knot_id": "foolery-d0l",
+  "type": "knot.created",
+  "data": {
+    "body": "the label stage:verification is not removed\nand hence the check and the thumb remain",
+    "description": "the label stage:verification is not removed\nand hence the check and the thumb remain",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "clicking reject thumbs down doesn't work",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-394f-73f1-a605-7604a461de15",
+  "occurred_at": "2026-02-12T10:10:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-nnw",
+    "state": "shipped",
+    "terminal": true,
+    "title": "change search text",
+    "updated_at": "2026-02-12T10:10:55Z",
+    "workflow_id": "default"
+  }
+}

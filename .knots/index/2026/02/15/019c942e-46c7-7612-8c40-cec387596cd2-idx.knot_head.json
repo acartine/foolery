@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-46c7-7612-8c40-cec387596cd2",
+  "occurred_at": "2026-02-15T06:13:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-w3r",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add worktree dependency bootstrap guidance for agents",
+    "updated_at": "2026-02-15T06:13:13Z",
+    "workflow_id": "default"
+  }
+}

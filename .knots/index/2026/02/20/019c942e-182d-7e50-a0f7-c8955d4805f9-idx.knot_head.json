@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-182d-7e50-a0f7-c8955d4805f9",
+  "occurred_at": "2026-02-20T07:31:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3e8",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Registry and browse API routes",
+    "updated_at": "2026-02-20T07:31:08Z",
+    "workflow_id": "default"
+  }
+}

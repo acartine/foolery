@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-39c5-76e0-8645-c281d2867ee4",
+  "occurred_at": "2026-02-10T16:10:06Z",
+  "knot_id": "foolery-ojo",
+  "type": "knot.created",
+  "data": {
+    "body": "the logo still has residual cruft in each of it's 4 corners.  clean that out.  make the logo 50% bigger, it's way too small.",
+    "description": "the logo still has residual cruft in each of it's 4 corners.  clean that out.  make the logo 50% bigger, it's way too small.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "clean up the logo and make it bigger",
+    "workflow_id": "default"
+  }
+}

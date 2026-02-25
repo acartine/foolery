@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4a38-7943-8e01-a71cb758e7b2",
+  "occurred_at": "2026-02-23T12:40:06Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Render transition:verification status treatment",
+    "updated_at": "2026-02-23T12:40:06Z",
+    "workflow_id": "default"
+  }
+}

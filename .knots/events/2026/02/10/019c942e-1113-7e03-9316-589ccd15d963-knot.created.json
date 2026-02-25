@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1113-7e03-9316-589ccd15d963",
+  "occurred_at": "2026-02-10T16:43:06Z",
+  "knot_id": "foolery-0sr",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Update AGENTS/CLAUDE policy for in_progress and worktrees",
+    "workflow_id": "default"
+  }
+}

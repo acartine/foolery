@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1b04-7711-bc65-34f6df52c308",
+  "occurred_at": "2026-02-14T18:02:30Z",
+  "knot_id": "foolery-517",
+  "type": "knot.created",
+  "data": {
+    "body": "move shift+h toggle this help to be to the right of Keyboard Shortcuts\n\nuse your ux skill to organize the shortcuts into two columns, trying to keep similar commands together.",
+    "description": "move shift+h toggle this help to be to the right of Keyboard Shortcuts\n\nuse your ux skill to organize the shortcuts into two columns, trying to keep similar commands together.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "keyboard shortcuts needs to be in 2 columns",
+    "workflow_id": "default"
+  }
+}

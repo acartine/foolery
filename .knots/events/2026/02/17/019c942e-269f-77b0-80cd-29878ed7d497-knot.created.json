@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-269f-77b0-80cd-29878ed7d497",
+  "occurred_at": "2026-02-17T10:45:37Z",
+  "knot_id": "foolery-cpcu",
+  "type": "knot.created",
+  "data": {
+    "body": "if backend is unable to provide an update, this should be ignored for up to 2 minutes.  just keep showing the same list and suppressing the backend errors.\n\nimplement this logic in the backend, the front end shouldn't have any logic to handle this.  it should keep getting the latest known list while the backend suppresses the errors and keeps seving it's last good list.\n\nafter 2 minutes, teh backend should send an error with a message like \"Unable to interact with beats store, try refreshing the page or restarting Foolery.  If problems persist, investigate your beads install\"\n\nthe frontend should display this as an immutable warning banner.\n\nthe polling interval should continue.  if the backend is able to successfully interact with beads again, it should notify the frontend to remove the error banner.",
+    "description": "if backend is unable to provide an update, this should be ignored for up to 2 minutes.  just keep showing the same list and suppressing the backend errors.\n\nimplement this logic in the backend, the front end shouldn't have any logic to handle this.  it should keep getting the latest known list while the backend suppresses the errors and keeps seving it's last good list.\n\nafter 2 minutes, teh backend should send an error with a message like \"Unable to interact with beats store, try refreshing the page or restarting Foolery.  If problems persist, investigate your beads install\"\n\nthe frontend should display this as an immutable warning banner.\n\nthe polling interval should continue.  if the backend is able to successfully interact with beads again, it should notify the frontend to remove the error banner.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "when auto-refershing, if dolt is locked by another client, list screen shows big red error message",
+    "workflow_id": "default"
+  }
+}

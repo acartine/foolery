@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-0fde-70d2-87b7-df5c2ba9f2c1",
+  "occurred_at": "2026-02-11T12:24:08Z",
+  "knot_id": "foolery-090",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when you cycle up and down the /beads table, the id is hopping all over because it is vertically center aligned, so when the description text appears it hops down.  make it top aligned so it doesn't move."
+  }
+}

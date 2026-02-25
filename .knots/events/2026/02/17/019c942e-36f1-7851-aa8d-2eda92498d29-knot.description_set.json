@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-36f1-7851-aa8d-2eda92498d29",
+  "occurred_at": "2026-02-17T09:21:15Z",
+  "knot_id": "foolery-mg4s",
+  "type": "knot.description_set",
+  "data": {
+    "description": "- remove most the extra vertical padding/margin space between \"Configuration stored in\" and \"Agents\"\n- in Agents edit mode, stack textboxes and their lables in a 3x2 grid, the space is too small for horizontal layout.\n- in Agents edit mode, cut textbox internal padding/merge in 1/2"
+  }
+}

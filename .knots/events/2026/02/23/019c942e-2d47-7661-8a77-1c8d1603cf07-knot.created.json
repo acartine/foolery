@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2d47-7661-8a77-1c8d1603cf07",
+  "occurred_at": "2026-02-23T17:12:52Z",
+  "knot_id": "foolery-g3y1.3.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Wire backend factory/settings/backend-instance with explicit knots backend entry.",
+    "description": "Wire backend factory/settings/backend-instance with explicit knots backend entry.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Wire backend factory/settings/backend-instance for knots",
+    "workflow_id": "default"
+  }
+}

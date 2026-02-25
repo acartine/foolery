@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-34ec-7a73-80f4-f7cda976bc8b",
+  "occurred_at": "2026-02-18T15:29:57Z",
+  "knot_id": "foolery-kx5f",
+  "type": "knot.created",
+  "data": {
+    "body": "In List view with status=ready, descendants currently appear top-level when an intermediate parent is not ready (blocked). Adjust ready response shaping so descendants are hidden unless every ancestor is present in the ready/in_progress result set, preserving hierarchy semantics.",
+    "description": "In List view with status=ready, descendants currently appear top-level when an intermediate parent is not ready (blocked). Adjust ready response shaping so descendants are hidden unless every ancestor is present in the ready/in_progress result set, preserving hierarchy semantics.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Ready view: hide descendants when parent chain is not ready",
+    "workflow_id": "default"
+  }
+}

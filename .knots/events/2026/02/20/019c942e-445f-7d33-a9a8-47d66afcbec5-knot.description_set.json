@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-445f-7d33-a9a8-47d66afcbec5",
+  "occurred_at": "2026-02-20T05:23:52Z",
+  "knot_id": "foolery-vdk0.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Ship OpenRouter configuration UX including API key input and model/cost visibility.\n\nNotes: Depends on waves 1-2. UI tasks can be parallelized across section layout, API wiring, and cost-table rendering.\n\nAssigned tasks:\n- Add OpenRouter section to Settings sheet\n- Wire frontend settings API methods for OpenRouter\n- Render model catalog with cost columns\n- Add UI coverage for OpenRouter settings flows"
+  }
+}

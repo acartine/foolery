@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1a3c-7b61-b14d-87a323d6d87b",
+  "occurred_at": "2026-02-15T07:28:16Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4fa",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Graceful transition when bead leaves filtered list after update",
+    "updated_at": "2026-02-15T07:28:16Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-24e6-7651-bef7-ad32e9a89219",
+  "occurred_at": "2026-02-23T08:42:00Z",
+  "knot_id": "foolery-bwws",
+  "type": "knot.created",
+  "data": {
+    "body": "Update settings/repo registry UI and backing data so each registered repo clearly displays which issue tracker implementation it uses (for now: beads).",
+    "description": "Update settings/repo registry UI and backing data so each registered repo clearly displays which issue tracker implementation it uses (for now: beads).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Show issue tracker type in registered repos settings",
+    "workflow_id": "default"
+  }
+}

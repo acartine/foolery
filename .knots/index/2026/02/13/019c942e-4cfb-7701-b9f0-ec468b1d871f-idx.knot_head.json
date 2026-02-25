@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4cfb-7701-b9f0-ec468b1d871f",
+  "occurred_at": "2026-02-13T13:34:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-z9y",
+    "state": "shipped",
+    "terminal": true,
+    "title": "parse \"event\" and \"text\" and other keys in claude stream",
+    "updated_at": "2026-02-13T13:34:58Z",
+    "workflow_id": "default"
+  }
+}

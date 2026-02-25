@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-26c4-7862-bb44-0834754ed5b4",
+  "occurred_at": "2026-02-18T18:41:24Z",
+  "knot_id": "foolery-csjr",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Let's get it up to 80% just because we can"
+  }
+}

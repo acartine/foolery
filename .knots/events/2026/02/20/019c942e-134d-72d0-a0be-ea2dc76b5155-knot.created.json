@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-134d-72d0-a0be-ea2dc76b5155",
+  "occurred_at": "2026-02-20T09:26:34Z",
+  "knot_id": "foolery-1guy.3.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Route backend creation through one composition point used by CLI/services/jobs.",
+    "description": "Route backend creation through one composition point used by CLI/services/jobs.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add backend factory and dependency injection seam",
+    "workflow_id": "default"
+  }
+}

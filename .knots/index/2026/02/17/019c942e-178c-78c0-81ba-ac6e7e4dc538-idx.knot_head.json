@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-178c-78c0-81ba-ac6e7e4dc538",
+  "occurred_at": "2026-02-17T08:56:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2xmh",
+    "state": "shipped",
+    "terminal": true,
+    "title": "back button on detail page has broken navigation",
+    "updated_at": "2026-02-17T08:56:45Z",
+    "workflow_id": "default"
+  }
+}

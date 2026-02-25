@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-49f9-7ff0-ab7f-2dd4af919e52",
+  "occurred_at": "2026-02-20T07:28:25Z",
+  "knot_id": "foolery-xmg8.3.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Provide selectable agent option for verification workflow and persist to settings model.",
+    "description": "Provide selectable agent option for verification workflow and persist to settings model.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add verification-agent selector in settings",
+    "workflow_id": "default"
+  }
+}

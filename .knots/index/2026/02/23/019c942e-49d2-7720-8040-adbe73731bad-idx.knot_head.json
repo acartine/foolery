@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-49d2-7720-8040-adbe73731bad",
+  "occurred_at": "2026-02-23T12:40:07Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene theron-noir: Verification UX",
+    "updated_at": "2026-02-23T12:40:07Z",
+    "workflow_id": "default"
+  }
+}

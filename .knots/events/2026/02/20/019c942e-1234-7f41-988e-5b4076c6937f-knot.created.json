@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1234-7f41-988e-5b4076c6937f",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Trace existing foolery workflows and derive implementation-neutral operations they require.",
+    "description": "Trace existing foolery workflows and derive implementation-neutral operations they require.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Map required workflows to backend operations",
+    "workflow_id": "default"
+  }
+}

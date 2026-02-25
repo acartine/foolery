@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3c90-7e11-b768-09326c3808ee",
+  "occurred_at": "2026-02-17T21:28:57Z",
+  "knot_id": "foolery-qqla.2.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Emit telemetry/logging for Breakdown clicks to support adoption and debugging of the new planning flow.",
+    "description": "Emit telemetry/logging for Breakdown clicks to support adoption and debugging of the new planning flow.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Track Breakdown invocation event",
+    "workflow_id": "default"
+  }
+}

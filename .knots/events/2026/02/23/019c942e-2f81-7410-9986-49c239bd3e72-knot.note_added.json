@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2f81-7410-9986-49c239bd3e72",
+  "occurred_at": "2026-02-23T17:14:19Z",
+  "knot_id": "foolery-g3y1.7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Created follow-up epic: foolery-knots-native (blocked by foolery-g3y1.6).",
+    "datetime": "2026-02-23T17:14:19Z",
+    "entry_id": "c17fb1e08bdff62aa01a9d6bcb4f4104e67be088cf1140611e4e3682bb1d29cb",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

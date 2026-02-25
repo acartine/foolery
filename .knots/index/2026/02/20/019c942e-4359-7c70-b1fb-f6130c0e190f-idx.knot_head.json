@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4359-7c70-b1fb-f6130c0e190f",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.1.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Update settings merge logic for OpenRouter partial updates",
+    "updated_at": "2026-02-20T05:23:49Z",
+    "workflow_id": "default"
+  }
+}

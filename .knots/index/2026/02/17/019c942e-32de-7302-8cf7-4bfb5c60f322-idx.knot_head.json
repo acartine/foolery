@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-32de-7302-8cf7-4bfb5c60f322",
+  "occurred_at": "2026-02-17T08:57:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-iw2e",
+    "state": "shipped",
+    "terminal": true,
+    "title": "foolery setup: interactive post-install configuration for repos and agents",
+    "updated_at": "2026-02-17T08:57:11Z",
+    "workflow_id": "default"
+  }
+}

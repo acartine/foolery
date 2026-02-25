@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2afd-7fe2-af41-446e7a312773",
+  "occurred_at": "2026-02-23T14:23:29Z",
+  "knot_id": "foolery-fyhe",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  current implementation of Breakdown from Create New and Beat Detail lightbox is entirely broken.  All it does is open a Direct view with no prompt.  This is a clear regression from historical behavior.\n\nwhat it should do is open the Direct view, populate the prompt with something like 'break beat xyz down into a hierarchical group of beats', and trigger the run action.\n\nmake both flows work the same, in the proper way."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4911-7061-9428-24450dc86155",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "If commit label is missing, prompt the producing agent to add it; if still missing, relaunch corrective agent and restart workflow with bounded retry safeguards."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1b96-7d32-8092-95c4e7c58ecb",
+  "occurred_at": "2026-02-15T07:27:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-59o",
+    "state": "shipped",
+    "terminal": true,
+    "title": "when process completes, flicker for the tab for 5 seconds and then close unless clicked on.",
+    "updated_at": "2026-02-15T07:27:55Z",
+    "workflow_id": "default"
+  }
+}

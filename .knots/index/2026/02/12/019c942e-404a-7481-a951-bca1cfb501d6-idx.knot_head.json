@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-404a-7481-a951-bca1cfb501d6",
+  "occurred_at": "2026-02-12T12:02:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-se1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "reject thumbs down should add labels",
+    "updated_at": "2026-02-12T12:02:35Z",
+    "workflow_id": "default"
+  }
+}

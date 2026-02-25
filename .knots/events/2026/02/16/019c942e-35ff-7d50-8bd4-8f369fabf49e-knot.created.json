@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-35ff-7d50-8bd4-8f369fabf49e",
+  "occurred_at": "2026-02-16T18:56:20Z",
+  "knot_id": "foolery-l3fv",
+  "type": "knot.created",
+  "data": {
+    "body": "In Foolery UI, selecting the foolery repo shows 'no beads found' even though beads exist. Reproduce, identify root cause in filtering/repo selection/query wiring, and fix.",
+    "description": "In Foolery UI, selecting the foolery repo shows 'no beads found' even though beads exist. Reproduce, identify root cause in filtering/repo selection/query wiring, and fix.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Investigate false 'no beads found' in repo view",
+    "workflow_id": "default"
+  }
+}

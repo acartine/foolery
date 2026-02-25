@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-324d-76d3-9f21-eeda085129f9",
+  "occurred_at": "2026-02-13T08:53:08Z",
+  "knot_id": "foolery-iki",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we want it to reverse cycle.  whatever direction shift R goes in, cmd shift R cycles in the opposite direction.  right now it just goes to All Repositories."
+  }
+}

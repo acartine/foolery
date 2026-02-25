@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2487-7a32-bd84-c657bf479dc1",
+  "occurred_at": "2026-02-10T16:16:14Z",
+  "knot_id": "foolery-bjv",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when you select a bead it fucking shifts all the beads down so that the action row can be shown at the top.\n\nthat is fucking horrific.  instead, the filter contents row should swap out it's components with the bulk edit components.  they should have the exact same xyhw and padding/margin properties so that the beads stay in one place on the screen.\n\nalternatively you can use some kind of card (doesn't have to be exactly a card) or some other kind of component that achieves the same goal - when the bulk edit state is activated, the filter components should be swapped out for the bulk edit components."
+  }
+}

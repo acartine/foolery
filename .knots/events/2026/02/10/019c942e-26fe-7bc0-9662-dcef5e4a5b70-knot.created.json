@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-26fe-7bc0-9662-dcef5e4a5b70",
+  "occurred_at": "2026-02-10T15:48:05Z",
+  "knot_id": "foolery-cvg",
+  "type": "knot.created",
+  "data": {
+    "body": "move the New Bead Button up to the right of the repo pull down.  remove the repo name below the logo, and manage your issues and tasks.  \n\nmake the filter pull downs flush to the divider (minus the padding)",
+    "description": "move the New Bead Button up to the right of the repo pull down.  remove the repo name below the logo, and manage your issues and tasks.  \n\nmake the filter pull downs flush to the divider (minus the padding)",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "streamline repo table view (/beads)",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-114a-7832-9f73-05d8215d0ffb",
+  "occurred_at": "2026-02-11T12:30:49Z",
+  "knot_id": "foolery-0xl",
+  "type": "knot.created",
+  "data": {
+    "body": "Make the new button a dark green that matches the palette.  Make the create new dialogue's Done button the same dark green color.  Make the Create More button in the same dialogue a light green color that matches the description text on the selected bead in /beads",
+    "description": "Make the new button a dark green that matches the palette.  Make the create new dialogue's Done button the same dark green color.  Make the Create More button in the same dialogue a light green color that matches the description text on the selected bead in /beads",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "button colors",
+    "workflow_id": "default"
+  }
+}

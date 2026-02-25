@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-110d-72c2-85dd-45e133930b27",
+  "occurred_at": "2026-02-16T18:31:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0ku8",
+    "state": "shipped",
+    "terminal": true,
+    "title": "custom behavior for beats that are rolling/running",
+    "updated_at": "2026-02-16T18:31:35Z",
+    "workflow_id": "default"
+  }
+}

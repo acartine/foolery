@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3f60-7441-94fd-408091c03d9f",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-rmje",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Prevent concurrent bd subprocesses from crashing embedded Dolt",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

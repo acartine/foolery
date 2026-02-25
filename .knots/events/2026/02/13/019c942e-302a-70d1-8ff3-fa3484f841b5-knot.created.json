@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-302a-70d1-8ff3-fa3484f841b5",
+  "occurred_at": "2026-02-13T22:32:37Z",
+  "knot_id": "foolery-glj",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.",
+    "description": "as title says.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "replace ship with Take! and clapperboard icon",
+    "workflow_id": "default"
+  }
+}

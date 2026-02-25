@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4773-74b1-8e62-ec3aa3d282b5",
+  "occurred_at": "2026-02-19T17:10:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-wefn",
+    "state": "shipped",
+    "terminal": true,
+    "title": "List Viiew: Ready Filter:  Labels are missing, should be shown",
+    "updated_at": "2026-02-19T17:10:17Z",
+    "workflow_id": "default"
+  }
+}

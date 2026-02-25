@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-40c0-78b1-b642-a70809f3bd8e",
+  "occurred_at": "2026-02-14T09:15:13Z",
+  "knot_id": "foolery-shg",
+  "type": "knot.description_set",
+  "data": {
+    "description": "On orchestration page: move planner summary to just under user textarea form. Swap wave diagram with terminal. Cut terminal height in half and use remaining half to show 'Applied section' when beads are created."
+  }
+}

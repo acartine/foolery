@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-300a-7ac1-9b28-d86bbeafd53f",
+  "occurred_at": "2026-02-17T13:00:12Z",
+  "knot_id": "foolery-gj7q",
+  "type": "knot.created",
+  "data": {
+    "body": "Track integration of branch blitz/agent-info so agent identity/model metadata is visible in Terminal panel and Direct view.",
+    "description": "Track integration of branch blitz/agent-info so agent identity/model metadata is visible in Terminal panel and Direct view.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Show agent info in terminal and Direct view",
+    "workflow_id": "default"
+  }
+}

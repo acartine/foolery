@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2e36-7660-8ada-3e7526b55877",
+  "occurred_at": "2026-02-23T17:12:56Z",
+  "knot_id": "foolery-g3y1.5.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Keep Foolery statuses and map Knots states with raw Knots state preserved in metadata.",
+    "description": "Keep Foolery statuses and map Knots states with raw Knots state preserved in metadata.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Implement Knots-state compression with raw state metadata",
+    "workflow_id": "default"
+  }
+}

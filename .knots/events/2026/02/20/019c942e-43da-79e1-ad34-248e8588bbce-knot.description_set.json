@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-43da-79e1-ad34-248e8588bbce",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Parse OpenRouter model payloads into internal model objects including id, display name, context window, and input/output price fields."
+  }
+}

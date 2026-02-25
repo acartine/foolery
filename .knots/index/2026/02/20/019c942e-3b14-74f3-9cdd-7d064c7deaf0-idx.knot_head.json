@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3b14-74f3-9cdd-7d064c7deaf0",
+  "occurred_at": "2026-02-20T15:51:28Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ptzv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "direct view: put console and diagram components side by side",
+    "updated_at": "2026-02-20T15:51:28Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2028-7af2-b1a8-a5ff04654b0a",
+  "occurred_at": "2026-02-17T11:12:33Z",
+  "knot_id": "foolery-8czc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Resolve conflict between user-level default ship_with_review guidance and foolery repo policy forbidding PR/review workflows unless explicitly requested. Update user AGENTS note, ship_with_review skill metadata, and repo AGENTS with explicit local disable rule."
+  }
+}

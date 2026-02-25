@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3f80-7b41-8555-3891d5365582",
+  "occurred_at": "2026-02-18T18:37:41Z",
+  "knot_id": "foolery-ryv0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-18): fixed doctor --fix questionnaire flow in launcher template. Changes in scripts/install.sh: (1) render_doctor_report now uses node /dev/fd/3 so JSON response reaches parser; (2) questionnaire parser reads diagnostics from temp file and prompts via stdin instead of /dev/tty split stream; (3) non-TTY fallback auto-selects default strategies; (4) temp file cleanup added. Validation: bash -n scripts/install.sh; HOME=/tmp/foolery-home-ryv0 FOOLERY_DEV_PORT=3316 bash scripts/test-doctor-stream.sh --fix with piped yes shows \"1 succeeded\"; interactive expect run on port 3317 also shows fix success.",
+    "datetime": "2026-02-18T18:37:41Z",
+    "entry_id": "a2b12f8f4671b5b49ff9b70f6abc3efcda6db2005815962df81409231f0d7644",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

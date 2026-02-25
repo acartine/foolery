@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4b8b-7ce0-af79-67c7c369331c",
+  "occurred_at": "2026-02-16T19:21:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-y5e",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove prev/next zoom out/in buttons from Existing ORchestrations",
+    "updated_at": "2026-02-16T19:21:21Z",
+    "workflow_id": "default"
+  }
+}

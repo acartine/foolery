@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-47e1-7902-a05d-cec26697ec23",
+  "occurred_at": "2026-02-17T13:24:38Z",
+  "knot_id": "foolery-xccx",
+  "type": "knot.description_set",
+  "data": {
+    "description": "store logs with our prompts, the responses, keyed by active repo, bead id (if available), interaction type (scene/direct/take).\n\nlogs should work when running the installed binary (logging to logical places one would expect) OR when using bun dev for debugging."
+  }
+}

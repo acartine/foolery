@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3058-70f0-bbcd-7305ce7dfadb",
+  "occurred_at": "2026-02-13T10:27:37Z",
+  "knot_id": "foolery-gps",
+  "type": "knot.priority_set",
+  "data": {
+    "priority": 0
+  }
+}

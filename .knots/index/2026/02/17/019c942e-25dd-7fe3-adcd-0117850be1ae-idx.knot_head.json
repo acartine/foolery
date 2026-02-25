@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-25dd-7fe3-adcd-0117850be1ae",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ccu",
+    "state": "shipped",
+    "terminal": true,
+    "title": "detail page clean up",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

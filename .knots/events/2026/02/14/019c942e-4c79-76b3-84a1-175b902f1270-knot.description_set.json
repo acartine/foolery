@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4c79-76b3-84a1-175b902f1270",
+  "occurred_at": "2026-02-14T18:03:10Z",
+  "knot_id": "foolery-z26",
+  "type": "knot.description_set",
+  "data": {
+    "description": "ready should mean Open or In Progress.\n\nis only showing Open"
+  }
+}

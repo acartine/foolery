@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3931-7eb3-8593-f2f09a38996c",
+  "occurred_at": "2026-02-11T18:04:35Z",
+  "knot_id": "foolery-nnw",
+  "type": "knot.created",
+  "data": {
+    "body": "replace 'find your beads' with\n'search it up'",
+    "description": "replace 'find your beads' with\n'search it up'",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "change search text",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3937-7902-9951-e530df1be722",
+  "occurred_at": "2026-02-11T18:04:35Z",
+  "knot_id": "foolery-nnw",
+  "type": "knot.description_set",
+  "data": {
+    "description": "replace 'find your beads' with\n'search it up'"
+  }
+}

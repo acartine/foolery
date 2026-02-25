@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-30ba-7a32-a8a4-55601cccbfce",
+  "occurred_at": "2026-02-13T08:50:56Z",
+  "knot_id": "foolery-h9m",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we can tell it's a terminal.  :-). remove the label for less clutter."
+  }
+}

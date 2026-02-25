@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1a81-78a0-af7b-18b343cf7e72",
+  "occurred_at": "2026-02-11T11:48:32Z",
+  "knot_id": "foolery-4u9",
+  "type": "knot.created",
+  "data": {
+    "body": "remove split pane\nin /beads, for selected row, show (underneath the title and time since changed / labels section text) a two column \"summary\" section for description and notes.\ndo not have titles (e.g. Description) in the columns, just the text.\n\nthe total width of the two column section should not exceed or cause the growth beyond what the width of the title column would have been without this new three column section.  Instead the text should wrap.\n\nthis new \"summary\" section should use a smaller font. it should not have dividers or outline borders.  the description column should have a very light green background that matches the pallette. if the notes field is not empty it should have a very light yellow background.  if it is empty it should not have a background color.",
+    "description": "remove split pane\nin /beads, for selected row, show (underneath the title and time since changed / labels section text) a two column \"summary\" section for description and notes.\ndo not have titles (e.g. Description) in the columns, just the text.\n\nthe total width of the two column section should not exceed or cause the growth beyond what the width of the title column would have been without this new three column section.  Instead the text should wrap.\n\nthis new \"summary\" section should use a smaller font. it should not have dividers or outline borders.  the description column should have a very light green background that matches the pallette. if the notes field is not empty it should have a very light yellow background.  if it is empty it should not have a background color.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "replace split pane with inline summary",
+    "workflow_id": "default"
+  }
+}

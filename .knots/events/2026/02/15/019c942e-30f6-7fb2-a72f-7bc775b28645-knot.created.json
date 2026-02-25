@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-30f6-7fb2-a72f-7bc775b28645",
+  "occurred_at": "2026-02-15T07:38:52Z",
+  "knot_id": "foolery-hbt",
+  "type": "knot.created",
+  "data": {
+    "body": "we should add a final cut view which is very similar to list view, but only shows in-progress beats waiting for verification.",
+    "description": "we should add a final cut view which is very similar to list view, but only shows in-progress beats waiting for verification.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Final Cut view",
+    "workflow_id": "default"
+  }
+}

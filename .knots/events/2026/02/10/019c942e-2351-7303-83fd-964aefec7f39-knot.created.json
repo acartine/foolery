@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2351-7303-83fd-964aefec7f39",
+  "occurred_at": "2026-02-10T09:58:37Z",
+  "knot_id": "foolery-ajv",
+  "type": "knot.created",
+  "data": {
+    "body": "BeadTypeBadge crashes when bd returns a type not in the typeConfig map. Already fixed by adding fallback config and widening the type prop to string. Close this bead.",
+    "description": "BeadTypeBadge crashes when bd returns a type not in the typeConfig map. Already fixed by adding fallback config and widening the type prop to string. Close this bead.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix BeadTypeBadge crash on unknown type",
+    "workflow_id": "default"
+  }
+}

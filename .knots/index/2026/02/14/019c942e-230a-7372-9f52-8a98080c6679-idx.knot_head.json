@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-230a-7372-9f52-8a98080c6679",
+  "occurred_at": "2026-02-14T17:32:22Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-a5z",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add ship and wave follow-up prompts for merge+verification state",
+    "updated_at": "2026-02-14T17:32:22Z",
+    "workflow_id": "default"
+  }
+}

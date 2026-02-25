@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3fd3-7d10-8d55-c2e48bc7092f",
+  "occurred_at": "2026-02-13T08:48:28Z",
+  "knot_id": "foolery-s3q",
+  "type": "knot.description_set",
+  "data": {
+    "description": "for now let's keep it simple, nobody can ship if something is shipping.  disable all the labels.  for the ticket that is actively shipping, change the ship button to a green Shipping... text, add a red square next to it with a mouseover that says 'Terminating'.  on click it terminates the terminal process and then the selected task becomes shippable again."
+  }
+}

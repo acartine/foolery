@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-43f8-7690-be79-bb0b1c8cac61",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Expose an API route (for example `/api/settings/openrouter/models`) that reads configured key, fetches models, caches results, and returns normalized costs."
+  }
+}

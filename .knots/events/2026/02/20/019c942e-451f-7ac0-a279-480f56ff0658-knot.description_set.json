@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-451f-7ac0-a279-480f56ff0658",
+  "occurred_at": "2026-02-20T05:23:54Z",
+  "knot_id": "foolery-vdk0.4.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Introduce planner-provider config so planning actions can choose CLI agent mode or OpenRouter mode without affecting Take/Scene defaults."
+  }
+}

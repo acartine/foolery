@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1d59-7403-8e64-d45c82a511a6",
+  "occurred_at": "2026-02-11T12:26:21Z",
+  "knot_id": "foolery-6t1",
+  "type": "knot.created",
+  "data": {
+    "body": "the repo button is padded slightlymore in from the right and it looks weird",
+    "description": "the repo button is padded slightlymore in from the right and it looks weird",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "make repo pulldown and new button aligned horizontally on the right",
+    "workflow_id": "default"
+  }
+}

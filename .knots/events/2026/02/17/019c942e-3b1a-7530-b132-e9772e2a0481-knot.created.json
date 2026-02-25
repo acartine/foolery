@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3b1a-7530-b132-e9772e2a0481",
+  "occurred_at": "2026-02-17T16:10:50Z",
+  "knot_id": "foolery-qbor",
+  "type": "knot.created",
+  "data": {
+    "body": "when launch the app with foolery open, it should always check for new versions and ask you if you want to upgrade instead.\n\nthe app should store the last time it checked for update vi cli or the ui.  if > 24 hours, it should check and conditionally show the banner (if an update exists).  if it has never checked (no last time saved), it should check and conditionally show the banner.",
+    "description": "when launch the app with foolery open, it should always check for new versions and ask you if you want to upgrade instead.\n\nthe app should store the last time it checked for update vi cli or the ui.  if > 24 hours, it should check and conditionally show the banner (if an update exists).  if it has never checked (no last time saved), it should check and conditionally show the banner.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "app should check for new versions periodically",
+    "workflow_id": "default"
+  }
+}

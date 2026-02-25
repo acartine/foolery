@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3e3c-7321-9297-487271b09e0d",
+  "occurred_at": "2026-02-20T15:50:22Z",
+  "knot_id": "foolery-r1mi",
+  "type": "knot.created",
+  "data": {
+    "body": "Apply the v0.55.1 Dolt-native hook behavior for pre-push/post-merge/post-checkout, add a reusable setup path for this repo, and validate with bd hooks list + bd doctor + manual pre-push run.",
+    "description": "Apply the v0.55.1 Dolt-native hook behavior for pre-push/post-merge/post-checkout, add a reusable setup path for this repo, and validate with bd hooks list + bd doctor + manual pre-push run.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix Beads v0.55.1 Dolt hook integration for push/pull workflows",
+    "workflow_id": "default"
+  }
+}

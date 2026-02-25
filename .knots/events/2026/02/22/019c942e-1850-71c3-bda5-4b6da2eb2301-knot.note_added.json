@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1850-71c3-bda5-4b6da2eb2301",
+  "occurred_at": "2026-02-22T08:50:52Z",
+  "knot_id": "foolery-3ji",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Hydration (2026-02-16): Release UX must behave like an installed app, not a developer clone workflow. After installation, users should run 'foolery start', 'foolery stop', and 'foolery restart'. Start should daemonize backend, stream stdout/stderr to logs, and automatically open browser to the local app URL.\nPackaging path now includes prebuilt release runtime artifacts and installer now pulls artifacts from GitHub Releases rather than cloning repository.",
+    "datetime": "2026-02-22T08:50:52Z",
+    "entry_id": "450a77a52a61d539c2be9bb24a6045101847e7bc2ab2eed40b4326e505d86618",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

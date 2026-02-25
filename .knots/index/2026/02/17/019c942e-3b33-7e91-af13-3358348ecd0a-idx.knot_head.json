@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3b33-7e91-af13-3358348ecd0a",
+  "occurred_at": "2026-02-17T16:29:28Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qbor",
+    "state": "implementing",
+    "terminal": false,
+    "title": "app should check for new versions periodically",
+    "updated_at": "2026-02-17T16:29:28Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-32e8-7583-a134-00425be0a89c",
+  "occurred_at": "2026-02-20T10:21:56Z",
+  "knot_id": "foolery-j2l0",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we want the title texts of each row/bead to align, whether it's a parent or not.\nso show the ^> toggle components to the left of the title text, after that text is already left aligned."
+  }
+}

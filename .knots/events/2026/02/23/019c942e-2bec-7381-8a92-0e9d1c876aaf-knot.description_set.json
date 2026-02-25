@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2bec-7381-8a92-0e9d1c876aaf",
+  "occurred_at": "2026-02-23T17:12:45Z",
+  "knot_id": "foolery-g3y1.1.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Publish compatibility ADR and mapping decisions in docs."
+  }
+}

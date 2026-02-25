@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-46cd-7041-a959-9c071aa9a86a",
+  "occurred_at": "2026-02-10T09:58:16Z",
+  "knot_id": "foolery-w5u",
+  "type": "knot.created",
+  "data": {
+    "body": "Create server-side directory listing module at src/lib/browse.ts. Functions: listDirectory(path) returns DirEntry[] with isBeadsRepo flag, getParentPath. Filters hidden dirs, handles permission errors, checks for .beads/ child.",
+    "description": "Create server-side directory listing module at src/lib/browse.ts. Functions: listDirectory(path) returns DirEntry[] with isBeadsRepo flag, getParentPath. Filters hidden dirs, handles permission errors, checks for .beads/ child.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Directory browser logic (src/lib/browse.ts)",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4b70-7fc0-ad79-d739ca53a278",
+  "occurred_at": "2026-02-15T05:08:16Z",
+  "knot_id": "foolery-y5e",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, it's just clutter",
+    "description": "as title says, it's just clutter",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove prev/next zoom out/in buttons from Existing ORchestrations",
+    "workflow_id": "default"
+  }
+}

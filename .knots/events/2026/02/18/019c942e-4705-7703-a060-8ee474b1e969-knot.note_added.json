@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-4705-7703-a060-8ee474b1e969",
+  "occurred_at": "2026-02-18T04:52:53Z",
+  "knot_id": "foolery-w6b8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejection Reason: Hierarchy is now completely broken and unrepresented in List or Final Cut views.",
+    "datetime": "2026-02-18T04:52:53Z",
+    "entry_id": "859f588d8fc98d199fbda3194e9b323779ee29563bc5ffe5ee31340ba54ba26a",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

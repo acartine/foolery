@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4952-7bd1-a27a-38cf19c15fa9",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "If requirements fail or bugs are found, remove stage:verification/transition:verification, add stage:retry, and increment attempt; if pass, remove verification labels and close bead."
+  }
+}

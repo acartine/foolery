@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4321-79c1-acd6-f4a56d97597f",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "knot_id": "foolery-vdk0.1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add an `openrouter` section with explicit defaults for `enabled`, `apiKey`, and `model` in `foolerySettingsSchema`, and export corresponding TS types."
+  }
+}

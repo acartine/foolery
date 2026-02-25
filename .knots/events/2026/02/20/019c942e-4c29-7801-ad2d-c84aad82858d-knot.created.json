@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4c29-7801-ad2d-c84aad82858d",
+  "occurred_at": "2026-02-20T08:21:26Z",
+  "knot_id": "foolery-yn6q",
+  "type": "knot.created",
+  "data": {
+    "body": "agents appear to be creating molecules which is semantically incorrect.  let's both\n\n- prompt them to use task/feature\n- examine the resulting artifacts and convert them if molecules were used anyway",
+    "description": "agents appear to be creating molecules which is semantically incorrect.  let's both\n\n- prompt them to use task/feature\n- examine the resulting artifacts and convert them if molecules were used anyway",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Find out why Breakdown/Direct actions are creating molecules and  fix it",
+    "workflow_id": "default"
+  }
+}

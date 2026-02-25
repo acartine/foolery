@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-4210-7b23-ba00-2a50af20520f",
+  "occurred_at": "2026-02-18T10:17:41Z",
+  "knot_id": "foolery-twrr",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Log Lifecycle Policy (commit c2dbbdd)\n\nThree-phase automatic cleanup for agent interaction logs (.jsonl files):\n\n1. **Compress**: gzip .jsonl files older than 3 days (preserves original mtime for correct age tracking)\n2. **Delete**: remove all log files (.jsonl and .jsonl.gz) older than 30 days\n3. **Size cap**: if total log storage exceeds 500 MB, delete oldest files first until under the cap\n\n### Integration\n- Triggered fire-and-forget on first `startInteractionLog()` call\n- Throttled to once per hour for long-lived processes\n- Idempotent and safe for concurrent execution\n- Prunes empty date/slug directories after cleanup\n\n### Files\n- `src/lib/log-lifecycle.ts` — core policy logic (walk, compress, delete, size cap)\n- `src/lib/interaction-logger.ts` — cleanup trigger via `maybeScheduleCleanup()`\n- `src/lib/__tests__/log-lifecycle.test.ts` — 338 lines of test coverage\n\n### Defaults (configurable via CleanupOptions)\n- compressAfterDays: 3\n- deleteAfterDays: 30\n- maxTotalBytes: 500 MB\n- logRoot: `.foolery-logs/` (dev) or `~/.config/foolery/logs/` (prod)",
+    "datetime": "2026-02-18T10:17:41Z",
+    "entry_id": "0268190d19a842a1f7bd4d1a6becca21c1d851bdae1c1651412937ef53dea82c",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

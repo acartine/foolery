@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3866-7780-897b-0859ecf9a064",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mvc5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stop closed-bead queries unless explicitly requested",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

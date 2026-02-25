@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-367e-7ba0-8fc2-015c7d3733bc",
+  "occurred_at": "2026-02-20T15:51:36Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-lodw",
+    "state": "shipped",
+    "terminal": true,
+    "title": "dozens of api calls per second making ui sluggish",
+    "updated_at": "2026-02-20T15:51:36Z",
+    "workflow_id": "default"
+  }
+}

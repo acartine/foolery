@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-457e-7e72-957a-93eebf0df13f",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Update breakdown session startup to dispatch to CLI or OpenRouter executor while preserving plan extraction and apply semantics.",
+    "description": "Update breakdown session startup to dispatch to CLI or OpenRouter executor while preserving plan extraction and apply semantics.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Integrate provider routing in breakdown manager",
+    "workflow_id": "default"
+  }
+}

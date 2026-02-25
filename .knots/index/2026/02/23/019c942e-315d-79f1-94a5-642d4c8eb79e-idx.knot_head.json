@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-315d-79f1-94a5-642d4c8eb79e",
+  "occurred_at": "2026-02-23T12:38:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-hh7o",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Prepare release summary and run release checklist",
+    "updated_at": "2026-02-23T12:38:40Z",
+    "workflow_id": "default"
+  }
+}

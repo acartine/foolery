@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1db0-78b0-a358-ab0d27f967c7",
+  "occurred_at": "2026-02-11T12:18:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6vh",
+    "state": "shipped",
+    "terminal": true,
+    "title": "rename New Bead button to New",
+    "updated_at": "2026-02-11T12:18:55Z",
+    "workflow_id": "default"
+  }
+}

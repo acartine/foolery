@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1b47-7182-818e-98d8e62f8175",
+  "occurred_at": "2026-02-13T11:59:19Z",
+  "knot_id": "foolery-563",
+  "type": "knot.description_set",
+  "data": {
+    "description": "after you orchestrate and choose to create the beads, they are created but they are not connected to the underlying beads as a parent."
+  }
+}

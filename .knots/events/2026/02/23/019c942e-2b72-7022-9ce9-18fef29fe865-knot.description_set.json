@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2b72-7022-9ce9-18fef29fe865",
+  "occurred_at": "2026-02-23T17:12:43Z",
+  "knot_id": "foolery-g3y1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Define and lock the compatibility contract and mapping behavior for Knots support in Foolery."
+  }
+}

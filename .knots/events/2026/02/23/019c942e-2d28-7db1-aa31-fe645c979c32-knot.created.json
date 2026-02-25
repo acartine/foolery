@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2d28-7db1-aa31-fe645c979c32",
+  "occurred_at": "2026-02-23T17:12:51Z",
+  "knot_id": "foolery-g3y1.3.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement dependency + hierarchy translation via edge commands (blocked_by/parent_of).",
+    "description": "Implement dependency + hierarchy translation via edge commands (blocked_by/parent_of).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Implement dependency and hierarchy translation via edges",
+    "workflow_id": "default"
+  }
+}

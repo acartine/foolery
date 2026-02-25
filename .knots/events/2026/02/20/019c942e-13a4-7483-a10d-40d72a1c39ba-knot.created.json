@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-13a4-7483-a10d-40d72a1c39ba",
+  "occurred_at": "2026-02-20T09:26:35Z",
+  "knot_id": "foolery-1guy.3.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Provide a minimal stub backend to unblock phased migration and isolated tests.",
+    "description": "Provide a minimal stub backend to unblock phased migration and isolated tests.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add temporary stub backend for incremental migration",
+    "workflow_id": "default"
+  }
+}

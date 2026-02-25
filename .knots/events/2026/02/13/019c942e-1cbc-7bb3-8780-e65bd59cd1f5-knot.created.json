@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1cbc-7bb3-8780-e65bd59cd1f5",
+  "occurred_at": "2026-02-13T22:23:45Z",
+  "knot_id": "foolery-6m7",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "description": "as title says",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift-c should close focused bead in list view",
+    "workflow_id": "default"
+  }
+}

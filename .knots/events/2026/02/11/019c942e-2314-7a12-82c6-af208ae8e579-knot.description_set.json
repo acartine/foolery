@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2314-7a12-82c6-af208ae8e579",
+  "occurred_at": "2026-02-11T07:10:19Z",
+  "knot_id": "foolery-ad6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "given that the application is stateful - how does it handle multiple clients?  does it namespace things like \"selected repo?\""
+  }
+}

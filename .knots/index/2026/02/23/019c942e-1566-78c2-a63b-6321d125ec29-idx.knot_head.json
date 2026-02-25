@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1566-78c2-a63b-6321d125ec29",
+  "occurred_at": "2026-02-23T07:23:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5.6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Document backend extension guide for future implementations",
+    "updated_at": "2026-02-23T07:23:58Z",
+    "workflow_id": "default"
+  }
+}

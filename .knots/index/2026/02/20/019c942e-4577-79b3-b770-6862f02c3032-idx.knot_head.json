@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4577-79b3-b770-6862f02c3032",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4.3",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Integrate provider routing in orchestration manager",
+    "updated_at": "2026-02-20T05:23:55Z",
+    "workflow_id": "default"
+  }
+}

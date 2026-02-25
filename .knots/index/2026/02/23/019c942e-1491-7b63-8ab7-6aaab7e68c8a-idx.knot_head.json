@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1491-7b63-8ab7-6aaab7e68c8a",
+  "occurred_at": "2026-02-23T12:37:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene sunset-props: Cutover Verify",
+    "updated_at": "2026-02-23T12:37:42Z",
+    "workflow_id": "default"
+  }
+}

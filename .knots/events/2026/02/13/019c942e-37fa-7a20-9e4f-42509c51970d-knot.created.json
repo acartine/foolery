@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-37fa-7a20-9e4f-42509c51970d",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Capture UI direction with references to strong open-source workflow UIs and define Foolery-specific interaction patterns (hierarchy, motion, CTA behavior, failure states).",
+    "description": "Capture UI direction with references to strong open-source workflow UIs and define Foolery-specific interaction patterns (hierarchy, motion, CTA behavior, failure states).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Orchestration UX references and interaction spec",
+    "workflow_id": "default"
+  }
+}

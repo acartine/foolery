@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4183-7b12-af55-62effe1aab58",
+  "occurred_at": "2026-02-23T11:10:25Z",
+  "knot_id": "foolery-tm5f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - the buttons all have different font sizes and shapes.\n\nmake them all use the same font and shape\n\nadd a Take! button that executes the Take! action.  Make sure it is only enabled if the button is Open"
+  }
+}

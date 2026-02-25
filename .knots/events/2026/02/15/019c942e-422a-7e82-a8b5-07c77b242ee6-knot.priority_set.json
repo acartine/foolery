@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-422a-7e82-a8b5-07c77b242ee6",
+  "occurred_at": "2026-02-15T07:39:14Z",
+  "knot_id": "foolery-ubaj",
+  "type": "knot.priority_set",
+  "data": {
+    "priority": 0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1383-72d1-aa98-703d7163cd5e",
+  "occurred_at": "2026-02-23T12:37:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.3.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add internal backend selection configuration",
+    "updated_at": "2026-02-23T12:37:40Z",
+    "workflow_id": "default"
+  }
+}

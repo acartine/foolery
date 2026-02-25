@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4c21-7790-a433-df7a881644ac",
+  "occurred_at": "2026-02-17T16:25:27Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ydl1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "foolery doctor",
+    "updated_at": "2026-02-17T16:25:27Z",
+    "workflow_id": "default"
+  }
+}

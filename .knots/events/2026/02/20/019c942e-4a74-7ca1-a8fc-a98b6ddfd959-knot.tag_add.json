@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4a74-7ca1-a8fc-a98b6ddfd959",
+  "occurred_at": "2026-02-20T07:28:26Z",
+  "knot_id": "foolery-xmg8.3.5",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "source:/private/tmp/beads_for_knots.jsonl"
+  }
+}

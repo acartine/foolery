@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3b79-7f42-a6d3-07a06b07e39a",
+  "occurred_at": "2026-02-17T21:27:11Z",
+  "knot_id": "foolery-qqla",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.\n\nwhen clicked it should create a prompt like \"break this bead xyz down into hierarchical tasks, making autonomous decisions about execution order, parallel execution, and vague requirements.\"\n\nload the \"Direct\" page with that prompt and auto execute \"Run Now\" or whatever the action is from that page.  that gives the user insight into the planning.",
+    "description": "as title says.\n\nwhen clicked it should create a prompt like \"break this bead xyz down into hierarchical tasks, making autonomous decisions about execution order, parallel execution, and vague requirements.\"\n\nload the \"Direct\" page with that prompt and auto execute \"Run Now\" or whatever the action is from that page.  that gives the user insight into the planning.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene depp-noir: bead detail screen should show 'Breakdown'",
+    "workflow_id": "default"
+  }
+}

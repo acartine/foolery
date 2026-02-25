@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1623-79a0-ad61-ad123f8ef72b",
+  "occurred_at": "2026-02-12T06:47:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-217",
+    "state": "shipped",
+    "terminal": true,
+    "title": "search leads to dead-end navigation",
+    "updated_at": "2026-02-12T06:47:23Z",
+    "workflow_id": "default"
+  }
+}

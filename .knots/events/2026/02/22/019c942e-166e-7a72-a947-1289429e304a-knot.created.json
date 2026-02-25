@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-166e-7a72-a947-1289429e304a",
+  "occurred_at": "2026-02-22T03:11:15Z",
+  "knot_id": "foolery-28hf",
+  "type": "knot.created",
+  "data": {
+    "body": "Registry data should not be refetched aggressively during normal beads usage. Use stale caching and avoid duplicate consumers that trigger repeated network requests when settings/repo management is not active.",
+    "description": "Registry data should not be refetched aggressively during normal beads usage. Use stale caching and avoid duplicate consumers that trigger repeated network requests when settings/repo management is not active.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Reduce unnecessary /api/registry polling on beads route",
+    "workflow_id": "default"
+  }
+}

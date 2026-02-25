@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-15a2-7aa1-9c02-21fd99dadb07",
+  "occurred_at": "2026-02-15T07:03:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1ng",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Show initial Plan Waves prompt in orchestration console",
+    "updated_at": "2026-02-15T07:03:08Z",
+    "workflow_id": "default"
+  }
+}

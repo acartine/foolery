@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2c2b-73e3-8e0d-78b398374d0f",
+  "occurred_at": "2026-02-23T17:12:47Z",
+  "knot_id": "foolery-g3y1.2.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Extend tracker model to include knots, marker .knots, and precedence .knots > .beads."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1a7a-7860-9170-e40522bc4fd6",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4p1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement option 1 command-style header layout",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

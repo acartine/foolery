@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3ea9-78f2-974b-65f182b88817",
+  "occurred_at": "2026-02-18T09:13:48Z",
+  "knot_id": "foolery-ran1",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - Scene! indicates that it is a bulk of related children tasks, it's more explicit.",
+    "description": "as title says - Scene! indicates that it is a bulk of related children tasks, it's more explicit.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "on list page, parent beads should say Scene! instead of Take!",
+    "workflow_id": "default"
+  }
+}

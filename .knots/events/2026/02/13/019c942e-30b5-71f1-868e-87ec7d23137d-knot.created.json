@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-30b5-71f1-868e-87ec7d23137d",
+  "occurred_at": "2026-02-13T08:50:56Z",
+  "knot_id": "foolery-h9m",
+  "type": "knot.created",
+  "data": {
+    "body": "we can tell it's a terminal.  :-). remove the label for less clutter.",
+    "description": "we can tell it's a terminal.  :-). remove the label for less clutter.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove the TERMINAL label from the terminal title bar",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-34e0-7f41-bb5b-d4c98ebd7ae3",
+  "occurred_at": "2026-02-13T07:08:45Z",
+  "knot_id": "foolery-kri",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "source:/private/tmp/beads_for_knots.jsonl"
+  }
+}

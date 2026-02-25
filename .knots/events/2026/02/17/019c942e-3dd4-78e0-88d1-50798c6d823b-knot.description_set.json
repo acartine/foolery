@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3dd4-78e0-88d1-50798c6d823b",
+  "occurred_at": "2026-02-17T21:29:00Z",
+  "knot_id": "foolery-qqla.4.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Document what Breakdown does, where it routes, and expected behavior when auto-run succeeds or fails."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3621-7321-93c8-d66822fe0372",
+  "occurred_at": "2026-02-20T12:00:49Z",
+  "knot_id": "foolery-l4wa",
+  "type": "knot.created",
+  "data": {
+    "body": "right now when you reject a beat with shift-f or the thumbs down, enter the note, and hit the reject button, it just freezes for 5 seconds or so and the table flickers it away.\n\nthere should be some kind of ux/ui transition so the user knows we got the request and that it is being processed.",
+    "description": "right now when you reject a beat with shift-f or the thumbs down, enter the note, and hit the reject button, it just freezes for 5 seconds or so and the table flickers it away.\n\nthere should be some kind of ux/ui transition so the user knows we got the request and that it is being processed.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Final Cut View: Rejecting a beat should provide UX feedback",
+    "workflow_id": "default"
+  }
+}

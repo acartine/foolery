@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3f86-7c23-9ce3-4b5d72b25ce9",
+  "occurred_at": "2026-02-18T18:37:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ryv0",
+    "state": "shipped",
+    "terminal": true,
+    "title": "doctor --fix questionnaire answers are not applying fixes in stream test",
+    "updated_at": "2026-02-18T18:37:41Z",
+    "workflow_id": "default"
+  }
+}

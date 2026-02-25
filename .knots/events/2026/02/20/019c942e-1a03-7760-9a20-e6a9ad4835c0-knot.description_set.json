@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1a03-7760-9a20-e6a9ad4835c0",
+  "occurred_at": "2026-02-20T12:24:31Z",
+  "knot_id": "foolery-49zm",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Instead, the UI is hanging for 5 seconds until an update which is super fucking annoying.  Provide some sort of transition handling."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3a0e-77c2-9c4e-ad0f438996b3",
+  "occurred_at": "2026-02-17T15:07:56Z",
+  "knot_id": "foolery-ozjw",
+  "type": "knot.created",
+  "data": {
+    "body": "remove \"beats viewer\"",
+    "description": "remove \"beats viewer\"",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "change page title to just \"Foolery\"",
+    "workflow_id": "default"
+  }
+}

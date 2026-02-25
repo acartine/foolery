@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-39a8-7463-aaba-b26c9ab98637",
+  "occurred_at": "2026-02-22T09:05:03Z",
+  "knot_id": "foolery-odiq",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we want a way to jump to certain messages  and see how many messages there are.  like i want to jump to app message 2 or agent message 36.\n\nif there are different agents involved it's nice see them delineated as well"
+  }
+}

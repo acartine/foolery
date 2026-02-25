@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4be1-7a81-b7da-1e7d4e733ecc",
+  "occurred_at": "2026-02-10T13:42:08Z",
+  "knot_id": "foolery-yab",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you should be able to edit prioriity and type within the table"
+  }
+}

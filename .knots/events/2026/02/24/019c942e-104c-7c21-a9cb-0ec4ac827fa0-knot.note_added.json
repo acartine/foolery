@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-104c-7c21-a9cb-0ec4ac827fa0",
+  "occurred_at": "2026-02-24T07:22:56Z",
+  "knot_id": "foolery-0f0n",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-23):\n- Renamed docs/FOOLERY_ISSUE_TRACKER_INTEGRATION_API.md to docs/FOOLERY_AGENT_MEMORY_CONTRACT.md.\n- Rewrote it as a tutorial: contract interfaces in TypeScript code blocks, standardized error/capability sections, Beads implementation examples, test harness usage, and quality gate checklist.\n- Replaced plain file-path mentions with clickable GitHub code links throughout the contract doc.\n- Updated README branding to \"Agent Memory Engagement tool\" and linked the new contract doc in contribution guidance.\n- Quality gates run: bun run lint (warnings only, pre-existing), bunx tsc --noEmit, bun run test, bun run build.\n- Commit: 535f168 (pushed to origin/main).\n- Labels added: commit:535f168, stage:verification.",
+    "datetime": "2026-02-24T07:22:56Z",
+    "entry_id": "829e692b4a7e7bfa2d3d4bc97ed2f3bbfe65dbc02e6f888708b55f6534c89330",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

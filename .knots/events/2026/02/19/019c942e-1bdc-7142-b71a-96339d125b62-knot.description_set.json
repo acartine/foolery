@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1bdc-7142-b71a-96339d125b62",
+  "occurred_at": "2026-02-19T17:15:03Z",
+  "knot_id": "foolery-5jlw",
+  "type": "knot.description_set",
+  "data": {
+    "description": "apparently hitting shift-v wipes out the entire list of \"stage:verification\" beats, which then gets refreshed about 10 seconds later.  that is obviously wrong.\n\nwhat should happen is when you click shift-v, you should get some kind of UX/UI clue that you have initiated a verification, some kind of transition maybe, until the confirmation of the change has been received."
+  }
+}

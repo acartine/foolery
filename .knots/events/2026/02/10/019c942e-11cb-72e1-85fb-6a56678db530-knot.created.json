@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-11cb-72e1-85fb-6a56678db530",
+  "occurred_at": "2026-02-10T09:58:13Z",
+  "knot_id": "foolery-16e",
+  "type": "knot.created",
+  "data": {
+    "body": "Create server-side registry module at src/lib/registry.ts. Persists registered repo paths to ~/.config/foolery/registry.json. Functions: loadRegistry, saveRegistry, addRepo (validates .beads/ exists), removeRepo, listRepos. Uses node:fs/promises.",
+    "description": "Create server-side registry module at src/lib/registry.ts. Persists registered repo paths to ~/.config/foolery/registry.json. Functions: loadRegistry, saveRegistry, addRepo (validates .beads/ exists), removeRepo, listRepos. Uses node:fs/promises.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Registry persistence layer (src/lib/registry.ts)",
+    "workflow_id": "default"
+  }
+}

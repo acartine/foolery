@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-31ed-7b93-9489-806a92e5c8dd",
+  "occurred_at": "2026-02-13T16:37:05Z",
+  "knot_id": "foolery-i22",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  don't show wave tags, it's just noise.\n\ninstead show an uneditable (no deleting) 'orchestrated' tag."
+  }
+}

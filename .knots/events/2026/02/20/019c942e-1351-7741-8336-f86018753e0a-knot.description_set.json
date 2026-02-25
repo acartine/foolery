@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1351-7741-8336-f86018753e0a",
+  "occurred_at": "2026-02-20T09:26:34Z",
+  "knot_id": "foolery-1guy.3.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Route backend creation through one composition point used by CLI/services/jobs."
+  }
+}

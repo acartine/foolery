@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2722-7fd0-b635-bd0a183de689",
+  "occurred_at": "2026-02-13T08:50:25Z",
+  "knot_id": "foolery-cxc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "figure out how to handle up to 5 terminals simultaneously.  do research on similar problem sets in popular open source applications.  can be tabs, a splitpane with horizontal stacking, can be anything you think is a sharp design."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-210a-7de0-ae5d-ce9ede20ae31",
+  "occurred_at": "2026-02-16T21:47:16Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8zu2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "repository flow is a dead end",
+    "updated_at": "2026-02-16T21:47:16Z",
+    "workflow_id": "default"
+  }
+}

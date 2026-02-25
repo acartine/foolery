@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-17c9-7a72-9620-8ad8aea9feaf",
+  "occurred_at": "2026-02-17T08:57:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-31ho",
+    "state": "shipped",
+    "terminal": true,
+    "title": "install prompts for agent scan and register",
+    "updated_at": "2026-02-17T08:57:17Z",
+    "workflow_id": "default"
+  }
+}

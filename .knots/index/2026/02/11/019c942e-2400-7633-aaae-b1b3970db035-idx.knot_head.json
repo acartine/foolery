@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2400-7633-aaae-b1b3970db035",
+  "occurred_at": "2026-02-11T12:18:49Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-b1m",
+    "state": "shipped",
+    "terminal": true,
+    "title": "condense table padding/spacing/margin",
+    "updated_at": "2026-02-11T12:18:49Z",
+    "workflow_id": "default"
+  }
+}

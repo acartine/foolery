@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2e0f-7aa1-993e-e94f47c46be0",
+  "occurred_at": "2026-02-23T17:12:55Z",
+  "knot_id": "foolery-g3y1.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Preserve current Foolery UI/status behavior while adding Knots compatibility and guardrails.",
+    "description": "Preserve current Foolery UI/status behavior while adding Knots compatibility and guardrails.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "API/UI compatibility and guardrails",
+    "workflow_id": "default"
+  }
+}

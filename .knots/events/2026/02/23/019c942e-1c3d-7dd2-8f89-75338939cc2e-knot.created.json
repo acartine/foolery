@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1c3d-7dd2-8f89-75338939cc2e",
+  "occurred_at": "2026-02-23T07:20:53Z",
+  "knot_id": "foolery-6c7c",
+  "type": "knot.created",
+  "data": {
+    "body": "Clear persistent Dolt lock warnings in this clone and commit the corrected .beads hook scripts so git push uses the intended Dolt sync behavior.",
+    "description": "Clear persistent Dolt lock warnings in this clone and commit the corrected .beads hook scripts so git push uses the intended Dolt sync behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "Stabilize Beads lock health and commit Dolt hook fixes",
+    "workflow_id": "default"
+  }
+}

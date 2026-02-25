@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2c78-7df2-bc5d-a201385e0153",
+  "occurred_at": "2026-02-23T17:12:48Z",
+  "knot_id": "foolery-g3y1.2.3",
+  "type": "knot.type_set",
+  "data": {
+    "type": "feature"
+  }
+}

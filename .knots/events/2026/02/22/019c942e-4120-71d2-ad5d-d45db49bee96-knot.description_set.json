@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4120-71d2-ad5d-d45db49bee96",
+  "occurred_at": "2026-02-22T03:09:30Z",
+  "knot_id": "foolery-t7rn",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Current /beads page mounts all views and hides inactive ones via CSS, so inactive views still run queries (retakes/history/existing/final-cut). This causes unnecessary API load and lock contention. Expected: only active view should be mounted and allowed to query."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-38d7-7122-8df2-b80bf84cc588",
+  "occurred_at": "2026-02-25T08:19:38Z",
+  "knot_id": "foolery-nh8w",
+  "type": "knot.created",
+  "data": {
+    "body": "Mirror the ~/knots multi-channel workflow in foolery: scripts for installing from local source, switching between release and local channels, and related helper commands/documentation.",
+    "description": "Mirror the ~/knots multi-channel workflow in foolery: scripts for installing from local source, switching between release and local channels, and related helper commands/documentation.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "Add multi-channel local/release tooling",
+    "workflow_id": "default"
+  }
+}

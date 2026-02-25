@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-409e-7881-8cf5-b97a15a54ba0",
+  "occurred_at": "2026-02-16T16:36:48Z",
+  "knot_id": "foolery-sgue",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Agent management section.  Add / Remove Agents.  Scan for agents.  (codex / claude / gemeni-cli)\n\nselect agent for any of the agentic paths like Take!  Scene!  Direct, Breakdown, etc."
+  }
+}

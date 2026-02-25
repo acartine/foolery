@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4a84-77d2-9765-3759532891c7",
+  "occurred_at": "2026-02-20T07:28:27Z",
+  "knot_id": "foolery-xmg8.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Harden behavior with tests and operational documentation before broad enablement.\n\nNotes: This wave should complete with full quality gates and confidence for production enablement.\n\nAssigned tasks:\n- Add end-to-end tests for pass path\n- Add end-to-end tests for retry paths\n- Add race-condition/idempotency tests\n- Add regression tests for verification edit locks\n- Document operational runbook"
+  }
+}

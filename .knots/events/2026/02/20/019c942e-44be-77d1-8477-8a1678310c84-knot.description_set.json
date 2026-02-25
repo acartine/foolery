@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-44be-77d1-8477-8a1678310c84",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Show available OpenRouter models with searchable/filterable rows and clear columns for prompt/completion costs plus context limits."
+  }
+}

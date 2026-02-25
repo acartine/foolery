@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4316-71a3-83c1-9274c5f695df",
+  "occurred_at": "2026-02-22T08:51:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Scene freeman-vertigo: Settings Contract",
+    "updated_at": "2026-02-22T08:51:00Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3768-79a3-9ba9-1c7a55378e93",
+  "occurred_at": "2026-02-12T22:29:55Z",
+  "knot_id": "foolery-mqv.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Add an embedded read-only terminal panel (VS Code style, bottom of page) that spawns Claude CLI to execute work on a bead. Uses xterm.js for rendering, SSE for streaming process output, and in-memory session management on the server. Includes a 'Ship' button per bead row.",
+    "description": "Add an embedded read-only terminal panel (VS Code style, bottom of page) that spawns Claude CLI to execute work on a bead. Uses xterm.js for rendering, SSE for streaming process output, and in-memory session management on the server. Includes a 'Ship' button per bead row.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Ship Now - Embedded Terminal",
+    "workflow_id": "default"
+  }
+}

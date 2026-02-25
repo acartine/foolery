@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2ab5-7b30-8931-806cbfd99ff7",
+  "occurred_at": "2026-02-13T22:26:06Z",
+  "knot_id": "foolery-fon",
+  "type": "knot.created",
+  "data": {
+    "body": "hotkeys for toggling between list, orchestrate, and waves",
+    "description": "hotkeys for toggling between list, orchestrate, and waves",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift-] and shift-[ should toggle between views",
+    "workflow_id": "default"
+  }
+}

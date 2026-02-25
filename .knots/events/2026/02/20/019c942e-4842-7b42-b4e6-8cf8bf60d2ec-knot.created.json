@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4842-7b42-b4e6-8cf8bf60d2ec",
+  "occurred_at": "2026-02-20T07:28:21Z",
+  "knot_id": "foolery-xmg8.1.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Specify deterministic transitions for stage:verification, transition:verification, stage:retry, attempt:N, and close behavior, including idempotent re-entry rules.",
+    "description": "Specify deterministic transitions for stage:verification, transition:verification, stage:retry, attempt:N, and close behavior, including idempotent re-entry rules.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Define verification state machine and label invariants",
+    "workflow_id": "default"
+  }
+}

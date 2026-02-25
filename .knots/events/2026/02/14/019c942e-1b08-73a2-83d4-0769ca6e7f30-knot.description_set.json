@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1b08-73a2-83d4-0769ca6e7f30",
+  "occurred_at": "2026-02-14T18:02:30Z",
+  "knot_id": "foolery-517",
+  "type": "knot.description_set",
+  "data": {
+    "description": "move shift+h toggle this help to be to the right of Keyboard Shortcuts\n\nuse your ux skill to organize the shortcuts into two columns, trying to keep similar commands together."
+  }
+}

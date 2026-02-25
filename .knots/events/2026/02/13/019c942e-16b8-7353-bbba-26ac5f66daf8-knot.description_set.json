@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-16b8-7353-bbba-26ac5f66daf8",
+  "occurred_at": "2026-02-13T22:22:55Z",
+  "knot_id": "foolery-2eh",
+  "type": "knot.description_set",
+  "data": {
+    "description": "instead it's aligned with the parent title, which looks strange"
+  }
+}

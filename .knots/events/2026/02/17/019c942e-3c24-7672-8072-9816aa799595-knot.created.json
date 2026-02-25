@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3c24-7672-8072-9816aa799595",
+  "occurred_at": "2026-02-17T21:28:55Z",
+  "knot_id": "foolery-qqla.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Expose and wire a Breakdown action from the bead detail screen.\n\nNotes: Tasks can be split by UI rendering vs click behavior vs instrumentation, then merged behind the shared contract.\n\nAssigned tasks:\n- Add Breakdown action to bead detail screen\n- Wire Breakdown click to prompt generation and navigation\n- Track Breakdown invocation event",
+    "description": "Objective: Expose and wire a Breakdown action from the bead detail screen.\n\nNotes: Tasks can be split by UI rendering vs click behavior vs instrumentation, then merged behind the shared contract.\n\nAssigned tasks:\n- Add Breakdown action to bead detail screen\n- Wire Breakdown click to prompt generation and navigation\n- Track Breakdown invocation event",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene pacino-prestige: Bead Detail CTA",
+    "workflow_id": "default"
+  }
+}

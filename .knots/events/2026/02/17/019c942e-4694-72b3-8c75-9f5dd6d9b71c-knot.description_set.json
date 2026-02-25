@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4694-72b3-8c75-9f5dd6d9b71c",
+  "occurred_at": "2026-02-17T21:04:34Z",
+  "knot_id": "foolery-vw50",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The write_launcher() heredoc uses unquoted <<LAUNCHER, so bash expands color variables (GREEN, RED, etc.) during heredoc generation. Since these are not defined in install.sh scope, set -u causes 'unbound variable' error during 'foolery update'. Fix: escape all color variable references with backslash-dollar."
+  }
+}

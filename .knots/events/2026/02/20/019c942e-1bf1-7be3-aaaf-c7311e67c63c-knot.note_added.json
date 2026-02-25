@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1bf1-7be3-aaaf-c7311e67c63c",
+  "occurred_at": "2026-02-20T05:58:59Z",
+  "knot_id": "foolery-5jlw",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "this appeared to be fixed in d4347c1\n\nnow it appears there has been a regression.  investigate, fix, harden.",
+    "datetime": "2026-02-20T05:58:59Z",
+    "entry_id": "df3465a1ecbe82a317550b5652fd5ac9f747b8118b84013bbd05680f1f84acc2",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

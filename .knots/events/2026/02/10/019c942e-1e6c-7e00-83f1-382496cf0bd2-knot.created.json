@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1e6c-7e00-83f1-382496cf0bd2",
+  "occurred_at": "2026-02-10T16:22:09Z",
+  "knot_id": "foolery-76t",
+  "type": "knot.created",
+  "data": {
+    "body": "remove the updated column and instead show it directly below the title.  also show the labels next to the updated value with a light background color.  have a pallette of 10 light background colors and try to assign each unique label in the db one of those colors.",
+    "description": "remove the updated column and instead show it directly below the title.  also show the labels next to the updated value with a light background color.  have a pallette of 10 light background colors and try to assign each unique label in the db one of those colors.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "sub title info on /beads",
+    "workflow_id": "default"
+  }
+}

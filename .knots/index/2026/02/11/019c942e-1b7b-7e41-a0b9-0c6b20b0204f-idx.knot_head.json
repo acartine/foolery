@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1b7b-7e41-a0b9-0c6b20b0204f",
+  "occurred_at": "2026-02-11T12:22:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-56x",
+    "state": "shipped",
+    "terminal": true,
+    "title": "when create dialogue is open, up and down arrows still have focus on the underlying screen",
+    "updated_at": "2026-02-11T12:22:13Z",
+    "workflow_id": "default"
+  }
+}

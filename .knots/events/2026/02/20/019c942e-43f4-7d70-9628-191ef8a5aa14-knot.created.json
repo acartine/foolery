@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-43f4-7d70-9628-191ef8a5aa14",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Expose an API route (for example `/api/settings/openrouter/models`) that reads configured key, fetches models, caches results, and returns normalized costs.",
+    "description": "Expose an API route (for example `/api/settings/openrouter/models`) that reads configured key, fetches models, caches results, and returns normalized costs.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add cached models endpoint for Settings UI",
+    "workflow_id": "default"
+  }
+}

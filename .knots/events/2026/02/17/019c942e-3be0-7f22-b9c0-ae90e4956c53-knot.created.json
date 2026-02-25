@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3be0-7f22-b9c0-ae90e4956c53",
+  "occurred_at": "2026-02-17T21:28:53Z",
+  "knot_id": "foolery-qqla.1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Introduce a typed route state/query schema for passing prompt text and an autorun flag into the Direct page, with validation/defaulting behavior.",
+    "description": "Introduce a typed route state/query schema for passing prompt text and an autorun flag into the Direct page, with validation/defaulting behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Define navigation payload contract for Direct prefill",
+    "workflow_id": "default"
+  }
+}

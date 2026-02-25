@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4563-7e52-b20c-9f61d5f5d184",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update orchestration session startup to dispatch to CLI or OpenRouter executor based on settings and preserve current apply behavior."
+  }
+}

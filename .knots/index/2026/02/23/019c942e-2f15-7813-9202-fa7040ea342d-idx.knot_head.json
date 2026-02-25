@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2f15-7813-9202-fa7040ea342d",
+  "occurred_at": "2026-02-23T17:12:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.6.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add integration tests for auto-routing and mixed trackers",
+    "updated_at": "2026-02-23T17:12:59Z",
+    "workflow_id": "default"
+  }
+}

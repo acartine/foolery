@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3024-7ba0-9d21-7d1161a4d4e5",
+  "occurred_at": "2026-02-17T15:25:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-gj7q",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Show agent info in terminal and Direct view",
+    "updated_at": "2026-02-17T15:25:02Z",
+    "workflow_id": "default"
+  }
+}

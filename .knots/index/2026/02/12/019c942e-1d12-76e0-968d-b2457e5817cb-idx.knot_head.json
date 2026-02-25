@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1d12-76e0-968d-b2457e5817cb",
+  "occurred_at": "2026-02-12T12:03:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6pi",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Repo switcher and page integration",
+    "updated_at": "2026-02-12T12:03:15Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3b94-7b21-a673-f3a4434c0718",
+  "occurred_at": "2026-02-22T08:50:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene depp-noir: bead detail screen should show 'Breakdown'",
+    "updated_at": "2026-02-22T08:50:55Z",
+    "workflow_id": "default"
+  }
+}

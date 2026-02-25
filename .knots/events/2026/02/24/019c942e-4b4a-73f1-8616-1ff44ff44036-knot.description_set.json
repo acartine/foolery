@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b4a-73f1-8616-1ff44ff44036",
+  "occurred_at": "2026-02-24T08:34:03Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  tell us what the bead id is so we can click on it and shift focus to that bead in the list"
+  }
+}

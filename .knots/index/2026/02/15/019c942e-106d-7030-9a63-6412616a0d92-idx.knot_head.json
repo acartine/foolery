@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-106d-7030-9a63-6412616a0d92",
+  "occurred_at": "2026-02-15T05:32:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0gg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Metaphor theming for orchestration view",
+    "updated_at": "2026-02-15T05:32:23Z",
+    "workflow_id": "default"
+  }
+}

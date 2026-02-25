@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-10e8-7542-9cfa-ed356f0b8cd5",
+  "occurred_at": "2026-02-15T07:21:01Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0j4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate and fix bead action latency (~10s)",
+    "updated_at": "2026-02-15T07:21:01Z",
+    "workflow_id": "default"
+  }
+}

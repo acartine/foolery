@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3d54-7cd3-b2b7-e44f1bd8ec9b",
+  "occurred_at": "2026-02-17T21:28:59Z",
+  "knot_id": "foolery-qqla.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Verify the full user journey and harden regressions.\n\nNotes: Final wave focuses on confidence and rollout readiness; no new core behavior introduced.\n\nAssigned tasks:\n- Add end-to-end test for bead-detail-to-Direct auto-run journey\n- Add regression tests for non-autorun Direct usage\n- Update user-facing/help docs for Breakdown action"
+  }
+}

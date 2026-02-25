@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1e3f-78a3-85c9-077b4c126245",
+  "occurred_at": "2026-02-13T10:24:10Z",
+  "knot_id": "foolery-75n",
+  "type": "knot.created",
+  "data": {
+    "body": "shift o should launch a lightbox with a notes management UI. you can reorder, delete, create new, etc.\n\nif the ticket is in stage:verification (the label), the note management ui should offer a \"Reject Work?\" button that works similarly to thumbs down.",
+    "description": "shift o should launch a lightbox with a notes management UI. you can reorder, delete, create new, etc.\n\nif the ticket is in stage:verification (the label), the note management ui should offer a \"Reject Work?\" button that works similarly to thumbs down.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift o hotkey to create notes",
+    "workflow_id": "default"
+  }
+}

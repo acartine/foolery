@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3815-75b0-999d-45285b809bfd",
+  "occurred_at": "2026-02-13T15:44:21Z",
+  "knot_id": "foolery-mqv.5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## UX Reference Notes\n\n### References (open source)\n- Argo Workflows UI features: https://argo-workflows.readthedocs.io/en/latest/ui-features/\n- Apache Airflow UI overview: https://airflow.apache.org/docs/apache-airflow/stable/ui.html\n- GitLab issue boards: https://docs.gitlab.com/user/project/issue_board/\n\n### Design decisions for Foolery Orchestration\n- Use **pipeline lanes (waves)** as the primary structure, with each lane owning a local \"Ship Next In Wave\" action.\n- Add a **global recommendation rail** (\"Recommended Next\" + \"Ship Next\") to reduce decision latency.\n- Surface **state at a glance** via top summary cards (runnable, in progress, blocked, cycles).\n- Encode readiness directly on cards (Ready / In Progress / Blocked / Verification / Cycle) so users do not infer state from raw status + deps.\n- Keep interactions deterministic: recommendation ordering by `wave -> priority -> id`.\n- Respect execution safety: one active ship at a time; all other ship actions disabled while running.\n\n### Interaction rules\n- Active ship card shows `Shipping...` with red terminate control.\n- Non-active cards are disabled while a ship is running.\n- Unschedulable items live in a dedicated cycle section.",
+    "datetime": "2026-02-13T15:44:21Z",
+    "entry_id": "dbd8f7b78315d518e91927ec10576304d0adc9290af0af944a081c810140d040",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

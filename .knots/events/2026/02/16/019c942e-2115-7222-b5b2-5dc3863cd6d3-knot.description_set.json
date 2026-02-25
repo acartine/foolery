@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2115-7222-b5b2-5dc3863cd6d3",
+  "occurred_at": "2026-02-16T16:40:33Z",
+  "knot_id": "foolery-988k",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ready view should not show stage:verification tagged items."
+  }
+}

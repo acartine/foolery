@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-252f-7ed2-973f-25e6ed57c6d3",
+  "occurred_at": "2026-02-17T11:22:58Z",
+  "knot_id": "foolery-bykz",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  let's just always know how many items are waiting to be verified.",
+    "description": "as title says.  let's just always know how many items are waiting to be verified.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "final cut badge should not clear, should always show items waiting for verification",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4625-7150-a148-51dd1f8c54c3",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.5.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Document OpenRouter setup and pricing behavior",
+    "updated_at": "2026-02-20T05:23:56Z",
+    "workflow_id": "default"
+  }
+}

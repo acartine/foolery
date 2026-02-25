@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-17cf-74a1-8e4f-bb9e9b4ba1cb",
+  "occurred_at": "2026-02-16T19:49:03Z",
+  "knot_id": "foolery-321t",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, when you run a scan, if the path is long, the agent overruns the right side of the container.   to fix that we should truncate enough characters from the beginning of the path with '...' and a mouseover shows the full path.",
+    "description": "as title says, when you run a scan, if the path is long, the agent overruns the right side of the container.   to fix that we should truncate enough characters from the beginning of the path with '...' and a mouseover shows the full path.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "settings scan results overflows past right side of container",
+    "workflow_id": "default"
+  }
+}

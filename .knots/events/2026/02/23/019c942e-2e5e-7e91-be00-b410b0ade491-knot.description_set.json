@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2e5e-7e91-be00-b410b0ade491",
+  "occurred_at": "2026-02-23T17:12:56Z",
+  "knot_id": "foolery-g3y1.5.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ensure unsupported backend operations return explicit non-500 API responses."
+  }
+}

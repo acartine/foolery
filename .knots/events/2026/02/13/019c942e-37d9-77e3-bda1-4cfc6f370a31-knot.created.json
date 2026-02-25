@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-37d9-77e3-bda1-4cfc6f370a31",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.2.6",
+  "type": "knot.created",
+  "data": {
+    "body": "Redesign Wave Planner into an actionable orchestration surface inspired by mature workflow UIs (pipeline lanes + execution summary). Include: summary stats, ready-now list, recommended next bead, and one-click Ship Next actions with clear disabled reasons when not runnable.",
+    "description": "Redesign Wave Planner into an actionable orchestration surface inspired by mature workflow UIs (pipeline lanes + execution summary). Include: summary stats, ready-now list, recommended next bead, and one-click Ship Next actions with clear disabled reasons when not runnable.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Orchestration v2 command center (Now/Next/Later + Ship Next)",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2794-7f80-b4fd-160410f6141a",
+  "occurred_at": "2026-02-13T13:44:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d2l",
+    "state": "shipped",
+    "terminal": true,
+    "title": "lots of garbage in top light green component after wave building finishes",
+    "updated_at": "2026-02-13T13:44:23Z",
+    "workflow_id": "default"
+  }
+}

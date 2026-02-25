@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-4665-7ab3-9e42-b6a8be3e4866",
+  "occurred_at": "2026-02-12T11:45:15Z",
+  "knot_id": "foolery-vje",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "you can cl",
+    "datetime": "2026-02-12T11:45:15Z",
+    "entry_id": "eec4c19f34aa2cec60ba5a4e87490d1be4698d0460be8741a87772e4854224f7",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

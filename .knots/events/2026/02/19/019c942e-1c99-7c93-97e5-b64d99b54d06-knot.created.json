@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1c99-7c93-97e5-b64d99b54d06",
+  "occurred_at": "2026-02-19T05:27:35Z",
+  "knot_id": "foolery-6h4u",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.",
+    "description": "as title says.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "get ci tests running in remote workflow",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4161-76a2-87a2-3a862a95f214",
+  "occurred_at": "2026-02-15T06:12:14Z",
+  "knot_id": "foolery-tgz",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, super fucking annoying.  i hit shift h, keyboard shortcuts are gone, great.\n\nthen i select something from one of the filter pulldowns and it shows up again.  same with refresh.\n\nfuckin remember that you hid the shortcuts, fool",
+    "description": "as title says, super fucking annoying.  i hit shift h, keyboard shortcuts are gone, great.\n\nthen i select something from one of the filter pulldowns and it shows up again.  same with refresh.\n\nfuckin remember that you hid the shortcuts, fool",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "changing filter shows keyboard shortcuts even if user explicitly turned them off",
+    "workflow_id": "default"
+  }
+}

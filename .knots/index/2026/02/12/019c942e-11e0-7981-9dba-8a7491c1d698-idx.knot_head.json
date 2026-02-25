@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-11e0-7981-9dba-8a7491c1d698",
+  "occurred_at": "2026-02-12T12:03:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-16e",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Registry persistence layer (src/lib/registry.ts)",
+    "updated_at": "2026-02-12T12:03:15Z",
+    "workflow_id": "default"
+  }
+}

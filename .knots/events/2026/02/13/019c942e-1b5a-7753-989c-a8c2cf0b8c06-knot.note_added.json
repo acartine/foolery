@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1b5a-7753-989c-a8c2cf0b8c06",
+  "occurred_at": "2026-02-13T22:36:19Z",
+  "knot_id": "foolery-563",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "looks like we are creating epics, which is fine, but the relationships are not represented in list view.  so we may need a more sophisticated relationship unpacking logic/routine.\n\nwe should also be visualizing those relationships in the bottom most component of the orchestration page.",
+    "datetime": "2026-02-13T22:36:19Z",
+    "entry_id": "0bd6b8af64b613d93196c82b958a7cf77bea42ba68c211709032b4de47d71d7a",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

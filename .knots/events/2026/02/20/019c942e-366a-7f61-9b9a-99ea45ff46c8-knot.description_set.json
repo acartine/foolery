@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-366a-7f61-9b9a-99ea45ff46c8",
+  "occurred_at": "2026-02-20T12:53:10Z",
+  "knot_id": "foolery-lodw",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we are seeing dozens of these calls:\n\n GET /api/beads/foolery-vdk0.5/deps?_repo=%2FUsers%2Fcartine%2Ffoolery 200 in 713ms (compile: 1494µs, render: 711ms)\n GET /api/beads/foolery-xmg8/deps?_repo=%2FUsers%2Fcartine%2Ffoolery 200 in 714ms (compile: 669µs, render: 714ms)\n GET /api/beads/foolery-xmg8.1/deps?_repo=%2FUsers%2Fcartine%2Ffoolery 200 in 716ms (compile: 924µs, render: 715ms)\n GET /api/beads/foolery-xmg8.2/deps?_repo=%2FUsers%2Fcartine%2Ffoolery 200 in 718ms (compile: 1331µs, render: 716ms)\n GET /api/beads/foolery-xmg8.3/deps?_repo=%2FUsers%2Fcartine%2Ffoolery 200 in 709ms (compile: 723µs, render: 708ms)\n GET /api/beads/foolery-xmg8.4/deps?_repo=%2FUsers%2Fcartine%2Ffoolery\n\nand many, many more with a single issue per get call.\n\ncan we not have a batch call and limit it only to beats that are actually visible in the last - child beats are more typically folded/hidden.  we can trigger a full request on page load and a full request on an unfold action.  but this should really be one batch call."
+  }
+}

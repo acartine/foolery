@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-40fa-73c2-914a-edee030bab87",
+  "occurred_at": "2026-02-22T11:49:57Z",
+  "knot_id": "foolery-sz41",
+  "type": "knot.created",
+  "data": {
+    "body": "Navigation focus vs selection, infinite scroll with sliding window, cache eviction, title loading for all visible beats, headers with metadata, and jump function fix",
+    "description": "Navigation focus vs selection, infinite scroll with sliding window, cache eviction, title loading for all visible beats, headers with metadata, and jump function fix",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Agent History View UX improvements",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-273f-7ce1-bb33-c9daf217a7da",
+  "occurred_at": "2026-02-16T16:46:01Z",
+  "knot_id": "foolery-cxcv",
+  "type": "knot.description_set",
+  "data": {
+    "description": "ask user if they want to mount existing local repo clones (you probalby do)\nthen ask if they want to search a specific directory or just manually specify\nif specific directory use user home as default but allow override\nand search user directory up to 2 levels deep for repos with beads\nif manually make sure to verify paths as valid paths.\nhandle case wher repos are already mounted/registered, \"the following clones are already mounted ...[list] ..., are there others? [y/N]"
+  }
+}

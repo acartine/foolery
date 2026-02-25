@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2b68-75f3-8618-a04133b4aae8",
+  "occurred_at": "2026-02-24T07:23:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Knots implementation for Foolery Agent Memory API",
+    "updated_at": "2026-02-24T07:23:02Z",
+    "workflow_id": "default"
+  }
+}

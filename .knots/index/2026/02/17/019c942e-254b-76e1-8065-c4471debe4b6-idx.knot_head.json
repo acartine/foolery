@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-254b-76e1-8065-c4471debe4b6",
+  "occurred_at": "2026-02-17T15:23:07Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bykz",
+    "state": "shipped",
+    "terminal": true,
+    "title": "final cut badge should not clear, should always show items waiting for verification",
+    "updated_at": "2026-02-17T15:23:07Z",
+    "workflow_id": "default"
+  }
+}

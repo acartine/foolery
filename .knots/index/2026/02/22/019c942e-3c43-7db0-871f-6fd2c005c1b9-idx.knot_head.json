@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3c43-7db0-871f-6fd2c005c1b9",
+  "occurred_at": "2026-02-22T08:50:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene pacino-prestige: Bead Detail CTA",
+    "updated_at": "2026-02-22T08:50:56Z",
+    "workflow_id": "default"
+  }
+}

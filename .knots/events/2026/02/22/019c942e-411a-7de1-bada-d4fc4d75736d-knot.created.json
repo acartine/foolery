@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-411a-7de1-bada-d4fc4d75736d",
+  "occurred_at": "2026-02-22T03:09:30Z",
+  "knot_id": "foolery-t7rn",
+  "type": "knot.created",
+  "data": {
+    "body": "Current /beads page mounts all views and hides inactive ones via CSS, so inactive views still run queries (retakes/history/existing/final-cut). This causes unnecessary API load and lock contention. Expected: only active view should be mounted and allowed to query.",
+    "description": "Current /beads page mounts all views and hides inactive ones via CSS, so inactive views still run queries (retakes/history/existing/final-cut). This causes unnecessary API load and lock contention. Expected: only active view should be mounted and allowed to query.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Mount only active /beads view to stop hidden polling",
+    "workflow_id": "default"
+  }
+}

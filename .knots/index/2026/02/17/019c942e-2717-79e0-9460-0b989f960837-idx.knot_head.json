@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2717-79e0-9460-0b989f960837",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cvg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "streamline repo table view (/beads)",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

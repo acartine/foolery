@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2e99-71c2-b7fc-0910f406ef05",
+  "occurred_at": "2026-02-23T17:12:57Z",
+  "knot_id": "foolery-g3y1.5.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Validate mixed-repo All Repositories behavior with both Beads and Knots trackers.",
+    "description": "Validate mixed-repo All Repositories behavior with both Beads and Knots trackers.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Validate mixed All Repositories behavior",
+    "workflow_id": "default"
+  }
+}

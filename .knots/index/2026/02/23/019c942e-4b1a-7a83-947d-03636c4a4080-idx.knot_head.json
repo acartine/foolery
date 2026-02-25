@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4b1a-7a83-947d-03636c4a4080",
+  "occurred_at": "2026-02-23T12:40:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.4.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add regression tests for verification edit locks",
+    "updated_at": "2026-02-23T12:40:08Z",
+    "workflow_id": "default"
+  }
+}

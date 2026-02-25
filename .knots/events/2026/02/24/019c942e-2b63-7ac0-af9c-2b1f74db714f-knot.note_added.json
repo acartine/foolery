@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2b63-7ac0-af9c-2b1f74db714f",
+  "occurred_at": "2026-02-24T07:23:02Z",
+  "knot_id": "foolery-g3y1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff 2026-02-23T17:15:17Z: Implemented compatibility-first Knots support (auto routing, Knots backend, tracker-aware prompts, API capability-aware statuses), added coverage and docs, and created hierarchical g3y1 child beads plus follow-up epic foolery-knots-native. Commit: 3922a76.\nRebase update 2026-02-23T17:17:29Z: commit label updated to 1f02ab1 after rebasing onto origin/main.\nPush complete 2026-02-23T17:24:08Z: commit 1f02ab1 rebased and pushed to origin/main.",
+    "datetime": "2026-02-24T07:23:02Z",
+    "entry_id": "0bcb1739ca6f37c047fdc7cf6a3f11ecdfda84bf7fd8c4d5e6e7c97a04912c7e",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

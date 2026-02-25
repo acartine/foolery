@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2baf-7a22-a361-3752e6b1cd3a",
+  "occurred_at": "2026-02-23T17:12:44Z",
+  "knot_id": "foolery-g3y1.1.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Capture knots fixture corpus (new/update/ls/show/edge/errors) and lock parser behavior against it."
+  }
+}

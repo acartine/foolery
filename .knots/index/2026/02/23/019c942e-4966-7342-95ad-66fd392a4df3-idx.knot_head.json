@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4966-7342-95ad-66fd392a4df3",
+  "occurred_at": "2026-02-23T12:40:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Apply verifier outcomes to bead state",
+    "updated_at": "2026-02-23T12:40:04Z",
+    "workflow_id": "default"
+  }
+}

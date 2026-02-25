@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1b65-7562-95b4-890e80dd6e15",
+  "occurred_at": "2026-02-11T11:59:36Z",
+  "knot_id": "foolery-56x",
+  "type": "knot.created",
+  "data": {
+    "body": "when you create a dialogue and are typing in the Description textarea, for example, if you use the up and down arrow keys it does not control the textarea, it cycles through the table on the underlying page (/beads)",
+    "description": "when you create a dialogue and are typing in the Description textarea, for example, if you use the up and down arrow keys it does not control the textarea, it cycles through the table on the underlying page (/beads)",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "when create dialogue is open, up and down arrows still have focus on the underlying screen",
+    "workflow_id": "default"
+  }
+}

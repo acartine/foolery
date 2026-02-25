@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-466a-7093-acf6-00899524acc4",
+  "occurred_at": "2026-02-12T11:45:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vje",
+    "state": "shipped",
+    "terminal": true,
+    "title": "the alignment of the /beads page is totally broken",
+    "updated_at": "2026-02-12T11:45:15Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4245-7843-ab6c-5b51ca6a293b",
+  "occurred_at": "2026-02-10T16:29:26Z",
+  "knot_id": "foolery-ue5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "on the table view /bead and in the detail page, you should be able to click on the bead id to copy it.  you should get a notification banner that the id was copied, along with the id.  do not copy the full id value, just the id part (no project prefix)"
+  }
+}

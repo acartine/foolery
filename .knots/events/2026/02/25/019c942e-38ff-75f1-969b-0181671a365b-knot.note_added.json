@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-38ff-75f1-969b-0181671a365b",
+  "occurred_at": "2026-02-25T08:26:07Z",
+  "knot_id": "foolery-nh8w",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule: added release/local channel tooling via scripts/release/channel-install.sh and scripts/release/channel-use.sh; local channel builds from current checkout and installs via local artifact URL; README and docs/DEVELOPING updated with usage/env vars. Validation: isolated /tmp E2E install + channel switch passed; quality gates passed (bun run lint [warnings only], bunx tsc --noEmit, bun run test, bun run build). Commit: a97b761.",
+    "datetime": "2026-02-25T08:26:07Z",
+    "entry_id": "5cbe8c1481b10ce3f8889e6810fc248a60714b2c5c91057cd12d51db69629589",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

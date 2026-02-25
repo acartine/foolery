@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1192-7403-8474-79719ad79ee8",
+  "occurred_at": "2026-02-22T03:16:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-10bd",
+    "state": "shipped",
+    "terminal": true,
+    "title": "spacebar selects active row in beats view",
+    "updated_at": "2026-02-22T03:16:50Z",
+    "workflow_id": "default"
+  }
+}

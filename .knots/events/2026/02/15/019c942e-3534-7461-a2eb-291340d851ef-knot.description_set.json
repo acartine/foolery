@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3534-7461-a2eb-291340d851ef",
+  "occurred_at": "2026-02-15T16:26:53Z",
+  "knot_id": "foolery-kxwv",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, corruption in \"selected beat\" in final cut view.\n\nmy guess is that shift-o is applied to the selected bin the Beats view and not the Final Cut view.\n\nyou might want to make sure they have separate state.  you could try sharing state but that might be a minefield with filters, where you run into a situation where the global selected beat is not visible on the list page."
+  }
+}

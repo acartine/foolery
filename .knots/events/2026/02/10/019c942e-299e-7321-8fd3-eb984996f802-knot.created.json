@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-299e-7321-8fd3-eb984996f802",
+  "occurred_at": "2026-02-10T16:28:21Z",
+  "knot_id": "foolery-epa",
+  "type": "knot.created",
+  "data": {
+    "body": "if bead has stage:verification, show a green LGTM button in the column to the left of the status value.  show a red thumbs down button to the right of the status value.\n\nif the green button is pressed, mark the bead as closed.\nif the red button is pressed, mark the bead as open.\n\nin both cases, remove the stage:verification label.",
+    "description": "if bead has stage:verification, show a green LGTM button in the column to the left of the status value.  show a red thumbs down button to the right of the status value.\n\nif the green button is pressed, mark the bead as closed.\nif the red button is pressed, mark the bead as open.\n\nin both cases, remove the stage:verification label.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "verify / reject",
+    "workflow_id": "default"
+  }
+}

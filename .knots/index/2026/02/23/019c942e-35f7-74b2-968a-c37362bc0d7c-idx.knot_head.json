@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-35f7-74b2-968a-c37362bc0d7c",
+  "occurred_at": "2026-02-23T14:35:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-l1pc",
+    "state": "shipped",
+    "terminal": true,
+    "title": "show version in a cool way in title area",
+    "updated_at": "2026-02-23T14:35:59Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-249c-77c2-8d07-06e9249296e1",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bjv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "visual consistency during bulk edit",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-378d-7aa1-848d-5eba7eb35f26",
+  "occurred_at": "2026-02-12T22:29:58Z",
+  "knot_id": "foolery-mqv.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Algorithmically group open beads into parallel execution waves based on dependency graph. Uses topological sort (Kahn's algorithm) to assign wave levels. Gate-type beads serve as human QA checkpoints between waves. Displayed in a dialog modal with swim-lane visualization."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4a5a-7d81-9868-c011d2e080af",
+  "occurred_at": "2026-02-23T12:40:06Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Disable editing interactions during verification",
+    "updated_at": "2026-02-23T12:40:06Z",
+    "workflow_id": "default"
+  }
+}

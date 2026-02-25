@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4c48-7bc1-8012-617b57c5af97",
+  "occurred_at": "2026-02-20T11:27:06Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-yn6q",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Find out why Breakdown/Direct actions are creating molecules and  fix it",
+    "updated_at": "2026-02-20T11:27:06Z",
+    "workflow_id": "default"
+  }
+}

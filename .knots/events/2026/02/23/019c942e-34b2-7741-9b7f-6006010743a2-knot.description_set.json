@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-34b2-7741-9b7f-6006010743a2",
+  "occurred_at": "2026-02-23T17:14:19Z",
+  "knot_id": "foolery-knots-native",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Post-g3y1 follow-up epic to move from compatibility mode to Knots-native workflow semantics, API contracts, and UX."
+  }
+}

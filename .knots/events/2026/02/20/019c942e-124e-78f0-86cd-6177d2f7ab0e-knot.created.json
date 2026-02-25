@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-124e-78f0-86cd-6177d2f7ab0e",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.1.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Document known breakages, retries, and inconsistency cases that the abstraction must account for.",
+    "description": "Document known breakages, retries, and inconsistency cases that the abstraction must account for.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Capture current failure modes and edge cases",
+    "workflow_id": "default"
+  }
+}

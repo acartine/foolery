@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4584-7093-a684-2054bbe4f867",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update breakdown session startup to dispatch to CLI or OpenRouter executor while preserving plan extraction and apply semantics."
+  }
+}

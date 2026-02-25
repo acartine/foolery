@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-42e3-7393-a752-e8ca12d8605b",
+  "occurred_at": "2026-02-20T05:20:30Z",
+  "knot_id": "foolery-vdk0",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  we should support openrouter.  this means implementing their api, having settings for the api key, showing the available models and their costs."
+  }
+}

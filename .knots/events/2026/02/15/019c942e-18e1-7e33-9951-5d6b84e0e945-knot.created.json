@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-18e1-7e33-9951-5d6b84e0e945",
+  "occurred_at": "2026-02-15T09:23:27Z",
+  "knot_id": "foolery-3ji.4.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement installer and launcher for a real app-like local experience. Installer must place a 'foolery' CLI on PATH and wire runtime paths needed to run Foolery without cloning or manually starting dev mode.",
+    "description": "Implement installer and launcher for a real app-like local experience. Installer must place a 'foolery' CLI on PATH and wire runtime paths needed to run Foolery without cloning or manually starting dev mode.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Implement GitHub install script and local launcher",
+    "workflow_id": "default"
+  }
+}

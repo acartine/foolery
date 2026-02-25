@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4990-7033-8bb8-5fc9a46f21af",
+  "occurred_at": "2026-02-20T07:28:24Z",
+  "knot_id": "foolery-xmg8.2.6",
+  "type": "knot.created",
+  "data": {
+    "body": "Record workflow milestones and failures for diagnosability (queued, missing commit, verifier started, retry, closed).",
+    "description": "Record workflow milestones and failures for diagnosability (queued, missing commit, verifier started, retry, closed).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Persist verification lifecycle events",
+    "workflow_id": "default"
+  }
+}

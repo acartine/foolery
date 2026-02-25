@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-172f-7fc3-ac8e-7a09e4567d30",
+  "occurred_at": "2026-02-23T16:40:20Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2pks",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings:  claude opus not showing version, should show actual version",
+    "updated_at": "2026-02-23T16:40:20Z",
+    "workflow_id": "default"
+  }
+}

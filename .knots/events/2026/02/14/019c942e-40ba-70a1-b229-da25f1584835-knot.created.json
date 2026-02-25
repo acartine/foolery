@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-40ba-70a1-b229-da25f1584835",
+  "occurred_at": "2026-02-14T09:15:13Z",
+  "knot_id": "foolery-shg",
+  "type": "knot.created",
+  "data": {
+    "body": "On orchestration page: move planner summary to just under user textarea form. Swap wave diagram with terminal. Cut terminal height in half and use remaining half to show 'Applied section' when beads are created.",
+    "description": "On orchestration page: move planner summary to just under user textarea form. Swap wave diagram with terminal. Cut terminal height in half and use remaining half to show 'Applied section' when beads are created.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "rearrange orchestration page layout for summary, terminal, wave diagram, and applied section",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3ab3-7e62-ba6b-cf226d43f781",
+  "occurred_at": "2026-02-14T18:42:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-pil",
+    "state": "shipped",
+    "terminal": true,
+    "title": "regroom orchestration",
+    "updated_at": "2026-02-14T18:42:45Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3116-7353-bab5-ceaad0fb5da3",
+  "occurred_at": "2026-02-17T15:19:56Z",
+  "knot_id": "foolery-hdtj",
+  "type": "knot.created",
+  "data": {
+    "body": "it's just json diarrhea\n\ninstead we should have a nicely color coded, formatted output for each check, with a green checkbox for good, red checkbox for bad.\n\nfor itemized problems like corrupt beats - don't list all of them, just show how many.",
+    "description": "it's just json diarrhea\n\ninstead we should have a nicely color coded, formatted output for each check, with a green checkbox for good, red checkbox for bad.\n\nfor itemized problems like corrupt beats - don't list all of them, just show how many.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "make foolery doctor output more pleasant",
+    "workflow_id": "default"
+  }
+}

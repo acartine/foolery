@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-35b7-7c72-827b-3f6551181db0",
+  "occurred_at": "2026-02-16T22:03:49Z",
+  "knot_id": "foolery-l15m",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove bash 4+ features (declare -A, ${var,,}) from setup.sh and agent-wizard.sh for macOS compatibility",
+    "description": "Remove bash 4+ features (declare -A, ${var,,}) from setup.sh and agent-wizard.sh for macOS compatibility",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "fix: bash 3.2 compatibility for foolery setup",
+    "workflow_id": "default"
+  }
+}

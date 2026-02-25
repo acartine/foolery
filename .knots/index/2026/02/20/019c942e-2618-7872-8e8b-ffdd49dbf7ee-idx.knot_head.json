@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2618-7872-8e8b-ffdd49dbf7ee",
+  "occurred_at": "2026-02-20T10:40:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cf81",
+    "state": "shipped",
+    "terminal": true,
+    "title": "by default, parent beats should be folded in all views",
+    "updated_at": "2026-02-20T10:40:59Z",
+    "workflow_id": "default"
+  }
+}

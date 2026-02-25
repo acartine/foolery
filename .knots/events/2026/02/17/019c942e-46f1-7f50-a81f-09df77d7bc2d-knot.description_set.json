@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-46f1-7f50-a81f-09df77d7bc2d",
+  "occurred_at": "2026-02-17T16:32:07Z",
+  "knot_id": "foolery-w6b8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the 'v'/> toggle should be in front of the parent, not the child.  you should be able to click on it to fold or unfold children."
+  }
+}

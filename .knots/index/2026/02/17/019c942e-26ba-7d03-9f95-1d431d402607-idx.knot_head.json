@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-26ba-7d03-9f95-1d431d402607",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cpcu",
+    "state": "shipped",
+    "terminal": true,
+    "title": "when auto-refershing, if dolt is locked by another client, list screen shows big red error message",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

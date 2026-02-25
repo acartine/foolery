@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3320-70e0-b046-3911e2452b08",
+  "occurred_at": "2026-02-14T18:43:05Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-j4z",
+    "state": "shipped",
+    "terminal": true,
+    "title": "update keyboard shortcuts helper",
+    "updated_at": "2026-02-14T18:43:05Z",
+    "workflow_id": "default"
+  }
+}

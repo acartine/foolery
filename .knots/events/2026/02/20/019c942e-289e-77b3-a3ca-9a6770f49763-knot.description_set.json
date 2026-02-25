@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-289e-77b3-a3ca-9a6770f49763",
+  "occurred_at": "2026-02-20T11:45:02Z",
+  "knot_id": "foolery-dw44",
+  "type": "knot.description_set",
+  "data": {
+    "description": "don't count child beats toward paging limit, it's too confusing.  only the top level parent beat counts"
+  }
+}

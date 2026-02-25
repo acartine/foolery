@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2659-7972-a784-105c7008c624",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cinw",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Stop stale bead-detail 404 polling when bead param is invalid",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

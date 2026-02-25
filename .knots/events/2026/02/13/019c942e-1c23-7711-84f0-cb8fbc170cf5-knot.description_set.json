@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1c23-7711-84f0-cb8fbc170cf5",
+  "occurred_at": "2026-02-13T13:33:09Z",
+  "knot_id": "foolery-5ws",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ready beads are those marked In Progress or Open"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4c0a-7093-a24a-7c6c545d2c50",
+  "occurred_at": "2026-02-16T18:36:32Z",
+  "knot_id": "foolery-ydl1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you should be able to run foolery doctor to identify:\n\nproblematic agent types (ping the registered agents and verify non garbage response)\n\navailable updates\n\ncorrupt tickets (stage:verification with status != In Progress)\n\nopen/inprogress parent beats where all children are closed.\n\nand foolery doctor --fix to fix the problems (if possible, can't fix broken agents)."
+  }
+}

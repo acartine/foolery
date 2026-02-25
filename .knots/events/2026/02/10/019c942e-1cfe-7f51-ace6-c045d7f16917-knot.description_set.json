@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1cfe-7f51-ace6-c045d7f16917",
+  "occurred_at": "2026-02-10T09:58:33Z",
+  "knot_id": "foolery-6pi",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create src/components/repo-switcher.tsx dropdown. Modify src/app/page.tsx for conditional landing (registry or redirect). Create src/app/registry/page.tsx. Modify src/app/beads/page.tsx for repo-aware loading. Modify src/app/beads/[id]/page.tsx for ?repo= param. Add repo column to bead-columns.tsx. Update bead-table.tsx navigation. Add registry command to command-palette.tsx. Add header with switcher to layout.tsx."
+  }
+}

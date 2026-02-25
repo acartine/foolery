@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1d18-7990-97dd-6e97841c744e",
+  "occurred_at": "2026-02-22T08:21:10Z",
+  "knot_id": "foolery-6q2x",
+  "type": "knot.created",
+  "data": {
+    "body": "when the app is opened or when an agent action completes, we should invalidate the final cut state so the badges show properly.  same is true for the notifications",
+    "description": "when the app is opened or when an agent action completes, we should invalidate the final cut state so the badges show properly.  same is true for the notifications",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "invalidate final cut state on window open or agent action completion",
+    "workflow_id": "default"
+  }
+}

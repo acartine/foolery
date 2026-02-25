@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-21ce-75a0-9a65-c3426a7b64c1",
+  "occurred_at": "2026-02-12T10:10:43Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9j4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add relationships in create and detail flows",
+    "updated_at": "2026-02-12T10:10:43Z",
+    "workflow_id": "default"
+  }
+}

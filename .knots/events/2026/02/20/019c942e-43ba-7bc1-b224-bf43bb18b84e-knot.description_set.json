@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-43ba-7bc1-b224-bf43bb18b84e",
+  "occurred_at": "2026-02-20T05:23:50Z",
+  "knot_id": "foolery-vdk0.2.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a typed server-side client for OpenRouter requests with auth header handling, timeout/retry policy, and normalized error mapping."
+  }
+}

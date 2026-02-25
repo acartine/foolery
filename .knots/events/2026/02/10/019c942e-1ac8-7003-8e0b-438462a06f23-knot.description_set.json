@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1ac8-7003-8e0b-438462a06f23",
+  "occurred_at": "2026-02-10T13:41:18Z",
+  "knot_id": "foolery-4vt",
+  "type": "knot.description_set",
+  "data": {
+    "description": "there is an icon png in the project root.  use it in place of the Foolery text in top left.  Clicking on it should return the user to the root path."
+  }
+}

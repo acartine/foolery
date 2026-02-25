@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-0fc3-74c1-8c8c-13623b6a59da",
+  "occurred_at": "2026-02-13T06:29:43Z",
+  "knot_id": "foolery-083",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix: stream-json requires --verbose with --print in terminal-manager",
+    "workflow_id": "default"
+  }
+}

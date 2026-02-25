@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3f3f-7b62-9742-1ddbd27f7054",
+  "occurred_at": "2026-02-19T17:30:32Z",
+  "knot_id": "foolery-rmje",
+  "type": "knot.created",
+  "data": {
+    "body": "Serialize bd CLI invocations per repo path and remove internal parallel label operations so embedded Dolt is never opened concurrently by this process.",
+    "description": "Serialize bd CLI invocations per repo path and remove internal parallel label operations so embedded Dolt is never opened concurrently by this process.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Prevent concurrent bd subprocesses from crashing embedded Dolt",
+    "workflow_id": "default"
+  }
+}

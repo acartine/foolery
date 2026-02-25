@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1e87-72c1-8309-1305bc8ca66d",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-76t",
+    "state": "shipped",
+    "terminal": true,
+    "title": "sub title info on /beads",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

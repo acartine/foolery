@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-41ca-7852-8f54-bad950862b8b",
+  "occurred_at": "2026-02-13T10:25:42Z",
+  "knot_id": "foolery-tu0",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  you want to be able to hit\nshift-v\nshift-v\n\nand quickly cycle through the unverified beads.",
+    "description": "as title says.  you want to be able to hit\nshift-v\nshift-v\n\nand quickly cycle through the unverified beads.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "after hitting shift-v on bead, the next item should be in focus",
+    "workflow_id": "default"
+  }
+}

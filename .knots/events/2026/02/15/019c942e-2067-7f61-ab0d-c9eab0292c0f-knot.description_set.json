@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2067-7f61-ab0d-c9eab0292c0f",
+  "occurred_at": "2026-02-15T07:45:10Z",
+  "knot_id": "foolery-8ftr",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says but also then cycle to the next item in the row.\n\nthis is to allow people to hit space several times in a row to select a bunch of rows"
+  }
+}

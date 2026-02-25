@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3644-7390-927a-1c5cc9c25fc8",
+  "occurred_at": "2026-02-13T13:48:22Z",
+  "knot_id": "foolery-l8n",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to toggle to list view and back to orchestrate without losing any state - the console output, the wave creation suggestions, etc.",
+    "description": "you should be able to toggle to list view and back to orchestrate without losing any state - the console output, the wave creation suggestions, etc.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "toggling between orchestrate and list throws away all the orchestration state",
+    "workflow_id": "default"
+  }
+}

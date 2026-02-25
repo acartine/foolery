@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-14fe-7252-828e-b9914dce1c62",
+  "occurred_at": "2026-02-23T12:37:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Replace test utilities with backend-aware fixtures",
+    "updated_at": "2026-02-23T12:37:42Z",
+    "workflow_id": "default"
+  }
+}

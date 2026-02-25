@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1b85-79b3-b9e5-f92a1b128252",
+  "occurred_at": "2026-02-15T06:02:00Z",
+  "knot_id": "foolery-59o",
+  "type": "knot.description_set",
+  "data": {
+    "description": "to aide in console cleanup - we should auto close tabs after a 5 second flicker warning on the tab.  if user clicks on it, the tab stays open."
+  }
+}

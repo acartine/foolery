@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1dbb-7de0-ba55-f604bd7966e1",
+  "occurred_at": "2026-02-12T13:43:05Z",
+  "knot_id": "foolery-6xc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, don't clutter the ui for no reason, if we are showing all the beads, hide the pagination row."
+  }
+}

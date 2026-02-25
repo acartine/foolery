@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3bc2-76f1-b1fe-b566ad1c75cb",
+  "occurred_at": "2026-02-17T21:28:52Z",
+  "knot_id": "foolery-qqla.1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a shared utility that builds the exact breakdown prompt string from bead context (id/title), including hierarchical tasks, execution order, parallelism, and vague-requirements handling instructions."
+  }
+}

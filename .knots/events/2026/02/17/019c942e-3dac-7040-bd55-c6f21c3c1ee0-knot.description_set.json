@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3dac-7040-bd55-c6f21c3c1ee0",
+  "occurred_at": "2026-02-17T21:29:00Z",
+  "knot_id": "foolery-qqla.4.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Ensure existing Direct workflows still work when no payload is supplied and no unexpected auto-run occurs."
+  }
+}

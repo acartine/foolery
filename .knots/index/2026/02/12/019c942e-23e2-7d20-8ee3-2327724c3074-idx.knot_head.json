@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-23e2-7d20-8ee3-2327724c3074",
+  "occurred_at": "2026-02-12T10:37:38Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ayw",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Repo registry screen component",
+    "updated_at": "2026-02-12T10:37:38Z",
+    "workflow_id": "default"
+  }
+}

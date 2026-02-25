@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4014-7c71-ba2b-7df56050a73f",
+  "occurred_at": "2026-02-16T16:39:55Z",
+  "knot_id": "foolery-sbl2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  nobody wants to see closed stuff by default :-D"
+  }
+}

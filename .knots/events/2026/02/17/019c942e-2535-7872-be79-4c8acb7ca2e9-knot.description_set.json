@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2535-7872-be79-4c8acb7ca2e9",
+  "occurred_at": "2026-02-17T11:22:58Z",
+  "knot_id": "foolery-bykz",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  let's just always know how many items are waiting to be verified."
+  }
+}

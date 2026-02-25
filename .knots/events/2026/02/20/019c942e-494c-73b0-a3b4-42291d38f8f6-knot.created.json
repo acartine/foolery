@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-494c-73b0-a3b4-42291d38f8f6",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.4",
+  "type": "knot.created",
+  "data": {
+    "body": "If requirements fail or bugs are found, remove stage:verification/transition:verification, add stage:retry, and increment attempt; if pass, remove verification labels and close bead.",
+    "description": "If requirements fail or bugs are found, remove stage:verification/transition:verification, add stage:retry, and increment attempt; if pass, remove verification labels and close bead.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Apply verifier outcomes to bead state",
+    "workflow_id": "default"
+  }
+}

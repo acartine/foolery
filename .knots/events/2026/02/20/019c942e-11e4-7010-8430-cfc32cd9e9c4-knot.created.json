@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-11e4-7010-8430-cfc32cd9e9c4",
+  "occurred_at": "2026-02-20T09:21:25Z",
+  "knot_id": "foolery-1guy",
+  "type": "knot.created",
+  "data": {
+    "body": "beads is an overly complicated, buggy mess that actually is 100% not working right now.  We need to create an abstraction layer so that we can build something else as a database backend.  This bead is not to build a new database - it's to build an abstraction layer and a \"beads\" implementation.  So no new user-facing functionality - just a separation of requirements from implementation.",
+    "description": "beads is an overly complicated, buggy mess that actually is 100% not working right now.  We need to create an abstraction layer so that we can build something else as a database backend.  This bead is not to build a new database - it's to build an abstraction layer and a \"beads\" implementation.  So no new user-facing functionality - just a separation of requirements from implementation.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene weaver-prestige: abstraction layer between foolery and beads",
+    "workflow_id": "default"
+  }
+}

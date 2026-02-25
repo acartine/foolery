@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-45a0-7501-92bd-80f304d88f34",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Mock OpenRouter streaming for success and failure paths and assert plan capture, session status transitions, and error messages.",
+    "description": "Mock OpenRouter streaming for success and failure paths and assert plan capture, session status transitions, and error messages.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add integration tests for OpenRouter planner sessions",
+    "workflow_id": "default"
+  }
+}

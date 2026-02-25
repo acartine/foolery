@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1d33-7bd0-9823-f1c3b9644a43",
+  "occurred_at": "2026-02-22T08:21:10Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6q2x",
+    "state": "work_item",
+    "terminal": false,
+    "title": "invalidate final cut state on window open or agent action completion",
+    "updated_at": "2026-02-22T08:21:10Z",
+    "workflow_id": "default"
+  }
+}

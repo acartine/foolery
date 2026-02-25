@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1178-7613-935f-6e50aca2f98e",
+  "occurred_at": "2026-02-15T07:28:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0z0",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave hamill-prestige: implement-remaining-p0",
+    "updated_at": "2026-02-15T07:28:08Z",
+    "workflow_id": "default"
+  }
+}

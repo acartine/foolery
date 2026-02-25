@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-449d-7921-b37e-53ad8fab9de8",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Extend `settings-api` client calls to load/save OpenRouter config and fetch model/cost data from new backend routes."
+  }
+}

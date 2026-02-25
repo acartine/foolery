@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-30af-7dc0-89df-3a1dd8effcbf",
+  "occurred_at": "2026-02-20T12:19:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-h6q6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add copy icon and action to all consoles top right corner",
+    "updated_at": "2026-02-20T12:19:42Z",
+    "workflow_id": "default"
+  }
+}

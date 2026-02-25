@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1497-7ff3-a083-f12a89a18bc0",
+  "occurred_at": "2026-02-20T09:26:38Z",
+  "knot_id": "foolery-1guy.5.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Switch all command/service codepaths from direct beads usage to the abstraction.",
+    "description": "Switch all command/service codepaths from direct beads usage to the abstraction.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Migrate remaining CLI and service callsites to BackendPort",
+    "workflow_id": "default"
+  }
+}

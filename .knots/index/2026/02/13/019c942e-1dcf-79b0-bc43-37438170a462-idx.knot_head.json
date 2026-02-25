@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1dcf-79b0-bc43-37438170a462",
+  "occurred_at": "2026-02-13T06:41:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6xc",
+    "state": "shipped",
+    "terminal": true,
+    "title": "only show pagination row if there are more beads",
+    "updated_at": "2026-02-13T06:41:13Z",
+    "workflow_id": "default"
+  }
+}

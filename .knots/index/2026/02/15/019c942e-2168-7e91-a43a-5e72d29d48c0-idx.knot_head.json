@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2168-7e91-a43a-5e72d29d48c0",
+  "occurred_at": "2026-02-15T07:00:47Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-98w",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove legacy navigation from Scenes",
+    "updated_at": "2026-02-15T07:00:47Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2b28-7e63-a7fe-43477b64963c",
+  "occurred_at": "2026-02-24T07:02:31Z",
+  "knot_id": "foolery-fyj6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, we can make the title column smaller to give the bead id more space.  we should be able to show 12 characters in the bead id column"
+  }
+}

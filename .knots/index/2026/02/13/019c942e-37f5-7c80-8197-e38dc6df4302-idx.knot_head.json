@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-37f5-7c80-8197-e38dc6df4302",
+  "occurred_at": "2026-02-13T15:44:47Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv.2.6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Orchestration v2 command center (Now/Next/Later + Ship Next)",
+    "updated_at": "2026-02-13T15:44:47Z",
+    "workflow_id": "default"
+  }
+}

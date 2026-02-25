@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2fee-7ad1-bf47-7915d52b54b8",
+  "occurred_at": "2026-02-20T18:47:05Z",
+  "knot_id": "foolery-ghqh",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Something like - review the app to see if the feature has been implemented according to plan.  Everything here is something an agent believes it has completed and pushed."
+  }
+}

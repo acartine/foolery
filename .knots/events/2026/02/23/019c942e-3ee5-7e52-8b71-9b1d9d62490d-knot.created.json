@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3ee5-7e52-8b71-9b1d9d62490d",
+  "occurred_at": "2026-02-23T08:41:57Z",
+  "knot_id": "foolery-rhre",
+  "type": "knot.created",
+  "data": {
+    "body": "Create a dedicated markdown document describing Foolery's issue tracker integration abstraction/API (BackendPort), expected method contracts, capabilities, error model, and implementation checklist for new tracker backends.",
+    "description": "Create a dedicated markdown document describing Foolery's issue tracker integration abstraction/API (BackendPort), expected method contracts, capabilities, error model, and implementation checklist for new tracker backends.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add Foolery Issue Tracker Integration API doc",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4415-7e03-bf6b-03f5a0fba362",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Provide a lightweight server route to validate API key/config and return actionable errors for the settings screen.",
+    "description": "Provide a lightweight server route to validate API key/config and return actionable errors for the settings screen.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add OpenRouter connectivity-check endpoint",
+    "workflow_id": "default"
+  }
+}

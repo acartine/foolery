@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4715-7ab3-b40e-8c9736850048",
+  "occurred_at": "2026-02-12T10:34:26Z",
+  "knot_id": "foolery-w8a",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update agent/Claude instruction docs so assignment clears all stage:* labels and sets stage:implementation; completion clears all stage:* labels and sets stage:verification."
+  }
+}

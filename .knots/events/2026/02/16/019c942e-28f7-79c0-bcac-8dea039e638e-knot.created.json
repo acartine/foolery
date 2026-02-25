@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-28f7-79c0-bcac-8dea039e638e",
+  "occurred_at": "2026-02-16T19:39:00Z",
+  "knot_id": "foolery-e92j",
+  "type": "knot.created",
+  "data": {
+    "body": "when loading foolery, load the list page if there are any registered repos.  try to load the last selected repo, if none, show the first repo.\n\nif there are no repos, open the settings page to the repo registry section.\n\nthis obviously means building a repo registry section in settings as well, unless one already exists.",
+    "description": "when loading foolery, load the list page if there are any registered repos.  try to load the last selected repo, if none, show the first repo.\n\nif there are no repos, open the settings page to the repo registry section.\n\nthis obviously means building a repo registry section in settings as well, unless one already exists.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove repo page - make list page default - repo registry in settings page",
+    "workflow_id": "default"
+  }
+}

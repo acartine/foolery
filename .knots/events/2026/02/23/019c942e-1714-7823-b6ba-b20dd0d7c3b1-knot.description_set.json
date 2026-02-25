@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1714-7823-b6ba-b20dd0d7c3b1",
+  "occurred_at": "2026-02-23T12:57:51Z",
+  "knot_id": "foolery-2pks",
+  "type": "knot.description_set",
+  "data": {
+    "description": "it just says \"opus\" which seems weird.  small fix.  make sure we fix this during import from install/cli, startup, or UI/settings import."
+  }
+}

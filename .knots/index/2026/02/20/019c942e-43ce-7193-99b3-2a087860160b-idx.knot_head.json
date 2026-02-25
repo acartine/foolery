@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-43ce-7193-99b3-2a087860160b",
+  "occurred_at": "2026-02-20T05:23:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Create OpenRouter API client module",
+    "updated_at": "2026-02-20T05:23:50Z",
+    "workflow_id": "default"
+  }
+}

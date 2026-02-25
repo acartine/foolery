@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-25fe-7402-b570-95984b4c2d13",
+  "occurred_at": "2026-02-20T10:18:35Z",
+  "knot_id": "foolery-cf81",
+  "type": "knot.created",
+  "data": {
+    "body": "don't show unfolded parents unless toggled by user.  save that as state so you can remember that they want that particular beat unfolded.  If they fold it again, delete the state for that beat.",
+    "description": "don't show unfolded parents unless toggled by user.  save that as state so you can remember that they want that particular beat unfolded.  If they fold it again, delete the state for that beat.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "by default, parent beats should be folded in all views",
+    "workflow_id": "default"
+  }
+}

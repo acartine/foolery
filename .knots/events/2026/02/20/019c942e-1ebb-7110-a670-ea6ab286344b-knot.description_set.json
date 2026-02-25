@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1ebb-7110-a670-ea6ab286344b",
+  "occurred_at": "2026-02-20T10:20:14Z",
+  "knot_id": "foolery-79zi",
+  "type": "knot.description_set",
+  "data": {
+    "description": "if a selected bead is a parent, shift < should fold  and shift > should unfold."
+  }
+}

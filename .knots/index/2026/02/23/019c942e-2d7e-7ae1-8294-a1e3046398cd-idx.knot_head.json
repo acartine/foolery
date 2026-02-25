@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2d7e-7ae1-8294-a1e3046398cd",
+  "occurred_at": "2026-02-23T17:12:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Workflow and prompt compatibility across backends",
+    "updated_at": "2026-02-23T17:12:52Z",
+    "workflow_id": "default"
+  }
+}

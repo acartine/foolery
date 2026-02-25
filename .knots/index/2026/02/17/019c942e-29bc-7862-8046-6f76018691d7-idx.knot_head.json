@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-29bc-7862-8046-6f76018691d7",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-epa",
+    "state": "shipped",
+    "terminal": true,
+    "title": "verify / reject",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

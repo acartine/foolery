@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3415-7763-9539-629ab255b8f9",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-k18",
+    "state": "shipped",
+    "terminal": true,
+    "title": "don't make 'all repositories' default state",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

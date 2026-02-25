@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-21ac-7a42-bb0a-6c74645c20c4",
+  "occurred_at": "2026-02-21T14:51:47Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9gl7",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add Agent History and ReTake screenshots to README",
+    "updated_at": "2026-02-21T14:51:47Z",
+    "workflow_id": "default"
+  }
+}

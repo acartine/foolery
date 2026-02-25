@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1fdf-7550-825e-35c14e994004",
+  "occurred_at": "2026-02-24T19:39:29Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8135",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Handle ship follow-up failure when worktree path is missing",
+    "updated_at": "2026-02-24T19:39:29Z",
+    "workflow_id": "default"
+  }
+}

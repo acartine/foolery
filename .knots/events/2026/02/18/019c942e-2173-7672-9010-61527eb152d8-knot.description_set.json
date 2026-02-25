@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2173-7672-9010-61527eb152d8",
+  "occurred_at": "2026-02-18T04:43:44Z",
+  "knot_id": "foolery-9a6a",
+  "type": "knot.description_set",
+  "data": {
+    "description": "shift-v shouuld \"verify\" the beat, removing any stage:* labels and closing the beat."
+  }
+}

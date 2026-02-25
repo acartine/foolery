@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-43d5-7510-b6c2-c75f319a0334",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "knot_id": "foolery-vdk0.2.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Parse OpenRouter model payloads into internal model objects including id, display name, context window, and input/output price fields.",
+    "description": "Parse OpenRouter model payloads into internal model objects including id, display name, context window, and input/output price fields.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Normalize OpenRouter model metadata and pricing",
+    "workflow_id": "default"
+  }
+}

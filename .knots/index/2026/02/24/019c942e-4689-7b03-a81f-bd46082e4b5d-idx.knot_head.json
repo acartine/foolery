@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4689-7b03-a81f-bd46082e4b5d",
+  "occurred_at": "2026-02-24T18:05:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vsnv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create Lightbox: Knots create fails",
+    "updated_at": "2026-02-24T18:05:41Z",
+    "workflow_id": "default"
+  }
+}

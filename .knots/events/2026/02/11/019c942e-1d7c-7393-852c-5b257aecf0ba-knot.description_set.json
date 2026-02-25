@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1d7c-7393-852c-5b257aecf0ba",
+  "occurred_at": "2026-02-11T12:29:15Z",
+  "knot_id": "foolery-6tn",
+  "type": "knot.description_set",
+  "data": {
+    "description": "make the logo and the search bar span both button rows (the repo pulldown and the New button\n\nmake the logo 50% bigger.\n\nvertically center the search bar"
+  }
+}

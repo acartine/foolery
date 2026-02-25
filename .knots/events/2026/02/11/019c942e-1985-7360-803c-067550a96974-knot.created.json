@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1985-7360-803c-067550a96974",
+  "occurred_at": "2026-02-11T17:04:22Z",
+  "knot_id": "foolery-3pn",
+  "type": "knot.created",
+  "data": {
+    "body": "when you click shift-N while on the /beads screen it should launch the Create New dialogue.  Be careful to override this when the create new dialogue is already open.",
+    "description": "when you click shift-N while on the /beads screen it should launch the Create New dialogue.  Be careful to override this when the create new dialogue is already open.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "create hotkey",
+    "workflow_id": "default"
+  }
+}

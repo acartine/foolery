@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2851-7121-9fcf-84f750d28f7c",
+  "occurred_at": "2026-02-18T04:47:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dnyl",
+    "state": "shipped",
+    "terminal": true,
+    "title": "issue detail light box is too small for content",
+    "updated_at": "2026-02-18T04:47:08Z",
+    "workflow_id": "default"
+  }
+}

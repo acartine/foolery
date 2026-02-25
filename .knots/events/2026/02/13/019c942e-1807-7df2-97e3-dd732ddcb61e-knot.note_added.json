@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1807-7df2-97e3-dd732ddcb61e",
+  "occurred_at": "2026-02-13T22:37:50Z",
+  "knot_id": "foolery-32r",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "amazingly still broken.  does not change status to 'Closed'",
+    "datetime": "2026-02-13T22:37:50Z",
+    "entry_id": "66fcbe21044e039217318ed8cadf706eede044ba4454cd9b5df4caa101f5605c",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

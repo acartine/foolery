@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1478-7fa0-80c3-552e79a27af6",
+  "occurred_at": "2026-02-20T09:26:37Z",
+  "knot_id": "foolery-1guy.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Complete migration and verify parity with no user-facing functionality change.\n\nNotes: Subsystem migrations are parallelizable; regression and boundary checks are release gates.\n\nAssigned tasks:\n- Migrate remaining CLI and service callsites to BackendPort\n- Migrate automation and background paths to BackendPort\n- Replace test utilities with backend-aware fixtures\n- Enforce adapter boundary with static check\n- Run full regression and parity validation with beads default\n- Document backend extension guide for future implementations",
+    "description": "Objective: Complete migration and verify parity with no user-facing functionality change.\n\nNotes: Subsystem migrations are parallelizable; regression and boundary checks are release gates.\n\nAssigned tasks:\n- Migrate remaining CLI and service callsites to BackendPort\n- Migrate automation and background paths to BackendPort\n- Replace test utilities with backend-aware fixtures\n- Enforce adapter boundary with static check\n- Run full regression and parity validation with beads default\n- Document backend extension guide for future implementations",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene sunset-props: Cutover Verify",
+    "workflow_id": "default"
+  }
+}

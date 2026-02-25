@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1145-7622-b1ba-c40f8a72990d",
+  "occurred_at": "2026-02-19T17:24:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0vdz",
+    "state": "shipped",
+    "terminal": true,
+    "title": "code coverage tweaking",
+    "updated_at": "2026-02-19T17:24:11Z",
+    "workflow_id": "default"
+  }
+}

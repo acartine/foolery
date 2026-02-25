@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3d48-7653-a363-a9815b8603f1",
+  "occurred_at": "2026-02-20T07:30:07Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.3.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add Direct-page failure and fallback behavior",
+    "updated_at": "2026-02-20T07:30:07Z",
+    "workflow_id": "default"
+  }
+}

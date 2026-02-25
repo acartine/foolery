@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-46ad-7430-ae3b-1b270c343640",
+  "occurred_at": "2026-02-15T04:59:58Z",
+  "knot_id": "foolery-w3r",
+  "type": "knot.created",
+  "data": {
+    "body": "Document that each git worktree needs dependency bootstrap (bun install --frozen-lockfile) before lint/typecheck/test, and prefer bun run over bunx for local plugin resolution.",
+    "description": "Document that each git worktree needs dependency bootstrap (bun install --frozen-lockfile) before lint/typecheck/test, and prefer bun run over bunx for local plugin resolution.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add worktree dependency bootstrap guidance for agents",
+    "workflow_id": "default"
+  }
+}

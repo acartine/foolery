@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1963-70a0-9e42-4a0034e2bf5d",
+  "occurred_at": "2026-02-10T18:47:28Z",
+  "knot_id": "foolery-3of",
+  "type": "knot.created",
+  "data": {
+    "body": "there is in general just too much padding on the /beads page, cutting the padding at least in half, in all components.  the pulldowns, the containers, the rows, the cells, it's crazy.\n\nsame is also true on the details page, even worse actually.  cut the padding by 75% and do anything you can to make it more condensed.",
+    "description": "there is in general just too much padding on the /beads page, cutting the padding at least in half, in all components.  the pulldowns, the containers, the rows, the cells, it's crazy.\n\nsame is also true on the details page, even worse actually.  cut the padding by 75% and do anything you can to make it more condensed.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "condense all components",
+    "workflow_id": "default"
+  }
+}

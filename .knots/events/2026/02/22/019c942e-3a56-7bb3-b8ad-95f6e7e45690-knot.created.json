@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3a56-7bb3-b8ad-95f6e7e45690",
+  "occurred_at": "2026-02-22T17:14:51Z",
+  "knot_id": "foolery-p63",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "id ~ 1guy",
+    "workflow_id": "default"
+  }
+}

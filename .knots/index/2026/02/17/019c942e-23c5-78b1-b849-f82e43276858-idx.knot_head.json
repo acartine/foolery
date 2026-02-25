@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-23c5-78b1-b849-f82e43276858",
+  "occurred_at": "2026-02-17T15:05:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-av6g",
+    "state": "shipped",
+    "terminal": true,
+    "title": "switching from beats view to final cut and back causes vertical jitter in the table",
+    "updated_at": "2026-02-17T15:05:35Z",
+    "workflow_id": "default"
+  }
+}

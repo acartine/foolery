@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2efe-7ee3-9ba7-46789567e403",
+  "occurred_at": "2026-02-23T17:12:59Z",
+  "knot_id": "foolery-g3y1.6.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Add integration tests for per-repo auto-routing and mixed tracker repos.",
+    "description": "Add integration tests for per-repo auto-routing and mixed tracker repos.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add integration tests for auto-routing and mixed trackers",
+    "workflow_id": "default"
+  }
+}

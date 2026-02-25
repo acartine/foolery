@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3bfc-73c1-84c7-62084d35da84",
+  "occurred_at": "2026-02-20T07:30:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.1.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Define navigation payload contract for Direct prefill",
+    "updated_at": "2026-02-20T07:30:41Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-29ee-7a80-aa24-fbb4f0f90f99",
+  "occurred_at": "2026-02-18T04:46:46Z",
+  "knot_id": "foolery-f0sq",
+  "type": "knot.created",
+  "data": {
+    "body": "Add NDJSON streaming to foolery doctor so each check category renders as it completes with status icons",
+    "description": "Add NDJSON streaming to foolery doctor so each check category renders as it completes with status icons",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Progressive diagnostic output for foolery doctor",
+    "workflow_id": "default"
+  }
+}

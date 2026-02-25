@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-48c0-7080-af85-b3ff575ac2cb",
+  "occurred_at": "2026-02-23T12:40:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.1.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add bead label parsing/mutation helpers",
+    "updated_at": "2026-02-23T12:40:02Z",
+    "workflow_id": "default"
+  }
+}

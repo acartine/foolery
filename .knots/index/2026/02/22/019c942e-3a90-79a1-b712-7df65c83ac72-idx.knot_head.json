@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3a90-79a1-b712-7df65c83ac72",
+  "occurred_at": "2026-02-22T05:43:28Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-pc33",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Don't count child beats for notifications and final cut",
+    "updated_at": "2026-02-22T05:43:28Z",
+    "workflow_id": "default"
+  }
+}

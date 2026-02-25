@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-23ac-7ea3-b859-6c4c57fb4943",
+  "occurred_at": "2026-02-17T08:19:22Z",
+  "knot_id": "foolery-av6g",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - looks like we need some ux/ui magic to keep the table from hopping up and down, possibly calculating the height of the largest row component above it and making that height stick regardless of what view it is.",
+    "description": "as title says - looks like we need some ux/ui magic to keep the table from hopping up and down, possibly calculating the height of the largest row component above it and making that height stick regardless of what view it is.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "switching from beats view to final cut and back causes vertical jitter in the table",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-34ce-7da0-93ac-27492785941a",
+  "occurred_at": "2026-02-13T07:08:45Z",
+  "knot_id": "foolery-kri",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Figure out how to proxy AskUserQuestion in Ship Now mode",
+    "workflow_id": "default"
+  }
+}

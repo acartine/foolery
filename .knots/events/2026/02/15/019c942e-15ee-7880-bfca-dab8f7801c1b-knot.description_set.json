@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-15ee-7880-bfca-dab8f7801c1b",
+  "occurred_at": "2026-02-15T07:34:32Z",
+  "knot_id": "foolery-1zh",
+  "type": "knot.description_set",
+  "data": {
+    "description": "i should able to to select multiple beats and click 'Scene!' from the bulk edit action component.  This should trigger the Agent like 'Take!' but with a single prompt/console - like telling the agent to plan and execute beads abc, def, ghi with parllelism."
+  }
+}

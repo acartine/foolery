@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3d2f-76d1-a483-b31d3792c7d6",
+  "occurred_at": "2026-02-17T21:28:58Z",
+  "knot_id": "foolery-qqla.3.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "If auto-run fails, surface actionable error state and leave the prefilled prompt ready for manual Run Now retry."
+  }
+}

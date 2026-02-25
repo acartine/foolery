@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-42c4-70c0-bc50-80d6d7a462a0",
+  "occurred_at": "2026-02-11T12:25:26Z",
+  "knot_id": "foolery-v3u",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the pulldowns and buttons are all bloaty, let's get their internal padding in half for a sleeker feel"
+  }
+}

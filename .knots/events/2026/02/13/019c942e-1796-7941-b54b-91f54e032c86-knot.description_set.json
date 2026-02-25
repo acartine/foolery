@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1796-7941-b54b-91f54e032c86",
+  "occurred_at": "2026-02-13T14:05:00Z",
+  "knot_id": "foolery-31f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, so that when multiple tabs are open, you can see what is still running without cycling through the tabs.\n\nwhen the process completes, the tab should turn dark green, flicker for 5 seconds, and then close."
+  }
+}

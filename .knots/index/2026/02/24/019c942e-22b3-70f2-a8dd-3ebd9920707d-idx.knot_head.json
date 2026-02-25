@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-22b3-70f2-a8dd-3ebd9920707d",
+  "occurred_at": "2026-02-24T19:39:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9wk7",
+    "state": "shipped",
+    "terminal": true,
+    "title": "History View: Console search and navigation upgrade",
+    "updated_at": "2026-02-24T19:39:13Z",
+    "workflow_id": "default"
+  }
+}

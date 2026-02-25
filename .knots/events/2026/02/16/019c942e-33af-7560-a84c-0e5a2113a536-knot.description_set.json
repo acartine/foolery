@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-33af-7560-a84c-0e5a2113a536",
+  "occurred_at": "2026-02-16T15:15:23Z",
+  "knot_id": "foolery-jxog",
+  "type": "knot.description_set",
+  "data": {
+    "description": "right now it always says  +Add which is super confusing.\n\non final cut view it should say \"Wrap!\" with a celebratory icon\n\non direct and scenes it should be hidden.\n\nthe button should have the exact position and size on all views, so users don't get disoriented."
+  }
+}

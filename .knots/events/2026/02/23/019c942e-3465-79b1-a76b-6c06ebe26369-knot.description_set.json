@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3465-79b1-a76b-6c06ebe26369",
+  "occurred_at": "2026-02-23T11:03:43Z",
+  "knot_id": "foolery-kcxj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the auto verifier ran for 81ga, commit 47ae9b3 - the logs show \n\n[verification] retry bead=foolery-8iga reason=fail-requirements\n\nand sure enough - the work was rejected by codex.\n\n- let's add some notes about the rejected work/commit when this happens.  \n- this should generate a notification to the user.\n- we should set the 'stage' tag to 'retry' (stage:retry replacing any other stage tags)\n- increment the attempts tag if it exists, else set it to attempts:1\n- start a new implementation session with the appropriate agent for scene/take\n\nand then continue back into the workflow of implement/followup/verify."
+  }
+}

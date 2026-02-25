@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-42f7-78b1-a1ca-e38d77806f5b",
+  "occurred_at": "2026-02-22T08:50:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Scene jolie-gladiator: support openrouter",
+    "updated_at": "2026-02-22T08:50:59Z",
+    "workflow_id": "default"
+  }
+}

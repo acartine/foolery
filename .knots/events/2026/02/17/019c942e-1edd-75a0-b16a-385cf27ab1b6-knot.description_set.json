@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1edd-75a0-b16a-385cf27ab1b6",
+  "occurred_at": "2026-02-17T07:49:08Z",
+  "knot_id": "foolery-7axc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Replace free-text model input with numbered menu in _prompt_model. Add _discover_models function for codex (cache file), claude (hardcoded), gemini (hardcoded)."
+  }
+}

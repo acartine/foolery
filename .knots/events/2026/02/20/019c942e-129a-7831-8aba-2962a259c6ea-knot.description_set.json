@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-129a-7831-8aba-2962a259c6ea",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Define a backend-agnostic contract and acceptance criteria.\n\nNotes: Tasks 1-3 are parallelizable; task 4 starts early and finalizes after interface stabilization.\n\nAssigned tasks:\n- Define BackendPort interface and domain DTOs\n- Specify backend error taxonomy and retry semantics\n- Define capability flags for optional backend behavior\n- Build reusable backend contract test harness"
+  }
+}

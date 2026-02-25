@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-0fb9-7bc2-a554-ac048102fdfe",
+  "occurred_at": "2026-02-14T08:49:22Z",
+  "knot_id": "foolery-060",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "=== Orchestration Assessment (2026-02-13) ===\n2/5 children complete (11j, gps closed).\n3/5 children open (iki, k18, smj) -- no work started, no labels.\nThese 3 are also children of 6qg, which is blocked by 53d.\n060 cannot close until all children are done.\n060 itself is a coordination bead -- no direct code work needed on the epic.",
+    "datetime": "2026-02-14T08:49:22Z",
+    "entry_id": "cfbd5b8f014a858f45d2e71d778783c8b08ba6e162e5dd47bb5a58f16a79e3a0",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

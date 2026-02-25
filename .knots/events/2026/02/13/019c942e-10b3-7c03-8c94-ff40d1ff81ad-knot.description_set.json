@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-10b3-7c03-8c94-ff40d1ff81ad",
+  "occurred_at": "2026-02-13T13:21:58Z",
+  "knot_id": "foolery-0in",
+  "type": "knot.description_set",
+  "data": {
+    "description": "it's easy to accidentally create a bead in the wrong projoect.  from the detail page, let's have a project selector to facilitate \"moving\" it.  this wouldn't in actuality moving it, it would be taking the attributes of the existing one, creating it in the target repo, then closing it in the \"wrong\" repo"
+  }
+}

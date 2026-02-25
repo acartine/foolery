@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2e7f-7aa0-b564-bbca548a3abb",
+  "occurred_at": "2026-02-23T17:12:57Z",
+  "knot_id": "foolery-g3y1.5.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Validate bead table/filter/sort/hierarchy behavior under Knots-backed repos."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1d77-7643-87f8-f2027c55508d",
+  "occurred_at": "2026-02-11T12:29:15Z",
+  "knot_id": "foolery-6tn",
+  "type": "knot.created",
+  "data": {
+    "body": "make the logo and the search bar span both button rows (the repo pulldown and the New button\n\nmake the logo 50% bigger.\n\nvertically center the search bar",
+    "description": "make the logo and the search bar span both button rows (the repo pulldown and the New button\n\nmake the logo 50% bigger.\n\nvertically center the search bar",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "realign logo and search bar",
+    "workflow_id": "default"
+  }
+}

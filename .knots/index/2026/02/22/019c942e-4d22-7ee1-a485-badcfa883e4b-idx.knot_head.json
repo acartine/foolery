@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4d22-7ee1-a485-badcfa883e4b",
+  "occurred_at": "2026-02-22T05:40:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-zuf7",
+    "state": "implementing",
+    "terminal": false,
+    "title": "Evaluate repo-first API route shape for beads endpoints",
+    "updated_at": "2026-02-22T05:40:24Z",
+    "workflow_id": "default"
+  }
+}

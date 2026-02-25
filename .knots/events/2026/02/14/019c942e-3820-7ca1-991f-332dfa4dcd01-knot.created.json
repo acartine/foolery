@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3820-7ca1-991f-332dfa4dcd01",
+  "occurred_at": "2026-02-14T17:38:23Z",
+  "knot_id": "foolery-mr0",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, let's not clutter everything with prefixes.",
+    "description": "as title says, let's not clutter everything with prefixes.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "wave view, child beats shouldn't show project prefix in front of beat id",
+    "workflow_id": "default"
+  }
+}

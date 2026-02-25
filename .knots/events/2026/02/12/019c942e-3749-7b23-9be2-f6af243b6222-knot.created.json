@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3749-7b23-9be2-f6af243b6222",
+  "occurred_at": "2026-02-12T22:29:49Z",
+  "knot_id": "foolery-mqv",
+  "type": "knot.created",
+  "data": {
+    "body": "Add orchestration capabilities to Foolery: (1) Ship Now - embedded read-only terminal that spawns Claude CLI to execute bead work, (2) Wave Planner - algorithmic grouping of beads into parallel execution waves based on dependencies. Human QA gates represented as gate-type beads blocking wave progression.",
+    "description": "Add orchestration capabilities to Foolery: (1) Ship Now - embedded read-only terminal that spawns Claude CLI to execute bead work, (2) Wave Planner - algorithmic grouping of beads into parallel execution waves based on dependencies. Human QA gates represented as gate-type beads blocking wave progression.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene mckellen-gladiator: Foolery Orchestration: Ship Now + Wave Planner",
+    "workflow_id": "default"
+  }
+}

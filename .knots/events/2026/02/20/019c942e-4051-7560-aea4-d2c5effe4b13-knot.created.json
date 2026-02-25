@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4051-7560-aea4-d2c5effe4b13",
+  "occurred_at": "2026-02-20T05:48:17Z",
+  "knot_id": "foolery-seev",
+  "type": "knot.created",
+  "data": {
+    "body": "we want a view that allows us to quickly associate regressions to their closed bead.  this gives us access to the commit that achieved the goal, so we can understand how we reversed that achievement since then.\n\nThe view shows closed beads in the order of lastupdated (most recent to oldest)\n\neach one has a button ReTake on the right.  there is no bulk select in this section.  the row cannot be edited (no changing status etc.). the ReTake button launches a dialog where you can add notes optional or just fire away.\n\nonce they initiate the retake, the bead is set to in progress and the agent is prompted slightly differently - they are informed that there has been a regressions since commit xyz, and we want to identify the offending commit and introduce a fix.  we can add a tag:\n\nregression:[commit id] for some aid in tracking the offending commit.",
+    "description": "we want a view that allows us to quickly associate regressions to their closed bead.  this gives us access to the commit that achieved the goal, so we can understand how we reversed that achievement since then.\n\nThe view shows closed beads in the order of lastupdated (most recent to oldest)\n\neach one has a button ReTake on the right.  there is no bulk select in this section.  the row cannot be edited (no changing status etc.). the ReTake button launches a dialog where you can add notes optional or just fire away.\n\nonce they initiate the retake, the bead is set to in progress and the agent is prompted slightly differently - they are informed that there has been a regressions since commit xyz, and we want to identify the offending commit and introduce a fix.  we can add a tag:\n\nregression:[commit id] for some aid in tracking the offending commit.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "add a view ReTakes that shows closed beads in order of last updated",
+    "workflow_id": "default"
+  }
+}

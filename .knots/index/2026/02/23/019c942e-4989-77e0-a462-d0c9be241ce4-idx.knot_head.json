@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4989-77e0-a462-d0c9be241ce4",
+  "occurred_at": "2026-02-23T12:40:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add orchestration idempotency and dedupe locks",
+    "updated_at": "2026-02-23T12:40:04Z",
+    "workflow_id": "default"
+  }
+}

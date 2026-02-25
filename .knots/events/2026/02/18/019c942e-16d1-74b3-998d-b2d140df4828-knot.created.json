@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-16d1-74b3-998d-b2d140df4828",
+  "occurred_at": "2026-02-18T21:45:02Z",
+  "knot_id": "foolery-2fqg",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Refresh README badges and screenshots",
+    "workflow_id": "default"
+  }
+}

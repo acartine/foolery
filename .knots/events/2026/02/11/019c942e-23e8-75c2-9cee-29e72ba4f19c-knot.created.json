@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-23e8-75c2-9cee-29e72ba4f19c",
+  "occurred_at": "2026-02-11T11:50:13Z",
+  "knot_id": "foolery-b1m",
+  "type": "knot.created",
+  "data": {
+    "body": "try to cut the space between rows, columns, cells, containers, elements etc. by about half.",
+    "description": "try to cut the space between rows, columns, cells, containers, elements etc. by about half.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "condense table padding/spacing/margin",
+    "workflow_id": "default"
+  }
+}

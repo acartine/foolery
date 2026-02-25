@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-195d-7821-84fb-f15fc9c4fd59",
+  "occurred_at": "2026-02-15T07:21:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3no",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Rolling... with stop button table cell gets cut off",
+    "updated_at": "2026-02-15T07:21:21Z",
+    "workflow_id": "default"
+  }
+}

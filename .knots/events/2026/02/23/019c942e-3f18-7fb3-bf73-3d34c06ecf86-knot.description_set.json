@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3f18-7fb3-bf73-3d34c06ecf86",
+  "occurred_at": "2026-02-23T06:46:19Z",
+  "knot_id": "foolery-rm0f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when navigating the history view, it's ok if we have to wait for the UI to load and/or prune cache, but there should be some kind of UX feedback, like a spinner and/or some helper text like \"loading...prompt histories are BIG, please be patient :-)\""
+  }
+}

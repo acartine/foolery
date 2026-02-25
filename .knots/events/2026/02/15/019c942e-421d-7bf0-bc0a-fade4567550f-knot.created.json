@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-421d-7bf0-bc0a-fade4567550f",
+  "occurred_at": "2026-02-15T07:39:14Z",
+  "knot_id": "foolery-ubaj",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, just change the view order",
+    "description": "as title says, just change the view order",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "swap 'direct' with 'scenes'",
+    "workflow_id": "default"
+  }
+}

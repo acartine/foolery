@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-263a-7dc3-8b23-f7d71cb63471",
+  "occurred_at": "2026-02-15T05:51:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cgc",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave redmayne-noir: hotkeys-filters-layout",
+    "updated_at": "2026-02-15T05:51:04Z",
+    "workflow_id": "default"
+  }
+}

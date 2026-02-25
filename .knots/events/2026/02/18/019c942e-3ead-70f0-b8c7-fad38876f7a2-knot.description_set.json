@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3ead-70f0-b8c7-fad38876f7a2",
+  "occurred_at": "2026-02-18T09:13:48Z",
+  "knot_id": "foolery-ran1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - Scene! indicates that it is a bulk of related children tasks, it's more explicit."
+  }
+}

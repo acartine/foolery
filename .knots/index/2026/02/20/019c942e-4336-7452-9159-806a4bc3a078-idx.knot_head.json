@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4336-7452-9159-806a4bc3a078",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.1.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Extend settings schema with OpenRouter section",
+    "updated_at": "2026-02-20T05:23:49Z",
+    "workflow_id": "default"
+  }
+}

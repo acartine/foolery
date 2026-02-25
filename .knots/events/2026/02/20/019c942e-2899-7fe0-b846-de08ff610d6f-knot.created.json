@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2899-7fe0-b846-de08ff610d6f",
+  "occurred_at": "2026-02-20T11:45:02Z",
+  "knot_id": "foolery-dw44",
+  "type": "knot.created",
+  "data": {
+    "body": "don't count child beats toward paging limit, it's too confusing.  only the top level parent beat counts",
+    "description": "don't count child beats toward paging limit, it's too confusing.  only the top level parent beat counts",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "child beats should not count towards paging limit",
+    "workflow_id": "default"
+  }
+}

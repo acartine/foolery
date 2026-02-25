@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1792-7851-bb74-408082d85a43",
+  "occurred_at": "2026-02-13T14:05:00Z",
+  "knot_id": "foolery-31f",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, so that when multiple tabs are open, you can see what is still running without cycling through the tabs.\n\nwhen the process completes, the tab should turn dark green, flicker for 5 seconds, and then close.",
+    "description": "as title says, so that when multiple tabs are open, you can see what is still running without cycling through the tabs.\n\nwhen the process completes, the tab should turn dark green, flicker for 5 seconds, and then close.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "the blue dot next to the bead id in the terminal should blink when the terminal is running.",
+    "workflow_id": "default"
+  }
+}

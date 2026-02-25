@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4bd4-7de0-86e3-1358cf6c43c2",
+  "occurred_at": "2026-02-16T19:35:26Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-y97y",
+    "state": "shipped",
+    "terminal": true,
+    "title": "foolery launcher syntax error on update",
+    "updated_at": "2026-02-16T19:35:26Z",
+    "workflow_id": "default"
+  }
+}

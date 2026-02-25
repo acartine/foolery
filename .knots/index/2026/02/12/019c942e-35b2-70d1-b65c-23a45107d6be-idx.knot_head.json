@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-35b2-70d1-b65c-23a45107d6be",
+  "occurred_at": "2026-02-12T10:14:14Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kzg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "shift-v and shift-f hotkeys",
+    "updated_at": "2026-02-12T10:14:14Z",
+    "workflow_id": "default"
+  }
+}

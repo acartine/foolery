@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-25bd-7733-890e-48e7e88ac3c6",
+  "occurred_at": "2026-02-15T07:21:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-c47",
+    "state": "shipped",
+    "terminal": true,
+    "title": "wave tree shows closed parents and omits wave id in title",
+    "updated_at": "2026-02-15T07:21:08Z",
+    "workflow_id": "default"
+  }
+}

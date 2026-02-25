@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3010-73a1-aa3b-4195da2c5908",
+  "occurred_at": "2026-02-17T13:00:12Z",
+  "knot_id": "foolery-gj7q",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Track integration of branch blitz/agent-info so agent identity/model metadata is visible in Terminal panel and Direct view."
+  }
+}

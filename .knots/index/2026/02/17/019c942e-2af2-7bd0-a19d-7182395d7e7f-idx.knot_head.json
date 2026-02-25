@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2af2-7bd0-a19d-7182395d7e7f",
+  "occurred_at": "2026-02-17T15:24:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-frac",
+    "state": "shipped",
+    "terminal": true,
+    "title": "OOM on gc",
+    "updated_at": "2026-02-17T15:24:58Z",
+    "workflow_id": "default"
+  }
+}

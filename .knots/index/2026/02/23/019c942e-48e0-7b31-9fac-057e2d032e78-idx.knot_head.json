@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-48e0-7b31-9fac-057e2d032e78",
+  "occurred_at": "2026-02-23T12:40:05Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene pitt-inception: Backend Automation",
+    "updated_at": "2026-02-23T12:40:05Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-423a-7600-a14f-09c21d2d638f",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ubaj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "swap 'direct' with 'scenes'",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

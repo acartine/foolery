@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1e1c-7c03-9d00-85dcf21700a2",
+  "occurred_at": "2026-02-19T14:17:37Z",
+  "knot_id": "foolery-75fs",
+  "type": "knot.created",
+  "data": {
+    "body": "Investigate why beat 'dwet' does not display the contest:orch label on the Beats screen and identify/fix filtering/rendering logic.",
+    "description": "Investigate why beat 'dwet' does not display the contest:orch label on the Beats screen and identify/fix filtering/rendering logic.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Dwet missing contest:orch label on Beats screen",
+    "workflow_id": "default"
+  }
+}

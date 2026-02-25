@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-10a9-74c1-a6b4-c63475df5a8e",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0i68",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Redesign Beats detail view as dense lightbox",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

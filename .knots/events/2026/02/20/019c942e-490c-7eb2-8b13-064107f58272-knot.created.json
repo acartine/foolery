@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-490c-7eb2-8b13-064107f58272",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.2",
+  "type": "knot.created",
+  "data": {
+    "body": "If commit label is missing, prompt the producing agent to add it; if still missing, relaunch corrective agent and restart workflow with bounded retry safeguards.",
+    "description": "If commit label is missing, prompt the producing agent to add it; if still missing, relaunch corrective agent and restart workflow with bounded retry safeguards.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Implement commit-label remediation loop",
+    "workflow_id": "default"
+  }
+}

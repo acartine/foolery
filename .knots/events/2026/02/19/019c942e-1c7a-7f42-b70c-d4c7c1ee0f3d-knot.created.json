@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1c7a-7f42-b70c-d4c7c1ee0f3d",
+  "occurred_at": "2026-02-19T19:40:57Z",
+  "knot_id": "foolery-6gcd",
+  "type": "knot.created",
+  "data": {
+    "body": "Github build is failing",
+    "description": "Github build is failing",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix build",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2552-7001-a87e-2182a8dc34b5",
+  "occurred_at": "2026-02-17T21:00:41Z",
+  "knot_id": "foolery-c1uk",
+  "type": "knot.created",
+  "data": {
+    "body": "Add README section and PROMPT.md, implement 'foolery prompt' subcommand to append guidance to AGENTS.md and/or CLAUDE.md, prompt during setup to apply guidance (highly recommended), and add doctor warnings when guidance prompt is missing from repo prompt files.",
+    "description": "Add README section and PROMPT.md, implement 'foolery prompt' subcommand to append guidance to AGENTS.md and/or CLAUDE.md, prompt during setup to apply guidance (highly recommended), and add doctor warnings when guidance prompt is missing from repo prompt files.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add Foolery guidance prompt flow (README/PROMPT.md/CLI/setup/doctor)",
+    "workflow_id": "default"
+  }
+}

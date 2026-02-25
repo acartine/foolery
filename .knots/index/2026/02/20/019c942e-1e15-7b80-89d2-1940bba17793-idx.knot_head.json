@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1e15-7b80-89d2-1940bba17793",
+  "occurred_at": "2026-02-20T19:11:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-72rr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent History View:  Search by beat",
+    "updated_at": "2026-02-20T19:11:59Z",
+    "workflow_id": "default"
+  }
+}

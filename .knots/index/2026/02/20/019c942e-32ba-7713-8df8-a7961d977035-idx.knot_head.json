@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-32ba-7713-8df8-a7961d977035",
+  "occurred_at": "2026-02-20T12:19:46Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ivtu",
+    "state": "shipped",
+    "terminal": true,
+    "title": "breakdown opens it's own page instead of using the Direct view",
+    "updated_at": "2026-02-20T12:19:46Z",
+    "workflow_id": "default"
+  }
+}

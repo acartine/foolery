@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1182-7c20-b5e6-9df7330877d4",
+  "occurred_at": "2026-02-22T02:47:03Z",
+  "knot_id": "foolery-10bd",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  should check the checkbox."
+  }
+}

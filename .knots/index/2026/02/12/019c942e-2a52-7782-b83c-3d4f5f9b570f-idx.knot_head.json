@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2a52-7782-b83c-3d4f5f9b570f",
+  "occurred_at": "2026-02-12T12:03:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fcr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Client-side registry API and store",
+    "updated_at": "2026-02-12T12:03:15Z",
+    "workflow_id": "default"
+  }
+}

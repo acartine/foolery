@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-220a-7952-946e-223fe9f8f375",
+  "occurred_at": "2026-02-22T08:50:54Z",
+  "knot_id": "foolery-9v09",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "SPEC DRAFT: Agent-Consumable API Documentation\n\nObjective\nProvide API documentation that enables agent clients (OpenClaw, Claude, etc.) to reliably automate common Foolery operations without Web UI interaction.\n\nDecision\nAdopt a dual-documentation strategy:\n1. OpenAPI 3.1 as the machine-readable contract.\n2. Markdown API guide as human-readable workflow context.\n\nScope\n- Document all existing API domains: beads, dependencies, close, terminal, orchestration, wave planning, registry.\n- Cover JSON routes and SSE streaming routes.\n- Document multi-repo behavior through the `_repo` parameter.\n- Include examples for key automation endpoints:\n  - POST /api/beads\n  - PATCH /api/beads/[id]\n  - POST /api/beads/[id]/deps\n  - GET /api/waves\n  - POST /api/terminal\n  - POST /api/orchestration\n\nOut of Scope\n- API behavior changes.\n- Authentication model redesign.\n- Non-API UI documentation.\n\nRequirements\nR1. Publish an OpenAPI 3.1 document at `/api/openapi.json` (or `/.well-known/openapi.json`).\nR2. OpenAPI must include schemas, required fields, status/error responses, and request/response examples for all supported routes.\nR3. Streaming endpoints must explicitly document SSE behavior and event shapes.\nR4. Create `/docs/API.md` with domain overview, workflow recipes, and error-handling guidance.\nR5. Replace outdated API content in `MANIFEST.md` with links to canonical API docs.\n\nAcceptance Criteria\n- Agents can discover the endpoint surface from OpenAPI alone.\n- Agents can execute common workflows by combining OpenAPI and `/docs/API.md`.\n- No stale or contradictory API reference remains in `MANIFEST.md`.",
+    "datetime": "2026-02-22T08:50:54Z",
+    "entry_id": "af50b30500bdeb4005ca5b87458b3552ef1f5339b9d2c36d5999399a606ee2ed",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

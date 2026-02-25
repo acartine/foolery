@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2dcf-79c0-b3f6-232bcc675cf9",
+  "occurred_at": "2026-02-23T17:12:54Z",
+  "knot_id": "foolery-g3y1.4.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Remove Beads-only wording/assumptions from orchestration and breakdown prompts."
+  }
+}

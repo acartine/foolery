@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4a1c-7773-9981-3a8c3b9fec05",
+  "occurred_at": "2026-02-20T07:28:26Z",
+  "knot_id": "foolery-xmg8.3.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Display a clear active-verification visual state (e.g., flicker/glow/status chip) on bead list/detail views.",
+    "description": "Display a clear active-verification visual state (e.g., flicker/glow/status chip) on bead list/detail views.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Render transition:verification status treatment",
+    "workflow_id": "default"
+  }
+}

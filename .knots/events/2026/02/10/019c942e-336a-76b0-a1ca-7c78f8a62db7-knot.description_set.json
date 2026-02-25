@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-336a-76b0-a1ca-7c78f8a62db7",
+  "occurred_at": "2026-02-10T16:09:10Z",
+  "knot_id": "foolery-jln",
+  "type": "knot.description_set",
+  "data": {
+    "description": "show 50 beads by default\nallow user to show more or less\npersist their decision"
+  }
+}

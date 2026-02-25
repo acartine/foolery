@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3df1-7ac2-885b-521eb0c28c87",
+  "occurred_at": "2026-02-16T19:50:36Z",
+  "knot_id": "foolery-qyey",
+  "type": "knot.created",
+  "data": {
+    "body": "after a scan, 'add all' should pop up if there is more than one agent.  it should register all.  default should chose from alphabetical order.  if there is only one, make the only the default.",
+    "description": "after a scan, 'add all' should pop up if there is more than one agent.  it should register all.  default should chose from alphabetical order.  if there is only one, make the only the default.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "settings scan results should support 'add all' button",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2131-7420-bcb7-a27d12f63e06",
+  "occurred_at": "2026-02-22T03:10:00Z",
+  "knot_id": "foolery-98qh",
+  "type": "knot.created",
+  "data": {
+    "body": "Agent history APIs should only be queried when history view is active. Hidden/inactive views must not poll /api/agent-history or per-bead history detail.",
+    "description": "Agent history APIs should only be queried when history view is active. Hidden/inactive views must not poll /api/agent-history or per-bead history detail.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Gate agent-history API usage to history view only",
+    "workflow_id": "default"
+  }
+}

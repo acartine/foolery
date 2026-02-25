@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-16ec-7263-a1a9-6550fe6b3eec",
+  "occurred_at": "2026-02-19T10:15:37Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2fqg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Refresh README badges and screenshots",
+    "updated_at": "2026-02-19T10:15:37Z",
+    "workflow_id": "default"
+  }
+}

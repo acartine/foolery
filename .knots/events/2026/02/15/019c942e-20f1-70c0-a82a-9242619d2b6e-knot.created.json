@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-20f1-70c0-a82a-9242619d2b6e",
+  "occurred_at": "2026-02-15T15:14:52Z",
+  "knot_id": "foolery-8zu2",
+  "type": "knot.created",
+  "data": {
+    "body": "when you select \"Manage repository\", the corresponding page looks totally different from the other views and there is no way to navigate back to where you came from.",
+    "description": "when you select \"Manage repository\", the corresponding page looks totally different from the other views and there is no way to navigate back to where you came from.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "repository flow is a dead end",
+    "workflow_id": "default"
+  }
+}

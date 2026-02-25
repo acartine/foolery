@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2cf0-7350-b851-4cc67a934a20",
+  "occurred_at": "2026-02-23T17:12:50Z",
+  "knot_id": "foolery-g3y1.3.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Implement KnotsBackend read paths (list/get/search/query/listReady) with local filtering."
+  }
+}

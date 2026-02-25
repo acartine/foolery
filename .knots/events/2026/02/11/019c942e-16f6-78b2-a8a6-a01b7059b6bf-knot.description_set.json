@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-16f6-78b2-a8a6-a01b7059b6bf",
+  "occurred_at": "2026-02-11T06:58:28Z",
+  "knot_id": "foolery-2j3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "on /beads table, we don't need an ID header, and it doesn't need to be sortable.  remove the header and the id sorting functionality."
+  }
+}

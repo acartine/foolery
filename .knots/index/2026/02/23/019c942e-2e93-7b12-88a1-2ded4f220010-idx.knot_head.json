@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2e93-7b12-88a1-2ded4f220010",
+  "occurred_at": "2026-02-23T17:12:57Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.5.3",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Validate table/filter/sort/hierarchy views on Knots repos",
+    "updated_at": "2026-02-23T17:12:57Z",
+    "workflow_id": "default"
+  }
+}

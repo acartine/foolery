@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4263-7df0-bed1-ac93974bd529",
+  "occurred_at": "2026-02-12T14:50:12Z",
+  "knot_id": "foolery-uqg",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Ignore .playwright-mcp directory in git",
+    "workflow_id": "default"
+  }
+}

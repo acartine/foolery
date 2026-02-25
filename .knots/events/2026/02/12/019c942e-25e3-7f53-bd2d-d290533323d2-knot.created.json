@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-25e3-7f53-bd2d-d290533323d2",
+  "occurred_at": "2026-02-12T10:08:26Z",
+  "knot_id": "foolery-cds",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Enable full Playwright MCP auto-accept for Codex and Claude user configs",
+    "workflow_id": "default"
+  }
+}

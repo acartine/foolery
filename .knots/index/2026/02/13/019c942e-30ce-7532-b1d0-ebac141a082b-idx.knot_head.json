@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-30ce-7532-b1d0-ebac141a082b",
+  "occurred_at": "2026-02-13T22:13:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-h9m",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove the TERMINAL label from the terminal title bar",
+    "updated_at": "2026-02-13T22:13:24Z",
+    "workflow_id": "default"
+  }
+}

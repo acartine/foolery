@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2e3c-72b3-b542-e24868e5913b",
+  "occurred_at": "2026-02-23T17:12:56Z",
+  "knot_id": "foolery-g3y1.5.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Keep Foolery statuses and map Knots states with raw Knots state preserved in metadata."
+  }
+}

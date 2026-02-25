@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2049-7871-9ca7-df83e3a4de92",
+  "occurred_at": "2026-02-17T15:01:10Z",
+  "knot_id": "foolery-8eob",
+  "type": "knot.description_set",
+  "data": {
+    "description": "All three agent-spawning managers hardcode Claude CLI flags that Codex doesn't understand. Create agent-adapter.ts and update orchestration-manager, breakdown-manager, and terminal-manager to use it."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1030-7d11-88c1-d9c116b2a335",
+  "occurred_at": "2026-02-23T13:07:20Z",
+  "knot_id": "foolery-0f0n",
+  "type": "knot.created",
+  "data": {
+    "body": "Rename the Foolery Issue Tracker Implementation API doc to Foolery Agent Memory Contract, expand it into a tutorial with pretty interface code blocks, include at least one concrete implementation example, convert code references to real links, and update README branding to describe Foolery as an Agent Memory Engagement tool.",
+    "description": "Rename the Foolery Issue Tracker Implementation API doc to Foolery Agent Memory Contract, expand it into a tutorial with pretty interface code blocks, include at least one concrete implementation example, convert code references to real links, and update README branding to describe Foolery as an Agent Memory Engagement tool.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Rebrand issue tracker integration docs to agent memory tutorial",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2e16-7262-8bc4-9cbedcbd0edb",
+  "occurred_at": "2026-02-23T17:12:55Z",
+  "knot_id": "foolery-g3y1.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Preserve current Foolery UI/status behavior while adding Knots compatibility and guardrails."
+  }
+}

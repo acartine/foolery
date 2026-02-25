@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1814-7d71-8663-e9b15ba10582",
+  "occurred_at": "2026-02-10T09:58:18Z",
+  "knot_id": "foolery-3e8",
+  "type": "knot.created",
+  "data": {
+    "body": "Create API routes: src/app/api/registry/route.ts (GET/POST/DELETE for registry CRUD) and src/app/api/registry/browse/route.ts (GET with ?path= for directory listing). Add registry schemas to src/lib/schemas.ts. Add RegisteredRepo and DirEntry types to src/lib/types.ts.",
+    "description": "Create API routes: src/app/api/registry/route.ts (GET/POST/DELETE for registry CRUD) and src/app/api/registry/browse/route.ts (GET with ?path= for directory listing). Add registry schemas to src/lib/schemas.ts. Add RegisteredRepo and DirEntry types to src/lib/types.ts.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Registry and browse API routes",
+    "workflow_id": "default"
+  }
+}

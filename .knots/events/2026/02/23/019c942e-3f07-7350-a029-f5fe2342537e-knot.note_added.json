@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3f07-7350-a029-f5fe2342537e",
+  "occurred_at": "2026-02-23T12:38:46Z",
+  "knot_id": "foolery-rhre",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff: Added docs/FOOLERY_ISSUE_TRACKER_INTEGRATION_API.md and linked it from README. Commit: b8223f5. Quality gates passed (lint, tsc --noEmit, test, build).",
+    "datetime": "2026-02-23T12:38:46Z",
+    "entry_id": "9595d4b52375c96e2dbdf3fdc71b917b66a5f4d208ca70299554a794b7fe6868",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

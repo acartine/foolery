@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-44da-7322-8eb6-d3ed4e3276a0",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Add component-level tests/stories for save/reset, missing-key errors, loading states, and empty/failed model catalog states.",
+    "description": "Add component-level tests/stories for save/reset, missing-key errors, loading states, and empty/failed model catalog states.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add UI coverage for OpenRouter settings flows",
+    "workflow_id": "default"
+  }
+}

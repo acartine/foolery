@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4c73-7081-b39d-91e30cfc2692",
+  "occurred_at": "2026-02-14T18:03:10Z",
+  "knot_id": "foolery-z26",
+  "type": "knot.created",
+  "data": {
+    "body": "ready should mean Open or In Progress.\n\nis only showing Open",
+    "description": "ready should mean Open or In Progress.\n\nis only showing Open",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "\"Ready\" filter is wrong, is missing In Progress",
+    "workflow_id": "default"
+  }
+}

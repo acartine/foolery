@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-37b0-7ea3-8ed7-35090de777e4",
+  "occurred_at": "2026-02-22T08:50:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene bardem-vertigo: Wave Planner - Dependency-Based Execution Waves",
+    "updated_at": "2026-02-22T08:50:53Z",
+    "workflow_id": "default"
+  }
+}

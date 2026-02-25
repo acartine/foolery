@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2110-7aa3-8c1a-cb0e677ee301",
+  "occurred_at": "2026-02-16T16:40:33Z",
+  "knot_id": "foolery-988k",
+  "type": "knot.created",
+  "data": {
+    "body": "Ready view should not show stage:verification tagged items.",
+    "description": "Ready view should not show stage:verification tagged items.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Exclude stage:verification beats from Ready view",
+    "workflow_id": "default"
+  }
+}

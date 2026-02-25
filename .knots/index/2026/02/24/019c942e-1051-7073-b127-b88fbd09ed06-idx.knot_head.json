@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1051-7073-b127-b88fbd09ed06",
+  "occurred_at": "2026-02-24T07:22:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0f0n",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Rebrand issue tracker integration docs to agent memory tutorial",
+    "updated_at": "2026-02-24T07:22:56Z",
+    "workflow_id": "default"
+  }
+}

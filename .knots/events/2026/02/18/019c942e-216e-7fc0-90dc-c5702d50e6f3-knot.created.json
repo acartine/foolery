@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-216e-7fc0-90dc-c5702d50e6f3",
+  "occurred_at": "2026-02-18T04:43:44Z",
+  "knot_id": "foolery-9a6a",
+  "type": "knot.created",
+  "data": {
+    "body": "shift-v shouuld \"verify\" the beat, removing any stage:* labels and closing the beat.",
+    "description": "shift-v shouuld \"verify\" the beat, removing any stage:* labels and closing the beat.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift-v points to wrong action in list view",
+    "workflow_id": "default"
+  }
+}

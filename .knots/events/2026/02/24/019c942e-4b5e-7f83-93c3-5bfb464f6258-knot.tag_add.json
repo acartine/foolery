@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b5e-7f83-93c3-5bfb464f6258",
+  "occurred_at": "2026-02-24T08:34:03Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "stage:verification"
+  }
+}

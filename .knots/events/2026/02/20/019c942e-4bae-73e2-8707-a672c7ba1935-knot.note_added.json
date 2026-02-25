@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-4bae-73e2-8707-a672c7ba1935",
+  "occurred_at": "2026-02-20T10:41:42Z",
+  "knot_id": "foolery-y7rj",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejection Reason:  beat type  pill still slightly higher vertically  than the pills in the columns to the left and right.",
+    "datetime": "2026-02-20T10:41:42Z",
+    "entry_id": "d2c31d6ea6f75edcead66333759a73ec3d7a66c497dd9017eb2460ff4ffcddb0",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

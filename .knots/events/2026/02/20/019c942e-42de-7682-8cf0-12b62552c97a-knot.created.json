@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-42de-7682-8cf0-12b62552c97a",
+  "occurred_at": "2026-02-20T05:20:30Z",
+  "knot_id": "foolery-vdk0",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  we should support openrouter.  this means implementing their api, having settings for the api key, showing the available models and their costs.",
+    "description": "as title says.  we should support openrouter.  this means implementing their api, having settings for the api key, showing the available models and their costs.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene jolie-gladiator: support openrouter",
+    "workflow_id": "default"
+  }
+}

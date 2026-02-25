@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-462f-77f0-9c83-96a69cecbc51",
+  "occurred_at": "2026-02-20T05:23:57Z",
+  "knot_id": "foolery-vdk0.5.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Validate that Take/Scene CLI flows remain stable while Direct/Breakdown work in both CLI and OpenRouter modes; fix any regressions found."
+  }
+}

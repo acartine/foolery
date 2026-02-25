@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-356c-7e93-858d-e28b62ac37e1",
+  "occurred_at": "2026-02-22T03:16:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kyfp",
+    "state": "shipped",
+    "terminal": true,
+    "title": "history view should just show the last 5 items, regardless of when they happened",
+    "updated_at": "2026-02-22T03:16:56Z",
+    "workflow_id": "default"
+  }
+}

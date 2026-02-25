@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-24a3-7a82-aa15-88a7fe7b69c9",
+  "occurred_at": "2026-02-15T06:01:07Z",
+  "knot_id": "foolery-brt",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - it should turn into a green X that can be clicked on to close the tap.",
+    "description": "as title says - it should turn into a green X that can be clicked on to close the tap.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "tab title blue dot in console should not keep flickering afte process is complete..",
+    "workflow_id": "default"
+  }
+}

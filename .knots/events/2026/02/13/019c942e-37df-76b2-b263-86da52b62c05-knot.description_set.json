@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-37df-76b2-b263-86da52b62c05",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.2.6",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Redesign Wave Planner into an actionable orchestration surface inspired by mature workflow UIs (pipeline lanes + execution summary). Include: summary stats, ready-now list, recommended next bead, and one-click Ship Next actions with clear disabled reasons when not runnable."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3fee-7091-ab6c-7fdb22e90495",
+  "occurred_at": "2026-02-13T14:08:47Z",
+  "knot_id": "foolery-s9v",
+  "type": "knot.created",
+  "data": {
+    "body": "console flickers and spams messages constantly after task is completed.  related to 31f it should just flicker the tab section at the top of the console, flickering dark/light green for 5 seconds and then simply close the tab and be certain to terminate the process.",
+    "description": "console flickers and spams messages constantly after task is completed.  related to 31f it should just flicker the tab section at the top of the console, flickering dark/light green for 5 seconds and then simply close the tab and be certain to terminate the process.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "console gets caught in infinite loop after task is finished",
+    "workflow_id": "default"
+  }
+}

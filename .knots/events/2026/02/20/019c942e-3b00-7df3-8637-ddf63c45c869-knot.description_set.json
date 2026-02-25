@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3b00-7df3-8637-ddf63c45c869",
+  "occurred_at": "2026-02-20T12:54:22Z",
+  "knot_id": "foolery-ptzv",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, no reason to stack them"
+  }
+}

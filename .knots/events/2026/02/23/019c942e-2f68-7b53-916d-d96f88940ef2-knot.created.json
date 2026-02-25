@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2f68-7b53-916d-d96f88940ef2",
+  "occurred_at": "2026-02-23T17:13:01Z",
+  "knot_id": "foolery-g3y1.7",
+  "type": "knot.created",
+  "data": {
+    "body": "Create follow-up epic outside g3y1 for full Knots-native workflow and memory API realignment.",
+    "description": "Create follow-up epic outside g3y1 for full Knots-native workflow and memory API realignment.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Create follow-up epic for Knots-native flow/API realignment",
+    "workflow_id": "default"
+  }
+}

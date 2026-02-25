@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-35bd-7041-8a15-2a2bcb72727f",
+  "occurred_at": "2026-02-16T22:03:49Z",
+  "knot_id": "foolery-l15m",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Remove bash 4+ features (declare -A, ${var,,}) from setup.sh and agent-wizard.sh for macOS compatibility"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1d71-7b83-bea2-0f2d3d47dedb",
+  "occurred_at": "2026-02-11T17:16:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6t1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "make repo pulldown and new button aligned horizontally on the right",
+    "updated_at": "2026-02-11T17:16:31Z",
+    "workflow_id": "default"
+  }
+}

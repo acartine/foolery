@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-20cc-7842-8397-cf378c5da228",
+  "occurred_at": "2026-02-18T04:47:25Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8r59",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Sort beats by priority then status in List/Final Cut",
+    "updated_at": "2026-02-18T04:47:25Z",
+    "workflow_id": "default"
+  }
+}

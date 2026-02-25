@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1a17-71c0-a4a6-4ec8f86e26e0",
+  "occurred_at": "2026-02-21T14:52:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-49zm",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beat view:  Changing beat property pulldown values should have feedback",
+    "updated_at": "2026-02-21T14:52:59Z",
+    "workflow_id": "default"
+  }
+}

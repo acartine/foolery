@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3f39-74e1-a50a-561f679a8c5b",
+  "occurred_at": "2026-02-23T10:47:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-rm0f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "history list navigation is laggy and provides no feedback",
+    "updated_at": "2026-02-23T10:47:50Z",
+    "workflow_id": "default"
+  }
+}

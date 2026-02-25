@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-384b-77a2-9ae8-dcb8e33d286c",
+  "occurred_at": "2026-02-22T03:10:33Z",
+  "knot_id": "foolery-mvc5",
+  "type": "knot.created",
+  "data": {
+    "body": "Closed bead fetches are expensive and should only happen when user explicitly selects closed/retakes views. Default list/final-cut/history views must not trigger status=closed queries.",
+    "description": "Closed bead fetches are expensive and should only happen when user explicitly selects closed/retakes views. Default list/final-cut/history views must not trigger status=closed queries.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Stop closed-bead queries unless explicitly requested",
+    "workflow_id": "default"
+  }
+}

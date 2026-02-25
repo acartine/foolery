@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2776-7042-8ed5-f9b709738d24",
+  "occurred_at": "2026-02-11T06:25:05Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d0l",
+    "state": "shipped",
+    "terminal": true,
+    "title": "clicking reject thumbs down doesn't work",
+    "updated_at": "2026-02-11T06:25:05Z",
+    "workflow_id": "default"
+  }
+}

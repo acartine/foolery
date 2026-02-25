@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2f62-75a0-ad75-52fbd1e4b424",
+  "occurred_at": "2026-02-23T17:24:10Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.6.4",
+    "state": "implementing",
+    "terminal": false,
+    "title": "Run quality gates and record verification handoff capsule",
+    "updated_at": "2026-02-23T17:24:10Z",
+    "workflow_id": "default"
+  }
+}

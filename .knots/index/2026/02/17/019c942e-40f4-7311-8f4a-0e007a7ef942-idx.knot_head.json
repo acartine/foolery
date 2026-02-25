@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-40f4-7311-8f4a-0e007a7ef942",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-smj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove \"Fooler\" header text from top left corner of /beads",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-259a-7422-8c75-164c3c702ca3",
+  "occurred_at": "2026-02-23T12:40:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-c23y",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Make repo discovery tracker-aware in setup and settings",
+    "updated_at": "2026-02-23T12:40:51Z",
+    "workflow_id": "default"
+  }
+}

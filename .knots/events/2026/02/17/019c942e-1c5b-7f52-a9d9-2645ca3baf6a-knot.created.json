@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1c5b-7f52-a9d9-2645ca3baf6a",
+  "occurred_at": "2026-02-17T12:17:52Z",
+  "knot_id": "foolery-6ego",
+  "type": "knot.created",
+  "data": {
+    "body": "- merge top two rows - we have title and ticket id twice.  just once is enough (do not show project prefix on id)\n- Change 'Move to Project' to 'Move'\n- don't show the project path, it's redundant.\n- show all labels regardless of how they are shown in list view.  in detail view we see them all.",
+    "description": "- merge top two rows - we have title and ticket id twice.  just once is enough (do not show project prefix on id)\n- Change 'Move to Project' to 'Move'\n- don't show the project path, it's redundant.\n- show all labels regardless of how they are shown in list view.  in detail view we see them all.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Detail Page:  clean up",
+    "workflow_id": "default"
+  }
+}

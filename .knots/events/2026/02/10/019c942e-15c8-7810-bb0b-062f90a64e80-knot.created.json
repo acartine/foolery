@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-15c8-7810-bb0b-062f90a64e80",
+  "occurred_at": "2026-02-10T15:57:00Z",
+  "knot_id": "foolery-1ya",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to add a bead note from the detail page. notes should be shown on the page if there any",
+    "description": "you should be able to add a bead note from the detail page. notes should be shown on the page if there any",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "add note functionality in detail page",
+    "workflow_id": "default"
+  }
+}

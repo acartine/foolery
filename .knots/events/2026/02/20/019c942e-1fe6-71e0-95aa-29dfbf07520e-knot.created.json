@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1fe6-71e0-95aa-29dfbf07520e",
+  "occurred_at": "2026-02-20T19:18:29Z",
+  "knot_id": "foolery-81h1",
+  "type": "knot.created",
+  "data": {
+    "body": "Backfill newly added settings for existing installs, with focus on automated review post-prompt settings. Ensure foolery start/restart backfills missing keys without overwriting existing user values. Add a foolery doctor check that detects missing settings defaults and offers an auto-fix to write missing keys.",
+    "description": "Backfill newly added settings for existing installs, with focus on automated review post-prompt settings. Ensure foolery start/restart backfills missing keys without overwriting existing user values. Add a foolery doctor check that detects missing settings defaults and offers an auto-fix to write missing keys.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Backfill missing automated review post-prompt setting on startup and via doctor",
+    "workflow_id": "default"
+  }
+}

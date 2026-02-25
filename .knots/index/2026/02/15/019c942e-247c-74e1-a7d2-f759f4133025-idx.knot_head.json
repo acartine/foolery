@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-247c-74e1-a7d2-f759f4133025",
+  "occurred_at": "2026-02-15T16:11:27Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bd8i",
+    "state": "shipped",
+    "terminal": true,
+    "title": "replace orchestration waves with scenes",
+    "updated_at": "2026-02-15T16:11:27Z",
+    "workflow_id": "default"
+  }
+}

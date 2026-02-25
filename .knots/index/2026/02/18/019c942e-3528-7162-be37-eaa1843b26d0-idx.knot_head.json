@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3528-7162-be37-eaa1843b26d0",
+  "occurred_at": "2026-02-18T09:15:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kxl1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "by default, hierarchical beats in beats view should be folded",
+    "updated_at": "2026-02-18T09:15:17Z",
+    "workflow_id": "default"
+  }
+}

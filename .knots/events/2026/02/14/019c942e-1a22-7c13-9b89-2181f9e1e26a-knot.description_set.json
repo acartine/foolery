@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1a22-7c13-9b89-2181f9e1e26a",
+  "occurred_at": "2026-02-14T07:24:04Z",
+  "knot_id": "foolery-4fa",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a bead update causes it to no longer match active filters, avoid abrupt disappearance and summary flash. Add a brief glow/fade transition, then remove row."
+  }
+}

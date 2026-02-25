@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3aba-72e1-bf88-7beaeccf7254",
+  "occurred_at": "2026-02-10T15:51:23Z",
+  "knot_id": "foolery-pnk",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, remove asignee column from /beads",
+    "description": "as title says, remove asignee column from /beads",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove assignee column",
+    "workflow_id": "default"
+  }
+}

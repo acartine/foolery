@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3828-7a23-ac55-1ddc1701b5f7",
+  "occurred_at": "2026-02-14T17:38:23Z",
+  "knot_id": "foolery-mr0",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, let's not clutter everything with prefixes."
+  }
+}

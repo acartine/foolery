@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1eb6-7760-8ed1-56d0df15c58e",
+  "occurred_at": "2026-02-20T10:20:14Z",
+  "knot_id": "foolery-79zi",
+  "type": "knot.created",
+  "data": {
+    "body": "if a selected bead is a parent, shift < should fold  and shift > should unfold.",
+    "description": "if a selected bead is a parent, shift < should fold  and shift > should unfold.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "add shift-< and shift- > to fold and unold, respectively",
+    "workflow_id": "default"
+  }
+}

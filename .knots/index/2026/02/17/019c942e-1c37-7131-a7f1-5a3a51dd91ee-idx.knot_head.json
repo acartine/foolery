@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1c37-7131-a7f1-5a3a51dd91ee",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5ws",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Status filter should show 'Ready' option",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-139e-7150-9bbc-302b51162e5e",
+  "occurred_at": "2026-02-22T18:58:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.3.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Refactor shared layers to consume BackendPort",
+    "updated_at": "2026-02-22T18:58:51Z",
+    "workflow_id": "default"
+  }
+}

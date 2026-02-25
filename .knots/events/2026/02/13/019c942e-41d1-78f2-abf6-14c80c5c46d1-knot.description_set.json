@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-41d1-78f2-abf6-14c80c5c46d1",
+  "occurred_at": "2026-02-13T10:25:42Z",
+  "knot_id": "foolery-tu0",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  you want to be able to hit\nshift-v\nshift-v\n\nand quickly cycle through the unverified beads."
+  }
+}

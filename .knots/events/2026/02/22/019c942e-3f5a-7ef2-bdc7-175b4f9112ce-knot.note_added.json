@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3f5a-7ef2-bdc7-175b4f9112ce",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "knot_id": "foolery-rmje",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-19):\n- Fix commit: e8f70b7 (pushed to origin/main).\n- Change: serialized all bd CLI execution per repo path in src/lib/bd.ts to prevent concurrent embedded Dolt opens.\n- Test: added src/lib/__tests__/bd-serialization.test.ts to lock same-repo concurrency and allow cross-repo parallelism.\n- Validation: bun run test -- src/lib/__tests__/bd-serialization.test.ts src/lib/__tests__/bd-update-labels.test.ts src/lib/__tests__/bd-auto-import-sync.test.ts src/lib/__tests__/bd.test.ts (pass).\n- Validation: bun run build (pass).\n- Validation: bun run lint fails on pre-existing repo issues (directory-browser hook immutability + Storybook renderer-package rules), unrelated to this change.\nHandoff capsule (2026-02-20, follow-up):\n- Follow-up fix commit: 389364b (pushed to origin/main).\n- Change: bd read commands now default to JSONL mode by setting BD_NO_DB=true in src/lib/bd.ts (list/ready/search/query/show/dep list), preventing embedded Dolt opens during read-heavy views.\n- Added fallback: if read bypass is disabled (FOOLERY_BD_READ_NO_DB=0), nil-pointer panic on read retries once with BD_NO_DB=true.\n- Added tests: src/lib/__tests__/bd-read-no-db.test.ts.\n- Validation: bun run test -- src/lib/__tests__/bd-read-no-db.test.ts src/lib/__tests__/bd-serialization.test.ts src/lib/__tests__/bd-update-labels.test.ts src/lib/__tests__/bd-auto-import-sync.test.ts src/lib/__tests__/bd.test.ts (pass).\n- Validation: bun run lint (warnings only, no errors), bun run build (pass).\n- Operational note: restart any running Foolery server process so new bd invocation behavior is active.\nReTake: happens again in list view, bummer.  investigate and fix",
+    "datetime": "2026-02-22T16:53:50Z",
+    "entry_id": "e243478e93b484fe2c33c24dc5a05b0903f9b473033297c56450556d6da3bb40",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

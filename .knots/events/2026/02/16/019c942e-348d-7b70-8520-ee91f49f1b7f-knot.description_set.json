@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-348d-7b70-8520-ee91f49f1b7f",
+  "occurred_at": "2026-02-16T18:45:37Z",
+  "knot_id": "foolery-kmof",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Current unit coverage baseline on main: 44.92% statements (265/590). To reach 70%, we need +148 covered statements while minimizing denominator growth. Highest-impact low-hanging targets already in the denominator: (1) src/lib/bd.ts has 110 uncovered statements; add mock-driven success/failure/parse-path tests across list/search/query/show/create/update/delete/sync branches (+70-90), (2) src/stores/terminal-store.ts has 39 uncovered; expand state-transition tests for open/close/toggle/history/tab/reset (+25-35), (3) src/lib/wave-slugs.ts has 23 uncovered; add edge-case slug parsing/validation tests (+15-20), (4) src/components/bead-columns.tsx has 111 uncovered; focus on exported helpers and key callback branches from getBeadColumns for targeted gains (+25-40), (5) quick wins: badge components + src/lib/utils.ts (+8-12). Estimated gain +143 to +197; realistic path to >=70% if bd.ts and bead-columns hit mid/high estimates. Guardrail: avoid importing new large untested modules until threshold is reached, or total statement count will increase and move the target."
+  }
+}

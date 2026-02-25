@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1bd7-7740-891e-32390f327d60",
+  "occurred_at": "2026-02-19T17:15:03Z",
+  "knot_id": "foolery-5jlw",
+  "type": "knot.created",
+  "data": {
+    "body": "apparently hitting shift-v wipes out the entire list of \"stage:verification\" beats, which then gets refreshed about 10 seconds later.  that is obviously wrong.\n\nwhat should happen is when you click shift-v, you should get some kind of UX/UI clue that you have initiated a verification, some kind of transition maybe, until the confirmation of the change has been received.",
+    "description": "apparently hitting shift-v wipes out the entire list of \"stage:verification\" beats, which then gets refreshed about 10 seconds later.  that is obviously wrong.\n\nwhat should happen is when you click shift-v, you should get some kind of UX/UI clue that you have initiated a verification, some kind of transition maybe, until the confirmation of the change has been received.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "FInal Cut View: shift-v causes the entire list to disappear for 10 seconds.  This is a bug",
+    "workflow_id": "default"
+  }
+}

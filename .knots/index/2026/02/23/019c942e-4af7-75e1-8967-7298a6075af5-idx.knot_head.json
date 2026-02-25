@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4af7-75e1-8967-7298a6075af5",
+  "occurred_at": "2026-02-23T12:40:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.4.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add race-condition/idempotency tests",
+    "updated_at": "2026-02-23T12:40:08Z",
+    "workflow_id": "default"
+  }
+}

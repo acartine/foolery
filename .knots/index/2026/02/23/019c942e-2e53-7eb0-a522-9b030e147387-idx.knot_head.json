@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2e53-7eb0-a522-9b030e147387",
+  "occurred_at": "2026-02-23T17:12:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.5.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Implement Knots-state compression with raw state metadata",
+    "updated_at": "2026-02-23T17:12:56Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4847-77f2-b879-6a9854c8c87b",
+  "occurred_at": "2026-02-20T07:28:21Z",
+  "knot_id": "foolery-xmg8.1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Specify deterministic transitions for stage:verification, transition:verification, stage:retry, attempt:N, and close behavior, including idempotent re-entry rules."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-34f2-76b3-8432-850b21108ef0",
+  "occurred_at": "2026-02-18T15:29:57Z",
+  "knot_id": "foolery-kx5f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In List view with status=ready, descendants currently appear top-level when an intermediate parent is not ready (blocked). Adjust ready response shaping so descendants are hidden unless every ancestor is present in the ready/in_progress result set, preserving hierarchy semantics."
+  }
+}

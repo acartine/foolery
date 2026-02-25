@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1908-78e0-a01b-225fba1b0887",
+  "occurred_at": "2026-02-15T09:23:07Z",
+  "knot_id": "foolery-3ji.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Define and implement Homebrew-based install path for Foolery as an independent track from direct Git install."
+  }
+}

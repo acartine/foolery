@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1921-7ca0-8b2d-83a9cb06b6dd",
+  "occurred_at": "2026-02-10T15:58:11Z",
+  "knot_id": "foolery-3jt",
+  "type": "knot.created",
+  "data": {
+    "body": "at present you have to reload the page which sucks.  we can poll bd every 10 seconds or something to capture changes.",
+    "description": "at present you have to reload the page which sucks.  we can poll bd every 10 seconds or something to capture changes.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "table and detail pages should be moderately self updating",
+    "workflow_id": "default"
+  }
+}

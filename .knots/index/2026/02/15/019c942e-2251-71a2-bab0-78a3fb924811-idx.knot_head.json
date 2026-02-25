@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2251-71a2-bab0-78a3fb924811",
+  "occurred_at": "2026-02-15T13:52:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9v09.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Publish OpenAPI document endpoint",
+    "updated_at": "2026-02-15T13:52:50Z",
+    "workflow_id": "default"
+  }
+}

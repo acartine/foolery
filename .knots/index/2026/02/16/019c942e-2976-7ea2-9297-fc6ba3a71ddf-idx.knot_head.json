@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2976-7ea2-9297-fc6ba3a71ddf",
+  "occurred_at": "2026-02-16T19:35:30Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-en5d",
+    "state": "shipped",
+    "terminal": true,
+    "title": "show the attempts: label in disabled label (no x)",
+    "updated_at": "2026-02-16T19:35:30Z",
+    "workflow_id": "default"
+  }
+}

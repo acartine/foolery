@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1db6-7363-a0a8-9311a5a80ded",
+  "occurred_at": "2026-02-12T13:43:05Z",
+  "knot_id": "foolery-6xc",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, don't clutter the ui for no reason, if we are showing all the beads, hide the pagination row.",
+    "description": "as title says, don't clutter the ui for no reason, if we are showing all the beads, hide the pagination row.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "only show pagination row if there are more beads",
+    "workflow_id": "default"
+  }
+}

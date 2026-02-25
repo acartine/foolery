@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1e21-7c70-a576-c8dd76e1f1b3",
+  "occurred_at": "2026-02-19T14:17:37Z",
+  "knot_id": "foolery-75fs",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Investigate why beat 'dwet' does not display the contest:orch label on the Beats screen and identify/fix filtering/rendering logic."
+  }
+}

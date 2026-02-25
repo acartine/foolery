@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-15cd-72e1-b6b6-06a8efa62459",
+  "occurred_at": "2026-02-10T15:57:00Z",
+  "knot_id": "foolery-1ya",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you should be able to add a bead note from the detail page. notes should be shown on the page if there any"
+  }
+}

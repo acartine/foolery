@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-17d4-7cc0-a774-d4445f514b32",
+  "occurred_at": "2026-02-16T19:49:03Z",
+  "knot_id": "foolery-321t",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, when you run a scan, if the path is long, the agent overruns the right side of the container.   to fix that we should truncate enough characters from the beginning of the path with '...' and a mouseover shows the full path."
+  }
+}

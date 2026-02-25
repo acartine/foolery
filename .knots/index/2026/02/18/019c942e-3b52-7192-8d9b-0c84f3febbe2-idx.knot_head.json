@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3b52-7192-8d9b-0c84f3febbe2",
+  "occurred_at": "2026-02-18T04:47:28Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qgi5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "viewswitcher component hopping from left to right",
+    "updated_at": "2026-02-18T04:47:28Z",
+    "workflow_id": "default"
+  }
+}

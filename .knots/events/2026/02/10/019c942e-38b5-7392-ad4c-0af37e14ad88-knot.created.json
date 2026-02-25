@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-38b5-7392-ad4c-0af37e14ad88",
+  "occurred_at": "2026-02-10T19:06:12Z",
+  "knot_id": "foolery-nex",
+  "type": "knot.created",
+  "data": {
+    "body": "beads requiring verification should show at the top, being subsorted by the same criteria as the rest of the beads.\n\nafter a different sorting selection is made from the title row, the verification rows are no longer treated specially",
+    "description": "beads requiring verification should show at the top, being subsorted by the same criteria as the rest of the beads.\n\nafter a different sorting selection is made from the title row, the verification rows are no longer treated specially",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "verification stage beads at top of /beads table",
+    "workflow_id": "default"
+  }
+}

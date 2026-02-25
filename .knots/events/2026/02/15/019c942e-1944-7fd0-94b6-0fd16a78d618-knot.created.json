@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1944-7fd0-94b6-0fd16a78d618",
+  "occurred_at": "2026-02-15T05:56:38Z",
+  "knot_id": "foolery-3no",
+  "type": "knot.created",
+  "data": {
+    "body": "the stop button gets cut in half, i'm gessing the cell isn't bug enough, which is weird because it has a shit ton of room on the left.",
+    "description": "the stop button gets cut in half, i'm gessing the cell isn't bug enough, which is weird because it has a shit ton of room on the left.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Rolling... with stop button table cell gets cut off",
+    "workflow_id": "default"
+  }
+}

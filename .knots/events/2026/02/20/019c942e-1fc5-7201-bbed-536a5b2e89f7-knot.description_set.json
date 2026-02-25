@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1fc5-7201-bbed-536a5b2e89f7",
+  "occurred_at": "2026-02-20T09:50:30Z",
+  "knot_id": "foolery-8135",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Capture ship follow-up execution failures where the prior worktree CWD no longer exists (e.g., deleted worktree), then provide recovery: retry using the prior session id when possible and/or show a failure UI prompt offering retry."
+  }
+}

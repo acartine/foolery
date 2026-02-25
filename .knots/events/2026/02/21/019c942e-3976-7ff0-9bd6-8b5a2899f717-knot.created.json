@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3976-7ff0-9bd6-8b5a2899f717",
+  "occurred_at": "2026-02-21T14:33:32Z",
+  "knot_id": "foolery-o65u",
+  "type": "knot.created",
+  "data": {
+    "body": "when we prompt agents for Take/Scene/Direct, we don't need to give them a full bead show dump - agents know how to query beads.  Just give them the bead ids.",
+    "description": "when we prompt agents for Take/Scene/Direct, we don't need to give them a full bead show dump - agents know how to query beads.  Just give them the bead ids.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "prompt tightening",
+    "workflow_id": "default"
+  }
+}

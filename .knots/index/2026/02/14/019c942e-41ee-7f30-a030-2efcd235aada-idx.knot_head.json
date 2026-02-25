@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-41ee-7f30-a030-2efcd235aada",
+  "occurred_at": "2026-02-14T19:01:48Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-tu0",
+    "state": "shipped",
+    "terminal": true,
+    "title": "after hitting shift-v on bead, the next item should be in focus",
+    "updated_at": "2026-02-14T19:01:48Z",
+    "workflow_id": "default"
+  }
+}

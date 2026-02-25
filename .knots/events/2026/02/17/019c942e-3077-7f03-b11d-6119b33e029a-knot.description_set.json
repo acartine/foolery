@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3077-7f03-b11d-6119b33e029a",
+  "occurred_at": "2026-02-17T09:11:22Z",
+  "knot_id": "foolery-gv86",
+  "type": "knot.description_set",
+  "data": {
+    "description": "remove all reference to Hydration and Quick Direct - it's simply 'Breakdown'.  there should be no reference to Quick Direct / Hydration anywhere in the codebase - only Breakdown.\n\nbe sure to make the changes in all UI elements, backend codepaths, and settings.  For choosing the agent for Breakdown, it should use the setting for Breakdown.  check that path as well."
+  }
+}

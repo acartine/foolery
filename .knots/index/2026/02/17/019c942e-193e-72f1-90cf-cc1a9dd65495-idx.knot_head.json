@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-193e-72f1-90cf-cc1a9dd65495",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3jt",
+    "state": "shipped",
+    "terminal": true,
+    "title": "table and detail pages should be moderately self updating",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

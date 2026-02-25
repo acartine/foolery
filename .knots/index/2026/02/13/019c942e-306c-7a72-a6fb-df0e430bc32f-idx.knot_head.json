@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-306c-7a72-a6fb-df0e430bc32f",
+  "occurred_at": "2026-02-13T14:01:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-gps",
+    "state": "shipped",
+    "terminal": true,
+    "title": "bead hierarch in list view is broken",
+    "updated_at": "2026-02-13T14:01:31Z",
+    "workflow_id": "default"
+  }
+}

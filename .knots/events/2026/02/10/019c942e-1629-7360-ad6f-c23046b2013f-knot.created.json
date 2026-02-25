@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1629-7360-ad6f-c23046b2013f",
+  "occurred_at": "2026-02-10T09:51:53Z",
+  "knot_id": "foolery-22b",
+  "type": "knot.created",
+  "data": {
+    "body": "the fields Assignee, due date, estimate are stupid.  remove them from the create new bead screen.",
+    "description": "the fields Assignee, due date, estimate are stupid.  remove them from the create new bead screen.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove unnecessary fields from bead creation",
+    "workflow_id": "default"
+  }
+}

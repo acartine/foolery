@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3d9f-7e80-ac8b-95cd2a37b236",
+  "occurred_at": "2026-02-17T21:29:00Z",
+  "knot_id": "foolery-qqla.4.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Ensure existing Direct workflows still work when no payload is supplied and no unexpected auto-run occurs.",
+    "description": "Ensure existing Direct workflows still work when no payload is supplied and no unexpected auto-run occurs.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add regression tests for non-autorun Direct usage",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-40d6-7911-aec9-87670919c00f",
+  "occurred_at": "2026-02-14T17:32:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-shg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "rearrange orchestration page layout for summary, terminal, wave diagram, and applied section",
+    "updated_at": "2026-02-14T17:32:23Z",
+    "workflow_id": "default"
+  }
+}

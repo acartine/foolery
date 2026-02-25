@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4c90-7e81-a4a6-0e5bf042f0cb",
+  "occurred_at": "2026-02-15T07:02:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-z26",
+    "state": "shipped",
+    "terminal": true,
+    "title": "\"Ready\" filter is wrong, is missing In Progress",
+    "updated_at": "2026-02-15T07:02:53Z",
+    "workflow_id": "default"
+  }
+}

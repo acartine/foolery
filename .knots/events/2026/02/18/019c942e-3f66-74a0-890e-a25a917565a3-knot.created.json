@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3f66-74a0-890e-a25a917565a3",
+  "occurred_at": "2026-02-18T15:27:01Z",
+  "knot_id": "foolery-ryv0",
+  "type": "knot.created",
+  "data": {
+    "body": "Repro: bash scripts/test-doctor-stream.sh --fix. After questionnaire, suggested fixes are not applied. Need local development path that tests updated doctor logic without changing installed production foolery binary or server.",
+    "description": "Repro: bash scripts/test-doctor-stream.sh --fix. After questionnaire, suggested fixes are not applied. Need local development path that tests updated doctor logic without changing installed production foolery binary or server.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "doctor --fix questionnaire answers are not applying fixes in stream test",
+    "workflow_id": "default"
+  }
+}

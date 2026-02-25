@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3afc-7f83-9f88-ba9524b693e0",
+  "occurred_at": "2026-02-20T12:54:22Z",
+  "knot_id": "foolery-ptzv",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, no reason to stack them",
+    "description": "as title says, no reason to stack them",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "direct view: put console and diagram components side by side",
+    "workflow_id": "default"
+  }
+}

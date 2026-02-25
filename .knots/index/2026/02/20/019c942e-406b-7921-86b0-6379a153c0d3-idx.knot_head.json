@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-406b-7921-86b0-6379a153c0d3",
+  "occurred_at": "2026-02-20T07:29:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-seev",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add a view ReTakes that shows closed beads in order of last updated",
+    "updated_at": "2026-02-20T07:29:23Z",
+    "workflow_id": "default"
+  }
+}

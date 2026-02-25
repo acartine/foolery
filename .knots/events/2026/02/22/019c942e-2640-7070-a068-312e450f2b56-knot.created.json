@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2640-7070-a068-312e450f2b56",
+  "occurred_at": "2026-02-22T03:11:20Z",
+  "knot_id": "foolery-cinw",
+  "type": "knot.created",
+  "data": {
+    "body": "Requests like /api/beads/<id>?_repo=... should not loop when bead param is stale/invalid or when non-list views are active. Ensure detail fetches are gated and URL params are cleared when detail view is not in use.",
+    "description": "Requests like /api/beads/<id>?_repo=... should not loop when bead param is stale/invalid or when non-list views are active. Ensure detail fetches are gated and URL params are cleared when detail view is not in use.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Stop stale bead-detail 404 polling when bead param is invalid",
+    "workflow_id": "default"
+  }
+}

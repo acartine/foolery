@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3a07-7421-a99b-943ab5d119ec",
+  "occurred_at": "2026-02-18T09:15:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-oxud",
+    "state": "shipped",
+    "terminal": true,
+    "title": "bulk select Scene! should actually create a scene visible on the scenes screen",
+    "updated_at": "2026-02-18T09:15:00Z",
+    "workflow_id": "default"
+  }
+}

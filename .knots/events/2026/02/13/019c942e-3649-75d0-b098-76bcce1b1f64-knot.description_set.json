@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3649-75d0-b098-76bcce1b1f64",
+  "occurred_at": "2026-02-13T13:48:22Z",
+  "knot_id": "foolery-l8n",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you should be able to toggle to list view and back to orchestrate without losing any state - the console output, the wave creation suggestions, etc."
+  }
+}

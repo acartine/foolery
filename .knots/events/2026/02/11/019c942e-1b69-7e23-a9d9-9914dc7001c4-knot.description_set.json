@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1b69-7e23-a9d9-9914dc7001c4",
+  "occurred_at": "2026-02-11T11:59:36Z",
+  "knot_id": "foolery-56x",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when you create a dialogue and are typing in the Description textarea, for example, if you use the up and down arrow keys it does not control the textarea, it cycles through the table on the underlying page (/beads)"
+  }
+}

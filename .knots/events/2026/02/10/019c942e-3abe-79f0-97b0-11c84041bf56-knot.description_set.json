@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3abe-79f0-97b0-11c84041bf56",
+  "occurred_at": "2026-02-10T15:51:23Z",
+  "knot_id": "foolery-pnk",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, remove asignee column from /beads"
+  }
+}

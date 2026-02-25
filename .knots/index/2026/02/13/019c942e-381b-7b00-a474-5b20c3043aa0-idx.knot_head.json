@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-381b-7b00-a474-5b20c3043aa0",
+  "occurred_at": "2026-02-13T15:44:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Orchestration UX references and interaction spec",
+    "updated_at": "2026-02-13T15:44:21Z",
+    "workflow_id": "default"
+  }
+}

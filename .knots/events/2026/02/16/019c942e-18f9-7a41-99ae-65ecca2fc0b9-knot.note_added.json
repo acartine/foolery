@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-18f9-7a41-99ae-65ecca2fc0b9",
+  "occurred_at": "2026-02-16T14:53:03Z",
+  "knot_id": "foolery-3ji.4.1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented scripts/install.sh with production build/install flow and launcher lifecycle commands (foolery start|stop|restart|status). Launcher now starts backend detached, writes stdout/stderr logs, tracks PID, supports restart/stop, and auto-opens browser on start. Validated via temp-prefix smoke test using install + start + status + restart + stop.\nFollow-up: installer now installs from GitHub Release runtime artifacts instead of cloning repository, while preserving foolery start|stop|restart|status lifecycle behavior and log/PID management.\nLauncher lifecycle behavior re-validated from release-installed runtime: start/status/stop produced expected PID/log handling and clean shutdown.\nCorrection: installed launcher now runs via node + Next binary (no bun runtime dependency). Verified with release artifact install and start/stop lifecycle on 2026-02-16.\nAdjusted launcher start behavior: by default, foolery start now prints PID/log paths and returns immediately while service continues in background. Added optional blocking readiness mode via FOOLERY_WAIT_FOR_READY=1.\nAdded lifecycle command: foolery uninstall. It stops running backend, then executes cleanup from a temporary script and removes runtime bundle, local state/logs, and launcher binary.",
+    "datetime": "2026-02-16T14:53:03Z",
+    "entry_id": "f94f2529eda60a8a86be0f871c2de50760685b556faed6b64dd252100e9ec099",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

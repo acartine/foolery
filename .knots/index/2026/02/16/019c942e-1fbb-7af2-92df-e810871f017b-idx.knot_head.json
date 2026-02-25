@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1fbb-7af2-92df-e810871f017b",
+  "occurred_at": "2026-02-16T19:21:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7zn",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Move repo/filter/page-size state from localStorage to URL params",
+    "updated_at": "2026-02-16T19:21:21Z",
+    "workflow_id": "default"
+  }
+}

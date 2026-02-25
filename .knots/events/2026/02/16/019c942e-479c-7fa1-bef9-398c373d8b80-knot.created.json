@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-479c-7fa1-bef9-398c373d8b80",
+  "occurred_at": "2026-02-16T15:41:27Z",
+  "knot_id": "foolery-wsk4",
+  "type": "knot.created",
+  "data": {
+    "body": "Button shows Add on beats, Wrap! on final cut, hidden on direct/scenes",
+    "description": "Button shows Add on beats, Wrap! on final cut, hidden on direct/scenes",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add button dynamically changes based on selected view",
+    "workflow_id": "default"
+  }
+}

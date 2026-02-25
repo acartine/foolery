@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-27b8-7440-abe7-7cfcfce8e53f",
+  "occurred_at": "2026-02-16T14:57:53Z",
+  "knot_id": "foolery-d61u",
+  "type": "knot.created",
+  "data": {
+    "body": "you can check 3 items in one repo and when you switch repos  the same item indexes in the 2nd repo are also selected.  obviously theyshould be unique per repo so you can switch interchangeably.",
+    "description": "you can check 3 items in one repo and when you switch repos  the same item indexes in the 2nd repo are also selected.  obviously theyshould be unique per repo so you can switch interchangeably.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "list checkbox state not unique per repo",
+    "workflow_id": "default"
+  }
+}

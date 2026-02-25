@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-397e-78f2-9d47-f9dde6d65db1",
+  "occurred_at": "2026-02-21T14:33:32Z",
+  "knot_id": "foolery-o65u",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when we prompt agents for Take/Scene/Direct, we don't need to give them a full bead show dump - agents know how to query beads.  Just give them the bead ids."
+  }
+}

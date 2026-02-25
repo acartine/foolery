@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1bd1-7452-98b9-c8f1de96799f",
+  "occurred_at": "2026-02-19T10:15:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5i57",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Manual bd doctor cleanup (config + artifact)",
+    "updated_at": "2026-02-19T10:15:45Z",
+    "workflow_id": "default"
+  }
+}

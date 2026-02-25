@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4d03-7521-be33-cc1c5ca206cf",
+  "occurred_at": "2026-02-22T03:11:50Z",
+  "knot_id": "foolery-zuf7",
+  "type": "knot.created",
+  "data": {
+    "body": "Current API shape uses /api/beads/:id?_repo=...; assess and propose migration to repo-first routes (e.g. /api/repos/:repo/beads/:id) to reduce coupling and clarify tenancy boundaries.",
+    "description": "Current API shape uses /api/beads/:id?_repo=...; assess and propose migration to repo-first routes (e.g. /api/repos/:repo/beads/:id) to reduce coupling and clarify tenancy boundaries.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "Evaluate repo-first API route shape for beads endpoints",
+    "workflow_id": "default"
+  }
+}

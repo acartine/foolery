@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-44f3-7fb3-9af4-8f70595e1e3f",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.3.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add UI coverage for OpenRouter settings flows",
+    "updated_at": "2026-02-20T05:23:53Z",
+    "workflow_id": "default"
+  }
+}

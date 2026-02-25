@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4534-75c1-a762-3ff2f8eee0e7",
+  "occurred_at": "2026-02-20T05:23:54Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add planner provider selection for Direct and Breakdown",
+    "updated_at": "2026-02-20T05:23:54Z",
+    "workflow_id": "default"
+  }
+}

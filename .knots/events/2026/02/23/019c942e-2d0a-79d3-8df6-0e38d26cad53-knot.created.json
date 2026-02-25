@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2d0a-79d3-8df6-0e38d26cad53",
+  "occurred_at": "2026-02-23T17:12:51Z",
+  "knot_id": "foolery-g3y1.3.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement create/update/close paths with deterministic state mapping and label/tag parity.",
+    "description": "Implement create/update/close paths with deterministic state mapping and label/tag parity.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Implement KnotsBackend mutation paths",
+    "workflow_id": "default"
+  }
+}

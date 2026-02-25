@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-455e-76c1-a7c4-482839e95674",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Update orchestration session startup to dispatch to CLI or OpenRouter executor based on settings and preserve current apply behavior.",
+    "description": "Update orchestration session startup to dispatch to CLI or OpenRouter executor based on settings and preserve current apply behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Integrate provider routing in orchestration manager",
+    "workflow_id": "default"
+  }
+}

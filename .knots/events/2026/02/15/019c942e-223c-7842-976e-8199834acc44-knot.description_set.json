@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-223c-7842-976e-8199834acc44",
+  "occurred_at": "2026-02-15T13:52:36Z",
+  "knot_id": "foolery-9v09.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Expose the generated or maintained OpenAPI JSON at a stable endpoint (`/api/openapi.json` or `/.well-known/openapi.json`) and ensure it stays in sync with route changes."
+  }
+}

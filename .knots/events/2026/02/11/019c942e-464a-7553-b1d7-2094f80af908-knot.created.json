@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-464a-7553-b1d7-2094f80af908",
+  "occurred_at": "2026-02-11T18:15:02Z",
+  "knot_id": "foolery-vje",
+  "type": "knot.created",
+  "data": {
+    "body": "it expands to the right forever, which makes it look awful when maximized.  for example, the repo button is way to the right of the status column, and the row horizontal borders stretch stupidly all the way to the right.\n\ni'm not a ui expert.  pretend you are and do something smart there, it looks terrible.",
+    "description": "it expands to the right forever, which makes it look awful when maximized.  for example, the repo button is way to the right of the status column, and the row horizontal borders stretch stupidly all the way to the right.\n\ni'm not a ui expert.  pretend you are and do something smart there, it looks terrible.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "the alignment of the /beads page is totally broken",
+    "workflow_id": "default"
+  }
+}

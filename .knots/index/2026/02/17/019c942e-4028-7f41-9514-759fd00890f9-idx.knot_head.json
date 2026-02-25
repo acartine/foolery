@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4028-7f41-9514-759fd00890f9",
+  "occurred_at": "2026-02-17T08:57:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-sbl2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "default status for list page should be Ready",
+    "updated_at": "2026-02-17T08:57:13Z",
+    "workflow_id": "default"
+  }
+}

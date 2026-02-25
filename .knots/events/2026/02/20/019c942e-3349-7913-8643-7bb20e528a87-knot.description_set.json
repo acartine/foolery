@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3349-7913-8643-7bb20e528a87",
+  "occurred_at": "2026-02-20T11:59:12Z",
+  "knot_id": "foolery-jbtq",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, get rid of that link, makes no sense in that context"
+  }
+}

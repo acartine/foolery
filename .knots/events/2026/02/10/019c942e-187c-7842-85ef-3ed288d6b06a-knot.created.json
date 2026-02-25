@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-187c-7842-85ef-3ed288d6b06a",
+  "occurred_at": "2026-02-10T14:20:47Z",
+  "knot_id": "foolery-3ji.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Create and validate the Homebrew installation path (tap/formula and release artifact wiring) so users can install foolery with brew.",
+    "description": "Create and validate the Homebrew installation path (tap/formula and release artifact wiring) so users can install foolery with brew.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add Homebrew distribution path for foolery executable",
+    "workflow_id": "default"
+  }
+}

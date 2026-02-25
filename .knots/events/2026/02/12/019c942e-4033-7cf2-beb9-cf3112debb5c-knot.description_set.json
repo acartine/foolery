@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4033-7cf2-beb9-cf3112debb5c",
+  "occurred_at": "2026-02-12T10:36:18Z",
+  "knot_id": "foolery-se1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in addition to removing stage:verification, the thumbs down should add/replace the following labels\n\nstage:retry\nattempts:{number of attempts}\n\nfor example, if bead only has\n\nstage:verification\n\nthumbs down would change labels to\n\nstage:retry \nattempts:1\n\nif bead has\n\nstage:verification\nattempts:2\n\nthums down would change labels to\n\nstage:retry\nattempts:3"
+  }
+}

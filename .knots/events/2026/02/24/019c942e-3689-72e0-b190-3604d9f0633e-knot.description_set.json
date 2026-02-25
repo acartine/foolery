@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3689-72e0-b190-3604d9f0633e",
+  "occurred_at": "2026-02-24T08:41:00Z",
+  "knot_id": "foolery-lxpz",
+  "type": "knot.description_set",
+  "data": {
+    "description": "i selected 'blocks 92k7` to `ioos` and it appears to have applied it the other way around."
+  }
+}

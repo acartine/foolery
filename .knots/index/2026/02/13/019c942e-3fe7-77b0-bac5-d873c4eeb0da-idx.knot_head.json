@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3fe7-77b0-bac5-d873c4eeb0da",
+  "occurred_at": "2026-02-13T22:13:26Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-s3q",
+    "state": "shipped",
+    "terminal": true,
+    "title": "ship vs. shipping states",
+    "updated_at": "2026-02-13T22:13:26Z",
+    "workflow_id": "default"
+  }
+}

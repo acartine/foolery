@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-22be-7ba3-9bf4-07b57a50500b",
+  "occurred_at": "2026-02-10T10:25:42Z",
+  "knot_id": "foolery-a0w",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we want to be able to bulk edit by checking a checkbox next to each item (or a top left corner table checkbox that selects all)\n\nwe should be able to edit\n\ntype, priority, labels, status"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2467-7060-8e8a-1ed2c6b12d95",
+  "occurred_at": "2026-02-15T09:25:47Z",
+  "knot_id": "foolery-bd8i",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when there are no scenes, you see \"no orchestration waves found for foolery\"\n\nreplace orchestration waves with 'scenes'.  look for other such labels/text in the codebase and replace those too"
+  }
+}

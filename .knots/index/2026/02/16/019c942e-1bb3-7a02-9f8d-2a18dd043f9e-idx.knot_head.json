@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1bb3-7a02-9f8d-2a18dd043f9e",
+  "occurred_at": "2026-02-16T15:09:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5hvk",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene mode should execute directly without planning handoff",
+    "updated_at": "2026-02-16T15:09:00Z",
+    "workflow_id": "default"
+  }
+}

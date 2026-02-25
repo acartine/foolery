@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2735-7973-90f2-135500ac2e42",
+  "occurred_at": "2026-02-13T22:21:18Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cxc",
+    "state": "shipped",
+    "terminal": true,
+    "title": "multi terminal support",
+    "updated_at": "2026-02-13T22:21:18Z",
+    "workflow_id": "default"
+  }
+}

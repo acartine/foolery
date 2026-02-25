@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-17b0-7ec3-b146-35437e0a08c8",
+  "occurred_at": "2026-02-16T16:39:09Z",
+  "knot_id": "foolery-31ho",
+  "type": "knot.created",
+  "data": {
+    "body": "ask user if they want foolery to search for and auto-register agents such as claude, codex, gemini-cli.  if yes, see if claude, codex, or gemeni-cli is already installed.  if more than one agent is installed, prompt them for each of the actions we support, asking them which agent to use and what model.",
+    "description": "ask user if they want foolery to search for and auto-register agents such as claude, codex, gemini-cli.  if yes, see if claude, codex, or gemeni-cli is already installed.  if more than one agent is installed, prompt them for each of the actions we support, asking them which agent to use and what model.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "install prompts for agent scan and register",
+    "workflow_id": "default"
+  }
+}

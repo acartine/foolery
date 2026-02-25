@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4135-7371-8c4e-07164bfedf3c",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-t7rn",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Mount only active /beads view to stop hidden polling",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3157-7ae1-9589-d1135ddbc43f",
+  "occurred_at": "2026-02-23T12:38:40Z",
+  "knot_id": "foolery-hh7o",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added .changeset/release-hh7o.md (minor release notes) on main. Quality gates passed in dedicated worktree: bun run lint (warnings only), bunx tsc --noEmit, bun run test (53/53 files), bun run build. Commits: f3eaab9 (changeset), 32cb49d (bead sync). Pushed to origin/main.",
+    "datetime": "2026-02-23T12:38:40Z",
+    "entry_id": "2e2d5b351e8ddfc8a0b2853f5227e2baba29847a5e40b610f49e4196be93a258",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

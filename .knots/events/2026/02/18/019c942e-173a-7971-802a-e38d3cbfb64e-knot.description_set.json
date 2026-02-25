@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-173a-7971-802a-e38d3cbfb64e",
+  "occurred_at": "2026-02-18T12:03:26Z",
+  "knot_id": "foolery-2qv7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The streaming renderer in the CLI receives batch JSON when stream param not recognized. Fix: (1) add defensive guard skipping events without category/label, (2) guard ev.summary with || '' to prevent undefined coercion, (3) use req.nextUrl instead of new URL(req.url) in route.ts"
+  }
+}

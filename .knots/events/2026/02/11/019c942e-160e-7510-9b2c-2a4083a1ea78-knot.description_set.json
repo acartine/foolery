@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-160e-7510-9b2c-2a4083a1ea78",
+  "occurred_at": "2026-02-11T07:48:12Z",
+  "knot_id": "foolery-217",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when you search for something and there are no results, you have no way to go back.  we should provide a navigation helper there."
+  }
+}

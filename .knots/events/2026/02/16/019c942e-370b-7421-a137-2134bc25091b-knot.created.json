@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-370b-7421-a137-2134bc25091b",
+  "occurred_at": "2026-02-16T18:41:30Z",
+  "knot_id": "foolery-mh2m",
+  "type": "knot.created",
+  "data": {
+    "body": "Resolve current failing unit and Storybook Vitest suites; restore a working test command in package scripts.",
+    "description": "Resolve current failing unit and Storybook Vitest suites; restore a working test command in package scripts.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Fix failing test suites",
+    "workflow_id": "default"
+  }
+}

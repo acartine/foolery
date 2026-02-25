@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3381-7021-a112-906578749635",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-jln",
+    "state": "shipped",
+    "terminal": true,
+    "title": "configurable paging",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

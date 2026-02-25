@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-47c0-70a3-97a1-87e5a7912355",
+  "occurred_at": "2026-02-20T10:44:40Z",
+  "knot_id": "foolery-wxr8",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  overview component is aligned with the fold/unfold toggles and not the beat title text, which is confusing."
+  }
+}

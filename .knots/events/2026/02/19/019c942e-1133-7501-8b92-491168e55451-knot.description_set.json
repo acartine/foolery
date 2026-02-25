@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1133-7501-8b92-491168e55451",
+  "occurred_at": "2026-02-19T05:26:40Z",
+  "knot_id": "foolery-0vdz",
+  "type": "knot.description_set",
+  "data": {
+    "description": "get code coverage over 90%"
+  }
+}

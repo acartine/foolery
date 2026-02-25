@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-13dd-7653-a9db-ff51c163aa01",
+  "occurred_at": "2026-02-23T12:37:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene spotlight-take: Beads Adapter",
+    "updated_at": "2026-02-23T12:37:42Z",
+    "workflow_id": "default"
+  }
+}

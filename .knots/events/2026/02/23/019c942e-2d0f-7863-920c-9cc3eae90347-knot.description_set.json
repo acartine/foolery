@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2d0f-7863-920c-9cc3eae90347",
+  "occurred_at": "2026-02-23T17:12:51Z",
+  "knot_id": "foolery-g3y1.3.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Implement create/update/close paths with deterministic state mapping and label/tag parity."
+  }
+}

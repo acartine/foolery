@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4364-7b81-b8aa-bb89e49cd79a",
+  "occurred_at": "2026-02-20T05:23:50Z",
+  "knot_id": "foolery-vdk0.1.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover missing-file defaults, partial updates, and save/load round-trip for new OpenRouter fields in settings tests.",
+    "description": "Cover missing-file defaults, partial updates, and save/load round-trip for new OpenRouter fields in settings tests.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add settings tests for OpenRouter defaults and TOML round-trip",
+    "workflow_id": "default"
+  }
+}

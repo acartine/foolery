@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2ca4-7c12-ad5d-82a2406989e1",
+  "occurred_at": "2026-02-23T17:12:48Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.2.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Backfill and doctor checks for Knots-aware repo metadata",
+    "updated_at": "2026-02-23T17:12:48Z",
+    "workflow_id": "default"
+  }
+}

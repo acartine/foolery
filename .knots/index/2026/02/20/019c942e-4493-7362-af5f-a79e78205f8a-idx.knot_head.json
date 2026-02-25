@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4493-7362-af5f-a79e78205f8a",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.3.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add OpenRouter section to Settings sheet",
+    "updated_at": "2026-02-20T05:23:53Z",
+    "workflow_id": "default"
+  }
+}

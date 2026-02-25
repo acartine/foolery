@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-174d-7bb2-93ac-91475e5b9a76",
+  "occurred_at": "2026-02-18T18:37:43Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-2qv7",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix foolery doctor showing undefined instead of check results",
+    "updated_at": "2026-02-18T18:37:43Z",
+    "workflow_id": "default"
+  }
+}

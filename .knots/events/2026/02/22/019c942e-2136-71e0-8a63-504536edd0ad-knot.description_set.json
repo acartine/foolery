@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2136-71e0-8a63-504536edd0ad",
+  "occurred_at": "2026-02-22T03:10:00Z",
+  "knot_id": "foolery-98qh",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Agent history APIs should only be queried when history view is active. Hidden/inactive views must not poll /api/agent-history or per-bead history detail."
+  }
+}

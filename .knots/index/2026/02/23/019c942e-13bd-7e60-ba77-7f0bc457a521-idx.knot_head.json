@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-13bd-7e60-ba77-7f0bc457a521",
+  "occurred_at": "2026-02-23T12:37:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.3.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add temporary stub backend for incremental migration",
+    "updated_at": "2026-02-23T12:37:41Z",
+    "workflow_id": "default"
+  }
+}

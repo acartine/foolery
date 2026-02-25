@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3ec7-7b20-8877-191f7894a57d",
+  "occurred_at": "2026-02-17T13:29:20Z",
+  "knot_id": "foolery-rdfu",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "description": "as title says",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Claude Code opus in model detail bar of terminal should say the version number (4.6), not just the name.",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3a97-7fb0-8040-58add8d91bbc",
+  "occurred_at": "2026-02-14T07:52:22Z",
+  "knot_id": "foolery-pil",
+  "type": "knot.created",
+  "data": {
+    "body": "after any level wave is executed, look at all parent beats anywhere in the hierarchy (going up, down, and across) and see if they have any remaining 'ready' beats (open or inprogress).  If not, close the parent.\n\nif the parent beat only has child beats that are inprogress AND stage:verification, highly that beat with an embedded banner that says something like 'built for review', and offer the check/thumbs down ux you see on the list view for inprogress / stage-verification beads.",
+    "description": "after any level wave is executed, look at all parent beats anywhere in the hierarchy (going up, down, and across) and see if they have any remaining 'ready' beats (open or inprogress).  If not, close the parent.\n\nif the parent beat only has child beats that are inprogress AND stage:verification, highly that beat with an embedded banner that says something like 'built for review', and offer the check/thumbs down ux you see on the list view for inprogress / stage-verification beads.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "regroom orchestration",
+    "workflow_id": "default"
+  }
+}

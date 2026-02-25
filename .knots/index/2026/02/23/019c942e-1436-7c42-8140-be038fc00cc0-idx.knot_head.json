@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1436-7c42-8140-be038fc00cc0",
+  "occurred_at": "2026-02-23T06:41:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.4.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement beads adapter sync/history/lifecycle operations",
+    "updated_at": "2026-02-23T06:41:21Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2d2d-7712-90de-32a0b0b8ec06",
+  "occurred_at": "2026-02-23T17:12:51Z",
+  "knot_id": "foolery-g3y1.3.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Implement dependency + hierarchy translation via edge commands (blocked_by/parent_of)."
+  }
+}

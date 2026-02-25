@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3ea3-73a0-a5b3-7d9a42e1774c",
+  "occurred_at": "2026-02-15T07:27:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ra5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "after selecting bead filter, focus should return to top row",
+    "updated_at": "2026-02-15T07:27:58Z",
+    "workflow_id": "default"
+  }
+}

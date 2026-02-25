@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3b72-7633-aead-cfc287d2ab6e",
+  "occurred_at": "2026-02-20T12:20:23Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qiqm",
+    "state": "shipped",
+    "terminal": true,
+    "title": "top level parent beats title misaligned, count pill and arrows should be swapped",
+    "updated_at": "2026-02-20T12:20:23Z",
+    "workflow_id": "default"
+  }
+}

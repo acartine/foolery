@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-221c-7b31-8aae-109261031492",
+  "occurred_at": "2026-02-15T13:52:35Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Produce a complete OpenAPI 3.1 specification for all current API routes, including request/response schemas, examples, and error surfaces."
+  }
+}

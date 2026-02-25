@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3bd9-7d23-bc59-762bda7f7b7f",
+  "occurred_at": "2026-02-20T07:30:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.1.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Define breakdown prompt builder utility",
+    "updated_at": "2026-02-20T07:30:40Z",
+    "workflow_id": "default"
+  }
+}

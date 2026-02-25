@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-32c8-79b1-b41b-a2a31da1b45c",
+  "occurred_at": "2026-02-16T21:43:42Z",
+  "knot_id": "foolery-iw2e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a 'foolery setup' subcommand (like 'bd setup') that runs interactive configuration after install. This replaces the wizard prompts that were embedded in install.sh (which never fired because curl|bash pipes stdin). Setup should: (1) run the repo discovery wizard (scan for local clones with .beads/, offer to mount them), (2) run the agent discovery wizard (scan for claude/codex/gemini, prompt for action mappings and models). Install.sh should be made silent (no interactive prompts) and print a hint to run 'foolery setup' afterward. Consolidates work from cxcv (repo wizard) and 31ho (agent wizard) into a proper post-install command."
+  }
+}

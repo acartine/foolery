@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1a47-7743-bddd-948b48d205ef",
+  "occurred_at": "2026-02-15T05:54:44Z",
+  "knot_id": "foolery-4gp",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says.  when Take! or Action! is called and the console pops up, let's show a big chunk of the title, first 40 chars."
+  }
+}

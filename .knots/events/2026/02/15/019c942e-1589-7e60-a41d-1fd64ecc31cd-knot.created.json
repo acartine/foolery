@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1589-7e60-a41d-1fd64ecc31cd",
+  "occurred_at": "2026-02-15T05:31:39Z",
+  "knot_id": "foolery-1ng",
+  "type": "knot.created",
+  "data": {
+    "body": "When a Plan Waves run starts, emit the full initial prompt into the orchestration console so users can see exactly what was sent to Claude.",
+    "description": "When a Plan Waves run starts, emit the full initial prompt into the orchestration console so users can see exactly what was sent to Claude.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Show initial Plan Waves prompt in orchestration console",
+    "workflow_id": "default"
+  }
+}

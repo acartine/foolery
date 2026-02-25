@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2cb1-7c41-ac84-a916f45db4cf",
+  "occurred_at": "2026-02-23T17:12:49Z",
+  "knot_id": "foolery-g3y1.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Implement BackendPort-compatible Knots backend and adapter."
+  }
+}

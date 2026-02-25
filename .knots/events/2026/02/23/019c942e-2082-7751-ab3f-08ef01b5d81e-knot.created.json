@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2082-7751-ab3f-08ef01b5d81e",
+  "occurred_at": "2026-02-23T10:43:09Z",
+  "knot_id": "foolery-8iga",
+  "type": "knot.created",
+  "data": {
+    "body": "if you hide the terminal and reload the page, the terminal is gone forever, even while it is still working.  You need to be able to see ongoing work.\n\nPerhaps one way to solve this is by keeping the terminal minimized on the bottom instead of completely hiding it with shift-t",
+    "description": "if you hide the terminal and reload the page, the terminal is gone forever, even while it is still working.  You need to be able to see ongoing work.\n\nPerhaps one way to solve this is by keeping the terminal minimized on the bottom instead of completely hiding it with shift-t",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "make Take!/Scene! terminals persistent until completed",
+    "workflow_id": "default"
+  }
+}

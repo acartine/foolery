@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-17aa-7070-85b1-0c98ab4e6fd5",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-31f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "the blue dot next to the bead id in the terminal should blink when the terminal is running.",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

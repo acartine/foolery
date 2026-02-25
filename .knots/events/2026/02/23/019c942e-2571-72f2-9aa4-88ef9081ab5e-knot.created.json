@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2571-72f2-9aa4-88ef9081ab5e",
+  "occurred_at": "2026-02-23T08:42:02Z",
+  "knot_id": "foolery-c23y",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend repo discovery during foolery setup and settings lightbox flows to search for known issue tracker implementations and validate compatibility. Initial known implementation list contains only beads.",
+    "description": "Extend repo discovery during foolery setup and settings lightbox flows to search for known issue tracker implementations and validate compatibility. Initial known implementation list contains only beads.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Make repo discovery tracker-aware in setup and settings",
+    "workflow_id": "default"
+  }
+}

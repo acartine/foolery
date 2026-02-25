@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2910-7501-ab1c-9ffb148ac320",
+  "occurred_at": "2026-02-17T15:49:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e92j",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove repo page - make list page default - repo registry in settings page",
+    "updated_at": "2026-02-17T15:49:31Z",
+    "workflow_id": "default"
+  }
+}

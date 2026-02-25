@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-27bc-7241-88e1-69999090798a",
+  "occurred_at": "2026-02-16T14:57:53Z",
+  "knot_id": "foolery-d61u",
+  "type": "knot.description_set",
+  "data": {
+    "description": "you can check 3 items in one repo and when you switch repos  the same item indexes in the 2nd repo are also selected.  obviously theyshould be unique per repo so you can switch interchangeably."
+  }
+}

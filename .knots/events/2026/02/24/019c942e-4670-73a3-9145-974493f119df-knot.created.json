@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4670-73a3-9145-974493f119df",
+  "occurred_at": "2026-02-24T17:54:39Z",
+  "knot_id": "foolery-vsnv",
+  "type": "knot.created",
+  "data": {
+    "body": "Knots implementaiton fails with \n\nerror: unexpected argument '- ' found tip: to pass '- ' as a value, use '-- - ' Usage: kno new [OPTIONS] <TITLE> For more information, try '--help'.\n\nwhen trying to create a new item",
+    "description": "Knots implementaiton fails with \n\nerror: unexpected argument '- ' found tip: to pass '- ' as a value, use '-- - ' Usage: kno new [OPTIONS] <TITLE> For more information, try '--help'.\n\nwhen trying to create a new item",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Create Lightbox: Knots create fails",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-48aa-7133-8ad6-b94f165aa250",
+  "occurred_at": "2026-02-20T07:28:22Z",
+  "knot_id": "foolery-xmg8.1.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create reusable helpers for commit label detection (commit:<sha>), attempt label parsing/increment, and safe label mutation operations."
+  }
+}

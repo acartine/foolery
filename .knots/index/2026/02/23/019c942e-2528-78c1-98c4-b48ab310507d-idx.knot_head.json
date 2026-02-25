@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2528-78c1-98c4-b48ab310507d",
+  "occurred_at": "2026-02-23T12:38:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bwws",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Show issue tracker type in registered repos settings",
+    "updated_at": "2026-02-23T12:38:31Z",
+    "workflow_id": "default"
+  }
+}

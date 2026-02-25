@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-485b-7c31-8332-ecaa6903d551",
+  "occurred_at": "2026-02-23T12:40:01Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.1.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Define verification state machine and label invariants",
+    "updated_at": "2026-02-23T12:40:01Z",
+    "workflow_id": "default"
+  }
+}

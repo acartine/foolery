@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1364-79b3-82da-8af4a42f0a64",
+  "occurred_at": "2026-02-22T18:58:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.3.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add backend factory and dependency injection seam",
+    "updated_at": "2026-02-22T18:58:51Z",
+    "workflow_id": "default"
+  }
+}

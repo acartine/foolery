@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-36c9-7af2-a3c0-ffc715e1b39a",
+  "occurred_at": "2026-02-12T11:44:09Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-m24",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Clicking bead in /beads shows bead not found",
+    "updated_at": "2026-02-12T11:44:09Z",
+    "workflow_id": "default"
+  }
+}

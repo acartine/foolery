@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1bcc-7f93-b3b8-3193fe10fdc4",
+  "occurred_at": "2026-02-19T10:15:45Z",
+  "knot_id": "foolery-5i57",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-19): committed da876d2 and pushed to origin/main. Changes: enabled sync-branch in .beads/config.yaml, replaced .beads/issues.jsonl with empty .beads/beads.jsonl to remove classic artifact path, exported safety backup to /tmp/foolery-issues-backup-20260219.jsonl. Post-push bd doctor: 71 passed, 4 warnings (remaining warnings are local upstream/version-tracking and Dolt config working-set status).",
+    "datetime": "2026-02-19T10:15:45Z",
+    "entry_id": "9faea0e8a0651a8e3c681f2e1ad96e640156265234fbcee59fd1d4d31c9fd6b0",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

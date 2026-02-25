@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-27fd-7743-8e9b-b6a9610941de",
+  "occurred_at": "2026-02-14T07:10:11Z",
+  "knot_id": "foolery-dgx",
+  "type": "knot.description_set",
+  "data": {
+    "description": "don't reset search filters on reload - save them in the url so they are preserved after refresh"
+  }
+}

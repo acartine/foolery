@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1e38-74b3-80bb-e2a019279378",
+  "occurred_at": "2026-02-19T16:40:39Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-75fs",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Dwet missing contest:orch label on Beats screen",
+    "updated_at": "2026-02-19T16:40:39Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2087-7042-ad90-f59789a38d72",
+  "occurred_at": "2026-02-23T10:43:09Z",
+  "knot_id": "foolery-8iga",
+  "type": "knot.description_set",
+  "data": {
+    "description": "if you hide the terminal and reload the page, the terminal is gone forever, even while it is still working.  You need to be able to see ongoing work.\n\nPerhaps one way to solve this is by keeping the terminal minimized on the bottom instead of completely hiding it with shift-t"
+  }
+}

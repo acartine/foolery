@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1f7e-7a13-b673-25eab6c4d1ab",
+  "occurred_at": "2026-02-15T07:03:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7u0",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Rewrite apply should auto-close emptied source wave parents",
+    "updated_at": "2026-02-15T07:03:02Z",
+    "workflow_id": "default"
+  }
+}

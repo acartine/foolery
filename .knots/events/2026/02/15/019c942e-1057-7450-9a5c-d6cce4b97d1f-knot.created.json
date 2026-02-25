@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1057-7450-9a5c-d6cce4b97d1f",
+  "occurred_at": "2026-02-15T05:29:43Z",
+  "knot_id": "foolery-0gg",
+  "type": "knot.created",
+  "data": {
+    "body": "replace the word 'Wave' with 'Scene'\n\nRemove the title 'Orchestration view', it's unnecesasry.\n\nReplace Apply Wave Beats with 'Approve Board'\n\nAdd new button 'Approve And Shoot' with a video camera icon that is disabled until the planning is complete.",
+    "description": "replace the word 'Wave' with 'Scene'\n\nRemove the title 'Orchestration view', it's unnecesasry.\n\nReplace Apply Wave Beats with 'Approve Board'\n\nAdd new button 'Approve And Shoot' with a video camera icon that is disabled until the planning is complete.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Metaphor theming for orchestration view",
+    "workflow_id": "default"
+  }
+}

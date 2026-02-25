@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-19ac-7c82-8f29-c1f58eef8e65",
+  "occurred_at": "2026-02-15T07:37:24Z",
+  "knot_id": "foolery-3zj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we need a way for the user to configure settings, it should not use local storage.  likely a toml in the user's ~/.configs/foolery or simply ~/.foolery.\n\nto start with we should have a an agent command, defaulting to 'claude'.  we will add more settings later.  make sure to document how to add new settings so it is easier for agents to add them later."
+  }
+}

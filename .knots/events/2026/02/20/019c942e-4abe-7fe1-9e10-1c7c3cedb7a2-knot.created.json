@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4abe-7fe1-9e10-1c7c3cedb7a2",
+  "occurred_at": "2026-02-20T07:28:27Z",
+  "knot_id": "foolery-xmg8.4.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover missing commit handling, failed requirement checks, and bug-detection outcomes that transition to stage:retry with incremented attempt.",
+    "description": "Cover missing commit handling, failed requirement checks, and bug-detection outcomes that transition to stage:retry with incremented attempt.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add end-to-end tests for retry paths",
+    "workflow_id": "default"
+  }
+}

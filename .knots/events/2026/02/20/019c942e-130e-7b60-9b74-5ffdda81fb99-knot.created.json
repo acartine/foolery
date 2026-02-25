@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-130e-7b60-9b74-5ffdda81fb99",
+  "occurred_at": "2026-02-20T09:26:33Z",
+  "knot_id": "foolery-1guy.2.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement tests that any backend implementation must pass to be considered compatible.",
+    "description": "Implement tests that any backend implementation must pass to be considered compatible.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Build reusable backend contract test harness",
+    "workflow_id": "default"
+  }
+}

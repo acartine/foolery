@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2c06-7a03-9dc0-c34aa3527175",
+  "occurred_at": "2026-02-23T17:12:46Z",
+  "knot_id": "foolery-g3y1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Build tracker detection and per-repo backend auto-routing foundation.",
+    "description": "Build tracker detection and per-repo backend auto-routing foundation.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Tracker detection and backend auto-routing foundation",
+    "workflow_id": "default"
+  }
+}

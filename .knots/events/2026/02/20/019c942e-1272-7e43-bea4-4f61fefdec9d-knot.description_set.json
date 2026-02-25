@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1272-7e43-bea4-4f61fefdec9d",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.1.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Define and scaffold parity tests that lock required behavior before the separation work."
+  }
+}

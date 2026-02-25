@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-386c-7503-886d-2bb3db44420f",
+  "occurred_at": "2026-02-10T13:49:18Z",
+  "knot_id": "foolery-myw",
+  "type": "knot.created",
+  "data": {
+    "body": "we don't delete beads.",
+    "description": "we don't delete beads.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove delete option on bead detail page",
+    "workflow_id": "default"
+  }
+}

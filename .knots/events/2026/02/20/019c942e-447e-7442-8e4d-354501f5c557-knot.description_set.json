@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-447e-7442-8e4d-354501f5c557",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Introduce a dedicated settings section with enable toggle, masked API key input, and selected model state bound to saved settings."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-15a8-7233-99cb-2529cfdacb90",
+  "occurred_at": "2026-02-13T13:34:31Z",
+  "knot_id": "foolery-1s9",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "description": "as title says",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "'All Statuses' does not show closed beads",
+    "workflow_id": "default"
+  }
+}

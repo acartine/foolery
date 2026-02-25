@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1ed9-7db3-9354-de20da0396d1",
+  "occurred_at": "2026-02-17T07:49:08Z",
+  "knot_id": "foolery-7axc",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace free-text model input with numbered menu in _prompt_model. Add _discover_models function for codex (cache file), claude (hardcoded), gemini (hardcoded).",
+    "description": "Replace free-text model input with numbered menu in _prompt_model. Add _discover_models function for codex (cache file), claude (hardcoded), gemini (hardcoded).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Model selection menu for setup/agent-wizard",
+    "workflow_id": "default"
+  }
+}

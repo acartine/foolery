@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-32e3-7d22-8c83-cfccf46860c9",
+  "occurred_at": "2026-02-20T10:21:56Z",
+  "knot_id": "foolery-j2l0",
+  "type": "knot.created",
+  "data": {
+    "body": "we want the title texts of each row/bead to align, whether it's a parent or not.\nso show the ^> toggle components to the left of the title text, after that text is already left aligned.",
+    "description": "we want the title texts of each row/bead to align, whether it's a parent or not.\nso show the ^> toggle components to the left of the title text, after that text is already left aligned.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "parent bead titles should not include ^> toggles in alignment",
+    "workflow_id": "default"
+  }
+}

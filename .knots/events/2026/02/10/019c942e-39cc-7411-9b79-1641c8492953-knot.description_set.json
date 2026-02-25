@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-39cc-7411-9b79-1641c8492953",
+  "occurred_at": "2026-02-10T16:10:06Z",
+  "knot_id": "foolery-ojo",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the logo still has residual cruft in each of it's 4 corners.  clean that out.  make the logo 50% bigger, it's way too small."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4add-7ae0-b4e3-a04234dda425",
+  "occurred_at": "2026-02-20T07:28:28Z",
+  "knot_id": "foolery-xmg8.4.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Simulate duplicate completion signals and concurrent workers to ensure no duplicate verifier jobs or inconsistent label states.",
+    "description": "Simulate duplicate completion signals and concurrent workers to ensure no duplicate verifier jobs or inconsistent label states.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add race-condition/idempotency tests",
+    "workflow_id": "default"
+  }
+}

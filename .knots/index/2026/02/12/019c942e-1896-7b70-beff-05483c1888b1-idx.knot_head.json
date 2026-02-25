@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1896-7b70-beff-05483c1888b1",
+  "occurred_at": "2026-02-12T12:03:34Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3ji.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add Homebrew distribution path for foolery executable",
+    "updated_at": "2026-02-12T12:03:34Z",
+    "workflow_id": "default"
+  }
+}

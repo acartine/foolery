@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2916-7703-926d-13456573fad2",
+  "occurred_at": "2026-02-11T17:15:18Z",
+  "knot_id": "foolery-edn",
+  "type": "knot.created",
+  "data": {
+    "body": "right most label should be dark green 'Add Label'\n\nshows pull down to select from known labels or create a new one.\n\nif the /beads table row is selected, shift-L is same functionality",
+    "description": "right most label should be dark green 'Add Label'\n\nshows pull down to select from known labels or create a new one.\n\nif the /beads table row is selected, shift-L is same functionality",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "'Add' label",
+    "workflow_id": "default"
+  }
+}

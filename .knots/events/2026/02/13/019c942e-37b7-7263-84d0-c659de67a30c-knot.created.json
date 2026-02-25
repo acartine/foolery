@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-37b7-7263-84d0-c659de67a30c",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.2.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend wave computation and API payload with readiness semantics and diagnostics that the UI can rely on. Include explicit fields for ready/runnable status, unresolved blockers, and deterministic recommendation ordering.",
+    "description": "Extend wave computation and API payload with readiness semantics and diagnostics that the UI can rely on. Include explicit fields for ready/runnable status, unresolved blockers, and deterministic recommendation ordering.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Wave planner data model v2 (readiness + blockers + diagnostics)",
+    "workflow_id": "default"
+  }
+}

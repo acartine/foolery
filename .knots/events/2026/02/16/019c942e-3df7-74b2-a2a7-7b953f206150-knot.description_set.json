@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3df7-74b2-a2a7-7b953f206150",
+  "occurred_at": "2026-02-16T19:50:36Z",
+  "knot_id": "foolery-qyey",
+  "type": "knot.description_set",
+  "data": {
+    "description": "after a scan, 'add all' should pop up if there is more than one agent.  it should register all.  default should chose from alphabetical order.  if there is only one, make the only the default."
+  }
+}

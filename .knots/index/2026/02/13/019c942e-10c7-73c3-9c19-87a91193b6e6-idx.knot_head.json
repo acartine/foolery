@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-10c7-73c3-9c19-87a91193b6e6",
+  "occurred_at": "2026-02-13T13:34:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0in",
+    "state": "shipped",
+    "terminal": true,
+    "title": "bead detail page should allow you to move it to another project",
+    "updated_at": "2026-02-13T13:34:52Z",
+    "workflow_id": "default"
+  }
+}

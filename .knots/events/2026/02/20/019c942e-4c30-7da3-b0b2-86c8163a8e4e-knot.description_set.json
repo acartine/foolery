@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4c30-7da3-b0b2-86c8163a8e4e",
+  "occurred_at": "2026-02-20T08:21:26Z",
+  "knot_id": "foolery-yn6q",
+  "type": "knot.description_set",
+  "data": {
+    "description": "agents appear to be creating molecules which is semantically incorrect.  let's both\n\n- prompt them to use task/feature\n- examine the resulting artifacts and convert them if molecules were used anyway"
+  }
+}

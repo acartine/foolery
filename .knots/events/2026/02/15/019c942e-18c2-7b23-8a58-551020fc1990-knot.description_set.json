@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-18c2-7b23-8a58-551020fc1990",
+  "occurred_at": "2026-02-15T09:23:07Z",
+  "knot_id": "foolery-3ji.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create and validate direct GitHub install flow for Foolery using a hosted install script (curl | bash), including launcher setup and upgrade-safe reinstall behavior."
+  }
+}

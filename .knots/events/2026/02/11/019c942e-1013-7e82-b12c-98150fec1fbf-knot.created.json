@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1013-7e82-b12c-98150fec1fbf",
+  "occurred_at": "2026-02-11T12:18:21Z",
+  "knot_id": "foolery-0dn",
+  "type": "knot.created",
+  "data": {
+    "body": "as you cycle up and down the table on /beads, it stutters because either the id or the title width/height properties are changing.  this is annoying to the user, we should find a way to make the display consistent and jitter free.",
+    "description": "as you cycle up and down the table on /beads, it stutters because either the id or the title width/height properties are changing.  this is annoying to the user, we should find a way to make the display consistent and jitter free.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "table column widths jitter when cycling up/down",
+    "workflow_id": "default"
+  }
+}

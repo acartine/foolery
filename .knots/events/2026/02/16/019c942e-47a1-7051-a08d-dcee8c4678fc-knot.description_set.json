@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-47a1-7051-a08d-dcee8c4678fc",
+  "occurred_at": "2026-02-16T15:41:27Z",
+  "knot_id": "foolery-wsk4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Button shows Add on beats, Wrap! on final cut, hidden on direct/scenes"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2dc5-72b2-89b1-fa83e4589e1e",
+  "occurred_at": "2026-02-23T17:12:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.4.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Make verification prompts backend-agnostic",
+    "updated_at": "2026-02-23T17:12:53Z",
+    "workflow_id": "default"
+  }
+}

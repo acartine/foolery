@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3c4a-7700-98d6-6a350b6ce829",
+  "occurred_at": "2026-02-17T21:28:57Z",
+  "knot_id": "foolery-qqla.2.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Render a visible 'Breakdown' control in bead detail UI with loading/disabled states consistent with existing action patterns.",
+    "description": "Render a visible 'Breakdown' control in bead detail UI with loading/disabled states consistent with existing action patterns.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add Breakdown action to bead detail screen",
+    "workflow_id": "default"
+  }
+}

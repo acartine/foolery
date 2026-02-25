@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-417f-7272-8b29-b9688f918878",
+  "occurred_at": "2026-02-23T11:10:25Z",
+  "knot_id": "foolery-tm5f",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - the buttons all have different font sizes and shapes.\n\nmake them all use the same font and shape\n\nadd a Take! button that executes the Take! action.  Make sure it is only enabled if the button is Open",
+    "description": "as title says - the buttons all have different font sizes and shapes.\n\nmake them all use the same font and shape\n\nadd a Take! button that executes the Take! action.  Make sure it is only enabled if the button is Open",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "detail view: standardize buttons, move to second row",
+    "workflow_id": "default"
+  }
+}

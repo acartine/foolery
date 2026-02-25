@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1925-7f62-bb3f-2b9b7fa51c5b",
+  "occurred_at": "2026-02-10T15:58:11Z",
+  "knot_id": "foolery-3jt",
+  "type": "knot.description_set",
+  "data": {
+    "description": "at present you have to reload the page which sucks.  we can poll bd every 10 seconds or something to capture changes."
+  }
+}

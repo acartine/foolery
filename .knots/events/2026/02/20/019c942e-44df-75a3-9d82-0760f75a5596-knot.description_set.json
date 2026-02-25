@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-44df-75a3-9d82-0760f75a5596",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add component-level tests/stories for save/reset, missing-key errors, loading states, and empty/failed model catalog states."
+  }
+}

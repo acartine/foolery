@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-46a8-7050-b10d-f1cb03945347",
+  "occurred_at": "2026-02-18T04:47:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vw50",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix unbound GREEN variable in install.sh heredoc",
+    "updated_at": "2026-02-18T04:47:35Z",
+    "workflow_id": "default"
+  }
+}

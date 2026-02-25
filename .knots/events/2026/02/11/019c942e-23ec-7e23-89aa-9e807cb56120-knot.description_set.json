@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-23ec-7e23-89aa-9e807cb56120",
+  "occurred_at": "2026-02-11T11:50:13Z",
+  "knot_id": "foolery-b1m",
+  "type": "knot.description_set",
+  "data": {
+    "description": "try to cut the space between rows, columns, cells, containers, elements etc. by about half."
+  }
+}

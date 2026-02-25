@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3556-76e3-a2a6-e297e8d2bf61",
+  "occurred_at": "2026-02-21T14:35:54Z",
+  "knot_id": "foolery-kyfp",
+  "type": "knot.description_set",
+  "data": {
+    "description": "currently history view only shows items from < 24 hours ago.\n\nthis is kind of silly, just show the last 5."
+  }
+}

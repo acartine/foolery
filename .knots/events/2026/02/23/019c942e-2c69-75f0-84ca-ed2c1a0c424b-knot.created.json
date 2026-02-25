@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2c69-75f0-84ca-ed2c1a0c424b",
+  "occurred_at": "2026-02-23T17:12:48Z",
+  "knot_id": "foolery-g3y1.2.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Add backend instance/factory per-repo delegator with cached backend instances.",
+    "description": "Add backend instance/factory per-repo delegator with cached backend instances.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Implement per-repo backend delegator with caching",
+    "workflow_id": "default"
+  }
+}

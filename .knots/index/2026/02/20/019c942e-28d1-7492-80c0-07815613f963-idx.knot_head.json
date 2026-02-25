@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-28d1-7492-80c0-07815613f963",
+  "occurred_at": "2026-02-20T12:19:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dz4j",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beats view: parent folding/child count should be full depth cumulative",
+    "updated_at": "2026-02-20T12:19:35Z",
+    "workflow_id": "default"
+  }
+}

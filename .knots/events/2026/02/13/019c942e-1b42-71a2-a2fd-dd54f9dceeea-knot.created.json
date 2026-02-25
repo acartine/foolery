@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1b42-71a2-a2fd-dd54f9dceeea",
+  "occurred_at": "2026-02-13T11:59:19Z",
+  "knot_id": "foolery-563",
+  "type": "knot.created",
+  "data": {
+    "body": "after you orchestrate and choose to create the beads, they are created but they are not connected to the underlying beads as a parent.",
+    "description": "after you orchestrate and choose to create the beads, they are created but they are not connected to the underlying beads as a parent.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "create wave beads doesn't create relationships",
+    "workflow_id": "default"
+  }
+}

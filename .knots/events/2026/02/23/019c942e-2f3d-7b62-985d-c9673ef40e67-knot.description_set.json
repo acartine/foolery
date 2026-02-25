@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2f3d-7b62-985d-c9673ef40e67",
+  "occurred_at": "2026-02-23T17:13:00Z",
+  "knot_id": "foolery-g3y1.6.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Run lint/typecheck/test/build and record handoff capsule with commit/stage labels."
+  }
+}

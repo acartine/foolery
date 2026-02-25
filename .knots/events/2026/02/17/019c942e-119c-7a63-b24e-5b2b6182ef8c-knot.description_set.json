@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-119c-7a63-b24e-5b2b6182ef8c",
+  "occurred_at": "2026-02-17T09:00:11Z",
+  "knot_id": "foolery-11cr",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the height of the action row above it is slightly differen than the filter row in list mode.\n\nmake sure those heights are always identical so that there is no vertical jitter"
+  }
+}

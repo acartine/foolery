@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1b9c-75e0-a431-596d5ba70156",
+  "occurred_at": "2026-02-15T14:34:35Z",
+  "knot_id": "foolery-5hvk",
+  "type": "knot.created",
+  "data": {
+    "body": "Scene sessions currently instruct Claude to enter plan mode, stop, and wait for execution follow-up. This causes frequent stalls when subagents remain in planning loops. Update scene/prompt flow so execution starts immediately from parent/context, with explicit instructions to spawn subagents, use dedicated worktrees, and commit/push to origin/main without PR unless requested.",
+    "description": "Scene sessions currently instruct Claude to enter plan mode, stop, and wait for execution follow-up. This causes frequent stalls when subagents remain in planning loops. Update scene/prompt flow so execution starts immediately from parent/context, with explicit instructions to spawn subagents, use dedicated worktrees, and commit/push to origin/main without PR unless requested.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene mode should execute directly without planning handoff",
+    "workflow_id": "default"
+  }
+}

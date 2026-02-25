@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-333e-7030-9e3a-b5f1ccf277ea",
+  "occurred_at": "2026-02-13T22:20:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-jac",
+    "state": "shipped",
+    "terminal": true,
+    "title": "orchestration waves should flow nicely into \"trigger now\"",
+    "updated_at": "2026-02-13T22:20:45Z",
+    "workflow_id": "default"
+  }
+}

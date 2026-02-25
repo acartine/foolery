@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-45cb-7942-ba40-b2fa86a1b54e",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "knot_id": "foolery-vdk0.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Document, diagnose, and regression-verify OpenRouter support alongside existing CLI workflows.\n\nNotes: Final stabilization wave after runtime integration is complete.\n\nAssigned tasks:\n- Add diagnostics for OpenRouter misconfiguration\n- Document OpenRouter setup and pricing behavior\n- Run regression matrix for CLI and OpenRouter modes"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2462-7610-92be-f82eb9ab7dc3",
+  "occurred_at": "2026-02-15T09:25:47Z",
+  "knot_id": "foolery-bd8i",
+  "type": "knot.created",
+  "data": {
+    "body": "when there are no scenes, you see \"no orchestration waves found for foolery\"\n\nreplace orchestration waves with 'scenes'.  look for other such labels/text in the codebase and replace those too",
+    "description": "when there are no scenes, you see \"no orchestration waves found for foolery\"\n\nreplace orchestration waves with 'scenes'.  look for other such labels/text in the codebase and replace those too",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "replace orchestration waves with scenes",
+    "workflow_id": "default"
+  }
+}

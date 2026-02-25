@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1ae6-7082-8d36-5e1388255baa",
+  "occurred_at": "2026-02-17T08:52:18Z",
+  "knot_id": "foolery-50u7",
+  "type": "knot.created",
+  "data": {
+    "body": "when you hit back, it changes your repo to go back to the beats page.\n\nthe back button should actually use navigation semantics.  the selected repo should never change when navigating.",
+    "description": "when you hit back, it changes your repo to go back to the beats page.\n\nthe back button should actually use navigation semantics.  the selected repo should never change when navigating.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "back button on detail page has broken navigation",
+    "workflow_id": "default"
+  }
+}

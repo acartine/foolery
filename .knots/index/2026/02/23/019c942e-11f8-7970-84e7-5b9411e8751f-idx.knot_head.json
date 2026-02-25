@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-11f8-7970-84e7-5b9411e8751f",
+  "occurred_at": "2026-02-23T12:37:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene weaver-prestige: abstraction layer between foolery and beads",
+    "updated_at": "2026-02-23T12:37:42Z",
+    "workflow_id": "default"
+  }
+}

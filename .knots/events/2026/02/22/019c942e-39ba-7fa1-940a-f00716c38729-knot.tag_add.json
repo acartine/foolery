@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-39ba-7fa1-940a-f00716c38729",
+  "occurred_at": "2026-02-22T09:05:03Z",
+  "knot_id": "foolery-odiq",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "source:/private/tmp/beads_for_knots.jsonl"
+  }
+}

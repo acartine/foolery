@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b98-7812-9046-8306ad92af9d",
+  "occurred_at": "2026-02-18T19:11:48Z",
+  "knot_id": "foolery-y7rj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - it's not on same y axis as priority or status"
+  }
+}

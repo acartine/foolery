@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1d1e-7cf3-a788-a4690e2ff409",
+  "occurred_at": "2026-02-22T08:21:10Z",
+  "knot_id": "foolery-6q2x",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when the app is opened or when an agent action completes, we should invalidate the final cut state so the badges show properly.  same is true for the notifications"
+  }
+}

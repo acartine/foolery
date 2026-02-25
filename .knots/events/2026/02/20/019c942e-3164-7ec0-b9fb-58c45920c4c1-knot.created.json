@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3164-7ec0-b9fb-58c45920c4c1",
+  "occurred_at": "2026-02-20T09:36:56Z",
+  "knot_id": "foolery-hkd6",
+  "type": "knot.created",
+  "data": {
+    "body": "1guy is rendered in a non-deterministic, incorrect relationship order.  should be 1guy.1...5\n\nit's showing as 1guy.4 -> .3 -> 1 ->5 -> 2",
+    "description": "1guy is rendered in a non-deterministic, incorrect relationship order.  should be 1guy.1...5\n\nit's showing as 1guy.4 -> .3 -> 1 ->5 -> 2",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "in all views, hierarchical beads should be listed in the proper order.",
+    "workflow_id": "default"
+  }
+}

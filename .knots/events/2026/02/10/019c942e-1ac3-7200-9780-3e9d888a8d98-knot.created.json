@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1ac3-7200-9780-3e9d888a8d98",
+  "occurred_at": "2026-02-10T13:41:18Z",
+  "knot_id": "foolery-4vt",
+  "type": "knot.created",
+  "data": {
+    "body": "there is an icon png in the project root.  use it in place of the Foolery text in top left.  Clicking on it should return the user to the root path.",
+    "description": "there is an icon png in the project root.  use it in place of the Foolery text in top left.  Clicking on it should return the user to the root path.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Replace Foolery in top left with foolery_icon.png",
+    "workflow_id": "default"
+  }
+}

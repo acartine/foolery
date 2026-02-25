@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4cb9-7510-b74e-aaeabb1dcb3c",
+  "occurred_at": "2026-02-12T06:28:31Z",
+  "knot_id": "foolery-z5c",
+  "type": "knot.created",
+  "data": {
+    "body": "in /beads, the summary section should be limited to the first 7 lines of the description or notes text, with an 8th line that says\n\n...show more... as a dark grean, bolded mouseover\n\nwhen you mouse over, the text should vertically and float over the rows beneath it.",
+    "description": "in /beads, the summary section should be limited to the first 7 lines of the description or notes text, with an 8th line that says\n\n...show more... as a dark grean, bolded mouseover\n\nwhen you mouse over, the text should vertically and float over the rows beneath it.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "limit summary section of title row",
+    "workflow_id": "default"
+  }
+}

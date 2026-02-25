@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2150-7372-8e35-aebce21f2b06",
+  "occurred_at": "2026-02-15T05:07:31Z",
+  "knot_id": "foolery-98w",
+  "type": "knot.created",
+  "data": {
+    "body": "we are using shift [] to toggle between views, lets dump the legacy navigation and it's mention in Existing Orchestrations.",
+    "description": "we are using shift [] to toggle between views, lets dump the legacy navigation and it's mention in Existing Orchestrations.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Remove legacy navigation from Scenes",
+    "workflow_id": "default"
+  }
+}

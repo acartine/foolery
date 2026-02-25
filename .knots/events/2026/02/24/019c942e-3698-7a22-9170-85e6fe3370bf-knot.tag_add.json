@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3698-7a22-9170-85e6fe3370bf",
+  "occurred_at": "2026-02-24T08:41:00Z",
+  "knot_id": "foolery-lxpz",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "commit:11e3120"
+  }
+}

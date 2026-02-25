@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-16f2-7683-97e9-627d000ab702",
+  "occurred_at": "2026-02-11T06:58:28Z",
+  "knot_id": "foolery-2j3",
+  "type": "knot.created",
+  "data": {
+    "body": "on /beads table, we don't need an ID header, and it doesn't need to be sortable.  remove the header and the id sorting functionality.",
+    "description": "on /beads table, we don't need an ID header, and it doesn't need to be sortable.  remove the header and the id sorting functionality.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove id header",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3d8e-7731-a426-cec42db8b2e2",
+  "occurred_at": "2026-02-20T06:09:34Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.4.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add end-to-end test for bead-detail-to-Direct auto-run journey",
+    "updated_at": "2026-02-20T06:09:34Z",
+    "workflow_id": "default"
+  }
+}

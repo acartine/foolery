@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3e40-7991-886b-c2e7d7fd48ef",
+  "occurred_at": "2026-02-20T15:50:22Z",
+  "knot_id": "foolery-r1mi",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Apply the v0.55.1 Dolt-native hook behavior for pre-push/post-merge/post-checkout, add a reusable setup path for this repo, and validate with bd hooks list + bd doctor + manual pre-push run."
+  }
+}

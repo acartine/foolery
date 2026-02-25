@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3781-7630-b177-f7a3ef0fd5a5",
+  "occurred_at": "2026-02-13T15:44:19Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mqv.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ship Now - Embedded Terminal",
+    "updated_at": "2026-02-13T15:44:19Z",
+    "workflow_id": "default"
+  }
+}

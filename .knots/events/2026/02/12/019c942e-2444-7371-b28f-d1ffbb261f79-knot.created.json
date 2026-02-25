@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2444-7371-b28f-d1ffbb261f79",
+  "occurred_at": "2026-02-12T10:39:16Z",
+  "knot_id": "foolery-bad",
+  "type": "knot.created",
+  "data": {
+    "body": "hitting h on the /beads screen should show a persistent hotkey glossary lightbox in the lower right corner.  hitting h again hides the lightbox",
+    "description": "hitting h on the /beads screen should show a persistent hotkey glossary lightbox in the lower right corner.  hitting h again hides the lightbox",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "h hotkey shows hotkey help lightbox",
+    "workflow_id": "default"
+  }
+}

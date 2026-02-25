@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2cd1-7890-bbd8-e688e36cf316",
+  "occurred_at": "2026-02-23T17:12:49Z",
+  "knot_id": "foolery-g3y1.3.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Build knots CLI wrapper with timeout/error classification and repo-path execution."
+  }
+}

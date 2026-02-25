@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2374-7cf1-b7a2-0109c7aa8183",
+  "occurred_at": "2026-02-11T06:52:43Z",
+  "knot_id": "foolery-akj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "replace assignee / owner / created with two flush lines under type/status/priority\n\n{owner} created this on {full creation datetime}\nlast update {full update time}\n\nremove surrounding border shape\nremove 2 horizontal separation bars.\nremove +Add"
+  }
+}

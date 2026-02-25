@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4437-7ba0-a02b-e1f7b8dc6f5c",
+  "occurred_at": "2026-02-20T05:23:52Z",
+  "knot_id": "foolery-vdk0.2.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Mock OpenRouter responses to verify auth usage, error handling, pricing normalization, and cache behavior.",
+    "description": "Mock OpenRouter responses to verify auth usage, error handling, pricing normalization, and cache behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add unit tests for OpenRouter client and parsers",
+    "workflow_id": "default"
+  }
+}

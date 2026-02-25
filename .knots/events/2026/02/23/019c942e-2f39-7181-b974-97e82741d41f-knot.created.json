@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2f39-7181-b974-97e82741d41f",
+  "occurred_at": "2026-02-23T17:13:00Z",
+  "knot_id": "foolery-g3y1.6.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Run lint/typecheck/test/build and record handoff capsule with commit/stage labels.",
+    "description": "Run lint/typecheck/test/build and record handoff capsule with commit/stage labels.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "Run quality gates and record verification handoff capsule",
+    "workflow_id": "default"
+  }
+}

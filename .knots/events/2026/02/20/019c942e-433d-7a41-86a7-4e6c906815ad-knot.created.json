@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-433d-7a41-86a7-4e6c906815ad",
+  "occurred_at": "2026-02-20T05:23:49Z",
+  "knot_id": "foolery-vdk0.1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Ensure `updateSettings` and `/api/settings` PUT can merge and persist OpenRouter fields without clobbering existing agent/action config.",
+    "description": "Ensure `updateSettings` and `/api/settings` PUT can merge and persist OpenRouter fields without clobbering existing agent/action config.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Update settings merge logic for OpenRouter partial updates",
+    "workflow_id": "default"
+  }
+}

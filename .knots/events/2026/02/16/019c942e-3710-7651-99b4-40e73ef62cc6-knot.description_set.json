@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3710-7651-99b4-40e73ef62cc6",
+  "occurred_at": "2026-02-16T18:41:30Z",
+  "knot_id": "foolery-mh2m",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Resolve current failing unit and Storybook Vitest suites; restore a working test command in package scripts."
+  }
+}

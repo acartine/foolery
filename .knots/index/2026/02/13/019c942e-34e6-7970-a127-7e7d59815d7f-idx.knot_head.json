@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-34e6-7970-a127-7e7d59815d7f",
+  "occurred_at": "2026-02-13T08:58:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kri",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Figure out how to proxy AskUserQuestion in Ship Now mode",
+    "updated_at": "2026-02-13T08:58:50Z",
+    "workflow_id": "default"
+  }
+}

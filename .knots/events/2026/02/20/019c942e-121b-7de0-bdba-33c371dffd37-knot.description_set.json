@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-121b-7de0-bdba-33c371dffd37",
+  "occurred_at": "2026-02-20T09:26:30Z",
+  "knot_id": "foolery-1guy.1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Locate all command invocations, imports, schemas, and scripts coupled to beads and record owners/paths."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1aa9-71f0-98ad-6861d9334e0b",
+  "occurred_at": "2026-02-11T06:57:32Z",
+  "knot_id": "foolery-4ue",
+  "type": "knot.description_set",
+  "data": {
+    "description": "right now if you click anywhere on the table row it will open the detail screen.  this creates annoying mis-clicks if you are trying to change priority / type / status.\n\nchange it so that you can only open the detail page by clicking on the title."
+  }
+}

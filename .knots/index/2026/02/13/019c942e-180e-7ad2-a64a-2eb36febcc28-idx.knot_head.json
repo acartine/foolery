@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-180e-7ad2-a64a-2eb36febcc28",
+  "occurred_at": "2026-02-13T22:37:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-32r",
+    "state": "shipped",
+    "terminal": true,
+    "title": "clicking thumbs down doesn't remove stage:verification label",
+    "updated_at": "2026-02-13T22:37:50Z",
+    "workflow_id": "default"
+  }
+}

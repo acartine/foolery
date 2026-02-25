@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1eae-73d2-a3dc-73b2dd8ca65c",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-79u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "make bead details editable on bead detail page",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

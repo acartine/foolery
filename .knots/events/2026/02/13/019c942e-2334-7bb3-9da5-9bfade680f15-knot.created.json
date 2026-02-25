@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2334-7bb3-9da5-9bfade680f15",
+  "occurred_at": "2026-02-13T08:51:57Z",
+  "knot_id": "foolery-ajb",
+  "type": "knot.created",
+  "data": {
+    "body": "show it by default, it's harmless.",
+    "description": "show it by default, it's harmless.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "show hot key lightbox by default",
+    "workflow_id": "default"
+  }
+}

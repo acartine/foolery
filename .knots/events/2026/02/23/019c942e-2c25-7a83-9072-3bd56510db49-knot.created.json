@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2c25-7a83-9072-3bd56510db49",
+  "occurred_at": "2026-02-23T17:12:47Z",
+  "knot_id": "foolery-g3y1.2.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend tracker model to include knots, marker .knots, and precedence .knots > .beads.",
+    "description": "Extend tracker model to include knots, marker .knots, and precedence .knots > .beads.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add knots tracker marker and precedence rules",
+    "workflow_id": "default"
+  }
+}

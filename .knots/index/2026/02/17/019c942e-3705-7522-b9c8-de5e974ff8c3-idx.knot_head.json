@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3705-7522-b9c8-de5e974ff8c3",
+  "occurred_at": "2026-02-17T15:22:43Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mg4s",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings pane ux issues",
+    "updated_at": "2026-02-17T15:22:43Z",
+    "workflow_id": "default"
+  }
+}

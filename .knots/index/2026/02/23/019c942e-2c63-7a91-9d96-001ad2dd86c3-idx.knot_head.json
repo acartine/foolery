@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2c63-7a91-9d96-001ad2dd86c3",
+  "occurred_at": "2026-02-23T17:12:47Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.2.2",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Update tracker labels and compatibility messaging",
+    "updated_at": "2026-02-23T17:12:47Z",
+    "workflow_id": "default"
+  }
+}

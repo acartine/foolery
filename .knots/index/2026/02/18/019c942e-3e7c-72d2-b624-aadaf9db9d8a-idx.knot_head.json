@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3e7c-72d2-b624-aadaf9db9d8a",
+  "occurred_at": "2026-02-18T10:13:14Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-r57u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Take! on parent should prompt agent with children also",
+    "updated_at": "2026-02-18T10:13:14Z",
+    "workflow_id": "default"
+  }
+}

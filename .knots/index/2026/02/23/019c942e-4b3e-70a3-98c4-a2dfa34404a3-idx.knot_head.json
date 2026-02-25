@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4b3e-70a3-98c4-a2dfa34404a3",
+  "occurred_at": "2026-02-23T12:40:09Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.4.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Document operational runbook",
+    "updated_at": "2026-02-23T12:40:09Z",
+    "workflow_id": "default"
+  }
+}

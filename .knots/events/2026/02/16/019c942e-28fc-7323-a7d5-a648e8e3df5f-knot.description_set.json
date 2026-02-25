@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-28fc-7323-a7d5-a648e8e3df5f",
+  "occurred_at": "2026-02-16T19:39:00Z",
+  "knot_id": "foolery-e92j",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when loading foolery, load the list page if there are any registered repos.  try to load the last selected repo, if none, show the first repo.\n\nif there are no repos, open the settings page to the repo registry section.\n\nthis obviously means building a repo registry section in settings as well, unless one already exists."
+  }
+}

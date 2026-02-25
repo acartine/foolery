@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1096-7201-b76c-765b73288aa0",
+  "occurred_at": "2026-02-17T09:46:32Z",
+  "knot_id": "foolery-0i68",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Replace/reshape Beats detail page into a compact lightbox-style presentation that matches list-page density and reduces visual clutter (borders, spacing, padding/margins)."
+  }
+}

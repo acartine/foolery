@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1f60-70f0-b4a1-47f68f7b3e18",
+  "occurred_at": "2026-02-19T16:40:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7tom",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve Scene auth-failure UX when agent token is expired",
+    "updated_at": "2026-02-19T16:40:08Z",
+    "workflow_id": "default"
+  }
+}

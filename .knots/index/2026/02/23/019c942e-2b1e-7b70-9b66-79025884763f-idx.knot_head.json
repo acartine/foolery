@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2b1e-7b70-9b66-79025884763f",
+  "occurred_at": "2026-02-23T14:57:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fyhe",
+    "state": "shipped",
+    "terminal": true,
+    "title": "clicking breakdown in Create New lightbox should open Direct view, populate prompt, and start run action",
+    "updated_at": "2026-02-23T14:57:42Z",
+    "workflow_id": "default"
+  }
+}

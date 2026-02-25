@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2f1b-77a1-983f-42ae5af6459c",
+  "occurred_at": "2026-02-23T17:13:00Z",
+  "knot_id": "foolery-g3y1.6.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Update README, agent memory contract, and backend extension docs for Knots usage.",
+    "description": "Update README, agent memory contract, and backend extension docs for Knots usage.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Update README, memory contract, and backend extension docs",
+    "workflow_id": "default"
+  }
+}

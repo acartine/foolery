@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2813-7ff1-8343-ea2288cb6031",
+  "occurred_at": "2026-02-14T17:41:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dgx",
+    "state": "shipped",
+    "terminal": true,
+    "title": "reload clears search filters, very annoying",
+    "updated_at": "2026-02-14T17:41:50Z",
+    "workflow_id": "default"
+  }
+}

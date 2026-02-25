@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4972-7ac0-b633-822c3a12df67",
+  "occurred_at": "2026-02-20T07:28:24Z",
+  "knot_id": "foolery-xmg8.2.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Prevent duplicate verifier launches and conflicting label mutations when completion events fire multiple times."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2941-7b62-b513-567423e31a87",
+  "occurred_at": "2026-02-11T17:08:03Z",
+  "knot_id": "foolery-ejm",
+  "type": "knot.description_set",
+  "data": {
+    "description": "remove the filter pulldowns.  move the new button to be directly under the repo pulldown.  remove the component that used to have the filter pulldowns and the new button."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1419-7113-b30b-8affa57b1074",
+  "occurred_at": "2026-02-22T22:03:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.4.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement beads adapter write/mutation operations",
+    "updated_at": "2026-02-22T22:03:00Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-245c-7a10-af3d-5454028e8f02",
+  "occurred_at": "2026-02-12T12:01:36Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-bad",
+    "state": "shipped",
+    "terminal": true,
+    "title": "h hotkey shows hotkey help lightbox",
+    "updated_at": "2026-02-12T12:01:36Z",
+    "workflow_id": "default"
+  }
+}

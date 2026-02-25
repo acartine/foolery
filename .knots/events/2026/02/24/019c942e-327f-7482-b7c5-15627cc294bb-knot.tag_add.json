@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-327f-7482-b7c5-15627cc294bb",
+  "occurred_at": "2026-02-24T08:38:50Z",
+  "knot_id": "foolery-ioos",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "attempt:1"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-43b6-7e01-af6c-b767776e71c8",
+  "occurred_at": "2026-02-20T05:23:50Z",
+  "knot_id": "foolery-vdk0.2.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Add a typed server-side client for OpenRouter requests with auth header handling, timeout/retry policy, and normalized error mapping.",
+    "description": "Add a typed server-side client for OpenRouter requests with auth header handling, timeout/retry policy, and normalized error mapping.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Create OpenRouter API client module",
+    "workflow_id": "default"
+  }
+}

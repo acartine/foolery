@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2187-7540-80ad-4daa765b5309",
+  "occurred_at": "2026-02-18T10:15:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-9a6a",
+    "state": "shipped",
+    "terminal": true,
+    "title": "shift-v points to wrong action in list view",
+    "updated_at": "2026-02-18T10:15:31Z",
+    "workflow_id": "default"
+  }
+}

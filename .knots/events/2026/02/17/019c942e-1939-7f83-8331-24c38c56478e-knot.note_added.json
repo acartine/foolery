@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1939-7f83-8331-24c38c56478e",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "knot_id": "foolery-3jt",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "i can see that the page is calling GET periodically but the data is not updating, telling me that something is wrong, perhaps a caching layer.",
+    "datetime": "2026-02-17T21:31:15Z",
+    "entry_id": "bfd003d273782d4a80375d3a44ef5d28515913a124db53dbfa838edc2cdd66e5",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

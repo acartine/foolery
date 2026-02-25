@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-229a-71b3-8a9e-3e09636225c0",
+  "occurred_at": "2026-02-24T08:32:53Z",
+  "knot_id": "foolery-9wk7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The current console search and navigation needs a different approach.\n\n- remove current navigation components\n- add pulldown to select interaction (app request type of initial, verificaton, follow-up - timestamp)\n- show interactions in time order\n\n- add \"type\" filters - these should be pre-indexed by the backend to aid in filtering agent responses."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1f06-7840-945d-706ffb1f34eb",
+  "occurred_at": "2026-02-10T19:09:38Z",
+  "knot_id": "foolery-7gj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we want search.  have a simple search bar that says something like 'find your beads' in gray suggestion text that disappears when the user starts typing.  no button, just capture return."
+  }
+}

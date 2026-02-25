@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2a16-7673-be23-a6d206ab2fd6",
+  "occurred_at": "2026-02-13T07:06:31Z",
+  "knot_id": "foolery-f61",
+  "type": "knot.description_set",
+  "data": {
+    "description": "in the upper left of the terminal title bar, just after the bead title there is a red circle.  instead make it a bright blue circle that matches the color palette, and it should flash/flicker as an indicator to the user that process is running.\n\nwhen the process is terminated, the blue dot should be replaced with [terminated] in red letters."
+  }
+}

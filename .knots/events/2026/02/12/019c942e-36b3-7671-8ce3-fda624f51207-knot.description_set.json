@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-36b3-7671-8ce3-fda624f51207",
+  "occurred_at": "2026-02-12T10:42:42Z",
+  "knot_id": "foolery-m24",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Diagnose and fix UI error where selecting a bead from /beads results in 'bead not found'."
+  }
+}

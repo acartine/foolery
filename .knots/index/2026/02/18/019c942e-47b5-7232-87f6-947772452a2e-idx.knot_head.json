@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-47b5-7232-87f6-947772452a2e",
+  "occurred_at": "2026-02-18T04:44:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-wsk4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add button dynamically changes based on selected view",
+    "updated_at": "2026-02-18T04:44:17Z",
+    "workflow_id": "default"
+  }
+}

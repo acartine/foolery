@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4a79-7521-abf3-2f1d103d5fe3",
+  "occurred_at": "2026-02-23T12:40:07Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enforce edit lock on server/API",
+    "updated_at": "2026-02-23T12:40:07Z",
+    "workflow_id": "default"
+  }
+}

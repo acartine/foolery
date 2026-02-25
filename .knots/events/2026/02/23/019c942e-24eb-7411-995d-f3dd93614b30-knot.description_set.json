@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-24eb-7411-995d-f3dd93614b30",
+  "occurred_at": "2026-02-23T08:42:00Z",
+  "knot_id": "foolery-bwws",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update settings/repo registry UI and backing data so each registered repo clearly displays which issue tracker implementation it uses (for now: beads)."
+  }
+}

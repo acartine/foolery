@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-440d-7522-912f-a69e2d288393",
+  "occurred_at": "2026-02-20T05:23:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2.3",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add cached models endpoint for Settings UI",
+    "updated_at": "2026-02-20T05:23:51Z",
+    "workflow_id": "default"
+  }
+}

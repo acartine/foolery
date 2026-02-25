@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-12cf-7da0-af1f-864f913f76f8",
+  "occurred_at": "2026-02-20T09:26:32Z",
+  "knot_id": "foolery-1guy.2.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Standardize error classes/codes and retryability rules exposed to callers.",
+    "description": "Standardize error classes/codes and retryability rules exposed to callers.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Specify backend error taxonomy and retry semantics",
+    "workflow_id": "default"
+  }
+}

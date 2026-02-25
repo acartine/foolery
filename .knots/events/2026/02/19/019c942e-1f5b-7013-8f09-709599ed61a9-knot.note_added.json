@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1f5b-7013-8f09-709599ed61a9",
+  "occurred_at": "2026-02-19T16:40:08Z",
+  "knot_id": "foolery-7tom",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-19): Implemented auth-failure UX for Scene/Take terminal sessions in commit 48b8dfe (pushed to origin/main). Added src/lib/terminal-failure.ts classifier and tests; terminal panel now shows actionable auth guidance on non-zero exit, emits toast, and keeps errored tabs open for inspection (auto-close only for completed). Validation run: bun run lint -- src/components/terminal-panel.tsx src/lib/terminal-failure.ts src/lib/__tests__/terminal-failure.test.ts; bun run test -- src/lib/__tests__/terminal-failure.test.ts; bun run build.",
+    "datetime": "2026-02-19T16:40:08Z",
+    "entry_id": "4a301df06be8341837e73e61074645d6776fc1b00c91cb1ce13c1e16158654d8",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

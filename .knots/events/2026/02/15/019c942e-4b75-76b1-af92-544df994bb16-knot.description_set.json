@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b75-76b1-af92-544df994bb16",
+  "occurred_at": "2026-02-15T05:08:16Z",
+  "knot_id": "foolery-y5e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, it's just clutter"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2005-7890-89d3-afecee0a2e8f",
+  "occurred_at": "2026-02-11T07:47:22Z",
+  "knot_id": "foolery-86h",
+  "type": "knot.created",
+  "data": {
+    "body": "doesn't appear to be searching titles.  bd search 'condense' should return 3of from cli\n\ndoesn't return anything for us",
+    "description": "doesn't appear to be searching titles.  bd search 'condense' should return 3of from cli\n\ndoesn't return anything for us",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "search should be better",
+    "workflow_id": "default"
+  }
+}

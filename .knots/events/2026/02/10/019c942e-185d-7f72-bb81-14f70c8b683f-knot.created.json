@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-185d-7f72-bb81-14f70c8b683f",
+  "occurred_at": "2026-02-10T14:20:44Z",
+  "knot_id": "foolery-3ji.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement packaging path (including runtime launcher and build output layout) so releases include a runnable foolery executable artifact for local install.",
+    "description": "Implement packaging path (including runtime launcher and build output layout) so releases include a runnable foolery executable artifact for local install.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Package foolery into runnable release artifact",
+    "workflow_id": "default"
+  }
+}

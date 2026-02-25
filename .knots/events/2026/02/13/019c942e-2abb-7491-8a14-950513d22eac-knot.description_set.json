@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2abb-7491-8a14-950513d22eac",
+  "occurred_at": "2026-02-13T22:26:06Z",
+  "knot_id": "foolery-fon",
+  "type": "knot.description_set",
+  "data": {
+    "description": "hotkeys for toggling between list, orchestrate, and waves"
+  }
+}

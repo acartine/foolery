@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3364-7b22-bc94-fa9c1ef2e4f3",
+  "occurred_at": "2026-02-10T16:09:10Z",
+  "knot_id": "foolery-jln",
+  "type": "knot.created",
+  "data": {
+    "body": "show 50 beads by default\nallow user to show more or less\npersist their decision",
+    "description": "show 50 beads by default\nallow user to show more or less\npersist their decision",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "configurable paging",
+    "workflow_id": "default"
+  }
+}

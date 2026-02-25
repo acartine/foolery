@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-49df-7dd1-8bd4-44a299f9e0b0",
+  "occurred_at": "2026-02-20T07:28:25Z",
+  "knot_id": "foolery-xmg8.3.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create UI control with explanatory copy: enabled is more reliable but slightly slower; disabled is faster but less reliable."
+  }
+}

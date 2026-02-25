@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-31a5-7323-a2c8-50019f196a55",
+  "occurred_at": "2026-02-15T07:11:37Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-hw7",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave pacino-prestige: UI polish & cleanup",
+    "updated_at": "2026-02-15T07:11:37Z",
+    "workflow_id": "default"
+  }
+}

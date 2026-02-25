@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3cac-7e10-99ab-712c6cfff9ed",
+  "occurred_at": "2026-02-20T07:30:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.2.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Track Breakdown invocation event",
+    "updated_at": "2026-02-20T07:30:42Z",
+    "workflow_id": "default"
+  }
+}

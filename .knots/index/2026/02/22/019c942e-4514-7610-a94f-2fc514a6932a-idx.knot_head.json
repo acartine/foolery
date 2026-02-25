@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4514-7610-a94f-2fc514a6932a",
+  "occurred_at": "2026-02-22T08:51:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Scene redmayne-noir: Planner Integration",
+    "updated_at": "2026-02-22T08:51:02Z",
+    "workflow_id": "default"
+  }
+}

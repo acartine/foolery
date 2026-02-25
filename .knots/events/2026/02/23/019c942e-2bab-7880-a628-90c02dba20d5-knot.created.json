@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2bab-7880-a628-90c02dba20d5",
+  "occurred_at": "2026-02-23T17:12:44Z",
+  "knot_id": "foolery-g3y1.1.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Capture knots fixture corpus (new/update/ls/show/edge/errors) and lock parser behavior against it.",
+    "description": "Capture knots fixture corpus (new/update/ls/show/edge/errors) and lock parser behavior against it.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Capture CLI fixture corpus and freeze parser behavior",
+    "workflow_id": "default"
+  }
+}

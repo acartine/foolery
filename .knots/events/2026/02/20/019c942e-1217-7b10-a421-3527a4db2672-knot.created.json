@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1217-7b10-a421-3527a4db2672",
+  "occurred_at": "2026-02-20T09:26:30Z",
+  "knot_id": "foolery-1guy.1.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Locate all command invocations, imports, schemas, and scripts coupled to beads and record owners/paths.",
+    "description": "Locate all command invocations, imports, schemas, and scripts coupled to beads and record owners/paths.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Inventory direct beads usage across the repository",
+    "workflow_id": "default"
+  }
+}

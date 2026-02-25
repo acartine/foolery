@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1ed3-7d00-bd90-25cecdcb73b5",
+  "occurred_at": "2026-02-20T10:40:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-79zi",
+    "state": "shipped",
+    "terminal": true,
+    "title": "add shift-< and shift- > to fold and unold, respectively",
+    "updated_at": "2026-02-20T10:40:55Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-14d5-7393-a8f0-5ae12f2ee65e",
+  "occurred_at": "2026-02-23T07:23:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.5.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Migrate automation and background paths to BackendPort",
+    "updated_at": "2026-02-23T07:23:58Z",
+    "workflow_id": "default"
+  }
+}

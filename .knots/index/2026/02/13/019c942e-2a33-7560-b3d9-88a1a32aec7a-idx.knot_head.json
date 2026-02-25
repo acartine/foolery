@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2a33-7560-b3d9-88a1a32aec7a",
+  "occurred_at": "2026-02-13T10:25:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f61",
+    "state": "shipped",
+    "terminal": true,
+    "title": "console active status circle",
+    "updated_at": "2026-02-13T10:25:51Z",
+    "workflow_id": "default"
+  }
+}

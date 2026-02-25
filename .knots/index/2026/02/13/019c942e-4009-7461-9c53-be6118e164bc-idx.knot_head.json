@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4009-7461-9c53-be6118e164bc",
+  "occurred_at": "2026-02-13T15:22:12Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-s9v",
+    "state": "shipped",
+    "terminal": true,
+    "title": "console gets caught in infinite loop after task is finished",
+    "updated_at": "2026-02-13T15:22:12Z",
+    "workflow_id": "default"
+  }
+}

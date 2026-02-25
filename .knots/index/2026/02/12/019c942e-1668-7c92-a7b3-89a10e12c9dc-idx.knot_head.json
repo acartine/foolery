@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1668-7c92-a7b3-89a10e12c9dc",
+  "occurred_at": "2026-02-12T11:45:31Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-26y",
+    "state": "shipped",
+    "terminal": true,
+    "title": "labels can be removed",
+    "updated_at": "2026-02-12T11:45:31Z",
+    "workflow_id": "default"
+  }
+}

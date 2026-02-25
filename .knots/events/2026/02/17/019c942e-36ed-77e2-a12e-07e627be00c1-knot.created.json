@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-36ed-77e2-a12e-07e627be00c1",
+  "occurred_at": "2026-02-17T09:21:15Z",
+  "knot_id": "foolery-mg4s",
+  "type": "knot.created",
+  "data": {
+    "body": "- remove most the extra vertical padding/margin space between \"Configuration stored in\" and \"Agents\"\n- in Agents edit mode, stack textboxes and their lables in a 3x2 grid, the space is too small for horizontal layout.\n- in Agents edit mode, cut textbox internal padding/merge in 1/2",
+    "description": "- remove most the extra vertical padding/margin space between \"Configuration stored in\" and \"Agents\"\n- in Agents edit mode, stack textboxes and their lables in a 3x2 grid, the space is too small for horizontal layout.\n- in Agents edit mode, cut textbox internal padding/merge in 1/2",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "settings pane ux issues",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-24c0-7cb3-8acf-8cf12f3ff7f5",
+  "occurred_at": "2026-02-15T07:20:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-brt",
+    "state": "shipped",
+    "terminal": true,
+    "title": "tab title blue dot in console should not keep flickering afte process is complete..",
+    "updated_at": "2026-02-15T07:20:55Z",
+    "workflow_id": "default"
+  }
+}

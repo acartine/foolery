@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3a32-73b1-abfd-8b0f314b52ff",
+  "occurred_at": "2026-02-25T08:07:34Z",
+  "knot_id": "foolery-p0bo",
+  "type": "knot.created",
+  "data": {
+    "body": "ust show the 'verifying' pill",
+    "description": "ust show the 'verifying' pill",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Final Cut View:  status column is overloaded incorrectly when setatus is knots:verifying",
+    "workflow_id": "default"
+  }
+}

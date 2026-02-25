@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1e72-7782-9dcc-c21bcac43f90",
+  "occurred_at": "2026-02-10T16:22:09Z",
+  "knot_id": "foolery-76t",
+  "type": "knot.description_set",
+  "data": {
+    "description": "remove the updated column and instead show it directly below the title.  also show the labels next to the updated value with a light background color.  have a pallette of 10 light background colors and try to assign each unique label in the db one of those colors."
+  }
+}

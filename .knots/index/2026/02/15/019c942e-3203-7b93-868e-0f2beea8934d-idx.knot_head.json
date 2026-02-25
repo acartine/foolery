@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3203-7b93-868e-0f2beea8934d",
+  "occurred_at": "2026-02-15T07:21:13Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-i22",
+    "state": "shipped",
+    "terminal": true,
+    "title": "don't show wave tags",
+    "updated_at": "2026-02-15T07:21:13Z",
+    "workflow_id": "default"
+  }
+}

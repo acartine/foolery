@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2838-7170-83c5-167f21a4e2d6",
+  "occurred_at": "2026-02-17T15:35:16Z",
+  "knot_id": "foolery-dnyl",
+  "type": "knot.created",
+  "data": {
+    "body": "seems like the content container can expand infinitely beyond the bounds of the light box.  introduce some constraints so that can't happens..",
+    "description": "seems like the content container can expand infinitely beyond the bounds of the light box.  introduce some constraints so that can't happens..",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "issue detail light box is too small for content",
+    "workflow_id": "default"
+  }
+}

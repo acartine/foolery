@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-451a-7401-b53d-b17e3fcf9261",
+  "occurred_at": "2026-02-20T05:23:54Z",
+  "knot_id": "foolery-vdk0.4.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Introduce planner-provider config so planning actions can choose CLI agent mode or OpenRouter mode without affecting Take/Scene defaults.",
+    "description": "Introduce planner-provider config so planning actions can choose CLI agent mode or OpenRouter mode without affecting Take/Scene defaults.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Add planner provider selection for Direct and Breakdown",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-279a-7691-9393-21c834c4bb4a",
+  "occurred_at": "2026-02-10T18:33:36Z",
+  "knot_id": "foolery-d45",
+  "type": "knot.created",
+  "data": {
+    "body": "like title says",
+    "description": "like title says",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "/beads : priority column should be before type and status columns",
+    "workflow_id": "default"
+  }
+}

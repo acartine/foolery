@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3e5b-7fc3-9fcf-8a6d67d365aa",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-r1mi",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix Beads v0.55.1 Dolt hook integration for push/pull workflows",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

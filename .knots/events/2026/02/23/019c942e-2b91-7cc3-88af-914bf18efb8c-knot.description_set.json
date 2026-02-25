@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2b91-7cc3-88af-914bf18efb8c",
+  "occurred_at": "2026-02-23T17:12:44Z",
+  "knot_id": "foolery-g3y1.1.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Define canonical field/status/dependency mapping between Knots JSON and Foolery Bead."
+  }
+}

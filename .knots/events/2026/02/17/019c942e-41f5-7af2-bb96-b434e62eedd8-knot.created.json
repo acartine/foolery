@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-41f5-7af2-bb96-b434e62eedd8",
+  "occurred_at": "2026-02-17T21:17:31Z",
+  "knot_id": "foolery-twrr",
+  "type": "knot.created",
+  "data": {
+    "body": "Agent interaction logs (.jsonl) grow fast (~200KB per session). Need a lifecycle policy covering: 1) When to compress/archive old logs (e.g. gzip after N days), 2) When to remove logs entirely (e.g. delete after N days/weeks), 3) Whether to enforce max total size. Applies to both dev (.foolery-logs/) and prod (~/.config/foolery/logs/) paths. Design decisions needed before implementation.",
+    "description": "Agent interaction logs (.jsonl) grow fast (~200KB per session). Need a lifecycle policy covering: 1) When to compress/archive old logs (e.g. gzip after N days), 2) When to remove logs entirely (e.g. delete after N days/weeks), 3) Whether to enforce max total size. Applies to both dev (.foolery-logs/) and prod (~/.config/foolery/logs/) paths. Design decisions needed before implementation.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add log lifecycle policy (compress, archive, remove)",
+    "workflow_id": "default"
+  }
+}

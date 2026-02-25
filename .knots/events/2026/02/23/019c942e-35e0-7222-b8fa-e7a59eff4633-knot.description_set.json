@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-35e0-7222-b8fa-e7a59eff4633",
+  "occurred_at": "2026-02-23T12:42:51Z",
+  "knot_id": "foolery-l1pc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "get creative, wow me."
+  }
+}

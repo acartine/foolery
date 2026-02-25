@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-21f3-77c1-b76e-d2d0cca1e575",
+  "occurred_at": "2026-02-15T07:47:10Z",
+  "knot_id": "foolery-9v09",
+  "type": "knot.created",
+  "data": {
+    "body": "Define and execute an API documentation spec that lets agent clients automate Foolery through documented endpoints instead of the web UI.",
+    "description": "Define and execute an API documentation spec that lets agent clients automate Foolery through documented endpoints instead of the web UI.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene eastwood-uncut: exploration: api docs for openclaw or other agents",
+    "workflow_id": "default"
+  }
+}

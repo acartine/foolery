@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1f40-7382-93d3-90895b752d7f",
+  "occurred_at": "2026-02-19T14:23:23Z",
+  "knot_id": "foolery-7tom",
+  "type": "knot.created",
+  "data": {
+    "body": "When Scene launches and the configured agent returns authentication failures (e.g. expired OAuth token), the terminal closes with little guidance. Detect auth failures and surface clear user-facing guidance in terminal/toast so users know what failed and what to do next.",
+    "description": "When Scene launches and the configured agent returns authentication failures (e.g. expired OAuth token), the terminal closes with little guidance. Detect auth failures and surface clear user-facing guidance in terminal/toast so users know what failed and what to do next.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Improve Scene auth-failure UX when agent token is expired",
+    "workflow_id": "default"
+  }
+}

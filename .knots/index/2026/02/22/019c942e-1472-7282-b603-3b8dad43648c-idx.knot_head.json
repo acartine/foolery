@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1472-7282-b603-3b8dad43648c",
+  "occurred_at": "2026-02-22T22:03:01Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.4.5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Make beads adapter pass contract harness",
+    "updated_at": "2026-02-22T22:03:01Z",
+    "workflow_id": "default"
+  }
+}

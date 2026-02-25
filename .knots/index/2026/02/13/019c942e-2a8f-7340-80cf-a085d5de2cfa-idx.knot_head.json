@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2a8f-7340-80cf-a085d5de2cfa",
+  "occurred_at": "2026-02-13T06:08:49Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fij",
+    "state": "shipped",
+    "terminal": true,
+    "title": "fix: status/label updates fail after switching active repo",
+    "updated_at": "2026-02-13T06:08:49Z",
+    "workflow_id": "default"
+  }
+}

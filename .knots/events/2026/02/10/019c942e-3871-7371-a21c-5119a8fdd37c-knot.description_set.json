@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3871-7371-a21c-5119a8fdd37c",
+  "occurred_at": "2026-02-10T13:49:18Z",
+  "knot_id": "foolery-myw",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we don't delete beads."
+  }
+}

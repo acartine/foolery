@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-40ff-76d2-9ef1-2eb4b7c552e5",
+  "occurred_at": "2026-02-22T11:49:57Z",
+  "knot_id": "foolery-sz41",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Navigation focus vs selection, infinite scroll with sliding window, cache eviction, title loading for all visible beats, headers with metadata, and jump function fix"
+  }
+}

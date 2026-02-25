@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-13e3-70d2-95bb-55e3ff9bb007",
+  "occurred_at": "2026-02-20T09:26:36Z",
+  "knot_id": "foolery-1guy.4.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement all contract read paths using beads internals behind the adapter boundary.",
+    "description": "Implement all contract read paths using beads internals behind the adapter boundary.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Implement beads adapter read/query operations",
+    "workflow_id": "default"
+  }
+}

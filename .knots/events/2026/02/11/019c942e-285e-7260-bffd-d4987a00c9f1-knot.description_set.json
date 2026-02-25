@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-285e-7260-bffd-d4987a00c9f1",
+  "occurred_at": "2026-02-11T06:56:01Z",
+  "knot_id": "foolery-dq2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "change table overview to split pane\n\non load the first row item should be in focus\nthe right pane should show Description / Notes / Acceptance Criteria vertically stacked\n\nup and down arrows should toggle through the list"
+  }
+}

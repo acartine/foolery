@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1f44-7f01-bd82-bb1573cdf4bc",
+  "occurred_at": "2026-02-19T14:23:23Z",
+  "knot_id": "foolery-7tom",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When Scene launches and the configured agent returns authentication failures (e.g. expired OAuth token), the terminal closes with little guidance. Detect auth failures and surface clear user-facing guidance in terminal/toast so users know what failed and what to do next."
+  }
+}

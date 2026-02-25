@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-363d-7f10-930a-29e59f490ffa",
+  "occurred_at": "2026-02-20T15:52:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-l4wa",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Final Cut View: Rejecting a beat should provide UX feedback",
+    "updated_at": "2026-02-20T15:52:11Z",
+    "workflow_id": "default"
+  }
+}

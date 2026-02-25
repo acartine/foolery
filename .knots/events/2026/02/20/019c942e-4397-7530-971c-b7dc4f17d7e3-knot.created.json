@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4397-7530-971c-b7dc4f17d7e3",
+  "occurred_at": "2026-02-20T05:23:50Z",
+  "knot_id": "foolery-vdk0.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Implement OpenRouter API integration for model discovery and pricing data.\n\nNotes: Depends on wave 1. Client/parser/tests can run in parallel; routes depend on client primitives.\n\nAssigned tasks:\n- Create OpenRouter API client module\n- Normalize OpenRouter model metadata and pricing\n- Add cached models endpoint for Settings UI\n- Add OpenRouter connectivity-check endpoint\n- Add unit tests for OpenRouter client and parsers",
+    "description": "Objective: Implement OpenRouter API integration for model discovery and pricing data.\n\nNotes: Depends on wave 1. Client/parser/tests can run in parallel; routes depend on client primitives.\n\nAssigned tasks:\n- Create OpenRouter API client module\n- Normalize OpenRouter model metadata and pricing\n- Add cached models endpoint for Settings UI\n- Add OpenRouter connectivity-check endpoint\n- Add unit tests for OpenRouter client and parsers",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene foster-uncut: Provider Backend",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1f88-7263-849f-1781a1ef06da",
+  "occurred_at": "2026-02-20T12:08:05Z",
+  "knot_id": "foolery-7wrg",
+  "type": "knot.description_set",
+  "data": {
+    "description": "after the agent has generated the plan, but before the beats have been created, the user should be able to \"discard\" the current plan.  you can put the button right next to the others."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-49f4-7fd3-ba39-36a62541888b",
+  "occurred_at": "2026-02-23T12:40:06Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add auto-verification settings toggle with info icon",
+    "updated_at": "2026-02-23T12:40:06Z",
+    "workflow_id": "default"
+  }
+}

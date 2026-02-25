@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1c93-7d32-a2d0-228562b23d51",
+  "occurred_at": "2026-02-20T06:08:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6gcd",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix build",
+    "updated_at": "2026-02-20T06:08:35Z",
+    "workflow_id": "default"
+  }
+}

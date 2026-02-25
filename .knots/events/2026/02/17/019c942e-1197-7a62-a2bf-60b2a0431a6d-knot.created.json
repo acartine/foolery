@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1197-7a62-a2bf-60b2a0431a6d",
+  "occurred_at": "2026-02-17T09:00:11Z",
+  "knot_id": "foolery-11cr",
+  "type": "knot.created",
+  "data": {
+    "body": "the height of the action row above it is slightly differen than the filter row in list mode.\n\nmake sure those heights are always identical so that there is no vertical jitter",
+    "description": "the height of the action row above it is slightly differen than the filter row in list mode.\n\nmake sure those heights are always identical so that there is no vertical jitter",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "list view: selecting item causes vertical jitter",
+    "workflow_id": "default"
+  }
+}

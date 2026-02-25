@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-0fd4-7670-937b-0a7177511e64",
+  "occurred_at": "2026-02-13T06:41:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-083",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix: stream-json requires --verbose with --print in terminal-manager",
+    "updated_at": "2026-02-13T06:41:08Z",
+    "workflow_id": "default"
+  }
+}

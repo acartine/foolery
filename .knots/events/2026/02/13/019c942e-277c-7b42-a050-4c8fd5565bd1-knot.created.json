@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-277c-7b42-a050-4c8fd5565bd1",
+  "occurred_at": "2026-02-13T11:54:41Z",
+  "knot_id": "foolery-d2l",
+  "type": "knot.created",
+  "data": {
+    "body": "in the orchestrate page, once the orchestration prompt is complete, the top light green component gets filled with lots of noise (not sure what the characters/text is)\n\nsuppress this",
+    "description": "in the orchestrate page, once the orchestration prompt is complete, the top light green component gets filled with lots of noise (not sure what the characters/text is)\n\nsuppress this",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "lots of garbage in top light green component after wave building finishes",
+    "workflow_id": "default"
+  }
+}

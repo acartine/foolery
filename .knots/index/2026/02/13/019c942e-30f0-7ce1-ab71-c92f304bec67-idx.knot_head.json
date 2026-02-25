@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-30f0-7ce1-ab71-c92f304bec67",
+  "occurred_at": "2026-02-13T08:58:47Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-hbf",
+    "state": "shipped",
+    "terminal": true,
+    "title": "shift-r from /beads switches repos",
+    "updated_at": "2026-02-13T08:58:47Z",
+    "workflow_id": "default"
+  }
+}

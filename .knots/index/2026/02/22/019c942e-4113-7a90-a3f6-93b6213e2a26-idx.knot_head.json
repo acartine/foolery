@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4113-7a90-a3f6-93b6213e2a26",
+  "occurred_at": "2026-02-22T12:03:27Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-sz41",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent History View UX improvements",
+    "updated_at": "2026-02-22T12:03:27Z",
+    "workflow_id": "default"
+  }
+}

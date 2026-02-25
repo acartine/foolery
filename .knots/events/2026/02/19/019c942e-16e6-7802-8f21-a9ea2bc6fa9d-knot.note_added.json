@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-16e6-7802-8f21-a9ea2bc6fa9d",
+  "occurred_at": "2026-02-19T10:15:37Z",
+  "knot_id": "foolery-2fqg",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule: Updated README badges and replaced screenshot placeholders with tracked assets under docs/screenshots (beats, scenes, new-beat for Direct, final-cut, hot-keys, take). Added blurbs for Hot Keys and Take terminal screenshots. Worktree commit: f260cef. Integrated to main via cherry-pick and pushed as 4234f56 to origin/main.\nFollow-up: Cropped docs/screenshots/beats.png by 2px on each side (size 1822x2160 -> 1818x2156). Worktree commit: 4cd53af. Integrated and pushed to origin/main as 155eaf2.\nFollow-up: Replaced docs/screenshots assets from ~/Desktop/foolery and batch-optimized with a width guard (resize only when width > 1024px). Final sizes: beats 1024x1214 382709B, scenes 1024x1054 303725B, new-beat/direct 1024x1016 226969B, final-cut 1024x476 111948B, take 1024x612 232756B, hot-keys kept at 894x824 156511B. Worktree commit d0897ce, integrated/pushed on main as f817839.\nFollow-up: Replaced docs/screenshots/direct.png from ~/Desktop/foolery/direct.png and optimized with width guard (>1024 only): 1780x2152 614752B -> 1024x1238 470131B. Updated README Direct image reference from new-beat.png to direct.png. Worktree commit c369686, integrated/pushed on main as dd36869.",
+    "datetime": "2026-02-19T10:15:37Z",
+    "entry_id": "8323941f00c835d1ebaafa9e8ba00282505dac895ebc781e7041ece2ef65edd8",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

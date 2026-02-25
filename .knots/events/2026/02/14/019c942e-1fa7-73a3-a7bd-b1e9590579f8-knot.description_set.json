@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1fa7-73a3-a7bd-b1e9590579f8",
+  "occurred_at": "2026-02-14T17:54:38Z",
+  "knot_id": "foolery-7zn",
+  "type": "knot.description_set",
+  "data": {
+    "description": "## Summary\nReplace all `localStorage`-backed list/header UI state with URL-based state so initial render is SSR/client deterministic and shareable.\n\n## Scope\nMigrate these persisted UI values to URL query params:\n- Active repository selection (`foolery-active-repo`)\n- Beads filters (`foolery-filters`: status/type/priority/assignee)\n- Beads table page size (`foolery-page-size`)\n\nOut of scope for this bead:\n- Temporary orchestration session/draft recovery in `sessionStorage`.\n\n## Why\nCurrent `localStorage` reads happen during initial render paths and can diverge between server render and client hydration, causing header/control mismatches.\n\n## Proposed Approach\n1. Define URL param contract for list/header state (including defaults and invalid-value handling).\n2. Make URL the single source of truth for repo + filters + page size.\n3. Update components/store usage so state derives from URL on first render and writes back via router updates.\n4. Remove `localStorage` reads/writes tied to these states.\n5. Ensure first SSR render and first client render remain structurally identical.\n\n## Acceptance Criteria\n- `activeRepo`, filters, and page size are represented in URL params and restore correctly on reload/share.\n- No `localStorage` reads/writes remain for those three concerns.\n- Initial load of `/beads` does not produce hydration mismatch warnings related to header/list controls.\n- Existing behavior for filtering, repo switching, and pagination still works."
+  }
+}

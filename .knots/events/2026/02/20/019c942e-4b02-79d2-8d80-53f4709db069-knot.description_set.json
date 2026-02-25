@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b02-79d2-8d80-53f4709db069",
+  "occurred_at": "2026-02-20T07:28:28Z",
+  "knot_id": "foolery-xmg8.4.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Verify both UI and API prevent edits while transition:verification is active and re-enable edits after transition exits."
+  }
+}

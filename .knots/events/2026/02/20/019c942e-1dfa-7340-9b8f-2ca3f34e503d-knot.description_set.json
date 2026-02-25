@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1dfa-7340-9b8f-2ca3f34e503d",
+  "occurred_at": "2026-02-20T10:28:14Z",
+  "knot_id": "foolery-72rr",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a dedicated Agent History view focused on implementation-producing agent interactions. Show only beats with Take!/Scene history updated in the last 24 hours. Layout: top row split 50/50 with a left title-selection list (5 visible items, scrollable) and a right beat-details panel of exact matching height (scrollable when content overflows). Add clear 'Last updated' metadata in titles/details. Place the full chronological app<->agent interaction log below in a terminal-style dark presentation with direction labels (App -> Agent, Agent -> App). Out of scope: Breakdown and Direct workflows."
+  }
+}

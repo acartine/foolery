@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2c01-7642-86f9-830deb40c742",
+  "occurred_at": "2026-02-23T17:12:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-g3y1.1.4",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Publish compatibility ADR",
+    "updated_at": "2026-02-23T17:12:45Z",
+    "workflow_id": "default"
+  }
+}

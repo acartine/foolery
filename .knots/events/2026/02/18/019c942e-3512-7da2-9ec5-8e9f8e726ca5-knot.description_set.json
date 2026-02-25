@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3512-7da2-9ec5-8e9f8e726ca5",
+  "occurred_at": "2026-02-18T04:54:52Z",
+  "knot_id": "foolery-kxl1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "list view: fold beats by default, if user expands remember that and keep them expanded.\nfinal cut: unfold beats by default"
+  }
+}

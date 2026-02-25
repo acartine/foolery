@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1d53-7423-9459-b949d50d8c44",
+  "occurred_at": "2026-02-14T19:01:48Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6qg",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave bardem-vertigo: P0 UI fixes & small features",
+    "updated_at": "2026-02-14T19:01:48Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1fec-7d12-b3d0-6bf5d098d744",
+  "occurred_at": "2026-02-20T19:18:29Z",
+  "knot_id": "foolery-81h1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Backfill newly added settings for existing installs, with focus on automated review post-prompt settings. Ensure foolery start/restart backfills missing keys without overwriting existing user values. Add a foolery doctor check that detects missing settings defaults and offers an auto-fix to write missing keys."
+  }
+}

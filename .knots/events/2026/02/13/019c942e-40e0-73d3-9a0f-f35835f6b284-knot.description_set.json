@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-40e0-73d3-9a0f-f35835f6b284",
+  "occurred_at": "2026-02-13T08:59:48Z",
+  "knot_id": "foolery-smj",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - remove Fooler from header bar, it's just clutter."
+  }
+}

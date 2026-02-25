@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4946-7f10-9cca-f4eb4ca0566e",
+  "occurred_at": "2026-02-23T12:40:03Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Launch verifier agent using commit label",
+    "updated_at": "2026-02-23T12:40:03Z",
+    "workflow_id": "default"
+  }
+}

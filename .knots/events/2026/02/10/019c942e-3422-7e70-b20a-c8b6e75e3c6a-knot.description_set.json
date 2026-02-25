@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3422-7e70-b20a-c8b6e75e3c6a",
+  "occurred_at": "2026-02-10T13:02:47Z",
+  "knot_id": "foolery-k2n",
+  "type": "knot.description_set",
+  "data": {
+    "description": "on the /beads path/page, instead of just saying Beads, have it say the name of the active \"project\" (the repo)\n\nin the id column, strip away the project- prefix, just show the identifier part."
+  }
+}

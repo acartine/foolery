@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4159-7d50-ba4d-414ac05f62a4",
+  "occurred_at": "2026-02-14T08:51:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-td6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave eastwood-uncut: Wave 2 epic kickoff",
+    "updated_at": "2026-02-14T08:51:00Z",
+    "workflow_id": "default"
+  }
+}

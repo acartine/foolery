@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-350c-78c2-a28c-ad707fc1fbe1",
+  "occurred_at": "2026-02-18T04:54:52Z",
+  "knot_id": "foolery-kxl1",
+  "type": "knot.created",
+  "data": {
+    "body": "list view: fold beats by default, if user expands remember that and keep them expanded.\nfinal cut: unfold beats by default",
+    "description": "list view: fold beats by default, if user expands remember that and keep them expanded.\nfinal cut: unfold beats by default",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "by default, hierarchical beats in beats view should be folded",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2216-7c41-ab65-b2d29ec351ed",
+  "occurred_at": "2026-02-15T13:52:35Z",
+  "knot_id": "foolery-9v09.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Produce a complete OpenAPI 3.1 specification for all current API routes, including request/response schemas, examples, and error surfaces.",
+    "description": "Produce a complete OpenAPI 3.1 specification for all current API routes, including request/response schemas, examples, and error surfaces.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Author OpenAPI 3.1 contract for Foolery API",
+    "workflow_id": "default"
+  }
+}

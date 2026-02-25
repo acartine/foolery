@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1b81-7120-869e-b6c356d14e64",
+  "occurred_at": "2026-02-15T06:02:00Z",
+  "knot_id": "foolery-59o",
+  "type": "knot.created",
+  "data": {
+    "body": "to aide in console cleanup - we should auto close tabs after a 5 second flicker warning on the tab.  if user clicks on it, the tab stays open.",
+    "description": "to aide in console cleanup - we should auto close tabs after a 5 second flicker warning on the tab.  if user clicks on it, the tab stays open.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "when process completes, flicker for the tab for 5 seconds and then close unless clicked on.",
+    "workflow_id": "default"
+  }
+}

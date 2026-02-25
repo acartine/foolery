@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-19c8-7cb0-b3cd-6d409777da3b",
+  "occurred_at": "2026-02-23T14:01:09Z",
+  "knot_id": "foolery-42yx",
+  "type": "knot.created",
+  "data": {
+    "body": "Show continuously updating playful status words while planner/agent work is running so users see responsive progress during long silent periods.",
+    "description": "Show continuously updating playful status words while planner/agent work is running so users see responsive progress during long silent periods.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add animated waiting spinner words for Breakdown/Direct actions",
+    "workflow_id": "default"
+  }
+}

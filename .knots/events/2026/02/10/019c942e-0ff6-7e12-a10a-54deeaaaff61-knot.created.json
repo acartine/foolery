@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-0ff6-7e12-a10a-54deeaaaff61",
+  "occurred_at": "2026-02-10T13:54:22Z",
+  "knot_id": "foolery-094",
+  "type": "knot.created",
+  "data": {
+    "body": "New Bead shouldn't be a strict button when the All Repositories view is loaded.  it should be a pull down so you can select the repository first.  Upon selecting the repository the new bead page is launched and the correct target repository is selected.",
+    "description": "New Bead shouldn't be a strict button when the All Repositories view is loaded.  it should be a pull down so you can select the repository first.  Upon selecting the repository the new bead page is launched and the correct target repository is selected.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "All Repositories - New Bead",
+    "workflow_id": "default"
+  }
+}

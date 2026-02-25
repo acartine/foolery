@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-36ae-73c2-aa3b-3a4fa04b5bd8",
+  "occurred_at": "2026-02-12T10:42:42Z",
+  "knot_id": "foolery-m24",
+  "type": "knot.created",
+  "data": {
+    "body": "Diagnose and fix UI error where selecting a bead from /beads results in 'bead not found'.",
+    "description": "Diagnose and fix UI error where selecting a bead from /beads results in 'bead not found'.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Clicking bead in /beads shows bead not found",
+    "workflow_id": "default"
+  }
+}

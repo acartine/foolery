@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-47d5-7ed3-bd15-8c6f966350cb",
+  "occurred_at": "2026-02-20T12:20:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-wxr8",
+    "state": "shipped",
+    "terminal": true,
+    "title": "List/Final Cut Views:  Overview component (desc. and notes) is out of alignment with title",
+    "updated_at": "2026-02-20T12:20:52Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-41c3-7aa3-9b89-3d254b134402",
+  "occurred_at": "2026-02-15T16:10:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ttx5",
+    "state": "shipped",
+    "terminal": true,
+    "title": "rewrite README.md",
+    "updated_at": "2026-02-15T16:10:40Z",
+    "workflow_id": "default"
+  }
+}

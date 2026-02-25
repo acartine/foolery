@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1295-7992-b8d5-45b974e3135d",
+  "occurred_at": "2026-02-20T09:26:31Z",
+  "knot_id": "foolery-1guy.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Define a backend-agnostic contract and acceptance criteria.\n\nNotes: Tasks 1-3 are parallelizable; task 4 starts early and finalizes after interface stabilization.\n\nAssigned tasks:\n- Define BackendPort interface and domain DTOs\n- Specify backend error taxonomy and retry semantics\n- Define capability flags for optional backend behavior\n- Build reusable backend contract test harness",
+    "description": "Objective: Define a backend-agnostic contract and acceptance criteria.\n\nNotes: Tasks 1-3 are parallelizable; task 4 starts early and finalizes after interface stabilization.\n\nAssigned tasks:\n- Define BackendPort interface and domain DTOs\n- Specify backend error taxonomy and retry semantics\n- Define capability flags for optional backend behavior\n- Build reusable backend contract test harness",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Scene clooney-heat: Contract Spec",
+    "workflow_id": "default"
+  }
+}

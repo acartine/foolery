@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3c73-71f1-8175-18dfdcf35c7d",
+  "occurred_at": "2026-02-17T21:28:57Z",
+  "knot_id": "foolery-qqla.2.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "On click, generate the breakdown prompt using current bead context and navigate to Direct with prefilled prompt + autorun intent."
+  }
+}

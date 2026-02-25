@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3fae-7972-8b9f-f659c2588714",
+  "occurred_at": "2026-02-13T22:27:49Z",
+  "knot_id": "foolery-s2x",
+  "type": "knot.created",
+  "data": {
+    "body": "replace \"list\" with \"beats\", \"orchestrate\" with \"direct\" and \"waves\" with \"scenes\"\n\nin hotkey lightbox, replace 'bead' with 'beat'\n\nanywhere you see 'bead', replace it with 'beat'",
+    "description": "replace \"list\" with \"beats\", \"orchestrate\" with \"direct\" and \"waves\" with \"scenes\"\n\nin hotkey lightbox, replace 'bead' with 'beat'\n\nanywhere you see 'bead', replace it with 'beat'",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "introduce film metaphor",
+    "workflow_id": "default"
+  }
+}

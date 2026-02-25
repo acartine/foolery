@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-12e8-7de3-9284-e2334cc791b2",
+  "occurred_at": "2026-02-22T09:25:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.2.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Specify backend error taxonomy and retry semantics",
+    "updated_at": "2026-02-22T09:25:58Z",
+    "workflow_id": "default"
+  }
+}

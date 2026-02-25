@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2448-7221-b216-d29f81b8d2be",
+  "occurred_at": "2026-02-12T10:39:16Z",
+  "knot_id": "foolery-bad",
+  "type": "knot.description_set",
+  "data": {
+    "description": "hitting h on the /beads screen should show a persistent hotkey glossary lightbox in the lower right corner.  hitting h again hides the lightbox"
+  }
+}

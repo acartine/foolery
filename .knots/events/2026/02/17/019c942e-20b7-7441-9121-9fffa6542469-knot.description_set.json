@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-20b7-7441-9121-9fffa6542469",
+  "occurred_at": "2026-02-17T15:32:00Z",
+  "knot_id": "foolery-8r59",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Fix list and final cut ordering so default sort is priority ascending (0 highest), then status order (open, in_progress, closed, others). Remove verification/in-progress special-casing for ordering while preserving user title sorting."
+  }
+}

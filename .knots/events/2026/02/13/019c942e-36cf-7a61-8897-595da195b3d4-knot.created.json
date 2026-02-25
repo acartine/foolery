@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-36cf-7a61-8897-595da195b3d4",
+  "occurred_at": "2026-02-13T14:00:04Z",
+  "knot_id": "foolery-mec",
+  "type": "knot.created",
+  "data": {
+    "body": "You should be able to type in a title and description of a work item on the create/add screen and hit \"Breakdown\" - which then treats the item as a top level parent of a feature/project/epic.  The agent is prompted to develop the plan for the project as a series of related/hierarchical beads.  this can use the same interface as the \"orchestration UI\" but with a different name \"Breakdown\" where instead of \"scenes\", it's just building the bead hierarchy of a top level bead by parsing the plan provided by the LLM into a visualization of unpublished bead metadata.\n\nupon conclusion you can hit LGTM and this triggers the creation of the beads and takes you to the list view, where the top level bead is selected.",
+    "description": "You should be able to type in a title and description of a work item on the create/add screen and hit \"Breakdown\" - which then treats the item as a top level parent of a feature/project/epic.  The agent is prompted to develop the plan for the project as a series of related/hierarchical beads.  this can use the same interface as the \"orchestration UI\" but with a different name \"Breakdown\" where instead of \"scenes\", it's just building the bead hierarchy of a top level bead by parsing the plan provided by the LLM into a visualization of unpublished bead metadata.\n\nupon conclusion you can hit LGTM and this triggers the creation of the beads and takes you to the list view, where the top level bead is selected.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Breakdown Feature",
+    "workflow_id": "default"
+  }
+}

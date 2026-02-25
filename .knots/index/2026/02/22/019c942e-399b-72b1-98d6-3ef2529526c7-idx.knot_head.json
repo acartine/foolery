@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-399b-72b1-98d6-3ef2529526c7",
+  "occurred_at": "2026-02-22T03:18:07Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-o65u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "prompt tightening",
+    "updated_at": "2026-02-22T03:18:07Z",
+    "workflow_id": "default"
+  }
+}

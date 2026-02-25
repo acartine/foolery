@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-29e5-7111-b1d9-f14259719b2a",
+  "occurred_at": "2026-02-13T22:20:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ez2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ship Now terminal: stream-json parsing + globalThis session sharing",
+    "updated_at": "2026-02-13T22:20:51Z",
+    "workflow_id": "default"
+  }
+}

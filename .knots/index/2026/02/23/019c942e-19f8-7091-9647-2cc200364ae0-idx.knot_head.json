@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-19f8-7091-9647-2cc200364ae0",
+  "occurred_at": "2026-02-23T16:40:32Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-42yx",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add animated waiting spinner words for Breakdown/Direct actions",
+    "updated_at": "2026-02-23T16:40:32Z",
+    "workflow_id": "default"
+  }
+}

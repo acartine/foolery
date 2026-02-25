@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-108b-7171-af70-a75a23aa4853",
+  "occurred_at": "2026-02-15T07:21:22Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-0gz",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave ledger-goodfellas: verify-prior-fixes",
+    "updated_at": "2026-02-15T07:21:22Z",
+    "workflow_id": "default"
+  }
+}

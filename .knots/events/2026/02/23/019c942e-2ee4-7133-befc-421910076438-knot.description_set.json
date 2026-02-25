@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2ee4-7133-befc-421910076438",
+  "occurred_at": "2026-02-23T17:12:59Z",
+  "knot_id": "foolery-g3y1.6.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Run backend contract harness against Knots backend and close parity gaps."
+  }
+}

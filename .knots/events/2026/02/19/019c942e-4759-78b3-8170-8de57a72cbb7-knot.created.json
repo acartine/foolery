@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4759-78b3-8170-8de57a72cbb7",
+  "occurred_at": "2026-02-19T16:15:16Z",
+  "knot_id": "foolery-wefn",
+  "type": "knot.created",
+  "data": {
+    "body": "labels are missing as title says\n\nbd ready is not the right thing to call (despite the filter name)\n\nwe should simply query beads by In Progress OR Open where 'stage:verification' not in labels\n\n--- merged from foolery-75fs ---\nInvestigate why beat 'dwet' does not display the contest:orch label on the Beats screen and identify/fix filtering/rendering logic.",
+    "description": "labels are missing as title says\n\nbd ready is not the right thing to call (despite the filter name)\n\nwe should simply query beads by In Progress OR Open where 'stage:verification' not in labels\n\n--- merged from foolery-75fs ---\nInvestigate why beat 'dwet' does not display the contest:orch label on the Beats screen and identify/fix filtering/rendering logic.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "List Viiew: Ready Filter:  Labels are missing, should be shown",
+    "workflow_id": "default"
+  }
+}

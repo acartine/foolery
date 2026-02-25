@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-162f-7663-964d-e6c2bb7d8cd2",
+  "occurred_at": "2026-02-10T09:51:53Z",
+  "knot_id": "foolery-22b",
+  "type": "knot.description_set",
+  "data": {
+    "description": "the fields Assignee, due date, estimate are stupid.  remove them from the create new bead screen."
+  }
+}

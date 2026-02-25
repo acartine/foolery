@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-26d9-7c40-8f10-38db8161d233",
+  "occurred_at": "2026-02-19T10:16:54Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-csjr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Beef up unit test code coverage",
+    "updated_at": "2026-02-19T10:16:54Z",
+    "workflow_id": "default"
+  }
+}

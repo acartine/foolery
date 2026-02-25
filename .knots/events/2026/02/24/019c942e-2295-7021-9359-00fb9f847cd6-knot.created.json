@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2295-7021-9359-00fb9f847cd6",
+  "occurred_at": "2026-02-24T08:32:53Z",
+  "knot_id": "foolery-9wk7",
+  "type": "knot.created",
+  "data": {
+    "body": "The current console search and navigation needs a different approach.\n\n- remove current navigation components\n- add pulldown to select interaction (app request type of initial, verificaton, follow-up - timestamp)\n- show interactions in time order\n\n- add \"type\" filters - these should be pre-indexed by the backend to aid in filtering agent responses.",
+    "description": "The current console search and navigation needs a different approach.\n\n- remove current navigation components\n- add pulldown to select interaction (app request type of initial, verificaton, follow-up - timestamp)\n- show interactions in time order\n\n- add \"type\" filters - these should be pre-indexed by the backend to aid in filtering agent responses.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "History View: Console search and navigation upgrade",
+    "workflow_id": "default"
+  }
+}

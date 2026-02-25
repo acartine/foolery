@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-42a1-7a60-b4a4-3041ffd53b98",
+  "occurred_at": "2026-02-20T12:25:35Z",
+  "knot_id": "foolery-v318",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, don't show every closed bead.  use whatever pagination is set up for the list view.",
+    "description": "as title says, don't show every closed bead.  use whatever pagination is set up for the list view.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "paginate ReTakes",
+    "workflow_id": "default"
+  }
+}

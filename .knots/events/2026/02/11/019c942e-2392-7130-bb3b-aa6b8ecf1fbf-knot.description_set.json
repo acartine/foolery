@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2392-7130-bb3b-aa6b8ecf1fbf",
+  "occurred_at": "2026-02-11T11:34:25Z",
+  "knot_id": "foolery-ary",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says...it kind of sucks"
+  }
+}

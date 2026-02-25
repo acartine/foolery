@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-481a-7c82-bde0-90f77e792b38",
+  "occurred_at": "2026-02-23T12:40:09Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene fonda-rocky: auto-verification: after an agent invocation completes for Take!, Scene!, or similar actions",
+    "updated_at": "2026-02-23T12:40:09Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3344-7eb1-84d6-7ea18253b022",
+  "occurred_at": "2026-02-20T11:59:12Z",
+  "knot_id": "foolery-jbtq",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, get rid of that link, makes no sense in that context",
+    "description": "as title says, get rid of that link, makes no sense in that context",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Final Cut view - there should be no 'take' link",
+    "workflow_id": "default"
+  }
+}

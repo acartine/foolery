@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-45be-72e3-8810-7e2d67cbe962",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.4.5",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add integration tests for OpenRouter planner sessions",
+    "updated_at": "2026-02-20T05:23:55Z",
+    "workflow_id": "default"
+  }
+}

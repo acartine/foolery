@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3fc8-76a2-9d26-bc04b2b82c6e",
+  "occurred_at": "2026-02-14T18:42:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-s2x",
+    "state": "shipped",
+    "terminal": true,
+    "title": "introduce film metaphor",
+    "updated_at": "2026-02-14T18:42:59Z",
+    "workflow_id": "default"
+  }
+}

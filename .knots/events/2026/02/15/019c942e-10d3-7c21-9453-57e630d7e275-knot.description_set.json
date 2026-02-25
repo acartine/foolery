@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-10d3-7c21-9453-57e630d7e275",
+  "occurred_at": "2026-02-15T05:36:22Z",
+  "knot_id": "foolery-0j4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Users are seeing ~10 second delays for common bead actions (create, bulk close, and other updates) with little/no immediate UI feedback until completion.\\n\\nRepro examples:\\n1) Create a new beat -> click Done -> UI appears hung for ~10s.\\n2) Select 2 beats -> bulk close -> no visible feedback for ~10s before state updates.\\n\\nExpected:\\n- Bead actions should complete quickly under normal conditions.\\n- If backend work takes longer, UI must provide immediate in-progress feedback.\\n\\nScope:\\n- Identify root cause(s) of latency across create/update/close paths.\\n- Instrument timings for API and bd command layers.\\n- Reduce end-to-end latency and/or improve progressive feedback where latency cannot be eliminated."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-35da-7ff0-ad19-0430626785d6",
+  "occurred_at": "2026-02-23T12:42:51Z",
+  "knot_id": "foolery-l1pc",
+  "type": "knot.created",
+  "data": {
+    "body": "get creative, wow me.",
+    "description": "get creative, wow me.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "show version in a cool way in title area",
+    "workflow_id": "default"
+  }
+}

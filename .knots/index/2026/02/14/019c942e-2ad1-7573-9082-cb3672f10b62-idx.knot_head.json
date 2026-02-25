@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2ad1-7573-9082-cb3672f10b62",
+  "occurred_at": "2026-02-14T18:57:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fon",
+    "state": "shipped",
+    "terminal": true,
+    "title": "shift-] and shift-[ should toggle between views",
+    "updated_at": "2026-02-14T18:57:56Z",
+    "workflow_id": "default"
+  }
+}

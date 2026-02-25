@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-20b2-7d62-82a1-a2c79cc5ac81",
+  "occurred_at": "2026-02-17T15:32:00Z",
+  "knot_id": "foolery-8r59",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix list and final cut ordering so default sort is priority ascending (0 highest), then status order (open, in_progress, closed, others). Remove verification/in-progress special-casing for ordering while preserving user title sorting.",
+    "description": "Fix list and final cut ordering so default sort is priority ascending (0 highest), then status order (open, in_progress, closed, others). Remove verification/in-progress special-casing for ordering while preserving user title sorting.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Sort beats by priority then status in List/Final Cut",
+    "workflow_id": "default"
+  }
+}

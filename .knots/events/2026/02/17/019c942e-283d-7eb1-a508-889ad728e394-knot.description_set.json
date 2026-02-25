@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-283d-7eb1-a508-889ad728e394",
+  "occurred_at": "2026-02-17T15:35:16Z",
+  "knot_id": "foolery-dnyl",
+  "type": "knot.description_set",
+  "data": {
+    "description": "seems like the content container can expand infinitely beyond the bounds of the light box.  introduce some constraints so that can't happens.."
+  }
+}

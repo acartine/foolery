@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-28b2-7130-8f35-5ec758516c18",
+  "occurred_at": "2026-02-20T12:20:33Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dw44",
+    "state": "shipped",
+    "terminal": true,
+    "title": "child beats should not count towards paging limit",
+    "updated_at": "2026-02-20T12:20:33Z",
+    "workflow_id": "default"
+  }
+}

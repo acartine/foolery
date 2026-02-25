@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-17ee-7332-a27e-2741f14f88c4",
+  "occurred_at": "2026-02-11T12:21:50Z",
+  "knot_id": "foolery-32r",
+  "type": "knot.created",
+  "data": {
+    "body": "this is a regression of a bug we fixed.  when you click thumbs down, the label appears removed.  on the next automated refresh, the label is back.",
+    "description": "this is a regression of a bug we fixed.  when you click thumbs down, the label appears removed.  on the next automated refresh, the label is back.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "clicking thumbs down doesn't remove stage:verification label",
+    "workflow_id": "default"
+  }
+}

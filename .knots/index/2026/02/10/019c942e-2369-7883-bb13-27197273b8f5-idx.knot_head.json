@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2369-7883-bb13-27197273b8f5",
+  "occurred_at": "2026-02-10T09:58:42Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ajv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix BeadTypeBadge crash on unknown type",
+    "updated_at": "2026-02-10T09:58:42Z",
+    "workflow_id": "default"
+  }
+}

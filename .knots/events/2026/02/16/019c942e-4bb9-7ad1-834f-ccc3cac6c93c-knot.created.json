@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4bb9-7ad1-834f-ccc3cac6c93c",
+  "occurred_at": "2026-02-16T19:16:37Z",
+  "knot_id": "foolery-y97y",
+  "type": "knot.created",
+  "data": {
+    "body": "[foolery] Updating Foolery runtime from acartine/foolery (latest)...\n[foolery-install] Downloading runtime artifact: foolery-runtime-darwin-arm64.tar.gz\n[foolery-install] Source: https://github.com/acartine/foolery/releases/latest/download/foolery-runtime-darwin-arm64.tar.gz\n[foolery-install] Writing launcher to /Users/cartine/.local/bin/foolery\n[foolery-install] Install complete\n[foolery-install] Commands: foolery start | foolery open | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall\n[foolery-install] Launcher is on PATH.\n[foolery-install] Get started: foolery\n[foolery-install] Log files default to: /Users/cartine/.local/state/foolery/logs\n[foolery] Update complete. reports update complete but then fails to execute launcher due to shell parse error: /Users/cartine/.local/bin/foolery line 570 near unexpected token ;;. Repro from installer output in user report.",
+    "description": "[foolery] Updating Foolery runtime from acartine/foolery (latest)...\n[foolery-install] Downloading runtime artifact: foolery-runtime-darwin-arm64.tar.gz\n[foolery-install] Source: https://github.com/acartine/foolery/releases/latest/download/foolery-runtime-darwin-arm64.tar.gz\n[foolery-install] Writing launcher to /Users/cartine/.local/bin/foolery\n[foolery-install] Install complete\n[foolery-install] Commands: foolery start | foolery open | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall\n[foolery-install] Launcher is on PATH.\n[foolery-install] Get started: foolery\n[foolery-install] Log files default to: /Users/cartine/.local/state/foolery/logs\n[foolery] Update complete. reports update complete but then fails to execute launcher due to shell parse error: /Users/cartine/.local/bin/foolery line 570 near unexpected token ;;. Repro from installer output in user report.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "foolery launcher syntax error on update",
+    "workflow_id": "default"
+  }
+}

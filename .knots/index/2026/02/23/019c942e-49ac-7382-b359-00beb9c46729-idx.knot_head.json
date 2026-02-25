@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-49ac-7382-b359-00beb9c46729",
+  "occurred_at": "2026-02-23T12:40:04Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.2.6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Persist verification lifecycle events",
+    "updated_at": "2026-02-23T12:40:04Z",
+    "workflow_id": "default"
+  }
+}

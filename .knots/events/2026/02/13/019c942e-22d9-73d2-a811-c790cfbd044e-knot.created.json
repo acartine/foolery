@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-22d9-73d2-a811-c790cfbd044e",
+  "occurred_at": "2026-02-13T14:05:47Z",
+  "knot_id": "foolery-a3b",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "description": null,
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "improved parsing and display of orchestration console",
+    "workflow_id": "default"
+  }
+}

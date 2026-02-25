@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4aa3-76c2-841b-ad6c6dad2eff",
+  "occurred_at": "2026-02-20T07:28:27Z",
+  "knot_id": "foolery-xmg8.4.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Validate flow from eligible action completion through verification to successful label cleanup and bead closure."
+  }
+}

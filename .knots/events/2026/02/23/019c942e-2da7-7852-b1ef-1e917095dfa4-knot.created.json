@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2da7-7852-b1ef-1e917095dfa4",
+  "occurred_at": "2026-02-23T17:12:53Z",
+  "knot_id": "foolery-g3y1.4.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Make verification prompts/transitions backend-agnostic while preserving verification lifecycle.",
+    "description": "Make verification prompts/transitions backend-agnostic while preserving verification lifecycle.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Make verification prompts backend-agnostic",
+    "workflow_id": "default"
+  }
+}

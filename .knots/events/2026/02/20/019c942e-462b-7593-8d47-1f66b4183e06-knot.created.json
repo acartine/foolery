@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-462b-7593-8d47-1f66b4183e06",
+  "occurred_at": "2026-02-20T05:23:57Z",
+  "knot_id": "foolery-vdk0.5.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Validate that Take/Scene CLI flows remain stable while Direct/Breakdown work in both CLI and OpenRouter modes; fix any regressions found.",
+    "description": "Validate that Take/Scene CLI flows remain stable while Direct/Breakdown work in both CLI and OpenRouter modes; fix any regressions found.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Run regression matrix for CLI and OpenRouter modes",
+    "workflow_id": "default"
+  }
+}

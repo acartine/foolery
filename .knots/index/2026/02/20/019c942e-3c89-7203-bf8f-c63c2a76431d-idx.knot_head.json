@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3c89-7203-bf8f-c63c2a76431d",
+  "occurred_at": "2026-02-20T07:30:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.2.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wire Breakdown click to prompt generation and navigation",
+    "updated_at": "2026-02-20T07:30:41Z",
+    "workflow_id": "default"
+  }
+}

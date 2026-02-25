@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3578-7f90-abd0-7828d9b2e106",
+  "occurred_at": "2026-02-11T12:27:26Z",
+  "knot_id": "foolery-kyo",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, it wil llook better to the right"
+  }
+}

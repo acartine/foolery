@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-33c7-7762-97a7-9d358a50b46c",
+  "occurred_at": "2026-02-18T04:44:06Z",
+  "knot_id": "foolery-jxog",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "the button does not have the exact position and size on  the beads and final cut views.\n\nfix this.  the button should not change sizes or move.  make it one size, on eposition, that works for both texts",
+    "datetime": "2026-02-18T04:44:06Z",
+    "entry_id": "983dfe74555c402f53087418c6d7ec1fbbc5b67ccfd5b9ec8effeea2be7eb88f",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

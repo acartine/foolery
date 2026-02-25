@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1857-7f80-a25c-a39696290c2e",
+  "occurred_at": "2026-02-22T08:50:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3ji",
+    "state": "deferred",
+    "terminal": true,
+    "title": "Scene hoffman-rocky: Ship foolery as installable executable (Homebrew + GitHub install)",
+    "updated_at": "2026-02-22T08:50:52Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-23ca-7b71-be51-870b79c86063",
+  "occurred_at": "2026-02-10T09:58:30Z",
+  "knot_id": "foolery-ayw",
+  "type": "knot.created",
+  "data": {
+    "body": "Create src/components/repo-registry.tsx. Shows registered repos as cards (name, path, remove button). Add Repository button opens DirectoryBrowser. Empty state with onboarding text. Uses React Query for registry API.",
+    "description": "Create src/components/repo-registry.tsx. Shows registered repos as cards (name, path, remove button). Add Repository button opens DirectoryBrowser. Empty state with onboarding text. Uses React Query for registry API.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Repo registry screen component",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-122f-7cd1-8582-2bf5f1cade06",
+  "occurred_at": "2026-02-23T06:22:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.1.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Inventory direct beads usage across the repository",
+    "updated_at": "2026-02-23T06:22:24Z",
+    "workflow_id": "default"
+  }
+}

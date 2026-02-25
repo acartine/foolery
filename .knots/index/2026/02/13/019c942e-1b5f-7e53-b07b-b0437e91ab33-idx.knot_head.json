@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1b5f-7e53-b07b-b0437e91ab33",
+  "occurred_at": "2026-02-13T22:36:19Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-563",
+    "state": "shipped",
+    "terminal": true,
+    "title": "create wave beads doesn't create relationships",
+    "updated_at": "2026-02-13T22:36:19Z",
+    "workflow_id": "default"
+  }
+}

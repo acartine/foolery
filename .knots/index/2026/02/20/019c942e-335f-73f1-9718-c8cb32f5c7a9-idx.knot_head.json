@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-335f-73f1-9718-c8cb32f5c7a9",
+  "occurred_at": "2026-02-20T15:52:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-jbtq",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Final Cut view - there should be no 'take' link",
+    "updated_at": "2026-02-20T15:52:08Z",
+    "workflow_id": "default"
+  }
+}

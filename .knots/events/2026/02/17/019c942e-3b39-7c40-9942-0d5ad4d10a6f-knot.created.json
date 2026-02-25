@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3b39-7c40-9942-0d5ad4d10a6f",
+  "occurred_at": "2026-02-17T13:02:15Z",
+  "knot_id": "foolery-qgi5",
+  "type": "knot.created",
+  "data": {
+    "body": "if you click on beats and final cut, you can see some terrible inconsistency in size position of the viewswitcher.\n\nlet's make that stay in place consistently.",
+    "description": "if you click on beats and final cut, you can see some terrible inconsistency in size position of the viewswitcher.\n\nlet's make that stay in place consistently.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "viewswitcher component hopping from left to right",
+    "workflow_id": "default"
+  }
+}

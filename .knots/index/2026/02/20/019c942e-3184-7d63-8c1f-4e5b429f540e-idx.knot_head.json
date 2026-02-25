@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3184-7d63-8c1f-4e5b429f540e",
+  "occurred_at": "2026-02-20T10:11:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-hkd6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "in all views, hierarchical beads should be listed in the proper order.",
+    "updated_at": "2026-02-20T10:11:40Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3a76-7d20-96e5-62f8edcd73ed",
+  "occurred_at": "2026-02-20T15:55:01Z",
+  "knot_id": "foolery-pc33",
+  "type": "knot.created",
+  "data": {
+    "body": "if you have a parent bead with lots of children, or a nested hierarchy, only send notifications when a parent is ready for verification.  Similarly, in final cut, don't include beats unless they either\n\n- have no parent OR\n- are a parent\n\nthis unclutters the finalcut count.",
+    "description": "if you have a parent bead with lots of children, or a nested hierarchy, only send notifications when a parent is ready for verification.  Similarly, in final cut, don't include beats unless they either\n\n- have no parent OR\n- are a parent\n\nthis unclutters the finalcut count.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Don't count child beats for notifications and final cut",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1876-7843-8bc8-a683f682cb90",
+  "occurred_at": "2026-02-16T19:21:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3ji.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Package foolery into runnable release artifact",
+    "updated_at": "2026-02-16T19:21:21Z",
+    "workflow_id": "default"
+  }
+}

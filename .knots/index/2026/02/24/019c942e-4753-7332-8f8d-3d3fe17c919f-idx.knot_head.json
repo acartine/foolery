@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4753-7332-8f8d-3d3fe17c919f",
+  "occurred_at": "2026-02-24T14:16:09Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-we6f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Breakdown still can't parse codex response properly",
+    "updated_at": "2026-02-24T14:16:09Z",
+    "workflow_id": "default"
+  }
+}

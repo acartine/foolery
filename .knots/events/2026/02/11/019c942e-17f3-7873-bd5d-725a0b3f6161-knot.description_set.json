@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-17f3-7873-bd5d-725a0b3f6161",
+  "occurred_at": "2026-02-11T12:21:50Z",
+  "knot_id": "foolery-32r",
+  "type": "knot.description_set",
+  "data": {
+    "description": "this is a regression of a bug we fixed.  when you click thumbs down, the label appears removed.  on the next automated refresh, the label is back."
+  }
+}

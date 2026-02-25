@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-27f1-7b72-b573-d4cc921eb7a9",
+  "occurred_at": "2026-02-15T06:13:54Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d6d",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave reeves-arrival: Bug fixes & stability",
+    "updated_at": "2026-02-15T06:13:54Z",
+    "workflow_id": "default"
+  }
+}

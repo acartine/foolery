@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3262-73c2-a316-9f0fc32424cd",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-iki",
+    "state": "shipped",
+    "terminal": true,
+    "title": "cmd shift R should not go to All Repositories",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

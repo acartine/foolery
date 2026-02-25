@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-42a6-71f0-b83b-88386feb9457",
+  "occurred_at": "2026-02-20T12:25:35Z",
+  "knot_id": "foolery-v318",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, don't show every closed bead.  use whatever pagination is set up for the list view."
+  }
+}

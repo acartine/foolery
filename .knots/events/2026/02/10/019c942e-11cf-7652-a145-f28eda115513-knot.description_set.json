@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-11cf-7652-a145-f28eda115513",
+  "occurred_at": "2026-02-10T09:58:13Z",
+  "knot_id": "foolery-16e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create server-side registry module at src/lib/registry.ts. Persists registered repo paths to ~/.config/foolery/registry.json. Functions: loadRegistry, saveRegistry, addRepo (validates .beads/ exists), removeRepo, listRepos. Uses node:fs/promises."
+  }
+}

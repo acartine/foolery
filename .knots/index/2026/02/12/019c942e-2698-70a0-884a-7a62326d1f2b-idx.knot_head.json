@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2698-70a0-884a-7a62326d1f2b",
+  "occurred_at": "2026-02-12T12:03:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-cnp",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Directory browser UI component",
+    "updated_at": "2026-02-12T12:03:15Z",
+    "workflow_id": "default"
+  }
+}

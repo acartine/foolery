@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-27f7-7f93-8372-7e0711d11904",
+  "occurred_at": "2026-02-14T07:10:11Z",
+  "knot_id": "foolery-dgx",
+  "type": "knot.created",
+  "data": {
+    "body": "don't reset search filters on reload - save them in the url so they are preserved after refresh",
+    "description": "don't reset search filters on reload - save them in the url so they are preserved after refresh",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "reload clears search filters, very annoying",
+    "workflow_id": "default"
+  }
+}

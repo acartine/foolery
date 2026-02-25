@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-23b1-7d42-ab06-7ac496af10f5",
+  "occurred_at": "2026-02-17T08:19:22Z",
+  "knot_id": "foolery-av6g",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says - looks like we need some ux/ui magic to keep the table from hopping up and down, possibly calculating the height of the largest row component above it and making that height stick regardless of what view it is."
+  }
+}

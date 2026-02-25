@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1f20-7323-a2dd-4e5c427324a8",
+  "occurred_at": "2026-02-19T16:19:53Z",
+  "knot_id": "foolery-7qvg",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to merge beads when only two are selected - the user should be prompted to pick the \"survivor\".  The labels, description, and notes of the non-survivor are APPENDED to the survivor's.  The survivor's title, type, priority, and dependencies remain unchanged.",
+    "description": "you should be able to merge beads when only two are selected - the user should be prompted to pick the \"survivor\".  The labels, description, and notes of the non-survivor are APPENDED to the survivor's.  The survivor's title, type, priority, and dependencies remain unchanged.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "bulk action: merge beads",
+    "workflow_id": "default"
+  }
+}

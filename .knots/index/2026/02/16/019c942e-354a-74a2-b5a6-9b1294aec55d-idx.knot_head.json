@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-354a-74a2-b5a6-9b1294aec55d",
+  "occurred_at": "2026-02-16T15:07:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kxwv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "state corruption - shift o on mec opens 5hvk",
+    "updated_at": "2026-02-16T15:07:11Z",
+    "workflow_id": "default"
+  }
+}

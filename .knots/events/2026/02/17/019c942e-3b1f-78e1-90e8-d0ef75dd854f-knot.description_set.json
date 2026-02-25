@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3b1f-78e1-90e8-d0ef75dd854f",
+  "occurred_at": "2026-02-17T16:10:50Z",
+  "knot_id": "foolery-qbor",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when launch the app with foolery open, it should always check for new versions and ask you if you want to upgrade instead.\n\nthe app should store the last time it checked for update vi cli or the ui.  if > 24 hours, it should check and conditionally show the banner (if an update exists).  if it has never checked (no last time saved), it should check and conditionally show the banner."
+  }
+}

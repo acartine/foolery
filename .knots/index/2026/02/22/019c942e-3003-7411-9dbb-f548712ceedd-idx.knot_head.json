@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3003-7411-9dbb-f548712ceedd",
+  "occurred_at": "2026-02-22T05:43:29Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ghqh",
+    "state": "shipped",
+    "terminal": true,
+    "title": "FInal Cut View:  Needs a description header like Direct",
+    "updated_at": "2026-02-22T05:43:29Z",
+    "workflow_id": "default"
+  }
+}

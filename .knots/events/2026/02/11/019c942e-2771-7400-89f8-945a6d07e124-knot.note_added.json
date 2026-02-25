@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2771-7400-89f8-945a6d07e124",
+  "occurred_at": "2026-02-11T06:25:05Z",
+  "knot_id": "foolery-d0l",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "doesn't remove label 'stage:verification'\n\ncheck the API and make sure you have it right.",
+    "datetime": "2026-02-11T06:25:05Z",
+    "entry_id": "fa2af741f82491bcc41bd10a5d19041ecbb1a85b71570faf6a88b030d53375d0",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

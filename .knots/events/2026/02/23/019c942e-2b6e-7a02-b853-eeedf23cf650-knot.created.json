@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2b6e-7a02-b853-eeedf23cf650",
+  "occurred_at": "2026-02-23T17:12:43Z",
+  "knot_id": "foolery-g3y1.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Define and lock the compatibility contract and mapping behavior for Knots support in Foolery.",
+    "description": "Define and lock the compatibility contract and mapping behavior for Knots support in Foolery.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Knots compatibility contract and mapping spec",
+    "workflow_id": "default"
+  }
+}

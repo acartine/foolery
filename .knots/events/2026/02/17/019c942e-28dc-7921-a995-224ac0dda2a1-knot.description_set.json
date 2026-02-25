@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-28dc-7921-a995-224ac0dda2a1",
+  "occurred_at": "2026-02-17T08:12:49Z",
+  "knot_id": "foolery-e32l",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Replace manual tag argument with interactive selection and --patch/--minor/--major flags. Add semver helpers, interactive prompt, package.json version management."
+  }
+}

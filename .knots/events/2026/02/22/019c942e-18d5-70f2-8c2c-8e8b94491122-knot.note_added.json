@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-18d5-70f2-8c2c-8e8b94491122",
+  "occurred_at": "2026-02-22T08:50:55Z",
+  "knot_id": "foolery-3ji.4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Installer flow now uses raw GitHub install script to download prebuilt release runtime artifact (no local clone/build), installs launcher on PATH, and supports app lifecycle commands via launcher. README documents first-run command and upgrade path.\nIntegrated to origin/main in commit 5bfcfbc (2026-02-16).\nPost-release validation: public installer command from README was executed against v0.1.0 artifact () and succeeded end-to-end with foolery start/status/stop and log file output.\nValidation detail: install was run with FOOLERY_RELEASE_TAG=v0.1.0 using the raw installer URL from README.\nCorrection: installer/launcher no longer require Bun for runtime; installs now run as Node-based app from release artifact.",
+    "datetime": "2026-02-22T08:50:55Z",
+    "entry_id": "98d1c1e4dfd583aa647e563951b76c20ec79ae5510d355f6b7171285d75a1634",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

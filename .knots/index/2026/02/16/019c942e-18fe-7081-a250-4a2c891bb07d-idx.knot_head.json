@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-18fe-7081-a250-4a2c891bb07d",
+  "occurred_at": "2026-02-16T14:53:03Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3ji.4.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement GitHub install script and local launcher",
+    "updated_at": "2026-02-16T14:53:03Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-168d-7990-8075-7080edad6b74",
+  "occurred_at": "2026-02-17T16:25:00Z",
+  "knot_id": "foolery-2e2i",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  if the notes have data, add a newline and the words \n\nRejection Reason: \n\nwith the cursor to characters after teh colon.\n\nif the notes have no data, do the same thing, just without the newline.\n\nthere should only be 2 buttons - reject or cancel.\n\nif the user clicks shift-o instead of shift-v, keep that behavior the way it works now (as if these changes were never made)",
+    "description": "as title says.  if the notes have data, add a newline and the words \n\nRejection Reason: \n\nwith the cursor to characters after teh colon.\n\nif the notes have no data, do the same thing, just without the newline.\n\nthere should only be 2 buttons - reject or cancel.\n\nif the user clicks shift-o instead of shift-v, keep that behavior the way it works now (as if these changes were never made)",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "on final cut or list view, clicking thumbs down or shift-v should open notes",
+    "workflow_id": "default"
+  }
+}

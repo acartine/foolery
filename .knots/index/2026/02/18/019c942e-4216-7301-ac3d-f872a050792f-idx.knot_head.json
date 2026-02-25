@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4216-7301-ac3d-f872a050792f",
+  "occurred_at": "2026-02-18T10:17:41Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-twrr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add log lifecycle policy (compress, archive, remove)",
+    "updated_at": "2026-02-18T10:17:41Z",
+    "workflow_id": "default"
+  }
+}

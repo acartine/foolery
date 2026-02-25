@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3c68-7373-9a00-c5efd30b5961",
+  "occurred_at": "2026-02-20T07:30:27Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.2.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add Breakdown action to bead detail screen",
+    "updated_at": "2026-02-20T07:30:27Z",
+    "workflow_id": "default"
+  }
+}

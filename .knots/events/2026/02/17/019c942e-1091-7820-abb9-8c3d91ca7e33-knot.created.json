@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1091-7820-abb9-8c3d91ca7e33",
+  "occurred_at": "2026-02-17T09:46:32Z",
+  "knot_id": "foolery-0i68",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace/reshape Beats detail page into a compact lightbox-style presentation that matches list-page density and reduces visual clutter (borders, spacing, padding/margins).",
+    "description": "Replace/reshape Beats detail page into a compact lightbox-style presentation that matches list-page density and reduces visual clutter (borders, spacing, padding/margins).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Redesign Beats detail view as dense lightbox",
+    "workflow_id": "default"
+  }
+}

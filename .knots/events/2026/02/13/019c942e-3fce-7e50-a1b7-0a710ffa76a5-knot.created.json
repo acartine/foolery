@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3fce-7e50-a1b7-0a710ffa76a5",
+  "occurred_at": "2026-02-13T08:48:28Z",
+  "knot_id": "foolery-s3q",
+  "type": "knot.created",
+  "data": {
+    "body": "for now let's keep it simple, nobody can ship if something is shipping.  disable all the labels.  for the ticket that is actively shipping, change the ship button to a green Shipping... text, add a red square next to it with a mouseover that says 'Terminating'.  on click it terminates the terminal process and then the selected task becomes shippable again.",
+    "description": "for now let's keep it simple, nobody can ship if something is shipping.  disable all the labels.  for the ticket that is actively shipping, change the ship button to a green Shipping... text, add a red square next to it with a mouseover that says 'Terminating'.  on click it terminates the terminal process and then the selected task becomes shippable again.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "ship vs. shipping states",
+    "workflow_id": "default"
+  }
+}

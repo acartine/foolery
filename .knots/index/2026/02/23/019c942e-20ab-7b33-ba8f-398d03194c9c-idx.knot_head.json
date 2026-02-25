@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-20ab-7b33-ba8f-398d03194c9c",
+  "occurred_at": "2026-02-23T12:39:00Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-8iga",
+    "state": "shipped",
+    "terminal": true,
+    "title": "make Take!/Scene! terminals persistent until completed",
+    "updated_at": "2026-02-23T12:39:00Z",
+    "workflow_id": "default"
+  }
+}

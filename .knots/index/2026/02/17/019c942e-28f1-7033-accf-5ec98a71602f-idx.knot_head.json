@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-28f1-7033-accf-5ec98a71602f",
+  "occurred_at": "2026-02-17T09:12:49Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-e32l",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve release script UX with interactive version bumping",
+    "updated_at": "2026-02-17T09:12:49Z",
+    "workflow_id": "default"
+  }
+}

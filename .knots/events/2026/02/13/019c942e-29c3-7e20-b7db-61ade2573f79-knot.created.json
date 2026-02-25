@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-29c3-7e20-b7db-61ade2573f79",
+  "occurred_at": "2026-02-13T06:27:08Z",
+  "knot_id": "foolery-ez2",
+  "type": "knot.created",
+  "data": {
+    "body": "Ship Now terminal spawns Claude CLI but output wasn't visible and no work was done. Three root causes found and fixed in this session.",
+    "description": "Ship Now terminal spawns Claude CLI but output wasn't visible and no work was done. Three root causes found and fixed in this session.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Ship Now terminal: stream-json parsing + globalThis session sharing",
+    "workflow_id": "default"
+  }
+}

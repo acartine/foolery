@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2875-7be2-8ab5-29dc075eaadb",
+  "occurred_at": "2026-02-11T07:44:53Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dq2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "split pane",
+    "updated_at": "2026-02-11T07:44:53Z",
+    "workflow_id": "default"
+  }
+}

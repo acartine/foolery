@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4b26-7c60-af55-8630d80e89c6",
+  "occurred_at": "2026-02-20T07:28:28Z",
+  "knot_id": "foolery-xmg8.4.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Document settings behavior, retry semantics, label lifecycle, and troubleshooting for stuck verification transitions."
+  }
+}

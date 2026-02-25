@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1d98-71d2-aeab-5c32a4dec563",
+  "occurred_at": "2026-02-11T11:34:54Z",
+  "knot_id": "foolery-6vh",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.",
+    "description": "as title says.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "rename New Bead button to New",
+    "workflow_id": "default"
+  }
+}

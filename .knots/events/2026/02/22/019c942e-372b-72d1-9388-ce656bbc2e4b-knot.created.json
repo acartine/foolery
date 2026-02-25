@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-372b-72d1-9388-ce656bbc2e4b",
+  "occurred_at": "2026-02-22T08:44:55Z",
+  "knot_id": "foolery-mm5n",
+  "type": "knot.created",
+  "data": {
+    "body": "when the app sends a message in the history log and it says APP -> AGENT, also show the agent/model name like:\n\nAPP -> AGENT OpenAI Codex 5.3\n\netc.",
+    "description": "when the app sends a message in the history log and it says APP -> AGENT, also show the agent/model name like:\n\nAPP -> AGENT OpenAI Codex 5.3\n\netc.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Agent History:  Show agent/model in title when APP sends messages",
+    "workflow_id": "default"
+  }
+}

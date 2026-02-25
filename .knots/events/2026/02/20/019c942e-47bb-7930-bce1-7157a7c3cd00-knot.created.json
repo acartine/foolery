@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-47bb-7930-bce1-7157a7c3cd00",
+  "occurred_at": "2026-02-20T10:44:40Z",
+  "knot_id": "foolery-wxr8",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  overview component is aligned with the fold/unfold toggles and not the beat title text, which is confusing.",
+    "description": "as title says.  overview component is aligned with the fold/unfold toggles and not the beat title text, which is confusing.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "List/Final Cut Views:  Overview component (desc. and notes) is out of alignment with title",
+    "workflow_id": "default"
+  }
+}

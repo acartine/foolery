@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-14e0-7ff3-b819-f41a6233f89a",
+  "occurred_at": "2026-02-20T09:26:38Z",
+  "knot_id": "foolery-1guy.5.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update helper factories/mocks to target BackendPort and adapter-based setup."
+  }
+}

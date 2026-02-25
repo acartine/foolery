@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-33d8-78a1-ac45-bc056b9ede69",
+  "occurred_at": "2026-02-25T08:09:40Z",
+  "knot_id": "foolery-jzww",
+  "type": "knot.description_set",
+  "data": {
+    "description": "stage is set to verifying but console just closes"
+  }
+}

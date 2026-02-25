@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-19f2-79e2-b39b-1f5365178c83",
+  "occurred_at": "2026-02-23T16:40:32Z",
+  "knot_id": "foolery-42yx",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-23): Added animated waiting-word spinner for Direct and Breakdown quiet-run states. New shared formatter + hook in src/lib/wait-spinner.ts and src/hooks/use-wait-spinner.ts, wired into src/components/orchestration-view.tsx and src/components/breakdown-view.tsx. Added unit tests in src/lib/__tests__/wait-spinner.test.ts. Quality gates passed: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build. Commit/push: e197d34 pushed to origin/main. Note: bd sync is unstable in this environment (worktree run hangs; repo-root run panics with Dolt nil-pointer), so sync step could not complete successfully.",
+    "datetime": "2026-02-23T16:40:32Z",
+    "entry_id": "b2f38b96bf79ad7271cb9650515902ed7566a4f8b70cc329ec2a37cf1fceb3a3",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

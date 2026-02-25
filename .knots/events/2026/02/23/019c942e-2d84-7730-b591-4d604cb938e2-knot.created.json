@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2d84-7730-b591-4d604cb938e2",
+  "occurred_at": "2026-02-23T17:12:53Z",
+  "knot_id": "foolery-g3y1.4.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace hardcoded bd prompt commands with tracker-aware command rendering in terminal flows.",
+    "description": "Replace hardcoded bd prompt commands with tracker-aware command rendering in terminal flows.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Render tracker-aware prompt commands in terminal flows",
+    "workflow_id": "default"
+  }
+}

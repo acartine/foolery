@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2e79-77e3-b36d-86ce006fcde4",
+  "occurred_at": "2026-02-23T17:12:57Z",
+  "knot_id": "foolery-g3y1.5.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Validate bead table/filter/sort/hierarchy behavior under Knots-backed repos.",
+    "description": "Validate bead table/filter/sort/hierarchy behavior under Knots-backed repos.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Validate table/filter/sort/hierarchy views on Knots repos",
+    "workflow_id": "default"
+  }
+}

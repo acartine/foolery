@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-48ec-79f1-82f0-600d283aad9c",
+  "occurred_at": "2026-02-20T07:28:23Z",
+  "knot_id": "foolery-xmg8.2.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "On successful eligible invocation completion, enqueue workflow and set transition:verification; ensure stage is set to stage:verification when missing."
+  }
+}

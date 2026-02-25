@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3e87-7e92-84ce-a4852219623f",
+  "occurred_at": "2026-02-14T07:08:38Z",
+  "knot_id": "foolery-ra5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "it's very annoying when focus gets stuck on the status pulldowns.\n\nafter anything is selected from the filters, move focus back to the first row."
+  }
+}

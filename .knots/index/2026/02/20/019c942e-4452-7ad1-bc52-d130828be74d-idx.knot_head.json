@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4452-7ad1-bc52-d130828be74d",
+  "occurred_at": "2026-02-20T05:23:52Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.2.5",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add unit tests for OpenRouter client and parsers",
+    "updated_at": "2026-02-20T05:23:52Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-317e-7e42-8b56-3dea1f9275bc",
+  "occurred_at": "2026-02-20T10:11:40Z",
+  "knot_id": "foolery-hkd6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "fix this in 'beats', 'scenes\", 'direct', 'final cut', and 'retakes'\n\ngo through each list component and make sure it is using the proper order for hierarchical rendering.",
+    "datetime": "2026-02-20T10:11:40Z",
+    "entry_id": "7bff0a0653413a293890242da8a6c062463d2e94244cfaaec0913b067d0bb79d",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

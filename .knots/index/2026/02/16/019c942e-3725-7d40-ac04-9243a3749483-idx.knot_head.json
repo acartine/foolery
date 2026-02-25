@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3725-7d40-ac04-9243a3749483",
+  "occurred_at": "2026-02-16T19:39:18Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-mh2m",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix failing test suites",
+    "updated_at": "2026-02-16T19:39:18Z",
+    "workflow_id": "default"
+  }
+}

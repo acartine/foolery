@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3b9f-7d82-a637-b45fd23f7cdd",
+  "occurred_at": "2026-02-17T21:28:51Z",
+  "knot_id": "foolery-qqla.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Create reusable prompt-generation and handoff contract from bead detail to Direct.\n\nNotes: This wave unblocks independent UI and Direct-page implementation by stabilizing shared interfaces first.\n\nAssigned tasks:\n- Define breakdown prompt builder utility\n- Define navigation payload contract for Direct prefill\n- Add unit tests for prompt template and payload parsing"
+  }
+}

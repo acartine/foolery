@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3325-78b0-8576-d091f3128f31",
+  "occurred_at": "2026-02-13T12:01:50Z",
+  "knot_id": "foolery-jac",
+  "type": "knot.created",
+  "data": {
+    "body": "after the orchestration and wave bead creation, the logical next step is \"initiate now\" or something akin to that",
+    "description": "after the orchestration and wave bead creation, the logical next step is \"initiate now\" or something akin to that",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "orchestration waves should flow nicely into \"trigger now\"",
+    "workflow_id": "default"
+  }
+}

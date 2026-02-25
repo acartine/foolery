@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-352e-7a70-8b6d-2fe290128837",
+  "occurred_at": "2026-02-15T16:26:53Z",
+  "knot_id": "foolery-kxwv",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, corruption in \"selected beat\" in final cut view.\n\nmy guess is that shift-o is applied to the selected bin the Beats view and not the Final Cut view.\n\nyou might want to make sure they have separate state.  you could try sharing state but that might be a minefield with filters, where you run into a situation where the global selected beat is not visible on the list page.",
+    "description": "as title says, corruption in \"selected beat\" in final cut view.\n\nmy guess is that shift-o is applied to the selected bin the Beats view and not the Final Cut view.\n\nyou might want to make sure they have separate state.  you could try sharing state but that might be a minefield with filters, where you run into a situation where the global selected beat is not visible on the list page.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "state corruption - shift o on mec opens 5hvk",
+    "workflow_id": "default"
+  }
+}

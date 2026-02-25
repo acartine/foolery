@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1608-7612-8bcf-8749afc5f5a3",
+  "occurred_at": "2026-02-11T07:48:12Z",
+  "knot_id": "foolery-217",
+  "type": "knot.created",
+  "data": {
+    "body": "when you search for something and there are no results, you have no way to go back.  we should provide a navigation helper there.",
+    "description": "when you search for something and there are no results, you have no way to go back.  we should provide a navigation helper there.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "search leads to dead-end navigation",
+    "workflow_id": "default"
+  }
+}

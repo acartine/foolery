@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-200a-7f42-9e76-10936b0b83ba",
+  "occurred_at": "2026-02-11T07:47:22Z",
+  "knot_id": "foolery-86h",
+  "type": "knot.description_set",
+  "data": {
+    "description": "doesn't appear to be searching titles.  bd search 'condense' should return 3of from cli\n\ndoesn't return anything for us"
+  }
+}

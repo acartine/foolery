@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3fb3-7ab1-999a-0bc0ab2568a6",
+  "occurred_at": "2026-02-13T22:27:49Z",
+  "knot_id": "foolery-s2x",
+  "type": "knot.description_set",
+  "data": {
+    "description": "replace \"list\" with \"beats\", \"orchestrate\" with \"direct\" and \"waves\" with \"scenes\"\n\nin hotkey lightbox, replace 'bead' with 'beat'\n\nanywhere you see 'bead', replace it with 'beat'"
+  }
+}

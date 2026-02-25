@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-2d66-7df3-a198-6a19fbb6ce9c",
+  "occurred_at": "2026-02-23T17:12:52Z",
+  "knot_id": "foolery-g3y1.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Make workflow and prompts backend-agnostic while preserving lifecycle behavior.",
+    "description": "Make workflow and prompts backend-agnostic while preserving lifecycle behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Workflow and prompt compatibility across backends",
+    "workflow_id": "default"
+  }
+}

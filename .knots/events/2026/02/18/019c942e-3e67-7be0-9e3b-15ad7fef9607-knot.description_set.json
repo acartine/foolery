@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3e67-7be0-9e3b-15ad7fef9607",
+  "occurred_at": "2026-02-18T09:14:12Z",
+  "knot_id": "foolery-r57u",
+  "type": "knot.description_set",
+  "data": {
+    "description": "make sure that Take! and Scene! actions on parent beats triggers a prompt that says stuff like:\n- execute this parent bead and it's children.  implement the children and use the parent bead notes for context and guidance."
+  }
+}

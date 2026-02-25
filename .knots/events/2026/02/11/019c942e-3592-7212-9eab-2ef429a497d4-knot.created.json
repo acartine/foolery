@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3592-7212-9eab-2ef429a497d4",
+  "occurred_at": "2026-02-11T17:09:41Z",
+  "knot_id": "foolery-kzg",
+  "type": "knot.created",
+  "data": {
+    "body": "when navigating the /beads table, if the bead is in stage:verification, shift-v should verify and shift-f should reject (thumbs down)",
+    "description": "when navigating the /beads table, if the bead is in stage:verification, shift-v should verify and shift-f should reject (thumbs down)",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift-v and shift-f hotkeys",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3e35-7812-8d98-b9f042c3ba89",
+  "occurred_at": "2026-02-19T10:16:58Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qym6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix foolery uninstall to clean up app state data (~/.config/foolery)",
+    "updated_at": "2026-02-19T10:16:58Z",
+    "workflow_id": "default"
+  }
+}

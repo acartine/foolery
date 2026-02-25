@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-273b-7761-9420-eced753bbee7",
+  "occurred_at": "2026-02-16T16:46:01Z",
+  "knot_id": "foolery-cxcv",
+  "type": "knot.created",
+  "data": {
+    "body": "ask user if they want to mount existing local repo clones (you probalby do)\nthen ask if they want to search a specific directory or just manually specify\nif specific directory use user home as default but allow override\nand search user directory up to 2 levels deep for repos with beads\nif manually make sure to verify paths as valid paths.\nhandle case wher repos are already mounted/registered, \"the following clones are already mounted ...[list] ..., are there others? [y/N]",
+    "description": "ask user if they want to mount existing local repo clones (you probalby do)\nthen ask if they want to search a specific directory or just manually specify\nif specific directory use user home as default but allow override\nand search user directory up to 2 levels deep for repos with beads\nif manually make sure to verify paths as valid paths.\nhandle case wher repos are already mounted/registered, \"the following clones are already mounted ...[list] ..., are there others? [y/N]",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "auto scan for repos during install",
+    "workflow_id": "default"
+  }
+}

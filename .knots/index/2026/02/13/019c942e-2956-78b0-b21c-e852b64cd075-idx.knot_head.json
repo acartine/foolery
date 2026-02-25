@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2956-78b0-b21c-e852b64cd075",
+  "occurred_at": "2026-02-13T06:41:35Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ejm",
+    "state": "shipped",
+    "terminal": true,
+    "title": "move the new button directly under the repo pulldown",
+    "updated_at": "2026-02-13T06:41:35Z",
+    "workflow_id": "default"
+  }
+}

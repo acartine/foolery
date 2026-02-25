@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2832-7843-8984-0097265332fc",
+  "occurred_at": "2026-02-12T17:51:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-dhk",
+    "state": "shipped",
+    "terminal": true,
+    "title": "text of the new button should be centered, not right aligned",
+    "updated_at": "2026-02-12T17:51:17Z",
+    "workflow_id": "default"
+  }
+}

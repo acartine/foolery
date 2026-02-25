@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3f12-7ae1-9f49-aaf1a97de402",
+  "occurred_at": "2026-02-23T06:46:19Z",
+  "knot_id": "foolery-rm0f",
+  "type": "knot.created",
+  "data": {
+    "body": "when navigating the history view, it's ok if we have to wait for the UI to load and/or prune cache, but there should be some kind of UX feedback, like a spinner and/or some helper text like \"loading...prompt histories are BIG, please be patient :-)\"",
+    "description": "when navigating the history view, it's ok if we have to wait for the UI to load and/or prune cache, but there should be some kind of UX feedback, like a spinner and/or some helper text like \"loading...prompt histories are BIG, please be patient :-)\"",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "history list navigation is laggy and provides no feedback",
+    "workflow_id": "default"
+  }
+}

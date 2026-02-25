@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-45ed-76f3-9384-708036cb605d",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "knot_id": "foolery-vdk0.5.1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Surface clear errors/warnings for missing API key, invalid model id, auth failures, and rate-limit conditions in runtime/doctor paths."
+  }
+}

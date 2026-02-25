@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1f01-79f0-b069-a60c5edfcdce",
+  "occurred_at": "2026-02-10T19:09:38Z",
+  "knot_id": "foolery-7gj",
+  "type": "knot.created",
+  "data": {
+    "body": "we want search.  have a simple search bar that says something like 'find your beads' in gray suggestion text that disappears when the user starts typing.  no button, just capture return.",
+    "description": "we want search.  have a simple search bar that says something like 'find your beads' in gray suggestion text that disappears when the user starts typing.  no button, just capture return.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "search bar centered in top between logo and repo pull down",
+    "workflow_id": "default"
+  }
+}

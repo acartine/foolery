@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4ad7-7a13-bab0-cc41f28b8fa9",
+  "occurred_at": "2026-02-23T12:40:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.4.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add end-to-end tests for retry paths",
+    "updated_at": "2026-02-23T12:40:08Z",
+    "workflow_id": "default"
+  }
+}

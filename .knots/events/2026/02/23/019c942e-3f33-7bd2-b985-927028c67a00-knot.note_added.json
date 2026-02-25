@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3f33-7bd2-b985-927028c67a00",
+  "occurred_at": "2026-02-23T10:47:50Z",
+  "knot_id": "foolery-rm0f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Handoff Capsule\n\n### What was done\nAdded animated loading spinners and friendlier messages to the history view navigation. When users navigate between beats or load conversation logs, they now see:\n\n1. **Beat list loading**: Animated spinner + \"Loading history… prompt histories are BIG, please be patient :-)\"\n2. **Beat detail panel**: Spinner + \"Loading beat details…\" (centered)\n3. **Conversation log loading**: Vertical layout with spinner + bead ID + patience message\n4. **Session refetching**: Subtle \"Refreshing…\" banner when data updates in background\n\n### Files changed\n- `src/components/agent-history-view.tsx` — Added `Loader2` import, `Spinner` helper, enhanced all 3 loading states + refetch indicator\n\n### How to verify\n1. Open the Foolery UI → History tab\n2. Navigate between beats using arrow keys\n3. Press Enter to load logs\n4. Observe spinners during all loading states\n5. Check that the spinner animates (CSS `animate-spin`)\n\n### Commit\nbc4721a — pushed to origin/main",
+    "datetime": "2026-02-23T10:47:50Z",
+    "entry_id": "97d6dd87b62b72ca9a3e6d2fb1946e5ce6031ce3b9db276ea3087861520f66cf",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

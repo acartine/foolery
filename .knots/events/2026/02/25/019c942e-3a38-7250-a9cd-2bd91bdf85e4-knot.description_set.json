@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3a38-7250-a9cd-2bd91bdf85e4",
+  "occurred_at": "2026-02-25T08:07:34Z",
+  "knot_id": "foolery-p0bo",
+  "type": "knot.description_set",
+  "data": {
+    "description": "ust show the 'verifying' pill"
+  }
+}

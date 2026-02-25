@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3f44-7cc2-bef0-247157fd0459",
+  "occurred_at": "2026-02-19T17:30:32Z",
+  "knot_id": "foolery-rmje",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Serialize bd CLI invocations per repo path and remove internal parallel label operations so embedded Dolt is never opened concurrently by this process."
+  }
+}

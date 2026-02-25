@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3deb-70e2-b50c-2e82a16ec265",
+  "occurred_at": "2026-02-20T06:09:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.4.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Update user-facing/help docs for Breakdown action",
+    "updated_at": "2026-02-20T06:09:40Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2df2-70e0-b083-9e184656dc0c",
+  "occurred_at": "2026-02-23T17:12:55Z",
+  "knot_id": "foolery-g3y1.4.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add regression tests for retry and verification behavior on Knots-backed repos."
+  }
+}

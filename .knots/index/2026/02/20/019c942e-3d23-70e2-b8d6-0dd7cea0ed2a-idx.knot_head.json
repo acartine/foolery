@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3d23-70e2-b8d6-0dd7cea0ed2a",
+  "occurred_at": "2026-02-20T07:30:25Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.3.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement one-shot auto Run Now trigger",
+    "updated_at": "2026-02-20T07:30:25Z",
+    "workflow_id": "default"
+  }
+}

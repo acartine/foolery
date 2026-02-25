@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3222-7e73-a315-5b95624f582d",
+  "occurred_at": "2026-02-12T10:10:51Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-i5f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "create new focus",
+    "updated_at": "2026-02-12T10:10:51Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-29f3-7083-9e16-066dadfa85d5",
+  "occurred_at": "2026-02-18T04:46:46Z",
+  "knot_id": "foolery-f0sq",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add NDJSON streaming to foolery doctor so each check category renders as it completes with status icons"
+  }
+}

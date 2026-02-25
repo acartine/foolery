@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2930-75b1-b725-259eadd3036b",
+  "occurred_at": "2026-02-13T06:41:31Z",
+  "knot_id": "foolery-edn",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "several things broken with current implementation\n- when you click on 'label' it shows you semi-random labels.  it should show you the labels that are actually used in your beads instance.  \n- the labels should be in alphabetical order\n- YOU CAN'T SAVE THE LABEL.  HITTIING RETURN DOES NOTHING",
+    "datetime": "2026-02-13T06:41:31Z",
+    "entry_id": "02834ee8e9af312dd99a1ebe53da72a1e8c801259618fe84179f4543ba1db3b3",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

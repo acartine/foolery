@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-341b-7792-ae64-b1cd03d78cd0",
+  "occurred_at": "2026-02-10T13:02:47Z",
+  "knot_id": "foolery-k2n",
+  "type": "knot.created",
+  "data": {
+    "body": "on the /beads path/page, instead of just saying Beads, have it say the name of the active \"project\" (the repo)\n\nin the id column, strip away the project- prefix, just show the identifier part.",
+    "description": "on the /beads path/page, instead of just saying Beads, have it say the name of the active \"project\" (the repo)\n\nin the id column, strip away the project- prefix, just show the identifier part.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "enhance repo engagement",
+    "workflow_id": "default"
+  }
+}

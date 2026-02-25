@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-29de-7a82-b180-f38f17fc6f67",
+  "occurred_at": "2026-02-13T22:20:51Z",
+  "knot_id": "foolery-ez2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Handoff Capsule — foolery-ez2 (Session 2)\n\n## Context\nShip Now terminal was failing to do actual work. Three issues addressed in this session.\n\n## Fixes applied (all committed & pushed to main)\n\n### Fix 1: `--output-format=stream-json` requires `--verbose` (d194a07)\n- **Error**: `Error: When using --print, --output-format=stream-json requires --verbose`\n- **Cause**: Claude CLI enforces that stream-json with `-p` also needs `--verbose`\n- **Fix**: Added `--verbose` to the spawn args\n- **File**: `src/lib/terminal-manager.ts:153`\n\n### Fix 2: Plan mode stall — agent planned but never implemented (72ffcfc → 5e83f1a)\n- **Symptom**: Agent entered plan mode, wrote a plan, called ExitPlanMode, process ended without implementing\n- **Cause**: In `-p` (print) mode, ExitPlanMode requires user confirmation that can't happen non-interactively\n- **First attempt** (72ffcfc): Added prompt instruction \"do NOT use plan mode\" — user rejected this, wants plan mode because Claude does better work with a self-generated plan\n- **Final fix** (5e83f1a): Added `--dangerously-skip-permissions` to CLI args — auto-approves ExitPlanMode and all permission prompts. User has already consented by clicking Ship Now.\n- **File**: `src/lib/terminal-manager.ts:151-156`\n\n### Verification\n- Commit `1c6bf14` shows a successful Ship Now run landed the foolery-6xc pagination fix, confirming the terminal is now producing real work\n\n## Current CLI args\n```ts\nconst args = [\n  \"-p\", prompt,\n  \"--verbose\",\n  \"--output-format\", \"stream-json\",\n  \"--dangerously-skip-permissions\",\n];\n```\n\n## Current prompt\n```\nImplement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.\n\nID: <bead.id>\nTitle: <bead.title>\n...\n```\n\n## Status\n- Ship Now terminal is functional — agents can plan, get auto-approved, and implement\n- User reported the latest run still had issues (\"no that was never in plan mode\") — need more detail on what went wrong in the most recent attempt\n- The pagination fix (foolery-6xc) DID land via Ship Now, so the pipeline works at least sometimes\n\n## Key files\n- `src/lib/terminal-manager.ts` — session management, process spawn, CLI args, NDJSON parser\n- `src/app/api/terminal/[sessionId]/route.ts` — SSE endpoint\n- `src/lib/terminal-api.ts` — client EventSource\n- `src/components/terminal-panel.tsx` — xterm.js panel\n\n## Related beads\n- foolery-083: Bug bead created this session for the stream-json fix (stage:verification)\n- foolery-6xc: Pagination bead — successfully shipped by Ship Now terminal",
+    "datetime": "2026-02-13T22:20:51Z",
+    "entry_id": "a3388c29018a74f3fca86b1f827941a07e8fbbbbb4a580cd811e15a3c587b572",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

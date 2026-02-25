@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4a16-7113-b79b-c01e03e115ea",
+  "occurred_at": "2026-02-23T12:40:06Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-xmg8.3.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add verification-agent selector in settings",
+    "updated_at": "2026-02-23T12:40:06Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-48cb-7c72-a5c3-bbd1130a27dc",
+  "occurred_at": "2026-02-20T07:28:22Z",
+  "knot_id": "foolery-xmg8.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Implement end-to-end post-invocation orchestration for verification and retry/close outcomes.\n\nNotes: Tasks can be split across event handling, job orchestration, and bead state services, then integrated behind one workflow entrypoint.\n\nAssigned tasks:\n- Hook agent completion to verification transition\n- Implement commit-label remediation loop\n- Launch verifier agent using commit label\n- Apply verifier outcomes to bead state\n- Add orchestration idempotency and dedupe locks\n- Persist verification lifecycle events"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-232e-7110-b5f2-d8e35bc32fd8",
+  "occurred_at": "2026-02-11T12:22:36Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ad6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate how application handles multiple open clients",
+    "updated_at": "2026-02-11T12:22:36Z",
+    "workflow_id": "default"
+  }
+}

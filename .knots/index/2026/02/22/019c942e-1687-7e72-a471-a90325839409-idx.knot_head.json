@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1687-7e72-a471-a90325839409",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-28hf",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Reduce unnecessary /api/registry polling on beads route",
+    "updated_at": "2026-02-22T16:53:50Z",
+    "workflow_id": "default"
+  }
+}

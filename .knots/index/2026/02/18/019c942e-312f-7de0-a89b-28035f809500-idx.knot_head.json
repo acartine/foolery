@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-312f-7de0-a89b-28035f809500",
+  "occurred_at": "2026-02-18T04:47:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-hdtj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "make foolery doctor output more pleasant",
+    "updated_at": "2026-02-18T04:47:17Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1583-70f3-90fc-8c13cb7d22c1",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1iu",
+    "state": "shipped",
+    "terminal": true,
+    "title": "remove 'close' button from top right of bead detail page",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

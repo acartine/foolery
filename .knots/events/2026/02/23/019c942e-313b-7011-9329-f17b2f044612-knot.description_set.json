@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-313b-7011-9329-f17b2f044612",
+  "occurred_at": "2026-02-23T11:13:18Z",
+  "knot_id": "foolery-hh7o",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Follow repository release cheatsheet, verify quality gates, and produce polished release summary from merged changes on main."
+  }
+}

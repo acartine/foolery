@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-4543-73d0-b792-38468fad25ba",
+  "occurred_at": "2026-02-20T05:23:55Z",
+  "knot_id": "foolery-vdk0.4.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Call OpenRouter generation endpoints and normalize streamed output into existing NDJSON/log/plan parsing expectations."
+  }
+}

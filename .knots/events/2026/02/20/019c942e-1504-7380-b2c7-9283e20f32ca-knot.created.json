@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-1504-7380-b2c7-9283e20f32ca",
+  "occurred_at": "2026-02-20T09:26:39Z",
+  "knot_id": "foolery-1guy.5.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Add lint/static rule to block direct beads imports outside the adapter package.",
+    "description": "Add lint/static rule to block direct beads imports outside the adapter package.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Enforce adapter boundary with static check",
+    "workflow_id": "default"
+  }
+}

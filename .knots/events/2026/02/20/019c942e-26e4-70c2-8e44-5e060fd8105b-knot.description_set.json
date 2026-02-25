@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-26e4-70c2-8e44-5e060fd8105b",
+  "occurred_at": "2026-02-20T10:35:39Z",
+  "knot_id": "foolery-ctup",
+  "type": "knot.description_set",
+  "data": {
+    "description": "as title says, it's helpful for understanding pagination to know that 1 parent actually has 25 subtasks and that's why you're not seeing 50 on the screen or whatever."
+  }
+}

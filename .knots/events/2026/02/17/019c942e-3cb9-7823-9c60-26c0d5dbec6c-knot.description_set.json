@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3cb9-7823-9c60-26c0d5dbec6c",
+  "occurred_at": "2026-02-17T21:28:57Z",
+  "knot_id": "foolery-qqla.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Objective: Make Direct page consume incoming prompt and execute Run Now automatically.\n\nNotes: Hydration and autorun are tightly coupled but can be developed in parallel with clear integration boundaries.\n\nAssigned tasks:\n- Hydrate Direct input from incoming prompt payload\n- Implement one-shot auto Run Now trigger\n- Add Direct-page failure and fallback behavior"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2c8f-7800-a78a-b837b5070c60",
+  "occurred_at": "2026-02-23T17:12:48Z",
+  "knot_id": "foolery-g3y1.2.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update tracker metadata backfill and doctor checks for Knots-aware repos."
+  }
+}

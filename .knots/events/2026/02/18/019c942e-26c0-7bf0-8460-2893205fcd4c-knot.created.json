@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-26c0-7bf0-8460-2893205fcd4c",
+  "occurred_at": "2026-02-18T18:41:24Z",
+  "knot_id": "foolery-csjr",
+  "type": "knot.created",
+  "data": {
+    "body": "Let's get it up to 80% just because we can",
+    "description": "Let's get it up to 80% just because we can",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Beef up unit test code coverage",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4a9f-7592-8652-c1d08b458a61",
+  "occurred_at": "2026-02-20T07:28:27Z",
+  "knot_id": "foolery-xmg8.4.1",
+  "type": "knot.created",
+  "data": {
+    "body": "Validate flow from eligible action completion through verification to successful label cleanup and bead closure.",
+    "description": "Validate flow from eligible action completion through verification to successful label cleanup and bead closure.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add end-to-end tests for pass path",
+    "workflow_id": "default"
+  }
+}

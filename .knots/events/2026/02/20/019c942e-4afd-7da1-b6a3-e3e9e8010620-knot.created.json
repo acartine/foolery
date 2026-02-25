@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4afd-7da1-b6a3-e3e9e8010620",
+  "occurred_at": "2026-02-20T07:28:28Z",
+  "knot_id": "foolery-xmg8.4.4",
+  "type": "knot.created",
+  "data": {
+    "body": "Verify both UI and API prevent edits while transition:verification is active and re-enable edits after transition exits.",
+    "description": "Verify both UI and API prevent edits while transition:verification is active and re-enable edits after transition exits.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add regression tests for verification edit locks",
+    "workflow_id": "default"
+  }
+}

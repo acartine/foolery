@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1ea8-79c3-9f50-8a80692bd643",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "knot_id": "foolery-79u",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "HANDOFF CAPSULE - Context for next session:\n\n## What was done this session\n- Launched 4 parallel SWE agents across worktrees, merged all branches to main\n- Fixed foolery-d45 (column reorder: priority before type/status) - DONE\n- Fixed foolery-d0l (reject button: --set-labels \"\" was no-op, switched to --remove-label via new removeLabels field in schema/bd.ts) - DONE, in stage:verification\n- Added removeLabels support: schemas.ts, bd.ts, bead-columns.tsx all updated\n- Currently mid-fix on foolery-79u (bead detail editing) - file was just rewritten but NOT yet committed or build-tested\n\n## foolery-79u changes just made (uncommitted in bead-detail.tsx):\n1. Select dropdowns (type/status/priority): Changed onValueChange from returning Promise to fire-and-forget via new `fireUpdate()` helper that calls onUpdate().catch(). Changed SelectTrigger from h-7 to h-auto and added cursor-pointer.\n2. Labels: Replaced click-to-edit-all with individual X buttons per label using removeLabels API + an \"+ Add\" button with inline input for new labels\n3. Added savingRef to prevent double-saves on blur\n4. saveEdit state reset moved to finally{} block\n\n## Remaining open P0 beads:\n- foolery-79u: bead detail editing - changes written but need build test + verify\n- foolery-3of: condense padding everywhere (50% on /beads, 75% on detail)\n- foolery-ojo: logo PNG corners not cleaned up (only CSS rounded was added)\n- foolery-6p6: hierarchy view doesn't work - bd list --json doesn't return parent field, only bd show does. Need different approach (maybe use dependencies or fetch parent per-bead)\n- foolery-d0l: in stage:verification, test reject button\n- foolery-d45: in stage:verification, test column order\n\n## Key technical findings:\n- bd CLI: --set-labels \"\" is a NO-OP (doesn't clear labels). Must use --remove-label instead.\n- bd list --json does NOT return parent field. bd show --json does. Hierarchy needs a different data source.\n- bd update accepts: --title, --description, --acceptance, --notes, --type, --status, --priority, --set-labels, --remove-label, --add-label\n- All worktrees cleaned up, branches deleted, code is on main",
+    "datetime": "2026-02-17T21:31:15Z",
+    "entry_id": "bcf1ce5fadc97f752277bfb8c50f1fe98a224a31858b058b36fe7d4052c838b5",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

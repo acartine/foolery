@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1f2b-7342-84b3-6ca0fcbc9f8d",
+  "occurred_at": "2026-02-19T16:19:53Z",
+  "knot_id": "foolery-7qvg",
+  "type": "knot.priority_set",
+  "data": {
+    "priority": 2
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1d91-7740-93b7-0adb7c4ebb84",
+  "occurred_at": "2026-02-11T17:16:19Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6tn",
+    "state": "shipped",
+    "terminal": true,
+    "title": "realign logo and search bar",
+    "updated_at": "2026-02-11T17:16:19Z",
+    "workflow_id": "default"
+  }
+}

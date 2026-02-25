@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3e55-79c2-b54f-06f97aa1d77b",
+  "occurred_at": "2026-02-22T16:53:50Z",
+  "knot_id": "foolery-r1mi",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff capsule (2026-02-20, final): Executed maintainer-approved continuation to resolve sync divergence by preserving and publishing local Beads state. Committed/pushed Beads sync commits to origin/main: 82c870f (config + issues sync after doctor) and 69ddb4b (persist verification labels update). Ran bd sync before pushes; pushes succeeded to origin/main. Current custom Dolt hooks remain installed for pre-push/post-merge/post-checkout (v0.55.1 custom behavior) with backups in .git/hooks/*.bak-*.\n\nPost-fix health: bd doctor now reports 67 passed / 2 warnings / 0 errors. Remaining warnings are operational only: git working tree has untracked .beads-backups/ and beads_integration_0_55_1.md, and Dolt lock health warns on lock-file presence after bd operations. Stale lock files were moved non-destructively to /Users/cartine/foolery/.beads-backups/locks-20260220-174254/.\n\nCurrent local workspace status:\n- clean tracked files on main (no modified tracked files)\n- untracked: .beads-backups/\n- untracked: beads_integration_0_55_1.md",
+    "datetime": "2026-02-22T16:53:50Z",
+    "entry_id": "e2e354a6edda0ec809e1520b76df46c020cb5e81c58e24ca7c0af1fbe8aea6f9",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

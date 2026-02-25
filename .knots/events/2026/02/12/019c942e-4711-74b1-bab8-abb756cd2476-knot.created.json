@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4711-74b1-bab8-abb756cd2476",
+  "occurred_at": "2026-02-12T10:34:26Z",
+  "knot_id": "foolery-w8a",
+  "type": "knot.created",
+  "data": {
+    "body": "Update agent/Claude instruction docs so assignment clears all stage:* labels and sets stage:implementation; completion clears all stage:* labels and sets stage:verification.",
+    "description": "Update agent/Claude instruction docs so assignment clears all stage:* labels and sets stage:implementation; completion clears all stage:* labels and sets stage:verification.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Normalize stage label transitions for agent workflow",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-156c-7160-b97c-e2e1972cc3da",
+  "occurred_at": "2026-02-10T15:52:09Z",
+  "knot_id": "foolery-1iu",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "description": "as title says",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove 'close' button from top right of bead detail page",
+    "workflow_id": "default"
+  }
+}

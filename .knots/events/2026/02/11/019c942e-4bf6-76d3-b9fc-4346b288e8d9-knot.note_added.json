@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-4bf6-76d3-b9fc-4346b288e8d9",
+  "occurred_at": "2026-02-11T06:41:23Z",
+  "knot_id": "foolery-yab",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "2 attempts were made to fix this.  you cannot edit the type, status, or priority fields anywhere within this application.  the field is frozen or disabled or something.",
+    "datetime": "2026-02-11T06:41:23Z",
+    "entry_id": "a0c406d1c68f2a5e91cb0c35769bb54af598cd624363c2a4e5b2033223763400",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3b5f-7130-b474-2d28dcaf56e4",
+  "occurred_at": "2026-02-20T11:43:11Z",
+  "knot_id": "foolery-qiqm",
+  "type": "knot.description_set",
+  "data": {
+    "description": "top level parent beats titles should left aligned with all the other titles, meaning that the >^ folding toggle and the child count pill should be to the left of the title AFTER the title has been aligned with the other titles.\n\nAlso let's swap the count pill and arrows"
+  }
+}

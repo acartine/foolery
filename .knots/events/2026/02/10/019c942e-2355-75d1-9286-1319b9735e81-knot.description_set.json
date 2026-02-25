@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2355-75d1-9286-1319b9735e81",
+  "occurred_at": "2026-02-10T09:58:37Z",
+  "knot_id": "foolery-ajv",
+  "type": "knot.description_set",
+  "data": {
+    "description": "BeadTypeBadge crashes when bd returns a type not in the typeConfig map. Already fixed by adding fallback config and widening the type prop to string. Close this bead."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3067-7202-b3ca-87f46523d1b8",
+  "occurred_at": "2026-02-13T14:01:31Z",
+  "knot_id": "foolery-gps",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "suspect this may have to do with epic parents, perhaps there are different relationship models and we are not handling all cases.  requires probably some exploration/investigation.",
+    "datetime": "2026-02-13T14:01:31Z",
+    "entry_id": "410e5e5c8b1aed9c5c6cfc3448fa1393ad184fb7fad0456b1089ab19c044a8fa",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

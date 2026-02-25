@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3049-7cf2-91e9-37e0c67ef2a9",
+  "occurred_at": "2026-02-13T10:27:37Z",
+  "knot_id": "foolery-gps",
+  "type": "knot.created",
+  "data": {
+    "body": "mqv shows 2.5 and 2.6 under 5\n5 and 1 are not under their parent.",
+    "description": "mqv shows 2.5 and 2.6 under 5\n5 and 1 are not under their parent.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "bead hierarch in list view is broken",
+    "workflow_id": "default"
+  }
+}

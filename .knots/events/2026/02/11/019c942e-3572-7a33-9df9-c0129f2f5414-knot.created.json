@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3572-7a33-9df9-c0129f2f5414",
+  "occurred_at": "2026-02-11T12:27:26Z",
+  "knot_id": "foolery-kyo",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, it wil llook better to the right",
+    "description": "as title says, it wil llook better to the right",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "slight filter pull downs to the right, next to the new button",
+    "workflow_id": "default"
+  }
+}

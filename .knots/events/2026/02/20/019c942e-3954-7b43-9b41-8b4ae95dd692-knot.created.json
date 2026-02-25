@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3954-7b43-9b41-8b4ae95dd692",
+  "occurred_at": "2026-02-20T06:39:45Z",
+  "knot_id": "foolery-o2wo",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.",
+    "description": "as title says.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "breakdown: creates new parent bead instead of making source bead the parent bead",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-225c-7df1-a22a-cf7a03c160fd",
+  "occurred_at": "2026-02-15T13:52:36Z",
+  "knot_id": "foolery-9v09.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Create a companion markdown guide with domain overview, agent-oriented workflows, multi-repo usage (`_repo`), and error handling conventions."
+  }
+}

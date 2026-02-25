@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-212a-7311-af07-caef1e45f00e",
+  "occurred_at": "2026-02-17T08:13:48Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-988k",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Exclude stage:verification beats from Ready view",
+    "updated_at": "2026-02-17T08:13:48Z",
+    "workflow_id": "default"
+  }
+}

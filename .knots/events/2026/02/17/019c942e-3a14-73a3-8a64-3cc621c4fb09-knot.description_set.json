@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3a14-73a3-8a64-3cc621c4fb09",
+  "occurred_at": "2026-02-17T15:07:56Z",
+  "knot_id": "foolery-ozjw",
+  "type": "knot.description_set",
+  "data": {
+    "description": "remove \"beats viewer\""
+  }
+}

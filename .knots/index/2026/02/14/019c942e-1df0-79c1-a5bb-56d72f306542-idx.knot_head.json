@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1df0-79c1-a5bb-56d72f306542",
+  "occurred_at": "2026-02-14T18:43:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-6y6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wave theron-noir: branding-and-shortcuts",
+    "updated_at": "2026-02-14T18:43:11Z",
+    "workflow_id": "default"
+  }
+}

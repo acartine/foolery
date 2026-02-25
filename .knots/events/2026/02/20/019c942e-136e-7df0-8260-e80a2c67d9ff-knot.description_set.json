@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-136e-7df0-8260-e80a2c67d9ff",
+  "occurred_at": "2026-02-20T09:26:34Z",
+  "knot_id": "foolery-1guy.3.2",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Introduce non-user-facing config/env selection for backend implementation, defaulting to beads."
+  }
+}

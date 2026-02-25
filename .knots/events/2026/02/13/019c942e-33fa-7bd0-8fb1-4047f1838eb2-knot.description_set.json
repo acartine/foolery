@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-33fa-7bd0-8fb1-4047f1838eb2",
+  "occurred_at": "2026-02-13T06:49:29Z",
+  "knot_id": "foolery-k18",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when the page reloads it goes into 'all repositories' \n\nall repositories should only be the default when explicitly selected by the user.  otherwise the default should be dynamic - the last repo selected.  if no repo was ever selected, use the first repo in the list.  if no repo was ever created, the /beads path should redirect to the repo management screen or lightbox."
+  }
+}

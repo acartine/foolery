@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3506-7563-aefd-1cf37bb05841",
+  "occurred_at": "2026-02-18T18:38:16Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-kx5f",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ready view: hide descendants when parent chain is not ready",
+    "updated_at": "2026-02-18T18:38:16Z",
+    "workflow_id": "default"
+  }
+}

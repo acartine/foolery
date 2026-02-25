@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-44b8-79e2-9010-36c380682323",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Show available OpenRouter models with searchable/filterable rows and clear columns for prompt/completion costs plus context limits.",
+    "description": "Show available OpenRouter models with searchable/filterable rows and clear columns for prompt/completion costs plus context limits.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Render model catalog with cost columns",
+    "workflow_id": "default"
+  }
+}

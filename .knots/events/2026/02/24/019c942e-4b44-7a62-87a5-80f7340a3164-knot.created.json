@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4b44-7a62-87a5-80f7340a3164",
+  "occurred_at": "2026-02-24T08:34:03Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  tell us what the bead id is so we can click on it and shift focus to that bead in the list",
+    "description": "as title says.  tell us what the bead id is so we can click on it and shift focus to that bead in the list",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "implementing",
+    "title": "\"created\" notification in loewr right corner and top header component should show clickable bead id",
+    "workflow_id": "default"
+  }
+}

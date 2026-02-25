@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2d6b-7170-a870-0c6ca792796c",
+  "occurred_at": "2026-02-23T17:12:52Z",
+  "knot_id": "foolery-g3y1.4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Make workflow and prompts backend-agnostic while preserving lifecycle behavior."
+  }
+}

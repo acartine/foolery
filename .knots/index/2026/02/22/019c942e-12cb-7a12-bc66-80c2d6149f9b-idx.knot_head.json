@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-12cb-7a12-bc66-80c2d6149f9b",
+  "occurred_at": "2026-02-22T09:26:11Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.2.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Define BackendPort interface and domain DTOs",
+    "updated_at": "2026-02-22T09:26:11Z",
+    "workflow_id": "default"
+  }
+}

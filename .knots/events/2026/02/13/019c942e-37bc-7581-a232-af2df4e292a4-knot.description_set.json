@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-37bc-7581-a232-af2df4e292a4",
+  "occurred_at": "2026-02-13T08:58:46Z",
+  "knot_id": "foolery-mqv.2.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Extend wave computation and API payload with readiness semantics and diagnostics that the UI can rely on. Include explicit fields for ready/runnable status, unresolved blockers, and deterministic recommendation ordering."
+  }
+}

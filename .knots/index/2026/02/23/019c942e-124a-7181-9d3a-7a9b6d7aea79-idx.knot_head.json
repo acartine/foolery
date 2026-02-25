@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-124a-7181-9d3a-7a9b6d7aea79",
+  "occurred_at": "2026-02-23T06:22:24Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.1.2",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Map required workflows to backend operations",
+    "updated_at": "2026-02-23T06:22:24Z",
+    "workflow_id": "default"
+  }
+}

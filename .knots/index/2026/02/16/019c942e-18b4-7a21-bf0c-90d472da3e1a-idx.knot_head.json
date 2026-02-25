@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-18b4-7a21-bf0c-90d472da3e1a",
+  "occurred_at": "2026-02-16T19:21:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-3ji.3",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Document Homebrew and GitHub installation in README",
+    "updated_at": "2026-02-16T19:21:21Z",
+    "workflow_id": "default"
+  }
+}

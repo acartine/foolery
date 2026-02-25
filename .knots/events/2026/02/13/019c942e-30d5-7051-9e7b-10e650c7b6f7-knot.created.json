@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-30d5-7051-9e7b-10e650c7b6f7",
+  "occurred_at": "2026-02-13T06:47:23Z",
+  "knot_id": "foolery-hbf",
+  "type": "knot.created",
+  "data": {
+    "body": "when user hits shift-r from /beads, it should toggle to the next repo\ncmd-shift-r toggles to the previous repo",
+    "description": "when user hits shift-r from /beads, it should toggle to the next repo\ncmd-shift-r toggles to the previous repo",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "shift-r from /beads switches repos",
+    "workflow_id": "default"
+  }
+}

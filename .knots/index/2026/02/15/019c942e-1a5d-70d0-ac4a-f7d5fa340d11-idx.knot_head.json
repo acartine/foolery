@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1a5d-70d0-ac4a-f7d5fa340d11",
+  "occurred_at": "2026-02-15T06:12:32Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4gp",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beat console/terminal should show first 40 characters of title after bead id",
+    "updated_at": "2026-02-15T06:12:32Z",
+    "workflow_id": "default"
+  }
+}

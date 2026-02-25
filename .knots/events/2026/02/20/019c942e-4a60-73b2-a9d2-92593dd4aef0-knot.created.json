@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4a60-73b2-a9d2-92593dd4aef0",
+  "occurred_at": "2026-02-20T07:28:26Z",
+  "knot_id": "foolery-xmg8.3.5",
+  "type": "knot.created",
+  "data": {
+    "body": "Reject mutation requests for transition:verification beads to prevent bypassing UI-only locks.",
+    "description": "Reject mutation requests for transition:verification beads to prevent bypassing UI-only locks.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Enforce edit lock on server/API",
+    "workflow_id": "default"
+  }
+}

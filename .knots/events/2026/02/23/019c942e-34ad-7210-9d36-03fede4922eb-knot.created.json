@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-34ad-7210-9d36-03fede4922eb",
+  "occurred_at": "2026-02-23T17:14:19Z",
+  "knot_id": "foolery-knots-native",
+  "type": "knot.created",
+  "data": {
+    "body": "Post-g3y1 follow-up epic to move from compatibility mode to Knots-native workflow semantics, API contracts, and UX.",
+    "description": "Post-g3y1 follow-up epic to move from compatibility mode to Knots-native workflow semantics, API contracts, and UX.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Knots-native Foolery workflow + Memory API realignment",
+    "workflow_id": "default"
+  }
+}

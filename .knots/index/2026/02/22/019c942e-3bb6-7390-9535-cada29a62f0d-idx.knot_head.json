@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3bb6-7390-9535-cada29a62f0d",
+  "occurred_at": "2026-02-22T08:50:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene reeves-arrival: Prompt Plumbing",
+    "updated_at": "2026-02-22T08:50:56Z",
+    "workflow_id": "default"
+  }
+}

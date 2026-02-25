@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1f1a-7ba1-aefc-0cc45f41e43d",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-7gj",
+    "state": "shipped",
+    "terminal": true,
+    "title": "search bar centered in top between logo and repo pull down",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

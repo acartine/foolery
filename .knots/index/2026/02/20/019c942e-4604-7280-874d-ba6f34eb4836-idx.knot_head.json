@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4604-7280-874d-ba6f34eb4836",
+  "occurred_at": "2026-02-20T05:23:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-vdk0.5.1",
+    "state": "work_item",
+    "terminal": false,
+    "title": "Add diagnostics for OpenRouter misconfiguration",
+    "updated_at": "2026-02-20T05:23:56Z",
+    "workflow_id": "default"
+  }
+}

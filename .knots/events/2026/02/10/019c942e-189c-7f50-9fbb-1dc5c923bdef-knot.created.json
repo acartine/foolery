@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-189c-7f50-9fbb-1dc5c923bdef",
+  "occurred_at": "2026-02-10T14:20:51Z",
+  "knot_id": "foolery-3ji.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Update README with clear install instructions for both Homebrew and direct install from GitHub release artifacts.",
+    "description": "Update README with clear install instructions for both Homebrew and direct install from GitHub release artifacts.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Document Homebrew and GitHub installation in README",
+    "workflow_id": "default"
+  }
+}

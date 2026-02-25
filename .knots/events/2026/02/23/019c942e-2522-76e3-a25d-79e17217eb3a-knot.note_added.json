@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-2522-76e3-a25d-79e17217eb3a",
+  "occurred_at": "2026-02-23T12:38:31Z",
+  "knot_id": "foolery-bwws",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Handoff: Replaced subtle plain-text \"Tracker: Beads\" display with prominent green pill badges (CircleDot icon + label) in both settings-repos-section and repo-registry UIs. The badge sits inline next to each repo name, styled green for known trackers and muted for unknown. Uses existing IssueTrackerType infrastructure (getIssueTrackerLabel). Commit: ee7eec9. Quality gates: tsc clean, 691 tests pass, 0 lint errors in changed files.",
+    "datetime": "2026-02-23T12:38:31Z",
+    "entry_id": "a6f18b9ba5815fa3f09514e62a953496dac7f86b92afc8141b33d375b98a4837",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

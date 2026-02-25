@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-42d8-7b71-89a7-1863d35a2e69",
+  "occurred_at": "2026-02-11T17:16:37Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-v3u",
+    "state": "shipped",
+    "terminal": true,
+    "title": "reduce button and pulldown component internal padding",
+    "updated_at": "2026-02-11T17:16:37Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4c04-7f00-8c13-b7bdacfc231b",
+  "occurred_at": "2026-02-16T18:36:32Z",
+  "knot_id": "foolery-ydl1",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to run foolery doctor to identify:\n\nproblematic agent types (ping the registered agents and verify non garbage response)\n\navailable updates\n\ncorrupt tickets (stage:verification with status != In Progress)\n\nopen/inprogress parent beats where all children are closed.\n\nand foolery doctor --fix to fix the problems (if possible, can't fix broken agents).",
+    "description": "you should be able to run foolery doctor to identify:\n\nproblematic agent types (ping the registered agents and verify non garbage response)\n\navailable updates\n\ncorrupt tickets (stage:verification with status != In Progress)\n\nopen/inprogress parent beats where all children are closed.\n\nand foolery doctor --fix to fix the problems (if possible, can't fix broken agents).",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "foolery doctor",
+    "workflow_id": "default"
+  }
+}

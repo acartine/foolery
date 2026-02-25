@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1abd-7fd0-b5dd-685b08fb1fd3",
+  "occurred_at": "2026-02-11T07:43:56Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-4ue",
+    "state": "shipped",
+    "terminal": true,
+    "title": "stricter clicking on table rows",
+    "updated_at": "2026-02-11T07:43:56Z",
+    "workflow_id": "default"
+  }
+}

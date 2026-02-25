@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-22f2-7901-82f7-5ce322f19dce",
+  "occurred_at": "2026-02-14T09:09:58Z",
+  "knot_id": "foolery-a5z",
+  "type": "knot.created",
+  "data": {
+    "body": "Add follow-up prompt behavior: (1) simple ship should require merge confirmation per agent guidelines and tell agent not to prompt again until done; once confirmed, ensure bead status is in_progress with stage:verification label. (2) wave Action! should do equivalent for each beat in the wave, all in one follow-up prompt.",
+    "description": "Add follow-up prompt behavior: (1) simple ship should require merge confirmation per agent guidelines and tell agent not to prompt again until done; once confirmed, ensure bead status is in_progress with stage:verification label. (2) wave Action! should do equivalent for each beat in the wave, all in one follow-up prompt.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "add ship and wave follow-up prompts for merge+verification state",
+    "workflow_id": "default"
+  }
+}

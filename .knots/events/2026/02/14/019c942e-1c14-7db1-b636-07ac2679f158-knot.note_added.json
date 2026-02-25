@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-1c14-7db1-b636-07ac2679f158",
+  "occurred_at": "2026-02-14T08:50:38Z",
+  "knot_id": "foolery-5mt",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "=== Orchestration Assessment (2026-02-13) ===\nBlocked by 060 (which is blocked by td6/6qg/53d chain).\nChildren status: 75n (OPEN), ajb (OPEN), cxc (IN_PROGRESS, blocker s3q cleared), mqv.2.6 (CLOSED).\nmqv.2.6 already closed -- reduces scope to 3 items.\n75n and ajb can begin immediately once 5mt is unblocked (no technical deps).\ncxc is in_progress and could potentially be verified now that s3q is done.",
+    "datetime": "2026-02-14T08:50:38Z",
+    "entry_id": "b2d993abe19d2d8c3bdb1f2c3bebedb2a65fca15daccd2a2b1a145ed27a7a6da",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

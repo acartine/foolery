@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4bdc-7342-b57b-ebb606ce4d72",
+  "occurred_at": "2026-02-10T13:42:08Z",
+  "knot_id": "foolery-yab",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to edit prioriity and type within the table",
+    "description": "you should be able to edit prioriity and type within the table",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "edit within table in /beads",
+    "workflow_id": "default"
+  }
+}

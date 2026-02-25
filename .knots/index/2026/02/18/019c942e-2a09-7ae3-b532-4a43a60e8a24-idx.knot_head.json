@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2a09-7ae3-b532-4a43a60e8a24",
+  "occurred_at": "2026-02-18T18:37:45Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-f0sq",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Progressive diagnostic output for foolery doctor",
+    "updated_at": "2026-02-18T18:37:45Z",
+    "workflow_id": "default"
+  }
+}

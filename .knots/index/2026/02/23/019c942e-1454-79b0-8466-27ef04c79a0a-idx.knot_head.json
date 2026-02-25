@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1454-79b0-8466-27ef04c79a0a",
+  "occurred_at": "2026-02-23T06:40:54Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-1guy.4.4",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add beads-to-domain translation for DTOs and errors",
+    "updated_at": "2026-02-23T06:40:54Z",
+    "workflow_id": "default"
+  }
+}

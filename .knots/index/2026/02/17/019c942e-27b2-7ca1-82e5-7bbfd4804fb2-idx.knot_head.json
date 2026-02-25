@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-27b2-7ca1-82e5-7bbfd4804fb2",
+  "occurred_at": "2026-02-17T21:31:17Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-d45",
+    "state": "shipped",
+    "terminal": true,
+    "title": "/beads : priority column should be before type and status columns",
+    "updated_at": "2026-02-17T21:31:17Z",
+    "workflow_id": "default"
+  }
+}

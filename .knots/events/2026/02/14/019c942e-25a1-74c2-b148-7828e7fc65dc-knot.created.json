@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-25a1-74c2-b148-7828e7fc65dc",
+  "occurred_at": "2026-02-14T08:53:28Z",
+  "knot_id": "foolery-c47",
+  "type": "knot.created",
+  "data": {
+    "body": "In waves/trees view, closed parent items are rendered (example wave 'mckellen-gladiator'). Also tree/wave titles currently show wave name + wave title but do not include wave id. Required: prepend stripped wave id before wave name in each title.",
+    "description": "In waves/trees view, closed parent items are rendered (example wave 'mckellen-gladiator'). Also tree/wave titles currently show wave name + wave title but do not include wave id. Required: prepend stripped wave id before wave name in each title.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "wave tree shows closed parents and omits wave id in title",
+    "workflow_id": "default"
+  }
+}

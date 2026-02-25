@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3af5-7f63-9fe9-9c345cbafb7b",
+  "occurred_at": "2026-02-18T10:13:08Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-pqvx",
+    "state": "shipped",
+    "terminal": true,
+    "title": "scenes screen should have Shoot Them All! button",
+    "updated_at": "2026-02-18T10:13:08Z",
+    "workflow_id": "default"
+  }
+}

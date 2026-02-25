@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3c95-7ab2-9b08-d0c5fa137a76",
+  "occurred_at": "2026-02-17T21:28:57Z",
+  "knot_id": "foolery-qqla.2.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Emit telemetry/logging for Breakdown clicks to support adoption and debugging of the new planning flow."
+  }
+}

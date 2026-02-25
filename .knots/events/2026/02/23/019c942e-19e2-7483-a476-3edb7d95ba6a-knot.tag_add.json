@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-19e2-7483-a476-3edb7d95ba6a",
+  "occurred_at": "2026-02-23T14:01:09Z",
+  "knot_id": "foolery-42yx",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "console"
+  }
+}

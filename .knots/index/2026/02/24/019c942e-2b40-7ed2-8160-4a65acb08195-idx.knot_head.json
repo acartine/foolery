@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-2b40-7ed2-8160-4a65acb08195",
+  "occurred_at": "2026-02-24T07:13:02Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-fyj6",
+    "state": "shipped",
+    "terminal": true,
+    "title": "in list views, the bead id needs about 25% more horizontal space.",
+    "updated_at": "2026-02-24T07:13:02Z",
+    "workflow_id": "default"
+  }
+}

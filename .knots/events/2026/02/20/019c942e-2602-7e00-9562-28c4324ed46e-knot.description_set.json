@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2602-7e00-9562-28c4324ed46e",
+  "occurred_at": "2026-02-20T10:18:35Z",
+  "knot_id": "foolery-cf81",
+  "type": "knot.description_set",
+  "data": {
+    "description": "don't show unfolded parents unless toggled by user.  save that as state so you can remember that they want that particular beat unfolded.  If they fold it again, delete the state for that beat."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-443c-7840-b96a-c244addba8f0",
+  "occurred_at": "2026-02-20T05:23:52Z",
+  "knot_id": "foolery-vdk0.2.5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Mock OpenRouter responses to verify auth usage, error handling, pricing normalization, and cache behavior."
+  }
+}

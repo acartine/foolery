@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3307-79c3-931f-7ab86a567611",
+  "occurred_at": "2026-02-13T22:24:16Z",
+  "knot_id": "foolery-j4z",
+  "type": "knot.description_set",
+  "data": {
+    "description": "we might need to break into sections now, it's getting big"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019c942e-3cf5-7fe2-bb06-92a5794c038f",
+  "occurred_at": "2026-02-20T07:30:12Z",
+  "knot_id": "foolery-qqla.3.1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "nothing is hydrated at all.  all context is lost and the user is switched to the Direct page..  I tis completely unpopulated.\n\nAcceptance Criteria - the textbox in Direct should be populated with a prompt like \"Break the bead xyz down into a series of hierarchical beads, flushing out the requirements.  Make decisions autonomously where requirements are not clear\"\n\nthe \"Run\" action should be triggered as if the user typed the above prompt and hit the run button.\n\nthe general idea is that when they hit breakdown, there is a seamless flow to having an agent do a planning dive on the bead.",
+    "datetime": "2026-02-20T07:30:12Z",
+    "entry_id": "b4c3ade27a3c71632cba19de5f6c3314f66cfe9dc1efab60866d4ce044e9f0de",
+    "model": "unknown",
+    "username": "cartine@gmail.com",
+    "version": "unknown"
+  }
+}

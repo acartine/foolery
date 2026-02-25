@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-40dc-7b82-a942-fc880a2d045c",
+  "occurred_at": "2026-02-13T08:59:48Z",
+  "knot_id": "foolery-smj",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - remove Fooler from header bar, it's just clutter.",
+    "description": "as title says - remove Fooler from header bar, it's just clutter.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "remove \"Fooler\" header text from top left corner of /beads",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-2f20-7742-930f-a3c84db2247e",
+  "occurred_at": "2026-02-23T17:13:00Z",
+  "knot_id": "foolery-g3y1.6.3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update README, agent memory contract, and backend extension docs for Knots usage."
+  }
+}

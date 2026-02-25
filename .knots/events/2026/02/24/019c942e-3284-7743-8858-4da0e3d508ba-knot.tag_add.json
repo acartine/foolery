@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3284-7743-8858-4da0e3d508ba",
+  "occurred_at": "2026-02-24T08:38:50Z",
+  "knot_id": "foolery-ioos",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "commit:f82debc"
+  }
+}

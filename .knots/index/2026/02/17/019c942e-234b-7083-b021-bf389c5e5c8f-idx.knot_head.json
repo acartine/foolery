@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-234b-7083-b021-bf389c5e5c8f",
+  "occurred_at": "2026-02-17T21:31:15Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-ajb",
+    "state": "shipped",
+    "terminal": true,
+    "title": "show hot key lightbox by default",
+    "updated_at": "2026-02-17T21:31:15Z",
+    "workflow_id": "default"
+  }
+}

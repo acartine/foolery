@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-12ef-7a81-9415-5b0de5519e10",
+  "occurred_at": "2026-02-20T09:26:33Z",
+  "knot_id": "foolery-1guy.2.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Model backend differences explicitly without changing caller-facing behavior.",
+    "description": "Model backend differences explicitly without changing caller-facing behavior.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Define capability flags for optional backend behavior",
+    "workflow_id": "default"
+  }
+}

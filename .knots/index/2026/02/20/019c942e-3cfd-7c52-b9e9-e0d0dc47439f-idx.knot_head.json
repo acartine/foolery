@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-3cfd-7c52-b9e9-e0d0dc47439f",
+  "occurred_at": "2026-02-20T07:30:12Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-qqla.3.1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Hydrate Direct input from incoming prompt payload",
+    "updated_at": "2026-02-20T07:30:12Z",
+    "workflow_id": "default"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1bf5-7c70-83c3-4d404b540594",
+  "occurred_at": "2026-02-20T05:58:59Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-5jlw",
+    "state": "shipped",
+    "terminal": true,
+    "title": "FInal Cut View: shift-v causes the entire list to disappear for 10 seconds.  This is a bug",
+    "updated_at": "2026-02-20T05:58:59Z",
+    "workflow_id": "default"
+  }
+}

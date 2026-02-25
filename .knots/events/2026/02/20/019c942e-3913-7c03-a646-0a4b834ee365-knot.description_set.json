@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3913-7c03-a646-0a4b834ee365",
+  "occurred_at": "2026-02-20T09:41:54Z",
+  "knot_id": "foolery-njng",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Hierarchical beads are rendered in non-deterministic order. Children should be sorted by natural ID order (1,2,3,4,5) not by priority/status. Affects beats, scenes, direct, final cut, and retakes views."
+  }
+}

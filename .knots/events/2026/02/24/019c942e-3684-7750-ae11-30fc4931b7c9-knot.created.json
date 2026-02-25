@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3684-7750-ae11-30fc4931b7c9",
+  "occurred_at": "2026-02-24T08:41:00Z",
+  "knot_id": "foolery-lxpz",
+  "type": "knot.created",
+  "data": {
+    "body": "i selected 'blocks 92k7` to `ioos` and it appears to have applied it the other way around.",
+    "description": "i selected 'blocks 92k7` to `ioos` and it appears to have applied it the other way around.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "dependency application is reversed in create dialogue",
+    "workflow_id": "default"
+  }
+}

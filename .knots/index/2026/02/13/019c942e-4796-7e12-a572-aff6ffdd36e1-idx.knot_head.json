@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-4796-7e12-a572-aff6ffdd36e1",
+  "occurred_at": "2026-02-13T22:35:40Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-wrb",
+    "state": "shipped",
+    "terminal": true,
+    "title": "improved parsing and display of orchestration console",
+    "updated_at": "2026-02-13T22:35:40Z",
+    "workflow_id": "default"
+  }
+}

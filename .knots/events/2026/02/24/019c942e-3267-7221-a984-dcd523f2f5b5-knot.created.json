@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-3267-7221-a984-dcd523f2f5b5",
+  "occurred_at": "2026-02-24T08:38:50Z",
+  "knot_id": "foolery-ioos",
+  "type": "knot.created",
+  "data": {
+    "body": "when foolery starts, have it look for a an agent message type index.\n\nif not found, have the backend look through the last 2 logs and create a unique list of agent message types (the top level \"type\" field in agent responses).  it should tell the user this is happening.\n\nthe message types should also annotate which agent/model/version used them (can be multiple)\n\nthis is the list that the history console navigation view will use.\n\nthe list should be persisted from install to install, and be removed when foolery is uninstalled.\n\nwhenever a \"take!\" or \"scene!\" is executed and completed, foolery should post process the interaction to keep the type index up-to-date.",
+    "description": "when foolery starts, have it look for a an agent message type index.\n\nif not found, have the backend look through the last 2 logs and create a unique list of agent message types (the top level \"type\" field in agent responses).  it should tell the user this is happening.\n\nthe message types should also annotate which agent/model/version used them (can be multiple)\n\nthis is the list that the history console navigation view will use.\n\nthe list should be persisted from install to install, and be removed when foolery is uninstalled.\n\nwhenever a \"take!\" or \"scene!\" is executed and completed, foolery should post process the interaction to keep the type index up-to-date.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "agent message type index",
+    "workflow_id": "default"
+  }
+}

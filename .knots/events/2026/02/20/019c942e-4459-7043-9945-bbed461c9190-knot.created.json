@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4459-7043-9945-bbed461c9190",
+  "occurred_at": "2026-02-20T05:23:52Z",
+  "knot_id": "foolery-vdk0.3",
+  "type": "knot.created",
+  "data": {
+    "body": "Objective: Ship OpenRouter configuration UX including API key input and model/cost visibility.\n\nNotes: Depends on waves 1-2. UI tasks can be parallelized across section layout, API wiring, and cost-table rendering.\n\nAssigned tasks:\n- Add OpenRouter section to Settings sheet\n- Wire frontend settings API methods for OpenRouter\n- Render model catalog with cost columns\n- Add UI coverage for OpenRouter settings flows",
+    "description": "Objective: Ship OpenRouter configuration UX including API key input and model/cost visibility.\n\nNotes: Depends on waves 1-2. UI tasks can be parallelized across section layout, API wiring, and cost-table rendering.\n\nAssigned tasks:\n- Add OpenRouter section to Settings sheet\n- Wire frontend settings API methods for OpenRouter\n- Render model catalog with cost columns\n- Add UI coverage for OpenRouter settings flows",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Scene ledger-goodfellas: Settings UI",
+    "workflow_id": "default"
+  }
+}

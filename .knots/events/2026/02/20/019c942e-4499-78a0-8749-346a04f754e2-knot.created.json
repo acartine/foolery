@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-4499-78a0-8749-346a04f754e2",
+  "occurred_at": "2026-02-20T05:23:53Z",
+  "knot_id": "foolery-vdk0.3.2",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend `settings-api` client calls to load/save OpenRouter config and fetch model/cost data from new backend routes.",
+    "description": "Extend `settings-api` client calls to load/save OpenRouter config and fetch model/cost data from new backend routes.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "work_item",
+    "title": "Wire frontend settings API methods for OpenRouter",
+    "workflow_id": "default"
+  }
+}

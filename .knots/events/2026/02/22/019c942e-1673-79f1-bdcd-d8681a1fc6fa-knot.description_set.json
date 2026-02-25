@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-1673-79f1-bdcd-d8681a1fc6fa",
+  "occurred_at": "2026-02-22T03:11:15Z",
+  "knot_id": "foolery-28hf",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Registry data should not be refetched aggressively during normal beads usage. Use stale caching and avoid duplicate consumers that trigger repeated network requests when settings/repo management is not active."
+  }
+}

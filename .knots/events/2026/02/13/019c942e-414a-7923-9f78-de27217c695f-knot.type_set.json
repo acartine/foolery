@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-414a-7923-9f78-de27217c695f",
+  "occurred_at": "2026-02-13T15:24:47Z",
+  "knot_id": "foolery-td6",
+  "type": "knot.type_set",
+  "data": {
+    "type": "epic"
+  }
+}

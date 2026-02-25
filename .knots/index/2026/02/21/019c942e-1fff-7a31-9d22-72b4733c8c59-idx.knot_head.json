@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-1fff-7a31-9d22-72b4733c8c59",
+  "occurred_at": "2026-02-21T14:53:05Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-81h1",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Backfill missing automated review post-prompt setting on startup and via doctor",
+    "updated_at": "2026-02-21T14:53:05Z",
+    "workflow_id": "default"
+  }
+}

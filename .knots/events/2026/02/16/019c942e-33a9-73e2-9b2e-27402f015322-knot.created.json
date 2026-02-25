@@ -1,0 +1,14 @@
+{
+  "event_id": "019c942e-33a9-73e2-9b2e-27402f015322",
+  "occurred_at": "2026-02-16T15:15:23Z",
+  "knot_id": "foolery-jxog",
+  "type": "knot.created",
+  "data": {
+    "body": "right now it always says  +Add which is super confusing.\n\non final cut view it should say \"Wrap!\" with a celebratory icon\n\non direct and scenes it should be hidden.\n\nthe button should have the exact position and size on all views, so users don't get disoriented.",
+    "description": "right now it always says  +Add which is super confusing.\n\non final cut view it should say \"Wrap!\" with a celebratory icon\n\non direct and scenes it should be hidden.\n\nthe button should have the exact position and size on all views, so users don't get disoriented.",
+    "source": "source:/private/tmp/beads_for_knots.jsonl",
+    "state": "shipped",
+    "title": "Add button dynamically changes action, text, icon, and tooltip based on selected view",
+    "workflow_id": "default"
+  }
+}

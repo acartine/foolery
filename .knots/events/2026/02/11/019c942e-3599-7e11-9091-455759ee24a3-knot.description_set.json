@@ -1,0 +1,9 @@
+{
+  "event_id": "019c942e-3599-7e11-9091-455759ee24a3",
+  "occurred_at": "2026-02-11T17:09:41Z",
+  "knot_id": "foolery-kzg",
+  "type": "knot.description_set",
+  "data": {
+    "description": "when navigating the /beads table, if the bead is in stage:verification, shift-v should verify and shift-f should reject (thumbs down)"
+  }
+}

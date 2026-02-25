@@ -1,0 +1,13 @@
+{
+  "event_id": "019c942e-361a-7212-a4c1-67822172ef28",
+  "occurred_at": "2026-02-16T19:39:21Z",
+  "type": "idx.knot_head",
+  "data": {
+    "knot_id": "foolery-l3fv",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate false 'no beads found' in repo view",
+    "updated_at": "2026-02-16T19:39:21Z",
+    "workflow_id": "default"
+  }
+}
