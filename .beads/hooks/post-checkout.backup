@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-# bd-shim v1
-# bd-hooks-version: 0.55.1
-# Custom Beads hook: no-op.
-
-exit 0
