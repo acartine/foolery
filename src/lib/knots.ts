@@ -147,6 +147,13 @@ async function exec(args: string[], options?: ExecOptions): Promise<ExecResult> 
         const exitCode =
           execError && typeof execError.code === "number" ? execError.code : execError ? 1 : 0;
 
+        if (exitCode !== 0) {
+          const cmdLabel = args.slice(0, 3).join(" ");
+          console.warn(
+            `[knots] kno ${cmdLabel} exited ${exitCode}${stderrText ? `: ${stderrText}` : ""}`,
+          );
+        }
+
         resolveExec({
           stdout: (stdout ?? "").trim(),
           stderr: stderrText,

@@ -43,6 +43,7 @@ type BeadFormProps =
       mode: "create";
       defaultValues?: Partial<CreateBeadInput>;
       workflows?: MemoryWorkflowDescriptor[];
+      hideTypeSelector?: boolean;
       onSubmit: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onCreateMore?: (data: CreateBeadInput, deps?: RelationshipDeps) => void;
       onBreakdown?: (data: CreateBeadInput) => void;
@@ -60,6 +61,7 @@ export function BeadForm(props: BeadFormProps) {
   const onBreakdown = props.mode === "create" ? props.onBreakdown : undefined;
   const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
   const workflows = props.mode === "create" ? (props.workflows ?? []) : [];
+  const hideTypeSelector = props.mode === "create" ? (props.hideTypeSelector ?? false) : false;
   const schema = mode === "create" ? createBeadSchema : updateBeadSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blockedBy, setBlockedBy] = useState<string[]>([]);
@@ -153,24 +155,26 @@ export function BeadForm(props: BeadFormProps) {
         </FormField>
       )}
 
-      <div className="grid grid-cols-2 gap-2">
-        <FormField label="Type">
-          <Select
-            value={form.watch("type")}
-            onValueChange={(v) => form.setValue("type", v as never)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {BEAD_TYPES.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FormField>
+      <div className={hideTypeSelector ? "" : "grid grid-cols-2 gap-2"}>
+        {!hideTypeSelector && (
+          <FormField label="Type">
+            <Select
+              value={form.watch("type")}
+              onValueChange={(v) => form.setValue("type", v as never)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {BEAD_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+        )}
 
         <FormField label="Priority">
           <Select

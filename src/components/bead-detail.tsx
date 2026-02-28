@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { X, Clapperboard } from "lucide-react";
-import type { Bead, BeadType, BeadStatus, BeadPriority } from "@/lib/types";
+import type { Bead, BeadType, BeadStatus, BeadPriority, MemoryWorkflowDescriptor } from "@/lib/types";
 import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import type { UpdateBeadInput } from "@/lib/schemas";
 import { BeadStatusBadge } from "@/components/bead-status-badge";
@@ -28,6 +28,27 @@ const BEAD_STATUSES: BeadStatus[] = [
 
 const PRIORITIES: BeadPriority[] = [0, 1, 2, 3, 4];
 
+function validNextStates(
+  currentState: string | undefined,
+  workflow: MemoryWorkflowDescriptor,
+): string[] {
+  if (!currentState) return [];
+  const normalized = currentState.trim().toLowerCase();
+  const next = new Set<string>();
+  for (const t of workflow.transitions ?? []) {
+    if (t.from === normalized || t.from === "*") {
+      next.add(t.to);
+    }
+  }
+  // Remove current state from options
+  next.delete(normalized);
+  return Array.from(next);
+}
+
+function formatStateName(state: string): string {
+  return state.replace(/_/g, " ");
+}
+
 function formatDate(dateStr: string | undefined): string {
   if (!dateStr) return "-";
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -40,6 +61,7 @@ function formatDate(dateStr: string | undefined): string {
 interface BeadDetailProps {
   bead: Bead;
   onUpdate?: (fields: UpdateBeadInput) => Promise<void>;
+  workflow?: MemoryWorkflowDescriptor | null;
 }
 
 interface EditableSectionProps {
@@ -101,7 +123,7 @@ function EditableSection({
   );
 }
 
-export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
+export function BeadDetail({ bead, onUpdate, workflow }: BeadDetailProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const savingRef = useRef(false);
@@ -173,7 +195,35 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             <BeadTypeBadge type={bead.type} />
           )}
 
-          {onUpdate ? (
+          {onUpdate && workflow && bead.workflowState ? (() => {
+            const nextStates = validNextStates(bead.workflowState, workflow);
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" title="Change workflow state" className="cursor-pointer">
+                    <Badge variant="secondary" className="bg-violet-100 text-violet-700">
+                      {formatStateName(bead.workflowState)}
+                    </Badge>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup
+                    value={bead.workflowState}
+                    onValueChange={(v) => fireUpdate({ workflowState: v })}
+                  >
+                    <DropdownMenuRadioItem value={bead.workflowState}>
+                      {formatStateName(bead.workflowState)} (current)
+                    </DropdownMenuRadioItem>
+                    {nextStates.map((s) => (
+                      <DropdownMenuRadioItem key={s} value={s}>
+                        {formatStateName(s)}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })() : onUpdate ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button type="button" title="Change beat status" className="cursor-pointer">
@@ -188,6 +238,10 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : bead.workflowState ? (
+            <Badge variant="secondary" className="bg-violet-100 text-violet-700">
+              {formatStateName(bead.workflowState)}
+            </Badge>
           ) : (
             <BeadStatusBadge status={bead.status} />
           )}

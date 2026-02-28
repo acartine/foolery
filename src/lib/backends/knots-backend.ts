@@ -555,20 +555,20 @@ export class KnotsBackend implements BackendPort {
 
     const records = listResult.data ?? [];
     const knownIds = new Set(records.map((record) => record.id));
-    const edgeResults = await Promise.all(
-      records.map(async (record) => [record.id, await this.getEdgesForId(record.id, repoPath)] as const),
-    );
 
+    // Fetch edges sequentially to avoid CLI lock contention.
+    // Cached entries are returned instantly; only uncached IDs hit the CLI.
     const edgesById = new Map<string, KnotEdge[]>();
-    for (const [id, edgeResult] of edgeResults) {
+    for (const record of records) {
+      const edgeResult = await this.getEdgesForId(record.id, repoPath);
       if (!edgeResult.ok) {
         // Keep list/search resilient when edge lookups are transiently unavailable.
         // Hierarchy can still be inferred from dotted IDs, and detail/dependency paths
         // continue to fetch precise edges on demand.
-        edgesById.set(id, []);
+        edgesById.set(record.id, []);
         continue;
       }
-      edgesById.set(id, edgeResult.data ?? []);
+      edgesById.set(record.id, edgeResult.data ?? []);
     }
 
     const beads = records.map((record) =>

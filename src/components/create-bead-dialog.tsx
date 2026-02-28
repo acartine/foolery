@@ -62,6 +62,7 @@ export function CreateBeadDialog({
   const defaultProfileId =
     workflows.find((workflow) => workflow.id === "autopilot")?.id ??
     workflows[0]?.id;
+  const isKnotsBackend = workflows.some((w) => w.label?.startsWith("Knots"));
 
   function withSelectedProfile(input: CreateBeadInput): CreateBeadInput {
     const selected = input.profileId ?? input.workflowId ?? defaultProfileId;
@@ -197,6 +198,7 @@ export function CreateBeadDialog({
           key={formKey}
           mode="create"
           workflows={workflows}
+          hideTypeSelector={isKnotsBackend}
           defaultValues={{
             profileId: defaultProfileId,
             workflowId: undefined,

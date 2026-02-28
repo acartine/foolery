@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clapperboard, Zap } from "lucide-react";
 import { toast } from "sonner";
-import type { Bead } from "@/lib/types";
+import type { Bead, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeadInput } from "@/lib/schemas";
-import { fetchBead, fetchDeps, updateBead, addDep } from "@/lib/api";
+import { fetchBead, fetchDeps, fetchWorkflows, updateBead, addDep } from "@/lib/api";
 import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { BeadDetail } from "@/components/bead-detail";
 import { DepTree } from "@/components/dep-tree";
@@ -66,6 +66,14 @@ export function BeadDetailLightbox({
     queryFn: () => fetchDeps(detailId, repo),
     enabled: open && detailId.length > 0,
     retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: workflowResult } = useQuery({
+    queryKey: ["workflows", repo ?? "__default__"],
+    queryFn: () => fetchWorkflows(repo ?? undefined),
+    enabled: open && detailId.length > 0,
+    staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
 
@@ -146,6 +154,18 @@ export function BeadDetailLightbox({
   });
 
   const bead = beadData?.ok ? beadData.data : (initialBead ?? null);
+
+  const beadWorkflow = useMemo((): MemoryWorkflowDescriptor | null => {
+    const workflows: MemoryWorkflowDescriptor[] =
+      workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+    if (workflows.length === 0 || !bead) return null;
+    const profileId = bead.profileId ?? bead.workflowId;
+    if (profileId) {
+      const match = workflows.find((w) => w.id === profileId);
+      if (match) return match;
+    }
+    return workflows[0] ?? null;
+  }, [workflowResult, bead]);
 
   const handleBreakdown = useCallback(() => {
     if (!beadId) return;
@@ -275,6 +295,7 @@ export function BeadDetailLightbox({
             ) : bead ? (
               <BeadDetail
                 bead={bead}
+                workflow={beadWorkflow}
                 onUpdate={async (fields) => {
                   await handleUpdate(fields);
                 }}
