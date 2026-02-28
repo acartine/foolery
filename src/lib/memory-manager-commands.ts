@@ -24,8 +24,13 @@ export function resolveMemoryManagerType(repoPath?: string): MemoryManagerType {
 }
 
 export function buildShowIssueCommand(id: string, memoryManagerType: MemoryManagerType): string {
-  if (memoryManagerType === "knots") return `knots show ${quoteId(id)}`;
+  if (memoryManagerType === "knots") return `kno show ${quoteId(id)}`;
   return `bd show ${quoteId(id)}`;
+}
+
+export function buildClaimCommand(id: string, memoryManagerType: MemoryManagerType): string {
+  if (memoryManagerType === "knots") return `kno claim ${quoteId(id)} --json`;
+  return buildShowIssueCommand(id, memoryManagerType);
 }
 
 export function buildWorkflowStateCommand(
@@ -36,7 +41,7 @@ export function buildWorkflowStateCommand(
 ): string {
   const normalizedState = workflowState.trim().toLowerCase();
   if (memoryManagerType === "knots") {
-    return `knots update ${quoteId(id)} --status ${quoteArg(normalizedState)}`;
+    return `kno update ${quoteId(id)} --status ${quoteArg(normalizedState)}`;
   }
   const compatStatus = mapWorkflowStateToCompatStatus(normalizedState, "memory-manager-commands");
   return `bd update ${quoteId(id)} --status ${quoteArg(compatStatus)} --add-label ${quoteArg(`wf:state:${normalizedState}`)}${beadsNoDaemonFlag(options)}`;
@@ -48,7 +53,7 @@ export function buildVerificationStageCommand(
   options?: MemoryManagerCommandOptions,
 ): string {
   if (memoryManagerType === "knots") {
-    return `knots update ${quoteId(id)} --status implementing --add-tag stage:verification`;
+    return `kno claim ${quoteId(id)} --json`;
   }
   return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification${beadsNoDaemonFlag(options)}`;
 }
@@ -59,9 +64,7 @@ export function buildVerificationRetryCommands(
   options?: MemoryManagerCommandOptions,
 ): string[] {
   if (memoryManagerType === "knots") {
-    return [
-      `knots update ${quoteId(id)} --remove-tag stage:verification --remove-tag transition:verification --add-tag stage:retry`,
-    ];
+    return [];
   }
 
   const noDaemon = beadsNoDaemonFlag(options);
@@ -78,9 +81,7 @@ export function buildVerificationPassCommands(
   options?: MemoryManagerCommandOptions,
 ): string[] {
   if (memoryManagerType === "knots") {
-    return [
-      `knots update ${quoteId(id)} --remove-tag stage:verification --remove-tag transition:verification --status shipped --force`,
-    ];
+    return [];
   }
 
   const noDaemon = beadsNoDaemonFlag(options);

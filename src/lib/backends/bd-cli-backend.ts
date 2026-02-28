@@ -19,7 +19,7 @@ import {
 } from "@/lib/backend-errors";
 import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type { Bead, BeadDependency, MemoryWorkflowDescriptor } from "@/lib/types";
-import { beadsCoarseWorkflowDescriptor } from "@/lib/workflows";
+import { beadsProfileWorkflowDescriptors } from "@/lib/workflows";
 import * as bd from "@/lib/bd";
 
 // ── BdResult -> BackendResult converter ───────────────────────────
@@ -68,7 +68,7 @@ export class BdCliBackend implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return { ok: true, data: [beadsCoarseWorkflowDescriptor()] };
+    return { ok: true, data: beadsProfileWorkflowDescriptors() };
   }
 
   async list(

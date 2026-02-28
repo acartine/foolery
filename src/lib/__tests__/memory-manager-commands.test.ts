@@ -43,7 +43,7 @@ describe("buildShowIssueCommand", () => {
 
   it("renders knots command for knots", () => {
     expect(buildShowIssueCommand("foolery-abc", "knots")).toBe(
-      'knots show "foolery-abc"',
+      'kno show "foolery-abc"',
     );
   });
 });
@@ -57,17 +57,12 @@ describe("verification command rendering", () => {
 
   it("renders knots verification stage command", () => {
     expect(buildVerificationStageCommand("foolery-abc", "knots")).toBe(
-      'knots update "foolery-abc" --status implementing --add-tag stage:verification',
+      'kno claim "foolery-abc" --json',
     );
   });
 
   it("renders knots retry and pass commands", () => {
-    expect(buildVerificationRetryCommands("foolery-abc", "knots")).toEqual([
-      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --add-tag stage:retry',
-    ]);
-
-    expect(buildVerificationPassCommands("foolery-abc", "knots")).toEqual([
-      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --status shipped --force',
-    ]);
+    expect(buildVerificationRetryCommands("foolery-abc", "knots")).toEqual([]);
+    expect(buildVerificationPassCommands("foolery-abc", "knots")).toEqual([]);
   });
 });

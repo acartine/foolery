@@ -50,6 +50,7 @@ export const createBeadSchema = z.object({
   notes: z.string().optional(),
   parent: z.string().optional(),
   estimate: z.number().int().positive().optional(),
+  profileId: z.string().min(1).optional(),
   workflowId: z.string().min(1).optional(),
 });
 
@@ -59,6 +60,7 @@ export const updateBeadSchema = z.object({
   type: beadTypeSchema.optional(),
   status: beadStatusSchema.optional(),
   workflowState: z.string().min(1).optional(),
+  profileId: z.string().min(1).optional(),
   priority: beadPrioritySchema.optional(),
   parent: z.string().optional(),
   labels: z.array(z.string()).optional(),

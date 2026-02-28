@@ -29,10 +29,13 @@ import {
   writeJsonlRecords,
 } from "./beads-jsonl-io";
 import {
-  BEADS_COARSE_WORKFLOW_ID,
-  beadsCoarseWorkflowDescriptor,
+  beadsProfileDescriptor,
+  beadsProfileWorkflowDescriptors,
+  deriveWorkflowRuntimeState,
   mapStatusToDefaultWorkflowState,
-  mapWorkflowStateToCompatStatus,
+  normalizeStateForWorkflow,
+  withWorkflowProfileLabel,
+  withWorkflowStateLabel,
 } from "@/lib/workflows";
 
 // ── Capabilities ────────────────────────────────────────────────
@@ -91,6 +94,14 @@ function isoNow(): string {
   return new Date().toISOString();
 }
 
+function isSupportedProfileSelection(profileId: string | undefined): boolean {
+  if (!profileId) return true;
+  const normalized = profileId.trim().toLowerCase();
+  if (!normalized) return true;
+  if (normalized === "beads-coarse" || normalized === "beads-coarse-human-gated") return true;
+  return beadsProfileWorkflowDescriptors().some((workflow) => workflow.id === normalized);
+}
+
 // ── BeadsBackend ────────────────────────────────────────────────
 
 export class BeadsBackend implements BackendPort {
@@ -147,7 +158,7 @@ export class BeadsBackend implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return ok([beadsCoarseWorkflowDescriptor()]);
+    return ok(beadsProfileWorkflowDescriptors());
   }
 
   // -- Read operations ----------------------------------------------------
@@ -171,7 +182,7 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const blockedIds = new Set(entry.deps.map((d) => d.blockedId));
     let items = Array.from(entry.beads.values()).filter(
-      (b) => b.status === "open" && !blockedIds.has(b.id),
+      (b) => b.status === "open" && !blockedIds.has(b.id) && !b.requiresHumanAction,
     );
     items = applyFilters(items, filters);
     return ok(items);
@@ -224,31 +235,39 @@ export class BeadsBackend implements BackendPort {
     input: CreateBeadInput,
     repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
-    if (input.workflowId && input.workflowId !== BEADS_COARSE_WORKFLOW_ID) {
-      return backendError(
-        "INVALID_INPUT",
-        `Unknown workflow "${input.workflowId}" for beads backend`,
-      );
+    const selectedProfileId = input.profileId ?? input.workflowId;
+    if (!isSupportedProfileSelection(selectedProfileId)) {
+      return backendError("INVALID_INPUT", `Unknown profile "${selectedProfileId}" for beads backend`);
     }
+    const workflow = beadsProfileDescriptor(selectedProfileId);
 
     const rp = this.resolvePath(repoPath);
     const entry = await this.ensureLoaded(rp);
     const id = generateId();
     const now = isoNow();
-    const workflowState = beadsCoarseWorkflowDescriptor().initialState;
-    const compatStatus = mapWorkflowStateToCompatStatus(workflowState, "beads-backend:create");
+    const workflowState = workflow.initialState;
+    const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
+    const labels = withWorkflowProfileLabel(
+      withWorkflowStateLabel(input.labels ?? [], workflowState),
+      workflow.id,
+    );
     const bead: Bead = {
       id,
       title: input.title,
       description: input.description,
       type: input.type ?? "task",
-      status: compatStatus,
-      compatStatus,
-      workflowId: BEADS_COARSE_WORKFLOW_ID,
-      workflowMode: "coarse_human_gated",
-      workflowState,
+      status: runtime.compatStatus,
+      compatStatus: runtime.compatStatus,
+      workflowId: workflow.id,
+      workflowMode: workflow.mode,
+      workflowState: runtime.workflowState,
+      profileId: workflow.id,
+      nextActionState: runtime.nextActionState,
+      nextActionOwnerKind: runtime.nextActionOwnerKind,
+      requiresHumanAction: runtime.requiresHumanAction,
+      isAgentClaimable: runtime.isAgentClaimable,
       priority: input.priority ?? 2,
-      labels: input.labels ?? [],
+      labels,
       assignee: input.assignee,
       parent: input.parent,
       due: input.due,
@@ -268,6 +287,9 @@ export class BeadsBackend implements BackendPort {
     input: UpdateBeadInput,
     repoPath?: string,
   ): Promise<BackendResult<void>> {
+    if (input.profileId && !isSupportedProfileSelection(input.profileId)) {
+      return backendError("INVALID_INPUT", `Unknown profile "${input.profileId}" for beads backend`);
+    }
     const rp = this.resolvePath(repoPath);
     const entry = await this.ensureLoaded(rp);
     const bead = entry.beads.get(id);
@@ -304,9 +326,20 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const bead = entry.beads.get(id);
     if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
-    bead.status = "closed";
-    bead.compatStatus = "closed";
-    bead.workflowState = "closed";
+    const workflow = beadsProfileDescriptor(bead.profileId ?? bead.workflowId);
+    const closedState = mapStatusToDefaultWorkflowState("closed", workflow);
+    const runtime = deriveWorkflowRuntimeState(workflow, closedState);
+    bead.status = runtime.compatStatus;
+    bead.compatStatus = runtime.compatStatus;
+    bead.workflowState = runtime.workflowState;
+    bead.nextActionState = runtime.nextActionState;
+    bead.nextActionOwnerKind = runtime.nextActionOwnerKind;
+    bead.requiresHumanAction = runtime.requiresHumanAction;
+    bead.isAgentClaimable = runtime.isAgentClaimable;
+    bead.labels = withWorkflowProfileLabel(
+      withWorkflowStateLabel(bead.labels ?? [], runtime.workflowState),
+      workflow.id,
+    );
     bead.closed = isoNow();
     bead.updated = isoNow();
     if (reason) {
@@ -399,8 +432,13 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
   return beads.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.workflowState && b.workflowState !== filters.workflowState) return false;
+    if (filters.profileId && b.profileId !== filters.profileId) return false;
     if (filters.type && b.type !== filters.type) return false;
     if (filters.status && b.status !== filters.status) return false;
+    if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
+      return false;
+    }
+    if (filters.nextOwnerKind && b.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     if (filters.priority !== undefined && b.priority !== filters.priority)
       return false;
     if (filters.assignee && b.assignee !== filters.assignee) return false;
@@ -415,20 +453,38 @@ function applyUpdate(bead: Bead, input: UpdateBeadInput): void {
   if (input.title !== undefined) bead.title = input.title;
   if (input.description !== undefined) bead.description = input.description;
   if (input.type !== undefined) bead.type = input.type;
-  if (input.workflowState !== undefined) {
-    bead.workflowState = input.workflowState.trim().toLowerCase();
-    const compatStatus = mapWorkflowStateToCompatStatus(bead.workflowState, "beads-backend:update");
-    bead.compatStatus = compatStatus;
-    bead.status = compatStatus;
-  }
+
+  const selectedProfileId = input.profileId ?? bead.profileId ?? bead.workflowId;
+  const workflow = beadsProfileDescriptor(selectedProfileId);
+
   if (input.status !== undefined) {
-    bead.status = input.status;
     recordCompatStatusConsumed("beads-backend:update-input-status");
-    bead.compatStatus = input.status;
-    if (input.workflowState === undefined) {
-      bead.workflowState = mapStatusToDefaultWorkflowState(input.status);
-    }
   }
+
+  let nextWorkflowState = bead.workflowState
+    ? normalizeStateForWorkflow(bead.workflowState, workflow)
+    : workflow.initialState;
+  if (input.profileId !== undefined && input.workflowState === undefined && input.status === undefined) {
+    nextWorkflowState = normalizeStateForWorkflow(bead.workflowState, workflow);
+  }
+  if (input.workflowState !== undefined) {
+    nextWorkflowState = normalizeStateForWorkflow(input.workflowState, workflow);
+  } else if (input.status !== undefined) {
+    nextWorkflowState = mapStatusToDefaultWorkflowState(input.status, workflow);
+  }
+
+  const runtime = deriveWorkflowRuntimeState(workflow, nextWorkflowState);
+  bead.workflowId = workflow.id;
+  bead.profileId = workflow.id;
+  bead.workflowMode = workflow.mode;
+  bead.workflowState = runtime.workflowState;
+  bead.status = runtime.compatStatus;
+  bead.compatStatus = runtime.compatStatus;
+  bead.nextActionState = runtime.nextActionState;
+  bead.nextActionOwnerKind = runtime.nextActionOwnerKind;
+  bead.requiresHumanAction = runtime.requiresHumanAction;
+  bead.isAgentClaimable = runtime.isAgentClaimable;
+
   if (input.priority !== undefined) bead.priority = input.priority;
   if (input.parent !== undefined) bead.parent = input.parent;
   if (input.labels !== undefined) {
@@ -442,6 +498,11 @@ function applyUpdate(bead: Bead, input: UpdateBeadInput): void {
   if (input.acceptance !== undefined) bead.acceptance = input.acceptance;
   if (input.notes !== undefined) bead.notes = input.notes;
   if (input.estimate !== undefined) bead.estimate = input.estimate;
+
+  bead.labels = withWorkflowProfileLabel(
+    withWorkflowStateLabel(bead.labels ?? [], bead.workflowState),
+    workflow.id,
+  );
 }
 
 function matchExpression(bead: Bead, expression: string): boolean {
@@ -458,6 +519,15 @@ function matchExpression(bead: Bead, expression: string): boolean {
       case "workflowstate":
       case "state":
         return bead.workflowState === value;
+      case "profile":
+      case "profileid":
+        return bead.profileId === value;
+      case "requireshumanaction":
+      case "human":
+        return String(Boolean(bead.requiresHumanAction)) === value;
+      case "nextowner":
+      case "nextownerkind":
+        return bead.nextActionOwnerKind === value;
       case "type":
         return bead.type === value;
       case "priority":

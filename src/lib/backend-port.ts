@@ -7,6 +7,7 @@
  */
 
 import type {
+  ActionOwnerKind,
   Bead,
   BeadDependency,
   BeadPriority,
@@ -60,6 +61,9 @@ export interface BeadListFilters {
   assignee?: string;
   owner?: string;
   parent?: string;
+  profileId?: string;
+  requiresHumanAction?: boolean;
+  nextOwnerKind?: ActionOwnerKind;
 }
 
 /** Options for query operations. */

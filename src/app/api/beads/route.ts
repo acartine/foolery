@@ -52,24 +52,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const selectedWorkflowId = parsed.data.workflowId;
-  if (workflows.length > 1 && !selectedWorkflowId) {
-    return NextResponse.json(
-      { error: "workflowId is required when multiple workflows are available." },
-      { status: 400 },
-    );
-  }
+  const selectedWorkflowId = parsed.data.profileId ?? parsed.data.workflowId;
+  const defaultWorkflowId = workflows.find((workflow) => workflow.id === "autopilot")?.id ?? workflows[0]!.id;
 
   if (selectedWorkflowId && !workflows.some((workflow) => workflow.id === selectedWorkflowId)) {
     return NextResponse.json(
-      { error: `Unknown workflowId "${selectedWorkflowId}".` },
+      { error: `Unknown profileId "${selectedWorkflowId}".` },
       { status: 400 },
     );
   }
 
   const input = selectedWorkflowId
-    ? parsed.data
-    : { ...parsed.data, workflowId: workflows[0]!.id };
+    ? { ...parsed.data, profileId: selectedWorkflowId }
+    : { ...parsed.data, profileId: defaultWorkflowId };
 
   const result = await getBackend().create(input, repoPath);
   if (!result.ok) {

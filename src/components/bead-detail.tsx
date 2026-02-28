@@ -211,6 +211,30 @@ export function BeadDetail({ bead, onUpdate }: BeadDetailProps) {
             <BeadPriorityBadge priority={bead.priority} />
           )}
         </div>
+        <div className="flex flex-wrap gap-1.5">
+          {bead.profileId && (
+            <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
+              Profile: {bead.profileId}
+            </Badge>
+          )}
+          {bead.nextActionOwnerKind && bead.nextActionOwnerKind !== "none" && (
+            <Badge
+              variant="secondary"
+              className={
+                bead.nextActionOwnerKind === "human"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-blue-100 text-blue-700"
+              }
+            >
+              Next owner: {bead.nextActionOwnerKind}
+            </Badge>
+          )}
+          {bead.requiresHumanAction && (
+            <Badge variant="secondary" className="bg-rose-100 text-rose-700">
+              Human action required
+            </Badge>
+          )}
+        </div>
 
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
           <span>{bead.owner ?? "someone"} created {formatDate(bead.created)}</span>

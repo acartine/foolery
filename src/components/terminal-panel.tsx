@@ -32,28 +32,26 @@ function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
 
-async function allSceneBeadsInVerificationState(
+async function allSceneBeadsAwaitingHumanAction(
   beadIds: string[],
   repoPath?: string
 ): Promise<boolean> {
   const results = await Promise.all(beadIds.map((beadId) => fetchBead(beadId, repoPath)));
   return results.every((result) => {
     if (!result.ok || !result.data) return false;
-    return (
-      result.data.status === "in_progress" &&
-      result.data.workflowState === "verification"
-    );
+    return result.data.status === "closed" || result.data.requiresHumanAction === true;
   });
 }
 
 function buildSceneRecoveryPrompt(previousSessionId: string, beadIds: string[]): string {
   return [
     `Scene recovery for prior session ${previousSessionId}.`,
-    "The previous scene stream disconnected before verification state was confirmed.",
+    `Affected beads: ${beadIds.join(", ")}`,
+    "The previous scene stream disconnected before human-action queue state was confirmed.",
     "Use current repository state. Do not redo already-completed work.",
     "If any listed bead is incomplete, finish it and land changes on main per project rules.",
-    "If you believe work is complete, verify merge/push state and transition each bead into its workflow's Final Cut/review state.",
-    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, workflow transition command result.",
+    "If you believe work is complete, verify merge/push state and transition each bead into its profile-defined next queue state (or claim completion command for Knots).",
+    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
   ].join("\n");
 }
 
@@ -65,8 +63,8 @@ function buildTakeRecoveryPrompt(beadId: string, previousSessionId: string | nul
       : "No prior agent session id was captured from the failed run.",
     "The previous run failed during a follow-up after primary work completed.",
     "Use current repository state and avoid redoing completed changes.",
-    "Confirm merge/push state and apply the workflow transition command for this bead if not already applied.",
-    "Finish with a concise summary: merged yes/no, pushed yes/no, workflow transition command result.",
+    "Confirm merge/push state and apply the profile transition command (or Knots claim completion command) for this bead if not already applied.",
+    "Finish with a concise summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
   ].join("\n");
 }
 
@@ -285,18 +283,18 @@ export function TerminalPanel() {
         if (sceneBeadIds && sceneBeadIds.length > 0) {
           if (source === "disconnect") {
             liveTerm.writeln(
-              "\x1b[33m⚠ Scene stream disconnected. Checking verification state...\x1b[0m"
+              "\x1b[33m⚠ Scene stream disconnected. Checking human-action state...\x1b[0m"
             );
 
-            const alreadyVerified = await allSceneBeadsInVerificationState(
+            const alreadyAwaitingHumanAction = await allSceneBeadsAwaitingHumanAction(
               sceneBeadIds,
               activeRepoPath
             );
             if (disposed) return;
 
-            if (alreadyVerified) {
+            if (alreadyAwaitingHumanAction) {
               liveTerm.writeln(
-                "\x1b[32m✓ All scene beads already in verification. Closing terminal tab.\x1b[0m"
+                "\x1b[32m✓ All scene beads already waiting on human action. Closing terminal tab.\x1b[0m"
               );
               updateStatus(sessionId, "completed");
               removeTerminal(sessionId);
@@ -304,7 +302,7 @@ export function TerminalPanel() {
             }
 
             liveTerm.writeln(
-              "\x1b[33m↻ Resuming scene to finish verification workflow...\x1b[0m"
+              "\x1b[33m↻ Resuming scene to finish human-action workflow...\x1b[0m"
             );
           } else {
             liveTerm.writeln(
@@ -434,7 +432,7 @@ export function TerminalPanel() {
             updateStatus(sessionId, code === 0 ? "completed" : "error");
 
             // On successful completion, immediately invalidate bead
-            // queries so Final Cut badges and notifications refresh
+            // queries so human-action badges and notifications refresh
             // without waiting for the next polling interval.
             if (code === 0) {
               queryClientRef.current.invalidateQueries({

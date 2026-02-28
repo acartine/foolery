@@ -21,10 +21,21 @@ export type WorkflowMode =
   | "granular_autonomous"
   | "coarse_human_gated";
 
+export type ActionOwnerKind = "agent" | "human" | "none";
+
 export type CoarsePrPreference =
   | "soft_required"
   | "preferred"
   | "none";
+
+export interface MemoryWorkflowOwners {
+  planning: ActionOwnerKind;
+  plan_review: ActionOwnerKind;
+  implementation: ActionOwnerKind;
+  implementation_review: ActionOwnerKind;
+  shipment: ActionOwnerKind;
+  shipment_review: ActionOwnerKind;
+}
 
 export interface MemoryWorkflowDescriptor {
   id: string;
@@ -34,10 +45,17 @@ export interface MemoryWorkflowDescriptor {
   initialState: string;
   states: string[];
   terminalStates: string[];
+  transitions?: Array<{ from: string; to: string }>;
   finalCutState: string | null;
   retakeState: string;
   promptProfileId: string;
   coarsePrPreferenceDefault?: CoarsePrPreference;
+  profileId?: string;
+  owners?: MemoryWorkflowOwners;
+  queueStates?: string[];
+  actionStates?: string[];
+  reviewQueueStates?: string[];
+  humanQueueStates?: string[];
 }
 
 export type BeadPriority = 0 | 1 | 2 | 3 | 4;
@@ -54,6 +72,11 @@ export interface Bead {
   workflowId?: string;
   workflowMode?: WorkflowMode;
   workflowState?: string;
+  profileId?: string;
+  nextActionState?: string;
+  nextActionOwnerKind?: ActionOwnerKind;
+  requiresHumanAction?: boolean;
+  isAgentClaimable?: boolean;
   priority: BeadPriority;
   labels: string[];
   assignee?: string;

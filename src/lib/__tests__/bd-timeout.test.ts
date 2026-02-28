@@ -74,33 +74,24 @@ describe("bd command timeout handling", () => {
   });
 
   it("retries idempotent write commands once and succeeds", async () => {
+    const beadJson = JSON.stringify({
+      id: "foolery-123",
+      title: "Retry timeout",
+      status: "open",
+      issue_type: "task",
+      priority: 2,
+      labels: [],
+      created_at: "2026-01-01T00:00:00Z",
+      updated_at: "2026-01-01T00:00:00Z",
+    });
+
     queueExec(
-      { killed: true },
-      {
-        stdout: JSON.stringify({
-          id: "foolery-123",
-          title: "Retry timeout",
-          status: "open",
-          issue_type: "task",
-          priority: 2,
-          labels: [],
-          created_at: "2026-01-01T00:00:00Z",
-          updated_at: "2026-01-01T00:00:00Z",
-        }),
-      },
-      {
-        stdout: JSON.stringify({
-          id: "foolery-123",
-          title: "Retry timeout",
-          status: "open",
-          issue_type: "task",
-          priority: 2,
-          labels: [],
-          created_at: "2026-01-01T00:00:00Z",
-          updated_at: "2026-01-01T00:00:00Z",
-        }),
-      },
-      { stdout: "" },
+      { stdout: beadJson }, // show (context load)
+      { stdout: beadJson }, // show (label reconciliation)
+      { killed: true }, // update timeout (attempt 1)
+      { stdout: "" }, // update retry succeeds
+      { stdout: "" }, // label add wf:state:*
+      { stdout: "" }, // label add wf:profile:*
     );
 
     const { updateBead } = await import("@/lib/bd");
@@ -111,9 +102,9 @@ describe("bd command timeout handling", () => {
     );
 
     expect(result.ok).toBe(true);
-    expect(execInvocations.length).toBeGreaterThanOrEqual(4);
-    expect(execInvocations[0].args[0]).toBe("update");
-    expect(execInvocations.some((call) => call.args[0] === "show")).toBe(true);
+    expect(execInvocations.length).toBeGreaterThanOrEqual(6);
+    expect(execInvocations[0].args[0]).toBe("show");
+    expect(execInvocations.some((call) => call.args[0] === "update")).toBe(true);
     expect(execInvocations.some((call) => call.args[0] === "label")).toBe(true);
   });
 

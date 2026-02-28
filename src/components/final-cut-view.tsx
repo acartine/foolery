@@ -3,34 +3,26 @@
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Scissors } from "lucide-react";
-import { fetchBeads, fetchWorkflows } from "@/lib/api";
+import { fetchBeads } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeadTable } from "@/components/bead-table";
 import { useAppStore } from "@/stores/app-store";
 import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
 import type { Bead } from "@/lib/types";
-import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
   const [selectionVersion] = useState(0);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
+    queryKey: ["beads", "human-action", activeRepo, registeredRepos.length],
     queryFn: async () => {
-      const params: Record<string, string> = { status: "in_progress" };
+      const params: Record<string, string> = { requiresHumanAction: "true" };
       if (activeRepo) {
-        const [result, workflowsResult] = await Promise.all([
-          fetchBeads(params, activeRepo),
-          fetchWorkflows(activeRepo),
-        ]);
+        const result = await fetchBeads(params, activeRepo);
         if (result.ok && result.data) {
-          const workflowsById = workflowDescriptorById(
-            workflowsResult.ok ? workflowsResult.data ?? [] : [],
-          );
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .filter((bead) => beadInFinalCut(bead, workflowsById))
             .map((bead) => ({
               ...bead,
               _repoPath: activeRepo,
@@ -42,16 +34,9 @@ export function FinalCutView() {
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const [result, workflowsResult] = await Promise.all([
-              fetchBeads(params, repo.path),
-              fetchWorkflows(repo.path),
-            ]);
+            const result = await fetchBeads(params, repo.path);
             if (!result.ok || !result.data) return [];
-            const workflowsById = workflowDescriptorById(
-              workflowsResult.ok ? workflowsResult.data ?? [] : [],
-            );
             return result.data
-              .filter((bead) => beadInFinalCut(bead, workflowsById))
               .map((bead) => ({
                 ...bead,
                 _repoPath: repo.path,
@@ -61,17 +46,7 @@ export function FinalCutView() {
         );
         return { ok: true, data: results.flat() };
       }
-      const [result, workflowsResult] = await Promise.all([
-        fetchBeads(params),
-        fetchWorkflows(),
-      ]);
-      if (result.ok && result.data) {
-        const workflowsById = workflowDescriptorById(
-          workflowsResult.ok ? workflowsResult.data ?? [] : [],
-        );
-        result.data = result.data.filter((bead) => beadInFinalCut(bead, workflowsById));
-      }
-      return result;
+      return fetchBeads(params);
     },
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
@@ -100,11 +75,11 @@ export function FinalCutView() {
           <div>
             <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
               <Scissors className="size-4" />
-              Final Cut
+              Human Action
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Review features that agents believe they have completed and
-              pushed. Everything here is ready for human verification.
+              Knots and beads that require a human-owned next step.
+              This queue is explicit from profile ownership and state.
             </p>
           </div>
           <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
@@ -115,7 +90,7 @@ export function FinalCutView() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
-          Loading final cut...
+          Loading human action queue...
         </div>
       ) : (
         <BeadTable

@@ -156,10 +156,9 @@ describe("updateBead error paths", () => {
     });
 
     queueExec(
-      // update fails with empty stderr
-      { stderr: "", exitCode: 1 },
-      // showBead succeeds
-      { stdout: beadJson }
+      { stdout: beadJson }, // show (context load)
+      { stdout: beadJson }, // show (label reconciliation)
+      { stderr: "", exitCode: 1 }, // update fails with empty stderr
     );
 
     const { updateBead } = await import("@/lib/bd");

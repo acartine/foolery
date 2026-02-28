@@ -1,16 +1,15 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchBeads, fetchWorkflows } from "@/lib/api";
+import { fetchBeads } from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
 import type { Bead, BdResult } from "@/lib/types";
-import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 /**
  * Returns the count of beads in the verification queue.
  *
  * Shares the same React Query cache entry as FinalCutView
- * (queryKey: ["beads", "finalcut", ...]) so:
+ * (queryKey: ["beads", "human-action", ...]) so:
  *  - Only one network request is made when both are mounted.
  *  - Invalidating ["beads"] also refreshes this count.
  *
@@ -28,7 +27,7 @@ export function useVerificationCount(
   const hasRepos = Boolean(activeRepo) || registeredRepos.length > 0;
 
   const { data } = useQuery<BdResult<Bead[]>, Error, number>({
-    queryKey: ["beads", "finalcut", activeRepo, registeredRepos.length],
+    queryKey: ["beads", "human-action", activeRepo, registeredRepos.length],
     queryFn: () => fetchVerificationBeads(activeRepo, registeredRepos),
     select: (result) => {
       if (!result.ok || !result.data) return 0;
@@ -58,20 +57,13 @@ async function fetchVerificationBeads(
   activeRepo: string | null,
   registeredRepos: { path: string; name: string }[],
 ): Promise<BdResult<Bead[]>> {
-  const params: Record<string, string> = { status: "in_progress" };
+  const params: Record<string, string> = { requiresHumanAction: "true" };
 
   if (activeRepo) {
-    const [result, workflowsResult] = await Promise.all([
-      fetchBeads(params, activeRepo),
-      fetchWorkflows(activeRepo),
-    ]);
+    const result = await fetchBeads(params, activeRepo);
     if (result.ok && result.data) {
-      const workflowsById = workflowDescriptorById(
-        workflowsResult.ok ? workflowsResult.data ?? [] : [],
-      );
       const repo = registeredRepos.find((r) => r.path === activeRepo);
       result.data = result.data
-        .filter((bead) => beadInFinalCut(bead, workflowsById))
         .map((bead) => ({
           ...bead,
           _repoPath: activeRepo,
@@ -84,16 +76,9 @@ async function fetchVerificationBeads(
   if (registeredRepos.length > 0) {
     const results = await Promise.all(
       registeredRepos.map(async (repo) => {
-        const [result, workflowsResult] = await Promise.all([
-          fetchBeads(params, repo.path),
-          fetchWorkflows(repo.path),
-        ]);
+        const result = await fetchBeads(params, repo.path);
         if (!result.ok || !result.data) return [];
-        const workflowsById = workflowDescriptorById(
-          workflowsResult.ok ? workflowsResult.data ?? [] : [],
-        );
         return result.data
-          .filter((bead) => beadInFinalCut(bead, workflowsById))
           .map((bead) => ({
             ...bead,
             _repoPath: repo.path,
@@ -104,15 +89,5 @@ async function fetchVerificationBeads(
     return { ok: true, data: results.flat() };
   }
 
-  const [result, workflowsResult] = await Promise.all([
-    fetchBeads(params),
-    fetchWorkflows(),
-  ]);
-  if (result.ok && result.data) {
-    const workflowsById = workflowDescriptorById(
-      workflowsResult.ok ? workflowsResult.data ?? [] : [],
-    );
-    result.data = result.data.filter((bead) => beadInFinalCut(bead, workflowsById));
-  }
-  return result;
+  return fetchBeads(params);
 }

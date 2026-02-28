@@ -1,8 +1,8 @@
 /**
- * KnotsBackend -- BackendPort adapter backed by the `knots` CLI.
+ * KnotsBackend -- BackendPort adapter backed by the `kno` CLI.
  *
- * Uses Knots as the source of truth and maps Knots fields/states/edges
- * into the existing Foolery BackendPort contract.
+ * Uses Knots as the source of truth and maps profile/state ownership into
+ * Foolery's backend contract.
  */
 
 import type {
@@ -18,30 +18,45 @@ import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type {
   Bead,
   BeadDependency,
-  BeadStatus,
   BeadType,
   MemoryWorkflowDescriptor,
+  MemoryWorkflowOwners,
   WorkflowMode,
 } from "@/lib/types";
 import type {
   KnotEdge,
+  KnotProfileDefinition,
   KnotRecord,
   KnotUpdateInput,
-  KnotWorkflowDefinition,
 } from "@/lib/knots";
 import * as knots from "@/lib/knots";
 import {
-  KNOTS_COARSE_DESCRIPTOR_ID,
-  KNOTS_COARSE_PROMPT_PROFILE_ID,
-  KNOTS_GRANULAR_DESCRIPTOR_ID,
-  KNOTS_GRANULAR_PROMPT_PROFILE_ID,
-  inferFinalCutState,
-  inferRetakeState,
+  deriveWorkflowRuntimeState,
   inferWorkflowMode,
+  mapStatusToDefaultWorkflowState,
+  normalizeStateForWorkflow,
 } from "@/lib/workflows";
 
 const EDGE_CACHE_TTL_MS = 2_000;
 const WORKFLOW_CACHE_TTL_MS = 10_000;
+
+const ACTION_STATES = new Set<string>([
+  "planning",
+  "plan_review",
+  "implementation",
+  "implementation_review",
+  "shipment",
+  "shipment_review",
+]);
+
+const OWNER_BY_ACTION_STATE: Record<string, keyof MemoryWorkflowOwners> = {
+  planning: "planning",
+  plan_review: "plan_review",
+  implementation: "implementation",
+  implementation_review: "implementation_review",
+  shipment: "shipment",
+  shipment_review: "shipment_review",
+};
 
 export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
   canCreate: true,
@@ -57,19 +72,6 @@ export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
   maxConcurrency: 1,
 });
 
-type KnotsState =
-  | "idea"
-  | "work_item"
-  | "implementing"
-  | "implemented"
-  | "reviewing"
-  | "rejected"
-  | "refining"
-  | "approved"
-  | "shipped"
-  | "deferred"
-  | "abandoned";
-
 interface CachedEdges {
   edges: KnotEdge[];
   expiresAt: number;
@@ -84,10 +86,7 @@ function ok<T>(data: T): BackendResult<T> {
   return { ok: true, data };
 }
 
-function backendError(
-  code: BackendErrorCode,
-  message: string,
-): BackendResult<never> {
+function backendError(code: BackendErrorCode, message: string): BackendResult<never> {
   return {
     ok: false,
     error: {
@@ -151,46 +150,6 @@ function fromKnots<T>(result: { ok: boolean; data?: T; error?: string }): Backen
   };
 }
 
-function mapKnotsStateToStatus(state: string): BeadStatus {
-  switch (state) {
-    case "idea":
-    case "work_item":
-      return "open";
-    case "implementing":
-    case "implemented":
-    case "reviewing":
-    case "refining":
-    case "approved":
-      return "in_progress";
-    case "rejected":
-      return "blocked";
-    case "deferred":
-      return "deferred";
-    case "shipped":
-    case "abandoned":
-      return "closed";
-    default:
-      return "open";
-  }
-}
-
-function mapStatusToKnotsState(status: BeadStatus): KnotsState {
-  switch (status) {
-    case "open":
-      return "work_item";
-    case "in_progress":
-      return "implementing";
-    case "blocked":
-      return "rejected";
-    case "deferred":
-      return "deferred";
-    case "closed":
-      return "shipped";
-    default:
-      return "work_item";
-  }
-}
-
 function normalizeType(raw: string | null | undefined): BeadType {
   if (!raw) return "task";
   const value = raw.toLowerCase();
@@ -241,59 +200,81 @@ function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
   return edges.some((edge) => edge.kind === "blocked_by" && edge.src === id);
 }
 
-function descriptorIdForMode(mode: WorkflowMode): string {
-  return mode === "coarse_human_gated"
-    ? KNOTS_COARSE_DESCRIPTOR_ID
-    : KNOTS_GRANULAR_DESCRIPTOR_ID;
-}
-
-function promptProfileIdForMode(mode: WorkflowMode): string {
-  return mode === "coarse_human_gated"
-    ? KNOTS_COARSE_PROMPT_PROFILE_ID
-    : KNOTS_GRANULAR_PROMPT_PROFILE_ID;
-}
-
-function toDescriptor(
-  workflow: KnotWorkflowDefinition,
-  modeOverride?: WorkflowMode,
-): MemoryWorkflowDescriptor {
-  const states = workflow.states.map((state) => state.trim().toLowerCase());
-  const initialState = workflow.initial_state.trim().toLowerCase();
-  const mode = modeOverride ?? inferWorkflowMode(workflow.id, workflow.description, states);
-  const finalCutState = mode === "coarse_human_gated"
-    ? inferFinalCutState(states) ?? initialState
-    : null;
-
+function normalizeOwners(profile: KnotProfileDefinition): MemoryWorkflowOwners {
   return {
-    id: descriptorIdForMode(mode),
-    backingWorkflowId: workflow.id,
-    label: `${workflow.id} (${mode === "coarse_human_gated" ? "Coarse" : "Granular"})`,
-    mode,
-    initialState,
-    states,
-    terminalStates: workflow.terminal_states.map((state) => state.trim().toLowerCase()),
-    finalCutState,
-    retakeState: inferRetakeState(states, initialState),
-    promptProfileId: promptProfileIdForMode(mode),
-    coarsePrPreferenceDefault: mode === "coarse_human_gated" ? "soft_required" : undefined,
+    planning: profile.owners.planning.kind,
+    plan_review: profile.owners.plan_review.kind,
+    implementation: profile.owners.implementation.kind,
+    implementation_review: profile.owners.implementation_review.kind,
+    shipment: profile.owners.shipment.kind,
+    shipment_review: profile.owners.shipment_review.kind,
   };
 }
 
-function ensureBothModes(workflows: KnotWorkflowDefinition[]): MemoryWorkflowDescriptor[] {
-  if (workflows.length === 0) return [];
+function modeFromOwners(owners: MemoryWorkflowOwners, profile: KnotProfileDefinition): WorkflowMode {
+  const hasHuman = Object.values(owners).some((kind) => kind === "human");
+  if (hasHuman) return "coarse_human_gated";
+  return inferWorkflowMode(profile.id, profile.description, profile.states);
+}
 
-  const descriptors = workflows.map((workflow) => toDescriptor(workflow));
-  const hasGranular = descriptors.some((workflow) => workflow.mode === "granular_autonomous");
-  const hasCoarse = descriptors.some((workflow) => workflow.mode === "coarse_human_gated");
+function queueStatesFrom(states: string[]): string[] {
+  return states.filter((state) => state.startsWith("ready_for_"));
+}
 
-  const primary = workflows[0]!;
-  if (!hasGranular) {
-    descriptors.unshift(toDescriptor(primary, "granular_autonomous"));
-  }
-  if (!hasCoarse) {
-    descriptors.push(toDescriptor(primary, "coarse_human_gated"));
-  }
+function actionStatesFrom(states: string[]): string[] {
+  return states.filter((state) => ACTION_STATES.has(state));
+}
 
+function queueStateToActionState(state: string): string | null {
+  if (!state.startsWith("ready_for_")) return null;
+  const action = state.slice("ready_for_".length);
+  return ACTION_STATES.has(action) ? action : null;
+}
+
+function toDescriptor(profile: KnotProfileDefinition): MemoryWorkflowDescriptor {
+  const states = profile.states.map((state) => state.trim().toLowerCase());
+  const owners = normalizeOwners(profile);
+  const queueStates = queueStatesFrom(states);
+  const actionStates = actionStatesFrom(states);
+  const reviewQueueStates = queueStates.filter((state) => {
+    const action = queueStateToActionState(state);
+    return action ? action.endsWith("_review") : false;
+  });
+  const humanQueueStates = queueStates.filter((queueState) => {
+    const action = queueStateToActionState(queueState);
+    if (!action) return false;
+    const ownerKey = OWNER_BY_ACTION_STATE[action];
+    return ownerKey ? owners[ownerKey] === "human" : false;
+  });
+  const mode = modeFromOwners(owners, profile);
+
+  return {
+    id: profile.id,
+    profileId: profile.id,
+    backingWorkflowId: profile.id,
+    label: `Knots (${profile.id})`,
+    mode,
+    initialState: profile.initial_state.trim().toLowerCase(),
+    states,
+    terminalStates: profile.terminal_states.map((state) => state.trim().toLowerCase()),
+    transitions: profile.transitions?.map((transition) => ({
+      from: transition.from.trim().toLowerCase(),
+      to: transition.to.trim().toLowerCase(),
+    })),
+    finalCutState: humanQueueStates[0] ?? null,
+    retakeState: states.includes("ready_for_implementation") ? "ready_for_implementation" : profile.initial_state,
+    promptProfileId: profile.id,
+    coarsePrPreferenceDefault: mode === "coarse_human_gated" ? "soft_required" : undefined,
+    owners,
+    queueStates,
+    actionStates,
+    reviewQueueStates,
+    humanQueueStates,
+  };
+}
+
+function mapForProfiles(profiles: KnotProfileDefinition[]): MemoryWorkflowDescriptor[] {
+  const descriptors = profiles.map(toDescriptor);
   const deduped = new Map<string, MemoryWorkflowDescriptor>();
   for (const descriptor of descriptors) {
     deduped.set(descriptor.id, descriptor);
@@ -301,15 +282,50 @@ function ensureBothModes(workflows: KnotWorkflowDefinition[]): MemoryWorkflowDes
   return Array.from(deduped.values());
 }
 
+function normalizeProfileId(value: string | null | undefined): string | null {
+  const normalized = value?.trim().toLowerCase();
+  return normalized || null;
+}
+
 function toBead(
   knot: KnotRecord,
   edges: KnotEdge[],
-  workflowModesByBackingId: Map<string, WorkflowMode>,
+  workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): Bead {
-  const backingWorkflowId = knot.workflow_id?.trim().toLowerCase() || "default";
-  const workflowMode = workflowModesByBackingId.get(backingWorkflowId) ?? inferWorkflowMode(backingWorkflowId);
-  const workflowId = descriptorIdForMode(workflowMode);
-  const status = mapKnotsStateToStatus(knot.state);
+  const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
+  const profileId = normalizeProfileId(knot.profile_id ?? knot.workflow_id) ?? fallback?.id ?? "autopilot";
+  const workflow = workflowsById.get(profileId) ?? fallback;
+
+  if (!workflow) {
+    const fallbackStatus = knot.state.startsWith("ready_for_") ? "open" : "in_progress";
+    return {
+      id: knot.id,
+      title: knot.title,
+      description: typeof knot.description === "string" ? knot.description : knot.body ?? undefined,
+      type: normalizeType(knot.type),
+      status: fallbackStatus,
+      compatStatus: fallbackStatus,
+      workflowId: profileId,
+      workflowMode: "granular_autonomous",
+      workflowState: knot.state,
+      profileId,
+      nextActionOwnerKind: "none",
+      requiresHumanAction: false,
+      isAgentClaimable: false,
+      priority: normalizePriority(knot.priority),
+      labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
+      notes: stringifyNotes(knot.notes),
+      parent: parentFromEdges(knot.id, edges),
+      created: knot.created_at ?? knot.updated_at,
+      updated: knot.updated_at,
+      metadata: {
+        knotsProfileId: profileId,
+      },
+    };
+  }
+
+  const workflowState = normalizeStateForWorkflow(knot.state, workflow);
+  const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const notes = stringifyNotes(knot.notes);
 
   return {
@@ -322,21 +338,27 @@ function toBead(
           ? knot.body
           : undefined,
     type: normalizeType(knot.type),
-    status,
-    compatStatus: status,
-    workflowId,
-    workflowMode,
-    workflowState: knot.state,
+    status: runtime.compatStatus,
+    compatStatus: runtime.compatStatus,
+    workflowId: workflow.id,
+    workflowMode: workflow.mode,
+    workflowState: runtime.workflowState,
+    profileId: workflow.id,
+    nextActionState: runtime.nextActionState,
+    nextActionOwnerKind: runtime.nextActionOwnerKind,
+    requiresHumanAction: runtime.requiresHumanAction,
+    isAgentClaimable: runtime.isAgentClaimable,
     priority: normalizePriority(knot.priority),
     labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
     notes,
     parent: parentFromEdges(knot.id, edges),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
-    closed: status === "closed" ? knot.updated_at : undefined,
+    closed: runtime.compatStatus === "closed" ? knot.updated_at : undefined,
     metadata: {
-      knotsWorkflowId: backingWorkflowId,
+      knotsProfileId: profileId,
       knotsState: knot.state,
+      knotsProfileEtag: knot.profile_etag,
       knotsWorkflowEtag: knot.workflow_etag,
       knotsHandoffCapsules: knot.handoff_capsules ?? [],
       knotsNotes: knot.notes ?? [],
@@ -349,6 +371,11 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
   return beads.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.workflowState && b.workflowState !== filters.workflowState) return false;
+    if (filters.profileId && b.profileId !== filters.profileId) return false;
+    if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
+      return false;
+    }
+    if (filters.nextOwnerKind && b.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     if (filters.type && b.type !== filters.type) return false;
     if (filters.status && b.status !== filters.status) return false;
     if (filters.priority !== undefined && b.priority !== filters.priority) return false;
@@ -374,6 +401,15 @@ function matchExpression(bead: Bead, expression: string): boolean {
       case "workflowstate":
       case "state":
         return bead.workflowState === value;
+      case "profile":
+      case "profileid":
+        return bead.profileId === value;
+      case "nextowner":
+      case "nextownerkind":
+        return bead.nextActionOwnerKind === value;
+      case "human":
+      case "requireshumanaction":
+        return String(Boolean(bead.requiresHumanAction)) === value;
       case "type":
         return bead.type === value;
       case "priority":
@@ -426,12 +462,12 @@ export class KnotsBackend implements BackendPort {
       return ok(cached.workflows);
     }
 
-    const rawWorkflows = fromKnots(await knots.listWorkflows(repoPath));
-    if (!rawWorkflows.ok) return propagateError<MemoryWorkflowDescriptor[]>(rawWorkflows);
+    const rawProfiles = fromKnots(await knots.listProfiles(repoPath));
+    if (!rawProfiles.ok) return propagateError<MemoryWorkflowDescriptor[]>(rawProfiles);
 
-    const normalized = ensureBothModes(rawWorkflows.data ?? []);
+    const normalized = mapForProfiles(rawProfiles.data ?? []);
     if (normalized.length === 0) {
-      return backendError("INVALID_INPUT", "No workflows available in knots backend");
+      return backendError("INVALID_INPUT", "No profiles available in knots backend");
     }
 
     this.workflowCache.set(key, {
@@ -441,17 +477,18 @@ export class KnotsBackend implements BackendPort {
     return ok(normalized);
   }
 
-  private async workflowModeMapByBackingId(
+  private async workflowMapByProfileId(
     repoPath: string,
-  ): Promise<BackendResult<Map<string, WorkflowMode>>> {
+  ): Promise<BackendResult<Map<string, MemoryWorkflowDescriptor>>> {
     const workflowsResult = await this.getWorkflowDescriptorsForRepo(repoPath);
-    if (!workflowsResult.ok) return propagateError<Map<string, WorkflowMode>>(workflowsResult);
+    if (!workflowsResult.ok) return propagateError<Map<string, MemoryWorkflowDescriptor>>(workflowsResult);
 
-    const modeByBackingId = new Map<string, WorkflowMode>();
+    const map = new Map<string, MemoryWorkflowDescriptor>();
     for (const workflow of workflowsResult.data ?? []) {
-      modeByBackingId.set(workflow.backingWorkflowId, workflow.mode);
+      map.set(workflow.id, workflow);
+      map.set(workflow.backingWorkflowId, workflow);
     }
-    return ok(modeByBackingId);
+    return ok(map);
   }
 
   private edgeCacheKey(id: string, repoPath: string): string {
@@ -488,9 +525,9 @@ export class KnotsBackend implements BackendPort {
   }
 
   private async buildBeadsForRepo(repoPath: string): Promise<BackendResult<Bead[]>> {
-    const workflowModesResult = await this.workflowModeMapByBackingId(repoPath);
-    if (!workflowModesResult.ok) return propagateError<Bead[]>(workflowModesResult);
-    const workflowModes = workflowModesResult.data ?? new Map<string, WorkflowMode>();
+    const workflowMapResult = await this.workflowMapByProfileId(repoPath);
+    if (!workflowMapResult.ok) return propagateError<Bead[]>(workflowMapResult);
+    const workflowMap = workflowMapResult.data ?? new Map<string, MemoryWorkflowDescriptor>();
 
     const listResult = fromKnots(await knots.listKnots(repoPath));
     if (!listResult.ok) return propagateError<Bead[]>(listResult);
@@ -506,7 +543,9 @@ export class KnotsBackend implements BackendPort {
       edgesById.set(id, edgeResult.data ?? []);
     }
 
-    const beads = records.map((record) => toBead(record, edgesById.get(record.id) ?? [], workflowModes));
+    const beads = records.map((record) =>
+      toBead(record, edgesById.get(record.id) ?? [], workflowMap),
+    );
     return ok(beads);
   }
 
@@ -532,27 +571,16 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<Bead[]>> {
     const rp = this.resolvePath(repoPath);
-    const workflowModesResult = await this.workflowModeMapByBackingId(rp);
-    if (!workflowModesResult.ok) return propagateError<Bead[]>(workflowModesResult);
-    const workflowModes = workflowModesResult.data ?? new Map<string, WorkflowMode>();
+    const builtResult = await this.buildBeadsForRepo(rp);
+    if (!builtResult.ok) return builtResult;
 
-    const listResult = fromKnots(await knots.listKnots(rp));
-    if (!listResult.ok) return propagateError<Bead[]>(listResult);
-
-    const records = listResult.data ?? [];
-    const edgeResults = await Promise.all(
-      records.map(async (record) => [record.id, await this.getEdgesForId(record.id, rp)] as const),
-    );
-
-    const edgesById = new Map<string, KnotEdge[]>();
-    for (const [id, edgeResult] of edgeResults) {
-      if (!edgeResult.ok) return propagateError<Bead[]>(edgeResult);
-      edgesById.set(id, edgeResult.data ?? []);
-    }
-
-    const beads = records
-      .map((record) => toBead(record, edgesById.get(record.id) ?? [], workflowModes))
-      .filter((bead) => bead.status === "open" && !isBlockedByEdges(bead.id, edgesById.get(bead.id) ?? []));
+    const beads = (builtResult.data ?? []).filter((bead) => {
+      if (bead.status !== "open") return false;
+      if (!bead.isAgentClaimable) return false;
+      const cached = this.edgeCache.get(this.edgeCacheKey(bead.id, rp));
+      const edges = cached?.edges ?? [];
+      return !isBlockedByEdges(bead.id, edges);
+    });
 
     return ok(applyFilters(beads, filters));
   }
@@ -601,11 +629,10 @@ export class KnotsBackend implements BackendPort {
     const edgesResult = await this.getEdgesForId(id, rp);
     if (!edgesResult.ok) return propagateError<Bead>(edgesResult);
 
-    const workflowModesResult = await this.workflowModeMapByBackingId(rp);
-    if (!workflowModesResult.ok) return propagateError<Bead>(workflowModesResult);
-    const workflowModes = workflowModesResult.data ?? new Map<string, WorkflowMode>();
+    const workflowMapResult = await this.workflowMapByProfileId(rp);
+    if (!workflowMapResult.ok) return propagateError<Bead>(workflowMapResult);
 
-    return ok(toBead(knotResult.data!, edgesResult.data ?? [], workflowModes));
+    return ok(toBead(knotResult.data!, edgesResult.data ?? [], workflowMapResult.data ?? new Map()));
   }
 
   async create(
@@ -618,29 +645,23 @@ export class KnotsBackend implements BackendPort {
     if (!workflowsResult.ok) return propagateError<{ id: string }>(workflowsResult);
     const workflows = workflowsResult.data ?? [];
     if (workflows.length === 0) {
-      return backendError("INVALID_INPUT", "No workflows available for knot creation");
+      return backendError("INVALID_INPUT", "No profiles available for knot creation");
     }
 
     const workflowsById = new Map(workflows.map((workflow) => [workflow.id, workflow]));
-    const selectedWorkflow = input.workflowId
-      ? workflowsById.get(input.workflowId)
-      : workflows.find((workflow) => workflow.mode === "granular_autonomous") ?? workflows[0];
+    const selectedWorkflowId = input.profileId ?? input.workflowId ?? "autopilot";
+    const selectedWorkflow = workflowsById.get(selectedWorkflowId) ?? workflows[0];
     if (!selectedWorkflow) {
-      return backendError(
-        "INVALID_INPUT",
-        input.workflowId
-          ? `Unknown workflow "${input.workflowId}" for knots backend`
-          : "Unable to resolve workflow for knot creation",
-      );
+      return backendError("INVALID_INPUT", `Unknown profile "${selectedWorkflowId}" for knots backend`);
     }
 
     const createResult = fromKnots(
       await knots.newKnot(
         input.title,
         {
-          body: input.description,
+          description: input.description,
           state: selectedWorkflow.initialState,
-          workflow: selectedWorkflow.backingWorkflowId,
+          profile: selectedWorkflow.id,
         },
         rp,
       ),
@@ -694,16 +715,42 @@ export class KnotsBackend implements BackendPort {
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
 
+    if (input.profileId) {
+      return backendError(
+        "INVALID_INPUT",
+        "Knots does not support changing profileId after creation",
+      );
+    }
+
+    const currentResult = await this.get(id, rp);
+    if (!currentResult.ok || !currentResult.data) {
+      return propagateError<void>(currentResult);
+    }
+    const current = currentResult.data;
+    const workflowsResult = await this.getWorkflowDescriptorsForRepo(rp);
+    if (!workflowsResult.ok) return propagateError<void>(workflowsResult);
+    const workflows = workflowsResult.data ?? [];
+    const workflow =
+      workflows.find((item) => item.id === (current.profileId ?? current.workflowId)) ?? workflows[0];
+
     const patch: KnotUpdateInput = {};
 
     if (input.title !== undefined) patch.title = input.title;
     if (input.description !== undefined) patch.description = input.description;
     if (input.priority !== undefined) patch.priority = input.priority;
+
     if (input.workflowState !== undefined) {
-      patch.status = input.workflowState.trim().toLowerCase();
+      const normalizedState = workflow
+        ? normalizeStateForWorkflow(input.workflowState, workflow)
+        : input.workflowState.trim().toLowerCase();
+      patch.status = normalizedState;
     } else if (input.status !== undefined) {
-      patch.status = mapStatusToKnotsState(input.status);
+      const nextState = workflow
+        ? mapStatusToDefaultWorkflowState(input.status, workflow)
+        : input.status;
+      patch.status = nextState;
     }
+
     if (input.type !== undefined) patch.type = input.type;
     if (input.labels?.length) patch.addTags = input.labels;
     if (input.removeLabels?.length) patch.removeTags = input.removeLabels;
@@ -849,8 +896,16 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
-    const result = fromKnots(await knots.addEdge(blockedId, "blocked_by", blockerId, rp));
-    if (!result.ok) return propagateError<void>(result);
+
+    const blockerExists = fromKnots(await knots.showKnot(blockerId, rp));
+    if (!blockerExists.ok) return propagateError<void>(blockerExists);
+
+    const blockedExists = fromKnots(await knots.showKnot(blockedId, rp));
+    if (!blockedExists.ok) return propagateError<void>(blockedExists);
+
+    const addResult = fromKnots(await knots.addEdge(blockedId, "blocked_by", blockerId, rp));
+    if (!addResult.ok) return propagateError<void>(addResult);
+
     this.invalidateEdgeCache(rp, blockerId);
     this.invalidateEdgeCache(rp, blockedId);
     return { ok: true };
@@ -862,8 +917,10 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
-    const result = fromKnots(await knots.removeEdge(blockedId, "blocked_by", blockerId, rp));
-    if (!result.ok) return propagateError<void>(result);
+
+    const removeResult = fromKnots(await knots.removeEdge(blockedId, "blocked_by", blockerId, rp));
+    if (!removeResult.ok) return propagateError<void>(removeResult);
+
     this.invalidateEdgeCache(rp, blockerId);
     this.invalidateEdgeCache(rp, blockedId);
     return { ok: true };

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, PartyPopper, X, History } from "lucide-react";
+import { Plus, Clapperboard, List, Film, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -214,16 +214,16 @@ export function AppHeader() {
 
   const actionButton = (() => {
     if (beadsView === "finalcut") {
-      // Final Cut: celebratory "Wrap!" button — no create dialog, just a visual cue
+      // Human-action queue: shortcut emphasis for review handoff.
       return (
         <Button
           size="lg"
-          variant="success"
+          variant="outline"
           className="gap-1.5 px-2.5"
-          title="That's a wrap!"
+          title="Human action queue"
         >
-          <PartyPopper className="size-4" />
-          Wrap!
+          <UserRoundCheck className="size-4" />
+          Human Queue
         </Button>
       );
     }
@@ -385,11 +385,11 @@ export function AppHeader() {
                     size="lg"
                     variant={beadsView === "finalcut" ? "default" : "ghost"}
                     className="relative h-8 gap-1.5 px-2.5"
-                    title="Verification queue"
+                    title="Human-action queue"
                     onClick={() => setBeadsView("finalcut")}
                   >
                     <Scissors className="size-4" />
-                    Final Cut
+                    Human Action
                     {verificationCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
                         {verificationCount > 9 ? "9+" : verificationCount}

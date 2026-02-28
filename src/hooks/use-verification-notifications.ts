@@ -35,7 +35,7 @@ export function useVerificationNotifications(beads: Bead[]) {
     if (newBeads.length > 0) {
       for (const bead of newBeads) {
         addNotification({
-          message: `"${bead.title}" is ready for verification`,
+          message: `"${bead.title}" is awaiting human action`,
           beadId: bead.id,
         });
       }

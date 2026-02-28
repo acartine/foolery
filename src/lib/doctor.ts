@@ -92,16 +92,20 @@ export type DoctorStreamEvent = DoctorCheckResult | DoctorStreamSummary;
 
 const PROMPT_GUIDANCE_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
 const PROMPT_PROFILE_MARKER = "FOOLERY_PROMPT_PROFILE:";
+const PROMPT_PROFILE_REGEX = new RegExp(
+  `${PROMPT_PROFILE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*([A-Za-z0-9._-]+)`,
+);
 
-function promptProfileTemplateFor(profileId: string): string {
-  if (profileId.startsWith("knots-")) return "PROMPT_KNOTS.md";
+function promptProfileTemplateFor(_profileId: string, repoPath?: string): string {
+  if (repoPath && detectMemoryManagerType(repoPath) === "knots") {
+    return "PROMPT_KNOTS.md";
+  }
   return "PROMPT_BEADS.md";
 }
 
 function fallbackPromptProfileForRepoPath(repoPath: string): string {
-  return detectMemoryManagerType(repoPath) === "knots"
-    ? "knots-granular-autonomous"
-    : "beads-coarse-human-gated";
+  void repoPath;
+  return "autopilot";
 }
 
 async function listWorkflowsSafe(repoPath: string): Promise<MemoryWorkflowDescriptor[]> {
@@ -658,7 +662,7 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
           continue;
         }
 
-        const profileMatch = content.match(/FOOLERY_PROMPT_PROFILE:\s*([A-Za-z0-9._-]+)/);
+        const profileMatch = content.match(PROMPT_PROFILE_REGEX);
         const actualProfile = profileMatch?.[1];
         if (!actualProfile || !expectedProfiles.includes(actualProfile)) {
           diagnostics.push({
@@ -1024,7 +1028,7 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       try {
         const expectedProfile = ctx.expectedProfile;
         const templateCandidates = expectedProfile
-          ? [promptProfileTemplateFor(expectedProfile), "PROMPT.md"]
+          ? [promptProfileTemplateFor(expectedProfile, repoPath), "PROMPT.md"]
           : ["PROMPT.md"];
         const templateContent = await readPromptTemplate(templateCandidates);
         if (!templateContent) {

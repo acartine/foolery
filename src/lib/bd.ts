@@ -6,12 +6,16 @@ import { join, resolve } from "node:path";
 import type { Bead, BeadDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
 import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
-  BEADS_COARSE_WORKFLOW_ID,
-  beadsCoarseWorkflowDescriptor,
+  beadsProfileDescriptor,
+  deriveBeadsProfileId,
   deriveBeadsWorkflowState,
+  deriveWorkflowRuntimeState,
+  beadsProfileWorkflowDescriptors,
+  isWorkflowProfileLabel,
   isWorkflowStateLabel,
   mapStatusToDefaultWorkflowState,
-  mapWorkflowStateToCompatStatus,
+  normalizeStateForWorkflow,
+  withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "./workflows";
 
@@ -427,17 +431,25 @@ function inferParent(id: string, explicit?: unknown, dependencies?: unknown): st
 function normalizeBead(raw: Record<string, unknown>): Bead {
   const id = raw.id as string;
   const labels = ((raw.labels ?? []) as string[]).filter(l => l.trim() !== "");
+  const metadata = raw.metadata as Record<string, unknown> | undefined;
+  const profileId = deriveBeadsProfileId(labels, metadata);
+  const workflow = beadsProfileDescriptor(profileId);
   const rawStatus = (raw.status ?? "open") as Bead["status"];
-  const workflowState = deriveBeadsWorkflowState(rawStatus, labels);
-  const compatStatus = mapWorkflowStateToCompatStatus(workflowState, "bd:normalize-bead");
+  const workflowState = deriveBeadsWorkflowState(rawStatus, labels, workflow);
+  const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   return {
     ...raw,
     type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
-    status: compatStatus,
-    compatStatus,
-    workflowId: BEADS_COARSE_WORKFLOW_ID,
-    workflowMode: "coarse_human_gated",
-    workflowState,
+    status: runtime.compatStatus,
+    compatStatus: runtime.compatStatus,
+    workflowId: workflow.id,
+    workflowMode: workflow.mode,
+    workflowState: runtime.workflowState,
+    profileId: workflow.id,
+    nextActionState: runtime.nextActionState,
+    nextActionOwnerKind: runtime.nextActionOwnerKind,
+    requiresHumanAction: runtime.requiresHumanAction,
+    isAgentClaimable: runtime.isAgentClaimable,
     priority: (raw.priority ?? 2) as Bead["priority"],
     acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
     parent: inferParent(id, raw.parent, raw.dependencies),
@@ -461,6 +473,12 @@ function applyWorkflowFilters(
   return beads.filter((bead) => {
     if (filters.workflowId && bead.workflowId !== filters.workflowId) return false;
     if (filters.workflowState && bead.workflowState !== filters.workflowState) return false;
+    if (filters.profileId && bead.profileId !== filters.profileId) return false;
+    if (filters.requiresHumanAction !== undefined) {
+      const wantsHuman = filters.requiresHumanAction === "true";
+      if ((bead.requiresHumanAction ?? false) !== wantsHuman) return false;
+    }
+    if (filters.nextOwnerKind && bead.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     return true;
   });
 }
@@ -482,7 +500,7 @@ function isStageLabel(label: string): boolean {
 export async function listWorkflows(
   _repoPath?: string
 ): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
-  return { ok: true, data: [beadsCoarseWorkflowDescriptor()] };
+  return { ok: true, data: beadsProfileWorkflowDescriptors() };
 }
 
 export async function listBeads(
@@ -493,7 +511,15 @@ export async function listBeads(
   const hasStatusFilter = filters && filters.status;
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
-      if (key === "workflowId" || key === "workflowState") continue;
+      if (
+        key === "workflowId" ||
+        key === "workflowState" ||
+        key === "profileId" ||
+        key === "requiresHumanAction" ||
+        key === "nextOwnerKind"
+      ) {
+        continue;
+      }
       if (val) args.push(`--${key}`, val);
     }
   }
@@ -516,7 +542,15 @@ export async function readyBeads(
   const args = ["ready", "--json", "--limit", "0"];
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
-      if (key === "workflowId" || key === "workflowState") continue;
+      if (
+        key === "workflowId" ||
+        key === "workflowState" ||
+        key === "profileId" ||
+        key === "requiresHumanAction" ||
+        key === "nextOwnerKind"
+      ) {
+        continue;
+      }
       if (val) args.push(`--${key}`, val);
     }
   }
@@ -538,7 +572,15 @@ export async function searchBeads(
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
       if (!val) continue;
-      if (key === "workflowId" || key === "workflowState") continue;
+      if (
+        key === "workflowId" ||
+        key === "workflowState" ||
+        key === "profileId" ||
+        key === "requiresHumanAction" ||
+        key === "nextOwnerKind"
+      ) {
+        continue;
+      }
       if (key === "priority") {
         args.push("--priority-min", val, "--priority-max", val);
       } else {
@@ -590,11 +632,19 @@ export async function createBead(
   repoPath?: string
 ): Promise<BdResult<{ id: string }>> {
   const nextFields: Record<string, string | string[] | number | undefined> = { ...fields };
+  const selectedProfileId =
+    typeof nextFields.profileId === "string"
+      ? nextFields.profileId
+      : typeof nextFields.workflowId === "string"
+        ? nextFields.workflowId
+        : null;
+  delete nextFields.profileId;
   delete nextFields.workflowId;
+  const workflow = beadsProfileDescriptor(selectedProfileId);
 
   const explicitWorkflowState =
     typeof nextFields.workflowState === "string"
-      ? nextFields.workflowState.trim().toLowerCase()
+      ? normalizeStateForWorkflow(nextFields.workflowState, workflow)
       : undefined;
   delete nextFields.workflowState;
 
@@ -604,14 +654,19 @@ export async function createBead(
   if (explicitStatus !== undefined) {
     recordCompatStatusConsumed("bd:create-input-status");
   }
-  const workflowState = explicitWorkflowState || (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus) : "open");
-  const compatStatus = explicitStatus ?? mapWorkflowStateToCompatStatus(workflowState, "bd:create");
+  const workflowState =
+    explicitWorkflowState ||
+    (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus, workflow) : workflow.initialState);
+  const compatStatus = explicitStatus ?? deriveWorkflowRuntimeState(workflow, workflowState).compatStatus;
   nextFields.status = compatStatus;
 
   const existingLabels = Array.isArray(nextFields.labels)
     ? nextFields.labels.filter((label): label is string => typeof label === "string")
     : [];
-  nextFields.labels = withWorkflowStateLabel(existingLabels, workflowState);
+  nextFields.labels = withWorkflowProfileLabel(
+    withWorkflowStateLabel(existingLabels, workflowState),
+    workflow.id,
+  );
 
   const args = ["create", "--json"];
   for (const [key, val] of Object.entries(nextFields)) {
@@ -641,11 +696,27 @@ export async function updateBead(
   repoPath?: string
 ): Promise<BdResult<void>> {
   const nextFields: Record<string, string | string[] | number | undefined> = { ...fields };
+  const selectedProfileId =
+    typeof nextFields.profileId === "string"
+      ? nextFields.profileId
+      : typeof nextFields.workflowId === "string"
+        ? nextFields.workflowId
+        : null;
+  delete nextFields.profileId;
   delete nextFields.workflowId;
 
+  const needsCurrentContext = Boolean(selectedProfileId) ||
+    typeof nextFields.workflowState === "string" ||
+    typeof nextFields.status === "string";
+  const current = needsCurrentContext ? await showBead(id, repoPath) : null;
+  if (current && !current.ok) {
+    return { ok: false, error: current.error || "Failed to load bead before update" };
+  }
+
+  const workflow = beadsProfileDescriptor(selectedProfileId ?? current?.data?.profileId);
   const explicitWorkflowState =
     typeof nextFields.workflowState === "string"
-      ? nextFields.workflowState.trim().toLowerCase()
+      ? normalizeStateForWorkflow(nextFields.workflowState, workflow)
       : undefined;
   delete nextFields.workflowState;
 
@@ -655,13 +726,23 @@ export async function updateBead(
   if (explicitStatus !== undefined) {
     recordCompatStatusConsumed("bd:update-input-status");
   }
-  const workflowState = explicitWorkflowState || (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus) : undefined);
-  if (workflowState) {
-    nextFields.status = explicitStatus ?? mapWorkflowStateToCompatStatus(workflowState, "bd:update");
+  const workflowState = explicitWorkflowState ||
+    (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus, workflow) : undefined) ||
+    (selectedProfileId ? normalizeStateForWorkflow(current?.data?.workflowState, workflow) : undefined);
+  if (workflowState || selectedProfileId) {
+    const resolvedState = workflowState ?? workflow.initialState;
+    nextFields.status = explicitStatus ?? deriveWorkflowRuntimeState(workflow, resolvedState).compatStatus;
     const existingLabels = Array.isArray(nextFields.labels)
       ? nextFields.labels.filter((label): label is string => typeof label === "string")
       : [];
-    nextFields.labels = withWorkflowStateLabel(existingLabels, workflowState);
+    const currentLabels = (current?.data?.labels ?? []).filter(
+      (label) => !isStageLabel(label) && !isWorkflowStateLabel(label) && !isWorkflowProfileLabel(label),
+    );
+    const mergedLabels = normalizeLabels([...currentLabels, ...existingLabels]);
+    nextFields.labels = withWorkflowProfileLabel(
+      withWorkflowStateLabel(mergedLabels, resolvedState),
+      workflow.id,
+    );
   }
 
   // Separate label operations from field updates because
@@ -687,10 +768,7 @@ export async function updateBead(
   const normalizedLabelsToAdd = normalizeLabels(labelsToAdd);
   let normalizedLabelsToRemove = normalizeLabels(labelsToRemove);
 
-  // Start field update immediately — don't wait for the stage label check
-  const updatePromise = hasUpdateFields
-    ? exec(args, { cwd: repoPath })
-    : null;
+  let updatePromise: Promise<ExecResult> | null = null;
 
   // Stage labels are mutually exclusive in this workflow. If callers add any
   // stage:* label, automatically remove other current stage:* labels so
@@ -699,8 +777,8 @@ export async function updateBead(
     normalizedLabelsToAdd.some(isStageLabel) ||
     normalizedLabelsToRemove.some(isStageLabel);
   const mutatesWorkflowLabels =
-    normalizedLabelsToAdd.some(isWorkflowStateLabel) ||
-    normalizedLabelsToRemove.some(isWorkflowStateLabel);
+    normalizedLabelsToAdd.some((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label)) ||
+    normalizedLabelsToRemove.some((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label));
   if (mutatesStageLabels || mutatesWorkflowLabels) {
     const current = await showBead(id, repoPath);
     if (!current.ok || !current.data) {
@@ -720,12 +798,17 @@ export async function updateBead(
       ]);
     }
 
-    if (mutatesWorkflowLabels && normalizedLabelsToAdd.some(isWorkflowStateLabel)) {
+    if (
+      mutatesWorkflowLabels &&
+      normalizedLabelsToAdd.some((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label))
+    ) {
       const workflowLabelsToKeep = new Set(
-        normalizedLabelsToAdd.filter(isWorkflowStateLabel)
+        normalizedLabelsToAdd.filter((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label))
       );
       const extraWorkflowLabels = (current.data.labels ?? []).filter(
-        (label) => isWorkflowStateLabel(label) && !workflowLabelsToKeep.has(label)
+        (label) =>
+          (isWorkflowStateLabel(label) || isWorkflowProfileLabel(label)) &&
+          !workflowLabelsToKeep.has(label)
       );
       normalizedLabelsToRemove = normalizeLabels([
         ...normalizedLabelsToRemove,
@@ -733,6 +816,12 @@ export async function updateBead(
       ]);
     }
   }
+
+  // Run field update after label reconciliation context is resolved so
+  // failures cannot leak background retries past an early return.
+  updatePromise = hasUpdateFields
+    ? exec(args, { cwd: repoPath })
+    : null;
 
   // Await field update if started
   if (updatePromise) {

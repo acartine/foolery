@@ -11,7 +11,14 @@ import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type { BackendPort, BackendResult, BeadListFilters } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
-import { beadsCoarseWorkflowDescriptor, mapStatusToDefaultWorkflowState } from "@/lib/workflows";
+import {
+  beadsProfileDescriptor,
+  beadsProfileWorkflowDescriptors,
+  deriveWorkflowRuntimeState,
+  mapStatusToDefaultWorkflowState,
+  withWorkflowProfileLabel,
+  withWorkflowStateLabel,
+} from "@/lib/workflows";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -64,7 +71,7 @@ export class MockBackendPort implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return ok([beadsCoarseWorkflowDescriptor()]);
+    return ok(beadsProfileWorkflowDescriptors());
   }
 
   // -- Read operations ------------------------------------------------------
@@ -133,18 +140,29 @@ export class MockBackendPort implements BackendPort {
   ): Promise<BackendResult<{ id: string }>> {
     const id = nextId();
     const now = isoNow();
+    const workflow = beadsProfileDescriptor(input.profileId ?? input.workflowId);
+    const workflowState = mapStatusToDefaultWorkflowState("open", workflow);
+    const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
     const bead: Bead = {
       id,
       title: input.title,
       description: input.description,
       type: input.type ?? "task",
-      status: "open",
-      compatStatus: "open",
-      workflowId: beadsCoarseWorkflowDescriptor().id,
-      workflowMode: "coarse_human_gated",
-      workflowState: mapStatusToDefaultWorkflowState("open"),
+      status: runtime.compatStatus,
+      compatStatus: runtime.compatStatus,
+      workflowId: workflow.id,
+      profileId: workflow.id,
+      workflowMode: workflow.mode,
+      workflowState: runtime.workflowState,
+      nextActionState: runtime.nextActionState,
+      nextActionOwnerKind: runtime.nextActionOwnerKind,
+      requiresHumanAction: runtime.requiresHumanAction,
+      isAgentClaimable: runtime.isAgentClaimable,
       priority: input.priority ?? 2,
-      labels: input.labels ?? [],
+      labels: withWorkflowProfileLabel(
+        withWorkflowStateLabel(input.labels ?? [], workflowState),
+        workflow.id,
+      ),
       assignee: input.assignee,
       parent: input.parent,
       due: input.due,
@@ -193,7 +211,7 @@ export class MockBackendPort implements BackendPort {
     if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
     bead.status = "closed";
     bead.compatStatus = "closed";
-    bead.workflowState = mapStatusToDefaultWorkflowState("closed");
+    bead.workflowState = mapStatusToDefaultWorkflowState("closed", beadsProfileDescriptor(bead.profileId ?? bead.workflowId));
     bead.closed = isoNow();
     bead.updated = isoNow();
     return { ok: true };

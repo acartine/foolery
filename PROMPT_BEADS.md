@@ -1,6 +1,6 @@
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
 ## Foolery Agent Handoff Contract
-FOOLERY_PROMPT_PROFILE: beads-coarse-human-gated
+FOOLERY_PROMPT_PROFILE: autopilot
 
 This repository uses `bd` (Beads) as the source of truth for work tracking and `foolery` for tracking visibility.
 
@@ -14,7 +14,8 @@ Required workflow:
    `SHORT_SHA=$(git rev-parse --short HEAD)`
 6. Add handoff labels in this order:
    `bd update <id> --add-label commit:$SHORT_SHA`
-   `bd update <id> --add-label wf:state:verification`
+   `bd update <id> --add-label wf:profile:<profile-id>`
+   `bd update <id> --add-label wf:state:<next-queue-state>`
 7. Do **not** close the bead unless explicitly instructed.
 8. Push work to remote before ending session:
    `git pull --rebase && bd sync && git push`
@@ -23,7 +24,8 @@ Required workflow:
 11. **Hand off** - Provide context for next session as handoff capsule in the bead.
 
 Rules:
-- Never add `wf:state:verification` without `commit:<short-sha>`.
+- Use `wf:profile:*` and `wf:state:*` labels for workflow progression; do not rely on legacy `stage:verification` / `stage:retry`.
+- If the next owner is human, stop and leave the bead in the human-action queue state.
 - Keep beads open for verification handoff.
 
 **CRITICAL RULES:**

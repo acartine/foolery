@@ -226,7 +226,12 @@ describe("denormalizeToJsonl", () => {
     expect(raw.issue_type).toBe("feature");
     expect(raw.status).toBe("in_progress");
     expect(raw.priority).toBe(3);
-    expect(raw.labels).toEqual(["frontend", "v2", "wf:state:open"]);
+    expect(raw.labels).toEqual([
+      "frontend",
+      "v2",
+      "wf:state:ready_for_planning",
+      "wf:profile:autopilot",
+    ]);
     expect(raw.assignee).toBe("alice");
     expect(raw.owner).toBe("bob");
     expect(raw.parent).toBe("proj.epic");
@@ -297,7 +302,11 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.type).toBe(domain.type);
     expect(restored.status).toBe(domain.status);
     expect(restored.priority).toBe(domain.priority);
-    expect(restored.labels).toEqual([...domain.labels, "wf:state:in_progress"]);
+    expect(restored.labels).toEqual([
+      ...domain.labels,
+      "wf:state:planning",
+      "wf:profile:autopilot",
+    ]);
     expect(restored.assignee).toBe(domain.assignee);
     expect(restored.owner).toBe(domain.owner);
     expect(restored.parent).toBe(domain.parent);
@@ -320,7 +329,10 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.type).toBe(domain.type);
     expect(restored.status).toBe(domain.status);
     expect(restored.priority).toBe(domain.priority);
-    expect(restored.labels).toEqual(["wf:state:open"]);
+    expect(restored.labels).toEqual([
+      "wf:state:ready_for_planning",
+      "wf:profile:autopilot",
+    ]);
     expect(restored.parent).toBe(domain.parent);
   });
 

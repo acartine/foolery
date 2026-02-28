@@ -14,7 +14,7 @@ import type {
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
 import type { Bead, BeadDependency, MemoryWorkflowDescriptor } from "@/lib/types";
-import { beadsCoarseWorkflowDescriptor } from "@/lib/workflows";
+import { beadsProfileWorkflowDescriptors } from "@/lib/workflows";
 
 // ── Capabilities ──────────────────────────────────────────────
 
@@ -53,7 +53,7 @@ export class StubBackend implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return { ok: true, data: [beadsCoarseWorkflowDescriptor()] };
+    return { ok: true, data: beadsProfileWorkflowDescriptors() };
   }
 
   async list(

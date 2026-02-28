@@ -8,10 +8,12 @@
 import type { Bead, BeadPriority, BeadStatus, BeadType } from "@/lib/types";
 import { recordCompatStatusConsumed } from "@/lib/compat-status-usage";
 import {
-  BEADS_COARSE_WORKFLOW_ID,
+  beadsProfileDescriptor,
+  deriveBeadsProfileId,
   deriveBeadsWorkflowState,
-  mapWorkflowStateToCompatStatus,
+  deriveWorkflowRuntimeState,
   withWorkflowStateLabel,
+  withWorkflowProfileLabel,
 } from "@/lib/workflows";
 
 // ── Raw JSONL record shape ──────────────────────────────────────
@@ -79,11 +81,10 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
   const rawStatus = raw.status ?? "open";
   const status = (VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open") as BeadStatus;
   const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
-  const workflowState = deriveBeadsWorkflowState(status, labels);
-  const compatStatus = mapWorkflowStateToCompatStatus(
-    workflowState,
-    "beads-jsonl-dto:normalize",
-  );
+  const profileId = deriveBeadsProfileId(labels, raw.metadata);
+  const workflow = beadsProfileDescriptor(profileId);
+  const workflowState = deriveBeadsWorkflowState(status, labels, workflow);
+  const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const rawPriority = raw.priority ?? 2;
   const priority = (typeof rawPriority === "number" && rawPriority >= 0 && rawPriority <= 4
     ? rawPriority
@@ -105,11 +106,16 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
     notes: raw.notes,
     acceptance: raw.acceptance_criteria ?? (raw as Record<string, unknown>).acceptance as string | undefined,
     type,
-    status: compatStatus,
-    compatStatus,
-    workflowId: BEADS_COARSE_WORKFLOW_ID,
-    workflowMode: "coarse_human_gated",
-    workflowState,
+    status: runtime.compatStatus,
+    compatStatus: runtime.compatStatus,
+    workflowId: workflow.id,
+    workflowMode: workflow.mode,
+    workflowState: runtime.workflowState,
+    profileId: workflow.id,
+    nextActionState: runtime.nextActionState,
+    nextActionOwnerKind: runtime.nextActionOwnerKind,
+    requiresHumanAction: runtime.requiresHumanAction,
+    isAgentClaimable: runtime.isAgentClaimable,
     priority,
     labels,
     assignee: raw.assignee,
@@ -127,14 +133,18 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
 // ── Denormalize: Domain → JSONL ─────────────────────────────────
 
 export function denormalizeToJsonl(bead: Bead): RawBead {
-  const workflowState = bead.workflowState || "open";
+  const workflow = beadsProfileDescriptor(bead.profileId ?? bead.workflowId);
+  const workflowState = bead.workflowState || workflow.initialState;
   const status = bead.compatStatus
     ? (() => {
         recordCompatStatusConsumed("beads-jsonl-dto:denormalize");
         return bead.compatStatus as BeadStatus;
       })()
-    : bead.status ?? mapWorkflowStateToCompatStatus(workflowState, "beads-jsonl-dto:denormalize-fallback");
-  const labels = withWorkflowStateLabel(bead.labels ?? [], workflowState);
+    : bead.status ?? deriveWorkflowRuntimeState(workflow, workflowState).compatStatus;
+  const labels = withWorkflowProfileLabel(
+    withWorkflowStateLabel(bead.labels ?? [], workflowState),
+    workflow.id,
+  );
   const raw: RawBead = {
     id: bead.id,
     title: bead.title,

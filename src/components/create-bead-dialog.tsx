@@ -59,17 +59,18 @@ export function CreateBeadDialog({
   });
   const workflows: MemoryWorkflowDescriptor[] =
     workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+  const defaultProfileId =
+    workflows.find((workflow) => workflow.id === "autopilot")?.id ??
+    workflows[0]?.id;
 
-  function withSelectedWorkflow(input: CreateBeadInput): CreateBeadInput | null {
-    if (workflows.length <= 1) {
-      if (input.workflowId) return input;
-      if (workflows.length === 1) {
-        return { ...input, workflowId: workflows[0]!.id };
-      }
-      return input;
-    }
-    if (!input.workflowId) return null;
-    return input;
+  function withSelectedProfile(input: CreateBeadInput): CreateBeadInput {
+    const selected = input.profileId ?? input.workflowId ?? defaultProfileId;
+    if (!selected) return input;
+    return {
+      ...input,
+      profileId: selected,
+      workflowId: undefined,
+    };
   }
 
   async function handleSubmit(
@@ -80,11 +81,7 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const payload = withSelectedWorkflow(data);
-      if (!payload) {
-        toast.error("Select a workflow before creating this beat.");
-        return;
-      }
+      const payload = withSelectedProfile(data);
 
       const result = await createBead(payload, repo ?? undefined);
       if (result.ok) {
@@ -123,11 +120,7 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const payload = withSelectedWorkflow(data);
-      if (!payload) {
-        toast.error("Select a workflow before creating this beat.");
-        return;
-      }
+      const payload = withSelectedProfile(data);
 
       const result = await createBead(payload, repo ?? undefined);
       if (result.ok) {
@@ -164,11 +157,7 @@ export function CreateBeadDialog({
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const payload = withSelectedWorkflow(data);
-      if (!payload) {
-        toast.error("Select a workflow before creating this beat.");
-        return;
-      }
+      const payload = withSelectedProfile(data);
 
       const result = await createBead(payload, repo ?? undefined);
       if (!result.ok || !result.data?.id) {
@@ -209,8 +198,8 @@ export function CreateBeadDialog({
           mode="create"
           workflows={workflows}
           defaultValues={{
-            workflowId:
-              workflows.length === 1 ? workflows[0]!.id : undefined,
+            profileId: defaultProfileId,
+            workflowId: undefined,
           }}
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}

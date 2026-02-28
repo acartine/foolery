@@ -353,12 +353,9 @@ describe("buildVerifierPrompt", () => {
       memoryManagerType: "knots",
     });
 
-    expect(prompt).toContain(
-      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --add-tag stage:retry'
-    );
-    expect(prompt).toContain(
-      'knots update "foolery-abc" --remove-tag stage:verification --remove-tag transition:verification --status shipped --force'
-    );
+    expect(prompt).toContain("VERIFICATION_RESULT:fail-requirements");
+    expect(prompt).toContain("VERIFICATION_RESULT:pass");
+    expect(prompt).not.toContain("knots update");
     expect(prompt).not.toContain("bd label remove");
   });
 });

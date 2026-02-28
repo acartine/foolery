@@ -55,14 +55,9 @@ describe("updateBead label transitions", () => {
     });
 
     queueExec(
-      // updateBead starts field updates in parallel before calling showBead.
+      { stdout: beadJson }, // show (context load)
+      { stdout: beadJson }, // show (label reconciliation)
       { stdout: "" }, // update --status
-      { stdout: beadJson }, // show
-      { stdout: "" }, // remove stage:verification
-      { stdout: "" }, // remove attempts:2
-      { stdout: "" }, // add stage:retry
-      { stdout: "" }, // add attempts:3
-      { stdout: "" } // sync
     );
 
     const { updateBead } = await import("@/lib/bd");

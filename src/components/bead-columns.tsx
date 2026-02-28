@@ -318,6 +318,25 @@ function TitleCell({ bead, onTitleClick, onUpdateBead, allLabels, isBuiltForRevi
         <span className="text-muted-foreground text-xs">
           {relativeTime(bead.updated)}
         </span>
+        {bead.profileId && (
+          <span className="inline-flex items-center rounded px-1 py-0 text-[10px] font-medium leading-none bg-emerald-100 text-emerald-700">
+            {bead.profileId}
+          </span>
+        )}
+        {bead.nextActionOwnerKind && bead.nextActionOwnerKind !== "none" && (
+          <span className={`inline-flex items-center rounded px-1 py-0 text-[10px] font-medium leading-none ${
+            bead.nextActionOwnerKind === "human"
+              ? "bg-amber-100 text-amber-700"
+              : "bg-blue-100 text-blue-700"
+          }`}>
+            {bead.nextActionOwnerKind === "human" ? "Human next" : "Agent next"}
+          </span>
+        )}
+        {bead.requiresHumanAction && (
+          <span className="inline-flex items-center rounded px-1 py-0 text-[10px] font-semibold leading-none bg-rose-100 text-rose-700">
+            Human action
+          </span>
+        )}
         {isOrchestrated && (
           <span className="inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none bg-slate-100 text-slate-600">
             <Clapperboard className="size-2.5" />
@@ -580,6 +599,13 @@ export function getBeadColumns(opts: BeadColumnOpts | boolean = false): ColumnDe
         if (bead.status === "closed" || bead.type === "gate") return null;
         // Disable Ship button during auto-verification
         if (isTransitionLocked(bead.labels ?? [])) return null;
+        if (bead.isAgentClaimable === false) {
+          return (
+            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700">
+              Human next
+            </span>
+          );
+        }
         const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
         const hb = bead as unknown as { _hasChildren?: boolean };
         const isParent = hb._hasChildren ?? false;

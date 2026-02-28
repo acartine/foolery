@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { join, resolve } from "node:path";
 import type { BdResult } from "./types";
 
-const KNOTS_BIN = process.env.KNOTS_BIN ?? "knots";
+const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
 const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 5000);
 
@@ -20,6 +20,8 @@ export interface KnotRecord {
   id: string;
   title: string;
   state: string;
+  profile_id?: string;
+  profile_etag?: string | null;
   workflow_id?: string;
   updated_at: string;
   body?: string | null;
@@ -40,6 +42,39 @@ export interface KnotWorkflowDefinition {
   states: string[];
   terminal_states: string[];
   transitions?: Array<{ from: string; to: string }>;
+}
+
+export interface KnotProfileOwners {
+  planning: { kind: "agent" | "human" };
+  plan_review: { kind: "agent" | "human" };
+  implementation: { kind: "agent" | "human" };
+  implementation_review: { kind: "agent" | "human" };
+  shipment: { kind: "agent" | "human" };
+  shipment_review: { kind: "agent" | "human" };
+}
+
+export interface KnotProfileDefinition {
+  id: string;
+  aliases?: string[];
+  description?: string | null;
+  planning_mode?: "required" | "optional" | "skipped";
+  implementation_review_mode?: "required" | "optional" | "skipped";
+  output?: "remote_main" | "pr" | "remote" | "local";
+  owners: KnotProfileOwners;
+  initial_state: string;
+  states: string[];
+  terminal_states: string[];
+  transitions?: Array<{ from: string; to: string }>;
+}
+
+export interface KnotClaimPrompt {
+  id: string;
+  title: string;
+  state: string;
+  profile_id: string;
+  type?: string;
+  priority?: number | null;
+  prompt: string;
 }
 
 export interface KnotEdge {
@@ -126,6 +161,31 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
 
+function workflowToLegacyProfile(workflow: KnotWorkflowDefinition): KnotProfileDefinition {
+  const modeHint = [workflow.id, workflow.description ?? ""].join(" ").toLowerCase();
+  const humanReview = /semiauto|coarse|human|gated/.test(modeHint);
+  return {
+    id: workflow.id,
+    aliases: [],
+    description: workflow.description ?? undefined,
+    planning_mode: "required",
+    implementation_review_mode: "required",
+    output: "remote_main",
+    owners: {
+      planning: { kind: "agent" },
+      plan_review: { kind: humanReview ? "human" : "agent" },
+      implementation: { kind: "agent" },
+      implementation_review: { kind: humanReview ? "human" : "agent" },
+      shipment: { kind: "agent" },
+      shipment_review: { kind: "agent" },
+    },
+    initial_state: workflow.initial_state,
+    states: workflow.states,
+    terminal_states: workflow.terminal_states,
+    transitions: workflow.transitions,
+  };
+}
+
 export async function listKnots(repoPath?: string): Promise<BdResult<KnotRecord[]>> {
   const { stdout, stderr, exitCode } = await exec(["ls", "--json"], { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots ls failed" };
@@ -134,6 +194,43 @@ export async function listKnots(repoPath?: string): Promise<BdResult<KnotRecord[
   } catch {
     return { ok: false, error: "Failed to parse knots ls output" };
   }
+}
+
+export async function listProfiles(repoPath?: string): Promise<BdResult<KnotProfileDefinition[]>> {
+  const primary = await exec(["profile", "list", "--json"], { repoPath });
+  if (primary.exitCode === 0) {
+    try {
+      return { ok: true, data: parseJson<KnotProfileDefinition[]>(primary.stdout) };
+    } catch {
+      return { ok: false, error: "Failed to parse knots profile list output" };
+    }
+  }
+
+  const fallback = await exec(["profile", "ls", "--json"], { repoPath });
+  if (fallback.exitCode === 0) {
+    try {
+      return { ok: true, data: parseJson<KnotProfileDefinition[]>(fallback.stdout) };
+    } catch {
+      return { ok: false, error: "Failed to parse knots profile list output" };
+    }
+  }
+
+  const workflowFallback = await listWorkflows(repoPath);
+  if (!workflowFallback.ok) {
+    return {
+      ok: false,
+      error:
+        fallback.stderr ||
+        primary.stderr ||
+        workflowFallback.error ||
+        "knots profile list failed",
+    };
+  }
+
+  return {
+    ok: true,
+    data: (workflowFallback.data ?? []).map(workflowToLegacyProfile),
+  };
 }
 
 export async function listWorkflows(repoPath?: string): Promise<BdResult<KnotWorkflowDefinition[]>> {
@@ -148,7 +245,10 @@ export async function listWorkflows(repoPath?: string): Promise<BdResult<KnotWor
 
   const fallbackResult = await exec(["workflow", "ls", "--json"], { repoPath });
   if (fallbackResult.exitCode !== 0) {
-    return { ok: false, error: fallbackResult.stderr || listResult.stderr || "knots workflow list failed" };
+    return {
+      ok: false,
+      error: fallbackResult.stderr || listResult.stderr || "knots workflow list failed",
+    };
   }
 
   try {
@@ -170,24 +270,41 @@ export async function showKnot(id: string, repoPath?: string): Promise<BdResult<
 
 export async function newKnot(
   title: string,
-  options?: { body?: string; state?: string; workflow?: string },
+  options?: { description?: string; body?: string; state?: string; profile?: string; workflow?: string },
   repoPath?: string,
 ): Promise<BdResult<{ id: string }>> {
   const args = ["new"];
-  if (options?.body) args.push("--body", options.body);
+  const description = options?.description ?? options?.body;
+  if (description) args.push("--desc", description);
   if (options?.state) args.push("--state", options.state);
-  if (options?.workflow) args.push("--workflow", options.workflow);
+
+  const selectedProfile = options?.profile ?? options?.workflow;
+  if (selectedProfile) args.push("--profile", selectedProfile);
+
   args.push("--", title);
 
   const { stdout, stderr, exitCode } = await exec(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots new failed" };
 
-  const match = /^created\s+(\S+)\s+\[/m.exec(stdout);
+  const match = /^created\s+(\S+)/m.exec(stdout);
   if (!match?.[1]) {
     return { ok: false, error: "Failed to parse knots new output" };
   }
 
   return { ok: true, data: { id: match[1] } };
+}
+
+export async function claimKnot(
+  id: string,
+  repoPath?: string,
+): Promise<BdResult<KnotClaimPrompt>> {
+  const { stdout, stderr, exitCode } = await exec(["claim", id, "--json"], { repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "knots claim failed" };
+  try {
+    return { ok: true, data: parseJson<KnotClaimPrompt>(stdout) };
+  } catch {
+    return { ok: false, error: "Failed to parse knots claim output" };
+  }
 }
 
 export async function updateKnot(

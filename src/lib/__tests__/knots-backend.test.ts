@@ -5,6 +5,7 @@ interface MockKnot {
   id: string;
   title: string;
   state: string;
+  profile_id?: string;
   workflow_id?: string;
   updated_at: string;
   body: string | null;
@@ -60,19 +61,22 @@ const mockShowKnot = vi.fn(async (id: string, _repoPath?: string) => {
 const mockNewKnot = vi.fn(
   async (
     title: string,
-    options?: { body?: string; state?: string; workflow?: string },
+    options?: { body?: string; description?: string; state?: string; profile?: string; workflow?: string },
     _repoPath?: string,
   ) => {
     const id = nextId();
     const now = nowIso();
+    const profileId = options?.profile ?? options?.workflow ?? "autopilot";
+    const description = options?.description ?? options?.body ?? null;
     store.knots.set(id, {
       id,
       title,
-      state: options?.state ?? "work_item",
-      workflow_id: options?.workflow ?? "granular",
+      state: options?.state ?? "ready_for_planning",
+      profile_id: profileId,
+      workflow_id: profileId,
       updated_at: now,
-      body: options?.body ?? null,
-      description: options?.body ?? null,
+      body: description,
+      description,
       priority: null,
       type: null,
       tags: [],
@@ -102,6 +106,59 @@ const mockListWorkflows = vi.fn(async (_repoPath?: string) => {
         initial_state: "work_item",
         states: ["work_item", "implementing", "reviewing", "shipped"],
         terminal_states: ["shipped"],
+      },
+    ],
+  };
+});
+
+const mockListProfiles = vi.fn(async (_repoPath?: string) => {
+  const states = [
+    "ready_for_planning",
+    "planning",
+    "ready_for_plan_review",
+    "plan_review",
+    "ready_for_implementation",
+    "implementation",
+    "ready_for_implementation_review",
+    "implementation_review",
+    "ready_for_shipment",
+    "shipment",
+    "ready_for_shipment_review",
+    "shipment_review",
+    "shipped",
+  ];
+  return {
+    ok: true as const,
+    data: [
+      {
+        id: "autopilot",
+        description: "Fully agent-owned profile",
+        initial_state: "ready_for_planning",
+        states,
+        terminal_states: ["shipped"],
+        owners: {
+          planning: { kind: "agent" as const },
+          plan_review: { kind: "agent" as const },
+          implementation: { kind: "agent" as const },
+          implementation_review: { kind: "agent" as const },
+          shipment: { kind: "agent" as const },
+          shipment_review: { kind: "agent" as const },
+        },
+      },
+      {
+        id: "semiauto",
+        description: "Human-gated reviews profile",
+        initial_state: "ready_for_planning",
+        states,
+        terminal_states: ["shipped"],
+        owners: {
+          planning: { kind: "agent" as const },
+          plan_review: { kind: "human" as const },
+          implementation: { kind: "agent" as const },
+          implementation_review: { kind: "human" as const },
+          shipment: { kind: "agent" as const },
+          shipment_review: { kind: "human" as const },
+        },
       },
     ],
   };
@@ -196,11 +253,15 @@ const mockRemoveEdge = vi.fn(async (src: string, kind: string, dst: string, _rep
 });
 
 vi.mock("@/lib/knots", () => ({
+  listProfiles: (repoPath?: string) => mockListProfiles(repoPath),
   listWorkflows: (repoPath?: string) => mockListWorkflows(repoPath),
   listKnots: (repoPath?: string) => mockListKnots(repoPath),
   showKnot: (id: string, repoPath?: string) => mockShowKnot(id, repoPath),
-  newKnot: (title: string, options?: { body?: string; state?: string; workflow?: string }, repoPath?: string) =>
-    mockNewKnot(title, options, repoPath),
+  newKnot: (
+    title: string,
+    options?: { body?: string; description?: string; state?: string; profile?: string; workflow?: string },
+    repoPath?: string,
+  ) => mockNewKnot(title, options, repoPath),
   updateKnot: (id: string, input: Record<string, unknown>, repoPath?: string) =>
     mockUpdateKnot(id, input, repoPath),
   listEdges: (id: string, direction: "incoming" | "outgoing" | "both" = "both", repoPath?: string) =>

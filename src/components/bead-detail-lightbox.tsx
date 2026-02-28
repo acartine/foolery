@@ -244,7 +244,7 @@ export function BeadDetailLightbox({
                 variant="outline"
                 size="xs"
                 title="Take! — start a session for this beat"
-                disabled={bead.status !== "open" || !onShipBead}
+                disabled={bead.status !== "open" || !onShipBead || bead.isAgentClaimable === false}
                 onClick={() => onShipBead?.(bead)}
               >
                 <Clapperboard className="size-3" />

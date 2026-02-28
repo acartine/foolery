@@ -81,6 +81,11 @@ export function BeadForm(props: BeadFormProps) {
           formErrorMap(form.formState.errors) as Partial<
             Record<keyof CreateBeadInput, { message?: string }>
           >
+        ).profileId?.message ??
+        (
+          formErrorMap(form.formState.errors) as Partial<
+            Record<keyof CreateBeadInput, { message?: string }>
+          >
         ).workflowId?.message
       : undefined;
 
@@ -122,17 +127,20 @@ export function BeadForm(props: BeadFormProps) {
         />
       </FormField>
 
-      {mode === "create" && workflows.length > 1 && (
+      {mode === "create" && workflows.length > 0 && (
         <FormField
-          label="Workflow"
+          label="Profile"
           error={workflowError}
         >
           <Select
-            value={form.watch("workflowId")}
-            onValueChange={(v) => form.setValue("workflowId", v as never)}
+            value={form.watch("profileId") ?? form.watch("workflowId")}
+            onValueChange={(v) => {
+              form.setValue("profileId", v as never);
+              form.setValue("workflowId", undefined as never);
+            }}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select workflow" />
+              <SelectValue placeholder="Select profile" />
             </SelectTrigger>
             <SelectContent>
               {workflows.map((workflow) => (

@@ -77,7 +77,43 @@ const mockListWorkflows = vi.fn(async () => ({
   ],
 }));
 
+const mockListProfiles = vi.fn(async () => ({
+  ok: true as const,
+  data: [
+    {
+      id: "autopilot",
+      description: "Fully agent-owned profile",
+      initial_state: "ready_for_planning",
+      states: [
+        "ready_for_planning",
+        "planning",
+        "ready_for_plan_review",
+        "plan_review",
+        "ready_for_implementation",
+        "implementation",
+        "ready_for_implementation_review",
+        "implementation_review",
+        "ready_for_shipment",
+        "shipment",
+        "ready_for_shipment_review",
+        "shipment_review",
+        "shipped",
+      ],
+      terminal_states: ["shipped"],
+      owners: {
+        planning: { kind: "agent" as const },
+        plan_review: { kind: "agent" as const },
+        implementation: { kind: "agent" as const },
+        implementation_review: { kind: "agent" as const },
+        shipment: { kind: "agent" as const },
+        shipment_review: { kind: "agent" as const },
+      },
+    },
+  ],
+}));
+
 vi.mock("@/lib/knots", () => ({
+  listProfiles: () => mockListProfiles(),
   listWorkflows: () => mockListWorkflows(),
   listKnots: () => mockListKnots(),
   showKnot: vi.fn(async () => ({ ok: false, error: "not found" })),

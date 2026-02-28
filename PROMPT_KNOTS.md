@@ -1,29 +1,31 @@
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
 ## Foolery Agent Handoff Contract
-FOOLERY_PROMPT_PROFILE: knots-granular-autonomous
+FOOLERY_PROMPT_PROFILE: autopilot
 
-This repository uses `knots` as the source of truth for work tracking and `foolery` for tracking visibility.
+This repository uses `kno` (Knots) as the source of truth for work tracking and `foolery` for tracking visibility.
 
 Required workflow:
-1. Pick a knot and inspect scope with `knots show <id>`.
-2. Before any code/doc/commit, move to active state:
-   `knots update <id> --status implementing`
-3. Implement and validate changes in a dedicated git worktree.
+1. Pick a knot and inspect scope with `kno show <id>`.
+2. Claim the knot before implementation:
+   `kno claim <id> --json`
+3. Follow the returned `prompt` field verbatim and run the completion command from that claim output.
 4. **Run quality gates** (if code changed) - Tests, linters, builds
 5. Commit and capture short hash:
    `SHORT_SHA=$(git rev-parse --short HEAD)`
-6. Add handoff tags in this order:
-   `knots update <id> --add-tag commit:$SHORT_SHA`
-   `knots update <id> --status reviewing`
+6. Add handoff metadata in this order:
+   `kno update <id> --add-tag commit:$SHORT_SHA`
+   `kno update <id> --add-handoff-capsule "<summary>"`
 7. Do **not** close the knot unless explicitly instructed.
 8. Push work to remote before ending session:
-   `git pull --rebase && knots sync && git push`
+   `git pull --rebase && kno sync && git push`
 9. **Clean up** - Clear stashes, worktrees, prune remote branches
 10. **Verify** - All changes committed AND pushed
 11. **Hand off** - Provide context for next session as handoff capsule on the knot.
 
 Rules:
-- Never move to `reviewing` without `commit:<short-sha>`.
+- Never skip `kno claim <id>` before implementation.
+- Never run manual multi-state transitions for a claimed knot.
+- Stop working on a knot immediately after the claim-provided completion command succeeds.
 - Keep knots open for verification handoff.
 
 **CRITICAL RULES:**

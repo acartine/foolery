@@ -15,6 +15,7 @@ import {
 } from "@/lib/agent-adapter";
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
+  buildClaimCommand,
   buildShowIssueCommand,
   buildWorkflowStateCommand,
   resolveMemoryManagerType,
@@ -113,7 +114,7 @@ function buildCoarsePolicyLines(policy: CoarsePrPreference): string[] {
     case "soft_required":
       return [
         "PR policy: soft-required.",
-        "Open a PR before moving to Final Cut. If impossible, explicitly state why and continue only with that explicit exception.",
+        "Open a PR before handing off to the required human-action queue. If impossible, explicitly state why and continue only with that explicit exception.",
       ];
     case "preferred":
       return [
@@ -178,10 +179,10 @@ function buildSingleTargetFollowUpLines(
   lines.push(...buildCoarsePolicyLines(coarsePrPolicy));
   lines.push("Human review is required: either review manually or delegate review to an agent.");
   if (target.workflow.finalCutState) {
-    lines.push("After merge/PR handling, move bead to Final Cut:");
+    lines.push("After merge/PR handling, move bead to the next human-action queue:");
     lines.push(`- ${buildWorkflowStateCommand(target.id, target.workflow.finalCutState, memoryManagerType)}`);
   } else {
-    lines.push("This workflow does not define a Final Cut state.");
+    lines.push("This workflow does not define a human-action queue state.");
   }
   return lines;
 }
@@ -234,6 +235,34 @@ function buildSceneCompletionFollowUp(
     memoryManagerType,
     coarsePolicyByWorkflowId,
   );
+}
+
+function buildKnotsClaimModeLines(
+  beadIds: string[],
+  memoryManagerType: MemoryManagerType,
+): string[] {
+  if (memoryManagerType !== "knots") return [];
+  const ids = beadIds.length > 0 ? beadIds : ["<id>"];
+  const lines: string[] = [
+    "KNOTS CLAIM MODE (required):",
+    "Always claim a knot before implementation and follow the claim output verbatim.",
+  ];
+  for (const id of ids) {
+    lines.push(`- Run \`${buildClaimCommand(id, memoryManagerType)}\` first.`);
+    lines.push(`- Use the returned \`prompt\` field as the source of truth for ${id}.`);
+    lines.push(`- Run the completion command from that claim output, then stop work on ${id}.`);
+  }
+  lines.push("- Do not guess or brute-force workflow transitions outside the claim output.");
+  return lines;
+}
+
+function assertKnotsClaimable(beads: Bead[], action: "Take" | "Scene"): void {
+  const blocked = beads.filter((bead) => bead.isAgentClaimable === false);
+  if (blocked.length === 0) return;
+  const summary = blocked
+    .map((bead) => `${bead.id}${bead.workflowState ? ` (${bead.workflowState})` : ""}`)
+    .join(", ");
+  throw new Error(`${action} unavailable: knot is not agent-claimable (${summary})`);
 }
 
 function resolveWorkflowForBead(
@@ -488,6 +517,9 @@ export async function createSession(
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
+  if (memoryManagerType === "knots") {
+    assertKnotsClaimable(isParent ? waveBeats : [bead], isParent ? "Scene" : "Take");
+  }
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
@@ -535,6 +567,7 @@ export async function createSession(
             ? `Open child bead IDs:\n${waveBeatIds.map((id) => `- ${id}`).join("\n")}`
             : "Open child bead IDs: (none loaded)",
           `Use \`${showSelfCommand}\` and \`${showChildCommand}\` to inspect full details before starting.`,
+          ...buildKnotsClaimModeLines(waveBeatIds.length > 0 ? waveBeatIds : [bead.id], memoryManagerType),
         ]
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
@@ -549,6 +582,7 @@ export async function createSession(
           ``,
           `Bead ID: ${bead.id}`,
           `Use \`${showSelfCommand}\` to inspect full details before starting.`,
+          ...buildKnotsClaimModeLines([bead.id], memoryManagerType),
         ]
     )
       .filter(Boolean)
@@ -655,6 +689,8 @@ export async function createSession(
     ? null
     : customPrompt
       ? null
+      : memoryManagerType === "knots"
+        ? null
       : isParent
         ? buildWaveCompletionFollowUp(
           bead.id,
@@ -984,6 +1020,9 @@ export async function createSceneSession(
   const id = generateId();
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
+  if (memoryManagerType === "knots") {
+    assertKnotsClaimable(beads, "Scene");
+  }
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
@@ -1027,15 +1066,23 @@ export async function createSceneSession(
       `3. Use the Task tool to spawn subagents for independent beads to maximize parallelism.`,
       `4. Each subagent must run in a dedicated git worktree on an isolated short-lived branch.`,
       `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-      `6. For each bead, once merge/push is confirmed, apply workflow transitions according to its assigned workflow:`,
-      ...sceneTargets.flatMap((target) =>
-        buildSingleTargetFollowUpLines(
-          target,
-          memoryManagerType,
-          coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
-        )
-      ),
-      `7. In your final summary, report per bead: merged yes/no, pushed yes/no, workflow command result, and PR/review status when applicable.`,
+      ...(memoryManagerType === "knots"
+        ? [
+            "6. Claim each knot before implementation and execute only the returned claim prompt.",
+            ...buildKnotsClaimModeLines(beadIds, memoryManagerType),
+            "7. In your final summary, report per knot: claim command status, completion command status, and any remaining human-action gates.",
+          ]
+        : [
+            "6. For each bead, once merge/push is confirmed, apply workflow transitions according to its assigned workflow:",
+            ...sceneTargets.flatMap((target) =>
+              buildSingleTargetFollowUpLines(
+                target,
+                memoryManagerType,
+                coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
+              )
+            ),
+            "7. In your final summary, report per bead: merged yes/no, pushed yes/no, workflow command result, and PR/review status when applicable.",
+          ]),
       ``,
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
@@ -1140,6 +1187,8 @@ export async function createSceneSession(
     ? null
     : customPrompt
       ? null
+      : memoryManagerType === "knots"
+        ? null
       : buildSceneCompletionFollowUp(
         sceneTargets,
         memoryManagerType,
