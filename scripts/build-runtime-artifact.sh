@@ -55,6 +55,7 @@ main() {
   version="${FOOLERY_VERSION:-${GITHUB_REF_NAME:-$(git -C "$ROOT_DIR" rev-parse --short HEAD)}}"
   artifact_name="${ARTIFACT_BASENAME}-${os}-${arch}.tar.gz"
   artifact_path="$DIST_DIR/$artifact_name"
+  log "Packaging runtime from commit $version"
 
   log "Installing dependencies"
   (

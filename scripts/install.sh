@@ -91,6 +91,7 @@ PORT="\${FOOLERY_PORT:-3210}"
 NEXT_BIN="\${FOOLERY_NEXT_BIN:-\$APP_DIR/node_modules/next/dist/bin/next}"
 LOG_DIR="\${FOOLERY_LOG_DIR:-\$STATE_DIR/logs}"
 PID_FILE="\${FOOLERY_PID_FILE:-\$STATE_DIR/foolery.pid}"
+LEGACY_PID_FILE="\${FOOLERY_LEGACY_PID_FILE:-\$STATE_DIR/run.pid}"
 STDOUT_LOG="\${FOOLERY_STDOUT_LOG:-\$LOG_DIR/stdout.log}"
 STDERR_LOG="\${FOOLERY_STDERR_LOG:-\$LOG_DIR/stderr.log}"
 NO_BROWSER="\${FOOLERY_NO_BROWSER:-0}"
@@ -138,18 +139,75 @@ ensure_runtime() {
   fi
 }
 
-read_pid() {
-  if [[ ! -f "\$PID_FILE" ]]; then
+read_pid_from_file() {
+  local file="\$1"
+  if [[ ! -f "\$file" ]]; then
     return 1
   fi
-
   local pid
-  pid="\$(tr -d '[:space:]' <"\$PID_FILE")"
+  pid="\$(tr -d '[:space:]' <"\$file")"
   if [[ ! "\$pid" =~ ^[0-9]+$ ]]; then
     return 1
   fi
 
   printf '%s\n' "\$pid"
+}
+
+write_pid() {
+  local pid="\$1"
+  printf '%s\n' "\$pid" >"\$PID_FILE"
+  if [[ -f "\$LEGACY_PID_FILE" ]]; then
+    rm -f "\$LEGACY_PID_FILE"
+  fi
+}
+
+read_pid() {
+  local pid
+  pid="\$(read_pid_from_file "\$PID_FILE" || true)"
+  if [[ -z "\$pid" ]]; then
+    pid="\$(read_pid_from_file "\$LEGACY_PID_FILE" || true)"
+    if [[ -n "\$pid" ]]; then
+      write_pid "\$pid"
+    fi
+  fi
+  if [[ -z "\$pid" ]]; then
+    return 1
+  fi
+  printf '%s\n' "\$pid"
+}
+
+read_listen_pid() {
+  if ! command -v lsof >/dev/null 2>&1; then
+    return 1
+  fi
+  local pid
+  pid="\$(lsof -nP -iTCP:"\$PORT" -sTCP:LISTEN -t 2>/dev/null | head -n 1)"
+  if [[ ! "\$pid" =~ ^[0-9]+$ ]]; then
+    return 1
+  fi
+  printf '%s\n' "\$pid"
+}
+
+looks_like_foolery_pid() {
+  local pid="\$1"
+  local cmdline
+  cmdline="\$(ps -p "\$pid" -o command= 2>/dev/null || true)"
+  if [[ -z "\$cmdline" ]]; then
+    return 1
+  fi
+  [[ "\$cmdline" == *"next-server"* || "\$cmdline" == *"/next/dist/bin/next"* || "\$cmdline" == *"\$NEXT_BIN"* ]]
+}
+
+adopt_listening_pid() {
+  local listen_pid
+  if ! listen_pid="\$(read_listen_pid)"; then
+    return 1
+  fi
+  if ! looks_like_foolery_pid "\$listen_pid"; then
+    return 1
+  fi
+  write_pid "\$listen_pid"
+  return 0
 }
 
 is_running() {
@@ -164,6 +222,18 @@ is_running() {
 clear_stale_pid() {
   if [[ -f "\$PID_FILE" ]] && ! is_running; then
     rm -f "\$PID_FILE"
+  fi
+  if [[ -f "\$LEGACY_PID_FILE" ]] && [[ ! -f "\$PID_FILE" ]]; then
+    local legacy_pid
+    legacy_pid="\$(read_pid_from_file "\$LEGACY_PID_FILE" || true)"
+    if [[ -n "\$legacy_pid" ]] && kill -0 "\$legacy_pid" >/dev/null 2>&1; then
+      write_pid "\$legacy_pid"
+    else
+      rm -f "\$LEGACY_PID_FILE"
+    fi
+  fi
+  if [[ ! -f "\$PID_FILE" ]]; then
+    adopt_listening_pid >/dev/null 2>&1 || true
   fi
 }
 
@@ -442,11 +512,22 @@ start_cmd() {
     return 0
   fi
 
+  local listen_pid
+  if listen_pid="\$(read_listen_pid)"; then
+    if looks_like_foolery_pid "\$listen_pid"; then
+      write_pid "\$listen_pid"
+      log "Detected existing Foolery server (pid \$listen_pid) at \$URL"
+      open_browser
+      return 0
+    fi
+    fail "Port \$PORT is already in use by pid \$listen_pid. Stop that process or set FOOLERY_PORT to another port."
+  fi
+
   log "Starting Foolery on \$URL"
   (
     cd "\$APP_DIR"
     nohup env NODE_ENV=production node "\$NEXT_BIN" start --hostname "\$HOST" --port "\$PORT" >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
-    echo \$! >"\$PID_FILE"
+    write_pid \$!
   )
 
   local pid
@@ -477,19 +558,28 @@ start_cmd() {
 stop_cmd() {
   clear_stale_pid
   if ! is_running; then
+    local listen_pid
+    if listen_pid="\$(read_listen_pid)" && looks_like_foolery_pid "\$listen_pid"; then
+      write_pid "\$listen_pid"
+    else
+      log "Foolery is not running."
+      return 0
+    fi
+  fi
+
+  local pid
+  if ! pid="\$(read_pid)"; then
     log "Foolery is not running."
     return 0
   fi
 
-  local pid
-  pid="\$(read_pid)"
   log "Stopping Foolery (pid \$pid)"
   kill "\$pid" >/dev/null 2>&1 || true
 
   local attempts=20
   while ((attempts > 0)); do
     if ! kill -0 "\$pid" >/dev/null 2>&1; then
-      rm -f "\$PID_FILE"
+      rm -f "\$PID_FILE" "\$LEGACY_PID_FILE"
       log "Stopped."
       return 0
     fi
@@ -499,7 +589,7 @@ stop_cmd() {
 
   log "Process did not stop gracefully; forcing kill."
   kill -9 "\$pid" >/dev/null 2>&1 || true
-  rm -f "\$PID_FILE"
+  rm -f "\$PID_FILE" "\$LEGACY_PID_FILE"
   log "Stopped."
 }
 
@@ -1253,11 +1343,19 @@ main() {
   log "Writing launcher to $LAUNCHER_PATH"
   write_launcher
 
+  local existing_pid=""
   if [[ -f "$STATE_DIR/foolery.pid" ]]; then
-    local existing_pid
     existing_pid="$(tr -d '[:space:]' <"$STATE_DIR/foolery.pid" || true)"
-    if [[ "$existing_pid" =~ ^[0-9]+$ ]] && kill -0 "$existing_pid" >/dev/null 2>&1; then
-      warn "Foolery is already running (pid $existing_pid). Run 'foolery restart' to pick up the new runtime."
+  elif [[ -f "$STATE_DIR/run.pid" ]]; then
+    existing_pid="$(tr -d '[:space:]' <"$STATE_DIR/run.pid" || true)"
+  fi
+  if [[ "$existing_pid" =~ ^[0-9]+$ ]] && kill -0 "$existing_pid" >/dev/null 2>&1; then
+    warn "Foolery is already running (pid $existing_pid). Run 'foolery restart' to pick up the new runtime."
+  elif command -v lsof >/dev/null 2>&1; then
+    local existing_port_pid=""
+    existing_port_pid="$(lsof -nP -iTCP:3210 -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
+    if [[ "$existing_port_pid" =~ ^[0-9]+$ ]]; then
+      warn "Port 3210 is already in use (pid $existing_port_pid). Run 'foolery stop' or free the port before restart."
     fi
   fi
 
