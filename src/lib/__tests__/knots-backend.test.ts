@@ -357,6 +357,123 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(fetched.data?.parent).toBe(parent.data!.id);
   });
 
+  it("infers parent from hierarchical dotted id when parent_of edge is missing", async () => {
+    const now = nowIso();
+    store.knots.set("foolery-g3y1", {
+      id: "foolery-g3y1",
+      title: "Parent",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "epic",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-parent",
+      created_at: now,
+    });
+    store.knots.set("foolery-g3y1.6.4", {
+      id: "foolery-g3y1.6.4",
+      title: "Leaf",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-leaf",
+      created_at: now,
+    });
+    store.knots.set("foolery-g3y1.6", {
+      id: "foolery-g3y1.6",
+      title: "Intermediate",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-mid",
+      created_at: now,
+    });
+
+    const backend = new KnotsBackend("/repo");
+    const listed = await backend.list();
+    expect(listed.ok).toBe(true);
+
+    const leaf = listed.data?.find((knot) => knot.id === "foolery-g3y1.6.4");
+    const intermediate = listed.data?.find((knot) => knot.id === "foolery-g3y1.6");
+    expect(leaf?.parent).toBe("foolery-g3y1.6");
+    expect(intermediate?.parent).toBe("foolery-g3y1");
+  });
+
+  it("keeps list resilient when per-knot edge lookup fails", async () => {
+    const now = nowIso();
+    store.knots.set("foolery-g3y1", {
+      id: "foolery-g3y1",
+      title: "Parent",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "epic",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-parent",
+      created_at: now,
+    });
+    store.knots.set("foolery-g3y1.1", {
+      id: "foolery-g3y1.1",
+      title: "Child",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-child",
+      created_at: now,
+    });
+
+    mockListEdges.mockImplementationOnce(
+      async () =>
+        ({
+          ok: false as const,
+          error: "knots command timed out after 20000ms",
+        }) as never,
+    );
+
+    const backend = new KnotsBackend("/repo");
+    const listed = await backend.list();
+    expect(listed.ok).toBe(true);
+
+    const child = listed.data?.find((knot) => knot.id === "foolery-g3y1.1");
+    expect(child?.parent).toBe("foolery-g3y1");
+  });
+
   it("returns INVALID_INPUT for delete", async () => {
     const backend = new KnotsBackend("/repo");
     const result = await backend.delete("K-unknown");

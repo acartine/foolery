@@ -196,6 +196,26 @@ function parentFromEdges(id: string, edges: KnotEdge[]): string | undefined {
   return parentEdge?.src;
 }
 
+function parentFromHierarchicalId(
+  id: string,
+  knownIds: ReadonlySet<string>,
+): string | undefined {
+  let cursor = id;
+  while (cursor.includes(".")) {
+    cursor = cursor.slice(0, cursor.lastIndexOf("."));
+    if (knownIds.has(cursor)) return cursor;
+  }
+  return undefined;
+}
+
+function deriveParentId(
+  id: string,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+): string | undefined {
+  return parentFromEdges(id, edges) ?? parentFromHierarchicalId(id, knownIds);
+}
+
 function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
   return edges.some((edge) => edge.kind === "blocked_by" && edge.src === id);
 }
@@ -290,6 +310,7 @@ function normalizeProfileId(value: string | null | undefined): string | null {
 function toBead(
   knot: KnotRecord,
   edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): Bead {
   const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
@@ -315,7 +336,7 @@ function toBead(
       priority: normalizePriority(knot.priority),
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       notes: stringifyNotes(knot.notes),
-      parent: parentFromEdges(knot.id, edges),
+      parent: deriveParentId(knot.id, edges, knownIds),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
       metadata: {
@@ -351,7 +372,7 @@ function toBead(
     priority: normalizePriority(knot.priority),
     labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
     notes,
-    parent: parentFromEdges(knot.id, edges),
+    parent: deriveParentId(knot.id, edges, knownIds),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: runtime.compatStatus === "closed" ? knot.updated_at : undefined,
@@ -533,18 +554,25 @@ export class KnotsBackend implements BackendPort {
     if (!listResult.ok) return propagateError<Bead[]>(listResult);
 
     const records = listResult.data ?? [];
+    const knownIds = new Set(records.map((record) => record.id));
     const edgeResults = await Promise.all(
       records.map(async (record) => [record.id, await this.getEdgesForId(record.id, repoPath)] as const),
     );
 
     const edgesById = new Map<string, KnotEdge[]>();
     for (const [id, edgeResult] of edgeResults) {
-      if (!edgeResult.ok) return propagateError<Bead[]>(edgeResult);
+      if (!edgeResult.ok) {
+        // Keep list/search resilient when edge lookups are transiently unavailable.
+        // Hierarchy can still be inferred from dotted IDs, and detail/dependency paths
+        // continue to fetch precise edges on demand.
+        edgesById.set(id, []);
+        continue;
+      }
       edgesById.set(id, edgeResult.data ?? []);
     }
 
     const beads = records.map((record) =>
-      toBead(record, edgesById.get(record.id) ?? [], workflowMap),
+      toBead(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
     );
     return ok(beads);
   }
@@ -632,7 +660,7 @@ export class KnotsBackend implements BackendPort {
     const workflowMapResult = await this.workflowMapByProfileId(rp);
     if (!workflowMapResult.ok) return propagateError<Bead>(workflowMapResult);
 
-    return ok(toBead(knotResult.data!, edgesResult.data ?? [], workflowMapResult.data ?? new Map()));
+    return ok(toBead(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
   }
 
   async create(

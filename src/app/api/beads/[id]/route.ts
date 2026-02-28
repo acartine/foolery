@@ -106,7 +106,9 @@ export async function PATCH(
   }
 
   // Enforce edit lock: reject mutations when transition:verification is active
-  const current = await getBackend().get(id, repoPath);
+  const backend = getBackend();
+  const current = await backend.get(id, repoPath);
+  const canonicalId = current.ok && current.data ? current.data.id : id;
   if (current.ok && current.data) {
     const labels = current.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
@@ -117,7 +119,7 @@ export async function PATCH(
     }
   }
 
-  const result = await getBackend().update(id, parsed.data, repoPath);
+  const result = await backend.update(canonicalId, parsed.data, repoPath);
   if (!result.ok) {
     return NextResponse.json(
       { error: result.error?.message },
@@ -125,6 +127,7 @@ export async function PATCH(
     );
   }
   clearCachedDetail(id, repoPath);
+  if (canonicalId !== id) clearCachedDetail(canonicalId, repoPath);
 
   // Regroom ancestors when a bead leaves verification state.
   const transitionedOutOfVerification =
@@ -132,8 +135,8 @@ export async function PATCH(
     parsed.data.workflowState.trim().toLowerCase() !== "verification";
   if (transitionedOutOfVerification) {
     // Fire-and-forget: don't block the HTTP response on ancestor regroom
-    regroomAncestors(id, repoPath).catch((err) =>
-      console.error(`[regroom] background error for ${id}:`, err)
+    regroomAncestors(canonicalId, repoPath).catch((err) =>
+      console.error(`[regroom] background error for ${canonicalId}:`, err)
     );
   }
 
@@ -148,7 +151,9 @@ export async function DELETE(
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
 
   // Enforce edit lock: reject deletes when transition:verification is active
-  const currentBead = await getBackend().get(id, repoPath);
+  const backend = getBackend();
+  const currentBead = await backend.get(id, repoPath);
+  const canonicalId = currentBead.ok && currentBead.data ? currentBead.data.id : id;
   if (currentBead.ok && currentBead.data) {
     const labels = currentBead.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
@@ -159,7 +164,7 @@ export async function DELETE(
     }
   }
 
-  const result = await getBackend().delete(id, repoPath);
+  const result = await backend.delete(canonicalId, repoPath);
   if (!result.ok) {
     return NextResponse.json(
       { error: result.error?.message },
@@ -167,5 +172,6 @@ export async function DELETE(
     );
   }
   clearCachedDetail(id, repoPath);
+  if (canonicalId !== id) clearCachedDetail(canonicalId, repoPath);
   return NextResponse.json({ ok: true });
 }

@@ -11,6 +11,7 @@ export async function POST(
   const { id } = await params;
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
+  const backend = getBackend();
   const parsed = closeBeadSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
@@ -18,7 +19,10 @@ export async function POST(
       { status: 400 }
     );
   }
-  const result = await getBackend().close(id, parsed.data.reason, repoPath);
+
+  const current = await backend.get(id, repoPath);
+  const canonicalId = current.ok && current.data ? current.data.id : id;
+  const result = await backend.close(canonicalId, parsed.data.reason, repoPath);
   if (!result.ok) {
     return NextResponse.json(
       { error: result.error?.message },
@@ -27,7 +31,7 @@ export async function POST(
   }
 
   // Auto-close ancestors whose children are all closed
-  await regroomAncestors(id, repoPath);
+  await regroomAncestors(canonicalId, repoPath);
 
   return NextResponse.json({ ok: true });
 }

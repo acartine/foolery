@@ -4,7 +4,7 @@ import type { BdResult } from "./types";
 
 const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
-const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 5000);
+const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 20000);
 
 interface ExecResult {
   stdout: string;
@@ -187,10 +187,24 @@ function workflowToLegacyProfile(workflow: KnotWorkflowDefinition): KnotProfileD
 }
 
 export async function listKnots(repoPath?: string): Promise<BdResult<KnotRecord[]>> {
-  const { stdout, stderr, exitCode } = await exec(["ls", "--json"], { repoPath });
-  if (exitCode !== 0) return { ok: false, error: stderr || "knots ls failed" };
+  const withAll = await exec(["ls", "--all", "--json"], { repoPath });
+  if (withAll.exitCode === 0) {
+    try {
+      return { ok: true, data: parseJson<KnotRecord[]>(withAll.stdout) };
+    } catch {
+      return { ok: false, error: "Failed to parse knots ls output" };
+    }
+  }
+
+  const fallback = await exec(["ls", "--json"], { repoPath });
+  if (fallback.exitCode !== 0) {
+    return {
+      ok: false,
+      error: fallback.stderr || withAll.stderr || "knots ls failed",
+    };
+  }
   try {
-    return { ok: true, data: parseJson<KnotRecord[]>(stdout) };
+    return { ok: true, data: parseJson<KnotRecord[]>(fallback.stdout) };
   } catch {
     return { ok: false, error: "Failed to parse knots ls output" };
   }
