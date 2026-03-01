@@ -1,6 +1,6 @@
 # Foolery Agent Memory Contract
 
-This tutorial defines how Foolery talks to an agent-memory backend (Beads today, others later) and shows exactly how to implement one.
+This tutorial defines how Foolery talks to an agent-memory backend and shows exactly how to implement one. Foolery currently ships two production backends: Beads (`bd`) and Knots (`kno`). Both are fully supported and selected automatically per repository based on memory manager marker detection (`.beads` or `.knots`).
 
 ## What This Contract Does
 
@@ -20,14 +20,16 @@ Every backend must implement this interface.
 
 ```ts
 export interface BackendPort {
-  list(filters?: BeadListFilters, repoPath?: string): Promise<BackendResult<Bead[]>>;
-  listReady(filters?: BeadListFilters, repoPath?: string): Promise<BackendResult<Bead[]>>;
-  search(query: string, filters?: BeadListFilters, repoPath?: string): Promise<BackendResult<Bead[]>>;
-  query(expression: string, options?: BeadQueryOptions, repoPath?: string): Promise<BackendResult<Bead[]>>;
-  get(id: string, repoPath?: string): Promise<BackendResult<Bead>>;
+  listWorkflows(repoPath?: string): Promise<BackendResult<MemoryWorkflowDescriptor[]>>;
 
-  create(input: CreateBeadInput, repoPath?: string): Promise<BackendResult<{ id: string }>>;
-  update(id: string, input: UpdateBeadInput, repoPath?: string): Promise<BackendResult<void>>;
+  list(filters?: BeatListFilters, repoPath?: string): Promise<BackendResult<Beat[]>>;
+  listReady(filters?: BeatListFilters, repoPath?: string): Promise<BackendResult<Beat[]>>;
+  search(query: string, filters?: BeatListFilters, repoPath?: string): Promise<BackendResult<Beat[]>>;
+  query(expression: string, options?: BeatQueryOptions, repoPath?: string): Promise<BackendResult<Beat[]>>;
+  get(id: string, repoPath?: string): Promise<BackendResult<Beat>>;
+
+  create(input: CreateBeatInput, repoPath?: string): Promise<BackendResult<{ id: string }>>;
+  update(id: string, input: UpdateBeatInput, repoPath?: string): Promise<BackendResult<void>>;
   delete(id: string, repoPath?: string): Promise<BackendResult<void>>;
   close(id: string, reason?: string, repoPath?: string): Promise<BackendResult<void>>;
 
@@ -35,9 +37,19 @@ export interface BackendPort {
     id: string,
     repoPath?: string,
     options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>>;
+  ): Promise<BackendResult<BeatDependency[]>>;
   addDependency(blockerId: string, blockedId: string, repoPath?: string): Promise<BackendResult<void>>;
   removeDependency(blockerId: string, blockedId: string, repoPath?: string): Promise<BackendResult<void>>;
+
+  buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>>;
+  buildPollPrompt(
+    options?: PollPromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>>;
 }
 ```
 
@@ -137,14 +149,16 @@ export function createBackend(type: BackendType = "auto"): BackendEntry {
 With `type: "auto"`, backend selection is resolved per repo by marker detection:
 `.knots` routes to Knots, `.beads` routes to Beads/CLI, and `.knots` wins when both exist.
 
-## 5. Implementation Example: `BeadsBackend` (JSONL)
+## 5. Implementation Examples
 
-Reference implementation:
+Two reference implementations are available:
 
-- [src/lib/backends/beads-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/beads-backend.ts)
-- [src/lib/backends/knots-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/knots-backend.ts)
+- **Beads** (JSONL): [src/lib/backends/beads-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/beads-backend.ts)
+- **Knots** (CLI adapter): [src/lib/backends/knots-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/knots-backend.ts)
 
-Capability declaration:
+Knots state mapping is codified in [src/lib/knots-compat.ts](https://github.com/acartine/foolery/blob/main/src/lib/knots-compat.ts), which provides bidirectional status maps (`KNOTS_TO_FOOLERY_STATUS` / `FOOLERY_TO_KNOTS_STATUS`), edge kind constants, and metadata key registries. See [docs/adr-knots-compatibility.md](https://github.com/acartine/foolery/blob/main/docs/adr-knots-compatibility.md) for the compatibility decisions behind these mappings.
+
+### Beads capabilities
 
 ```ts
 export const BEADS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
@@ -158,6 +172,26 @@ export const BEADS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
   canManageDependencies: true,
   canManageLabels: true,
   canSync: false,
+  maxConcurrency: 1,
+});
+```
+
+### Knots capabilities
+
+Knots supports everything except `canDelete`, and adds `canSync`:
+
+```ts
+export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
+  canCreate: true,
+  canUpdate: true,
+  canDelete: false,
+  canClose: true,
+  canSearch: true,
+  canQuery: true,
+  canListReady: true,
+  canManageDependencies: true,
+  canManageLabels: true,
+  canSync: true,
   maxConcurrency: 1,
 });
 ```
@@ -286,9 +320,9 @@ bun run build
 
 ## Backend Author Checklist
 
-- [ ] `BackendPort` fully implemented
+- [ ] `BackendPort` fully implemented (including `listWorkflows`, `buildTakePrompt`, `buildPollPrompt`)
 - [ ] Error codes and retryability are standardized
-- [ ] Capabilities declared accurately
+- [ ] Capabilities declared accurately (note: not all backends support all capabilities)
 - [ ] Factory + singleton wiring updated
 - [ ] Memory manager detection/metadata updated (if needed)
 - [ ] Contract test harness passes

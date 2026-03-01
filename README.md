@@ -85,7 +85,7 @@ Foolery is a local web UI that sits on top of local memory managers ([Beads](htt
 
 **Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), plus at least one supported memory manager CLI:
 - [Beads](https://github.com/steveyegge/beads) (`bd`)
-- Knots (`knots`)
+- Knots (`kno`)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash

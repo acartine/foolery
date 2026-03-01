@@ -45,10 +45,14 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  TakePromptOptions,
+  TakePromptResult,
+  PollPromptOptions,
+  PollPromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
-import type { Beat, BeatDependency } from "@/lib/types";
+import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 
 export class MyBackend implements BackendPort {
   readonly capabilities: BackendCapabilities = MY_CAPABILITIES;
@@ -143,6 +147,28 @@ export class MyBackend implements BackendPort {
   ): Promise<BackendResult<void>> {
     // ...
   }
+
+  async listWorkflows(
+    repoPath?: string,
+  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+    // ...
+  }
+
+  async buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    // ...
+  }
+
+  async buildPollPrompt(
+    options?: PollPromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>> {
+    // Return UNAVAILABLE if your backend does not support poll-based claiming.
+    // ...
+  }
 }
 ```
 
@@ -167,6 +193,11 @@ export const MY_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
   maxConcurrency: 0,     // 0 = unlimited
 });
 ```
+
+Not all backends support every capability. For example, the Knots backend sets
+`canDelete: false` (knots cannot be deleted) and `canSync: true` (knots support
+push/pull synchronization). Callers use the capability flags to degrade
+gracefully when a feature is unavailable.
 
 **Capability flags:**
 
@@ -429,13 +460,13 @@ declared capabilities, so a read-only backend will not fail write tests.
 | Unit test a component that calls BackendPort | `MockBackendPort` |
 | Validate a new backend satisfies the contract | `runBackendContractTests` |
 | Safe no-op backend during development | `StubBackend` |
-| Reference implementation to copy from | `MockBackendPort` or `BeadsBackend` |
+| Reference implementation to copy from | `MockBackendPort`, `BeadsBackend`, or `KnotsBackend` |
 
 ## Checklist
 
 Before considering your backend complete:
 
-- [ ] Class implements `BackendPort` (all 12 methods)
+- [ ] Class implements `BackendPort` (all 15 methods, including `listWorkflows`, `buildTakePrompt`, `buildPollPrompt`)
 - [ ] Capabilities constant is defined and accurate
 - [ ] Factory case added in `backend-factory.ts`
 - [ ] Type string added to `BackendType` union
