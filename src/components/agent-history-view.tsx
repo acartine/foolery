@@ -93,6 +93,12 @@ function promptSourceLabel(source?: string): string {
   return source.replace(/_/g, " ");
 }
 
+/** Strip the repo prefix from a beat/bead ID (e.g. "foolery-drmp" → "drmp"). */
+function stripIdPrefix(id: string): string {
+  const idx = id.indexOf("-");
+  return idx > 0 ? id.slice(idx + 1) : id;
+}
+
 function clipDisplay(text: string, maxChars = 8_000): string {
   if (text.length <= maxChars) return text;
   const extra = text.length - maxChars;
@@ -425,7 +431,7 @@ function BeatDetailContent({ beat, summary }: { beat: Beat | null; summary: Agen
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
-        <BeatMetaItem label="Beat ID" value={beat.id} />
+        <BeatMetaItem label="Beat ID" value={stripIdPrefix(beat.id)} />
         <BeatMetaItem label="Last updated" value={formatTime(summary.lastWorkedAt)} />
         <BeatMetaItem label="State" value={beat.state} />
         <BeatMetaItem label="Type" value={beat.type} />
@@ -827,7 +833,7 @@ export function AgentHistoryView() {
                           ? "text-sky-800 dark:text-sky-200"
                           : "text-muted-foreground"
                     }`}>
-                      <span className="font-mono">{beat.beadId}</span>
+                      <span className="font-mono">{stripIdPrefix(beat.beadId)}</span>
                       {showRepoName ? (
                         <Badge variant="outline" className="text-[9px] font-normal">
                           {repoNames.get(beat.repoPath) ?? beat.repoPath}
@@ -864,7 +870,7 @@ export function AgentHistoryView() {
               </p>
             </div>
             {focusedSummary ? (
-              <span className="ml-auto font-mono text-[10px] text-muted-foreground">{focusedSummary.beadId}</span>
+              <span className="ml-auto font-mono text-[10px] text-muted-foreground">{stripIdPrefix(focusedSummary.beadId)}</span>
             ) : null}
           </div>
 
@@ -899,7 +905,7 @@ export function AgentHistoryView() {
             </span>
           ) : null}
           {loadedSummary ? (
-            <span className="font-mono text-[10px] text-slate-400">{loadedSummary.beadId}</span>
+            <span className="font-mono text-[10px] text-slate-400">{stripIdPrefix(loadedSummary.beadId)}</span>
           ) : null}
           {loadedSummary ? (
             <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-slate-400">
@@ -931,7 +937,7 @@ export function AgentHistoryView() {
           ) : sessionsQuery.isLoading && sessions.length === 0 ? (
             <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[10px] text-slate-400">
               <Spinner className="size-4" />
-              <span>Loading logs for {loadedSummary.beadId}…</span>
+              <span>Loading logs for {stripIdPrefix(loadedSummary.beadId)}…</span>
               <span className="text-[9px]">prompt histories are BIG, please be patient :-)</span>
             </div>
           ) : sessions.length === 0 ? (
