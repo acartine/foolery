@@ -70,7 +70,6 @@ const DEFAULT_SETTINGS = {
   },
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" as const },
-  workflow: { coarsePrPreferenceOverrides: {} },
 };
 
 beforeEach(() => {

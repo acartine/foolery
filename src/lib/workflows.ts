@@ -1,7 +1,6 @@
 import type {
   ActionOwnerKind,
   Beat,
-  CoarsePrPreference,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
   WorkflowMode,
@@ -20,8 +19,6 @@ export const KNOTS_GRANULAR_DESCRIPTOR_ID = "autopilot";
 export const KNOTS_COARSE_DESCRIPTOR_ID = "semiauto";
 export const KNOTS_GRANULAR_PROMPT_PROFILE_ID = "autopilot";
 export const KNOTS_COARSE_PROMPT_PROFILE_ID = "semiauto";
-
-export const DEFAULT_COARSE_PR_PREFERENCE: CoarsePrPreference = "soft_required";
 
 const ACTION_STATES = [
   "planning",
@@ -304,7 +301,6 @@ function descriptorFromProfileConfig(
     finalCutState: humanQueueStates[0] ?? null,
     retakeState: states.includes("ready_for_implementation") ? "ready_for_implementation" : initialState,
     promptProfileId: config.id,
-    coarsePrPreferenceDefault: mode === "coarse_human_gated" ? DEFAULT_COARSE_PR_PREFERENCE : undefined,
     owners: config.owners,
     queueStates,
     actionStates,
@@ -699,19 +695,3 @@ export function beatInRetake(
   return normalizeState(workflow.retakeState) === normalized;
 }
 
-export function coarseOverrideKey(repoPath: string, workflowId: string): string {
-  return `${repoPath}::${workflowId}`;
-}
-
-export function resolveCoarsePrPreference(
-  repoPath: string | undefined,
-  workflow: MemoryWorkflowDescriptor,
-  overrides: Record<string, CoarsePrPreference>,
-): CoarsePrPreference {
-  if (workflow.mode !== "coarse_human_gated") return "none";
-  if (repoPath) {
-    const override = overrides[coarseOverrideKey(repoPath, workflow.id)];
-    if (override) return override;
-  }
-  return workflow.coarsePrPreferenceDefault ?? DEFAULT_COARSE_PR_PREFERENCE;
-}

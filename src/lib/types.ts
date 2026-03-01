@@ -16,11 +16,6 @@ export type WorkflowMode =
 
 export type ActionOwnerKind = "agent" | "human" | "none";
 
-export type CoarsePrPreference =
-  | "soft_required"
-  | "preferred"
-  | "none";
-
 export interface MemoryWorkflowOwners {
   planning: ActionOwnerKind;
   plan_review: ActionOwnerKind;
@@ -42,7 +37,6 @@ export interface MemoryWorkflowDescriptor {
   finalCutState: string | null;
   retakeState: string;
   promptProfileId: string;
-  coarsePrPreferenceDefault?: CoarsePrPreference;
   profileId?: string;
   owners?: MemoryWorkflowOwners;
   queueStates?: string[];

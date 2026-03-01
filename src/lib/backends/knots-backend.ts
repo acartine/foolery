@@ -269,7 +269,6 @@ function toDescriptor(profile: KnotProfileDefinition): MemoryWorkflowDescriptor 
     finalCutState: humanQueueStates[0] ?? null,
     retakeState: states.includes("ready_for_implementation") ? "ready_for_implementation" : profile.initial_state,
     promptProfileId: profile.id,
-    coarsePrPreferenceDefault: mode === "coarse_human_gated" ? "soft_required" : undefined,
     owners,
     queueStates,
     actionStates,

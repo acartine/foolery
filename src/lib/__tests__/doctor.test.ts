@@ -84,7 +84,6 @@ const DEFAULT_SETTINGS = {
   },
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" as const },
-  workflow: { coarsePrPreferenceOverrides: {} },
 };
 
 beforeEach(() => {
@@ -609,7 +608,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 8 check events plus 1 summary event", async () => {
+  it("emits 7 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -622,10 +621,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(9);
+    expect(events).toHaveLength(8);
 
-    // First 8 are check results
-    for (let i = 0; i < 8; i++) {
+    // First 7 are check results
+    for (let i = 0; i < 7; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -636,7 +635,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[8] as DoctorStreamSummary;
+    const summary = events[7] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -659,7 +658,6 @@ describe("streamDoctor", () => {
       "settings-defaults",
       "repo-memory-managers",
       "memory-implementation",
-      "workflow-pr-policy",
       "stale-parents",
       "prompt-guidance",
     ]);

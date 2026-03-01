@@ -7,7 +7,6 @@ import {
   getRegisteredAgents,
   inspectSettingsDefaults,
   backfillMissingSettingsDefaults,
-  loadSettings,
 } from "./settings";
 import {
   listRepos,
@@ -529,101 +528,6 @@ const PROMPT_GUIDANCE_FIX_OPTIONS: FixOption[] = [
   { key: "append", label: "Append Foolery guidance prompt" },
 ];
 
-const COARSE_PR_PREFERENCE_VALUES = new Set(["soft_required", "preferred", "none"]);
-
-function parseOverrideKey(key: string): { repoPath: string; workflowId: string } | null {
-  const separator = key.lastIndexOf("::");
-  if (separator <= 0 || separator >= key.length - 2) return null;
-  const repoPath = key.slice(0, separator).trim();
-  const workflowId = key.slice(separator + 2).trim();
-  if (!repoPath || !workflowId) return null;
-  return { repoPath, workflowId };
-}
-
-export async function checkWorkflowPrPreferenceOverrides(
-  repos: RegisteredRepo[],
-): Promise<Diagnostic[]> {
-  const diagnostics: Diagnostic[] = [];
-  const settings = await loadSettings();
-  const overrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
-  const entries = Object.entries(overrides as Record<string, string>);
-
-  if (entries.length === 0) {
-    diagnostics.push({
-      check: "workflow-pr-policy",
-      severity: "info",
-      fixable: false,
-      message: "No coarse workflow PR preference overrides configured.",
-    });
-    return diagnostics;
-  }
-
-  const knownRepoPaths = new Set(repos.map((repo) => repo.path));
-  const workflowIdsByRepo = new Map<string, Set<string>>();
-  for (const repo of repos) {
-    const workflows = await listWorkflowsSafe(repo.path);
-    workflowIdsByRepo.set(repo.path, new Set(workflows.map((workflow) => workflow.id)));
-  }
-
-  for (const [key, value] of entries) {
-    const parsedKey = parseOverrideKey(key);
-    if (!parsedKey) {
-      diagnostics.push({
-        check: "workflow-pr-policy",
-        severity: "warning",
-        fixable: false,
-        message: `Workflow PR override key "${key}" is invalid. Expected "<repoPath>::<workflowDescriptorId>".`,
-        context: { key },
-      });
-      continue;
-    }
-
-    if (!COARSE_PR_PREFERENCE_VALUES.has(value)) {
-      diagnostics.push({
-        check: "workflow-pr-policy",
-        severity: "warning",
-        fixable: false,
-        message: `Workflow PR override "${key}" has invalid value "${value}".`,
-        context: { key, value },
-      });
-      continue;
-    }
-
-    if (!knownRepoPaths.has(parsedKey.repoPath)) {
-      diagnostics.push({
-        check: "workflow-pr-policy",
-        severity: "warning",
-        fixable: false,
-        message: `Workflow PR override "${key}" references unknown repo "${parsedKey.repoPath}".`,
-        context: { key, repoPath: parsedKey.repoPath, workflowId: parsedKey.workflowId },
-      });
-      continue;
-    }
-
-    const workflowIds = workflowIdsByRepo.get(parsedKey.repoPath) ?? new Set<string>();
-    if (!workflowIds.has(parsedKey.workflowId)) {
-      diagnostics.push({
-        check: "workflow-pr-policy",
-        severity: "warning",
-        fixable: false,
-        message: `Workflow PR override "${key}" references unknown workflow "${parsedKey.workflowId}" for repo "${parsedKey.repoPath}".`,
-        context: { key, repoPath: parsedKey.repoPath, workflowId: parsedKey.workflowId },
-      });
-    }
-  }
-
-  if (diagnostics.length === 0) {
-    diagnostics.push({
-      check: "workflow-pr-policy",
-      severity: "info",
-      fixable: false,
-      message: `Workflow PR overrides are valid (${entries.length} configured).`,
-    });
-  }
-
-  return diagnostics;
-}
-
 /**
  * Warn when AGENTS.md/CLAUDE.md exists but is missing Foolery guidance prompt.
  */
@@ -706,7 +610,6 @@ export async function runDoctor(): Promise<DoctorReport> {
     settingsDiags,
     repoMemoryManagerDiags,
     memoryCompatibilityDiags,
-    workflowPrPolicyDiags,
     staleDiags,
     promptDiags,
   ] = await Promise.all([
@@ -715,7 +618,6 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkSettingsDefaults(),
     checkRepoMemoryManagerTypes(),
     checkMemoryImplementationCompatibility(repos),
-    checkWorkflowPrPreferenceOverrides(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
   ]);
@@ -726,7 +628,6 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...settingsDiags,
     ...repoMemoryManagerDiags,
     ...memoryCompatibilityDiags,
-    ...workflowPrPolicyDiags,
     ...staleDiags,
     ...promptDiags,
   ];
@@ -788,7 +689,6 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
     { category: "repo-memory-managers", label: "Repo memory managers", run: () => checkRepoMemoryManagerTypes() },
     { category: "memory-implementation", label: "Memory implementation", run: () => checkMemoryImplementationCompatibility(repos) },
-    { category: "workflow-pr-policy", label: "Workflow PR policy", run: () => checkWorkflowPrPreferenceOverrides(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
   ];

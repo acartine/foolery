@@ -7,7 +7,7 @@ import {
   type InteractionLog,
 } from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
-import { getActionAgent, loadSettings } from "@/lib/settings";
+import { getActionAgent } from "@/lib/settings";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -25,10 +25,9 @@ import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
-import type { Beat, CoarsePrPreference, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
   beadsCoarseWorkflowDescriptor,
-  resolveCoarsePrPreference,
   workflowDescriptorById,
 } from "@/lib/workflows";
 
@@ -109,27 +108,6 @@ interface WorkflowPromptTarget {
   workflowState?: string;
 }
 
-function buildCoarsePolicyLines(policy: CoarsePrPreference): string[] {
-  switch (policy) {
-    case "soft_required":
-      return [
-        "PR policy: soft-required.",
-        "Open a PR before handing off to the required human-action queue. If impossible, explicitly state why and continue only with that explicit exception.",
-      ];
-    case "preferred":
-      return [
-        "PR policy: preferred.",
-        "Open a PR when practical, then continue.",
-      ];
-    case "none":
-      return [
-        "PR policy: none.",
-      ];
-    default:
-      return [];
-  }
-}
-
 function normalizeWorkflowState(value: string | undefined): string | null {
   const normalized = value?.trim().toLowerCase();
   return normalized ? normalized : null;
@@ -159,7 +137,6 @@ function buildGranularProgressionCommands(
 function buildSingleTargetFollowUpLines(
   target: WorkflowPromptTarget,
   memoryManagerType: MemoryManagerType,
-  coarsePrPolicy: CoarsePrPreference,
 ): string[] {
   const lines: string[] = [
     `Beat ${target.id} (${target.workflow.mode}):`,
@@ -176,7 +153,6 @@ function buildSingleTargetFollowUpLines(
     return lines;
   }
 
-  lines.push(...buildCoarsePolicyLines(coarsePrPolicy));
   lines.push("Human review is required: either review manually or delegate review to an agent.");
   if (target.workflow.finalCutState) {
     lines.push("After merge/PR handling, move bead to the next human-action queue:");
@@ -190,13 +166,12 @@ function buildSingleTargetFollowUpLines(
 function buildSingleBeadCompletionFollowUp(
   target: WorkflowPromptTarget,
   memoryManagerType: MemoryManagerType,
-  coarsePrPolicy: CoarsePrPreference,
 ): string {
   return [
     "Ship completion follow-up:",
     `Confirm that changes for ${target.id} are merged and pushed according to your normal shipping guidelines.`,
     "Do not ask for another follow-up prompt until merge/push confirmation is done (or blocked by a hard error).",
-    ...buildSingleTargetFollowUpLines(target, memoryManagerType, coarsePrPolicy),
+    ...buildSingleTargetFollowUpLines(target, memoryManagerType),
     "Then summarize merge/push confirmation and workflow command results.",
   ].join("\n");
 }
@@ -205,7 +180,6 @@ function buildWaveCompletionFollowUp(
   waveId: string,
   targets: WorkflowPromptTarget[],
   memoryManagerType: MemoryManagerType,
-  coarsePolicyByWorkflowId: Map<string, CoarsePrPreference>,
 ): string {
   const safeTargets = targets.length > 0
     ? targets
@@ -218,7 +192,6 @@ function buildWaveCompletionFollowUp(
     ...safeTargets.flatMap((target) => buildSingleTargetFollowUpLines(
       target,
       memoryManagerType,
-      coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
     )),
     "Then summarize per bead: merged yes/no, pushed yes/no, workflow command results, and PR/review notes when applicable.",
   ].join("\n");
@@ -227,13 +200,11 @@ function buildWaveCompletionFollowUp(
 function buildSceneCompletionFollowUp(
   targets: WorkflowPromptTarget[],
   memoryManagerType: MemoryManagerType,
-  coarsePolicyByWorkflowId: Map<string, CoarsePrPreference>,
 ): string {
   return buildWaveCompletionFollowUp(
     "scene",
     targets,
     memoryManagerType,
-    coarsePolicyByWorkflowId,
   );
 }
 
@@ -524,21 +495,6 @@ export async function createSession(
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
   const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
-  const settings = await loadSettings();
-  const coarseOverrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
-  const coarsePolicyByWorkflowId = new Map<string, CoarsePrPreference>();
-  for (const workflow of workflows) {
-    coarsePolicyByWorkflowId.set(
-      workflow.id,
-      resolveCoarsePrPreference(resolvedRepoPath, workflow, coarseOverrides),
-    );
-  }
-  if (!coarsePolicyByWorkflowId.has(fallbackWorkflow.id)) {
-    coarsePolicyByWorkflowId.set(
-      fallbackWorkflow.id,
-      resolveCoarsePrPreference(resolvedRepoPath, fallbackWorkflow, coarseOverrides),
-    );
-  }
   const primaryTarget = toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow);
   const sceneTargets = waveBeats.map((child) =>
     toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
@@ -693,8 +649,6 @@ export async function createSession(
   let closeInputTimer: NodeJS.Timeout | null = null;
   const autoAnsweredToolUseIds = new Set<string>();
   const autoExecutionPrompt: string | null = null;
-  const primaryCoarsePolicy =
-    coarsePolicyByWorkflowId.get(primaryTarget.workflow.id) ?? "soft_required";
   const autoShipCompletionPrompt = !isInteractive
     ? null
     : customPrompt
@@ -706,12 +660,10 @@ export async function createSession(
           bead.id,
           sceneTargets,
           memoryManagerType,
-          coarsePolicyByWorkflowId,
         )
         : buildSingleBeadCompletionFollowUp(
           primaryTarget,
           memoryManagerType,
-          primaryCoarsePolicy,
         );
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
@@ -1037,21 +989,6 @@ export async function createSceneSession(
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
   const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
-  const settings = await loadSettings();
-  const coarseOverrides = settings.workflow?.coarsePrPreferenceOverrides ?? {};
-  const coarsePolicyByWorkflowId = new Map<string, CoarsePrPreference>();
-  for (const workflow of workflows) {
-    coarsePolicyByWorkflowId.set(
-      workflow.id,
-      resolveCoarsePrPreference(resolvedRepoPath, workflow, coarseOverrides),
-    );
-  }
-  if (!coarsePolicyByWorkflowId.has(fallbackWorkflow.id)) {
-    coarsePolicyByWorkflowId.set(
-      fallbackWorkflow.id,
-      resolveCoarsePrPreference(resolvedRepoPath, fallbackWorkflow, coarseOverrides),
-    );
-  }
   const sceneTargets = beats.map((beat) =>
     toWorkflowPromptTarget(beat, workflowsById, fallbackWorkflow),
   );
@@ -1088,7 +1025,6 @@ export async function createSceneSession(
               buildSingleTargetFollowUpLines(
                 target,
                 memoryManagerType,
-                coarsePolicyByWorkflowId.get(target.workflow.id) ?? "soft_required",
               )
             ),
             "7. In your final summary, report per bead: merged yes/no, pushed yes/no, workflow command result, and PR/review status when applicable.",
@@ -1202,7 +1138,6 @@ export async function createSceneSession(
       : buildSceneCompletionFollowUp(
         sceneTargets,
         memoryManagerType,
-        coarsePolicyByWorkflowId,
       );
   let executionPromptSent = true;
   let shipCompletionPromptSent = false;
