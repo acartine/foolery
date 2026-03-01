@@ -14,6 +14,7 @@ import {
 import { BeatForm } from "@/components/beat-form";
 import type { RelationshipDeps } from "@/components/beat-form";
 import { createBead, addDep, fetchWorkflows } from "@/lib/api";
+import { fetchSettings } from "@/lib/settings-api";
 import type { CreateBeatInput } from "@/lib/schemas";
 import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
@@ -57,9 +58,22 @@ export function CreateBeatDialog({
     queryFn: () => fetchWorkflows(repo ?? undefined),
     enabled: open,
   });
+  const { data: settingsResult } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+    enabled: open,
+  });
   const workflows: MemoryWorkflowDescriptor[] =
     workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+  const settingsProfileId = settingsResult?.ok
+    ? settingsResult.data?.defaults?.profileId
+    : undefined;
   const defaultProfileId =
+    (settingsProfileId
+      ? workflows.find(
+          (w) => (w.profileId ?? w.id) === settingsProfileId,
+        )?.id
+      : undefined) ??
     workflows.find((workflow) => workflow.id === "autopilot")?.id ??
     workflows[0]?.id;
   const isKnotsBackend = workflows.some((w) => w.label?.startsWith("Knots"));
