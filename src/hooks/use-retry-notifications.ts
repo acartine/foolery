@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { useNotificationStore } from "@/stores/notification-store";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
-/** Extract the attempt number from a bead's labels, or null if absent. */
+/** Extract the attempt number from a beat's labels, or null if absent. */
 function extractAttempt(labels: string[]): number | null {
   for (const label of labels) {
     if (label.startsWith("attempt:") || label.startsWith("attempts:")) {
@@ -18,7 +18,7 @@ function extractAttempt(labels: string[]): number | null {
   return null;
 }
 
-/** Extract the commit SHA from a bead's labels, or null if absent. */
+/** Extract the commit SHA from a beat's labels, or null if absent. */
 function extractCommitSha(labels: string[]): string | null {
   for (const label of labels) {
     if (label.startsWith("commit:")) {
@@ -29,7 +29,7 @@ function extractCommitSha(labels: string[]): string | null {
   return null;
 }
 
-/** Extract the latest rejection reason from bead notes (last verification section). */
+/** Extract the latest rejection reason from beat notes (last verification section). */
 function extractLatestRejectionReason(notes: string | undefined): string | null {
   if (!notes) return null;
   // Find the last verification failure section
@@ -49,35 +49,35 @@ function extractLatestRejectionReason(notes: string | undefined): string | null 
   return body.length > maxLen ? body.slice(0, maxLen) + "..." : body;
 }
 
-/** Build a human-readable notification message for a retry bead. */
-function buildRetryMessage(bead: Bead): string {
-  const labels = bead.labels ?? [];
+/** Build a human-readable notification message for a retry beat. */
+function buildRetryMessage(beat: Beat): string {
+  const labels = beat.labels ?? [];
   const attempt = extractAttempt(labels);
   const commitSha = extractCommitSha(labels);
   const attemptSuffix = attempt !== null ? ` (attempt ${attempt})` : "";
   const commitSuffix = commitSha ? ` [commit: ${commitSha}]` : "";
-  const reason = extractLatestRejectionReason(bead.notes);
+  const reason = extractLatestRejectionReason(beat.notes);
   const reasonSuffix = reason ? `\n${reason}` : "";
-  return `"${bead.title}" was rejected by verification${attemptSuffix}${commitSuffix} and is ready for retry${reasonSuffix}`;
+  return `"${beat.title}" was rejected by verification${attemptSuffix}${commitSuffix} and is ready for retry${reasonSuffix}`;
 }
 
 /**
- * Watches a list of beads and fires a notification whenever a bead
- * transitions to workflowState=retake (verification rejected).
+ * Watches a list of beats and fires a notification whenever a beat
+ * transitions to state=retake (verification rejected).
  *
  * The notification message includes the attempt number from the
- * bead's labels when available.
+ * beat's labels when available.
  */
-export function useRetryNotifications(beads: Bead[]) {
+export function useRetryNotifications(beats: Beat[]) {
   const addNotification = useNotificationStore((s) => s.addNotification);
   const prevIdsRef = useRef<Set<string>>(new Set());
   const initializedRef = useRef(false);
 
   useEffect(() => {
-    const retryBeads = beads.filter((b) =>
-      b.workflowState === "retake",
+    const retryBeats = beats.filter((b) =>
+      b.state === "retake",
     );
-    const currentIds = new Set(retryBeads.map((b) => b.id));
+    const currentIds = new Set(retryBeats.map((b) => b.id));
 
     // First load — just record baseline, no notification.
     if (!initializedRef.current) {
@@ -86,15 +86,15 @@ export function useRetryNotifications(beads: Bead[]) {
       return;
     }
 
-    // Fire notification for newly-appeared retry beads
-    const newRetries = retryBeads.filter((b) => !prevIdsRef.current.has(b.id));
-    for (const bead of newRetries) {
+    // Fire notification for newly-appeared retry beats
+    const newRetries = retryBeats.filter((b) => !prevIdsRef.current.has(b.id));
+    for (const beat of newRetries) {
       addNotification({
-        message: buildRetryMessage(bead),
-        beadId: bead.id,
+        message: buildRetryMessage(beat),
+        beadId: beat.id,
       });
     }
 
     prevIdsRef.current = currentIds;
-  }, [beads, addNotification]);
+  }, [beats, addNotification]);
 }

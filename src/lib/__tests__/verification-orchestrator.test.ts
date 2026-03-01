@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { BackendPort } from "@/lib/backend-port";
 
 // ── Mock setup ──────────────────────────────────────────────
@@ -72,11 +72,11 @@ import {
 } from "@/lib/verification-workflow";
 import { EventEmitter } from "node:events";
 
-function makeBead(overrides: Partial<Bead> = {}): Bead {
+function makeBeat(overrides: Partial<Beat> = {}): Beat {
   return {
     id: "foolery-test",
-    title: "Test Bead",
-    status: "in_progress",
+    title: "Test Beat",
+    state: "in_progress",
     priority: 2,
     type: "task",
     labels: [],
@@ -125,7 +125,7 @@ beforeEach(() => {
   // Default: verification disabled
   getVerificationSettingsMock.mockResolvedValue({ enabled: false, agent: "", maxRetries: 3 });
   getVerificationAgentMock.mockResolvedValue({ command: "claude" });
-  mockGet.mockResolvedValue({ ok: true, data: makeBead() });
+  mockGet.mockResolvedValue({ ok: true, data: makeBeat() });
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
@@ -157,7 +157,7 @@ describe("onAgentComplete", () => {
 // ── Test: pass path (xmg8.4.1) ─────────────────────────────
 
 describe("pass path", () => {
-  it("enters verification, launches verifier, and closes bead on pass", async () => {
+  it("enters verification, launches verifier, and closes beat on pass", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     // First show: fresh bead (no labels)
@@ -169,12 +169,12 @@ describe("pass path", () => {
     mockGet.mockImplementation(() => {
       showCallCount++;
       if (showCallCount <= 1) {
-        return { ok: true, data: makeBead({ labels: [] }) };
+        return { ok: true, data: makeBeat({ labels: [] }) };
       }
       // After first update, bead has transition + stage + commit labels
       return {
         ok: true,
-        data: makeBead({
+        data: makeBeat({
           labels: [
             "transition:verification",
             "stage:verification",
@@ -205,7 +205,7 @@ describe("pass path", () => {
       expect.objectContaining({
         interactionType: "verification",
         repoPath: "/repo",
-        beadIds: ["foolery-test"],
+        beatIds: ["foolery-test"],
       }),
     );
     expect(logPromptMock).toHaveBeenCalledWith(
@@ -226,7 +226,7 @@ describe("retry paths", () => {
     // Always return bead with no commit label
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: ["transition:verification", "stage:verification"],
       }),
     });
@@ -237,7 +237,7 @@ describe("retry paths", () => {
     const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
-        return fields.status === "open" && Array.isArray(fields.labels) && (fields.labels as string[]).includes("stage:retry");
+        return fields.state === "open" && Array.isArray(fields.labels) && (fields.labels as string[]).includes("stage:retry");
       }
     );
     expect(retryCall).toBeDefined();
@@ -248,7 +248,7 @@ describe("retry paths", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -270,7 +270,7 @@ describe("retry paths", () => {
     const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
-        return fields.status === "open";
+        return fields.state === "open";
       }
     );
     expect(retryCall).toBeDefined();
@@ -286,7 +286,7 @@ describe("idempotency", () => {
     // Bead with commit label ready to go
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -331,12 +331,12 @@ describe("edit lock labels", () => {
 // ── Test: notes update on failure (xmg8.4.5) ───────────────
 
 describe("verifier output capture on failure", () => {
-  it("updates bead notes with verifier output on fail-requirements", async () => {
+  it("updates beat notes with verifier output on fail-requirements", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         notes: "Existing notes here",
         labels: [
           "transition:verification",
@@ -372,7 +372,7 @@ describe("verifier output capture on failure", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -395,7 +395,7 @@ describe("verifier output capture on failure", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -418,7 +418,7 @@ describe("verifier output capture on failure", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -441,7 +441,7 @@ describe("verifier output capture on failure", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         labels: [
           "transition:verification",
           "stage:verification",
@@ -466,7 +466,7 @@ describe("verifier output capture on failure", () => {
 
     mockGet.mockResolvedValue({
       ok: true,
-      data: makeBead({
+      data: makeBeat({
         notes: "",
         labels: [
           "transition:verification",

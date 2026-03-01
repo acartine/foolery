@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { BackendResult } from "@/lib/backend-port";
 
 import {
@@ -10,24 +10,24 @@ import {
   _internals,
 } from "@/lib/bd-error-suppression";
 
-function ok(data: Bead[]): BackendResult<Bead[]> {
+function ok(data: Beat[]): BackendResult<Beat[]> {
   return { ok: true, data };
 }
 
-function fail(error: string): BackendResult<Bead[]> {
+function fail(error: string): BackendResult<Beat[]> {
   return { ok: false, error: { code: "BACKEND_ERROR", message: error, retryable: false } };
 }
 
-const STUB_BEAD = {
+const STUB_BEAT = {
   id: "b-1",
   title: "stub",
   type: "task",
-  status: "open",
+  state: "open",
   priority: 2,
   labels: [],
   created: "2024-01-01",
   updated: "2024-01-01",
-} as Bead;
+} as Beat;
 
 describe("bd-error-suppression", () => {
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe("bd-error-suppression", () => {
   });
 
   it("passes through successful results and caches them", () => {
-    const result = ok([STUB_BEAD]);
+    const result = ok([STUB_BEAT]);
     const out = withErrorSuppression("listBeads", result);
     expect(out).toEqual(result);
     expect(_internals.resultCache.size).toBe(1);
@@ -50,23 +50,23 @@ describe("bd-error-suppression", () => {
   });
 
   it("returns cached data on first lock failure after a success", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     const out = withErrorSuppression("listBeads", fail("database locked"));
     expect(out.ok).toBe(true);
-    expect(out.data).toEqual([STUB_BEAD]);
+    expect(out.data).toEqual([STUB_BEAT]);
     expect(_internals.failureState.size).toBe(1);
   });
 
   it("keeps returning cached data within suppression window", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     withErrorSuppression("listBeads", fail("locked"));
     const out = withErrorSuppression("listBeads", fail("locked again"));
     expect(out.ok).toBe(true);
-    expect(out.data).toEqual([STUB_BEAD]);
+    expect(out.data).toEqual([STUB_BEAT]);
   });
 
   it("returns degraded error after suppression window expires", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     withErrorSuppression("listBeads", fail("locked"));
 
     const state = _internals.failureState.get(
@@ -80,17 +80,17 @@ describe("bd-error-suppression", () => {
   });
 
   it("clears failure state on recovery", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     withErrorSuppression("listBeads", fail("locked"));
     expect(_internals.failureState.size).toBe(1);
 
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     expect(_internals.failureState.size).toBe(0);
   });
 
   it("uses separate cache entries for different call signatures", () => {
-    const beadA = { ...STUB_BEAD, id: "a" } as Bead;
-    const beadB = { ...STUB_BEAD, id: "b" } as Bead;
+    const beadA = { ...STUB_BEAT, id: "a" } as Beat;
+    const beadB = { ...STUB_BEAT, id: "b" } as Beat;
 
     withErrorSuppression("listBeads", ok([beadA]), undefined, "/repo-a");
     withErrorSuppression("listBeads", ok([beadB]), undefined, "/repo-b");
@@ -99,19 +99,19 @@ describe("bd-error-suppression", () => {
     expect(outA.ok).toBe(true);
     expect(outA.data).toEqual([beadA]);
 
-    const freshB = ok([{ ...beadB, title: "fresh" } as Bead]);
+    const freshB = ok([{ ...beadB, title: "fresh" } as Beat]);
     const outB = withErrorSuppression("listBeads", freshB, undefined, "/repo-b");
     expect(outB.ok).toBe(true);
     expect(outB.data?.[0].title).toBe("fresh");
   });
 
   it("distinguishes searchBeads calls by query parameter", () => {
-    withErrorSuppression("searchBeads", ok([STUB_BEAD]), undefined, undefined, "alpha");
+    withErrorSuppression("searchBeads", ok([STUB_BEAT]), undefined, undefined, "alpha");
     withErrorSuppression("searchBeads", ok([]), undefined, undefined, "beta");
 
     const out = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "alpha");
     expect(out.ok).toBe(true);
-    expect(out.data).toEqual([STUB_BEAD]);
+    expect(out.data).toEqual([STUB_BEAT]);
 
     const outBeta = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "beta");
     expect(outBeta.ok).toBe(true);
@@ -119,14 +119,14 @@ describe("bd-error-suppression", () => {
   });
 
   it("does NOT suppress non-lock errors like parse failures", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     const out = withErrorSuppression("listBeads", fail("Failed to parse bd list output"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe("Failed to parse bd list output");
   });
 
   it("does NOT suppress generic bd failures", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     const out = withErrorSuppression("listBeads", fail("bd list failed"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe("bd list failed");
@@ -135,14 +135,14 @@ describe("bd-error-suppression", () => {
   it("evicts oldest entry when cache exceeds MAX_CACHE_ENTRIES", () => {
     const max = _internals.MAX_CACHE_ENTRIES;
     for (let i = 0; i <= max; i++) {
-      withErrorSuppression("listBeads", ok([STUB_BEAD]), undefined, `/repo-${i}`);
+      withErrorSuppression("listBeads", ok([STUB_BEAT]), undefined, `/repo-${i}`);
     }
     // Should have evicted the first entry, keeping size at max
     expect(_internals.resultCache.size).toBe(max);
   });
 
   it("returns degraded error when cache TTL expires during ongoing failure", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
     withErrorSuppression("listBeads", fail("locked"));
 
     // Fast-forward failure past suppression window
@@ -168,11 +168,11 @@ describe("bd-error-suppression", () => {
     const filtersA = { status: "open", type: "bug" };
     const filtersB = { type: "bug", status: "open" };
 
-    withErrorSuppression("listBeads", ok([STUB_BEAD]), filtersA);
+    withErrorSuppression("listBeads", ok([STUB_BEAT]), filtersA);
     const out = withErrorSuppression("listBeads", fail("locked"), filtersB);
     // Should hit the cache from filtersA since keys are the same
     expect(out.ok).toBe(true);
-    expect(out.data).toEqual([STUB_BEAD]);
+    expect(out.data).toEqual([STUB_BEAT]);
   });
 });
 

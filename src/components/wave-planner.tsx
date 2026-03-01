@@ -21,18 +21,18 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BeadTypeBadge } from "@/components/bead-type-badge";
-import { BeadPriorityBadge } from "@/components/bead-priority-badge";
+import { BeatTypeBadge } from "@/components/beat-type-badge";
+import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { fetchWavePlan } from "@/lib/wave-api";
 import { useAppStore } from "@/stores/app-store";
-import type { Wave, WaveBead, WaveReadiness } from "@/lib/types";
+import type { Wave, WaveBeat, WaveReadiness } from "@/lib/types";
 
 interface WavePlannerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onShipBead?: (bead: WaveBead) => void;
-  onAbortShip?: (beadId: string) => void;
-  shippingByBeadId?: Record<string, string>;
+  onShipBeat?: (beat: WaveBeat) => void;
+  onAbortShip?: (beatId: string) => void;
+  shippingByBeatId?: Record<string, string>;
 }
 
 const READINESS_STYLES: Record<WaveReadiness, string> = {
@@ -57,27 +57,27 @@ function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
 
-function canShipBead(
-  bead: WaveBead,
-  shippingByBeadId: Record<string, string>
+function canShipBeat(
+  beat: WaveBeat,
+  shippingByBeatId: Record<string, string>
 ): boolean {
-  if (shippingByBeadId[bead.id]) return false;
-  return bead.readiness === "runnable";
+  if (shippingByBeatId[beat.id]) return false;
+  return beat.readiness === "runnable";
 }
 
-function BeadCard({
+function BeatCard({
   bead,
   onShip,
   onAbortShip,
-  shippingByBeadId,
+  shippingByBeatId,
 }: {
-  bead: WaveBead;
-  onShip?: (bead: WaveBead) => void;
-  onAbortShip?: (beadId: string) => void;
-  shippingByBeadId: Record<string, string>;
+  bead: WaveBeat;
+  onShip?: (bead: WaveBeat) => void;
+  onAbortShip?: (beatId: string) => void;
+  shippingByBeatId: Record<string, string>;
 }) {
-  const isActiveShipping = Boolean(shippingByBeadId[bead.id]);
-  const isShipDisabled = !canShipBead(bead, shippingByBeadId);
+  const isActiveShipping = Boolean(shippingByBeatId[bead.id]);
+  const isShipDisabled = !canShipBeat(bead, shippingByBeatId);
 
   return (
     <div
@@ -91,8 +91,8 @@ function BeadCard({
           <Badge variant="outline" className="text-[10px]">
             {READINESS_LABELS[bead.readiness]}
           </Badge>
-          <BeadPriorityBadge priority={bead.priority} />
-          <BeadTypeBadge type={bead.type} />
+          <BeatPriorityBadge priority={bead.priority} />
+          <BeatTypeBadge type={bead.type} />
         </div>
       </div>
 
@@ -159,8 +159,8 @@ function BeadCard({
   );
 }
 
-function getWaveNextCandidate(wave: Wave): WaveBead | undefined {
-  return wave.beads
+function getWaveNextCandidate(wave: Wave): WaveBeat | undefined {
+  return wave.beats
     .filter((bead) => bead.readiness === "runnable")
     .sort((a, b) => {
       if (a.priority !== b.priority) return a.priority - b.priority;
@@ -171,9 +171,9 @@ function getWaveNextCandidate(wave: Wave): WaveBead | undefined {
 export function WavePlanner({
   open,
   onOpenChange,
-  onShipBead,
+  onShipBeat,
   onAbortShip,
-  shippingByBeadId = {},
+  shippingByBeatId = {},
 }: WavePlannerProps) {
   const { activeRepo, registeredRepos } = useAppStore();
 
@@ -197,13 +197,13 @@ export function WavePlanner({
 
   const recommendationBead = useMemo(() => {
     if (!plan?.recommendation) return null;
-    const byId = new Map(plan.waves.flatMap((wave) => wave.beads).map((bead) => [bead.id, bead]));
-    return byId.get(plan.recommendation.beadId) ?? null;
+    const byId = new Map(plan.waves.flatMap((wave) => wave.beats).map((beat) => [beat.id, beat]));
+    return byId.get(plan.recommendation.beatId) ?? null;
   }, [plan]);
 
-  const shipBead = (bead: WaveBead) => {
+  const shipBeat = (beat: WaveBeat) => {
     onOpenChange(false);
-    onShipBead?.(bead);
+    onShipBeat?.(beat);
   };
 
   return (
@@ -295,8 +295,8 @@ export function WavePlanner({
                   <Button
                     size="sm"
                     className="gap-1"
-                    disabled={!recommendationBead || !canShipBead(recommendationBead, shippingByBeadId)}
-                    onClick={() => recommendationBead && shipBead(recommendationBead)}
+                    disabled={!recommendationBead || !canShipBeat(recommendationBead, shippingByBeatId)}
+                    onClick={() => recommendationBead && shipBeat(recommendationBead)}
                     title="Execute recommended next beat"
                   >
                     <Workflow className="size-3.5" />
@@ -319,7 +319,7 @@ export function WavePlanner({
                             Scene {wave.level}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            {wave.beads.length} beat{wave.beads.length === 1 ? "" : "s"}
+                            {wave.beats.length} beat{wave.beats.length === 1 ? "" : "s"}
                           </span>
                           {wave.gate && (
                             <Badge variant="secondary" className="gap-1">
@@ -333,8 +333,8 @@ export function WavePlanner({
                             size="sm"
                             variant="outline"
                             className="h-7 gap-1 text-xs"
-                            disabled={!canShipBead(waveNext, shippingByBeadId)}
-                            onClick={() => shipBead(waveNext)}
+                            disabled={!canShipBeat(waveNext, shippingByBeatId)}
+                            onClick={() => shipBeat(waveNext)}
                             title="Execute next beat in this scene"
                           >
                             <Clapperboard className="size-3.5" />
@@ -344,13 +344,13 @@ export function WavePlanner({
                       </div>
 
                       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                        {wave.beads.map((bead) => (
-                          <BeadCard
+                        {wave.beats.map((bead) => (
+                          <BeatCard
                             key={bead.id}
                             bead={bead}
-                            onShip={shipBead}
+                            onShip={shipBeat}
                             onAbortShip={onAbortShip}
-                            shippingByBeadId={shippingByBeadId}
+                            shippingByBeatId={shippingByBeatId}
                           />
                         ))}
                       </div>
@@ -369,10 +369,10 @@ export function WavePlanner({
                   </div>
                   <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                     {plan.unschedulable.map((bead) => (
-                      <BeadCard
+                      <BeatCard
                         key={bead.id}
                         bead={bead}
-                        shippingByBeadId={shippingByBeadId}
+                        shippingByBeatId={shippingByBeatId}
                       />
                     ))}
                   </div>

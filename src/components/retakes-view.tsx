@@ -6,11 +6,11 @@ import { fetchBeads, fetchWorkflows, updateBead } from "@/lib/api";
 import { naturalCompare } from "@/lib/bead-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
-import type { Bead } from "@/lib/types";
-import type { UpdateBeadInput } from "@/lib/schemas";
+import type { Beat } from "@/lib/types";
+import type { UpdateBeatInput } from "@/lib/schemas";
 import { RetakeDialog } from "@/components/retake-dialog";
-import { BeadTypeBadge } from "@/components/bead-type-badge";
-import { BeadPriorityBadge } from "@/components/bead-priority-badge";
+import { BeatTypeBadge } from "@/components/beat-type-badge";
+import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { isWaveLabel, extractWaveSlug, isInternalLabel } from "@/lib/wave-slugs";
 import { Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { beadInRetake, workflowDescriptorById } from "@/lib/workflows";
+import { beatInRetake, workflowDescriptorById } from "@/lib/workflows";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -58,7 +58,7 @@ function relativeTime(dateStr: string): string {
 }
 
 /** Extract the commit sha from a bead's labels (commit:<sha>). */
-function extractCommitSha(bead: Bead): string | undefined {
+function extractCommitSha(bead: Beat): string | undefined {
   const label = bead.labels?.find((l) => l.startsWith("commit:"));
   return label ? label.slice("commit:".length) : undefined;
 }
@@ -68,9 +68,9 @@ function RetakeRow({
   onRetake,
   onTitleClick,
 }: {
-  bead: Bead;
-  onRetake: (bead: Bead) => void;
-  onTitleClick?: (bead: Bead) => void;
+  bead: Beat;
+  onRetake: (bead: Beat) => void;
+  onTitleClick?: (bead: Beat) => void;
 }) {
   const labels = bead.labels ?? [];
   const waveSlug = extractWaveSlug(labels);
@@ -83,8 +83,8 @@ function RetakeRow({
       {/* Left: bead info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <BeadPriorityBadge priority={bead.priority} />
-          <BeadTypeBadge type={bead.type} />
+          <BeatPriorityBadge priority={bead.priority} />
+          <BeatTypeBadge type={bead.type} />
           {onTitleClick ? (
             <button
               type="button"
@@ -144,7 +144,7 @@ export function RetakesView() {
   const { activeRepo, registeredRepos, pageSize } = useAppStore();
   const queryClient = useQueryClient();
   const updateUrl = useUpdateUrl();
-  const [retakeBead, setRetakeBead] = useState<Bead | null>(null);
+  const [retakeBead, setRetakeBead] = useState<Beat | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -163,7 +163,7 @@ export function RetakesView() {
           );
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .filter((bead) => beadInRetake(bead, workflowsById))
+            .filter((bead) => beatInRetake(bead, workflowsById))
             .map((bead) => ({
               ...bead,
               _repoPath: activeRepo,
@@ -184,7 +184,7 @@ export function RetakesView() {
               workflowsResult.ok ? workflowsResult.data ?? [] : [],
             );
             return result.data
-              .filter((bead) => beadInRetake(bead, workflowsById))
+              .filter((bead) => beatInRetake(bead, workflowsById))
               .map((bead) => ({
                 ...bead,
                 _repoPath: repo.path,
@@ -202,7 +202,7 @@ export function RetakesView() {
         const workflowsById = workflowDescriptorById(
           workflowsResult.ok ? workflowsResult.data ?? [] : [],
         );
-        result.data = result.data.filter((bead) => beadInRetake(bead, workflowsById));
+        result.data = result.data.filter((bead) => beatInRetake(bead, workflowsById));
       }
       return result;
     },
@@ -213,7 +213,7 @@ export function RetakesView() {
 
   // Sort closed beads by updated timestamp descending (most recent first),
   // with natural ID order as tiebreaker for deterministic sibling ordering.
-  const beads = useMemo<Bead[]>(() => {
+  const beads = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
     return [...data.data].sort((a, b) => {
       const timeDiff = new Date(b.updated).getTime() - new Date(a.updated).getTime();
@@ -235,13 +235,13 @@ export function RetakesView() {
   }, [beads.length]);
 
   const { mutate: handleRetake, isPending: isRetaking } = useMutation({
-    mutationFn: async ({ bead, notes }: { bead: Bead; notes: string }) => {
+    mutationFn: async ({ bead, notes }: { bead: Beat; notes: string }) => {
       const commitSha = extractCommitSha(bead);
       const labels: string[] = [];
       if (commitSha) labels.push(`regression:${commitSha}`);
 
-      const fields: UpdateBeadInput = {
-        status: "in_progress",
+      const fields: UpdateBeatInput = {
+        state: "in_progress",
         labels: labels.length > 0 ? labels : undefined,
         notes: notes
           ? `${bead.notes ? bead.notes + "\n" : ""}ReTake: ${notes}`
@@ -264,7 +264,7 @@ export function RetakesView() {
     },
   });
 
-  const handleOpenRetake = useCallback((bead: Bead) => {
+  const handleOpenRetake = useCallback((bead: Beat) => {
     setRetakeBead(bead);
     setDialogOpen(true);
   }, []);

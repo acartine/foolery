@@ -3,18 +3,9 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAppStore } from "@/stores/app-store";
-import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
 
 const VALID_PAGE_SIZES = [25, 50, 100];
 const DEFAULT_PAGE_SIZE = 50;
-
-const VALID_STATUSES = new Set<string>([
-  "open", "in_progress", "blocked", "deferred", "closed", "ready", "all",
-]);
-
-const VALID_TYPES = new Set<string>([
-  "bug", "feature", "task", "epic", "chore", "merge-request", "molecule", "gate",
-]);
 
 export function UrlStateSync() {
   const searchParams = useSearchParams();
@@ -29,33 +20,31 @@ export function UrlStateSync() {
     }
 
     // Sync filters
-    const urlStatus = searchParams.get("status");
+    const urlState = searchParams.get("state");
     const urlType = searchParams.get("type");
     const urlPriority = searchParams.get("priority");
     const urlAssignee = searchParams.get("assignee");
 
-    const newStatus = urlStatus === "all"
+    const newState = urlState === "all"
       ? undefined
-      : urlStatus && VALID_STATUSES.has(urlStatus)
-        ? (urlStatus as BeadStatus | "ready")
+      : urlState
+        ? urlState
         : "ready";
-    const newType = urlType && VALID_TYPES.has(urlType)
-      ? (urlType as BeadType)
-      : undefined;
+    const newType = urlType || undefined;
     const newPriority = urlPriority !== null
-      ? (Number(urlPriority) as BeadPriority)
+      ? Number(urlPriority)
       : undefined;
     const newAssignee = urlAssignee || undefined;
 
     const filtersChanged =
-      newStatus !== store.filters.status ||
+      newState !== store.filters.state ||
       newType !== store.filters.type ||
       newPriority !== store.filters.priority ||
       newAssignee !== store.filters.assignee;
 
     if (filtersChanged) {
       store.setFiltersFromUrl({
-        status: newStatus,
+        state: newState,
         type: newType,
         priority: newPriority,
         assignee: newAssignee,

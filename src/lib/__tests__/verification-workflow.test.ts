@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import {
   extractCommitLabel,
   buildCommitLabel,
@@ -28,11 +28,11 @@ import {
   LABEL_STAGE_RETRY,
 } from "@/lib/verification-workflow";
 
-function makeBead(overrides: Partial<Bead> = {}): Bead {
+function makeBeat(overrides: Partial<Beat> = {}): Beat {
   return {
     id: "foolery-test",
-    title: "Test Bead",
-    status: "in_progress",
+    title: "Test Beat",
+    state: "in_progress",
     priority: 2,
     type: "task",
     labels: [],
@@ -118,22 +118,22 @@ describe("findAttemptLabel / findCommitLabelRaw", () => {
   });
 });
 
-// ── Bead state checks ───────────────────────────────────────
+// ── Beat state checks ───────────────────────────────────────
 
-describe("bead state checks", () => {
+describe("beat state checks", () => {
   it("hasTransitionLock detects lock", () => {
-    expect(hasTransitionLock(makeBead({ labels: [LABEL_TRANSITION_VERIFICATION] }))).toBe(true);
-    expect(hasTransitionLock(makeBead({ labels: [] }))).toBe(false);
+    expect(hasTransitionLock(makeBeat({ labels: [LABEL_TRANSITION_VERIFICATION] }))).toBe(true);
+    expect(hasTransitionLock(makeBeat({ labels: [] }))).toBe(false);
   });
 
   it("isInVerification detects stage", () => {
-    expect(isInVerification(makeBead({ labels: [LABEL_STAGE_VERIFICATION] }))).toBe(true);
-    expect(isInVerification(makeBead({ labels: [] }))).toBe(false);
+    expect(isInVerification(makeBeat({ labels: [LABEL_STAGE_VERIFICATION] }))).toBe(true);
+    expect(isInVerification(makeBeat({ labels: [] }))).toBe(false);
   });
 
   it("isInRetry detects retry", () => {
-    expect(isInRetry(makeBead({ labels: [LABEL_STAGE_RETRY] }))).toBe(true);
-    expect(isInRetry(makeBead({ labels: [] }))).toBe(false);
+    expect(isInRetry(makeBeat({ labels: [LABEL_STAGE_RETRY] }))).toBe(true);
+    expect(isInRetry(makeBeat({ labels: [] }))).toBe(false);
   });
 });
 
@@ -309,9 +309,9 @@ describe("computeRetryLabels", () => {
 // ── Verifier prompt ─────────────────────────────────────────
 
 describe("buildVerifierPrompt", () => {
-  it("includes bead and commit info", () => {
+  it("includes beat and commit info", () => {
     const prompt = buildVerifierPrompt({
-      beadId: "foolery-abc",
+      beatId: "foolery-abc",
       title: "Fix login bug",
       commitSha: "def456",
     });
@@ -323,7 +323,7 @@ describe("buildVerifierPrompt", () => {
 
   it("includes REJECTION_SUMMARY instructions for failure cases", () => {
     const prompt = buildVerifierPrompt({
-      beadId: "foolery-abc",
+      beatId: "foolery-abc",
       title: "Fix login bug",
       commitSha: "def456",
     });
@@ -333,7 +333,7 @@ describe("buildVerifierPrompt", () => {
 
   it("includes optional fields when provided", () => {
     const prompt = buildVerifierPrompt({
-      beadId: "foolery-abc",
+      beatId: "foolery-abc",
       title: "Fix login bug",
       commitSha: "def456",
       description: "The login form breaks",
@@ -347,7 +347,7 @@ describe("buildVerifierPrompt", () => {
 
   it("renders knots commands when memoryManagerType=knots", () => {
     const prompt = buildVerifierPrompt({
-      beadId: "foolery-abc",
+      beatId: "foolery-abc",
       title: "Fix login bug",
       commitSha: "def456",
       memoryManagerType: "knots",

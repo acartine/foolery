@@ -1,18 +1,18 @@
 import { getBackend } from "@/lib/backend-instance";
 import type { BackendResult } from "@/lib/backend-port";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 /**
- * Minimal info about a descendant bead for confirmation display.
+ * Minimal info about a descendant beat for confirmation display.
  */
 export interface CascadeDescendant {
   id: string;
   title: string;
-  status: string;
+  state: string;
 }
 
 /**
- * Collect all open descendant beads of a given parent, recursively.
+ * Collect all open descendant beats of a given parent, recursively.
  *
  * Returns descendants in leaf-first (bottom-up) order so callers can
  * close them before their parents without ordering concerns.
@@ -23,15 +23,15 @@ export async function getOpenDescendants(
 ): Promise<BackendResult<CascadeDescendant[]>> {
   const allResult = await getBackend().list(undefined, repoPath);
   if (!allResult.ok || !allResult.data) {
-    return { ok: false, error: allResult.error ?? { code: "INTERNAL", message: "Failed to list beads", retryable: false } };
+    return { ok: false, error: allResult.error ?? { code: "INTERNAL", message: "Failed to list beats", retryable: false } };
   }
 
-  const childrenIndex = new Map<string, Bead[]>();
-  for (const bead of allResult.data) {
-    if (!bead.parent) continue;
-    const list = childrenIndex.get(bead.parent) ?? [];
-    list.push(bead);
-    childrenIndex.set(bead.parent, list);
+  const childrenIndex = new Map<string, Beat[]>();
+  for (const beat of allResult.data) {
+    if (!beat.parent) continue;
+    const list = childrenIndex.get(beat.parent) ?? [];
+    list.push(beat);
+    childrenIndex.set(beat.parent, list);
   }
 
   const descendants: CascadeDescendant[] = [];
@@ -45,7 +45,7 @@ export async function getOpenDescendants(
  */
 function collectDescendants(
   parentId: string,
-  childrenIndex: Map<string, Bead[]>,
+  childrenIndex: Map<string, Beat[]>,
   result: CascadeDescendant[],
 ): void {
   const children = childrenIndex.get(parentId);
@@ -53,14 +53,14 @@ function collectDescendants(
   for (const child of children) {
     // Recurse first to get leaf-first ordering
     collectDescendants(child.id, childrenIndex, result);
-    if (child.status !== "closed") {
-      result.push({ id: child.id, title: child.title, status: child.status });
+    if (child.state !== "closed") {
+      result.push({ id: child.id, title: child.title, state: child.state });
     }
   }
 }
 
 /**
- * Close a parent bead and all its open descendants recursively.
+ * Close a parent beat and all its open descendants recursively.
  *
  * Closes in leaf-first order (deepest children first, then up to the parent).
  * Errors on individual children are collected but do not block siblings.

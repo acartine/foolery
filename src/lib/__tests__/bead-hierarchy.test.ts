@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
 import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
-function makeBead(overrides: Partial<Bead> & { id: string }): Bead {
+function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
   return {
     title: overrides.id,
     type: "task",
-    status: "open",
+    state: "open",
     priority: 2,
     labels: [],
     created: "2025-01-01T00:00:00Z",
@@ -17,9 +17,9 @@ function makeBead(overrides: Partial<Bead> & { id: string }): Bead {
 }
 
 describe("buildHierarchy", () => {
-  it("returns flat beads at depth 0 when no parents", () => {
-    const beads = [makeBead({ id: "a" }), makeBead({ id: "b" })];
-    const result = buildHierarchy(beads);
+  it("returns flat beats at depth 0 when no parents", () => {
+    const beats = [makeBeat({ id: "a" }), makeBeat({ id: "b" })];
+    const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
       ["a", 0, false],
       ["b", 0, false],
@@ -27,12 +27,12 @@ describe("buildHierarchy", () => {
   });
 
   it("nests children under their parent", () => {
-    const beads = [
-      makeBead({ id: "parent" }),
-      makeBead({ id: "child1", parent: "parent" }),
-      makeBead({ id: "child2", parent: "parent" }),
+    const beats = [
+      makeBeat({ id: "parent" }),
+      makeBeat({ id: "child1", parent: "parent" }),
+      makeBeat({ id: "child2", parent: "parent" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
       ["parent", 0, true],
       ["child1", 1, false],
@@ -41,12 +41,12 @@ describe("buildHierarchy", () => {
   });
 
   it("handles multi-level nesting", () => {
-    const beads = [
-      makeBead({ id: "root" }),
-      makeBead({ id: "mid", parent: "root" }),
-      makeBead({ id: "leaf", parent: "mid" }),
+    const beats = [
+      makeBeat({ id: "root" }),
+      makeBeat({ id: "mid", parent: "root" }),
+      makeBeat({ id: "leaf", parent: "mid" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
       ["root", 0, true],
       ["mid", 1, true],
@@ -54,12 +54,12 @@ describe("buildHierarchy", () => {
     ]);
   });
 
-  it("treats beads with missing parent as top-level", () => {
-    const beads = [
-      makeBead({ id: "orphan", parent: "nonexistent" }),
-      makeBead({ id: "root" }),
+  it("treats beats with missing parent as top-level", () => {
+    const beats = [
+      makeBeat({ id: "orphan", parent: "nonexistent" }),
+      makeBeat({ id: "root" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
       ["orphan", 0, false],
       ["root", 0, false],
@@ -67,13 +67,13 @@ describe("buildHierarchy", () => {
   });
 
   describe("sortChildren", () => {
-    it("reorders siblings by priority then status", () => {
-      const beads = [
-        makeBead({ id: "parent" }),
-        makeBead({ id: "low", parent: "parent", priority: 3 }),
-        makeBead({ id: "high", parent: "parent", priority: 1 }),
+    it("reorders siblings by priority then state", () => {
+      const beats = [
+        makeBeat({ id: "parent" }),
+        makeBeat({ id: "low", parent: "parent", priority: 3 }),
+        makeBeat({ id: "high", parent: "parent", priority: 1 }),
       ];
-      const result = buildHierarchy(beads, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
       expect(result.map((b) => [b.id, b._depth])).toEqual([
         ["parent", 0],
         ["high", 1],
@@ -83,15 +83,15 @@ describe("buildHierarchy", () => {
 
     it("children never escape their parent subtree", () => {
       // A child with higher priority must stay under its parent, not jump out.
-      const beads = [
-        makeBead({ id: "mqv", priority: 2 }),
-        makeBead({ id: "mqv.1", parent: "mqv", priority: 0 }),
-        makeBead({ id: "mqv.2", parent: "mqv", priority: 3 }),
-        makeBead({ id: "mqv.2.5", parent: "mqv.2", priority: 0 }),
-        makeBead({ id: "mqv.2.6", parent: "mqv.2", priority: 1 }),
-        makeBead({ id: "mqv.5", parent: "mqv", priority: 1 }),
+      const beats = [
+        makeBeat({ id: "mqv", priority: 2 }),
+        makeBeat({ id: "mqv.1", parent: "mqv", priority: 0 }),
+        makeBeat({ id: "mqv.2", parent: "mqv", priority: 3 }),
+        makeBeat({ id: "mqv.2.5", parent: "mqv.2", priority: 0 }),
+        makeBeat({ id: "mqv.2.6", parent: "mqv.2", priority: 1 }),
+        makeBeat({ id: "mqv.5", parent: "mqv", priority: 1 }),
       ];
-      const result = buildHierarchy(beads, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
       const ids = result.map((b) => b.id);
       const depths = result.map((b) => b._depth);
 
@@ -123,12 +123,12 @@ describe("buildHierarchy", () => {
       }
     });
 
-    it("sorts top-level beads by priority", () => {
-      const beads = [
-        makeBead({ id: "low", priority: 4 }),
-        makeBead({ id: "high", priority: 1 }),
+    it("sorts top-level beats by priority", () => {
+      const beats = [
+        makeBeat({ id: "low", priority: 4 }),
+        makeBeat({ id: "high", priority: 1 }),
       ];
-      const result = buildHierarchy(beads, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
       expect(result.map((b) => b.id)).toEqual(["high", "low"]);
     });
   });

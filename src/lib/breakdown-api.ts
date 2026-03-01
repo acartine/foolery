@@ -9,12 +9,12 @@ const BASE = "/api/breakdown";
 
 export async function startBreakdown(
   repo: string,
-  parentBeadId: string
+  parentBeatId: string
 ): Promise<BdResult<BreakdownSession>> {
   const res = await fetch(BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ _repo: repo, parentBeadId }),
+    body: JSON.stringify({ _repo: repo, parentBeatId }),
   });
 
   const json = await res.json();

@@ -3,9 +3,9 @@ import type { TerminalSessionStatus } from "@/lib/types";
 
 export interface ActiveTerminal {
   sessionId: string;
-  beadId: string;
-  beadTitle: string;
-  beadIds?: string[];
+  beatId: string;
+  beatTitle: string;
+  beatIds?: string[];
   repoPath?: string;
   status: TerminalSessionStatus;
   startedAt: string;

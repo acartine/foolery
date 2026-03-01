@@ -5,7 +5,7 @@ How to add a new backend implementation to Foolery.
 ## Overview
 
 Foolery uses a **port-adapter pattern** to decouple business logic from storage.
-All bead operations flow through a single `BackendPort` interface.  Concrete
+All beat operations flow through a single `BackendPort` interface.  Concrete
 implementations (CLI wrapper, direct JSONL I/O, in-memory stub) sit behind this
 interface so the rest of the application never knows which backend is active.
 
@@ -43,55 +43,55 @@ Your class must implement every method of `BackendPort`:
 import type {
   BackendPort,
   BackendResult,
-  BeadListFilters,
-  BeadQueryOptions,
+  BeatListFilters,
+  BeatQueryOptions,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
-import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
-import type { Bead, BeadDependency } from "@/lib/types";
+import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
+import type { Beat, BeatDependency } from "@/lib/types";
 
 export class MyBackend implements BackendPort {
   readonly capabilities: BackendCapabilities = MY_CAPABILITIES;
 
   async list(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     // ...
   }
 
   async listReady(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     // ...
   }
 
   async search(
     query: string,
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     // ...
   }
 
   async query(
     expression: string,
-    options?: BeadQueryOptions,
+    options?: BeatQueryOptions,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     // ...
   }
 
   async get(
     id: string,
     repoPath?: string,
-  ): Promise<BackendResult<Bead>> {
+  ): Promise<BackendResult<Beat>> {
     // ...
   }
 
   async create(
-    input: CreateBeadInput,
+    input: CreateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
     // ...
@@ -99,7 +99,7 @@ export class MyBackend implements BackendPort {
 
   async update(
     id: string,
-    input: UpdateBeadInput,
+    input: UpdateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     // ...
@@ -124,7 +124,7 @@ export class MyBackend implements BackendPort {
     id: string,
     repoPath?: string,
     options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>> {
+  ): Promise<BackendResult<BeatDependency[]>> {
     // ...
   }
 
@@ -178,7 +178,7 @@ export const MY_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
 | `canClose` | `close()` is functional |
 | `canSearch` | `search()` does free-text matching |
 | `canQuery` | `query()` handles structured expressions |
-| `canListReady` | `listReady()` filters to unblocked beads |
+| `canListReady` | `listReady()` filters to unblocked beats |
 | `canManageDependencies` | `addDependency` / `removeDependency` / `listDependencies` work |
 | `canManageLabels` | Label add/remove through `update()` works |
 | `canSync` | Backend supports a sync operation |
@@ -194,7 +194,7 @@ if (hasCapability(backend.capabilities, "canDelete")) {
 }
 
 // Or throw if missing:
-assertCapability(backend.capabilities, "canDelete", "delete bead");
+assertCapability(backend.capabilities, "canDelete", "delete beat");
 ```
 
 ### 3. Register in the factory
@@ -402,7 +402,7 @@ import { MockBackendPort } from "@/lib/__tests__/mock-backend-port";
 
 const backend = new MockBackendPort();
 // seed data
-await backend.create({ title: "Test bead", type: "task", priority: 2 });
+await backend.create({ title: "Test beat", type: "task", priority: 2 });
 // use in your component/service under test
 // ...
 // reset between tests

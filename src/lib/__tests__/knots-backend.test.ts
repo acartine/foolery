@@ -308,7 +308,7 @@ describe("KnotsBackend mapping behaviour", () => {
 
     const fetched = await backend.get(created.data!.id);
     expect(fetched.ok).toBe(true);
-    expect(fetched.data?.status).toBe("closed");
+    expect(fetched.data?.state).toBe("shipped");
     expect((fetched.data?.metadata as Record<string, unknown>)?.knotsState).toBe("shipped");
   });
 

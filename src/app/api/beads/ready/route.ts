@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import { backendErrorStatus } from "@/lib/backend-http";
-import type { BeadListFilters } from "@/lib/backend-port";
+import type { BeatListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { filterByVisibleAncestorChain } from "@/lib/ready-ancestor-filter";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -16,15 +16,15 @@ export async function GET(request: NextRequest) {
   // Query open + in_progress items via backend.list (which returns labels)
   // instead of backend.listReady (which can omit labels depending on backend).
   const [rawOpen, rawInProgress] = await Promise.all([
-    getBackend().list({ ...params, status: "open" } as BeadListFilters, repoPath),
-    getBackend().list({ ...params, status: "in_progress" } as BeadListFilters, repoPath),
+    getBackend().list({ ...params, state: "open" } as BeatListFilters, repoPath),
+    getBackend().list({ ...params, state: "in_progress" } as BeatListFilters, repoPath),
   ]);
 
-  const openResult = withErrorSuppression("listBeads", rawOpen, { ...params, status: "open" }, repoPath);
+  const openResult = withErrorSuppression("listBeads", rawOpen, { ...params, state: "open" }, repoPath);
   const inProgressResult = withErrorSuppression(
     "listBeads",
     rawInProgress,
-    { ...params, status: "in_progress" },
+    { ...params, state: "in_progress" },
     repoPath,
   );
 
@@ -35,14 +35,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: openResult.error?.message }, { status });
   }
 
-  const merged = new Map<string, Bead>();
-  for (const bead of openResult.data ?? []) merged.set(bead.id, bead);
-  for (const bead of (inProgressResult.ok ? inProgressResult.data ?? [] : [])) {
-    if (!merged.has(bead.id)) merged.set(bead.id, bead);
+  const merged = new Map<string, Beat>();
+  for (const beat of openResult.data ?? []) merged.set(beat.id, beat);
+  for (const beat of (inProgressResult.ok ? inProgressResult.data ?? [] : [])) {
+    if (!merged.has(beat.id)) merged.set(beat.id, beat);
   }
 
-  // Human-action queue beads are not \"ready\" for agent execution.
-  let result = Array.from(merged.values()).filter((bead) => !bead.requiresHumanAction);
+  // Human-action queue beats are not \"ready\" for agent execution.
+  let result = Array.from(merged.values()).filter((beat) => !beat.requiresHumanAction);
 
   // Hide descendants whose parent chain is not in the ready/in-progress set.
   result = filterByVisibleAncestorChain(result);

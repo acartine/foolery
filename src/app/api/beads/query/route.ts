@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import { backendErrorStatus } from "@/lib/backend-http";
-import { queryBeadSchema } from "@/lib/schemas";
+import { queryBeatSchema } from "@/lib/schemas";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
-  const parsed = queryBeadSchema.safeParse(rest);
+  const parsed = queryBeatSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },

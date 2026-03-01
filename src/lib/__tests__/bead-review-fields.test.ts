@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import { rejectBeadFields, verifyBeadFields } from "@/components/bead-columns";
 
-function makeBead(overrides: Partial<Bead> = {}): Bead {
+function makeBeat(overrides: Partial<Beat> = {}): Beat {
   return {
     id: "foolery-123",
-    title: "Test Bead",
+    title: "Test Beat",
     description: "",
-    status: "in_progress",
+    state: "in_progress",
     priority: 2,
     type: "task",
     labels: [],
@@ -20,17 +20,15 @@ function makeBead(overrides: Partial<Bead> = {}): Bead {
 describe("review field builders", () => {
   it("builds atomic verify fields", () => {
     expect(verifyBeadFields()).toEqual({
-      status: "closed",
-      workflowState: "closed",
+      state: "shipped",
     });
   });
 
   it("builds reject fields with incremented attempts", () => {
-    const bead = makeBead({ labels: ["stage:verification", "attempts:3"] });
+    const bead = makeBeat({ labels: ["stage:verification", "attempts:3"] });
 
     expect(rejectBeadFields(bead)).toEqual({
-      status: "open",
-      workflowState: "retake",
+      state: "ready_for_implementation",
       removeLabels: ["attempts:3"],
       labels: ["attempts:4"],
     });

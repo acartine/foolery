@@ -1,5 +1,5 @@
 /**
- * BackendPort - The core operations interface for bead management.
+ * BackendPort - The core operations interface for beat management.
  *
  * Any backend implementation (CLI wrapper, HTTP client, in-memory store)
  * must satisfy this contract. All types are implementation-neutral and
@@ -8,14 +8,12 @@
 
 import type {
   ActionOwnerKind,
-  Bead,
-  BeadDependency,
-  BeadPriority,
-  BeadStatus,
-  BeadType,
+  Beat,
+  BeatDependency,
+  BeatPriority,
   MemoryWorkflowDescriptor,
 } from "./types";
-import type { CreateBeadInput, UpdateBeadInput } from "./schemas";
+import type { CreateBeatInput, UpdateBeatInput } from "./schemas";
 
 // ── Structured error ────────────────────────────────────────
 
@@ -51,12 +49,11 @@ export interface BackendResult<T> {
 // ── Request DTOs ────────────────────────────────────────────
 
 /** Filters applied to list, listReady, and search operations. */
-export interface BeadListFilters {
-  type?: BeadType;
-  status?: BeadStatus;
+export interface BeatListFilters {
+  type?: string;
+  state?: string;
   workflowId?: string;
-  workflowState?: string;
-  priority?: BeadPriority;
+  priority?: BeatPriority;
   label?: string;
   assignee?: string;
   owner?: string;
@@ -67,7 +64,7 @@ export interface BeadListFilters {
 }
 
 /** Options for query operations. */
-export interface BeadQueryOptions {
+export interface BeatQueryOptions {
   /** Maximum number of results to return. */
   limit?: number;
   /** Sort expression (backend-specific format). */
@@ -77,7 +74,7 @@ export interface BeadQueryOptions {
 // ── BackendPort interface ───────────────────────────────────
 
 /**
- * The main contract that any bead backend must implement.
+ * The main contract that any beat backend must implement.
  *
  * Every method returns a `BackendResult` to allow callers to handle
  * success and failure uniformly without exceptions.
@@ -88,79 +85,79 @@ export interface BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>>;
 
-  /** List all beads, optionally filtered. */
+  /** List all beats, optionally filtered. */
   list(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>>;
+  ): Promise<BackendResult<Beat[]>>;
 
-  /** List beads that are ready to work on (unblocked). */
+  /** List beats that are ready to work on (unblocked). */
   listReady(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>>;
+  ): Promise<BackendResult<Beat[]>>;
 
-  /** Full-text search across beads. */
+  /** Full-text search across beats. */
   search(
     query: string,
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>>;
+  ): Promise<BackendResult<Beat[]>>;
 
   /** Execute an arbitrary query expression. */
   query(
     expression: string,
-    options?: BeadQueryOptions,
+    options?: BeatQueryOptions,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>>;
+  ): Promise<BackendResult<Beat[]>>;
 
-  /** Retrieve a single bead by ID. */
+  /** Retrieve a single beat by ID. */
   get(
     id: string,
     repoPath?: string,
-  ): Promise<BackendResult<Bead>>;
+  ): Promise<BackendResult<Beat>>;
 
-  /** Create a new bead. Returns the assigned ID. */
+  /** Create a new beat. Returns the assigned ID. */
   create(
-    input: CreateBeadInput,
+    input: CreateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<{ id: string }>>;
 
-  /** Update an existing bead's fields. */
+  /** Update an existing beat's fields. */
   update(
     id: string,
-    input: UpdateBeadInput,
+    input: UpdateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
-  /** Permanently delete a bead. */
+  /** Permanently delete a beat. */
   delete(
     id: string,
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
-  /** Close a bead with an optional reason. */
+  /** Close a beat with an optional reason. */
   close(
     id: string,
     reason?: string,
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
-  /** List dependencies for a given bead. */
+  /** List dependencies for a given beat. */
   listDependencies(
     id: string,
     repoPath?: string,
     options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>>;
+  ): Promise<BackendResult<BeatDependency[]>>;
 
-  /** Add a blocking dependency between two beads. */
+  /** Add a blocking dependency between two beats. */
   addDependency(
     blockerId: string,
     blockedId: string,
     repoPath?: string,
   ): Promise<BackendResult<void>>;
 
-  /** Remove a blocking dependency between two beads. */
+  /** Remove a blocking dependency between two beats. */
   removeDependency(
     blockerId: string,
     blockedId: string,
@@ -170,6 +167,13 @@ export interface BackendPort {
 
 // ── Re-exports ──────────────────────────────────────────────
 
-export type { Bead, BeadDependency, BeadType, BeadStatus, BeadPriority } from "./types";
+export type { Beat, BeatDependency, BeatPriority } from "./types";
 export type { MemoryWorkflowDescriptor } from "./types";
-export type { CreateBeadInput, UpdateBeadInput } from "./schemas";
+export type { CreateBeatInput, UpdateBeatInput } from "./schemas";
+
+// ── Deprecated re-exports ───────────────────────────────────
+
+/** @deprecated Use BeatListFilters */
+export type BeadListFilters = BeatListFilters;
+/** @deprecated Use BeatQueryOptions */
+export type BeadQueryOptions = BeatQueryOptions;

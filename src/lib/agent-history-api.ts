@@ -5,16 +5,16 @@ const BASE = "/api/agent-history";
 
 interface FetchAgentHistoryOptions {
   repoPath?: string;
-  beadId?: string;
-  beadRepoPath?: string;
+  beatId?: string;
+  beatRepoPath?: string;
   sinceHours?: number;
 }
 
 function buildQuery(options: FetchAgentHistoryOptions): string {
   const params = new URLSearchParams();
   if (options.repoPath) params.set("_repo", options.repoPath);
-  if (options.beadId) params.set("beadId", options.beadId);
-  if (options.beadRepoPath) params.set("beadRepo", options.beadRepoPath);
+  if (options.beatId) params.set("beatId", options.beatId);
+  if (options.beatRepoPath) params.set("beatRepo", options.beatRepoPath);
   if (typeof options.sinceHours === "number" && Number.isFinite(options.sinceHours)) {
     params.set("sinceHours", String(options.sinceHours));
   }

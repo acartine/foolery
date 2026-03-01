@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createBead, closeBead } from "@/lib/api";
-import { beadToCreateInput } from "@/lib/bead-utils";
+import { beatToCreateInput } from "@/lib/beat-utils";
 import { fetchRegistry } from "@/lib/registry-api";
 import { useAppStore } from "@/stores/app-store";
 import { Button } from "@/components/ui/button";
@@ -25,16 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 interface MoveToProjectDialogProps {
-  bead: Bead;
+  beat: Beat;
   currentRepo?: string;
-  onMoved: (newBeadId: string, targetRepo: string) => void;
+  onMoved: (newBeatId: string, targetRepo: string) => void;
 }
 
 export function MoveToProjectDialog({
-  bead,
+  beat,
   currentRepo,
   onMoved,
 }: MoveToProjectDialogProps) {
@@ -64,7 +64,7 @@ export function MoveToProjectDialog({
     mutationFn: async () => {
       // Step 1: Create in target repo
       const createResult = await createBead(
-        beadToCreateInput(bead),
+        beatToCreateInput(beat),
         targetRepo
       );
       if (!createResult.ok || !createResult.data) {
@@ -78,7 +78,7 @@ export function MoveToProjectDialog({
 
       // Step 2: Close original
       const closeResult = await closeBead(
-        bead.id,
+        beat.id,
         { reason: `Moved to ${targetName} as ${newId}` },
         currentRepo
       );
@@ -100,8 +100,8 @@ export function MoveToProjectDialog({
     },
   });
 
-  // Hide when bead is already closed or no other projects available
-  if (bead.status === "closed" || availableRepos.length === 0) return null;
+  // Hide when beat is already terminal or no other projects available
+  if (beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed" || availableRepos.length === 0) return null;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTargetRepo(""); }}>

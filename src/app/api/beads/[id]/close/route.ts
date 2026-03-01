@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import { backendErrorStatus } from "@/lib/backend-http";
-import { closeBeadSchema } from "@/lib/schemas";
+import { closeBeatSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 
 export async function POST(
@@ -12,7 +12,7 @@ export async function POST(
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
   const backend = getBackend();
-  const parsed = closeBeadSchema.safeParse(rest);
+  const parsed = closeBeatSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },

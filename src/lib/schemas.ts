@@ -1,23 +1,12 @@
 import { z } from "zod/v4";
 
-export const beadTypeSchema = z.enum([
-  "bug",
-  "feature",
-  "task",
-  "epic",
-  "chore",
-  "merge-request",
-  "molecule",
-  "gate",
-]);
+// ── Beat schemas ────────────────────────────────────────────
 
-export const beadStatusSchema = z.enum([
-  "open",
-  "in_progress",
-  "blocked",
-  "deferred",
-  "closed",
-]);
+/** Open string type — default "work" for knots compatibility. */
+export const beatTypeSchema = z.string().default("work");
+
+/** Workflow state — open string, e.g. "ready_for_implementation", "shipped". */
+export const beatStateSchema = z.string();
 
 export const workflowModeSchema = z.enum([
   "granular_autonomous",
@@ -30,7 +19,7 @@ export const coarsePrPreferenceSchema = z.enum([
   "none",
 ]);
 
-export const beadPrioritySchema = z.union([
+export const beatPrioritySchema = z.union([
   z.literal(0),
   z.literal(1),
   z.literal(2),
@@ -38,11 +27,11 @@ export const beadPrioritySchema = z.union([
   z.literal(4),
 ]);
 
-export const createBeadSchema = z.object({
+export const createBeatSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  type: beadTypeSchema.default("task"),
-  priority: beadPrioritySchema.default(2),
+  type: beatTypeSchema,
+  priority: beatPrioritySchema.default(2),
   labels: z.array(z.string()).default([]),
   assignee: z.string().optional(),
   due: z.string().optional(),
@@ -54,14 +43,13 @@ export const createBeadSchema = z.object({
   workflowId: z.string().min(1).optional(),
 });
 
-export const updateBeadSchema = z.object({
+export const updateBeatSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
-  type: beadTypeSchema.optional(),
-  status: beadStatusSchema.optional(),
-  workflowState: z.string().min(1).optional(),
+  type: z.string().optional(),
+  state: z.string().min(1).optional(),
   profileId: z.string().min(1).optional(),
-  priority: beadPrioritySchema.optional(),
+  priority: beatPrioritySchema.optional(),
   parent: z.string().optional(),
   labels: z.array(z.string()).optional(),
   removeLabels: z.array(z.string()).optional(),
@@ -72,7 +60,7 @@ export const updateBeadSchema = z.object({
   estimate: z.number().int().positive().optional(),
 });
 
-export const closeBeadSchema = z.object({
+export const closeBeatSchema = z.object({
   reason: z.string().optional(),
 });
 
@@ -81,7 +69,7 @@ export const cascadeCloseSchema = z.object({
   reason: z.string().optional(),
 });
 
-export const queryBeadSchema = z.object({
+export const queryBeatSchema = z.object({
   expression: z.string().min(1, "Query expression is required"),
   limit: z.number().int().positive().default(50),
   sort: z.string().optional(),
@@ -99,11 +87,11 @@ export const removeRepoSchema = z.object({
   path: z.string().min(1, "Path is required"),
 });
 
-export type CreateBeadInput = z.infer<typeof createBeadSchema>;
-export type UpdateBeadInput = z.infer<typeof updateBeadSchema>;
-export type CloseBeadInput = z.infer<typeof closeBeadSchema>;
+export type CreateBeatInput = z.infer<typeof createBeatSchema>;
+export type UpdateBeatInput = z.infer<typeof updateBeatSchema>;
+export type CloseBeatInput = z.infer<typeof closeBeatSchema>;
 export type CascadeCloseInput = z.infer<typeof cascadeCloseSchema>;
-export type QueryBeadInput = z.infer<typeof queryBeadSchema>;
+export type QueryBeatInput = z.infer<typeof queryBeatSchema>;
 export type AddDepInput = z.infer<typeof addDepSchema>;
 export type AddRepoInput = z.infer<typeof addRepoSchema>;
 export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;
@@ -185,3 +173,28 @@ export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type WorkflowSettings = z.infer<typeof workflowSettingsSchema>;
+
+// ── Deprecated re-exports (to be removed in cleanup pass) ───
+
+/** @deprecated Use beatTypeSchema */
+export const beadTypeSchema = beatTypeSchema;
+/** @deprecated Use beatStateSchema */
+export const beadStatusSchema = beatStateSchema;
+/** @deprecated Use beatPrioritySchema */
+export const beadPrioritySchema = beatPrioritySchema;
+/** @deprecated Use createBeatSchema */
+export const createBeadSchema = createBeatSchema;
+/** @deprecated Use updateBeatSchema */
+export const updateBeadSchema = updateBeatSchema;
+/** @deprecated Use closeBeatSchema */
+export const closeBeadSchema = closeBeatSchema;
+/** @deprecated Use queryBeatSchema */
+export const queryBeadSchema = queryBeatSchema;
+/** @deprecated Use CreateBeatInput */
+export type CreateBeadInput = CreateBeatInput;
+/** @deprecated Use UpdateBeatInput */
+export type UpdateBeadInput = UpdateBeatInput;
+/** @deprecated Use CloseBeatInput */
+export type CloseBeadInput = CloseBeatInput;
+/** @deprecated Use QueryBeatInput */
+export type QueryBeadInput = QueryBeatInput;

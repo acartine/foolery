@@ -1,15 +1,10 @@
 import { create } from "zustand";
-import type {
-  BeadStatus,
-  BeadType,
-  BeadPriority,
-  RegisteredRepo,
-} from "@/lib/types";
+import type { RegisteredRepo } from "@/lib/types";
 
 export interface Filters {
-  status?: BeadStatus | "ready";
-  type?: BeadType;
-  priority?: BeadPriority;
+  state?: string;
+  type?: string;
+  priority?: number;
   assignee?: string;
 }
 
@@ -31,7 +26,7 @@ interface AppState {
   setPageSize: (size: number) => void;
 }
 
-const initialFilters: Filters = { status: "ready" };
+const initialFilters: Filters = { state: "ready" };
 
 const LAST_REPO_KEY = "foolery:lastRepo";
 

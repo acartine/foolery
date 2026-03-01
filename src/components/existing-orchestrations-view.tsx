@@ -26,15 +26,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchBeads, fetchBatchDeps, updateBead, closeBead } from "@/lib/api";
-import { verifyBeadFields, rejectBeadFields } from "@/components/bead-columns";
+import { verifyBeatFields, rejectBeatFields } from "@/components/beat-columns";
 import { restageOrchestration } from "@/lib/orchestration-api";
 import {
   ORCHESTRATION_RESTAGE_DRAFT_KEY,
   type OrchestrationRestageDraft,
 } from "@/lib/orchestration-restage";
-import { naturalCompare } from "@/lib/bead-sort";
+import { naturalCompare } from "@/lib/beat-sort";
 import { startSession } from "@/lib/terminal-api";
-import type { Bead, BeadDependency, OrchestrationPlan } from "@/lib/types";
+import type { Beat, BeatDependency, OrchestrationPlan } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import {
@@ -50,17 +50,17 @@ import {
 } from "@/lib/wave-slugs";
 
 interface ExistingOrchestrationData {
-  beads: Bead[];
-  waves: Bead[];
-  depsByWaveId: Record<string, BeadDependency[]>;
+  beats: Beat[];
+  waves: Beat[];
+  depsByWaveId: Record<string, BeatDependency[]>;
 }
 
 interface HierarchyNode {
   id: string;
   title: string;
-  type: Bead["type"];
-  status: Bead["status"];
-  priority: Bead["priority"];
+  type: Beat["type"];
+  state: Beat["state"];
+  priority: Beat["priority"];
   children: HierarchyNode[];
 }
 
@@ -69,7 +69,7 @@ interface WaveCard {
   slug: string;
   title: string;
   name: string;
-  bead: Bead;
+  beat: Beat;
   children: HierarchyNode[];
   maxDepth: number;
   descendants: number;
@@ -101,12 +101,12 @@ type NavigationLevel = "tree" | "wave" | "child";
 
 const MIN_ZOOM_DEPTH = 2;
 
-function isWaveBead(bead: Bead): boolean {
-  return bead.labels?.includes(ORCHESTRATION_WAVE_LABEL);
+function isWaveBeat(beat: Beat): boolean {
+  return beat.labels?.includes(ORCHESTRATION_WAVE_LABEL);
 }
 
-function isVerificationState(bead: Bead): boolean {
-  return bead.workflowState === "verification";
+function isVerificationState(beat: Beat): boolean {
+  return beat.state === "verification";
 }
 
 function toEpochMs(value: string | undefined): number {
@@ -115,7 +115,7 @@ function toEpochMs(value: string | undefined): number {
   return parsed;
 }
 
-function compareByTimestamp(a: Bead, b: Bead): number {
+function compareByTimestamp(a: Beat, b: Beat): number {
   const updatedDiff = toEpochMs(b.updated) - toEpochMs(a.updated);
   if (updatedDiff !== 0) return updatedDiff;
   const createdDiff = toEpochMs(b.created) - toEpochMs(a.created);
@@ -169,22 +169,22 @@ function buildRestagePlan(tree: OrchestrationTree): OrchestrationPlan {
     .map((wave, index) => ({
       waveIndex: index + 1,
       name: wave.name,
-      objective: parseWaveObjective(wave.bead.description),
+      objective: parseWaveObjective(wave.beat.description),
       agents: [],
-      beads: wave.children.map((child) => ({
+      beats: wave.children.map((child) => ({
         id: child.id,
         title: child.title,
       })),
-      notes: parseWaveNotes(wave.bead.description),
+      notes: parseWaveNotes(wave.beat.description),
     }))
-    .filter((wave) => wave.beads.length > 0);
+    .filter((wave) => wave.beats.length > 0);
 
   return {
     summary: `Restaged ${waves.length} scene${
       waves.length === 1 ? "" : "s"
     } from tree ${tree.label}.`,
     waves,
-    unassignedBeadIds: [],
+    unassignedBeatIds: [],
     assumptions: [`Restaged from existing scene tree ${tree.label}.`],
   };
 }
@@ -200,25 +200,25 @@ function buildRestageWaveEdits(
   );
 }
 
-function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
-  const byId = new Map(beads.map((bead) => [bead.id, bead]));
-  const byParent = new Map<string, Bead[]>();
+function buildChildrenIndex(beats: Beat[]): Map<string, Beat[]> {
+  const byId = new Map(beats.map((beat) => [beat.id, beat]));
+  const byParent = new Map<string, Beat[]>();
 
-  const resolveVisibleParentId = (bead: Bead): string | undefined => {
-    const parentId = bead.parent;
+  const resolveVisibleParentId = (beat: Beat): string | undefined => {
+    const parentId = beat.parent;
     if (!parentId) return undefined;
     const parent = byId.get(parentId);
     if (!parent) return undefined;
-    if (parent.status === "closed") return undefined;
+    if (parent.state === "closed") return undefined;
     return parent.id;
   };
 
-  for (const bead of beads) {
-    if (bead.status === "closed") continue;
-    const parentId = resolveVisibleParentId(bead);
+  for (const beat of beats) {
+    if (beat.state === "closed") continue;
+    const parentId = resolveVisibleParentId(beat);
     if (!parentId) continue;
     const list = byParent.get(parentId) ?? [];
-    list.push(bead);
+    list.push(beat);
     byParent.set(parentId, list);
   }
   for (const [parent, list] of byParent.entries()) {
@@ -231,42 +231,42 @@ function buildChildrenIndex(beads: Bead[]): Map<string, Bead[]> {
 }
 
 function buildNode(
-  bead: Bead,
-  byParent: Map<string, Bead[]>,
+  beat: Beat,
+  byParent: Map<string, Beat[]>,
   seen: Set<string>
 ): HierarchyNode {
-  if (seen.has(bead.id)) {
+  if (seen.has(beat.id)) {
     return {
-      id: bead.id,
-      title: bead.title,
-      type: bead.type,
-      status: bead.status,
-      priority: bead.priority,
+      id: beat.id,
+      title: beat.title,
+      type: beat.type,
+      state: beat.state,
+      priority: beat.priority,
       children: [],
     };
   }
-  seen.add(bead.id);
-  const children = (byParent.get(bead.id) ?? []).map((child) =>
+  seen.add(beat.id);
+  const children = (byParent.get(beat.id) ?? []).map((child) =>
     buildNode(child, byParent, seen)
   );
-  seen.delete(bead.id);
+  seen.delete(beat.id);
   return {
-    id: bead.id,
-    title: bead.title,
-    type: bead.type,
-    status: bead.status,
-    priority: bead.priority,
+    id: beat.id,
+    title: beat.title,
+    type: beat.type,
+    state: beat.state,
+    priority: beat.priority,
     children,
   };
 }
 
 function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrchestration {
   const waves = data.waves
-    .filter((wave) => wave.status !== "closed")
+    .filter((wave) => wave.state !== "closed")
     .slice()
     .sort(compareByTimestamp);
   const waveIds = new Set(waves.map((wave) => wave.id));
-  const byParent = buildChildrenIndex(data.beads);
+  const byParent = buildChildrenIndex(data.beats);
 
   const waveCards = new Map<string, WaveCard>();
   for (const wave of waves) {
@@ -279,7 +279,7 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
       slug,
       title: wave.title,
       name: parseWaveName(wave.title),
-      bead: wave,
+      beat: wave,
       children,
       maxDepth: measureDepth(children, 2),
       descendants: countHierarchyNodes(children),
@@ -381,7 +381,7 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
       MIN_ZOOM_DEPTH
     );
     const updatedAt = waveCardsInTree
-      .map((waveCard) => waveCard.bead.updated)
+      .map((waveCard) => waveCard.beat.updated)
       .sort()
       .at(-1) ?? "";
     return {
@@ -404,41 +404,41 @@ function parseExistingOrchestrations(data: ExistingOrchestrationData): ParsedOrc
 async function loadExistingOrchestrations(
   repoPath: string
 ): Promise<ExistingOrchestrationData> {
-  const beadsResult = await fetchBeads(undefined, repoPath);
-  if (!beadsResult.ok || !beadsResult.data) {
-    throw new Error(beadsResult.error ?? "Failed to load beads");
+  const beatsResult = await fetchBeads(undefined, repoPath);
+  if (!beatsResult.ok || !beatsResult.data) {
+    throw new Error(beatsResult.error ?? "Failed to load beats");
   }
 
-  const beads = beadsResult.data;
+  const beats = beatsResult.data;
 
-  // Find all bead IDs referenced as parents by other beads
+  // Find all beat IDs referenced as parents by other beats
   const parentIds = new Set<string>();
-  for (const bead of beads) {
-    if (bead.parent) parentIds.add(bead.parent);
+  for (const beat of beats) {
+    if (beat.parent) parentIds.add(beat.parent);
   }
 
-  // Waves = beads with orchestration:wave label OR beads that are parents
-  const waves = beads.filter(
-    (bead) => isWaveBead(bead) || parentIds.has(bead.id)
+  // Waves = beats with orchestration:wave label OR beats that are parents
+  const waves = beats.filter(
+    (beat) => isWaveBeat(beat) || parentIds.has(beat.id)
   );
   const waveIds = waves.map((w) => w.id);
   const batchResult =
     waveIds.length > 0
       ? await fetchBatchDeps(waveIds, repoPath)
-      : { ok: true as const, data: {} as Record<string, BeadDependency[]> };
+      : { ok: true as const, data: {} as Record<string, BeatDependency[]> };
   const depsByWaveId =
     batchResult.ok && batchResult.data
       ? batchResult.data
       : Object.fromEntries(waveIds.map((id) => [id, []]));
 
   return {
-    beads,
+    beats,
     waves,
     depsByWaveId,
   };
 }
 
-function buildMigrationPlan(waves: Bead[]): MigrationPlan[] {
+function buildMigrationPlan(waves: Beat[]): MigrationPlan[] {
   const used = new Set<string>();
   const sorted = waves.slice().sort((a, b) => a.created.localeCompare(b.created));
   for (const wave of sorted) {
@@ -469,7 +469,7 @@ function buildMigrationPlan(waves: Bead[]): MigrationPlan[] {
   return updates;
 }
 
-function statusTone(status: Bead["status"]): string {
+function statusTone(status: Beat["state"]): string {
   if (status === "in_progress") return "bg-blue-100 text-blue-700";
   if (status === "blocked") return "bg-amber-100 text-amber-800";
   if (status === "closed") return "bg-zinc-200 text-zinc-700";
@@ -516,8 +516,8 @@ function HierarchyList({
               <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
                 {node.type}
               </Badge>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] ${statusTone(node.status)}`}>
-                {node.status}
+              <span className={`rounded px-1.5 py-0.5 text-[10px] ${statusTone(node.state)}`}>
+                {node.state}
               </span>
               <button
                 type="button"
@@ -598,24 +598,24 @@ export function ExistingOrchestrationsView() {
   );
 
   const builtForReviewIds = useMemo(() => {
-    const beads = query.data?.beads ?? [];
-    const byParent = new Map<string, Bead[]>();
-    for (const bead of beads) {
-      if (!bead.parent) continue;
-      const list = byParent.get(bead.parent) ?? [];
-      list.push(bead);
-      byParent.set(bead.parent, list);
+    const beats = query.data?.beats ?? [];
+    const byParent = new Map<string, Beat[]>();
+    for (const beat of beats) {
+      if (!beat.parent) continue;
+      const list = byParent.get(beat.parent) ?? [];
+      list.push(beat);
+      byParent.set(beat.parent, list);
     }
     const result = new Set<string>();
     for (const [parentId, children] of byParent) {
       const hasVerification = children.some(
-        (c) => c.status === "in_progress" && isVerificationState(c)
+        (c) => c.state === "in_progress" && isVerificationState(c)
       );
       if (!hasVerification) continue;
       const allSettled = children.every(
         (c) =>
-          c.status === "closed" ||
-          (c.status === "in_progress" && isVerificationState(c))
+          c.state === "closed" ||
+          (c.state === "in_progress" && isVerificationState(c))
       );
       if (allSettled) result.add(parentId);
     }
@@ -624,15 +624,15 @@ export function ExistingOrchestrationsView() {
 
   const handleApproveReview = useCallback(
     async (parentId: string) => {
-      const beads = query.data?.beads ?? [];
-      const children = beads.filter(
+      const beats = query.data?.beats ?? [];
+      const children = beats.filter(
         (b) =>
           b.parent === parentId &&
-          b.status === "in_progress" &&
+          b.state === "in_progress" &&
           isVerificationState(b)
       );
       for (const child of children) {
-        await updateBead(child.id, verifyBeadFields(), activeRepo ?? undefined);
+        await updateBead(child.id, verifyBeatFields(), activeRepo ?? undefined);
       }
       await closeBead(parentId, {}, activeRepo ?? undefined);
       queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
@@ -644,15 +644,15 @@ export function ExistingOrchestrationsView() {
 
   const handleRejectReview = useCallback(
     async (parentId: string) => {
-      const beads = query.data?.beads ?? [];
-      const children = beads.filter(
+      const beats = query.data?.beats ?? [];
+      const children = beats.filter(
         (b) =>
           b.parent === parentId &&
-          b.status === "in_progress" &&
+          b.state === "in_progress" &&
           isVerificationState(b)
       );
       for (const child of children) {
-        await updateBead(child.id, rejectBeadFields(child), activeRepo ?? undefined);
+        await updateBead(child.id, rejectBeatFields(child), activeRepo ?? undefined);
       }
       queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
       queryClient.invalidateQueries({ queryKey: ["beads"] });
@@ -924,7 +924,7 @@ export function ExistingOrchestrationsView() {
       }
 
       setSavingWaveId(wave.id);
-      const removeLabels = getWaveSlugLabels(wave.bead.labels ?? []);
+      const removeLabels = getWaveSlugLabels(wave.beat.labels ?? []);
       const result = await updateBead(
         wave.id,
         {
@@ -959,7 +959,7 @@ export function ExistingOrchestrationsView() {
       }
 
       const existingRunning = terminals.find(
-        (terminal) => terminal.beadId === wave.id && terminal.status === "running"
+        (terminal) => terminal.beatId === wave.id && terminal.status === "running"
       );
       if (existingRunning) {
         setActiveSession(existingRunning.sessionId);
@@ -985,8 +985,8 @@ export function ExistingOrchestrationsView() {
 
       upsertTerminal({
         sessionId: result.data.id,
-        beadId: wave.id,
-        beadTitle: wave.title,
+        beatId: wave.id,
+        beatTitle: wave.title,
         repoPath: result.data.repoPath ?? activeRepo,
         status: "running",
         startedAt: new Date().toISOString(),
@@ -1002,7 +1002,7 @@ export function ExistingOrchestrationsView() {
       return;
     }
     const wavesToShoot = activeTree.waves.filter(
-      (wave) => wave.bead.status !== "closed"
+      (wave) => wave.beat.state !== "closed"
     );
     if (wavesToShoot.length === 0) {
       toast.info("All scenes in this tree are already closed");
@@ -1012,7 +1012,7 @@ export function ExistingOrchestrationsView() {
     let fired = 0;
     for (const wave of wavesToShoot) {
       const existingRunning = terminals.find(
-        (terminal) => terminal.beadId === wave.id && terminal.status === "running"
+        (terminal) => terminal.beatId === wave.id && terminal.status === "running"
       );
       if (existingRunning) continue;
 
@@ -1021,8 +1021,8 @@ export function ExistingOrchestrationsView() {
         if (result.ok && result.data) {
           upsertTerminal({
             sessionId: result.data.id,
-            beadId: wave.id,
-            beadTitle: wave.title,
+            beatId: wave.id,
+            beatTitle: wave.title,
             repoPath: result.data.repoPath ?? activeRepo,
             status: "running",
             startedAt: new Date().toISOString(),

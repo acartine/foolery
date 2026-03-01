@@ -6,9 +6,9 @@
  *  2. Self-test target for the contract test harness.
  */
 
-import type { Bead, BeadDependency, BeadStatus, MemoryWorkflowDescriptor } from "@/lib/types";
-import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
-import type { BackendPort, BackendResult, BeadListFilters } from "@/lib/backend-port";
+import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
+import type { BackendPort, BackendResult, BeatListFilters } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import {
@@ -65,7 +65,7 @@ interface DepRecord {
 // ---------------------------------------------------------------------------
 
 export class MockBackendPort implements BackendPort {
-  private beads = new Map<string, Bead>();
+  private beats = new Map<string, Beat>();
   private deps: DepRecord[] = [];
 
   async listWorkflows(
@@ -77,20 +77,20 @@ export class MockBackendPort implements BackendPort {
   // -- Read operations ------------------------------------------------------
 
   async list(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
-    let items = Array.from(this.beads.values());
+  ): Promise<BackendResult<Beat[]>> {
+    let items = Array.from(this.beats.values());
     items = applyFilters(items, filters);
     return ok(items);
   }
 
   async listReady(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
-    let items = Array.from(this.beads.values()).filter(
-      (b) => b.status === "open",
+  ): Promise<BackendResult<Beat[]>> {
+    let items = Array.from(this.beats.values()).filter(
+      (b) => b.state === "open",
     );
     items = applyFilters(items, filters);
     return ok(items);
@@ -98,11 +98,11 @@ export class MockBackendPort implements BackendPort {
 
   async search(
     query: string,
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     const lower = query.toLowerCase();
-    let items = Array.from(this.beads.values()).filter(
+    let items = Array.from(this.beats.values()).filter(
       (b) =>
         b.title.toLowerCase().includes(lower) ||
         (b.description ?? "").toLowerCase().includes(lower),
@@ -115,9 +115,9 @@ export class MockBackendPort implements BackendPort {
     expression: string,
     _options?: { limit?: number; sort?: string },
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
-    // Minimal expression support: "status:VALUE" or "type:VALUE"
-    const items = Array.from(this.beads.values()).filter((b) =>
+  ): Promise<BackendResult<Beat[]>> {
+    // Minimal expression support: "state:VALUE" or "type:VALUE"
+    const items = Array.from(this.beats.values()).filter((b) =>
       matchExpression(b, expression),
     );
     return ok(items);
@@ -126,16 +126,16 @@ export class MockBackendPort implements BackendPort {
   async get(
     id: string,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead>> {
-    const bead = this.beads.get(id);
-    if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
-    return ok(bead);
+  ): Promise<BackendResult<Beat>> {
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    return ok(beat);
   }
 
   // -- Write operations -----------------------------------------------------
 
   async create(
-    input: CreateBeadInput,
+    input: CreateBeatInput,
     _repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
     const id = nextId();
@@ -143,17 +143,15 @@ export class MockBackendPort implements BackendPort {
     const workflow = beadsProfileDescriptor(input.profileId ?? input.workflowId);
     const workflowState = mapStatusToDefaultWorkflowState("open", workflow);
     const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
-    const bead: Bead = {
+    const beat: Beat = {
       id,
       title: input.title,
       description: input.description,
       type: input.type ?? "task",
-      status: runtime.compatStatus,
-      compatStatus: runtime.compatStatus,
+      state: runtime.state,
       workflowId: workflow.id,
-      profileId: workflow.id,
       workflowMode: workflow.mode,
-      workflowState: runtime.workflowState,
+      profileId: workflow.id,
       nextActionState: runtime.nextActionState,
       nextActionOwnerKind: runtime.nextActionOwnerKind,
       requiresHumanAction: runtime.requiresHumanAction,
@@ -172,19 +170,19 @@ export class MockBackendPort implements BackendPort {
       created: now,
       updated: now,
     };
-    this.beads.set(id, bead);
+    this.beats.set(id, beat);
     return ok({ id });
   }
 
   async update(
     id: string,
-    input: UpdateBeadInput,
+    input: UpdateBeatInput,
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
-    const bead = this.beads.get(id);
-    if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
-    applyUpdate(bead, input);
-    bead.updated = isoNow();
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    applyUpdate(beat, input);
+    beat.updated = isoNow();
     return { ok: true };
   }
 
@@ -192,10 +190,10 @@ export class MockBackendPort implements BackendPort {
     id: string,
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
-    if (!this.beads.has(id)) {
-      return backendError("NOT_FOUND", `Bead ${id} not found`);
+    if (!this.beats.has(id)) {
+      return backendError("NOT_FOUND", `Beat ${id} not found`);
     }
-    this.beads.delete(id);
+    this.beats.delete(id);
     this.deps = this.deps.filter(
       (d) => d.blockerId !== id && d.blockedId !== id,
     );
@@ -207,13 +205,12 @@ export class MockBackendPort implements BackendPort {
     _reason?: string,
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
-    const bead = this.beads.get(id);
-    if (!bead) return backendError("NOT_FOUND", `Bead ${id} not found`);
-    bead.status = "closed";
-    bead.compatStatus = "closed";
-    bead.workflowState = mapStatusToDefaultWorkflowState("closed", beadsProfileDescriptor(bead.profileId ?? bead.workflowId));
-    bead.closed = isoNow();
-    bead.updated = isoNow();
+    const beat = this.beats.get(id);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
+    const closedWorkflow = beadsProfileDescriptor(beat.profileId ?? beat.workflowId);
+    beat.state = mapStatusToDefaultWorkflowState("closed", closedWorkflow);
+    beat.closed = isoNow();
+    beat.updated = isoNow();
     return { ok: true };
   }
 
@@ -223,9 +220,9 @@ export class MockBackendPort implements BackendPort {
     id: string,
     _repoPath?: string,
     options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>> {
-    if (!this.beads.has(id)) {
-      return backendError("NOT_FOUND", `Bead ${id} not found`);
+  ): Promise<BackendResult<BeatDependency[]>> {
+    if (!this.beats.has(id)) {
+      return backendError("NOT_FOUND", `Beat ${id} not found`);
     }
     let matches = this.deps.filter(
       (d) => d.blockerId === id || d.blockedId === id,
@@ -233,7 +230,7 @@ export class MockBackendPort implements BackendPort {
     if (options?.type) {
       matches = matches.filter(() => options.type === "blocks");
     }
-    const result: BeadDependency[] = matches.map((d) => ({
+    const result: BeatDependency[] = matches.map((d) => ({
       id: d.blockerId === id ? d.blockedId : d.blockerId,
       type: "blocks",
       source: d.blockerId,
@@ -247,11 +244,11 @@ export class MockBackendPort implements BackendPort {
     blockedId: string,
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
-    if (!this.beads.has(blockerId)) {
-      return backendError("NOT_FOUND", `Bead ${blockerId} not found`);
+    if (!this.beats.has(blockerId)) {
+      return backendError("NOT_FOUND", `Beat ${blockerId} not found`);
     }
-    if (!this.beads.has(blockedId)) {
-      return backendError("NOT_FOUND", `Bead ${blockedId} not found`);
+    if (!this.beats.has(blockedId)) {
+      return backendError("NOT_FOUND", `Beat ${blockedId} not found`);
     }
     const exists = this.deps.some(
       (d) => d.blockerId === blockerId && d.blockedId === blockedId,
@@ -288,7 +285,7 @@ export class MockBackendPort implements BackendPort {
 
   /** Reset all state (called between tests). */
   reset(): void {
-    this.beads.clear();
+    this.beats.clear();
     this.deps = [];
     resetIdCounter();
   }
@@ -316,11 +313,11 @@ export const FULL_CAPABILITIES: BackendCapabilities = {
 // Internal helpers (kept below 75 lines each)
 // ---------------------------------------------------------------------------
 
-function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
-  if (!filters) return beads;
-  return beads.filter((b) => {
+function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
+  if (!filters) return beats;
+  return beats.filter((b) => {
     if (filters.type && b.type !== filters.type) return false;
-    if (filters.status && b.status !== filters.status) return false;
+    if (filters.state && b.state !== filters.state) return false;
     if (filters.priority !== undefined && b.priority !== filters.priority)
       return false;
     if (filters.assignee && b.assignee !== filters.assignee) return false;
@@ -328,41 +325,41 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
   });
 }
 
-function applyUpdate(bead: Bead, input: UpdateBeadInput): void {
-  if (input.title !== undefined) bead.title = input.title;
-  if (input.description !== undefined) bead.description = input.description;
-  if (input.type !== undefined) bead.type = input.type;
-  if (input.status !== undefined) bead.status = input.status as BeadStatus;
-  if (input.priority !== undefined) bead.priority = input.priority;
-  if (input.parent !== undefined) bead.parent = input.parent;
+function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
+  if (input.title !== undefined) beat.title = input.title;
+  if (input.description !== undefined) beat.description = input.description;
+  if (input.type !== undefined) beat.type = input.type;
+  if (input.state !== undefined) beat.state = input.state;
+  if (input.priority !== undefined) beat.priority = input.priority;
+  if (input.parent !== undefined) beat.parent = input.parent;
   if (input.labels !== undefined) {
-    bead.labels = [...new Set([...bead.labels, ...input.labels])];
+    beat.labels = [...new Set([...beat.labels, ...input.labels])];
   }
   if (input.removeLabels !== undefined) {
-    bead.labels = bead.labels.filter((l) => !input.removeLabels!.includes(l));
+    beat.labels = beat.labels.filter((l) => !input.removeLabels!.includes(l));
   }
-  if (input.assignee !== undefined) bead.assignee = input.assignee;
-  if (input.due !== undefined) bead.due = input.due;
-  if (input.acceptance !== undefined) bead.acceptance = input.acceptance;
-  if (input.notes !== undefined) bead.notes = input.notes;
-  if (input.estimate !== undefined) bead.estimate = input.estimate;
+  if (input.assignee !== undefined) beat.assignee = input.assignee;
+  if (input.due !== undefined) beat.due = input.due;
+  if (input.acceptance !== undefined) beat.acceptance = input.acceptance;
+  if (input.notes !== undefined) beat.notes = input.notes;
+  if (input.estimate !== undefined) beat.estimate = input.estimate;
 }
 
-function matchExpression(bead: Bead, expression: string): boolean {
+function matchExpression(beat: Beat, expression: string): boolean {
   // Simple "field:value" matching, supports AND with spaces
   const terms = expression.split(/\s+/);
   return terms.every((term) => {
     const [field, value] = term.split(":");
     if (!field || !value) return true;
     switch (field) {
-      case "status":
-        return bead.status === value;
+      case "state":
+        return beat.state === value;
       case "type":
-        return bead.type === value;
+        return beat.type === value;
       case "priority":
-        return String(bead.priority) === value;
+        return String(beat.priority) === value;
       case "assignee":
-        return bead.assignee === value;
+        return beat.assignee === value;
       default:
         return true;
     }

@@ -37,13 +37,13 @@ const ACTION_DEFS: ActionDef[] = [
   {
     name: "take",
     label: "Take!",
-    description: "Execute a single bead",
+    description: "Execute a single beat",
     icon: Zap,
   },
   {
     name: "scene",
     label: "Scene!",
-    description: "Multi-bead orchestration",
+    description: "Multi-beat orchestration",
     icon: Clapperboard,
   },
   {
@@ -55,7 +55,7 @@ const ACTION_DEFS: ActionDef[] = [
   {
     name: "breakdown",
     label: "Breakdown",
-    description: "Decompose into sub-beads",
+    description: "Decompose into sub-beats",
     icon: Layers,
   },
 ];

@@ -10,19 +10,22 @@
 
 // ── Prompt builder (foolery-qqla.1.1) ─────────────────────
 
-export function buildBeadBreakdownPrompt(
-  beadId: string,
-  beadTitle: string,
+export function buildBeatBreakdownPrompt(
+  beatId: string,
+  beatTitle: string,
 ): string {
   return [
-    `Break bead ${beadId} ("${beadTitle}") down into hierarchical tasks,`,
+    `Break beat ${beatId} ("${beatTitle}") down into hierarchical tasks,`,
     "making autonomous decisions about execution order, parallel execution,",
     "and vague requirements.",
     "",
-    "Focus on this single bead and its potential sub-tasks.",
+    "Focus on this single beat and its potential sub-tasks.",
     "Organize them into dependency-aware scenes that can be executed in waves.",
   ].join(" \n");
 }
+
+/** @deprecated Use buildBeatBreakdownPrompt */
+export const buildBeadBreakdownPrompt = buildBeatBreakdownPrompt;
 
 // ── Navigation payload contract (foolery-qqla.1.2) ────────
 
@@ -33,8 +36,8 @@ export interface DirectPrefillPayload {
   prompt: string;
   /** When true, auto-trigger "Plan Scenes" after hydration. */
   autorun: boolean;
-  /** The bead ID that triggered this breakdown (for telemetry). */
-  sourceBeadId: string;
+  /** The beat ID that triggered this breakdown (for telemetry). */
+  sourceBeatId: string;
 }
 
 /**
@@ -74,7 +77,7 @@ function isDirectPrefillPayload(value: unknown): value is DirectPrefillPayload {
     typeof obj.prompt === "string" &&
     obj.prompt.length > 0 &&
     typeof obj.autorun === "boolean" &&
-    typeof obj.sourceBeadId === "string" &&
-    obj.sourceBeadId.length > 0
+    typeof obj.sourceBeatId === "string" &&
+    obj.sourceBeatId.length > 0
   );
 }

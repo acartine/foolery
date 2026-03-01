@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
 import { backendErrorStatus } from "@/lib/backend-http";
-import { updateBeadSchema } from "@/lib/schemas";
+import { updateBeatSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
 import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
 import {
   DEGRADED_ERROR_MESSAGE,
   isSuppressibleError,
 } from "@/lib/bd-error-suppression";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
 const NOT_FOUND_PATTERNS = [
@@ -18,7 +18,7 @@ const NOT_FOUND_PATTERNS = [
 ];
 
 interface DetailCacheEntry {
-  bead: Bead;
+  beat: Beat;
   cachedAtMs: number;
 }
 
@@ -28,9 +28,9 @@ function cacheKey(id: string, repoPath?: string): string {
   return `${repoPath ?? ""}::${id}`;
 }
 
-function cacheDetail(id: string, repoPath: string | undefined, bead: Bead): void {
+function cacheDetail(id: string, repoPath: string | undefined, beat: Beat): void {
   detailCache.set(cacheKey(id, repoPath), {
-    bead,
+    beat,
     cachedAtMs: Date.now(),
   });
 }
@@ -71,12 +71,12 @@ export async function GET(
     });
   }
 
-  const error = result.error?.message ?? "Failed to fetch bead";
+  const error = result.error?.message ?? "Failed to fetch beat";
   if (isSuppressibleError(error)) {
     const cached = getCachedDetail(id, repoPath);
     if (cached) {
       return NextResponse.json({
-        data: cached.bead,
+        data: cached.beat,
         cached: true,
         cachedAt: new Date(cached.cachedAtMs).toISOString(),
       });
@@ -97,7 +97,7 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
-  const parsed = updateBeadSchema.safeParse(rest);
+  const parsed = updateBeatSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
@@ -113,7 +113,7 @@ export async function PATCH(
     const labels = current.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
       return NextResponse.json(
-        { error: "Bead is locked during auto-verification. Edits are disabled until verification completes." },
+        { error: "Beat is locked during auto-verification. Edits are disabled until verification completes." },
         { status: 409 }
       );
     }
@@ -129,10 +129,10 @@ export async function PATCH(
   clearCachedDetail(id, repoPath);
   if (canonicalId !== id) clearCachedDetail(canonicalId, repoPath);
 
-  // Regroom ancestors when a bead leaves verification state.
+  // Regroom ancestors when a beat leaves verification state.
   const transitionedOutOfVerification =
-    typeof parsed.data.workflowState === "string" &&
-    parsed.data.workflowState.trim().toLowerCase() !== "verification";
+    typeof parsed.data.state === "string" &&
+    parsed.data.state.trim().toLowerCase() !== "verification";
   if (transitionedOutOfVerification) {
     // Fire-and-forget: don't block the HTTP response on ancestor regroom
     regroomAncestors(canonicalId, repoPath).catch((err) =>
@@ -152,13 +152,13 @@ export async function DELETE(
 
   // Enforce edit lock: reject deletes when transition:verification is active
   const backend = getBackend();
-  const currentBead = await backend.get(id, repoPath);
-  const canonicalId = currentBead.ok && currentBead.data ? currentBead.data.id : id;
-  if (currentBead.ok && currentBead.data) {
-    const labels = currentBead.data.labels ?? [];
+  const currentBeat = await backend.get(id, repoPath);
+  const canonicalId = currentBeat.ok && currentBeat.data ? currentBeat.data.id : id;
+  if (currentBeat.ok && currentBeat.data) {
+    const labels = currentBeat.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
       return NextResponse.json(
-        { error: "Bead is locked during auto-verification. Deletion is disabled until verification completes." },
+        { error: "Beat is locked during auto-verification. Deletion is disabled until verification completes." },
         { status: 409 }
       );
     }

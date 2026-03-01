@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadTypeBadge } from '@/components/bead-type-badge';
-import type { BeadType } from '@/lib/types';
+import type { BeatType } from '@/lib/types';
 import '@/app/globals.css';
 
 const meta = {
@@ -81,7 +81,7 @@ export const Gate: Story = {
 
 export const AllTypes: Story = {
   render: () => {
-    const types: BeadType[] = [
+    const types: BeatType[] = [
       'bug',
       'feature',
       'task',

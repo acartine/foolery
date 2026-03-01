@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadPriorityBadge } from '@/components/bead-priority-badge';
-import type { BeadPriority } from '@/lib/types';
+import type { BeatPriority } from '@/lib/types';
 import '@/app/globals.css';
 
 const meta = {
@@ -57,7 +57,7 @@ export const Trivial: Story = {
 
 export const AllPriorities: Story = {
   render: () => {
-    const priorities: BeadPriority[] = [0, 1, 2, 3, 4];
+    const priorities: BeatPriority[] = [0, 1, 2, 3, 4];
     return (
       <div className="flex gap-4 flex-wrap">
         {priorities.map((priority) => (

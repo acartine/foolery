@@ -11,17 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import type { Bead } from "@/lib/types";
-import type { UpdateBeadInput } from "@/lib/schemas";
-import { rejectBeadFields } from "@/components/bead-columns";
+import type { Beat } from "@/lib/types";
+import type { UpdateBeatInput } from "@/lib/schemas";
+import { rejectBeatFields } from "@/components/beat-columns";
 
 interface NotesDialogProps {
-  bead: Bead | null;
+  bead: Beat | null;
   open: boolean;
   /** When true, the dialog opens in rejection mode with only Reject + Cancel buttons. */
   rejectionMode?: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdate: (id: string, fields: UpdateBeadInput) => void;
+  onUpdate: (id: string, fields: UpdateBeatInput) => void;
 }
 
 const REJECTION_PREFIX = "Rejection Reason: ";
@@ -57,7 +57,7 @@ export function NotesDialog({ bead, open, rejectionMode, onOpenChange, onUpdate 
 
   if (!bead) return null;
 
-  const hasVerification = bead.workflowState === "verification";
+  const hasVerification = bead.state === "ready_for_implementation_review" || bead.state === "verification";
 
   const handleSave = () => {
     onUpdate(bead.id, { notes });
@@ -65,7 +65,7 @@ export function NotesDialog({ bead, open, rejectionMode, onOpenChange, onUpdate 
   };
 
   const handleReject = () => {
-    onUpdate(bead.id, { ...rejectBeadFields(bead), notes });
+    onUpdate(bead.id, { ...rejectBeatFields(bead), notes });
     onOpenChange(false);
   };
 

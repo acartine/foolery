@@ -1,7 +1,6 @@
 import type {
   ActionOwnerKind,
-  Bead,
-  BeadStatus,
+  Beat,
   CoarsePrPreference,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
@@ -399,7 +398,8 @@ function firstActionState(workflow?: MemoryWorkflowDescriptor): string {
   return "in_progress";
 }
 
-function terminalStateForStatus(status: BeadStatus, workflow?: MemoryWorkflowDescriptor): string {
+/** @internal Used by beads backend for compat-status translation. */
+function terminalStateForStatus(status: string, workflow?: MemoryWorkflowDescriptor): string {
   if (status === "deferred") {
     if (workflow?.states.includes("deferred")) return "deferred";
     return "deferred";
@@ -411,10 +411,11 @@ function terminalStateForStatus(status: BeadStatus, workflow?: MemoryWorkflowDes
   return "closed";
 }
 
+/** @internal Beads-backend compat: maps workflow state to simple status. */
 export function mapWorkflowStateToCompatStatus(
   workflowState: string,
   context = "workflow-state",
-): BeadStatus {
+): string {
   recordCompatStatusSerialized(context);
   const normalized = normalizeState(workflowState);
   if (!normalized) return "open";
@@ -432,8 +433,9 @@ export function mapWorkflowStateToCompatStatus(
   return "open";
 }
 
+/** @internal Beads-backend compat: maps simple status to workflow state. */
 export function mapStatusToDefaultWorkflowState(
-  status: BeadStatus,
+  status: string,
   workflow?: MemoryWorkflowDescriptor,
 ): string {
   switch (status) {
@@ -523,7 +525,7 @@ export function deriveBeadsProfileId(
 }
 
 export function deriveBeadsWorkflowState(
-  status: BeadStatus | undefined,
+  status: string | undefined,
   labels: string[] | undefined,
   workflow?: MemoryWorkflowDescriptor,
 ): string {
@@ -568,8 +570,9 @@ function ownerForCurrentState(
 }
 
 export interface WorkflowRuntimeState {
-  workflowState: string;
-  compatStatus: BeadStatus;
+  state: string;
+  /** @internal Beads-backend compat: simple status derived from state. */
+  compatStatus: string;
   nextActionState?: string;
   nextActionOwnerKind: ActionOwnerKind;
   requiresHumanAction: boolean;
@@ -585,7 +588,7 @@ export function deriveWorkflowRuntimeState(
   const isQueueState = normalizedState.startsWith("ready_for_");
 
   return {
-    workflowState: normalizedState,
+    state: normalizedState,
     compatStatus: mapWorkflowStateToCompatStatus(normalizedState),
     nextActionState: owner.nextActionState,
     nextActionOwnerKind: owner.ownerKind,
@@ -657,42 +660,41 @@ export function workflowDescriptorById(
   return map;
 }
 
-function resolveWorkflowForBead(
-  bead: Bead,
+function resolveWorkflowForBeat(
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): MemoryWorkflowDescriptor | null {
-  const profileId = normalizeProfileId(bead.profileId);
+  const profileId = normalizeProfileId(beat.profileId);
   if (profileId && workflowsById.has(profileId)) return workflowsById.get(profileId)!;
-  if (bead.workflowId && workflowsById.has(bead.workflowId)) return workflowsById.get(bead.workflowId)!;
+  if (beat.workflowId && workflowsById.has(beat.workflowId)) return workflowsById.get(beat.workflowId)!;
   return null;
 }
 
-export function beadRequiresHumanAction(
-  bead: Bead,
+export function beatRequiresHumanAction(
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): boolean {
-  if (typeof bead.requiresHumanAction === "boolean") return bead.requiresHumanAction;
-  const workflow = resolveWorkflowForBead(bead, workflowsById);
+  if (typeof beat.requiresHumanAction === "boolean") return beat.requiresHumanAction;
+  const workflow = resolveWorkflowForBeat(beat, workflowsById);
   if (!workflow) return false;
-  return deriveWorkflowRuntimeState(workflow, bead.workflowState).requiresHumanAction;
+  return deriveWorkflowRuntimeState(workflow, beat.state).requiresHumanAction;
 }
 
-export function beadInFinalCut(
-  bead: Bead,
+export function beatInFinalCut(
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): boolean {
-  return beadRequiresHumanAction(bead, workflowsById);
+  return beatRequiresHumanAction(beat, workflowsById);
 }
 
-export function beadInRetake(
-  bead: Bead,
+export function beatInRetake(
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): boolean {
-  if (!bead.workflowState) return false;
-  const normalized = normalizeState(bead.workflowState) ?? "";
+  const normalized = normalizeState(beat.state) ?? "";
   if (LEGACY_RETAKE_STATES.has(normalized)) return true;
 
-  const workflow = resolveWorkflowForBead(bead, workflowsById);
+  const workflow = resolveWorkflowForBeat(beat, workflowsById);
   if (!workflow) return false;
   return normalizeState(workflow.retakeState) === normalized;
 }

@@ -3,16 +3,15 @@
 import { useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAppStore, type Filters } from "@/stores/app-store";
-import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
 
 const DEFAULT_PAGE_SIZE = 50;
 const VALID_PAGE_SIZES = [25, 50, 100];
 
 interface UrlOverrides {
   repo?: string | null;
-  status?: BeadStatus | "ready" | undefined;
-  type?: BeadType | undefined;
-  priority?: BeadPriority | undefined;
+  state?: string | undefined;
+  type?: string | undefined;
+  priority?: number | undefined;
   assignee?: string | undefined;
   pageSize?: number;
 }
@@ -28,7 +27,7 @@ export function useUpdateUrl() {
       const params = new URLSearchParams(searchParams.toString());
 
       const repo = "repo" in overrides ? overrides.repo : store.activeRepo;
-      const status = "status" in overrides ? overrides.status : store.filters.status;
+      const state = "state" in overrides ? overrides.state : store.filters.state;
       const type = "type" in overrides ? overrides.type : store.filters.type;
       const priority = "priority" in overrides ? overrides.priority : store.filters.priority;
       const assignee = "assignee" in overrides ? overrides.assignee : store.filters.assignee;
@@ -37,11 +36,11 @@ export function useUpdateUrl() {
       if (repo) params.set("repo", repo);
       else params.delete("repo");
 
-      if ("status" in overrides) {
-        if (overrides.status) params.set("status", overrides.status);
-        else params.set("status", "all");
-      } else if (status) {
-        params.set("status", status);
+      if ("state" in overrides) {
+        if (overrides.state) params.set("state", overrides.state);
+        else params.set("state", "all");
+      } else if (state) {
+        params.set("state", state);
       }
 
       if (type) params.set("type", type);
@@ -60,9 +59,9 @@ export function useUpdateUrl() {
       // Update Zustand immediately for instant reactivity
       if ("repo" in overrides) store.setActiveRepo(overrides.repo ?? null);
 
-      if ("status" in overrides || "type" in overrides || "priority" in overrides || "assignee" in overrides) {
+      if ("state" in overrides || "type" in overrides || "priority" in overrides || "assignee" in overrides) {
         const newFilters: Filters = {
-          status: "status" in overrides ? overrides.status : store.filters.status,
+          state: "state" in overrides ? overrides.state : store.filters.state,
           type: "type" in overrides ? overrides.type : store.filters.type,
           priority: "priority" in overrides ? overrides.priority : store.filters.priority,
           assignee: "assignee" in overrides ? overrides.assignee : store.filters.assignee,

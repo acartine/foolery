@@ -3,7 +3,7 @@ import type { Dirent } from "node:fs";
 import { join } from "node:path";
 import { gunzip as gunzipCallback } from "node:zlib";
 import { promisify } from "node:util";
-import { naturalCompare } from "@/lib/bead-sort";
+import { naturalCompare } from "@/lib/beat-sort";
 import { resolveInteractionLogRoot } from "@/lib/interaction-logger";
 import type {
   AgentHistoryBeatSummary,

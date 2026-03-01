@@ -8,12 +8,12 @@
 import type {
   BackendPort,
   BackendResult,
-  BeadListFilters,
-  BeadQueryOptions,
+  BeatListFilters,
+  BeatQueryOptions,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
-import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
-import type { Bead, BeadDependency, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
+import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import { beadsProfileWorkflowDescriptors } from "@/lib/workflows";
 
 // ── Capabilities ──────────────────────────────────────────────
@@ -57,51 +57,51 @@ export class StubBackend implements BackendPort {
   }
 
   async list(
-    _filters?: BeadListFilters,
+    _filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     return { ok: true, data: [] };
   }
 
   async listReady(
-    _filters?: BeadListFilters,
+    _filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     return { ok: true, data: [] };
   }
 
   async search(
     _query: string,
-    _filters?: BeadListFilters,
+    _filters?: BeatListFilters,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     return { ok: true, data: [] };
   }
 
   async query(
     _expression: string,
-    _options?: BeadQueryOptions,
+    _options?: BeatQueryOptions,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     return { ok: true, data: [] };
   }
 
   async get(
     id: string,
     _repoPath?: string,
-  ): Promise<BackendResult<Bead>> {
+  ): Promise<BackendResult<Beat>> {
     return {
       ok: false,
       error: {
         code: "NOT_FOUND",
-        message: `Bead ${id} not found (stub)`,
+        message: `Beat ${id} not found (stub)`,
         retryable: false,
       },
     };
   }
 
   async create(
-    _input: CreateBeadInput,
+    _input: CreateBeatInput,
     _repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
     return unavailableError("create");
@@ -109,7 +109,7 @@ export class StubBackend implements BackendPort {
 
   async update(
     _id: string,
-    _input: UpdateBeadInput,
+    _input: UpdateBeatInput,
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
     return unavailableError("update");
@@ -134,7 +134,7 @@ export class StubBackend implements BackendPort {
     _id: string,
     _repoPath?: string,
     _options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>> {
+  ): Promise<BackendResult<BeatDependency[]>> {
     return { ok: true, data: [] };
   }
 

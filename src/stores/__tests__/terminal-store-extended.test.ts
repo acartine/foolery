@@ -5,8 +5,8 @@ import type { ActiveTerminal } from "@/stores/terminal-store";
 function makeTerminal(overrides: Partial<ActiveTerminal> = {}): ActiveTerminal {
   return {
     sessionId: "s-1",
-    beadId: "b-1",
-    beadTitle: "Test",
+    beatId: "b-1",
+    beatTitle: "Test",
     status: "running",
     startedAt: "2026-01-01T00:00:00Z",
     ...overrides,

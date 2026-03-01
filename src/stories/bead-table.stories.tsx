@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadTable } from '@/components/bead-table';
-import type { Bead } from '@/lib/types';
+import type { Beat } from '@/lib/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@/app/globals.css';
 
@@ -25,13 +25,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockBeads: Bead[] = [
+const mockBeats: Beat[] = [
   {
     id: '550e8400-e29b-41d4-a716-446655440000',
     title: 'Fix login redirect issue',
     description: 'Users are being redirected to the wrong page after login',
     type: 'bug',
-    status: 'open',
+    state: 'open',
     priority: 0,
     labels: ['frontend', 'auth'],
     assignee: 'alice',
@@ -44,7 +44,7 @@ const mockBeads: Bead[] = [
     title: 'Implement user profile page',
     description: 'Create a new page for users to view and edit their profile',
     type: 'feature',
-    status: 'in_progress',
+    state: 'in_progress',
     priority: 1,
     labels: ['frontend', 'ui'],
     assignee: 'charlie',
@@ -58,7 +58,7 @@ const mockBeads: Bead[] = [
     title: 'Optimize database queries',
     description: 'Review and optimize slow database queries',
     type: 'task',
-    status: 'blocked',
+    state: 'blocked',
     priority: 2,
     labels: ['backend', 'performance'],
     assignee: undefined,
@@ -71,7 +71,7 @@ const mockBeads: Bead[] = [
     title: 'Update documentation',
     description: 'Update API documentation to reflect new endpoints',
     type: 'chore',
-    status: 'deferred',
+    state: 'deferred',
     priority: 3,
     labels: ['docs'],
     assignee: 'dave',
@@ -84,7 +84,7 @@ const mockBeads: Bead[] = [
     title: 'Release v2.0',
     description: 'Prepare and release version 2.0',
     type: 'epic',
-    status: 'closed',
+    state: 'closed',
     priority: 0,
     labels: ['release'],
     assignee: 'eve',
@@ -97,7 +97,7 @@ const mockBeads: Bead[] = [
 
 export const Default: Story = {
   args: {
-    data: mockBeads,
+    data: mockBeats,
   },
 };
 
@@ -115,13 +115,13 @@ export const Empty: Story = {
 
 export const SingleBead: Story = {
   args: {
-    data: [mockBeads[0]],
+    data: [mockBeats[0]],
   },
 };
 
 export const WithSelection: Story = {
   args: {
-    data: mockBeads,
+    data: mockBeats,
     onSelectionChange: (ids) => console.log('Selected:', ids),
   },
 };

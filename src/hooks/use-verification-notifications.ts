@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { useNotificationStore } from "@/stores/notification-store";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 /**
- * Watches a list of verification beads and fires a notification whenever
+ * Watches a list of verification beats and fires a notification whenever
  * the count increases between refetch cycles. Relies on the caller
- * providing the latest bead array from react-query on each render.
+ * providing the latest beat array from react-query on each render.
  */
-export function useVerificationNotifications(beads: Bead[]) {
+export function useVerificationNotifications(beats: Beat[]) {
   const addNotification = useNotificationStore((s) => s.addNotification);
   const lastVerificationCount = useNotificationStore(
     (s) => s.lastVerificationCount
@@ -20,29 +20,29 @@ export function useVerificationNotifications(beads: Bead[]) {
   const prevIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const currentIds = new Set(beads.map((b) => b.id));
+    const currentIds = new Set(beats.map((b) => b.id));
 
     // First load -- just record the baseline, no notification.
     if (lastVerificationCount === -1) {
-      setLastVerificationCount(beads.length);
+      setLastVerificationCount(beats.length);
       prevIdsRef.current = currentIds;
       return;
     }
 
-    // Find truly new bead IDs that were not in the previous set.
-    const newBeads = beads.filter((b) => !prevIdsRef.current.has(b.id));
+    // Find truly new beat IDs that were not in the previous set.
+    const newBeats = beats.filter((b) => !prevIdsRef.current.has(b.id));
 
-    if (newBeads.length > 0) {
-      for (const bead of newBeads) {
+    if (newBeats.length > 0) {
+      for (const beat of newBeats) {
         addNotification({
-          message: `"${bead.title}" is awaiting human action`,
-          beadId: bead.id,
+          message: `"${beat.title}" is awaiting human action`,
+          beadId: beat.id,
         });
       }
     }
 
-    setLastVerificationCount(beads.length);
+    setLastVerificationCount(beats.length);
     prevIdsRef.current = currentIds;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beads]);
+  }, [beats]);
 }

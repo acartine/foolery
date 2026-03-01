@@ -11,25 +11,16 @@ import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { X, Clapperboard, Merge } from "lucide-react";
-import type { BeadStatus, BeadType, BeadPriority } from "@/lib/types";
-import type { UpdateBeadInput } from "@/lib/schemas";
+import type { BeatPriority } from "@/lib/types";
+import type { UpdateBeatInput } from "@/lib/schemas";
 
-const statuses: BeadStatus[] = [
-  "open",
-  "in_progress",
-  "blocked",
-  "deferred",
-  "closed",
-];
-const types: BeadType[] = [
+const commonTypes: string[] = [
   "bug",
   "feature",
   "task",
   "epic",
   "chore",
-  "merge-request",
-  "molecule",
-  "gate",
+  "work",
 ];
 
 function formatLabel(val: string): string {
@@ -41,7 +32,7 @@ function formatLabel(val: string): string {
 
 interface FilterBarProps {
   selectedIds?: string[];
-  onBulkUpdate?: (fields: UpdateBeadInput) => void;
+  onBulkUpdate?: (fields: UpdateBeatInput) => void;
   onClearSelection?: () => void;
   onSceneBeads?: (ids: string[]) => void;
   onMergeBeads?: (ids: string[]) => void;
@@ -85,13 +76,13 @@ export function BulkEditControls({
         </Button>
       )}
       <Select
-        onValueChange={(v) => onBulkUpdate({ type: v as BeadType })}
+        onValueChange={(v) => onBulkUpdate({ type: v })}
       >
         <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set type..." />
         </SelectTrigger>
         <SelectContent>
-          {types.map((t) => (
+          {commonTypes.map((t) => (
             <SelectItem key={t} value={t}>
               {formatLabel(t)}
             </SelectItem>
@@ -100,7 +91,7 @@ export function BulkEditControls({
       </Select>
       <Select
         onValueChange={(v) =>
-          onBulkUpdate({ priority: Number(v) as BeadPriority })
+          onBulkUpdate({ priority: Number(v) as BeatPriority })
         }
       >
         <SelectTrigger className="w-[130px] h-7">
@@ -110,20 +101,6 @@ export function BulkEditControls({
           {([0, 1, 2, 3, 4] as const).map((p) => (
             <SelectItem key={p} value={String(p)}>
               P{p}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        onValueChange={(v) => onBulkUpdate({ status: v as BeadStatus })}
-      >
-        <SelectTrigger className="w-[130px] h-7">
-          <SelectValue placeholder="Set status..." />
-        </SelectTrigger>
-        <SelectContent>
-          {statuses.map((s) => (
-            <SelectItem key={s} value={s}>
-              {formatLabel(s)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -141,35 +118,30 @@ function FilterControls() {
   const updateUrl = useUpdateUrl();
 
   const hasNonDefaultFilters =
-    filters.status !== "ready" || filters.type || filters.priority !== undefined;
+    filters.state !== "ready" || filters.type || filters.priority !== undefined;
 
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <Select
-        value={filters.status ?? "all"}
+        value={filters.state ?? "all"}
         onValueChange={(v) => {
-          updateUrl({ status: v === "all" ? undefined : (v as BeadStatus | "ready") });
+          updateUrl({ state: v === "all" ? undefined : v });
           (document.activeElement as HTMLElement)?.blur?.();
         }}
       >
         <SelectTrigger className="w-[140px] h-7">
-          <SelectValue placeholder="Status" />
+          <SelectValue placeholder="State" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="all">All States</SelectItem>
           <SelectItem value="ready">Ready</SelectItem>
-          {statuses.map((s) => (
-            <SelectItem key={s} value={s}>
-              {formatLabel(s)}
-            </SelectItem>
-          ))}
         </SelectContent>
       </Select>
 
       <Select
         value={filters.type ?? "all"}
         onValueChange={(v) => {
-          updateUrl({ type: v === "all" ? undefined : (v as BeadType) });
+          updateUrl({ type: v === "all" ? undefined : v });
           (document.activeElement as HTMLElement)?.blur?.();
         }}
       >
@@ -178,7 +150,7 @@ function FilterControls() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
-          {types.map((t) => (
+          {commonTypes.map((t) => (
             <SelectItem key={t} value={t}>
               {formatLabel(t)}
             </SelectItem>
@@ -213,7 +185,7 @@ function FilterControls() {
           variant="ghost"
           size="sm"
           title="Clear all filters"
-          onClick={() => updateUrl({ status: "ready", type: undefined, priority: undefined })}
+          onClick={() => updateUrl({ state: "ready", type: undefined, priority: undefined })}
         >
           <X className="h-4 w-4 mr-1" />
           Clear

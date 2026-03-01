@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { BackendResult } from "@/lib/backend-port";
 
 import {
@@ -8,24 +8,24 @@ import {
   _internals,
 } from "@/lib/bd-error-suppression";
 
-function ok(data: Bead[]): BackendResult<Bead[]> {
+function ok(data: Beat[]): BackendResult<Beat[]> {
   return { ok: true, data };
 }
 
-function fail(error: string): BackendResult<Bead[]> {
+function fail(error: string): BackendResult<Beat[]> {
   return { ok: false, error: { code: "BACKEND_ERROR", message: error, retryable: false } };
 }
 
-const STUB_BEAD = {
+const STUB_BEAT = {
   id: "b-1",
   title: "stub",
   type: "task",
-  status: "open",
+  state: "open",
   priority: 2,
   labels: [],
   created: "2024-01-01",
   updated: "2024-01-01",
-} as Bead;
+} as Beat;
 
 describe("bd-error-suppression cache TTL expiry", () => {
   beforeEach(() => {
@@ -35,7 +35,7 @@ describe("bd-error-suppression cache TTL expiry", () => {
 
   it("evicts expired cache entry and cleans up failure state (lines 122-125)", () => {
     // Populate cache with a successful result
-    withErrorSuppression("listBeads", ok([STUB_BEAD]));
+    withErrorSuppression("listBeads", ok([STUB_BEAT]));
 
     // Start a failure tracking
     withErrorSuppression("listBeads", fail("locked"));

@@ -7,12 +7,12 @@
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { BeadsBackend } from "@/lib/backends/beads-backend";
-import type { CreateBeadInput } from "@/lib/schemas";
+import type { CreateBeatInput } from "@/lib/schemas";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-function sample(title: string): CreateBeadInput {
+function sample(title: string): CreateBeatInput {
   return { title, type: "task", priority: 2, labels: [] };
 }
 

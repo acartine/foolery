@@ -50,7 +50,7 @@ export function BreakdownView() {
   const queryClient = useQueryClient();
   const { activeRepo } = useAppStore();
 
-  const parentBeadId = searchParams.get("parent") ?? "";
+  const parentBeatId = searchParams.get("parent") ?? "";
 
   const [session, setSession] = useState<BreakdownSession | null>(null);
   const [plan, setPlan] = useState<BreakdownPlan | null>(null);
@@ -89,11 +89,11 @@ export function BreakdownView() {
   );
 
   useEffect(() => {
-    if (!activeRepo || !parentBeadId || startedRef.current) return;
+    if (!activeRepo || !parentBeatId || startedRef.current) return;
     startedRef.current = true;
 
     (async () => {
-      const result = await startBreakdown(activeRepo, parentBeadId);
+      const result = await startBreakdown(activeRepo, parentBeatId);
       if (!result.ok || !result.data) {
         toast.error(result.error ?? "Failed to start breakdown");
         return;
@@ -109,7 +109,7 @@ export function BreakdownView() {
     return () => {
       cleanupRef.current?.();
     };
-  }, [activeRepo, parentBeadId, handleEvent, appendLog]);
+  }, [activeRepo, parentBeatId, handleEvent, appendLog]);
 
   useEffect(() => {
     if (logRef.current) {
@@ -141,16 +141,16 @@ export function BreakdownView() {
     }
 
     toast.success(
-      `Created ${result.data.createdBeadIds.length} beats across ${result.data.waveCount} scenes`
+      `Created ${result.data.createdBeatIds.length} beats across ${result.data.waveCount} scenes`
     );
     queryClient.invalidateQueries({ queryKey: ["beads"] });
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete("view");
     params.delete("parent");
-    params.set("bead", parentBeadId);
+    params.set("bead", parentBeatId);
     router.push(`/beads?${params.toString()}`);
-  }, [session, plan, activeRepo, queryClient, searchParams, router, parentBeadId]);
+  }, [session, plan, activeRepo, queryClient, searchParams, router, parentBeatId]);
 
   const handleBack = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -167,7 +167,7 @@ export function BreakdownView() {
   const isDone = status === "completed";
   const canApply = isDone && plan && plan.waves.length > 0 && !isApplying;
 
-  if (!parentBeadId) {
+  if (!parentBeatId) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
         No parent beat specified. Go back to the beats list and use Breakdown from the create dialog.
@@ -241,7 +241,7 @@ export function BreakdownView() {
           <h3 className="text-sm font-semibold flex items-center gap-1.5">
             <Workflow className="size-4" />
             Scene Plan — {plan.waves.length} scene{plan.waves.length === 1 ? "" : "s"},{" "}
-            {plan.waves.reduce((sum, w) => sum + w.beads.length, 0)} beats
+            {plan.waves.reduce((sum, w) => sum + w.beats.length, 0)} beats
           </h3>
           <p className="text-xs text-muted-foreground">{plan.summary}</p>
 
@@ -260,7 +260,7 @@ export function BreakdownView() {
                 {wave.objective}
               </p>
               <div className="space-y-1">
-                {wave.beads.map((bead, index) => (
+                {wave.beats.map((bead, index) => (
                   <div
                     key={index}
                     className="rounded-md border bg-white/90 px-2.5 py-1.5 text-xs flex items-center gap-2"

@@ -33,37 +33,37 @@ function shortId(id: string): string {
 }
 
 async function allSceneBeadsAwaitingHumanAction(
-  beadIds: string[],
+  beatIds: string[],
   repoPath?: string
 ): Promise<boolean> {
-  const results = await Promise.all(beadIds.map((beadId) => fetchBead(beadId, repoPath)));
+  const results = await Promise.all(beatIds.map((beatId) => fetchBead(beatId, repoPath)));
   return results.every((result) => {
     if (!result.ok || !result.data) return false;
-    return result.data.status === "closed" || result.data.requiresHumanAction === true;
+    return result.data.state === "closed" || result.data.requiresHumanAction === true;
   });
 }
 
-function buildSceneRecoveryPrompt(previousSessionId: string, beadIds: string[]): string {
+function buildSceneRecoveryPrompt(previousSessionId: string, beatIds: string[]): string {
   return [
     `Scene recovery for prior session ${previousSessionId}.`,
-    `Affected beads: ${beadIds.join(", ")}`,
+    `Affected beats: ${beatIds.join(", ")}`,
     "The previous scene stream disconnected before human-action queue state was confirmed.",
     "Use current repository state. Do not redo already-completed work.",
-    "If any listed bead is incomplete, finish it and land changes on main per project rules.",
-    "If you believe work is complete, verify merge/push state and transition each bead into its profile-defined next queue state (or claim completion command for Knots).",
-    "Finish with a concise per-bead summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
+    "If any listed beat is incomplete, finish it and land changes on main per project rules.",
+    "If you believe work is complete, verify merge/push state and transition each beat into its profile-defined next queue state (or claim completion command for Knots).",
+    "Finish with a concise per-beat summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
   ].join("\n");
 }
 
-function buildTakeRecoveryPrompt(beadId: string, previousSessionId: string | null): string {
+function buildTakeRecoveryPrompt(beatId: string, previousSessionId: string | null): string {
   return [
-    `Take recovery for bead ${beadId}.`,
+    `Take recovery for beat ${beatId}.`,
     previousSessionId
       ? `Prior agent session id: ${previousSessionId}.`
       : "No prior agent session id was captured from the failed run.",
     "The previous run failed during a follow-up after primary work completed.",
     "Use current repository state and avoid redoing completed changes.",
-    "Confirm merge/push state and apply the profile transition command (or Knots claim completion command) for this bead if not already applied.",
+    "Confirm merge/push state and apply the profile transition command (or Knots claim completion command) for this beat if not already applied.",
     "Finish with a concise summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
   ].join("\n");
 }
@@ -92,9 +92,9 @@ export function TerminalPanel() {
     [activeSessionId, terminals]
   );
   const activeSessionKey = activeTerminal?.sessionId ?? null;
-  const activeBeadId = activeTerminal?.beadId ?? null;
-  const activeBeadTitle = activeTerminal?.beadTitle ?? null;
-  const activeBeadIds = activeTerminal?.beadIds;
+  const activeBeatId = activeTerminal?.beatId ?? null;
+  const activeBeatTitle = activeTerminal?.beatTitle ?? null;
+  const activeBeatIds = activeTerminal?.beatIds;
   const activeRepoPath = activeTerminal?.repoPath;
 
   const termContainerRef = useRef<HTMLDivElement>(null);
@@ -107,7 +107,7 @@ export function TerminalPanel() {
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const isMaximized = panelHeight > 70;
-  const agentAction = activeTerminal?.beadIds ? "scene" : "take";
+  const agentAction = activeTerminal?.beatIds ? "scene" : "take";
   const agentInfo = useAgentInfo(agentAction);
 
   const handleAbort = useCallback(async () => {
@@ -195,12 +195,12 @@ export function TerminalPanel() {
 
   // Initialize xterm + connect to SSE for active session
   useEffect(() => {
-    if (!panelOpen || !activeSessionKey || !activeBeadId || !activeBeadTitle || !termContainerRef.current) {
+    if (!panelOpen || !activeSessionKey || !activeBeatId || !activeBeatTitle || !termContainerRef.current) {
       return;
     }
     const sessionId = activeSessionKey;
-    const beadId = activeBeadId;
-    const beadTitle = activeBeadTitle;
+    const beatId = activeBeatId;
+    const beatTitle = activeBeatTitle;
 
     let term: XtermTerminal | null = null;
     let disposed = false;
@@ -245,18 +245,18 @@ export function TerminalPanel() {
       fitRef.current = fitAddon;
       const liveTerm = term;
 
-      if (activeBeadIds) {
+      if (activeBeatIds) {
         liveTerm.writeln(
-          `\x1b[36m▶ Scene: rolling ${activeBeadIds.length} beads\x1b[0m`
+          `\x1b[36m▶ Scene: rolling ${activeBeatIds.length} beats\x1b[0m`
         );
-        for (const bid of activeBeadIds) {
+        for (const bid of activeBeatIds) {
           liveTerm.writeln(`\x1b[90m  - ${bid}\x1b[0m`);
         }
       } else {
         liveTerm.writeln(
-          `\x1b[36m▶ Rolling beat: ${beadId}\x1b[0m`
+          `\x1b[36m▶ Rolling beat: ${beatId}\x1b[0m`
         );
-        liveTerm.writeln(`\x1b[90m  ${beadTitle}\x1b[0m`);
+        liveTerm.writeln(`\x1b[90m  ${beatTitle}\x1b[0m`);
       }
       liveTerm.writeln("");
 
@@ -279,22 +279,22 @@ export function TerminalPanel() {
         if (recoveryInFlight) return;
         recoveryInFlight = true;
 
-        const sceneBeadIds = activeBeadIds;
-        if (sceneBeadIds && sceneBeadIds.length > 0) {
+        const sceneBeatIds = activeBeatIds;
+        if (sceneBeatIds && sceneBeatIds.length > 0) {
           if (source === "disconnect") {
             liveTerm.writeln(
               "\x1b[33m⚠ Scene stream disconnected. Checking human-action state...\x1b[0m"
             );
 
             const alreadyAwaitingHumanAction = await allSceneBeadsAwaitingHumanAction(
-              sceneBeadIds,
+              sceneBeatIds,
               activeRepoPath
             );
             if (disposed) return;
 
             if (alreadyAwaitingHumanAction) {
               liveTerm.writeln(
-                "\x1b[32m✓ All scene beads already waiting on human action. Closing terminal tab.\x1b[0m"
+                "\x1b[32m✓ All scene beats already waiting on human action. Closing terminal tab.\x1b[0m"
               );
               updateStatus(sessionId, "completed");
               removeTerminal(sessionId);
@@ -311,9 +311,9 @@ export function TerminalPanel() {
           }
 
           const recovery = await startSceneSession(
-            sceneBeadIds,
+            sceneBeatIds,
             activeRepoPath,
-            buildSceneRecoveryPrompt(previousSessionId ?? sessionId, sceneBeadIds)
+            buildSceneRecoveryPrompt(previousSessionId ?? sessionId, sceneBeatIds)
           );
           if (disposed) return;
 
@@ -329,9 +329,9 @@ export function TerminalPanel() {
 
           upsertTerminal({
             sessionId: recovery.data.id,
-            beadId: recovery.data.beadId,
-            beadTitle: recovery.data.beadTitle,
-            beadIds: recovery.data.beadIds,
+            beatId: recovery.data.beatId,
+            beatTitle: recovery.data.beatTitle,
+            beatIds: recovery.data.beatIds,
             repoPath: recovery.data.repoPath ?? activeRepoPath,
             status: "running",
             startedAt: new Date().toISOString(),
@@ -349,9 +349,9 @@ export function TerminalPanel() {
           "\x1b[33m↻ Retrying take with recovery prompt...\x1b[0m"
         );
         const recovery = await startSession(
-          beadId,
+          beatId,
           activeRepoPath,
-          buildTakeRecoveryPrompt(beadId, previousSessionId)
+          buildTakeRecoveryPrompt(beatId, previousSessionId)
         );
         if (disposed) return;
 
@@ -367,9 +367,9 @@ export function TerminalPanel() {
 
         upsertTerminal({
           sessionId: recovery.data.id,
-          beadId: recovery.data.beadId,
-          beadTitle: recovery.data.beadTitle,
-          beadIds: recovery.data.beadIds,
+          beatId: recovery.data.beatId,
+          beatTitle: recovery.data.beatTitle,
+          beatIds: recovery.data.beatIds,
           repoPath: recovery.data.repoPath ?? activeRepoPath,
           status: "running",
           startedAt: new Date().toISOString(),
@@ -409,7 +409,7 @@ export function TerminalPanel() {
                 });
                 if (failureHint.kind === "missing_cwd") {
                   const retryLabel =
-                    activeBeadIds && activeBeadIds.length > 0 ? "Retry Scene" : "Retry Take";
+                    activeBeatIds && activeBeatIds.length > 0 ? "Retry Scene" : "Retry Take";
                   liveTerm.writeln(
                     "\x1b[33m? Use the retry action in the toast to relaunch with recovery context.\x1b[0m"
                   );
@@ -431,19 +431,19 @@ export function TerminalPanel() {
             }
             updateStatus(sessionId, code === 0 ? "completed" : "error");
 
-            // On successful completion, immediately invalidate bead
+            // On successful completion, immediately invalidate beat
             // queries so human-action badges and notifications refresh
             // without waiting for the next polling interval.
             if (code === 0) {
               queryClientRef.current.invalidateQueries({
-                queryKey: ["beads"],
+                queryKey: ["beats"],
               });
             }
           }
         },
         () => {
           if (disposed) return;
-          if (activeBeadIds && activeBeadIds.length > 0) {
+          if (activeBeatIds && activeBeatIds.length > 0) {
             void launchRecoverySession(sessionId, "disconnect");
             return;
           }
@@ -471,9 +471,9 @@ export function TerminalPanel() {
   }, [
     panelOpen,
     activeSessionKey,
-    activeBeadId,
-    activeBeadTitle,
-    activeBeadIds,
+    activeBeatId,
+    activeBeatTitle,
+    activeBeatIds,
     activeRepoPath,
     removeTerminal,
     upsertTerminal,
@@ -524,16 +524,16 @@ export function TerminalPanel() {
                         : "bg-white/5 text-white/70 hover:bg-white/10"
                   }`}
                   onClick={() => handleTabClick(terminal.sessionId)}
-                  title={isPending ? "Click to keep open" : `${terminal.beadId} - ${terminal.beadTitle}`}
+                  title={isPending ? "Click to keep open" : `${terminal.beatId} - ${terminal.beatTitle}`}
                 >
                   <span className="font-mono">
-                    {terminal.beadIds
-                      ? `Scene (${terminal.beadIds.length})`
-                      : shortId(terminal.beadId)}
+                    {terminal.beatIds
+                      ? `Scene (${terminal.beatIds.length})`
+                      : shortId(terminal.beatId)}
                   </span>
-                  {terminal.beadTitle && (
+                  {terminal.beatTitle && (
                     <span className="truncate text-white/50">
-                      {terminal.beadTitle.slice(0, 40)}
+                      {terminal.beatTitle.slice(0, 40)}
                     </span>
                   )}
                   {isRunning ? (

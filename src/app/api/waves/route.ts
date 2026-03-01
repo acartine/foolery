@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import type { BeadListFilters } from "@/lib/backend-port";
+import type { BeatListFilters } from "@/lib/backend-port";
 import { computeWaves } from "@/lib/wave-planner";
 import type {
-  WaveBead,
+  WaveBeat,
   WavePlan,
   WaveRecommendation,
   WaveReadiness,
   WaveSummary,
 } from "@/lib/types";
-import { beadInFinalCut, workflowDescriptorById } from "@/lib/workflows";
+import { beatInFinalCut, workflowDescriptorById } from "@/lib/workflows";
 
 interface DepEdge {
   source: string; // blocker
@@ -21,7 +21,7 @@ function shortId(id: string): string {
 }
 
 function inferReadiness(
-  bead: WaveBead,
+  beat: WaveBeat,
   isUnschedulable: boolean,
   isInFinalCut: boolean,
 ): { readiness: WaveReadiness; reason: string } {
@@ -32,7 +32,7 @@ function inferReadiness(
     };
   }
 
-  if (bead.type === "gate") {
+  if (beat.type === "gate") {
     return {
       readiness: "gate",
       reason: "Gate beat. Requires human verification before progressing.",
@@ -46,30 +46,30 @@ function inferReadiness(
     };
   }
 
-  if (bead.status === "in_progress") {
+  if (beat.state === "in_progress") {
     return {
       readiness: "in_progress",
       reason: "Already in progress.",
     };
   }
 
-  if (bead.status === "blocked") {
+  if (beat.state === "blocked") {
     return {
       readiness: "blocked",
-      reason: bead.blockedBy.length > 0
-        ? `Waiting on ${bead.blockedBy.map(shortId).join(", ")}`
+      reason: beat.blockedBy.length > 0
+        ? `Waiting on ${beat.blockedBy.map(shortId).join(", ")}`
         : "Marked blocked.",
     };
   }
 
-  if (bead.blockedBy.length > 0) {
+  if (beat.blockedBy.length > 0) {
     return {
       readiness: "blocked",
-      reason: `Waiting on ${bead.blockedBy.map(shortId).join(", ")}`,
+      reason: `Waiting on ${beat.blockedBy.map(shortId).join(", ")}`,
     };
   }
 
-  if (bead.status === "open") {
+  if (beat.state === "open") {
     return {
       readiness: "runnable",
       reason: "Ready to ship.",
@@ -78,14 +78,14 @@ function inferReadiness(
 
   return {
     readiness: "blocked",
-    reason: `Status is ${bead.status}.`,
+    reason: `State is ${beat.state}.`,
   };
 }
 
 function computeSummary(plan: WavePlan): WaveSummary {
-  const allBeads: WaveBead[] = [
+  const allBeats: WaveBeat[] = [
     ...plan.waves.flatMap((wave) => [
-      ...wave.beads,
+      ...wave.beats,
       ...(wave.gate ? [wave.gate] : []),
     ]),
     ...plan.unschedulable,
@@ -97,16 +97,16 @@ function computeSummary(plan: WavePlan): WaveSummary {
   let verification = 0;
   let gates = 0;
 
-  for (const bead of allBeads) {
-    if (bead.readiness === "runnable") runnable += 1;
-    if (bead.readiness === "in_progress") inProgress += 1;
-    if (bead.readiness === "blocked") blocked += 1;
-    if (bead.readiness === "verification") verification += 1;
-    if (bead.readiness === "gate") gates += 1;
+  for (const beat of allBeats) {
+    if (beat.readiness === "runnable") runnable += 1;
+    if (beat.readiness === "in_progress") inProgress += 1;
+    if (beat.readiness === "blocked") blocked += 1;
+    if (beat.readiness === "verification") verification += 1;
+    if (beat.readiness === "gate") gates += 1;
   }
 
   return {
-    total: allBeads.length,
+    total: allBeats.length,
     runnable,
     inProgress,
     blocked,
@@ -119,24 +119,24 @@ function computeSummary(plan: WavePlan): WaveSummary {
 function computeRunnableQueue(plan: WavePlan): WaveRecommendation[] {
   const queue = plan.waves
     .flatMap((wave) =>
-      wave.beads
-        .filter((bead) => bead.readiness === "runnable")
-        .map((bead) => ({
-          beadId: bead.id,
-          title: bead.title,
+      wave.beats
+        .filter((beat) => beat.readiness === "runnable")
+        .map((beat) => ({
+          beatId: beat.id,
+          title: beat.title,
           waveLevel: wave.level,
-          reason: bead.readinessReason,
-          priority: bead.priority,
+          reason: beat.readinessReason,
+          priority: beat.priority,
         }))
     )
     .sort((a, b) => {
       if (a.waveLevel !== b.waveLevel) return a.waveLevel - b.waveLevel;
       if (a.priority !== b.priority) return a.priority - b.priority;
-      return a.beadId.localeCompare(b.beadId);
+      return a.beatId.localeCompare(b.beatId);
     });
 
   return queue.map((item) => ({
-    beadId: item.beadId,
+    beatId: item.beatId,
     title: item.title,
     waveLevel: item.waveLevel,
     reason: item.reason,
@@ -150,40 +150,40 @@ export async function GET(request: NextRequest) {
     workflowsResult.ok ? workflowsResult.data ?? [] : [],
   );
 
-  // Fetch all non-closed beads
-  const beadsResult = await getBackend().list({ status: "open" } as BeadListFilters, repoPath);
-  const inProgressResult = await getBackend().list({ status: "in_progress" } as BeadListFilters, repoPath);
-  const blockedResult = await getBackend().list({ status: "blocked" } as BeadListFilters, repoPath);
+  // Fetch all non-closed beats
+  const beatsResult = await getBackend().list({ state: "open" } as BeatListFilters, repoPath);
+  const inProgressResult = await getBackend().list({ state: "in_progress" } as BeatListFilters, repoPath);
+  const blockedResult = await getBackend().list({ state: "blocked" } as BeatListFilters, repoPath);
 
-  if (!beadsResult.ok) {
+  if (!beatsResult.ok) {
     return NextResponse.json(
-      { error: beadsResult.error?.message ?? "Failed to fetch beads" },
+      { error: beatsResult.error?.message ?? "Failed to fetch beats" },
       { status: 500 }
     );
   }
 
-  const allBeads = [
-    ...(beadsResult.data ?? []),
+  const allBeats = [
+    ...(beatsResult.data ?? []),
     ...(inProgressResult.data ?? []),
     ...(blockedResult.data ?? []),
   ];
 
   // Deduplicate by ID
   const seen = new Set<string>();
-  const beads = allBeads.filter((b) => {
+  const beats = allBeats.filter((b) => {
     if (seen.has(b.id)) return false;
     seen.add(b.id);
     return true;
   });
   const finalCutIds = new Set(
-    beads
-      .filter((bead) => beadInFinalCut(bead, workflowsById))
-      .map((bead) => bead.id),
+    beats
+      .filter((beat) => beatInFinalCut(beat, workflowsById))
+      .map((beat) => beat.id),
   );
 
-  // Fetch deps for all beads in parallel
+  // Fetch deps for all beats in parallel
   const depResults = await Promise.allSettled(
-    beads.map((b) => getBackend().listDependencies(b.id, repoPath))
+    beats.map((b) => getBackend().listDependencies(b.id, repoPath))
   );
 
   // Collect all dep edges
@@ -193,15 +193,15 @@ export async function GET(request: NextRequest) {
       for (const dep of result.value.data) {
         if (dep.dependency_type !== "blocks") continue;
         const blocker = dep.id;
-        const blocked = beads[index]?.id;
+        const blocked = beats[index]?.id;
         if (!blocker || !blocked) continue;
         allDeps.push({ source: blocker, target: blocked });
       }
     }
   }
 
-  // Build WaveBeads
-  const waveBeads: WaveBead[] = beads.map((b) => {
+  // Build WaveBeats
+  const waveBeats: WaveBeat[] = beats.map((b) => {
     const blockedBy = allDeps
       .filter((d) => d.target === b.id)
       .map((d) => d.source);
@@ -209,7 +209,7 @@ export async function GET(request: NextRequest) {
       id: b.id,
       title: b.title,
       type: b.type,
-      status: b.status,
+      state: b.state,
       priority: b.priority,
       labels: b.labels ?? [],
       blockedBy,
@@ -218,15 +218,15 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  const basePlan = computeWaves(waveBeads, allDeps);
+  const basePlan = computeWaves(waveBeats, allDeps);
   const unschedulableIds = new Set(basePlan.unschedulable.map((b) => b.id));
 
   for (const wave of basePlan.waves) {
-    for (const bead of wave.beads) {
-      const { readiness, reason } = inferReadiness(bead, false, finalCutIds.has(bead.id));
-      bead.readiness = readiness;
-      bead.readinessReason = reason;
-      bead.waveLevel = wave.level;
+    for (const beat of wave.beats) {
+      const { readiness, reason } = inferReadiness(beat, false, finalCutIds.has(beat.id));
+      beat.readiness = readiness;
+      beat.readinessReason = reason;
+      beat.waveLevel = wave.level;
     }
     if (wave.gate) {
       const { readiness, reason } = inferReadiness(wave.gate, false, finalCutIds.has(wave.gate.id));
@@ -236,14 +236,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  for (const bead of basePlan.unschedulable) {
+  for (const beat of basePlan.unschedulable) {
     const { readiness, reason } = inferReadiness(
-      bead,
-      unschedulableIds.has(bead.id),
-      finalCutIds.has(bead.id),
+      beat,
+      unschedulableIds.has(beat.id),
+      finalCutIds.has(beat.id),
     );
-    bead.readiness = readiness;
-    bead.readinessReason = reason;
+    beat.readiness = readiness;
+    beat.readinessReason = reason;
   }
 
   const plan: WavePlan = {

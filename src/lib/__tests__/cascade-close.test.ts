@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { BackendPort, BackendResult } from "@/lib/backend-port";
 
 // Mock backend-instance before importing cascade-close
@@ -16,12 +16,12 @@ vi.mock("@/lib/backend-instance", () => ({
 
 import { getOpenDescendants, cascadeClose } from "@/lib/cascade-close";
 
-function makeBead(overrides: Partial<Bead>): Bead {
+function makeBeat(overrides: Partial<Beat>): Beat {
   return {
     id: "test",
     title: "Test",
     description: "",
-    status: "open",
+    state: "open",
     priority: 2,
     type: "task",
     labels: [],
@@ -39,7 +39,7 @@ describe("getOpenDescendants", () => {
   it("returns empty list when parent has no children", async () => {
     mockList.mockResolvedValue({
       ok: true,
-      data: [makeBead({ id: "parent", status: "open" })],
+      data: [makeBeat({ id: "parent", state: "open" })],
     });
 
     const result = await getOpenDescendants("parent");
@@ -51,9 +51,9 @@ describe("getOpenDescendants", () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
-        makeBead({ id: "parent", status: "open" }),
-        makeBead({ id: "child-a", parent: "parent", status: "open", title: "Child A" }),
-        makeBead({ id: "child-b", parent: "parent", status: "in_progress", title: "Child B" }),
+        makeBeat({ id: "parent", state: "open" }),
+        makeBeat({ id: "child-a", parent: "parent", state: "open", title: "Child A" }),
+        makeBeat({ id: "child-b", parent: "parent", state: "in_progress", title: "Child B" }),
       ],
     });
 
@@ -68,9 +68,9 @@ describe("getOpenDescendants", () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
-        makeBead({ id: "parent", status: "open" }),
-        makeBead({ id: "child-a", parent: "parent", status: "closed", title: "Closed" }),
-        makeBead({ id: "child-b", parent: "parent", status: "open", title: "Open" }),
+        makeBeat({ id: "parent", state: "open" }),
+        makeBeat({ id: "child-a", parent: "parent", state: "closed", title: "Closed" }),
+        makeBeat({ id: "child-b", parent: "parent", state: "open", title: "Open" }),
       ],
     });
 
@@ -84,9 +84,9 @@ describe("getOpenDescendants", () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
-        makeBead({ id: "gp", status: "open" }),
-        makeBead({ id: "parent", parent: "gp", status: "open", title: "Parent" }),
-        makeBead({ id: "leaf", parent: "parent", status: "open", title: "Leaf" }),
+        makeBeat({ id: "gp", state: "open" }),
+        makeBeat({ id: "parent", parent: "gp", state: "open", title: "Parent" }),
+        makeBeat({ id: "leaf", parent: "parent", state: "open", title: "Leaf" }),
       ],
     });
 
@@ -102,8 +102,8 @@ describe("cascadeClose", () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
-        makeBead({ id: "parent", status: "open" }),
-        makeBead({ id: "child", parent: "parent", status: "open", title: "Child" }),
+        makeBeat({ id: "parent", state: "open" }),
+        makeBeat({ id: "child", parent: "parent", state: "open", title: "Child" }),
       ],
     });
     mockClose.mockResolvedValue({ ok: true });
@@ -122,9 +122,9 @@ describe("cascadeClose", () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
-        makeBead({ id: "parent", status: "open" }),
-        makeBead({ id: "fail-child", parent: "parent", status: "open", title: "Fail" }),
-        makeBead({ id: "ok-child", parent: "parent", status: "open", title: "OK" }),
+        makeBeat({ id: "parent", state: "open" }),
+        makeBeat({ id: "fail-child", parent: "parent", state: "open", title: "Fail" }),
+        makeBeat({ id: "ok-child", parent: "parent", state: "open", title: "OK" }),
       ],
     });
     mockClose.mockImplementation(async (id: string): Promise<BackendResult<void>> => {
@@ -143,7 +143,7 @@ describe("cascadeClose", () => {
   it("closes only the parent when no children exist", async () => {
     mockList.mockResolvedValue({
       ok: true,
-      data: [makeBead({ id: "solo", status: "open" })],
+      data: [makeBeat({ id: "solo", state: "open" })],
     });
     mockClose.mockResolvedValue({ ok: true });
 

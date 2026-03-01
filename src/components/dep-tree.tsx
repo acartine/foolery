@@ -1,14 +1,14 @@
 import Link from "next/link";
-import type { BeadDependency } from "@/lib/types";
+import type { BeatDependency } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
 interface DepTreeProps {
-  deps: BeadDependency[];
-  beadId: string;
+  deps: BeatDependency[];
+  beatId: string;
   repo?: string;
 }
 
-export function DepTree({ deps, beadId, repo }: DepTreeProps) {
+export function DepTree({ deps, beatId, repo }: DepTreeProps) {
   if (deps.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">No dependencies found.</p>
@@ -22,8 +22,8 @@ export function DepTree({ deps, beadId, repo }: DepTreeProps) {
         let depLabel: string;
 
         if (dep.source && dep.target) {
-          linkedId = dep.source === beadId ? dep.target : dep.source;
-          depLabel = dep.source === beadId ? "blocks" : "blocked by";
+          linkedId = dep.source === beatId ? dep.target : dep.source;
+          depLabel = dep.source === beatId ? "blocks" : "blocked by";
         } else {
           linkedId = dep.id;
           depLabel = dep.type ?? dep.dependency_type ?? "depends";

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus, Search } from "lucide-react";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 interface RelationshipPickerProps {
   label: string;
@@ -36,7 +36,7 @@ export function RelationshipPicker({
     enabled: searchOpen && query.length > 0,
   });
 
-  const results = useMemo<Bead[]>(() => {
+  const results = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
     return data.data.filter(
       (b) => b.id !== excludeId && !selectedIds.includes(b.id),
@@ -128,7 +128,7 @@ function SearchDropdown({
 }: {
   query: string;
   onQueryChange: (q: string) => void;
-  results: Bead[];
+  results: Beat[];
   onSelect: (id: string) => void;
 }) {
   return (
@@ -146,17 +146,17 @@ function SearchDropdown({
       </div>
       {results.length > 0 && (
         <ul className="max-h-32 overflow-y-auto space-y-0.5">
-          {results.slice(0, 10).map((bead) => (
-            <li key={bead.id}>
+          {results.slice(0, 10).map((beat) => (
+            <li key={beat.id}>
               <button
                 type="button"
                 className="w-full text-left px-2 py-1 text-xs rounded hover:bg-muted flex items-center gap-2"
-                onClick={() => onSelect(bead.id)}
+                onClick={() => onSelect(beat.id)}
               >
                 <span className="font-mono text-muted-foreground">
-                  {bead.id.replace(/^[^-]+-/, "")}
+                  {beat.id.replace(/^[^-]+-/, "")}
                 </span>
-                <span className="truncate">{bead.title}</span>
+                <span className="truncate">{beat.title}</span>
               </button>
             </li>
           ))}

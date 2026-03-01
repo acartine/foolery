@@ -1,21 +1,14 @@
 import type { MemoryManagerType } from "@/lib/memory-managers";
 
-export type BeadType =
-  | "bug"
-  | "feature"
-  | "task"
-  | "epic"
-  | "chore"
-  | "merge-request"
-  | "molecule"
-  | "gate";
+// ── Beat types ──────────────────────────────────────────────
 
-export type BeadStatus =
-  | "open"
-  | "in_progress"
-  | "blocked"
-  | "deferred"
-  | "closed";
+/**
+ * Open string type identifier.
+ * Knots gives "work"; beads may give "task", "bug", "feature", etc.
+ */
+export type BeatType = string;
+
+export type BeatPriority = 0 | 1 | 2 | 3 | 4;
 
 export type WorkflowMode =
   | "granular_autonomous"
@@ -58,26 +51,29 @@ export interface MemoryWorkflowDescriptor {
   humanQueueStates?: string[];
 }
 
-export type BeadPriority = 0 | 1 | 2 | 3 | 4;
-
-export interface Bead {
+/**
+ * Beat — the core work-item model for Foolery.
+ *
+ * `type` is an open string (knots: "work", beads: "task"/"bug"/etc.).
+ * `state` is the canonical workflow state (e.g. "ready_for_implementation",
+ * "shipped"), replacing the old status/compatStatus/workflowState fields.
+ */
+export interface Beat {
   id: string;
   title: string;
   description?: string;
   notes?: string;
   acceptance?: string;
-  type: BeadType;
-  status: BeadStatus;
-  compatStatus?: BeadStatus;
+  type: string;
+  state: string;
   workflowId?: string;
   workflowMode?: WorkflowMode;
-  workflowState?: string;
   profileId?: string;
   nextActionState?: string;
   nextActionOwnerKind?: ActionOwnerKind;
   requiresHumanAction?: boolean;
   isAgentClaimable?: boolean;
-  priority: BeadPriority;
+  priority: BeatPriority;
   labels: string[];
   assignee?: string;
   owner?: string;
@@ -90,7 +86,7 @@ export interface Bead {
   metadata?: Record<string, unknown>;
 }
 
-export interface BeadDependency {
+export interface BeatDependency {
   id: string;
   type?: string;
   source?: string;
@@ -98,9 +94,9 @@ export interface BeadDependency {
   dependency_type?: string;
   title?: string;
   description?: string;
-  status?: BeadStatus;
-  priority?: BeadPriority;
-  issue_type?: BeadType;
+  state?: string;
+  priority?: BeatPriority;
+  issue_type?: string;
   owner?: string;
 }
 
@@ -124,7 +120,7 @@ export interface DirEntry {
   isCompatible: boolean;
 }
 
-export interface BeadWithRepo extends Bead {
+export interface BeatWithRepo extends Beat {
   _repoPath: string;
   _repoName: string;
 }
@@ -135,9 +131,9 @@ export type TerminalSessionStatus = "idle" | "running" | "completed" | "error" |
 
 export interface TerminalSession {
   id: string;
-  beadId: string;
-  beadTitle: string;
-  beadIds?: string[];
+  beatId: string;
+  beatTitle: string;
+  beatIds?: string[];
   repoPath?: string;
   status: TerminalSessionStatus;
   startedAt: string;
@@ -152,12 +148,12 @@ export interface TerminalEvent {
 
 // ── Wave planner types ──────────────────────────────────────
 
-export interface WaveBead {
+export interface WaveBeat {
   id: string;
   title: string;
-  type: BeadType;
-  status: BeadStatus;
-  priority: BeadPriority;
+  type: string;
+  state: string;
+  priority: BeatPriority;
   labels: string[];
   blockedBy: string[];
   readiness: WaveReadiness;
@@ -167,8 +163,8 @@ export interface WaveBead {
 
 export interface Wave {
   level: number;
-  beads: WaveBead[];
-  gate?: WaveBead;
+  beats: WaveBeat[];
+  gate?: WaveBeat;
 }
 
 export type WaveReadiness =
@@ -190,7 +186,7 @@ export interface WaveSummary {
 }
 
 export interface WaveRecommendation {
-  beadId: string;
+  beatId: string;
   title: string;
   waveLevel: number;
   reason: string;
@@ -198,7 +194,7 @@ export interface WaveRecommendation {
 
 export interface WavePlan {
   waves: Wave[];
-  unschedulable: WaveBead[];
+  unschedulable: WaveBeat[];
   summary: WaveSummary;
   recommendation?: WaveRecommendation;
   runnableQueue: WaveRecommendation[];
@@ -213,7 +209,7 @@ export interface OrchestrationAgentSpec {
   specialty?: string;
 }
 
-export interface OrchestrationWaveBead {
+export interface OrchestrationWaveBeat {
   id: string;
   title: string;
 }
@@ -223,14 +219,14 @@ export interface OrchestrationWave {
   name: string;
   objective: string;
   agents: OrchestrationAgentSpec[];
-  beads: OrchestrationWaveBead[];
+  beats: OrchestrationWaveBeat[];
   notes?: string;
 }
 
 export interface OrchestrationPlan {
   summary: string;
   waves: OrchestrationWave[];
-  unassignedBeadIds: string[];
+  unassignedBeatIds: string[];
   assumptions: string[];
 }
 
@@ -290,10 +286,10 @@ export interface ApplyOrchestrationOverrides {
 
 // ── Breakdown types ──────────────────────────────────────
 
-export interface BreakdownBeadSpec {
+export interface BreakdownBeatSpec {
   title: string;
-  type: BeadType;
-  priority: BeadPriority;
+  type: string;
+  priority: BeatPriority;
   description?: string;
 }
 
@@ -301,7 +297,7 @@ export interface BreakdownWave {
   waveIndex: number;
   name: string;
   objective: string;
-  beads: BreakdownBeadSpec[];
+  beats: BreakdownBeatSpec[];
   notes?: string;
 }
 
@@ -320,7 +316,7 @@ export type BreakdownSessionStatus =
 export interface BreakdownSession {
   id: string;
   repoPath: string;
-  parentBeadId: string;
+  parentBeatId: string;
   status: BreakdownSessionStatus;
   startedAt: string;
   completedAt?: string;
@@ -342,7 +338,7 @@ export interface BreakdownEvent {
 }
 
 export interface ApplyBreakdownResult {
-  createdBeadIds: string[];
+  createdBeatIds: string[];
   waveCount: number;
 }
 
@@ -366,3 +362,24 @@ export interface ScannedAgent {
   path: string;
   installed: boolean;
 }
+
+// ── Deprecated re-exports (to be removed in cleanup pass) ───
+
+/** @deprecated Use Beat */
+export type Bead = Beat;
+/** @deprecated Use BeatType */
+export type BeadType = BeatType;
+/** @deprecated Use string for state */
+export type BeadStatus = string;
+/** @deprecated Use BeatPriority */
+export type BeadPriority = BeatPriority;
+/** @deprecated Use BeatDependency */
+export type BeadDependency = BeatDependency;
+/** @deprecated Use BeatWithRepo */
+export type BeadWithRepo = BeatWithRepo;
+/** @deprecated Use WaveBeat */
+export type WaveBead = WaveBeat;
+/** @deprecated Use BreakdownBeatSpec */
+export type BreakdownBeadSpec = BreakdownBeatSpec;
+/** @deprecated Use OrchestrationWaveBeat */
+export type OrchestrationWaveBead = OrchestrationWaveBeat;

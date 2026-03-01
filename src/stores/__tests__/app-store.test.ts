@@ -18,7 +18,7 @@ describe("app-store", () => {
   beforeEach(() => {
     localStore.clear();
     useAppStore.setState({
-      filters: { status: "ready" },
+      filters: { state: "ready" },
       commandPaletteOpen: false,
       viewMode: "table",
       activeRepo: null,
@@ -29,7 +29,7 @@ describe("app-store", () => {
 
   it("has correct initial state", () => {
     const state = useAppStore.getState();
-    expect(state.filters).toEqual({ status: "ready" });
+    expect(state.filters).toEqual({ state: "ready" });
     expect(state.commandPaletteOpen).toBe(false);
     expect(state.viewMode).toBe("table");
     expect(state.activeRepo).toBeNull();
@@ -38,21 +38,21 @@ describe("app-store", () => {
   });
 
   it("sets individual filter", () => {
-    useAppStore.getState().setFilter("status", "open");
-    expect(useAppStore.getState().filters.status).toBe("open");
+    useAppStore.getState().setFilter("state", "open");
+    expect(useAppStore.getState().filters.state).toBe("open");
   });
 
   it("sets filter preserves other filters", () => {
     useAppStore.getState().setFilter("type", "bug");
     useAppStore.getState().setFilter("priority", 1);
     const filters = useAppStore.getState().filters;
-    expect(filters.status).toBe("ready");
+    expect(filters.state).toBe("ready");
     expect(filters.type).toBe("bug");
     expect(filters.priority).toBe(1);
   });
 
   it("sets filters from URL", () => {
-    const newFilters = { status: "open" as const, type: "feature" as const };
+    const newFilters = { state: "open", type: "feature" };
     useAppStore.getState().setFiltersFromUrl(newFilters);
     expect(useAppStore.getState().filters).toEqual(newFilters);
   });
@@ -61,7 +61,7 @@ describe("app-store", () => {
     useAppStore.getState().setFilter("type", "bug");
     useAppStore.getState().setFilter("assignee", "alice");
     useAppStore.getState().resetFilters();
-    expect(useAppStore.getState().filters).toEqual({ status: "ready" });
+    expect(useAppStore.getState().filters).toEqual({ state: "ready" });
   });
 
   it("sets command palette open", () => {

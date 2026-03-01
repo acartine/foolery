@@ -52,7 +52,7 @@ export function SettingsVerificationSection({
                   When enabled, a verification agent automatically reviews code
                   changes after Take! and Scene! actions complete. This produces
                   more reliable results but is slightly slower. When disabled,
-                  beads go directly to verification without automated review.
+                  beats go directly to verification without automated review.
                 </p>
               </TooltipContent>
             </Tooltip>

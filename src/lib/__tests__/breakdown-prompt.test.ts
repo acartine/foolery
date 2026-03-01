@@ -59,7 +59,7 @@ describe("DirectPrefillPayload", () => {
     const payload: DirectPrefillPayload = {
       prompt: "Break this bead down",
       autorun: true,
-      sourceBeadId: "foolery-abc1",
+      sourceBeatId: "foolery-abc1",
     };
 
     setDirectPrefillPayload(payload);
@@ -73,7 +73,7 @@ describe("DirectPrefillPayload", () => {
     setDirectPrefillPayload({
       prompt: "test prompt",
       autorun: false,
-      sourceBeadId: "b-1",
+      sourceBeatId: "b-1",
     });
 
     const first = consumeDirectPrefillPayload();
@@ -103,15 +103,15 @@ describe("DirectPrefillPayload", () => {
   it("returns null for empty prompt string", () => {
     storage.set(
       DIRECT_PREFILL_KEY,
-      JSON.stringify({ prompt: "", autorun: true, sourceBeadId: "x" })
+      JSON.stringify({ prompt: "", autorun: true, sourceBeatId: "x" })
     );
     expect(consumeDirectPrefillPayload()).toBeNull();
   });
 
-  it("returns null for empty sourceBeadId", () => {
+  it("returns null for empty sourceBeatId", () => {
     storage.set(
       DIRECT_PREFILL_KEY,
-      JSON.stringify({ prompt: "ok", autorun: true, sourceBeadId: "" })
+      JSON.stringify({ prompt: "ok", autorun: true, sourceBeatId: "" })
     );
     expect(consumeDirectPrefillPayload()).toBeNull();
   });
@@ -150,7 +150,7 @@ describe("bead-detail-to-Direct autorun journey (unit-level)", () => {
     setDirectPrefillPayload({
       prompt,
       autorun: true,
-      sourceBeadId: beadId,
+      sourceBeatId: beadId,
     });
 
     // Step 3: Direct page consumes the payload (like OrchestrationView does on mount)
@@ -158,7 +158,7 @@ describe("bead-detail-to-Direct autorun journey (unit-level)", () => {
     expect(payload).not.toBeNull();
     expect(payload!.prompt).toBe(prompt);
     expect(payload!.autorun).toBe(true);
-    expect(payload!.sourceBeadId).toBe(beadId);
+    expect(payload!.sourceBeatId).toBe(beadId);
 
     // Step 4: Payload is consumed — second read returns null (no duplicate autorun)
     expect(consumeDirectPrefillPayload()).toBeNull();
@@ -168,7 +168,7 @@ describe("bead-detail-to-Direct autorun journey (unit-level)", () => {
     setDirectPrefillPayload({
       prompt: "Some manual prompt",
       autorun: false,
-      sourceBeadId: "b-manual",
+      sourceBeatId: "b-manual",
     });
 
     const payload = consumeDirectPrefillPayload();
@@ -225,7 +225,7 @@ describe("non-autorun Direct usage regression", () => {
   it("rejects payload with wrong types", () => {
     storage.set(
       DIRECT_PREFILL_KEY,
-      JSON.stringify({ prompt: 123, autorun: "yes", sourceBeadId: null })
+      JSON.stringify({ prompt: 123, autorun: "yes", sourceBeatId: null })
     );
     expect(consumeDirectPrefillPayload()).toBeNull();
   });

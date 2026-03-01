@@ -5,10 +5,10 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Scissors } from "lucide-react";
 import { fetchBeads } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
-import { BeadTable } from "@/components/bead-table";
+import { BeatTable } from "@/components/beat-table";
 import { useAppStore } from "@/stores/app-store";
 import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
@@ -53,7 +53,7 @@ export function FinalCutView() {
     placeholderData: keepPreviousData,
   });
 
-  const allBeads: Bead[] = data?.ok ? (data.data ?? []) : [];
+  const allBeads: Beat[] = data?.ok ? (data.data ?? []) : [];
 
   // Only show top-level beads (no parent) and parent beads (have children).
   // Leaf children are excluded to reduce clutter in the Final Cut view.
@@ -83,7 +83,7 @@ export function FinalCutView() {
             </p>
           </div>
           <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
-            {beads.length} {beads.length === 1 ? "bead" : "beads"}
+            {beads.length} {beads.length === 1 ? "beat" : "beats"}
           </Badge>
         </div>
       </section>
@@ -93,7 +93,7 @@ export function FinalCutView() {
           Loading human action queue...
         </div>
       ) : (
-        <BeadTable
+        <BeatTable
           data={beads}
           showRepoColumn={showRepoColumn}
           onSelectionChange={handleSelectionChange}

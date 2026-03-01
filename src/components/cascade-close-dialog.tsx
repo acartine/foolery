@@ -98,7 +98,7 @@ function DescendantList({ descendants }: { descendants: CascadeDescendant[] }) {
             </span>
             <span className="truncate">{d.title}</span>
             <span className="ml-auto shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium">
-              {d.status.replace("_", " ")}
+              {d.state.replace("_", " ")}
             </span>
           </li>
         ))}

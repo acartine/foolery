@@ -15,8 +15,8 @@ describe("terminal store updateStatus", () => {
     const state = useTerminalStore.getState();
     state.upsertTerminal({
       sessionId: "session-1",
-      beadId: "foolery-1",
-      beadTitle: "Test bead",
+      beatId: "foolery-1",
+      beatTitle: "Test beat",
       status: "completed",
       startedAt: "2026-02-13T00:00:00.000Z",
     });
@@ -35,8 +35,8 @@ describe("terminal store updateStatus", () => {
     const state = useTerminalStore.getState();
     state.upsertTerminal({
       sessionId: "session-2",
-      beadId: "foolery-2",
-      beadTitle: "Another bead",
+      beatId: "foolery-2",
+      beatTitle: "Another beat",
       status: "running",
       startedAt: "2026-02-13T00:00:00.000Z",
     });

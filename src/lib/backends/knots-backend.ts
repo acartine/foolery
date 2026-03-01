@@ -8,17 +8,16 @@
 import type {
   BackendPort,
   BackendResult,
-  BeadListFilters,
-  BeadQueryOptions,
+  BeatListFilters,
+  BeatQueryOptions,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import { isRetryableByDefault } from "@/lib/backend-errors";
-import type { CreateBeadInput, UpdateBeadInput } from "@/lib/schemas";
+import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type {
-  Bead,
-  BeadDependency,
-  BeadType,
+  Beat,
+  BeatDependency,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
   WorkflowMode,
@@ -148,22 +147,6 @@ function fromKnots<T>(result: { ok: boolean; data?: T; error?: string }): Backen
     ok: false,
     error: { code, message, retryable: isRetryableByDefault(code) },
   };
-}
-
-function normalizeType(raw: string | null | undefined): BeadType {
-  if (!raw) return "task";
-  const value = raw.toLowerCase();
-  const allowed: BeadType[] = [
-    "bug",
-    "feature",
-    "task",
-    "epic",
-    "chore",
-    "merge-request",
-    "molecule",
-    "gate",
-  ];
-  return allowed.includes(value as BeadType) ? (value as BeadType) : "task";
 }
 
 function normalizePriority(raw: number | null | undefined): 0 | 1 | 2 | 3 | 4 {
@@ -307,28 +290,25 @@ function normalizeProfileId(value: string | null | undefined): string | null {
   return normalized || null;
 }
 
-function toBead(
+function toBeat(
   knot: KnotRecord,
   edges: KnotEdge[],
   knownIds: ReadonlySet<string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): Bead {
+): Beat {
   const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
   const profileId = normalizeProfileId(knot.profile_id ?? knot.workflow_id) ?? fallback?.id ?? "autopilot";
   const workflow = workflowsById.get(profileId) ?? fallback;
 
   if (!workflow) {
-    const fallbackStatus = knot.state.startsWith("ready_for_") ? "open" : "in_progress";
     return {
       id: knot.id,
       title: knot.title,
       description: typeof knot.description === "string" ? knot.description : knot.body ?? undefined,
-      type: normalizeType(knot.type),
-      status: fallbackStatus,
-      compatStatus: fallbackStatus,
+      type: knot.type ?? "work",
+      state: knot.state,
       workflowId: profileId,
       workflowMode: "granular_autonomous",
-      workflowState: knot.state,
       profileId,
       nextActionOwnerKind: "none",
       requiresHumanAction: false,
@@ -358,12 +338,10 @@ function toBead(
         : typeof knot.body === "string"
           ? knot.body
           : undefined,
-    type: normalizeType(knot.type),
-    status: runtime.compatStatus,
-    compatStatus: runtime.compatStatus,
+    type: knot.type ?? "work",
+    state: runtime.state,
     workflowId: workflow.id,
     workflowMode: workflow.mode,
-    workflowState: runtime.workflowState,
     profileId: workflow.id,
     nextActionState: runtime.nextActionState,
     nextActionOwnerKind: runtime.nextActionOwnerKind,
@@ -375,7 +353,7 @@ function toBead(
     parent: deriveParentId(knot.id, edges, knownIds),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
-    closed: runtime.compatStatus === "closed" ? knot.updated_at : undefined,
+    closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
     metadata: {
       knotsProfileId: profileId,
       knotsState: knot.state,
@@ -387,18 +365,17 @@ function toBead(
   };
 }
 
-function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
-  if (!filters) return beads;
-  return beads.filter((b) => {
+function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
+  if (!filters) return beats;
+  return beats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
-    if (filters.workflowState && b.workflowState !== filters.workflowState) return false;
+    if (filters.state && b.state !== filters.state) return false;
     if (filters.profileId && b.profileId !== filters.profileId) return false;
     if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
       return false;
     }
     if (filters.nextOwnerKind && b.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     if (filters.type && b.type !== filters.type) return false;
-    if (filters.status && b.status !== filters.status) return false;
     if (filters.priority !== undefined && b.priority !== filters.priority) return false;
     if (filters.assignee && b.assignee !== filters.assignee) return false;
     if (filters.label && !b.labels.includes(filters.label)) return false;
@@ -408,43 +385,42 @@ function applyFilters(beads: Bead[], filters?: BeadListFilters): Bead[] {
   });
 }
 
-function matchExpression(bead: Bead, expression: string): boolean {
+function matchExpression(beat: Beat, expression: string): boolean {
   const terms = expression.split(/\s+/).filter(Boolean);
   return terms.every((term) => {
     const [field, value] = term.split(":");
     if (!field || !value) return true;
     switch (field) {
       case "status":
-        return bead.status === value;
-      case "workflow":
-      case "workflowid":
-        return bead.workflowId === value;
       case "workflowstate":
       case "state":
-        return bead.workflowState === value;
+        return beat.state === value;
+      case "workflow":
+      case "workflowid":
+        return beat.workflowId === value;
       case "profile":
       case "profileid":
-        return bead.profileId === value;
+        return beat.profileId === value;
       case "nextowner":
       case "nextownerkind":
-        return bead.nextActionOwnerKind === value;
+        return beat.nextActionOwnerKind === value;
       case "human":
       case "requireshumanaction":
-        return String(Boolean(bead.requiresHumanAction)) === value;
+        return String(Boolean(beat.requiresHumanAction)) === value;
       case "type":
-        return bead.type === value;
+        return beat.type === value;
       case "priority":
-        return String(bead.priority) === value;
+        return String(beat.priority) === value;
       case "assignee":
-        return bead.assignee === value;
+        return beat.assignee === value;
       case "label":
-        return bead.labels.includes(value);
+        return beat.labels.includes(value);
       case "owner":
-        return bead.owner === value;
+        return beat.owner === value;
       case "parent":
-        return bead.parent === value;
+        return beat.parent === value;
       case "id":
-        return bead.id === value;
+        return beat.id === value;
       default:
         return true;
     }
@@ -545,13 +521,13 @@ export class KnotsBackend implements BackendPort {
     return ok(edges);
   }
 
-  private async buildBeadsForRepo(repoPath: string): Promise<BackendResult<Bead[]>> {
+  private async buildBeatsForRepo(repoPath: string): Promise<BackendResult<Beat[]>> {
     const workflowMapResult = await this.workflowMapByProfileId(repoPath);
-    if (!workflowMapResult.ok) return propagateError<Bead[]>(workflowMapResult);
+    if (!workflowMapResult.ok) return propagateError<Beat[]>(workflowMapResult);
     const workflowMap = workflowMapResult.data ?? new Map<string, MemoryWorkflowDescriptor>();
 
     const listResult = fromKnots(await knots.listKnots(repoPath));
-    if (!listResult.ok) return propagateError<Bead[]>(listResult);
+    if (!listResult.ok) return propagateError<Beat[]>(listResult);
 
     const records = listResult.data ?? [];
     const knownIds = new Set(records.map((record) => record.id));
@@ -571,10 +547,10 @@ export class KnotsBackend implements BackendPort {
       edgesById.set(record.id, edgeResult.data ?? []);
     }
 
-    const beads = records.map((record) =>
-      toBead(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
+    const beats = records.map((record) =>
+      toBeat(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
     );
-    return ok(beads);
+    return ok(beats);
   }
 
   async listWorkflows(
@@ -585,49 +561,48 @@ export class KnotsBackend implements BackendPort {
   }
 
   async list(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     const rp = this.resolvePath(repoPath);
-    const result = await this.buildBeadsForRepo(rp);
+    const result = await this.buildBeatsForRepo(rp);
     if (!result.ok) return result;
     return ok(applyFilters(result.data ?? [], filters));
   }
 
   async listReady(
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     const rp = this.resolvePath(repoPath);
-    const builtResult = await this.buildBeadsForRepo(rp);
+    const builtResult = await this.buildBeatsForRepo(rp);
     if (!builtResult.ok) return builtResult;
 
-    const beads = (builtResult.data ?? []).filter((bead) => {
-      if (bead.status !== "open") return false;
-      if (!bead.isAgentClaimable) return false;
-      const cached = this.edgeCache.get(this.edgeCacheKey(bead.id, rp));
+    const beats = (builtResult.data ?? []).filter((beat) => {
+      if (!beat.isAgentClaimable) return false;
+      const cached = this.edgeCache.get(this.edgeCacheKey(beat.id, rp));
       const edges = cached?.edges ?? [];
-      return !isBlockedByEdges(bead.id, edges);
+      return !isBlockedByEdges(beat.id, edges);
     });
 
-    return ok(applyFilters(beads, filters));
+    return ok(applyFilters(beats, filters));
   }
 
   async search(
     query: string,
-    filters?: BeadListFilters,
+    filters?: BeatListFilters,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     const rp = this.resolvePath(repoPath);
-    const result = await this.buildBeadsForRepo(rp);
+    const result = await this.buildBeatsForRepo(rp);
     if (!result.ok) return result;
 
     const lower = query.toLowerCase();
-    const matches = (result.data ?? []).filter((bead) =>
-      bead.id.toLowerCase().includes(lower) ||
-      bead.title.toLowerCase().includes(lower) ||
-      (bead.description ?? "").toLowerCase().includes(lower) ||
-      (bead.notes ?? "").toLowerCase().includes(lower),
+    const matches = (result.data ?? []).filter((beat) =>
+      beat.id.toLowerCase().includes(lower) ||
+      beat.title.toLowerCase().includes(lower) ||
+      (beat.description ?? "").toLowerCase().includes(lower) ||
+      (beat.notes ?? "").toLowerCase().includes(lower),
     );
 
     return ok(applyFilters(matches, filters));
@@ -635,36 +610,36 @@ export class KnotsBackend implements BackendPort {
 
   async query(
     expression: string,
-    _options?: BeadQueryOptions,
+    _options?: BeatQueryOptions,
     repoPath?: string,
-  ): Promise<BackendResult<Bead[]>> {
+  ): Promise<BackendResult<Beat[]>> {
     const rp = this.resolvePath(repoPath);
-    const result = await this.buildBeadsForRepo(rp);
+    const result = await this.buildBeatsForRepo(rp);
     if (!result.ok) return result;
 
-    const matches = (result.data ?? []).filter((bead) => matchExpression(bead, expression));
+    const matches = (result.data ?? []).filter((beat) => matchExpression(beat, expression));
     return ok(matches);
   }
 
   async get(
     id: string,
     repoPath?: string,
-  ): Promise<BackendResult<Bead>> {
+  ): Promise<BackendResult<Beat>> {
     const rp = this.resolvePath(repoPath);
     const knotResult = fromKnots(await knots.showKnot(id, rp));
-    if (!knotResult.ok) return propagateError<Bead>(knotResult);
+    if (!knotResult.ok) return propagateError<Beat>(knotResult);
 
     const edgesResult = await this.getEdgesForId(id, rp);
-    if (!edgesResult.ok) return propagateError<Bead>(edgesResult);
+    if (!edgesResult.ok) return propagateError<Beat>(edgesResult);
 
     const workflowMapResult = await this.workflowMapByProfileId(rp);
-    if (!workflowMapResult.ok) return propagateError<Bead>(workflowMapResult);
+    if (!workflowMapResult.ok) return propagateError<Beat>(workflowMapResult);
 
-    return ok(toBead(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
+    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
   }
 
   async create(
-    input: CreateBeadInput,
+    input: CreateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
     const rp = this.resolvePath(repoPath);
@@ -738,7 +713,7 @@ export class KnotsBackend implements BackendPort {
 
   async update(
     id: string,
-    input: UpdateBeadInput,
+    input: UpdateBeatInput,
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
@@ -767,16 +742,11 @@ export class KnotsBackend implements BackendPort {
     if (input.description !== undefined) patch.description = input.description;
     if (input.priority !== undefined) patch.priority = input.priority;
 
-    if (input.workflowState !== undefined) {
+    if (input.state !== undefined) {
       const normalizedState = workflow
-        ? normalizeStateForWorkflow(input.workflowState, workflow)
-        : input.workflowState.trim().toLowerCase();
+        ? normalizeStateForWorkflow(input.state, workflow)
+        : input.state.trim().toLowerCase();
       patch.status = normalizedState;
-    } else if (input.status !== undefined) {
-      const nextState = workflow
-        ? mapStatusToDefaultWorkflowState(input.status, workflow)
-        : input.status;
-      patch.status = nextState;
     }
 
     if (input.type !== undefined) patch.type = input.type;
@@ -874,16 +844,16 @@ export class KnotsBackend implements BackendPort {
     id: string,
     repoPath?: string,
     options?: { type?: string },
-  ): Promise<BackendResult<BeadDependency[]>> {
+  ): Promise<BackendResult<BeatDependency[]>> {
     const rp = this.resolvePath(repoPath);
 
     const showResult = fromKnots(await knots.showKnot(id, rp));
-    if (!showResult.ok) return propagateError<BeadDependency[]>(showResult);
+    if (!showResult.ok) return propagateError<BeatDependency[]>(showResult);
 
     const edgesResult = await this.getEdgesForId(id, rp);
-    if (!edgesResult.ok) return propagateError<BeadDependency[]>(edgesResult);
+    if (!edgesResult.ok) return propagateError<BeatDependency[]>(edgesResult);
 
-    const deps: BeadDependency[] = [];
+    const deps: BeatDependency[] = [];
     for (const edge of edgesResult.data ?? []) {
       if (edge.kind === "blocked_by") {
         if (options?.type && options.type !== "blocks") continue;

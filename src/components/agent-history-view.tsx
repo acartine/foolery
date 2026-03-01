@@ -24,7 +24,7 @@ import type {
 } from "@/lib/agent-history-types";
 import { fetchAgentHistory } from "@/lib/agent-history-api";
 import { formatModelDisplay } from "@/hooks/use-agent-info";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -42,18 +42,18 @@ function Spinner({ className = "" }: { className?: string }) {
   return <Loader2 className={`animate-spin ${className}`} />;
 }
 
-function beadKey(beadId: string, repoPath: string): string {
-  return `${repoPath}::${beadId}`;
+function beatKey(beatId: string, repoPath: string): string {
+  return `${repoPath}::${beatId}`;
 }
 
-function parseBeadKey(value: string | null): { beadId: string; repoPath: string } | null {
+function parseBeatKey(value: string | null): { beatId: string; repoPath: string } | null {
   if (!value) return null;
   const pivot = value.lastIndexOf("::");
   if (pivot <= 0) return null;
   const repoPath = value.slice(0, pivot);
-  const beadId = value.slice(pivot + 2);
-  if (!repoPath || !beadId) return null;
-  return { beadId, repoPath };
+  const beatId = value.slice(pivot + 2);
+  if (!repoPath || !beatId) return null;
+  return { beatId, repoPath };
 }
 
 function parseMillis(value: string): number {
@@ -218,7 +218,7 @@ function interactionTypeLabel(interactionType: AgentHistorySession["interactionT
   return "Take!";
 }
 
-function BeadMetaItem({ label, value }: { label: string; value?: string | null }) {
+function BeatMetaItem({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="px-0.5 py-0.5">
       <p className="text-[9px] uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -413,8 +413,8 @@ function renderLongText(label: string, value?: string) {
   );
 }
 
-function BeadDetailContent({ bead, summary }: { bead: Bead | null; summary: AgentHistoryBeatSummary }) {
-  if (!bead) {
+function BeatDetailContent({ beat, summary }: { beat: Beat | null; summary: AgentHistoryBeatSummary }) {
+  if (!beat) {
     return (
       <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
         Beat details are unavailable for this repository entry.
@@ -425,21 +425,21 @@ function BeadDetailContent({ bead, summary }: { bead: Bead | null; summary: Agen
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
-        <BeadMetaItem label="Beat ID" value={bead.id} />
-        <BeadMetaItem label="Last updated" value={formatTime(summary.lastWorkedAt)} />
-        <BeadMetaItem label="Status" value={bead.status} />
-        <BeadMetaItem label="Type" value={bead.type} />
-        <BeadMetaItem label="Priority" value={`P${bead.priority}`} />
-        <BeadMetaItem label="Owner" value={bead.owner ?? bead.assignee ?? ""} />
-        <BeadMetaItem label="Created" value={formatTime(bead.created)} />
-        <BeadMetaItem label="Updated" value={formatTime(bead.updated)} />
+        <BeatMetaItem label="Beat ID" value={beat.id} />
+        <BeatMetaItem label="Last updated" value={formatTime(summary.lastWorkedAt)} />
+        <BeatMetaItem label="State" value={beat.state} />
+        <BeatMetaItem label="Type" value={beat.type} />
+        <BeatMetaItem label="Priority" value={`P${beat.priority}`} />
+        <BeatMetaItem label="Owner" value={beat.owner ?? beat.assignee ?? ""} />
+        <BeatMetaItem label="Created" value={formatTime(beat.created)} />
+        <BeatMetaItem label="Updated" value={formatTime(beat.updated)} />
       </div>
 
-      {bead.labels && bead.labels.length > 0 ? (
+      {beat.labels && beat.labels.length > 0 ? (
         <section className="px-0.5 py-0.5">
           <p className="text-[9px] uppercase tracking-wide text-muted-foreground">Labels</p>
           <div className="mt-1 flex flex-wrap gap-1">
-            {bead.labels.map((label) => (
+            {beat.labels.map((label) => (
               <Badge key={label} variant="outline" className="text-[10px] font-normal">
                 {label}
               </Badge>
@@ -448,9 +448,9 @@ function BeadDetailContent({ bead, summary }: { bead: Bead | null; summary: Agen
         </section>
       ) : null}
 
-      {renderLongText("Description", bead.description)}
-      {renderLongText("Acceptance", bead.acceptance)}
-      {renderLongText("Notes", bead.notes)}
+      {renderLongText("Description", beat.description)}
+      {renderLongText("Acceptance", beat.acceptance)}
+      {renderLongText("Notes", beat.notes)}
     </div>
   );
 }
@@ -458,16 +458,16 @@ function BeadDetailContent({ bead, summary }: { bead: Bead | null; summary: Agen
 export function AgentHistoryView() {
   const { activeRepo, registeredRepos } = useAppStore();
   const queryClient = useQueryClient();
-  const [focusedBeadKey, setFocusedBeadKey] = useState<string | null>(null);
-  const [loadedBeadKey, setLoadedBeadKey] = useState<string | null>(null);
+  const [focusedBeatKey, setFocusedBeatKey] = useState<string | null>(null);
+  const [loadedBeatKey, setLoadedBeatKey] = useState<string | null>(null);
   const [windowStart, setWindowStart] = useState(0);
   const beatButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const beatListRef = useRef<HTMLDivElement | null>(null);
   const consolePanelRef = useRef<HTMLDivElement | null>(null);
-  const cachedBeadKeysRef = useRef<string[]>([]);
+  const cachedBeatKeysRef = useRef<string[]>([]);
   const lastScrollDirectionRef = useRef<1 | -1>(1);
 
-  const loadedBead = useMemo(() => parseBeadKey(loadedBeadKey), [loadedBeadKey]);
+  const loadedBeat = useMemo(() => parseBeatKey(loadedBeatKey), [loadedBeatKey]);
 
   const beatsQuery = useQuery({
     queryKey: ["agent-history", "beats", activeRepo],
@@ -494,36 +494,36 @@ export function AgentHistoryView() {
   /* Keep focus and loaded in sync with beat list membership */
   useEffect(() => {
     if (beats.length === 0) {
-      if (focusedBeadKey !== null) {
+      if (focusedBeatKey !== null) {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- Focus and loaded selections must stay in sync with filtered beat list membership.
-        setFocusedBeadKey(null);
+        setFocusedBeatKey(null);
       }
-      if (loadedBeadKey !== null) {
-        setLoadedBeadKey(null);
+      if (loadedBeatKey !== null) {
+        setLoadedBeatKey(null);
       }
       setWindowStart(0);
       return;
     }
 
     const focusedStillPresent =
-      focusedBeadKey !== null &&
-      beats.some((beat) => beadKey(beat.beadId, beat.repoPath) === focusedBeadKey);
+      focusedBeatKey !== null &&
+      beats.some((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey);
     if (!focusedStillPresent) {
-      setFocusedBeadKey(beadKey(beats[0].beadId, beats[0].repoPath));
+      setFocusedBeatKey(beatKey(beats[0].beadId, beats[0].repoPath));
     }
 
     const loadedStillPresent =
-      loadedBeadKey === null ||
-      beats.some((beat) => beadKey(beat.beadId, beat.repoPath) === loadedBeadKey);
+      loadedBeatKey === null ||
+      beats.some((beat) => beatKey(beat.beadId, beat.repoPath) === loadedBeatKey);
     if (!loadedStillPresent) {
-      setLoadedBeadKey(null);
+      setLoadedBeatKey(null);
     }
-  }, [beats, focusedBeadKey, loadedBeadKey]);
+  }, [beats, focusedBeatKey, loadedBeatKey]);
 
   /* Keep window aligned with focused beat */
   useEffect(() => {
-    if (!focusedBeadKey || beats.length === 0) return;
-    const idx = beats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey);
+    if (!focusedBeatKey || beats.length === 0) return;
+    const idx = beats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey);
     if (idx < 0) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Window position must stay in sync with focused beat index after beats list changes.
     setWindowStart((prev) => {
@@ -532,55 +532,55 @@ export function AgentHistoryView() {
       const maxStart = Math.max(0, beats.length - WINDOW_SIZE);
       return Math.min(prev, maxStart);
     });
-  }, [focusedBeadKey, beats]);
+  }, [focusedBeatKey, beats]);
 
   useEffect(() => {
-    if (!focusedBeadKey) return;
-    const node = beatButtonRefs.current[focusedBeadKey];
+    if (!focusedBeatKey) return;
+    const node = beatButtonRefs.current[focusedBeatKey];
     if (!node) return;
     node.scrollIntoView({ block: "nearest" });
-  }, [focusedBeadKey]);
+  }, [focusedBeatKey]);
 
   const moveFocusedBeat = useCallback(
     (direction: -1 | 1) => {
       if (beats.length === 0) return;
       lastScrollDirectionRef.current = direction;
-      const currentIndex = focusedBeadKey
-        ? beats.findIndex((beat) => beadKey(beat.beadId, beat.repoPath) === focusedBeadKey)
+      const currentIndex = focusedBeatKey
+        ? beats.findIndex((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey)
         : -1;
       const nextIndex =
         currentIndex === -1
           ? 0
           : (currentIndex + direction + beats.length) % beats.length;
-      setFocusedBeadKey(beadKey(beats[nextIndex].beadId, beats[nextIndex].repoPath));
+      setFocusedBeatKey(beatKey(beats[nextIndex].beadId, beats[nextIndex].repoPath));
     },
-    [beats, focusedBeadKey],
+    [beats, focusedBeatKey],
   );
 
   const focusedSummary = useMemo<AgentHistoryBeatSummary | null>(
     () =>
-      focusedBeadKey
-        ? beats.find((beat) => beadKey(beat.beadId, beat.repoPath) === focusedBeadKey) ?? null
+      focusedBeatKey
+        ? beats.find((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey) ?? null
         : null,
-    [beats, focusedBeadKey],
+    [beats, focusedBeatKey],
   );
 
   const loadedSummary = useMemo<AgentHistoryBeatSummary | null>(
     () =>
-      loadedBeadKey
-        ? beats.find((beat) => beadKey(beat.beadId, beat.repoPath) === loadedBeadKey) ?? null
+      loadedBeatKey
+        ? beats.find((beat) => beatKey(beat.beadId, beat.repoPath) === loadedBeatKey) ?? null
         : null,
-    [beats, loadedBeadKey],
+    [beats, loadedBeatKey],
   );
 
   const focusConsolePanel = useCallback(() => {
     consolePanelRef.current?.focus();
   }, []);
 
-  /* Fetch bead details for all visible beats */
+  /* Fetch beat details for all visible beats */
   const detailQueries = useQueries({
     queries: visibleBeats.map((beat) => ({
-      queryKey: ["agent-history-bead-detail", beat.repoPath, beat.beadId] as const,
+      queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beadId] as const,
       queryFn: () => fetchBead(beat.beadId, beat.repoPath),
       staleTime: 60_000,
       refetchOnWindowFocus: false,
@@ -588,13 +588,13 @@ export function AgentHistoryView() {
     })),
   });
 
-  const beadDetailMap = useMemo(() => {
-    const map = new Map<string, Bead>();
+  const beatDetailMap = useMemo(() => {
+    const map = new Map<string, Beat>();
     for (let i = 0; i < detailQueries.length; i++) {
       const q = detailQueries[i];
       const beat = visibleBeats[i];
       if (q?.data?.ok && q.data.data && beat) {
-        map.set(beadKey(beat.beadId, beat.repoPath), q.data.data);
+        map.set(beatKey(beat.beadId, beat.repoPath), q.data.data);
       }
     }
     return map;
@@ -602,19 +602,19 @@ export function AgentHistoryView() {
 
   /* Focused beat detail state for the right panel */
   const focusedDetail = useMemo(() => {
-    if (!focusedBeadKey) return { loading: false, error: null as string | null, bead: null as Bead | null };
-    const idx = visibleBeats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey);
-    if (idx < 0) return { loading: false, error: null, bead: null };
+    if (!focusedBeatKey) return { loading: false, error: null as string | null, beat: null as Beat | null };
+    const idx = visibleBeats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey);
+    if (idx < 0) return { loading: false, error: null, beat: null };
     const q = detailQueries[idx];
-    if (q.isLoading) return { loading: true, error: null, bead: null };
-    if (q.data && !q.data.ok) return { loading: false, error: q.data.error ?? "Failed to load", bead: null };
-    return { loading: false, error: null, bead: q.data?.data ?? null };
-  }, [focusedBeadKey, visibleBeats, detailQueries]);
+    if (q.isLoading) return { loading: true, error: null, beat: null };
+    if (q.data && !q.data.ok) return { loading: false, error: q.data.error ?? "Failed to load", beat: null };
+    return { loading: false, error: null, beat: q.data?.data ?? null };
+  }, [focusedBeatKey, visibleBeats, detailQueries]);
 
   /* Pre-cache next batch of beats when focus is near bottom of window */
   useEffect(() => {
-    const focusedIndexInWindow = focusedBeadKey
-      ? visibleBeats.findIndex((b) => beadKey(b.beadId, b.repoPath) === focusedBeadKey)
+    const focusedIndexInWindow = focusedBeatKey
+      ? visibleBeats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey)
       : -1;
     if (focusedIndexInWindow < Math.floor(WINDOW_SIZE / 2)) return;
 
@@ -623,18 +623,18 @@ export function AgentHistoryView() {
     for (let i = prefetchStart; i < prefetchEnd; i++) {
       const beat = beats[i];
       void queryClient.prefetchQuery({
-        queryKey: ["agent-history-bead-detail", beat.repoPath, beat.beadId],
+        queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beadId],
         queryFn: () => fetchBead(beat.beadId, beat.repoPath),
         staleTime: 60_000,
       });
     }
-  }, [windowStart, focusedBeadKey, beats, visibleBeats, queryClient]);
+  }, [windowStart, focusedBeatKey, beats, visibleBeats, queryClient]);
 
-  /* Cache eviction: keep at most CACHE_MAX bead detail queries */
+  /* Cache eviction: keep at most CACHE_MAX beat detail queries */
   useEffect(() => {
-    const cached = cachedBeadKeysRef.current;
+    const cached = cachedBeatKeysRef.current;
     for (const beat of visibleBeats) {
-      const key = beadKey(beat.beadId, beat.repoPath);
+      const key = beatKey(beat.beadId, beat.repoPath);
       const idx = cached.indexOf(key);
       if (idx >= 0) cached.splice(idx, 1);
       cached.push(key);
@@ -642,10 +642,10 @@ export function AgentHistoryView() {
     while (cached.length > CACHE_MAX) {
       const direction = lastScrollDirectionRef.current;
       const evicted = direction === 1 ? cached.shift()! : cached.pop()!;
-      const parsed = parseBeadKey(evicted);
+      const parsed = parseBeatKey(evicted);
       if (parsed) {
         queryClient.removeQueries({
-          queryKey: ["agent-history-bead-detail", parsed.repoPath, parsed.beadId],
+          queryKey: ["agent-history-beat-detail", parsed.repoPath, parsed.beatId],
         });
       }
     }
@@ -656,16 +656,16 @@ export function AgentHistoryView() {
       "agent-history",
       "sessions",
       activeRepo,
-      loadedBead?.repoPath ?? null,
-      loadedBead?.beadId ?? null,
+      loadedBeat?.repoPath ?? null,
+      loadedBeat?.beatId ?? null,
     ],
     queryFn: () =>
       fetchAgentHistory({
         repoPath: activeRepo ?? undefined,
-        beadId: loadedBead!.beadId,
-        beadRepoPath: loadedBead!.repoPath,
+        beatId: loadedBeat!.beatId,
+        beatRepoPath: loadedBeat!.repoPath,
       }),
-    enabled: Boolean(loadedBead),
+    enabled: Boolean(loadedBeat),
     refetchOnWindowFocus: false,
     retry: 1,
   });
@@ -692,12 +692,12 @@ export function AgentHistoryView() {
       if (!summary) return "";
       const hinted = summary.title?.trim();
       if (hinted) return hinted;
-      const key = beadKey(summary.beadId, summary.repoPath);
-      const detail = beadDetailMap.get(key);
+      const key = beatKey(summary.beadId, summary.repoPath);
+      const detail = beatDetailMap.get(key);
       if (detail?.title?.trim()) return detail.title.trim();
       return summary.beadId;
     },
-    [beadDetailMap],
+    [beatDetailMap],
   );
 
   const focusedTitle = focusedSummary ? getBeatTitle(focusedSummary) : "Beat details";
@@ -746,9 +746,9 @@ export function AgentHistoryView() {
                 moveFocusedBeat(-1);
                 return;
               }
-              if (event.key === "Enter" && focusedBeadKey) {
+              if (event.key === "Enter" && focusedBeatKey) {
                 event.preventDefault();
-                setLoadedBeadKey(focusedBeadKey);
+                setLoadedBeatKey(focusedBeatKey);
                 focusConsolePanel();
                 return;
               }
@@ -758,8 +758,8 @@ export function AgentHistoryView() {
               }
               if (event.key === " ") {
                 event.preventDefault();
-                if (focusedBeadKey) {
-                  setLoadedBeadKey(focusedBeadKey);
+                if (focusedBeatKey) {
+                  setLoadedBeatKey(focusedBeatKey);
                 }
                 return;
               }
@@ -782,9 +782,9 @@ export function AgentHistoryView() {
               </div>
             ) : (
               visibleBeats.map((beat) => {
-                const key = beadKey(beat.beadId, beat.repoPath);
-                const focused = focusedBeadKey === key;
-                const loaded = loadedBeadKey === key;
+                const key = beatKey(beat.beadId, beat.repoPath);
+                const focused = focusedBeatKey === key;
+                const loaded = loadedBeatKey === key;
                 return (
                   <button
                     type="button"
@@ -793,8 +793,8 @@ export function AgentHistoryView() {
                       beatButtonRefs.current[key] = node;
                     }}
                     onClick={() => {
-                      setFocusedBeadKey(key);
-                      setLoadedBeadKey(key);
+                      setFocusedBeatKey(key);
+                      setLoadedBeatKey(key);
                     }}
                     onKeyDown={(event) => {
                       if (event.key === "Tab") {
@@ -883,7 +883,7 @@ export function AgentHistoryView() {
                 {focusedDetail.error}
               </div>
             ) : (
-              <BeadDetailContent bead={focusedDetail.bead} summary={focusedSummary} />
+              <BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} />
             )}
           </div>
         </section>

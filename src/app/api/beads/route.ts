@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "@/lib/backend-instance";
-import type { BeadListFilters } from "@/lib/backend-port";
+import type { BeatListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { backendErrorStatus } from "@/lib/backend-http";
-import { createBeadSchema } from "@/lib/schemas";
+import { createBeatSchema } from "@/lib/schemas";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
   const query = params.q;
   delete params.q;
   const raw = query
-    ? await getBackend().search(query, params as BeadListFilters, repoPath)
-    : await getBackend().list(params as BeadListFilters, repoPath);
+    ? await getBackend().search(query, params as BeatListFilters, repoPath)
+    : await getBackend().list(params as BeatListFilters, repoPath);
   const fn = query ? "searchBeads" : "listBeads";
   const result = withErrorSuppression(fn, raw, params, repoPath, query);
   if (!result.ok) {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { _repo: repoPath, ...rest } = body;
-  const parsed = createBeadSchema.safeParse(rest);
+  const parsed = createBeatSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },

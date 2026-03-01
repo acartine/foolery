@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { BeadStatusBadge } from '@/components/bead-status-badge';
-import type { BeadStatus } from '@/lib/types';
+// BeadStatus is now a string type; keep array typed inline
 import '@/app/globals.css';
 
 const meta = {
@@ -52,7 +52,7 @@ export const Closed: Story = {
 
 export const AllStatuses: Story = {
   render: () => {
-    const statuses: BeadStatus[] = ['open', 'in_progress', 'blocked', 'deferred', 'closed'];
+    const statuses = ['open', 'in_progress', 'blocked', 'deferred', 'closed'];
     return (
       <div className="flex gap-4 flex-wrap">
         {statuses.map((status) => (

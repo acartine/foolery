@@ -717,7 +717,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
     const existingRunning = terminals.find(
       (terminal) =>
-        terminal.beadId === nextWaveToTrigger.waveId && terminal.status === "running"
+        terminal.beatId === nextWaveToTrigger.waveId && terminal.status === "running"
     );
     if (existingRunning) {
       setActiveSession(existingRunning.sessionId);
@@ -736,8 +736,8 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
 
     upsertTerminal({
       sessionId: result.data.id,
-      beadId: nextWaveToTrigger.waveId,
-      beadTitle: nextWaveToTrigger.waveTitle,
+      beatId: nextWaveToTrigger.waveId,
+      beatTitle: nextWaveToTrigger.waveTitle,
       repoPath: result.data.repoPath ?? activeRepo,
       status: "running",
       startedAt: new Date().toISOString(),
@@ -899,7 +899,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                             {notesLayout.scenes.length} internal
                           </Badge>
                         )}
-                        <span className="text-xs text-muted-foreground">{wave.beads.length} beats</span>
+                        <span className="text-xs text-muted-foreground">{wave.beats.length} beats</span>
                       </div>
                     </div>
                     <div className="mt-1 space-y-1.5">
@@ -988,7 +988,7 @@ export function OrchestrationView({ onApplied }: OrchestrationViewProps) {
                     </div>
 
                     <ul className="mt-2 space-y-1">
-                      {[...wave.beads].sort((a, b) => naturalCompare(a.id, b.id)).map((bead) => (
+                      {[...wave.beats].sort((a, b) => naturalCompare(a.id, b.id)).map((bead) => (
                         <li key={bead.id} className="rounded-md border bg-white px-2 py-1 text-xs">
                           <span className="font-mono text-[10px] text-muted-foreground">
                             {bead.id.replace(/^[^-]+-/, "")}

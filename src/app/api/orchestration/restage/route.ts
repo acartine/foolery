@@ -86,7 +86,7 @@ function parseWave(
     name,
     objective,
     agents,
-    beads,
+    beats: beads,
     notes,
   };
 }
@@ -109,8 +109,8 @@ function parsePlan(value: unknown): OrchestrationPlan | null {
       `Restaged ${waves.length} scene${waves.length === 1 ? "" : "s"}.`,
     waves,
     assumptions: parseStringArray(obj.assumptions),
-    unassignedBeadIds: parseStringArray(
-      obj.unassignedBeadIds ?? obj.unassigned_bead_ids
+    unassignedBeatIds: parseStringArray(
+      obj.unassignedBeatIds ?? obj.unassigned_beat_ids
     ),
   };
 }

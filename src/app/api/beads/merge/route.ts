@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
   if (Object.keys(fields).length > 0) {
     const updateResult = await getBackend().update(
       survivorId,
-      fields as import("@/lib/backend-port").UpdateBeadInput,
+      fields as import("@/lib/backend-port").UpdateBeatInput,
       repoPath,
     );
     if (!updateResult.ok) {

@@ -2,16 +2,16 @@
  * JSONL DTO translation helpers for the BeadsBackend.
  *
  * Converts between the JSONL on-disk format (snake_case, bd-specific
- * field names) and the domain Bead type used internally by foolery.
+ * field names) and the domain Beat type used internally by foolery.
  */
 
-import type { Bead, BeadPriority, BeadStatus, BeadType } from "@/lib/types";
-import { recordCompatStatusConsumed } from "@/lib/compat-status-usage";
+import type { Beat, BeatPriority } from "@/lib/types";
 import {
   beadsProfileDescriptor,
   deriveBeadsProfileId,
   deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
+  mapWorkflowStateToCompatStatus,
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
 } from "@/lib/workflows";
@@ -74,12 +74,12 @@ function inferParent(id: string, explicit?: unknown): string | undefined {
 
 // ── Normalize: JSONL → Domain ───────────────────────────────────
 
-export function normalizeFromJsonl(raw: RawBead): Bead {
+export function normalizeFromJsonl(raw: RawBead): Beat {
   const id = raw.id;
-  const rawType = raw.issue_type ?? raw.type ?? "task";
-  const type = (VALID_TYPES.has(rawType as string) ? rawType : "task") as BeadType;
+  const rawType = (raw.issue_type ?? raw.type ?? "task") as string;
+  const type: string = VALID_TYPES.has(rawType) ? rawType : "task";
   const rawStatus = raw.status ?? "open";
-  const status = (VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open") as BeadStatus;
+  const status = VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open";
   const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
   const profileId = deriveBeadsProfileId(labels, raw.metadata);
   const workflow = beadsProfileDescriptor(profileId);
@@ -88,7 +88,7 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
   const rawPriority = raw.priority ?? 2;
   const priority = (typeof rawPriority === "number" && rawPriority >= 0 && rawPriority <= 4
     ? rawPriority
-    : 2) as BeadPriority;
+    : 2) as BeatPriority;
 
   // Merge close_reason from top-level JSONL field into metadata
   const baseMetadata = raw.metadata ?? {};
@@ -106,11 +106,9 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
     notes: raw.notes,
     acceptance: raw.acceptance_criteria ?? (raw as Record<string, unknown>).acceptance as string | undefined,
     type,
-    status: runtime.compatStatus,
-    compatStatus: runtime.compatStatus,
+    state: runtime.state,
     workflowId: workflow.id,
     workflowMode: workflow.mode,
-    workflowState: runtime.workflowState,
     profileId: workflow.id,
     nextActionState: runtime.nextActionState,
     nextActionOwnerKind: runtime.nextActionOwnerKind,
@@ -132,43 +130,38 @@ export function normalizeFromJsonl(raw: RawBead): Bead {
 
 // ── Denormalize: Domain → JSONL ─────────────────────────────────
 
-export function denormalizeToJsonl(bead: Bead): RawBead {
-  const workflow = beadsProfileDescriptor(bead.profileId ?? bead.workflowId);
-  const workflowState = bead.workflowState || workflow.initialState;
-  const status = bead.compatStatus
-    ? (() => {
-        recordCompatStatusConsumed("beads-jsonl-dto:denormalize");
-        return bead.compatStatus as BeadStatus;
-      })()
-    : bead.status ?? deriveWorkflowRuntimeState(workflow, workflowState).compatStatus;
+export function denormalizeToJsonl(beat: Beat): RawBead {
+  const workflow = beadsProfileDescriptor(beat.profileId ?? beat.workflowId);
+  const beatState = beat.state || workflow.initialState;
+  const status = mapWorkflowStateToCompatStatus(beatState, "beads-jsonl-dto:denormalize");
   const labels = withWorkflowProfileLabel(
-    withWorkflowStateLabel(bead.labels ?? [], workflowState),
+    withWorkflowStateLabel(beat.labels ?? [], beatState),
     workflow.id,
   );
   const raw: RawBead = {
-    id: bead.id,
-    title: bead.title,
+    id: beat.id,
+    title: beat.title,
     status,
-    priority: bead.priority,
-    issue_type: bead.type,
+    priority: beat.priority,
+    issue_type: beat.type,
     labels,
-    created_at: bead.created,
-    updated_at: bead.updated,
+    created_at: beat.created,
+    updated_at: beat.updated,
   };
 
-  if (bead.description !== undefined) raw.description = bead.description;
-  if (bead.notes !== undefined) raw.notes = bead.notes;
-  if (bead.acceptance !== undefined) raw.acceptance_criteria = bead.acceptance;
-  if (bead.assignee !== undefined) raw.assignee = bead.assignee;
-  if (bead.owner !== undefined) raw.owner = bead.owner;
-  if (bead.parent !== undefined) raw.parent = bead.parent;
-  if (bead.due !== undefined) raw.due = bead.due;
-  if (bead.estimate !== undefined) raw.estimated_minutes = bead.estimate;
-  if (bead.closed !== undefined) raw.closed_at = bead.closed;
-  if (bead.metadata?.close_reason !== undefined) {
-    raw.close_reason = bead.metadata.close_reason as string;
+  if (beat.description !== undefined) raw.description = beat.description;
+  if (beat.notes !== undefined) raw.notes = beat.notes;
+  if (beat.acceptance !== undefined) raw.acceptance_criteria = beat.acceptance;
+  if (beat.assignee !== undefined) raw.assignee = beat.assignee;
+  if (beat.owner !== undefined) raw.owner = beat.owner;
+  if (beat.parent !== undefined) raw.parent = beat.parent;
+  if (beat.due !== undefined) raw.due = beat.due;
+  if (beat.estimate !== undefined) raw.estimated_minutes = beat.estimate;
+  if (beat.closed !== undefined) raw.closed_at = beat.closed;
+  if (beat.metadata?.close_reason !== undefined) {
+    raw.close_reason = beat.metadata.close_reason as string;
   }
-  if (bead.metadata !== undefined) raw.metadata = bead.metadata;
+  if (beat.metadata !== undefined) raw.metadata = beat.metadata;
 
   return raw;
 }

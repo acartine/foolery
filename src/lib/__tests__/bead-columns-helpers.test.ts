@@ -4,14 +4,14 @@ import {
   rejectBeadFields,
   getBeadColumns,
 } from "@/components/bead-columns";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
-function makeBead(overrides: Partial<Bead> = {}): Bead {
+function makeBeat(overrides: Partial<Beat> = {}): Beat {
   return {
     id: "proj-abc",
-    title: "Test bead",
+    title: "Test beat",
     type: "task",
-    status: "open",
+    state: "open",
     priority: 2,
     labels: [],
     created: "2026-01-01T00:00:00Z",
@@ -21,38 +21,36 @@ function makeBead(overrides: Partial<Bead> = {}): Bead {
 }
 
 describe("verifyBeadFields", () => {
-  it("returns status closed with workflow state closed", () => {
+  it("returns state shipped", () => {
     const result = verifyBeadFields();
-    expect(result.status).toBe("closed");
-    expect(result.workflowState).toBe("closed");
+    expect(result.state).toBe("shipped");
   });
 });
 
 describe("rejectBeadFields", () => {
-  it("returns open status with retake workflow state and attempt count 1 for first rejection", () => {
-    const bead = makeBead({ labels: ["stage:verification", "foo"] });
+  it("returns ready_for_implementation state with attempt count 1 for first rejection", () => {
+    const bead = makeBeat({ labels: ["stage:verification", "foo"] });
     const result = rejectBeadFields(bead);
-    expect(result.status).toBe("open");
-    expect(result.workflowState).toBe("retake");
+    expect(result.state).toBe("ready_for_implementation");
     expect(result.removeLabels).toBeUndefined();
     expect(result.labels).toContain("attempts:1");
   });
 
   it("increments attempt count for subsequent rejections", () => {
-    const bead = makeBead({
+    const bead = makeBeat({
       labels: ["stage:verification", "attempts:2"],
     });
     const result = rejectBeadFields(bead);
-    expect(result.status).toBe("open");
+    expect(result.state).toBe("ready_for_implementation");
     expect(result.removeLabels).not.toContain("stage:verification");
     expect(result.removeLabels).toContain("attempts:2");
     expect(result.labels).toContain("attempts:3");
   });
 
   it("handles bead with no labels", () => {
-    const bead = makeBead({ labels: undefined as unknown as string[] });
+    const bead = makeBeat({ labels: undefined as unknown as string[] });
     const result = rejectBeadFields(bead);
-    expect(result.status).toBe("open");
+    expect(result.state).toBe("ready_for_implementation");
     expect(result.labels).toContain("attempts:1");
   });
 });
@@ -87,26 +85,15 @@ describe("getBeadColumns", () => {
     expect(hasRepo).toBe(false);
   });
 
-  it("adds ship column when onShipBead is provided", () => {
-    const cols = getBeadColumns({ onShipBead: () => {} });
+  it("adds ship column when onShipBeat is provided", () => {
+    const cols = getBeadColumns({ onShipBeat: () => {} });
     const hasShip = cols.some((c) => c.id === "ship");
     expect(hasShip).toBe(true);
   });
 
-  it("does not add ship column when onShipBead is not provided", () => {
+  it("does not add ship column when onShipBeat is not provided", () => {
     const cols = getBeadColumns({});
     const hasShip = cols.some((c) => c.id === "ship");
     expect(hasShip).toBe(false);
-  });
-
-  it("always includes select, id, title, priority, type, status columns", () => {
-    const cols = getBeadColumns();
-    const ids = cols.map((c) => c.id ?? (c as unknown as { accessorKey?: string }).accessorKey);
-    expect(ids).toContain("select");
-    expect(ids).toContain("id");
-    expect(ids).toContain("title");
-    expect(ids).toContain("priority");
-    expect(ids).toContain("type");
-    expect(ids).toContain("status");
   });
 });

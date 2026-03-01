@@ -11,18 +11,18 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 interface RetakeDialogProps {
-  bead: Bead | null;
+  bead: Beat | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (notes: string) => void;
   isPending?: boolean;
 }
 
-/** Extract the commit sha from a bead's labels (commit:<sha>). */
-function extractCommitSha(bead: Bead): string | undefined {
+/** Extract the commit sha from a beat's labels (commit:<sha>). */
+function extractCommitSha(bead: Beat): string | undefined {
   const label = bead.labels?.find((l) => l.startsWith("commit:"));
   return label ? label.slice("commit:".length) : undefined;
 }
@@ -57,7 +57,7 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
         </DialogHeader>
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            This will reopen the bead as <span className="font-semibold text-foreground">in_progress</span> for
+            This will reopen the beat as <span className="font-semibold text-foreground">in_progress</span> for
             regression investigation.
             {commitSha && (
               <>
@@ -80,7 +80,7 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
           </Button>
           <Button
             className="bg-amber-600 text-white hover:bg-amber-700"
-            title="Reopen bead for regression investigation"
+            title="Reopen beat for regression investigation"
             onClick={() => onConfirm(notes)}
             disabled={isPending}
           >

@@ -25,9 +25,9 @@ export function MinimizedTerminalBar() {
       <span className="truncate text-[11px] text-white/40">
         {terminals
           .map((t) =>
-            t.beadIds
-              ? `Scene (${t.beadIds.length})`
-              : t.beadTitle || t.beadId
+            t.beatIds
+              ? `Scene (${t.beatIds.length})`
+              : t.beatTitle || t.beatId
           )
           .join(", ")}
       </span>

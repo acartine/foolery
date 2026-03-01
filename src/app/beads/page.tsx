@@ -5,10 +5,10 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
 import { startSession, startSceneSession, abortSession } from "@/lib/terminal-api";
-import { BeadTable } from "@/components/bead-table";
-import { BeadDetailLightbox } from "@/components/bead-detail-lightbox";
+import { BeatTable } from "@/components/beat-table";
+import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
-import { MergeBeadsDialog } from "@/components/merge-beads-dialog";
+import { MergeBeatsDialog } from "@/components/merge-beats-dialog";
 import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
@@ -20,8 +20,8 @@ import { useTerminalStore } from "@/stores/terminal-store";
 import { useRetryNotifications } from "@/hooks/use-retry-notifications";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
-import type { Bead } from "@/lib/types";
-import type { UpdateBeadInput } from "@/lib/schemas";
+import type { Beat } from "@/lib/types";
+import type { UpdateBeatInput } from "@/lib/schemas";
 
 const DEGRADED_ERROR_PREFIX = "Unable to interact with beads store";
 
@@ -53,7 +53,7 @@ function BeadsPageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchQuery = searchParams.get("q") ?? "";
-  const detailBeadId = searchParams.get("bead");
+  const detailBeatId = searchParams.get("bead");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
   const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
@@ -80,7 +80,7 @@ function BeadsPageInner() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
-  const [mergeBeadIds, setMergeBeadIds] = useState<string[]>([]);
+  const [mergeBeatIds, setMergeBeatIds] = useState<string[]>([]);
   const queryClient = useQueryClient();
   const { filters, activeRepo, registeredRepos } = useAppStore();
   const {
@@ -89,15 +89,15 @@ function BeadsPageInner() {
     upsertTerminal,
     updateStatus,
   } = useTerminalStore();
-  const shippingByBeadId = terminals.reduce<Record<string, string>>(
+  const shippingByBeatId = terminals.reduce<Record<string, string>>(
     (acc, terminal) => {
       if (terminal.status === "running") {
-        if (terminal.beadIds && terminal.beadIds.length > 0) {
-          for (const bid of terminal.beadIds) {
+        if (terminal.beatIds && terminal.beatIds.length > 0) {
+          for (const bid of terminal.beatIds) {
             acc[bid] = terminal.sessionId;
           }
         } else {
-          acc[terminal.beadId] = terminal.sessionId;
+          acc[terminal.beatId] = terminal.sessionId;
         }
       }
       return acc;
@@ -105,9 +105,9 @@ function BeadsPageInner() {
     {}
   );
 
-  const isReadyFilter = filters.status === "ready";
+  const isReadyFilter = filters.state === "ready";
   const params: Record<string, string> = {};
-  if (filters.status && !isReadyFilter) params.status = filters.status;
+  if (filters.state && !isReadyFilter) params.state = filters.state;
   if (filters.type) params.type = filters.type;
   if (filters.priority !== undefined) params.priority = String(filters.priority);
   if (searchQuery) params.q = searchQuery;
@@ -121,8 +121,8 @@ function BeadsPageInner() {
         throwIfDegraded(result);
         if (result.ok && result.data) {
           const repo = registeredRepos.find((r) => r.path === activeRepo);
-          result.data = result.data.map((bead) => ({
-            ...bead,
+          result.data = result.data.map((beat) => ({
+            ...beat,
             _repoPath: activeRepo,
             _repoName: repo?.name ?? activeRepo,
           })) as typeof result.data;
@@ -141,8 +141,8 @@ function BeadsPageInner() {
               return [];
             }
             if (!result.ok || !result.data) return [];
-            return result.data.map((bead) => ({
-              ...bead,
+            return result.data.map((beat) => ({
+              ...beat,
               _repoPath: repo.path,
               _repoName: repo.name,
             }));
@@ -163,8 +163,8 @@ function BeadsPageInner() {
     retry: (count, error) => !(error instanceof DegradedStoreError) && count < 3,
   });
 
-  const beads = useMemo<Bead[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
-  useRetryNotifications(beads);
+  const beats = useMemo<Beat[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
+  useRetryNotifications(beats);
   const partialDegradedMsg = data?.ok ? (data as { _degraded?: string })._degraded : undefined;
   const isDegradedError = queryError instanceof DegradedStoreError || Boolean(partialDegradedMsg);
   const loadError = queryError instanceof DegradedStoreError
@@ -177,11 +177,11 @@ function BeadsPageInner() {
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   const { mutate: bulkUpdate } = useMutation({
-    mutationFn: async ({ ids, fields }: { ids: string[]; fields: UpdateBeadInput }) => {
+    mutationFn: async ({ ids, fields }: { ids: string[]; fields: UpdateBeatInput }) => {
       await Promise.all(
         ids.map((id) => {
-          const bead = beads.find((b) => b.id === id) as unknown as Record<string, unknown>;
-          const repo = bead?._repoPath as string | undefined;
+          const beat = beats.find((b) => b.id === id) as unknown as Record<string, unknown>;
+          const repo = beat?._repoPath as string | undefined;
           return updateBead(id, fields, repo);
         })
       );
@@ -201,7 +201,7 @@ function BeadsPageInner() {
   }, []);
 
   const handleBulkUpdate = useCallback(
-    (fields: UpdateBeadInput) => {
+    (fields: UpdateBeatInput) => {
       if (selectedIds.length > 0) {
         bulkUpdate({ ids: selectedIds, fields });
       }
@@ -213,10 +213,10 @@ function BeadsPageInner() {
     setSelectionVersion((v) => v + 1);
   }, []);
 
-  const handleShipBead = useCallback(
-    async (bead: Bead) => {
+  const handleShipBeat = useCallback(
+    async (beat: Beat) => {
       const existingRunning = terminals.find(
-        (terminal) => terminal.beadId === bead.id && terminal.status === "running"
+        (terminal) => terminal.beatId === beat.id && terminal.status === "running"
       );
       if (existingRunning) {
         setActiveSession(existingRunning.sessionId);
@@ -224,16 +224,16 @@ function BeadsPageInner() {
         return;
       }
 
-      const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      const result = await startSession(bead.id, repo ?? activeRepo ?? undefined);
+      const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
+      const result = await startSession(beat.id, repo ?? activeRepo ?? undefined);
       if (!result.ok || !result.data) {
         toast.error(result.error ?? "Failed to start terminal session");
         return;
       }
       upsertTerminal({
         sessionId: result.data.id,
-        beadId: bead.id,
-        beadTitle: bead.title,
+        beatId: beat.id,
+        beatTitle: beat.title,
         repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
@@ -242,12 +242,12 @@ function BeadsPageInner() {
     [activeRepo, setActiveSession, terminals, upsertTerminal]
   );
 
-  const handleAbortShipping = useCallback(async (beadId: string) => {
+  const handleAbortShipping = useCallback(async (beatId: string) => {
     const running = terminals.find(
       (terminal) =>
         terminal.status === "running" &&
-        (terminal.beadId === beadId ||
-         (terminal.beadIds && terminal.beadIds.includes(beadId)))
+        (terminal.beatId === beatId ||
+         (terminal.beatIds && terminal.beatIds.includes(beatId)))
     );
     if (!running) return;
 
@@ -257,13 +257,13 @@ function BeadsPageInner() {
       return;
     }
     updateStatus(running.sessionId, "aborted");
-    toast.success(running.beadIds ? "Scene terminated" : "Take terminated");
+    toast.success(running.beatIds ? "Scene terminated" : "Take terminated");
   }, [terminals, updateStatus]);
 
-  const handleSceneBeads = useCallback(
+  const handleSceneBeats = useCallback(
     async (ids: string[]) => {
-      const firstBead = beads.find((b) => ids.includes(b.id));
-      const repo = (firstBead as unknown as Record<string, unknown>)?._repoPath as string | undefined;
+      const firstBeat = beats.find((b) => ids.includes(b.id));
+      const repo = (firstBeat as unknown as Record<string, unknown>)?._repoPath as string | undefined;
 
       const result = await startSceneSession(ids, repo ?? activeRepo ?? undefined);
       if (!result.ok || !result.data) {
@@ -272,20 +272,20 @@ function BeadsPageInner() {
       }
       upsertTerminal({
         sessionId: result.data.id,
-        beadId: result.data.beadId,
-        beadTitle: result.data.beadTitle,
-        beadIds: result.data.beadIds,
+        beatId: result.data.beatId,
+        beatTitle: result.data.beatTitle,
+        beatIds: result.data.beatIds,
         repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
       });
     },
-    [beads, activeRepo, upsertTerminal]
+    [beats, activeRepo, upsertTerminal]
   );
 
-  const handleMergeBeads = useCallback(
+  const handleMergeBeats = useCallback(
     (ids: string[]) => {
-      setMergeBeadIds(ids);
+      setMergeBeatIds(ids);
       setMergeDialogOpen(true);
     },
     []
@@ -295,7 +295,7 @@ function BeadsPageInner() {
     setSelectionVersion((v) => v + 1);
   }, []);
 
-  const setBeadDetailParams = useCallback((id: string | null, repo: string | undefined, mode: "push" | "replace") => {
+  const setBeatDetailParams = useCallback((id: string | null, repo: string | undefined, mode: "push" | "replace") => {
     const params = new URLSearchParams(searchParams.toString());
     if (id) params.set("bead", id);
     else params.delete("bead");
@@ -310,33 +310,33 @@ function BeadsPageInner() {
   }, [searchParams, pathname, router]);
 
   useEffect(() => {
-    if (!isListView && detailBeadId) {
-      setBeadDetailParams(null, undefined, "replace");
+    if (!isListView && detailBeatId) {
+      setBeatDetailParams(null, undefined, "replace");
     }
-  }, [isListView, detailBeadId, setBeadDetailParams]);
+  }, [isListView, detailBeatId, setBeatDetailParams]);
 
-  const handleOpenBead = useCallback((bead: Bead) => {
-    const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-    setBeadDetailParams(bead.id, repo, "push");
-  }, [setBeadDetailParams]);
+  const handleOpenBeat = useCallback((beat: Beat) => {
+    const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
+    setBeatDetailParams(beat.id, repo, "push");
+  }, [setBeatDetailParams]);
 
-  const handleBeadLightboxOpenChange = useCallback((open: boolean) => {
-    if (!open) setBeadDetailParams(null, undefined, "replace");
-  }, [setBeadDetailParams]);
+  const handleBeatLightboxOpenChange = useCallback((open: boolean) => {
+    if (!open) setBeatDetailParams(null, undefined, "replace");
+  }, [setBeatDetailParams]);
 
-  const handleMovedBead = useCallback((newId: string, targetRepo: string) => {
-    setBeadDetailParams(newId, targetRepo, "replace");
+  const handleMovedBeat = useCallback((newId: string, targetRepo: string) => {
+    setBeatDetailParams(newId, targetRepo, "replace");
     queryClient.invalidateQueries({ queryKey: ["beads"] });
-  }, [queryClient, setBeadDetailParams]);
+  }, [queryClient, setBeatDetailParams]);
 
-  const initialDetailBead = useMemo(() => {
-    if (!detailBeadId) return null;
-    return beads.find((bead) => {
-      if (bead.id !== detailBeadId) return false;
-      const beadRepo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      return !detailRepo || beadRepo === detailRepo;
+  const initialDetailBeat = useMemo(() => {
+    if (!detailBeatId) return null;
+    return beats.find((beat) => {
+      if (beat.id !== detailBeatId) return false;
+      const beatRepo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
+      return !detailRepo || beatRepo === detailRepo;
     }) ?? null;
-  }, [beads, detailBeadId, detailRepo]);
+  }, [beats, detailBeatId, detailRepo]);
 
   return (
     <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
@@ -346,8 +346,8 @@ function BeadsPageInner() {
             selectedIds={selectedIds}
             onBulkUpdate={handleBulkUpdate}
             onClearSelection={handleClearSelection}
-            onSceneBeads={handleSceneBeads}
-            onMergeBeads={handleMergeBeads}
+            onSceneBeads={handleSceneBeats}
+            onMergeBeads={handleMergeBeats}
           />
         </div>
       )}
@@ -387,15 +387,15 @@ function BeadsPageInner() {
                   <span>{loadError}</span>
                 </div>
               )}
-              <BeadTable
-                data={beads}
+              <BeatTable
+                data={beats}
                 showRepoColumn={showRepoColumn}
                 onSelectionChange={handleSelectionChange}
                 selectionVersion={selectionVersion}
                 searchQuery={searchQuery}
-                onOpenBead={handleOpenBead}
-                onShipBead={handleShipBead}
-                shippingByBeadId={shippingByBeadId}
+                onOpenBeat={handleOpenBeat}
+                onShipBeat={handleShipBeat}
+                shippingByBeatId={shippingByBeatId}
                 onAbortShipping={handleAbortShipping}
               />
             </>
@@ -404,22 +404,22 @@ function BeadsPageInner() {
         )}
       </div>
       {isListView && (
-        <BeadDetailLightbox
-          key={`${detailBeadId ?? "none"}:${detailRepo ?? "none"}`}
-          open={Boolean(detailBeadId)}
-          beadId={detailBeadId}
+        <BeatDetailLightbox
+          key={`${detailBeatId ?? "none"}:${detailRepo ?? "none"}`}
+          open={Boolean(detailBeatId)}
+          beatId={detailBeatId}
           repo={detailRepo}
-          initialBead={initialDetailBead}
-          onOpenChange={handleBeadLightboxOpenChange}
-          onMoved={handleMovedBead}
-          onShipBead={handleShipBead}
+          initialBeat={initialDetailBeat}
+          onOpenChange={handleBeatLightboxOpenChange}
+          onMoved={handleMovedBeat}
+          onShipBeat={handleShipBeat}
         />
       )}
       {isListView && (
-        <MergeBeadsDialog
+        <MergeBeatsDialog
           open={mergeDialogOpen}
           onOpenChange={setMergeDialogOpen}
-          beads={beads.filter((b) => mergeBeadIds.includes(b.id))}
+          beats={beats.filter((b) => mergeBeatIds.includes(b.id))}
           onMerged={handleMergeComplete}
         />
       )}
