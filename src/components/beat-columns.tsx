@@ -19,6 +19,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
+import { beadsProfileDescriptor } from "@/lib/workflows";
+import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
@@ -39,6 +41,26 @@ function labelColor(label: string): string {
   let hash = 0;
   for (let i = 0; i < label.length; i++) hash = ((hash << 5) - hash + label.charCodeAt(i)) | 0;
   return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
+}
+
+function validNextStates(
+  currentState: string | undefined,
+  workflow: MemoryWorkflowDescriptor,
+): string[] {
+  if (!currentState) return [];
+  const normalized = currentState.trim().toLowerCase();
+  const next = new Set<string>();
+  for (const t of workflow.transitions ?? []) {
+    if (t.from === normalized || t.from === "*") {
+      next.add(t.to);
+    }
+  }
+  next.delete(normalized);
+  return Array.from(next);
+}
+
+function formatStateName(state: string): string {
+  return state.replace(/_/g, " ");
 }
 
 function relativeTime(dateStr: string): string {
@@ -528,11 +550,34 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               onUpdateBeat={onUpdateBeat}
               isRolling={isRolling}
             />
-            {onUpdateBeat && !isLocked ? (
-              <button type="button" title="Change state" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
-                <BeatStateBadge state={state} />
-              </button>
-            ) : (
+            {onUpdateBeat && !isLocked ? (() => {
+              const workflow = beadsProfileDescriptor(row.original.profileId);
+              const nextStates = validNextStates(state, workflow);
+              return (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" title="Change state" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
+                      <BeatStateBadge state={state} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuRadioGroup
+                      value={state}
+                      onValueChange={(v) => onUpdateBeat(row.original.id, { state: v })}
+                    >
+                      <DropdownMenuRadioItem value={state}>
+                        {formatStateName(state)} (current)
+                      </DropdownMenuRadioItem>
+                      {nextStates.map((s) => (
+                        <DropdownMenuRadioItem key={s} value={s}>
+                          {formatStateName(s)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })() : (
               <BeatStateBadge state={state} className={pulseClass} />
             )}
             <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isRolling} />
