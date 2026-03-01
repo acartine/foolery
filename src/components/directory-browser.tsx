@@ -192,7 +192,7 @@ export function DirectoryBrowser({
                   <span className="flex-1 truncate">{entry.name}</span>
                   {entry.isCompatible ? (
                     <span className="text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full">
-                      {entry.memoryManagerType}
+                      {getMemoryManagerLabel(entry.memoryManagerType)}
                     </span>
                   ) : (
                     <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">

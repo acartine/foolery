@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, FolderOpen, Plus, Trash2, Database, CircleDot } from "lucide-react";
+import { ArrowLeft, FolderOpen, Plus, Trash2, Database } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -19,24 +19,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { getMemoryManagerLabel, listKnownMemoryManagers } from "@/lib/memory-managers";
-
-function MemoryManagerBadge({ type }: { type?: string }) {
-  const label = getMemoryManagerLabel(type);
-  const isKnown = type && label !== "Unknown";
-  return (
-    <span
-      className={
-        isKnown
-          ? "inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0"
-          : "inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0"
-      }
-    >
-      <CircleDot className="size-3" />
-      {label}
-    </span>
-  );
-}
+import { listKnownMemoryManagers } from "@/lib/memory-managers";
+import { MemoryManagerBadge } from "@/components/memory-manager-badge";
 
 export function RepoRegistry() {
   const [browseOpen, setBrowseOpen] = useState(false);

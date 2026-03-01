@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderOpen, Plus, Trash2, Database, CircleDot } from "lucide-react";
+import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -13,7 +13,8 @@ import {
 import { DirectoryBrowser } from "@/components/directory-browser";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
-import { getMemoryManagerLabel, listKnownMemoryManagers } from "@/lib/memory-managers";
+import { listKnownMemoryManagers } from "@/lib/memory-managers";
+import { MemoryManagerBadge } from "@/components/memory-manager-badge";
 
 export function SettingsReposSection() {
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -120,23 +121,6 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
 interface RepoListProps {
   repos: { path: string; name: string; memoryManagerType?: string }[];
   onRemove: (path: string) => void;
-}
-
-function MemoryManagerBadge({ type }: { type?: string }) {
-  const label = getMemoryManagerLabel(type);
-  const isKnown = type && label !== "Unknown";
-  return (
-    <span
-      className={
-        isKnown
-          ? "inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 dark:bg-green-950 dark:text-green-400 px-2 py-0.5 rounded-full shrink-0"
-          : "inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0"
-      }
-    >
-      <CircleDot className="size-3" />
-      {label}
-    </span>
-  );
 }
 
 function RepoList({ repos, onRemove }: RepoListProps) {
