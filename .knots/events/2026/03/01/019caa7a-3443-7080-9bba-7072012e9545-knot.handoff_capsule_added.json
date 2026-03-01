@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7a-3443-7080-9bba-7072012e9545",
+  "occurred_at": "2026-03-01T17:37:41.443129Z",
+  "knot_id": "foolery-g3y1.6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented g3y1.6 (Validation, docs, and rollout hardening). Deliverables: (1) Created GET /api/capabilities?_repo=<path> endpoint for per-repo capability resolution. (2) Added 21 Knots backend contract parity tests covering capability flags, delete gate (UNSUPPORTED), workflow descriptor shape, and close->shipped mapping. (3) Added 10 auto-routing integration tests for per-repo capability resolution, mixed tracker operation routing, and cache behavior. (4) Updated README.md (fixed kno CLI name), FOOLERY_AGENT_MEMORY_CONTRACT.md (added Knots as production backend, listWorkflows/buildTakePrompt/buildPollPrompt methods, KNOTS_CAPABILITIES), and backend-extension-guide.md (added 3 new methods, Knots reference impl, capability variability note). Quality gates: typecheck clean, 953 tests passing, lint clean for new code, build has pre-existing SSR prerender issue. Commits: dfeb2b3, 3d6cefd, d710b4d, 0a6e4ab on origin/main.",
+    "datetime": "2026-03-01T18:40:00Z",
+    "entry_id": "019caa7a-3443-7080-9bba-7063a3e037ce",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa71-dde9-7642-ae99-47e6b159aa29",
+  "occurred_at": "2026-03-01T17:28:35.048883Z",
+  "knot_id": "foolery-g3y1.6.2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Integration tests added in dfeb2b3. File: src/lib/__tests__/auto-routing-integration.test.ts with 10 tests across 3 groups: per-repo capability resolution (4 tests), mixed tracker operation routing (3 tests), cache behavior with mixed repos (3 tests). All quality gates pass (850 tests, typecheck, lint).",
+    "datetime": "2026-03-01T17:28:35.048883Z",
+    "entry_id": "019caa71-dde9-7642-ae99-47d895e7a8e9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

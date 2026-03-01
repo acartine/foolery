@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa79-f972-7970-b8f1-b485311ee730",
+  "occurred_at": "2026-03-01T17:37:26.386376Z",
+  "knot_id": "foolery-g3y1.2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: Fixed critical issue where precedence field was declared but not enforced in detectMemoryManagerType(). Detection now sorts by precedence before scanning markers (commit 26712a8). All 958 tests pass, typecheck clean. Major issues noted for future work: cache TTL has no automatic cleanup mechanism, doctor checks not fixable. Approved.",
+    "datetime": "2026-03-01T17:37:26.386376Z",
+    "entry_id": "019caa79-f972-7970-b8f1-b47291f95661",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

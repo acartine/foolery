@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa7a-5088-7ad3-b8f9-b32645657643",
+  "occurred_at": "2026-03-01T17:37:48.673652Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5.2",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Add capability-aware API guard behavior",
+    "updated_at": "2026-03-01T17:37:48.673652Z"
+  }
+}

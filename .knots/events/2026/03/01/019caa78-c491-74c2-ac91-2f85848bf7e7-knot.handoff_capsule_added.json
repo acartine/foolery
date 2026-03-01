@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa78-c491-74c2-ac91-2f85848bf7e7",
+  "occurred_at": "2026-03-01T17:36:07.313365Z",
+  "knot_id": "foolery-g3y1.4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. All workflow and prompt APIs are backend-agnostic with deprecated aliases. Fixed pre-existing UNSUPPORTED error code gap (added to BackendErrorCode, HTTP 405 mapping, knots-backend delete). 958 tests pass, typecheck clean. Review commit: 0a6e4ab",
+    "datetime": "2026-03-01T17:36:07.313365Z",
+    "entry_id": "019caa78-c491-74c2-ac91-2f745d72b6c1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

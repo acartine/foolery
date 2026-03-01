@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa7a-41a9-7a12-9776-33ed2ca6c7e7",
+  "occurred_at": "2026-03-01T17:37:44.873295Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.3",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Knots backend implementation",
+    "updated_at": "2026-03-01T17:37:44.873295Z"
+  },
+  "precondition": {
+    "profile_etag": "019caa70-4b70-7ff2-bbf4-c435284236ec"
+  }
+}
