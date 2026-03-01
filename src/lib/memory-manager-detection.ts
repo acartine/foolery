@@ -6,7 +6,8 @@ import {
 } from "@/lib/memory-managers";
 
 export function detectMemoryManagerType(repoPath: string): MemoryManagerType | undefined {
-  for (const memoryManager of listKnownMemoryManagers()) {
+  const sorted = [...listKnownMemoryManagers()].sort((a, b) => a.precedence - b.precedence);
+  for (const memoryManager of sorted) {
     if (existsSync(join(repoPath, memoryManager.markerDirectory))) {
       return memoryManager.type;
     }
