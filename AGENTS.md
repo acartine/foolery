@@ -12,9 +12,10 @@ Override with: `codex -c approval_policy=ask` or `codex -c model_reasoning_effor
 
 These repo-level rules are mandatory for all agents working in this project:
 
-1. Always use Beads (`bd`) to track and coordinate work.
-2. Never close Beads unless the user explicitly instructs you to close them.
-3. Never use a PR workflow unless the user explicitly instructs you to use PRs.
+1. Use Knots (`kno`) as the only work-tracking system.
+2. Do not use any alternate tracker in this repository.
+3. Never move knots to terminal states unless the user explicitly instructs you.
+4. Never use a PR workflow unless the user explicitly instructs you to use PRs.
 
 ## Git Worktree Policy (Hard Override)
 
@@ -50,29 +51,23 @@ Do not push code that fails these checks unless explicitly instructed.
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
 ## Foolery Agent Handoff Contract
 
-This repository uses `bd` (Beads) as the source of truth for work tracking and `foolery` for tracking visibility.
+This repository uses Knots (`kno`) as the source of truth for work tracking.
 
 Required workflow:
-1. Pick a bead and inspect scope with `bd show <id>`.
-2. Before any code/doc/commit, set status:
-   `bd update <id> --status in_progress`
+1. Pick a knot and inspect scope with `kno show <id>`.
+2. Before any code/doc/commit, claim work with `kno claim <id>` (or `kno poll --claim`).
 3. Implement and validate changes in a dedicated git worktree.
 4. **Run quality gates** (if code changed) - Tests, linters, builds
 5. Commit and capture short hash:
    `SHORT_SHA=$(git rev-parse --short HEAD)`
-6. Add handoff labels in this order:
-   `bd update <id> --add-label commit:$SHORT_SHA`
-   `bd update <id> --add-label stage:verification`
-7. Do **not** close the bead unless explicitly instructed.
+6. Add handoff context to the knot:
+   `kno update <id> --add-handoff-capsule "<summary>"`
+7. Do **not** move knots to terminal states unless explicitly instructed.
 8. Push work to remote before ending session:
-   `git pull --rebase && bd sync && git push`
+   `git pull --rebase && git push`
 9. **Clean up** - Clear stashes, worktrees, prune remote branches
 10. **Verify** - All changes committed AND pushed
-11. **Hand off** - Provide context for next session as handoff capsule in the bead.
-
-Rules:
-- Never add `stage:verification` without `commit:<short-sha>`.
-- Keep beads open for verification handoff.
+11. **Hand off** - Provide context for next session in the knot.
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds
@@ -88,13 +83,12 @@ Rules:
 
 **MANDATORY WORKFLOW:**
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
+1. **File follow-up knots** - Create knots for anything that needs follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
+3. **Update knot status** - Advance state as appropriate (non-terminal unless instructed)
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
-   bd sync
    git push
    git status  # MUST show "up to date with origin"
    ```

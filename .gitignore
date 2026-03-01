@@ -60,3 +60,6 @@ storybook-static
 .playwright-mcp/
 # bd worktree
 codex-release-wrapper/
+
+# knots local store
+/.knots/
