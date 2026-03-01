@@ -1,4 +1,4 @@
-export type AgentHistoryInteractionType = "take" | "scene" | "verification";
+export type AgentHistoryInteractionType = "take" | "scene" | "verification" | "direct" | "breakdown";
 
 export interface AgentHistoryEntry {
   id: string;
@@ -34,6 +34,8 @@ export interface AgentHistoryBeatSummary {
   sessionCount: number;
   takeCount: number;
   sceneCount: number;
+  directCount: number;
+  breakdownCount: number;
 }
 
 export interface AgentHistoryPayload {

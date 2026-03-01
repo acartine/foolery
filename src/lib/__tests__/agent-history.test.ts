@@ -30,7 +30,7 @@ describe("readAgentHistory", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  it("returns take/scene beat summaries sorted by most recent activity", async () => {
+  it("returns beat summaries for all conversation types sorted by most recent activity", async () => {
     await writeLog(tempDir, "repo-a/2026-02-20/term-a.jsonl", [
       {
         kind: "session_start",
@@ -81,7 +81,7 @@ describe("readAgentHistory", () => {
       },
     ]);
 
-    // Direct sessions are intentionally out-of-scope and should not appear.
+    // Direct sessions should now appear in history.
     await writeLog(tempDir, "repo-a/2026-02-20/orch-a.jsonl", [
       {
         kind: "session_start",
@@ -102,11 +102,13 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({ logRoot: tempDir });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-2", "foo-3", "foo-1"]);
-    expect(history.beats[0]?.sceneCount).toBe(1);
+    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-4", "foo-2", "foo-3", "foo-1"]);
+    expect(history.beats[0]?.directCount).toBe(1);
     expect(history.beats[0]?.takeCount).toBe(0);
-    expect(history.beats[2]?.takeCount).toBe(1);
-    expect(history.beats[2]?.title).toBe("First beat");
+    expect(history.beats[1]?.sceneCount).toBe(1);
+    expect(history.beats[1]?.takeCount).toBe(0);
+    expect(history.beats[3]?.takeCount).toBe(1);
+    expect(history.beats[3]?.title).toBe("First beat");
   });
 
   it("returns selected beat sessions with prompt source metadata", async () => {
@@ -279,5 +281,41 @@ describe("readAgentHistory", () => {
     });
 
     expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-recent"]);
+  });
+
+  it("includes breakdown sessions in beat summaries", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/breakdown-a.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-02-20T15:00:00.000Z",
+        sessionId: "breakdown-a",
+        interactionType: "breakdown",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-bd"],
+      },
+      {
+        kind: "prompt",
+        ts: "2026-02-20T15:00:01.000Z",
+        sessionId: "breakdown-a",
+        prompt: "ID: foo-bd\nTitle: Breakdown beat",
+        source: "initial",
+      },
+      {
+        kind: "session_end",
+        ts: "2026-02-20T15:02:00.000Z",
+        sessionId: "breakdown-a",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    const history = await readAgentHistory({ logRoot: tempDir });
+
+    expect(history.beats).toHaveLength(1);
+    expect(history.beats[0]?.beadId).toBe("foo-bd");
+    expect(history.beats[0]?.breakdownCount).toBe(1);
+    expect(history.beats[0]?.takeCount).toBe(0);
+    expect(history.beats[0]?.sessionCount).toBe(1);
+    expect(history.beats[0]?.title).toBe("Breakdown beat");
   });
 });

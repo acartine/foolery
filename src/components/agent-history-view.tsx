@@ -215,12 +215,20 @@ function interactionTypeTone(interactionType: AgentHistorySession["interactionTy
   if (interactionType === "verification") {
     return "border-amber-500/40 bg-amber-500/20 text-amber-100";
   }
+  if (interactionType === "direct") {
+    return "border-emerald-500/40 bg-emerald-500/20 text-emerald-100";
+  }
+  if (interactionType === "breakdown") {
+    return "border-rose-500/40 bg-rose-500/20 text-rose-100";
+  }
   return "border-cyan-500/40 bg-cyan-500/20 text-cyan-100";
 }
 
 function interactionTypeLabel(interactionType: AgentHistorySession["interactionType"]): string {
   if (interactionType === "scene") return "Scene!";
   if (interactionType === "verification") return "Auto-review";
+  if (interactionType === "direct") return "Direct";
+  if (interactionType === "breakdown") return "Breakdown";
   return "Take!";
 }
 
@@ -725,7 +733,7 @@ export function AgentHistoryView() {
           style={{ height: `${TOP_PANEL_HEIGHT_PX}px` }}
         >
           <div className="border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
-            <p className="text-xs font-semibold">Recent Take!/Scene Beats</p>
+            <p className="text-xs font-semibold">Beats with Conversations</p>
             <p className="text-[10px] text-muted-foreground">
               {beats.length > 0
                 ? `Showing ${windowStart + 1}–${Math.min(windowStart + WINDOW_SIZE, beats.length)} of ${beats.length}, newest first.`
@@ -784,7 +792,7 @@ export function AgentHistoryView() {
               </div>
             ) : beats.length === 0 ? (
               <div className="px-2.5 py-3 text-xs text-muted-foreground">
-                No beats with Take!/Scene activity.
+                No beats with conversation activity.
               </div>
             ) : (
               visibleBeats.map((beat) => {

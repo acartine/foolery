@@ -146,14 +146,17 @@ function parseSession(
     const ts = typeof parsed.ts === "string" ? parsed.ts : "";
 
     if (kind === "session_start") {
-      const interactionType = parsed.interactionType;
+      const rawType = parsed.interactionType;
       if (
-        interactionType !== "take" &&
-        interactionType !== "scene" &&
-        interactionType !== "verification"
+        rawType !== "take" &&
+        rawType !== "scene" &&
+        rawType !== "verification" &&
+        rawType !== "direct" &&
+        rawType !== "breakdown"
       ) {
         return null;
       }
+      const interactionType: AgentHistoryInteractionType = rawType;
 
       const repoPath = typeof parsed.repoPath === "string" ? parsed.repoPath : "";
       if (!repoPath) return null;
@@ -327,6 +330,8 @@ export async function readAgentHistory(
         existing.sessionCount += 1;
         if (start.interactionType === "take") existing.takeCount += 1;
         else if (start.interactionType === "scene") existing.sceneCount += 1;
+        else if (start.interactionType === "direct") existing.directCount += 1;
+        else if (start.interactionType === "breakdown") existing.breakdownCount += 1;
         if (!existing.title && titleHints.has(beadId)) {
           existing.title = titleHints.get(beadId);
         }
@@ -339,6 +344,8 @@ export async function readAgentHistory(
           sessionCount: 1,
           takeCount: start.interactionType === "take" ? 1 : 0,
           sceneCount: start.interactionType === "scene" ? 1 : 0,
+          directCount: start.interactionType === "direct" ? 1 : 0,
+          breakdownCount: start.interactionType === "breakdown" ? 1 : 0,
         });
       }
     }
