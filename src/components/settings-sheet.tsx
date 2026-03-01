@@ -71,6 +71,7 @@ const DEFAULTS: SettingsData = {
   openrouter: {
     apiKey: "",
     enabled: false,
+    model: "",
   },
 };
 

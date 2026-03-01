@@ -39,7 +39,7 @@ const DEFAULT_SETTINGS = {
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" },
   defaults: { profileId: "" },
-  openrouter: { apiKey: "", enabled: false },
+  openrouter: { apiKey: "", enabled: false, model: "" },
 };
 
 beforeEach(() => {
@@ -139,6 +139,7 @@ describe("backfillMissingSettingsDefaults", () => {
         '[openrouter]',
         'apiKey = ""',
         'enabled = false',
+        'model = ""',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
@@ -156,7 +157,7 @@ describe("saveSettings", () => {
       verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      openrouter: { apiKey: "", enabled: false },
+      openrouter: { apiKey: "", enabled: false, model: "" },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

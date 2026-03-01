@@ -158,8 +158,10 @@ export const openrouterSettingsSchema = z
     apiKey: z.string().default(""),
     /** Whether OpenRouter integration is enabled. */
     enabled: z.boolean().default(false),
+    /** Default OpenRouter model identifier (e.g. "anthropic/claude-sonnet-4"). */
+    model: z.string().default(""),
   })
-  .default({ apiKey: "", enabled: false });
+  .default({ apiKey: "", enabled: false, model: "" });
 
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
