@@ -357,6 +357,21 @@ export interface ScannedAgent {
   installed: boolean;
 }
 
+// ── OpenRouter types ──────────────────────────────────────
+
+export interface OpenRouterModel {
+  id: string;
+  name: string;
+  description?: string;
+  context_length: number;
+  pricing: {
+    prompt: string;
+    completion: string;
+    image: string;
+    request: string;
+  };
+}
+
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 
 /** @deprecated Use Beat */

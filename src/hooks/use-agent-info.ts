@@ -24,6 +24,7 @@ export function detectVendor(command: string): string {
   if (lower.includes("claude")) return "claude";
   if (lower.includes("codex")) return "codex";
   if (lower.includes("gemini")) return "gemini";
+  if (lower.includes("openrouter")) return "openrouter";
   return "unknown";
 }
 

@@ -19,6 +19,7 @@ import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsVerificationSection } from "@/components/settings-verification-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
+import { SettingsOpenRouterSection } from "@/components/settings-openrouter-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
@@ -26,6 +27,7 @@ import type {
   VerificationSettings,
   BackendSettings,
   DefaultsSettings,
+  OpenRouterSettings,
 } from "@/lib/schemas";
 
 export type SettingsSection = "repos" | null;
@@ -43,6 +45,7 @@ interface SettingsData {
   verification: VerificationSettings;
   backend: BackendSettings;
   defaults: DefaultsSettings;
+  openrouter: OpenRouterSettings;
 }
 
 const DEFAULTS: SettingsData = {
@@ -64,6 +67,10 @@ const DEFAULTS: SettingsData = {
   },
   defaults: {
     profileId: "",
+  },
+  openrouter: {
+    apiKey: "",
+    enabled: false,
   },
 };
 
@@ -92,6 +99,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             verification: settingsResult.data.verification ?? DEFAULTS.verification,
             backend: settingsResult.data.backend ?? DEFAULTS.backend,
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
+            openrouter: settingsResult.data.openrouter ?? DEFAULTS.openrouter,
           });
         }
       })
@@ -183,7 +191,17 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
               <Separator />
 
-              {/* Section 5: Legacy / Default Agent */}
+              {/* Section 5: OpenRouter */}
+              <SettingsOpenRouterSection
+                openrouter={settings.openrouter}
+                onOpenRouterChange={(openrouter) =>
+                  setSettings((prev) => ({ ...prev, openrouter }))
+                }
+              />
+
+              <Separator />
+
+              {/* Section 6: Legacy / Default Agent */}
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Default Agent Command</h3>
                 <div className="space-y-2">

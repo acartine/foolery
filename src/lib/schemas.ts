@@ -151,6 +151,16 @@ export const defaultsSettingsSchema = z
   })
   .default({ profileId: "" });
 
+// OpenRouter provider settings
+export const openrouterSettingsSchema = z
+  .object({
+    /** OpenRouter API key for accessing models. */
+    apiKey: z.string().default(""),
+    /** Whether OpenRouter integration is enabled. */
+    enabled: z.boolean().default(false),
+  })
+  .default({ apiKey: "", enabled: false });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
@@ -158,6 +168,7 @@ export const foolerySettingsSchema = z.object({
   verification: verificationSettingsSchema,
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
+  openrouter: openrouterSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -167,6 +178,7 @@ export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
+export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

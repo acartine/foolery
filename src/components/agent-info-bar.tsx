@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Code2, Diamond, Sparkles } from "lucide-react";
+import { Bot, Code2, Diamond, Globe, Sparkles } from "lucide-react";
 import type { ResolvedAgentInfo } from "@/hooks/use-agent-info";
 
 const VENDOR_CONFIG: Record<
@@ -21,6 +21,11 @@ const VENDOR_CONFIG: Record<
     icon: Diamond,
     color: "text-blue-300",
     bg: "bg-blue-500/10",
+  },
+  openrouter: {
+    icon: Globe,
+    color: "text-orange-300",
+    bg: "bg-orange-500/10",
   },
 };
 

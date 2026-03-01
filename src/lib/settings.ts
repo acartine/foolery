@@ -11,6 +11,7 @@ import {
   type FoolerySettings,
   type RegisteredAgentConfig,
   type VerificationSettings,
+  type OpenRouterSettings,
 } from "@/lib/schemas";
 import type {
   RegisteredAgent,
@@ -230,6 +231,7 @@ type SettingsPartial = Partial<{
   verification: Partial<FoolerySettings["verification"]>;
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
+  openrouter: Partial<FoolerySettings["openrouter"]>;
 }>;
 
 /**
@@ -247,6 +249,7 @@ export async function updateSettings(
     verification: { ...current.verification, ...partial.verification },
     backend: { ...current.backend, ...partial.backend },
     defaults: { ...current.defaults, ...partial.defaults },
+    openrouter: { ...current.openrouter, ...partial.openrouter },
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -349,6 +352,12 @@ export async function scanForAgents(): Promise<ScannedAgent[]> {
     }),
   );
   return results;
+}
+
+/** Returns the OpenRouter settings. */
+export async function getOpenRouterSettings(): Promise<OpenRouterSettings> {
+  const settings = await loadSettings();
+  return settings.openrouter;
 }
 
 /** Reset the in-memory cache (useful for testing). */

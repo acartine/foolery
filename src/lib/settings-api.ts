@@ -80,3 +80,16 @@ export function saveActions(
     body: JSON.stringify(actions),
   });
 }
+
+export function fetchOpenRouterModels(): Promise<
+  BdResult<import("./openrouter").OpenRouterModel[]>
+> {
+  return request<import("./openrouter").OpenRouterModel[]>("/api/openrouter/models");
+}
+
+export function validateOpenRouterKey(apiKey: string): Promise<BdResult<{ valid: boolean }>> {
+  return request<{ valid: boolean }>("/api/openrouter/validate", {
+    method: "POST",
+    body: JSON.stringify({ apiKey }),
+  });
+}
