@@ -6,11 +6,11 @@ import { join, resolve } from "node:path";
 import type { Beat, BeatDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
 import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
-  beadsProfileDescriptor,
-  deriveBeadsProfileId,
-  deriveBeadsWorkflowState,
+  builtinProfileDescriptor,
+  deriveProfileId,
+  deriveWorkflowState,
   deriveWorkflowRuntimeState,
-  beadsProfileWorkflowDescriptors,
+  builtinWorkflowDescriptors,
   isWorkflowProfileLabel,
   isWorkflowStateLabel,
   mapStatusToDefaultWorkflowState,
@@ -432,10 +432,10 @@ function normalizeBeat(raw: Record<string, unknown>): Beat {
   const id = raw.id as string;
   const labels = ((raw.labels ?? []) as string[]).filter(l => l.trim() !== "");
   const metadata = raw.metadata as Record<string, unknown> | undefined;
-  const profileId = deriveBeadsProfileId(labels, metadata);
-  const workflow = beadsProfileDescriptor(profileId);
+  const profileId = deriveProfileId(labels, metadata);
+  const workflow = builtinProfileDescriptor(profileId);
   const rawStatus = (raw.status ?? "open") as string;
-  const workflowState = deriveBeadsWorkflowState(rawStatus, labels, workflow);
+  const workflowState = deriveWorkflowState(rawStatus, labels, workflow);
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   return {
     ...raw,
@@ -498,7 +498,7 @@ function isStageLabel(label: string): boolean {
 export async function listWorkflows(
   _repoPath?: string
 ): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
-  return { ok: true, data: beadsProfileWorkflowDescriptors() };
+  return { ok: true, data: builtinWorkflowDescriptors() };
 }
 
 export async function listBeats(
@@ -641,7 +641,7 @@ export async function createBeat(
         : null;
   delete nextFields.profileId;
   delete nextFields.workflowId;
-  const workflow = beadsProfileDescriptor(selectedProfileId);
+  const workflow = builtinProfileDescriptor(selectedProfileId);
 
   const explicitWorkflowState =
     typeof nextFields.workflowState === "string"
@@ -714,7 +714,7 @@ export async function updateBeat(
     return { ok: false, error: current.error || "Failed to load beat before update" };
   }
 
-  const workflow = beadsProfileDescriptor(selectedProfileId ?? current?.data?.profileId);
+  const workflow = builtinProfileDescriptor(selectedProfileId ?? current?.data?.profileId);
   const explicitWorkflowState =
     typeof nextFields.workflowState === "string"
       ? normalizeStateForWorkflow(nextFields.workflowState, workflow)

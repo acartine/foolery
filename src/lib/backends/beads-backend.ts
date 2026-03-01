@@ -32,8 +32,8 @@ import {
   writeJsonlRecords,
 } from "./beads-jsonl-io";
 import {
-  beadsProfileDescriptor,
-  beadsProfileWorkflowDescriptors,
+  builtinProfileDescriptor,
+  builtinWorkflowDescriptors,
   deriveWorkflowRuntimeState,
   mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
@@ -111,7 +111,7 @@ function isSupportedProfileSelection(profileId: string | undefined): boolean {
   const normalized = profileId.trim().toLowerCase();
   if (!normalized) return true;
   if (normalized === "beads-coarse" || normalized === "beads-coarse-human-gated") return true;
-  return beadsProfileWorkflowDescriptors().some((workflow) => workflow.id === normalized);
+  return builtinWorkflowDescriptors().some((workflow) => workflow.id === normalized);
 }
 
 // ── BeadsBackend ────────────────────────────────────────────────
@@ -170,7 +170,7 @@ export class BeadsBackend implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return ok(beadsProfileWorkflowDescriptors());
+    return ok(builtinWorkflowDescriptors());
   }
 
   // -- Read operations ----------------------------------------------------
@@ -251,7 +251,7 @@ export class BeadsBackend implements BackendPort {
     if (!isSupportedProfileSelection(selectedProfileId)) {
       return backendError("INVALID_INPUT", `Unknown profile "${selectedProfileId}" for beads backend`);
     }
-    const workflow = beadsProfileDescriptor(selectedProfileId);
+    const workflow = builtinProfileDescriptor(selectedProfileId);
 
     const rp = this.resolvePath(repoPath);
     const entry = await this.ensureLoaded(rp);
@@ -336,7 +336,7 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const beat = entry.beads.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
-    const workflow = beadsProfileDescriptor(beat.profileId ?? beat.workflowId);
+    const workflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
     const closedState = mapStatusToDefaultWorkflowState("closed", workflow);
     const runtime = deriveWorkflowRuntimeState(workflow, closedState);
     beat.state = runtime.state;
@@ -467,7 +467,7 @@ export class BeadsBackend implements BackendPort {
     _options?: PollPromptOptions,
     _repoPath?: string,
   ): Promise<BackendResult<PollPromptResult>> {
-    return backendError("UNAVAILABLE", "buildPollPrompt is only available for knots-backed sessions");
+    return backendError("UNAVAILABLE", "This backend does not support poll-based prompt building");
   }
 }
 
@@ -508,7 +508,7 @@ function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.type !== undefined) beat.type = input.type;
 
   const selectedProfileId = input.profileId ?? beat.profileId ?? beat.workflowId;
-  const workflow = beadsProfileDescriptor(selectedProfileId);
+  const workflow = builtinProfileDescriptor(selectedProfileId);
 
   let nextState = beat.state
     ? normalizeStateForWorkflow(beat.state, workflow)

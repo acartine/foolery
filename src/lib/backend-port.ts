@@ -72,7 +72,7 @@ export interface TakePromptResult {
 
 // ── Poll prompt DTOs ────────────────────────────────────────
 
-/** Options passed when building a poll-based prompt (knots only). */
+/** Options passed when building a poll-based prompt. */
 export interface PollPromptOptions {
   /** Agent name for claim tracking. */
   agentName?: string;
@@ -86,7 +86,7 @@ export interface PollPromptOptions {
 export interface PollPromptResult {
   /** The task-specific prompt content. */
   prompt: string;
-  /** The ID of the knot that was claimed. */
+  /** The ID of the beat that was claimed. */
   claimedId: string;
 }
 
@@ -211,9 +211,8 @@ export interface BackendPort {
   /**
    * Build the task-specific prompt for a Take!/Scene! agent session.
    *
-   * Each backend supplies its own prompt format:
-   * - Beads: beat metadata with show commands
-   * - Knots: claims the knot via `kno claim` and returns the claim prompt
+   * Each backend supplies its own prompt format appropriate to its
+   * lifecycle semantics (e.g. show commands, claim workflows, etc.).
    */
   buildTakePrompt(
     beatId: string,
@@ -224,8 +223,7 @@ export interface BackendPort {
   /**
    * Build a poll-based prompt by claiming the highest-priority claimable work.
    *
-   * Only meaningful for knots-backed sessions; other backends return UNAVAILABLE.
-   * Uses `kno poll --claim` to atomically find and claim the next work item.
+   * Backends that do not support poll-based claiming return UNAVAILABLE.
    */
   buildPollPrompt(
     options?: PollPromptOptions,

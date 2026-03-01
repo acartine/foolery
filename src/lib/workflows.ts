@@ -10,10 +10,10 @@ import { recordCompatStatusSerialized } from "@/lib/compat-status-usage";
 export const WF_STATE_LABEL_PREFIX = "wf:state:";
 export const WF_PROFILE_LABEL_PREFIX = "wf:profile:";
 
-export const DEFAULT_BEADS_PROFILE_ID = "autopilot";
+export const DEFAULT_PROFILE_ID = "autopilot";
 export const LEGACY_BEADS_COARSE_WORKFLOW_ID = "beads-coarse";
-export const BEADS_COARSE_WORKFLOW_ID = DEFAULT_BEADS_PROFILE_ID;
-export const BEADS_COARSE_PROMPT_PROFILE_ID = DEFAULT_BEADS_PROFILE_ID;
+export const DEFAULT_WORKFLOW_ID = DEFAULT_PROFILE_ID;
+export const DEFAULT_PROMPT_PROFILE_ID = DEFAULT_PROFILE_ID;
 
 export const KNOTS_GRANULAR_DESCRIPTOR_ID = "autopilot";
 export const KNOTS_COARSE_DESCRIPTOR_ID = "semiauto";
@@ -88,7 +88,7 @@ const SEMIAUTO_OWNERS: MemoryWorkflowOwners = {
   shipment_review: "agent",
 };
 
-const BEADS_PROFILE_CATALOG: ReadonlyArray<BuiltinProfileConfig> = [
+const BUILTIN_PROFILE_CATALOG: ReadonlyArray<BuiltinProfileConfig> = [
   {
     id: "autopilot",
     description: "Agent-owned full flow with remote main output",
@@ -148,7 +148,7 @@ function normalizeProfileId(value: string | null | undefined): string | null {
   const normalized = value?.trim().toLowerCase();
   if (!normalized) return null;
 
-  if (normalized === LEGACY_BEADS_COARSE_WORKFLOW_ID) return DEFAULT_BEADS_PROFILE_ID;
+  if (normalized === LEGACY_BEADS_COARSE_WORKFLOW_ID) return DEFAULT_PROFILE_ID;
   if (normalized === "beads-coarse-human-gated") return "semiauto";
   if (normalized === "knots-granular" || normalized === "knots-granular-autonomous") {
     return "autopilot";
@@ -286,7 +286,7 @@ function descriptorFromProfileConfig(
   const initialState = config.planningMode === "skipped"
     ? "ready_for_implementation"
     : "ready_for_planning";
-  const labelPrefix = options?.labelPrefix ?? "Beads";
+  const labelPrefix = options?.labelPrefix ?? "Workflow";
 
   return {
     id: config.id,
@@ -309,12 +309,12 @@ function descriptorFromProfileConfig(
   };
 }
 
-const BUILTIN_BEADS_WORKFLOWS = BEADS_PROFILE_CATALOG.map((config) =>
+const BUILTIN_WORKFLOWS = BUILTIN_PROFILE_CATALOG.map((config) =>
   descriptorFromProfileConfig(config),
 );
 
-const BUILTIN_BEADS_WORKFLOWS_BY_ID = new Map<string, MemoryWorkflowDescriptor>(
-  BUILTIN_BEADS_WORKFLOWS.map((workflow) => [workflow.id, workflow]),
+const BUILTIN_WORKFLOWS_BY_ID = new Map<string, MemoryWorkflowDescriptor>(
+  BUILTIN_WORKFLOWS.map((workflow) => [workflow.id, workflow]),
 );
 
 function cloneWorkflowDescriptor(workflow: MemoryWorkflowDescriptor): MemoryWorkflowDescriptor {
@@ -331,19 +331,19 @@ function cloneWorkflowDescriptor(workflow: MemoryWorkflowDescriptor): MemoryWork
   };
 }
 
-export function beadsProfileWorkflowDescriptors(): MemoryWorkflowDescriptor[] {
-  return BUILTIN_BEADS_WORKFLOWS.map(cloneWorkflowDescriptor);
+export function builtinWorkflowDescriptors(): MemoryWorkflowDescriptor[] {
+  return BUILTIN_WORKFLOWS.map(cloneWorkflowDescriptor);
 }
 
-export function beadsProfileDescriptor(profileId?: string | null): MemoryWorkflowDescriptor {
-  const normalized = normalizeProfileId(profileId) ?? DEFAULT_BEADS_PROFILE_ID;
-  const descriptor = BUILTIN_BEADS_WORKFLOWS_BY_ID.get(normalized)
-    ?? BUILTIN_BEADS_WORKFLOWS_BY_ID.get(DEFAULT_BEADS_PROFILE_ID)!;
+export function builtinProfileDescriptor(profileId?: string | null): MemoryWorkflowDescriptor {
+  const normalized = normalizeProfileId(profileId) ?? DEFAULT_PROFILE_ID;
+  const descriptor = BUILTIN_WORKFLOWS_BY_ID.get(normalized)
+    ?? BUILTIN_WORKFLOWS_BY_ID.get(DEFAULT_PROFILE_ID)!;
   return cloneWorkflowDescriptor(descriptor);
 }
 
-export function beadsCoarseWorkflowDescriptor(): MemoryWorkflowDescriptor {
-  return beadsProfileDescriptor(DEFAULT_BEADS_PROFILE_ID);
+export function defaultWorkflowDescriptor(): MemoryWorkflowDescriptor {
+  return builtinProfileDescriptor(DEFAULT_PROFILE_ID);
 }
 
 export function isWorkflowStateLabel(label: string): boolean {
@@ -381,7 +381,7 @@ export function withWorkflowStateLabel(labels: string[], workflowState: string):
 
 export function withWorkflowProfileLabel(labels: string[], profileId: string): string[] {
   const next = labels.filter((label) => !isWorkflowProfileLabel(label));
-  const normalizedProfileId = normalizeProfileId(profileId) ?? DEFAULT_BEADS_PROFILE_ID;
+  const normalizedProfileId = normalizeProfileId(profileId) ?? DEFAULT_PROFILE_ID;
   next.push(`${WF_PROFILE_LABEL_PREFIX}${normalizedProfileId}`);
   return Array.from(new Set(next));
 }
@@ -497,7 +497,7 @@ export function normalizeStateForWorkflow(
   return remapLegacyStateForProfile(normalized, workflow);
 }
 
-export function deriveBeadsProfileId(
+export function deriveProfileId(
   labels: string[] | undefined,
   metadata?: Record<string, unknown>,
 ): string {
@@ -517,16 +517,16 @@ export function deriveBeadsProfileId(
   if (normalizedFromMetadata) return normalizedFromMetadata;
 
   const explicit = extractWorkflowProfileLabel(labels ?? []);
-  return explicit ?? DEFAULT_BEADS_PROFILE_ID;
+  return explicit ?? DEFAULT_PROFILE_ID;
 }
 
-export function deriveBeadsWorkflowState(
+export function deriveWorkflowState(
   status: string | undefined,
   labels: string[] | undefined,
   workflow?: MemoryWorkflowDescriptor,
 ): string {
   const nextLabels = labels ?? [];
-  const descriptor = workflow ?? beadsProfileDescriptor(DEFAULT_BEADS_PROFILE_ID);
+  const descriptor = workflow ?? builtinProfileDescriptor(DEFAULT_PROFILE_ID);
 
   const explicit = extractWorkflowStateLabel(nextLabels);
   if (explicit) return normalizeStateForWorkflow(explicit, descriptor);
@@ -694,4 +694,24 @@ export function beatInRetake(
   if (!workflow) return false;
   return normalizeState(workflow.retakeState) === normalized;
 }
+
+// ── Deprecated aliases (use backend-agnostic names above) ──────
+
+/** @deprecated Use DEFAULT_PROFILE_ID */
+export const DEFAULT_BEADS_PROFILE_ID = DEFAULT_PROFILE_ID;
+/** @deprecated Use DEFAULT_WORKFLOW_ID */
+export const BEADS_COARSE_WORKFLOW_ID = DEFAULT_WORKFLOW_ID;
+/** @deprecated Use DEFAULT_PROMPT_PROFILE_ID */
+export const BEADS_COARSE_PROMPT_PROFILE_ID = DEFAULT_PROMPT_PROFILE_ID;
+
+/** @deprecated Use builtinWorkflowDescriptors */
+export const beadsProfileWorkflowDescriptors = builtinWorkflowDescriptors;
+/** @deprecated Use builtinProfileDescriptor */
+export const beadsProfileDescriptor = builtinProfileDescriptor;
+/** @deprecated Use defaultWorkflowDescriptor */
+export const beadsCoarseWorkflowDescriptor = defaultWorkflowDescriptor;
+/** @deprecated Use deriveProfileId */
+export const deriveBeadsProfileId = deriveProfileId;
+/** @deprecated Use deriveWorkflowState */
+export const deriveBeadsWorkflowState = deriveWorkflowState;
 

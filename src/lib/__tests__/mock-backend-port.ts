@@ -20,8 +20,8 @@ import type {
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import {
-  beadsProfileDescriptor,
-  beadsProfileWorkflowDescriptors,
+  builtinProfileDescriptor,
+  builtinWorkflowDescriptors,
   deriveWorkflowRuntimeState,
   mapStatusToDefaultWorkflowState,
   withWorkflowProfileLabel,
@@ -79,7 +79,7 @@ export class MockBackendPort implements BackendPort {
   async listWorkflows(
     _repoPath?: string,
   ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
-    return ok(beadsProfileWorkflowDescriptors());
+    return ok(builtinWorkflowDescriptors());
   }
 
   // -- Read operations ------------------------------------------------------
@@ -148,7 +148,7 @@ export class MockBackendPort implements BackendPort {
   ): Promise<BackendResult<{ id: string }>> {
     const id = nextId();
     const now = isoNow();
-    const workflow = beadsProfileDescriptor(input.profileId ?? input.workflowId);
+    const workflow = builtinProfileDescriptor(input.profileId ?? input.workflowId);
     const workflowState = mapStatusToDefaultWorkflowState("open", workflow);
     const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
     const beat: Beat = {
@@ -215,7 +215,7 @@ export class MockBackendPort implements BackendPort {
   ): Promise<BackendResult<void>> {
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
-    const closedWorkflow = beadsProfileDescriptor(beat.profileId ?? beat.workflowId);
+    const closedWorkflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
     beat.state = mapStatusToDefaultWorkflowState("closed", closedWorkflow);
     beat.closed = isoNow();
     beat.updated = isoNow();
@@ -321,7 +321,7 @@ export class MockBackendPort implements BackendPort {
     _options?: PollPromptOptions,
     _repoPath?: string,
   ): Promise<BackendResult<PollPromptResult>> {
-    return backendError("UNAVAILABLE", "buildPollPrompt is only available for knots-backed sessions");
+    return backendError("UNAVAILABLE", "This backend does not support poll-based prompt building");
   }
 
   // -- Test utilities -------------------------------------------------------
