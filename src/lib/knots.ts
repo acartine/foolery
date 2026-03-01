@@ -339,6 +339,31 @@ export async function claimKnot(
   }
 }
 
+export interface PollKnotOptions {
+  stage?: string;
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+}
+
+export async function pollKnot(
+  repoPath?: string,
+  options?: PollKnotOptions,
+): Promise<BdResult<KnotClaimPrompt>> {
+  const args = ["poll", "--claim", "--json"];
+  if (options?.stage) args.push(options.stage);
+  if (options?.agentName) args.push("--agent-name", options.agentName);
+  if (options?.agentModel) args.push("--agent-model", options.agentModel);
+  if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
+  const { stdout, stderr, exitCode } = await exec(args, { repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "knots poll --claim failed" };
+  try {
+    return { ok: true, data: parseJson<KnotClaimPrompt>(stdout) };
+  } catch {
+    return { ok: false, error: "Failed to parse knots poll output" };
+  }
+}
+
 export async function updateKnot(
   id: string,
   input: KnotUpdateInput,

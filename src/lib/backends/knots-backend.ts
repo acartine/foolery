@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  PollPromptOptions,
+  PollPromptResult,
   TakePromptOptions,
   TakePromptResult,
 } from "@/lib/backend-port";
@@ -982,6 +984,27 @@ export class KnotsBackend implements BackendPort {
     return ok({
       prompt: claimResult.data!.prompt,
       claimed: true,
+    });
+  }
+
+  async buildPollPrompt(
+    options?: PollPromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>> {
+    const rp = this.resolvePath(repoPath);
+
+    const pollResult = fromKnots(
+      await knots.pollKnot(rp, {
+        agentName: options?.agentName,
+        agentModel: options?.agentModel,
+        agentVersion: options?.agentVersion,
+      }),
+    );
+    if (!pollResult.ok) return propagateError<PollPromptResult>(pollResult);
+
+    return ok({
+      prompt: pollResult.data!.prompt,
+      claimedId: pollResult.data!.id,
     });
   }
 }

@@ -656,6 +656,7 @@ export async function createSession(
   };
 
   const buildNextPollPrompt = async (): Promise<string | null> => {
+    // Check the original beat's state to decide whether to continue polling.
     const currentResult = await getBackend().get(beatId, repoPath);
     if (!currentResult.ok || !currentResult.data) return null;
 
@@ -680,21 +681,27 @@ export async function createSession(
       return null;
     }
 
-    const takeResult = await getBackend().buildTakePrompt(
-      beatId,
+    // Use kno poll --claim to find and claim the next highest-priority work.
+    const pollResult = await getBackend().buildPollPrompt(
       { agentName: agent.label || agent.command, agentModel: agent.model },
       repoPath,
     );
-    if (!takeResult.ok || !takeResult.data) {
+    if (!pollResult.ok || !pollResult.data) {
       pushEvent({
         type: "stderr",
-        data: `Poll loop: failed to claim for next iteration: ${takeResult.error?.message ?? "unknown error"}\n`,
+        data: `Poll loop: no claimable work found: ${pollResult.error?.message ?? "unknown error"}\n`,
         timestamp: Date.now(),
       });
       return null;
     }
 
-    return wrapSingleBeatPrompt(takeResult.data.prompt);
+    pushEvent({
+      type: "stdout",
+      data: `\x1b[36m--- Claimed ${pollResult.data.claimedId} ---\x1b[0m\n`,
+      timestamp: Date.now(),
+    });
+
+    return wrapSingleBeatPrompt(pollResult.data.prompt);
   };
 
   const finishSession = (exitCode: number) => {

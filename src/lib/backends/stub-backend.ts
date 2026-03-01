@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  PollPromptOptions,
+  PollPromptResult,
   TakePromptOptions,
   TakePromptResult,
 } from "@/lib/backend-port";
@@ -162,5 +164,12 @@ export class StubBackend implements BackendPort {
     _repoPath?: string,
   ): Promise<BackendResult<TakePromptResult>> {
     return unavailableError("buildTakePrompt");
+  }
+
+  async buildPollPrompt(
+    _options?: PollPromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>> {
+    return unavailableError("buildPollPrompt");
   }
 }

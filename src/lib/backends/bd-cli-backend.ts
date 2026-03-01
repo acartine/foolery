@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  PollPromptOptions,
+  PollPromptResult,
   TakePromptOptions,
   TakePromptResult,
 } from "@/lib/backend-port";
@@ -195,5 +197,19 @@ export class BdCliBackend implements BackendPort {
       `Use \`${showCmd}\` to inspect full details before starting.`,
     ].join("\n");
     return { ok: true, data: { prompt, claimed: false } };
+  }
+
+  async buildPollPrompt(
+    _options?: PollPromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>> {
+    return {
+      ok: false,
+      error: {
+        code: "UNAVAILABLE",
+        message: "buildPollPrompt is only available for knots-backed sessions",
+        retryable: false,
+      },
+    };
   }
 }

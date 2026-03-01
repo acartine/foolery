@@ -114,6 +114,12 @@ class AutoRoutingBackend implements BackendPort {
   ): ReturnType<BackendPort["buildTakePrompt"]> {
     return this.backendFor(args[2]).buildTakePrompt(...args);
   }
+
+  async buildPollPrompt(
+    ...args: Parameters<BackendPort["buildPollPrompt"]>
+  ): ReturnType<BackendPort["buildPollPrompt"]> {
+    return this.backendFor(args[1]).buildPollPrompt(...args);
+  }
 }
 
 function createConcreteBackend(type: Exclude<BackendType, "auto">): BackendEntry {

@@ -12,6 +12,8 @@ import type {
   BackendPort,
   BackendResult,
   BeatListFilters,
+  PollPromptOptions,
+  PollPromptResult,
   TakePromptOptions,
   TakePromptResult,
 } from "@/lib/backend-port";
@@ -313,6 +315,13 @@ export class MockBackendPort implements BackendPort {
       `Use \`${showCmd}\` to inspect full details before starting.`,
     ].join("\n");
     return ok({ prompt, claimed: false });
+  }
+
+  async buildPollPrompt(
+    _options?: PollPromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>> {
+    return backendError("UNAVAILABLE", "buildPollPrompt is only available for knots-backed sessions");
   }
 
   // -- Test utilities -------------------------------------------------------

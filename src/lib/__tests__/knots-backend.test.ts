@@ -252,6 +252,52 @@ const mockRemoveEdge = vi.fn(async (src: string, kind: string, dst: string, _rep
   return { ok: true as const };
 });
 
+const mockPollKnot = vi.fn(
+  async (_repoPath?: string, options?: { stage?: string; agentName?: string; agentModel?: string; agentVersion?: string }) => {
+    // Find the highest-priority claimable knot from the store
+    const claimable = Array.from(store.knots.values())
+      .filter((k) => k.state.startsWith("ready_for_"))
+      .sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99));
+    if (claimable.length === 0) {
+      return { ok: false as const, error: "no claimable knots found" };
+    }
+    const knot = claimable[0]!;
+    return {
+      ok: true as const,
+      data: {
+        id: knot.id,
+        title: knot.title,
+        state: knot.state,
+        profile_id: knot.profile_id ?? "autopilot",
+        type: knot.type,
+        priority: knot.priority,
+        prompt: `# ${knot.title}\n\n**ID**: ${knot.id}`,
+      },
+    };
+  },
+);
+
+const mockClaimKnot = vi.fn(
+  async (id: string, _repoPath?: string, _options?: { agentName?: string; agentModel?: string; agentVersion?: string }) => {
+    const knot = store.knots.get(id);
+    if (!knot) {
+      return { ok: false as const, error: `knot '${id}' not found in local cache` };
+    }
+    return {
+      ok: true as const,
+      data: {
+        id: knot.id,
+        title: knot.title,
+        state: knot.state,
+        profile_id: knot.profile_id ?? "autopilot",
+        type: knot.type,
+        priority: knot.priority,
+        prompt: `# ${knot.title}\n\n**ID**: ${knot.id}`,
+      },
+    };
+  },
+);
+
 vi.mock("@/lib/knots", () => ({
   listProfiles: (repoPath?: string) => mockListProfiles(repoPath),
   listWorkflows: (repoPath?: string) => mockListWorkflows(repoPath),
@@ -270,6 +316,10 @@ vi.mock("@/lib/knots", () => ({
     mockAddEdge(src, kind, dst, repoPath),
   removeEdge: (src: string, kind: string, dst: string, repoPath?: string) =>
     mockRemoveEdge(src, kind, dst, repoPath),
+  claimKnot: (id: string, repoPath?: string, options?: Record<string, unknown>) =>
+    mockClaimKnot(id, repoPath, options),
+  pollKnot: (repoPath?: string, options?: Record<string, unknown>) =>
+    mockPollKnot(repoPath, options),
 }));
 
 import { KnotsBackend, KNOTS_CAPABILITIES } from "@/lib/backends/knots-backend";
@@ -479,5 +529,59 @@ describe("KnotsBackend mapping behaviour", () => {
     const result = await backend.delete("K-unknown");
     expect(result.ok).toBe(false);
     expect(result.error?.code).toBe("INVALID_INPUT");
+  });
+
+  describe("buildTakePrompt", () => {
+    it("claims a specific knot and returns its prompt", async () => {
+      const backend = new KnotsBackend("/repo");
+      const created = await backend.create({
+        title: "Claim me",
+        type: "task",
+        priority: 1,
+        labels: [],
+      });
+      expect(created.ok).toBe(true);
+      const id = created.data!.id;
+
+      const result = await backend.buildTakePrompt(id, { agentName: "test-agent", agentModel: "test-model" });
+      expect(result.ok).toBe(true);
+      expect(result.data?.prompt).toContain(id);
+      expect(result.data?.claimed).toBe(true);
+      expect(mockClaimKnot).toHaveBeenCalledWith(id, "/repo", {
+        agentName: "test-agent",
+        agentModel: "test-model",
+        agentVersion: undefined,
+      });
+    });
+  });
+
+  describe("buildPollPrompt", () => {
+    it("polls for the highest-priority claimable knot", async () => {
+      const backend = new KnotsBackend("/repo");
+      const created = await backend.create({
+        title: "Poll target",
+        type: "task",
+        priority: 0,
+        labels: [],
+      });
+      expect(created.ok).toBe(true);
+
+      const result = await backend.buildPollPrompt({ agentName: "test-agent", agentModel: "test-model" });
+      expect(result.ok).toBe(true);
+      expect(result.data?.claimedId).toBe(created.data!.id);
+      expect(result.data?.prompt).toContain("Poll target");
+      expect(mockPollKnot).toHaveBeenCalledWith("/repo", {
+        agentName: "test-agent",
+        agentModel: "test-model",
+        agentVersion: undefined,
+      });
+    });
+
+    it("returns error when no claimable work exists", async () => {
+      const backend = new KnotsBackend("/repo");
+      // Store is empty, no knots to poll
+      const result = await backend.buildPollPrompt({ agentName: "test-agent" });
+      expect(result.ok).toBe(false);
+    });
   });
 });

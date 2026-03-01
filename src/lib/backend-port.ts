@@ -70,6 +70,26 @@ export interface TakePromptResult {
   claimed?: boolean;
 }
 
+// ── Poll prompt DTOs ────────────────────────────────────────
+
+/** Options passed when building a poll-based prompt (knots only). */
+export interface PollPromptOptions {
+  /** Agent name for claim tracking. */
+  agentName?: string;
+  /** Agent model identifier for claim tracking. */
+  agentModel?: string;
+  /** Agent version for claim tracking. */
+  agentVersion?: string;
+}
+
+/** Result of a poll-based prompt build. */
+export interface PollPromptResult {
+  /** The task-specific prompt content. */
+  prompt: string;
+  /** The ID of the knot that was claimed. */
+  claimedId: string;
+}
+
 // ── Request DTOs ────────────────────────────────────────────
 
 /** Filters applied to list, listReady, and search operations. */
@@ -200,6 +220,17 @@ export interface BackendPort {
     options?: TakePromptOptions,
     repoPath?: string,
   ): Promise<BackendResult<TakePromptResult>>;
+
+  /**
+   * Build a poll-based prompt by claiming the highest-priority claimable work.
+   *
+   * Only meaningful for knots-backed sessions; other backends return UNAVAILABLE.
+   * Uses `kno poll --claim` to atomically find and claim the next work item.
+   */
+  buildPollPrompt(
+    options?: PollPromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<PollPromptResult>>;
 }
 
 // ── Re-exports ──────────────────────────────────────────────
