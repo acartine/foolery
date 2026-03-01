@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import * as memoryManagerDetection from "@/lib/memory-manager-detection";
 
 const mockListBeads = vi.fn(async () => ({
   ok: true as const,
@@ -133,7 +134,7 @@ vi.mock("@/lib/knots", () => ({
   removeEdge: vi.fn(async () => ({ ok: false, error: "not implemented" })),
 }));
 
-import { createBackend } from "@/lib/backend-factory";
+import { createBackend, AutoRoutingBackend } from "@/lib/backend-factory";
 
 function makeRepo(markerDirs: string[]): string {
   const dir = mkdtempSync(join(tmpdir(), "foolery-auto-backend-"));
@@ -186,5 +187,56 @@ describe("createBackend(auto)", () => {
     expect(result.ok).toBe(true);
     expect(result.data?.[0].id).toBe("bd-1");
     expect(mockListBeads).toHaveBeenCalled();
+  });
+});
+
+describe("AutoRoutingBackend repo type caching", () => {
+  it("caches detection so repeated calls skip filesystem checks", async () => {
+    const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
+    const repo = makeRepo([".knots"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    await backend.list(undefined, repo);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // Second call should use cache -- no additional detection
+    await backend.list(undefined, repo);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
+  });
+
+  it("re-detects after clearRepoCache()", async () => {
+    const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
+    const repo = makeRepo([".knots"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    await backend.list(undefined, repo);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    backend.clearRepoCache();
+    await backend.list(undefined, repo);
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    spy.mockRestore();
+  });
+
+  it("detects each repo independently", async () => {
+    const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
+    const repoA = makeRepo([".knots"]);
+    const repoB = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const resultA = await backend.list(undefined, repoA);
+    expect(resultA.ok).toBe(true);
+    expect(resultA.data?.[0].id).toBe("K-0001");
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    const resultB = await backend.list(undefined, repoB);
+    expect(resultB.ok).toBe(true);
+    expect(resultB.data?.[0].id).toBe("bd-1");
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    spy.mockRestore();
   });
 });

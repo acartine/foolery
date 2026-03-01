@@ -36,6 +36,27 @@ export function getBackendCapabilities(): BackendCapabilities {
   return instance!.capabilities;
 }
 
+interface RepoCapabilityAware {
+  capabilitiesForRepo(repoPath?: string): BackendCapabilities;
+}
+
+function hasRepoCapabilities(port: BackendPort): port is BackendPort & RepoCapabilityAware {
+  return typeof (port as BackendPort & Partial<RepoCapabilityAware>).capabilitiesForRepo === "function";
+}
+
+/**
+ * Returns the capabilities for a specific repo path.
+ * If the backend supports per-repo capability resolution (e.g. AutoRoutingBackend),
+ * delegates to it; otherwise falls back to the singleton capabilities.
+ */
+export function getBackendCapabilitiesForRepo(repoPath?: string): BackendCapabilities {
+  const port = getBackend();
+  if (hasRepoCapabilities(port)) {
+    return port.capabilitiesForRepo(repoPath);
+  }
+  return getBackendCapabilities();
+}
+
 /** Reset the singleton -- intended for test use only. */
 export function _resetBackend(): void {
   instance = null;

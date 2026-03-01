@@ -57,6 +57,11 @@ vi.mock("node:child_process", () => ({
   },
 }));
 
+const mockDetectMemoryManagerType = vi.fn();
+vi.mock("@/lib/memory-manager-detection", () => ({
+  detectMemoryManagerType: (...args: unknown[]) => mockDetectMemoryManagerType(...args),
+}));
+
 import {
   checkAgents,
   checkUpdates,
@@ -65,6 +70,8 @@ import {
   checkCorruptTickets,
   checkStaleParents,
   checkPromptGuidance,
+  checkMemoryManagerCliAvailability,
+  checkRegistryConsistency,
   runDoctor,
   runDoctorFix,
   streamDoctor,
@@ -133,6 +140,7 @@ beforeEach(() => {
     latestVersion: "1.0.0",
     updateAvailable: false,
   });
+  mockDetectMemoryManagerType.mockReturnValue(undefined);
 });
 
 // ── checkSettingsDefaults ─────────────────────────────────
@@ -608,7 +616,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 7 check events plus 1 summary event", async () => {
+  it("emits 9 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -621,10 +629,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(8);
+    expect(events).toHaveLength(10);
 
-    // First 7 are check results
-    for (let i = 0; i < 7; i++) {
+    // First 9 are check results
+    for (let i = 0; i < 9; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -635,7 +643,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[7] as DoctorStreamSummary;
+    const summary = events[9] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -660,6 +668,8 @@ describe("streamDoctor", () => {
       "memory-implementation",
       "stale-parents",
       "prompt-guidance",
+      "memory-manager-cli",
+      "registry-consistency",
     ]);
   });
 
@@ -728,5 +738,96 @@ describe("streamDoctor", () => {
     expect(summary.done).toBe(true);
     expect(summary.fixable).toBe(1);
     expect(summary.warned).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ── checkMemoryManagerCliAvailability ──────────────────────
+
+describe("checkMemoryManagerCliAvailability", () => {
+  const repos = [
+    { path: "/repo-knots", name: "knots-repo", addedAt: "2026-01-01", memoryManagerType: "knots" as const },
+    { path: "/repo-beads", name: "beads-repo", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+  ];
+
+  it("reports info when CLI is reachable", async () => {
+    mockExecFile.mockResolvedValue({ stdout: "1.0.0", stderr: "" });
+
+    const diags = await checkMemoryManagerCliAvailability(repos);
+    expect(diags).toHaveLength(2);
+    expect(diags.every((d) => d.severity === "info")).toBe(true);
+    expect(diags.every((d) => d.check === "memory-manager-cli")).toBe(true);
+  });
+
+  it("reports error when CLI is unreachable", async () => {
+    mockExecFile.mockRejectedValue(new Error("command not found"));
+
+    const diags = await checkMemoryManagerCliAvailability(repos);
+    expect(diags).toHaveLength(2);
+    expect(diags.every((d) => d.severity === "error")).toBe(true);
+    expect(diags[0].message).toContain("unreachable");
+  });
+
+  it("caches ping results per binary", async () => {
+    const sameTypeRepos = [
+      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01", memoryManagerType: "knots" as const },
+      { path: "/repo-b", name: "repo-b", addedAt: "2026-01-01", memoryManagerType: "knots" as const },
+    ];
+    mockExecFile.mockResolvedValue({ stdout: "1.0.0", stderr: "" });
+
+    await checkMemoryManagerCliAvailability(sameTypeRepos);
+    // Only one ping for "kno" despite two repos
+    expect(mockExecFile).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips repos without memoryManagerType", async () => {
+    const noTypeRepos = [
+      { path: "/repo", name: "untyped", addedAt: "2026-01-01" },
+    ];
+
+    const diags = await checkMemoryManagerCliAvailability(noTypeRepos);
+    expect(diags).toHaveLength(0);
+  });
+});
+
+// ── checkRegistryConsistency ──────────────────────────────
+
+describe("checkRegistryConsistency", () => {
+  it("reports info when registered type matches detected type", async () => {
+    const repos = [
+      { path: "/repo", name: "test-repo", addedAt: "2026-01-01", memoryManagerType: "knots" as const },
+    ];
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+
+    const diags = await checkRegistryConsistency(repos);
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("info");
+    expect(diags[0].check).toBe("registry-consistency");
+    expect(diags[0].message).toContain("matches");
+  });
+
+  it("warns when registered type differs from detected type", async () => {
+    const repos = [
+      { path: "/repo", name: "test-repo", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+    ];
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+
+    const diags = await checkRegistryConsistency(repos);
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("warning");
+    expect(diags[0].check).toBe("registry-consistency");
+    expect(diags[0].message).toContain("beads");
+    expect(diags[0].message).toContain("knots");
+  });
+
+  it("reports info when repo cannot be detected on disk", async () => {
+    const repos = [
+      { path: "/nonexistent", name: "gone-repo", addedAt: "2026-01-01", memoryManagerType: "knots" as const },
+    ];
+    mockDetectMemoryManagerType.mockReturnValue(undefined);
+
+    const diags = await checkRegistryConsistency(repos);
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("info");
+    expect(diags[0].message).toContain("could not be detected");
   });
 });

@@ -37,4 +37,20 @@ describe("memory-managers", () => {
     expect(isKnownMemoryManagerType("beads")).toBe(true);
     expect(isKnownMemoryManagerType("foo")).toBe(false);
   });
+
+  it("returns managers sorted by precedence (ascending)", () => {
+    const memoryManagers = listKnownMemoryManagers();
+    for (let i = 1; i < memoryManagers.length; i++) {
+      expect(memoryManagers[i].precedence).toBeGreaterThanOrEqual(
+        memoryManagers[i - 1].precedence,
+      );
+    }
+  });
+
+  it("assigns knots a lower precedence number than beads", () => {
+    const memoryManagers = listKnownMemoryManagers();
+    const knots = memoryManagers.find((m) => m.type === "knots")!;
+    const beads = memoryManagers.find((m) => m.type === "beads")!;
+    expect(knots.precedence).toBeLessThan(beads.precedence);
+  });
 });

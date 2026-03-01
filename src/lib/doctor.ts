@@ -599,6 +599,105 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
   return diagnostics;
 }
 
+// ── Memory manager CLI availability checks ─────────────────
+
+const CLI_FOR_MEMORY_MANAGER: Record<string, { envVar: string; fallback: string }> = {
+  knots: { envVar: "KNOTS_BIN", fallback: "kno" },
+  beads: { envVar: "BD_BIN", fallback: "bd" },
+};
+
+export async function checkMemoryManagerCliAvailability(
+  repos: RegisteredRepo[],
+): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+  const pingCache = new Map<string, { ok: boolean; error?: string }>();
+
+  for (const repo of repos) {
+    const mmType = repo.memoryManagerType;
+    if (!mmType) continue;
+
+    const cliInfo = CLI_FOR_MEMORY_MANAGER[mmType];
+    if (!cliInfo) continue;
+
+    const binary = process.env[cliInfo.envVar] || cliInfo.fallback;
+
+    if (!pingCache.has(binary)) {
+      pingCache.set(binary, await pingAgent(binary));
+    }
+    const result = pingCache.get(binary)!;
+
+    if (!result.ok) {
+      diagnostics.push({
+        check: "memory-manager-cli",
+        severity: "error",
+        fixable: false,
+        message: `Repo "${repo.name}" uses ${mmType} but CLI "${binary}" is unreachable: ${result.error}`,
+        context: { repoPath: repo.path, repoName: repo.name, binary, memoryManagerType: mmType },
+      });
+    } else {
+      diagnostics.push({
+        check: "memory-manager-cli",
+        severity: "info",
+        fixable: false,
+        message: `Repo "${repo.name}" uses ${mmType} and CLI "${binary}" is available.`,
+        context: { repoPath: repo.path, repoName: repo.name, binary, memoryManagerType: mmType },
+      });
+    }
+  }
+
+  return diagnostics;
+}
+
+// ── Registry consistency checks ────────────────────────────
+
+export async function checkRegistryConsistency(
+  repos: RegisteredRepo[],
+): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+
+  for (const repo of repos) {
+    const registered = repo.memoryManagerType;
+    const detected = detectMemoryManagerType(repo.path);
+
+    if (detected === undefined) {
+      // Repo directory may no longer exist or has no marker
+      diagnostics.push({
+        check: "registry-consistency",
+        severity: "info",
+        fixable: false,
+        message: `Repo "${repo.name}" could not be detected on disk (registered as ${registered ?? "unset"}).`,
+        context: { repoPath: repo.path, repoName: repo.name, registered: registered ?? "unset" },
+      });
+      continue;
+    }
+
+    if (registered !== detected) {
+      diagnostics.push({
+        check: "registry-consistency",
+        severity: "warning",
+        fixable: false,
+        message: `Repo "${repo.name}" is registered as "${registered ?? "unset"}" but detected as "${detected}".`,
+        context: {
+          repoPath: repo.path,
+          repoName: repo.name,
+          registered: registered ?? "unset",
+          detected,
+        },
+      });
+    } else {
+      diagnostics.push({
+        check: "registry-consistency",
+        severity: "info",
+        fixable: false,
+        message: `Repo "${repo.name}" registry type matches detected type (${detected}).`,
+        context: { repoPath: repo.path, repoName: repo.name, detected },
+      });
+    }
+  }
+
+  return diagnostics;
+}
+
 // ── Run all checks ─────────────────────────────────────────
 
 export async function runDoctor(): Promise<DoctorReport> {
@@ -612,6 +711,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     memoryCompatibilityDiags,
     staleDiags,
     promptDiags,
+    cliAvailDiags,
+    registryConsistencyDiags,
   ] = await Promise.all([
     checkAgents(),
     checkUpdates(),
@@ -620,6 +721,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkMemoryImplementationCompatibility(repos),
     checkStaleParents(repos),
     checkPromptGuidance(repos),
+    checkMemoryManagerCliAvailability(repos),
+    checkRegistryConsistency(repos),
   ]);
 
   const diagnostics = [
@@ -630,6 +733,8 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...memoryCompatibilityDiags,
     ...staleDiags,
     ...promptDiags,
+    ...cliAvailDiags,
+    ...registryConsistencyDiags,
   ];
 
   return {
@@ -691,6 +796,8 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "memory-implementation", label: "Memory implementation", run: () => checkMemoryImplementationCompatibility(repos) },
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "prompt-guidance", label: "Prompt guidance", run: () => checkPromptGuidance(repos) },
+    { category: "memory-manager-cli", label: "Memory manager CLI", run: () => checkMemoryManagerCliAvailability(repos) },
+    { category: "registry-consistency", label: "Registry consistency", run: () => checkRegistryConsistency(repos) },
   ];
 
   let passed = 0;

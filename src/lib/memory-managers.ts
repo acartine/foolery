@@ -11,6 +11,8 @@ export interface MemoryManagerImplementation {
   type: MemoryManagerType;
   label: string;
   markerDirectory: string;
+  /** Lower number = higher priority when multiple managers are detected. */
+  precedence: number;
 }
 
 const KNOWN_MEMORY_MANAGERS: ReadonlyArray<MemoryManagerImplementation> = Object.freeze([
@@ -18,11 +20,13 @@ const KNOWN_MEMORY_MANAGERS: ReadonlyArray<MemoryManagerImplementation> = Object
     type: "knots",
     label: "Knots",
     markerDirectory: ".knots",
+    precedence: 0,
   },
   {
     type: "beads",
     label: "Beads",
     markerDirectory: ".beads",
+    precedence: 1,
   },
 ]);
 

@@ -24,8 +24,10 @@ export interface BackendEntry {
   capabilities: BackendCapabilities;
 }
 
-class AutoRoutingBackend implements BackendPort {
+export class AutoRoutingBackend implements BackendPort {
   private cache = new Map<Exclude<BackendType, "auto">, BackendEntry>();
+  private repoTypeCache = new Map<string, { type: Exclude<BackendType, "auto">; cachedAt: number }>();
+  private REPO_CACHE_TTL_MS = 30_000;
   private fallbackType: Exclude<BackendType, "auto">;
 
   constructor(fallbackType: Exclude<BackendType, "auto"> = "cli") {
@@ -34,10 +36,33 @@ class AutoRoutingBackend implements BackendPort {
 
   private resolveType(repoPath?: string): Exclude<BackendType, "auto"> {
     if (!repoPath) return this.fallbackType;
+
+    const cached = this.repoTypeCache.get(repoPath);
+    if (cached && Date.now() - cached.cachedAt < this.REPO_CACHE_TTL_MS) {
+      return cached.type;
+    }
+
     const memoryManager = detectMemoryManagerType(repoPath);
-    if (memoryManager === "knots") return "knots";
-    if (memoryManager === "beads") return "cli";
-    return this.fallbackType;
+    let resolved: Exclude<BackendType, "auto">;
+    if (memoryManager === "knots") resolved = "knots";
+    else if (memoryManager === "beads") resolved = "cli";
+    else resolved = this.fallbackType;
+
+    this.repoTypeCache.set(repoPath, { type: resolved, cachedAt: Date.now() });
+    return resolved;
+  }
+
+  clearRepoCache(repoPath?: string): void {
+    if (repoPath) {
+      this.repoTypeCache.delete(repoPath);
+    } else {
+      this.repoTypeCache.clear();
+    }
+  }
+
+  capabilitiesForRepo(repoPath?: string): BackendCapabilities {
+    const type = this.resolveType(repoPath);
+    return this.getBackend(type).capabilities;
   }
 
   private getBackend(type: Exclude<BackendType, "auto">): BackendEntry {
