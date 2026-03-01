@@ -27,7 +27,7 @@ import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
-  beadsCoarseWorkflowDescriptor,
+  defaultWorkflowDescriptor,
   workflowDescriptorById,
 } from "@/lib/workflows";
 
@@ -184,7 +184,7 @@ function buildWaveCompletionFollowUp(
 ): string {
   const safeTargets = targets.length > 0
     ? targets
-    : [{ id: waveId, workflow: beadsCoarseWorkflowDescriptor() }];
+    : [{ id: waveId, workflow: defaultWorkflowDescriptor() }];
   return [
     "Scene completion follow-up:",
     `Handle this in one pass for scene ${waveId}.`,
@@ -495,7 +495,7 @@ export async function createSession(
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
-  const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
+  const fallbackWorkflow = workflows[0] ?? defaultWorkflowDescriptor();
   const primaryTarget = toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow);
   const sceneTargets = waveBeats.map((child) =>
     toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
@@ -1259,7 +1259,7 @@ export async function createSceneSession(
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
-  const fallbackWorkflow = workflows[0] ?? beadsCoarseWorkflowDescriptor();
+  const fallbackWorkflow = workflows[0] ?? defaultWorkflowDescriptor();
   const sceneTargets = beats.map((beat) =>
     toWorkflowPromptTarget(beat, workflowsById, fallbackWorkflow),
   );

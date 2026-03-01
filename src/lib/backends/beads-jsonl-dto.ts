@@ -7,9 +7,9 @@
 
 import type { Beat, BeatPriority } from "@/lib/types";
 import {
-  beadsProfileDescriptor,
-  deriveBeadsProfileId,
-  deriveBeadsWorkflowState,
+  builtinProfileDescriptor,
+  deriveProfileId,
+  deriveWorkflowState,
   deriveWorkflowRuntimeState,
   mapWorkflowStateToCompatStatus,
   withWorkflowStateLabel,
@@ -81,9 +81,9 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
   const rawStatus = raw.status ?? "open";
   const status = VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open";
   const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
-  const profileId = deriveBeadsProfileId(labels, raw.metadata);
-  const workflow = beadsProfileDescriptor(profileId);
-  const workflowState = deriveBeadsWorkflowState(status, labels, workflow);
+  const profileId = deriveProfileId(labels, raw.metadata);
+  const workflow = builtinProfileDescriptor(profileId);
+  const workflowState = deriveWorkflowState(status, labels, workflow);
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const rawPriority = raw.priority ?? 2;
   const priority = (typeof rawPriority === "number" && rawPriority >= 0 && rawPriority <= 4
@@ -131,7 +131,7 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
 // ── Denormalize: Domain → JSONL ─────────────────────────────────
 
 export function denormalizeToJsonl(beat: Beat): RawBead {
-  const workflow = beadsProfileDescriptor(beat.profileId ?? beat.workflowId);
+  const workflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
   const beatState = beat.state || workflow.initialState;
   const status = mapWorkflowStateToCompatStatus(beatState, "beads-jsonl-dto:denormalize");
   const labels = withWorkflowProfileLabel(

@@ -19,7 +19,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
-import { beadsProfileDescriptor } from "@/lib/workflows";
+import { builtinProfileDescriptor } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
@@ -551,7 +551,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               isRolling={isRolling}
             />
             {onUpdateBeat && !isLocked ? (() => {
-              const workflow = beadsProfileDescriptor(row.original.profileId);
+              const workflow = builtinProfileDescriptor(row.original.profileId);
               const nextStates = validNextStates(state, workflow);
               return (
                 <DropdownMenu>
