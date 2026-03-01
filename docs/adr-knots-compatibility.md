@@ -28,6 +28,18 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 | Labels | Foolery labels map 1:1 to Knots tags |
 | Raw state preservation | backend writes raw Knots state to `bead.metadata.knotsState` |
 
+## Canonical Source of Truth
+
+The locked mappings above are codified in [`src/lib/knots-compat.ts`](../src/lib/knots-compat.ts) as typed constants and pure functions. All new Knots backend code should import mapping constants from this module rather than using inline string literals.
+
+- `KNOTS_TO_FOOLERY_STATUS` / `FOOLERY_TO_KNOTS_STATUS` — bidirectional status maps
+- `mapKnotsStateToFooleryStatus()` / `mapFooleryStatusToKnotsState()` — normalizing lookup functions
+- `KNOTS_BLOCKED_BY_EDGE_KIND` / `KNOTS_PARENT_OF_EDGE_KIND` — edge kind constants
+- `KNOTS_CLOSE_TARGET_STATE` — close() target state
+- `KNOTS_METADATA_KEYS` — metadata key registry
+
+Contract tests: [`src/lib/__tests__/knots-compat.test.ts`](../src/lib/__tests__/knots-compat.test.ts)
+
 ## Consequences
 
 1. Mixed memory manager repos are supported in one Foolery session.
