@@ -512,9 +512,9 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "state",
       header: "State",
-      size: 130,
-      minSize: 130,
-      maxSize: 130,
+      size: 175,
+      minSize: 175,
+      maxSize: 175,
       cell: ({ row }) => {
         const isRolling = Boolean(shippingByBeatId[row.original.id]);
         const isLocked = isTransitionLocked(row.original.labels ?? []);

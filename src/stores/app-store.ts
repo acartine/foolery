@@ -26,7 +26,7 @@ interface AppState {
   setPageSize: (size: number) => void;
 }
 
-const initialFilters: Filters = { state: "ready" };
+const initialFilters: Filters = { state: "queued" };
 
 const LAST_REPO_KEY = "foolery:lastRepo";
 

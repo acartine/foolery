@@ -18,7 +18,7 @@ describe("app-store", () => {
   beforeEach(() => {
     localStore.clear();
     useAppStore.setState({
-      filters: { state: "ready" },
+      filters: { state: "queued" },
       commandPaletteOpen: false,
       viewMode: "table",
       activeRepo: null,
@@ -29,7 +29,7 @@ describe("app-store", () => {
 
   it("has correct initial state", () => {
     const state = useAppStore.getState();
-    expect(state.filters).toEqual({ state: "ready" });
+    expect(state.filters).toEqual({ state: "queued" });
     expect(state.commandPaletteOpen).toBe(false);
     expect(state.viewMode).toBe("table");
     expect(state.activeRepo).toBeNull();
@@ -46,7 +46,7 @@ describe("app-store", () => {
     useAppStore.getState().setFilter("type", "bug");
     useAppStore.getState().setFilter("priority", 1);
     const filters = useAppStore.getState().filters;
-    expect(filters.state).toBe("ready");
+    expect(filters.state).toBe("queued");
     expect(filters.type).toBe("bug");
     expect(filters.priority).toBe(1);
   });
@@ -61,7 +61,7 @@ describe("app-store", () => {
     useAppStore.getState().setFilter("type", "bug");
     useAppStore.getState().setFilter("assignee", "alice");
     useAppStore.getState().resetFilters();
-    expect(useAppStore.getState().filters).toEqual({ state: "ready" });
+    expect(useAppStore.getState().filters).toEqual({ state: "queued" });
   });
 
   it("sets command palette open", () => {
