@@ -98,6 +98,7 @@ export function CreateBeatDialog({
                 onClick: () => {
                   const params = new URLSearchParams(searchParams.toString());
                   params.set("bead", createdId);
+                  if (repo) params.set("detailRepo", repo);
                   router.push(`/beads?${params.toString()}`);
                 },
               }
@@ -137,6 +138,7 @@ export function CreateBeatDialog({
                 onClick: () => {
                   const params = new URLSearchParams(searchParams.toString());
                   params.set("bead", createdId2);
+                  if (repo) params.set("detailRepo", repo);
                   router.push(`/beads?${params.toString()}`);
                 },
               }
