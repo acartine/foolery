@@ -108,6 +108,12 @@ class AutoRoutingBackend implements BackendPort {
   ): ReturnType<BackendPort["removeDependency"]> {
     return this.backendFor(args[2]).removeDependency(...args);
   }
+
+  async buildTakePrompt(
+    ...args: Parameters<BackendPort["buildTakePrompt"]>
+  ): ReturnType<BackendPort["buildTakePrompt"]> {
+    return this.backendFor(args[2]).buildTakePrompt(...args);
+  }
 }
 
 function createConcreteBackend(type: Exclude<BackendType, "auto">): BackendEntry {

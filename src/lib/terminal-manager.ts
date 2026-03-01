@@ -543,13 +543,33 @@ export async function createSession(
   const sceneTargets = waveBeats.map((child) =>
     toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
   );
-  const showSelfCommand = buildShowIssueCommand(bead.id, memoryManagerType);
-  const showChildCommand = buildShowIssueCommand("<child-id>", memoryManagerType);
+
+  // Resolve agent early so we can pass metadata to buildTakePrompt
+  const agent = await getActionAgent("take");
 
   const id = generateId();
-  const prompt =
-    customPrompt ??
-    (isParent
+  let prompt: string;
+  if (customPrompt) {
+    prompt = customPrompt;
+  } else {
+    // Ask the backend for the task-specific prompt
+    const takePromptResult = await getBackend().buildTakePrompt(
+      bead.id,
+      {
+        isParent,
+        childBeatIds: waveBeatIds.length > 0 ? waveBeatIds : undefined,
+        agentName: agent.label || agent.command,
+        agentModel: agent.model,
+      },
+      repoPath,
+    );
+    if (!takePromptResult.ok || !takePromptResult.data) {
+      throw new Error(takePromptResult.error?.message ?? "Failed to build take prompt");
+    }
+    const taskPrompt = takePromptResult.data.prompt;
+
+    // Wrap backend prompt with Foolery execution instructions
+    prompt = (isParent
       ? [
           `You are executing a parent bead and its children. Implement the children beads and use the parent bead's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
           ``,
@@ -562,12 +582,7 @@ export async function createSession(
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
-          `Parent bead ID: ${bead.id}`,
-          waveBeatIds.length > 0
-            ? `Open child bead IDs:\n${waveBeatIds.map((id) => `- ${id}`).join("\n")}`
-            : "Open child bead IDs: (none loaded)",
-          `Use \`${showSelfCommand}\` and \`${showChildCommand}\` to inspect full details before starting.`,
-          ...buildKnotsClaimModeLines(waveBeatIds.length > 0 ? waveBeatIds : [bead.id], memoryManagerType),
+          taskPrompt,
         ]
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
@@ -580,13 +595,10 @@ export async function createSession(
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
-          `Beat ID: ${bead.id}`,
-          `Use \`${showSelfCommand}\` to inspect full details before starting.`,
-          ...buildKnotsClaimModeLines([bead.id], memoryManagerType),
+          taskPrompt,
         ]
-    )
-      .filter(Boolean)
-      .join("\n");
+    ).filter(Boolean).join("\n");
+  }
 
   const session: TerminalSession = {
     id,
@@ -600,8 +612,6 @@ export async function createSession(
   const emitter = new EventEmitter();
   emitter.setMaxListeners(20);
   const buffer: TerminalEvent[] = [];
-
-  const agent = await getActionAgent("take");
 
   const interactionLog = await startInteractionLog({
     sessionId: id,

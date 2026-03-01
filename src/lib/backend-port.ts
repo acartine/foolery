@@ -46,6 +46,30 @@ export interface BackendResult<T> {
   error?: BackendError;
 }
 
+// ── Take! prompt DTOs ───────────────────────────────────────
+
+/** Options passed when building a Take!/Scene! prompt. */
+export interface TakePromptOptions {
+  /** Whether this beat is a parent with children. */
+  isParent?: boolean;
+  /** IDs of child beats (when isParent is true). */
+  childBeatIds?: string[];
+  /** Agent name for claim tracking. */
+  agentName?: string;
+  /** Agent model identifier for claim tracking. */
+  agentModel?: string;
+  /** Agent version for claim tracking. */
+  agentVersion?: string;
+}
+
+/** Result of building a Take!/Scene! prompt. */
+export interface TakePromptResult {
+  /** The task-specific prompt content. */
+  prompt: string;
+  /** Whether the beat state was transitioned (claimed) as a side effect. */
+  claimed?: boolean;
+}
+
 // ── Request DTOs ────────────────────────────────────────────
 
 /** Filters applied to list, listReady, and search operations. */
@@ -163,6 +187,19 @@ export interface BackendPort {
     blockedId: string,
     repoPath?: string,
   ): Promise<BackendResult<void>>;
+
+  /**
+   * Build the task-specific prompt for a Take!/Scene! agent session.
+   *
+   * Each backend supplies its own prompt format:
+   * - Beads: beat metadata with show commands
+   * - Knots: claims the knot via `kno claim` and returns the claim prompt
+   */
+  buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>>;
 }
 
 // ── Re-exports ──────────────────────────────────────────────

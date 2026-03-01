@@ -11,6 +11,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  TakePromptOptions,
+  TakePromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
@@ -36,6 +38,15 @@ import {
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "@/lib/workflows";
+
+const ACTION_STATES = new Set<string>([
+  "planning",
+  "plan_review",
+  "implementation",
+  "implementation_review",
+  "shipment",
+  "shipment_review",
+]);
 
 // ── Capabilities ────────────────────────────────────────────────
 
@@ -418,6 +429,37 @@ export class BeadsBackend implements BackendPort {
     await this.flush(rp);
     return { ok: true };
   }
+
+  async buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    const rp = this.resolvePath(repoPath);
+    const entry = await this.ensureLoaded(rp);
+    const beat = entry.beads.get(beatId);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${beatId} not found`);
+
+    const showCmd = `bd show ${JSON.stringify(beatId)}`;
+
+    if (options?.isParent && options.childBeatIds?.length) {
+      const childIds = options.childBeatIds;
+      const prompt = [
+        `Parent beat ID: ${beatId}`,
+        `Use \`${showCmd}\` and \`bd show "<child-id>"\` to inspect full details before starting.`,
+        ``,
+        `Open child beat IDs:`,
+        ...childIds.map((id) => `- ${id}`),
+      ].join("\n");
+      return ok({ prompt, claimed: false });
+    }
+
+    const prompt = [
+      `Beat ID: ${beatId}`,
+      `Use \`${showCmd}\` to inspect full details before starting.`,
+    ].join("\n");
+    return ok({ prompt, claimed: false });
+  }
 }
 
 // ── Internal helpers (kept below 75 lines each) ─────────────────
@@ -426,7 +468,15 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
   return beats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
-    if (filters.state && b.state !== filters.state) return false;
+    if (filters.state) {
+      if (filters.state === "queued") {
+        if (!b.state.startsWith("ready_for_")) return false;
+      } else if (filters.state === "in_action") {
+        if (!ACTION_STATES.has(b.state)) return false;
+      } else {
+        if (b.state !== filters.state) return false;
+      }
+    }
     if (filters.profileId && b.profileId !== filters.profileId) return false;
     if (filters.type && b.type !== filters.type) return false;
     if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {

@@ -8,7 +8,13 @@
 
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
-import type { BackendPort, BackendResult, BeatListFilters } from "@/lib/backend-port";
+import type {
+  BackendPort,
+  BackendResult,
+  BeatListFilters,
+  TakePromptOptions,
+  TakePromptResult,
+} from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import {
@@ -279,6 +285,34 @@ export class MockBackendPort implements BackendPort {
     }
     this.deps.splice(idx, 1);
     return { ok: true };
+  }
+
+  async buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    const beat = this.beats.get(beatId);
+    if (!beat) return backendError("NOT_FOUND", `Beat ${beatId} not found`);
+
+    const showCmd = `bd show ${JSON.stringify(beatId)}`;
+
+    if (options?.isParent && options.childBeatIds?.length) {
+      const prompt = [
+        `Parent beat ID: ${beatId}`,
+        `Use \`${showCmd}\` and \`bd show "<child-id>"\` to inspect full details before starting.`,
+        ``,
+        `Open child beat IDs:`,
+        ...options.childBeatIds.map((id) => `- ${id}`),
+      ].join("\n");
+      return ok({ prompt, claimed: false });
+    }
+
+    const prompt = [
+      `Beat ID: ${beatId}`,
+      `Use \`${showCmd}\` to inspect full details before starting.`,
+    ].join("\n");
+    return ok({ prompt, claimed: false });
   }
 
   // -- Test utilities -------------------------------------------------------

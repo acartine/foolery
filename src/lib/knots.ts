@@ -315,11 +315,22 @@ export async function newKnot(
   return { ok: true, data: { id: match[1] } };
 }
 
+export interface ClaimKnotOptions {
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+}
+
 export async function claimKnot(
   id: string,
   repoPath?: string,
+  options?: ClaimKnotOptions,
 ): Promise<BdResult<KnotClaimPrompt>> {
-  const { stdout, stderr, exitCode } = await exec(["claim", id, "--json"], { repoPath });
+  const args = ["claim", id, "--json"];
+  if (options?.agentName) args.push("--agent-name", options.agentName);
+  if (options?.agentModel) args.push("--agent-model", options.agentModel);
+  if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
+  const { stdout, stderr, exitCode } = await exec(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots claim failed" };
   try {
     return { ok: true, data: parseJson<KnotClaimPrompt>(stdout) };

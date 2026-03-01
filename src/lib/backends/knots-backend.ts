@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  TakePromptOptions,
+  TakePromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
@@ -369,7 +371,15 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
   return beats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
-    if (filters.state && b.state !== filters.state) return false;
+    if (filters.state) {
+      if (filters.state === "queued") {
+        if (!b.state.startsWith("ready_for_")) return false;
+      } else if (filters.state === "in_action") {
+        if (!ACTION_STATES.has(b.state)) return false;
+      } else {
+        if (b.state !== filters.state) return false;
+      }
+    }
     if (filters.profileId && b.profileId !== filters.profileId) return false;
     if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
       return false;
@@ -922,5 +932,57 @@ export class KnotsBackend implements BackendPort {
     this.invalidateEdgeCache(rp, blockerId);
     this.invalidateEdgeCache(rp, blockedId);
     return { ok: true };
+  }
+
+  async buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    const rp = this.resolvePath(repoPath);
+
+    if (options?.isParent && options.childBeatIds?.length) {
+      // Parent/Scene mode: don't claim upfront — subagents claim children.
+      // Return parent metadata with child listing and claim instructions.
+      const parentResult = fromKnots(await knots.showKnot(beatId, rp));
+      if (!parentResult.ok) return propagateError<TakePromptResult>(parentResult);
+      const parent = parentResult.data!;
+
+      const childLines = options.childBeatIds.map(
+        (id) => `- Run \`kno claim ${JSON.stringify(id)} --json\` first.`,
+      );
+      const prompt = [
+        `Parent beat ID: ${beatId}`,
+        parent.title ? `Title: ${parent.title}` : null,
+        parent.description ? `Description: ${parent.description}` : parent.body ? `Description: ${parent.body}` : null,
+        ``,
+        `Open child beat IDs:`,
+        ...options.childBeatIds.map((id) => `- ${id}`),
+        ``,
+        `KNOTS CLAIM MODE (required):`,
+        `Always claim a knot before implementation and follow the claim output verbatim.`,
+        ...childLines,
+        `- Use the returned \`prompt\` field as the source of truth for each child.`,
+        `- Run the completion command from that claim output, then stop work on that child.`,
+        `- Do not guess or brute-force workflow transitions outside the claim output.`,
+      ].filter((line): line is string => line !== null).join("\n");
+
+      return ok({ prompt, claimed: false });
+    }
+
+    // Single-beat Take! mode: claim the knot and return the claim prompt.
+    const claimResult = fromKnots(
+      await knots.claimKnot(beatId, rp, {
+        agentName: options?.agentName,
+        agentModel: options?.agentModel,
+        agentVersion: options?.agentVersion,
+      }),
+    );
+    if (!claimResult.ok) return propagateError<TakePromptResult>(claimResult);
+
+    return ok({
+      prompt: claimResult.data!.prompt,
+      claimed: true,
+    });
   }
 }

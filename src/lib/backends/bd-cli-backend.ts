@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  TakePromptOptions,
+  TakePromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import { FULL_CAPABILITIES } from "@/lib/backend-capabilities";
@@ -167,5 +169,31 @@ export class BdCliBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     return toBR(await bd.removeDep(blockerId, blockedId, repoPath));
+  }
+
+  async buildTakePrompt(
+    beatId: string,
+    options?: TakePromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    const showCmd = `bd show ${JSON.stringify(beatId)}`;
+
+    if (options?.isParent && options.childBeatIds?.length) {
+      const childIds = options.childBeatIds;
+      const prompt = [
+        `Parent beat ID: ${beatId}`,
+        `Use \`${showCmd}\` and \`bd show "<child-id>"\` to inspect full details before starting.`,
+        ``,
+        `Open child beat IDs:`,
+        ...childIds.map((id) => `- ${id}`),
+      ].join("\n");
+      return { ok: true, data: { prompt, claimed: false } };
+    }
+
+    const prompt = [
+      `Beat ID: ${beatId}`,
+      `Use \`${showCmd}\` to inspect full details before starting.`,
+    ].join("\n");
+    return { ok: true, data: { prompt, claimed: false } };
   }
 }

@@ -10,6 +10,8 @@ import type {
   BackendResult,
   BeatListFilters,
   BeatQueryOptions,
+  TakePromptOptions,
+  TakePromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
@@ -152,5 +154,13 @@ export class StubBackend implements BackendPort {
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
     return unavailableError("removeDependency");
+  }
+
+  async buildTakePrompt(
+    _beatId: string,
+    _options?: TakePromptOptions,
+    _repoPath?: string,
+  ): Promise<BackendResult<TakePromptResult>> {
+    return unavailableError("buildTakePrompt");
   }
 }
