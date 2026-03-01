@@ -143,12 +143,21 @@ export const backendSettingsSchema = z
   })
   .default({ type: "auto" });
 
+// User-facing defaults for beat creation
+export const defaultsSettingsSchema = z
+  .object({
+    /** Default workflow profile ID for new beats (empty = "autopilot" fallback). */
+    profileId: z.string().default(""),
+  })
+  .default({ profileId: "" });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
   actions: actionAgentMappingsSchema,
   verification: verificationSettingsSchema,
   backend: backendSettingsSchema,
+  defaults: defaultsSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -157,6 +166,7 @@ export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
+export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

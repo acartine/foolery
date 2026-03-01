@@ -38,6 +38,7 @@ const DEFAULT_SETTINGS = {
   actions: DEFAULT_ACTIONS,
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" },
+  defaults: { profileId: "" },
 };
 
 beforeEach(() => {
@@ -132,6 +133,8 @@ describe("backfillMissingSettingsDefaults", () => {
         'maxRetries = 3',
         '[backend]',
         'type = "cli"',
+        '[defaults]',
+        'profileId = ""',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
@@ -148,6 +151,7 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
+      defaults: { profileId: "" },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
