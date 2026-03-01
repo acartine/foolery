@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa64-d103-7e40-a4ba-8044e47a6db1",
+  "occurred_at": "2026-03-01T17:14:19.779907Z",
+  "knot_id": "foolery-g3y1.3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "KnotsBackend implementation verified complete on main. All 5 sub-tasks shipped: CLI wrapper (knots.ts, 450 lines), BackendPort adapter (knots-backend.ts, 1010 lines), contract tests (knots-backend.test.ts, 587 lines, 43/43 passing), factory wiring (backend-factory.ts). Capabilities: create, update, close, search, query, listReady, dependencies, labels, sync. Delete unsupported by design. Build failure on /beads page is pre-existing useContext issue, unrelated to knots backend.",
+    "datetime": "2026-03-01T18:15:00Z",
+    "entry_id": "019caa64-d103-7e40-a4ba-8034fc39b92b",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

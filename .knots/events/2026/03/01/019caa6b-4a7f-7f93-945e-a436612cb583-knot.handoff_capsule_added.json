@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa6b-4a7f-7f93-945e-a436612cb583",
+  "occurred_at": "2026-03-01T17:21:24.095215Z",
+  "knot_id": "foolery-g3y1.4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Renamed all Beads-prefixed workflow exports to backend-agnostic names (builtinProfileDescriptor, builtinWorkflowDescriptors, deriveProfileId, deriveWorkflowState, etc.) with deprecated aliases for backward compat. Updated 10 callers, backend-port.ts JSDoc, and buildPollPrompt error messages. 21 new tests. Descriptor labels now use Workflow prefix instead of Beads. All existing 822 tests pass. Commit: 88d1c71",
+    "datetime": "2026-03-01T18:25:00Z",
+    "entry_id": "019caa6b-4a7f-7f93-945e-a42e220befa7",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

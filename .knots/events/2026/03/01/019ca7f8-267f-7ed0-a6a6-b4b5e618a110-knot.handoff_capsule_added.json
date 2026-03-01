@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca7f8-267f-7ed0-a6a6-b4b5e618a110",
+  "occurred_at": "2026-03-01T05:56:23.807327Z",
+  "knot_id": "foolery-2a54",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Hid the Types filter dropdown in FilterControls for knots-backed projects by checking activeRepo's memoryManagerType. Types filter only renders when isBeadsProject is true. Also adjusted hasNonDefaultFilters to not consider type filter for knots projects. Commit: 77f3905",
+    "datetime": "2026-03-01T05:56:23.807327Z",
+    "entry_id": "019ca7f8-267f-7ed0-a6a6-b4ae99bf9035",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

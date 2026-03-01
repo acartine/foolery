@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca824-bdce-7e42-8bba-eaf879e89b4f",
+  "occurred_at": "2026-03-01T06:45:06.126439Z",
+  "knot_id": "foolery-2268",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented: widened AgentHistoryInteractionType to include 'direct' and 'breakdown'. Removed interaction type filter in parseSession so all conversation types appear in history. Added directCount/breakdownCount to AgentHistoryBeatSummary. Updated UI labels and empty-state text. Updated tests. Commit: 36ae4e1",
+    "datetime": "2026-03-01T06:45:06.126439Z",
+    "entry_id": "019ca824-bdce-7e42-8bba-eae943c6ff2d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

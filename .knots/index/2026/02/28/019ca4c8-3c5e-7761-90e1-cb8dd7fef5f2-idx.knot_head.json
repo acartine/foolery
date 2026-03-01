@@ -1,0 +1,14 @@
+{
+  "event_id": "019ca4c8-3c5e-7761-90e1-cb8dd7fef5f2",
+  "occurred_at": "2026-02-28T15:05:12.030464Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-77fc",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Diagnosis test knot",
+    "updated_at": "2026-02-28T15:05:12.030464Z"
+  }
+}

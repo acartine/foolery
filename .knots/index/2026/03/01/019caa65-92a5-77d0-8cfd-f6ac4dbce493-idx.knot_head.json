@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa65-92a5-77d0-8cfd-f6ac4dbce493",
+  "occurred_at": "2026-03-01T17:15:09.349329Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "API/UI compatibility and guardrails",
+    "updated_at": "2026-03-01T17:15:09.349329Z"
+  },
+  "precondition": {
+    "profile_etag": "019c942e-2e2f-78a0-a385-07b80d6bd629"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca7ff-75fe-7360-985a-46e0d70b1b4f",
+  "occurred_at": "2026-03-01T06:04:22.910531Z",
+  "knot_id": "foolery-eaa9",
+  "type": "knot.created",
+  "data": {
+    "body": "The current prompt only works for beads impl of memory integration api.\n\nthe api should be updated to require impls to supply the Take! prompt.\n\nthe beads impl should return the current prompt.\n\nthe kntos impl should do something like:\n\n`kno claim  --agent-name <agent-name> --agent-model <agent-model> --agent-version <agent-version> <id> |  <agent-cli>`\n\nthis will likely require different flags for different agent cli types.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Take! prompt should be supplied by the implemented memory manager"
+  }
+}

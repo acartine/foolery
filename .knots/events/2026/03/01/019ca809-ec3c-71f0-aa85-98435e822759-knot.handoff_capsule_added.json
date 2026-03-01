@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca809-ec3c-71f0-aa85-98435e822759",
+  "occurred_at": "2026-03-01T06:15:48.540505Z",
+  "knot_id": "foolery-eaa9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented buildTakePrompt on BackendPort interface. All backends (beads, knots, bd-cli, stub, mock) implement the method. Knots backend calls kno claim --json with agent metadata flags. Beads returns beat metadata with show commands. Terminal-manager now delegates task-specific prompt to backend and wraps with execution instructions. All 797 tests pass, types clean. Commit: 89b6ae9",
+    "datetime": "2026-03-01T06:15:48.540505Z",
+    "entry_id": "019ca809-ec3c-71f0-aa85-98327806ee14",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

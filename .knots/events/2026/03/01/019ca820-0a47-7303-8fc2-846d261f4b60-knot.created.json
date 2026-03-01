@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca820-0a47-7303-8fc2-846d261f4b60",
+  "occurred_at": "2026-03-01T06:39:58.023038Z",
+  "knot_id": "foolery-a994",
+  "type": "knot.created",
+  "data": {
+    "body": "for knots backed beats, when the user clicks \"Take!\", we want to prompt with \"poll!\" as described in foolery-eaa9 - except now we want to execute that same command in a loop until:\n\n- the shipped state has been achieved OR\n- a human owned state has been reached OR\n- 10 polls have been executed without the checkpoints above having been achieved.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Take!:  convert to poll loop for knots backed beats"
+  }
+}

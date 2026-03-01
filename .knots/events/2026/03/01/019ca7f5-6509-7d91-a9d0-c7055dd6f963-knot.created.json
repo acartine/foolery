@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca7f5-6509-7d91-a9d0-c7055dd6f963",
+  "occurred_at": "2026-03-01T05:53:23.209181Z",
+  "knot_id": "foolery-d073",
+  "type": "knot.created",
+  "data": {
+    "body": "When you click on the link it says \"beat not found\".  but it exists in the list.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "\"Created\" toast link is broken"
+  }
+}

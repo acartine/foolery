@@ -1,0 +1,14 @@
+{
+  "event_id": "019ca7f5-6524-7fb3-b899-1d7828358077",
+  "occurred_at": "2026-03-01T05:53:23.231222Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-d073",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "\"Created\" toast link is broken",
+    "updated_at": "2026-03-01T05:53:23.231222Z"
+  }
+}

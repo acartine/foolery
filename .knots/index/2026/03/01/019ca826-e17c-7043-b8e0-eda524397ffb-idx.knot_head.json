@@ -1,0 +1,14 @@
+{
+  "event_id": "019ca826-e17c-7043-b8e0-eda524397ffb",
+  "occurred_at": "2026-03-01T06:47:26.326409Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-cbb7",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Settings: Default beat workflow profiles",
+    "updated_at": "2026-03-01T06:47:26.326409Z"
+  }
+}

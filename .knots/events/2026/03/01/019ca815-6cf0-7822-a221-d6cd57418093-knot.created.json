@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca815-6cf0-7822-a221-d6cd57418093",
+  "occurred_at": "2026-03-01T06:28:22.384373Z",
+  "knot_id": "foolery-3a7b",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "History:  Don't show beats for which we have no history of anymore"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa64-a542-79e3-84d9-1f77dc40bdd8",
+  "occurred_at": "2026-03-01T17:14:08.569044Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.3.4",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement dependency and hierarchy translation via edges",
+    "updated_at": "2026-03-01T17:14:08.569044Z"
+  }
+}

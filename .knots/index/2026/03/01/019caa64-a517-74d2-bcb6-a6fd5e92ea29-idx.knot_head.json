@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa64-a517-74d2-bcb6-a6fd5e92ea29",
+  "occurred_at": "2026-03-01T17:14:08.525762Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.3.2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement KnotsBackend read paths",
+    "updated_at": "2026-03-01T17:14:08.525762Z"
+  }
+}

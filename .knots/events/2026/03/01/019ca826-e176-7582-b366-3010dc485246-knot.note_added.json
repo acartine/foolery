@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca826-e176-7582-b366-3010dc485246",
+  "occurred_at": "2026-03-01T06:47:26.326409Z",
+  "knot_id": "foolery-cbb7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented default workflow profile setting. Changes: (1) Added defaults.profileId to settings schema in schemas.ts, (2) Added defaults merge in settings.ts updateSettings, (3) Created SettingsDefaultsSection component with workflow profile dropdown, (4) Wired into SettingsSheet between Auto-Verification and Default Agent Command, (5) CreateBeatDialog now fetches settings and uses defaults.profileId as the pre-selected profile for Shift+N. Falls back to autopilot if unset or profile not found. All tests pass, types clean.",
+    "datetime": "2026-03-01T06:47:26.326409Z",
+    "entry_id": "019ca826-e176-7582-b366-300e93dff058",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

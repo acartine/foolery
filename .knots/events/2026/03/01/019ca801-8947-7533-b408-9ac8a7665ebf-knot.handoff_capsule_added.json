@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca801-8947-7533-b408-9ac8a7665ebf",
+  "occurred_at": "2026-03-01T06:06:38.919554Z",
+  "knot_id": "foolery-drmp",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented stripIdPrefix() helper in agent-history-view.tsx that strips repo prefix from beat IDs (e.g. foolery-drmp → drmp). Applied to all 5 display locations: beat list row, detail panel Beat ID field, detail panel header, console log header, and loading message. Commit: 42dd3a5",
+    "datetime": "2026-03-01T07:06:00Z",
+    "entry_id": "019ca801-8947-7533-b408-9abfe6827843",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

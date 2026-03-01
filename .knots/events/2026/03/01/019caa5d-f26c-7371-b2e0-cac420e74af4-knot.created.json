@@ -1,0 +1,12 @@
+{
+  "event_id": "019caa5d-f26c-7371-b2e0-cac420e74af4",
+  "occurred_at": "2026-03-01T17:06:49.580381Z",
+  "knot_id": "foolery-4162",
+  "type": "knot.created",
+  "data": {
+    "body": "you click on the \"state\", nothing happens.  you should be able to move it to whatever state you want.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "unable to change beat state from Beats list view"
+  }
+}

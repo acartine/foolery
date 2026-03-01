@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa64-d109-7fd3-8b0d-7a6fb4c02937",
+  "occurred_at": "2026-03-01T17:14:19.779907Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.3",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Knots backend implementation",
+    "updated_at": "2026-03-01T17:14:19.779907Z"
+  }
+}

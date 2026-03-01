@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca802-bfd4-7fa0-9f9c-541f1a05fd70",
+  "occurred_at": "2026-03-01T06:07:58.420856Z",
+  "knot_id": "foolery-eaa9",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Goal\nMove the Take!/Scene! prompt generation from terminal-manager into the BackendPort interface so each memory manager implementation supplies its own prompt.\n\n### Design\n\n**New BackendPort method**: `buildTakePrompt(beatId, options?, repoPath?) → BackendResult<TakePromptResult>`\n- `TakePromptOptions`: isParent, childBeatIds, agentName, agentModel, agentVersion\n- `TakePromptResult`: { prompt: string, claimed?: boolean }\n\n**Beads impl**: Returns the current hardcoded prompt (beat metadata + show commands)\n**Knots impl**: Calls `kno claim <id> --json` with agent metadata flags, returns the claim's prompt field\n**Terminal-manager**: Calls backend.buildTakePrompt(), wraps result with execution instructions (ship mode, subagents, worktrees)\n\n### Files to change\n1. `src/lib/backend-port.ts` - Add types and method\n2. `src/lib/knots.ts` - Add agent metadata flags to claimKnot\n3. `src/lib/backends/knots-backend.ts` - Implement using kno claim\n4. `src/lib/backends/beads-backend.ts` - Implement returning current prompt\n5. `src/lib/backends/bd-cli-backend.ts` - Delegate to beads-style logic\n6. `src/lib/backends/stub-backend.ts` - Return UNAVAILABLE\n7. `src/lib/backend-factory.ts` - Delegate in AutoRoutingBackend\n8. `src/lib/terminal-manager.ts` - Call backend method, remove inline prompt building\n9. Tests - Update for new method",
+    "datetime": "2026-03-01T06:07:58.420856Z",
+    "entry_id": "019ca802-bfd4-7fa0-9f9c-540a759144cf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

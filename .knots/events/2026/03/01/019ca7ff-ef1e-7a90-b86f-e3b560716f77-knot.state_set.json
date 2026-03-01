@@ -1,0 +1,16 @@
+{
+  "event_id": "019ca7ff-ef1e-7a90-b86f-e3b560716f77",
+  "occurred_at": "2026-03-01T06:04:53.918617Z",
+  "knot_id": "foolery-drmp",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "ready_for_implementation",
+    "profile_id": "autopilot",
+    "to": "implementation"
+  },
+  "precondition": {
+    "profile_etag": "019c942e-2893-78f0-84c1-d0c6df0ded99"
+  }
+}

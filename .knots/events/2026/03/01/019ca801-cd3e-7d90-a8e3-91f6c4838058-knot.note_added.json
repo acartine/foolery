@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca801-cd3e-7d90-a8e3-91f6c4838058",
+  "occurred_at": "2026-03-01T06:06:56.318429Z",
+  "knot_id": "foolery-d073",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fix: Added missing detailRepo search param to both toast Open actions in create-beat-dialog.tsx. The toast only set bead param but not detailRepo, so the detail lightbox couldn't find the beat. Commit: c5fb2d6",
+    "datetime": "2026-03-01T06:06:56.318429Z",
+    "entry_id": "019ca801-cd3e-7d90-a8e3-91eff5070e30",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

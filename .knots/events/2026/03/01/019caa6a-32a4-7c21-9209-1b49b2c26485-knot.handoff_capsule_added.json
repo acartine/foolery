@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa6a-32a4-7c21-9209-1b49b2c26485",
+  "occurred_at": "2026-03-01T17:20:12.452174Z",
+  "knot_id": "foolery-vdk0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented OpenRouter support: API client (src/lib/openrouter.ts) with model listing and key validation, settings schema with apiKey+enabled fields, API routes (/api/openrouter/models and /api/openrouter/validate), settings UI section with toggle, API key input with validation, and filterable model browser showing name/context/costs. Added vendor detection (openrouter) and agent info bar config (orange Globe icon). All quality gates pass: 0 lint errors, clean typecheck, 807 tests passing.",
+    "datetime": "2026-03-01T18:25:00Z",
+    "entry_id": "019caa6a-32a4-7c21-9209-1b321808e45c",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019ca7ff-7619-7d72-880e-6288fc9c5f1c",
+  "occurred_at": "2026-03-01T06:04:22.932681Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-eaa9",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Take! prompt should be supplied by the implemented memory manager",
+    "updated_at": "2026-03-01T06:04:22.932681Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca819-b70f-7292-8b02-737fd83c8bd3",
+  "occurred_at": "2026-03-01T06:33:03.50326Z",
+  "knot_id": "foolery-cbb7",
+  "type": "knot.created",
+  "data": {
+    "body": "allow user to set a default profile for shift-N",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Default beat workflow profiles"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ca861-4f13-7611-baa4-ecd3c0488a3b",
+  "occurred_at": "2026-03-01T07:51:15.474957Z",
+  "knot_id": "foolery-a994",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Converted Take\\! poll loop to use kno poll --claim instead of kno claim <id>. Added pollKnot() to knots.ts, buildPollPrompt() to BackendPort interface, implemented in all backends (knots returns poll result, others return UNAVAILABLE). Updated terminal-manager buildNextPollPrompt() to use the new method. The poll loop still checks the original beat's state for stop conditions (terminal/human-owned) but now claims the highest-priority work via kno poll --claim. Added 3 tests for buildTakePrompt and buildPollPrompt. All 801 tests pass. Commit: 78972c6",
+    "datetime": "2026-03-01T08:52:00Z",
+    "entry_id": "019ca861-4f13-7611-baa4-ecce09ab939d",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019ca7f1-9add-7f40-9c13-3060d90fbb6a",
+  "occurred_at": "2026-03-01T05:49:14.84526Z",
+  "knot_id": "foolery-2a54",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - we shouldn't show the types filter for knots backed projects.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove \"Types\" filter if the active project is not a beads project"
+  }
+}
