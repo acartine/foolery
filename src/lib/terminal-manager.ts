@@ -43,6 +43,7 @@ const MAX_BUFFER = 5000;
 const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
+const MAX_POLL_ITERATIONS = 10;
 
 type JsonObject = Record<string, unknown>;
 
@@ -634,6 +635,283 @@ export async function createSession(
   }
   const normalizeEvent = createLineNormalizer(dialect);
 
+  // ── Poll loop infrastructure (knots single-beat only) ─────────
+  const isPollLoop = memoryManagerType === "knots" && !isParent && !customPrompt;
+  let pollIteration = 1;
+
+  const wrapSingleBeatPrompt = (taskPrompt: string): string => {
+    return [
+      `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
+      ``,
+      `IMPORTANT INSTRUCTIONS:`,
+      `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
+      `2. Use the Task tool to spawn subagents for independent subtasks whenever parallel execution is possible.`,
+      `3. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
+      `4. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
+      ``,
+      `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
+      ``,
+      taskPrompt,
+    ].filter(Boolean).join("\n");
+  };
+
+  const buildNextPollPrompt = async (): Promise<string | null> => {
+    const currentResult = await getBackend().get(beatId, repoPath);
+    if (!currentResult.ok || !currentResult.data) return null;
+
+    const current = currentResult.data;
+    const workflow = resolveWorkflowForBeat(current, workflowsById, fallbackWorkflow);
+
+    if (workflow.terminalStates.includes(current.state)) {
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Poll loop stopped: reached terminal state "${current.state}" after ${pollIteration} iteration(s) ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      return null;
+    }
+
+    if (!current.isAgentClaimable) {
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Poll loop stopped: reached human-owned state "${current.state}" after ${pollIteration} iteration(s) ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      return null;
+    }
+
+    const takeResult = await getBackend().buildTakePrompt(
+      beatId,
+      { agentName: agent.label || agent.command, agentModel: agent.model },
+      repoPath,
+    );
+    if (!takeResult.ok || !takeResult.data) {
+      pushEvent({
+        type: "stderr",
+        data: `Poll loop: failed to claim for next iteration: ${takeResult.error?.message ?? "unknown error"}\n`,
+        timestamp: Date.now(),
+      });
+      return null;
+    }
+
+    return wrapSingleBeatPrompt(takeResult.data.prompt);
+  };
+
+  const finishSession = (exitCode: number) => {
+    session.exitCode = exitCode;
+    session.status = exitCode === 0 ? "completed" : "error";
+    interactionLog.logEnd(exitCode, session.status);
+    pushEvent({ type: "exit", data: String(exitCode), timestamp: Date.now() });
+    entry.process = null;
+
+    if (exitCode === 0) {
+      regroomAncestors(beatId, cwd).catch((err) => {
+        console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
+      });
+      const actionBeatIds = isParent ? waveBeatIds : [beatId];
+      onAgentComplete(actionBeatIds, "take", cwd, exitCode).catch((err) => {
+        console.error(`[terminal-manager] verification hook failed for ${beatId}:`, err);
+      });
+      const logFile = interactionLog.filePath;
+      if (logFile) {
+        updateMessageTypeIndexFromSession(
+          logFile,
+          agent.label || agent.command,
+          agent.model,
+        ).catch((err) => {
+          console.error(`[terminal-manager] message type index update failed:`, err);
+        });
+      }
+    }
+
+    setTimeout(() => { emitter.removeAllListeners(); }, 2000);
+    setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
+  };
+
+  /** Spawn a fresh agent child process for a poll iteration. */
+  const spawnPollChild = (pollPrompt: string): void => {
+    const pollChild = spawn(agentCmd, args, {
+      cwd,
+      env: { ...process.env },
+      stdio: [isInteractive ? "pipe" : "ignore", "pipe", "pipe"],
+    });
+    entry.process = pollChild;
+
+    console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration}: pid=${pollChild.pid ?? "failed"}`);
+
+    let pollStdinClosed = !isInteractive;
+    let pollLineBuffer = "";
+    let pollCloseInputTimer: NodeJS.Timeout | null = null;
+    const pollAutoAnsweredIds = new Set<string>();
+
+    const pollCloseInput = () => {
+      if (pollStdinClosed) return;
+      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
+      pollStdinClosed = true;
+      pollChild.stdin?.end();
+    };
+
+    const pollCancelInputClose = () => {
+      if (!pollCloseInputTimer) return;
+      clearTimeout(pollCloseInputTimer);
+      pollCloseInputTimer = null;
+    };
+
+    const pollScheduleInputClose = () => {
+      pollCancelInputClose();
+      pollCloseInputTimer = setTimeout(() => pollCloseInput(), INPUT_CLOSE_GRACE_MS);
+    };
+
+    const pollSendUserTurn = (text: string, source = "manual"): boolean => {
+      if (!pollChild.stdin || pollChild.stdin.destroyed || pollChild.stdin.writableEnded || pollStdinClosed) {
+        return false;
+      }
+      pollCancelInputClose();
+      const line = makeUserMessageLine(text);
+      try {
+        pollChild.stdin.write(line);
+        interactionLog.logPrompt(text, { source });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const pollAutoAnswerAskUser = (obj: JsonObject) => {
+      if (obj.type !== "assistant") return;
+      const msg = toObject(obj.message);
+      const content = msg?.content;
+      if (!Array.isArray(content)) return;
+      for (const rawBlock of content) {
+        const block = toObject(rawBlock);
+        if (!block) continue;
+        if (block.type !== "tool_use" || block.name !== "AskUserQuestion") continue;
+        const toolUseId = typeof block.id === "string" ? block.id : null;
+        if (!toolUseId || pollAutoAnsweredIds.has(toolUseId)) continue;
+        pollAutoAnsweredIds.add(toolUseId);
+        const autoResponse = buildAutoAskUserResponse(block.input);
+        const sent = pollSendUserTurn(autoResponse, "auto_ask_user_response");
+        if (sent) {
+          pushEvent({
+            type: "stdout",
+            data: `\x1b[33m-> Auto-answered AskUserQuestion (${toolUseId.slice(0, 12)}...)\x1b[0m\n`,
+            timestamp: Date.now(),
+          });
+        }
+      }
+    };
+
+    pollChild.stdout?.on("data", (chunk: Buffer) => {
+      pollLineBuffer += chunk.toString();
+      const lines = pollLineBuffer.split("\n");
+      pollLineBuffer = lines.pop() ?? "";
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        interactionLog.logResponse(line);
+        try {
+          const raw = JSON.parse(line) as Record<string, unknown>;
+          const obj = (normalizeEvent(raw) ?? raw) as Record<string, unknown>;
+          pollAutoAnswerAskUser(obj);
+          if (obj.type === "result") {
+            pollScheduleInputClose();
+          } else {
+            pollCancelInputClose();
+          }
+          const display = formatStreamEvent(obj);
+          if (display) {
+            pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+          }
+        } catch {
+          pushEvent({ type: "stdout", data: line + "\n", timestamp: Date.now() });
+        }
+      }
+    });
+
+    pollChild.stderr?.on("data", (chunk: Buffer) => {
+      pushEvent({ type: "stderr", data: chunk.toString(), timestamp: Date.now() });
+    });
+
+    pollChild.on("close", (pollCode) => {
+      if (pollLineBuffer.trim()) {
+        interactionLog.logResponse(pollLineBuffer);
+        try {
+          const obj = JSON.parse(pollLineBuffer) as Record<string, unknown>;
+          pollAutoAnswerAskUser(obj);
+          if (obj.type === "result") pollScheduleInputClose();
+          const display = formatStreamEvent(obj);
+          if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+        } catch {
+          pushEvent({ type: "stdout", data: pollLineBuffer + "\n", timestamp: Date.now() });
+        }
+        pollLineBuffer = "";
+      }
+
+      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
+      pollStdinClosed = true;
+      pollChild.stdout?.removeAllListeners();
+      pollChild.stderr?.removeAllListeners();
+      entry.process = null;
+
+      console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode}`);
+
+      if (pollCode === 0 && pollIteration < MAX_POLL_ITERATIONS) {
+        (async () => {
+          try {
+            const nextPrompt = await buildNextPollPrompt();
+            if (nextPrompt) {
+              pollIteration++;
+              pushEvent({
+                type: "stdout",
+                data: `\n\x1b[36m--- Poll ${pollIteration}/${MAX_POLL_ITERATIONS} ---\x1b[0m\n`,
+                timestamp: Date.now(),
+              });
+              spawnPollChild(nextPrompt);
+              return;
+            }
+          } catch (err) {
+            console.error(`[terminal-manager] [${id}] poll check failed:`, err);
+            pushEvent({
+              type: "stderr",
+              data: `Poll check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+              timestamp: Date.now(),
+            });
+          }
+          finishSession(pollCode ?? 0);
+        })();
+        return;
+      }
+
+      if (pollCode === 0 && pollIteration >= MAX_POLL_ITERATIONS) {
+        pushEvent({
+          type: "stdout",
+          data: `\x1b[33m--- Poll loop stopped: max ${MAX_POLL_ITERATIONS} iterations reached ---\x1b[0m\n`,
+          timestamp: Date.now(),
+        });
+      }
+      finishSession(pollCode ?? 1);
+    });
+
+    pollChild.on("error", (err) => {
+      console.error(`[terminal-manager] [${id}] poll spawn error:`, err.message);
+      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
+      pollStdinClosed = true;
+      pushEvent({ type: "stderr", data: `Process error: ${err.message}`, timestamp: Date.now() });
+      pollChild.stdout?.removeAllListeners();
+      pollChild.stderr?.removeAllListeners();
+      entry.process = null;
+      finishSession(1);
+    });
+
+    const sent = pollSendUserTurn(pollPrompt, `poll_${pollIteration}`);
+    if (!sent) {
+      pollCloseInput();
+      pushEvent({ type: "stderr", data: `Failed to send prompt for poll iteration ${pollIteration}\n`, timestamp: Date.now() });
+      pollChild.kill("SIGTERM");
+      entry.process = null;
+      finishSession(1);
+    }
+  };
+
   const child = spawn(agentCmd, args, {
     cwd,
     env: { ...process.env },
@@ -859,54 +1137,51 @@ export async function createSession(
       closeInputTimer = null;
     }
     stdinClosed = true;
-    session.exitCode = code ?? 1;
-    session.status = code === 0 ? "completed" : "error";
-    interactionLog.logEnd(code ?? 1, session.status);
-    pushEvent({
-      type: "exit",
-      data: String(code ?? 1),
-      timestamp: Date.now(),
-    });
+
     // Release child process stream listeners to free closures
     child.stdout?.removeAllListeners();
     child.stderr?.removeAllListeners();
     entry.process = null;
 
-    // Regroom ancestors after successful session completion
-    if (code === 0) {
-      regroomAncestors(beatId, cwd).catch((err) => {
-        console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
-      });
-
-      // Trigger auto-verification workflow for code-producing actions
-      const actionBeatIds = isParent ? waveBeatIds : [beatId];
-      onAgentComplete(actionBeatIds, "take", cwd, code ?? 1).catch((err) => {
-        console.error(`[terminal-manager] verification hook failed for ${beatId}:`, err);
-      });
-
-      // Update message type index with types from this session
-      const logFile = interactionLog.filePath;
-      if (logFile) {
-        updateMessageTypeIndexFromSession(
-          logFile,
-          agent.label || agent.command,
-          agent.model,
-        ).catch((err) => {
-          console.error(`[terminal-manager] message type index update failed:`, err);
-        });
-      }
+    // Poll loop: check if knots-backed session should continue polling
+    if (isPollLoop && code === 0 && pollIteration < MAX_POLL_ITERATIONS) {
+      (async () => {
+        try {
+          const nextPrompt = await buildNextPollPrompt();
+          if (nextPrompt) {
+            pollIteration++;
+            pushEvent({
+              type: "stdout",
+              data: `\n\x1b[36m--- Poll ${pollIteration}/${MAX_POLL_ITERATIONS} ---\x1b[0m\n`,
+              timestamp: Date.now(),
+            });
+            console.log(`[terminal-manager] [${id}] starting poll iteration ${pollIteration}/${MAX_POLL_ITERATIONS}`);
+            spawnPollChild(nextPrompt);
+            return;
+          }
+        } catch (err) {
+          console.error(`[terminal-manager] [${id}] poll check failed:`, err);
+          pushEvent({
+            type: "stderr",
+            data: `Poll check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+            timestamp: Date.now(),
+          });
+        }
+        finishSession(code ?? 0);
+      })();
+      return;
     }
 
-    // Remove all emitter listeners after a short drain window so
-    // SSE clients receive the final exit event before detachment.
-    setTimeout(() => {
-      emitter.removeAllListeners();
-    }, 2000);
+    // Handle max poll iterations reached
+    if (isPollLoop && code === 0 && pollIteration >= MAX_POLL_ITERATIONS) {
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Poll loop stopped: max ${MAX_POLL_ITERATIONS} iterations reached ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+    }
 
-    setTimeout(() => {
-      buffer.length = 0;
-      sessions.delete(id);
-    }, CLEANUP_DELAY_MS);
+    finishSession(code ?? 1);
   });
 
   child.on("error", (err) => {
@@ -916,26 +1191,15 @@ export async function createSession(
       closeInputTimer = null;
     }
     stdinClosed = true;
-    session.status = "error";
-    interactionLog.logEnd(1, "error");
     pushEvent({
       type: "stderr",
       data: `Process error: ${err.message}`,
       timestamp: Date.now(),
     });
-    pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
     child.stdout?.removeAllListeners();
     child.stderr?.removeAllListeners();
     entry.process = null;
-
-    setTimeout(() => {
-      emitter.removeAllListeners();
-    }, 2000);
-
-    setTimeout(() => {
-      buffer.length = 0;
-      sessions.delete(id);
-    }, CLEANUP_DELAY_MS);
+    finishSession(1);
   });
 
   const initialPromptSent = sendUserTurn(prompt, "initial");
