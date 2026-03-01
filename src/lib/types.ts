@@ -359,18 +359,8 @@ export interface ScannedAgent {
 
 // ── OpenRouter types ──────────────────────────────────────
 
-export interface OpenRouterModel {
-  id: string;
-  name: string;
-  description?: string;
-  context_length: number;
-  pricing: {
-    prompt: string;
-    completion: string;
-    image: string;
-    request: string;
-  };
-}
+// Canonical OpenRouterModel lives in src/lib/openrouter.ts
+export type { OpenRouterModel } from "./openrouter";
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

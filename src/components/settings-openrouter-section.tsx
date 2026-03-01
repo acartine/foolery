@@ -13,15 +13,9 @@ import {
   fetchOpenRouterModels as fetchModelsApi,
   validateOpenRouterKey,
 } from "@/lib/settings-api";
+import { formatPricing } from "@/lib/openrouter";
 import type { OpenRouterModel } from "@/lib/openrouter";
 
-function formatCost(perToken: string): string {
-  const cost = parseFloat(perToken);
-  if (isNaN(cost) || cost === 0) return "Free";
-  const perMillion = cost * 1_000_000;
-  if (perMillion < 0.01) return "<$0.01/M";
-  return `$${perMillion.toFixed(2)}/M`;
-}
 
 function formatContext(tokens: number): string {
   if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
@@ -307,12 +301,12 @@ function ModelsTable({ models }: { models: OpenRouterModel[] }) {
               </td>
               <td className="px-2 py-1.5 text-right">
                 <Badge variant="secondary" className="text-[9px] font-mono">
-                  {formatCost(model.pricing.prompt)}
+                  {formatPricing(model.pricing.prompt)}
                 </Badge>
               </td>
               <td className="px-2 py-1.5 text-right">
                 <Badge variant="secondary" className="text-[9px] font-mono">
-                  {formatCost(model.pricing.completion)}
+                  {formatPricing(model.pricing.completion)}
                 </Badge>
               </td>
             </tr>
