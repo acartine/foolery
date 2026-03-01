@@ -114,11 +114,14 @@ export function BulkEditControls({
 }
 
 function FilterControls() {
-  const { filters } = useAppStore();
+  const { filters, activeRepo, registeredRepos } = useAppStore();
   const updateUrl = useUpdateUrl();
 
+  const activeRepoEntry = registeredRepos.find((r) => r.path === activeRepo);
+  const isBeadsProject = activeRepoEntry?.memoryManagerType === "beads";
+
   const hasNonDefaultFilters =
-    filters.state !== "ready" || filters.type || filters.priority !== undefined;
+    filters.state !== "queued" || (isBeadsProject && filters.type) || filters.priority !== undefined;
 
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
@@ -133,30 +136,34 @@ function FilterControls() {
           <SelectValue placeholder="State" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All States</SelectItem>
+          <SelectItem value="queued">Queued</SelectItem>
+          <SelectItem value="in_action">In Action</SelectItem>
           <SelectItem value="ready">Ready</SelectItem>
+          <SelectItem value="all">All States</SelectItem>
         </SelectContent>
       </Select>
 
-      <Select
-        value={filters.type ?? "all"}
-        onValueChange={(v) => {
-          updateUrl({ type: v === "all" ? undefined : v });
-          (document.activeElement as HTMLElement)?.blur?.();
-        }}
-      >
-        <SelectTrigger className="w-[140px] h-7">
-          <SelectValue placeholder="Type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
-          {commonTypes.map((t) => (
-            <SelectItem key={t} value={t}>
-              {formatLabel(t)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {isBeadsProject && (
+        <Select
+          value={filters.type ?? "all"}
+          onValueChange={(v) => {
+            updateUrl({ type: v === "all" ? undefined : v });
+            (document.activeElement as HTMLElement)?.blur?.();
+          }}
+        >
+          <SelectTrigger className="w-[140px] h-7">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            {commonTypes.map((t) => (
+              <SelectItem key={t} value={t}>
+                {formatLabel(t)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         value={filters.priority !== undefined ? String(filters.priority) : "all"}
@@ -185,7 +192,7 @@ function FilterControls() {
           variant="ghost"
           size="sm"
           title="Clear all filters"
-          onClick={() => updateUrl({ state: "ready", type: undefined, priority: undefined })}
+          onClick={() => updateUrl({ state: "queued", type: undefined, priority: undefined })}
         >
           <X className="h-4 w-4 mr-1" />
           Clear
