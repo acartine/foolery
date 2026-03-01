@@ -21,6 +21,8 @@ export function backendErrorStatus(error: BackendError | undefined): number {
       return 503;
     case "RATE_LIMITED":
       return 429;
+    case "UNSUPPORTED":
+      return 405;
     case "INTERNAL":
     default:
       return 500;

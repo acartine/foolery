@@ -17,7 +17,8 @@ export type BackendErrorCode =
   | "PERMISSION_DENIED"
   | "INTERNAL"
   | "CONFLICT"
-  | "RATE_LIMITED";
+  | "RATE_LIMITED"
+  | "UNSUPPORTED";
 
 // ── Default retryability ──────────────────────────────────
 
@@ -32,6 +33,7 @@ const DEFAULT_RETRYABLE: Record<BackendErrorCode, boolean> = {
   INTERNAL: false,
   CONFLICT: false,
   RATE_LIMITED: true,
+  UNSUPPORTED: false,
 };
 
 /** Returns the default retryability for the given error code. */

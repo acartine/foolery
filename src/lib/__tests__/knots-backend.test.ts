@@ -524,11 +524,11 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(child?.parent).toBe("foolery-g3y1");
   });
 
-  it("returns INVALID_INPUT for delete", async () => {
+  it("returns UNSUPPORTED for delete", async () => {
     const backend = new KnotsBackend("/repo");
     const result = await backend.delete("K-unknown");
     expect(result.ok).toBe(false);
-    expect(result.error?.code).toBe("INVALID_INPUT");
+    expect(result.error?.code).toBe("UNSUPPORTED");
   });
 
   describe("buildTakePrompt", () => {

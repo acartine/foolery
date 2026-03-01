@@ -298,14 +298,14 @@ describe("Knots capability flags", () => {
 });
 
 describe("Knots delete() capability gate", () => {
-  it("returns error with INVALID_INPUT code when delete is attempted", async () => {
+  it("returns error with UNSUPPORTED code when delete is attempted", async () => {
     const backend = new KnotsBackend("/repo");
     const result = await backend.delete("any-id");
 
     expect(result.ok).toBe(false);
     expect(result.error).toBeDefined();
-    expect(result.error!.code).toBe("INVALID_INPUT");
-    expect(result.error!.message).toContain("does not support deleting");
+    expect(result.error!.code).toBe("UNSUPPORTED");
+    expect(result.error!.message).toContain("not supported");
   });
 
   it("error is not retryable", async () => {

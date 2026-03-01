@@ -825,8 +825,8 @@ export class KnotsBackend implements BackendPort {
     _repoPath?: string,
   ): Promise<BackendResult<void>> {
     return backendError(
-      "INVALID_INPUT",
-      "Knots backend does not support deleting knots",
+      "UNSUPPORTED",
+      "Delete is not supported by the Knots backend",
     );
   }
 
