@@ -12,7 +12,7 @@
 
 import { spawn } from "node:child_process";
 import { getBackend } from "@/lib/backend-instance";
-import type { UpdateBeadInput } from "@/lib/backend-port";
+import type { UpdateBeatInput } from "@/lib/backend-port";
 import { getVerificationSettings, getVerificationAgent } from "@/lib/settings";
 import { startInteractionLog, noopInteractionLog } from "@/lib/interaction-logger";
 import {
@@ -192,12 +192,12 @@ async function enterVerification(beadId: string, repoPath: string): Promise<void
 
   const mutations = computeEntryLabels(labels);
   if (mutations.add.length > 0 || mutations.remove.length > 0) {
-    const updateFields: UpdateBeadInput = {};
+    const updateFields: UpdateBeatInput = {};
     if (mutations.add.length > 0) updateFields.labels = mutations.add;
     if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;
     // Ensure status is in_progress for verification
-    if (bead.status !== "in_progress") {
-      updateFields.status = "in_progress";
+    if (bead.state !== "in_progress") {
+      updateFields.state = "in_progress";
     }
     await getBackend().update(beadId, updateFields, repoPath);
   }
@@ -249,7 +249,7 @@ async function launchVerifier(
   const memoryManagerType = resolveMemoryManagerType(repoPath);
 
   const prompt = buildVerifierPrompt({
-    beadId,
+    beatId: beadId,
     title: bead.title,
     description: bead.description,
     acceptance: bead.acceptance,
@@ -266,7 +266,7 @@ async function launchVerifier(
     sessionId: generateVerifierSessionId(),
     interactionType: "verification",
     repoPath,
-    beadIds: [beadId],
+    beatIds: [beadId],
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
@@ -487,8 +487,8 @@ async function transitionToRetry(beadId: string, repoPath: string): Promise<void
   const labels = beadResult.data.labels ?? [];
   const mutations = computeRetryLabels(labels);
 
-  const updateFields: UpdateBeadInput = {
-    status: "open",
+  const updateFields: UpdateBeatInput = {
+    state: "open",
   };
   if (mutations.add.length > 0) updateFields.labels = mutations.add;
   if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;

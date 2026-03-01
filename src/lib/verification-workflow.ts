@@ -36,7 +36,7 @@
  * - The in-memory lock map prevents concurrent launches for the same bead.
  */
 
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
   buildVerificationPassCommands,
@@ -107,18 +107,18 @@ export function findAllStageLabels(labels: string[]): string[] {
 }
 
 /** Check if a bead has the transition:verification lock. */
-export function hasTransitionLock(bead: Bead): boolean {
-  return (bead.labels ?? []).includes(LABEL_TRANSITION_VERIFICATION);
+export function hasTransitionLock(beat: Beat): boolean {
+  return (beat.labels ?? []).includes(LABEL_TRANSITION_VERIFICATION);
 }
 
-/** Check if a bead is in stage:verification. */
-export function isInVerification(bead: Bead): boolean {
-  return (bead.labels ?? []).includes(LABEL_STAGE_VERIFICATION);
+/** Check if a beat is in stage:verification. */
+export function isInVerification(beat: Beat): boolean {
+  return (beat.labels ?? []).includes(LABEL_STAGE_VERIFICATION);
 }
 
-/** Check if a bead is in stage:retry. */
-export function isInRetry(bead: Bead): boolean {
-  return (bead.labels ?? []).includes(LABEL_STAGE_RETRY);
+/** Check if a beat is in stage:retry. */
+export function isInRetry(beat: Beat): boolean {
+  return (beat.labels ?? []).includes(LABEL_STAGE_RETRY);
 }
 
 // ── Eligible action classification (xmg8.1.2) ──────────────
@@ -253,7 +253,7 @@ export function computeRetryLabels(currentLabels: string[]): VerificationTransit
 // ── Verifier prompt builder ─────────────────────────────────
 
 export interface VerifierPromptContext {
-  beadId: string;
+  beatId: string;
   title: string;
   description?: string;
   acceptance?: string;
@@ -268,14 +268,14 @@ export interface VerifierPromptContext {
  */
 export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
   const memoryManagerType = ctx.memoryManagerType ?? "beads";
-  const retryCommands = buildVerificationRetryCommands(ctx.beadId, memoryManagerType, { noDaemon: true });
-  const passCommands = buildVerificationPassCommands(ctx.beadId, memoryManagerType, { noDaemon: true });
+  const retryCommands = buildVerificationRetryCommands(ctx.beatId, memoryManagerType, { noDaemon: true });
+  const passCommands = buildVerificationPassCommands(ctx.beatId, memoryManagerType, { noDaemon: true });
 
   const lines: string[] = [
-    `Bead ${ctx.beadId} has just been queued for verification. You are going to verify it with the following steps:`,
+    `Bead ${ctx.beatId} has just been queued for verification. You are going to verify it with the following steps:`,
     ``,
     `## Reference`,
-    `- Bead ID: ${ctx.beadId}`,
+    `- Bead ID: ${ctx.beatId}`,
     `- Title: ${ctx.title}`,
     `- Commit: ${ctx.commitSha}`,
   ];

@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { getBackend } from "@/lib/backend-instance";
-import type { CreateBeadInput } from "@/lib/backend-port";
+import type { CreateBeatInput } from "@/lib/backend-port";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -15,9 +15,9 @@ import {
 } from "@/lib/agent-adapter";
 import type {
   ApplyBreakdownResult,
-  BeadPriority,
-  BeadType,
-  BreakdownBeadSpec,
+  BeatPriority,
+  BeatType,
+  BreakdownBeatSpec,
   BreakdownEvent,
   BreakdownPlan,
   BreakdownSession,
@@ -110,18 +110,18 @@ function buildBreakdownPrompt(
     .join("\n");
 }
 
-function normalizeBeadSpec(raw: unknown): BreakdownBeadSpec | null {
+function normalizeBeatSpec(raw: unknown): BreakdownBeatSpec | null {
   const obj = toObject(raw);
   if (!obj) return null;
 
   const title = typeof obj.title === "string" ? obj.title.trim() : "";
   if (!title) return null;
 
-  const validTypes: BeadType[] = ["bug", "feature", "task", "epic", "chore", "merge-request", "gate"];
+  const validTypes: BeatType[] = ["bug", "feature", "task", "epic", "chore", "merge-request", "gate"];
   const rawType = typeof obj.type === "string" ? obj.type.trim().toLowerCase() : "task";
-  const type = (validTypes.includes(rawType as BeadType) ? rawType : "task") as BeadType;
+  const type = (validTypes.includes(rawType as BeatType) ? rawType : "task") as BeatType;
 
-  const priority = Math.min(4, Math.max(0, toInt(obj.priority, 2))) as BeadPriority;
+  const priority = Math.min(4, Math.max(0, toInt(obj.priority, 2))) as BeatPriority;
 
   const description =
     typeof obj.description === "string" && obj.description.trim()
@@ -151,13 +151,13 @@ function normalizeBreakdownWave(
     typeof obj.notes === "string" && obj.notes.trim() ? obj.notes.trim() : undefined;
 
   const rawBeads = Array.isArray(obj.beads) ? obj.beads : [];
-  const beads = rawBeads
-    .map((b) => normalizeBeadSpec(b))
-    .filter((b): b is BreakdownBeadSpec => b !== null);
+  const beats = rawBeads
+    .map((b) => normalizeBeatSpec(b))
+    .filter((b): b is BreakdownBeatSpec => b !== null);
 
-  if (beads.length === 0) return null;
+  if (beats.length === 0) return null;
 
-  return { waveIndex, name, objective, beads, notes };
+  return { waveIndex, name, objective, beats, notes };
 }
 
 function normalizeBreakdownPlan(raw: unknown): BreakdownPlan | null {
@@ -365,14 +365,14 @@ function finalizeSession(
 
 export async function createBreakdownSession(
   repoPath: string,
-  parentBeadId: string,
+  parentBeatId: string,
   parentTitle: string,
   parentDescription: string
 ): Promise<BreakdownSession> {
   const session: BreakdownSession = {
     id: generateId(),
     repoPath,
-    parentBeadId,
+    parentBeatId,
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -383,7 +383,7 @@ export async function createBreakdownSession(
     sessionId: session.id,
     interactionType: "breakdown",
     repoPath,
-    beadIds: [parentBeadId],
+    beatIds: [parentBeatId],
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
@@ -584,8 +584,8 @@ export async function applyBreakdownPlan(
   if (!entry.session.plan) throw new Error("No breakdown plan available to apply");
 
   const plan = entry.session.plan;
-  const parentBeadId = entry.session.parentBeadId;
-  const createdBeadIds: string[] = [];
+  const parentBeatId = entry.session.parentBeatId;
+  const createdBeatIds: string[] = [];
 
   const existing = await getBackend().list(undefined, repoPath);
   if (!existing.ok || !existing.data) {
@@ -601,9 +601,9 @@ export async function applyBreakdownPlan(
   let previousWaveId: string | null = null;
 
   for (const wave of plan.waves.slice().sort((a, b) => a.waveIndex - b.waveIndex)) {
-    if (wave.beads.length === 0) continue;
+    if (wave.beats.length === 0) continue;
 
-    const minPriority = Math.min(...wave.beads.map((b) => b.priority)) as BeadPriority;
+    const minPriority = Math.min(...wave.beats.map((b) => b.priority)) as BeatPriority;
 
     const waveSlug = allocateWaveSlug(usedWaveSlugs);
     const waveTitle = buildWaveTitle(waveSlug, wave.name);
@@ -612,7 +612,7 @@ export async function applyBreakdownPlan(
       `Objective: ${wave.objective}`,
       wave.notes ? `\nNotes: ${wave.notes}` : null,
       `\nAssigned tasks:`,
-      ...wave.beads.map((b) => `- ${b.title}`),
+      ...wave.beats.map((b) => `- ${b.title}`),
     ]
       .filter((line): line is string => line !== null)
       .join("\n");
@@ -624,8 +624,8 @@ export async function applyBreakdownPlan(
         priority: minPriority,
         labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
-        parent: parentBeadId,
-      } as CreateBeadInput,
+        parent: parentBeatId,
+      } as CreateBeatInput,
       repoPath,
     );
 
@@ -634,7 +634,7 @@ export async function applyBreakdownPlan(
     }
 
     const waveId = waveResult.data.id;
-    createdBeadIds.push(waveId);
+    createdBeatIds.push(waveId);
 
     if (previousWaveId) {
       const depResult = await getBackend().addDependency(previousWaveId, waveId, repoPath);
@@ -644,7 +644,7 @@ export async function applyBreakdownPlan(
     }
     previousWaveId = waveId;
 
-    for (const spec of wave.beads) {
+    for (const spec of wave.beats) {
       const beadResult = await getBackend().create(
         {
           title: spec.title,
@@ -652,7 +652,7 @@ export async function applyBreakdownPlan(
           priority: spec.priority,
           description: spec.description,
           parent: waveId,
-        } as CreateBeadInput,
+        } as CreateBeatInput,
         repoPath,
       );
 
@@ -660,12 +660,12 @@ export async function applyBreakdownPlan(
         throw new Error(beadResult.error?.message ?? `Failed to create bead: ${spec.title}`);
       }
 
-      createdBeadIds.push(beadResult.data.id);
+      createdBeatIds.push(beadResult.data.id);
     }
   }
 
   return {
-    createdBeadIds,
+    createdBeatIds,
     waveCount: plan.waves.length,
   };
 }

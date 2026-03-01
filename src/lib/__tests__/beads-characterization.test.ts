@@ -16,18 +16,18 @@ import {
 } from "@/lib/bead-sort";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
 import { beadToCreateInput } from "@/lib/bead-utils";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Test helpers
 // ---------------------------------------------------------------------------
 
-function makeBead(overrides: Partial<Bead> = {}): Bead {
+function makeBeat(overrides: Partial<Beat> = {}): Beat {
   return {
     id: "test-001",
-    title: "Test bead",
+    title: "Test beat",
     type: "task",
-    status: "open",
+    state: "open",
     priority: 2,
     labels: [],
     created: "2026-01-01T00:00:00Z",
@@ -59,34 +59,34 @@ describe("bead-sort: naturalCompare", () => {
 
 describe("bead-sort: compareBeadsByPriorityThenStatus", () => {
   it("SRT-004: primary sort by priority (lower number first)", () => {
-    const a = makeBead({ priority: 1 });
-    const b = makeBead({ priority: 3 });
+    const a = makeBeat({ priority: 1 });
+    const b = makeBeat({ priority: 3 });
     expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
   });
 
-  it("SRT-005: secondary sort by status rank (open < in_progress < closed)", () => {
-    const a = makeBead({ priority: 2, status: "open" });
-    const b = makeBead({ priority: 2, status: "closed" });
+  it("SRT-005: secondary sort by state rank (queue < action < terminal)", () => {
+    const a = makeBeat({ priority: 2, state: "ready_for_planning" });
+    const b = makeBeat({ priority: 2, state: "shipped" });
     expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
   });
 
   it("SRT-006: tertiary sort by title alphabetically", () => {
-    const a = makeBead({ priority: 2, status: "open", title: "Alpha" });
-    const b = makeBead({ priority: 2, status: "open", title: "Zeta" });
+    const a = makeBeat({ priority: 2, state: "open", title: "Alpha" });
+    const b = makeBeat({ priority: 2, state: "open", title: "Zeta" });
     expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
   });
 
   it("SRT-007: quaternary sort by ID when all else equal", () => {
-    const a = makeBead({
+    const a = makeBeat({
       id: "aaa",
       priority: 2,
-      status: "open",
+      state: "open",
       title: "Same",
     });
-    const b = makeBead({
+    const b = makeBeat({
       id: "zzz",
       priority: 2,
-      status: "open",
+      state: "open",
       title: "Same",
     });
     expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
@@ -101,21 +101,21 @@ describe("bead-sort: compareBeadsByPriorityThenStatus", () => {
 
 describe("bead-hierarchy: buildHierarchy", () => {
   it("HIR-001: flat list of root beads has depth 0", () => {
-    const beads = [
-      makeBead({ id: "a" }),
-      makeBead({ id: "b" }),
+    const beats = [
+      makeBeat({ id: "a" }),
+      makeBeat({ id: "b" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result).toHaveLength(2);
     expect(result.every((b) => b._depth === 0)).toBe(true);
   });
 
   it("HIR-002: children nested under parent", () => {
-    const beads = [
-      makeBead({ id: "parent" }),
-      makeBead({ id: "child", parent: "parent" }),
+    const beats = [
+      makeBeat({ id: "parent" }),
+      makeBeat({ id: "child", parent: "parent" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result[0].id).toBe("parent");
     expect(result[0]._depth).toBe(0);
     expect(result[1].id).toBe("child");
@@ -123,12 +123,12 @@ describe("bead-hierarchy: buildHierarchy", () => {
   });
 
   it("HIR-003: three-level nesting", () => {
-    const beads = [
-      makeBead({ id: "grandparent" }),
-      makeBead({ id: "parent", parent: "grandparent" }),
-      makeBead({ id: "child", parent: "parent" }),
+    const beats = [
+      makeBeat({ id: "grandparent" }),
+      makeBeat({ id: "parent", parent: "grandparent" }),
+      makeBeat({ id: "child", parent: "parent" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth])).toEqual([
       ["grandparent", 0],
       ["parent", 1],
@@ -137,11 +137,11 @@ describe("bead-hierarchy: buildHierarchy", () => {
   });
 
   it("HIR-004: orphaned children treated as top-level", () => {
-    const beads = [
-      makeBead({ id: "orphan", parent: "missing-parent" }),
-      makeBead({ id: "root" }),
+    const beats = [
+      makeBeat({ id: "orphan", parent: "missing-parent" }),
+      makeBeat({ id: "root" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     expect(result).toHaveLength(2);
     expect(result.every((b) => b._depth === 0)).toBe(true);
   });
@@ -149,12 +149,12 @@ describe("bead-hierarchy: buildHierarchy", () => {
   it.todo("HIR-005: circular references skipped safely");
 
   it("HIR-006: _hasChildren flag set correctly", () => {
-    const beads = [
-      makeBead({ id: "parent" }),
-      makeBead({ id: "child", parent: "parent" }),
-      makeBead({ id: "leaf" }),
+    const beats = [
+      makeBeat({ id: "parent" }),
+      makeBeat({ id: "child", parent: "parent" }),
+      makeBeat({ id: "leaf" }),
     ];
-    const result = buildHierarchy(beads);
+    const result = buildHierarchy(beats);
     const parentNode = result.find((b) => b.id === "parent");
     const childNode = result.find((b) => b.id === "child");
     const leafNode = result.find((b) => b.id === "leaf");
@@ -172,7 +172,7 @@ describe("bead-hierarchy: buildHierarchy", () => {
 
 describe("bead-utils: beadToCreateInput", () => {
   it("UTL-001: extracts copyable fields", () => {
-    const bead = makeBead({
+    const beat = makeBeat({
       title: "Feature X",
       description: "A description",
       type: "feature",
@@ -184,7 +184,7 @@ describe("bead-utils: beadToCreateInput", () => {
       notes: "Some notes",
       estimate: 120,
     });
-    const input = beadToCreateInput(bead);
+    const input = beadToCreateInput(beat);
     expect(input.title).toBe("Feature X");
     expect(input.description).toBe("A description");
     expect(input.type).toBe("feature");
@@ -197,19 +197,19 @@ describe("bead-utils: beadToCreateInput", () => {
     expect(input.estimate).toBe(120);
   });
 
-  it("UTL-002: excludes id, parent, status, timestamps", () => {
-    const bead = makeBead({
+  it("UTL-002: excludes id, parent, state, timestamps", () => {
+    const beat = makeBeat({
       id: "proj-001",
       parent: "proj",
-      status: "in_progress",
+      state: "in_progress",
       created: "2026-01-01",
       updated: "2026-01-02",
     });
-    const input = beadToCreateInput(bead);
+    const input = beadToCreateInput(beat);
     const keys = Object.keys(input);
     expect(keys).not.toContain("id");
     expect(keys).not.toContain("parent");
-    expect(keys).not.toContain("status");
+    expect(keys).not.toContain("state");
     expect(keys).not.toContain("created");
     expect(keys).not.toContain("updated");
   });

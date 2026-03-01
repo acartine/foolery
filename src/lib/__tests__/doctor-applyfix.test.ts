@@ -219,7 +219,7 @@ describe("applyFix: stale-parent", () => {
         {
           id: "parent-1",
           title: "Epic",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -229,7 +229,7 @@ describe("applyFix: stale-parent", () => {
         {
           id: "child-1",
           title: "Task 1",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -248,11 +248,11 @@ describe("applyFix: stale-parent", () => {
     const fixReport = await runDoctorFix({ "stale-parent": "default" });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(fix?.success).toBe(true);
-    expect(fix?.message).toContain("in_progress");
+    expect(fix?.message).toContain("verification");
     expect(fix?.message).toContain("parent-1");
     expect(mockUpdate).toHaveBeenCalledWith(
       "parent-1",
-      { status: "in_progress", workflowState: "verification" },
+      { state: "verification" },
       "/repo",
     );
   });
@@ -355,7 +355,7 @@ describe("applyFix: context filtering", () => {
         {
           id: "parent-1",
           title: "Parent bead",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -365,7 +365,7 @@ describe("applyFix: context filtering", () => {
         {
           id: "child-1",
           title: "Child bead",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -381,7 +381,7 @@ describe("applyFix: context filtering", () => {
     const fixReport = await runDoctorFix({
       "stale-parent": {
         strategy: "mark-verification",
-        contexts: [{ beadId: "parent-1", repoPath: "/repo" }],
+        contexts: [{ beatId: "parent-1", repoPath: "/repo" }],
       },
     });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
@@ -397,7 +397,7 @@ describe("applyFix: context filtering", () => {
         {
           id: "parent-1",
           title: "Parent bead",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -407,7 +407,7 @@ describe("applyFix: context filtering", () => {
         {
           id: "child-1",
           title: "Child bead",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -422,7 +422,7 @@ describe("applyFix: context filtering", () => {
     const fixReport = await runDoctorFix({
       "stale-parent": {
         strategy: "mark-verification",
-        contexts: [{ beadId: "other-bead", repoPath: "/other-repo" }],
+        contexts: [{ beatId: "other-bead", repoPath: "/other-repo" }],
       },
     });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");

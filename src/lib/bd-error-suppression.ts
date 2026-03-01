@@ -1,4 +1,4 @@
-import type { Bead } from "./types";
+import type { Beat } from "./types";
 import type { BackendResult } from "./backend-port";
 
 /**
@@ -15,7 +15,7 @@ import type { BackendResult } from "./backend-port";
  */
 
 interface CacheEntry {
-  data: BackendResult<Bead[]>;
+  data: BackendResult<Beat[]>;
   timestamp: number;
 }
 
@@ -90,11 +90,11 @@ function evictIfNeeded(): void {
  */
 export function withErrorSuppression(
   fn: string,
-  result: BackendResult<Bead[]>,
+  result: BackendResult<Beat[]>,
   filters?: Record<string, string>,
   repoPath?: string,
   query?: string,
-): BackendResult<Bead[]> {
+): BackendResult<Beat[]> {
   const key = cacheKey(fn, filters, repoPath, query);
 
   if (result.ok) {

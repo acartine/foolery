@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import type { BackendPort } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
-import type { CreateBeadInput } from "@/lib/schemas";
+import type { CreateBeatInput } from "@/lib/schemas";
 
 // ---------------------------------------------------------------------------
 // Valid error codes -- used to assert error contract
@@ -37,10 +37,10 @@ const VALID_ERROR_CODES: BackendErrorCode[] = [
 // ---------------------------------------------------------------------------
 
 function sampleCreateInput(
-  overrides?: Partial<CreateBeadInput>,
-): CreateBeadInput {
+  overrides?: Partial<CreateBeatInput>,
+): CreateBeatInput {
   return {
-    title: "Contract test bead",
+    title: "Contract test beat",
     type: "task",
     priority: 2,
     labels: ["contract-test"],
@@ -85,21 +85,21 @@ function registerReadTests(
       expect(Array.isArray(result.data)).toBe(true);
     });
 
-    it("list() data items have required Bead fields", async () => {
+    it("list() data items have required Beat fields", async () => {
       if (getCaps().canCreate) {
         await getPort().create(sampleCreateInput());
       }
       const result = await getPort().list();
       expect(result.ok).toBe(true);
-      for (const bead of result.data ?? []) {
-        expect(bead).toHaveProperty("id");
-        expect(bead).toHaveProperty("title");
-        expect(bead).toHaveProperty("type");
-        expect(bead).toHaveProperty("status");
-        expect(bead).toHaveProperty("priority");
-        expect(bead).toHaveProperty("labels");
-        expect(bead).toHaveProperty("created");
-        expect(bead).toHaveProperty("updated");
+      for (const beat of result.data ?? []) {
+        expect(beat).toHaveProperty("id");
+        expect(beat).toHaveProperty("title");
+        expect(beat).toHaveProperty("type");
+        expect(beat).toHaveProperty("state");
+        expect(beat).toHaveProperty("priority");
+        expect(beat).toHaveProperty("labels");
+        expect(beat).toHaveProperty("created");
+        expect(beat).toHaveProperty("updated");
       }
     });
 
@@ -167,7 +167,7 @@ function registerWriteTests(
       expect(fetched.data!.priority).toBe(1);
     });
 
-    it("close() sets status to closed", async () => {
+    it("close() sets state to a terminal state", async () => {
       if (!getCaps().canClose) return;
       const created = await getPort().create(sampleCreateInput());
       const id = created.data!.id;
@@ -177,7 +177,7 @@ function registerWriteTests(
 
       const fetched = await getPort().get(id);
       expect(fetched.ok).toBe(true);
-      expect(fetched.data!.status).toBe("closed");
+      expect(fetched.data!.state).toMatch(/shipped|closed/);
     });
   });
 }
@@ -231,7 +231,7 @@ function registerSearchQueryTests(
       expect(result.ok).toBe(true);
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
       expect(
-        result.data!.some((b: Bead) => b.title.includes("needle")),
+        result.data!.some((b: Beat) => b.title.includes("needle")),
       ).toBe(true);
     });
   });
@@ -244,7 +244,7 @@ function registerSearchQueryTests(
       const result = await getPort().query("type:task");
       expect(result.ok).toBe(true);
       expect(result.data!.length).toBeGreaterThanOrEqual(1);
-      expect(result.data!.every((b: Bead) => b.type === "task")).toBe(true);
+      expect(result.data!.every((b: Beat) => b.type === "task")).toBe(true);
     });
   });
 }

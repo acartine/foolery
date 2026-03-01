@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import { buildHierarchy } from "@/lib/bead-hierarchy";
 import {
   compareBeadsByPriorityThenStatus,
@@ -7,11 +7,11 @@ import {
   naturalCompare,
 } from "@/lib/bead-sort";
 
-function makeBead(overrides: Partial<Bead> & { id: string }): Bead {
+function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
   return {
     title: overrides.id,
     type: "task",
-    status: "open",
+    state: "open",
     priority: 2,
     labels: [],
     created: "2025-01-01T00:00:00Z",
@@ -22,43 +22,43 @@ function makeBead(overrides: Partial<Bead> & { id: string }): Bead {
 
 describe("compareBeadsByPriorityThenStatus", () => {
   it("sorts by priority first (0 is highest)", () => {
-    const beads = [
-      makeBead({ id: "p3", priority: 3 }),
-      makeBead({ id: "p0", priority: 0 }),
-      makeBead({ id: "p1", priority: 1 }),
+    const beats = [
+      makeBeat({ id: "p3", priority: 3 }),
+      makeBeat({ id: "p0", priority: 0 }),
+      makeBeat({ id: "p1", priority: 1 }),
     ];
 
-    const sorted = beads.slice().sort(compareBeadsByPriorityThenStatus);
+    const sorted = beats.slice().sort(compareBeadsByPriorityThenStatus);
     expect(sorted.map((b) => b.id)).toEqual(["p0", "p1", "p3"]);
   });
 
-  it("sorts equal-priority beads by status rank", () => {
-    const beads = [
-      makeBead({ id: "blocked", status: "blocked", priority: 2 }),
-      makeBead({ id: "closed", status: "closed", priority: 2 }),
-      makeBead({ id: "open", status: "open", priority: 2 }),
-      makeBead({ id: "inprogress", status: "in_progress", priority: 2 }),
-      makeBead({ id: "deferred", status: "deferred", priority: 2 }),
+  it("sorts equal-priority beats by state rank", () => {
+    const beats = [
+      makeBeat({ id: "blocked", state: "blocked", priority: 2 }),
+      makeBeat({ id: "shipped", state: "shipped", priority: 2 }),
+      makeBeat({ id: "queue", state: "ready_for_planning", priority: 2 }),
+      makeBeat({ id: "action", state: "implementation", priority: 2 }),
+      makeBeat({ id: "deferred", state: "deferred", priority: 2 }),
     ];
 
-    const sorted = beads.slice().sort(compareBeadsByPriorityThenStatus);
+    const sorted = beats.slice().sort(compareBeadsByPriorityThenStatus);
     expect(sorted.map((b) => b.id)).toEqual([
-      "open",
-      "inprogress",
-      "closed",
+      "queue",
+      "action",
+      "shipped",
       "blocked",
       "deferred",
     ]);
   });
 
   it("keeps children under parents when used with buildHierarchy", () => {
-    const beads = [
-      makeBead({ id: "p1-parent", priority: 1 }),
-      makeBead({ id: "p0-root", priority: 0 }),
-      makeBead({ id: "p0-child", parent: "p1-parent", priority: 0 }),
+    const beats = [
+      makeBeat({ id: "p1-parent", priority: 1 }),
+      makeBeat({ id: "p0-root", priority: 0 }),
+      makeBeat({ id: "p0-child", parent: "p1-parent", priority: 0 }),
     ];
 
-    const hierarchy = buildHierarchy(beads, compareBeadsByPriorityThenStatus);
+    const hierarchy = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
     expect(hierarchy.map((b) => [b.id, b._depth])).toEqual([
       ["p0-root", 0],
       ["p1-parent", 0],
@@ -101,31 +101,31 @@ describe("naturalCompare", () => {
 
 describe("compareBeadsByHierarchicalOrder", () => {
   it("sorts siblings by natural ID order regardless of priority", () => {
-    const beads = [
-      makeBead({ id: "1guy.4", priority: 0 }),
-      makeBead({ id: "1guy.3", priority: 1 }),
-      makeBead({ id: "1guy.1", priority: 3 }),
-      makeBead({ id: "1guy.5", priority: 2 }),
-      makeBead({ id: "1guy.2", priority: 0 }),
+    const beats = [
+      makeBeat({ id: "1guy.4", priority: 0 }),
+      makeBeat({ id: "1guy.3", priority: 1 }),
+      makeBeat({ id: "1guy.1", priority: 3 }),
+      makeBeat({ id: "1guy.5", priority: 2 }),
+      makeBeat({ id: "1guy.2", priority: 0 }),
     ];
 
-    const sorted = beads.slice().sort(compareBeadsByHierarchicalOrder);
+    const sorted = beats.slice().sort(compareBeadsByHierarchicalOrder);
     expect(sorted.map((b) => b.id)).toEqual([
       "1guy.1", "1guy.2", "1guy.3", "1guy.4", "1guy.5",
     ]);
   });
 
   it("preserves hierarchy when used with buildHierarchy", () => {
-    const beads = [
-      makeBead({ id: "1guy" }),
-      makeBead({ id: "1guy.4", parent: "1guy", priority: 0 }),
-      makeBead({ id: "1guy.3", parent: "1guy", priority: 1 }),
-      makeBead({ id: "1guy.1", parent: "1guy", priority: 3 }),
-      makeBead({ id: "1guy.5", parent: "1guy", priority: 2 }),
-      makeBead({ id: "1guy.2", parent: "1guy", priority: 0 }),
+    const beats = [
+      makeBeat({ id: "1guy" }),
+      makeBeat({ id: "1guy.4", parent: "1guy", priority: 0 }),
+      makeBeat({ id: "1guy.3", parent: "1guy", priority: 1 }),
+      makeBeat({ id: "1guy.1", parent: "1guy", priority: 3 }),
+      makeBeat({ id: "1guy.5", parent: "1guy", priority: 2 }),
+      makeBeat({ id: "1guy.2", parent: "1guy", priority: 0 }),
     ];
 
-    const hierarchy = buildHierarchy(beads, compareBeadsByHierarchicalOrder);
+    const hierarchy = buildHierarchy(beats, compareBeadsByHierarchicalOrder);
     expect(hierarchy.map((b) => [b.id, b._depth])).toEqual([
       ["1guy", 0],
       ["1guy.1", 1],

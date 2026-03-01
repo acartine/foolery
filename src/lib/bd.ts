@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { Bead, BeadDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
+import type { Beat, BeatDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
 import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
   beadsProfileDescriptor,
@@ -427,58 +427,56 @@ function inferParent(id: string, explicit?: unknown, dependencies?: unknown): st
   return id.slice(0, dotIdx);
 }
 
-/** Map bd CLI JSON field names to our Bead interface field names. */
-function normalizeBead(raw: Record<string, unknown>): Bead {
+/** Map bd CLI JSON field names to our Beat interface field names. */
+function normalizeBeat(raw: Record<string, unknown>): Beat {
   const id = raw.id as string;
   const labels = ((raw.labels ?? []) as string[]).filter(l => l.trim() !== "");
   const metadata = raw.metadata as Record<string, unknown> | undefined;
   const profileId = deriveBeadsProfileId(labels, metadata);
   const workflow = beadsProfileDescriptor(profileId);
-  const rawStatus = (raw.status ?? "open") as Bead["status"];
+  const rawStatus = (raw.status ?? "open") as string;
   const workflowState = deriveBeadsWorkflowState(rawStatus, labels, workflow);
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   return {
     ...raw,
-    type: (raw.issue_type ?? raw.type ?? "task") as Bead["type"],
-    status: runtime.compatStatus,
-    compatStatus: runtime.compatStatus,
+    type: (raw.issue_type ?? raw.type ?? "task") as Beat["type"],
+    state: runtime.state,
     workflowId: workflow.id,
     workflowMode: workflow.mode,
-    workflowState: runtime.workflowState,
     profileId: workflow.id,
     nextActionState: runtime.nextActionState,
     nextActionOwnerKind: runtime.nextActionOwnerKind,
     requiresHumanAction: runtime.requiresHumanAction,
     isAgentClaimable: runtime.isAgentClaimable,
-    priority: (raw.priority ?? 2) as Bead["priority"],
+    priority: (raw.priority ?? 2) as Beat["priority"],
     acceptance: (raw.acceptance_criteria ?? raw.acceptance) as string | undefined,
     parent: inferParent(id, raw.parent, raw.dependencies),
     created: (raw.created_at ?? raw.created) as string,
     updated: (raw.updated_at ?? raw.updated) as string,
     estimate: (raw.estimated_minutes ?? raw.estimate) as number | undefined,
     labels,
-  } as Bead;
+  } as Beat;
 }
 
-function normalizeBeads(raw: string): Bead[] {
+function normalizeBeats(raw: string): Beat[] {
   const items = JSON.parse(raw) as Record<string, unknown>[];
-  return items.map(normalizeBead);
+  return items.map(normalizeBeat);
 }
 
 function applyWorkflowFilters(
-  beads: Bead[],
+  beats: Beat[],
   filters?: Record<string, string>,
-): Bead[] {
-  if (!filters) return beads;
-  return beads.filter((bead) => {
-    if (filters.workflowId && bead.workflowId !== filters.workflowId) return false;
-    if (filters.workflowState && bead.workflowState !== filters.workflowState) return false;
-    if (filters.profileId && bead.profileId !== filters.profileId) return false;
+): Beat[] {
+  if (!filters) return beats;
+  return beats.filter((beat) => {
+    if (filters.workflowId && beat.workflowId !== filters.workflowId) return false;
+    if (filters.state && beat.state !== filters.state) return false;
+    if (filters.profileId && beat.profileId !== filters.profileId) return false;
     if (filters.requiresHumanAction !== undefined) {
       const wantsHuman = filters.requiresHumanAction === "true";
-      if ((bead.requiresHumanAction ?? false) !== wantsHuman) return false;
+      if ((beat.requiresHumanAction ?? false) !== wantsHuman) return false;
     }
-    if (filters.nextOwnerKind && bead.nextActionOwnerKind !== filters.nextOwnerKind) return false;
+    if (filters.nextOwnerKind && beat.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     return true;
   });
 }
@@ -503,17 +501,18 @@ export async function listWorkflows(
   return { ok: true, data: beadsProfileWorkflowDescriptors() };
 }
 
-export async function listBeads(
+export async function listBeats(
   filters?: Record<string, string>,
   repoPath?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const args = ["list", "--json", "--limit", "0"];
-  const hasStatusFilter = filters && filters.status;
+  const hasStatusFilter = filters && (filters.status || filters.state);
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
       if (
         key === "workflowId" ||
         key === "workflowState" ||
+        key === "state" ||
         key === "profileId" ||
         key === "requiresHumanAction" ||
         key === "nextOwnerKind"
@@ -529,22 +528,23 @@ export async function listBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd list failed" };
   try {
-    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeats(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd list output" };
   }
 }
 
-export async function readyBeads(
+export async function readyBeats(
   filters?: Record<string, string>,
   repoPath?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const args = ["ready", "--json", "--limit", "0"];
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
       if (
         key === "workflowId" ||
         key === "workflowState" ||
+        key === "state" ||
         key === "profileId" ||
         key === "requiresHumanAction" ||
         key === "nextOwnerKind"
@@ -557,17 +557,17 @@ export async function readyBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd ready failed" };
   try {
-    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeats(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd ready output" };
   }
 }
 
-export async function searchBeads(
+export async function searchBeats(
   query: string,
   filters?: Record<string, string>,
   repoPath?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const args = ["search", query, "--json", "--limit", "0"];
   if (filters) {
     for (const [key, val] of Object.entries(filters)) {
@@ -575,6 +575,7 @@ export async function searchBeads(
       if (
         key === "workflowId" ||
         key === "workflowState" ||
+        key === "state" ||
         key === "profileId" ||
         key === "requiresHumanAction" ||
         key === "nextOwnerKind"
@@ -591,17 +592,17 @@ export async function searchBeads(
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd search failed" };
   try {
-    return { ok: true, data: applyWorkflowFilters(normalizeBeads(stdout), filters) };
+    return { ok: true, data: applyWorkflowFilters(normalizeBeats(stdout), filters) };
   } catch {
     return { ok: false, error: "Failed to parse bd search output" };
   }
 }
 
-export async function queryBeads(
+export async function queryBeats(
   expression: string,
   options?: { limit?: number; sort?: string },
   repoPath?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const args = ["query", expression, "--json"];
   if (options?.limit) args.push("--limit", String(options.limit));
   if (options?.sort) args.push("--sort", options.sort);
@@ -609,25 +610,25 @@ export async function queryBeads(
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd query failed" };
   try {
-    return { ok: true, data: normalizeBeads(stdout) };
+    return { ok: true, data: normalizeBeats(stdout) };
   } catch {
     return { ok: false, error: "Failed to parse bd query output" };
   }
 }
 
-export async function showBead(id: string, repoPath?: string): Promise<BdResult<Bead>> {
+export async function showBeat(id: string, repoPath?: string): Promise<BdResult<Beat>> {
   const { stdout, stderr, exitCode } = await exec(["show", id, "--json"], { cwd: repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "bd show failed" };
   try {
     const parsed = JSON.parse(stdout);
     const item = Array.isArray(parsed) ? parsed[0] : parsed;
-    return { ok: true, data: normalizeBead(item as Record<string, unknown>) };
+    return { ok: true, data: normalizeBeat(item as Record<string, unknown>) };
   } catch {
     return { ok: false, error: "Failed to parse bd show output" };
   }
 }
 
-export async function createBead(
+export async function createBeat(
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
 ): Promise<BdResult<{ id: string }>> {
@@ -649,7 +650,7 @@ export async function createBead(
   delete nextFields.workflowState;
 
   const explicitStatus = typeof nextFields.status === "string"
-    ? (nextFields.status as Bead["status"])
+    ? (nextFields.status as string)
     : undefined;
   if (explicitStatus !== undefined) {
     recordCompatStatusConsumed("bd:create-input-status");
@@ -690,7 +691,7 @@ export async function createBead(
   }
 }
 
-export async function updateBead(
+export async function updateBeat(
   id: string,
   fields: Record<string, string | string[] | number | undefined>,
   repoPath?: string
@@ -708,9 +709,9 @@ export async function updateBead(
   const needsCurrentContext = Boolean(selectedProfileId) ||
     typeof nextFields.workflowState === "string" ||
     typeof nextFields.status === "string";
-  const current = needsCurrentContext ? await showBead(id, repoPath) : null;
+  const current = needsCurrentContext ? await showBeat(id, repoPath) : null;
   if (current && !current.ok) {
-    return { ok: false, error: current.error || "Failed to load bead before update" };
+    return { ok: false, error: current.error || "Failed to load beat before update" };
   }
 
   const workflow = beadsProfileDescriptor(selectedProfileId ?? current?.data?.profileId);
@@ -721,14 +722,14 @@ export async function updateBead(
   delete nextFields.workflowState;
 
   const explicitStatus = typeof nextFields.status === "string"
-    ? (nextFields.status as Bead["status"])
+    ? (nextFields.status as string)
     : undefined;
   if (explicitStatus !== undefined) {
     recordCompatStatusConsumed("bd:update-input-status");
   }
   const workflowState = explicitWorkflowState ||
     (explicitStatus ? mapStatusToDefaultWorkflowState(explicitStatus, workflow) : undefined) ||
-    (selectedProfileId ? normalizeStateForWorkflow(current?.data?.workflowState, workflow) : undefined);
+    (selectedProfileId ? normalizeStateForWorkflow(current?.data?.state, workflow) : undefined);
   if (workflowState || selectedProfileId) {
     const resolvedState = workflowState ?? workflow.initialState;
     nextFields.status = explicitStatus ?? deriveWorkflowRuntimeState(workflow, resolvedState).compatStatus;
@@ -780,9 +781,9 @@ export async function updateBead(
     normalizedLabelsToAdd.some((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label)) ||
     normalizedLabelsToRemove.some((label) => isWorkflowStateLabel(label) || isWorkflowProfileLabel(label));
   if (mutatesStageLabels || mutatesWorkflowLabels) {
-    const current = await showBead(id, repoPath);
+    const current = await showBeat(id, repoPath);
     if (!current.ok || !current.data) {
-      return { ok: false, error: current.error || "Failed to load bead before label update" };
+      return { ok: false, error: current.error || "Failed to load beat before label update" };
     }
 
     if (mutatesStageLabels && normalizedLabelsToAdd.some(isStageLabel)) {
@@ -878,14 +879,14 @@ export async function updateBead(
   return { ok: true };
 }
 
-export async function deleteBead(id: string, repoPath?: string): Promise<BdResult<void>> {
+export async function deleteBeat(id: string, repoPath?: string): Promise<BdResult<void>> {
   const { stderr, exitCode } = await exec(["delete", id, "--force"], { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd delete failed" };
   return { ok: true };
 }
 
-export async function closeBead(
+export async function closeBeat(
   id: string,
   reason?: string,
   repoPath?: string
@@ -902,14 +903,14 @@ export async function listDeps(
   id: string,
   repoPath?: string,
   options?: { type?: string }
-): Promise<BdResult<BeadDependency[]>> {
+): Promise<BdResult<BeatDependency[]>> {
   const args = ["dep", "list", id, "--json"];
   if (options?.type) args.push("--type", options.type);
   const { stdout, stderr, exitCode } = await exec(args, { cwd: repoPath });
   if (exitCode !== 0)
     return { ok: false, error: stderr || "bd dep list failed" };
   try {
-    return { ok: true, data: parseJson<BeadDependency[]>(stdout) };
+    return { ok: true, data: parseJson<BeatDependency[]>(stdout) };
   } catch {
     return { ok: false, error: "Failed to parse bd dep list output" };
   }
@@ -946,3 +947,26 @@ export async function removeDep(
     return { ok: false, error: stderr || "bd dep remove failed" };
   return { ok: true };
 }
+
+// ── Deprecated re-exports (to be removed in cleanup pass) ───
+
+/** @deprecated Use listBeats */
+export const listBeads = listBeats;
+/** @deprecated Use readyBeats */
+export const readyBeads = readyBeats;
+/** @deprecated Use searchBeats */
+export const searchBeads = searchBeats;
+/** @deprecated Use queryBeats */
+export const queryBeads = queryBeats;
+/** @deprecated Use showBeat */
+export const showBead = showBeat;
+/** @deprecated Use createBeat */
+export const createBead = createBeat;
+/** @deprecated Use updateBeat */
+export const updateBead = updateBeat;
+/** @deprecated Use deleteBeat */
+export const deleteBead = deleteBeat;
+/** @deprecated Use closeBeat */
+export const closeBead = closeBeat;
+/** @deprecated Use normalizeBeats */
+export const normalizeBeads = normalizeBeats;

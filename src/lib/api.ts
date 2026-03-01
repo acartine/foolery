@@ -1,16 +1,16 @@
 import type {
-  Bead,
-  BeadDependency,
-  BeadWithRepo,
+  Beat,
+  BeatDependency,
+  BeatWithRepo,
   BdResult,
   MemoryWorkflowDescriptor,
   RegisteredRepo,
 } from "./types";
 import type {
-  CreateBeadInput,
-  UpdateBeadInput,
-  CloseBeadInput,
-  QueryBeadInput,
+  CreateBeatInput,
+  UpdateBeatInput,
+  CloseBeatInput,
+  QueryBeatInput,
   AddDepInput,
 } from "./schemas";
 import type { CascadeDescendant } from "./cascade-close";
@@ -49,43 +49,55 @@ function repoQs(repo?: string): string {
     : "";
 }
 
-export function fetchBeads(
+export function fetchBeats(
   params?: Record<string, string>,
   repo?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const qs = buildQs(params, repo);
-  return request<Bead[]>(`${BASE}${qs}`);
+  return request<Beat[]>(`${BASE}${qs}`);
 }
 
-export function fetchReadyBeads(
+/** @deprecated Use fetchBeats */
+export const fetchBeads = fetchBeats;
+
+export function fetchReadyBeats(
   params?: Record<string, string>,
   repo?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const qs = buildQs(params, repo);
-  return request<Bead[]>(`${BASE}/ready${qs}`);
+  return request<Beat[]>(`${BASE}/ready${qs}`);
 }
 
-export function queryBeads(
-  input: QueryBeadInput,
+/** @deprecated Use fetchReadyBeats */
+export const fetchReadyBeads = fetchReadyBeats;
+
+export function queryBeats(
+  input: QueryBeatInput,
   repo?: string
-): Promise<BdResult<Bead[]>> {
+): Promise<BdResult<Beat[]>> {
   const body = repo ? { ...input, _repo: repo } : input;
-  return request<Bead[]>(`${BASE}/query`, {
+  return request<Beat[]>(`${BASE}/query`, {
     method: "POST",
     body: JSON.stringify(body),
   });
 }
 
-export function fetchBead(
+/** @deprecated Use queryBeats */
+export const queryBeads = queryBeats;
+
+export function fetchBeat(
   id: string,
   repo?: string
-): Promise<BdResult<Bead>> {
+): Promise<BdResult<Beat>> {
   const qs = repoQs(repo);
-  return request<Bead>(`${BASE}/${id}${qs}`);
+  return request<Beat>(`${BASE}/${id}${qs}`);
 }
 
-export function createBead(
-  input: CreateBeadInput,
+/** @deprecated Use fetchBeat */
+export const fetchBead = fetchBeat;
+
+export function createBeat(
+  input: CreateBeatInput,
   repo?: string
 ): Promise<BdResult<{ id: string }>> {
   const body = repo ? { ...input, _repo: repo } : input;
@@ -95,6 +107,9 @@ export function createBead(
   });
 }
 
+/** @deprecated Use createBeat */
+export const createBead = createBeat;
+
 export function fetchWorkflows(
   repo?: string
 ): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
@@ -102,9 +117,9 @@ export function fetchWorkflows(
   return request<MemoryWorkflowDescriptor[]>(`/api/workflows${qs}`);
 }
 
-export function updateBead(
+export function updateBeat(
   id: string,
-  input: UpdateBeadInput,
+  input: UpdateBeatInput,
   repo?: string
 ): Promise<BdResult<void>> {
   const body = repo ? { ...input, _repo: repo } : input;
@@ -114,7 +129,10 @@ export function updateBead(
   });
 }
 
-export function deleteBead(
+/** @deprecated Use updateBeat */
+export const updateBead = updateBeat;
+
+export function deleteBeat(
   id: string,
   repo?: string
 ): Promise<BdResult<void>> {
@@ -122,9 +140,12 @@ export function deleteBead(
   return request<void>(`${BASE}/${id}${qs}`, { method: "DELETE" });
 }
 
-export function closeBead(
+/** @deprecated Use deleteBeat */
+export const deleteBead = deleteBeat;
+
+export function closeBeat(
   id: string,
-  input: CloseBeadInput,
+  input: CloseBeatInput,
   repo?: string
 ): Promise<BdResult<void>> {
   const body = repo ? { ...input, _repo: repo } : input;
@@ -133,6 +154,9 @@ export function closeBead(
     body: JSON.stringify(body),
   });
 }
+
+/** @deprecated Use closeBeat */
+export const closeBead = closeBeat;
 
 /**
  * Preview which descendants would be closed if a cascade close is performed.
@@ -150,11 +174,11 @@ export function previewCascadeClose(
 }
 
 /**
- * Close a parent bead and all its open descendants recursively.
+ * Close a parent beat and all its open descendants recursively.
  */
-export function cascadeCloseBead(
+export function cascadeCloseBeat(
   id: string,
-  input: CloseBeadInput,
+  input: CloseBeatInput,
   repo?: string
 ): Promise<BdResult<{ closed: string[]; errors: string[] }>> {
   const body: Record<string, unknown> = { ...input, confirmed: true };
@@ -165,20 +189,23 @@ export function cascadeCloseBead(
   });
 }
 
+/** @deprecated Use cascadeCloseBeat */
+export const cascadeCloseBead = cascadeCloseBeat;
+
 export function fetchDeps(
   id: string,
   repo?: string
-): Promise<BdResult<BeadDependency[]>> {
+): Promise<BdResult<BeatDependency[]>> {
   const qs = repoQs(repo);
-  return request<BeadDependency[]>(`${BASE}/${id}/deps${qs}`);
+  return request<BeatDependency[]>(`${BASE}/${id}/deps${qs}`);
 }
 
 export function fetchBatchDeps(
   ids: string[],
   repo?: string
-): Promise<BdResult<Record<string, BeadDependency[]>>> {
+): Promise<BdResult<Record<string, BeatDependency[]>>> {
   const qs = buildQs({ ids: ids.join(",") }, repo);
-  return request<Record<string, BeadDependency[]>>(
+  return request<Record<string, BeatDependency[]>>(
     `${BASE}/batch-deps${qs}`
   );
 }
@@ -195,7 +222,7 @@ export function addDep(
   });
 }
 
-export function mergeBeads(
+export function mergeBeats(
   survivorId: string,
   consumedId: string,
   repo?: string
@@ -208,16 +235,19 @@ export function mergeBeads(
   });
 }
 
-export async function fetchBeadsFromAllRepos(
+/** @deprecated Use mergeBeats */
+export const mergeBeads = mergeBeats;
+
+export async function fetchBeatsFromAllRepos(
   repos: RegisteredRepo[],
   params?: Record<string, string>
-): Promise<BdResult<BeadWithRepo[]>> {
+): Promise<BdResult<BeatWithRepo[]>> {
   const results = await Promise.all(
     repos.map(async (repo) => {
-      const result = await fetchBeads(params, repo.path);
+      const result = await fetchBeats(params, repo.path);
       if (!result.ok || !result.data) return [];
-      return result.data.map((bead) => ({
-        ...bead,
+      return result.data.map((beat) => ({
+        ...beat,
         _repoPath: repo.path,
         _repoName: repo.name,
       }));
@@ -225,3 +255,6 @@ export async function fetchBeadsFromAllRepos(
   );
   return { ok: true, data: results.flat() };
 }
+
+/** @deprecated Use fetchBeatsFromAllRepos */
+export const fetchBeadsFromAllRepos = fetchBeatsFromAllRepos;

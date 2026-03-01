@@ -25,7 +25,7 @@ import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
-import type { Bead, CoarsePrPreference, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { Beat, CoarsePrPreference, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
   beadsCoarseWorkflowDescriptor,
   resolveCoarsePrPreference,
@@ -162,7 +162,7 @@ function buildSingleTargetFollowUpLines(
   coarsePrPolicy: CoarsePrPreference,
 ): string[] {
   const lines: string[] = [
-    `Bead ${target.id} (${target.workflow.mode}):`,
+    `Beat ${target.id} (${target.workflow.mode}):`,
   ];
 
   if (target.workflow.mode === "granular_autonomous") {
@@ -238,11 +238,11 @@ function buildSceneCompletionFollowUp(
 }
 
 function buildKnotsClaimModeLines(
-  beadIds: string[],
+  beatIds: string[],
   memoryManagerType: MemoryManagerType,
 ): string[] {
   if (memoryManagerType !== "knots") return [];
-  const ids = beadIds.length > 0 ? beadIds : ["<id>"];
+  const ids = beatIds.length > 0 ? beatIds : ["<id>"];
   const lines: string[] = [
     "KNOTS CLAIM MODE (required):",
     "Always claim a knot before implementation and follow the claim output verbatim.",
@@ -256,36 +256,36 @@ function buildKnotsClaimModeLines(
   return lines;
 }
 
-function assertKnotsClaimable(beads: Bead[], action: "Take" | "Scene"): void {
-  const blocked = beads.filter((bead) => bead.isAgentClaimable === false);
+function assertKnotsClaimable(beats: Beat[], action: "Take" | "Scene"): void {
+  const blocked = beats.filter((beat) => beat.isAgentClaimable === false);
   if (blocked.length === 0) return;
   const summary = blocked
-    .map((bead) => `${bead.id}${bead.workflowState ? ` (${bead.workflowState})` : ""}`)
+    .map((beat) => `${beat.id}${beat.state ? ` (${beat.state})` : ""}`)
     .join(", ");
   throw new Error(`${action} unavailable: knot is not agent-claimable (${summary})`);
 }
 
-function resolveWorkflowForBead(
-  bead: Bead,
+function resolveWorkflowForBeat(
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
   fallbackWorkflow: MemoryWorkflowDescriptor,
 ): MemoryWorkflowDescriptor {
-  if (bead.workflowId) {
-    const matched = workflowsById.get(bead.workflowId);
+  if (beat.workflowId) {
+    const matched = workflowsById.get(beat.workflowId);
     if (matched) return matched;
   }
   return fallbackWorkflow;
 }
 
 function toWorkflowPromptTarget(
-  bead: Bead,
+  beat: Beat,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
   fallbackWorkflow: MemoryWorkflowDescriptor,
 ): WorkflowPromptTarget {
   return {
-    id: bead.id,
-    workflow: resolveWorkflowForBead(bead, workflowsById, fallbackWorkflow),
-    workflowState: bead.workflowState,
+    id: beat.id,
+    workflow: resolveWorkflowForBeat(beat, workflowsById, fallbackWorkflow),
+    workflowState: beat.state,
   };
 }
 
@@ -480,7 +480,7 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
 }
 
 export async function createSession(
-  beadId: string,
+  beatId: string,
   repoPath?: string,
   customPrompt?: string
 ): Promise<TerminalSession> {
@@ -493,20 +493,20 @@ export async function createSession(
   }
 
   // Fetch bead details for prompt
-  const result = await getBackend().get(beadId, repoPath);
+  const result = await getBackend().get(beatId, repoPath);
   if (!result.ok || !result.data) {
-    throw new Error(result.error?.message ?? "Failed to fetch bead");
+    throw new Error(result.error?.message ?? "Failed to fetch beat");
   }
   const bead = result.data;
   const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
   // Check for children — both orchestrated waves and plain parent beads
   let waveBeatIds: string[] = [];
-  let waveBeats: Bead[] = [];
+  let waveBeats: Beat[] = [];
   const childResult = await getBackend().list({ parent: bead.id }, repoPath);
   const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
   if (hasChildren) {
     waveBeats = childResult.data!
-      .filter((child) => child.status !== "closed")
+      .filter((child) => child.state !== "closed")
       .sort((a, b) => a.id.localeCompare(b.id));
     waveBeatIds = waveBeats.map((child) => child.id);
   } else if (isWave) {
@@ -580,7 +580,7 @@ export async function createSession(
           ``,
           `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
           ``,
-          `Bead ID: ${bead.id}`,
+          `Beat ID: ${bead.id}`,
           `Use \`${showSelfCommand}\` to inspect full details before starting.`,
           ...buildKnotsClaimModeLines([bead.id], memoryManagerType),
         ]
@@ -590,8 +590,8 @@ export async function createSession(
 
   const session: TerminalSession = {
     id,
-    beadId: bead.id,
-    beadTitle: bead.title,
+    beatId: bead.id,
+    beatTitle: bead.title,
     repoPath: resolvedRepoPath,
     status: "running",
     startedAt: new Date().toISOString(),
@@ -607,7 +607,7 @@ export async function createSession(
     sessionId: id,
     interactionType: isParent ? "scene" : "take",
     repoPath: resolvedRepoPath,
-    beadIds: isParent ? waveBeatIds : [beadId],
+    beatIds: isParent ? waveBeatIds : [beatId],
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
@@ -641,7 +641,7 @@ export async function createSession(
   }
 
   console.log(`[terminal-manager] Creating session ${id}`);
-  console.log(`[terminal-manager]   beadId: ${beadId}`);
+  console.log(`[terminal-manager]   beatId: ${beatId}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
@@ -912,14 +912,14 @@ export async function createSession(
 
     // Regroom ancestors after successful session completion
     if (code === 0) {
-      regroomAncestors(beadId, cwd).catch((err) => {
-        console.error(`[terminal-manager] regroom failed for ${beadId}:`, err);
+      regroomAncestors(beatId, cwd).catch((err) => {
+        console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
       });
 
       // Trigger auto-verification workflow for code-producing actions
-      const actionBeadIds = isParent ? waveBeatIds : [beadId];
-      onAgentComplete(actionBeadIds, "take", cwd, code ?? 1).catch((err) => {
-        console.error(`[terminal-manager] verification hook failed for ${beadId}:`, err);
+      const actionBeatIds = isParent ? waveBeatIds : [beatId];
+      onAgentComplete(actionBeatIds, "take", cwd, code ?? 1).catch((err) => {
+        console.error(`[terminal-manager] verification hook failed for ${beatId}:`, err);
       });
 
       // Update message type index with types from this session
@@ -990,7 +990,7 @@ export async function createSession(
 }
 
 export async function createSceneSession(
-  beadIds: string[],
+  beatIds: string[],
   repoPath?: string,
   customPrompt?: string
 ): Promise<TerminalSession> {
@@ -1002,17 +1002,17 @@ export async function createSceneSession(
     throw new Error(`Max concurrent sessions (${MAX_SESSIONS}) reached`);
   }
 
-  if (beadIds.length === 0) {
-    throw new Error("At least one bead ID is required for a scene session");
+  if (beatIds.length === 0) {
+    throw new Error("At least one beat ID is required for a scene session");
   }
 
-  // Fetch all bead details in parallel
-  const beadResults = await Promise.all(
-    beadIds.map((bid) => getBackend().get(bid, repoPath))
+  // Fetch all beat details in parallel
+  const beatResults = await Promise.all(
+    beatIds.map((bid) => getBackend().get(bid, repoPath))
   );
-  const beads = beadResults.map((r, i) => {
+  const beats = beatResults.map((r, i) => {
     if (!r.ok || !r.data) {
-      throw new Error(`Failed to fetch bead ${beadIds[i]}: ${r.error?.message ?? "unknown error"}`);
+      throw new Error(`Failed to fetch beat ${beatIds[i]}: ${r.error?.message ?? "unknown error"}`);
     }
     return r.data;
   });
@@ -1021,7 +1021,7 @@ export async function createSceneSession(
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
   if (memoryManagerType === "knots") {
-    assertKnotsClaimable(beads, "Scene");
+    assertKnotsClaimable(beats, "Scene");
   }
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
@@ -1042,23 +1042,23 @@ export async function createSceneSession(
       resolveCoarsePrPreference(resolvedRepoPath, fallbackWorkflow, coarseOverrides),
     );
   }
-  const sceneTargets = beads.map((bead) =>
-    toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow),
+  const sceneTargets = beats.map((beat) =>
+    toWorkflowPromptTarget(beat, workflowsById, fallbackWorkflow),
   );
   const showAnyCommand = buildShowIssueCommand("<id>", memoryManagerType);
 
   // Build combined prompt with bead IDs only (agents query details themselves)
-  const beadBlocks = beads
+  const beatBlocks = beats
     .map(
-      (bead, i) =>
-        `--- Bead ${i + 1} of ${beads.length} ---\nID: ${bead.id}`
+      (beat, i) =>
+        `--- Beat ${i + 1} of ${beats.length} ---\nID: ${beat.id}`
     )
     .join("\n\n");
 
   const prompt =
     customPrompt ??
     [
-      `You are in SCENE MODE. You have ${beads.length} beads to implement.`,
+      `You are in SCENE MODE. You have ${beats.length} beats to implement.`,
       ``,
       `IMPORTANT INSTRUCTIONS:`,
       `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
@@ -1069,7 +1069,7 @@ export async function createSceneSession(
       ...(memoryManagerType === "knots"
         ? [
             "6. Claim each knot before implementation and execute only the returned claim prompt.",
-            ...buildKnotsClaimModeLines(beadIds, memoryManagerType),
+            ...buildKnotsClaimModeLines(beatIds, memoryManagerType),
             "7. In your final summary, report per knot: claim command status, completion command status, and any remaining human-action gates.",
           ]
         : [
@@ -1086,15 +1086,15 @@ export async function createSceneSession(
       ``,
       `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
       ``,
-      beadBlocks,
+      beatBlocks,
       `\nUse \`${showAnyCommand}\` to inspect full bead details before starting implementation.`,
     ].join("\n");
 
   const session: TerminalSession = {
     id,
-    beadId: "scene",
-    beadTitle: `Scene: ${beads.length} beads`,
-    beadIds,
+    beatId: "scene",
+    beatTitle: `Scene: ${beats.length} beats`,
+    beatIds,
     repoPath: resolvedRepoPath,
     status: "running",
     startedAt: new Date().toISOString(),
@@ -1110,7 +1110,7 @@ export async function createSceneSession(
     sessionId: id,
     interactionType: "scene",
     repoPath: resolvedRepoPath,
-    beadIds,
+    beatIds,
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
@@ -1144,7 +1144,7 @@ export async function createSceneSession(
   }
 
   console.log(`[terminal-manager] Creating scene session ${id}`);
-  console.log(`[terminal-manager]   beadIds: ${beadIds.join(", ")}`);
+  console.log(`[terminal-manager]   beatIds: ${beatIds.join(", ")}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
   const sceneDialect = resolveDialect(agent.command);
@@ -1402,13 +1402,13 @@ export async function createSceneSession(
     // Regroom ancestors for all beads in the scene
     if (code === 0) {
       Promise.all(
-        beadIds.map((bid) => regroomAncestors(bid, cwd))
+        beatIds.map((bid) => regroomAncestors(bid, cwd))
       ).catch((err) => {
         console.error(`[terminal-manager] regroom failed for scene:`, err);
       });
 
       // Trigger auto-verification workflow for scene beads
-      onAgentComplete(beadIds, "scene", cwd, code ?? 1).catch((err) => {
+      onAgentComplete(beatIds, "scene", cwd, code ?? 1).catch((err) => {
         console.error(`[terminal-manager] verification hook failed for scene:`, err);
       });
 

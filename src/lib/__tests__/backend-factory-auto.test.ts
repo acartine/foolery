@@ -20,14 +20,23 @@ const mockListBeads = vi.fn(async () => ({
 }));
 
 vi.mock("@/lib/bd", () => ({
+  listBeats: () => mockListBeads(),
   listBeads: () => mockListBeads(),
+  readyBeats: () => mockListBeads(),
   readyBeads: () => mockListBeads(),
+  searchBeats: () => mockListBeads(),
   searchBeads: () => mockListBeads(),
+  queryBeats: () => mockListBeads(),
   queryBeads: () => mockListBeads(),
+  showBeat: vi.fn(async () => ({ ok: false, error: "not found" })),
   showBead: vi.fn(async () => ({ ok: false, error: "not found" })),
+  createBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   createBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
+  updateBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   updateBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
+  deleteBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   deleteBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
+  closeBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   closeBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   listDeps: vi.fn(async () => ({ ok: true, data: [] })),
   addDep: vi.fn(async () => ({ ok: false, error: "not implemented" })),

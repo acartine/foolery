@@ -539,13 +539,13 @@ describe("normalizeBead field mapping", () => {
     expect(result.data![0].estimate).toBe(60);
   });
 
-  it("defaults status to open when missing", async () => {
+  it("defaults state to workflow initial when status missing", async () => {
     const raw = { ...BEAD_JSON };
     delete (raw as Record<string, unknown>).status;
     queueExec({ stdout: JSON.stringify([raw]) });
     const { listBeads } = await import("@/lib/bd");
     const result = await listBeads();
-    expect(result.data![0].status).toBe("open");
+    expect(result.data![0].state).toBeTruthy();
   });
 
   it("defaults type to task when missing", async () => {

@@ -16,7 +16,7 @@ import {
   type RegisteredRepo,
 } from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
-import type { Bead, MemoryWorkflowDescriptor } from "./types";
+import type { Beat, MemoryWorkflowDescriptor } from "./types";
 import { detectMemoryManagerType } from "./memory-manager-detection";
 
 // ── Types ──────────────────────────────────────────────────
@@ -35,7 +35,7 @@ export interface Diagnostic {
   fixable: boolean;
   /** Available fix strategies when fixable is true */
   fixOptions?: FixOption[];
-  /** Context for auto-fix: which bead/repo/agent is affected */
+  /** Context for auto-fix: which beat/repo/agent is affected */
   context?: Record<string, string>;
 }
 
@@ -396,51 +396,51 @@ export async function checkMemoryImplementationCompatibility(
   return diagnostics;
 }
 
-// ── Corrupt bead verification checks ──────────────────────
+// ── Corrupt beat verification checks ──────────────────────
 
-const CORRUPT_BEAD_FIX_OPTIONS: FixOption[] = [
-  { key: "set-in-progress", label: "Set status to in_progress" },
+const CORRUPT_BEAT_FIX_OPTIONS: FixOption[] = [
+  { key: "set-in-progress", label: "Set state to in_progress" },
   { key: "remove-label", label: "Remove stage:verification label" },
 ];
 
 /**
- * Finds beads that have stage:verification label but status != in_progress.
+ * Finds beats that have stage:verification label but state != in_progress.
  * These are inconsistent and should be fixed.
  */
 export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diagnostic[]> {
   const diagnostics: Diagnostic[] = [];
 
   for (const repo of repos) {
-    let beads: Bead[];
+    let beats: Beat[];
     try {
       const result = await getBackend().list(undefined, repo.path);
       if (!result.ok || !result.data) continue;
-      beads = result.data;
+      beats = result.data;
     } catch {
       diagnostics.push({
-        check: "corrupt-beads",
+        check: "corrupt-beats",
         severity: "warning",
-        message: `Could not list beads for repo "${repo.name}" (${repo.path}).`,
+        message: `Could not list beats for repo "${repo.name}" (${repo.path}).`,
         fixable: false,
         context: { repoPath: repo.path, repoName: repo.name },
       });
       continue;
     }
 
-    for (const bead of beads) {
-      const hasVerificationLabel = bead.labels.some((l) => l === "stage:verification");
-      if (hasVerificationLabel && bead.status !== "in_progress") {
+    for (const beat of beats) {
+      const hasVerificationLabel = beat.labels.some((l) => l === "stage:verification");
+      if (hasVerificationLabel && beat.state !== "in_progress") {
         diagnostics.push({
-          check: "corrupt-bead-verification",
+          check: "corrupt-beat-verification",
           severity: "error",
-          message: `Bead ${bead.id} ("${bead.title}") has stage:verification label but status is "${bead.status}" (expected "in_progress") in repo "${repo.name}".`,
+          message: `Beat ${beat.id} ("${beat.title}") has stage:verification label but state is "${beat.state}" (expected "in_progress") in repo "${repo.name}".`,
           fixable: true,
-          fixOptions: CORRUPT_BEAD_FIX_OPTIONS,
+          fixOptions: CORRUPT_BEAT_FIX_OPTIONS,
           context: {
-            beadId: bead.id,
+            beatId: beat.id,
             repoPath: repo.path,
             repoName: repo.name,
-            currentStatus: bead.status,
+            currentState: beat.state,
           },
         });
       }
@@ -457,55 +457,55 @@ const STALE_PARENT_FIX_OPTIONS: FixOption[] = [
 ];
 
 /**
- * Finds parent beads (open or in_progress) where ALL children are closed.
+ * Finds parent beats (open or in_progress) where ALL children are closed.
  * These parents should likely be closed too.
  */
 export async function checkStaleParents(repos: RegisteredRepo[]): Promise<Diagnostic[]> {
   const diagnostics: Diagnostic[] = [];
 
   for (const repo of repos) {
-    let beads: Bead[];
+    let beats: Beat[];
     try {
       const result = await getBackend().list(undefined, repo.path);
       if (!result.ok || !result.data) continue;
-      beads = result.data;
+      beats = result.data;
     } catch {
       continue;
     }
 
-    const beadMap = new Map<string, Bead>();
-    for (const b of beads) {
-      beadMap.set(b.id, b);
+    const beatMap = new Map<string, Beat>();
+    for (const b of beats) {
+      beatMap.set(b.id, b);
     }
 
     // Group children by parent
-    const childrenByParent = new Map<string, Bead[]>();
-    for (const bead of beads) {
-      if (bead.parent) {
-        const existing = childrenByParent.get(bead.parent) ?? [];
-        existing.push(bead);
-        childrenByParent.set(bead.parent, existing);
+    const childrenByParent = new Map<string, Beat[]>();
+    for (const beat of beats) {
+      if (beat.parent) {
+        const existing = childrenByParent.get(beat.parent) ?? [];
+        existing.push(beat);
+        childrenByParent.set(beat.parent, existing);
       }
     }
 
     for (const [parentId, children] of Array.from(childrenByParent.entries())) {
-      const parent = beadMap.get(parentId);
+      const parent = beatMap.get(parentId);
       if (!parent) continue;
-      if (parent.status === "closed" || parent.status === "deferred") continue;
+      if (parent.state === "closed" || parent.state === "deferred") continue;
 
-      const allChildrenClosed = children.length > 0 && children.every((c) => c.status === "closed");
+      const allChildrenClosed = children.length > 0 && children.every((c) => c.state === "closed");
       if (allChildrenClosed) {
         diagnostics.push({
           check: "stale-parent",
           severity: "warning",
-          message: `Parent bead ${parent.id} ("${parent.title}") is "${parent.status}" but all ${children.length} children are closed in repo "${repo.name}".`,
+          message: `Parent beat ${parent.id} ("${parent.title}") is "${parent.state}" but all ${children.length} children are closed in repo "${repo.name}".`,
           fixable: true,
           fixOptions: STALE_PARENT_FIX_OPTIONS,
           context: {
-            beadId: parent.id,
+            beatId: parent.id,
             repoPath: repo.path,
             repoName: repo.name,
-            currentStatus: parent.status,
+            currentState: parent.state,
             childCount: String(children.length),
           },
         });
@@ -828,7 +828,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
  * specific diagnostics.
  *
  * Examples:
- *   { "corrupt-bead-verification": "set-in-progress" }           // fix all
+ *   { "corrupt-beat-verification": "set-in-progress" }           // fix all
  *   { "prompt-guidance": { strategy: "append", contexts: [...] } } // fix specific
  *
  * If a check is absent from the map, its diagnostics are skipped.
@@ -969,26 +969,26 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       }
     }
 
-    case "corrupt-bead-verification": {
-      const { beadId, repoPath } = ctx;
-      if (!beadId || !repoPath) {
+    case "corrupt-beat-verification": {
+      const { beatId, repoPath } = ctx;
+      if (!beatId || !repoPath) {
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
         if (strategy === "remove-label") {
-          // Fix: remove the stage:verification label to match the current status
-          const result = await getBackend().update(beadId, { removeLabels: ["stage:verification"] }, repoPath);
+          // Fix: remove the stage:verification label to match the current state
+          const result = await getBackend().update(beatId, { removeLabels: ["stage:verification"] }, repoPath);
           if (!result.ok) {
             return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
           }
-          return { check: diag.check, success: true, message: `Removed stage:verification from ${beadId}.`, context: ctx };
+          return { check: diag.check, success: true, message: `Removed stage:verification from ${beatId}.`, context: ctx };
         }
-        // Default: set status to in_progress to match the verification label
-        const result = await getBackend().update(beadId, { status: "in_progress" }, repoPath);
+        // Default: set state to in_progress to match the verification label
+        const result = await getBackend().update(beatId, { state: "in_progress" }, repoPath);
         if (!result.ok) {
           return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
         }
-        return { check: diag.check, success: true, message: `Set ${beadId} status to in_progress.`, context: ctx };
+        return { check: diag.check, success: true, message: `Set ${beatId} state to in_progress.`, context: ctx };
       } catch (e) {
         return { check: diag.check, success: false, message: String(e), context: ctx };
       }
@@ -996,14 +996,14 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
 
     case "stale-parent": {
       // Fix: move parent into verification workflow state (don't close — per project rules)
-      const { beadId, repoPath } = ctx;
-      if (!beadId || !repoPath) {
+      const { beatId, repoPath } = ctx;
+      if (!beatId || !repoPath) {
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
       }
       try {
         const result = await getBackend().update(
-          beadId,
-          { status: "in_progress", workflowState: "verification" },
+          beatId,
+          { state: "verification" },
           repoPath,
         );
         if (!result.ok) {
@@ -1012,7 +1012,7 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         return {
           check: diag.check,
           success: true,
-          message: `Moved ${beadId} to in_progress with workflowState=verification.`,
+          message: `Moved ${beatId} to state=verification.`,
           context: ctx,
         };
       } catch (e) {

@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Bead } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 import {
   normalizeFromJsonl,
   denormalizeToJsonl,
@@ -41,7 +41,7 @@ function fullRawBead(): RawBead {
   };
 }
 
-function fullDomainBead(): Bead {
+function fullDomainBeat(): Beat {
   return {
     id: "proj.epic.1",
     title: "Implement widget",
@@ -49,7 +49,7 @@ function fullDomainBead(): Bead {
     notes: "See design doc",
     acceptance: "Widget renders correctly",
     type: "feature",
-    status: "in_progress",
+    state: "planning",
     priority: 3,
     labels: ["frontend", "v2"],
     assignee: "alice",
@@ -69,95 +69,95 @@ function fullDomainBead(): Bead {
 describe("normalizeFromJsonl", () => {
   it("maps all RawBead fields to domain Bead", () => {
     const raw = fullRawBead();
-    const bead = normalizeFromJsonl(raw);
+    const beat = normalizeFromJsonl(raw);
 
-    expect(bead.id).toBe("proj.epic.1");
-    expect(bead.title).toBe("Implement widget");
-    expect(bead.description).toBe("Build the widget component");
-    expect(bead.notes).toBe("See design doc");
-    expect(bead.acceptance).toBe("Widget renders correctly");
-    expect(bead.type).toBe("feature");
-    expect(bead.status).toBe("in_progress");
-    expect(bead.priority).toBe(3);
-    expect(bead.labels).toEqual(["frontend", "v2"]);
-    expect(bead.assignee).toBe("alice");
-    expect(bead.owner).toBe("bob");
-    expect(bead.parent).toBe("proj.epic");
-    expect(bead.due).toBe("2026-03-01");
-    expect(bead.estimate).toBe(120);
-    expect(bead.created).toBe("2026-01-01T00:00:00Z");
-    expect(bead.updated).toBe("2026-02-01T00:00:00Z");
-    expect(bead.closed).toBe("2026-02-15T00:00:00Z");
-    expect(bead.metadata).toEqual({ source: "import", close_reason: "completed" });
+    expect(beat.id).toBe("proj.epic.1");
+    expect(beat.title).toBe("Implement widget");
+    expect(beat.description).toBe("Build the widget component");
+    expect(beat.notes).toBe("See design doc");
+    expect(beat.acceptance).toBe("Widget renders correctly");
+    expect(beat.type).toBe("feature");
+    expect(beat.state).toBe("planning");
+    expect(beat.priority).toBe(3);
+    expect(beat.labels).toEqual(["frontend", "v2"]);
+    expect(beat.assignee).toBe("alice");
+    expect(beat.owner).toBe("bob");
+    expect(beat.parent).toBe("proj.epic");
+    expect(beat.due).toBe("2026-03-01");
+    expect(beat.estimate).toBe(120);
+    expect(beat.created).toBe("2026-01-01T00:00:00Z");
+    expect(beat.updated).toBe("2026-02-01T00:00:00Z");
+    expect(beat.closed).toBe("2026-02-15T00:00:00Z");
+    expect(beat.metadata).toEqual({ source: "import", close_reason: "completed" });
   });
 
   it("infers parent from dotted ID when no explicit parent", () => {
     const raw: RawBead = { id: "a.b.c", title: "Child" };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.parent).toBe("a.b");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.parent).toBe("a.b");
   });
 
   it("explicit parent overrides inferred parent", () => {
     const raw: RawBead = { id: "a.b.c", title: "Child", parent: "x.y" };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.parent).toBe("x.y");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.parent).toBe("x.y");
   });
 
   it("returns undefined parent for top-level ID without dots", () => {
     const raw: RawBead = { id: "toplevel", title: "Root" };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.parent).toBeUndefined();
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.parent).toBeUndefined();
   });
 
   it("defaults type to task for invalid issue_type", () => {
     const raw: RawBead = { id: "x", title: "T", issue_type: "banana" };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.type).toBe("task");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.type).toBe("task");
   });
 
-  it("defaults status to open for invalid status", () => {
+  it("defaults state to workflow initial for invalid status", () => {
     const raw: RawBead = { id: "x", title: "T", status: "limbo" };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.status).toBe("open");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.state).toBe("ready_for_planning");
   });
 
   it("defaults priority to 2 for out-of-range values", () => {
     const raw: RawBead = { id: "x", title: "T", priority: 99 };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.priority).toBe(2);
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.priority).toBe(2);
   });
 
   it("defaults priority to 2 for non-number values", () => {
     const raw: RawBead = { id: "x", title: "T", priority: "high" as unknown as number };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.priority).toBe(2);
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.priority).toBe(2);
   });
 
   it("handles missing optional fields gracefully", () => {
     const raw: RawBead = { id: "minimal", title: "Bare minimum" };
-    const bead = normalizeFromJsonl(raw);
+    const beat = normalizeFromJsonl(raw);
 
-    expect(bead.id).toBe("minimal");
-    expect(bead.title).toBe("Bare minimum");
-    expect(bead.description).toBeUndefined();
-    expect(bead.notes).toBeUndefined();
-    expect(bead.acceptance).toBeUndefined();
-    expect(bead.type).toBe("task");
-    expect(bead.status).toBe("open");
-    expect(bead.priority).toBe(2);
-    expect(bead.labels).toEqual([]);
-    expect(bead.assignee).toBeUndefined();
-    expect(bead.owner).toBeUndefined();
-    expect(bead.due).toBeUndefined();
-    expect(bead.estimate).toBeUndefined();
-    expect(bead.closed).toBeUndefined();
-    expect(bead.metadata).toBeUndefined();
+    expect(beat.id).toBe("minimal");
+    expect(beat.title).toBe("Bare minimum");
+    expect(beat.description).toBeUndefined();
+    expect(beat.notes).toBeUndefined();
+    expect(beat.acceptance).toBeUndefined();
+    expect(beat.type).toBe("task");
+    expect(beat.state).toBe("ready_for_planning");
+    expect(beat.priority).toBe(2);
+    expect(beat.labels).toEqual([]);
+    expect(beat.assignee).toBeUndefined();
+    expect(beat.owner).toBeUndefined();
+    expect(beat.due).toBeUndefined();
+    expect(beat.estimate).toBeUndefined();
+    expect(beat.closed).toBeUndefined();
+    expect(beat.metadata).toBeUndefined();
   });
 
   it("filters empty-string labels", () => {
     const raw: RawBead = { id: "x", title: "T", labels: ["a", "", "  ", "b"] };
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.labels).toEqual(["a", "b"]);
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.labels).toEqual(["a", "b"]);
   });
 
   it("reads acceptance from acceptance field as fallback", () => {
@@ -166,8 +166,8 @@ describe("normalizeFromJsonl", () => {
       title: "T",
       acceptance: "Fallback criteria",
     };
-    const bead = normalizeFromJsonl(raw as RawBead);
-    expect(bead.acceptance).toBe("Fallback criteria");
+    const beat = normalizeFromJsonl(raw as RawBead);
+    expect(beat.acceptance).toBe("Fallback criteria");
   });
 
   it("prefers acceptance_criteria over acceptance fallback", () => {
@@ -177,14 +177,14 @@ describe("normalizeFromJsonl", () => {
       acceptance_criteria: "Primary",
       acceptance: "Fallback",
     } as RawBead;
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.acceptance).toBe("Primary");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.acceptance).toBe("Primary");
   });
 
   it("reads estimate from estimate field as fallback", () => {
     const raw = { id: "x", title: "T", estimate: 60 } as RawBead;
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.estimate).toBe(60);
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.estimate).toBe(60);
   });
 
   it("prefers estimated_minutes over estimate fallback", () => {
@@ -194,8 +194,8 @@ describe("normalizeFromJsonl", () => {
       estimated_minutes: 90,
       estimate: 60,
     } as RawBead;
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.estimate).toBe(90);
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.estimate).toBe(90);
   });
 
   it("reads created/updated from domain-style fields as fallback", () => {
@@ -205,9 +205,9 @@ describe("normalizeFromJsonl", () => {
       created: "2026-01-01T00:00:00Z",
       updated: "2026-02-01T00:00:00Z",
     } as RawBead;
-    const bead = normalizeFromJsonl(raw);
-    expect(bead.created).toBe("2026-01-01T00:00:00Z");
-    expect(bead.updated).toBe("2026-02-01T00:00:00Z");
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.created).toBe("2026-01-01T00:00:00Z");
+    expect(beat.updated).toBe("2026-02-01T00:00:00Z");
   });
 });
 
@@ -215,8 +215,8 @@ describe("normalizeFromJsonl", () => {
 
 describe("denormalizeToJsonl", () => {
   it("maps all domain Bead fields to RawBead", () => {
-    const bead = fullDomainBead();
-    const raw = denormalizeToJsonl(bead);
+    const beat = fullDomainBeat();
+    const raw = denormalizeToJsonl(beat);
 
     expect(raw.id).toBe("proj.epic.1");
     expect(raw.title).toBe("Implement widget");
@@ -229,7 +229,7 @@ describe("denormalizeToJsonl", () => {
     expect(raw.labels).toEqual([
       "frontend",
       "v2",
-      "wf:state:ready_for_planning",
+      "wf:state:planning",
       "wf:profile:autopilot",
     ]);
     expect(raw.assignee).toBe("alice");
@@ -244,33 +244,33 @@ describe("denormalizeToJsonl", () => {
   });
 
   it("serializes parent field", () => {
-    const bead: Bead = {
+    const beat: Beat = {
       id: "a.b.c",
       title: "Child",
       type: "task",
-      status: "open",
+      state: "open",
       priority: 2,
       labels: [],
       parent: "a.b",
       created: "2026-01-01T00:00:00Z",
       updated: "2026-01-01T00:00:00Z",
     };
-    const raw = denormalizeToJsonl(bead);
+    const raw = denormalizeToJsonl(beat);
     expect(raw.parent).toBe("a.b");
   });
 
   it("omits optional fields when undefined", () => {
-    const bead: Bead = {
+    const beat: Beat = {
       id: "minimal",
       title: "Bare",
       type: "task",
-      status: "open",
+      state: "open",
       priority: 2,
       labels: [],
       created: "2026-01-01T00:00:00Z",
       updated: "2026-01-01T00:00:00Z",
     };
-    const raw = denormalizeToJsonl(bead);
+    const raw = denormalizeToJsonl(beat);
 
     expect(raw.description).toBeUndefined();
     expect(raw.notes).toBeUndefined();
@@ -300,7 +300,7 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.notes).toBe(domain.notes);
     expect(restored.acceptance).toBe(domain.acceptance);
     expect(restored.type).toBe(domain.type);
-    expect(restored.status).toBe(domain.status);
+    expect(restored.state).toBe(domain.state);
     expect(restored.priority).toBe(domain.priority);
     expect(restored.labels).toEqual([
       ...domain.labels,
@@ -327,7 +327,7 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.id).toBe(domain.id);
     expect(restored.title).toBe(domain.title);
     expect(restored.type).toBe(domain.type);
-    expect(restored.status).toBe(domain.status);
+    expect(restored.state).toBe(domain.state);
     expect(restored.priority).toBe(domain.priority);
     expect(restored.labels).toEqual([
       "wf:state:ready_for_planning",

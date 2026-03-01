@@ -1,7 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { getBackend } from "@/lib/backend-instance";
-import type { CreateBeadInput, UpdateBeadInput } from "@/lib/backend-port";
+import type { CreateBeatInput, UpdateBeatInput } from "@/lib/backend-port";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -16,7 +16,7 @@ import {
 import type {
   ApplyOrchestrationOverrides,
   ApplyOrchestrationResult,
-  Bead,
+  Beat,
   OrchestrationAgentSpec,
   OrchestrationEvent,
   OrchestrationPlan,
@@ -37,7 +37,7 @@ interface OrchestrationSessionEntry {
   process: ChildProcess | null;
   emitter: EventEmitter;
   buffer: OrchestrationEvent[];
-  allBeads: Map<string, Bead>;
+  allBeats: Map<string, Beat>;
   draftWaves: Map<number, OrchestrationWave>;
   assistantText: string;
   lineBuffer: string;
@@ -72,20 +72,20 @@ function toInt(value: unknown, fallback: number): number {
   return Math.max(1, Math.floor(parsed));
 }
 
-function dedupeBeads(items: Bead[]): Bead[] {
-  const byId = new Map<string, Bead>();
-  for (const bead of items) {
-    if (!byId.has(bead.id)) byId.set(bead.id, bead);
+function dedupeBeats(items: Beat[]): Beat[] {
+  const byId = new Map<string, Beat>();
+  for (const beat of items) {
+    if (!byId.has(beat.id)) byId.set(beat.id, beat);
   }
   return Array.from(byId.values());
 }
 
-interface PromptScopeBead {
+interface PromptScopeBeat {
   id: string;
   title: string;
-  type: Bead["type"];
-  status: Bead["status"];
-  priority: Bead["priority"];
+  type: Beat["type"];
+  state: Beat["state"];
+  priority: Beat["priority"];
 }
 
 function extractObjectiveBeadIds(objective?: string): string[] {
@@ -99,50 +99,50 @@ function extractObjectiveBeadIds(objective?: string): string[] {
 }
 
 function derivePromptScope(
-  beads: Bead[],
+  beats: Beat[],
   objective?: string
-): { scopedBeads: PromptScopeBead[]; unresolvedScopeIds: string[] } {
+): { scopedBeats: PromptScopeBeat[]; unresolvedScopeIds: string[] } {
   const normalizedToOriginal = new Map<string, string>();
-  const beadById = new Map<string, Bead>();
+  const beatById = new Map<string, Beat>();
 
-  for (const bead of beads) {
-    const normalized = bead.id.toLowerCase();
-    normalizedToOriginal.set(normalized, bead.id);
-    beadById.set(normalized, bead);
+  for (const beat of beats) {
+    const normalized = beat.id.toLowerCase();
+    normalizedToOriginal.set(normalized, beat.id);
+    beatById.set(normalized, beat);
   }
 
   const objectiveIds = extractObjectiveBeadIds(objective);
-  const scopedBeads: PromptScopeBead[] = [];
+  const scopedBeats: PromptScopeBeat[] = [];
   const unresolvedScopeIds: string[] = [];
 
   for (const id of objectiveIds) {
-    const bead = beadById.get(id);
-    if (!bead) {
+    const beat = beatById.get(id);
+    if (!beat) {
       unresolvedScopeIds.push(normalizedToOriginal.get(id) ?? id);
       continue;
     }
 
-    scopedBeads.push({
-      id: bead.id,
-      title: bead.title,
-      type: bead.type,
-      status: bead.status,
-      priority: bead.priority,
+    scopedBeats.push({
+      id: beat.id,
+      title: beat.title,
+      type: beat.type,
+      state: beat.state,
+      priority: beat.priority,
     });
   }
 
-  scopedBeads.sort((a, b) => a.id.localeCompare(b.id));
+  scopedBeats.sort((a, b) => a.id.localeCompare(b.id));
   unresolvedScopeIds.sort((a, b) => a.localeCompare(b));
-  return { scopedBeads, unresolvedScopeIds };
+  return { scopedBeats, unresolvedScopeIds };
 }
 
 function buildPrompt(
   repoPath: string,
-  scopedBeads: PromptScopeBead[],
+  scopedBeats: PromptScopeBeat[],
   unresolvedScopeIds: string[],
   objective?: string
 ): string {
-  const hasExplicitScope = scopedBeads.length > 0 || unresolvedScopeIds.length > 0;
+  const hasExplicitScope = scopedBeats.length > 0 || unresolvedScopeIds.length > 0;
   return [
     "You are an orchestration planner for engineering work tracked as issues/work items.",
     "Create execution waves that respect dependencies while maximizing useful parallelism.",
@@ -155,9 +155,9 @@ function buildPrompt(
     hasExplicitScope
       ? "Use the explicit work-item IDs below as the in-scope planning set."
       : "No explicit bead IDs were provided. Infer scope from the objective and inspect beads as needed.",
-    ...scopedBeads.map(
-      (bead) =>
-        `- ${bead.id} [${bead.type}, ${bead.status}, P${bead.priority}]: ${bead.title}`
+    ...scopedBeats.map(
+      (beat) =>
+        `- ${beat.id} [${beat.type}, ${beat.state}, P${beat.priority}]: ${beat.title}`
     ),
     ...(unresolvedScopeIds.length > 0
       ? [
@@ -217,23 +217,23 @@ function normalizeAgents(raw: unknown): OrchestrationAgentSpec[] {
   return normalized;
 }
 
-function selectKnownInputBeads(
-  rawBeadsForWave: Array<{ id: string; title: string }>,
-  beadTitleMap: Map<string, string>
+function selectKnownInputBeats(
+  rawBeatsForWave: Array<{ id: string; title: string }>,
+  beatTitleMap: Map<string, string>
 ): Array<{ id: string; title: string }> {
-  return rawBeadsForWave.filter((bead) => beadTitleMap.has(bead.id));
+  return rawBeatsForWave.filter((bead) => beatTitleMap.has(bead.id));
 }
 
-function selectFallbackWaveBeads(
-  rawBeadsForWave: Array<{ id: string; title: string }>
+function selectFallbackWaveBeats(
+  rawBeatsForWave: Array<{ id: string; title: string }>
 ): Array<{ id: string; title: string }> {
-  return rawBeadsForWave;
+  return rawBeatsForWave;
 }
 
 function normalizeWave(
   raw: unknown,
   fallbackIndex: number,
-  beadTitleMap: Map<string, string>
+  beatTitleMap: Map<string, string>
 ): OrchestrationWave | null {
   const obj = toObject(raw);
   if (!obj) return null;
@@ -287,38 +287,38 @@ function normalizeWave(
     if (title) explicitTitles.set(id, title);
   }
 
-  const rawBeadsForWave = Array.from(beadIds).map((id) => ({
+  const rawBeatsForWave = Array.from(beadIds).map((id) => ({
     id,
-    title: explicitTitles.get(id) ?? beadTitleMap.get(id) ?? id,
+    title: explicitTitles.get(id) ?? beatTitleMap.get(id) ?? id,
   }));
 
-  const knownBeads = selectKnownInputBeads(rawBeadsForWave, beadTitleMap);
+  const knownBeats = selectKnownInputBeats(rawBeatsForWave, beatTitleMap);
 
   // Preserve the original behavior when known bead IDs are present.
   // Fallback to raw wave beads only when the model emits layout-only IDs.
-  const beads =
-    knownBeads.length > 0 ? knownBeads : selectFallbackWaveBeads(rawBeadsForWave);
+  const beats =
+    knownBeats.length > 0 ? knownBeats : selectFallbackWaveBeats(rawBeatsForWave);
 
   return {
     waveIndex,
     name,
     objective,
     agents,
-    beads,
+    beats,
     notes,
   };
 }
 
 function normalizePlan(
   raw: unknown,
-  beadTitleMap: Map<string, string>
+  beatTitleMap: Map<string, string>
 ): OrchestrationPlan | null {
   const obj = toObject(raw);
   if (!obj) return null;
 
   const rawWaves = Array.isArray(obj.waves) ? obj.waves : [];
   const waves = rawWaves
-    .map((wave, index) => normalizeWave(wave, index + 1, beadTitleMap))
+    .map((wave, index) => normalizeWave(wave, index + 1, beatTitleMap))
     .filter((wave): wave is OrchestrationWave => Boolean(wave))
     .sort((a, b) => a.waveIndex - b.waveIndex);
 
@@ -326,16 +326,16 @@ function normalizePlan(
 
   const assigned = new Set<string>();
   for (const wave of waves) {
-    for (const bead of wave.beads) assigned.add(bead.id);
+    for (const beat of wave.beats) assigned.add(beat.id);
   }
 
-  const inputIds = Array.from(beadTitleMap.keys());
+  const inputIds = Array.from(beatTitleMap.keys());
   const rawUnassigned = Array.isArray(obj.unassigned_bead_ids)
     ? obj.unassigned_bead_ids
     : [];
   const normalizedUnassigned = rawUnassigned
     .filter((value): value is string => typeof value === "string")
-    .filter((id) => beadTitleMap.has(id));
+    .filter((id) => beatTitleMap.has(id));
 
   for (const id of inputIds) {
     if (!assigned.has(id)) normalizedUnassigned.push(id);
@@ -353,7 +353,7 @@ function normalizePlan(
   return {
     summary,
     waves,
-    unassignedBeadIds: Array.from(new Set(normalizedUnassigned)),
+    unassignedBeatIds: Array.from(new Set(normalizedUnassigned)),
     assumptions,
   };
 }
@@ -365,24 +365,24 @@ function buildDraftPlan(entry: OrchestrationSessionEntry): OrchestrationPlan {
 
   const assigned = new Set<string>();
   for (const wave of waves) {
-    for (const bead of wave.beads) assigned.add(bead.id);
+    for (const beat of wave.beats) assigned.add(beat.id);
   }
 
-  const unassigned = Array.from(entry.allBeads.keys()).filter(
+  const unassigned = Array.from(entry.allBeats.keys()).filter(
     (id) => !assigned.has(id)
   );
 
   return {
     summary: `Drafting ${waves.length} scene${waves.length === 1 ? "" : "s"}...`,
     waves,
-    unassignedBeadIds: unassigned,
+    unassignedBeatIds: unassigned,
     assumptions: [],
   };
 }
 
 function extractPlanFromTaggedJson(
   text: string,
-  beadTitleMap: Map<string, string>
+  beatTitleMap: Map<string, string>
 ): OrchestrationPlan | null {
   const pattern = new RegExp(
     `<${ORCHESTRATION_JSON_TAG}>\\s*([\\s\\S]*?)\\s*</${ORCHESTRATION_JSON_TAG}>`,
@@ -393,7 +393,7 @@ function extractPlanFromTaggedJson(
 
   try {
     const parsed = JSON.parse(match[1]);
-    return normalizePlan(parsed, beadTitleMap);
+    return normalizePlan(parsed, beatTitleMap);
   } catch {
     return null;
   }
@@ -433,7 +433,7 @@ function applyLineEvent(entry: OrchestrationSessionEntry, line: string) {
     const wave = normalizeWave(
       obj.wave ?? obj,
       entry.draftWaves.size + 1,
-      new Map(Array.from(entry.allBeads.values()).map((b) => [b.id, b.title]))
+      new Map(Array.from(entry.allBeats.values()).map((b) => [b.id, b.title]))
     );
     if (!wave) return;
 
@@ -445,10 +445,10 @@ function applyLineEvent(entry: OrchestrationSessionEntry, line: string) {
   }
 
   if (obj.event === "plan_final") {
-    const beadTitleMap = new Map(
-      Array.from(entry.allBeads.values()).map((b) => [b.id, b.title])
+    const beatTitleMap = new Map(
+      Array.from(entry.allBeats.values()).map((b) => [b.id, b.title])
     );
-    const plan = normalizePlan(obj.plan ?? obj, beadTitleMap);
+    const plan = normalizePlan(obj.plan ?? obj, beatTitleMap);
     if (!plan) return;
 
     entry.session.plan = plan;
@@ -552,10 +552,10 @@ function finalizeSession(
   flushAssistantTail(entry);
 
   if (!entry.session.plan) {
-    const beadTitleMap = new Map(
-      Array.from(entry.allBeads.values()).map((b) => [b.id, b.title])
+    const beatTitleMap = new Map(
+      Array.from(entry.allBeats.values()).map((b) => [b.id, b.title])
     );
-    const fromTags = extractPlanFromTaggedJson(entry.assistantText, beadTitleMap);
+    const fromTags = extractPlanFromTaggedJson(entry.assistantText, beatTitleMap);
     if (fromTags) {
       entry.session.plan = fromTags;
       pushEvent(entry, "plan", fromTags);
@@ -579,7 +579,7 @@ function finalizeSession(
   pushEvent(entry, "exit", message);
 
   // Free large accumulated strings now that the session is done.
-  // Note: allBeads is kept because applyOrchestrationSession uses it
+  // Note: allBeats is kept because applyOrchestrationSession uses it
   // after finalization. It is cleared when the session is deleted.
   entry.assistantText = "";
   entry.lineBuffer = "";
@@ -593,44 +593,44 @@ function finalizeSession(
 
   setTimeout(() => {
     entry.buffer.length = 0;
-    entry.allBeads.clear();
+    entry.allBeats.clear();
     sessions.delete(entry.session.id);
   }, CLEANUP_DELAY_MS);
 }
 
 async function collectContext(repoPath: string): Promise<{
-  beads: Bead[];
+  beats: Beat[];
 }> {
-  const beads = await collectEligibleBeads(repoPath, {
+  const beats = await collectEligibleBeats(repoPath, {
     excludeOrchestrationWaves: true,
   });
-  return { beads };
+  return { beats };
 }
 
-async function collectEligibleBeads(
+async function collectEligibleBeats(
   repoPath: string,
   options?: { excludeOrchestrationWaves?: boolean }
-): Promise<Bead[]> {
+): Promise<Beat[]> {
   const [open, inProgress, blocked] = await Promise.all([
-    getBackend().list({ status: "open" }, repoPath),
-    getBackend().list({ status: "in_progress" }, repoPath),
-    getBackend().list({ status: "blocked" }, repoPath),
+    getBackend().list({ state: "open" }, repoPath),
+    getBackend().list({ state: "in_progress" }, repoPath),
+    getBackend().list({ state: "blocked" }, repoPath),
   ]);
 
   for (const result of [open, inProgress, blocked]) {
     if (!result.ok) {
-      throw new Error(result.error?.message ?? "Failed to load beads for orchestration");
+      throw new Error(result.error?.message ?? "Failed to load beats for orchestration");
     }
   }
 
-  const beads = dedupeBeads([
+  const beats = dedupeBeats([
     ...(open.data ?? []),
     ...(inProgress.data ?? []),
     ...(blocked.data ?? []),
   ]);
-  if (!options?.excludeOrchestrationWaves) return beads;
-  return beads.filter(
-    (bead) => !(bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false)
+  if (!options?.excludeOrchestrationWaves) return beats;
+  return beats.filter(
+    (beat) => !(beat.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false)
   );
 }
 
@@ -638,10 +638,10 @@ export async function createOrchestrationSession(
   repoPath: string,
   objective?: string
 ): Promise<OrchestrationSession> {
-  const { beads } = await collectContext(repoPath);
+  const { beats } = await collectContext(repoPath);
 
-  if (beads.length === 0) {
-    throw new Error("No open/in_progress/blocked beads available for orchestration");
+  if (beats.length === 0) {
+    throw new Error("No open/in_progress/blocked beats available for orchestration");
   }
 
   const session: OrchestrationSession = {
@@ -658,7 +658,7 @@ export async function createOrchestrationSession(
     sessionId: session.id,
     interactionType: "direct",
     repoPath,
-    beadIds: beads.map((b) => b.id),
+    beatIds: beats.map((b) => b.id),
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
@@ -671,7 +671,7 @@ export async function createOrchestrationSession(
     process: null,
     emitter: new EventEmitter(),
     buffer: [],
-    allBeads: new Map(beads.map((bead) => [bead.id, bead])),
+    allBeats: new Map(beats.map((beat) => [beat.id, beat])),
     draftWaves: new Map(),
     assistantText: "",
     lineBuffer: "",
@@ -681,17 +681,17 @@ export async function createOrchestrationSession(
   entry.emitter.setMaxListeners(20);
   sessions.set(session.id, entry);
 
-  const scope = derivePromptScope(beads, objective);
+  const scope = derivePromptScope(beats, objective);
   const prompt = buildPrompt(
     repoPath,
-    scope.scopedBeads,
+    scope.scopedBeats,
     scope.unresolvedScopeIds,
     objective
   );
   orchInteractionLog.logPrompt(prompt);
   const scopeSummary =
-    scope.scopedBeads.length > 0
-      ? scope.scopedBeads.map((bead) => bead.id).join(", ")
+    scope.scopedBeats.length > 0
+      ? scope.scopedBeats.map((beat) => beat.id).join(", ")
       : "inferred from objective";
   const promptLog = [
     "prompt_initial | Orchestration prompt sent",
@@ -790,10 +790,10 @@ export async function createOrchestrationSession(
         const resultText = summarizeResult(obj.result, isError);
 
         if (!entry.session.plan && typeof obj.result === "string") {
-          const beadTitleMap = new Map(
-            Array.from(entry.allBeads.values()).map((bead) => [bead.id, bead.title])
+          const beatTitleMap = new Map(
+            Array.from(entry.allBeats.values()).map((beat) => [beat.id, beat.title])
           );
-          const fromTags = extractPlanFromTaggedJson(obj.result, beadTitleMap);
+          const fromTags = extractPlanFromTaggedJson(obj.result, beatTitleMap);
           if (fromTags) {
             entry.session.plan = fromTags;
             pushEvent(entry, "plan", fromTags);
@@ -862,13 +862,13 @@ export async function createRestagedOrchestrationSession(
   plan: OrchestrationPlan,
   objective?: string
 ): Promise<OrchestrationSession> {
-  const beads = await collectEligibleBeads(repoPath);
+  const beats = await collectEligibleBeats(repoPath);
 
-  if (beads.length === 0) {
-    throw new Error("No open/in_progress/blocked beads available for orchestration");
+  if (beats.length === 0) {
+    throw new Error("No open/in_progress/blocked beats available for orchestration");
   }
 
-  const allBeads = new Map(beads.map((bead) => [bead.id, bead]));
+  const allBeats = new Map(beats.map((beat) => [beat.id, beat]));
   const assigned = new Set<string>();
 
   const normalizedWaves = plan.waves
@@ -891,15 +891,15 @@ export async function createRestagedOrchestrationSession(
           specialty: agent.specialty?.trim() || undefined,
         }));
 
-      const beadsForWave = wave.beads
-        .filter((bead) => typeof bead.id === "string" && bead.id.trim().length > 0)
-        .map((bead) => bead.id.trim())
-        .filter((beadId) => allBeads.has(beadId) && !assigned.has(beadId))
-        .map((beadId) => {
-          assigned.add(beadId);
+      const beatsForWave = wave.beats
+        .filter((beat) => typeof beat.id === "string" && beat.id.trim().length > 0)
+        .map((beat) => beat.id.trim())
+        .filter((beatId) => allBeats.has(beatId) && !assigned.has(beatId))
+        .map((beatId) => {
+          assigned.add(beatId);
           return {
-            id: beadId,
-            title: allBeads.get(beadId)?.title ?? beadId,
+            id: beatId,
+            title: allBeats.get(beatId)?.title ?? beatId,
           };
         });
 
@@ -908,15 +908,15 @@ export async function createRestagedOrchestrationSession(
         name,
         objective: waveObjective,
         agents,
-        beads: beadsForWave,
+        beats: beatsForWave,
         notes,
       };
     })
-    .filter((wave) => wave.beads.length > 0);
+    .filter((wave) => wave.beats.length > 0);
 
   if (normalizedWaves.length === 0) {
     throw new Error(
-      "Restaged plan has no beads currently eligible (open/in_progress/blocked)."
+      "Restaged plan has no beats currently eligible (open/in_progress/blocked)."
     );
   }
 
@@ -927,8 +927,8 @@ export async function createRestagedOrchestrationSession(
         normalizedWaves.length === 1 ? "" : "s"
       }.`,
     waves: normalizedWaves,
-    unassignedBeadIds: (plan.unassignedBeadIds ?? []).filter(
-      (id) => typeof id === "string" && allBeads.has(id) && !assigned.has(id)
+    unassignedBeatIds: (plan.unassignedBeatIds ?? []).filter(
+      (id) => typeof id === "string" && allBeats.has(id) && !assigned.has(id)
     ),
     assumptions: (plan.assumptions ?? [])
       .filter((assumption): assumption is string => typeof assumption === "string")
@@ -950,7 +950,7 @@ export async function createRestagedOrchestrationSession(
     process: null,
     emitter: new EventEmitter(),
     buffer: [],
-    allBeads,
+    allBeats,
     draftWaves: new Map(
       normalizedPlan.waves.map((wave) => [wave.waveIndex, wave])
     ),
@@ -1003,19 +1003,19 @@ function formatAgentPlan(agents: OrchestrationAgentSpec[]): string {
     .join("\n");
 }
 
-function countActiveChildrenByParent(beads: Bead[]): Map<string, number> {
+function countActiveChildrenByParent(beats: Beat[]): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const bead of beads) {
-    if (!bead.parent || bead.status === "closed") continue;
-    counts.set(bead.parent, (counts.get(bead.parent) ?? 0) + 1);
+  for (const beat of beats) {
+    if (!beat.parent || beat.state === "closed") continue;
+    counts.set(beat.parent, (counts.get(beat.parent) ?? 0) + 1);
   }
   return counts;
 }
 
-function isOpenOrchestratedWave(bead: Bead | undefined): boolean {
-  if (!bead) return false;
-  if (bead.status === "closed") return false;
-  return bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
+function isOpenOrchestratedWave(beat: Beat | undefined): boolean {
+  if (!beat) return false;
+  if (beat.state === "closed") return false;
+  return beat.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
 }
 
 function isMissingDependencyError(error?: string): boolean {
@@ -1057,17 +1057,17 @@ export async function applyOrchestrationSession(
   }
 
   for (const wave of plan.waves.slice().sort((a, b) => a.waveIndex - b.waveIndex)) {
-    const validChildren = wave.beads.filter((bead) => entry.allBeads.has(bead.id));
+    const validChildren = wave.beats.filter((beat) => entry.allBeats.has(beat.id));
 
     if (validChildren.length === 0) {
       skipped.push(`wave:${wave.waveIndex}`);
       continue;
     }
 
-    let wavePriority: Bead["priority"] = 2;
+    let wavePriority: Beat["priority"] = 2;
     let hasPriority = false;
     for (const bead of validChildren) {
-      const priority = entry.allBeads.get(bead.id)?.priority;
+      const priority = entry.allBeats.get(bead.id)?.priority;
       if (priority === undefined) continue;
       if (!hasPriority || priority < wavePriority) {
         wavePriority = priority;
@@ -1108,7 +1108,7 @@ export async function applyOrchestrationSession(
         priority: wavePriority,
         labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
         description,
-      } as CreateBeadInput,
+      } as CreateBeatInput,
       repoPath,
     );
 
@@ -1120,12 +1120,12 @@ export async function applyOrchestrationSession(
     createdWaveIds.add(waveId);
 
     for (const child of validChildren) {
-      const currentParentId = entry.allBeads.get(child.id)?.parent;
+      const currentParentId = entry.allBeats.get(child.id)?.parent;
       if (currentParentId) sourceParentIds.add(currentParentId);
 
       const updateResult = await getBackend().update(
         child.id,
-        { parent: waveId } as UpdateBeadInput,
+        { parent: waveId } as UpdateBeatInput,
         repoPath,
       );
       if (!updateResult.ok) {
@@ -1137,9 +1137,9 @@ export async function applyOrchestrationSession(
         throw new Error(`Failed to confirm ${child.id} parent relationship to ${waveId}`);
       }
 
-      const existingChild = entry.allBeads.get(child.id);
+      const existingChild = entry.allBeats.get(child.id);
       if (existingChild) {
-        entry.allBeads.set(child.id, { ...existingChild, parent: waveId });
+        entry.allBeats.set(child.id, { ...existingChild, parent: waveId });
       }
 
       // Rewrites move children to a new wave; prune old wave->child edge if present.
@@ -1190,13 +1190,13 @@ export async function applyOrchestrationSession(
       );
     }
 
-    const beadsById = new Map(refreshed.data.map((bead) => [bead.id, bead]));
+    const beatsById = new Map(refreshed.data.map((beat) => [beat.id, beat]));
     const activeChildCounts = countActiveChildrenByParent(refreshed.data);
 
     for (const parentId of sourceParentIds) {
       if (createdWaveIds.has(parentId)) continue;
 
-      const parent = beadsById.get(parentId);
+      const parent = beatsById.get(parentId);
       if (!isOpenOrchestratedWave(parent)) continue;
 
       const activeChildren = activeChildCounts.get(parentId) ?? 0;

@@ -293,8 +293,8 @@ describe("checkCorruptTickets", () => {
       data: [
         {
           id: "b-1",
-          title: "Bad bead",
-          status: "open",
+          title: "Bad beat",
+          state: "open",
           labels: ["stage:verification"],
           type: "task",
           priority: 2,
@@ -306,23 +306,23 @@ describe("checkCorruptTickets", () => {
     const diags = await checkCorruptTickets(repos);
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("error");
-    expect(diags[0].check).toBe("corrupt-bead-verification");
+    expect(diags[0].check).toBe("corrupt-beat-verification");
     expect(diags[0].fixable).toBe(true);
     expect(diags[0].fixOptions).toEqual([
-      { key: "set-in-progress", label: "Set status to in_progress" },
+      { key: "set-in-progress", label: "Set state to in_progress" },
       { key: "remove-label", label: "Remove stage:verification label" },
     ]);
-    expect(diags[0].context?.beadId).toBe("b-1");
+    expect(diags[0].context?.beatId).toBe("b-1");
   });
 
-  it("ignores verification bead already in_progress", async () => {
+  it("ignores verification beat already in_progress", async () => {
     mockList.mockResolvedValue({
       ok: true,
       data: [
         {
           id: "b-2",
-          title: "Good bead",
-          status: "in_progress",
+          title: "Good beat",
+          state: "in_progress",
           labels: ["stage:verification"],
           type: "task",
           priority: 2,
@@ -348,7 +348,7 @@ describe("checkStaleParents", () => {
         {
           id: "parent-1",
           title: "Epic",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -358,7 +358,7 @@ describe("checkStaleParents", () => {
         {
           id: "child-1",
           title: "Task 1",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -369,7 +369,7 @@ describe("checkStaleParents", () => {
         {
           id: "child-2",
           title: "Task 2",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -384,7 +384,7 @@ describe("checkStaleParents", () => {
     expect(diags[0].severity).toBe("warning");
     expect(diags[0].check).toBe("stale-parent");
     expect(diags[0].fixable).toBe(true);
-    expect(diags[0].context?.beadId).toBe("parent-1");
+    expect(diags[0].context?.beatId).toBe("parent-1");
   });
 
   it("ignores parent when some children are open", async () => {
@@ -394,7 +394,7 @@ describe("checkStaleParents", () => {
         {
           id: "parent-1",
           title: "Epic",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -404,7 +404,7 @@ describe("checkStaleParents", () => {
         {
           id: "child-1",
           title: "Task 1",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -415,7 +415,7 @@ describe("checkStaleParents", () => {
         {
           id: "child-2",
           title: "Task 2",
-          status: "open",
+          state: "open",
           labels: [],
           type: "task",
           priority: 2,
@@ -436,7 +436,7 @@ describe("checkStaleParents", () => {
         {
           id: "parent-1",
           title: "Epic",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "epic",
           priority: 2,
@@ -446,7 +446,7 @@ describe("checkStaleParents", () => {
         {
           id: "child-1",
           title: "Task 1",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,
@@ -536,7 +536,7 @@ describe("runDoctorFix", () => {
       {
         id: "parent-fix",
         title: "Parent",
-        status: "open",
+        state: "open",
         labels: [],
         type: "epic",
         priority: 2,
@@ -546,7 +546,7 @@ describe("runDoctorFix", () => {
       {
         id: "child-fix",
         title: "Child",
-        status: "closed",
+        state: "closed",
         labels: [],
         type: "task",
         priority: 2,
@@ -572,10 +572,10 @@ describe("runDoctorFix", () => {
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
     const verificationFix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(verificationFix?.success).toBe(true);
-    expect(verificationFix?.message).toContain("workflowState=verification");
+    expect(verificationFix?.message).toContain("state=verification");
     expect(mockUpdate).toHaveBeenCalledWith(
       "parent-fix",
-      { status: "in_progress", workflowState: "verification" },
+      { state: "verification" },
       "/repo",
     );
   });
@@ -704,7 +704,7 @@ describe("streamDoctor", () => {
         {
           id: "parent-1",
           title: "Parent",
-          status: "open",
+          state: "open",
           labels: [],
           type: "epic",
           priority: 2,
@@ -714,7 +714,7 @@ describe("streamDoctor", () => {
         {
           id: "child-1",
           title: "Child",
-          status: "closed",
+          state: "closed",
           labels: [],
           type: "task",
           priority: 2,

@@ -28,7 +28,7 @@ interface SessionMeta {
   sessionId: string;
   interactionType: InteractionType;
   repoPath: string;
-  beadIds: string[];
+  beatIds: string[];
   agentName?: string;
   agentModel?: string;
 }
@@ -145,7 +145,7 @@ export async function startInteractionLog(
     sessionId: meta.sessionId,
     interactionType: meta.interactionType,
     repoPath: meta.repoPath,
-    beadIds: meta.beadIds,
+    beatIds: meta.beatIds,
     ...(meta.agentName ? { agentName: meta.agentName } : {}),
     ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
   };
