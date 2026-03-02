@@ -263,10 +263,11 @@ describe("nextKnot per-id serialization", () => {
       expect(execFileCallbacks.length).toBe(1);
     });
 
-    // Fail the first call
-    const err = new Error("database locked") as NodeJS.ErrnoException;
+    // Fail the first call with a non-retryable error
+    // (retryable errors like "database is locked" trigger retry logic)
+    const err = new Error("invalid transition") as NodeJS.ErrnoException;
     err.code = 1 as unknown as string;
-    execFileCallbacks[0].callback(err, "", "database is locked");
+    execFileCallbacks[0].callback(err, "", "invalid transition");
 
     // Second should still proceed
     await vi.waitFor(() => {

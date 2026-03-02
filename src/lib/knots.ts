@@ -1,10 +1,17 @@
 import { execFile } from "node:child_process";
 import { join, resolve } from "node:path";
 import type { BdResult } from "./types";
+import { classifyErrorMessage, isRetryableByDefault } from "./backend-errors";
 
 const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
 const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 20000);
+
+const RETRY_DELAYS_MS = [1000, 2000, 4000];
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const repoWriteQueues = new Map<string, { tail: Promise<void>; pending: number }>();
 const nextKnotQueues = new Map<string, { tail: Promise<void>; pending: number }>();
@@ -243,6 +250,27 @@ async function execWrite(
   return withWriteSerialization(options?.repoPath, () => exec(args, options));
 }
 
+/**
+ * Retries a write operation on transient errors (e.g. "database is locked")
+ * using exponential backoff: 1s, 2s, 4s delays before giving up.
+ */
+async function execWriteWithRetry(
+  args: string[],
+  options?: ExecOptions,
+): Promise<ExecResult> {
+  let result = await execWrite(args, options);
+  for (const delayMs of RETRY_DELAYS_MS) {
+    if (result.exitCode === 0) return result;
+    const code = classifyErrorMessage(result.stderr);
+    if (!isRetryableByDefault(code)) return result;
+    const cmdLabel = args.slice(0, 3).join(" ");
+    console.warn(`[knots] retrying kno ${cmdLabel} in ${delayMs}ms (${code})`);
+    await sleep(delayMs);
+    result = await execWrite(args, options);
+  }
+  return result;
+}
+
 function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
@@ -435,7 +463,7 @@ export async function nextKnot(
   return withNextKnotSerialization(id, async () => {
     const args = ["next", id];
     if (options?.actorKind) args.push("--actor-kind", options.actorKind);
-    const { stderr, exitCode } = await execWrite(args, { repoPath });
+    const { stderr, exitCode } = await execWriteWithRetry(args, { repoPath });
     if (exitCode !== 0) return { ok: false, error: stderr || "knots next failed" };
     return { ok: true };
   });
