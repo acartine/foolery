@@ -20,22 +20,6 @@ export const KNOTS_COARSE_DESCRIPTOR_ID = "semiauto";
 export const KNOTS_GRANULAR_PROMPT_PROFILE_ID = "autopilot";
 export const KNOTS_COARSE_PROMPT_PROFILE_ID = "semiauto";
 
-const ACTION_STATES = [
-  "planning",
-  "plan_review",
-  "implementation",
-  "implementation_review",
-  "shipment",
-  "shipment_review",
-] as const;
-
-const REVIEW_ACTION_STATES = new Set<string>([
-  "plan_review",
-  "implementation_review",
-  "shipment_review",
-]);
-
-const ACTION_STATE_SET = new Set<string>(ACTION_STATES);
 const TERMINAL_STATUS_STATES = new Set<string>(["shipped", "abandoned", "closed"]);
 const LEGACY_TERMINAL_STATES = new Set<string>(["closed", "done", "approved"]);
 const LEGACY_RETAKE_STATES = new Set<string>([
@@ -51,15 +35,6 @@ const LEGACY_IN_PROGRESS_STATES = new Set<string>([
   "implemented",
   "reviewing",
 ]);
-
-const OWNER_BY_ACTION_STATE: Record<string, keyof MemoryWorkflowOwners> = {
-  planning: "planning",
-  plan_review: "plan_review",
-  implementation: "implementation",
-  implementation_review: "implementation_review",
-  shipment: "shipment",
-  shipment_review: "shipment_review",
-};
 
 // ── Step abstraction ────────────────────────────────────────────
 
@@ -283,26 +258,6 @@ function filterTransitionsForStates(states: string[], config: BuiltinProfileConf
       const previous = all[index - 1];
       return previous.from !== transition.from || previous.to !== transition.to;
     });
-}
-
-function queueStatesFrom(states: string[]): string[] {
-  return states.filter((state) => state.startsWith("ready_for_"));
-}
-
-function actionStatesFrom(states: string[]): string[] {
-  return states.filter((state) => ACTION_STATE_SET.has(state));
-}
-
-function queueStateToActionState(queueState: string): string | null {
-  if (!queueState.startsWith("ready_for_")) return null;
-  const action = queueState.slice("ready_for_".length);
-  return ACTION_STATE_SET.has(action) ? action : null;
-}
-
-function actionOwnerKind(workflow: MemoryWorkflowDescriptor, actionState: string): ActionOwnerKind {
-  const ownerKey = OWNER_BY_ACTION_STATE[actionState];
-  if (!ownerKey) return "none";
-  return workflow.owners?.[ownerKey] ?? "agent";
 }
 
 function stepOwnerKind(workflow: MemoryWorkflowDescriptor, step: WorkflowStep): ActionOwnerKind {
