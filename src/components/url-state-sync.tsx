@@ -29,7 +29,7 @@ export function UrlStateSync() {
       ? undefined
       : urlState
         ? urlState
-        : "ready";
+        : "queued";
     const newType = urlType || undefined;
     const newPriority = urlPriority !== null
       ? Number(urlPriority)

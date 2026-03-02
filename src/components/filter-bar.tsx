@@ -138,7 +138,6 @@ function FilterControls() {
         <SelectContent>
           <SelectItem value="queued">Queued</SelectItem>
           <SelectItem value="in_action">In Action</SelectItem>
-          <SelectItem value="ready">Ready</SelectItem>
           <SelectItem value="all">All States</SelectItem>
         </SelectContent>
       </Select>
