@@ -655,7 +655,7 @@ export async function createSession(
     ].filter(Boolean).join("\n");
   };
 
-  const buildNextPollPrompt = async (): Promise<string | null> => {
+  const buildNextPollPrompt = async (): Promise<{ prompt: string; beatState: string } | null> => {
     // Check the original beat's state to decide whether to continue polling.
     const currentResult = await getBackend().get(beatId, repoPath);
     if (!currentResult.ok || !currentResult.data) return null;
@@ -681,15 +681,16 @@ export async function createSession(
       return null;
     }
 
-    // Use kno poll --claim to find and claim the next highest-priority work.
-    const pollResult = await getBackend().buildPollPrompt(
+    // Claim the same beat into its next workflow state.
+    const takeResult = await getBackend().buildTakePrompt(
+      beatId,
       { agentName: agent.label || agent.command, agentModel: agent.model },
       repoPath,
     );
-    if (!pollResult.ok || !pollResult.data) {
+    if (!takeResult.ok || !takeResult.data) {
       pushEvent({
         type: "stderr",
-        data: `Poll loop: no claimable work found: ${pollResult.error?.message ?? "unknown error"}\n`,
+        data: `Poll loop: failed to claim ${beatId}: ${takeResult.error?.message ?? "unknown error"}\n`,
         timestamp: Date.now(),
       });
       return null;
@@ -697,11 +698,11 @@ export async function createSession(
 
     pushEvent({
       type: "stdout",
-      data: `\x1b[36m--- Claimed ${pollResult.data.claimedId} ---\x1b[0m\n`,
+      data: `\x1b[36m--- Claimed ${beatId} (iteration ${pollIteration + 1}) ---\x1b[0m\n`,
       timestamp: Date.now(),
     });
 
-    return wrapSingleBeatPrompt(pollResult.data.prompt);
+    return { prompt: wrapSingleBeatPrompt(takeResult.data.prompt), beatState: current.state };
   };
 
   const finishSession = (exitCode: number) => {
@@ -736,7 +737,7 @@ export async function createSession(
   };
 
   /** Spawn a fresh agent child process for a poll iteration. */
-  const spawnPollChild = (pollPrompt: string): void => {
+  const spawnPollChild = (pollPrompt: string, beatState?: string): void => {
     const pollChild = spawn(agentCmd, args, {
       cwd,
       env: { ...process.env },
@@ -744,7 +745,7 @@ export async function createSession(
     });
     entry.process = pollChild;
 
-    console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration}: pid=${pollChild.pid ?? "failed"}`);
+    console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration}: pid=${pollChild.pid ?? "failed"} beat_state=${beatState ?? "unknown"}`);
 
     let pollStdinClosed = !isInteractive;
     let pollLineBuffer = "";
@@ -859,20 +860,25 @@ export async function createSession(
       pollChild.stderr?.removeAllListeners();
       entry.process = null;
 
-      console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode}`);
+      getBackend().get(beatId, repoPath).then((r) => {
+        const state = r.ok && r.data ? r.data.state : "unknown";
+        console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode} beat_state=${state}`);
+      }).catch(() => {
+        console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode} beat_state=fetch_error`);
+      });
 
       if (pollCode === 0 && pollIteration < MAX_POLL_ITERATIONS) {
         (async () => {
           try {
-            const nextPrompt = await buildNextPollPrompt();
-            if (nextPrompt) {
+            const nextPoll = await buildNextPollPrompt();
+            if (nextPoll) {
               pollIteration++;
               pushEvent({
                 type: "stdout",
                 data: `\n\x1b[36m--- Poll ${pollIteration}/${MAX_POLL_ITERATIONS} ---\x1b[0m\n`,
                 timestamp: Date.now(),
               });
-              spawnPollChild(nextPrompt);
+              spawnPollChild(nextPoll.prompt, nextPoll.beatState);
               return;
             }
           } catch (err) {
@@ -1138,7 +1144,16 @@ export async function createSession(
       lineBuffer = "";
     }
 
-    console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events`);
+    if (isPollLoop) {
+      getBackend().get(beatId, repoPath).then((r) => {
+        const state = r.ok && r.data ? r.data.state : "unknown";
+        console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events beat_state=${state}`);
+      }).catch(() => {
+        console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events beat_state=fetch_error`);
+      });
+    } else {
+      console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events`);
+    }
     if (closeInputTimer) {
       clearTimeout(closeInputTimer);
       closeInputTimer = null;
@@ -1154,8 +1169,8 @@ export async function createSession(
     if (isPollLoop && code === 0 && pollIteration < MAX_POLL_ITERATIONS) {
       (async () => {
         try {
-          const nextPrompt = await buildNextPollPrompt();
-          if (nextPrompt) {
+          const nextPoll = await buildNextPollPrompt();
+          if (nextPoll) {
             pollIteration++;
             pushEvent({
               type: "stdout",
@@ -1163,7 +1178,7 @@ export async function createSession(
               timestamp: Date.now(),
             });
             console.log(`[terminal-manager] [${id}] starting poll iteration ${pollIteration}/${MAX_POLL_ITERATIONS}`);
-            spawnPollChild(nextPrompt);
+            spawnPollChild(nextPoll.prompt, nextPoll.beatState);
             return;
           }
         } catch (err) {
