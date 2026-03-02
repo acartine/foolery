@@ -32,6 +32,15 @@ const DEFAULT_ACTIONS = {
   breakdown: "",
 };
 
+const DEFAULT_POOLS = {
+  planning: [],
+  plan_review: [],
+  implementation: [],
+  implementation_review: [],
+  shipment: [],
+  shipment_review: [],
+};
+
 const DEFAULT_SETTINGS = {
   agent: { command: "claude" },
   agents: {},
@@ -40,6 +49,7 @@ const DEFAULT_SETTINGS = {
   backend: { type: "auto" },
   defaults: { profileId: "" },
   openrouter: { apiKey: "", enabled: false, model: "" },
+  pools: DEFAULT_POOLS,
 };
 
 beforeEach(() => {
@@ -140,6 +150,13 @@ describe("backfillMissingSettingsDefaults", () => {
         'apiKey = ""',
         'enabled = false',
         'model = ""',
+        '[pools]',
+        'planning = []',
+        'plan_review = []',
+        'implementation = []',
+        'implementation_review = []',
+        'shipment = []',
+        'shipment_review = []',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
