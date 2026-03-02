@@ -480,6 +480,7 @@ export function AgentHistoryView() {
   const consolePanelRef = useRef<HTMLDivElement | null>(null);
   const cachedBeatKeysRef = useRef<string[]>([]);
   const lastScrollDirectionRef = useRef<1 | -1>(1);
+  const [goneBeatKeys, setGoneBeatKeys] = useState<Set<string>>(() => new Set());
 
   const loadedBeat = useMemo(() => parseBeatKey(loadedBeatKey), [loadedBeatKey]);
 
@@ -494,11 +495,18 @@ export function AgentHistoryView() {
     refetchOnWindowFocus: false,
   });
 
+  /* Reset gone-beats tracking when the active repo changes. */
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Gone-beats must reset when repo context changes to avoid stale filtering across repos.
+    setGoneBeatKeys(new Set());
+  }, [activeRepo]);
+
   const beats = useMemo(() => {
     if (!beatsQuery.data?.ok) return [];
     return (beatsQuery.data.data?.beats ?? [])
+      .filter((b) => !goneBeatKeys.has(beatKey(b.beadId, b.repoPath)))
       .sort((a, b) => parseMillis(b.lastWorkedAt) - parseMillis(a.lastWorkedAt));
-  }, [beatsQuery.data]);
+  }, [beatsQuery.data, goneBeatKeys]);
 
   const visibleBeats = useMemo(
     () => beats.slice(windowStart, windowStart + WINDOW_SIZE),
@@ -601,6 +609,32 @@ export function AgentHistoryView() {
       retry: 1,
     })),
   });
+
+  /* Hide beats whose backend detail fetch settled with an error (beat no longer exists). */
+  useEffect(() => {
+    const newGone: string[] = [];
+    for (let i = 0; i < detailQueries.length; i++) {
+      const q = detailQueries[i];
+      const beat = visibleBeats[i];
+      if (!beat || q.isLoading) continue;
+      if (q.data && !q.data.ok) {
+        newGone.push(beatKey(beat.beadId, beat.repoPath));
+      }
+    }
+    if (newGone.length === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Gone-beat set must update after detail queries settle to filter stale history entries.
+    setGoneBeatKeys((prev) => {
+      const merged = new Set(prev);
+      let changed = false;
+      for (const key of newGone) {
+        if (!merged.has(key)) {
+          merged.add(key);
+          changed = true;
+        }
+      }
+      return changed ? merged : prev;
+    });
+  }, [detailQueries, visibleBeats]);
 
   const beatDetailMap = useMemo(() => {
     const map = new Map<string, Beat>();
