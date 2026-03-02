@@ -1,0 +1,14 @@
+{
+  "event_id": "019caddf-e24e-7b40-b2f3-942d4db22e80",
+  "occurred_at": "2026-03-02T09:27:36.782367Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-0e94",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "step-enum: refactor internals and delete backend duplicates",
+    "updated_at": "2026-03-02T09:27:36.782367Z"
+  }
+}

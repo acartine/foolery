@@ -1,0 +1,14 @@
+{
+  "event_id": "019caddf-5f76-7cf0-a3f8-114e17436043",
+  "occurred_at": "2026-03-02T09:27:03.286389Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-e5f5",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "step-enum: add WorkflowStep, StepPhase, resolveStep",
+    "updated_at": "2026-03-02T09:27:03.286389Z"
+  }
+}

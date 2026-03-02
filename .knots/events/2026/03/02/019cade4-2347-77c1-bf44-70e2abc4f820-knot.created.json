@@ -1,0 +1,12 @@
+{
+  "event_id": "019cade4-2347-77c1-bf44-70e2abc4f820",
+  "occurred_at": "2026-03-02T09:32:15.559665Z",
+  "knot_id": "foolery-5492",
+  "type": "knot.created",
+  "data": {
+    "body": "Current overall: 82.43% stmts, 68.32% branches, 89.22% funcs, 85.82% lines. Target: ≥90% statements and lines.\n\nFiles below 90% needing improvement (sorted by impact):\n- registry.ts: 64.35% stmts (uncovered: 61,181,198,207)\n- workflows.ts: 66.29% stmts (uncovered: 46,599,605-689) — largest file, biggest impact\n- knots-backend.ts: 70.9% stmts (uncovered: 54-858,917-940)\n- beads-backend.ts: 73.06% stmts (uncovered: 67,571-573,581)\n- agent-history.ts: 78.85% stmts (uncovered: 92-294,329-336)\n- doctor.ts: 83.19% stmts (uncovered: 1058-1063,1079)\n- bd.ts: 83.44% stmts (uncovered: 20,552,583,656)\n- settings.ts: 85.71% stmts (uncovered: 90-315,361-362)\n- app-store.ts: 89.28% stmts\n- status-usage.ts: 58.33% stmts (small file)\n- memory-manager-commands.ts: 67.85% stmts\n\nAlso consider excluding test helper mock-backend-port.ts from coverage metrics.\n\nStrategy: Focus on workflows.ts, knots-backend.ts, beads-backend.ts, and registry.ts first — they have the most uncovered lines and biggest impact on the overall number.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Raise overall test coverage from 82% to 90%+"
+  }
+}

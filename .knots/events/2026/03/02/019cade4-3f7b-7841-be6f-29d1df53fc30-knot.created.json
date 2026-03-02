@@ -1,0 +1,12 @@
+{
+  "event_id": "019cade4-3f7b-7841-be6f-29d1df53fc30",
+  "occurred_at": "2026-03-02T09:32:22.779335Z",
+  "knot_id": "foolery-d119",
+  "type": "knot.created",
+  "data": {
+    "body": "Introduce a lightweight coverage regression mechanism that warns (not blocks) when coverage drops. Approach:\n1. Add a coverage threshold check to the existing CI workflow or coverage.yml\n2. Compare current coverage against a baseline stored in the repo (e.g. coverage-baseline.json)\n3. On regression: post a warning comment on the PR or annotate the workflow summary — do NOT fail the build\n4. On improvement: auto-update the baseline\n5. Add a simple script (e.g. scripts/check-coverage.mjs) that:\n   - Reads coverage-summary.json from vitest output\n   - Compares against baseline\n   - Exits 0 always (soft gate) but prints clear warnings if coverage dropped\n   - Optionally uses GitHub Actions annotations (::warning::) for visibility\n6. Store baseline as coverage-baseline.json in repo root (committed)\n\nKeep it painless: no external services, no build failures, just visibility. The goal is awareness — developers see when they're regressing and can make informed decisions.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add soft coverage regression gate to CI"
+  }
+}
