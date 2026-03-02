@@ -1,0 +1,17 @@
+{
+  "event_id": "019cad97-3cc4-76f2-b61a-11336b203f71",
+  "occurred_at": "2026-03-02T08:08:15.812142Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-08af",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Serialize KnotsBackend writes to prevent SQLite lock contention",
+    "updated_at": "2026-03-02T08:08:15.812142Z"
+  },
+  "precondition": {
+    "profile_etag": "019cad96-fa1f-7dd1-ae4e-6f55976b69a4"
+  }
+}

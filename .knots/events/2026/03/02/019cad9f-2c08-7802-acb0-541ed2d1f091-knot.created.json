@@ -1,0 +1,12 @@
+{
+  "event_id": "019cad9f-2c08-7802-acb0-541ed2d1f091",
+  "occurred_at": "2026-03-02T08:16:55.81689Z",
+  "knot_id": "foolery-c550",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  also support bulk edit of profiles when multiple beats are selected.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "beats view:  add profile column"
+  }
+}

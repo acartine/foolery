@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadcc-8df8-7ad0-b183-daa727e652f7",
+  "occurred_at": "2026-03-02T09:06:30.008716Z",
+  "knot_id": "foolery-c2de",
+  "type": "knot.created",
+  "data": {
+    "body": "backend-factory.ts is at 62.9% statement coverage with only 39.13% function coverage. Add tests for uncovered factory paths (lines 69-170, 191-194). Target: ≥70% statements, branches, functions, and lines.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Improve test coverage for backend-factory.ts (62.9% → 70%+)"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa7f-8be6-71c3-a8f8-0d8ee7190307",
+  "occurred_at": "2026-03-01T17:43:31.552237Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.1.1",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Extend settings schema with OpenRouter section",
+    "updated_at": "2026-03-01T17:43:31.552237Z"
+  }
+}

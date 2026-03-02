@@ -1,0 +1,15 @@
+{
+  "event_id": "019cad5c-19f1-7f90-b086-7e78bd263f05",
+  "occurred_at": "2026-03-02T07:03:40.273219Z",
+  "knot_id": "foolery-e4df",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Removed 'Ready' SelectItem from state pulldown in filter-bar.tsx and changed default URL state from 'ready' to 'queued' in url-state-sync.tsx. Commit: 2e300a9. Lint/typecheck/tests all pass.",
+    "datetime": "2026-03-02T08:03:00Z",
+    "entry_id": "019cad5c-19f1-7f90-b086-7e6b46d3983f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

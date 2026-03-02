@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadcc-5a46-7822-8847-02e221e5826c",
+  "occurred_at": "2026-03-02T09:06:16.77413Z",
+  "knot_id": "foolery-b382",
+  "type": "knot.created",
+  "data": {
+    "body": "execution-logger.ts is at 4.87% statement coverage. Add unit tests covering the core logging paths (lines 48-82, 112-216). Target: ≥70% statements, branches, functions, and lines.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Improve test coverage for execution-logger.ts (4.87% → 70%+)"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019cad49-4783-7b92-977f-b9b975a2cf6f",
+  "occurred_at": "2026-03-02T06:43:06.754984Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-2268",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "history view: drive list from actual conversations, not beat state",
+    "updated_at": "2026-03-02T06:43:06.754984Z"
+  },
+  "precondition": {
+    "profile_etag": "019ca824-c002-71e3-bbe2-605bca34a2aa"
+  }
+}

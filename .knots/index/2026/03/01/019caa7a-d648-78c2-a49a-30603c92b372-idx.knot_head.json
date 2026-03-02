@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa7a-d648-78c2-a49a-30603c92b372",
+  "occurred_at": "2026-03-01T17:38:22.920306Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.2",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Tracker detection and backend auto-routing foundation",
+    "updated_at": "2026-03-01T17:38:22.920306Z"
+  },
+  "precondition": {
+    "profile_etag": "019caa7a-06b4-7b50-a6e2-233cb688ae12"
+  }
+}

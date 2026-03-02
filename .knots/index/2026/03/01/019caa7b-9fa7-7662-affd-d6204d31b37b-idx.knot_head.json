@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa7b-9fa7-7662-affd-d6204d31b37b",
+  "occurred_at": "2026-03-01T17:39:14.471191Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.1",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Knots compatibility contract and mapping spec",
+    "updated_at": "2026-03-01T17:39:14.471191Z"
+  },
+  "precondition": {
+    "profile_etag": "019caa7b-18c5-7a90-b83d-06b3a32ded02"
+  }
+}

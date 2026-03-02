@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadcc-6745-7a72-978a-47f0fd7c2024",
+  "occurred_at": "2026-03-02T09:06:20.10194Z",
+  "knot_id": "foolery-f156",
+  "type": "knot.created",
+  "data": {
+    "body": "stub-backend.ts is at 27.77% statement coverage. Add unit tests for the stub backend covering uncovered lines (42, 74-90, 111-173). Target: ≥70% statements, branches, functions, and lines.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Improve test coverage for stub-backend.ts (27.77% → 70%+)"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cad98-8d10-7ea2-a89d-50450c0ea0b2",
+  "occurred_at": "2026-03-02T08:09:41.904667Z",
+  "knot_id": "foolery-08af",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation verified: per-repo async write queue in src/lib/knots.ts (commit 1feef77). Six write ops (newKnot, claimKnot, pollKnot, updateKnot, addEdge, removeEdge) route through execWrite→withWriteSerialization. Five read ops remain concurrent. Five tests in knots-write-serialization.test.ts. All quality gates pass (lint, tsc, 970 tests).",
+    "datetime": "2026-03-02T09:10:00Z",
+    "entry_id": "019cad98-8d10-7ea2-a89d-5033f9d89f14",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

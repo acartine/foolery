@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7a-7d2e-74d0-98b7-8a642e3c91bc",
+  "occurred_at": "2026-03-01T17:38:00.110569Z",
+  "knot_id": "foolery-g3y1.5.4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "g3y1.5.4 complete: Validated mixed All Repositories behavior. Tests verify: BeatWithRepo annotation with _repoPath/_repoName, concatenation of beats from different backends, cross-backend sort by priority, hierarchy working for knots beats with dotted IDs alongside beads beats. All tests pass in knots-guardrails.test.ts. Ref: 0a6e4ab..26712a8",
+    "datetime": "2026-03-01T17:38:00.110569Z",
+    "entry_id": "019caa7a-7d2e-74d0-98b7-8a5729a48bdb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa7a-7d3d-7e61-880d-decf623c1ada",
+  "occurred_at": "2026-03-01T17:38:00.110569Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5.4",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Validate mixed All Repositories behavior",
+    "updated_at": "2026-03-01T17:38:00.110569Z"
+  }
+}

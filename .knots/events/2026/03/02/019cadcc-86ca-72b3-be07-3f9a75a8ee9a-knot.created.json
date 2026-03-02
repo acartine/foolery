@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadcc-86ca-72b3-be07-3f9a75a8ee9a",
+  "occurred_at": "2026-03-02T09:06:28.170693Z",
+  "knot_id": "foolery-2c20",
+  "type": "knot.created",
+  "data": {
+    "body": "bead-hierarchy.ts, bead-sort.ts, and bead-utils.ts have 0% coverage. They appear to be dead code superseded by their beat-* counterparts (beat-hierarchy.ts, beat-sort.ts, beat-utils.ts) which have good coverage. Verify these are unused, remove them, and update any remaining imports.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove dead bead-*.ts files (0% coverage, replaced by beat-*.ts)"
+  }
+}

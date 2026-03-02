@@ -1,0 +1,14 @@
+{
+  "event_id": "019caa7a-9276-7722-be17-62b63422ee26",
+  "occurred_at": "2026-03-01T17:38:05.548994Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "API/UI compatibility and guardrails",
+    "updated_at": "2026-03-01T17:38:05.548994Z"
+  }
+}

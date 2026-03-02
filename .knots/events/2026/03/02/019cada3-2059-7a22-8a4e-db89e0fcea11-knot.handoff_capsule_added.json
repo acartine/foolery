@@ -1,0 +1,15 @@
+{
+  "event_id": "019cada3-2059-7a22-8a4e-db89e0fcea11",
+  "occurred_at": "2026-03-02T08:21:14.969319Z",
+  "knot_id": "foolery-c550",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Profile column added to beats table (beat-columns.tsx) with inline dropdown editing via builtinWorkflowDescriptors(). Bulk profile edit added to filter-bar.tsx BulkEditControls. Commit: 2f987cd",
+    "datetime": "2026-03-02T08:21:14.969319Z",
+    "entry_id": "019cada3-2059-7a22-8a4e-db7cd44a15ba",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

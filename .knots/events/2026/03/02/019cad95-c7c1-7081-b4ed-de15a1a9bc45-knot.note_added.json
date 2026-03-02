@@ -1,0 +1,15 @@
+{
+  "event_id": "019cad95-c7c1-7081-b4ed-de15a1a9bc45",
+  "occurred_at": "2026-03-02T08:06:40.321498Z",
+  "knot_id": "foolery-08af",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1. Added `repoWriteQueues` Map keyed by resolved repo path\n2. Added `withWriteSerialization<T>()` promise-chain queue (same pattern as bd.ts but without OS-level locks)\n3. Added `execWrite()` wrapper that routes through serialization\n4. Changed 6 write operations (newKnot, claimKnot, pollKnot, updateKnot, addEdge, removeEdge) to use execWrite\n5. Left 5 read operations (listKnots, listProfiles, listWorkflows, showKnot, listEdges) on unserialized exec\n6. Exported _pendingWriteCount() test helper\n7. Added 5 tests in knots-write-serialization.test.ts verifying serialization, concurrent reads, mixed read/write, cleanup, and error recovery",
+    "datetime": "2026-03-02T08:06:40.321498Z",
+    "entry_id": "019cad95-c7c1-7081-b4ed-de01e1b93003",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7a-6902-7561-9d97-d2fc59771d3c",
+  "occurred_at": "2026-03-01T17:37:54.946597Z",
+  "knot_id": "foolery-g3y1.5.3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "g3y1.5.3 complete: Validated table/filter/sort/hierarchy for Knots repos. Tests cover: filter by state (queued/in_action/exact), type, priority, label; hierarchy inference from dotted IDs via buildHierarchy(); sort via compareBeatsByPriorityThenState; search across title/description/ID; query expressions (type:task, state:shipped). All 27 tests pass in knots-guardrails.test.ts. Ref: 0a6e4ab..26712a8",
+    "datetime": "2026-03-01T17:37:54.946597Z",
+    "entry_id": "019caa7a-6902-7561-9d97-d2e27135ba86",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cad95-dad6-70e0-be2f-dee9bceb40ca",
+  "occurred_at": "2026-03-02T08:06:45.206375Z",
+  "knot_id": "foolery-08af",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented per-repo async write queue in knots.ts (commit 1feef77). Six write operations now go through execWrite→withWriteSerialization promise chain. Five read operations remain concurrent. Five new tests in knots-write-serialization.test.ts. All quality gates pass.",
+    "datetime": "2026-03-02T08:06:45.206375Z",
+    "entry_id": "019cad95-dad6-70e0-be2f-ded3248f4495",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019caa84-17f3-79d3-850a-0d6c24f3c3f9",
+  "occurred_at": "2026-03-01T17:48:29.555616Z",
+  "knot_id": "foolery-08af",
+  "type": "knot.created",
+  "data": {
+    "body": "KnotsBackend declares maxConcurrency: 1 but doesn't enforce it. Concurrent kno CLI calls from poll loops, list refetches, and rehydration race on the SQLite WAL writer lock, producing: Persisting failed: Another write batch or compaction is already active. Add a per-repo async queue to serialize write operations through the kno CLI.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Serialize KnotsBackend writes to prevent SQLite lock contention"
+  }
+}

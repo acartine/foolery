@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7f-8be0-79c1-9de7-0f01609c2017",
+  "occurred_at": "2026-03-01T17:43:31.552237Z",
+  "knot_id": "foolery-vdk0.1.1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added model field (z.string().default('')) to openrouterSettingsSchema in src/lib/schemas.ts. Updated OpenRouterSettings type export, settings-sheet.tsx DEFAULTS, and all settings.test.ts references. All 958 tests pass, tsc clean, lint clean. Commit: 01a1a3a",
+    "datetime": "2026-03-01T18:45:00Z",
+    "entry_id": "019caa7f-8be0-79c1-9de7-0ef32860f1f0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

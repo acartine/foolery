@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa7f-3431-7cf0-8b7f-1c9b15a537a6",
+  "occurred_at": "2026-03-01T17:43:09.105064Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.2.2",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Normalize OpenRouter model metadata and pricing",
+    "updated_at": "2026-03-01T17:43:09.105064Z"
+  },
+  "precondition": {
+    "profile_etag": "019c942e-43ee-70f2-b6bf-2084a074d18e"
+  }
+}

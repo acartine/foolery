@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7a-926d-7ab3-839b-46964041b178",
+  "occurred_at": "2026-03-01T17:38:05.548994Z",
+  "knot_id": "foolery-g3y1.5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "g3y1.5 API/UI compatibility and guardrails — all 4 subtasks complete. Key deliverables: (1) knots-compat.ts canonical mappings with 55 tests, (2) UNSUPPORTED error code + /api/capabilities endpoint + per-repo capability resolution, (3) validated all table/filter/sort/hierarchy views, (4) validated mixed multi-repo behavior. 125 knots-related tests passing, 937 total tests green. Commits: 0a6e4ab..26712a8, pushed to origin/main.",
+    "datetime": "2026-03-01T17:38:05.548994Z",
+    "entry_id": "019caa7a-926c-7882-9860-5b504e7b39f7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

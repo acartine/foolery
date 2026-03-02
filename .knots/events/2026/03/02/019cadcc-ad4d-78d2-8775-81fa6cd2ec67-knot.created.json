@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadcc-ad4d-78d2-8775-81fa6cd2ec67",
+  "occurred_at": "2026-03-02T09:06:38.029195Z",
+  "knot_id": "foolery-1e23",
+  "type": "knot.created",
+  "data": {
+    "body": "Add a coverage badge to README.md and set up coverage reporting on GitHub. Options include: (1) Generate a coverage summary in CI and render a shield.io badge in the README, (2) Use a coverage reporting service (Codecov, Coveralls), or (3) Generate a local coverage report and commit a badge SVG. Ensure bun run test:coverage output is parsed and surfaced. Current overall: 76.9% stmts, 63.8% branches, 80.1% funcs, 80.6% lines.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add code coverage badge and reporting to README/GitHub"
+  }
+}

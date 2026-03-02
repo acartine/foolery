@@ -1,0 +1,15 @@
+{
+  "event_id": "019caa7c-e8d2-7d73-a39a-104c1db9beff",
+  "occurred_at": "2026-03-01T17:40:38.738317Z",
+  "knot_id": "foolery-g3y1.1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment verified: all quality gates pass (lint 0 errors, tsc clean, 958 tests passed), CI green on main (run 22548790539). Commit 7454b13 with knots-compat.ts canonical mapping spec already on main and pushed to origin.",
+    "datetime": "2026-03-01T17:40:38.738317Z",
+    "entry_id": "019caa7c-e8d2-7d73-a39a-103f11aeeeab",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

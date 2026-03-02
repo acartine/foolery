@@ -1,0 +1,17 @@
+{
+  "event_id": "019caa7d-db89-7b12-92f2-418cc6ef677d",
+  "occurred_at": "2026-03-01T17:41:40.873422Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.2.1",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Create OpenRouter API client module",
+    "updated_at": "2026-03-01T17:41:40.873422Z"
+  },
+  "precondition": {
+    "profile_etag": "019c942e-43ce-7193-99b3-2a087860160b"
+  }
+}

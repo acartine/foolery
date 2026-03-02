@@ -1,0 +1,13 @@
+{
+  "event_id": "019caa7c-1134-7f23-8b75-15f0c28019de",
+  "occurred_at": "2026-03-01T17:39:43.539706Z",
+  "knot_id": "foolery-g3y1.4",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "shipment_review",
+    "profile_id": "autopilot",
+    "to": "shipped"
+  }
+}
