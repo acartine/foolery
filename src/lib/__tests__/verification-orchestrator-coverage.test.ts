@@ -15,7 +15,7 @@
  */
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Beat } from "@/lib/types";
-import type { BackendPort } from "@/lib/backend-port";
+import type { BackendPort, UpdateBeatInput } from "@/lib/backend-port";
 
 // ── Mock setup (same pattern as existing test) ──────────────
 
@@ -68,6 +68,11 @@ vi.mock("node:child_process", () => ({
 const createSessionMock = vi.fn();
 vi.mock("@/lib/terminal-manager", () => ({
   createSession: (...args: unknown[]) => createSessionMock(...args),
+}));
+
+const nextKnotMock = vi.fn();
+vi.mock("@/lib/knots", () => ({
+  nextKnot: (...args: unknown[]) => nextKnotMock(...args),
 }));
 
 import { onAgentComplete, getVerificationEvents } from "@/lib/verification-orchestrator";
@@ -153,6 +158,7 @@ beforeEach(() => {
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
+  nextKnotMock.mockResolvedValue({ ok: true });
 });
 
 // ── getVerificationEvents ───────────────────────────────────
@@ -278,12 +284,8 @@ describe("launchVerifier error paths", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // Should transition to retry on error
-    const retryCall = mockUpdate.mock.calls.find((call: unknown[]) => {
-      const fields = call[1] as Record<string, unknown>;
-      return fields.state === "open";
-    });
-    expect(retryCall).toBeDefined();
+    // Should transition to retry via nextKnot (not state: "open")
+    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo");
   });
 
   it("handles verifier non-zero exit without result marker", async () => {
@@ -300,13 +302,9 @@ describe("launchVerifier error paths", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // Should transition to retry
+    // Should transition to retry via nextKnot (not state: "open")
     expect(mockClose).not.toHaveBeenCalled();
-    const retryCall = mockUpdate.mock.calls.find((call: unknown[]) => {
-      const fields = call[1] as Record<string, unknown>;
-      return fields.state === "open";
-    });
-    expect(retryCall).toBeDefined();
+    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo");
   });
 
   it("defaults to pass when exit code 0 but no result marker", async () => {
@@ -529,6 +527,58 @@ describe("transitionToRetry error handling", () => {
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
     // Should complete without throwing
+  });
+});
+
+// ── transitionToRetry uses nextKnot instead of state: "open" ─
+
+describe("transitionToRetry uses nextKnot", () => {
+  it("calls nextKnot and does not set state: open", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    let callCount = 0;
+    mockGet.mockImplementation(() => {
+      callCount++;
+      if (callCount <= 3) {
+        // Normal flow until ensureCommitLabel fails (no commit label)
+        return { ok: true, data: makeBeat({ labels: [] }) };
+      }
+      // transitionToRetry get succeeds with retry labels
+      return {
+        ok: true,
+        data: makeBeat({ labels: ["transition:verification"] }),
+      };
+    });
+
+    await onAgentComplete(["test-beat"], "take", "/repo", 0);
+
+    // nextKnot should have been called for the retry transition
+    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo");
+
+    // No update call should have set state: "open"
+    for (const call of mockUpdate.mock.calls) {
+      const input = call[1] as UpdateBeatInput;
+      expect(input.state).not.toBe("open");
+    }
+  });
+
+  it("calls nextKnot even when there are no label changes", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+
+    let callCount = 0;
+    mockGet.mockImplementation(() => {
+      callCount++;
+      if (callCount <= 3) {
+        return { ok: true, data: makeBeat({ labels: [] }) };
+      }
+      // transitionToRetry get succeeds with no labels to mutate
+      return { ok: true, data: makeBeat({ labels: [] }) };
+    });
+
+    await onAgentComplete(["test-beat"], "take", "/repo", 0);
+
+    // nextKnot should still be called for state advancement
+    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo");
   });
 });
 

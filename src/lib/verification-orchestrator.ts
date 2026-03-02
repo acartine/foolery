@@ -13,6 +13,7 @@
 import { spawn } from "node:child_process";
 import { getBackend } from "@/lib/backend-instance";
 import type { UpdateBeatInput } from "@/lib/backend-port";
+import { nextKnot } from "@/lib/knots";
 import { getVerificationSettings, getVerificationAgent } from "@/lib/settings";
 import { startInteractionLog, noopInteractionLog } from "@/lib/interaction-logger";
 import {
@@ -483,13 +484,18 @@ async function transitionToRetry(beadId: string, repoPath: string): Promise<void
   const labels = beadResult.data.labels ?? [];
   const mutations = computeRetryLabels(labels);
 
-  const updateFields: UpdateBeatInput = {
-    state: "open",
-  };
+  const updateFields: UpdateBeatInput = {};
   if (mutations.add.length > 0) updateFields.labels = mutations.add;
   if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;
 
-  await getBackend().update(beadId, updateFields, repoPath);
+  const hasLabelChanges =
+    (updateFields.labels?.length ?? 0) > 0 ||
+    (updateFields.removeLabels?.length ?? 0) > 0;
+  if (hasLabelChanges) {
+    await getBackend().update(beadId, updateFields, repoPath);
+  }
+
+  await nextKnot(beadId, repoPath);
 }
 
 // ── Utilities ───────────────────────────────────────────────

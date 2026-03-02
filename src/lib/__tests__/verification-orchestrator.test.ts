@@ -61,6 +61,12 @@ vi.mock("@/lib/terminal-manager", () => ({
   createSession: (...args: unknown[]) => createSessionMock(...args),
 }));
 
+// Mock knots (nextKnot used by transitionToRetry)
+const nextKnotMock = vi.fn();
+vi.mock("@/lib/knots", () => ({
+  nextKnot: (...args: unknown[]) => nextKnotMock(...args),
+}));
+
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import {
   _clearAllLocks,
@@ -127,6 +133,7 @@ beforeEach(() => {
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
+  nextKnotMock.mockResolvedValue({ ok: true });
 });
 
 // ── Test: disabled verification ─────────────────────────────
@@ -230,11 +237,14 @@ describe("retry paths", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
-    // Should have called updateBead to transition to retry
+    // Should have called nextKnot to advance state (not state: "open")
+    expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo");
+
+    // Should have called updateBead with retry labels (without state)
     const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
-        return fields.state === "open" && Array.isArray(fields.labels) && (fields.labels as string[]).includes("stage:retry");
+        return Array.isArray(fields.labels) && (fields.labels as string[]).includes("stage:retry");
       }
     );
     expect(retryCall).toBeDefined();
@@ -263,14 +273,8 @@ describe("retry paths", () => {
     // Should NOT have called closeBead
     expect(mockClose).not.toHaveBeenCalled();
 
-    // Should have called updateBead with retry labels
-    const retryCall = mockUpdate.mock.calls.find(
-      (call: unknown[]) => {
-        const fields = call[1] as Record<string, unknown>;
-        return fields.state === "open";
-      }
-    );
-    expect(retryCall).toBeDefined();
+    // Should have called nextKnot to advance state (not state: "open")
+    expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo");
   });
 });
 
