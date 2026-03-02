@@ -22,6 +22,7 @@ interface PoolsSectionProps {
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
   onPoolsChange: (pools: PoolsSettings) => void;
+  disabled?: boolean;
 }
 
 const STEP_LABELS: Record<string, { label: string; description: string }> = {
@@ -57,6 +58,7 @@ export function SettingsPoolsSection({
   pools,
   agents,
   onPoolsChange,
+  disabled,
 }: PoolsSectionProps) {
   const agentIds = Object.keys(agents);
   const hasAgents = agentIds.length > 0;
@@ -79,20 +81,20 @@ export function SettingsPoolsSection({
 
   if (!hasAgents) {
     return (
-      <div className="space-y-4">
+      <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
         <div className="flex items-center gap-2">
           <Users className="size-4 text-muted-foreground" />
           <h3 className="text-sm font-medium">Agent Pools</h3>
         </div>
         <p className="text-xs text-muted-foreground">
-          Register agents in the General tab first, then configure pools here.
+          Register agents first, then configure pools here.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
       <div className="flex items-center gap-2">
         <Users className="size-4 text-muted-foreground" />
         <h3 className="text-sm font-medium">Agent Pools</h3>

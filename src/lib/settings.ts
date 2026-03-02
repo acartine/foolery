@@ -236,6 +236,7 @@ export type SettingsPartial = Partial<{
   defaults: Partial<FoolerySettings["defaults"]>;
   openrouter: Partial<FoolerySettings["openrouter"]>;
   pools: Partial<FoolerySettings["pools"]>;
+  dispatchMode: FoolerySettings["dispatchMode"];
 }>;
 
 /**
@@ -257,6 +258,7 @@ export async function updateSettings(
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
     openrouter:   partial.openrouter   !== undefined ? { ...current.openrouter,   ...partial.openrouter }   : current.openrouter,
     pools:        partial.pools        !== undefined ? { ...current.pools,        ...partial.pools }        : current.pools,
+    dispatchMode: partial.dispatchMode !== undefined ? partial.dispatchMode                                 : current.dispatchMode,
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -378,9 +380,11 @@ export async function getStepAgent(
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
 
-  // Try pool selection first
-  const poolAgent = resolvePoolAgent(step, settings.pools, settings.agents);
-  if (poolAgent) return poolAgent;
+  // Only use pools when dispatch mode is "pools"
+  if (settings.dispatchMode === "pools") {
+    const poolAgent = resolvePoolAgent(step, settings.pools, settings.agents);
+    if (poolAgent) return poolAgent;
+  }
 
   // Fall back to action mapping
   if (fallbackAction) {

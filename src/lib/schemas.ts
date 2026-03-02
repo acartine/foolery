@@ -163,6 +163,12 @@ export const openrouterSettingsSchema = z
   })
   .default({ apiKey: "", enabled: false, model: "" });
 
+// Agent dispatch mode: "actions" uses simple per-action mappings,
+// "pools" uses weighted per-step agent pools.
+export const dispatchModeSchema = z
+  .enum(["actions", "pools"])
+  .default("actions");
+
 // Agent pool entry: weighted agent selection
 export const poolEntrySchema = z.object({
   /** ID of a registered agent. */
@@ -199,6 +205,7 @@ export const foolerySettingsSchema = z.object({
   defaults: defaultsSettingsSchema,
   openrouter: openrouterSettingsSchema,
   pools: poolsSettingsSchema,
+  dispatchMode: dispatchModeSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -211,6 +218,7 @@ export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
+export type DispatchMode = z.infer<typeof dispatchModeSchema>;
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

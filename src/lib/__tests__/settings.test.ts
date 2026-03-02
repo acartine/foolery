@@ -50,6 +50,7 @@ const DEFAULT_SETTINGS = {
   defaults: { profileId: "" },
   openrouter: { apiKey: "", enabled: false, model: "" },
   pools: DEFAULT_POOLS,
+  dispatchMode: "actions",
 };
 
 beforeEach(() => {
@@ -131,6 +132,7 @@ describe("backfillMissingSettingsDefaults", () => {
   it("does not write when defaults are already present", async () => {
     mockReadFile.mockResolvedValue(
       [
+        'dispatchMode = "actions"',
         '[agent]',
         'command = "claude"',
         '[actions]',
@@ -176,6 +178,7 @@ describe("saveSettings", () => {
       defaults: { profileId: "" },
       openrouter: { apiKey: "", enabled: false, model: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
+      dispatchMode: "actions" as const,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

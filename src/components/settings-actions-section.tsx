@@ -24,6 +24,7 @@ interface ActionsSectionProps {
   actions: ActionAgentMappings;
   agents: Record<string, RegisteredAgent>;
   onActionsChange: (actions: ActionAgentMappings) => void;
+  disabled?: boolean;
 }
 
 interface ActionDef {
@@ -64,6 +65,7 @@ export function SettingsActionsSection({
   actions,
   agents,
   onActionsChange,
+  disabled,
 }: ActionsSectionProps) {
   const agentIds = Object.keys(agents);
 
@@ -81,7 +83,7 @@ export function SettingsActionsSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
       <h3 className="text-sm font-medium">Action Mappings</h3>
       <p className="text-xs text-muted-foreground">
         Choose which registered agent handles each action.
@@ -106,7 +108,7 @@ export function SettingsActionsSection({
               <Select
                 value={actions[def.name] || ""}
                 onValueChange={(v) => handleChange(def.name, v)}
-                disabled={agentIds.length === 0}
+                disabled={disabled || agentIds.length === 0}
               >
                 <SelectTrigger className="w-[140px] shrink-0">
                   <SelectValue placeholder={agentIds.length === 0 ? "no agents" : "select agent"} />
