@@ -1,0 +1,14 @@
+{
+  "event_id": "019cadde-f116-7173-84e8-a5ae129d84d6",
+  "occurred_at": "2026-03-02T09:26:35.03084Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-2c20",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Remove dead bead-*.ts files (0% coverage, replaced by beat-*.ts)",
+    "updated_at": "2026-03-02T09:26:35.03084Z"
+  }
+}

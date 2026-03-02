@@ -1,0 +1,14 @@
+{
+  "event_id": "019cadde-adf4-74c1-99ca-70c16fca6106",
+  "occurred_at": "2026-03-02T09:26:17.844822Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-f156",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Improve test coverage for stub-backend.ts (27.77% → 70%+)",
+    "updated_at": "2026-03-02T09:26:17.844822Z"
+  }
+}

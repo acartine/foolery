@@ -1,0 +1,14 @@
+{
+  "event_id": "019cadde-7eb1-7332-89eb-a36cf29cd0a2",
+  "occurred_at": "2026-03-02T09:26:05.74536Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-b382",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "Improve test coverage for execution-logger.ts (4.87% → 70%+)",
+    "updated_at": "2026-03-02T09:26:05.74536Z"
+  }
+}

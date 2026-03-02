@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd7-965e-7c50-9831-83ce91551b62",
+  "occurred_at": "2026-03-02T09:18:33.054288Z",
+  "knot_id": "foolery-af02",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "All 4 child knots (e5f5, 0e94, 73c5, 0770) implemented and pushed to main. SHA=107ab6b. Introduced WorkflowStep/StepPhase/resolveStep abstraction, refactored all internal helpers and both backends, fixed take-loop stop condition, added parity tests, removed dead code. 8 files changed, +317/-140. All gates green (991 tests, 0 lint errors, 0 type errors, build success).",
+    "datetime": "2026-03-02T09:18:33.054288Z",
+    "entry_id": "019cadd7-965e-7c50-9831-83be1a7995e5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

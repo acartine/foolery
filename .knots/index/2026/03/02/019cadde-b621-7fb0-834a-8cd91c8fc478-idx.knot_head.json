@@ -1,0 +1,14 @@
+{
+  "event_id": "019cadde-b621-7fb0-834a-8cd91c8fc478",
+  "occurred_at": "2026-03-02T09:26:19.937172Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c2de",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Improve test coverage for backend-factory.ts (62.9% → 70%+)",
+    "updated_at": "2026-03-02T09:26:19.937172Z"
+  }
+}

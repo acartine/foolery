@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd7-1f82-7d60-a546-84128dbdcf3e",
+  "occurred_at": "2026-03-02T09:18:02.626082Z",
+  "knot_id": "foolery-0770",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added beads parity tests. Removed dead code (ACTION_STATES, ACTION_STATE_SET, REVIEW_ACTION_STATES, OWNER_BY_ACTION_STATE, queueStateToActionState, actionOwnerKind). SHA=c66c592. All gates green.",
+    "datetime": "2026-03-02T09:18:02.626082Z",
+    "entry_id": "019cadd7-1f82-7d60-a546-84039cb52cdf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
