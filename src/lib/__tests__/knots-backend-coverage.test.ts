@@ -286,7 +286,7 @@ const mockPollKnot = vi.fn(
 );
 
 const mockSkillPrompt = vi.fn(
-  async (_stateOrId: string, _repoPath?: string) => {
+  async (_stateOrId: string, _repoPath?: string): Promise<{ ok: true; data: string } | { ok: false; error: string }> => {
     return { ok: true as const, data: "Skill prompt placeholder" };
   },
 );
