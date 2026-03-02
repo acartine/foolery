@@ -179,198 +179,27 @@ interface Bead {
 
 ## API Routes
 
-### Overview
+Foolery exposes a RESTful JSON API over Next.js API Routes. The complete reference lives in two canonical locations:
 
-The Foolery API provides RESTful endpoints that wrap `bd` CLI commands. All endpoints:
-- Accept JSON payloads
-- Return JSON responses
-- Use standard HTTP status codes
-- Run CLI commands via `Bun.spawn()`
-- Handle errors gracefully
+- **Machine-readable**: [`GET /api/openapi.json`](/api/openapi.json) — OpenAPI 3.1.0 specification with schemas, examples, and error responses.
+- **Human-readable**: [`docs/API.md`](./API.md) — Domain overview, workflow recipes, SSE streaming guide, and error-handling guidance.
 
-### Endpoints
+### Quick Summary
 
-#### **GET /api/beads**
-List all Beads with optional filtering and sorting.
+| Domain | Key Endpoints |
+|--------|--------------|
+| Beats (CRUD) | `GET/POST /api/beads`, `GET/PATCH/DELETE /api/beads/[id]` |
+| Beat Actions | `POST /api/beads/[id]/close`, `GET /api/beads/ready`, `POST /api/beads/query` |
+| Dependencies | `GET/POST /api/beads/[id]/deps`, `GET /api/beads/batch-deps` |
+| Waves | `GET /api/waves` |
+| Terminal | `GET/POST/DELETE /api/terminal`, `GET /api/terminal/[sessionId]` (SSE) |
+| Breakdown | `POST/DELETE /api/breakdown`, `GET /api/breakdown/[sessionId]` (SSE), `POST /api/breakdown/apply` |
+| Orchestration | `GET/POST/DELETE /api/orchestration`, `GET /api/orchestration/[sessionId]` (SSE), `POST /api/orchestration/apply` |
+| Settings | `GET/PUT/PATCH /api/settings`, `GET/POST/DELETE /api/settings/agents` |
+| Registry | `GET/POST/DELETE /api/registry`, `GET /api/registry/browse` |
+| System | `GET /api/doctor`, `GET /api/version`, `GET /api/capabilities`, `GET /api/workflows` |
 
-**Query Parameters:**
-- `status?` (string): Filter by status
-- `type?` (string): Filter by type
-- `priority?` (number): Filter by priority
-- `assignee?` (string): Filter by assignee
-- `labels?` (string): Comma-separated label filters
-- `sort?` (string): Sort field (default: 'updated')
-- `order?` (asc|desc): Sort direction
-
-**Response:** `{ beads: Bead[] }`
-
-**Implementation:** Invokes `bd list` with JSON output, applies filters/sorts client-side
-
----
-
-#### **POST /api/beads**
-Create a new Bead.
-
-**Body:**
-```json
-{
-  "title": "string",
-  "description": "string",
-  "type": "feature|bug|task|...",
-  "priority": 0-4,
-  "labels"?: ["string"],
-  "assignee"?: "string"
-}
-```
-
-**Response:** `{ bead: Bead }`
-
-**Implementation:** Invokes `bd create` with provided arguments
-
----
-
-#### **GET /api/beads/ready**
-Get all Beads ready for work (open, not blocked, assigned or available).
-
-**Response:** `{ beads: Bead[] }`
-
-**Implementation:** Filters Beads by status and dependency checks
-
----
-
-#### **POST /api/beads/query**
-Advanced query interface for complex filtering.
-
-**Body:**
-```json
-{
-  "filter": {
-    "status": ["open", "in_progress"],
-    "type": ["feature", "bug"],
-    "priority": { "min": 0, "max": 2 },
-    "assignee": "username",
-    "labels": ["frontend", "ui"],
-    "search": "search text"
-  },
-  "sort": { "field": "priority", "direction": "asc" }
-}
-```
-
-**Response:** `{ beads: Bead[], total: number }`
-
-**Implementation:** Complex filtering and full-text search on Bead collection
-
----
-
-#### **GET /api/beads/[id]**
-Retrieve a single Bead by ID.
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Response:** `{ bead: Bead }`
-
-**Implementation:** Invokes `bd show <id>` with JSON output
-
----
-
-#### **PATCH /api/beads/[id]**
-Update a Bead's properties.
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Body:** Partial Bead object with fields to update
-```json
-{
-  "title"?: "string",
-  "description"?: "string",
-  "status"?: "string",
-  "priority"?: number,
-  "assignee"?: "string",
-  "labels"?: ["string"]
-}
-```
-
-**Response:** `{ bead: Bead }`
-
-**Implementation:** Invokes `bd update <id>` with provided fields
-
----
-
-#### **DELETE /api/beads/[id]**
-Delete/archive a Bead.
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Response:** `{ success: boolean }`
-
-**Implementation:** Invokes `bd delete <id>` or similar archive command
-
----
-
-#### **POST /api/beads/[id]/close**
-Close a Bead (mark as complete).
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Body:**
-```json
-{
-  "reason"?: "string"
-}
-```
-
-**Response:** `{ bead: Bead }`
-
-**Implementation:** Invokes `bd close <id>` with optional reason
-
----
-
-#### **GET /api/beads/[id]/deps**
-Get dependencies for a Bead (blockers, blocked-by, related).
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Query Parameters:**
-- `direction?` (in|out|both): Filter by dependency direction (default: both)
-
-**Response:**
-```json
-{
-  "bead": Bead,
-  "dependencies": {
-    "blocks": Bead[],
-    "blockedBy": Bead[],
-    "related": Bead[]
-  }
-}
-```
-
-**Implementation:** Invokes `bd deps <id>` with JSON output
-
----
-
-#### **POST /api/beads/[id]/deps**
-Create or update a dependency relationship.
-
-**URL Parameters:**
-- `id` (string): Bead ID
-
-**Body:**
-```json
-{
-  "targetId": "string",
-  "type": "blocks|blockedBy|related"
-}
-```
-
-**Response:** `{ dependency: { from: string, to: string, type: string } }`
-
-**Implementation:** Invokes `bd link` or similar command
+All endpoints accept JSON, return JSON, and support multi-repo targeting via the `_repo` parameter. See the [API guide](./API.md) for full details.
 
 ---
 
@@ -724,6 +553,6 @@ foolery/
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2026-02-10
+**Document Version:** 1.1
+**Last Updated:** 2026-03-02
 **Next Review:** After major feature additions or architecture changes
