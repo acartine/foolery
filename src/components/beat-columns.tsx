@@ -342,7 +342,7 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels, isBuiltForRevi
               ? "bg-amber-100 text-amber-700"
               : "bg-blue-100 text-blue-700"
           }`}>
-            {beat.nextActionOwnerKind === "human" ? "Human" : "Agent"}
+            {beat.nextActionOwnerKind === "human" ? "Human next" : "Agent next"}
           </span>
         )}
         {beat.requiresHumanAction && (
@@ -579,80 +579,12 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         );
       },
     },
-    {
-      accessorKey: "state",
-      header: "State",
-      size: 175,
-      minSize: 175,
-      maxSize: 175,
-      cell: ({ row }) => {
-        const isRolling = Boolean(shippingByBeatId[row.original.id]);
-        const isLocked = isTransitionLocked(row.original.labels ?? []);
-        const state = row.original.state;
-        const isTerminal = state === "shipped" || state === "abandoned" || state === "closed";
-        const pulseClass = isRolling && !isTerminal ? "animate-pulse" : "";
-        return (
-          <div className="flex items-center gap-0.5">
-            <VerificationButtons
-              beat={row.original}
-              onUpdateBeat={onUpdateBeat}
-              isRolling={isRolling}
-            />
-            {onUpdateBeat && !isLocked ? (() => {
-              const workflow = builtinProfileDescriptor(row.original.profileId);
-              const nextStates = validNextStates(state, workflow);
-              return (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button type="button" title="Change state" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
-                      <BeatStateBadge state={state} />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuRadioGroup
-                      value={state}
-                      onValueChange={(v) => onUpdateBeat(row.original.id, { state: v })}
-                    >
-                      <DropdownMenuRadioItem value={state}>
-                        {formatStateName(state)} (current)
-                      </DropdownMenuRadioItem>
-                      {nextStates.filter((s) => !isRollbackTransition(state, s)).map((s) => (
-                        <DropdownMenuRadioItem key={s} value={s}>
-                          {formatStateName(s)}
-                        </DropdownMenuRadioItem>
-                      ))}
-                      {nextStates.some((s) => isRollbackTransition(state, s)) && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuLabel className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Undo2 className="size-3" />
-                            Rollback
-                          </DropdownMenuLabel>
-                        </>
-                      )}
-                      {nextStates.filter((s) => isRollbackTransition(state, s)).map((s) => (
-                        <DropdownMenuRadioItem key={s} value={s}>
-                          {formatStateName(s)}
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              );
-            })() : (
-              <BeatStateBadge state={state} className={pulseClass} />
-            )}
-            <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isRolling} />
-          </div>
-        );
-      },
-    },
   ];
 
   if (onShipBeat) {
     columns.push({
       id: "ship",
-      header: "Owner Type",
+      header: "",
       size: 100,
       minSize: 100,
       maxSize: 100,
@@ -662,10 +594,10 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
         if (isTerminal || beat.type === "gate") return null;
         if (isTransitionLocked(beat.labels ?? [])) return null;
-        if (beat.nextActionOwnerKind === "human") {
+        if (beat.isAgentClaimable === false) {
           return (
             <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700">
-              Human
+              Human next
             </span>
           );
         }
@@ -712,6 +644,75 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
       },
     });
   }
+
+  // State column: placed rightmost so it sits after the run/ship column.
+  // Uses percentage width via meta so it can grow and consume space from the title column.
+  columns.push({
+    accessorKey: "state",
+    header: "State",
+    meta: { widthPercent: "15%" },
+    cell: ({ row }) => {
+      const isRolling = Boolean(shippingByBeatId[row.original.id]);
+      const isLocked = isTransitionLocked(row.original.labels ?? []);
+      const state = row.original.state;
+      const isTerminal = state === "shipped" || state === "abandoned" || state === "closed";
+      const pulseClass = isRolling && !isTerminal ? "animate-pulse" : "";
+      return (
+        <div className="flex items-center gap-0.5">
+          <VerificationButtons
+            beat={row.original}
+            onUpdateBeat={onUpdateBeat}
+            isRolling={isRolling}
+          />
+          {onUpdateBeat && !isLocked ? (() => {
+            const workflow = builtinProfileDescriptor(row.original.profileId);
+            const nextStates = validNextStates(state, workflow);
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" title="Change state" className={`cursor-pointer ${pulseClass}`} onClick={(e) => e.stopPropagation()}>
+                    <BeatStateBadge state={state} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenuRadioGroup
+                    value={state}
+                    onValueChange={(v) => onUpdateBeat(row.original.id, { state: v })}
+                  >
+                    <DropdownMenuRadioItem value={state}>
+                      {formatStateName(state)} (current)
+                    </DropdownMenuRadioItem>
+                    {nextStates.filter((s) => !isRollbackTransition(state, s)).map((s) => (
+                      <DropdownMenuRadioItem key={s} value={s}>
+                        {formatStateName(s)}
+                      </DropdownMenuRadioItem>
+                    ))}
+                    {nextStates.some((s) => isRollbackTransition(state, s)) && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Undo2 className="size-3" />
+                          Rollback
+                        </DropdownMenuLabel>
+                      </>
+                    )}
+                    {nextStates.filter((s) => isRollbackTransition(state, s)).map((s) => (
+                      <DropdownMenuRadioItem key={s} value={s}>
+                        {formatStateName(s)}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })() : (
+            <BeatStateBadge state={state} className={pulseClass} />
+          )}
+          <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isRolling} />
+        </div>
+      );
+    },
+  });
 
   if (showRepoColumn) {
     columns.splice(1, 0, {

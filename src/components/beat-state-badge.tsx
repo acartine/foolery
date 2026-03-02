@@ -33,10 +33,17 @@ function stateColor(state: string): string {
   return "bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300";
 }
 
+const STATE_ABBREVIATIONS: Record<string, string> = {
+  Implementation: "Impl",
+};
+
 function formatState(state: string): string {
   return (state ?? "open")
     .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .map((w) => {
+      const capped = w.charAt(0).toUpperCase() + w.slice(1);
+      return STATE_ABBREVIATIONS[capped] ?? capped;
+    })
     .join(" ");
 }
 

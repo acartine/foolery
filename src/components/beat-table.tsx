@@ -705,7 +705,10 @@ function BeatTableContent({
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
-                style={{ width: header.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? header.getSize() : undefined }}
+                style={{
+                  width: (header.column.columnDef.meta as Record<string, string> | undefined)?.widthPercent
+                    ?? (header.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? header.getSize() : undefined),
+                }}
               >
                 {header.isPlaceholder ? null : header.column.getCanSort() ? (
                   <button
@@ -749,7 +752,13 @@ function BeatTableContent({
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? undefined : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")}
+                  className={
+                    (cell.column.columnDef.meta as Record<string, string> | undefined)?.widthPercent
+                      ? "whitespace-nowrap"
+                      : cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER
+                        ? undefined
+                        : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")
+                  }
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   {focusedRowId === row.original.id &&
