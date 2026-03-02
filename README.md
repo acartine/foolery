@@ -5,6 +5,7 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/releases)
 [![License](https://img.shields.io/github/license/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/blob/main/LICENSE)
+[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/acartine/foolery/coverage/coverage.json&style=for-the-badge)](https://github.com/acartine/foolery/actions/workflows/coverage.yml)
 
 <table align="center">
   <tr>

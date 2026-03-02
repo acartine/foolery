@@ -1,0 +1,54 @@
+name: Coverage Badge
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.9"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: bun run test:coverage
+
+      - name: Extract coverage and build badge
+        id: badge
+        run: |
+          node -e "
+            const s = require('./coverage/coverage-summary.json');
+            const pct = s.total.lines.pct;
+            const color = pct >= 80 ? 'brightgreen' : pct >= 60 ? 'yellow' : 'red';
+            const badge = { schemaVersion: 1, label: 'coverage', message: pct + '%', color };
+            require('fs').mkdirSync('/tmp/badge', { recursive: true });
+            require('fs').writeFileSync('/tmp/badge/coverage.json', JSON.stringify(badge, null, 2));
+            console.log('Coverage: ' + pct + '% (' + color + ')');
+          "
+
+      - name: Deploy badge to coverage branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin coverage || true
+          git checkout --orphan coverage-tmp
+          git rm -rf .
+
+          cp /tmp/badge/coverage.json .
+          git add coverage.json
+          git commit -m "Update coverage badge [skip ci]"
+          git push origin HEAD:coverage --force
