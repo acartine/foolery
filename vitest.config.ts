@@ -20,6 +20,7 @@ export default defineConfig({
       reporter: ['text', 'json-summary'],
       exclude: [
         'src/components/**',
+        'src/lib/__tests__/mock-backend-port.ts',
       ],
     },
     projects: [
