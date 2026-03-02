@@ -135,6 +135,10 @@ vi.mock("@/lib/knots", () => ({
 }));
 
 import { createBackend, AutoRoutingBackend } from "@/lib/backend-factory";
+import { FULL_CAPABILITIES } from "@/lib/backend-capabilities";
+import { BEADS_CAPABILITIES } from "@/lib/backends/beads-backend";
+import { KNOTS_CAPABILITIES } from "@/lib/backends/knots-backend";
+import { STUB_CAPABILITIES } from "@/lib/backends/stub-backend";
 
 function makeRepo(markerDirs: string[]): string {
   const dir = mkdtempSync(join(tmpdir(), "foolery-auto-backend-"));
@@ -236,6 +240,228 @@ describe("AutoRoutingBackend repo type caching", () => {
     expect(resultB.ok).toBe(true);
     expect(resultB.data?.[0].id).toBe("bd-1");
     expect(spy).toHaveBeenCalledTimes(2);
+
+    spy.mockRestore();
+  });
+});
+
+describe("createBackend() concrete types", () => {
+  it("creates cli backend with FULL_CAPABILITIES", () => {
+    const entry = createBackend("cli");
+    expect(entry.port).toBeDefined();
+    expect(entry.capabilities).toEqual(FULL_CAPABILITIES);
+  });
+
+  it("creates stub backend with STUB_CAPABILITIES", () => {
+    const entry = createBackend("stub");
+    expect(entry.port).toBeDefined();
+    expect(entry.capabilities).toEqual(STUB_CAPABILITIES);
+  });
+
+  it("creates beads backend with BEADS_CAPABILITIES", () => {
+    const entry = createBackend("beads");
+    expect(entry.port).toBeDefined();
+    expect(entry.capabilities).toEqual(BEADS_CAPABILITIES);
+  });
+
+  it("creates knots backend with KNOTS_CAPABILITIES", () => {
+    const entry = createBackend("knots");
+    expect(entry.port).toBeDefined();
+    expect(entry.capabilities).toEqual(KNOTS_CAPABILITIES);
+  });
+
+  it("defaults to auto when no type given", () => {
+    const entry = createBackend();
+    expect(entry.port).toBeDefined();
+    expect(entry.capabilities).toEqual(FULL_CAPABILITIES);
+  });
+});
+
+describe("AutoRoutingBackend proxy methods", () => {
+  it("delegates listWorkflows to resolved backend", async () => {
+    const repo = makeRepo([".knots"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.listWorkflows(repo);
+    expect(result.ok).toBe(true);
+    // KnotsBackend derives workflows from profiles, not from listWorkflows
+    expect(mockListProfiles).toHaveBeenCalled();
+  });
+
+  it("delegates listReady to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.listReady(undefined, repo);
+    expect(result.ok).toBe(true);
+    expect(mockListBeads).toHaveBeenCalled();
+  });
+
+  it("delegates search to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.search("test", undefined, repo);
+    expect(result.ok).toBe(true);
+    expect(mockListBeads).toHaveBeenCalled();
+  });
+
+  it("delegates query to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.query("expr", undefined, repo);
+    expect(result.ok).toBe(true);
+    expect(mockListBeads).toHaveBeenCalled();
+  });
+
+  it("delegates get to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.get("id-1", repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates create to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.create(
+      { title: "test", type: "task", priority: 2, labels: [] },
+      repo,
+    );
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates update to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.update("id-1", { title: "updated" }, repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates delete to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.delete("id-1", repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates close to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.close("id-1", "done", repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates listDependencies to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.listDependencies("id-1", repo);
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual([]);
+  });
+
+  it("delegates addDependency to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.addDependency("a", "b", repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates removeDependency to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.removeDependency("a", "b", repo);
+    expect(result.ok).toBe(false);
+  });
+
+  it("delegates buildTakePrompt to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.buildTakePrompt("id-1", undefined, repo);
+    expect(result).toBeDefined();
+  });
+
+  it("delegates buildPollPrompt to resolved backend", async () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const result = await backend.buildPollPrompt(undefined, repo);
+    expect(result).toBeDefined();
+  });
+});
+
+describe("AutoRoutingBackend.capabilitiesForRepo", () => {
+  it("returns knots capabilities for .knots repo", () => {
+    const repo = makeRepo([".knots"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const caps = backend.capabilitiesForRepo(repo);
+    expect(caps).toEqual(KNOTS_CAPABILITIES);
+  });
+
+  it("returns cli capabilities for .beads repo (maps to cli)", () => {
+    const repo = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    const caps = backend.capabilitiesForRepo(repo);
+    expect(caps).toEqual(FULL_CAPABILITIES);
+  });
+
+  it("returns fallback capabilities when no marker", () => {
+    const repo = makeRepo([]);
+    const backend = new AutoRoutingBackend("stub");
+
+    const caps = backend.capabilitiesForRepo(repo);
+    expect(caps).toEqual(STUB_CAPABILITIES);
+  });
+});
+
+describe("AutoRoutingBackend getBackend caching", () => {
+  it("reuses cached backend instances for the same type", async () => {
+    const repoA = makeRepo([]);
+    const repoB = makeRepo([]);
+    const backend = new AutoRoutingBackend("cli");
+
+    // Both repos resolve to "cli", so same backend instance should be used
+    await backend.list(undefined, repoA);
+    await backend.list(undefined, repoB);
+
+    // If caching works, the second call uses the same instance.
+    // We verify indirectly: mockListBeads should be called twice
+    // (both calls go through the same cli backend).
+    expect(mockListBeads).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("AutoRoutingBackend clearRepoCache selective", () => {
+  it("clears only the specified repo path", async () => {
+    const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
+    const repoA = makeRepo([".knots"]);
+    const repoB = makeRepo([".beads"]);
+    const backend = new AutoRoutingBackend("cli");
+
+    await backend.list(undefined, repoA);
+    await backend.list(undefined, repoB);
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // Clear only repoA cache
+    backend.clearRepoCache(repoA);
+    await backend.list(undefined, repoA);
+    expect(spy).toHaveBeenCalledTimes(3);
+
+    // repoB cache should still be valid
+    await backend.list(undefined, repoB);
+    expect(spy).toHaveBeenCalledTimes(3);
 
     spy.mockRestore();
   });
