@@ -24,6 +24,10 @@ import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
+function formatLabel(val: string): string {
+  return val.split(/[_-]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
+
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
   "bg-blue-100 text-blue-800",
@@ -387,6 +391,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
   const shippingByBeatId = typeof opts === "boolean" ? {} : (opts.shippingByBeatId ?? {});
   const onAbortShipping = typeof opts === "boolean" ? undefined : opts.onAbortShipping;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
+  const profiles = builtinWorkflowDescriptors();
   const builtForReviewIds = typeof opts === "boolean" ? new Set<string>() : (opts.builtForReviewIds ?? new Set<string>());
   const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
   const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
@@ -541,7 +546,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         const profileId = row.original.profileId;
         const badge = profileId ? (
           <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium leading-none bg-emerald-100 text-emerald-700">
-            {profileId}
+            {formatLabel(profileId)}
           </span>
         ) : (
           <span className="text-muted-foreground text-xs">&mdash;</span>
@@ -549,7 +554,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
 
         if (!onUpdateBeat) return badge;
 
-        const profiles = builtinWorkflowDescriptors();
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -564,7 +568,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               >
                 {profiles.map((p) => (
                   <DropdownMenuRadioItem key={p.id} value={p.id}>
-                    {p.id}
+                    {formatLabel(p.id)}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
