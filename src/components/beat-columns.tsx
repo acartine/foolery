@@ -428,8 +428,10 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
             title="Click to copy ID"
             onClick={(e) => {
               e.stopPropagation();
-              navigator.clipboard.writeText(shortId);
-              toast.success(`Copied: ${shortId}`);
+              navigator.clipboard.writeText(shortId).then(
+                () => toast.success(`Copied: ${shortId}`),
+                () => toast.error("Failed to copy to clipboard"),
+              );
             }}
           >
             {shortId}

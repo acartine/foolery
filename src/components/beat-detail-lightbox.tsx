@@ -265,7 +265,10 @@ function LightboxHeader({
             className="shrink-0 cursor-pointer font-mono text-[11px]"
             onClick={() => {
               const shortId = beatId.replace(/^[^-]+-/, "");
-              navigator.clipboard.writeText(shortId);
+              navigator.clipboard.writeText(shortId).then(
+                () => toast.success(`Copied: ${shortId}`),
+                () => toast.error("Failed to copy to clipboard"),
+              );
             }}
             title="Click to copy ID"
           >
