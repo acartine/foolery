@@ -22,8 +22,10 @@ import {
   getActionAgent,
   addRegisteredAgent,
   removeRegisteredAgent,
+  getStepAgent,
   _resetCache,
 } from "@/lib/settings";
+import { WorkflowStep } from "@/lib/workflows";
 
 const DEFAULT_ACTIONS = {
   take: "",
@@ -492,5 +494,117 @@ describe("removeRegisteredAgent", () => {
     mockReadFile.mockResolvedValue('[agent]\ncommand = "claude"');
     const result = await removeRegisteredAgent("nonexistent");
     expect(result.agents).toEqual({});
+  });
+});
+
+describe("getStepAgent", () => {
+  it("uses pool when dispatchMode is pools and pool is configured", async () => {
+    const toml = [
+      'dispatchMode = "pools"',
+      '[agent]',
+      'command = "default-agent"',
+      '[agents.sonnet]',
+      'command = "claude"',
+      'model = "sonnet-4"',
+      'label = "Claude Sonnet"',
+      '[actions]',
+      'take = "sonnet"',
+      '[[pools.implementation]]',
+      'agentId = "sonnet"',
+      'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    expect(agent.model).toBe("sonnet-4");
+    expect(agent.label).toBe("Claude Sonnet");
+  });
+
+  it("ignores pool when dispatchMode is actions even if pool is configured", async () => {
+    const toml = [
+      'dispatchMode = "actions"',
+      '[agent]',
+      'command = "default-agent"',
+      '[agents.sonnet]',
+      'command = "claude"',
+      'model = "sonnet-4"',
+      'label = "Claude Sonnet"',
+      '[agents.opus]',
+      'command = "claude"',
+      'model = "opus"',
+      'label = "Claude Opus"',
+      '[actions]',
+      'take = "opus"',
+      '[[pools.implementation]]',
+      'agentId = "sonnet"',
+      'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    // Should use the action mapping (opus), not the pool (sonnet)
+    expect(agent.model).toBe("opus");
+    expect(agent.label).toBe("Claude Opus");
+  });
+
+  it("falls back to action mapping when pool step is empty in pools mode", async () => {
+    const toml = [
+      'dispatchMode = "pools"',
+      '[agent]',
+      'command = "default-agent"',
+      '[agents.opus]',
+      'command = "claude"',
+      'model = "opus"',
+      'label = "Claude Opus"',
+      '[actions]',
+      'take = "opus"',
+      '[pools]',
+      'planning = []',
+      'implementation = []',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    // No pool configured for implementation, falls back to action mapping
+    expect(agent.model).toBe("opus");
+    expect(agent.label).toBe("Claude Opus");
+  });
+
+  it("falls back to default agent when no pool and no action mapping", async () => {
+    const toml = [
+      'dispatchMode = "pools"',
+      '[agent]',
+      'command = "my-default"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getStepAgent(WorkflowStep.Planning);
+    expect(agent.command).toBe("my-default");
+  });
+
+  it("defaults dispatchMode to actions when not specified", async () => {
+    const toml = [
+      '[agent]',
+      'command = "default-agent"',
+      '[agents.sonnet]',
+      'command = "claude"',
+      'model = "sonnet-4"',
+      'label = "Claude Sonnet"',
+      '[agents.opus]',
+      'command = "claude"',
+      'model = "opus"',
+      'label = "Claude Opus"',
+      '[actions]',
+      'take = "opus"',
+      '[[pools.implementation]]',
+      'agentId = "sonnet"',
+      'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    // dispatchMode defaults to "actions", so pools should be ignored
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    expect(agent.model).toBe("opus");
+    expect(agent.label).toBe("Claude Opus");
   });
 });
