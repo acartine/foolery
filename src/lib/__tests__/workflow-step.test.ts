@@ -5,6 +5,8 @@ import {
   resolveStep,
   rollbackActivePhase,
   isQueueOrTerminal,
+  isReviewStep,
+  priorActionStep,
   builtinProfileDescriptor,
 } from "@/lib/workflows";
 import type { MemoryWorkflowOwners } from "@/lib/types";
@@ -177,5 +179,39 @@ describe("isQueueOrTerminal", () => {
     expect(isQueueOrTerminal("closed")).toBe(true);
     expect(isQueueOrTerminal("ready_for_planning")).toBe(true);
     expect(isQueueOrTerminal("implementation")).toBe(false);
+  });
+});
+
+describe("isReviewStep", () => {
+  it("returns true for review steps", () => {
+    expect(isReviewStep(WorkflowStep.PlanReview)).toBe(true);
+    expect(isReviewStep(WorkflowStep.ImplementationReview)).toBe(true);
+    expect(isReviewStep(WorkflowStep.ShipmentReview)).toBe(true);
+  });
+
+  it("returns false for action steps", () => {
+    expect(isReviewStep(WorkflowStep.Planning)).toBe(false);
+    expect(isReviewStep(WorkflowStep.Implementation)).toBe(false);
+    expect(isReviewStep(WorkflowStep.Shipment)).toBe(false);
+  });
+});
+
+describe("priorActionStep", () => {
+  it("maps review steps to their corresponding action steps", () => {
+    expect(priorActionStep(WorkflowStep.PlanReview)).toBe(
+      WorkflowStep.Planning,
+    );
+    expect(priorActionStep(WorkflowStep.ImplementationReview)).toBe(
+      WorkflowStep.Implementation,
+    );
+    expect(priorActionStep(WorkflowStep.ShipmentReview)).toBe(
+      WorkflowStep.Shipment,
+    );
+  });
+
+  it("returns null for non-review steps", () => {
+    expect(priorActionStep(WorkflowStep.Planning)).toBeNull();
+    expect(priorActionStep(WorkflowStep.Implementation)).toBeNull();
+    expect(priorActionStep(WorkflowStep.Shipment)).toBeNull();
   });
 });

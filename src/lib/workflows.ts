@@ -81,6 +81,25 @@ export function resolveStep(state: string): ResolvedStep | null {
   return RESOLVED_STEP_MAP.get(state) ?? null;
 }
 
+// ── Review-step helpers ────────────────────────────────────────
+
+/** Maps each review step to the action step it reviews. */
+const REVIEW_TO_ACTION_STEP: ReadonlyMap<WorkflowStep, WorkflowStep> = new Map([
+  [WorkflowStep.PlanReview, WorkflowStep.Planning],
+  [WorkflowStep.ImplementationReview, WorkflowStep.Implementation],
+  [WorkflowStep.ShipmentReview, WorkflowStep.Shipment],
+]);
+
+/** Returns true if the given step is a review step (plan_review, implementation_review, shipment_review). */
+export function isReviewStep(step: WorkflowStep): boolean {
+  return REVIEW_TO_ACTION_STEP.has(step);
+}
+
+/** Returns the action step that precedes a review step, or null for non-review steps. */
+export function priorActionStep(step: WorkflowStep): WorkflowStep | null {
+  return REVIEW_TO_ACTION_STEP.get(step) ?? null;
+}
+
 interface BuiltinProfileConfig {
   id: string;
   description: string;

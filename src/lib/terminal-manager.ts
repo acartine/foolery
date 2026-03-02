@@ -7,7 +7,7 @@ import {
   type InteractionLog,
 } from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
-import { getActionAgent, getStepAgent } from "@/lib/settings";
+import { getActionAgent, getStepAgent, loadSettings } from "@/lib/settings";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -27,10 +27,12 @@ import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
   defaultWorkflowDescriptor,
   isQueueOrTerminal,
+  isReviewStep,
   resolveStep,
   rollbackActivePhase,
   workflowDescriptorById,
 } from "@/lib/workflows";
+import { recordStepAgent } from "@/lib/agent-pool";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -481,8 +483,13 @@ export async function createSession(
   // Resolve agent: try pool selection by workflow step, fall back to action mapping
   const resolved = resolveStep(bead.state);
   const agent = resolved
-    ? await getStepAgent(resolved.step, "take")
+    ? await getStepAgent(resolved.step, "take", beatId)
     : await getActionAgent("take");
+
+  // Record initial agent selection for cross-agent review tracking
+  if (resolved && agent.agentId) {
+    recordStepAgent(beatId, resolved.step, agent.agentId);
+  }
 
   const id = generateId();
   let prompt: string;
@@ -690,6 +697,38 @@ export async function createSession(
         timestamp: Date.now(),
       });
       return null;
+    }
+
+    // Cross-agent review: stop the take loop when transitioning to a review
+    // step and a different agent is available in the pool, so a fresh take
+    // can select the alternative agent instead of reusing this one.
+    if (isReviewStep(resolved.step) && agent.agentId) {
+      try {
+        const settings = await loadSettings();
+        if (settings.dispatchMode === "pools") {
+          const pool = settings.pools[resolved.step] ?? [];
+          const alternatives = pool.filter(
+            (e) =>
+              e.weight > 0 &&
+              settings.agents[e.agentId] &&
+              e.agentId !== agent.agentId,
+          );
+          if (alternatives.length > 0) {
+            console.log(
+              `${tag} STOP: cross-agent review — step "${resolved.step}" has alternative agents` +
+              ` (current: ${agent.agentId}, alternatives: ${alternatives.map((e) => e.agentId).join(", ")})`,
+            );
+            pushEvent({
+              type: "stdout",
+              data: `\x1b[33m--- Take loop stopped: cross-agent review for "${resolved.step}" (deferring to alternative agent) ---\x1b[0m\n`,
+              timestamp: Date.now(),
+            });
+            return null;
+          }
+        }
+      } catch {
+        // Settings load failure should not block the take loop
+      }
     }
 
     // Claim the same beat into its next workflow state.

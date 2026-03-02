@@ -26,6 +26,7 @@ import {
   _resetCache,
 } from "@/lib/settings";
 import { WorkflowStep } from "@/lib/workflows";
+import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
 
 const DEFAULT_ACTIONS = {
   take: "",
@@ -606,5 +607,97 @@ describe("getStepAgent", () => {
     const agent = await getStepAgent(WorkflowStep.Implementation, "take");
     expect(agent.model).toBe("opus");
     expect(agent.label).toBe("Claude Opus");
+  });
+
+  describe("cross-agent review", () => {
+    beforeEach(() => {
+      _resetStepAgentMap();
+    });
+
+    it("excludes prior action agent when selecting for a review step", async () => {
+      const toml = [
+        'dispatchMode = "pools"',
+        '[agent]',
+        'command = "default-agent"',
+        '[agents.opus]',
+        'command = "claude"',
+        'model = "opus"',
+        'label = "Claude Opus"',
+        '[agents.sonnet]',
+        'command = "claude"',
+        'model = "sonnet-4"',
+        'label = "Claude Sonnet"',
+        '[[pools.implementation]]',
+        'agentId = "opus"',
+        'weight = 3',
+        '[[pools.implementation_review]]',
+        'agentId = "opus"',
+        'weight = 3',
+        '[[pools.implementation_review]]',
+        'agentId = "sonnet"',
+        'weight = 1',
+      ].join("\n");
+      mockReadFile.mockResolvedValue(toml);
+
+      // Record that opus did the implementation for beat-1
+      recordStepAgent("beat-1", WorkflowStep.Implementation, "opus");
+
+      // When selecting for implementation review with beatId, opus should be excluded
+      const agent = await getStepAgent(
+        WorkflowStep.ImplementationReview,
+        "take",
+        "beat-1",
+      );
+      expect(agent.agentId).toBe("sonnet");
+      expect(agent.model).toBe("sonnet-4");
+    });
+
+    it("does not exclude when no prior agent is recorded", async () => {
+      const toml = [
+        'dispatchMode = "pools"',
+        '[agent]',
+        'command = "default-agent"',
+        '[agents.opus]',
+        'command = "claude"',
+        'model = "opus"',
+        'label = "Claude Opus"',
+        '[[pools.implementation_review]]',
+        'agentId = "opus"',
+        'weight = 1',
+      ].join("\n");
+      mockReadFile.mockResolvedValue(toml);
+
+      // No prior agent recorded, so opus should be selected normally
+      const agent = await getStepAgent(
+        WorkflowStep.ImplementationReview,
+        "take",
+        "beat-1",
+      );
+      expect(agent.agentId).toBe("opus");
+    });
+
+    it("does not exclude for non-review steps", async () => {
+      const toml = [
+        'dispatchMode = "pools"',
+        '[agent]',
+        'command = "default-agent"',
+        '[agents.opus]',
+        'command = "claude"',
+        'model = "opus"',
+        'label = "Claude Opus"',
+        '[[pools.implementation]]',
+        'agentId = "opus"',
+        'weight = 1',
+      ].join("\n");
+      mockReadFile.mockResolvedValue(toml);
+
+      // Even with beatId, non-review steps should not exclude
+      const agent = await getStepAgent(
+        WorkflowStep.Implementation,
+        "take",
+        "beat-1",
+      );
+      expect(agent.agentId).toBe("opus");
+    });
   });
 });

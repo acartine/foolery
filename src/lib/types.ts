@@ -342,6 +342,8 @@ export interface RegisteredAgent {
   command: string;
   model?: string;
   label?: string;
+  /** Pool agent ID when selected via pool dispatch. */
+  agentId?: string;
 }
 
 export type ActionName =

@@ -19,8 +19,8 @@ import type {
   ActionName,
   ScannedAgent,
 } from "@/lib/types";
-import type { WorkflowStep } from "@/lib/workflows";
-import { resolvePoolAgent } from "@/lib/agent-pool";
+import { type WorkflowStep, isReviewStep, priorActionStep } from "@/lib/workflows";
+import { resolvePoolAgent, getLastStepAgent, recordStepAgent } from "@/lib/agent-pool";
 
 const CONFIG_DIR = join(homedir(), ".config", "foolery");
 const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
@@ -373,17 +373,46 @@ export async function getPoolsSettings(): Promise<PoolsSettings> {
  * Resolve an agent for a workflow step using pool configuration.
  * Falls back to the given action's agent mapping if no pool is configured,
  * then to the default agent command.
+ *
+ * Cross-agent review: for review steps (plan_review, implementation_review,
+ * shipment_review), if we know which agent executed the preceding action step
+ * for the same beat, we exclude that agent from pool selection so a different
+ * agent performs the review. If no alternative is available, the same agent
+ * is used and a warning is logged.
+ *
+ * @param beatId - Beat ID for per-beat agent tracking (optional).
  */
 export async function getStepAgent(
   step: WorkflowStep,
   fallbackAction?: ActionName,
+  beatId?: string,
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
 
   // Only use pools when dispatch mode is "pools"
   if (settings.dispatchMode === "pools") {
-    const poolAgent = resolvePoolAgent(step, settings.pools, settings.agents);
-    if (poolAgent) return poolAgent;
+    // Derive exclusion for cross-agent review
+    let excludeAgentId: string | undefined;
+    if (beatId && isReviewStep(step)) {
+      const actionStep = priorActionStep(step);
+      if (actionStep) {
+        excludeAgentId = getLastStepAgent(beatId, actionStep);
+      }
+    }
+
+    const poolAgent = resolvePoolAgent(
+      step,
+      settings.pools,
+      settings.agents,
+      excludeAgentId,
+    );
+    if (poolAgent) {
+      // Record this selection for future cross-agent review lookups
+      if (beatId && poolAgent.agentId) {
+        recordStepAgent(beatId, step, poolAgent.agentId);
+      }
+      return poolAgent;
+    }
   }
 
   // Fall back to action mapping

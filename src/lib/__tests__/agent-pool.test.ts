@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { selectFromPool, resolvePoolAgent } from "@/lib/agent-pool";
+import {
+  selectFromPool,
+  resolvePoolAgent,
+  recordStepAgent,
+  getLastStepAgent,
+  _resetStepAgentMap,
+} from "@/lib/agent-pool";
 import type { PoolEntry } from "@/lib/types";
 import type { RegisteredAgentConfig, PoolsSettings } from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
@@ -35,6 +41,7 @@ describe("selectFromPool", () => {
       command: "claude",
       model: "opus",
       label: "Claude Opus",
+      agentId: "claude",
     });
   });
 
@@ -46,6 +53,7 @@ describe("selectFromPool", () => {
     // With sonnet at weight 0, only claude should be selected
     const result = selectFromPool(pool, AGENTS);
     expect(result?.model).toBe("opus");
+    expect(result?.agentId).toBe("claude");
   });
 
   it("respects weighted random selection", () => {
@@ -62,16 +70,19 @@ describe("selectFromPool", () => {
     randomSpy.mockReturnValue(0.0);
     let result = selectFromPool(pool, AGENTS);
     expect(result?.label).toBe("Claude Opus");
+    expect(result?.agentId).toBe("claude");
 
     // Roll at ~0.5 should select second (roll = 1.5, after -1 = 0.5, after -1 = -0.5)
     randomSpy.mockReturnValue(0.5);
     result = selectFromPool(pool, AGENTS);
     expect(result?.label).toBe("Claude Sonnet");
+    expect(result?.agentId).toBe("sonnet");
 
     // Roll near 1.0 should select third (roll = 2.99, after -1 = 1.99, after -1 = 0.99, after -1 = -0.01)
     randomSpy.mockReturnValue(0.999);
     result = selectFromPool(pool, AGENTS);
     expect(result?.label).toBe("Codex");
+    expect(result?.agentId).toBe("codex");
 
     randomSpy.mockRestore();
   });
@@ -84,6 +95,64 @@ describe("selectFromPool", () => {
     // Only claude exists, so it should always be selected
     const result = selectFromPool(pool, AGENTS);
     expect(result?.label).toBe("Claude Opus");
+  });
+
+  describe("excludeAgentId (cross-agent review)", () => {
+    it("excludes the specified agent and selects from alternatives", () => {
+      const pool: PoolEntry[] = [
+        { agentId: "claude", weight: 3 },
+        { agentId: "sonnet", weight: 1 },
+      ];
+      // Exclude claude — only sonnet should be selected
+      const result = selectFromPool(pool, AGENTS, "claude");
+      expect(result?.agentId).toBe("sonnet");
+      expect(result?.label).toBe("Claude Sonnet");
+    });
+
+    it("falls back to excluded agent when no alternatives exist", () => {
+      const pool: PoolEntry[] = [{ agentId: "claude", weight: 1 }];
+      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+      const result = selectFromPool(pool, AGENTS, "claude");
+      expect(result?.agentId).toBe("claude");
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("no eligible alternative"),
+      );
+      consoleSpy.mockRestore();
+    });
+
+    it("respects weights among remaining alternatives", () => {
+      const pool: PoolEntry[] = [
+        { agentId: "claude", weight: 100 },
+        { agentId: "sonnet", weight: 3 },
+        { agentId: "codex", weight: 1 },
+      ];
+      const randomSpy = vi.spyOn(Math, "random");
+
+      // Exclude claude. Remaining: sonnet(3) + codex(1) = total 4
+      // Roll 0.0 → 0.0 * 4 = 0.0, first entry (sonnet) selected
+      randomSpy.mockReturnValue(0.0);
+      let result = selectFromPool(pool, AGENTS, "claude");
+      expect(result?.agentId).toBe("sonnet");
+
+      // Roll 0.9 → 0.9 * 4 = 3.6, after -3 = 0.6, after -1 = -0.4 → codex
+      randomSpy.mockReturnValue(0.9);
+      result = selectFromPool(pool, AGENTS, "claude");
+      expect(result?.agentId).toBe("codex");
+
+      randomSpy.mockRestore();
+    });
+
+    it("ignores exclusion when excludeAgentId is not in the pool", () => {
+      const pool: PoolEntry[] = [
+        { agentId: "claude", weight: 1 },
+        { agentId: "sonnet", weight: 1 },
+      ];
+      // Exclude "codex" which is not in this pool — no effect
+      const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.0);
+      const result = selectFromPool(pool, AGENTS, "codex");
+      expect(result?.agentId).toBe("claude");
+      randomSpy.mockRestore();
+    });
   });
 });
 
@@ -120,6 +189,7 @@ describe("resolvePoolAgent", () => {
       command: "claude",
       model: "sonnet-4",
       label: "Claude Sonnet",
+      agentId: "sonnet",
     });
   });
 
@@ -134,5 +204,70 @@ describe("resolvePoolAgent", () => {
       AGENTS,
     );
     expect(result).toBeNull();
+  });
+
+  it("passes excludeAgentId through to selectFromPool", () => {
+    const pools: PoolsSettings = {
+      ...emptyPools,
+      implementation_review: [
+        { agentId: "claude", weight: 3 },
+        { agentId: "sonnet", weight: 1 },
+      ],
+    };
+    // Exclude claude for review — should select sonnet
+    const result = resolvePoolAgent(
+      WorkflowStep.ImplementationReview,
+      pools,
+      AGENTS,
+      "claude",
+    );
+    expect(result?.agentId).toBe("sonnet");
+  });
+});
+
+describe("step agent tracking", () => {
+  beforeEach(() => {
+    _resetStepAgentMap();
+  });
+
+  it("records and retrieves agent for a beat+step", () => {
+    recordStepAgent("beat-1", WorkflowStep.Implementation, "claude");
+    expect(getLastStepAgent("beat-1", WorkflowStep.Implementation)).toBe(
+      "claude",
+    );
+  });
+
+  it("returns undefined for untracked beat+step", () => {
+    expect(
+      getLastStepAgent("beat-1", WorkflowStep.Implementation),
+    ).toBeUndefined();
+  });
+
+  it("tracks different agents for different steps of the same beat", () => {
+    recordStepAgent("beat-1", WorkflowStep.Planning, "sonnet");
+    recordStepAgent("beat-1", WorkflowStep.Implementation, "claude");
+    expect(getLastStepAgent("beat-1", WorkflowStep.Planning)).toBe("sonnet");
+    expect(getLastStepAgent("beat-1", WorkflowStep.Implementation)).toBe(
+      "claude",
+    );
+  });
+
+  it("tracks different agents for different beats", () => {
+    recordStepAgent("beat-1", WorkflowStep.Implementation, "claude");
+    recordStepAgent("beat-2", WorkflowStep.Implementation, "sonnet");
+    expect(getLastStepAgent("beat-1", WorkflowStep.Implementation)).toBe(
+      "claude",
+    );
+    expect(getLastStepAgent("beat-2", WorkflowStep.Implementation)).toBe(
+      "sonnet",
+    );
+  });
+
+  it("overwrites previous agent on re-record", () => {
+    recordStepAgent("beat-1", WorkflowStep.Implementation, "claude");
+    recordStepAgent("beat-1", WorkflowStep.Implementation, "sonnet");
+    expect(getLastStepAgent("beat-1", WorkflowStep.Implementation)).toBe(
+      "sonnet",
+    );
   });
 });
