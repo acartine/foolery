@@ -61,6 +61,51 @@ const OWNER_BY_ACTION_STATE: Record<string, keyof MemoryWorkflowOwners> = {
   shipment_review: "shipment_review",
 };
 
+// ── Step abstraction ────────────────────────────────────────────
+
+export const WorkflowStep = {
+  Planning: "planning",
+  PlanReview: "plan_review",
+  Implementation: "implementation",
+  ImplementationReview: "implementation_review",
+  Shipment: "shipment",
+  ShipmentReview: "shipment_review",
+} as const;
+
+export type WorkflowStep = (typeof WorkflowStep)[keyof typeof WorkflowStep];
+
+export const StepPhase = {
+  Queued: "queued",
+  Active: "active",
+} as const;
+
+export type StepPhase = (typeof StepPhase)[keyof typeof StepPhase];
+
+export interface ResolvedStep {
+  step: WorkflowStep;
+  phase: StepPhase;
+}
+
+const RESOLVED_STEP_MAP: ReadonlyMap<string, ResolvedStep> = new Map<string, ResolvedStep>([
+  ["ready_for_planning", { step: WorkflowStep.Planning, phase: StepPhase.Queued }],
+  ["planning", { step: WorkflowStep.Planning, phase: StepPhase.Active }],
+  ["ready_for_plan_review", { step: WorkflowStep.PlanReview, phase: StepPhase.Queued }],
+  ["plan_review", { step: WorkflowStep.PlanReview, phase: StepPhase.Active }],
+  ["ready_for_implementation", { step: WorkflowStep.Implementation, phase: StepPhase.Queued }],
+  ["implementation", { step: WorkflowStep.Implementation, phase: StepPhase.Active }],
+  ["ready_for_implementation_review", { step: WorkflowStep.ImplementationReview, phase: StepPhase.Queued }],
+  ["implementation_review", { step: WorkflowStep.ImplementationReview, phase: StepPhase.Active }],
+  ["ready_for_shipment", { step: WorkflowStep.Shipment, phase: StepPhase.Queued }],
+  ["shipment", { step: WorkflowStep.Shipment, phase: StepPhase.Active }],
+  ["ready_for_shipment_review", { step: WorkflowStep.ShipmentReview, phase: StepPhase.Queued }],
+  ["shipment_review", { step: WorkflowStep.ShipmentReview, phase: StepPhase.Active }],
+]);
+
+/** Map any raw workflow state string to its step + phase, or null for terminal/deferred/unknown. */
+export function resolveStep(state: string): ResolvedStep | null {
+  return RESOLVED_STEP_MAP.get(state) ?? null;
+}
+
 interface BuiltinProfileConfig {
   id: string;
   description: string;
