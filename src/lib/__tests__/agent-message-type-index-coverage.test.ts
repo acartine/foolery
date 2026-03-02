@@ -5,7 +5,7 @@
  * merging with existing entry, agent dedup, missing raw field.
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { mkdtemp, mkdir, rm, writeFile, readFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { gzip as gzipCallback } from "node:zlib";
 import { promisify } from "node:util";
 import { join } from "node:path";
@@ -16,10 +16,7 @@ const gzip = promisify(gzipCallback);
 import {
   buildMessageTypeIndex,
   updateMessageTypeIndexFromSession,
-  writeMessageTypeIndex,
-  readMessageTypeIndex,
   removeMessageTypeIndex,
-  resolveIndexPath,
 } from "@/lib/agent-message-type-index";
 
 let tempDir: string;
@@ -161,12 +158,6 @@ describe("agent-message-type-index (additional coverage)", () => {
   });
 
   it("updateMessageTypeIndexFromSession with overrideAgent", async () => {
-    const indexDir = join(tempDir, "index-dir");
-    await mkdir(indexDir, { recursive: true });
-
-    // Write initial index
-    const indexPath = join(indexDir, "message-type-index.json");
-
     const filePath = await writeLog(tempDir, "repo/s1.jsonl", [
       {
         kind: "response",
