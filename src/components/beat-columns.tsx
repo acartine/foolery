@@ -12,14 +12,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck } from "lucide-react";
+import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck, Undo2 } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
-import { builtinProfileDescriptor, builtinWorkflowDescriptors } from "@/lib/workflows";
+import { builtinProfileDescriptor, builtinWorkflowDescriptors, isRollbackTransition } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
@@ -614,7 +616,21 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
                       <DropdownMenuRadioItem value={state}>
                         {formatStateName(state)} (current)
                       </DropdownMenuRadioItem>
-                      {nextStates.map((s) => (
+                      {nextStates.filter((s) => !isRollbackTransition(state, s)).map((s) => (
+                        <DropdownMenuRadioItem key={s} value={s}>
+                          {formatStateName(s)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                      {nextStates.some((s) => isRollbackTransition(state, s)) && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuLabel className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Undo2 className="size-3" />
+                            Rollback
+                          </DropdownMenuLabel>
+                        </>
+                      )}
+                      {nextStates.filter((s) => isRollbackTransition(state, s)).map((s) => (
                         <DropdownMenuRadioItem key={s} value={s}>
                           {formatStateName(s)}
                         </DropdownMenuRadioItem>

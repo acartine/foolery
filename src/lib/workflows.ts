@@ -689,6 +689,34 @@ export function beatInRetake(
   return normalizeState(workflow.retakeState) === normalized;
 }
 
+/**
+ * Ordered pipeline index for each workflow state.
+ * A transition is a "rollback" when the target has a lower index than the source.
+ */
+const STATE_PIPELINE_ORDER: ReadonlyMap<string, number> = new Map([
+  ["ready_for_planning", 0],
+  ["planning", 1],
+  ["ready_for_plan_review", 2],
+  ["plan_review", 3],
+  ["ready_for_implementation", 4],
+  ["implementation", 5],
+  ["ready_for_implementation_review", 6],
+  ["implementation_review", 7],
+  ["ready_for_shipment", 8],
+  ["shipment", 9],
+  ["ready_for_shipment_review", 10],
+  ["shipment_review", 11],
+  ["shipped", 12],
+]);
+
+/** Returns true when the transition moves backward through the workflow pipeline. */
+export function isRollbackTransition(from: string, to: string): boolean {
+  const fromIndex = STATE_PIPELINE_ORDER.get(from);
+  const toIndex = STATE_PIPELINE_ORDER.get(to);
+  if (fromIndex === undefined || toIndex === undefined) return false;
+  return toIndex < fromIndex;
+}
+
 // ── Deprecated aliases (use backend-agnostic names above) ──────
 
 /** @deprecated Use DEFAULT_PROFILE_ID */

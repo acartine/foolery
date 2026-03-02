@@ -27,6 +27,7 @@ import {
   beatRequiresHumanAction,
   beatInFinalCut,
   beatInRetake,
+  isRollbackTransition,
   WF_STATE_LABEL_PREFIX,
   WF_PROFILE_LABEL_PREFIX,
 } from "@/lib/workflows";
@@ -762,5 +763,33 @@ describe("builtin profile descriptors edge cases", () => {
     const desc2 = builtinProfileDescriptor("autopilot");
     desc1.states.push("custom_state");
     expect(desc2.states).not.toContain("custom_state");
+  });
+});
+
+// ── isRollbackTransition coverage ───────────────────────────
+
+describe("isRollbackTransition", () => {
+  it("returns true for backward transitions", () => {
+    expect(isRollbackTransition("plan_review", "ready_for_planning")).toBe(true);
+    expect(isRollbackTransition("implementation_review", "ready_for_implementation")).toBe(true);
+    expect(isRollbackTransition("shipment_review", "ready_for_implementation")).toBe(true);
+    expect(isRollbackTransition("shipment_review", "ready_for_shipment")).toBe(true);
+  });
+
+  it("returns false for forward transitions", () => {
+    expect(isRollbackTransition("ready_for_planning", "planning")).toBe(false);
+    expect(isRollbackTransition("planning", "ready_for_plan_review")).toBe(false);
+    expect(isRollbackTransition("implementation", "ready_for_implementation_review")).toBe(false);
+    expect(isRollbackTransition("shipment_review", "shipped")).toBe(false);
+  });
+
+  it("returns false for same-state transitions", () => {
+    expect(isRollbackTransition("planning", "planning")).toBe(false);
+  });
+
+  it("returns false for unknown states", () => {
+    expect(isRollbackTransition("unknown", "planning")).toBe(false);
+    expect(isRollbackTransition("planning", "unknown")).toBe(false);
+    expect(isRollbackTransition("deferred", "planning")).toBe(false);
   });
 });

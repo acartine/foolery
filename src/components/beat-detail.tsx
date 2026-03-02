@@ -6,13 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { X, Clapperboard } from "lucide-react";
+import { X, Clapperboard, Undo2 } from "lucide-react";
 import type { Beat, BeatPriority, MemoryWorkflowDescriptor } from "@/lib/types";
 import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
+import { isRollbackTransition } from "@/lib/workflows";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { BeatStateBadge } from "@/components/beat-state-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
@@ -258,7 +261,21 @@ function BeatDetailHeader({
                   <DropdownMenuRadioItem value={beat.state}>
                     {formatStateName(beat.state)} (current)
                   </DropdownMenuRadioItem>
-                  {nextStates.map((s) => (
+                  {nextStates.filter((s) => !isRollbackTransition(beat.state, s)).map((s) => (
+                    <DropdownMenuRadioItem key={s} value={s}>
+                      {formatStateName(s)}
+                    </DropdownMenuRadioItem>
+                  ))}
+                  {nextStates.some((s) => isRollbackTransition(beat.state, s)) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Undo2 className="size-3" />
+                        Rollback
+                      </DropdownMenuLabel>
+                    </>
+                  )}
+                  {nextStates.filter((s) => isRollbackTransition(beat.state, s)).map((s) => (
                     <DropdownMenuRadioItem key={s} value={s}>
                       {formatStateName(s)}
                     </DropdownMenuRadioItem>
