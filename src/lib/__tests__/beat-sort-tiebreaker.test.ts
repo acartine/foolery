@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Beat } from "@/lib/types";
-import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
+import { compareBeatsByPriorityThenState } from "@/lib/beat-sort";
 
 function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
   return {
@@ -15,7 +15,7 @@ function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
   };
 }
 
-describe("compareBeadsByPriorityThenStatus - ID tiebreaker", () => {
+describe("compareBeatsByPriorityThenState - ID tiebreaker", () => {
   it("falls back to id comparison when priority, status, and title are equal", () => {
     const beats = [
       makeBeat({ id: "z-bead", title: "Same Title" }),
@@ -23,7 +23,7 @@ describe("compareBeadsByPriorityThenStatus - ID tiebreaker", () => {
       makeBeat({ id: "m-bead", title: "Same Title" }),
     ];
 
-    const sorted = beats.slice().sort(compareBeadsByPriorityThenStatus);
+    const sorted = beats.slice().sort(compareBeatsByPriorityThenState);
     expect(sorted.map((b) => b.id)).toEqual(["a-bead", "m-bead", "z-bead"]);
   });
 
@@ -33,7 +33,7 @@ describe("compareBeadsByPriorityThenStatus - ID tiebreaker", () => {
       makeBeat({ id: "zzz", title: "Alpha" }),
     ];
 
-    const sorted = beats.slice().sort(compareBeadsByPriorityThenStatus);
+    const sorted = beats.slice().sort(compareBeatsByPriorityThenState);
     expect(sorted.map((b) => b.id)).toEqual(["zzz", "aaa"]);
   });
 
@@ -44,8 +44,8 @@ describe("compareBeadsByPriorityThenStatus - ID tiebreaker", () => {
       makeBeat({ id: "b", title: "X" }),
     ];
 
-    const sorted1 = beats.slice().sort(compareBeadsByPriorityThenStatus);
-    const sorted2 = beats.slice().reverse().sort(compareBeadsByPriorityThenStatus);
+    const sorted1 = beats.slice().sort(compareBeatsByPriorityThenState);
+    const sorted2 = beats.slice().reverse().sort(compareBeatsByPriorityThenState);
     expect(sorted1.map((b) => b.id)).toEqual(sorted2.map((b) => b.id));
   });
 });

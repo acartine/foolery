@@ -12,10 +12,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   naturalCompare,
-  compareBeadsByPriorityThenStatus,
-} from "@/lib/bead-sort";
-import { buildHierarchy } from "@/lib/bead-hierarchy";
-import { beadToCreateInput } from "@/lib/bead-utils";
+  compareBeatsByPriorityThenState,
+} from "@/lib/beat-sort";
+import { buildHierarchy } from "@/lib/beat-hierarchy";
+import { beatToCreateInput } from "@/lib/beat-utils";
 import type { Beat } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -40,7 +40,7 @@ function makeBeat(overrides: Partial<Beat> = {}): Beat {
 // 3. Bead Sort (SRT-*)
 // ===========================================================================
 
-describe("bead-sort: naturalCompare", () => {
+describe("beat-sort: naturalCompare", () => {
   it("SRT-001: sorts numeric segments numerically", () => {
     expect(naturalCompare("bead-2", "bead-10")).toBeLessThan(0);
     expect(naturalCompare("bead-10", "bead-2")).toBeGreaterThan(0);
@@ -57,23 +57,23 @@ describe("bead-sort: naturalCompare", () => {
   });
 });
 
-describe("bead-sort: compareBeadsByPriorityThenStatus", () => {
+describe("beat-sort: compareBeatsByPriorityThenState", () => {
   it("SRT-004: primary sort by priority (lower number first)", () => {
     const a = makeBeat({ priority: 1 });
     const b = makeBeat({ priority: 3 });
-    expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
+    expect(compareBeatsByPriorityThenState(a, b)).toBeLessThan(0);
   });
 
   it("SRT-005: secondary sort by state rank (queue < action < terminal)", () => {
     const a = makeBeat({ priority: 2, state: "ready_for_planning" });
     const b = makeBeat({ priority: 2, state: "shipped" });
-    expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
+    expect(compareBeatsByPriorityThenState(a, b)).toBeLessThan(0);
   });
 
   it("SRT-006: tertiary sort by title alphabetically", () => {
     const a = makeBeat({ priority: 2, state: "open", title: "Alpha" });
     const b = makeBeat({ priority: 2, state: "open", title: "Zeta" });
-    expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
+    expect(compareBeatsByPriorityThenState(a, b)).toBeLessThan(0);
   });
 
   it("SRT-007: quaternary sort by ID when all else equal", () => {
@@ -89,7 +89,7 @@ describe("bead-sort: compareBeadsByPriorityThenStatus", () => {
       state: "open",
       title: "Same",
     });
-    expect(compareBeadsByPriorityThenStatus(a, b)).toBeLessThan(0);
+    expect(compareBeatsByPriorityThenState(a, b)).toBeLessThan(0);
   });
 
   it.todo("SRT-008: compareBeadsByHierarchicalOrder delegates to naturalCompare");
@@ -99,7 +99,7 @@ describe("bead-sort: compareBeadsByPriorityThenStatus", () => {
 // 4. Bead Hierarchy (HIR-*)
 // ===========================================================================
 
-describe("bead-hierarchy: buildHierarchy", () => {
+describe("beat-hierarchy: buildHierarchy", () => {
   it("HIR-001: flat list of root beads has depth 0", () => {
     const beats = [
       makeBeat({ id: "a" }),
@@ -170,7 +170,7 @@ describe("bead-hierarchy: buildHierarchy", () => {
 // 5. Bead Utils (UTL-*)
 // ===========================================================================
 
-describe("bead-utils: beadToCreateInput", () => {
+describe("beat-utils: beatToCreateInput", () => {
   it("UTL-001: extracts copyable fields", () => {
     const beat = makeBeat({
       title: "Feature X",
@@ -184,7 +184,7 @@ describe("bead-utils: beadToCreateInput", () => {
       notes: "Some notes",
       estimate: 120,
     });
-    const input = beadToCreateInput(beat);
+    const input = beatToCreateInput(beat);
     expect(input.title).toBe("Feature X");
     expect(input.description).toBe("A description");
     expect(input.type).toBe("feature");
@@ -205,7 +205,7 @@ describe("bead-utils: beadToCreateInput", () => {
       created: "2026-01-01",
       updated: "2026-01-02",
     });
-    const input = beadToCreateInput(beat);
+    const input = beatToCreateInput(beat);
     const keys = Object.keys(input);
     expect(keys).not.toContain("id");
     expect(keys).not.toContain("parent");

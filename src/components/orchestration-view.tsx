@@ -45,7 +45,7 @@ import type {
   OrchestrationPlan,
   OrchestrationSession,
 } from "@/lib/types";
-import { naturalCompare } from "@/lib/bead-sort";
+import { naturalCompare } from "@/lib/beat-sort";
 import { normalizeWaveSlugCandidate } from "@/lib/wave-slugs";
 import { consumeDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { useAgentInfo } from "@/hooks/use-agent-info";

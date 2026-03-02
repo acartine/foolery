@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { buildHierarchy } from "@/lib/bead-hierarchy";
-import { compareBeadsByPriorityThenStatus } from "@/lib/bead-sort";
+import { buildHierarchy } from "@/lib/beat-hierarchy";
+import { compareBeatsByPriorityThenState } from "@/lib/beat-sort";
 import type { Beat } from "@/lib/types";
 
 function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
@@ -73,7 +73,7 @@ describe("buildHierarchy", () => {
         makeBeat({ id: "low", parent: "parent", priority: 3 }),
         makeBeat({ id: "high", parent: "parent", priority: 1 }),
       ];
-      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeatsByPriorityThenState);
       expect(result.map((b) => [b.id, b._depth])).toEqual([
         ["parent", 0],
         ["high", 1],
@@ -91,7 +91,7 @@ describe("buildHierarchy", () => {
         makeBeat({ id: "mqv.2.6", parent: "mqv.2", priority: 1 }),
         makeBeat({ id: "mqv.5", parent: "mqv", priority: 1 }),
       ];
-      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeatsByPriorityThenState);
       const ids = result.map((b) => b.id);
       const depths = result.map((b) => b._depth);
 
@@ -128,7 +128,7 @@ describe("buildHierarchy", () => {
         makeBeat({ id: "low", priority: 4 }),
         makeBeat({ id: "high", priority: 1 }),
       ];
-      const result = buildHierarchy(beats, compareBeadsByPriorityThenStatus);
+      const result = buildHierarchy(beats, compareBeatsByPriorityThenState);
       expect(result.map((b) => b.id)).toEqual(["high", "low"]);
     });
   });

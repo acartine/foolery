@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads, fetchWorkflows, updateBead } from "@/lib/api";
-import { naturalCompare } from "@/lib/bead-sort";
+import { naturalCompare } from "@/lib/beat-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
