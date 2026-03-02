@@ -20,7 +20,7 @@ vi.mock("node:child_process", () => ({
 }));
 
 // Import AFTER mocking
-import { _pendingWriteCount, newKnot, updateKnot, listKnots, showKnot } from "../knots";
+import { _pendingWriteCount, _pendingNextCount, newKnot, nextKnot, updateKnot, listKnots, showKnot } from "../knots";
 
 describe("knots write serialization", () => {
   beforeEach(() => {
@@ -171,5 +171,113 @@ describe("knots write serialization", () => {
     expect(r1.ok).toBe(false);
     expect(r2.ok).toBe(true);
     expect(_pendingWriteCount(repo)).toBe(0);
+  });
+});
+
+describe("nextKnot per-id serialization", () => {
+  beforeEach(() => {
+    execFileCallbacks.length = 0;
+  });
+
+  afterEach(() => {
+    for (const entry of execFileCallbacks) {
+      entry.callback(null, "", "");
+    }
+    execFileCallbacks.length = 0;
+  });
+
+  it("serializes concurrent nextKnot calls for the same knot ID", async () => {
+    const repo = "/tmp/test-repo-next-same";
+
+    // Fire two concurrent nextKnot calls for the same ID
+    const next1 = nextKnot("K-0001", repo);
+    const next2 = nextKnot("K-0001", repo);
+
+    // Only the first should have its exec called (repo-write + knot-id queue)
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(1);
+    });
+
+    expect(_pendingNextCount("K-0001")).toBe(2);
+    expect(execFileCallbacks).toHaveLength(1);
+
+    // Complete the first call
+    execFileCallbacks[0].callback(null, "", "");
+
+    // Now the second should start
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(2);
+    });
+
+    execFileCallbacks[1].callback(null, "", "");
+
+    const [r1, r2] = await Promise.all([next1, next2]);
+    expect(r1.ok).toBe(true);
+    expect(r2.ok).toBe(true);
+    expect(_pendingNextCount("K-0001")).toBe(0);
+  });
+
+  it("allows concurrent nextKnot calls for different knot IDs", async () => {
+    // Use different repos so repo-wide write serialization does not interfere
+    const next1 = nextKnot("K-0001", "/tmp/test-repo-next-diff-a");
+    const next2 = nextKnot("K-0002", "/tmp/test-repo-next-diff-b");
+
+    // Both should be in-flight since they have different knot IDs and repos
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(2);
+    });
+
+    execFileCallbacks[0].callback(null, "", "");
+    execFileCallbacks[1].callback(null, "", "");
+
+    const [r1, r2] = await Promise.all([next1, next2]);
+    expect(r1.ok).toBe(true);
+    expect(r2.ok).toBe(true);
+    expect(_pendingNextCount("K-0001")).toBe(0);
+    expect(_pendingNextCount("K-0002")).toBe(0);
+  });
+
+  it("cleans up per-id queue after all calls complete", async () => {
+    const repo = "/tmp/test-repo-next-cleanup";
+
+    const next1 = nextKnot("K-0001", repo);
+
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(1);
+    });
+
+    expect(_pendingNextCount("K-0001")).toBe(1);
+    execFileCallbacks[0].callback(null, "", "");
+
+    await next1;
+    expect(_pendingNextCount("K-0001")).toBe(0);
+  });
+
+  it("continues per-id queue after an error", async () => {
+    const repo = "/tmp/test-repo-next-error";
+
+    const next1 = nextKnot("K-0001", repo);
+    const next2 = nextKnot("K-0001", repo);
+
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(1);
+    });
+
+    // Fail the first call
+    const err = new Error("database locked") as NodeJS.ErrnoException;
+    err.code = 1 as unknown as string;
+    execFileCallbacks[0].callback(err, "", "database is locked");
+
+    // Second should still proceed
+    await vi.waitFor(() => {
+      expect(execFileCallbacks.length).toBe(2);
+    });
+
+    execFileCallbacks[1].callback(null, "", "");
+
+    const [r1, r2] = await Promise.all([next1, next2]);
+    expect(r1.ok).toBe(false);
+    expect(r2.ok).toBe(true);
+    expect(_pendingNextCount("K-0001")).toBe(0);
   });
 });

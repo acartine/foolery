@@ -7,6 +7,7 @@ const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
 const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 20000);
 
 const repoWriteQueues = new Map<string, { tail: Promise<void>; pending: number }>();
+const nextKnotQueues = new Map<string, { tail: Promise<void>; pending: number }>();
 
 interface ExecResult {
   stdout: string;
@@ -197,6 +198,40 @@ async function withWriteSerialization<T>(
     state.pending -= 1;
     if (state.pending === 0) {
       repoWriteQueues.delete(key);
+    }
+  }
+}
+
+async function withNextKnotSerialization<T>(
+  knotId: string,
+  run: () => Promise<T>,
+): Promise<T> {
+  let state = nextKnotQueues.get(knotId);
+  if (!state) {
+    state = { tail: Promise.resolve(), pending: 0 };
+    nextKnotQueues.set(knotId, state);
+  }
+
+  let releaseQueue!: () => void;
+  const gate = new Promise<void>((resolveGate) => {
+    releaseQueue = resolveGate;
+  });
+
+  const waitForTurn = state.tail;
+  state.tail = waitForTurn.then(
+    () => gate,
+    () => gate,
+  );
+  state.pending += 1;
+
+  try {
+    await waitForTurn;
+    return await run();
+  } finally {
+    releaseQueue();
+    state.pending -= 1;
+    if (state.pending === 0) {
+      nextKnotQueues.delete(knotId);
     }
   }
 }
@@ -397,11 +432,13 @@ export async function nextKnot(
   repoPath?: string,
   options?: { actorKind?: string },
 ): Promise<BdResult<void>> {
-  const args = ["next", id];
-  if (options?.actorKind) args.push("--actor-kind", options.actorKind);
-  const { stderr, exitCode } = await execWrite(args, { repoPath });
-  if (exitCode !== 0) return { ok: false, error: stderr || "knots next failed" };
-  return { ok: true };
+  return withNextKnotSerialization(id, async () => {
+    const args = ["next", id];
+    if (options?.actorKind) args.push("--actor-kind", options.actorKind);
+    const { stderr, exitCode } = await execWrite(args, { repoPath });
+    if (exitCode !== 0) return { ok: false, error: stderr || "knots next failed" };
+    return { ok: true };
+  });
 }
 
 export interface PollKnotOptions {
@@ -517,4 +554,9 @@ export async function removeEdge(
 export function _pendingWriteCount(repoPath?: string): number {
   const key = resolveRepoPath(repoPath);
   return repoWriteQueues.get(key)?.pending ?? 0;
+}
+
+/** @internal Exposed for testing only. */
+export function _pendingNextCount(knotId: string): number {
+  return nextKnotQueues.get(knotId)?.pending ?? 0;
 }
