@@ -13,6 +13,7 @@ import { useUpdateUrl } from "@/hooks/use-update-url";
 import { X, Clapperboard, Merge } from "lucide-react";
 import type { BeatPriority } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
+import { builtinWorkflowDescriptors } from "@/lib/workflows";
 
 const commonTypes: string[] = [
   "bug",
@@ -101,6 +102,20 @@ export function BulkEditControls({
           {([0, 1, 2, 3, 4] as const).map((p) => (
             <SelectItem key={p} value={String(p)}>
               P{p}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select
+        onValueChange={(v) => onBulkUpdate({ profileId: v })}
+      >
+        <SelectTrigger className="w-[130px] h-7">
+          <SelectValue placeholder="Set profile..." />
+        </SelectTrigger>
+        <SelectContent>
+          {builtinWorkflowDescriptors().map((p) => (
+            <SelectItem key={p.id} value={p.id}>
+              {formatLabel(p.id)}
             </SelectItem>
           ))}
         </SelectContent>

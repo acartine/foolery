@@ -19,7 +19,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
-import { builtinProfileDescriptor } from "@/lib/workflows";
+import { builtinProfileDescriptor, builtinWorkflowDescriptors } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
@@ -528,6 +528,48 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
           <div className="flex items-center">
             <BeatTypeBadge type={row.original.type} />
           </div>
+        );
+      },
+    },
+    {
+      accessorKey: "profileId",
+      header: "Profile",
+      size: 130,
+      minSize: 130,
+      maxSize: 130,
+      cell: ({ row }) => {
+        const profileId = row.original.profileId;
+        const badge = profileId ? (
+          <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium leading-none bg-emerald-100 text-emerald-700">
+            {profileId}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">&mdash;</span>
+        );
+
+        if (!onUpdateBeat) return badge;
+
+        const profiles = builtinWorkflowDescriptors();
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" title="Change profile" className="cursor-pointer" onClick={(e) => e.stopPropagation()}>
+                {badge}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuRadioGroup
+                value={profileId ?? ""}
+                onValueChange={(v) => onUpdateBeat(row.original.id, { profileId: v })}
+              >
+                {profiles.map((p) => (
+                  <DropdownMenuRadioItem key={p.id} value={p.id}>
+                    {p.id}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
