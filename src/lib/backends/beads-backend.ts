@@ -37,18 +37,11 @@ import {
   deriveWorkflowRuntimeState,
   mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
+  resolveStep,
+  StepPhase,
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "@/lib/workflows";
-
-const ACTION_STATES = new Set<string>([
-  "planning",
-  "plan_review",
-  "implementation",
-  "implementation_review",
-  "shipment",
-  "shipment_review",
-]);
 
 // ── Capabilities ────────────────────────────────────────────────
 
@@ -194,7 +187,7 @@ export class BeadsBackend implements BackendPort {
     const entry = await this.ensureLoaded(rp);
     const blockedIds = new Set(entry.deps.map((d) => d.blockedId));
     let items = Array.from(entry.beads.values()).filter(
-      (b) => b.state.startsWith("ready_for_") && !blockedIds.has(b.id) && !b.requiresHumanAction,
+      (b) => resolveStep(b.state)?.phase === StepPhase.Queued && !blockedIds.has(b.id) && !b.requiresHumanAction,
     );
     items = applyFilters(items, filters);
     return ok(items);
@@ -479,9 +472,9 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
-        if (!b.state.startsWith("ready_for_")) return false;
+        if (resolveStep(b.state)?.phase !== StepPhase.Queued) return false;
       } else if (filters.state === "in_action") {
-        if (!ACTION_STATES.has(b.state)) return false;
+        if (resolveStep(b.state)?.phase !== StepPhase.Active) return false;
       } else {
         if (b.state !== filters.state) return false;
       }

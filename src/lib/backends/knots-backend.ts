@@ -38,28 +38,12 @@ import {
   inferWorkflowMode,
   mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
+  resolveStep,
+  StepPhase,
 } from "@/lib/workflows";
 
 const EDGE_CACHE_TTL_MS = 2_000;
 const WORKFLOW_CACHE_TTL_MS = 10_000;
-
-const ACTION_STATES = new Set<string>([
-  "planning",
-  "plan_review",
-  "implementation",
-  "implementation_review",
-  "shipment",
-  "shipment_review",
-]);
-
-const OWNER_BY_ACTION_STATE: Record<string, keyof MemoryWorkflowOwners> = {
-  planning: "planning",
-  plan_review: "plan_review",
-  implementation: "implementation",
-  implementation_review: "implementation_review",
-  shipment: "shipment",
-  shipment_review: "shipment_review",
-};
 
 export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
   canCreate: true,
@@ -224,34 +208,19 @@ function modeFromOwners(owners: MemoryWorkflowOwners, profile: KnotProfileDefini
   return inferWorkflowMode(profile.id, profile.description, profile.states);
 }
 
-function queueStatesFrom(states: string[]): string[] {
-  return states.filter((state) => state.startsWith("ready_for_"));
-}
-
-function actionStatesFrom(states: string[]): string[] {
-  return states.filter((state) => ACTION_STATES.has(state));
-}
-
-function queueStateToActionState(state: string): string | null {
-  if (!state.startsWith("ready_for_")) return null;
-  const action = state.slice("ready_for_".length);
-  return ACTION_STATES.has(action) ? action : null;
-}
-
 function toDescriptor(profile: KnotProfileDefinition): MemoryWorkflowDescriptor {
   const states = profile.states.map((state) => state.trim().toLowerCase());
   const owners = normalizeOwners(profile);
-  const queueStates = queueStatesFrom(states);
-  const actionStates = actionStatesFrom(states);
+  const queueStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Queued);
+  const actionStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Active);
   const reviewQueueStates = queueStates.filter((state) => {
-    const action = queueStateToActionState(state);
-    return action ? action.endsWith("_review") : false;
+    const resolved = resolveStep(state);
+    return resolved ? resolved.step.endsWith("_review") : false;
   });
   const humanQueueStates = queueStates.filter((queueState) => {
-    const action = queueStateToActionState(queueState);
-    if (!action) return false;
-    const ownerKey = OWNER_BY_ACTION_STATE[action];
-    return ownerKey ? owners[ownerKey] === "human" : false;
+    const resolved = resolveStep(queueState);
+    if (!resolved) return false;
+    return owners[resolved.step] === "human";
   });
   const mode = modeFromOwners(owners, profile);
 
@@ -374,9 +343,9 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
-        if (!b.state.startsWith("ready_for_")) return false;
+        if (resolveStep(b.state)?.phase !== StepPhase.Queued) return false;
       } else if (filters.state === "in_action") {
-        if (!ACTION_STATES.has(b.state)) return false;
+        if (resolveStep(b.state)?.phase !== StepPhase.Active) return false;
       } else {
         if (b.state !== filters.state) return false;
       }

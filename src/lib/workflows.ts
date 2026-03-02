@@ -305,6 +305,10 @@ function actionOwnerKind(workflow: MemoryWorkflowDescriptor, actionState: string
   return workflow.owners?.[ownerKey] ?? "agent";
 }
 
+function stepOwnerKind(workflow: MemoryWorkflowDescriptor, step: WorkflowStep): ActionOwnerKind {
+  return workflow.owners?.[step] ?? "agent";
+}
+
 function modeForOwners(owners: MemoryWorkflowOwners): WorkflowMode {
   const hasHuman = Object.values(owners).some((ownerKind) => ownerKind === "human");
   return hasHuman ? "coarse_human_gated" : "granular_autonomous";
@@ -316,17 +320,17 @@ function descriptorFromProfileConfig(
 ): MemoryWorkflowDescriptor {
   const states = buildStates(config);
   const transitions = filterTransitionsForStates(states, config);
-  const queueStates = queueStatesFrom(states);
-  const actionStates = actionStatesFrom(states);
+  const queueStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Queued);
+  const actionStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Active);
   const reviewQueueStates = queueStates.filter((state) => {
-    const actionState = queueStateToActionState(state);
-    return actionState ? REVIEW_ACTION_STATES.has(actionState) : false;
+    const resolved = resolveStep(state);
+    return resolved ? resolved.step.endsWith("_review") : false;
   });
   const mode = modeForOwners(config.owners);
   const humanQueueStates = queueStates.filter((state) => {
-    const actionState = queueStateToActionState(state);
-    if (!actionState) return false;
-    return actionOwnerKind({ owners: config.owners } as MemoryWorkflowDescriptor, actionState) === "human";
+    const resolved = resolveStep(state);
+    if (!resolved) return false;
+    return stepOwnerKind({ owners: config.owners } as MemoryWorkflowDescriptor, resolved.step) === "human";
   });
   const initialState = config.planningMode === "skipped"
     ? "ready_for_implementation"
@@ -466,8 +470,9 @@ export function mapWorkflowStateToCompatStatus(
   if (TERMINAL_STATUS_STATES.has(normalized) || LEGACY_TERMINAL_STATES.has(normalized)) {
     return "closed";
   }
-  if (normalized.startsWith("ready_for_")) return "open";
-  if (ACTION_STATE_SET.has(normalized) || LEGACY_IN_PROGRESS_STATES.has(normalized)) {
+  const resolved = resolveStep(normalized);
+  if (resolved?.phase === StepPhase.Queued) return "open";
+  if (resolved?.phase === StepPhase.Active || LEGACY_IN_PROGRESS_STATES.has(normalized)) {
     return "in_progress";
   }
   if (normalized === "open") return "open";
@@ -590,24 +595,13 @@ function ownerForCurrentState(
   state: string,
   workflow: MemoryWorkflowDescriptor,
 ): { nextActionState?: string; ownerKind: ActionOwnerKind } {
-  if (state.startsWith("ready_for_")) {
-    const actionState = queueStateToActionState(state);
-    if (actionState) {
-      return {
-        nextActionState: actionState,
-        ownerKind: actionOwnerKind(workflow, actionState),
-      };
-    }
-  }
+  const resolved = resolveStep(state);
+  if (!resolved) return { ownerKind: "none" };
 
-  if (ACTION_STATE_SET.has(state)) {
-    return {
-      nextActionState: state,
-      ownerKind: actionOwnerKind(workflow, state),
-    };
-  }
-
-  return { ownerKind: "none" };
+  return {
+    nextActionState: resolved.step,
+    ownerKind: stepOwnerKind(workflow, resolved.step),
+  };
 }
 
 export interface WorkflowRuntimeState {
@@ -626,7 +620,7 @@ export function deriveWorkflowRuntimeState(
 ): WorkflowRuntimeState {
   const normalizedState = normalizeStateForWorkflow(workflowState, workflow);
   const owner = ownerForCurrentState(normalizedState, workflow);
-  const isQueueState = normalizedState.startsWith("ready_for_");
+  const resolved = resolveStep(normalizedState);
 
   return {
     state: normalizedState,
@@ -634,7 +628,7 @@ export function deriveWorkflowRuntimeState(
     nextActionState: owner.nextActionState,
     nextActionOwnerKind: owner.ownerKind,
     requiresHumanAction: owner.ownerKind === "human",
-    isAgentClaimable: isQueueState && owner.ownerKind === "agent",
+    isAgentClaimable: resolved?.phase === StepPhase.Queued && owner.ownerKind === "agent",
   };
 }
 
