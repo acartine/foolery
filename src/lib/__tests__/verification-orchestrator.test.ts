@@ -57,10 +57,8 @@ vi.mock("node:child_process", () => ({
 
 // Mock terminal-manager (dynamically imported for auto-retry)
 const createSessionMock = vi.fn();
-const createSceneSessionMock = vi.fn();
 vi.mock("@/lib/terminal-manager", () => ({
   createSession: (...args: unknown[]) => createSessionMock(...args),
-  createSceneSession: (...args: unknown[]) => createSceneSessionMock(...args),
 }));
 
 import { onAgentComplete } from "@/lib/verification-orchestrator";
@@ -129,7 +127,6 @@ beforeEach(() => {
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
-  createSceneSessionMock.mockResolvedValue({ id: "mock-scene-session", status: "running" });
 });
 
 // ── Test: disabled verification ─────────────────────────────
@@ -390,7 +387,7 @@ describe("verifier output capture on failure", () => {
     expect(createSessionMock).toHaveBeenCalledWith("foolery-test", "/repo");
   });
 
-  it("auto-launches scene session for scene action on retry", async () => {
+  it("auto-launches take session for scene action on retry", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     mockGet.mockResolvedValue({
@@ -410,7 +407,7 @@ describe("verifier output capture on failure", () => {
 
     await onAgentComplete(["foolery-test"], "scene", "/repo", 0);
 
-    expect(createSceneSessionMock).toHaveBeenCalledWith(["foolery-test"], "/repo");
+    expect(createSessionMock).toHaveBeenCalledWith("foolery-test", "/repo");
   });
 
   it("does not auto-retry when maxRetries is 0", async () => {

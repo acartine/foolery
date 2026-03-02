@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback, useMemo } from "react";
+import { Suspense, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeads, fetchReadyBeads, updateBead } from "@/lib/api";
-import { startSession, startSceneSession, abortSession } from "@/lib/terminal-api";
+import { startSession, abortSession } from "@/lib/terminal-api";
 import { BeatTable } from "@/components/beat-table";
 import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
@@ -16,7 +16,7 @@ import { RetakesView } from "@/components/retakes-view";
 import { BreakdownView } from "@/components/breakdown-view";
 import { AgentHistoryView } from "@/components/agent-history-view";
 import { useAppStore } from "@/stores/app-store";
-import { useTerminalStore } from "@/stores/terminal-store";
+import { useTerminalStore, type QueuedBeat } from "@/stores/terminal-store";
 import { useRetryNotifications } from "@/hooks/use-retry-notifications";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
@@ -24,6 +24,7 @@ import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 
 const DEGRADED_ERROR_PREFIX = "Unable to interact with beads store";
+const MAX_SESSIONS = 5;
 
 /** Thrown when the backend reports a degraded beads store.
  *  React Query keeps previous data when the queryFn throws. */
@@ -88,17 +89,14 @@ function BeadsPageInner() {
     setActiveSession,
     upsertTerminal,
     updateStatus,
+    sceneQueue,
+    enqueueSceneBeats,
+    dequeueSceneBeats,
   } = useTerminalStore();
   const shippingByBeatId = terminals.reduce<Record<string, string>>(
     (acc, terminal) => {
       if (terminal.status === "running") {
-        if (terminal.beatIds && terminal.beatIds.length > 0) {
-          for (const bid of terminal.beatIds) {
-            acc[bid] = terminal.sessionId;
-          }
-        } else {
-          acc[terminal.beatId] = terminal.sessionId;
-        }
+        acc[terminal.beatId] = terminal.sessionId;
       }
       return acc;
     },
@@ -245,9 +243,7 @@ function BeadsPageInner() {
   const handleAbortShipping = useCallback(async (beatId: string) => {
     const running = terminals.find(
       (terminal) =>
-        terminal.status === "running" &&
-        (terminal.beatId === beatId ||
-         (terminal.beatIds && terminal.beatIds.includes(beatId)))
+        terminal.status === "running" && terminal.beatId === beatId
     );
     if (!running) return;
 
@@ -257,31 +253,78 @@ function BeadsPageInner() {
       return;
     }
     updateStatus(running.sessionId, "aborted");
-    toast.success(running.beatIds ? "Scene terminated" : "Take terminated");
+    toast.success("Take terminated");
   }, [terminals, updateStatus]);
 
-  const handleSceneBeats = useCallback(
-    async (ids: string[]) => {
-      const firstBeat = beats.find((b) => ids.includes(b.id));
-      const repo = (firstBeat as unknown as Record<string, unknown>)?._repoPath as string | undefined;
-
-      const result = await startSceneSession(ids, repo ?? activeRepo ?? undefined);
+  const launchTakeForQueuedBeat = useCallback(
+    async (item: QueuedBeat) => {
+      const result = await startSession(item.beatId, item.repoPath ?? activeRepo ?? undefined);
       if (!result.ok || !result.data) {
-        toast.error(result.error ?? "Failed to start scene session");
+        toast.error(result.error ?? `Failed to start session for ${item.beatId}`);
         return;
       }
       upsertTerminal({
         sessionId: result.data.id,
-        beatId: result.data.beatId,
-        beatTitle: result.data.beatTitle,
-        beatIds: result.data.beatIds,
-        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
+        beatId: item.beatId,
+        beatTitle: item.beatTitle,
+        repoPath: result.data.repoPath ?? item.repoPath ?? activeRepo ?? undefined,
         status: "running",
         startedAt: new Date().toISOString(),
       });
     },
-    [beats, activeRepo, upsertTerminal]
+    [activeRepo, upsertTerminal]
   );
+
+  const drainingRef = useRef(false);
+
+  const handleSceneBeats = useCallback(
+    async (ids: string[]) => {
+      const selectedBeats = beats.filter((b) => ids.includes(b.id));
+      if (selectedBeats.length === 0) return;
+
+      const runningCount = terminals.filter((t) => t.status === "running").length;
+      const availableSlots = Math.max(0, MAX_SESSIONS - runningCount);
+
+      const toLaunch = selectedBeats.slice(0, availableSlots);
+      const toQueue = selectedBeats.slice(availableSlots);
+
+      for (const beat of toLaunch) {
+        await handleShipBeat(beat);
+      }
+
+      if (toQueue.length > 0) {
+        const queued: QueuedBeat[] = toQueue.map((beat) => ({
+          beatId: beat.id,
+          beatTitle: beat.title,
+          repoPath: (beat as unknown as Record<string, unknown>)._repoPath as string | undefined,
+        }));
+        enqueueSceneBeats(queued);
+        toast.info(`${toQueue.length} beat${toQueue.length > 1 ? "s" : ""} queued (waiting for available slots)`);
+      }
+    },
+    [beats, terminals, handleShipBeat, enqueueSceneBeats]
+  );
+
+  // Drain the scene queue as sessions complete and slots open up
+  useEffect(() => {
+    if (sceneQueue.length === 0 || drainingRef.current) return;
+
+    const runningCount = terminals.filter((t) => t.status === "running").length;
+    if (runningCount >= MAX_SESSIONS) return;
+
+    const slotsAvailable = MAX_SESSIONS - runningCount;
+    const batch = dequeueSceneBeats(slotsAvailable);
+    if (batch.length === 0) return;
+
+    drainingRef.current = true;
+    const launch = async () => {
+      for (const item of batch) {
+        await launchTakeForQueuedBeat(item);
+      }
+      drainingRef.current = false;
+    };
+    launch();
+  }, [sceneQueue, terminals, dequeueSceneBeats, launchTakeForQueuedBeat]);
 
   const handleMergeBeats = useCallback(
     (ids: string[]) => {

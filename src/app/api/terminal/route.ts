@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSession, createSceneSession, abortSession, listSessions } from "@/lib/terminal-manager";
+import { createSession, abortSession, listSessions } from "@/lib/terminal-manager";
 
 export async function GET() {
   return NextResponse.json({ data: listSessions() });
@@ -7,29 +7,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { beadId, beadIds, prompt, _repo } = body;
+  const { beadId, prompt, _repo } = body;
 
-  // Scene! mode: beadIds is an array of multiple beads
-  if (Array.isArray(beadIds) && beadIds.length > 0) {
-    if (!beadIds.every((id: unknown) => typeof id === "string")) {
-      return NextResponse.json(
-        { error: "beadIds must be an array of strings" },
-        { status: 400 }
-      );
-    }
-    try {
-      const session = await createSceneSession(beadIds, _repo, typeof prompt === "string" ? prompt : undefined);
-      return NextResponse.json({ data: session }, { status: 201 });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create scene session";
-      return NextResponse.json({ error: message }, { status: 500 });
-    }
-  }
-
-  // Take! mode: single beadId
   if (!beadId || typeof beadId !== "string") {
     return NextResponse.json(
-      { error: "beadId or beadIds is required" },
+      { error: "beadId is required" },
       { status: 400 }
     );
   }

@@ -66,10 +66,8 @@ vi.mock("node:child_process", () => ({
 }));
 
 const createSessionMock = vi.fn();
-const createSceneSessionMock = vi.fn();
 vi.mock("@/lib/terminal-manager", () => ({
   createSession: (...args: unknown[]) => createSessionMock(...args),
-  createSceneSession: (...args: unknown[]) => createSceneSessionMock(...args),
 }));
 
 import { onAgentComplete, getVerificationEvents } from "@/lib/verification-orchestrator";
@@ -155,7 +153,6 @@ beforeEach(() => {
   mockUpdate.mockResolvedValue({ ok: true });
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
-  createSceneSessionMock.mockResolvedValue({ id: "mock-scene-session", status: "running" });
 });
 
 // ── getVerificationEvents ───────────────────────────────────
@@ -491,7 +488,7 @@ describe("maybeAutoRetry error handling", () => {
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
   });
 
-  it("logs error when createSceneSession fails", async () => {
+  it("logs error when createSession fails for scene action", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     mockGet.mockResolvedValue({
@@ -501,13 +498,13 @@ describe("maybeAutoRetry error handling", () => {
       }),
     });
 
-    createSceneSessionMock.mockRejectedValue(new Error("scene session failed"));
+    createSessionMock.mockRejectedValue(new Error("session failed"));
 
     spawnMock.mockReturnValue(
       createMockProcess("VERIFICATION_RESULT:fail-bugs\n", 0),
     );
 
-    // Should not throw despite createSceneSession failure
+    // Should not throw despite createSession failure
     await onAgentComplete(["test-beat"], "scene", "/repo", 0);
   });
 });

@@ -462,15 +462,11 @@ async function maybeAutoRetry(
 
   try {
     // Dynamic import to avoid circular dependency (terminal-manager imports us)
-    const { createSession, createSceneSession } = await import(
+    const { createSession } = await import(
       "@/lib/terminal-manager"
     );
 
-    if (action === "scene") {
-      await createSceneSession([beadId], repoPath);
-    } else {
-      await createSession(beadId, repoPath);
-    }
+    await createSession(beadId, repoPath);
     logEvent("retry-session-started", beadId, `attempt=${attemptNum} action=${action}`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

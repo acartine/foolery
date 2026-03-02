@@ -4,8 +4,7 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
-import { connectToSession, abortSession, startSceneSession, startSession } from "@/lib/terminal-api";
-import { fetchBead } from "@/lib/api";
+import { connectToSession, abortSession, startSession } from "@/lib/terminal-api";
 import { useAgentInfo } from "@/hooks/use-agent-info";
 import { AgentInfoBar } from "@/components/agent-info-bar";
 import type { TerminalEvent } from "@/lib/types";
@@ -32,28 +31,6 @@ function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
 
-async function allSceneBeadsAwaitingHumanAction(
-  beatIds: string[],
-  repoPath?: string
-): Promise<boolean> {
-  const results = await Promise.all(beatIds.map((beatId) => fetchBead(beatId, repoPath)));
-  return results.every((result) => {
-    if (!result.ok || !result.data) return false;
-    return result.data.state === "closed" || result.data.requiresHumanAction === true;
-  });
-}
-
-function buildSceneRecoveryPrompt(previousSessionId: string, beatIds: string[]): string {
-  return [
-    `Scene recovery for prior session ${previousSessionId}.`,
-    `Affected beats: ${beatIds.join(", ")}`,
-    "The previous scene stream disconnected before human-action queue state was confirmed.",
-    "Use current repository state. Do not redo already-completed work.",
-    "If any listed beat is incomplete, finish it and land changes on main per project rules.",
-    "If you believe work is complete, verify merge/push state and transition each beat into its profile-defined next queue state (or claim completion command for Knots).",
-    "Finish with a concise per-beat summary: merged yes/no, pushed yes/no, transition/claim completion command result.",
-  ].join("\n");
-}
 
 function buildTakeRecoveryPrompt(beatId: string, previousSessionId: string | null): string {
   return [
@@ -94,7 +71,6 @@ export function TerminalPanel() {
   const activeSessionKey = activeTerminal?.sessionId ?? null;
   const activeBeatId = activeTerminal?.beatId ?? null;
   const activeBeatTitle = activeTerminal?.beatTitle ?? null;
-  const activeBeatIds = activeTerminal?.beatIds;
   const activeRepoPath = activeTerminal?.repoPath;
 
   const termContainerRef = useRef<HTMLDivElement>(null);
@@ -107,8 +83,7 @@ export function TerminalPanel() {
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const isMaximized = panelHeight > 70;
-  const agentAction = activeTerminal?.beatIds ? "scene" : "take";
-  const agentInfo = useAgentInfo(agentAction);
+  const agentInfo = useAgentInfo("take");
 
   const handleAbort = useCallback(async () => {
     if (!activeTerminal) return;
@@ -245,19 +220,10 @@ export function TerminalPanel() {
       fitRef.current = fitAddon;
       const liveTerm = term;
 
-      if (activeBeatIds) {
-        liveTerm.writeln(
-          `\x1b[36m▶ Scene: rolling ${activeBeatIds.length} beats\x1b[0m`
-        );
-        for (const bid of activeBeatIds) {
-          liveTerm.writeln(`\x1b[90m  - ${bid}\x1b[0m`);
-        }
-      } else {
-        liveTerm.writeln(
-          `\x1b[36m▶ Rolling beat: ${beatId}\x1b[0m`
-        );
-        liveTerm.writeln(`\x1b[90m  ${beatTitle}\x1b[0m`);
-      }
+      liveTerm.writeln(
+        `\x1b[36m▶ Rolling beat: ${beatId}\x1b[0m`
+      );
+      liveTerm.writeln(`\x1b[90m  ${beatTitle}\x1b[0m`);
       liveTerm.writeln("");
 
       let recoveryInFlight = false;
@@ -278,72 +244,6 @@ export function TerminalPanel() {
       ) => {
         if (recoveryInFlight) return;
         recoveryInFlight = true;
-
-        const sceneBeatIds = activeBeatIds;
-        if (sceneBeatIds && sceneBeatIds.length > 0) {
-          if (source === "disconnect") {
-            liveTerm.writeln(
-              "\x1b[33m⚠ Scene stream disconnected. Checking human-action state...\x1b[0m"
-            );
-
-            const alreadyAwaitingHumanAction = await allSceneBeadsAwaitingHumanAction(
-              sceneBeatIds,
-              activeRepoPath
-            );
-            if (disposed) return;
-
-            if (alreadyAwaitingHumanAction) {
-              liveTerm.writeln(
-                "\x1b[32m✓ All scene beats already waiting on human action. Closing terminal tab.\x1b[0m"
-              );
-              updateStatus(sessionId, "completed");
-              removeTerminal(sessionId);
-              return;
-            }
-
-            liveTerm.writeln(
-              "\x1b[33m↻ Resuming scene to finish human-action workflow...\x1b[0m"
-            );
-          } else {
-            liveTerm.writeln(
-              "\x1b[33m↻ Retrying scene with recovery prompt...\x1b[0m"
-            );
-          }
-
-          const recovery = await startSceneSession(
-            sceneBeatIds,
-            activeRepoPath,
-            buildSceneRecoveryPrompt(previousSessionId ?? sessionId, sceneBeatIds)
-          );
-          if (disposed) return;
-
-          if (!recovery.ok || !recovery.data) {
-            liveTerm.writeln(
-              `\x1b[31m✗ Recovery launch failed: ${recovery.error ?? "unknown error"}\x1b[0m`
-            );
-            updateStatus(sessionId, "error");
-            toast.error(recovery.error ?? "Failed to launch recovery scene session");
-            recoveryInFlight = false;
-            return;
-          }
-
-          upsertTerminal({
-            sessionId: recovery.data.id,
-            beatId: recovery.data.beatId,
-            beatTitle: recovery.data.beatTitle,
-            beatIds: recovery.data.beatIds,
-            repoPath: recovery.data.repoPath ?? activeRepoPath,
-            status: "running",
-            startedAt: new Date().toISOString(),
-          });
-          removeTerminal(sessionId);
-          toast.info(
-            source === "disconnect"
-              ? "Scene stream disconnected; started automatic recovery session."
-              : "Retry launched with scene recovery prompt."
-          );
-          return;
-        }
 
         liveTerm.writeln(
           "\x1b[33m↻ Retrying take with recovery prompt...\x1b[0m"
@@ -369,7 +269,6 @@ export function TerminalPanel() {
           sessionId: recovery.data.id,
           beatId: recovery.data.beatId,
           beatTitle: recovery.data.beatTitle,
-          beatIds: recovery.data.beatIds,
           repoPath: recovery.data.repoPath ?? activeRepoPath,
           status: "running",
           startedAt: new Date().toISOString(),
@@ -408,8 +307,7 @@ export function TerminalPanel() {
                   liveTerm.writeln(`\x1b[90m  ${index + 1}. ${step}\x1b[0m`);
                 });
                 if (failureHint.kind === "missing_cwd") {
-                  const retryLabel =
-                    activeBeatIds && activeBeatIds.length > 0 ? "Retry Scene" : "Retry Take";
+                  const retryLabel = "Retry Take";
                   liveTerm.writeln(
                     "\x1b[33m? Use the retry action in the toast to relaunch with recovery context.\x1b[0m"
                   );
@@ -443,10 +341,6 @@ export function TerminalPanel() {
         },
         () => {
           if (disposed) return;
-          if (activeBeatIds && activeBeatIds.length > 0) {
-            void launchRecoverySession(sessionId, "disconnect");
-            return;
-          }
           liveTerm.writeln(
             "\x1b[33m⚠ Session stream disconnected. Reopen the tab to retry stream attachment.\x1b[0m"
           );
@@ -473,7 +367,6 @@ export function TerminalPanel() {
     activeSessionKey,
     activeBeatId,
     activeBeatTitle,
-    activeBeatIds,
     activeRepoPath,
     removeTerminal,
     upsertTerminal,
@@ -527,9 +420,7 @@ export function TerminalPanel() {
                   title={isPending ? "Click to keep open" : `${terminal.beatId} - ${terminal.beatTitle}`}
                 >
                   <span className="font-mono">
-                    {terminal.beatIds
-                      ? `Scene (${terminal.beatIds.length})`
-                      : shortId(terminal.beatId)}
+                    {shortId(terminal.beatId)}
                   </span>
                   {terminal.beatTitle && (
                     <span className="truncate text-white/50">

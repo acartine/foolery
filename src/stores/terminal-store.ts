@@ -11,6 +11,12 @@ export interface ActiveTerminal {
   startedAt: string;
 }
 
+export interface QueuedBeat {
+  beatId: string;
+  beatTitle: string;
+  repoPath?: string;
+}
+
 interface TerminalState {
   panelOpen: boolean;
   panelMinimized: boolean;
@@ -18,6 +24,7 @@ interface TerminalState {
   terminals: ActiveTerminal[];
   activeSessionId: string | null;
   pendingClose: Set<string>;
+  sceneQueue: QueuedBeat[];
   openPanel: () => void;
   closePanel: () => void;
   clearTerminals: () => void;
@@ -31,15 +38,19 @@ interface TerminalState {
   updateStatus: (sessionId: string, status: TerminalSessionStatus) => void;
   markPendingClose: (sessionId: string) => void;
   cancelPendingClose: (sessionId: string) => void;
+  enqueueSceneBeats: (items: QueuedBeat[]) => void;
+  dequeueSceneBeats: (count: number) => QueuedBeat[];
+  clearSceneQueue: () => void;
 }
 
-export const useTerminalStore = create<TerminalState>((set) => ({
+export const useTerminalStore = create<TerminalState>((set, get) => ({
   panelOpen: false,
   panelMinimized: false,
   panelHeight: 35,
   terminals: [],
   activeSessionId: null,
   pendingClose: new Set<string>(),
+  sceneQueue: [],
   openPanel: () => set({ panelOpen: true, panelMinimized: false }),
   closePanel: () =>
     set((s) => {
@@ -143,6 +154,15 @@ export const useTerminalStore = create<TerminalState>((set) => ({
       pendingClose.delete(sessionId);
       return { pendingClose };
     }),
+  enqueueSceneBeats: (items) =>
+    set((state) => ({ sceneQueue: [...state.sceneQueue, ...items] })),
+  dequeueSceneBeats: (count) => {
+    const current = get().sceneQueue;
+    const taken = current.slice(0, count);
+    set({ sceneQueue: current.slice(count) });
+    return taken;
+  },
+  clearSceneQueue: () => set({ sceneQueue: [] }),
 }));
 
 export function getActiveTerminal(
