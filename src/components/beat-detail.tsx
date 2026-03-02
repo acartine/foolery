@@ -37,7 +37,7 @@ function validNextStates(
   }
   // Remove current state from options
   next.delete(normalized);
-  return Array.from(next);
+  return Array.from(next).filter((s) => !s.startsWith("ready"));
 }
 
 function formatStateName(state: string): string {
