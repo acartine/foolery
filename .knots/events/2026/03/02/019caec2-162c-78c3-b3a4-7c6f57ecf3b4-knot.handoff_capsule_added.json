@@ -1,0 +1,15 @@
+{
+  "event_id": "019caec2-162c-78c3-b3a4-7c6f57ecf3b4",
+  "occurred_at": "2026-03-02T13:34:41.196982Z",
+  "knot_id": "foolery-f4ff",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed: Added fallback in buildTakePrompt (knots-backend.ts) when kno claim fails for ready_for_* states. New skillPrompt() and nextKnot() functions in knots.ts wrap kno skill and kno next CLI commands. When claim fails, the backend now tries kno show + kno skill to construct a prompt manually, then advances state via kno next. Tests added for both success and failure fallback paths. Commit: c5e362c",
+    "datetime": "2026-03-02T13:34:41.196982Z",
+    "entry_id": "019caec2-162c-78c3-b3a4-7c58026efba0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
