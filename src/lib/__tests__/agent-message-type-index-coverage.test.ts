@@ -172,7 +172,7 @@ describe("agent-message-type-index (additional coverage)", () => {
     // the real index path). We'll just verify no error is thrown.
     await expect(
       updateMessageTypeIndexFromSession(filePath, "test-agent", "test-model"),
-    ).resolves.not.toThrow();
+    ).resolves.toBeUndefined();
   });
 
   it("returns empty index for nonexistent log root", async () => {
@@ -236,6 +236,6 @@ describe("agent-message-type-index (additional coverage)", () => {
   });
 
   it("removeMessageTypeIndex does not throw for nonexistent file", async () => {
-    await expect(removeMessageTypeIndex()).resolves.not.toThrow();
+    await expect(removeMessageTypeIndex()).resolves.toBeUndefined();
   });
 });

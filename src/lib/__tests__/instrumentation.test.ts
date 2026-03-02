@@ -10,6 +10,15 @@ vi.mock("@/lib/registry", () => ({
   backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
 }));
 
+const mockReadMessageTypeIndex = vi.fn();
+const mockBuildMessageTypeIndex = vi.fn();
+const mockWriteMessageTypeIndex = vi.fn();
+vi.mock("@/lib/agent-message-type-index", () => ({
+  readMessageTypeIndex: () => mockReadMessageTypeIndex(),
+  buildMessageTypeIndex: () => mockBuildMessageTypeIndex(),
+  writeMessageTypeIndex: (index: unknown) => mockWriteMessageTypeIndex(index),
+}));
+
 import { register } from "@/instrumentation";
 
 describe("register startup backfills", () => {
@@ -28,6 +37,18 @@ describe("register startup backfills", () => {
       migratedRepoPaths: [],
       fileMissing: false,
     });
+    // Default: index already exists (skip build)
+    mockReadMessageTypeIndex.mockResolvedValue({
+      version: 1,
+      builtAt: "2026-01-01T00:00:00Z",
+      entries: [],
+    });
+    mockBuildMessageTypeIndex.mockResolvedValue({
+      version: 1,
+      builtAt: "2026-01-01T00:00:00Z",
+      entries: [],
+    });
+    mockWriteMessageTypeIndex.mockResolvedValue(undefined);
   });
 
   it("runs both settings and registry backfills", async () => {
@@ -181,5 +202,92 @@ describe("register startup backfills", () => {
     expect(warnSpy).toHaveBeenCalledWith(
       "[registry] startup memory manager backfill failed: 42",
     );
+  });
+
+  // --- Lines 45-66: message-type index startup ---
+
+  it("skips index build when index already exists", async () => {
+    mockReadMessageTypeIndex.mockResolvedValue({
+      version: 1,
+      builtAt: "2026-01-01T00:00:00Z",
+      entries: [{ type: "text", agents: [], firstSeen: "", lastSeen: "", count: 1 }],
+    });
+
+    await register();
+
+    expect(mockReadMessageTypeIndex).toHaveBeenCalledTimes(1);
+    expect(mockBuildMessageTypeIndex).not.toHaveBeenCalled();
+    expect(mockWriteMessageTypeIndex).not.toHaveBeenCalled();
+  });
+
+  it("builds and writes index when none exists", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockReadMessageTypeIndex.mockResolvedValue(null);
+    mockBuildMessageTypeIndex.mockResolvedValue({
+      version: 1,
+      builtAt: "2026-01-01T00:00:00Z",
+      entries: [
+        { type: "text", agents: [], firstSeen: "", lastSeen: "", count: 3 },
+        { type: "tool_use", agents: [], firstSeen: "", lastSeen: "", count: 1 },
+      ],
+    });
+
+    await register();
+
+    expect(mockBuildMessageTypeIndex).toHaveBeenCalledTimes(1);
+    expect(mockWriteMessageTypeIndex).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Building agent message type index"),
+    );
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Built index with 2 message types"),
+    );
+  });
+
+  it("logs singular form when index has exactly one type", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockReadMessageTypeIndex.mockResolvedValue(null);
+    mockBuildMessageTypeIndex.mockResolvedValue({
+      version: 1,
+      builtAt: "2026-01-01T00:00:00Z",
+      entries: [{ type: "text", agents: [], firstSeen: "", lastSeen: "", count: 1 }],
+    });
+
+    await register();
+
+    const builtLog = logSpy.mock.calls.find(
+      (c) => typeof c[0] === "string" && c[0].includes("Built index"),
+    );
+    expect(builtLog).toBeDefined();
+    expect(builtLog![0]).toContain("1 message type.");
+    expect(builtLog![0]).not.toContain("message types.");
+  });
+
+  it("catches and warns when message-type index build throws an Error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockReadMessageTypeIndex.mockRejectedValue(new Error("disk full"));
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[message-types] startup index build failed: disk full",
+    );
+  });
+
+  it("catches and warns when message-type index build throws a non-Error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockReadMessageTypeIndex.mockRejectedValue("unexpected");
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[message-types] startup index build failed: unexpected",
+    );
+  });
+
+  it("skips index build when NEXT_RUNTIME is not nodejs", async () => {
+    process.env.NEXT_RUNTIME = "edge";
+    await register();
+    expect(mockReadMessageTypeIndex).not.toHaveBeenCalled();
   });
 });
