@@ -158,6 +158,7 @@ describe("saveSettings", () => {
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       openrouter: { apiKey: "", enabled: false, model: "" },
+      pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();

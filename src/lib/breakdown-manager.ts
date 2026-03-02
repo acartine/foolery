@@ -7,7 +7,8 @@ import {
   noopInteractionLog,
   type InteractionLog,
 } from "@/lib/interaction-logger";
-import { getActionAgent } from "@/lib/settings";
+import { getStepAgent } from "@/lib/settings";
+import { WorkflowStep } from "@/lib/workflows";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -377,7 +378,7 @@ export async function createBreakdownSession(
     startedAt: new Date().toISOString(),
   };
 
-  const agent = await getActionAgent("breakdown");
+  const agent = await getStepAgent(WorkflowStep.Planning, "breakdown");
 
   const bkdnInteractionLog = await startInteractionLog({
     sessionId: session.id,

@@ -357,6 +357,11 @@ export interface ScannedAgent {
   installed: boolean;
 }
 
+export interface PoolEntry {
+  agentId: string;
+  weight: number;
+}
+
 // ── OpenRouter types ──────────────────────────────────────
 
 // Canonical OpenRouterModel lives in src/lib/openrouter.ts

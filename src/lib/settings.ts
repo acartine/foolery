@@ -12,12 +12,15 @@ import {
   type RegisteredAgentConfig,
   type VerificationSettings,
   type OpenRouterSettings,
+  type PoolsSettings,
 } from "@/lib/schemas";
 import type {
   RegisteredAgent,
   ActionName,
   ScannedAgent,
 } from "@/lib/types";
+import type { WorkflowStep } from "@/lib/workflows";
+import { resolvePoolAgent } from "@/lib/agent-pool";
 
 const CONFIG_DIR = join(homedir(), ".config", "foolery");
 const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
@@ -232,6 +235,7 @@ export type SettingsPartial = Partial<{
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
   openrouter: Partial<FoolerySettings["openrouter"]>;
+  pools: Partial<FoolerySettings["pools"]>;
 }>;
 
 /**
@@ -252,6 +256,7 @@ export async function updateSettings(
     backend:      partial.backend      !== undefined ? { ...current.backend,      ...partial.backend }      : current.backend,
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
     openrouter:   partial.openrouter   !== undefined ? { ...current.openrouter,   ...partial.openrouter }   : current.openrouter,
+    pools:        partial.pools        !== undefined ? { ...current.pools,        ...partial.pools }        : current.pools,
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -354,6 +359,40 @@ export async function scanForAgents(): Promise<ScannedAgent[]> {
     }),
   );
   return results;
+}
+
+/** Returns the pools settings. */
+export async function getPoolsSettings(): Promise<PoolsSettings> {
+  const settings = await loadSettings();
+  return settings.pools;
+}
+
+/**
+ * Resolve an agent for a workflow step using pool configuration.
+ * Falls back to the given action's agent mapping if no pool is configured,
+ * then to the default agent command.
+ */
+export async function getStepAgent(
+  step: WorkflowStep,
+  fallbackAction?: ActionName,
+): Promise<RegisteredAgent> {
+  const settings = await loadSettings();
+
+  // Try pool selection first
+  const poolAgent = resolvePoolAgent(step, settings.pools, settings.agents);
+  if (poolAgent) return poolAgent;
+
+  // Fall back to action mapping
+  if (fallbackAction) {
+    const agentId = settings.actions[fallbackAction] ?? "";
+    if (agentId && agentId !== "default" && settings.agents[agentId]) {
+      const reg = settings.agents[agentId];
+      return { command: reg.command, model: reg.model, label: reg.label };
+    }
+  }
+
+  // Fall back to default agent
+  return { command: settings.agent.command };
 }
 
 /** Returns the OpenRouter settings. */

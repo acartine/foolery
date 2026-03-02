@@ -7,7 +7,8 @@ import {
   noopInteractionLog,
   type InteractionLog,
 } from "@/lib/interaction-logger";
-import { getActionAgent } from "@/lib/settings";
+import { getStepAgent } from "@/lib/settings";
+import { WorkflowStep } from "@/lib/workflows";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -652,7 +653,7 @@ export async function createOrchestrationSession(
     objective: objective?.trim() || undefined,
   };
 
-  const agent = await getActionAgent("direct");
+  const agent = await getStepAgent(WorkflowStep.Planning, "direct");
 
   const orchInteractionLog = await startInteractionLog({
     sessionId: session.id,

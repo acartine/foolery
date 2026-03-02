@@ -163,6 +163,33 @@ export const openrouterSettingsSchema = z
   })
   .default({ apiKey: "", enabled: false, model: "" });
 
+// Agent pool entry: weighted agent selection
+export const poolEntrySchema = z.object({
+  /** ID of a registered agent. */
+  agentId: z.string().min(1),
+  /** Relative weight for selection probability. */
+  weight: z.number().min(0).default(1),
+});
+
+// Pools keyed by workflow step
+export const poolsSettingsSchema = z
+  .object({
+    planning: z.array(poolEntrySchema).default([]),
+    plan_review: z.array(poolEntrySchema).default([]),
+    implementation: z.array(poolEntrySchema).default([]),
+    implementation_review: z.array(poolEntrySchema).default([]),
+    shipment: z.array(poolEntrySchema).default([]),
+    shipment_review: z.array(poolEntrySchema).default([]),
+  })
+  .default({
+    planning: [],
+    plan_review: [],
+    implementation: [],
+    implementation_review: [],
+    shipment: [],
+    shipment_review: [],
+  });
+
 export const foolerySettingsSchema = z.object({
   agent: agentSettingsSchema.default({ command: "claude" }),
   agents: agentsMapSchema,
@@ -171,6 +198,7 @@ export const foolerySettingsSchema = z.object({
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
   openrouter: openrouterSettingsSchema,
+  pools: poolsSettingsSchema,
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
@@ -181,6 +209,8 @@ export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;
+export type PoolEntry = z.infer<typeof poolEntrySchema>;
+export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

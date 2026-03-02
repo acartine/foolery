@@ -1,5 +1,5 @@
 import type { BdResult, RegisteredAgent, ScannedAgent } from "./types";
-import type { FoolerySettings, ActionAgentMappings } from "./schemas";
+import type { FoolerySettings, ActionAgentMappings, PoolsSettings } from "./schemas";
 
 const SETTINGS_BASE = "/api/settings";
 
@@ -106,4 +106,10 @@ export function validateOpenRouterKey(apiKey: string): Promise<BdResult<{ valid:
     method: "POST",
     body: JSON.stringify({ apiKey }),
   });
+}
+
+export function savePools(
+  pools: Partial<PoolsSettings>,
+): Promise<BdResult<FoolerySettings>> {
+  return patchSettings({ pools } as Partial<FoolerySettings>);
 }
