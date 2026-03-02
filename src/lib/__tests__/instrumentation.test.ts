@@ -15,6 +15,7 @@ import { register } from "@/instrumentation";
 describe("register startup backfills", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
     delete process.env.NEXT_RUNTIME;
     mockBackfillMissingSettingsDefaults.mockResolvedValue({
       settings: {},
@@ -47,5 +48,138 @@ describe("register startup backfills", () => {
     await register();
     expect(mockBackfillMissingSettingsDefaults).toHaveBeenCalledTimes(1);
     expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Line 9: early return for non-nodejs runtimes ---
+  it("skips all backfills when NEXT_RUNTIME is not nodejs", async () => {
+    process.env.NEXT_RUNTIME = "edge";
+    await register();
+    expect(mockBackfillMissingSettingsDefaults).not.toHaveBeenCalled();
+    expect(mockBackfillMissingRepoMemoryManagerTypes).not.toHaveBeenCalled();
+  });
+
+  // --- Lines 18-22: settings changed path (plural) ---
+  it("logs count when settings backfill changes multiple settings", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockBackfillMissingSettingsDefaults.mockResolvedValue({
+      settings: {},
+      missingPaths: ["a.b", "c.d"],
+      fileMissing: false,
+      changed: true,
+    });
+
+    await register();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("backfilled 2 missing settings"),
+    );
+  });
+
+  // --- Line 20: settings changed path (singular) ---
+  it("logs singular form when exactly one setting is backfilled", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockBackfillMissingSettingsDefaults.mockResolvedValue({
+      settings: {},
+      missingPaths: ["a.b"],
+      fileMissing: false,
+      changed: true,
+    });
+
+    await register();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("backfilled 1 missing setting in"),
+    );
+    // Ensure it does NOT say "settings" (plural)
+    const loggedMessage = logSpy.mock.calls[0]?.[0] as string;
+    expect(loggedMessage).not.toContain("missing settings");
+  });
+
+  // --- Lines 23-25: settings backfill throws Error instance ---
+  it("catches and warns when settings backfill throws an Error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockBackfillMissingSettingsDefaults.mockRejectedValue(
+      new Error("file not found"),
+    );
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[settings] startup backfill failed: file not found",
+    );
+    // Registry backfill should still run
+    expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Lines 23-25: settings backfill throws non-Error ---
+  it("catches and warns when settings backfill throws a non-Error value", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockBackfillMissingSettingsDefaults.mockRejectedValue("string error");
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[settings] startup backfill failed: string error",
+    );
+    expect(mockBackfillMissingRepoMemoryManagerTypes).toHaveBeenCalledTimes(1);
+  });
+
+  // --- Line 32: registry backfill reports an error ---
+  it("warns when registry backfill reports an error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
+      changed: false,
+      migratedRepoPaths: [],
+      fileMissing: false,
+      error: "registry locked",
+    });
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[registry] startup memory manager backfill skipped: registry locked",
+    );
+  });
+
+  // --- Lines 34-38: registry changed path ---
+  it("logs count when registry backfill migrates repos", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockBackfillMissingRepoMemoryManagerTypes.mockResolvedValue({
+      changed: true,
+      migratedRepoPaths: ["/repo/a", "/repo/b", "/repo/c"],
+      fileMissing: false,
+    });
+
+    await register();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining("backfilled memory manager metadata for 3 repos"),
+    );
+  });
+
+  // --- Lines 39-41: registry backfill throws Error instance ---
+  it("catches and warns when registry backfill throws an Error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockBackfillMissingRepoMemoryManagerTypes.mockRejectedValue(
+      new Error("corrupt registry"),
+    );
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[registry] startup memory manager backfill failed: corrupt registry",
+    );
+  });
+
+  // --- Lines 39-41: registry backfill throws non-Error ---
+  it("catches and warns when registry backfill throws a non-Error value", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockBackfillMissingRepoMemoryManagerTypes.mockRejectedValue(42);
+
+    await register();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[registry] startup memory manager backfill failed: 42",
+    );
   });
 });
