@@ -1,4 +1,5 @@
 import type { Beat } from "@/lib/types";
+import { resolveStep, StepPhase } from "@/lib/workflows";
 
 /**
  * Natural string comparison that treats embedded numeric segments as numbers.
@@ -24,9 +25,12 @@ export function naturalCompare(a: string, b: string): number {
 }
 
 function stateSortRank(state: Beat["state"]): number {
-  if (state.startsWith("ready_for_")) return 0;
-  if (state === "planning" || state === "implementation" || state === "shipment") return 1;
-  if (state.endsWith("_review")) return 2;
+  const resolved = resolveStep(state);
+  if (resolved) {
+    if (resolved.phase === StepPhase.Queued) return 0;
+    // Active non-review → 1, active review → 2
+    return resolved.step.endsWith("_review") ? 2 : 1;
+  }
   if (state === "shipped" || state === "abandoned" || state === "closed") return 3;
   if (state === "deferred" || state === "blocked") return 4;
   return 5;

@@ -28,6 +28,7 @@ import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-inde
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import {
   defaultWorkflowDescriptor,
+  resolveStep,
   workflowDescriptorById,
 } from "@/lib/workflows";
 
@@ -690,15 +691,17 @@ export async function createSession(
       return null;
     }
 
-    if (!current.isAgentClaimable) {
+    const resolved = resolveStep(current.state);
+    const stepOwner = resolved ? workflow.owners?.[resolved.step] ?? "agent" : "none";
+    if (!resolved || stepOwner !== "agent") {
       console.log(
-        `${tag} STOP: not agent-claimable — state=${current.state}` +
-        ` nextActionOwnerKind=${current.nextActionOwnerKind}` +
-        ` requiresHumanAction=${current.requiresHumanAction}`,
+        `${tag} STOP: not agent-owned — state=${current.state}` +
+        ` step=${resolved?.step ?? "none"} phase=${resolved?.phase ?? "none"}` +
+        ` stepOwner=${stepOwner}`,
       );
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Take loop stopped: state "${current.state}" is not agent-claimable (owner=${current.nextActionOwnerKind}) after ${takeIteration} iteration(s) ---\x1b[0m\n`,
+        data: `\x1b[33m--- Take loop stopped: state "${current.state}" is not agent-owned (step=${resolved?.step ?? "none"}, owner=${stepOwner}) after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
       return null;
