@@ -320,6 +320,8 @@ vi.mock("@/lib/knots", () => ({
     mockClaimKnot(id, repoPath, options),
   pollKnot: (repoPath?: string, options?: Record<string, unknown>) =>
     mockPollKnot(repoPath, options),
+  skillPrompt: vi.fn(async () => ({ ok: true as const, data: "Skill prompt placeholder" })),
+  nextKnot: vi.fn(async () => ({ ok: true as const })),
 }));
 
 import { KnotsBackend, KNOTS_CAPABILITIES } from "@/lib/backends/knots-backend";

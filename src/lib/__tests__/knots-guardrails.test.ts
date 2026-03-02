@@ -224,6 +224,8 @@ vi.mock("@/lib/knots", () => ({
   removeEdge: (src: string, kind: string, dst: string) => mockRemoveEdge(src, kind, dst),
   claimKnot: (id: string) => mockClaimKnot(id),
   pollKnot: () => mockPollKnot(),
+  skillPrompt: vi.fn(async () => ({ ok: true as const, data: "Skill prompt placeholder" })),
+  nextKnot: vi.fn(async () => ({ ok: true as const })),
 }));
 
 import { KnotsBackend } from "@/lib/backends/knots-backend";

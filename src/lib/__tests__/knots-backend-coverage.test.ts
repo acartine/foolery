@@ -285,6 +285,22 @@ const mockPollKnot = vi.fn(
   },
 );
 
+const mockSkillPrompt = vi.fn(
+  async (_stateOrId: string, _repoPath?: string) => {
+    return { ok: true as const, data: "Skill prompt placeholder" };
+  },
+);
+
+const mockNextKnot = vi.fn(
+  async (
+    _id: string,
+    _repoPath?: string,
+    _options?: Record<string, unknown>,
+  ) => {
+    return { ok: true as const };
+  },
+);
+
 vi.mock("@/lib/knots", () => ({
   listProfiles: (repoPath?: string) => mockListProfiles(repoPath),
   listWorkflows: vi.fn(async () => ({ ok: true as const, data: [] })),
@@ -316,6 +332,10 @@ vi.mock("@/lib/knots", () => ({
   ) => mockClaimKnot(id, repoPath, options),
   pollKnot: (repoPath?: string, options?: Record<string, unknown>) =>
     mockPollKnot(repoPath, options),
+  skillPrompt: (stateOrId: string, repoPath?: string) =>
+    mockSkillPrompt(stateOrId, repoPath),
+  nextKnot: (id: string, repoPath?: string, options?: Record<string, unknown>) =>
+    mockNextKnot(id, repoPath, options),
 }));
 
 import { KnotsBackend } from "@/lib/backends/knots-backend";
@@ -543,11 +563,31 @@ describe("KnotsBackend coverage: buildTakePrompt parent/scene mode", () => {
     expect(result.data?.claimed).toBe(true);
   });
 
-  it("returns error when claim fails", async () => {
+  it("falls back to skillPrompt when claim fails", async () => {
+    const backend = new KnotsBackend("/repo");
+    mockClaimKnot.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Ready For Shipment has no skill",
+    });
+
+    insertKnot({ id: "FB-1", title: "Fallback Beat", state: "ready_for_shipment" });
+    const result = await backend.buildTakePrompt("FB-1");
+
+    expect(result.ok).toBe(true);
+    expect(result.data?.claimed).toBe(false);
+    expect(result.data?.prompt).toContain("Fallback Beat");
+    expect(result.data?.prompt).toContain("Skill prompt placeholder");
+  });
+
+  it("returns original claim error when fallback skillPrompt also fails", async () => {
     const backend = new KnotsBackend("/repo");
     mockClaimKnot.mockResolvedValueOnce({
       ok: false as const,
       error: "locked by another agent",
+    });
+    mockSkillPrompt.mockResolvedValueOnce({
+      ok: false as const,
+      error: "unknown skill",
     });
 
     insertKnot({ id: "LOCKED-1", title: "Locked" });

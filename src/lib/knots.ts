@@ -383,6 +383,27 @@ export async function claimKnot(
   }
 }
 
+export async function skillPrompt(
+  stateOrId: string,
+  repoPath?: string,
+): Promise<BdResult<string>> {
+  const { stdout, stderr, exitCode } = await exec(["skill", stateOrId], { repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "knots skill failed" };
+  return { ok: true, data: stdout };
+}
+
+export async function nextKnot(
+  id: string,
+  repoPath?: string,
+  options?: { actorKind?: string },
+): Promise<BdResult<void>> {
+  const args = ["next", id];
+  if (options?.actorKind) args.push("--actor-kind", options.actorKind);
+  const { stderr, exitCode } = await execWrite(args, { repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "knots next failed" };
+  return { ok: true };
+}
+
 export interface PollKnotOptions {
   stage?: string;
   agentName?: string;
