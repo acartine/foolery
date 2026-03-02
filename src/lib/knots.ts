@@ -6,6 +6,8 @@ const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
 const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 20000);
 
+const repoWriteQueues = new Map<string, { tail: Promise<void>; pending: number }>();
+
 interface ExecResult {
   stdout: string;
   stderr: string;
@@ -164,6 +166,48 @@ async function exec(args: string[], options?: ExecOptions): Promise<ExecResult> 
   });
 }
 
+async function withWriteSerialization<T>(
+  repoPath: string | undefined,
+  run: () => Promise<T>,
+): Promise<T> {
+  const key = resolveRepoPath(repoPath);
+  let state = repoWriteQueues.get(key);
+  if (!state) {
+    state = { tail: Promise.resolve(), pending: 0 };
+    repoWriteQueues.set(key, state);
+  }
+
+  let releaseQueue!: () => void;
+  const gate = new Promise<void>((resolveGate) => {
+    releaseQueue = resolveGate;
+  });
+
+  const waitForTurn = state.tail;
+  state.tail = waitForTurn.then(
+    () => gate,
+    () => gate,
+  );
+  state.pending += 1;
+
+  try {
+    await waitForTurn;
+    return await run();
+  } finally {
+    releaseQueue();
+    state.pending -= 1;
+    if (state.pending === 0) {
+      repoWriteQueues.delete(key);
+    }
+  }
+}
+
+async function execWrite(
+  args: string[],
+  options?: ExecOptions,
+): Promise<ExecResult> {
+  return withWriteSerialization(options?.repoPath, () => exec(args, options));
+}
+
 function parseJson<T>(raw: string): T {
   return JSON.parse(raw) as T;
 }
@@ -304,7 +348,7 @@ export async function newKnot(
 
   args.push("--", title);
 
-  const { stdout, stderr, exitCode } = await exec(args, { repoPath });
+  const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots new failed" };
 
   const match = /^created\s+(\S+)/m.exec(stdout);
@@ -330,7 +374,7 @@ export async function claimKnot(
   if (options?.agentName) args.push("--agent-name", options.agentName);
   if (options?.agentModel) args.push("--agent-model", options.agentModel);
   if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
-  const { stdout, stderr, exitCode } = await exec(args, { repoPath });
+  const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots claim failed" };
   try {
     return { ok: true, data: parseJson<KnotClaimPrompt>(stdout) };
@@ -355,7 +399,7 @@ export async function pollKnot(
   if (options?.agentName) args.push("--agent-name", options.agentName);
   if (options?.agentModel) args.push("--agent-model", options.agentModel);
   if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
-  const { stdout, stderr, exitCode } = await exec(args, { repoPath });
+  const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots poll --claim failed" };
   try {
     return { ok: true, data: parseJson<KnotClaimPrompt>(stdout) };
@@ -404,7 +448,7 @@ export async function updateKnot(
 
   if (input.force) args.push("--force");
 
-  const { stderr, exitCode } = await exec(args, { repoPath });
+  const { stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots update failed" };
   return { ok: true };
 }
@@ -432,7 +476,7 @@ export async function addEdge(
   dst: string,
   repoPath?: string,
 ): Promise<BdResult<void>> {
-  const { stderr, exitCode } = await exec(["edge", "add", src, kind, dst], { repoPath });
+  const { stderr, exitCode } = await execWrite(["edge", "add", src, kind, dst], { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots edge add failed" };
   return { ok: true };
 }
@@ -443,7 +487,13 @@ export async function removeEdge(
   dst: string,
   repoPath?: string,
 ): Promise<BdResult<void>> {
-  const { stderr, exitCode } = await exec(["edge", "remove", src, kind, dst], { repoPath });
+  const { stderr, exitCode } = await execWrite(["edge", "remove", src, kind, dst], { repoPath });
   if (exitCode !== 0) return { ok: false, error: stderr || "knots edge remove failed" };
   return { ok: true };
+}
+
+/** @internal Exposed for testing only. */
+export function _pendingWriteCount(repoPath?: string): number {
+  const key = resolveRepoPath(repoPath);
+  return repoWriteQueues.get(key)?.pending ?? 0;
 }
