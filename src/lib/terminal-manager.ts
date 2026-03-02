@@ -867,6 +867,12 @@ export async function createSession(
         const state = r.ok && r.data ? r.data.state : "unknown";
         const claimable = r.ok && r.data ? r.data.isAgentClaimable : "unknown";
         console.log(`${tag} post-close beat state: beat=${beatId} state=${state} isAgentClaimable=${claimable}`);
+        interactionLog.logBeatState({
+          beatId,
+          state,
+          phase: "after_prompt",
+          iteration: takeIteration,
+        });
       }).catch(() => {
         console.log(`${tag} post-close beat fetch failed: beat=${beatId}`);
       });
@@ -924,6 +930,14 @@ export async function createSession(
       takeChild.stderr?.removeAllListeners();
       entry.process = null;
       finishSession(1);
+    });
+
+    // Log beat state before sending the take-loop prompt.
+    interactionLog.logBeatState({
+      beatId,
+      state: beatState ?? "unknown",
+      phase: "before_prompt",
+      iteration: takeIteration,
     });
 
     const sent = takeSendUserTurn(takePrompt, `take_${takeIteration}`);
@@ -1163,6 +1177,12 @@ export async function createSession(
         const state = r.ok && r.data ? r.data.state : "unknown";
         const claimable = r.ok && r.data ? r.data.isAgentClaimable : "unknown";
         console.log(`${tag} post-close beat state: beat=${beatId} state=${state} isAgentClaimable=${claimable}`);
+        interactionLog.logBeatState({
+          beatId,
+          state,
+          phase: "after_prompt",
+          iteration: takeIteration,
+        });
       }).catch(() => {
         console.log(`${tag} post-close beat fetch failed: beat=${beatId}`);
       });
@@ -1248,6 +1268,16 @@ export async function createSession(
     entry.process = null;
     finishSession(1);
   });
+
+  // Log beat state before the initial prompt (iteration 1).
+  if (isTakeLoop) {
+    interactionLog.logBeatState({
+      beatId,
+      state: bead.state ?? "unknown",
+      phase: "before_prompt",
+      iteration: takeIteration,
+    });
+  }
 
   const initialPromptSent = sendUserTurn(prompt, "initial");
   if (!initialPromptSent) {

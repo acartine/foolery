@@ -19,6 +19,7 @@ import { cleanupLogs } from "@/lib/log-lifecycle";
  *   - kind:"session_start"  — metadata about the session
  *   - kind:"prompt"         — the prompt sent to the agent
  *   - kind:"response"       — a raw NDJSON line from the agent
+ *   - kind:"beat_state"     — beat state snapshot (before/after prompt)
  *   - kind:"session_end"    — exit code and final status
  */
 
@@ -35,6 +36,15 @@ interface SessionMeta {
 
 export interface PromptLogMetadata {
   source?: string;
+}
+
+export type BeatStatePhase = "before_prompt" | "after_prompt";
+
+export interface BeatStateLogEntry {
+  beatId: string;
+  state: string;
+  phase: BeatStatePhase;
+  iteration: number;
 }
 
 interface LogLine {
@@ -93,6 +103,8 @@ export interface InteractionLog {
   logPrompt(prompt: string, metadata?: PromptLogMetadata): void;
   /** Log a raw NDJSON line received from the agent. */
   logResponse(rawLine: string): void;
+  /** Log beat state snapshot before or after a prompt. */
+  logBeatState(entry: BeatStateLogEntry): void;
   /** Log session completion. */
   logEnd(exitCode: number | null, status: string): void;
 }
@@ -199,6 +211,18 @@ export async function startInteractionLog(
       });
     },
 
+    logBeatState(entry: BeatStateLogEntry) {
+      write({
+        kind: "beat_state",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        beatId: entry.beatId,
+        state: entry.state,
+        phase: entry.phase,
+        iteration: entry.iteration,
+      });
+    },
+
     logEnd(exitCode: number | null, status: string) {
       write({
         kind: "session_end",
@@ -217,6 +241,7 @@ export function noopInteractionLog(): InteractionLog {
     filePath: "",
     logPrompt() {},
     logResponse() {},
+    logBeatState() {},
     logEnd() {},
   };
 }

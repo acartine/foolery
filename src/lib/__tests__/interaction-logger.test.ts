@@ -76,6 +76,12 @@ describe("noopInteractionLog", () => {
     const log = noopInteractionLog();
     expect(() => log.logPrompt("hello")).not.toThrow();
     expect(() => log.logResponse('{"ok":true}')).not.toThrow();
+    expect(() => log.logBeatState({
+      beatId: "b-1",
+      state: "planning",
+      phase: "before_prompt",
+      iteration: 1,
+    })).not.toThrow();
     expect(() => log.logEnd(0, "done")).not.toThrow();
   });
 });
@@ -290,10 +296,62 @@ describe("InteractionLog methods", () => {
     expect(endLine.status).toBe("terminated");
   });
 
+  it("logBeatState writes a beat_state entry with all fields", async () => {
+    const log = await startLogInTemp();
+    log.logBeatState({
+      beatId: "beat-42",
+      state: "implementation",
+      phase: "before_prompt",
+      iteration: 3,
+    });
+    const lines = await readLogLines(log.filePath);
+
+    const beatLine = lines.find(
+      (l: Record<string, unknown>) => l.kind === "beat_state",
+    );
+    expect(beatLine).toBeDefined();
+    expect(beatLine.beatId).toBe("beat-42");
+    expect(beatLine.state).toBe("implementation");
+    expect(beatLine.phase).toBe("before_prompt");
+    expect(beatLine.iteration).toBe(3);
+    expect(beatLine.sessionId).toBe("methods-session");
+    expect(beatLine.ts).toBeDefined();
+  });
+
+  it("logBeatState records after_prompt phase", async () => {
+    const log = await startLogInTemp();
+    log.logBeatState({
+      beatId: "beat-99",
+      state: "ready_for_plan_review",
+      phase: "after_prompt",
+      iteration: 1,
+    });
+    const lines = await readLogLines(log.filePath);
+
+    const beatLine = lines.find(
+      (l: Record<string, unknown>) => l.kind === "beat_state",
+    );
+    expect(beatLine).toBeDefined();
+    expect(beatLine.phase).toBe("after_prompt");
+    expect(beatLine.state).toBe("ready_for_plan_review");
+  });
+
   it("full session lifecycle writes all expected entries", async () => {
     const log = await startLogInTemp();
     log.logPrompt("prompt text", { source: "cli" });
+    log.logBeatState({
+      beatId: "b-1",
+      state: "planning",
+      phase: "before_prompt",
+      iteration: 1,
+    });
     log.logResponse('{"msg":"hello"}');
+    log.logBeatState({
+      beatId: "b-1",
+      state: "ready_for_plan_review",
+      phase: "after_prompt",
+      iteration: 1,
+    });
     log.logEnd(0, "completed");
 
     const lines = await readLogLines(log.filePath);
@@ -302,9 +360,10 @@ describe("InteractionLog methods", () => {
     // so verify presence rather than exact ordering for the async entries.
     expect(kinds[0]).toBe("session_start");
     expect(kinds).toContain("prompt");
+    expect(kinds).toContain("beat_state");
     expect(kinds).toContain("response");
     expect(kinds).toContain("session_end");
-    expect(kinds).toHaveLength(4);
+    expect(kinds).toHaveLength(6);
   });
 });
 
