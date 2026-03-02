@@ -215,6 +215,156 @@ describe("updateSettings", () => {
     expect(updated.actions.take).toBe("codex");
     expect(updated.actions.scene).toBe("");
   });
+
+  it("merges openrouter.enabled without clobbering apiKey or model", async () => {
+    const toml = [
+      '[openrouter]',
+      'apiKey = "sk-or-v1-secret"',
+      'enabled = false',
+      'model = "anthropic/claude-sonnet-4"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { enabled: true },
+    });
+    expect(updated.openrouter.enabled).toBe(true);
+    expect(updated.openrouter.apiKey).toBe("sk-or-v1-secret");
+    expect(updated.openrouter.model).toBe("anthropic/claude-sonnet-4");
+  });
+
+  it("merges openrouter.apiKey without clobbering enabled or model", async () => {
+    const toml = [
+      '[openrouter]',
+      'apiKey = "old-key"',
+      'enabled = true',
+      'model = "meta/llama-3"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { apiKey: "new-key" },
+    });
+    expect(updated.openrouter.apiKey).toBe("new-key");
+    expect(updated.openrouter.enabled).toBe(true);
+    expect(updated.openrouter.model).toBe("meta/llama-3");
+  });
+
+  it("openrouter-only update does not clobber agent config", async () => {
+    const toml = [
+      '[agent]',
+      'command = "codex"',
+      '[agents.claude]',
+      'command = "claude"',
+      'label = "Claude Code"',
+      '[actions]',
+      'take = "claude"',
+      'scene = "claude"',
+      'direct = ""',
+      'breakdown = ""',
+      '[openrouter]',
+      'apiKey = ""',
+      'enabled = false',
+      'model = ""',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { enabled: true, apiKey: "sk-or-v1-new" },
+    });
+
+    // OpenRouter fields updated
+    expect(updated.openrouter.enabled).toBe(true);
+    expect(updated.openrouter.apiKey).toBe("sk-or-v1-new");
+
+    // Agent/agents/actions untouched
+    expect(updated.agent.command).toBe("codex");
+    expect(updated.agents.claude).toBeDefined();
+    expect(updated.agents.claude.command).toBe("claude");
+    expect(updated.actions.take).toBe("claude");
+    expect(updated.actions.scene).toBe("claude");
+  });
+
+  it("openrouter-only update does not clobber verification or defaults", async () => {
+    const toml = [
+      '[verification]',
+      'enabled = true',
+      'agent = "codex"',
+      'maxRetries = 5',
+      '[defaults]',
+      'profileId = "custom"',
+      '[openrouter]',
+      'apiKey = ""',
+      'enabled = false',
+      'model = ""',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { model: "openai/gpt-4o" },
+    });
+
+    expect(updated.openrouter.model).toBe("openai/gpt-4o");
+    expect(updated.verification.enabled).toBe(true);
+    expect(updated.verification.agent).toBe("codex");
+    expect(updated.verification.maxRetries).toBe(5);
+    expect(updated.defaults.profileId).toBe("custom");
+  });
+
+  it("empty partial object leaves all settings unchanged", async () => {
+    const toml = [
+      '[agent]',
+      'command = "codex"',
+      '[openrouter]',
+      'apiKey = "keep"',
+      'enabled = true',
+      'model = "keep-model"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({});
+
+    expect(updated.agent.command).toBe("codex");
+    expect(updated.openrouter.apiKey).toBe("keep");
+    expect(updated.openrouter.enabled).toBe(true);
+    expect(updated.openrouter.model).toBe("keep-model");
+  });
+
+  it("merges openrouter.model selection without clobbering enabled or apiKey", async () => {
+    const toml = [
+      '[openrouter]',
+      'apiKey = "sk-or-v1-mykey"',
+      'enabled = true',
+      'model = ""',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { model: "anthropic/claude-sonnet-4" },
+    });
+
+    expect(updated.openrouter.model).toBe("anthropic/claude-sonnet-4");
+    expect(updated.openrouter.apiKey).toBe("sk-or-v1-mykey");
+    expect(updated.openrouter.enabled).toBe(true);
+  });
+
+  it("clears openrouter.model by setting empty string", async () => {
+    const toml = [
+      '[openrouter]',
+      'apiKey = "sk-or-v1-mykey"',
+      'enabled = true',
+      'model = "openai/gpt-4o"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const updated = await updateSettings({
+      openrouter: { model: "" },
+    });
+
+    expect(updated.openrouter.model).toBe("");
+    expect(updated.openrouter.apiKey).toBe("sk-or-v1-mykey");
+    expect(updated.openrouter.enabled).toBe(true);
+  });
 });
 
 describe("getRegisteredAgents", () => {

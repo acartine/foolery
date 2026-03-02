@@ -224,7 +224,7 @@ export async function saveSettings(
 }
 
 /** Partial shape accepted by updateSettings for deep merging. */
-type SettingsPartial = Partial<{
+export type SettingsPartial = Partial<{
   agent: Partial<FoolerySettings["agent"]>;
   agents: FoolerySettings["agents"];
   actions: Partial<FoolerySettings["actions"]>;
@@ -236,6 +236,8 @@ type SettingsPartial = Partial<{
 
 /**
  * Merge a partial update into the current settings, save, and return the result.
+ * Each top-level section is only touched when explicitly provided in `partial`,
+ * so sending `{ openrouter: { enabled: true } }` will never clobber agent/action config.
  */
 export async function updateSettings(
   partial: SettingsPartial,
@@ -243,13 +245,13 @@ export async function updateSettings(
   const current = await loadSettings();
   const merged: FoolerySettings = {
     ...current,
-    agent: { ...current.agent, ...partial.agent },
-    agents: partial.agents !== undefined ? { ...current.agents, ...partial.agents } : current.agents,
-    actions: { ...current.actions, ...partial.actions },
-    verification: { ...current.verification, ...partial.verification },
-    backend: { ...current.backend, ...partial.backend },
-    defaults: { ...current.defaults, ...partial.defaults },
-    openrouter: { ...current.openrouter, ...partial.openrouter },
+    agent:        partial.agent        !== undefined ? { ...current.agent,        ...partial.agent }        : current.agent,
+    agents:       partial.agents       !== undefined ? { ...current.agents,       ...partial.agents }       : current.agents,
+    actions:      partial.actions      !== undefined ? { ...current.actions,      ...partial.actions }      : current.actions,
+    verification: partial.verification !== undefined ? { ...current.verification, ...partial.verification } : current.verification,
+    backend:      partial.backend      !== undefined ? { ...current.backend,      ...partial.backend }      : current.backend,
+    defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
+    openrouter:   partial.openrouter   !== undefined ? { ...current.openrouter,   ...partial.openrouter }   : current.openrouter,
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);

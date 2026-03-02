@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Globe, Eye, EyeOff, CheckCircle2, Loader2 } from "lucide-react";
+import { Globe, Eye, EyeOff, CheckCircle2, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -122,13 +122,26 @@ export function SettingsOpenRouterSection({
             onValidate={handleValidate}
           />
 
+          {openrouter.model && (
+            <SelectedModelBadge
+              modelId={openrouter.model}
+              onClear={() =>
+                onOpenRouterChange({ ...openrouter, model: "" })
+              }
+            />
+          )}
+
           <ModelsBrowser
             models={models}
             filteredModels={filteredModels ?? null}
             loadingModels={loadingModels}
             modelFilter={modelFilter}
+            selectedModelId={openrouter.model}
             onFilterChange={setModelFilter}
             onLoadModels={handleLoadModels}
+            onSelectModel={(id) =>
+              onOpenRouterChange({ ...openrouter, model: id })
+            }
           />
         </div>
       )}
@@ -137,6 +150,30 @@ export function SettingsOpenRouterSection({
 }
 
 /* ── Sub-components ─────────────────────────────────────────── */
+
+interface SelectedModelBadgeProps {
+  modelId: string;
+  onClear: () => void;
+}
+
+function SelectedModelBadge({ modelId, onClear }: SelectedModelBadgeProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <Label className="text-xs">Selected Model</Label>
+      <Badge variant="outline" className="gap-1 font-mono text-[11px]">
+        {modelId}
+        <button
+          type="button"
+          onClick={onClear}
+          className="ml-0.5 rounded-full hover:bg-muted"
+          aria-label="Clear selected model"
+        >
+          <X className="size-3" />
+        </button>
+      </Badge>
+    </div>
+  );
+}
 
 interface ApiKeyFieldProps {
   apiKey: string;
@@ -217,8 +254,10 @@ interface ModelsBrowserProps {
   filteredModels: OpenRouterModel[] | null;
   loadingModels: boolean;
   modelFilter: string;
+  selectedModelId: string;
   onFilterChange: (filter: string) => void;
   onLoadModels: () => void;
+  onSelectModel: (id: string) => void;
 }
 
 function ModelsBrowser({
@@ -226,8 +265,10 @@ function ModelsBrowser({
   filteredModels,
   loadingModels,
   modelFilter,
+  selectedModelId,
   onFilterChange,
   onLoadModels,
+  onSelectModel,
 }: ModelsBrowserProps) {
   return (
     <div className="space-y-2">
@@ -260,7 +301,11 @@ function ModelsBrowser({
             onChange={(e) => onFilterChange(e.target.value)}
             className="h-7 text-xs"
           />
-          <ModelsTable models={filteredModels ?? []} />
+          <ModelsTable
+            models={filteredModels ?? []}
+            selectedModelId={selectedModelId}
+            onSelectModel={onSelectModel}
+          />
           <p className="text-[10px] text-muted-foreground text-right">
             {filteredModels?.length ?? 0} of {models.length} models
           </p>
@@ -270,7 +315,13 @@ function ModelsBrowser({
   );
 }
 
-function ModelsTable({ models }: { models: OpenRouterModel[] }) {
+interface ModelsTableProps {
+  models: OpenRouterModel[];
+  selectedModelId: string;
+  onSelectModel: (id: string) => void;
+}
+
+function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProps) {
   return (
     <div className="max-h-[240px] overflow-y-auto rounded-md border">
       <table className="w-full text-[11px]">
@@ -283,34 +334,51 @@ function ModelsTable({ models }: { models: OpenRouterModel[] }) {
           </tr>
         </thead>
         <tbody>
-          {models.map((model) => (
-            <tr
-              key={model.id}
-              className="border-b border-border/50 hover:bg-muted/50"
-            >
-              <td className="px-2 py-1.5">
-                <div
-                  className="font-medium truncate max-w-[180px]"
-                  title={model.id}
-                >
-                  {model.name}
-                </div>
-              </td>
-              <td className="px-2 py-1.5 text-right text-muted-foreground">
-                {formatContext(model.context_length)}
-              </td>
-              <td className="px-2 py-1.5 text-right">
-                <Badge variant="secondary" className="text-[9px] font-mono">
-                  {formatPricing(model.pricing.prompt)}
-                </Badge>
-              </td>
-              <td className="px-2 py-1.5 text-right">
-                <Badge variant="secondary" className="text-[9px] font-mono">
-                  {formatPricing(model.pricing.completion)}
-                </Badge>
-              </td>
-            </tr>
-          ))}
+          {models.map((model) => {
+            const isSelected = model.id === selectedModelId;
+            return (
+              <tr
+                key={model.id}
+                role="button"
+                tabIndex={0}
+                aria-selected={isSelected}
+                className={`border-b border-border/50 cursor-pointer transition-colors ${
+                  isSelected
+                    ? "bg-primary/10 hover:bg-primary/15"
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => onSelectModel(model.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelectModel(model.id);
+                  }
+                }}
+              >
+                <td className="px-2 py-1.5">
+                  <div
+                    className="font-medium truncate max-w-[180px]"
+                    title={model.id}
+                  >
+                    {model.name}
+                  </div>
+                </td>
+                <td className="px-2 py-1.5 text-right text-muted-foreground">
+                  {formatContext(model.context_length)}
+                </td>
+                <td className="px-2 py-1.5 text-right">
+                  <Badge variant="secondary" className="text-[9px] font-mono">
+                    {formatPricing(model.pricing.prompt)}
+                  </Badge>
+                </td>
+                <td className="px-2 py-1.5 text-right">
+                  <Badge variant="secondary" className="text-[9px] font-mono">
+                    {formatPricing(model.pricing.completion)}
+                  </Badge>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       {models.length === 0 && (

@@ -31,6 +31,20 @@ export function saveSettings(
   });
 }
 
+/**
+ * Partially update settings without clobbering unrelated sections.
+ * Only the provided top-level keys (and their sub-fields) are merged;
+ * omitted sections are left untouched on disk.
+ */
+export function patchSettings(
+  partial: Partial<FoolerySettings>,
+): Promise<BdResult<FoolerySettings>> {
+  return request<FoolerySettings>(SETTINGS_BASE, {
+    method: "PATCH",
+    body: JSON.stringify(partial),
+  });
+}
+
 export function fetchAgents(): Promise<
   BdResult<Record<string, RegisteredAgent>>
 > {
