@@ -85,15 +85,21 @@ describe("getBeadColumns", () => {
     expect(hasRepo).toBe(false);
   });
 
-  it("adds ship column when onShipBeat is provided", () => {
+  it("adds action column when onShipBeat is provided", () => {
     const cols = getBeadColumns({ onShipBeat: () => {} });
-    const hasShip = cols.some((c) => c.id === "ship");
-    expect(hasShip).toBe(true);
+    const hasAction = cols.some((c) => c.id === "action");
+    expect(hasAction).toBe(true);
   });
 
-  it("does not add ship column when onShipBeat is not provided", () => {
+  it("does not add action column when onShipBeat is not provided", () => {
     const cols = getBeadColumns({});
-    const hasShip = cols.some((c) => c.id === "ship");
-    expect(hasShip).toBe(false);
+    const hasAction = cols.some((c) => c.id === "action");
+    expect(hasAction).toBe(false);
+  });
+
+  it("always adds ownerType column", () => {
+    const cols = getBeadColumns({});
+    const hasOwnerType = cols.some((c) => c.id === "ownerType");
+    expect(hasOwnerType).toBe(true);
   });
 });

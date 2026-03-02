@@ -569,69 +569,34 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     },
   ];
 
-  if (onShipBeat) {
-    columns.push({
-      id: "ship",
-      header: "Owner Type",
-      size: 100,
-      minSize: 100,
-      maxSize: 100,
-      enableSorting: false,
-      cell: ({ row }) => {
-        const beat = row.original;
-        const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
-        if (isTerminal || beat.type === "gate") return null;
-        if (isTransitionLocked(beat.labels ?? [])) return null;
-        if (beat.nextActionOwnerKind === "human") {
-          return (
-            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700">
-              Human
-            </span>
-          );
-        }
-        const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
-        const hb = beat as unknown as { _hasChildren?: boolean };
-        const isParent = hb._hasChildren ?? false;
-        const actionLabel = isParent ? "Scene!" : "Take!";
-
-        if (isActiveShipping) {
-          return (
-            <div className="inline-flex items-center gap-1.5">
-              <span className="text-xs font-semibold text-green-700">
-                Rolling...
-              </span>
-              <button
-                type="button"
-                title="Terminating"
-                className="inline-flex h-5 w-5 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAbortShipping?.(beat.id);
-                }}
-              >
-                <Square className="size-3" />
-              </button>
-            </div>
-          );
-        }
-
+  // Owner Type column: shows "Agent" or "Human" based on nextActionOwnerKind
+  columns.push({
+    id: "ownerType",
+    header: "Owner Type",
+    size: 90,
+    minSize: 90,
+    maxSize: 90,
+    enableSorting: false,
+    cell: ({ row }) => {
+      const beat = row.original;
+      const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
+      if (isTerminal || beat.type === "gate") return null;
+      const kind = beat.nextActionOwnerKind;
+      if (!kind || kind === "none") return null;
+      if (kind === "human") {
         return (
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${isParent ? "text-purple-700 hover:bg-purple-100" : "text-blue-700 hover:bg-blue-100"}`}
-            title={actionLabel}
-            onClick={(e) => {
-              e.stopPropagation();
-              onShipBeat(beat);
-            }}
-          >
-            <Clapperboard className="size-3" />
-            {actionLabel}
-          </button>
+          <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700">
+            Human
+          </span>
         );
-      },
-    });
-  }
+      }
+      return (
+        <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-blue-100 text-blue-700">
+          Agent
+        </span>
+      );
+    },
+  });
 
   // State column: placed rightmost so it sits after the run/ship column.
   // Uses percentage width via meta so it can grow and consume space from the title column.
@@ -701,6 +666,65 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
       );
     },
   });
+
+  // Action column: shows Take!/Scene!/Rolling... buttons as the last column
+  if (onShipBeat) {
+    columns.push({
+      id: "action",
+      header: "Action",
+      size: 100,
+      minSize: 100,
+      maxSize: 100,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const beat = row.original;
+        const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
+        if (isTerminal || beat.type === "gate") return null;
+        if (isTransitionLocked(beat.labels ?? [])) return null;
+        if (beat.nextActionOwnerKind === "human") return null;
+        const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
+        const hb = beat as unknown as { _hasChildren?: boolean };
+        const isParent = hb._hasChildren ?? false;
+        const actionLabel = isParent ? "Scene!" : "Take!";
+
+        if (isActiveShipping) {
+          return (
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-green-700">
+                Rolling...
+              </span>
+              <button
+                type="button"
+                title="Terminating"
+                className="inline-flex h-5 w-5 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAbortShipping?.(beat.id);
+                }}
+              >
+                <Square className="size-3" />
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <button
+            type="button"
+            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${isParent ? "text-purple-700 hover:bg-purple-100" : "text-blue-700 hover:bg-blue-100"}`}
+            title={actionLabel}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShipBeat(beat);
+            }}
+          >
+            <Clapperboard className="size-3" />
+            {actionLabel}
+          </button>
+        );
+      },
+    });
+  }
 
   if (showRepoColumn) {
     columns.splice(1, 0, {

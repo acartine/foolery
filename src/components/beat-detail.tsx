@@ -350,7 +350,7 @@ function BeatDetailMetadata({ beat }: { beat: Beat }) {
                 : "bg-blue-100 text-blue-700"
             }
           >
-            Owner type: {beat.nextActionOwnerKind}
+            Owner type: {beat.nextActionOwnerKind === "human" ? "Human" : "Agent"}
           </Badge>
         )}
         {beat.requiresHumanAction && (
