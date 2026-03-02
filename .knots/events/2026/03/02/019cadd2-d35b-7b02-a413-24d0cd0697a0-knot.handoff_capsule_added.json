@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd2-d35b-7b02-a413-24d0cd0697a0",
+  "occurred_at": "2026-03-02T09:13:20.987326Z",
+  "knot_id": "foolery-1e23",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented coverage badge and CI reporting. Commit 499ac8b adds: (1) json-summary reporter to vitest.config.ts, (2) .github/workflows/coverage.yml that runs coverage on push to main, extracts line% via node, generates shields.io endpoint JSON, and deploys it to a coverage orphan branch, (3) updated ci.yml to run test:coverage instead of test, (4) shields.io endpoint badge in README.md. Badge will be live after first CI run on main creates the coverage branch. Current line coverage: 80.55%.",
+    "datetime": "2026-03-02T00:00:00Z",
+    "entry_id": "019cadd2-d35b-7b02-a413-24c70b7a6b43",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

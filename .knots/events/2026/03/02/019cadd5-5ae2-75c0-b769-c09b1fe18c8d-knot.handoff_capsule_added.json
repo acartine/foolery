@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd5-5ae2-75c0-b769-c09b1fe18c8d",
+  "occurred_at": "2026-03-02T09:16:06.754436Z",
+  "knot_id": "foolery-c2de",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Improved backend-factory.ts test coverage from 62.9% to 93.5% statements, 39.1% to 100% functions. Added 24 new tests covering createBackend() for all concrete types, all AutoRoutingBackend proxy methods, capabilitiesForRepo, getBackend caching, and selective repo cache clearing. Commit a06ce1d pushed to main.",
+    "datetime": "2026-03-02T10:16:00Z",
+    "entry_id": "019cadd5-5ae2-75c0-b769-c086791bfdb5",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

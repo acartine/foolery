@@ -1,0 +1,17 @@
+{
+  "event_id": "019cadd0-01a5-7da0-8e4b-8b050824d782",
+  "occurred_at": "2026-03-02T09:10:16.229468Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-1e23",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Add code coverage badge and reporting to README/GitHub",
+    "updated_at": "2026-03-02T09:10:16.229468Z"
+  },
+  "precondition": {
+    "profile_etag": "019cadcc-ad4d-78d2-8775-820b14ea4a9b"
+  }
+}

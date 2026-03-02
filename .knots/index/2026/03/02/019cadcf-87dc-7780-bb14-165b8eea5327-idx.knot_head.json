@@ -1,0 +1,17 @@
+{
+  "event_id": "019cadcf-87dc-7780-bb14-165b8eea5327",
+  "occurred_at": "2026-03-02T09:09:45.052859Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-6dd8",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Improve test coverage for bd-cli-backend.ts (22.85% → 70%+)",
+    "updated_at": "2026-03-02T09:09:45.052859Z"
+  },
+  "precondition": {
+    "profile_etag": "019cadcc-62fb-7633-86c8-9d781deab42b"
+  }
+}

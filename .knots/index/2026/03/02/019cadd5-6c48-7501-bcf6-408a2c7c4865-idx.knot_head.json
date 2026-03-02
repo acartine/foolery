@@ -1,0 +1,14 @@
+{
+  "event_id": "019cadd5-6c48-7501-bcf6-408a2c7c4865",
+  "occurred_at": "2026-03-02T09:16:11.203278Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-73c5",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "step-enum: fix take-loop and update UI helpers",
+    "updated_at": "2026-03-02T09:16:11.203278Z"
+  }
+}

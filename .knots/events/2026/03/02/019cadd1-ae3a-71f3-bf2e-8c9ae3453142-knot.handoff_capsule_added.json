@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd1-ae3a-71f3-bf2e-8c9ae3453142",
+  "occurred_at": "2026-03-02T09:12:05.946395Z",
+  "knot_id": "foolery-e5f5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added WorkflowStep/StepPhase/ResolvedStep/resolveStep to workflows.ts with full test coverage. SHA=f115476. Zero breaking changes — purely additive exports.",
+    "datetime": "2026-03-02T09:12:05.946395Z",
+    "entry_id": "019cadd1-ae3a-71f3-bf2e-8c86c83faf84",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

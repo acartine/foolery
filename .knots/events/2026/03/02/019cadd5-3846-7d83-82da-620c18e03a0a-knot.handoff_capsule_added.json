@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd5-3846-7d83-82da-620c18e03a0a",
+  "occurred_at": "2026-03-02T09:15:57.894443Z",
+  "knot_id": "foolery-b382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 19 unit tests for interaction-logger.ts (file was named execution-logger.ts in the knot description). Coverage: 92.68% stmts, 92.85% branches, 95% funcs, 92.5% lines. Commit 005700b pushed to main.",
+    "datetime": "2026-03-02T10:16:00Z",
+    "entry_id": "019cadd5-3846-7d83-82da-61f9c06f136c",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

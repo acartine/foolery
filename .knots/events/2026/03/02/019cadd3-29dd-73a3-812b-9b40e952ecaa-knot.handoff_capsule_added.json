@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd3-29dd-73a3-812b-9b40e952ecaa",
+  "occurred_at": "2026-03-02T09:13:43.133374Z",
+  "knot_id": "foolery-6dd8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 36 unit tests for BdCliBackend in src/lib/__tests__/bd-cli-backend.test.ts. Coverage went from 22.85% to 100% across all metrics (statements, branches, functions, lines). Tests cover toBR result conversion, filtersToRecord helper, all BackendPort delegation methods, buildTakePrompt branching, and buildPollPrompt UNAVAILABLE stub. Commit a87d978 pushed to main.",
+    "datetime": "2026-03-02T10:13:00Z",
+    "entry_id": "019cadd3-29dd-73a3-812b-9b34749d49ee",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

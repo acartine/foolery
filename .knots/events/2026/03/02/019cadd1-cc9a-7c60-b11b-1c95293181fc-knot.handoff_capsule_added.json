@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd1-cc9a-7c60-b11b-1c95293181fc",
+  "occurred_at": "2026-03-02T09:12:13.722061Z",
+  "knot_id": "foolery-f156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 22 direct method tests to stub-backend.test.ts covering all previously untested StubBackend methods (listReady, search, query, create, update, delete, close, listDependencies, addDependency, removeDependency, buildTakePrompt, buildPollPrompt) and STUB_CAPABILITIES verification. Coverage went from 27.77% to 100% across statements, branches, functions, and lines. Commit f2cf157 pushed to main.",
+    "datetime": "2026-03-02T10:12:00Z",
+    "entry_id": "019cadd1-cc9a-7c60-b11b-1c80e459faca",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "4.6"
+  }
+}

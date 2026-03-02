@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadd0-7510-7213-a29a-bc4bdf9ffc9d",
+  "occurred_at": "2026-03-02T09:10:45.776102Z",
+  "knot_id": "foolery-0e94",
+  "type": "knot.created",
+  "data": {
+    "body": "Refactor workflows.ts internals to use resolveStep(). Delete duplicate ACTION_STATES/helpers from knots-backend.ts and beads-backend.ts. All existing tests must pass unchanged.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "step-enum: refactor internals and delete backend duplicates"
+  }
+}

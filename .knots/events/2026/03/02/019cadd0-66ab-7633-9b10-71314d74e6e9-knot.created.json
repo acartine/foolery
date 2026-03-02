@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadd0-66ab-7633-9b10-71314d74e6e9",
+  "occurred_at": "2026-03-02T09:10:42.091765Z",
+  "knot_id": "foolery-e5f5",
+  "type": "knot.created",
+  "data": {
+    "body": "Add WorkflowStep enum, StepPhase enum, ResolvedStep interface, and resolveStep() to src/lib/workflows.ts. Purely additive. Add tests in src/lib/__tests__/workflow-step.test.ts.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "step-enum: add WorkflowStep, StepPhase, resolveStep"
+  }
+}

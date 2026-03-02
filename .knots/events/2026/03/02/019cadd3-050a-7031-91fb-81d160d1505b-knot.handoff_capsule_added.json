@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd3-050a-7031-91fb-81d160d1505b",
+  "occurred_at": "2026-03-02T09:13:33.706192Z",
+  "knot_id": "foolery-1b64",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added src/lib/__tests__/knots-integration.test.ts with 47 tests covering all public functions in knots.ts. Coverage went from 40.59% to 98.51% statements, 28.32% to 78.61% branch, 65.38% to 96.15% functions, 47.56% to 98.17% lines. Commit 73effea pushed to origin/main.",
+    "datetime": "2026-03-02T10:15:00Z",
+    "entry_id": "019cadd3-050a-7031-91fb-81c2631f20a7",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

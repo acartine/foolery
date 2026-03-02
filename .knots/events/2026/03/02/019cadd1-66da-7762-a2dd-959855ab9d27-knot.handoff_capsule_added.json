@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd1-66da-7762-a2dd-959855ab9d27",
+  "occurred_at": "2026-03-02T09:11:47.674457Z",
+  "knot_id": "foolery-6c49",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Commit 43357d2: Extended instrumentation.test.ts from 2 to 11 tests covering all branches in src/instrumentation.ts. Coverage went from 56.52% to 100% (stmts, branches, funcs, lines). Covered: early return for edge runtime, settings changed path (singular + plural), registry changed path, error reporting for both backfills, catch blocks for Error and non-Error values. All 979 tests pass, lint and typecheck clean.",
+    "datetime": "2026-03-02T10:12:00Z",
+    "entry_id": "019cadd1-66da-7762-a2dd-95818be62e85",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd3-304f-7692-b7c2-0cd9bb99cfc6",
+  "occurred_at": "2026-03-02T09:13:44.783624Z",
+  "knot_id": "foolery-2c20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed bead-hierarchy.ts, bead-sort.ts, bead-utils.ts compatibility shims. Migrated all imports (retakes-view.tsx, orchestration-view.tsx, 4 test files) to beat-* modules with canonical function names. Renamed test files from bead-* to beat-*. All 970 tests pass, lint/typecheck/build green. Commit 648a1f9 pushed to main.",
+    "datetime": "2026-03-02T09:13:44.783624Z",
+    "entry_id": "019cadd3-304f-7692-b7c2-0cc2a7d45303",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd5-6c43-7610-b7f2-eb0e15c0609e",
+  "occurred_at": "2026-03-02T09:16:11.203278Z",
+  "knot_id": "foolery-73c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed take-loop stop condition: uses resolveStep-based ownership instead of isAgentClaimable. Updated beat-sort and beat-state-badge. SHA=0c6e6cc. Resolves af02 root cause.",
+    "datetime": "2026-03-02T09:16:11.203278Z",
+    "entry_id": "019cadd5-6c43-7610-b7f2-eafbee7de01f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

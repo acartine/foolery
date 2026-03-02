@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadd4-1bc8-7481-a6f4-fd510e4dcc3c",
+  "occurred_at": "2026-03-02T09:14:45.064801Z",
+  "knot_id": "foolery-0e94",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Refactored workflows.ts internals to resolveStep(). Deleted 3 duplicate ACTION_STATES definitions and 2 duplicate queueStateToActionState implementations. SHA=992efc2. All tests green.",
+    "datetime": "2026-03-02T09:14:45.064801Z",
+    "entry_id": "019cadd4-1bc8-7481-a6f4-fd4dbca200e1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

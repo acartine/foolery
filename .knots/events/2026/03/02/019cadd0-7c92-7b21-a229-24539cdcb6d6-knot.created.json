@@ -1,0 +1,12 @@
+{
+  "event_id": "019cadd0-7c92-7b21-a229-24539cdcb6d6",
+  "occurred_at": "2026-03-02T09:10:47.698385Z",
+  "knot_id": "foolery-0770",
+  "type": "knot.created",
+  "data": {
+    "body": "Add beads parity tests confirming listReady and deriveWorkflowRuntimeState work identically across backends. Remove dead code: ACTION_STATES array, ACTION_STATE_SET, REVIEW_ACTION_STATES, OWNER_BY_ACTION_STATE, queueStateToActionState from workflows.ts.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "step-enum: beads parity tests and dead code cleanup"
+  }
+}
