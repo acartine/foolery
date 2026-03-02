@@ -43,7 +43,7 @@ const MAX_BUFFER = 5000;
 const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
-const MAX_POLL_ITERATIONS = 10;
+const MAX_TAKE_ITERATIONS = 10;
 
 type JsonObject = Record<string, unknown>;
 
@@ -635,9 +635,9 @@ export async function createSession(
   }
   const normalizeEvent = createLineNormalizer(dialect);
 
-  // ── Poll loop infrastructure (knots single-beat only) ─────────
-  const isPollLoop = memoryManagerType === "knots" && !isParent && !customPrompt;
-  let pollIteration = 1;
+  // ── Take loop infrastructure (knots single-beat only) ─────────
+  const isTakeLoop = memoryManagerType === "knots" && !isParent && !customPrompt;
+  let takeIteration = 1;
 
   const wrapSingleBeatPrompt = (taskPrompt: string): string => {
     return [
@@ -655,50 +655,76 @@ export async function createSession(
     ].filter(Boolean).join("\n");
   };
 
-  const buildNextPollPrompt = async (): Promise<{ prompt: string; beatState: string } | null> => {
-    // Check the original beat's state to decide whether to continue polling.
+  const buildNextTakePrompt = async (): Promise<{ prompt: string; beatState: string } | null> => {
+    const tag = `[terminal-manager] [${id}] [take-loop]`;
+
+    // Fetch the beat's current state to decide whether to continue.
     const currentResult = await getBackend().get(beatId, repoPath);
-    if (!currentResult.ok || !currentResult.data) return null;
+    if (!currentResult.ok || !currentResult.data) {
+      console.log(`${tag} get(${beatId}) failed: ok=${currentResult.ok} error=${currentResult.error?.message ?? "no data"}`);
+      pushEvent({
+        type: "stderr",
+        data: `Take loop: failed to fetch ${beatId}: ${currentResult.error?.message ?? "no data"}\n`,
+        timestamp: Date.now(),
+      });
+      return null;
+    }
 
     const current = currentResult.data;
     const workflow = resolveWorkflowForBeat(current, workflowsById, fallbackWorkflow);
 
+    console.log(
+      `${tag} beat=${beatId} state=${current.state} isAgentClaimable=${current.isAgentClaimable}` +
+      ` profileId=${current.profileId} workflowId=${current.workflowId}` +
+      ` nextActionOwnerKind=${current.nextActionOwnerKind} requiresHumanAction=${current.requiresHumanAction}` +
+      ` terminalStates=[${workflow.terminalStates}] iteration=${takeIteration}`,
+    );
+
     if (workflow.terminalStates.includes(current.state)) {
+      console.log(`${tag} STOP: terminal state "${current.state}"`);
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Poll loop stopped: reached terminal state "${current.state}" after ${pollIteration} iteration(s) ---\x1b[0m\n`,
+        data: `\x1b[33m--- Take loop stopped: reached terminal state "${current.state}" after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
       return null;
     }
 
     if (!current.isAgentClaimable) {
+      console.log(
+        `${tag} STOP: not agent-claimable — state=${current.state}` +
+        ` nextActionOwnerKind=${current.nextActionOwnerKind}` +
+        ` requiresHumanAction=${current.requiresHumanAction}`,
+      );
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Poll loop stopped: reached human-owned state "${current.state}" after ${pollIteration} iteration(s) ---\x1b[0m\n`,
+        data: `\x1b[33m--- Take loop stopped: state "${current.state}" is not agent-claimable (owner=${current.nextActionOwnerKind}) after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
       return null;
     }
 
     // Claim the same beat into its next workflow state.
+    console.log(`${tag} claiming ${beatId} from state=${current.state}`);
     const takeResult = await getBackend().buildTakePrompt(
       beatId,
       { agentName: agent.label || agent.command, agentModel: agent.model },
       repoPath,
     );
     if (!takeResult.ok || !takeResult.data) {
+      console.log(`${tag} STOP: buildTakePrompt failed — ok=${takeResult.ok} error=${takeResult.error?.message ?? "no data"}`);
       pushEvent({
         type: "stderr",
-        data: `Poll loop: failed to claim ${beatId}: ${takeResult.error?.message ?? "unknown error"}\n`,
+        data: `Take loop: failed to claim ${beatId}: ${takeResult.error?.message ?? "unknown error"}\n`,
         timestamp: Date.now(),
       });
       return null;
     }
 
+    console.log(`${tag} CONTINUE: claimed ${beatId} → iteration ${takeIteration + 1}`);
     pushEvent({
       type: "stdout",
-      data: `\x1b[36m--- Claimed ${beatId} (iteration ${pollIteration + 1}) ---\x1b[0m\n`,
+      data: `\x1b[36m--- Claimed ${beatId} (iteration ${takeIteration + 1}) ---\x1b[0m\n`,
       timestamp: Date.now(),
     });
 
@@ -736,48 +762,48 @@ export async function createSession(
     setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
   };
 
-  /** Spawn a fresh agent child process for a poll iteration. */
-  const spawnPollChild = (pollPrompt: string, beatState?: string): void => {
-    const pollChild = spawn(agentCmd, args, {
+  /** Spawn a fresh agent child process for a take-loop iteration. */
+  const spawnTakeChild = (takePrompt: string, beatState?: string): void => {
+    const takeChild = spawn(agentCmd, args, {
       cwd,
       env: { ...process.env },
       stdio: [isInteractive ? "pipe" : "ignore", "pipe", "pipe"],
     });
-    entry.process = pollChild;
+    entry.process = takeChild;
 
-    console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration}: pid=${pollChild.pid ?? "failed"} beat_state=${beatState ?? "unknown"}`);
+    console.log(`[terminal-manager] [${id}] [take-loop] iteration ${takeIteration}: pid=${takeChild.pid ?? "failed"} beat=${beatId} beat_state=${beatState ?? "unknown"}`);
 
-    let pollStdinClosed = !isInteractive;
-    let pollLineBuffer = "";
-    let pollCloseInputTimer: NodeJS.Timeout | null = null;
-    const pollAutoAnsweredIds = new Set<string>();
+    let takeStdinClosed = !isInteractive;
+    let takeLineBuffer = "";
+    let takeCloseInputTimer: NodeJS.Timeout | null = null;
+    const takeAutoAnsweredIds = new Set<string>();
 
-    const pollCloseInput = () => {
-      if (pollStdinClosed) return;
-      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
-      pollStdinClosed = true;
-      pollChild.stdin?.end();
+    const takeCloseInput = () => {
+      if (takeStdinClosed) return;
+      if (takeCloseInputTimer) { clearTimeout(takeCloseInputTimer); takeCloseInputTimer = null; }
+      takeStdinClosed = true;
+      takeChild.stdin?.end();
     };
 
-    const pollCancelInputClose = () => {
-      if (!pollCloseInputTimer) return;
-      clearTimeout(pollCloseInputTimer);
-      pollCloseInputTimer = null;
+    const takeCancelInputClose = () => {
+      if (!takeCloseInputTimer) return;
+      clearTimeout(takeCloseInputTimer);
+      takeCloseInputTimer = null;
     };
 
-    const pollScheduleInputClose = () => {
-      pollCancelInputClose();
-      pollCloseInputTimer = setTimeout(() => pollCloseInput(), INPUT_CLOSE_GRACE_MS);
+    const takeScheduleInputClose = () => {
+      takeCancelInputClose();
+      takeCloseInputTimer = setTimeout(() => takeCloseInput(), INPUT_CLOSE_GRACE_MS);
     };
 
-    const pollSendUserTurn = (text: string, source = "manual"): boolean => {
-      if (!pollChild.stdin || pollChild.stdin.destroyed || pollChild.stdin.writableEnded || pollStdinClosed) {
+    const takeSendUserTurn = (text: string, source = "manual"): boolean => {
+      if (!takeChild.stdin || takeChild.stdin.destroyed || takeChild.stdin.writableEnded || takeStdinClosed) {
         return false;
       }
-      pollCancelInputClose();
+      takeCancelInputClose();
       const line = makeUserMessageLine(text);
       try {
-        pollChild.stdin.write(line);
+        takeChild.stdin.write(line);
         interactionLog.logPrompt(text, { source });
         return true;
       } catch {
@@ -785,7 +811,7 @@ export async function createSession(
       }
     };
 
-    const pollAutoAnswerAskUser = (obj: JsonObject) => {
+    const takeAutoAnswerAskUser = (obj: JsonObject) => {
       if (obj.type !== "assistant") return;
       const msg = toObject(obj.message);
       const content = msg?.content;
@@ -795,10 +821,10 @@ export async function createSession(
         if (!block) continue;
         if (block.type !== "tool_use" || block.name !== "AskUserQuestion") continue;
         const toolUseId = typeof block.id === "string" ? block.id : null;
-        if (!toolUseId || pollAutoAnsweredIds.has(toolUseId)) continue;
-        pollAutoAnsweredIds.add(toolUseId);
+        if (!toolUseId || takeAutoAnsweredIds.has(toolUseId)) continue;
+        takeAutoAnsweredIds.add(toolUseId);
         const autoResponse = buildAutoAskUserResponse(block.input);
-        const sent = pollSendUserTurn(autoResponse, "auto_ask_user_response");
+        const sent = takeSendUserTurn(autoResponse, "auto_ask_user_response");
         if (sent) {
           pushEvent({
             type: "stdout",
@@ -809,21 +835,21 @@ export async function createSession(
       }
     };
 
-    pollChild.stdout?.on("data", (chunk: Buffer) => {
-      pollLineBuffer += chunk.toString();
-      const lines = pollLineBuffer.split("\n");
-      pollLineBuffer = lines.pop() ?? "";
+    takeChild.stdout?.on("data", (chunk: Buffer) => {
+      takeLineBuffer += chunk.toString();
+      const lines = takeLineBuffer.split("\n");
+      takeLineBuffer = lines.pop() ?? "";
       for (const line of lines) {
         if (!line.trim()) continue;
         interactionLog.logResponse(line);
         try {
           const raw = JSON.parse(line) as Record<string, unknown>;
           const obj = (normalizeEvent(raw) ?? raw) as Record<string, unknown>;
-          pollAutoAnswerAskUser(obj);
+          takeAutoAnswerAskUser(obj);
           if (obj.type === "result") {
-            pollScheduleInputClose();
+            takeScheduleInputClose();
           } else {
-            pollCancelInputClose();
+            takeCancelInputClose();
           }
           const display = formatStreamEvent(obj);
           if (display) {
@@ -835,91 +861,102 @@ export async function createSession(
       }
     });
 
-    pollChild.stderr?.on("data", (chunk: Buffer) => {
+    takeChild.stderr?.on("data", (chunk: Buffer) => {
       pushEvent({ type: "stderr", data: chunk.toString(), timestamp: Date.now() });
     });
 
-    pollChild.on("close", (pollCode) => {
-      if (pollLineBuffer.trim()) {
-        interactionLog.logResponse(pollLineBuffer);
+    takeChild.on("close", (takeCode) => {
+      if (takeLineBuffer.trim()) {
+        interactionLog.logResponse(takeLineBuffer);
         try {
-          const obj = JSON.parse(pollLineBuffer) as Record<string, unknown>;
-          pollAutoAnswerAskUser(obj);
-          if (obj.type === "result") pollScheduleInputClose();
+          const obj = JSON.parse(takeLineBuffer) as Record<string, unknown>;
+          takeAutoAnswerAskUser(obj);
+          if (obj.type === "result") takeScheduleInputClose();
           const display = formatStreamEvent(obj);
           if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
         } catch {
-          pushEvent({ type: "stdout", data: pollLineBuffer + "\n", timestamp: Date.now() });
+          pushEvent({ type: "stdout", data: takeLineBuffer + "\n", timestamp: Date.now() });
         }
-        pollLineBuffer = "";
+        takeLineBuffer = "";
       }
 
-      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
-      pollStdinClosed = true;
-      pollChild.stdout?.removeAllListeners();
-      pollChild.stderr?.removeAllListeners();
+      if (takeCloseInputTimer) { clearTimeout(takeCloseInputTimer); takeCloseInputTimer = null; }
+      takeStdinClosed = true;
+      takeChild.stdout?.removeAllListeners();
+      takeChild.stderr?.removeAllListeners();
       entry.process = null;
+
+      const tag = `[terminal-manager] [${id}] [take-loop]`;
+      console.log(`${tag} child close: code=${takeCode} iteration=${takeIteration}/${MAX_TAKE_ITERATIONS} beat=${beatId}`);
 
       getBackend().get(beatId, repoPath).then((r) => {
         const state = r.ok && r.data ? r.data.state : "unknown";
-        console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode} beat_state=${state}`);
+        const claimable = r.ok && r.data ? r.data.isAgentClaimable : "unknown";
+        console.log(`${tag} post-close beat state: beat=${beatId} state=${state} isAgentClaimable=${claimable}`);
       }).catch(() => {
-        console.log(`[terminal-manager] [${id}] poll iteration ${pollIteration} close: code=${pollCode} beat_state=fetch_error`);
+        console.log(`${tag} post-close beat fetch failed: beat=${beatId}`);
       });
 
-      if (pollCode === 0 && pollIteration < MAX_POLL_ITERATIONS) {
-        (async () => {
-          try {
-            const nextPoll = await buildNextPollPrompt();
-            if (nextPoll) {
-              pollIteration++;
-              pushEvent({
-                type: "stdout",
-                data: `\n\x1b[36m--- Poll ${pollIteration}/${MAX_POLL_ITERATIONS} ---\x1b[0m\n`,
-                timestamp: Date.now(),
-              });
-              spawnPollChild(nextPoll.prompt, nextPoll.beatState);
-              return;
-            }
-          } catch (err) {
-            console.error(`[terminal-manager] [${id}] poll check failed:`, err);
-            pushEvent({
-              type: "stderr",
-              data: `Poll check failed: ${err instanceof Error ? err.message : String(err)}\n`,
-              timestamp: Date.now(),
-            });
-          }
-          finishSession(pollCode ?? 0);
-        })();
+      if (takeCode !== 0) {
+        console.log(`${tag} STOP: non-zero exit code=${takeCode}`);
+        finishSession(takeCode ?? 1);
         return;
       }
 
-      if (pollCode === 0 && pollIteration >= MAX_POLL_ITERATIONS) {
+      if (takeIteration >= MAX_TAKE_ITERATIONS) {
+        console.log(`${tag} STOP: max iterations reached (${takeIteration}/${MAX_TAKE_ITERATIONS})`);
         pushEvent({
           type: "stdout",
-          data: `\x1b[33m--- Poll loop stopped: max ${MAX_POLL_ITERATIONS} iterations reached ---\x1b[0m\n`,
+          data: `\x1b[33m--- Take loop stopped: max ${MAX_TAKE_ITERATIONS} iterations reached ---\x1b[0m\n`,
           timestamp: Date.now(),
         });
+        finishSession(takeCode ?? 1);
+        return;
       }
-      finishSession(pollCode ?? 1);
+
+      console.log(`${tag} evaluating next iteration (code=0, iteration=${takeIteration}/${MAX_TAKE_ITERATIONS})`);
+      (async () => {
+        try {
+          const nextTake = await buildNextTakePrompt();
+          if (nextTake) {
+            takeIteration++;
+            pushEvent({
+              type: "stdout",
+              data: `\n\x1b[36m--- Take ${takeIteration}/${MAX_TAKE_ITERATIONS} ---\x1b[0m\n`,
+              timestamp: Date.now(),
+            });
+            spawnTakeChild(nextTake.prompt, nextTake.beatState);
+            return;
+          }
+          console.log(`${tag} buildNextTakePrompt returned null — ending session`);
+        } catch (err) {
+          console.error(`${tag} buildNextTakePrompt threw:`, err);
+          pushEvent({
+            type: "stderr",
+            data: `Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+            timestamp: Date.now(),
+          });
+        }
+        finishSession(takeCode ?? 0);
+      })();
     });
 
-    pollChild.on("error", (err) => {
-      console.error(`[terminal-manager] [${id}] poll spawn error:`, err.message);
-      if (pollCloseInputTimer) { clearTimeout(pollCloseInputTimer); pollCloseInputTimer = null; }
-      pollStdinClosed = true;
+    takeChild.on("error", (err) => {
+      console.error(`[terminal-manager] [${id}] [take-loop] spawn error:`, err.message);
+      if (takeCloseInputTimer) { clearTimeout(takeCloseInputTimer); takeCloseInputTimer = null; }
+      takeStdinClosed = true;
       pushEvent({ type: "stderr", data: `Process error: ${err.message}`, timestamp: Date.now() });
-      pollChild.stdout?.removeAllListeners();
-      pollChild.stderr?.removeAllListeners();
+      takeChild.stdout?.removeAllListeners();
+      takeChild.stderr?.removeAllListeners();
       entry.process = null;
       finishSession(1);
     });
 
-    const sent = pollSendUserTurn(pollPrompt, `poll_${pollIteration}`);
+    const sent = takeSendUserTurn(takePrompt, `take_${takeIteration}`);
     if (!sent) {
-      pollCloseInput();
-      pushEvent({ type: "stderr", data: `Failed to send prompt for poll iteration ${pollIteration}\n`, timestamp: Date.now() });
-      pollChild.kill("SIGTERM");
+      takeCloseInput();
+      pushEvent({ type: "stderr", data: `Failed to send prompt for take iteration ${takeIteration}\n`, timestamp: Date.now() });
+      takeChild.kill("SIGTERM");
       entry.process = null;
       finishSession(1);
     }
@@ -1144,12 +1181,16 @@ export async function createSession(
       lineBuffer = "";
     }
 
-    if (isPollLoop) {
+    const tag = `[terminal-manager] [${id}] [take-loop]`;
+
+    if (isTakeLoop) {
+      console.log(`${tag} initial child close: code=${code} signal=${signal} beat=${beatId} isTakeLoop=${isTakeLoop}`);
       getBackend().get(beatId, repoPath).then((r) => {
         const state = r.ok && r.data ? r.data.state : "unknown";
-        console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events beat_state=${state}`);
+        const claimable = r.ok && r.data ? r.data.isAgentClaimable : "unknown";
+        console.log(`${tag} post-close beat state: beat=${beatId} state=${state} isAgentClaimable=${claimable}`);
       }).catch(() => {
-        console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events beat_state=fetch_error`);
+        console.log(`${tag} post-close beat fetch failed: beat=${beatId}`);
       });
     } else {
       console.log(`[terminal-manager] [${id}] close: code=${code} signal=${signal} buffer=${buffer.length} events`);
@@ -1165,42 +1206,52 @@ export async function createSession(
     child.stderr?.removeAllListeners();
     entry.process = null;
 
-    // Poll loop: check if knots-backed session should continue polling
-    if (isPollLoop && code === 0 && pollIteration < MAX_POLL_ITERATIONS) {
+    // Take loop: check if knots-backed session should continue claiming the same beat
+    if (isTakeLoop && code !== 0) {
+      console.log(`${tag} STOP: initial child exited with non-zero code=${code}`);
+      finishSession(code ?? 1);
+      return;
+    }
+
+    if (isTakeLoop && code === 0 && takeIteration >= MAX_TAKE_ITERATIONS) {
+      console.log(`${tag} STOP: max iterations reached (${takeIteration}/${MAX_TAKE_ITERATIONS})`);
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Take loop stopped: max ${MAX_TAKE_ITERATIONS} iterations reached ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      finishSession(code ?? 1);
+      return;
+    }
+
+    if (isTakeLoop && code === 0 && takeIteration < MAX_TAKE_ITERATIONS) {
+      console.log(`${tag} evaluating next iteration after initial child (code=0, iteration=${takeIteration}/${MAX_TAKE_ITERATIONS})`);
       (async () => {
         try {
-          const nextPoll = await buildNextPollPrompt();
-          if (nextPoll) {
-            pollIteration++;
+          const nextTake = await buildNextTakePrompt();
+          if (nextTake) {
+            takeIteration++;
             pushEvent({
               type: "stdout",
-              data: `\n\x1b[36m--- Poll ${pollIteration}/${MAX_POLL_ITERATIONS} ---\x1b[0m\n`,
+              data: `\n\x1b[36m--- Take ${takeIteration}/${MAX_TAKE_ITERATIONS} ---\x1b[0m\n`,
               timestamp: Date.now(),
             });
-            console.log(`[terminal-manager] [${id}] starting poll iteration ${pollIteration}/${MAX_POLL_ITERATIONS}`);
-            spawnPollChild(nextPoll.prompt, nextPoll.beatState);
+            console.log(`${tag} starting iteration ${takeIteration}/${MAX_TAKE_ITERATIONS}`);
+            spawnTakeChild(nextTake.prompt, nextTake.beatState);
             return;
           }
+          console.log(`${tag} buildNextTakePrompt returned null — ending session`);
         } catch (err) {
-          console.error(`[terminal-manager] [${id}] poll check failed:`, err);
+          console.error(`${tag} buildNextTakePrompt threw:`, err);
           pushEvent({
             type: "stderr",
-            data: `Poll check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+            data: `Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
             timestamp: Date.now(),
           });
         }
         finishSession(code ?? 0);
       })();
       return;
-    }
-
-    // Handle max poll iterations reached
-    if (isPollLoop && code === 0 && pollIteration >= MAX_POLL_ITERATIONS) {
-      pushEvent({
-        type: "stdout",
-        data: `\x1b[33m--- Poll loop stopped: max ${MAX_POLL_ITERATIONS} iterations reached ---\x1b[0m\n`,
-        timestamp: Date.now(),
-      });
     }
 
     finishSession(code ?? 1);
