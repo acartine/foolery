@@ -1,0 +1,15 @@
+{
+  "event_id": "019caeb9-d094-7982-ae6b-f6ef04c55496",
+  "occurred_at": "2026-03-02T13:25:39.092919Z",
+  "knot_id": "foolery-ioos",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented startup message type index build in src/instrumentation.ts. The full feature was already 95% built across agent-message-type-index.ts (core logic: build, update, remove, persistence), API route (message-types/route.ts), client fetch (agent-message-type-api.ts), UI consumer (interaction-picker.tsx), and post-session hook (terminal-manager.ts:747). The missing piece was proactive startup initialization — now when Foolery starts, register() checks for the persisted index, builds it from the 2 most recent logs if absent, and logs progress to the console. Uninstall cleanup is handled by the launcher script removing ~/.config/foolery/ entirely. All 91 test files pass (1633 tests). Commit 808c79e pushed to origin/main.",
+    "datetime": "2026-03-02T14:30:00Z",
+    "entry_id": "019caeb9-d094-7982-ae6b-f6d8658b6788",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "opus-4.6"
+  }
+}

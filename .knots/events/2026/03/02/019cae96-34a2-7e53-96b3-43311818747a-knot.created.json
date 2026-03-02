@@ -1,0 +1,12 @@
+{
+  "event_id": "019cae96-34a2-7e53-96b3-43311818747a",
+  "occurred_at": "2026-03-02T12:46:45.410786Z",
+  "knot_id": "foolery-de46",
+  "type": "knot.created",
+  "data": {
+    "body": "Some of the states are rather long now - you can abbreviate Implementation to Impl, and alalow the column to grow.  it should consume width from the title column (if state grows, shrink title)",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Beats View: States over run column to the right"
+  }
+}

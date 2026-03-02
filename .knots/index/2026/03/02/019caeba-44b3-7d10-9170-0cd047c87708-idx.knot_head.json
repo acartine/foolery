@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeba-44b3-7d10-9170-0cd047c87708",
+  "occurred_at": "2026-03-02T13:26:08.819763Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-fcfc",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Agent Pools: Settings integration and server-side resolution",
+    "updated_at": "2026-03-02T13:26:08.819763Z"
+  }
+}

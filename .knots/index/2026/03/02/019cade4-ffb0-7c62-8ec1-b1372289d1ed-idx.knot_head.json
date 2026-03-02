@@ -1,0 +1,14 @@
+{
+  "event_id": "019cade4-ffb0-7c62-8ec1-b1372289d1ed",
+  "occurred_at": "2026-03-02T09:33:11.984072Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-af02",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Take loop stops at action states: isAgentClaimable false for agent-owned action states",
+    "updated_at": "2026-03-02T09:33:11.984072Z"
+  }
+}

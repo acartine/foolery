@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeb1-f7ff-7542-8ce8-a65f92d11ffc",
+  "occurred_at": "2026-03-02T13:17:04.890464Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-da39",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "New Feature: Agent Pools",
+    "updated_at": "2026-03-02T13:17:04.890464Z"
+  }
+}

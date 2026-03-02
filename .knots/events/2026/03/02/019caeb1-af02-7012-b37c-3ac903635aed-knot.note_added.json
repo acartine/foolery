@@ -1,0 +1,15 @@
+{
+  "event_id": "019caeb1-af02-7012-b37c-3ac903635aed",
+  "occurred_at": "2026-03-02T13:16:46.210878Z",
+  "knot_id": "foolery-da39",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan: Agent Pools\n\n### Overview\nAdd per-workflow-step agent pools with weighted random selection. Users configure pools (e.g., 50% Sonnet, 25% Opus, 25% Codex) for each of the 6 workflow steps: planning, plan_review, implementation, implementation_review, shipment, shipment_review.\n\n### Architecture\n- Pool = array of { agentId, weight } per WorkflowStep\n- Resolution: pool (if configured for step) → action mapping → default agent\n- Settings stored in pools section of settings.toml\n- UI: tabs in settings sheet (General + Agent Pools), sheet made wider\n\n### File Changes\n1. src/lib/schemas.ts — poolEntrySchema, poolsSettingsSchema\n2. src/lib/types.ts — PoolEntry, PoolConfig types\n3. src/lib/agent-pool.ts — weighted selection engine (new file)\n4. src/lib/settings.ts — pools in SettingsPartial, getStepAgent()\n5. src/lib/settings-api.ts — patchPools client helper\n6. src/components/settings-sheet.tsx — tabs refactor, wider\n7. src/components/settings-pools-section.tsx — pool config UI (new)\n8. src/lib/terminal-manager.ts — use getStepAgent when beat has step context\n9. src/lib/orchestration-manager.ts — use getStepAgent\n10. src/lib/breakdown-manager.ts — use getStepAgent\n11. src/lib/__tests__/agent-pool.test.ts — unit tests (new)\n\n### Risks\n- TOML serialization of nested arrays-of-objects (smol-toml handles this)\n- Weight normalization edge cases (empty pool, zero weights)\n- Backward compatibility with existing action mappings",
+    "datetime": "2026-03-02T13:16:46.210878Z",
+    "entry_id": "019caeb1-af02-7012-b37c-3ab221463f22",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

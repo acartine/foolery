@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeb5-19df-7693-b904-6d7ba1a3b1e5",
+  "occurred_at": "2026-03-02T13:20:30.175423Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-fa2b",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "test-skill-repro",
+    "updated_at": "2026-03-02T13:20:30.175423Z"
+  }
+}

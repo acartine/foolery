@@ -1,0 +1,12 @@
+{
+  "event_id": "019caeac-d00a-7462-8749-35a39749617d",
+  "occurred_at": "2026-03-02T13:11:26.986033Z",
+  "knot_id": "foolery-f4ff",
+  "type": "knot.created",
+  "data": {
+    "body": "says Ready For Shipment has no skill\n\nif this is true, add a skill similar to the others.\n\nthe skill is basically:\n\nsee if code is commited to main, if so, `kno next`\nsee if code is committed to branch, if so, merge to main, then `kno next`\nlook for committed code referencing the problem or the knot/bead.  if found, go back to step 1 (see if code is committed to main, etc.)\nif not, roll back to ready for implementation.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "beat e4df throws error when Take! selected"
+  }
+}

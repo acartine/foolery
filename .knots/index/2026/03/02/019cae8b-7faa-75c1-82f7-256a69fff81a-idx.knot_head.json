@@ -1,0 +1,17 @@
+{
+  "event_id": "019cae8b-7faa-75c1-82f7-256a69fff81a",
+  "occurred_at": "2026-03-02T12:35:03.722665Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-3a9d",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "beats view: state should be possible to rollback",
+    "updated_at": "2026-03-02T12:35:03.722665Z"
+  },
+  "precondition": {
+    "profile_etag": "019cae85-ae8b-7b70-b4e2-4f04f15f9660"
+  }
+}

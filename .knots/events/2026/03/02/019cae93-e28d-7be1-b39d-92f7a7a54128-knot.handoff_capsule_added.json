@@ -1,0 +1,15 @@
+{
+  "event_id": "019cae93-e28d-7be1-b39d-92f7a7a54128",
+  "occurred_at": "2026-03-02T12:44:13.32581Z",
+  "knot_id": "foolery-3a9d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented state rollback in beats view. Added isRollbackTransition() to workflows.ts with pipeline ordering. Updated state dropdowns in beat-columns.tsx and beat-detail.tsx to partition forward/rollback transitions with separator and Undo2 icon label. Added tests. Commit f0a7eae on main.",
+    "datetime": "2026-03-02T12:45:00Z",
+    "entry_id": "019cae93-e28d-7be1-b39d-92ea50bc9239",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

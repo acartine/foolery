@@ -1,0 +1,17 @@
+{
+  "event_id": "019caea8-1f75-7a21-acb2-8daddb28afd8",
+  "occurred_at": "2026-03-02T13:06:19.637077Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c550",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "beats view:  add profile column",
+    "updated_at": "2026-03-02T13:06:19.637077Z"
+  },
+  "precondition": {
+    "profile_etag": "019cae92-3b9c-7262-bece-45ce0d18820e"
+  }
+}

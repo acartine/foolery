@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeba-b01d-79a1-a97d-1ad4211d0f42",
+  "occurred_at": "2026-03-02T13:26:36.317132Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-460d",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Agent Pools: Runtime integration with terminal/orchestration/breakdown",
+    "updated_at": "2026-03-02T13:26:36.317132Z"
+  }
+}

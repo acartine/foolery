@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeba-c77b-7ed3-9207-06628784f257",
+  "occurred_at": "2026-03-02T13:26:42.299681Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-90f0",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent Pools: Unit tests for weighted selection",
+    "updated_at": "2026-03-02T13:26:42.299681Z"
+  }
+}

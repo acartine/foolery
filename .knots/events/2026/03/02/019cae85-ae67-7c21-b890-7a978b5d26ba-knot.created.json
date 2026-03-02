@@ -1,0 +1,12 @@
+{
+  "event_id": "019cae85-ae67-7c21-b890-7a978b5d26ba",
+  "occurred_at": "2026-03-02T12:28:42.471854Z",
+  "knot_id": "foolery-3a9d",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to go backwards, and the pulldown should reflect this like\n\n<- Rollback",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "beats view: state should be possible to rollback"
+  }
+}

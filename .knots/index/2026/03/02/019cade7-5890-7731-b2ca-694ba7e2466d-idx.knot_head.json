@@ -1,0 +1,14 @@
+{
+  "event_id": "019cade7-5890-7731-b2ca-694ba7e2466d",
+  "occurred_at": "2026-03-02T09:35:45.808595Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-2a54",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove \"Types\" filter if the active project is not a beads project",
+    "updated_at": "2026-03-02T09:35:45.808595Z"
+  }
+}

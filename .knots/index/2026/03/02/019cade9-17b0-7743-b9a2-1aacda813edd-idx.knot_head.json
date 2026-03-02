@@ -1,0 +1,14 @@
+{
+  "event_id": "019cade9-17b0-7743-b9a2-1aacda813edd",
+  "occurred_at": "2026-03-02T09:37:40.2729Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-drmp",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "in history view, list and detail components should NOT show id prefix",
+    "updated_at": "2026-03-02T09:37:40.2729Z"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeae-d43f-7933-80a8-350ceedfcd43",
+  "occurred_at": "2026-03-02T13:13:39.135728Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-9b59",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Scene Action: Simplify to reuse Take! workflow",
+    "updated_at": "2026-03-02T13:13:39.135728Z"
+  }
+}

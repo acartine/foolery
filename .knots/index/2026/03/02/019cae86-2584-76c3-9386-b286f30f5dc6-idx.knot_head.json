@@ -1,0 +1,14 @@
+{
+  "event_id": "019cae86-2584-76c3-9386-b286f30f5dc6",
+  "occurred_at": "2026-03-02T12:29:12.952779Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-jzww",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Verification stage is broken with knots",
+    "updated_at": "2026-03-02T12:29:12.952779Z"
+  }
+}

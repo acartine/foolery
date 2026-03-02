@@ -1,0 +1,12 @@
+{
+  "event_id": "019cae86-2578-7103-89b4-537d808d24a4",
+  "occurred_at": "2026-03-02T12:29:12.952779Z",
+  "knot_id": "foolery-jzww",
+  "type": "knot.state_set",
+  "data": {
+    "force": false,
+    "from": "ready_for_implementation",
+    "profile_id": "autopilot",
+    "to": "abandoned"
+  }
+}

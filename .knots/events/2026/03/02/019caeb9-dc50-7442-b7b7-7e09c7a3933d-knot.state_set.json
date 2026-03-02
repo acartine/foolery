@@ -1,0 +1,13 @@
+{
+  "event_id": "019caeb9-dc50-7442-b7b7-7e09c7a3933d",
+  "occurred_at": "2026-03-02T13:25:42.096795Z",
+  "knot_id": "foolery-ioos",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "implementation",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation_review"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cae90-7870-7560-9d4c-2e92373f85a6",
+  "occurred_at": "2026-03-02T12:40:29.552148Z",
+  "knot_id": "foolery-cbb7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Feature already fully implemented and merged to main (commit 8792e25). All components verified: defaults.profileId in schema, settings deep-merge, SettingsDefaultsSection UI, SettingsSheet wiring, CreateBeatDialog profile resolution with fallback to autopilot. Tests cover settings update with defaults.profileId. Typecheck clean. No additional code changes needed.",
+    "datetime": "2026-03-02T13:45:00Z",
+    "entry_id": "019cae90-7870-7560-9d4c-2e89f5e00dcc",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019caea9-1e05-7e41-8c67-9a2bf1310607",
+  "occurred_at": "2026-03-02T13:07:24.805804Z",
+  "knot_id": "foolery-da39",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "likely we want to make the settings lightbox wider AND add tabs so we can add a tab specifically to configure pools for each step of the workflow.  note that we don't need a pool for each state - just the step (combination of action+queue)",
+    "datetime": "2026-03-02T13:07:24.805804Z",
+    "entry_id": "019caea9-1e05-7e41-8c67-9a1b863990d3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

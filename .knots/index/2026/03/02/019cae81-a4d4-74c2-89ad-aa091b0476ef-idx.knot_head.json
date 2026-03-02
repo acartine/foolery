@@ -1,0 +1,17 @@
+{
+  "event_id": "019cae81-a4d4-74c2-89ad-aa091b0476ef",
+  "occurred_at": "2026-03-02T12:24:17.87666Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-d119",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Add soft coverage regression gate to CI",
+    "updated_at": "2026-03-02T12:24:17.87666Z"
+  },
+  "precondition": {
+    "profile_etag": "019cae24-37f0-7203-ab36-9fbdf77b3352"
+  }
+}

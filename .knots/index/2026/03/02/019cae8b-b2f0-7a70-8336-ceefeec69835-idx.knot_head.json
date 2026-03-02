@@ -1,0 +1,17 @@
+{
+  "event_id": "019cae8b-b2f0-7a70-8336-ceefeec69835",
+  "occurred_at": "2026-03-02T12:35:16.848646Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-5492",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Raise overall test coverage from 82% to 90%+",
+    "updated_at": "2026-03-02T12:35:16.848646Z"
+  },
+  "precondition": {
+    "profile_etag": "019cae87-ae7f-7273-85fc-3a4ad0ef3b2c"
+  }
+}

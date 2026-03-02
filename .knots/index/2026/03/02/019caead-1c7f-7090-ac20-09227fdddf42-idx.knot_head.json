@@ -1,0 +1,14 @@
+{
+  "event_id": "019caead-1c7f-7090-ac20-09227fdddf42",
+  "occurred_at": "2026-03-02T13:11:46.559549Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-f8c6",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "beats view: in action filter shows mismatched ownership",
+    "updated_at": "2026-03-02T13:11:46.559549Z"
+  }
+}

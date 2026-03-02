@@ -1,0 +1,12 @@
+{
+  "event_id": "019cae93-182a-7d13-badf-7cff8c299501",
+  "occurred_at": "2026-03-02T12:43:21.514764Z",
+  "knot_id": "foolery-9b59",
+  "type": "knot.created",
+  "data": {
+    "body": "Rather than having a bulk prompt to one agent, eliminate the scene prompt entirely and instead use the Take! workflow  for each selected item.\n\nIf more than the max number of agents would be exceeded, just run Take! on up to the max number, and as each agent finishes, launch an agent to work on the next beat.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Scene Action: Simplify to reuse Take! workflow"
+  }
+}

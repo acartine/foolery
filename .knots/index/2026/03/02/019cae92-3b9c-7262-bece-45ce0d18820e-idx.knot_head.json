@@ -1,0 +1,14 @@
+{
+  "event_id": "019cae92-3b9c-7262-bece-45ce0d18820e",
+  "occurred_at": "2026-03-02T12:42:25.052984Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c550",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "beats view:  add profile column",
+    "updated_at": "2026-03-02T12:42:25.052984Z"
+  }
+}

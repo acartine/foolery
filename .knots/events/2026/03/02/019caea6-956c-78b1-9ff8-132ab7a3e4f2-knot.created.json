@@ -1,0 +1,12 @@
+{
+  "event_id": "019caea6-956c-78b1-9ff8-132ab7a3e4f2",
+  "occurred_at": "2026-03-02T13:04:38.764271Z",
+  "knot_id": "foolery-da39",
+  "type": "knot.created",
+  "data": {
+    "body": "User can configure how agent models/types/versions are selected per workflow step.  For example, you can say you want 50% of impl steps to be Claude Sonnet 4.6, 25% to be Claude Opus 4.6, 25% to be OpenAI Codex 5.3.\n\nthe value of this is multi-fold:\n\n1) Distribute work to manage account quotas\n2) Track performance - which guys are faster\n3) Failover - we can have circuit breaks that capture when agents return errors or rate limits, and move on to the next agent type until a recovery is detected.\n\n",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "New Feature: Agent Pools"
+  }
+}

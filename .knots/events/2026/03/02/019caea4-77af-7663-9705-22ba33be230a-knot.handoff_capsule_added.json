@@ -1,0 +1,15 @@
+{
+  "event_id": "019caea4-77af-7663-9705-22ba33be230a",
+  "occurred_at": "2026-03-02T13:02:20.079456Z",
+  "knot_id": "foolery-f8c6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed ownership display in beats view: renamed column to 'Owner Type', changed badge text from 'Human next'/'Agent next' to 'Human'/'Agent', fixed ship column check to use nextActionOwnerKind instead of isAgentClaimable, and added rollbackActivePhase() to both backends to normalize stale active-phase beats back to queued state (respecting transition:verification lock). Commit 3978083 pushed to origin/main. All quality gates green (lint, typecheck, 1623 tests passed).",
+    "datetime": "2026-03-02T13:02:20.079456Z",
+    "entry_id": "019caea4-77af-7663-9705-22a4b950fb0d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

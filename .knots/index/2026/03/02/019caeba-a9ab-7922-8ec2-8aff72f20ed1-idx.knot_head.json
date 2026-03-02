@@ -1,0 +1,14 @@
+{
+  "event_id": "019caeba-a9ab-7922-8ec2-8aff72f20ed1",
+  "occurred_at": "2026-03-02T13:26:34.667067Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-3186",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Agent Pools: Schema, types, and pool selection engine",
+    "updated_at": "2026-03-02T13:26:34.667067Z"
+  }
+}

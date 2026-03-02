@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadf1-e714-76d3-82f1-59392d1ac93d",
+  "occurred_at": "2026-03-02T09:47:17.652941Z",
+  "knot_id": "foolery-c550",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Profile column feature verified on main (commit 2f987cd). Implementation: profile column in beat-columns.tsx:534-575 with inline dropdown editing via builtinWorkflowDescriptors(). Bulk profile edit in filter-bar.tsx:109-122 as a Select component in BulkEditControls. All quality gates pass: TypeScript clean, lint clean, 73 test files / 1146 tests passing. Remote is up to date.",
+    "datetime": "2026-03-02T10:48:00Z",
+    "entry_id": "019cadf1-e714-76d3-82f1-592148dbf76b",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

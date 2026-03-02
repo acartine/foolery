@@ -1,0 +1,15 @@
+{
+  "event_id": "019cadef-a378-76f1-a818-975a32d15301",
+  "occurred_at": "2026-03-02T09:44:49.27233Z",
+  "knot_id": "foolery-3a7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented client-side filtering in AgentHistoryView to hide beats whose backend detail fetch fails (beat no longer exists). Added goneBeatKeys state tracking, reset on repo change, and an effect that marks beats as gone when detailQueries settle with errors. Commit a657ed9 on main. Lint (0 errors), typecheck, and all related tests pass.",
+    "datetime": "2026-03-02T10:45:00Z",
+    "entry_id": "019cadef-a378-76f1-a818-9748b3c4a508",
+    "model": "claude",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

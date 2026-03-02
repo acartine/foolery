@@ -1,0 +1,12 @@
+{
+  "event_id": "019cae8b-22e9-7a21-ad9f-33bd12a17222",
+  "occurred_at": "2026-03-02T12:34:39.977035Z",
+  "knot_id": "foolery-f8c6",
+  "type": "knot.created",
+  "data": {
+    "body": "if you filter the foolery beats by \"in action\" you'll see a lot of beats in actions state blocked by \"humean next\" despite the label correctly saying \"Agent:next\"\n\nthese are all in an invalid state.\n\n- the \"ownership\" column should have the title \"owner typet\"\n- it should just say human or agent (not next)\n- it should hav ethe correct owner type (they are all agent owned)\n- they should all be rolled back to the Ready (queued) state so that they can be folded into the proper workflow.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "beats view: in action filter shows mismatched ownership"
+  }
+}
