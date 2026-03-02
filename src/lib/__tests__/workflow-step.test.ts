@@ -3,6 +3,7 @@ import {
   WorkflowStep,
   StepPhase,
   resolveStep,
+  rollbackActivePhase,
 } from "@/lib/workflows";
 import type { MemoryWorkflowOwners } from "@/lib/types";
 
@@ -102,5 +103,33 @@ describe("resolveStep", () => {
       expect(queued!.step).toBe(step);
       expect(queued!.phase).toBe(StepPhase.Queued);
     }
+  });
+});
+
+describe("rollbackActivePhase", () => {
+  it("maps all 6 active states to their queued counterparts", () => {
+    expect(rollbackActivePhase("planning")).toBe("ready_for_planning");
+    expect(rollbackActivePhase("plan_review")).toBe("ready_for_plan_review");
+    expect(rollbackActivePhase("implementation")).toBe("ready_for_implementation");
+    expect(rollbackActivePhase("implementation_review")).toBe("ready_for_implementation_review");
+    expect(rollbackActivePhase("shipment")).toBe("ready_for_shipment");
+    expect(rollbackActivePhase("shipment_review")).toBe("ready_for_shipment_review");
+  });
+
+  it("returns queued states unchanged", () => {
+    expect(rollbackActivePhase("ready_for_planning")).toBe("ready_for_planning");
+    expect(rollbackActivePhase("ready_for_plan_review")).toBe("ready_for_plan_review");
+    expect(rollbackActivePhase("ready_for_implementation")).toBe("ready_for_implementation");
+    expect(rollbackActivePhase("ready_for_implementation_review")).toBe("ready_for_implementation_review");
+    expect(rollbackActivePhase("ready_for_shipment")).toBe("ready_for_shipment");
+    expect(rollbackActivePhase("ready_for_shipment_review")).toBe("ready_for_shipment_review");
+  });
+
+  it("returns terminal and unknown states unchanged", () => {
+    expect(rollbackActivePhase("shipped")).toBe("shipped");
+    expect(rollbackActivePhase("abandoned")).toBe("abandoned");
+    expect(rollbackActivePhase("deferred")).toBe("deferred");
+    expect(rollbackActivePhase("unknown_state")).toBe("unknown_state");
+    expect(rollbackActivePhase("")).toBe("");
   });
 });

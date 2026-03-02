@@ -342,7 +342,7 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels, isBuiltForRevi
               ? "bg-amber-100 text-amber-700"
               : "bg-blue-100 text-blue-700"
           }`}>
-            {beat.nextActionOwnerKind === "human" ? "Human next" : "Agent next"}
+            {beat.nextActionOwnerKind === "human" ? "Human" : "Agent"}
           </span>
         )}
         {beat.requiresHumanAction && (
@@ -652,7 +652,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
   if (onShipBeat) {
     columns.push({
       id: "ship",
-      header: "",
+      header: "Owner Type",
       size: 100,
       minSize: 100,
       maxSize: 100,
@@ -662,10 +662,10 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
         if (isTerminal || beat.type === "gate") return null;
         if (isTransitionLocked(beat.labels ?? [])) return null;
-        if (beat.isAgentClaimable === false) {
+        if (beat.nextActionOwnerKind === "human") {
           return (
             <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700">
-              Human next
+              Human
             </span>
           );
         }

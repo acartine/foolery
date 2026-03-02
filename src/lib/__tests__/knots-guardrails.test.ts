@@ -292,7 +292,8 @@ describe("Knots-state compression with raw state metadata", () => {
     expect(result.ok).toBe(true);
     const beat = result.data!;
 
-    expect(beat.state).toBe("implementation");
+    // rollbackActivePhase maps "implementation" → "ready_for_implementation" for non-locked beats
+    expect(beat.state).toBe("ready_for_implementation");
     expect(beat.metadata![KNOTS_METADATA_KEYS.state]).toBe("implementation");
     expect(beat.metadata![KNOTS_METADATA_KEYS.handoffCapsules]).toBeInstanceOf(Array);
     expect(beat.metadata![KNOTS_METADATA_KEYS.notes]).toBeInstanceOf(Array);
@@ -484,7 +485,8 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       const ids = result.data!.map((b) => b.id);
       expect(ids).toContain("g3y1.1");
       expect(ids).toContain("g3y1.1.1");
-      expect(ids).not.toContain("g3y1"); // implementation, not queued
+      // rollbackActivePhase maps implementation → ready_for_implementation (queued)
+      expect(ids).toContain("g3y1");
       expect(ids).not.toContain("g3y1.2"); // shipped, not queued
     });
 
@@ -494,7 +496,8 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       const result = await backend.list({ state: "in_action" });
       expect(result.ok).toBe(true);
       const ids = result.data!.map((b) => b.id);
-      expect(ids).toContain("g3y1"); // implementation is an action state
+      // rollbackActivePhase maps implementation → ready_for_implementation (queued)
+      expect(ids).not.toContain("g3y1");
       expect(ids).not.toContain("g3y1.1"); // ready_for_implementation is queued
     });
 

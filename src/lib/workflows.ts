@@ -690,6 +690,23 @@ export function beatInRetake(
 }
 
 /**
+ * Map an active-phase state to its queued counterpart.
+ * e.g. "implementation" → "ready_for_implementation".
+ * Returns the state unchanged if it is not in an active phase.
+ */
+export function rollbackActivePhase(state: string): string {
+  const resolved = resolveStep(state);
+  if (!resolved || resolved.phase !== StepPhase.Active) return state;
+
+  for (const [candidate, res] of RESOLVED_STEP_MAP.entries()) {
+    if (res.step === resolved.step && res.phase === StepPhase.Queued) {
+      return candidate;
+    }
+  }
+  return state;
+}
+
+/**
  * Ordered pipeline index for each workflow state.
  * A transition is a "rollback" when the target has a lower index than the source.
  */

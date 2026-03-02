@@ -824,7 +824,8 @@ describe("KnotsBackend coverage: applyFilters edge cases", () => {
   it("filters by queued state", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "AF1", title: "Queued", state: "ready_for_planning" });
-    insertKnot({ id: "AF2", title: "Active", state: "planning" });
+    // transition:verification keeps the active state from being rolled back
+    insertKnot({ id: "AF2", title: "Active", state: "planning", tags: ["transition:verification"] });
 
     const result = await backend.list({ state: "queued" });
     expect(result.ok).toBe(true);
@@ -833,7 +834,8 @@ describe("KnotsBackend coverage: applyFilters edge cases", () => {
 
   it("filters by in_action state", async () => {
     const backend = new KnotsBackend("/repo");
-    insertKnot({ id: "FA1", title: "Active", state: "implementation" });
+    // transition:verification keeps the active state from being rolled back
+    insertKnot({ id: "FA1", title: "Active", state: "implementation", tags: ["transition:verification"] });
     insertKnot({ id: "FA2", title: "Queued", state: "ready_for_implementation" });
 
     const result = await backend.list({ state: "in_action" });

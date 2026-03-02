@@ -12,9 +12,11 @@ import {
   deriveWorkflowState,
   deriveWorkflowRuntimeState,
   mapWorkflowStateToCompatStatus,
+  rollbackActivePhase,
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
 } from "@/lib/workflows";
+import { isTransitionLocked } from "@/lib/wave-slugs";
 
 // ── Raw JSONL record shape ──────────────────────────────────────
 
@@ -83,7 +85,11 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
   const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
   const profileId = deriveProfileId(labels, raw.metadata);
   const workflow = builtinProfileDescriptor(profileId);
-  const workflowState = deriveWorkflowState(status, labels, workflow);
+  const rawWorkflowState = deriveWorkflowState(status, labels, workflow);
+  // Roll back active-phase states to queued unless the beat is transition-locked
+  const workflowState = isTransitionLocked(labels)
+    ? rawWorkflowState
+    : rollbackActivePhase(rawWorkflowState);
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const rawPriority = raw.priority ?? 2;
   const priority = (typeof rawPriority === "number" && rawPriority >= 0 && rawPriority <= 4
