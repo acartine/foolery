@@ -6,6 +6,7 @@ import {
   noopInteractionLog,
   type InteractionLog,
 } from "@/lib/interaction-logger";
+import { nextKnot } from "@/lib/knots";
 import { regroomAncestors } from "@/lib/regroom";
 import { getActionAgent, getStepAgent, loadSettings } from "@/lib/settings";
 import {
@@ -787,26 +788,25 @@ export async function createSession(
       timestamp: Date.now(),
     });
 
-    // Layer 3: force rollback to queue state
+    // Layer 3: advance to the next queue/terminal state via kno next
     const rolledBack = rollbackActivePhase(current.state);
-    if (rolledBack !== current.state) {
-      console.log(`${tag} forcing rollback: ${current.state} → ${rolledBack}`);
-      const updateResult = await getBackend().update(beatId, { state: rolledBack }, repoPath);
-      if (updateResult.ok) {
-        pushEvent({
-          type: "stdout",
-          data: `\x1b[33m--- Forced rollback: ${current.state} → ${rolledBack} ---\x1b[0m\n`,
-          timestamp: Date.now(),
-        });
-        console.log(`${tag} rollback succeeded: ${beatId} now in ${rolledBack}`);
-      } else {
-        console.error(`${tag} rollback failed: ${updateResult.error?.message ?? "unknown"}`);
-        pushEvent({
-          type: "stderr",
-          data: `Invariant enforcement: failed to rollback ${beatId} from ${current.state} to ${rolledBack}: ${updateResult.error?.message ?? "unknown"}\n`,
-          timestamp: Date.now(),
-        });
-      }
+    console.log(`${tag} advancing via nextKnot (would-be rollback: ${current.state} → ${rolledBack})`);
+    const nextResult = await nextKnot(beatId, repoPath, { actorKind: "agent" });
+    if (nextResult.ok) {
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Invariant fix: advanced ${beatId} from action state "${current.state}" via kno next ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      console.log(`${tag} nextKnot succeeded for ${beatId}`);
+    } else {
+      const errMsg = typeof nextResult.error === "string" ? nextResult.error : "unknown";
+      console.error(`${tag} nextKnot failed: ${errMsg}`);
+      pushEvent({
+        type: "stderr",
+        data: `Invariant enforcement: failed to advance ${beatId} from ${current.state}: ${errMsg}\n`,
+        timestamp: Date.now(),
+      });
     }
     return false;
   };
