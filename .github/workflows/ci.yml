@@ -29,5 +29,8 @@ jobs:
       - name: Unit tests with coverage
         run: bun run test:coverage
 
+      - name: Check coverage regression
+        run: node scripts/check-coverage.mjs
+
       - name: Build
         run: bun run build
