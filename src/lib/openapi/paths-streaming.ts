@@ -341,7 +341,7 @@ export const orchestrationPaths = {
           description: "SSE event stream of orchestration progress",
           content: {
             "text/event-stream": {
-              schema: { $ref: "#/components/schemas/BreakdownEvent" },
+              schema: { $ref: "#/components/schemas/OrchestrationEvent" },
             },
           },
         },

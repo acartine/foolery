@@ -187,6 +187,61 @@ export const settingsPaths = {
     },
   },
 
+  "/api/settings/actions": {
+    get: {
+      tags: ["Settings"],
+      summary: "Get action settings",
+      operationId: "getActions",
+      responses: {
+        "200": {
+          description: "Current action settings",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  ok: { type: "boolean" },
+                  data: { type: "object", additionalProperties: true },
+                },
+              },
+            },
+          },
+        },
+        "500": { description: "Server error", content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } } },
+      },
+    },
+    put: {
+      tags: ["Settings"],
+      summary: "Replace action settings",
+      operationId: "replaceActions",
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: { type: "object", additionalProperties: true },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Action settings replaced",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  ok: { type: "boolean" },
+                  data: { type: "object", additionalProperties: true },
+                },
+              },
+            },
+          },
+        },
+        "400": { description: "Validation error", content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } } },
+      },
+    },
+  },
+
   "/api/settings/agents/scan": {
     get: {
       tags: ["Settings"],

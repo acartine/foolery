@@ -203,6 +203,16 @@ export const componentSchemas = {
     },
   },
 
+  OrchestrationEvent: {
+    type: "object",
+    required: ["type", "data", "timestamp"],
+    properties: {
+      type: { type: "string", enum: ["log", "plan", "status", "error", "exit"] },
+      data: { oneOf: [{ type: "string" }, { $ref: "#/components/schemas/OrchestrationPlan" }] },
+      timestamp: { type: "number" },
+    },
+  },
+
   OrchestrationPlan: {
     type: "object",
     required: ["summary", "waves", "unassignedBeatIds", "assumptions"],
