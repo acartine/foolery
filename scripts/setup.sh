@@ -498,13 +498,14 @@ EOF
 
 _AGENT_CONFIG_DIR="${HOME}/.config/foolery"
 _AGENT_SETTINGS_FILE="${_AGENT_CONFIG_DIR}/settings.toml"
-KNOWN_AGENTS=(claude codex gemini)
+KNOWN_AGENTS=(claude codex gemini openrouter)
 
 _agent_label() {
   case "$1" in
     claude) printf 'Claude Code' ;;
     codex)  printf 'OpenAI Codex' ;;
     gemini) printf 'Google Gemini' ;;
+    openrouter) printf 'OpenRouter' ;;
     *)      printf '%s' "$1" ;;
   esac
 }

@@ -9,7 +9,7 @@ CONFIG_DIR="${HOME}/.config/foolery"
 SETTINGS_FILE="${CONFIG_DIR}/settings.toml"
 
 # Known agent ids checked during detection.
-KNOWN_AGENTS=(claude codex gemini)
+KNOWN_AGENTS=(claude codex gemini openrouter)
 
 _wizard_log() {
   printf '[foolery-install] %s\n' "$*"
@@ -47,6 +47,7 @@ _agent_label() {
     claude) printf 'Claude Code' ;;
     codex)  printf 'OpenAI Codex' ;;
     gemini) printf 'Google Gemini' ;;
+    openrouter) printf 'OpenRouter' ;;
     *)      printf '%s' "$1" ;;
   esac
 }

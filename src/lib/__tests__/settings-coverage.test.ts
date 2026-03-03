@@ -166,7 +166,7 @@ describe("scanForAgents (line 345-357)", () => {
     });
 
     const results = await scanForAgents();
-    expect(results).toHaveLength(3);
+    expect(results).toHaveLength(4);
 
     const claude = results.find((r) => r.id === "claude");
     expect(claude?.installed).toBe(true);
@@ -174,5 +174,8 @@ describe("scanForAgents (line 345-357)", () => {
 
     const codex = results.find((r) => r.id === "codex");
     expect(codex?.installed).toBe(false);
+
+    const openrouter = results.find((r) => r.id === "openrouter");
+    expect(openrouter?.installed).toBe(false);
   });
 });

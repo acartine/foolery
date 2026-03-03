@@ -405,7 +405,7 @@ export async function removeRegisteredAgent(
   return validated;
 }
 
-const SCANNABLE_AGENTS = ["claude", "codex", "gemini"] as const;
+const SCANNABLE_AGENTS = ["claude", "codex", "gemini", "openrouter"] as const;
 
 /** Scans PATH for known agent CLIs and returns what was found. */
 export async function scanForAgents(): Promise<ScannedAgent[]> {
