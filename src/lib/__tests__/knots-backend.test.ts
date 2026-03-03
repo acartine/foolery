@@ -557,6 +557,73 @@ describe("KnotsBackend mapping behaviour", () => {
     });
   });
 
+  describe("update() stuck active state handling", () => {
+    it("skips status change when target state matches raw kno state", async () => {
+      const backend = new KnotsBackend("/repo");
+      const now = nowIso();
+      // Knot is in "planning" in kno, but toBeat rolls it back to "ready_for_planning"
+      store.knots.set("stuck-1", {
+        id: "stuck-1",
+        title: "Stuck knot",
+        state: "planning",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: now,
+        body: null,
+        description: null,
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-stuck",
+        created_at: now,
+      });
+
+      // User selects "planning" from the UI (which sees "ready_for_planning")
+      // This should NOT send status=planning to kno because it's already in planning
+      const result = await backend.update("stuck-1", { state: "planning" });
+      expect(result.ok).toBe(true);
+
+      // No update call should have been made (no fields changed)
+      const updateCalls = mockUpdateKnot.mock.calls.filter((c) => c[0] === "stuck-1");
+      expect(updateCalls.length).toBe(0);
+    });
+
+    it("sets force=true when jumping to a non-adjacent state", async () => {
+      const backend = new KnotsBackend("/repo");
+      const now = nowIso();
+      // Knot is in "planning" but user wants to jump to "ready_for_implementation"
+      store.knots.set("stuck-2", {
+        id: "stuck-2",
+        title: "Force jump knot",
+        state: "planning",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: now,
+        body: null,
+        description: null,
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-stuck2",
+        created_at: now,
+      });
+
+      // Jump from "planning" to "ready_for_implementation" (non-adjacent)
+      const result = await backend.update("stuck-2", { state: "ready_for_implementation" });
+      expect(result.ok).toBe(true);
+
+      const lastUpdateArgs = mockUpdateKnot.mock.calls.at(-1);
+      expect(lastUpdateArgs?.[1]).toMatchObject({
+        status: "ready_for_implementation",
+        force: true,
+      });
+    });
+  });
+
   describe("buildPollPrompt", () => {
     it("polls for the highest-priority claimable knot", async () => {
       const backend = new KnotsBackend("/repo");

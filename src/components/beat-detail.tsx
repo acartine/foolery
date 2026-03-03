@@ -23,20 +23,45 @@ import { BeatTypeBadge } from "@/components/beat-type-badge";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
-function validNextStates(
+/** @internal Exported for testing only. */
+export function validNextStates(
   currentState: string | undefined,
   workflow: MemoryWorkflowDescriptor,
+  rawKnoState?: string,
 ): string[] {
   if (!currentState) return [];
   const normalized = currentState.trim().toLowerCase();
+
+  // If the raw kno state differs from the display state, the knot is stuck in an
+  // active phase that was rolled back for display. Compute transitions from the
+  // actual kno state and include all workflow states as escape hatches.
+  const isRolledBack = rawKnoState && rawKnoState !== normalized;
+  const effectiveState = isRolledBack ? rawKnoState : normalized;
+
   const next = new Set<string>();
   for (const t of workflow.transitions ?? []) {
-    if (t.from === normalized || t.from === "*") {
+    if (t.from === effectiveState || t.from === "*") {
       next.add(t.to);
     }
   }
-  // Remove current state from options
+
+  // When stuck (rolled back), also add all non-terminal workflow states as force targets
+  if (isRolledBack) {
+    for (const state of workflow.states ?? []) {
+      if (!workflow.terminalStates?.includes(state)) {
+        next.add(state);
+      }
+    }
+  }
+
+  // Remove current display state and raw state from options
   next.delete(normalized);
+  if (rawKnoState) next.delete(rawKnoState);
+
+  // Only filter out ready_for_* states when NOT rolled back (normal flow)
+  if (isRolledBack) {
+    return Array.from(next);
+  }
   return Array.from(next).filter((s) => !s.startsWith("ready"));
 }
 
@@ -245,7 +270,10 @@ function BeatDetailHeader({
         <BeatTypeBadge type={beat.type} />
 
         {onUpdate && workflow && beat.state ? (() => {
-          const nextStates = validNextStates(beat.state, workflow);
+          const rawKnoState = typeof beat.metadata?.knotsState === "string"
+            ? beat.metadata.knotsState
+            : undefined;
+          const nextStates = validNextStates(beat.state, workflow, rawKnoState);
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
