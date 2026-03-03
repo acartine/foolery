@@ -23,9 +23,7 @@ const HOTKEY_SECTIONS: HotkeySection[] = [
     hotkeys: [
       { key: "Space", description: "Select & advance" },
       { key: "Shift+S", description: "Take! focused beat" },
-      { key: "Shift+V", description: "Verify (close) focused beat" },
       { key: "Shift+C", description: "Close focused beat" },
-      { key: "Shift+F", description: "Reject focused beat" },
     ],
   },
   {

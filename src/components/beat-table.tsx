@@ -17,7 +17,7 @@ import type { UpdateBeatInput } from "@/lib/schemas";
 import { updateBead, closeBead, previewCascadeClose, cascadeCloseBead } from "@/lib/api";
 import { buildHierarchy, type HierarchicalBeat } from "@/lib/beat-hierarchy";
 import { compareBeatsByHierarchicalOrder } from "@/lib/beat-sort";
-import { getBeatColumns, rejectBeatFields, verifyBeatFields } from "@/components/beat-columns";
+import { getBeatColumns } from "@/components/beat-columns";
 import {
   Table,
   TableHeader,
@@ -44,10 +44,6 @@ import { useUpdateUrl } from "@/hooks/use-update-url";
 import { isInternalLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import { CascadeCloseDialog } from "@/components/cascade-close-dialog";
 import type { CascadeDescendant } from "@/lib/cascade-close";
-
-function isVerificationState(beat: Beat): boolean {
-  return beat.state === "ready_for_implementation_review" || beat.state === "verification";
-}
 
 function SummaryColumn({
   text,
@@ -183,10 +179,7 @@ export function BeatTable({
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(getStoredHotkeyHelp);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBeat, setNotesBeat] = useState<Beat | null>(null);
-  const [notesRejectionMode, setNotesRejectionMode] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(getStoredExpandedIds);
-  const [verifyingIds, setVerifyingIds] = useState<Set<string>>(new Set());
-  const [rejectingIds, setRejectingIds] = useState<Set<string>>(new Set());
   const [manualPageIndex, setManualPageIndex] = useState(0);
   const [cascadeDialogOpen, setCascadeDialogOpen] = useState(false);
   const [cascadeBeat, setCascadeBeat] = useState<Beat | null>(null);
@@ -203,10 +196,7 @@ export function BeatTable({
       return updateBead(id, fields, repo);
     },
     onMutate: async ({ id, fields }) => {
-      const isVerify = fields.state === "shipped";
-      const isReject = fields.state === "retake" || fields.state === "open";
-
-      // For ALL property changes: optimistically update the beads cache
+      // Optimistically update the beads cache
       await queryClient.cancelQueries({ queryKey: ["beads"] });
       const previousBeads = queryClient.getQueriesData({ queryKey: ["beads"] });
 
@@ -215,9 +205,6 @@ export function BeatTable({
         (old: unknown) => {
           const prev = old as { ok: boolean; data?: Beat[] } | undefined;
           if (!prev?.data) return prev;
-          if (isVerify || isReject) {
-            return { ...prev, data: prev.data.filter((b) => b.id !== id) };
-          }
           return {
             ...prev,
             data: prev.data.map((b) =>
@@ -227,68 +214,19 @@ export function BeatTable({
         }
       );
 
-      if (!isVerify && !isReject) {
-        return { isVerify: false as const, isReject: false as const, previousBeads };
-      }
-
-      const beat = data.find((b) => b.id === id);
-      if (isVerify) {
-        toast.success(`Verified: ${beat?.title ?? id}`);
-        setVerifyingIds((prev) => new Set(prev).add(id));
-      } else {
-        toast.info(`Rejected: ${beat?.title ?? id}`);
-        setRejectingIds((prev) => new Set(prev).add(id));
-      }
-
-      return { isVerify: isVerify as boolean, isReject: isReject as boolean, previousBeads };
+      return { previousBeads };
     },
-    onSuccess: () => {
-      // Invalidation is handled in onSettled for all cases
-    },
-    onError: (_err, { id }, context) => {
+    onError: (_err, _vars, context) => {
       toast.error("Failed to update beat");
       if (context?.previousBeads) {
         for (const [key, snapData] of context.previousBeads) {
           queryClient.setQueryData(key, snapData);
         }
       }
-      if (context?.isVerify) {
-        setVerifyingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(id);
-          return next;
-        });
-      }
-      if (context?.isReject) {
-        setRejectingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(id);
-          return next;
-        });
-      }
     },
-    onSettled: (_data, _err, { id }, context) => {
-      setVerifyingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-      setRejectingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-      if (context?.isVerify || context?.isReject) {
-        queryClient.invalidateQueries({
-          queryKey: ["beads"],
-          predicate: (query) =>
-            !(query.queryKey.length >= 2 && query.queryKey[1] === "finalcut"),
-        });
-        queryClient.invalidateQueries({ queryKey: ["bead", id] });
-      } else {
-        queryClient.invalidateQueries({ queryKey: ["beads"] });
-        queryClient.invalidateQueries({ queryKey: ["bead", id] });
-      }
+    onSettled: (_data, _err, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["bead", id] });
     },
   });
 
@@ -420,54 +358,6 @@ export function BeatTable({
     return Array.from(labelSet).sort();
   }, [data]);
 
-  const builtForReviewIds = useMemo(() => {
-    const byParent = new Map<string, Beat[]>();
-    for (const beat of data) {
-      if (!beat.parent) continue;
-      const list = byParent.get(beat.parent) ?? [];
-      list.push(beat);
-      byParent.set(beat.parent, list);
-    }
-    const result = new Set<string>();
-    for (const [parentId, children] of byParent) {
-      const hasVerification = children.some(
-        (c) => c.state !== "closed" && c.state !== "shipped" && isVerificationState(c)
-      );
-      if (!hasVerification) continue;
-      const allSettled = children.every(
-        (c) =>
-          c.state === "closed" || c.state === "shipped" || isVerificationState(c)
-      );
-      if (allSettled) result.add(parentId);
-    }
-    return result;
-  }, [data]);
-
-  const handleApproveReview = useCallback((parentId: string) => {
-    const children = data.filter(
-      (b) => b.parent === parentId && b.state !== "closed" && b.state !== "shipped" && isVerificationState(b)
-    );
-    for (const child of children) {
-      handleUpdateBeat({ id: child.id, fields: verifyBeatFields() });
-    }
-    handleCloseBeat(parentId);
-  }, [data, handleUpdateBeat, handleCloseBeat]);
-
-  const handleRejectReview = useCallback((parentId: string) => {
-    const children = data.filter(
-      (b) => b.parent === parentId && b.state !== "closed" && b.state !== "shipped" && isVerificationState(b)
-    );
-    for (const child of children) {
-      handleUpdateBeat({ id: child.id, fields: rejectBeatFields(child) });
-    }
-  }, [data, handleUpdateBeat]);
-
-  const handleRejectBeat = useCallback((beat: Beat) => {
-    setNotesBeat(beat);
-    setNotesRejectionMode(true);
-    setNotesDialogOpen(true);
-  }, []);
-
   const childCountMap = useMemo(() => {
     const childrenOf = new Map<string, string[]>();
     for (const beat of data) {
@@ -560,17 +450,13 @@ export function BeatTable({
       shippingByBeatId,
       onAbortShipping,
       allLabels,
-      builtForReviewIds,
-      onApproveReview: handleApproveReview,
-      onRejectReview: handleRejectReview,
-      onRejectBeat: handleRejectBeat,
       onCloseBeat: initiateClose,
       collapsedIds,
       onToggleCollapse: handleToggleCollapse,
       childCountMap,
       parentRollingBeatIds,
     }),
-    [showRepoColumn, handleUpdateBeat, onOpenBeat, searchParams, router, onShipBeat, shippingByBeatId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBeat, initiateClose, collapsedIds, handleToggleCollapse, childCountMap, parentRollingBeatIds]
+    [showRepoColumn, handleUpdateBeat, onOpenBeat, searchParams, router, onShipBeat, shippingByBeatId, onAbortShipping, allLabels, initiateClose, collapsedIds, handleToggleCollapse, childCountMap, parentRollingBeatIds]
   );
 
   const handleRowFocus = useCallback((beat: Beat) => {
@@ -642,7 +528,6 @@ export function BeatTable({
     setHotkeyHelpOpen,
     setNotesBeat,
     setNotesDialogOpen,
-    setNotesRejectionMode,
     activeRepo,
     registeredRepos,
     updateUrl,
@@ -655,8 +540,6 @@ export function BeatTable({
         table={table}
         columns={columns}
         focusedRowId={focusedRowId}
-        verifyingIds={verifyingIds}
-        rejectingIds={rejectingIds}
         handleRowFocus={handleRowFocus}
         searchQuery={searchQuery}
         searchParams={searchParams}
@@ -677,11 +560,7 @@ export function BeatTable({
       <NotesDialog
         bead={notesBeat}
         open={notesDialogOpen}
-        rejectionMode={notesRejectionMode}
-        onOpenChange={(open) => {
-          setNotesDialogOpen(open);
-          if (!open) setNotesRejectionMode(false);
-        }}
+        onOpenChange={setNotesDialogOpen}
         onUpdate={(id, fields) => handleUpdateBeat({ id, fields })}
       />
       <CascadeCloseDialog
@@ -712,8 +591,6 @@ function BeatTableContent({
   table,
   columns,
   focusedRowId,
-  verifyingIds,
-  rejectingIds,
   handleRowFocus,
   searchQuery,
   searchParams,
@@ -722,8 +599,6 @@ function BeatTableContent({
   table: ReturnType<typeof useReactTable<Beat>>;
   columns: ReturnType<typeof getBeatColumns>;
   focusedRowId: string | null;
-  verifyingIds: Set<string>;
-  rejectingIds: Set<string>;
   handleRowFocus: (beat: Beat) => void;
   searchQuery?: string;
   searchParams: ReturnType<typeof useSearchParams>;
@@ -768,16 +643,11 @@ function BeatTableContent({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => {
-            const isVerifying = verifyingIds.has(row.original.id);
-            const isRejecting = rejectingIds.has(row.original.id);
-            return (
+          table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}
               className={cn(
                 focusedRowId === row.original.id && "bg-muted/50",
-                isVerifying && "bg-green-50 opacity-50 transition-all duration-300 dark:bg-green-950/30",
-                isRejecting && "bg-red-50 opacity-50 transition-all duration-300 dark:bg-red-950/30",
               )}
               onClick={() => handleRowFocus(row.original)}
             >
@@ -802,8 +672,7 @@ function BeatTableContent({
                 </TableCell>
               ))}
             </TableRow>
-            );
-          })
+          ))
         ) : (
           <TableRow>
             <TableCell
@@ -916,7 +785,6 @@ function useBeatTableKeyboard({
   setHotkeyHelpOpen,
   setNotesBeat,
   setNotesDialogOpen,
-  setNotesRejectionMode,
   activeRepo,
   registeredRepos,
   updateUrl,
@@ -935,7 +803,6 @@ function useBeatTableKeyboard({
   setHotkeyHelpOpen: (fn: (prev: boolean) => boolean) => void;
   setNotesBeat: (beat: Beat | null) => void;
   setNotesDialogOpen: (open: boolean) => void;
-  setNotesRejectionMode: (mode: boolean) => void;
   activeRepo: string | null;
   registeredRepos: { path: string }[];
   updateUrl: ReturnType<typeof useUpdateUrl>;
@@ -962,13 +829,13 @@ function useBeatTableKeyboard({
       if (handleSpaceSelect(e, rows, currentIndex, setFocusedRowId)) return;
       handleActionKeys(e, rows, currentIndex, {
         setFocusedRowId, handleUpdateBeat, initiateClose,
-        onShipBeat, shippingByBeatId, parentRollingBeatIds, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode,
+        onShipBeat, shippingByBeatId, parentRollingBeatIds,
         activeRepo, registeredRepos, updateUrl, setExpandedIds,
       });
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl, tableContainerRef, setHotkeyHelpOpen, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode, setExpandedIds, setFocusedRowId]);
+  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl, tableContainerRef, setHotkeyHelpOpen, setNotesBeat, setNotesDialogOpen, setExpandedIds, setFocusedRowId]);
 }
 
 /* --- Keyboard helper functions ------------------------------------------- */
@@ -1076,38 +943,13 @@ function handleActionKeys(
     onShipBeat?: (beat: Beat) => void;
     shippingByBeatId: Record<string, string>;
     parentRollingBeatIds: Set<string>;
-    setNotesBeat: (beat: Beat | null) => void;
-    setNotesDialogOpen: (open: boolean) => void;
-    setNotesRejectionMode: (mode: boolean) => void;
     activeRepo: string | null;
     registeredRepos: { path: string }[];
     updateUrl: ReturnType<typeof useUpdateUrl>;
     setExpandedIds: (fn: (prev: Set<string>) => Set<string>) => void;
   },
 ): void {
-  if (e.key === "V" && e.shiftKey) {
-    if (currentIndex < 0) return;
-    const beat = rows[currentIndex].original;
-    const isInheritedRolling = ctx.parentRollingBeatIds.has(beat.id) || Boolean(beat.parent && ctx.shippingByBeatId[beat.parent]);
-    if (isInheritedRolling) return;
-    if (beat.state === "shipped" || beat.state === "closed") return;
-    e.preventDefault();
-    ctx.handleUpdateBeat({ id: beat.id, fields: verifyBeatFields() });
-    const nextFocusIdx = currentIndex < rows.length - 1 ? currentIndex + 1 : Math.max(0, currentIndex - 1);
-    if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== beat.id) {
-      ctx.setFocusedRowId(rows[nextFocusIdx].original.id);
-    }
-  } else if (e.key === "F" && e.shiftKey) {
-    if (currentIndex < 0) return;
-    const beat = rows[currentIndex].original;
-    const isInheritedRolling = ctx.parentRollingBeatIds.has(beat.id) || Boolean(beat.parent && ctx.shippingByBeatId[beat.parent]);
-    if (isInheritedRolling) return;
-    if (!isVerificationState(beat)) return;
-    e.preventDefault();
-    ctx.setNotesBeat(beat);
-    ctx.setNotesRejectionMode(true);
-    ctx.setNotesDialogOpen(true);
-  } else if (e.key === "S" && e.shiftKey) {
+  if (e.key === "S" && e.shiftKey) {
     if (!ctx.onShipBeat || currentIndex < 0) return;
     const beat = rows[currentIndex].original;
     if (beat.state === "shipped" || beat.state === "closed" || beat.type === "gate") return;

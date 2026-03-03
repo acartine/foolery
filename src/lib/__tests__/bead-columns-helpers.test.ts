@@ -1,59 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  verifyBeadFields,
-  rejectBeadFields,
   getBeadColumns,
 } from "@/components/bead-columns";
-import type { Beat } from "@/lib/types";
-
-function makeBeat(overrides: Partial<Beat> = {}): Beat {
-  return {
-    id: "proj-abc",
-    title: "Test beat",
-    type: "task",
-    state: "open",
-    priority: 2,
-    labels: [],
-    created: "2026-01-01T00:00:00Z",
-    updated: "2026-01-02T00:00:00Z",
-    ...overrides,
-  };
-}
-
-describe("verifyBeadFields", () => {
-  it("returns state shipped", () => {
-    const result = verifyBeadFields();
-    expect(result.state).toBe("shipped");
-  });
-});
-
-describe("rejectBeadFields", () => {
-  it("returns ready_for_implementation state with attempt count 1 for first rejection", () => {
-    const bead = makeBeat({ labels: ["stage:verification", "foo"] });
-    const result = rejectBeadFields(bead);
-    expect(result.state).toBe("ready_for_implementation");
-    expect(result.removeLabels).toBeUndefined();
-    expect(result.labels).toContain("attempts:1");
-  });
-
-  it("increments attempt count for subsequent rejections", () => {
-    const bead = makeBeat({
-      labels: ["stage:verification", "attempts:2"],
-    });
-    const result = rejectBeadFields(bead);
-    expect(result.state).toBe("ready_for_implementation");
-    expect(result.removeLabels).not.toContain("stage:verification");
-    expect(result.removeLabels).toContain("attempts:2");
-    expect(result.labels).toContain("attempts:3");
-  });
-
-  it("handles bead with no labels", () => {
-    const bead = makeBeat({ labels: undefined as unknown as string[] });
-    const result = rejectBeadFields(bead);
-    expect(result.state).toBe("ready_for_implementation");
-    expect(result.labels).toContain("attempts:1");
-  });
-});
 
 describe("getBeadColumns", () => {
   it("returns an array of column definitions", () => {

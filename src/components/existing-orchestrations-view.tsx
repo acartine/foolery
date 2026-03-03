@@ -11,22 +11,18 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Check,
   Clapperboard,
-  Eye,
   Loader2,
   Pencil,
   RefreshCw,
   Save,
-  ThumbsDown,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchBeads, fetchBatchDeps, updateBead, closeBead } from "@/lib/api";
-import { verifyBeatFields, rejectBeatFields } from "@/components/beat-columns";
+import { fetchBeads, fetchBatchDeps, updateBead } from "@/lib/api";
 import { restageOrchestration } from "@/lib/orchestration-api";
 import {
   ORCHESTRATION_RESTAGE_DRAFT_KEY,
@@ -103,10 +99,6 @@ const MIN_ZOOM_DEPTH = 2;
 
 function isWaveBeat(beat: Beat): boolean {
   return beat.labels?.includes(ORCHESTRATION_WAVE_LABEL);
-}
-
-function isVerificationState(beat: Beat): boolean {
-  return beat.state === "verification";
 }
 
 function toEpochMs(value: string | undefined): number {
@@ -595,70 +587,6 @@ export function ExistingOrchestrationsView() {
   const migrationPlan = useMemo(
     () => buildMigrationPlan(query.data?.waves ?? []),
     [query.data]
-  );
-
-  const builtForReviewIds = useMemo(() => {
-    const beats = query.data?.beats ?? [];
-    const byParent = new Map<string, Beat[]>();
-    for (const beat of beats) {
-      if (!beat.parent) continue;
-      const list = byParent.get(beat.parent) ?? [];
-      list.push(beat);
-      byParent.set(beat.parent, list);
-    }
-    const result = new Set<string>();
-    for (const [parentId, children] of byParent) {
-      const hasVerification = children.some(
-        (c) => c.state === "in_progress" && isVerificationState(c)
-      );
-      if (!hasVerification) continue;
-      const allSettled = children.every(
-        (c) =>
-          c.state === "closed" ||
-          (c.state === "in_progress" && isVerificationState(c))
-      );
-      if (allSettled) result.add(parentId);
-    }
-    return result;
-  }, [query.data]);
-
-  const handleApproveReview = useCallback(
-    async (parentId: string) => {
-      const beats = query.data?.beats ?? [];
-      const children = beats.filter(
-        (b) =>
-          b.parent === parentId &&
-          b.state === "in_progress" &&
-          isVerificationState(b)
-      );
-      for (const child of children) {
-        await updateBead(child.id, verifyBeatFields(), activeRepo ?? undefined);
-      }
-      await closeBead(parentId, {}, activeRepo ?? undefined);
-      queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      toast.success("Review approved");
-    },
-    [query.data, activeRepo, queryClient]
-  );
-
-  const handleRejectReview = useCallback(
-    async (parentId: string) => {
-      const beats = query.data?.beats ?? [];
-      const children = beats.filter(
-        (b) =>
-          b.parent === parentId &&
-          b.state === "in_progress" &&
-          isVerificationState(b)
-      );
-      for (const child of children) {
-        await updateBead(child.id, rejectBeatFields(child), activeRepo ?? undefined);
-      }
-      queryClient.invalidateQueries({ queryKey: ["existing-orchestrations", activeRepo] });
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      toast.success("Review rejected — beats returned to open");
-    },
-    [query.data, activeRepo, queryClient]
   );
 
   useEffect(() => {
@@ -1319,34 +1247,6 @@ export function ExistingOrchestrationsView() {
                         {wave.descendants} descendant beat
                         {wave.descendants === 1 ? "" : "s"} · depth {wave.maxDepth}
                       </p>
-                      {builtForReviewIds.has(wave.id) && (
-                        <div className="mt-1.5 flex items-center gap-1.5 rounded border border-orange-200 bg-orange-50 px-2 py-1">
-                          <Eye className="size-3.5 text-orange-600 shrink-0" />
-                          <span className="text-xs font-semibold text-orange-700">Built for Review</span>
-                          <button
-                            type="button"
-                            className="inline-flex items-center justify-center rounded p-0.5 text-green-700 hover:bg-green-100"
-                            title="Approve all — close children and parent"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void handleApproveReview(wave.id);
-                            }}
-                          >
-                            <Check className="size-4" />
-                          </button>
-                          <button
-                            type="button"
-                            className="inline-flex items-center justify-center rounded p-0.5 text-red-700 hover:bg-red-100"
-                            title="Reject all — return children to open"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void handleRejectReview(wave.id);
-                            }}
-                          >
-                            <ThumbsDown className="size-4" />
-                          </button>
-                        </div>
-                      )}
                     </>
                   )}
                 </div>

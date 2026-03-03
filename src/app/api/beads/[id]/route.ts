@@ -3,7 +3,6 @@ import { getBackend } from "@/lib/backend-instance";
 import { backendErrorStatus } from "@/lib/backend-http";
 import { updateBeatSchema } from "@/lib/schemas";
 import { regroomAncestors } from "@/lib/regroom";
-import { LABEL_TRANSITION_VERIFICATION } from "@/lib/verification-workflow";
 import {
   DEGRADED_ERROR_MESSAGE,
   isSuppressibleError,
@@ -111,20 +110,9 @@ export async function PATCH(
     );
   }
 
-  // Enforce edit lock: reject mutations when transition:verification is active
   const backend = getBackend();
   const current = await backend.get(id, repoPath);
   const canonicalId = current.ok && current.data ? current.data.id : id;
-  if (current.ok && current.data) {
-    const labels = current.data.labels ?? [];
-    if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
-      logApiError({ method: "PATCH", path: `/api/beads/${id}`, status: 409, error: "Beat is locked during auto-verification" });
-      return NextResponse.json(
-        { error: "Beat is locked during auto-verification. Edits are disabled until verification completes." },
-        { status: 409 }
-      );
-    }
-  }
 
   const result = await backend.update(canonicalId, parsed.data, repoPath);
   if (!result.ok) {
@@ -138,12 +126,8 @@ export async function PATCH(
   clearCachedDetail(id, repoPath);
   if (canonicalId !== id) clearCachedDetail(canonicalId, repoPath);
 
-  // Regroom ancestors when a beat leaves verification state.
-  const transitionedOutOfVerification =
-    typeof parsed.data.state === "string" &&
-    parsed.data.state.trim().toLowerCase() !== "verification";
-  if (transitionedOutOfVerification) {
-    // Fire-and-forget: don't block the HTTP response on ancestor regroom
+  // Fire-and-forget: regroom ancestors on state changes
+  if (typeof parsed.data.state === "string") {
     regroomAncestors(canonicalId, repoPath).catch((err) =>
       console.error(`[regroom] background error for ${canonicalId}:`, err)
     );
@@ -159,20 +143,9 @@ export async function DELETE(
   const { id } = await params;
   const repoPath = request.nextUrl.searchParams.get("_repo") || undefined;
 
-  // Enforce edit lock: reject deletes when transition:verification is active
   const backend = getBackend();
   const currentBeat = await backend.get(id, repoPath);
   const canonicalId = currentBeat.ok && currentBeat.data ? currentBeat.data.id : id;
-  if (currentBeat.ok && currentBeat.data) {
-    const labels = currentBeat.data.labels ?? [];
-    if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
-      logApiError({ method: "DELETE", path: `/api/beads/${id}`, status: 409, error: "Beat is locked during auto-verification" });
-      return NextResponse.json(
-        { error: "Beat is locked during auto-verification. Deletion is disabled until verification completes." },
-        { status: 409 }
-      );
-    }
-  }
 
   const result = await backend.delete(canonicalId, repoPath);
   if (!result.ok) {

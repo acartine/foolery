@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, ThumbsDown, ChevronRight, ChevronDown, X, Clapperboard, Square, Eye, ShieldCheck, Undo2 } from "lucide-react";
+import { ChevronRight, ChevronDown, X, Clapperboard, Square, ShieldCheck, Undo2 } from "lucide-react";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
 import { builtinProfileDescriptor, builtinWorkflowDescriptors, isRollbackTransition } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
@@ -91,10 +91,6 @@ export interface BeatColumnOpts {
   shippingByBeatId?: Record<string, string>;
   onAbortShipping?: (beatId: string) => void;
   allLabels?: string[];
-  builtForReviewIds?: Set<string>;
-  onApproveReview?: (parentId: string) => void;
-  onRejectReview?: (parentId: string) => void;
-  onRejectBeat?: (beat: Beat) => void;
   onCloseBeat?: (beatId: string) => void;
   collapsedIds?: Set<string>;
   onToggleCollapse?: (id: string) => void;
@@ -105,101 +101,18 @@ export interface BeatColumnOpts {
   parentRollingBeatIds?: Set<string>;
 }
 
-function isVerificationState(beat: Beat): boolean {
-  return beat.state === "ready_for_implementation_review" || beat.state === "verification";
-}
-
-function VerificationButtons({
-  beat,
-  onUpdateBeat,
-  isRolling,
-}: {
-  beat: Beat;
-  onUpdateBeat?: (id: string, fields: UpdateBeatInput) => void;
-  isRolling?: boolean;
-}) {
-  const hasVerification = isVerificationState(beat);
+function TransitionLockBadge({ beat }: { beat: Beat }) {
   const hasTransition = isTransitionLocked(beat.labels ?? []);
-
-  if (hasTransition) {
-    return (
-      <span
-        className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700 animate-pulse"
-        title="Auto-verification in progress"
-      >
-        <ShieldCheck className="size-3 animate-spin" style={{ animationDuration: "3s" }} />
-        Verifying
-      </span>
-    );
-  }
-
-  if (!hasVerification || !onUpdateBeat || isRolling) return null;
+  if (!hasTransition) return null;
 
   return (
-    <>
-      <button
-        type="button"
-        className="inline-flex items-center justify-center rounded p-1 text-green-700 hover:bg-green-100"
-        title="Verify (LGTM)"
-        onClick={(e) => {
-          e.stopPropagation();
-          onUpdateBeat(beat.id, verifyBeatFields());
-        }}
-      >
-        <Check className="size-4" />
-      </button>
-    </>
-  );
-}
-
-export function verifyBeatFields(): UpdateBeatInput {
-  return {
-    state: "shipped",
-  };
-}
-
-export function rejectBeatFields(beat: Beat): UpdateBeatInput {
-  const currentLabels = beat.labels ?? [];
-  const prev = currentLabels.find((l) => l.startsWith("attempts:"));
-  const attemptNum = prev ? parseInt(prev.split(":")[1], 10) + 1 : 1;
-  const removeLabels = prev ? [prev] : undefined;
-  return {
-    state: "ready_for_implementation",
-    removeLabels,
-    labels: [`attempts:${attemptNum}`],
-  };
-}
-
-function RejectButton({
-  beat,
-  onUpdateBeat,
-  onRejectBeat,
-  isRolling,
-}: {
-  beat: Beat;
-  onUpdateBeat?: (id: string, fields: UpdateBeatInput) => void;
-  onRejectBeat?: (beat: Beat) => void;
-  isRolling?: boolean;
-}) {
-  const hasVerification = isVerificationState(beat);
-  if (!hasVerification || (!onUpdateBeat && !onRejectBeat) || isRolling) return null;
-
-  return (
-    <button
-      type="button"
-      className="inline-flex items-center justify-center rounded p-1 text-red-700 hover:bg-red-100"
-      title="Reject"
-      onClick={(e) => {
-        e.stopPropagation();
-        if (onRejectBeat) {
-          onRejectBeat(beat);
-        } else if (onUpdateBeat) {
-          onUpdateBeat(beat.id, rejectBeatFields(beat));
-        }
-      }}
+    <span
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700 animate-pulse"
+      title="Auto-verification in progress"
     >
-      <ThumbsDown className="size-4" />
-    </button>
+      <ShieldCheck className="size-3 animate-spin" style={{ animationDuration: "3s" }} />
+      Verifying
+    </span>
   );
 }
 
@@ -265,14 +178,11 @@ function AddLabelDropdown({
   );
 }
 
-function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels, isBuiltForReview, onApproveReview, onRejectReview }: {
+function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
   beat: Beat;
   onTitleClick?: (beat: Beat) => void;
   onUpdateBeat?: (id: string, fields: UpdateBeatInput) => void;
   allLabels?: string[];
-  isBuiltForReview?: boolean;
-  onApproveReview?: (parentId: string) => void;
-  onRejectReview?: (parentId: string) => void;
 }) {
   const labels = beat.labels ?? [];
   const isOrchestrated = labels.some(isWaveLabel);
@@ -296,38 +206,6 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels, isBuiltForRevi
         </button>
       ) : (
         <span className="font-medium">{waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{beat.title}</span>
-      )}
-      {isBuiltForReview && (
-        <div className="mt-0.5 flex items-center gap-1.5 rounded border border-orange-200 bg-orange-50 px-2 py-1">
-          <Eye className="size-3.5 text-orange-600 shrink-0" />
-          <span className="text-xs font-semibold text-orange-700">Built for Review</span>
-          {onApproveReview && (
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded p-0.5 text-green-700 hover:bg-green-100"
-              title="Approve all"
-              onClick={(e) => {
-                e.stopPropagation();
-                onApproveReview(beat.id);
-              }}
-            >
-              <Check className="size-4" />
-            </button>
-          )}
-          {onRejectReview && (
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded p-0.5 text-red-700 hover:bg-red-100"
-              title="Reject all"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRejectReview(beat.id);
-              }}
-            >
-              <ThumbsDown className="size-4" />
-            </button>
-          )}
-        </div>
       )}
       <div className="flex items-center gap-1 flex-wrap">
         <span className="text-muted-foreground text-xs">
@@ -382,10 +260,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
   const onAbortShipping = typeof opts === "boolean" ? undefined : opts.onAbortShipping;
   const allLabels = typeof opts === "boolean" ? undefined : opts.allLabels;
   const profiles = builtinWorkflowDescriptors();
-  const builtForReviewIds = typeof opts === "boolean" ? new Set<string>() : (opts.builtForReviewIds ?? new Set<string>());
-  const onApproveReview = typeof opts === "boolean" ? undefined : opts.onApproveReview;
-  const onRejectReview = typeof opts === "boolean" ? undefined : opts.onRejectReview;
-  const onRejectBeat = typeof opts === "boolean" ? undefined : opts.onRejectBeat;
   const onCloseBeat = typeof opts === "boolean" ? undefined : opts.onCloseBeat;
   const collapsedIds = typeof opts === "boolean" ? new Set<string>() : (opts.collapsedIds ?? new Set<string>());
   const onToggleCollapse = typeof opts === "boolean" ? undefined : opts.onToggleCollapse;
@@ -450,7 +324,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         const depth = hb._depth ?? 0;
         const hasChildren = hb._hasChildren ?? false;
         const isCollapsed = collapsedIds.has(row.original.id);
-        const isReview = builtForReviewIds.has(row.original.id);
         const Chevron = isCollapsed ? ChevronRight : ChevronDown;
         return (
           <div className="flex items-start gap-0.5" style={{ paddingLeft: `${depth * 16}px` }}>
@@ -481,9 +354,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               onTitleClick={onTitleClick}
               onUpdateBeat={onUpdateBeat}
               allLabels={allLabels}
-              isBuiltForReview={isReview}
-              onApproveReview={isReview ? onApproveReview : undefined}
-              onRejectReview={isReview ? onRejectReview : undefined}
             />
           </div>
         );
@@ -617,11 +487,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
       const pulseClass = isInheritedRolling && !isTerminal ? "animate-pulse" : "";
       return (
         <div className="flex items-center gap-0.5">
-          <VerificationButtons
-            beat={row.original}
-            onUpdateBeat={onUpdateBeat}
-            isRolling={isInheritedRolling}
-          />
+          <TransitionLockBadge beat={row.original} />
           {onUpdateBeat && !isLocked && !isInheritedRolling ? (() => {
             const workflow = builtinProfileDescriptor(row.original.profileId);
             const nextStates = validNextStates(state, workflow);
@@ -666,7 +532,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
           })() : (
             <BeatStateBadge state={state} className={pulseClass} />
           )}
-          <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isInheritedRolling} />
         </div>
       );
     },
@@ -773,7 +638,3 @@ export type BeadColumnOpts = BeatColumnOpts;
 export const getBeadColumns = getBeatColumns;
 /** @deprecated Use beatColumns */
 export const beadColumns = beatColumns;
-/** @deprecated Use verifyBeatFields */
-export const verifyBeadFields = verifyBeatFields;
-/** @deprecated Use rejectBeatFields */
-export const rejectBeadFields = rejectBeatFields;
