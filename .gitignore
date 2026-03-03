@@ -63,3 +63,6 @@ codex-release-wrapper/
 
 # knots local store
 /.knots/
+
+# settings files (may contain API keys)
+settings.toml
