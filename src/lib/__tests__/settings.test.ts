@@ -40,6 +40,7 @@ import {
 } from "@/lib/settings";
 import { WorkflowStep } from "@/lib/workflows";
 import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
+import { OPENROUTER_SELECTED_AGENT_ID } from "@/lib/openrouter";
 
 const DEFAULT_ACTIONS = {
   take: "",
@@ -476,6 +477,26 @@ describe("getActionAgent", () => {
     expect(agent.label).toBe("OpenAI Codex");
   });
 
+  it("resolves the selected OpenRouter model when mapped as an action agent", async () => {
+    const toml = [
+      "[agents.codex]",
+      'command = "codex"',
+      "[actions]",
+      `take = "${OPENROUTER_SELECTED_AGENT_ID}"`,
+      "[openrouter]",
+      "enabled = true",
+      'model = "mistralai/devstral-small:free"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getActionAgent("take");
+    expect(agent.command).toBe("codex");
+    expect(agent.model).toBe("mistralai/devstral-small:free");
+    expect(agent.label).toBe(
+      "OpenRouter (mistralai/devstral-small:free)",
+    );
+  });
+
   it("falls back when mapped agent id is not registered", async () => {
     const toml = [
       '[actions]',
@@ -587,6 +608,26 @@ describe("getStepAgent", () => {
     // No pool configured for implementation, falls back to action mapping
     expect(agent.model).toBe("opus");
     expect(agent.label).toBe("Claude Opus");
+  });
+
+  it("supports selected OpenRouter model as a pool entry", async () => {
+    const toml = [
+      'dispatchMode = "pools"',
+      "[agents.codex]",
+      'command = "codex"',
+      "[openrouter]",
+      "enabled = true",
+      'model = "mistralai/devstral-small:free"',
+      "[[pools.implementation]]",
+      `agentId = "${OPENROUTER_SELECTED_AGENT_ID}"`,
+      "weight = 1",
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    expect(agent.agentId).toBe(OPENROUTER_SELECTED_AGENT_ID);
+    expect(agent.command).toBe("codex");
+    expect(agent.model).toBe("mistralai/devstral-small:free");
   });
 
   it("falls back to dispatch default when no pool and no action mapping", async () => {

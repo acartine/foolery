@@ -7,6 +7,29 @@
  */
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
+export const OPENROUTER_SELECTED_AGENT_ID = "openrouter:selected";
+
+interface OpenRouterSelectionLike {
+  enabled?: boolean;
+  model?: string;
+}
+
+/**
+ * Returns the currently selected OpenRouter model when the integration is
+ * enabled; otherwise returns null.
+ */
+export function getSelectedOpenRouterModel(
+  openrouter: OpenRouterSelectionLike | null | undefined,
+): string | null {
+  if (!openrouter?.enabled) return null;
+  const model = openrouter.model?.trim();
+  return model ? model : null;
+}
+
+/** Human-readable label for the virtual "selected OpenRouter model" agent. */
+export function formatOpenRouterSelectedAgentLabel(modelId: string): string {
+  return `OpenRouter (${modelId})`;
+}
 
 export interface OpenRouterModelPricing {
   prompt: string; // cost per token (string number)

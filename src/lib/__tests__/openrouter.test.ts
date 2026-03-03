@@ -1,14 +1,53 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
+  OPENROUTER_SELECTED_AGENT_ID,
   formatPricing,
+  formatOpenRouterSelectedAgentLabel,
   maskApiKey,
   fetchOpenRouterModels,
   validateOpenRouterApiKey,
   findOpenRouterModel,
+  getSelectedOpenRouterModel,
   resolveOpenRouterPricing,
 } from "../openrouter";
 
 describe("openrouter", () => {
+  describe("selected model helpers", () => {
+    it("exposes a stable virtual agent id", () => {
+      expect(OPENROUTER_SELECTED_AGENT_ID).toBe("openrouter:selected");
+    });
+
+    it("returns selected model when OpenRouter is enabled", () => {
+      expect(
+        getSelectedOpenRouterModel({
+          enabled: true,
+          model: "mistralai/devstral-small:free",
+        }),
+      ).toBe("mistralai/devstral-small:free");
+    });
+
+    it("returns null when OpenRouter is disabled or model is empty", () => {
+      expect(
+        getSelectedOpenRouterModel({
+          enabled: false,
+          model: "mistralai/devstral-small:free",
+        }),
+      ).toBeNull();
+      expect(
+        getSelectedOpenRouterModel({
+          enabled: true,
+          model: "   ",
+        }),
+      ).toBeNull();
+    });
+
+    it("formats the selected-model agent label", () => {
+      expect(
+        formatOpenRouterSelectedAgentLabel("mistralai/devstral-small:free"),
+      ).toBe("OpenRouter (mistralai/devstral-small:free)");
+    });
+  });
+
   describe("formatPricing", () => {
     it("returns Free for zero cost", () => {
       expect(formatPricing("0")).toBe("Free");

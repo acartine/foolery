@@ -14,15 +14,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { fetchOpenRouterModels as fetchOpenRouterModelsApi, savePools } from "@/lib/settings-api";
-import { resolveOpenRouterPricing } from "@/lib/openrouter";
+import {
+  OPENROUTER_SELECTED_AGENT_ID,
+  formatOpenRouterSelectedAgentLabel,
+  getSelectedOpenRouterModel,
+  resolveOpenRouterPricing,
+} from "@/lib/openrouter";
 import type { OpenRouterModel } from "@/lib/openrouter";
 import type { RegisteredAgent } from "@/lib/types";
-import type { PoolEntry, PoolsSettings } from "@/lib/schemas";
+import type { OpenRouterSettings, PoolEntry, PoolsSettings } from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
 
 interface PoolsSectionProps {
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
+  openrouter: OpenRouterSettings;
   onPoolsChange: (pools: PoolsSettings) => void;
   disabled?: boolean;
 }
@@ -62,19 +68,42 @@ function formatPoolAgentLabel(
 ): string {
   const base = agent?.label?.trim() || agentId;
   const model = agent?.model?.trim();
-  return model ? `${base} (${model})` : base;
+  if (!model || base.includes(model)) return base;
+  return `${base} (${model})`;
 }
 
 export function SettingsPoolsSection({
   pools,
   agents,
+  openrouter,
   onPoolsChange,
   disabled,
 }: PoolsSectionProps) {
-  const agentIds = Object.keys(agents);
+  const selectedOpenRouterModel = getSelectedOpenRouterModel(openrouter);
+  const poolsUseOpenRouter = ALL_STEPS.some((step) =>
+    (pools[step] ?? []).some(
+      (entry) => entry.agentId === OPENROUTER_SELECTED_AGENT_ID,
+    ),
+  );
+  const includeOpenRouterOption =
+    (selectedOpenRouterModel && openrouter.enabled) ||
+    (selectedOpenRouterModel && poolsUseOpenRouter);
+
+  const selectableAgents: Record<string, RegisteredAgent> = {
+    ...agents,
+  };
+  if (includeOpenRouterOption && selectedOpenRouterModel) {
+    selectableAgents[OPENROUTER_SELECTED_AGENT_ID] = {
+      command: Object.values(agents)[0]?.command ?? "claude",
+      model: selectedOpenRouterModel,
+      label: formatOpenRouterSelectedAgentLabel(selectedOpenRouterModel),
+    };
+  }
+
+  const agentIds = Object.keys(selectableAgents);
   const hasAgents = agentIds.length > 0;
   const hasModeledAgents = agentIds.some(
-    (id) => Boolean(agents[id]?.model?.trim()),
+    (id) => Boolean(selectableAgents[id]?.model?.trim()),
   );
   const [openRouterModels, setOpenRouterModels] = useState<OpenRouterModel[] | null>(null);
 
@@ -144,7 +173,7 @@ export function SettingsPoolsSection({
             key={step}
             meta={STEP_LABELS[step]!}
             entries={pools[step] ?? []}
-            agents={agents}
+            agents={selectableAgents}
             agentIds={agentIds}
             openRouterModels={openRouterModels}
             onChange={(entries) => handlePoolChange(step, entries)}

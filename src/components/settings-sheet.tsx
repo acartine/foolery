@@ -175,6 +175,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                   actions={settings.actions}
                   pools={settings.pools}
                   agents={settings.agents}
+                  openrouter={settings.openrouter}
                   verification={settings.verification}
                   onDispatchModeChange={(dispatchMode) =>
                     setSettings((prev) => ({ ...prev, dispatchMode }))

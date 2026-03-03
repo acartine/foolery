@@ -15,6 +15,11 @@ import {
   type PoolsSettings,
 } from "@/lib/schemas";
 import { keychainSet, keychainGet, keychainDelete } from "@/lib/keychain";
+import {
+  OPENROUTER_SELECTED_AGENT_ID,
+  formatOpenRouterSelectedAgentLabel,
+  getSelectedOpenRouterModel,
+} from "@/lib/openrouter";
 import type {
   RegisteredAgent,
   ActionName,
@@ -308,6 +313,18 @@ function getFallbackCommand(settings: FoolerySettings): string {
   return first?.command ?? "claude";
 }
 
+function resolveSelectedOpenRouterAgentConfig(
+  settings: FoolerySettings,
+): RegisteredAgentConfig | null {
+  const selectedModel = getSelectedOpenRouterModel(settings.openrouter);
+  if (!selectedModel) return null;
+  return {
+    command: getFallbackCommand(settings),
+    model: selectedModel,
+    label: formatOpenRouterSelectedAgentLabel(selectedModel),
+  };
+}
+
 /** Returns the dispatch fallback command for unmapped actions/steps. */
 export async function getAgentCommand(): Promise<string> {
   const settings = await loadSettings();
@@ -328,6 +345,17 @@ export async function getActionAgent(
 ): Promise<RegisteredAgent> {
   const settings = await loadSettings();
   const agentId = settings.actions[action] ?? "";
+  if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
+    const selected = resolveSelectedOpenRouterAgentConfig(settings);
+    if (selected) {
+      return {
+        command: selected.command,
+        ...(selected.model ? { model: selected.model } : {}),
+        ...(selected.version ? { version: selected.version } : {}),
+        ...(selected.label ? { label: selected.label } : {}),
+      };
+    }
+  }
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
     const reg = settings.agents[agentId];
     return {
@@ -452,6 +480,14 @@ export async function getStepAgent(
 
   // Only use pools when dispatch mode is "pools"
   if (settings.dispatchMode === "pools") {
+    const poolAgents: Record<string, RegisteredAgentConfig> = {
+      ...settings.agents,
+    };
+    const selected = resolveSelectedOpenRouterAgentConfig(settings);
+    if (selected) {
+      poolAgents[OPENROUTER_SELECTED_AGENT_ID] = selected;
+    }
+
     // Derive exclusion for cross-agent review
     let excludeAgentId: string | undefined;
     if (beatId && isReviewStep(step)) {
@@ -464,7 +500,7 @@ export async function getStepAgent(
     const poolAgent = resolvePoolAgent(
       step,
       settings.pools,
-      settings.agents,
+      poolAgents,
       excludeAgentId,
     );
     if (poolAgent) {
@@ -479,6 +515,17 @@ export async function getStepAgent(
   // Fall back to action mapping
   if (fallbackAction) {
     const agentId = settings.actions[fallbackAction] ?? "";
+    if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
+      const selected = resolveSelectedOpenRouterAgentConfig(settings);
+      if (selected) {
+        return {
+          command: selected.command,
+          ...(selected.model ? { model: selected.model } : {}),
+          ...(selected.version ? { version: selected.version } : {}),
+          ...(selected.label ? { label: selected.label } : {}),
+        };
+      }
+    }
     if (agentId && agentId !== "default" && settings.agents[agentId]) {
       const reg = settings.agents[agentId];
       return {

@@ -16,12 +16,18 @@ import {
 } from "@/components/ui/select";
 import { saveActions } from "@/lib/settings-api";
 import type { RegisteredAgent, ActionName } from "@/lib/types";
-import type { ActionAgentMappings } from "@/lib/schemas";
+import type { ActionAgentMappings, OpenRouterSettings } from "@/lib/schemas";
+import {
+  OPENROUTER_SELECTED_AGENT_ID,
+  formatOpenRouterSelectedAgentLabel,
+  getSelectedOpenRouterModel,
+} from "@/lib/openrouter";
 import type { LucideIcon } from "lucide-react";
 
 interface ActionsSectionProps {
   actions: ActionAgentMappings;
   agents: Record<string, RegisteredAgent>;
+  openrouter: OpenRouterSettings;
   onActionsChange: (actions: ActionAgentMappings) => void;
   disabled?: boolean;
 }
@@ -57,10 +63,24 @@ const ACTION_DEFS: ActionDef[] = [
 export function SettingsActionsSection({
   actions,
   agents,
+  openrouter,
   onActionsChange,
   disabled,
 }: ActionsSectionProps) {
-  const agentIds = Object.keys(agents);
+  const selectedOpenRouterModel = getSelectedOpenRouterModel(openrouter);
+  const actionUsesOpenRouter = Object.values(actions).includes(
+    OPENROUTER_SELECTED_AGENT_ID,
+  );
+  const includeOpenRouterOption =
+    (selectedOpenRouterModel && openrouter.enabled) ||
+    (selectedOpenRouterModel && actionUsesOpenRouter);
+
+  const optionIds = Array.from(new Set([
+    ...(includeOpenRouterOption ? [OPENROUTER_SELECTED_AGENT_ID] : []),
+    ...Object.keys(agents),
+  ]));
+
+  const hasOptions = optionIds.length > 0;
 
   async function handleChange(action: ActionName, value: string) {
     const updated = { ...actions, [action]: value };
@@ -101,17 +121,28 @@ export function SettingsActionsSection({
               <Select
                 value={actions[def.name] || ""}
                 onValueChange={(v) => handleChange(def.name, v)}
-                disabled={disabled || agentIds.length === 0}
+                disabled={disabled || !hasOptions}
               >
                 <SelectTrigger className="w-[140px] shrink-0">
-                  <SelectValue placeholder={agentIds.length === 0 ? "no agents" : "select agent"} />
+                  <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {agentIds.map((id) => (
-                    <SelectItem key={id} value={id}>
-                      {agents[id].label ?? id}
-                    </SelectItem>
-                  ))}
+                  {optionIds.map((id) => {
+                    if (id === OPENROUTER_SELECTED_AGENT_ID) {
+                      return (
+                        <SelectItem key={id} value={id}>
+                          {formatOpenRouterSelectedAgentLabel(
+                            selectedOpenRouterModel!,
+                          )}
+                        </SelectItem>
+                      );
+                    }
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {agents[id].label ?? id}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
