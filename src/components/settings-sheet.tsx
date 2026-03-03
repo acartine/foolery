@@ -154,8 +154,8 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
           </SheetDescription>
         </SheetHeader>
 
-        <div className="px-4 pt-2">
-          <div className="space-y-3 py-4 overflow-y-auto flex-1">
+        <div className="px-4 pt-2 flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-3 py-4">
             {/* Section: Repositories (independent data, always rendered) */}
             <div ref={reposSectionRef}>
               <SettingsReposSection />
