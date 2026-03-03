@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeads, fetchWorkflows, updateBead } from "@/lib/api";
 import { naturalCompare } from "@/lib/beat-sort";
@@ -63,6 +63,141 @@ function extractCommitSha(bead: Beat): string | undefined {
   return label ? label.slice("commit:".length) : undefined;
 }
 
+function ExpandableText({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setOverflows(el.scrollHeight > el.clientHeight + 1);
+  }, [text]);
+
+  return (
+    <div className={className} onMouseLeave={() => setExpanded(false)}>
+      <div
+        ref={ref}
+        className={`whitespace-pre-wrap break-words text-xs ${expanded ? "" : "line-clamp-6"}`}
+      >
+        {text}
+      </div>
+      {!expanded && overflows && (
+        <button
+          type="button"
+          title="Expand full text"
+          className="text-green-700 font-bold cursor-pointer mt-0.5 text-xs"
+          onMouseEnter={() => setExpanded(true)}
+        >
+          ...show more...
+        </button>
+      )}
+    </div>
+  );
+}
+
+function AgentBadge({ entry }: { entry: Record<string, unknown> }) {
+  const agentname = typeof entry.agentname === "string" ? entry.agentname : undefined;
+  const model = typeof entry.model === "string" ? entry.model : undefined;
+  const username = typeof entry.username === "string" ? entry.username : undefined;
+  const datetime = typeof entry.datetime === "string" ? entry.datetime : undefined;
+
+  return (
+    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-0.5">
+      {agentname && agentname !== "unknown" && (
+        <span className="font-medium">{agentname}</span>
+      )}
+      {model && model !== "unknown" && (
+        <>
+          <span className="text-muted-foreground/40">|</span>
+          <span>{model}</span>
+        </>
+      )}
+      {username && (
+        <>
+          <span className="text-muted-foreground/40">|</span>
+          <span>{username}</span>
+        </>
+      )}
+      {datetime && (
+        <>
+          <span className="text-muted-foreground/40">|</span>
+          <span>{relativeTime(datetime)}</span>
+        </>
+      )}
+    </div>
+  );
+}
+
+function RetakeDetails({ bead }: { bead: Beat }) {
+  const description = bead.description;
+  const rawNotes = (bead.metadata?.knotsNotes ?? []) as Array<Record<string, unknown>>;
+  const rawCapsules = (bead.metadata?.knotsHandoffCapsules ?? []) as Array<Record<string, unknown>>;
+
+  if (!description && rawNotes.length === 0 && rawCapsules.length === 0) return null;
+
+  return (
+    <div className="mt-2 space-y-2">
+      {description && (
+        <div className="rounded bg-green-50 px-2 py-1.5">
+          <div className="text-[10px] font-semibold text-green-800 uppercase tracking-wide mb-0.5">
+            Description
+          </div>
+          <ExpandableText text={description} />
+        </div>
+      )}
+
+      {rawNotes.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-semibold text-yellow-800 uppercase tracking-wide">
+            Notes
+          </div>
+          {rawNotes.map((note, i) => {
+            const content = typeof note.content === "string" ? note.content : "";
+            if (!content) return null;
+            return (
+              <div
+                key={typeof note.entry_id === "string" ? note.entry_id : i}
+                className="rounded bg-yellow-50 px-2 py-1.5"
+              >
+                <AgentBadge entry={note} />
+                <ExpandableText text={content} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {rawCapsules.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-semibold text-blue-800 uppercase tracking-wide">
+            Handoff Capsules
+          </div>
+          {rawCapsules.map((capsule, i) => {
+            const content = typeof capsule.content === "string" ? capsule.content : "";
+            if (!content) return null;
+            return (
+              <div
+                key={typeof capsule.entry_id === "string" ? capsule.entry_id : i}
+                className="rounded bg-blue-50 px-2 py-1.5"
+              >
+                <AgentBadge entry={capsule} />
+                <ExpandableText text={content} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RetakeRow({
   bead,
   onRetake,
@@ -79,7 +214,7 @@ function RetakeRow({
   const commitSha = extractCommitSha(bead);
 
   return (
-    <div className="flex items-center gap-3 border-b border-border/40 px-2 py-2.5 hover:bg-muted/30">
+    <div className="flex items-start gap-3 border-b border-border/40 px-2 py-2.5 hover:bg-muted/30">
       {/* Left: bead info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -125,6 +260,7 @@ function RetakeRow({
             </span>
           ))}
         </div>
+        <RetakeDetails bead={bead} />
       </div>
 
       {/* Right: ReTake button */}
