@@ -4,6 +4,7 @@ import type { BeatListFilters } from "@/lib/backend-port";
 import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 import { backendErrorStatus } from "@/lib/backend-http";
 import { createBeatSchema } from "@/lib/schemas";
+import { logApiError } from "@/lib/server-logger";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
   const { _repo: repoPath, ...rest } = body;
   const parsed = createBeatSchema.safeParse(rest);
   if (!parsed.success) {
+    logApiError({ method: "POST", path: "/api/beads", status: 400, error: "Validation failed" });
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
       { status: 400 }
@@ -38,14 +40,18 @@ export async function POST(request: NextRequest) {
 
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   if (!workflowsResult.ok) {
+    const wfError = workflowsResult.error?.message ?? "Failed to list workflows";
+    const wfStatus = backendErrorStatus(workflowsResult.error);
+    logApiError({ method: "POST", path: "/api/beads", status: wfStatus, error: wfError });
     return NextResponse.json(
-      { error: workflowsResult.error?.message ?? "Failed to list workflows" },
-      { status: backendErrorStatus(workflowsResult.error) },
+      { error: wfError },
+      { status: wfStatus },
     );
   }
 
   const workflows = workflowsResult.data ?? [];
   if (workflows.length === 0) {
+    logApiError({ method: "POST", path: "/api/beads", status: 400, error: "Repository does not expose any supported workflows." });
     return NextResponse.json(
       { error: "Repository does not expose any supported workflows." },
       { status: 400 },
@@ -68,9 +74,11 @@ export async function POST(request: NextRequest) {
 
   const result = await getBackend().create(input, repoPath);
   if (!result.ok) {
+    const createStatus = backendErrorStatus(result.error);
+    logApiError({ method: "POST", path: "/api/beads", status: createStatus, error: result.error?.message });
     return NextResponse.json(
       { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
+      { status: createStatus },
     );
   }
   return NextResponse.json({ data: result.data }, { status: 201 });

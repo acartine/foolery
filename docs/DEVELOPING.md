@@ -217,6 +217,17 @@ The script starts a dev server on port 3211 (configurable via `FOOLERY_DEV_PORT`
 rm -rf .next && bash scripts/test-doctor-stream.sh
 ```
 
+## Logs
+
+Server-side logs are always written to disk in both dev and production so errors can be reviewed after the fact.
+
+| Environment | Server logs | Interaction logs | Next.js stdout/stderr |
+|-------------|------------|-----------------|----------------------|
+| `bun dev` | `.foolery-logs/_server/{date}/server.jsonl` | `.foolery-logs/{repo}/{date}/` | Terminal only |
+| Production (`foolery start`) | `~/.config/foolery/logs/_server/{date}/server.jsonl` | `~/.config/foolery/logs/{repo}/{date}/` | `~/.local/state/foolery/logs/stdout.log` |
+
+Server logs use JSONL format with `ts`, `level`, `category`, `message`, and optional `data` fields. They capture API errors and CLI failures automatically.
+
 ## Commit Style
 
 Follow conventional commits with a scope:

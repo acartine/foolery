@@ -9,6 +9,7 @@ import {
   isSuppressibleError,
 } from "@/lib/bd-error-suppression";
 import type { Beat } from "@/lib/types";
+import { logApiError } from "@/lib/server-logger";
 
 const DETAIL_CACHE_TTL_MS = 10 * 60 * 1000;
 const NOT_FOUND_PATTERNS = [
@@ -81,13 +82,17 @@ export async function GET(
         cachedAt: new Date(cached.cachedAtMs).toISOString(),
       });
     }
+    logApiError({ method: "GET", path: `/api/beads/${id}`, status: 503, error: DEGRADED_ERROR_MESSAGE });
     return NextResponse.json({ error: DEGRADED_ERROR_MESSAGE }, { status: 503 });
   }
 
   if (result.error?.code === "NOT_FOUND" || isNotFoundError(error)) {
+    logApiError({ method: "GET", path: `/api/beads/${id}`, status: 404, error });
     return NextResponse.json({ error }, { status: 404 });
   }
-  return NextResponse.json({ error }, { status: backendErrorStatus(result.error) });
+  const getStatus = backendErrorStatus(result.error);
+  logApiError({ method: "GET", path: `/api/beads/${id}`, status: getStatus, error });
+  return NextResponse.json({ error }, { status: getStatus });
 }
 
 export async function PATCH(
@@ -99,6 +104,7 @@ export async function PATCH(
   const { _repo: repoPath, ...rest } = body;
   const parsed = updateBeatSchema.safeParse(rest);
   if (!parsed.success) {
+    logApiError({ method: "PATCH", path: `/api/beads/${id}`, status: 400, error: "Validation failed" });
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.issues },
       { status: 400 }
@@ -112,6 +118,7 @@ export async function PATCH(
   if (current.ok && current.data) {
     const labels = current.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
+      logApiError({ method: "PATCH", path: `/api/beads/${id}`, status: 409, error: "Beat is locked during auto-verification" });
       return NextResponse.json(
         { error: "Beat is locked during auto-verification. Edits are disabled until verification completes." },
         { status: 409 }
@@ -121,9 +128,11 @@ export async function PATCH(
 
   const result = await backend.update(canonicalId, parsed.data, repoPath);
   if (!result.ok) {
+    const updateStatus = backendErrorStatus(result.error);
+    logApiError({ method: "PATCH", path: `/api/beads/${id}`, status: updateStatus, error: result.error?.message });
     return NextResponse.json(
       { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
+      { status: updateStatus },
     );
   }
   clearCachedDetail(id, repoPath);
@@ -157,6 +166,7 @@ export async function DELETE(
   if (currentBeat.ok && currentBeat.data) {
     const labels = currentBeat.data.labels ?? [];
     if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
+      logApiError({ method: "DELETE", path: `/api/beads/${id}`, status: 409, error: "Beat is locked during auto-verification" });
       return NextResponse.json(
         { error: "Beat is locked during auto-verification. Deletion is disabled until verification completes." },
         { status: 409 }
@@ -166,9 +176,11 @@ export async function DELETE(
 
   const result = await backend.delete(canonicalId, repoPath);
   if (!result.ok) {
+    const deleteStatus = backendErrorStatus(result.error);
+    logApiError({ method: "DELETE", path: `/api/beads/${id}`, status: deleteStatus, error: result.error?.message });
     return NextResponse.json(
       { error: result.error?.message },
-      { status: backendErrorStatus(result.error) },
+      { status: deleteStatus },
     );
   }
   clearCachedDetail(id, repoPath);

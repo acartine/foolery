@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { join, resolve } from "node:path";
 import type { BdResult } from "./types";
 import { classifyErrorMessage, isRetryableByDefault } from "./backend-errors";
+import { logCliFailure } from "./server-logger";
 
 const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
@@ -167,6 +168,7 @@ async function exec(args: string[], options?: ExecOptions): Promise<ExecResult> 
           console.warn(
             `[knots] kno ${cmdLabel} exited ${exitCode}${stderrText ? `: ${stderrText}` : ""}`,
           );
+          logCliFailure({ command: KNOTS_BIN, args: fullArgs, exitCode, stderr: stderrText });
         }
 
         resolveExec({
