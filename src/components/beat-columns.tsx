@@ -610,18 +610,19 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     cell: ({ row }) => {
       const isRolling = Boolean(shippingByBeatId[row.original.id]);
       const isParentRolling = parentRollingBeatIds.has(row.original.id);
+      const isInheritedRolling = isRolling || isParentRolling;
       const isLocked = isTransitionLocked(row.original.labels ?? []);
       const state = row.original.state;
       const isTerminal = state === "shipped" || state === "abandoned" || state === "closed";
-      const pulseClass = (isRolling || isParentRolling) && !isTerminal ? "animate-pulse" : "";
+      const pulseClass = isInheritedRolling && !isTerminal ? "animate-pulse" : "";
       return (
         <div className="flex items-center gap-0.5">
           <VerificationButtons
             beat={row.original}
             onUpdateBeat={onUpdateBeat}
-            isRolling={isRolling}
+            isRolling={isInheritedRolling}
           />
-          {onUpdateBeat && !isLocked ? (() => {
+          {onUpdateBeat && !isLocked && !isInheritedRolling ? (() => {
             const workflow = builtinProfileDescriptor(row.original.profileId);
             const nextStates = validNextStates(state, workflow);
             return (
@@ -665,7 +666,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
           })() : (
             <BeatStateBadge state={state} className={pulseClass} />
           )}
-          <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isRolling} />
+          <RejectButton beat={row.original} onUpdateBeat={onUpdateBeat} onRejectBeat={onRejectBeat} isRolling={isInheritedRolling} />
         </div>
       );
     },

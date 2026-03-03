@@ -1066,6 +1066,7 @@ function handleActionKeys(
   if (e.key === "V" && e.shiftKey) {
     if (currentIndex < 0) return;
     const beat = rows[currentIndex].original;
+    if (beat.parent && ctx.shippingByBeatId[beat.parent]) return;
     if (beat.state === "shipped" || beat.state === "closed") return;
     e.preventDefault();
     ctx.handleUpdateBeat({ id: beat.id, fields: verifyBeatFields() });
@@ -1076,6 +1077,7 @@ function handleActionKeys(
   } else if (e.key === "F" && e.shiftKey) {
     if (currentIndex < 0) return;
     const beat = rows[currentIndex].original;
+    if (beat.parent && ctx.shippingByBeatId[beat.parent]) return;
     if (!isVerificationState(beat)) return;
     e.preventDefault();
     ctx.setNotesBeat(beat);
