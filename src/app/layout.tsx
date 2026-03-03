@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Providers } from "@/components/providers";
 import { AppHeader } from "@/components/app-header";
 import { TerminalPanel } from "@/components/terminal-panel";
+import { TerminalConnectionSync } from "@/components/terminal-connection-sync";
 import { UrlStateSync } from "@/components/url-state-sync";
 import "./globals.css";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
             <UrlStateSync />
           </Suspense>
           {children}
+          <TerminalConnectionSync />
           <TerminalPanel />
         </Providers>
       </body>

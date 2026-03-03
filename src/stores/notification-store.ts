@@ -10,21 +10,17 @@ export interface Notification {
 
 interface NotificationState {
   notifications: Notification[];
-  /** Last known count of verification beads, used for change detection. */
-  lastVerificationCount: number;
   addNotification: (
     notification: Omit<Notification, "id" | "timestamp" | "read">
   ) => void;
   markAllRead: () => void;
   clearAll: () => void;
-  setLastVerificationCount: (count: number) => void;
 }
 
 let nextId = 1;
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
-  lastVerificationCount: -1,
   addNotification: (notification) =>
     set((state) => ({
       notifications: [
@@ -48,8 +44,6 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       };
     }),
   clearAll: () => set({ notifications: [] }),
-  setLastVerificationCount: (count) =>
-    set({ lastVerificationCount: count }),
 }));
 
 export function selectUnreadCount(state: NotificationState): number {

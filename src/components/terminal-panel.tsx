@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
-import { connectToSession, abortSession, startSession, listSessions } from "@/lib/terminal-api";
+import { abortSession, startSession, listSessions } from "@/lib/terminal-api";
+import { sessionConnections } from "@/lib/session-connection-manager";
 import {
   detectVendor,
   formatModelDisplay,
@@ -14,12 +15,10 @@ import {
 import { AgentInfoBar } from "@/components/agent-info-bar";
 import type { BeatInfoForBar } from "@/components/agent-info-bar";
 import { fetchBeat } from "@/lib/api";
-import type { TerminalEvent } from "@/lib/types";
 import {
   classifyTerminalFailure,
   type TerminalFailureGuidance,
 } from "@/lib/terminal-failure";
-import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { splitTerminalTabBeatId } from "@/lib/terminal-tab-id";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
@@ -49,6 +48,58 @@ function buildTakeRecoveryPrompt(beatId: string, previousSessionId: string | nul
   ].join("\n");
 }
 
+/**
+ * Write the exit status message and failure hints to xterm.
+ * Extracted so it can be used both for buffer replay and live events.
+ */
+function writeExitMessage(
+  term: XtermTerminal,
+  code: number,
+  sessionId: string,
+  recentOutputBySession: React.RefObject<Map<string, string>>,
+  failureHintBySession: React.RefObject<Map<string, TerminalFailureGuidance>>,
+  agentCommand: string | undefined,
+  launchRecoverySession: (previousSessionId: string | null) => void,
+) {
+  term.writeln("");
+  if (code === 0) {
+    term.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
+  } else {
+    term.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
+
+    const text = recentOutputBySession.current.get(sessionId) ?? "";
+    const failureHint =
+      failureHintBySession.current.get(sessionId) ??
+      classifyTerminalFailure(text, agentCommand);
+
+    if (failureHint) {
+      failureHintBySession.current.set(sessionId, failureHint);
+      term.writeln(`\x1b[33m! ${failureHint.title}\x1b[0m`);
+      failureHint.steps.forEach((step, index) => {
+        term.writeln(`\x1b[90m  ${index + 1}. ${step}\x1b[0m`);
+      });
+      if (failureHint.kind === "missing_cwd") {
+        term.writeln(
+          "\x1b[33m? Use the retry action in the toast to relaunch with recovery context.\x1b[0m"
+        );
+        toast.error(failureHint.toast, {
+          duration: 12_000,
+          action: {
+            label: "Retry Take",
+            onClick: () => {
+              void launchRecoverySession(failureHint.previousSessionId);
+            },
+          },
+        });
+      } else {
+        toast.error(failureHint.toast);
+      }
+    } else {
+      toast.error(`Session failed (exit code ${code}). Open the terminal tab for details.`);
+    }
+  }
+}
+
 export function TerminalPanel() {
   const {
     panelOpen,
@@ -65,8 +116,6 @@ export function TerminalPanel() {
     markPendingClose,
     cancelPendingClose,
   } = useTerminalStore();
-
-  const queryClient = useQueryClient();
 
   const activeTerminal = useMemo(
     () => getActiveTerminal(terminals, activeSessionId),
@@ -96,8 +145,6 @@ export function TerminalPanel() {
   const termRef = useRef<XtermTerminal | null>(null);
   const fitRef = useRef<XtermFitAddon | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
-  const queryClientRef = useRef(queryClient);
-  queryClientRef.current = queryClient;
   const autoCloseTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
@@ -234,7 +281,7 @@ export function TerminalPanel() {
     setActiveSession(sessionId);
   }, [setActiveSession, cancelPendingClose]);
 
-  // Initialize xterm + connect to SSE for active session
+  // Initialize xterm + subscribe to session-connection-manager for active session
   useEffect(() => {
     if (!panelOpen || !activeSessionKey || !activeBeatId || !activeBeatTitle || !termContainerRef.current) {
       return;
@@ -297,7 +344,6 @@ export function TerminalPanel() {
         if (!chunk) return;
         const previous = recentOutputBySession.current.get(sessionId) ?? "";
         const combined = previous + chunk;
-        // Keep a bounded tail to avoid unbounded memory growth.
         recentOutputBySession.current.set(
           sessionId,
           combined.length > 16_000 ? combined.slice(-16_000) : combined
@@ -322,7 +368,7 @@ export function TerminalPanel() {
           liveTerm.writeln(
             `\x1b[31m✗ Recovery launch failed: ${recovery.error ?? "unknown error"}\x1b[0m`
           );
-          updateStatus(sessionId, "error");
+          useTerminalStore.getState().updateStatus(sessionId, "error");
           toast.error(recovery.error ?? "Failed to launch recovery take session");
           recoveryInFlight = false;
           return;
@@ -344,87 +390,49 @@ export function TerminalPanel() {
         toast.info("Retry launched with take recovery prompt.");
       };
 
-      let sessionExited = false;
-
-      const cleanup = connectToSession(
-        sessionId,
-        (event: TerminalEvent) => {
-          if (disposed) return;
-          if (event.type === "stdout") {
-            appendRecentOutput(event.data);
-            liveTerm.write(event.data);
-          } else if (event.type === "stderr") {
-            appendRecentOutput(event.data);
-            liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
-          } else if (event.type === "exit") {
-            sessionExited = true;
-            const code = parseInt(event.data, 10);
-            liveTerm.writeln("");
-            if (code === 0) {
-              liveTerm.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
-            } else {
-              liveTerm.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
-
-              const text = recentOutputBySession.current.get(sessionId) ?? "";
-              const failureHint =
-                failureHintBySession.current.get(sessionId) ??
-                classifyTerminalFailure(text, agentInfo?.command);
-
-              if (failureHint) {
-                failureHintBySession.current.set(sessionId, failureHint);
-                liveTerm.writeln(`\x1b[33m! ${failureHint.title}\x1b[0m`);
-                failureHint.steps.forEach((step, index) => {
-                  liveTerm.writeln(`\x1b[90m  ${index + 1}. ${step}\x1b[0m`);
-                });
-                if (failureHint.kind === "missing_cwd") {
-                  const retryLabel = "Retry Take";
-                  liveTerm.writeln(
-                    "\x1b[33m? Use the retry action in the toast to relaunch with recovery context.\x1b[0m"
-                  );
-                  toast.error(failureHint.toast, {
-                    duration: 12_000,
-                    action: {
-                      label: retryLabel,
-                      onClick: () => {
-                        void launchRecoverySession(failureHint.previousSessionId);
-                      },
-                    },
-                  });
-                } else {
-                  toast.error(failureHint.toast);
-                }
-              } else {
-                toast.error(`Session failed (exit code ${code}). Open the terminal tab for details.`);
-              }
-            }
-            updateStatus(sessionId, code === 0 ? "completed" : "error");
-
-            // On successful completion, immediately invalidate beat
-            // queries so human-action badges and notifications refresh
-            // without waiting for the next polling interval.
-            if (code === 0) {
-              void invalidateBeatListQueries(queryClientRef.current);
-            }
-          }
-        },
-        () => {
-          // Stream disconnect after exit is expected (server closes the SSE
-          // connection once the agent process finishes).  Only warn when the
-          // stream drops while the session was still running.
-          if (disposed || sessionExited) return;
-          liveTerm.writeln(
-            "\x1b[33m⚠ Session stream disconnected. Reopen the tab to retry stream attachment.\x1b[0m"
-          );
+      // Replay buffered output from the connection manager
+      const buffer = sessionConnections.getBuffer(sessionId);
+      for (const entry of buffer) {
+        if (entry.type === "stdout") {
+          appendRecentOutput(entry.data);
+          liveTerm.write(entry.data);
+        } else if (entry.type === "stderr") {
+          appendRecentOutput(entry.data);
+          liveTerm.write(`\x1b[31m${entry.data}\x1b[0m`);
+        } else if (entry.type === "exit") {
+          writeExitMessage(liveTerm, parseInt(entry.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
         }
-      );
+      }
 
-      cleanupRef.current = cleanup;
+      // If exit was already received (e.g., completed while on another tab),
+      // write the exit message if buffer didn't already contain it
+      if (sessionConnections.hasExited(sessionId) && !buffer.some((e) => e.type === "exit")) {
+        const code = sessionConnections.getExitCode(sessionId) ?? 0;
+        writeExitMessage(liveTerm, code, sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
+      }
+
+      // Subscribe to live events going forward
+      const unsubscribe = sessionConnections.subscribe(sessionId, (event) => {
+        if (disposed) return;
+        if (event.type === "stdout") {
+          appendRecentOutput(event.data);
+          liveTerm.write(event.data);
+        } else if (event.type === "stderr") {
+          appendRecentOutput(event.data);
+          liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
+        } else if (event.type === "exit") {
+          writeExitMessage(liveTerm, parseInt(event.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
+        }
+      });
+
+      cleanupRef.current = unsubscribe;
     };
 
     init();
 
     return () => {
       disposed = true;
+      // Unsubscribe from live events — but do NOT disconnect the SSE
       cleanupRef.current?.();
       cleanupRef.current = null;
       if (term) {
@@ -441,7 +449,6 @@ export function TerminalPanel() {
     activeRepoPath,
     removeTerminal,
     upsertTerminal,
-    updateStatus,
     agentInfo?.command,
   ]);
 

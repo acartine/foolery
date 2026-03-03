@@ -189,7 +189,7 @@ describe("connectToSession", () => {
     expect(es.closed).toBe(true);
   });
 
-  it("calls onError when backend session is gone after disconnect", async () => {
+  it("synthesizes exit 0 when backend session is gone after disconnect", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -207,10 +207,11 @@ describe("connectToSession", () => {
 
     await vi.advanceTimersByTimeAsync(200);
 
-    expect(onError).toHaveBeenCalledTimes(1);
-    expect(onEvent).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "exit" }),
+    // Session gone from backend → synthesized exit 0 (not onError)
+    expect(onEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "exit", data: "0" }),
     );
+    expect(onError).not.toHaveBeenCalled();
     expect(es.closed).toBe(true);
   });
 });

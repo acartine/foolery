@@ -8,7 +8,6 @@ describe("notification store", () => {
   beforeEach(() => {
     useNotificationStore.setState({
       notifications: [],
-      lastVerificationCount: -1,
     });
   });
 
@@ -89,11 +88,4 @@ describe("notification store", () => {
     expect(n.beadId).toBe("foolery-42");
   });
 
-  it("tracks lastVerificationCount", () => {
-    const store = useNotificationStore.getState();
-    expect(store.lastVerificationCount).toBe(-1);
-
-    store.setLastVerificationCount(5);
-    expect(useNotificationStore.getState().lastVerificationCount).toBe(5);
-  });
 });

@@ -7,7 +7,6 @@ import { fetchBeads } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
 import { useAppStore } from "@/stores/app-store";
-import { useVerificationNotifications } from "@/hooks/use-verification-notifications";
 import type { Beat } from "@/lib/types";
 
 export function FinalCutView() {
@@ -60,7 +59,6 @@ export function FinalCutView() {
   const parentIds = new Set(allBeads.map((b) => b.parent).filter(Boolean));
   const beads = allBeads.filter((b) => !b.parent || parentIds.has(b.id));
 
-  useVerificationNotifications(beads);
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

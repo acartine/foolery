@@ -103,6 +103,9 @@ export function connectToSession(
           data: String(session.exitCode ?? 0),
           timestamp: Date.now(),
         });
+      } else if (!session) {
+        // Session gone from backend — most likely completed and cleaned up.
+        onEvent({ type: "exit", data: "0", timestamp: Date.now() });
       } else {
         onError?.(err);
       }
