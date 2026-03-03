@@ -67,21 +67,30 @@ type MetadataEntry = Record<string, unknown>;
 
 const STEP_METADATA_KEYS = [
   "knotsSteps",
+  "knots_steps",
   "knotsStepHistory",
   "knotsTimeline",
   "knotsTransitions",
+  "stepHistory",
   "steps",
   "step_history",
   "timeline",
   "transitions",
 ] as const;
 
-const NOTE_METADATA_KEYS = ["knotsNotes", "notes", "knots_notes"] as const;
+const NOTE_METADATA_KEYS = [
+  "knotsNotes",
+  "knots_notes",
+  "notes",
+  "noteHistory",
+  "note_history",
+] as const;
 const HANDOFF_METADATA_KEYS = [
   "knotsHandoffCapsules",
+  "knots_handoff_capsules",
   "handoff_capsules",
   "handoffCapsules",
-  "knots_handoff_capsules",
+  "handoff_capsule_history",
 ] as const;
 
 function pickString(entry: MetadataEntry, keys: string[]): string | undefined {
@@ -108,8 +117,14 @@ function readMetadataEntries(bead: Beat, keys: string[]): MetadataEntry[] {
   return [];
 }
 
+function readMetadataString(bead: Beat, keys: string[]): string | undefined {
+  const metadata = bead.metadata;
+  if (!metadata || typeof metadata !== "object") return undefined;
+  return pickString(metadata as MetadataEntry, keys);
+}
+
 function metadataEntryKey(entry: MetadataEntry, index: number): string {
-  return pickString(entry, ["entry_id", "id", "step_id"]) ?? String(index);
+  return pickString(entry, ["entry_id", "id", "step_id", "uuid"]) ?? String(index);
 }
 
 function pickObject(entry: MetadataEntry, keys: string[]): MetadataEntry | null {
@@ -123,10 +138,19 @@ function pickObject(entry: MetadataEntry, keys: string[]): MetadataEntry | null 
 }
 
 function stepSummary(entry: MetadataEntry): string | undefined {
-  const direct = pickString(entry, ["content", "summary", "description", "message", "note", "title"]);
-  const from = pickString(entry, ["from_state", "fromState", "from"]);
-  const to = pickString(entry, ["to_state", "toState", "to", "state"]);
-  const action = pickString(entry, ["action", "step"]);
+  const direct = pickString(entry, [
+    "content",
+    "summary",
+    "description",
+    "message",
+    "note",
+    "title",
+    "details",
+    "reason",
+  ]);
+  const from = pickString(entry, ["from_state", "fromState", "from", "prev_state", "previous_state"]);
+  const to = pickString(entry, ["to_state", "toState", "to", "state", "next_state"]);
+  const action = pickString(entry, ["action", "step", "event", "transition"]);
   const actorKind = pickString(entry, ["actor_kind", "actorKind", "owner_kind", "ownerKind"]);
 
   const parts: string[] = [];
@@ -183,28 +207,39 @@ function ExpandableText({
 }
 
 function AgentBadge({ entry }: { entry: MetadataEntry }) {
-  const agent = pickObject(entry, ["agent"]);
-  const user = pickObject(entry, ["user"]);
-  const actor = pickObject(entry, ["actor"]);
+  const metadata = pickObject(entry, ["metadata", "meta", "details"]);
+  const agent =
+    pickObject(entry, ["agent", "executor", "worker"]) ??
+    (metadata ? pickObject(metadata, ["agent", "executor", "worker"]) : null);
+  const user =
+    pickObject(entry, ["user", "author", "created_by", "createdBy"]) ??
+    (metadata ? pickObject(metadata, ["user", "author", "created_by", "createdBy"]) : null);
+  const actor =
+    pickObject(entry, ["actor", "updated_by", "updatedBy", "by"]) ??
+    (metadata ? pickObject(metadata, ["actor", "updated_by", "updatedBy", "by"]) : null);
 
   const agentname =
     pickString(entry, ["agentname", "agentName", "agent_name"]) ??
+    (metadata ? pickString(metadata, ["agentname", "agentName", "agent_name"]) : undefined) ??
     (agent ? pickString(agent, ["name", "agentname", "agentName", "agent_name"]) : undefined) ??
     "unknown-agent";
 
   const model =
     pickString(entry, ["model", "agentModel", "agent_model"]) ??
+    (metadata ? pickString(metadata, ["model", "agentModel", "agent_model"]) : undefined) ??
     (agent ? pickString(agent, ["model", "agentModel", "agent_model"]) : undefined) ??
     "unknown-model";
 
   const username =
     pickString(entry, ["username", "user", "user_name", "actor", "actor_name"]) ??
+    (metadata ? pickString(metadata, ["username", "user", "user_name", "actor", "actor_name"]) : undefined) ??
     (user ? pickString(user, ["name", "username", "login"]) : undefined) ??
     (actor ? pickString(actor, ["name", "username", "login"]) : undefined) ??
     "unknown-user";
 
   const version =
     pickString(entry, ["version", "agentVersion", "agent_version"]) ??
+    (metadata ? pickString(metadata, ["version", "agentVersion", "agent_version"]) : undefined) ??
     (agent ? pickString(agent, ["version", "agentVersion", "agent_version"]) : undefined);
 
   const datetime = pickString(entry, [
@@ -216,7 +251,19 @@ function AgentBadge({ entry }: { entry: MetadataEntry }) {
     "updated_at",
     "updatedAt",
     "time",
-  ]);
+  ]) ??
+    (metadata ? pickString(metadata, [
+      "datetime",
+      "timestamp",
+      "ts",
+      "created_at",
+      "createdAt",
+      "updated_at",
+      "updatedAt",
+      "time",
+      "at",
+      "occurred_at",
+    ]) : undefined);
 
   return (
     <div className="mb-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -242,7 +289,12 @@ function AgentBadge({ entry }: { entry: MetadataEntry }) {
 }
 
 function RetakeDetails({ bead }: { bead: Beat }) {
-  const description = bead.description;
+  const description = bead.description ?? readMetadataString(bead, [
+    "knotsDescription",
+    "description",
+    "body",
+    "knotsBody",
+  ]);
   const rawSteps = readMetadataEntries(bead, [...STEP_METADATA_KEYS]);
   const rawNotes = readMetadataEntries(bead, [...NOTE_METADATA_KEYS]);
   const rawCapsules = readMetadataEntries(bead, [...HANDOFF_METADATA_KEYS]);
@@ -263,13 +315,13 @@ function RetakeDetails({ bead }: { bead: Beat }) {
   });
 
   const renderedNotes = noteEntries.flatMap((note, index) => {
-    const content = pickString(note, ["content", "note", "message"]);
+    const content = pickString(note, ["content", "note", "message", "summary", "description"]);
     if (!content) return [];
     return [{ entry: note, key: metadataEntryKey(note, index), content }];
   });
 
   const renderedCapsules = rawCapsules.flatMap((capsule, index) => {
-    const content = pickString(capsule, ["content", "summary", "message"]);
+    const content = pickString(capsule, ["content", "summary", "message", "description", "note"]);
     if (!content) return [];
     return [{ entry: capsule, key: metadataEntryKey(capsule, index), content }];
   });
