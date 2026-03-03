@@ -1,6 +1,13 @@
 import { getBackend } from "@/lib/backend-instance";
 import type { Beat } from "@/lib/types";
 
+const TERMINAL_CHILD_STATES = new Set(["closed", "shipped", "abandoned"]);
+
+function isTerminalChildState(state: string | undefined): boolean {
+  if (!state) return false;
+  return TERMINAL_CHILD_STATES.has(state);
+}
+
 /**
  * Build a map of parentId → immediate children from a flat beat list.
  */
@@ -63,11 +70,11 @@ export async function regroomAncestors(
       const children = childrenIndex.get(ancestorId);
       if (!children || children.length === 0) continue;
 
-      const allClosed = children.every((child) => child.state === "closed");
-      if (!allClosed) break; // stop walking up — this ancestor still has open work
+      const allTerminal = children.every((child) => isTerminalChildState(child.state));
+      if (!allTerminal) break; // stop walking up — this ancestor still has open work
 
       console.log(
-        `[regroom] Auto-closing ${ancestorId} — all ${children.length} children closed`
+        `[regroom] Auto-closing ${ancestorId} — all ${children.length} children are terminal`
       );
       const result = await getBackend().close(ancestorId, undefined, repoPath);
       if (!result.ok) {
@@ -80,7 +87,8 @@ export async function regroomAncestors(
       // Update our in-memory map so the next ancestor check sees this as closed
       const ancestor = beatsById.get(ancestorId);
       if (ancestor) {
-        beatsById.set(ancestorId, { ...ancestor, state: "closed" });
+        ancestor.state = "closed";
+        beatsById.set(ancestorId, ancestor);
       }
     }
   } catch (err) {

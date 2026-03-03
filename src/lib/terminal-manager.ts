@@ -26,6 +26,7 @@ import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
 import type { Beat, MemoryWorkflowDescriptor, RegisteredAgent } from "@/lib/types";
 import {
+  StepPhase,
   defaultWorkflowDescriptor,
   isQueueOrTerminal,
   isReviewStep,
@@ -253,6 +254,53 @@ function makeUserMessageLine(text: string): string {
   }) + "\n";
 }
 
+function isTerminalBeatState(state: string | undefined): boolean {
+  if (!state) return false;
+  return state === "closed" || state === "shipped" || state === "abandoned";
+}
+
+function isAgentOwnedActionState(
+  beat: Beat,
+  workflow: MemoryWorkflowDescriptor,
+): boolean {
+  const resolved = resolveStep(beat.state);
+  if (!resolved || resolved.phase !== StepPhase.Active) return false;
+  const ownerKind = workflow.owners?.[resolved.step] ?? beat.nextActionOwnerKind ?? "agent";
+  return ownerKind === "agent";
+}
+
+async function advanceAgentOwnedActionStateToQueue(
+  beat: Beat,
+  repoPath: string | undefined,
+  workflowsById: Map<string, MemoryWorkflowDescriptor>,
+  fallbackWorkflow: MemoryWorkflowDescriptor,
+  contextLabel: string,
+): Promise<Beat> {
+  const workflow = resolveWorkflowForBeat(beat, workflowsById, fallbackWorkflow);
+  if (!isAgentOwnedActionState(beat, workflow)) return beat;
+
+  const tag = `[terminal-manager] [${contextLabel}] [action-heal]`;
+  console.log(`${tag} advancing ${beat.id} from action state=${beat.state}`);
+
+  const nextResult = await nextKnot(beat.id, repoPath, { actorKind: "agent" });
+  if (!nextResult.ok) {
+    const errMsg = typeof nextResult.error === "string" ? nextResult.error : "unknown";
+    console.warn(`${tag} failed to advance ${beat.id}: ${errMsg}`);
+    return beat;
+  }
+
+  const refreshed = await getBackend().get(beat.id, repoPath);
+  if (!refreshed.ok || !refreshed.data) {
+    console.warn(`${tag} failed to reload ${beat.id} after advance`);
+    return beat;
+  }
+
+  console.log(
+    `${tag} advanced ${beat.id}: ${beat.state} -> ${refreshed.data.state} claimable=${refreshed.data.isAgentClaimable}`,
+  );
+  return refreshed.data;
+}
+
 function compactValue(value: unknown, max = 220): string {
   const rendered =
     typeof value === "string"
@@ -454,7 +502,11 @@ export async function createSession(
   if (!result.ok || !result.data) {
     throw new Error(result.error?.message ?? "Failed to fetch beat");
   }
-  const bead = result.data;
+  let bead = result.data;
+  const workflowsResult = await getBackend().listWorkflows(repoPath);
+  const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
+  const workflowsById = workflowDescriptorById(workflows);
+  const fallbackWorkflow = workflows[0] ?? defaultWorkflowDescriptor();
   const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
   // Check for children — both orchestrated waves and plain parent beads
   let waveBeatIds: string[] = [];
@@ -463,7 +515,7 @@ export async function createSession(
   const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
   if (hasChildren) {
     waveBeats = childResult.data!
-      .filter((child) => child.state !== "closed")
+      .filter((child) => !isTerminalBeatState(child.state))
       .sort((a, b) => a.id.localeCompare(b.id));
     waveBeatIds = waveBeats.map((child) => child.id);
   } else if (isWave) {
@@ -475,12 +527,27 @@ export async function createSession(
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
   if (memoryManagerType === "knots") {
-    assertKnotsClaimable(isParent ? waveBeats : [bead], isParent ? "Scene" : "Take");
+    const targets = isParent ? waveBeats : [bead];
+    const healedTargets = await Promise.all(
+      targets.map((target) =>
+        advanceAgentOwnedActionStateToQueue(
+          target,
+          repoPath,
+          workflowsById,
+          fallbackWorkflow,
+          beatId,
+        )
+      ),
+    );
+    if (isParent) {
+      waveBeats = healedTargets.filter((child) => !isTerminalBeatState(child.state));
+      waveBeatIds = waveBeats.map((child) => child.id);
+      assertKnotsClaimable(waveBeats, "Scene");
+    } else {
+      bead = healedTargets[0] ?? bead;
+      assertKnotsClaimable([bead], "Take");
+    }
   }
-  const workflowsResult = await getBackend().listWorkflows(repoPath);
-  const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
-  const workflowsById = workflowDescriptorById(workflows);
-  const fallbackWorkflow = workflows[0] ?? defaultWorkflowDescriptor();
   const primaryTarget = toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow);
   const sceneTargets = waveBeats.map((child) =>
     toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
@@ -674,8 +741,8 @@ export async function createSession(
       return null;
     }
 
-    const current = currentResult.data;
-    const workflow = resolveWorkflowForBeat(current, workflowsById, fallbackWorkflow);
+    let current = currentResult.data;
+    let workflow = resolveWorkflowForBeat(current, workflowsById, fallbackWorkflow);
 
     console.log(
       `${tag} beat=${beatId} state=${current.state} isAgentClaimable=${current.isAgentClaimable}` +
@@ -694,8 +761,42 @@ export async function createSession(
       return null;
     }
 
-    const resolved = resolveStep(current.state);
-    const stepOwner = resolved ? workflow.owners?.[resolved.step] ?? "agent" : "none";
+    let resolved = resolveStep(current.state);
+    let stepOwner = resolved ? workflow.owners?.[resolved.step] ?? "agent" : "none";
+    if (resolved?.phase === StepPhase.Active && stepOwner === "agent") {
+      console.log(`${tag} auto-advancing ${beatId} from active state=${current.state}`);
+      const nextResult = await nextKnot(beatId, repoPath, { actorKind: "agent" });
+      if (!nextResult.ok) {
+        const errMsg = typeof nextResult.error === "string" ? nextResult.error : "unknown";
+        console.log(`${tag} STOP: auto-advance failed for ${beatId}: ${errMsg}`);
+        pushEvent({
+          type: "stderr",
+          data: `Take loop: failed to advance ${beatId} from ${current.state}: ${errMsg}\n`,
+          timestamp: Date.now(),
+        });
+        return null;
+      }
+
+      const refreshedResult = await getBackend().get(beatId, repoPath);
+      if (!refreshedResult.ok || !refreshedResult.data) {
+        console.log(`${tag} STOP: failed to reload ${beatId} after auto-advance`);
+        pushEvent({
+          type: "stderr",
+          data: `Take loop: failed to reload ${beatId} after auto-advance\n`,
+          timestamp: Date.now(),
+        });
+        return null;
+      }
+
+      current = refreshedResult.data;
+      workflow = resolveWorkflowForBeat(current, workflowsById, fallbackWorkflow);
+      resolved = resolveStep(current.state);
+      stepOwner = resolved ? workflow.owners?.[resolved.step] ?? "agent" : "none";
+      console.log(
+        `${tag} auto-advance result: beat=${beatId} state=${current.state}` +
+        ` isAgentClaimable=${current.isAgentClaimable}`,
+      );
+    }
     if (!resolved || stepOwner !== "agent") {
       console.log(
         `${tag} STOP: not agent-owned — state=${current.state}` +
