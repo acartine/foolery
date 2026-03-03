@@ -17,6 +17,17 @@ import {
 import { formatModelDisplay } from "@/hooks/use-agent-info";
 import type { ActionAgentMappings } from "@/lib/schemas";
 
+const KNOWN_AGENT_LABELS: Record<string, string> = {
+  claude: "Claude Code",
+  codex: "OpenAI Codex",
+  gemini: "Google Gemini",
+  openrouter: "OpenRouter",
+};
+
+function defaultAgentLabel(id: string): string {
+  return KNOWN_AGENT_LABELS[id] ?? id.charAt(0).toUpperCase() + id.slice(1);
+}
+
 async function setDefaultAgentForActions(agentId: string) {
   const mappings: ActionAgentMappings = {
     take: agentId,
@@ -68,7 +79,7 @@ export function SettingsAgentsSection({
   async function handleAddScanned(scanned: ScannedAgent) {
     const res = await addAgent(scanned.id, {
       command: scanned.path,
-      label: scanned.id.charAt(0).toUpperCase() + scanned.id.slice(1),
+      label: defaultAgentLabel(scanned.id),
     });
     if (res.ok && res.data) {
       onAgentsChange(res.data);
@@ -90,7 +101,7 @@ export function SettingsAgentsSection({
     for (const agent of sorted) {
       const res = await addAgent(agent.id, {
         command: agent.path,
-        label: agent.id.charAt(0).toUpperCase() + agent.id.slice(1),
+        label: defaultAgentLabel(agent.id),
       });
       if (res.ok && res.data) {
         latestAgents = res.data;
