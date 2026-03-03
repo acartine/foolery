@@ -31,12 +31,17 @@ export function validNextStates(
 ): string[] {
   if (!currentState) return [];
   const normalized = currentState.trim().toLowerCase();
+  const normalizedRawKnoState = rawKnoState?.trim().toLowerCase();
 
   // If the raw kno state differs from the display state, the knot is stuck in an
   // active phase that was rolled back for display. Compute transitions from the
   // actual kno state and include all workflow states as escape hatches.
-  const isRolledBack = rawKnoState && rawKnoState !== normalized;
-  const effectiveState = isRolledBack ? rawKnoState : normalized;
+  const isRolledBack = Boolean(
+    normalizedRawKnoState && normalizedRawKnoState !== normalized,
+  );
+  const effectiveState = isRolledBack && normalizedRawKnoState
+    ? normalizedRawKnoState
+    : normalized;
 
   const next = new Set<string>();
   for (const t of workflow.transitions ?? []) {
@@ -56,7 +61,7 @@ export function validNextStates(
 
   // Remove current display state and raw state from options
   next.delete(normalized);
-  if (rawKnoState) next.delete(rawKnoState);
+  if (normalizedRawKnoState) next.delete(normalizedRawKnoState);
 
   // Only filter out ready_for_* states when NOT rolled back (normal flow)
   if (isRolledBack) {

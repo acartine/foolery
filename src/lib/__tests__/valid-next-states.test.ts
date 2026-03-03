@@ -137,5 +137,16 @@ describe("validNextStates", () => {
       // Should filter out ready_for_* (normal flow)
       expect(result.some((s) => s.startsWith("ready_for_"))).toBe(false);
     });
+
+    it("normalizes rawKnoState before rollback detection", () => {
+      // Same state with casing/whitespace should still be treated as non-rollback
+      const result = validNextStates(
+        "ready_for_planning",
+        workflow,
+        " Ready_For_Planning ",
+      );
+      expect(result).toContain("planning");
+      expect(result.some((s) => s.startsWith("ready_for_"))).toBe(false);
+    });
   });
 });

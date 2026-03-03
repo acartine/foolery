@@ -590,6 +590,51 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(updateCalls.length).toBe(0);
     });
 
+    it("normalizes raw kno metadata state before comparing for no-op", async () => {
+      const backend = new KnotsBackend("/repo");
+      const now = nowIso();
+      store.knots.set("stuck-1b", {
+        id: "stuck-1b",
+        title: "Stuck knot with formatted metadata state",
+        state: "planning",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: now,
+        body: null,
+        description: null,
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-stuck-1b",
+        created_at: now,
+      });
+
+      const listed = await backend.list();
+      expect(listed.ok).toBe(true);
+      const beat = listed.data?.find((item) => item.id === "stuck-1b");
+      expect(beat).toBeTruthy();
+      if (!beat) return;
+
+      // Simulate a persisted raw metadata value with inconsistent formatting.
+      beat.metadata = {
+        ...(beat.metadata ?? {}),
+        knotsState: " PlAnNiNg ",
+      };
+
+      const getSpy = vi.spyOn(backend, "get").mockResolvedValue({ ok: true, data: beat });
+      try {
+        const result = await backend.update("stuck-1b", { state: "planning" });
+        expect(result.ok).toBe(true);
+      } finally {
+        getSpy.mockRestore();
+      }
+
+      const updateCalls = mockUpdateKnot.mock.calls.filter((c) => c[0] === "stuck-1b");
+      expect(updateCalls.length).toBe(0);
+    });
+
     it("sets force=true when jumping to a non-adjacent state", async () => {
       const backend = new KnotsBackend("/repo");
       const now = nowIso();

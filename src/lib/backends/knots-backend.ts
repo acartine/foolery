@@ -818,7 +818,7 @@ export class KnotsBackend implements BackendPort {
         : input.state.trim().toLowerCase();
 
       const rawKnoState = typeof current.metadata?.knotsState === "string"
-        ? current.metadata.knotsState
+        ? current.metadata.knotsState.trim().toLowerCase()
         : undefined;
 
       if (rawKnoState && normalizedState === rawKnoState) {
