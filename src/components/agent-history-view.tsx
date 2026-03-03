@@ -534,6 +534,18 @@ export function AgentHistoryView() {
     }
   }, [beats, focusedBeatKey, loadedBeatKey]);
 
+  /* Auto-focus the beat list when beats first become available */
+  const hadBeatsRef = useRef(false);
+  useEffect(() => {
+    if (beats.length > 0 && !hadBeatsRef.current) {
+      hadBeatsRef.current = true;
+      beatListRef.current?.focus();
+    }
+    if (beats.length === 0) {
+      hadBeatsRef.current = false;
+    }
+  }, [beats.length]);
+
   /* Keep window aligned with focused beat */
   useEffect(() => {
     if (!focusedBeatKey || beats.length === 0) return;
@@ -565,7 +577,7 @@ export function AgentHistoryView() {
       const nextIndex =
         currentIndex === -1
           ? 0
-          : (currentIndex + direction + beats.length) % beats.length;
+          : Math.max(0, Math.min(beats.length - 1, currentIndex + direction));
       setFocusedBeatKey(beatKey(beats[nextIndex].beadId, beats[nextIndex].repoPath));
     },
     [beats, focusedBeatKey],
@@ -809,6 +821,7 @@ export function AgentHistoryView() {
                     onClick={() => {
                       setFocusedBeatKey(key);
                       setLoadedBeatKey(key);
+                      beatListRef.current?.focus();
                     }}
                     onKeyDown={(event) => {
                       if (event.key === "Tab") {
