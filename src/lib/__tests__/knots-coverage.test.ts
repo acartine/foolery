@@ -185,8 +185,7 @@ describe("newKnot", () => {
 
     await newKnot("Title", { description: "My desc" }, "/repo");
     const callArgs = execFileCallArgs[0]!;
-    expect(callArgs).toContain("--desc");
-    expect(callArgs).toContain("My desc");
+    expect(callArgs).toContain("--desc=My desc");
   });
 
   it("passes body as description", async () => {
@@ -194,8 +193,7 @@ describe("newKnot", () => {
 
     await newKnot("Title", { body: "Body text" }, "/repo");
     const callArgs = execFileCallArgs[0]!;
-    expect(callArgs).toContain("--desc");
-    expect(callArgs).toContain("Body text");
+    expect(callArgs).toContain("--desc=Body text");
   });
 
   it("passes state option", async () => {
@@ -390,20 +388,21 @@ describe("updateKnot", () => {
     expect(result.ok).toBe(true);
 
     const callArgs = execFileCallArgs[0]!;
-    expect(callArgs).toContain("--title");
-    expect(callArgs).toContain("--description");
+    expect(callArgs).toContain("--title=New Title");
+    expect(callArgs).toContain("--description=New desc");
     expect(callArgs).toContain("--priority");
     expect(callArgs).toContain("--status");
     expect(callArgs).toContain("--type");
-    expect(callArgs).toContain("--add-tag");
-    expect(callArgs).toContain("--remove-tag");
-    expect(callArgs).toContain("--add-note");
+    expect(callArgs).toContain("--add-tag=tag1");
+    expect(callArgs).toContain("--add-tag=tag2");
+    expect(callArgs).toContain("--remove-tag=old-tag");
+    expect(callArgs).toContain("--add-note=A note");
     expect(callArgs).toContain("--note-username");
     expect(callArgs).toContain("--note-datetime");
     expect(callArgs).toContain("--note-agentname");
     expect(callArgs).toContain("--note-model");
     expect(callArgs).toContain("--note-version");
-    expect(callArgs).toContain("--add-handoff-capsule");
+    expect(callArgs).toContain("--add-handoff-capsule=Capsule text");
     expect(callArgs).toContain("--handoff-username");
     expect(callArgs).toContain("--handoff-datetime");
     expect(callArgs).toContain("--handoff-agentname");
@@ -417,12 +416,9 @@ describe("updateKnot", () => {
 
     await updateKnot("42", { addTags: ["", "  ", "valid"] }, "/repo");
     const callArgs = execFileCallArgs[0]!;
-    const addTagIndices = callArgs.reduce<number[]>((acc, arg, i) => {
-      if (arg === "--add-tag") acc.push(i);
-      return acc;
-    }, []);
-    expect(addTagIndices.length).toBe(1);
-    expect(callArgs[addTagIndices[0]! + 1]).toBe("valid");
+    const addTagArgs = callArgs.filter((arg: string) => arg.startsWith("--add-tag="));
+    expect(addTagArgs.length).toBe(1);
+    expect(addTagArgs[0]).toBe("--add-tag=valid");
   });
 
   it("returns error on non-zero exit", async () => {

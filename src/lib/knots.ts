@@ -410,7 +410,7 @@ export async function newKnot(
 ): Promise<BdResult<{ id: string }>> {
   const args = ["new"];
   const description = options?.description ?? options?.body;
-  if (description) args.push("--desc", description);
+  if (description) args.push(`--desc=${description}`);
   if (options?.state) args.push("--state", options.state);
 
   const selectedProfile = options?.profile ?? options?.workflow;
@@ -508,21 +508,21 @@ export async function updateKnot(
 ): Promise<BdResult<void>> {
   const args = ["update", id];
 
-  if (input.title !== undefined) args.push("--title", input.title);
-  if (input.description !== undefined) args.push("--description", input.description);
+  if (input.title !== undefined) args.push(`--title=${input.title}`);
+  if (input.description !== undefined) args.push(`--description=${input.description}`);
   if (input.priority !== undefined) args.push("--priority", String(input.priority));
   if (input.status !== undefined) args.push("--status", input.status);
   if (input.type !== undefined) args.push("--type", input.type);
 
   for (const tag of input.addTags ?? []) {
-    if (tag.trim()) args.push("--add-tag", tag);
+    if (tag.trim()) args.push(`--add-tag=${tag}`);
   }
   for (const tag of input.removeTags ?? []) {
-    if (tag.trim()) args.push("--remove-tag", tag);
+    if (tag.trim()) args.push(`--remove-tag=${tag}`);
   }
 
   if (input.addNote !== undefined) {
-    args.push("--add-note", input.addNote);
+    args.push(`--add-note=${input.addNote}`);
     if (input.noteUsername) args.push("--note-username", input.noteUsername);
     if (input.noteDatetime) args.push("--note-datetime", input.noteDatetime);
     if (input.noteAgentname) args.push("--note-agentname", input.noteAgentname);
@@ -531,7 +531,7 @@ export async function updateKnot(
   }
 
   if (input.addHandoffCapsule !== undefined) {
-    args.push("--add-handoff-capsule", input.addHandoffCapsule);
+    args.push(`--add-handoff-capsule=${input.addHandoffCapsule}`);
     if (input.handoffUsername) args.push("--handoff-username", input.handoffUsername);
     if (input.handoffDatetime) args.push("--handoff-datetime", input.handoffDatetime);
     if (input.handoffAgentname) args.push("--handoff-agentname", input.handoffAgentname);

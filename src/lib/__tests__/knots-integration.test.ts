@@ -184,7 +184,7 @@ describe("newKnot", () => {
     const promise = newKnot("My task", { description: "desc", state: "open" }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
-    expect(args).toEqual(expect.arrayContaining(["new", "--desc", "desc", "--state", "open"]));
+    expect(args).toEqual(expect.arrayContaining(["new", "--desc=desc", "--state", "open"]));
     expect(args).toEqual(expect.arrayContaining(["--", "My task"]));
     resolveNext("created K-0042");
     const result = await promise;
@@ -216,7 +216,7 @@ describe("newKnot", () => {
     const promise = newKnot("Task", { body: "body-text" }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     expect(execFileCallbacks[0].args).toEqual(
-      expect.arrayContaining(["--desc", "body-text"]),
+      expect.arrayContaining(["--desc=body-text"]),
     );
     resolveNext("created K-0001");
     await promise;
@@ -534,21 +534,21 @@ describe("updateKnot", () => {
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
     expect(args).toEqual(expect.arrayContaining(["update", "K-1"]));
-    expect(args).toEqual(expect.arrayContaining(["--title", "New Title"]));
-    expect(args).toEqual(expect.arrayContaining(["--description", "New Desc"]));
+    expect(args).toEqual(expect.arrayContaining(["--title=New Title"]));
+    expect(args).toEqual(expect.arrayContaining(["--description=New Desc"]));
     expect(args).toEqual(expect.arrayContaining(["--priority", "2"]));
     expect(args).toEqual(expect.arrayContaining(["--status", "implementing"]));
     expect(args).toEqual(expect.arrayContaining(["--type", "task"]));
-    expect(args).toEqual(expect.arrayContaining(["--add-tag", "bug"]));
-    expect(args).toEqual(expect.arrayContaining(["--add-tag", "urgent"]));
-    expect(args).toEqual(expect.arrayContaining(["--remove-tag", "stale"]));
-    expect(args).toEqual(expect.arrayContaining(["--add-note", "Work started"]));
+    expect(args).toEqual(expect.arrayContaining(["--add-tag=bug"]));
+    expect(args).toEqual(expect.arrayContaining(["--add-tag=urgent"]));
+    expect(args).toEqual(expect.arrayContaining(["--remove-tag=stale"]));
+    expect(args).toEqual(expect.arrayContaining(["--add-note=Work started"]));
     expect(args).toEqual(expect.arrayContaining(["--note-username", "user1"]));
     expect(args).toEqual(expect.arrayContaining(["--note-datetime", "2025-01-01T00:00:00Z"]));
     expect(args).toEqual(expect.arrayContaining(["--note-agentname", "agent1"]));
     expect(args).toEqual(expect.arrayContaining(["--note-model", "model1"]));
     expect(args).toEqual(expect.arrayContaining(["--note-version", "v1"]));
-    expect(args).toEqual(expect.arrayContaining(["--add-handoff-capsule", "Handoff data"]));
+    expect(args).toEqual(expect.arrayContaining(["--add-handoff-capsule=Handoff data"]));
     expect(args).toEqual(expect.arrayContaining(["--handoff-username", "user2"]));
     expect(args).toEqual(expect.arrayContaining(["--handoff-datetime", "2025-01-02T00:00:00Z"]));
     expect(args).toEqual(expect.arrayContaining(["--handoff-agentname", "agent2"]));
@@ -567,15 +567,13 @@ describe("updateKnot", () => {
     }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
-    // Only "valid" should appear as --add-tag
-    const addTagIndices = args.reduce<number[]>((acc, v, i) => {
-      if (v === "--add-tag") acc.push(i);
-      return acc;
-    }, []);
-    expect(addTagIndices).toHaveLength(1);
-    expect(args[addTagIndices[0] + 1]).toBe("valid");
+    // Only "valid" should appear as --add-tag=valid
+    const addTagArgs = args.filter((v: string) => v.startsWith("--add-tag="));
+    expect(addTagArgs).toHaveLength(1);
+    expect(addTagArgs[0]).toBe("--add-tag=valid");
     // No --remove-tag since all are empty/whitespace
-    expect(args).not.toEqual(expect.arrayContaining(["--remove-tag"]));
+    const removeTagArgs = args.filter((v: string) => v.startsWith("--remove-tag="));
+    expect(removeTagArgs).toHaveLength(0);
     resolveNext("");
     await promise;
   });
@@ -592,10 +590,10 @@ describe("updateKnot", () => {
     const promise = updateKnot("K-1", { title: "Just Title" }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     const args = execFileCallbacks[0].args;
-    expect(args).toEqual(expect.arrayContaining(["update", "K-1", "--title", "Just Title"]));
+    expect(args).toEqual(expect.arrayContaining(["update", "K-1", "--title=Just Title"]));
     expect(args).not.toEqual(expect.arrayContaining(["--force"]));
-    expect(args).not.toEqual(expect.arrayContaining(["--add-note"]));
-    expect(args).not.toEqual(expect.arrayContaining(["--add-handoff-capsule"]));
+    expect(args.some((v: string) => v.startsWith("--add-note="))).toBe(false);
+    expect(args.some((v: string) => v.startsWith("--add-handoff-capsule="))).toBe(false);
     resolveNext("");
     await promise;
   });
