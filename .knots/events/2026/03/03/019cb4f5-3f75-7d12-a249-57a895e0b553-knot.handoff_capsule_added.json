@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4f5-3f75-7d12-a249-57a895e0b553",
+  "occurred_at": "2026-03-03T18:28:17.397172Z",
+  "knot_id": "foolery-1fbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment finalized: verified fix commit a3b7a2dce9c4b1b14441a7f61fefe30cf1c573c6 is present on main and origin/main, re-ran retakes pagination and beads layout unit tests (pass), confirmed latest remote CI runs for main head cc33150b8be0aaa8ecd2926dd5a3cde26b357434 are successful, and confirmed push state is up-to-date.",
+    "datetime": "2026-03-03T18:28:17.397172Z",
+    "entry_id": "019cb4f5-3f75-7d12-a249-5793b2a64a65",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

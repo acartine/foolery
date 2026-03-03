@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb4f5-4e8d-7c90-b75b-dc4056e8dd8a",
+  "occurred_at": "2026-03-03T18:28:21.261337Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-1fbb",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "ReTakes screen isn't paginated",
+    "updated_at": "2026-03-03T18:28:21.261337Z"
+  }
+}
