@@ -232,6 +232,9 @@ function BeadsPageInner() {
         beatId: beat.id,
         beatTitle: beat.title,
         repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
+        agentName: result.data.agentName,
+        agentModel: result.data.agentModel,
+        agentCommand: result.data.agentCommand,
         status: "running",
         startedAt: new Date().toISOString(),
       });
@@ -267,6 +270,9 @@ function BeadsPageInner() {
         beatId: item.beatId,
         beatTitle: item.beatTitle,
         repoPath: result.data.repoPath ?? item.repoPath ?? activeRepo ?? undefined,
+        agentName: result.data.agentName,
+        agentModel: result.data.agentModel,
+        agentCommand: result.data.agentCommand,
         status: "running",
         startedAt: new Date().toISOString(),
       });
