@@ -988,6 +988,9 @@ export function ExistingOrchestrationsView() {
         beatId: wave.id,
         beatTitle: wave.title,
         repoPath: result.data.repoPath ?? activeRepo,
+        agentName: result.data.agentName,
+        agentModel: result.data.agentModel,
+        agentCommand: result.data.agentCommand,
         status: "running",
         startedAt: new Date().toISOString(),
       });
@@ -1024,6 +1027,9 @@ export function ExistingOrchestrationsView() {
             beatId: wave.id,
             beatTitle: wave.title,
             repoPath: result.data.repoPath ?? activeRepo,
+            agentName: result.data.agentName,
+            agentModel: result.data.agentModel,
+            agentCommand: result.data.agentCommand,
             status: "running",
             startedAt: new Date().toISOString(),
           });

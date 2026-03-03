@@ -129,6 +129,9 @@ export interface TerminalSession {
   beatTitle: string;
   beatIds?: string[];
   repoPath?: string;
+  agentName?: string;
+  agentModel?: string;
+  agentCommand?: string;
   status: TerminalSessionStatus;
   startedAt: string;
   exitCode?: number;

@@ -559,6 +559,9 @@ export async function createSession(
     beatId: bead.id,
     beatTitle: bead.title,
     repoPath: resolvedRepoPath,
+    agentName: agent.label || agent.command,
+    agentModel: agent.model,
+    agentCommand: agent.command,
     status: "running",
     startedAt: new Date().toISOString(),
   };

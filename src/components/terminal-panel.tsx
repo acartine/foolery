@@ -5,7 +5,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { connectToSession, abortSession, startSession } from "@/lib/terminal-api";
-import { useAgentInfo } from "@/hooks/use-agent-info";
+import {
+  detectVendor,
+  formatModelDisplay,
+  useAgentInfo,
+  type ResolvedAgentInfo,
+} from "@/hooks/use-agent-info";
 import { AgentInfoBar } from "@/components/agent-info-bar";
 import type { TerminalEvent } from "@/lib/types";
 import {
@@ -30,7 +35,6 @@ const AUTO_CLOSE_MS = 30_000;
 function shortId(id: string): string {
   return id.replace(/^[^-]+-/, "");
 }
-
 
 function buildTakeRecoveryPrompt(beatId: string, previousSessionId: string | null): string {
   return [
@@ -83,7 +87,17 @@ export function TerminalPanel() {
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const isMaximized = panelHeight > 70;
-  const agentInfo = useAgentInfo("take");
+  const fallbackAgentInfo = useAgentInfo("take");
+  const sessionAgentInfo = useMemo<ResolvedAgentInfo | null>(() => {
+    if (!activeTerminal?.agentCommand) return null;
+    return {
+      name: activeTerminal.agentName || activeTerminal.agentCommand,
+      model: formatModelDisplay(activeTerminal.agentModel),
+      command: activeTerminal.agentCommand,
+      vendor: detectVendor(activeTerminal.agentCommand),
+    };
+  }, [activeTerminal?.agentCommand, activeTerminal?.agentModel, activeTerminal?.agentName]);
+  const agentInfo = sessionAgentInfo ?? fallbackAgentInfo;
 
   const handleAbort = useCallback(async () => {
     if (!activeTerminal) return;
@@ -270,6 +284,9 @@ export function TerminalPanel() {
           beatId: recovery.data.beatId,
           beatTitle: recovery.data.beatTitle,
           repoPath: recovery.data.repoPath ?? activeRepoPath,
+          agentName: recovery.data.agentName,
+          agentModel: recovery.data.agentModel,
+          agentCommand: recovery.data.agentCommand,
           status: "running",
           startedAt: new Date().toISOString(),
         });
