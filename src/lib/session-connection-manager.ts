@@ -54,6 +54,8 @@ class SessionConnectionManager {
         }
 
         if (event.type === "exit") {
+          // Exit is terminal; ignore duplicate exit events from reconnect/replay.
+          if (conn.exitReceived) return;
           conn.exitReceived = true;
           conn.exitCode = parseInt(event.data, 10);
 

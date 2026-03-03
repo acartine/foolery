@@ -267,4 +267,14 @@ describe("SessionConnectionManager", () => {
       beadId: "beat-43",
     });
   });
+
+  it("duplicate exit events only notify once", () => {
+    mockTerminals.push({ sessionId: "sess-notif-once", status: "running", beatId: "beat-44", beatTitle: "One-shot exit" });
+    sessionConnections.connect("sess-notif-once");
+
+    capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
+    capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
+
+    expect(mockAddNotification).toHaveBeenCalledTimes(1);
+  });
 });
