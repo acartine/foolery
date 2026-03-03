@@ -14,7 +14,7 @@ import {
   type OpenRouterSettings,
   type PoolsSettings,
 } from "@/lib/schemas";
-import { keychainSet, keychainGet } from "@/lib/keychain";
+import { keychainSet, keychainGet, keychainDelete } from "@/lib/keychain";
 import type {
   RegisteredAgent,
   ActionName,
@@ -246,7 +246,9 @@ export async function saveSettings(
   // Attempt to store API key in OS keychain
   let settingsForDisk = settings;
   const apiKey = settings.openrouter.apiKey;
-  if (apiKey && apiKey !== KEYCHAIN_SENTINEL) {
+  if (!apiKey) {
+    await keychainDelete();
+  } else if (apiKey !== KEYCHAIN_SENTINEL) {
     const stored = await keychainSet(apiKey);
     if (stored) {
       settingsForDisk = {

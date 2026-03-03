@@ -1,17 +1,16 @@
 /**
  * OS keychain integration for secret storage.
  * Uses macOS `security` CLI or Linux `secret-tool` via child_process.
+ * Commands are executed without a shell to avoid interpolation risks.
  * Falls back gracefully when keychain is unavailable.
  */
 
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
+import { execFile, spawn } from "node:child_process";
 import { platform } from "node:os";
-
-const execAsync = promisify(exec);
 
 const SERVICE_NAME = "foolery";
 const ACCOUNT_NAME = "openrouter-api-key";
+const LINUX_LABEL = "Foolery OpenRouter API Key";
 
 /**
  * Store a secret in the OS keychain.
@@ -41,15 +40,24 @@ export async function keychainGet(): Promise<string | null> {
   try {
     const os = platform();
     if (os === "darwin") {
-      const { stdout } = await execAsync(
-        `security find-generic-password -a ${q(ACCOUNT_NAME)} -s ${q(SERVICE_NAME)} -w`,
-      );
+      const stdout = await runCommand("security", [
+        "find-generic-password",
+        "-a",
+        ACCOUNT_NAME,
+        "-s",
+        SERVICE_NAME,
+        "-w",
+      ]);
       return stdout.trim();
     }
     if (os === "linux") {
-      const { stdout } = await execAsync(
-        `secret-tool lookup application ${q(SERVICE_NAME)} key ${q(ACCOUNT_NAME)}`,
-      );
+      const stdout = await runCommand("secret-tool", [
+        "lookup",
+        "application",
+        SERVICE_NAME,
+        "key",
+        ACCOUNT_NAME,
+      ]);
       return stdout.trim();
     }
     return null;
@@ -66,15 +74,23 @@ export async function keychainDelete(): Promise<boolean> {
   try {
     const os = platform();
     if (os === "darwin") {
-      await execAsync(
-        `security delete-generic-password -a ${q(ACCOUNT_NAME)} -s ${q(SERVICE_NAME)}`,
-      );
+      await runCommand("security", [
+        "delete-generic-password",
+        "-a",
+        ACCOUNT_NAME,
+        "-s",
+        SERVICE_NAME,
+      ]);
       return true;
     }
     if (os === "linux") {
-      await execAsync(
-        `secret-tool clear application ${q(SERVICE_NAME)} key ${q(ACCOUNT_NAME)}`,
-      );
+      await runCommand("secret-tool", [
+        "clear",
+        "application",
+        SERVICE_NAME,
+        "key",
+        ACCOUNT_NAME,
+      ]);
       return true;
     }
     return false;
@@ -83,29 +99,97 @@ export async function keychainDelete(): Promise<boolean> {
   }
 }
 
-/** Shell-quote a value using JSON.stringify (produces double-quoted string). */
-function q(value: string): string {
-  return JSON.stringify(value);
+async function runCommand(command: string, args: string[]): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    execFile(
+      command,
+      args,
+      { encoding: "utf8" },
+      (error, stdout) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(stdout);
+      },
+    );
+  });
+}
+
+async function runCommandWithInput(
+  command: string,
+  args: string[],
+  input: string,
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, { stdio: ["pipe", "ignore", "pipe"] });
+    let stderr = "";
+
+    child.stderr.setEncoding("utf8");
+    child.stderr.on("data", (chunk: string) => {
+      stderr += chunk;
+    });
+
+    child.on("error", (error) => {
+      reject(error);
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      reject(
+        new Error(
+          stderr.trim() || `${command} exited with code ${code ?? "unknown"}`,
+        ),
+      );
+    });
+
+    child.stdin.on("error", (error) => {
+      reject(error);
+    });
+    child.stdin.end(input);
+  });
 }
 
 async function darwinSet(key: string): Promise<boolean> {
   // Delete existing entry first (ignore errors if absent)
   try {
-    await execAsync(
-      `security delete-generic-password -a ${q(ACCOUNT_NAME)} -s ${q(SERVICE_NAME)}`,
-    );
+    await runCommand("security", [
+      "delete-generic-password",
+      "-a",
+      ACCOUNT_NAME,
+      "-s",
+      SERVICE_NAME,
+    ]);
   } catch {
     // Entry didn't exist, that's fine
   }
-  await execAsync(
-    `security add-generic-password -a ${q(ACCOUNT_NAME)} -s ${q(SERVICE_NAME)} -w ${q(key)}`,
-  );
+  await runCommand("security", [
+    "add-generic-password",
+    "-a",
+    ACCOUNT_NAME,
+    "-s",
+    SERVICE_NAME,
+    "-w",
+    key,
+  ]);
   return true;
 }
 
 async function linuxSet(key: string): Promise<boolean> {
-  await execAsync(
-    `echo -n ${q(key)} | secret-tool store --label="Foolery OpenRouter API Key" application ${q(SERVICE_NAME)} key ${q(ACCOUNT_NAME)}`,
+  await runCommandWithInput(
+    "secret-tool",
+    [
+      "store",
+      `--label=${LINUX_LABEL}`,
+      "application",
+      SERVICE_NAME,
+      "key",
+      ACCOUNT_NAME,
+    ],
+    key,
   );
   return true;
 }

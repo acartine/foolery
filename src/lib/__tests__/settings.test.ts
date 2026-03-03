@@ -16,10 +16,12 @@ vi.mock("node:fs/promises", () => ({
 // Mock keychain — default: keychain unavailable so existing tests pass unchanged
 const mockKeychainSet = vi.fn().mockResolvedValue(false);
 const mockKeychainGet = vi.fn().mockResolvedValue(null);
+const mockKeychainDelete = vi.fn().mockResolvedValue(true);
 
 vi.mock("@/lib/keychain", () => ({
   keychainSet: (...args: unknown[]) => mockKeychainSet(...args),
   keychainGet: (...args: unknown[]) => mockKeychainGet(...args),
+  keychainDelete: (...args: unknown[]) => mockKeychainDelete(...args),
 }));
 
 import {
@@ -71,6 +73,7 @@ beforeEach(() => {
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
   mockChmod.mockResolvedValue(undefined);
+  mockKeychainDelete.mockResolvedValue(true);
 });
 
 describe("loadSettings", () => {
@@ -744,7 +747,7 @@ describe("keychain integration", () => {
     expect(written).not.toContain("**keychain**");
   });
 
-  it("does not call keychainSet when key is empty", async () => {
+  it("deletes keychain entry when key is empty", async () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       backend: { type: "auto" as const },
@@ -754,6 +757,7 @@ describe("keychain integration", () => {
     await saveSettings(settings);
 
     expect(mockKeychainSet).not.toHaveBeenCalled();
+    expect(mockKeychainDelete).toHaveBeenCalledTimes(1);
   });
 
   it("does not call keychainSet when key is already the sentinel", async () => {
@@ -766,6 +770,7 @@ describe("keychain integration", () => {
     await saveSettings(settings);
 
     expect(mockKeychainSet).not.toHaveBeenCalled();
+    expect(mockKeychainDelete).not.toHaveBeenCalled();
   });
 
   it("resolves keychain sentinel when loading", async () => {
