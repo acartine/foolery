@@ -16,9 +16,14 @@ export interface MissingCwdTerminalFailureGuidance extends TerminalFailureGuidan
   previousSessionId: string | null;
 }
 
+export interface StdinPromptTerminalFailureGuidance extends TerminalFailureGuidanceBase {
+  kind: "stdin_prompt";
+}
+
 export type TerminalFailureGuidance =
   | AuthTerminalFailureGuidance
-  | MissingCwdTerminalFailureGuidance;
+  | MissingCwdTerminalFailureGuidance
+  | StdinPromptTerminalFailureGuidance;
 
 const AUTH_FAILURE_PATTERNS: RegExp[] = [
   /\boauth token has expired\b/i,
@@ -155,6 +160,19 @@ export function classifyTerminalFailure(
       ],
       missingPath,
       previousSessionId,
+    };
+  }
+
+  if (/failed to send prompt/i.test(normalized) && /stdin/i.test(normalized)) {
+    return {
+      kind: "stdin_prompt",
+      title: "Take iteration failed to send prompt via stdin",
+      toast: "Take failed — agent stdin was unavailable. Check agent configuration.",
+      steps: [
+        "The agent process could not receive the prompt via stdin (pipe was closed or unavailable).",
+        "Check Settings → Agents to verify the configured command is correct.",
+        "Retry the Take action. If it persists, check server logs for details.",
+      ],
     };
   }
 

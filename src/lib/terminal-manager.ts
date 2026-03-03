@@ -417,10 +417,13 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
   // Final result
   if (obj.type === "result") {
     const result = obj.result as string | undefined;
+    const isError = Boolean(obj.is_error);
     const cost = obj.cost_usd as number | undefined;
     const dur = obj.duration_ms as number | undefined;
     const parts: string[] = [];
-    if (result) parts.push(result);
+    if (result) {
+      parts.push(isError ? `\x1b[31m${result}\x1b[0m` : result);
+    }
     if (cost !== undefined || dur !== undefined) {
       const meta: string[] = [];
       if (cost !== undefined) meta.push(`$${cost.toFixed(4)}`);
@@ -817,7 +820,10 @@ export async function createSession(
     return false;
   };
 
+  let sessionFinished = false;
   const finishSession = (exitCode: number) => {
+    if (sessionFinished) return;
+    sessionFinished = true;
     session.exitCode = exitCode;
     session.status = exitCode === 0 ? "completed" : "error";
     interactionLog.logEnd(exitCode, session.status);
@@ -1058,7 +1064,7 @@ export async function createSession(
           console.error(`${tag} buildNextTakePrompt threw:`, err);
           pushEvent({
             type: "stderr",
-            data: `Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+            data: `[take ${takeIteration}/${MAX_TAKE_ITERATIONS} | beat: ${beatId.slice(0, 12)}] Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
             timestamp: Date.now(),
           });
         }
@@ -1067,11 +1073,13 @@ export async function createSession(
       })();
     });
 
+    const takeErrorPrefix = `[take ${takeIteration}/${MAX_TAKE_ITERATIONS} | beat: ${beatId.slice(0, 12)} | agent: ${effectiveDialect}]`;
+
     takeChild.on("error", (err) => {
       console.error(`[terminal-manager] [${id}] [take-loop] spawn error:`, err.message);
       if (takeCloseInputTimer) { clearTimeout(takeCloseInputTimer); takeCloseInputTimer = null; }
       takeStdinClosed = true;
-      pushEvent({ type: "stderr", data: `Process error: ${err.message}`, timestamp: Date.now() });
+      pushEvent({ type: "stderr", data: `${takeErrorPrefix} Process error: ${err.message}\n`, timestamp: Date.now() });
       takeChild.stdout?.removeAllListeners();
       takeChild.stderr?.removeAllListeners();
       entry.process = null;
@@ -1086,13 +1094,17 @@ export async function createSession(
       iteration: takeIteration,
     });
 
-    const sent = takeSendUserTurn(takePrompt, `take_${takeIteration}`);
-    if (!sent) {
-      takeCloseInput();
-      pushEvent({ type: "stderr", data: `Failed to send prompt for take iteration ${takeIteration}\n`, timestamp: Date.now() });
-      takeChild.kill("SIGTERM");
-      entry.process = null;
-      finishSession(1);
+    // For interactive (claude) agents the prompt is sent via stdin;
+    // for one-shot (codex) agents it was already passed as a CLI arg.
+    if (effectiveIsInteractive) {
+      const sent = takeSendUserTurn(takePrompt, `take_${takeIteration}`);
+      if (!sent) {
+        takeCloseInput();
+        pushEvent({ type: "stderr", data: `${takeErrorPrefix} Failed to send prompt — stdin is closed or unavailable.\n`, timestamp: Date.now() });
+        takeChild.kill("SIGTERM");
+        entry.process = null;
+        finishSession(1);
+      }
     }
   };
 
@@ -1394,7 +1406,7 @@ export async function createSession(
           console.error(`${tag} buildNextTakePrompt threw:`, err);
           pushEvent({
             type: "stderr",
-            data: `Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
+            data: `[take ${takeIteration}/${MAX_TAKE_ITERATIONS} | beat: ${beatId.slice(0, 12)}] Take loop check failed: ${err instanceof Error ? err.message : String(err)}\n`,
             timestamp: Date.now(),
           });
         }
