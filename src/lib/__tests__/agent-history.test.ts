@@ -318,4 +318,46 @@ describe("readAgentHistory", () => {
     expect(history.beats[0]?.sessionCount).toBe(1);
     expect(history.beats[0]?.title).toBe("Breakdown beat");
   });
+
+  it("does not filter out beats when session status is closed", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/closed-status.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-02-20T15:30:00.000Z",
+        sessionId: "closed-status",
+        interactionType: "take",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-closed"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-02-20T15:31:00.000Z",
+        sessionId: "closed-status",
+        status: "closed",
+        exitCode: 0,
+      },
+    ]);
+
+    await writeLog(tempDir, "repo-a/2026-02-20/recent-status.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-02-20T15:40:00.000Z",
+        sessionId: "recent-status",
+        interactionType: "take",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-recent"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-02-20T15:41:00.000Z",
+        sessionId: "recent-status",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    const history = await readAgentHistory({ logRoot: tempDir });
+
+    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-recent", "foo-closed"]);
+  });
 });
