@@ -13,6 +13,15 @@ vi.mock("node:fs/promises", () => ({
   chmod: (...args: unknown[]) => mockChmod(...args),
 }));
 
+// Mock keychain — default: keychain unavailable so existing tests pass unchanged
+const mockKeychainSet = vi.fn().mockResolvedValue(false);
+const mockKeychainGet = vi.fn().mockResolvedValue(null);
+
+vi.mock("@/lib/keychain", () => ({
+  keychainSet: (...args: unknown[]) => mockKeychainSet(...args),
+  keychainGet: (...args: unknown[]) => mockKeychainGet(...args),
+}));
+
 import {
   loadSettings,
   saveSettings,
@@ -725,5 +734,114 @@ describe("getStepAgent", () => {
       );
       expect(agent.agentId).toBe("opus");
     });
+  });
+});
+
+describe("keychain integration", () => {
+  it("stores API key in keychain when available", async () => {
+    mockKeychainSet.mockResolvedValueOnce(true);
+
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      backend: { type: "auto" as const },
+      dispatchMode: "actions" as const,
+      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, model: "" },
+    };
+    await saveSettings(settings);
+
+    expect(mockKeychainSet).toHaveBeenCalledWith("sk-or-v1-secret");
+    // TOML should contain sentinel, not the real key
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain("**keychain**");
+    expect(written).not.toContain("sk-or-v1-secret");
+  });
+
+  it("falls back to plaintext when keychain unavailable", async () => {
+    mockKeychainSet.mockResolvedValueOnce(false);
+
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      backend: { type: "auto" as const },
+      dispatchMode: "actions" as const,
+      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, model: "" },
+    };
+    await saveSettings(settings);
+
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain("sk-or-v1-secret");
+    expect(written).not.toContain("**keychain**");
+  });
+
+  it("does not call keychainSet when key is empty", async () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      backend: { type: "auto" as const },
+      dispatchMode: "actions" as const,
+      openrouter: { apiKey: "", enabled: false, model: "" },
+    };
+    await saveSettings(settings);
+
+    expect(mockKeychainSet).not.toHaveBeenCalled();
+  });
+
+  it("does not call keychainSet when key is already the sentinel", async () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      backend: { type: "auto" as const },
+      dispatchMode: "actions" as const,
+      openrouter: { apiKey: "**keychain**", enabled: true, model: "" },
+    };
+    await saveSettings(settings);
+
+    expect(mockKeychainSet).not.toHaveBeenCalled();
+  });
+
+  it("resolves keychain sentinel when loading", async () => {
+    mockKeychainGet.mockResolvedValueOnce("sk-or-v1-from-keychain");
+
+    mockReadFile.mockResolvedValue(
+      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
+    );
+
+    const settings = await loadSettings();
+    expect(settings.openrouter.apiKey).toBe("sk-or-v1-from-keychain");
+    expect(mockKeychainGet).toHaveBeenCalled();
+  });
+
+  it("resolves to empty string when keychain read fails", async () => {
+    mockKeychainGet.mockResolvedValueOnce(null);
+
+    mockReadFile.mockResolvedValue(
+      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
+    );
+
+    const settings = await loadSettings();
+    expect(settings.openrouter.apiKey).toBe("");
+  });
+
+  it("does not call keychainGet when key is not the sentinel", async () => {
+    mockReadFile.mockResolvedValue(
+      '[openrouter]\napiKey = "sk-plaintext"\nenabled = true\nmodel = ""',
+    );
+
+    const settings = await loadSettings();
+    expect(settings.openrouter.apiKey).toBe("sk-plaintext");
+    expect(mockKeychainGet).not.toHaveBeenCalled();
+  });
+
+  it("caches resolved key so keychainGet is not called again", async () => {
+    mockKeychainGet.mockResolvedValueOnce("sk-or-v1-cached");
+
+    mockReadFile.mockResolvedValue(
+      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
+    );
+
+    const first = await loadSettings();
+    expect(first.openrouter.apiKey).toBe("sk-or-v1-cached");
+
+    // Second call should use cache
+    const second = await loadSettings();
+    expect(second.openrouter.apiKey).toBe("sk-or-v1-cached");
+    expect(mockKeychainGet).toHaveBeenCalledTimes(1);
   });
 });

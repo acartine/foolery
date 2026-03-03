@@ -14,6 +14,7 @@ import {
   type OpenRouterSettings,
   type PoolsSettings,
 } from "@/lib/schemas";
+import { keychainSet, keychainGet } from "@/lib/keychain";
 import type {
   RegisteredAgent,
   ActionName,
@@ -25,6 +26,7 @@ import { resolvePoolAgent, getLastStepAgent, recordStepAgent } from "@/lib/agent
 const CONFIG_DIR = join(homedir(), ".config", "foolery");
 const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
 const CACHE_TTL_MS = 30_000;
+const KEYCHAIN_SENTINEL = "**keychain**";
 const DEFAULT_SETTINGS: FoolerySettings = foolerySettingsSchema.parse({});
 
 let cached: { value: FoolerySettings; loadedAt: number } | null = null;
@@ -200,31 +202,64 @@ export async function backfillMissingSettingsDefaults(): Promise<SettingsDefault
   };
 }
 
+/** Resolve keychain sentinel in loaded settings. */
+async function resolveKeychainSecrets(
+  settings: FoolerySettings,
+): Promise<FoolerySettings> {
+  if (settings.openrouter.apiKey !== KEYCHAIN_SENTINEL) {
+    return settings;
+  }
+  const key = await keychainGet();
+  return {
+    ...settings,
+    openrouter: { ...settings.openrouter, apiKey: key ?? "" },
+  };
+}
+
 /**
  * Load settings from ~/.config/foolery/settings.toml.
  * Returns validated settings with defaults filled in.
  * Uses a 30-second TTL cache to avoid redundant disk reads.
+ * Resolves keychain sentinel values for secrets.
  */
 export async function loadSettings(): Promise<FoolerySettings> {
   if (cached && Date.now() - cached.loadedAt < CACHE_TTL_MS) {
     return cached.value;
   }
   const result = await computeSettingsDefaultsStatus();
-  cached = { value: result.settings, loadedAt: Date.now() };
-  return result.settings;
+  const resolved = await resolveKeychainSecrets(result.settings);
+  cached = { value: resolved, loadedAt: Date.now() };
+  return resolved;
 }
 
 /**
  * Write the full settings object to disk as TOML.
  * Creates the config directory if it doesn't exist.
+ * When the OS keychain is available, the API key is stored there
+ * and a sentinel value is written to the TOML file instead.
  */
 export async function saveSettings(
   settings: FoolerySettings,
 ): Promise<void> {
   await mkdir(CONFIG_DIR, { recursive: true });
-  const toml = stringify(settings);
+
+  // Attempt to store API key in OS keychain
+  let settingsForDisk = settings;
+  const apiKey = settings.openrouter.apiKey;
+  if (apiKey && apiKey !== KEYCHAIN_SENTINEL) {
+    const stored = await keychainSet(apiKey);
+    if (stored) {
+      settingsForDisk = {
+        ...settings,
+        openrouter: { ...settings.openrouter, apiKey: KEYCHAIN_SENTINEL },
+      };
+    }
+  }
+
+  const toml = stringify(settingsForDisk);
   await writeFile(SETTINGS_FILE, toml, "utf-8");
   await chmod(SETTINGS_FILE, 0o600);
+  // Cache the full settings (with real key, not sentinel)
   cached = { value: settings, loadedAt: Date.now() };
 }
 
