@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb496-fb1f-7d12-9815-fdd55caa1f0a",
+  "occurred_at": "2026-03-03T16:45:19.519963Z",
+  "knot_id": "foolery-e6d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented expected-state guarding for kno next in take-loop action-heal, auto-advance, and invariant enforcement; added nextKnot --expected-state wiring and regression coverage in knots-retry tests. Coordinated with knots CLI update (acartine/knots d7a0eb4) adding --expected-state mismatch rejection.",
+    "datetime": "2026-03-03T16:45:19.519963Z",
+    "entry_id": "019cb496-fb1f-7d12-9815-fdccda001c51",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
