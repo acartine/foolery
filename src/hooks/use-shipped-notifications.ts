@@ -4,6 +4,23 @@ import { useEffect, useRef } from "react";
 import { useNotificationStore } from "@/stores/notification-store";
 import type { Beat } from "@/lib/types";
 
+export function selectTerminalShippedBeats(beats: Beat[]): Beat[] {
+  return beats.filter((b) => b.state === "shipped" || b.state === "closed");
+}
+
+export function diffNewlyShippedBeats(
+  beats: Beat[],
+  previousTerminalIds: ReadonlySet<string>,
+): {
+  terminalIds: Set<string>;
+  newlyShipped: Beat[];
+} {
+  const terminalBeats = selectTerminalShippedBeats(beats);
+  const terminalIds = new Set(terminalBeats.map((b) => b.id));
+  const newlyShipped = terminalBeats.filter((b) => !previousTerminalIds.has(b.id));
+  return { terminalIds, newlyShipped };
+}
+
 /**
  * Watches a list of beats and fires a notification whenever a beat
  * transitions to a shipped (or closed) terminal state.
@@ -14,22 +31,19 @@ export function useShippedNotifications(beats: Beat[]) {
   const initializedRef = useRef(false);
 
   useEffect(() => {
-    const shippedBeats = beats.filter(
-      (b) => b.state === "shipped" || b.state === "closed",
+    const { terminalIds, newlyShipped } = diffNewlyShippedBeats(
+      beats,
+      prevIdsRef.current,
     );
-    const currentIds = new Set(shippedBeats.map((b) => b.id));
 
     // First load — just record baseline, no notification.
     if (!initializedRef.current) {
       initializedRef.current = true;
-      prevIdsRef.current = currentIds;
+      prevIdsRef.current = terminalIds;
       return;
     }
 
     // Fire notification for newly-shipped beats
-    const newlyShipped = shippedBeats.filter(
-      (b) => !prevIdsRef.current.has(b.id),
-    );
     for (const beat of newlyShipped) {
       addNotification({
         message: `"${beat.title}" has been shipped`,
@@ -37,6 +51,6 @@ export function useShippedNotifications(beats: Beat[]) {
       });
     }
 
-    prevIdsRef.current = currentIds;
+    prevIdsRef.current = terminalIds;
   }, [beats, addNotification]);
 }
