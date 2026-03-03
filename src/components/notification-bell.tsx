@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { buildBeadFocusHref, stripBeadPrefix } from "@/lib/bead-navigation";
+import { markAllNotificationsReadAndClose } from "@/components/notification-bell-actions";
 import {
   useNotificationStore,
   selectUnreadCount,
@@ -18,16 +20,16 @@ import {
 export function NotificationBell() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [open, setOpen] = useState(false);
   const unreadCount = useNotificationStore(selectUnreadCount);
   const notifications = useNotificationStore((s) => s.notifications);
   const markAllRead = useNotificationStore((s) => s.markAllRead);
-  const clearAll = useNotificationStore((s) => s.clearAll);
   const focusBead = (beadId: string) => {
     router.push(buildBeadFocusHref(beadId, searchParams.toString()));
   };
 
   return (
-    <Popover onOpenChange={(open) => { if (open) markAllRead(); }}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           size="icon"
@@ -46,14 +48,17 @@ export function NotificationBell() {
       <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b px-3 py-2">
           <span className="text-sm font-medium">Notifications</span>
-          {notifications.length > 0 && (
+          {unreadCount > 0 && (
             <Button
               size="sm"
               variant="ghost"
               className="h-6 px-2 text-xs text-muted-foreground"
-              onClick={clearAll}
+              onClick={() => markAllNotificationsReadAndClose({
+                markAllRead,
+                closeLightbox: () => setOpen(false),
+              })}
             >
-              Clear all
+              Mark all as read
             </Button>
           )}
         </div>
