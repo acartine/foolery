@@ -20,6 +20,7 @@ import {
   type TerminalFailureGuidance,
 } from "@/lib/terminal-failure";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
+import { splitTerminalTabBeatId } from "@/lib/terminal-tab-id";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
 import { toast } from "sonner";
@@ -34,10 +35,6 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const AUTO_CLOSE_MS = 30_000;
-
-function shortId(id: string): string {
-  return id.replace(/^[^-]+-/, "");
-}
 
 function buildTakeRecoveryPrompt(beatId: string, previousSessionId: string | null): string {
   return [
@@ -479,6 +476,7 @@ export function TerminalPanel() {
               const isActive = terminal.sessionId === activeTerminal?.sessionId;
               const isRunning = terminal.status === "running";
               const isPending = pendingClose.has(terminal.sessionId);
+              const beatIdParts = splitTerminalTabBeatId(terminal.beatId);
               return (
                 <button
                   key={terminal.sessionId}
@@ -494,7 +492,14 @@ export function TerminalPanel() {
                   title={isPending ? "Click to keep open" : `${terminal.beatId} - ${terminal.beatTitle}`}
                 >
                   <span className="font-mono">
-                    {shortId(terminal.beatId)}
+                    {beatIdParts.prefix ? (
+                      <>
+                        <span className="text-white/45">{beatIdParts.prefix}-</span>
+                        {beatIdParts.localId}
+                      </>
+                    ) : (
+                      beatIdParts.localId
+                    )}
                   </span>
                   {terminal.beatTitle && (
                     <span className="truncate text-white/50">
