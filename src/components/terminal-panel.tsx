@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Copy, Square, Maximize2, Minimize2, X } from "lucide-react";
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
@@ -155,6 +155,7 @@ export function TerminalPanel() {
   const recentOutputBySession = useRef<Map<string, string>>(new Map());
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const hasRehydrated = useRef(false);
+  const [completionAnimationEnabled, setCompletionAnimationEnabled] = useState(false);
   const isMaximized = panelHeight > 70;
   const fallbackAgentInfo = useAgentInfo("take");
   const sessionAgentInfo = useMemo<ResolvedAgentInfo | null>(() => {
@@ -216,6 +217,7 @@ export function TerminalPanel() {
         completionAnimationTracker.current,
         terminal.sessionId,
         terminal.status,
+        { allowAnimation: completionAnimationEnabled },
       );
 
       if (shouldPulseCompletion && !alreadyPending && !hasTimer) {
@@ -259,7 +261,13 @@ export function TerminalPanel() {
         failureHintBySession.current.delete(sessionId);
       }
     }
-  }, [terminals, pendingClose, markPendingClose, removeTerminal]);
+  }, [
+    terminals,
+    pendingClose,
+    markPendingClose,
+    removeTerminal,
+    completionAnimationEnabled,
+  ]);
 
   // Cleanup all timers on unmount
   useEffect(() => {
@@ -284,11 +292,27 @@ export function TerminalPanel() {
   useEffect(() => {
     if (hasRehydrated.current) return;
     hasRehydrated.current = true;
+    let cancelled = false;
+    const enableCompletionAnimation = () => {
+      if (!cancelled) {
+        setCompletionAnimationEnabled(true);
+      }
+    };
     const { terminals } = useTerminalStore.getState();
-    if (terminals.length === 0) return;
-    listSessions().then((sessions) => {
-      useTerminalStore.getState().rehydrateFromBackend(sessions);
-    });
+    if (terminals.length === 0) {
+      enableCompletionAnimation();
+      return () => {
+        cancelled = true;
+      };
+    }
+    listSessions()
+      .then((sessions) => {
+        useTerminalStore.getState().rehydrateFromBackend(sessions);
+      })
+      .finally(enableCompletionAnimation);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleTabClick = useCallback((sessionId: string) => {

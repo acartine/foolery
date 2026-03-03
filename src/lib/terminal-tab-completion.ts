@@ -5,6 +5,10 @@ export interface CompletionAnimationTracker {
   previousStatusBySession: Map<string, TerminalSessionStatus>;
 }
 
+interface CompletionAnimationOptions {
+  allowAnimation?: boolean;
+}
+
 export function createCompletionAnimationTracker(): CompletionAnimationTracker {
   return {
     seenSessionIds: new Set<string>(),
@@ -16,11 +20,13 @@ export function shouldAnimateCompletion(
   tracker: CompletionAnimationTracker,
   sessionId: string,
   status: TerminalSessionStatus,
+  options?: CompletionAnimationOptions,
 ): boolean {
+  const allowAnimation = options?.allowAnimation ?? true;
   const hasSeenSession = tracker.seenSessionIds.has(sessionId);
   const previousStatus = tracker.previousStatusBySession.get(sessionId);
   const transitionedToCompleted =
-    status === "completed" && hasSeenSession && previousStatus !== "completed";
+    allowAnimation && status === "completed" && hasSeenSession && previousStatus !== "completed";
 
   tracker.seenSessionIds.add(sessionId);
   tracker.previousStatusBySession.set(sessionId, status);

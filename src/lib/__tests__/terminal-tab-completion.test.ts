@@ -30,6 +30,20 @@ describe("terminal-tab completion animation tracking", () => {
     expect(shouldAnimateCompletion(tracker, "sess-3", "completed")).toBe(true);
   });
 
+  it("suppresses animation when disabled but keeps status tracking", () => {
+    const tracker = createCompletionAnimationTracker();
+
+    expect(
+      shouldAnimateCompletion(tracker, "sess-3", "running", { allowAnimation: false }),
+    ).toBe(false);
+    expect(
+      shouldAnimateCompletion(tracker, "sess-3", "completed", { allowAnimation: false }),
+    ).toBe(false);
+    expect(shouldAnimateCompletion(tracker, "sess-3", "completed")).toBe(false);
+    expect(shouldAnimateCompletion(tracker, "sess-3", "running")).toBe(false);
+    expect(shouldAnimateCompletion(tracker, "sess-3", "completed")).toBe(true);
+  });
+
   it("prunes removed sessions from tracker state", () => {
     const tracker = createCompletionAnimationTracker();
 
