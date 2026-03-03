@@ -49,19 +49,50 @@ function labelColor(label: string): string {
   return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
 }
 
-function validNextStates(
+/** @internal Exported for testing only. */
+export function validNextStates(
   currentState: string | undefined,
   workflow: MemoryWorkflowDescriptor,
+  rawKnoState?: string,
 ): string[] {
   if (!currentState) return [];
   const normalized = currentState.trim().toLowerCase();
+  const normalizedRawKnoState = rawKnoState?.trim().toLowerCase();
+
+  // If the raw kno state differs from the display state, the knot is stuck in an
+  // active phase that was rolled back for display. Compute transitions from the
+  // actual kno state and include all workflow states as escape hatches.
+  const isRolledBack = Boolean(
+    normalizedRawKnoState && normalizedRawKnoState !== normalized,
+  );
+  const effectiveState = isRolledBack && normalizedRawKnoState
+    ? normalizedRawKnoState
+    : normalized;
+
   const next = new Set<string>();
   for (const t of workflow.transitions ?? []) {
-    if (t.from === normalized || t.from === "*") {
+    if (t.from === effectiveState || t.from === "*") {
       next.add(t.to);
     }
   }
+
+  // When stuck (rolled back), also add all non-terminal workflow states as force targets.
+  if (isRolledBack) {
+    for (const state of workflow.states ?? []) {
+      if (!workflow.terminalStates?.includes(state)) {
+        next.add(state);
+      }
+    }
+  }
+
+  // Remove current display state and raw state from options.
   next.delete(normalized);
+  if (normalizedRawKnoState) next.delete(normalizedRawKnoState);
+
+  // Only filter out ready_for_* states when NOT rolled back (normal flow).
+  if (isRolledBack) {
+    return Array.from(next);
+  }
   return Array.from(next).filter((s) => !s.startsWith("ready"));
 }
 
@@ -490,7 +521,10 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
           <TransitionLockBadge beat={row.original} />
           {onUpdateBeat && !isLocked && !isInheritedRolling ? (() => {
             const workflow = builtinProfileDescriptor(row.original.profileId);
-            const nextStates = validNextStates(state, workflow);
+            const rawKnoState = typeof row.original.metadata?.knotsState === "string"
+              ? row.original.metadata.knotsState
+              : undefined;
+            const nextStates = validNextStates(state, workflow, rawKnoState);
             return (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
