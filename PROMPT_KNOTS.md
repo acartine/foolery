@@ -1,32 +1,22 @@
 <!-- FOOLERY_GUIDANCE_PROMPT_START -->
 ## Foolery Agent Handoff Contract
-FOOLERY_PROMPT_PROFILE: autopilot
 
-This repository uses `kno` (Knots) as the source of truth for work tracking and `foolery` for tracking visibility.
+This repository uses Knots (`kno`) as the source of truth for work tracking.
 
 Required workflow:
-1. Pick a knot and inspect scope with `kno show <id>`.
-2. Claim the knot before implementation:
-   `kno claim <id> --json`
-3. Follow the returned `prompt` field verbatim and run the completion command from that claim output.
-4. **Run quality gates** (if code changed) - Tests, linters, builds
-5. Commit and capture short hash:
-   `SHORT_SHA=$(git rev-parse --short HEAD)`
-6. Add handoff metadata in this order:
-   `kno update <id> --add-tag commit:$SHORT_SHA`
+1. Before any code/doc/commit, claim work with `kno claim <id>`.
+2. Implement and validate changes in a dedicated git worktree.
+3. **Run quality gates** (if code changed) - Tests, linters, builds
+4. If code changed, commit and capture short hash as a tag, also adding handoff_capsule:
+   `SHORT_SHA=$(git rev-parse --short HEAD); kno update <id> --add-tag "<SHORT_SHA>" --add-handoff-capsule "<summary>"`
+5. If code did not change, simply add a handoff_capsule:
    `kno update <id> --add-handoff-capsule "<summary>"`
-7. Do **not** close the knot unless explicitly instructed.
-8. Push work to remote before ending session:
-   `git pull --rebase && kno sync && git push`
-9. **Clean up** - Clear stashes, worktrees, prune remote branches
-10. **Verify** - All changes committed AND pushed
-11. **Hand off** - Provide context for next session as handoff capsule on the knot.
-
-Rules:
-- Never skip `kno claim <id>` before implementation.
-- Never run manual multi-state transitions for a claimed knot.
-- Stop working on a knot immediately after the claim-provided completion command succeeds.
-- Keep knots open for verification handoff.
+6. Do **not** move knots to terminal states unless explicitly instructed.
+7. If code changed, push work to remote before ending session:
+   `git pull --rebase && git push`
+8. **Clean up** - Clear stashes, worktrees, prune remote branches
+9. **Verify** - All changes committed AND pushed
+10. **Hand off** - Provide context for next session in the knot.  If you already did this in step 4, you can skip this step.
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds
