@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useTerminalStore } from "@/stores/terminal-store";
 
 // Provide a minimal localStorage polyfill for the Node test environment
-if (typeof globalThis.localStorage === "undefined") {
+if (
+  typeof globalThis.localStorage === "undefined" ||
+  typeof globalThis.localStorage.getItem !== "function" ||
+  typeof globalThis.localStorage.setItem !== "function" ||
+  typeof globalThis.localStorage.removeItem !== "function"
+) {
   const store = new Map<string, string>();
   globalThis.localStorage = {
     getItem: (key: string) => store.get(key) ?? null,

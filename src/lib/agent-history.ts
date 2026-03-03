@@ -42,6 +42,7 @@ interface SessionParseResult {
   exitCode?: number | null;
   entries: AgentHistoryEntry[];
   titleHints: Map<string, string>;
+  workflowStates: string[];
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -129,6 +130,7 @@ function parseSession(
   let exitCode: number | null | undefined;
   const entries: AgentHistoryEntry[] = [];
   const titleHints = new Map<string, string>();
+  const workflowStates = new Set<string>();
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
     const line = lines[lineIndex];
@@ -243,6 +245,15 @@ function parseSession(
       continue;
     }
 
+    if (kind === "beat_state") {
+      if (!selectedSession) continue;
+      const state = typeof parsed.state === "string" ? parsed.state.trim() : "";
+      if (state) {
+        workflowStates.add(state);
+      }
+      continue;
+    }
+
     if (kind === "session_end") {
       endedAt = ts || endedAt;
       status = typeof parsed.status === "string" ? parsed.status : status;
@@ -270,6 +281,7 @@ function parseSession(
     exitCode,
     entries,
     titleHints,
+    workflowStates: Array.from(workflowStates.values()).sort(naturalCompare),
   };
 }
 
@@ -324,7 +336,7 @@ export async function readAgentHistory(
     const parsed = parseSession(content, query);
     if (!parsed) continue;
 
-    const { start, updatedAt, endedAt, status, exitCode, entries, titleHints } = parsed;
+    const { start, updatedAt, endedAt, status, exitCode, entries, titleHints, workflowStates } = parsed;
 
     for (const beadId of start.beadIds) {
       const key = beadKey(start.repoPath, beadId);
@@ -374,6 +386,7 @@ export async function readAgentHistory(
         entries: sortEntries(entries),
         agentName: start.agentName,
         agentModel: start.agentModel,
+        workflowStates,
       });
     }
   }

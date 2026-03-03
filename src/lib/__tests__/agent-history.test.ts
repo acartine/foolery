@@ -170,6 +170,63 @@ describe("readAgentHistory", () => {
     expect(session?.entries[3]?.promptSource).toBe("ship_completion_follow_up");
   });
 
+  it("captures workflow states from beat_state entries for selected sessions", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/term-workflow.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-02-20T13:20:00.000Z",
+        sessionId: "term-workflow",
+        interactionType: "take",
+        repoPath: "/tmp/repo-a",
+        beadIds: ["foo-1"],
+      },
+      {
+        kind: "beat_state",
+        ts: "2026-02-20T13:20:00.100Z",
+        sessionId: "term-workflow",
+        beatId: "foo-1",
+        state: "planning",
+        phase: "before_prompt",
+        iteration: 1,
+      },
+      {
+        kind: "prompt",
+        ts: "2026-02-20T13:20:01.000Z",
+        sessionId: "term-workflow",
+        prompt: "Prompt",
+        source: "initial",
+      },
+      {
+        kind: "beat_state",
+        ts: "2026-02-20T13:20:02.000Z",
+        sessionId: "term-workflow",
+        beatId: "foo-1",
+        state: "ready_for_plan_review",
+        phase: "after_prompt",
+        iteration: 1,
+      },
+      {
+        kind: "session_end",
+        ts: "2026-02-20T13:20:03.000Z",
+        sessionId: "term-workflow",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    const history = await readAgentHistory({
+      logRoot: tempDir,
+      beadId: "foo-1",
+      beadRepoPath: "/tmp/repo-a",
+    });
+
+    expect(history.sessions).toHaveLength(1);
+    expect(history.sessions[0]?.workflowStates).toEqual([
+      "planning",
+      "ready_for_plan_review",
+    ]);
+  });
+
   it("includes verification sessions and prompt metadata for selected beats", async () => {
     await writeLog(tempDir, "repo-a/2026-02-20/verify-a.jsonl", [
       {

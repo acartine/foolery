@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Filter } from "lucide-react";
+import { Check, ChevronDown, Filter } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type {
   AgentHistoryEntry,
@@ -12,6 +12,64 @@ import { fetchMessageTypeIndex } from "@/lib/agent-message-type-api";
 /* ------------------------------------------------------------------ */
 /*  Types                                                             */
 /* ------------------------------------------------------------------ */
+
+type WorkflowStepFilterId =
+  | "planning"
+  | "plan_review"
+  | "implementation"
+  | "implementation_review"
+  | "shipment"
+  | "shipment_review";
+
+interface WorkflowStepFilterOption {
+  id: WorkflowStepFilterId;
+  label: string;
+  states: readonly [string, string];
+}
+
+const WORKFLOW_STEP_FILTERS: readonly WorkflowStepFilterOption[] = [
+  {
+    id: "planning",
+    label: "Planning",
+    states: ["ready_for_planning", "planning"],
+  },
+  {
+    id: "plan_review",
+    label: "Plan Review",
+    states: ["ready_for_plan_review", "plan_review"],
+  },
+  {
+    id: "implementation",
+    label: "Implementation",
+    states: ["ready_for_implementation", "implementation"],
+  },
+  {
+    id: "implementation_review",
+    label: "Implementation Review",
+    states: ["ready_for_implementation_review", "implementation_review"],
+  },
+  {
+    id: "shipment",
+    label: "Shipment",
+    states: ["ready_for_shipment", "shipment"],
+  },
+  {
+    id: "shipment_review",
+    label: "Shipment Review",
+    states: ["ready_for_shipment_review", "shipment_review"],
+  },
+];
+
+const WORKFLOW_FILTER_BY_ID = new Map<
+  WorkflowStepFilterId,
+  WorkflowStepFilterOption
+>(WORKFLOW_STEP_FILTERS.map((item) => [item.id, item]));
+
+const WORKFLOW_STATES = Array.from(
+  new Set(
+    WORKFLOW_STEP_FILTERS.flatMap((item) => [item.states[0], item.states[1]]),
+  ),
+);
 
 export interface InteractionItem {
   id: string;
@@ -26,14 +84,17 @@ export interface InteractionPickerState {
   interactions: InteractionItem[];
   selectedInteraction: string | null;
   messageTypeFilters: Set<string>;
+  workflowStepFilters: Set<WorkflowStepFilterId>;
   availableMessageTypes: string[];
+  availableWorkflowStepFilters: readonly WorkflowStepFilterOption[];
   isIndexLoading: boolean;
   selectInteraction: (id: string) => void;
   toggleTypeFilter: (type: string) => void;
-  clearTypeFilters: () => void;
+  toggleWorkflowStepFilter: (stepId: WorkflowStepFilterId) => void;
+  clearFilters: () => void;
   entryRefCallback: (id: string, node: HTMLDivElement | null) => void;
   highlightedEntryId: string | null;
-  filterEntry: (entry: AgentHistoryEntry) => boolean;
+  filterEntry: (entry: AgentHistoryEntry, session: AgentHistorySession) => boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -60,6 +121,17 @@ function promptSourceLabel(source: string): string {
   return source.replace(/_/g, " ");
 }
 
+function collectWorkflowStatesFromText(
+  text: string,
+  stateSet: Set<string>,
+): void {
+  for (const state of WORKFLOW_STATES) {
+    if (text.includes(state)) {
+      stateSet.add(state);
+    }
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Hook: useInteractionPicker                                        */
 /* ------------------------------------------------------------------ */
@@ -79,6 +151,9 @@ export function useInteractionPicker(
   const [messageTypeFilters, setMessageTypeFilters] = useState<Set<string>>(
     new Set(),
   );
+  const [workflowStepFilters, setWorkflowStepFilters] = useState<
+    Set<WorkflowStepFilterId>
+  >(new Set());
 
   // Fetch message type index
   const typeIndexQuery = useQuery({
@@ -92,6 +167,11 @@ export function useInteractionPicker(
     if (!typeIndexQuery.data?.ok || !typeIndexQuery.data.data) return [];
     return typeIndexQuery.data.data.entries.map((e) => e.type);
   }, [typeIndexQuery.data]);
+
+  const availableWorkflowStepFilters = useMemo(
+    () => WORKFLOW_STEP_FILTERS,
+    [],
+  );
 
   // Build interaction list from sessions
   const interactions = useMemo<InteractionItem[]>(() => {
@@ -115,6 +195,26 @@ export function useInteractionPicker(
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
     return items;
+  }, [sessions]);
+
+  const sessionWorkflowStates = useMemo(() => {
+    const bySession = new Map<string, Set<string>>();
+
+    for (const session of sessions) {
+      const states = new Set<string>(session.workflowStates ?? []);
+      if (states.size === 0) {
+        for (const entry of session.entries) {
+          if (entry.kind === "prompt" && entry.prompt) {
+            collectWorkflowStatesFromText(entry.prompt, states);
+          } else if (entry.kind === "response" && entry.raw) {
+            collectWorkflowStatesFromText(entry.raw, states);
+          }
+        }
+      }
+      bySession.set(session.sessionId, states);
+    }
+
+    return bySession;
   }, [sessions]);
 
   const entryRefCallback = useCallback(
@@ -145,13 +245,48 @@ export function useInteractionPicker(
     });
   }, []);
 
-  const clearTypeFilters = useCallback(() => {
-    setMessageTypeFilters(new Set());
+  const toggleWorkflowStepFilter = useCallback((stepId: WorkflowStepFilterId) => {
+    setWorkflowStepFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(stepId)) next.delete(stepId);
+      else next.add(stepId);
+      return next;
+    });
   }, []);
+
+  const clearFilters = useCallback(() => {
+    setMessageTypeFilters(new Set());
+    setWorkflowStepFilters(new Set());
+  }, []);
+
+  const sessionMatchesWorkflowFilter = useCallback(
+    (session: AgentHistorySession): boolean => {
+      if (workflowStepFilters.size === 0) return true;
+      const sessionStates = sessionWorkflowStates.get(session.sessionId);
+      if (!sessionStates || sessionStates.size === 0) return false;
+
+      for (const stepId of workflowStepFilters) {
+        const stepDef = WORKFLOW_FILTER_BY_ID.get(stepId);
+        if (!stepDef) continue;
+        if (
+          sessionStates.has(stepDef.states[0]) ||
+          sessionStates.has(stepDef.states[1])
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [workflowStepFilters, sessionWorkflowStates],
+  );
 
   // Filter function for entries
   const filterEntry = useCallback(
-    (entry: AgentHistoryEntry): boolean => {
+    (entry: AgentHistoryEntry, session: AgentHistorySession): boolean => {
+      if (!sessionMatchesWorkflowFilter(session)) {
+        return false;
+      }
+
       if (messageTypeFilters.size === 0) return true;
       if (entry.kind !== "response") return true; // always show non-response
       if (!entry.raw) return false;
@@ -165,7 +300,7 @@ export function useInteractionPicker(
         return false;
       }
     },
-    [messageTypeFilters],
+    [messageTypeFilters, sessionMatchesWorkflowFilter],
   );
 
   // Reset on session change
@@ -179,11 +314,14 @@ export function useInteractionPicker(
     interactions,
     selectedInteraction,
     messageTypeFilters,
+    workflowStepFilters,
     availableMessageTypes,
+    availableWorkflowStepFilters,
     isIndexLoading: typeIndexQuery.isLoading,
     selectInteraction,
     toggleTypeFilter,
-    clearTypeFilters,
+    toggleWorkflowStepFilter,
+    clearFilters,
     entryRefCallback,
     highlightedEntryId,
     filterEntry,
@@ -199,23 +337,32 @@ export function InteractionPicker({
 }: {
   picker: InteractionPickerState;
 }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [interactionDropdownOpen, setInteractionDropdownOpen] = useState(false);
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const interactionDropdownRef = useRef<HTMLDivElement>(null);
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
-    if (!dropdownOpen) return;
+    if (!interactionDropdownOpen && !filterDropdownOpen) return;
     const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        interactionDropdownRef.current &&
+        !interactionDropdownRef.current.contains(target)
       ) {
-        setDropdownOpen(false);
+        setInteractionDropdownOpen(false);
+      }
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(target)
+      ) {
+        setFilterDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [dropdownOpen]);
+  }, [interactionDropdownOpen, filterDropdownOpen]);
 
   const selectedLabel = picker.selectedInteraction
     ? (picker.interactions.find((i) => i.id === picker.selectedInteraction)
@@ -224,21 +371,23 @@ export function InteractionPicker({
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1 text-[10px]">
-      {/* Interaction dropdown */}
       <InteractionDropdown
-        dropdownRef={dropdownRef}
-        dropdownOpen={dropdownOpen}
-        setDropdownOpen={setDropdownOpen}
+        dropdownRef={interactionDropdownRef}
+        dropdownOpen={interactionDropdownOpen}
+        setDropdownOpen={setInteractionDropdownOpen}
         selectedLabel={selectedLabel}
         picker={picker}
       />
 
       <span className="text-slate-600">|</span>
 
-      {/* Type filter chips */}
-      <TypeFilterChips picker={picker} />
+      <FilterDropdown
+        dropdownRef={filterDropdownRef}
+        dropdownOpen={filterDropdownOpen}
+        setDropdownOpen={setFilterDropdownOpen}
+        picker={picker}
+      />
 
-      {/* Interaction count */}
       <span className="ml-auto text-[10px] text-slate-400">
         {picker.interactions.length} interaction
         {picker.interactions.length === 1 ? "" : "s"}
@@ -309,45 +458,139 @@ function InteractionDropdown({
   );
 }
 
-function TypeFilterChips({
+function FilterDropdown({
+  dropdownRef,
+  dropdownOpen,
+  setDropdownOpen,
   picker,
 }: {
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
+  dropdownOpen: boolean;
+  setDropdownOpen: (open: boolean) => void;
   picker: InteractionPickerState;
 }) {
+  const selectedCount =
+    picker.messageTypeFilters.size + picker.workflowStepFilters.size;
+
   return (
-    <div className="flex items-center gap-1">
-      <Filter className="size-3 text-slate-400" />
-      {picker.isIndexLoading ? (
-        <span className="text-[9px] text-slate-500">Loading types…</span>
-      ) : picker.availableMessageTypes.length === 0 ? (
-        <span className="text-[9px] text-slate-500">No type index</span>
-      ) : (
-        <>
-          {picker.availableMessageTypes.map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => picker.toggleTypeFilter(type)}
-              className={`rounded px-1.5 py-0.5 text-[9px] ${
-                picker.messageTypeFilters.has(type)
-                  ? "bg-cyan-800 text-cyan-100"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-          {picker.messageTypeFilters.size > 0 && (
-            <button
-              type="button"
-              onClick={picker.clearTypeFilters}
-              className="ml-1 text-[9px] text-slate-500 hover:text-slate-300"
-            >
-              clear
-            </button>
-          )}
-        </>
+    <div ref={dropdownRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200 hover:bg-slate-700"
+      >
+        <Filter className="size-3" />
+        <span>Filters</span>
+        {selectedCount > 0 ? (
+          <span className="rounded bg-cyan-900/70 px-1 text-[9px] text-cyan-100">
+            {selectedCount}
+          </span>
+        ) : null}
+        <ChevronDown className="size-3" />
+      </button>
+
+      {dropdownOpen && (
+        <div className="absolute left-0 top-full z-50 mt-1 w-80 rounded border border-slate-600 bg-slate-800 shadow-lg">
+          <div className="max-h-72 space-y-2 overflow-y-auto p-2">
+            <section>
+              <p className="px-1 text-[9px] uppercase tracking-wide text-slate-500">
+                Agent Message Types
+              </p>
+              <div className="mt-1 space-y-0.5">
+                {picker.isIndexLoading ? (
+                  <p className="px-1 py-1 text-[9px] text-slate-500">
+                    Loading types…
+                  </p>
+                ) : picker.availableMessageTypes.length === 0 ? (
+                  <p className="px-1 py-1 text-[9px] text-slate-500">
+                    No type index
+                  </p>
+                ) : (
+                  picker.availableMessageTypes.map((type) => (
+                    <FilterOptionRow
+                      key={type}
+                      selected={picker.messageTypeFilters.has(type)}
+                      label={type}
+                      onToggle={() => picker.toggleTypeFilter(type)}
+                    />
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section>
+              <p className="px-1 text-[9px] uppercase tracking-wide text-slate-500">
+                Workflow Steps (queue/action)
+              </p>
+              <div className="mt-1 space-y-0.5">
+                {picker.availableWorkflowStepFilters.map((step) => (
+                  <FilterOptionRow
+                    key={step.id}
+                    selected={picker.workflowStepFilters.has(step.id)}
+                    label={step.label}
+                    description={`${step.states[0]} / ${step.states[1]}`}
+                    onToggle={() => picker.toggleWorkflowStepFilter(step.id)}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
+          <div className="flex items-center justify-between border-t border-slate-700 px-2 py-1">
+            <span className="text-[9px] text-slate-500">
+              {selectedCount === 0
+                ? "No filters selected"
+                : `${selectedCount} active filter${selectedCount === 1 ? "" : "s"}`}
+            </span>
+            {selectedCount > 0 ? (
+              <button
+                type="button"
+                onClick={picker.clearFilters}
+                className="text-[9px] text-slate-400 hover:text-slate-200"
+              >
+                Clear all
+              </button>
+            ) : null}
+          </div>
+        </div>
       )}
     </div>
+  );
+}
+
+function FilterOptionRow({
+  selected,
+  label,
+  description,
+  onToggle,
+}: {
+  selected: boolean;
+  label: string;
+  description?: string;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full items-start gap-2 rounded px-1 py-1 text-left hover:bg-slate-700/60"
+    >
+      <span
+        className={`mt-[1px] inline-flex size-3 shrink-0 items-center justify-center rounded border ${
+          selected
+            ? "border-cyan-400 bg-cyan-700 text-cyan-100"
+            : "border-slate-500 text-transparent"
+        }`}
+      >
+        <Check className="size-2.5" />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-[10px] text-slate-200">{label}</span>
+        {description ? (
+          <span className="block truncate text-[9px] text-slate-500">
+            {description}
+          </span>
+        ) : null}
+      </span>
+    </button>
   );
 }

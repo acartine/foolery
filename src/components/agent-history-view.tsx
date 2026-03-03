@@ -341,7 +341,7 @@ function SessionCard({
   session: AgentHistorySession;
   entryRefCallback?: (id: string, node: HTMLDivElement | null) => void;
   highlightedEntryId?: string | null;
-  filterEntry?: (entry: AgentHistoryEntry) => boolean;
+  filterEntry?: (entry: AgentHistoryEntry, session: AgentHistorySession) => boolean;
 }) {
   const agentLabel = useMemo(() => buildAgentLabel(session), [session]);
 
@@ -362,8 +362,8 @@ function SessionCard({
 
   const filteredEntries = useMemo(() => {
     if (!filterEntry) return enrichedEntries;
-    return enrichedEntries.filter(({ entry }) => filterEntry(entry));
-  }, [enrichedEntries, filterEntry]);
+    return enrichedEntries.filter(({ entry }) => filterEntry(entry, session));
+  }, [enrichedEntries, filterEntry, session]);
 
   return (
     <section className="rounded border border-slate-700 bg-[#0b1020]">

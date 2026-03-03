@@ -24,6 +24,7 @@ export interface AgentHistorySession {
   entries: AgentHistoryEntry[];
   agentName?: string;
   agentModel?: string;
+  workflowStates?: string[];
 }
 
 export interface AgentHistoryBeatSummary {

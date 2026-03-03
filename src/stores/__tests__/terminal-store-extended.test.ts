@@ -4,7 +4,12 @@ import type { ActiveTerminal } from "@/stores/terminal-store";
 import type { TerminalSession } from "@/lib/types";
 
 // Provide a minimal localStorage polyfill for the Node test environment
-if (typeof globalThis.localStorage === "undefined") {
+if (
+  typeof globalThis.localStorage === "undefined" ||
+  typeof globalThis.localStorage.getItem !== "function" ||
+  typeof globalThis.localStorage.setItem !== "function" ||
+  typeof globalThis.localStorage.removeItem !== "function"
+) {
   const store = new Map<string, string>();
   globalThis.localStorage = {
     getItem: (key: string) => store.get(key) ?? null,
