@@ -2,6 +2,15 @@ import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const nextKnotMock = vi.fn();
+type MockChild = EventEmitter & {
+  stdout: EventEmitter;
+  stderr: EventEmitter;
+  stdin: { writable: boolean; write: ReturnType<typeof vi.fn>; end: ReturnType<typeof vi.fn> };
+  kill: ReturnType<typeof vi.fn>;
+  pid: number;
+  killed?: boolean;
+};
+const spawnedChildren: MockChild[] = [];
 
 const backend = {
   get: vi.fn(),
@@ -22,14 +31,7 @@ const interactionLog = {
 
 vi.mock("node:child_process", () => ({
   spawn: vi.fn(() => {
-    const child = new EventEmitter() as EventEmitter & {
-      stdout: EventEmitter;
-      stderr: EventEmitter;
-      stdin: { writable: boolean; write: ReturnType<typeof vi.fn>; end: ReturnType<typeof vi.fn> };
-      kill: ReturnType<typeof vi.fn>;
-      pid: number;
-      killed?: boolean;
-    };
+    const child = new EventEmitter() as MockChild;
     child.stdout = new EventEmitter();
     child.stderr = new EventEmitter();
     child.stdin = {
@@ -42,6 +44,7 @@ vi.mock("node:child_process", () => ({
       return true;
     });
     child.pid = 4321;
+    spawnedChildren.push(child);
     return child;
   }),
 }));
@@ -96,6 +99,7 @@ import { createSession } from "@/lib/terminal-manager";
 describe("terminal-manager nextKnot expected-state guard", () => {
   beforeEach(() => {
     nextKnotMock.mockReset();
+    spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();
     backend.listWorkflows.mockReset();
@@ -153,5 +157,52 @@ describe("terminal-manager nextKnot expected-state guard", () => {
       expectedState: "implementation",
     });
     expect(backend.get).toHaveBeenCalledTimes(2);
+  });
+
+  it("logs initial prompt for one-shot agents", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-1000",
+        title: "Record prompt history",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+
+    await createSession("foolery-1000", "/tmp/repo", "show this prompt in history");
+
+    expect(spawnedChildren).toHaveLength(1);
+    expect(interactionLog.logPrompt).toHaveBeenCalledWith("show this prompt in history", { source: "initial" });
+  });
+
+  it("logs take-loop prompts for one-shot agents", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-2000",
+        title: "Take-loop prompt visibility",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "initial app prompt" } })
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "loop app prompt" } });
+
+    await createSession("foolery-2000", "/tmp/repo");
+
+    expect(spawnedChildren).toHaveLength(1);
+    spawnedChildren[0].emit("close", 0, null);
+
+    await vi.waitFor(() => {
+      expect(spawnedChildren.length).toBe(2);
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("initial app prompt"), { source: "initial" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("loop app prompt"), { source: "take_2" });
+    });
   });
 });
