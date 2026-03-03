@@ -273,4 +273,102 @@ describe("readAgentHistory (additional coverage)", () => {
     });
     expect(history.sessions[0]?.exitCode).toBeNull();
   });
+
+  it("includes repo-local .foolery-logs in production mode when repoPath is provided", async () => {
+    const originalHome = process.env.HOME;
+    const originalNodeEnv = process.env.NODE_ENV;
+    const fakeHome = join(tempDir, "fake-home");
+    const repoPath = join(tempDir, "repo-a");
+
+    await mkdir(fakeHome, { recursive: true });
+    await mkdir(repoPath, { recursive: true });
+
+    await writeLog(join(repoPath, ".foolery-logs"), "repo-a/2026-03-03/repo-local.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-03-03T10:00:00.000Z",
+        sessionId: "repo-local-1",
+        interactionType: "take",
+        repoPath,
+        beadIds: ["repo-local-bead"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-03-03T10:01:00.000Z",
+        sessionId: "repo-local-1",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    await writeLog(join(fakeHome, ".config", "foolery", "logs"), "repo-a/2026-03-03/global.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-03-03T09:00:00.000Z",
+        sessionId: "global-1",
+        interactionType: "take",
+        repoPath: "/different/repo",
+        beadIds: ["global-bead"],
+      },
+    ]);
+
+    (process.env as Record<string, string | undefined>).HOME = fakeHome;
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+
+    try {
+      const history = await readAgentHistory({ repoPath });
+      expect(history.beats.map((b) => b.beadId)).toEqual(["repo-local-bead"]);
+    } finally {
+      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
+      else (process.env as Record<string, string | undefined>).HOME = originalHome;
+      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
+      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it("deduplicates sessions discovered in both default and repo-local roots", async () => {
+    const originalHome = process.env.HOME;
+    const originalNodeEnv = process.env.NODE_ENV;
+    const fakeHome = join(tempDir, "fake-home");
+    const repoPath = join(tempDir, "repo-b");
+
+    await mkdir(fakeHome, { recursive: true });
+    await mkdir(repoPath, { recursive: true });
+
+    const sharedLines = [
+      {
+        kind: "session_start",
+        ts: "2026-03-03T11:00:00.000Z",
+        sessionId: "shared-session",
+        interactionType: "scene",
+        repoPath,
+        beadIds: ["shared-bead"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-03-03T11:01:00.000Z",
+        sessionId: "shared-session",
+        status: "completed",
+        exitCode: 0,
+      },
+    ];
+
+    await writeLog(join(repoPath, ".foolery-logs"), "repo-b/2026-03-03/shared.jsonl", sharedLines);
+    await writeLog(join(fakeHome, ".config", "foolery", "logs"), "repo-b/2026-03-03/shared.jsonl", sharedLines);
+
+    (process.env as Record<string, string | undefined>).HOME = fakeHome;
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+
+    try {
+      const history = await readAgentHistory({ repoPath });
+      const beat = history.beats.find((b) => b.beadId === "shared-bead");
+      expect(beat?.sessionCount).toBe(1);
+      expect(beat?.sceneCount).toBe(1);
+    } finally {
+      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
+      else (process.env as Record<string, string | undefined>).HOME = originalHome;
+      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
+      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+    }
+  });
 });

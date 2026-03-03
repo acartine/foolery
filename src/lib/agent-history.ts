@@ -15,6 +15,7 @@ import type {
 
 const gunzip = promisify(gunzipCallback);
 const MAX_LINE_CHARS = 120_000;
+const DEV_LOG_DIRNAME = ".foolery-logs";
 
 interface AgentHistoryQuery {
   repoPath?: string;
@@ -68,6 +69,28 @@ function clipText(text: string): string {
 
 function beadKey(repoPath: string, beadId: string): string {
   return `${repoPath}::${beadId}`;
+}
+
+function devLogRootForRepoPath(repoPath: string): string | null {
+  const trimmed = repoPath.trim();
+  if (!trimmed) return null;
+  return join(trimmed, DEV_LOG_DIRNAME);
+}
+
+function resolveHistoryLogRoots(query: AgentHistoryQuery): string[] {
+  if (query.logRoot) {
+    return [query.logRoot];
+  }
+
+  const roots = new Set<string>([resolveInteractionLogRoot()]);
+  for (const repoPath of [query.repoPath, query.beadRepoPath]) {
+    if (!repoPath) continue;
+    const devRoot = devLogRootForRepoPath(repoPath);
+    if (devRoot) {
+      roots.add(devRoot);
+    }
+  }
+  return Array.from(roots.values());
 }
 
 async function collectLogFiles(dir: string, out: string[]): Promise<void> {
@@ -314,12 +337,20 @@ function sortSessions(sessions: AgentHistorySession[]): AgentHistorySession[] {
 export async function readAgentHistory(
   query: AgentHistoryQuery = {},
 ): Promise<AgentHistoryPayload> {
-  const root = query.logRoot ?? resolveInteractionLogRoot();
-  const logFiles: string[] = [];
-  await collectLogFiles(root, logFiles);
+  const logFileSet = new Set<string>();
+  const roots = resolveHistoryLogRoots(query);
+  for (const root of roots) {
+    const filesForRoot: string[] = [];
+    await collectLogFiles(root, filesForRoot);
+    for (const filePath of filesForRoot) {
+      logFileSet.add(filePath);
+    }
+  }
+  const logFiles = Array.from(logFileSet.values()).sort(naturalCompare);
 
   const beatMap = new Map<string, AgentHistoryBeatSummary>();
   const selectedSessions: AgentHistorySession[] = [];
+  const seenSessions = new Set<string>();
   const sinceHours =
     typeof query.sinceHours === "number" && Number.isFinite(query.sinceHours)
       ? query.sinceHours
@@ -337,6 +368,11 @@ export async function readAgentHistory(
     if (!parsed) continue;
 
     const { start, updatedAt, endedAt, status, exitCode, entries, titleHints, workflowStates } = parsed;
+    const sessionKey = `${start.repoPath}::${start.sessionId}::${start.ts}`;
+    if (seenSessions.has(sessionKey)) {
+      continue;
+    }
+    seenSessions.add(sessionKey);
 
     for (const beadId of start.beadIds) {
       const key = beadKey(start.repoPath, beadId);
