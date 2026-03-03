@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { savePools } from "@/lib/settings-api";
+import { fetchOpenRouterModels as fetchOpenRouterModelsApi, savePools } from "@/lib/settings-api";
+import { resolveOpenRouterPricing } from "@/lib/openrouter";
+import type { OpenRouterModel } from "@/lib/openrouter";
 import type { RegisteredAgent } from "@/lib/types";
 import type { PoolEntry, PoolsSettings } from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
@@ -54,6 +56,15 @@ const STEP_LABELS: Record<string, { label: string; description: string }> = {
 
 const ALL_STEPS = Object.values(WorkflowStep);
 
+function formatPoolAgentLabel(
+  agentId: string,
+  agent: RegisteredAgent | undefined,
+): string {
+  const base = agent?.label?.trim() || agentId;
+  const model = agent?.model?.trim();
+  return model ? `${base} (${model})` : base;
+}
+
 export function SettingsPoolsSection({
   pools,
   agents,
@@ -62,6 +73,30 @@ export function SettingsPoolsSection({
 }: PoolsSectionProps) {
   const agentIds = Object.keys(agents);
   const hasAgents = agentIds.length > 0;
+  const hasModeledAgents = agentIds.some(
+    (id) => Boolean(agents[id]?.model?.trim()),
+  );
+  const [openRouterModels, setOpenRouterModels] = useState<OpenRouterModel[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!hasModeledAgents || openRouterModels !== null) return;
+    fetchOpenRouterModelsApi()
+      .then((res) => {
+        if (cancelled) return;
+        if (res.ok && res.data) {
+          setOpenRouterModels(res.data);
+          return;
+        }
+        setOpenRouterModels([]);
+      })
+      .catch(() => {
+        if (!cancelled) setOpenRouterModels([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasModeledAgents, openRouterModels]);
 
   async function handlePoolChange(
     step: string,
@@ -107,11 +142,11 @@ export function SettingsPoolsSection({
         {ALL_STEPS.map((step) => (
           <StepPoolEditor
             key={step}
-            step={step}
             meta={STEP_LABELS[step]!}
             entries={pools[step] ?? []}
             agents={agents}
             agentIds={agentIds}
+            openRouterModels={openRouterModels}
             onChange={(entries) => handlePoolChange(step, entries)}
           />
         ))}
@@ -123,18 +158,18 @@ export function SettingsPoolsSection({
 /* ── Per-step pool editor ──────────────────────────────────── */
 
 function StepPoolEditor({
-  step,
   meta,
   entries,
   agents,
   agentIds,
+  openRouterModels,
   onChange,
 }: {
-  step: string;
   meta: { label: string; description: string };
   entries: PoolEntry[];
   agents: Record<string, RegisteredAgent>;
   agentIds: string[];
+  openRouterModels: OpenRouterModel[] | null;
   onChange: (entries: PoolEntry[]) => void;
 }) {
   const [addingAgent, setAddingAgent] = useState(false);
@@ -178,14 +213,29 @@ function StepPoolEditor({
               totalWeight > 0
                 ? Math.round((entry.weight / totalWeight) * 100)
                 : 0;
+            const agent = agents[entry.agentId];
+            const pricing = resolveOpenRouterPricing(
+              openRouterModels,
+              agent?.model,
+            );
             return (
               <div
                 key={entry.agentId}
                 className="flex items-center gap-2"
               >
-                <span className="text-sm min-w-[80px] truncate">
-                  {agents[entry.agentId]?.label ?? entry.agentId}
-                </span>
+                <div className="min-w-[180px]">
+                  <span className="text-sm block truncate">
+                    {formatPoolAgentLabel(entry.agentId, agent)}
+                  </span>
+                  {pricing && (
+                    <span
+                      className="text-[10px] text-muted-foreground font-mono"
+                      title={pricing.modelId}
+                    >
+                      P {pricing.prompt} / C {pricing.completion}
+                    </span>
+                  )}
+                </div>
                 <Input
                   type="number"
                   min={0}
@@ -230,6 +280,7 @@ function StepPoolEditor({
         <AddPoolEntryForm
           availableIds={availableIds}
           agents={agents}
+          openRouterModels={openRouterModels}
           onAdd={(agentId, weight) => {
             onChange([...entries, { agentId, weight }]);
             setAddingAgent(false);
@@ -246,11 +297,13 @@ function StepPoolEditor({
 function AddPoolEntryForm({
   availableIds,
   agents,
+  openRouterModels,
   onAdd,
   onCancel,
 }: {
   availableIds: string[];
   agents: Record<string, RegisteredAgent>;
+  openRouterModels: OpenRouterModel[] | null;
   onAdd: (agentId: string, weight: number) => void;
   onCancel: () => void;
 }) {
@@ -264,11 +317,27 @@ function AddPoolEntryForm({
           <SelectValue placeholder="select agent" />
         </SelectTrigger>
         <SelectContent>
-          {availableIds.map((id) => (
-            <SelectItem key={id} value={id}>
-              {agents[id]?.label ?? id}
-            </SelectItem>
-          ))}
+          {availableIds.map((id) => {
+            const agent = agents[id];
+            const pricing = resolveOpenRouterPricing(
+              openRouterModels,
+              agent?.model,
+            );
+            return (
+              <SelectItem key={id} value={id}>
+                <div className="flex w-full items-center justify-between gap-2">
+                  <span className="truncate">
+                    {formatPoolAgentLabel(id, agent)}
+                  </span>
+                  {pricing && (
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      P {pricing.prompt} / C {pricing.completion}
+                    </span>
+                  )}
+                </div>
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
       <Input

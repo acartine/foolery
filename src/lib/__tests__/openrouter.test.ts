@@ -4,6 +4,8 @@ import {
   maskApiKey,
   fetchOpenRouterModels,
   validateOpenRouterApiKey,
+  findOpenRouterModel,
+  resolveOpenRouterPricing,
 } from "../openrouter";
 
 describe("openrouter", () => {
@@ -55,6 +57,63 @@ describe("openrouter", () => {
       const key = "abcdefghijklmnop";
       const masked = maskApiKey(key);
       expect(masked).toBe("abcdef...mnop");
+    });
+  });
+
+  describe("findOpenRouterModel", () => {
+    const models = [
+      {
+        id: "mistralai/devstral-small:free",
+        name: "Devstral Small",
+        context_length: 131072,
+        pricing: { prompt: "0.0000002", completion: "0.0000003", image: "0", request: "0" },
+      },
+      {
+        id: "openai/gpt-4o",
+        name: "GPT-4o",
+        context_length: 128000,
+        pricing: { prompt: "0.000005", completion: "0.000015", image: "0", request: "0" },
+      },
+    ];
+
+    it("matches exact model id", () => {
+      const match = findOpenRouterModel(models, "openai/gpt-4o");
+      expect(match?.id).toBe("openai/gpt-4o");
+    });
+
+    it("matches shorthand model references like devstral", () => {
+      const match = findOpenRouterModel(models, "devstral");
+      expect(match?.id).toBe("mistralai/devstral-small:free");
+    });
+
+    it("returns null when there is no match", () => {
+      const match = findOpenRouterModel(models, "does-not-exist");
+      expect(match).toBeNull();
+    });
+  });
+
+  describe("resolveOpenRouterPricing", () => {
+    const models = [
+      {
+        id: "mistralai/devstral-small:free",
+        name: "Devstral Small",
+        context_length: 131072,
+        pricing: { prompt: "0.0000002", completion: "0.0000003", image: "0", request: "0" },
+      },
+    ];
+
+    it("formats prompt and completion prices for matched models", () => {
+      const pricing = resolveOpenRouterPricing(models, "devstral");
+      expect(pricing).toEqual({
+        modelId: "mistralai/devstral-small:free",
+        prompt: "$0.20/M",
+        completion: "$0.30/M",
+      });
+    });
+
+    it("returns null when model reference is unknown", () => {
+      const pricing = resolveOpenRouterPricing(models, "unknown");
+      expect(pricing).toBeNull();
     });
   });
 

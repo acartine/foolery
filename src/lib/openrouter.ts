@@ -36,6 +36,45 @@ export interface OpenRouterModelsResponse {
   data: OpenRouterModel[];
 }
 
+function normalizeModelRef(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function slugifyName(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function buildModelAliases(model: Pick<OpenRouterModel, "id" | "name">): string[] {
+  const aliases = new Set<string>();
+  const id = normalizeModelRef(model.id);
+  const name = normalizeModelRef(model.name);
+
+  if (id) aliases.add(id);
+  if (name) aliases.add(name);
+
+  const nameSlug = slugifyName(model.name);
+  if (nameSlug) aliases.add(nameSlug);
+
+  const idNoProvider = id.includes("/") ? id.slice(id.indexOf("/") + 1) : id;
+  if (idNoProvider) aliases.add(idNoProvider);
+
+  const idNoSuffix = idNoProvider.includes(":")
+    ? idNoProvider.slice(0, idNoProvider.indexOf(":"))
+    : idNoProvider;
+  if (idNoSuffix) aliases.add(idNoSuffix);
+
+  const lastSegment = idNoSuffix.includes("/")
+    ? idNoSuffix.slice(idNoSuffix.lastIndexOf("/") + 1)
+    : idNoSuffix;
+  if (lastSegment) aliases.add(lastSegment);
+
+  return Array.from(aliases);
+}
+
 /**
  * Fetch all available models from OpenRouter.
  * The models list endpoint does not require authentication.
@@ -92,4 +131,61 @@ export function formatPricing(perTokenCost: string): string {
   const perMillion = cost * 1_000_000;
   if (perMillion < 0.01) return "<$0.01/M";
   return `$${perMillion.toFixed(2)}/M`;
+}
+
+/**
+ * Resolve a user-provided model reference to an OpenRouter model.
+ * Supports exact id/name matches plus common shorthand like "devstral".
+ */
+export function findOpenRouterModel(
+  models: OpenRouterModel[],
+  modelRef: string,
+): OpenRouterModel | null {
+  const key = normalizeModelRef(modelRef);
+  if (!key) return null;
+
+  // Exact alias match first.
+  for (const model of models) {
+    const aliases = buildModelAliases(model);
+    if (aliases.includes(key)) return model;
+  }
+
+  // Then fuzzy containment for shorthand lookups.
+  let best: { model: OpenRouterModel; score: number } | null = null;
+  for (const model of models) {
+    const aliases = buildModelAliases(model);
+    const hasPartial = aliases.some(
+      (alias) => alias.includes(key) || key.includes(alias),
+    );
+    if (!hasPartial) continue;
+    const score = Math.min(
+      ...aliases.map((alias) => Math.abs(alias.length - key.length)),
+    );
+    if (!best || score < best.score) {
+      best = { model, score };
+    }
+  }
+
+  return best?.model ?? null;
+}
+
+export interface OpenRouterPricingDisplay {
+  modelId: string;
+  prompt: string;
+  completion: string;
+}
+
+/** Resolve and format prompt/completion pricing for a model reference. */
+export function resolveOpenRouterPricing(
+  models: OpenRouterModel[] | null | undefined,
+  modelRef: string | undefined,
+): OpenRouterPricingDisplay | null {
+  if (!models || models.length === 0 || !modelRef) return null;
+  const matched = findOpenRouterModel(models, modelRef);
+  if (!matched) return null;
+  return {
+    modelId: matched.id,
+    prompt: formatPricing(matched.pricing.prompt),
+    completion: formatPricing(matched.pricing.completion),
+  };
 }

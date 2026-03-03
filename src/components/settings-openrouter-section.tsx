@@ -96,6 +96,8 @@ export function SettingsOpenRouterSection({
       m.name.toLowerCase().includes(modelFilter.toLowerCase()) ||
       m.id.toLowerCase().includes(modelFilter.toLowerCase()),
   );
+  const selectedModel =
+    models?.find((model) => model.id === openrouter.model) ?? null;
 
   return (
     <div className="space-y-4">
@@ -150,6 +152,7 @@ export function SettingsOpenRouterSection({
           {openrouter.model && (
             <SelectedModelBadge
               modelId={openrouter.model}
+              model={selectedModel}
               onClear={() =>
                 onOpenRouterChange({ ...openrouter, model: "" })
               }
@@ -178,12 +181,13 @@ export function SettingsOpenRouterSection({
 
 interface SelectedModelBadgeProps {
   modelId: string;
+  model: OpenRouterModel | null;
   onClear: () => void;
 }
 
-function SelectedModelBadge({ modelId, onClear }: SelectedModelBadgeProps) {
+function SelectedModelBadge({ modelId, model, onClear }: SelectedModelBadgeProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Label className="text-xs">Selected Model</Label>
       <Badge variant="outline" className="gap-1 font-mono text-[11px]">
         {modelId}
@@ -196,6 +200,16 @@ function SelectedModelBadge({ modelId, onClear }: SelectedModelBadgeProps) {
           <X className="size-3" />
         </button>
       </Badge>
+      {model && (
+        <>
+          <Badge variant="secondary" className="font-mono text-[10px]">
+            Prompt {formatPricing(model.pricing.prompt)}
+          </Badge>
+          <Badge variant="secondary" className="font-mono text-[10px]">
+            Completion {formatPricing(model.pricing.completion)}
+          </Badge>
+        </>
+      )}
     </div>
   );
 }
