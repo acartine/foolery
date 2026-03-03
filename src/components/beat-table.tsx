@@ -148,6 +148,12 @@ function persistExpandedIds(ids: Set<string>) {
   } catch { /* localStorage unavailable */ }
 }
 
+function repoPathForBeat(beat: Beat | undefined): string | undefined {
+  const record = beat as (Beat & { _repoPath?: unknown }) | undefined;
+  const repoPath = record?._repoPath;
+  return typeof repoPath === "string" && repoPath.trim().length > 0 ? repoPath : undefined;
+}
+
 export function BeatTable({
   data,
   showRepoColumn = false,
@@ -191,9 +197,9 @@ export function BeatTable({
   const filtersKey = JSON.stringify(filters);
 
   const { mutate: handleUpdateBeat } = useMutation({
-    mutationFn: ({ id, fields }: { id: string; fields: UpdateBeatInput }) =>
-      updateBeatOrThrow(data, id, fields),
-    onMutate: async ({ id, fields }) => {
+    mutationFn: ({ id, fields, repoPath }: { id: string; fields: UpdateBeatInput; repoPath?: string }) =>
+      updateBeatOrThrow(data, id, fields, repoPath),
+    onMutate: async ({ id, fields, repoPath }) => {
       // Optimistically update the beads cache
       await queryClient.cancelQueries({ queryKey: ["beads"] });
       const previousBeads = queryClient.getQueriesData({ queryKey: ["beads"] });
@@ -206,7 +212,9 @@ export function BeatTable({
           return {
             ...prev,
             data: prev.data.map((b) =>
-              b.id === id ? { ...b, ...fields, updated: new Date().toISOString() } : b
+              b.id === id && (repoPath === undefined || repoPathForBeat(b) === repoPath)
+                ? { ...b, ...fields, updated: new Date().toISOString() }
+                : b
             ),
           };
         }
@@ -231,8 +239,8 @@ export function BeatTable({
 
   const { mutate: handleCloseBeat } = useMutation({
     mutationFn: (id: string) => {
-      const beat = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
-      const repo = beat?._repoPath as string | undefined;
+      const beat = data.find((b) => b.id === id);
+      const repo = repoPathForBeat(beat);
       return closeBead(id, {}, repo);
     },
     onSuccess: () => {
@@ -246,8 +254,8 @@ export function BeatTable({
 
   const { mutate: handleCascadeClose } = useMutation({
     mutationFn: (id: string) => {
-      const beat = data.find((b) => b.id === id) as unknown as Record<string, unknown>;
-      const repo = beat?._repoPath as string | undefined;
+      const beat = data.find((b) => b.id === id);
+      const repo = repoPathForBeat(beat);
       return cascadeCloseBead(id, {}, repo);
     },
     onSuccess: (_data, id) => {
@@ -278,7 +286,7 @@ export function BeatTable({
       setCascadeBeat(beat);
       setCascadeLoading(true);
       setCascadeDialogOpen(true);
-      const repo = (beat as unknown as Record<string, unknown>)?._repoPath as string | undefined;
+      const repo = repoPathForBeat(beat);
       const result = await previewCascadeClose(beatId, repo);
       setCascadeLoading(false);
       if (result.ok && result.data) {
@@ -430,14 +438,14 @@ export function BeatTable({
   const columns = useMemo(
     () => getBeatColumns({
       showRepoColumn,
-      onUpdateBeat: (id, fields) => handleUpdateBeat({ id, fields }),
+      onUpdateBeat: (id, fields, repoPath) => handleUpdateBeat({ id, fields, repoPath }),
       onTitleClick: (beat) => {
         if (onOpenBeat) {
           onOpenBeat(beat);
           return;
         }
 
-        const repoPath = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
+        const repoPath = repoPathForBeat(beat);
         const params = new URLSearchParams(searchParams.toString());
         params.set("bead", beat.id);
         if (repoPath) params.set("detailRepo", repoPath);
@@ -560,7 +568,7 @@ export function BeatTable({
         bead={notesBeat}
         open={notesDialogOpen}
         onOpenChange={setNotesDialogOpen}
-        onUpdate={(id, fields) => handleUpdateBeat({ id, fields })}
+        onUpdate={(id, fields) => handleUpdateBeat({ id, fields, repoPath: repoPathForBeat(notesBeat ?? undefined) })}
       />
       <CascadeCloseDialog
         open={cascadeDialogOpen}
@@ -793,7 +801,7 @@ function useBeatTableKeyboard({
   setFocusedRowId: (id: string | null) => void;
   table: ReturnType<typeof useReactTable<Beat>>;
   tableContainerRef: React.RefObject<HTMLDivElement | null>;
-  handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput }) => void;
+  handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput; repoPath?: string }) => void;
   initiateClose: (id: string) => void;
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId: Record<string, string>;
@@ -937,7 +945,7 @@ function handleActionKeys(
   currentIndex: number,
   ctx: {
     setFocusedRowId: (id: string | null) => void;
-    handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput }) => void;
+    handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput; repoPath?: string }) => void;
     initiateClose: (id: string) => void;
     onShipBeat?: (beat: Beat) => void;
     shippingByBeatId: Record<string, string>;

@@ -40,6 +40,21 @@ describe("updateBeatOrThrow", () => {
     );
   });
 
+  it("prefers the explicit repo path when one is provided", async () => {
+    const beatA = { ...makeBeat(), _repoPath: "/tmp/repo-a" } as Beat;
+    const beatB = { ...makeBeat(), _repoPath: "/tmp/repo-b" } as Beat;
+    updateBeadMock.mockResolvedValue({ ok: true });
+
+    await expect(
+      updateBeatOrThrow([beatA, beatB], beatA.id, { state: "abandoned" }, "/tmp/repo-b"),
+    ).resolves.toBeUndefined();
+    expect(updateBeadMock).toHaveBeenCalledWith(
+      beatA.id,
+      { state: "abandoned" },
+      "/tmp/repo-b",
+    );
+  });
+
   it("throws backend error messages so callers can surface them", async () => {
     const beat = { ...makeBeat(), _repoPath: "/tmp/repo-a" } as Beat;
     updateBeadMock.mockResolvedValue({ ok: false, error: "transition rejected" });

@@ -25,6 +25,7 @@ import { builtinProfileDescriptor, builtinWorkflowDescriptors, isRollbackTransit
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
+type UpdateBeatFn = (id: string, fields: UpdateBeatInput, repoPath?: string) => void;
 
 function formatLabel(val: string): string {
   return val.split(/[_-]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -116,7 +117,7 @@ function relativeTime(dateStr: string): string {
 
 export interface BeatColumnOpts {
   showRepoColumn?: boolean;
-  onUpdateBeat?: (id: string, fields: UpdateBeatInput) => void;
+  onUpdateBeat?: UpdateBeatFn;
   onTitleClick?: (beat: Beat) => void;
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId?: Record<string, string>;
@@ -130,6 +131,12 @@ export interface BeatColumnOpts {
   availableStates?: string[];
   /** Beat IDs whose parent/ancestor is currently rolling (inherited rolling state). */
   parentRollingBeatIds?: Set<string>;
+}
+
+function repoPathForBeat(beat: Beat): string | undefined {
+  const record = beat as Beat & { _repoPath?: unknown };
+  const repoPath = record._repoPath;
+  return typeof repoPath === "string" && repoPath.trim().length > 0 ? repoPath : undefined;
 }
 
 function TransitionLockBadge({ beat }: { beat: Beat }) {
@@ -151,11 +158,13 @@ function AddLabelDropdown({
   beatId,
   existingLabels,
   onUpdateBeat,
+  repoPath,
   allLabels = [],
 }: {
   beatId: string;
   existingLabels: string[];
-  onUpdateBeat: (id: string, fields: UpdateBeatInput) => void;
+  onUpdateBeat: UpdateBeatFn;
+  repoPath?: string;
   allLabels?: string[];
 }) {
   const [open, setOpen] = useState(false);
@@ -164,7 +173,7 @@ function AddLabelDropdown({
   const availableLabels = allLabels.filter((l) => !existingLabels.includes(l));
 
   const addLabel = (label: string) => {
-    onUpdateBeat(beatId, { labels: [label] });
+    onUpdateBeat(beatId, { labels: [label] }, repoPath);
     setOpen(false);
     setNewLabel("");
   };
@@ -212,7 +221,7 @@ function AddLabelDropdown({
 function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
   beat: Beat;
   onTitleClick?: (beat: Beat) => void;
-  onUpdateBeat?: (id: string, fields: UpdateBeatInput) => void;
+  onUpdateBeat?: UpdateBeatFn;
   allLabels?: string[];
 }) {
   const labels = beat.labels ?? [];
@@ -266,7 +275,7 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
                 title={`Remove ${label}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  effectiveOnUpdateBeat(beat.id, { removeLabels: [label] });
+                  effectiveOnUpdateBeat(beat.id, { removeLabels: [label] }, repoPathForBeat(beat));
                 }}
               >
                 <X className="size-3" />
@@ -275,7 +284,13 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
           </span>
         ))}
         {effectiveOnUpdateBeat && (
-          <AddLabelDropdown beatId={beat.id} existingLabels={labels} onUpdateBeat={effectiveOnUpdateBeat} allLabels={allLabels} />
+          <AddLabelDropdown
+            beatId={beat.id}
+            existingLabels={labels}
+            onUpdateBeat={effectiveOnUpdateBeat}
+            repoPath={repoPathForBeat(beat)}
+            allLabels={allLabels}
+          />
         )}
       </div>
     </div>
@@ -406,7 +421,14 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuRadioGroup value={String(row.original.priority)} onValueChange={(v) => onUpdateBeat(row.original.id, { priority: Number(v) as BeatPriority })}>
+              <DropdownMenuRadioGroup
+                value={String(row.original.priority)}
+                onValueChange={(v) => onUpdateBeat(
+                  row.original.id,
+                  { priority: Number(v) as BeatPriority },
+                  repoPathForBeat(row.original),
+                )}
+              >
                 {PRIORITIES.map((p) => (
                   <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
                 ))}
@@ -458,7 +480,11 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
             <DropdownMenuContent align="start">
               <DropdownMenuRadioGroup
                 value={profileId ?? ""}
-                onValueChange={(v) => onUpdateBeat(row.original.id, { profileId: v })}
+                onValueChange={(v) => onUpdateBeat(
+                  row.original.id,
+                  { profileId: v },
+                  repoPathForBeat(row.original),
+                )}
               >
                 {profiles.map((p) => (
                   <DropdownMenuRadioItem key={p.id} value={p.id}>
@@ -535,7 +561,11 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
                 <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenuRadioGroup
                     value={state}
-                    onValueChange={(v) => onUpdateBeat(row.original.id, { state: v })}
+                    onValueChange={(v) => onUpdateBeat(
+                      row.original.id,
+                      { state: v },
+                      repoPathForBeat(row.original),
+                    )}
                   >
                     <DropdownMenuRadioItem value={state}>
                       {formatStateName(state)} (current)
