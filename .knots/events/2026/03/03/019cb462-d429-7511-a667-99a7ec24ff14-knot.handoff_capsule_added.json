@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb462-d429-7511-a667-99a7ec24ff14",
+  "occurred_at": "2026-03-03T15:48:21.673852Z",
+  "knot_id": "foolery-051a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment handling completed: verified commit 4027da2 on main already contains Direct-view removal, confirmed origin/main matches local main, verified GitHub Actions CI/Changesets/Coverage are green for commit 4027da2, advanced knot via kno next to ready_for_shipment_review, and pushed knot events to remote knots branch.",
+    "datetime": "2026-03-03T15:48:21.673852Z",
+    "entry_id": "019cb462-d429-7511-a667-99996ba330c6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
