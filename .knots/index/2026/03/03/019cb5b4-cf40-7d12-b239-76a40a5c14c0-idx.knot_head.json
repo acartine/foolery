@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb5b4-cf40-7d12-b239-76a40a5c14c0",
+  "occurred_at": "2026-03-03T21:57:31.565497Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-46fc",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "clicking on state in beats view doesn't change state",
+    "updated_at": "2026-03-03T21:57:31.565497Z"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb5b4-b483-7783-bd3c-3bf0e22e1b5e",
+  "occurred_at": "2026-03-03T21:57:24.739942Z",
+  "knot_id": "foolery-46fc",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "tmp-probe-46fc"
+  }
+}

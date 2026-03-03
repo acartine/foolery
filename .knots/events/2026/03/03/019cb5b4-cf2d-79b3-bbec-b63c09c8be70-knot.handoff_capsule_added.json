@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb5b4-cf2d-79b3-bbec-b63c09c8be70",
+  "occurred_at": "2026-03-03T21:57:31.565497Z",
+  "knot_id": "foolery-46fc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Fixed beats-view state changes that silently reverted: table and bulk updates now throw on updateBead {ok:false}, so errors surface and optimistic rollback happens correctly. Added unit tests for updateBeatOrThrow. Gates: lint pass (warnings only), tsc pass, unit tests pass, build fails on existing Next prerender key issue for /_global-error and /beads.",
+    "datetime": "2026-03-03T21:57:31Z",
+    "entry_id": "019cb5b4-cf2d-79b3-bbec-b6211c2cfef5",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}
