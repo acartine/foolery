@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb35f-7f76-71b0-9810-56c9bcd46b88",
+  "occurred_at": "2026-03-03T11:05:06.166808Z",
+  "knot_id": "foolery-g3y1.5",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "orchestration:wave:theron-noir"
+  }
+}

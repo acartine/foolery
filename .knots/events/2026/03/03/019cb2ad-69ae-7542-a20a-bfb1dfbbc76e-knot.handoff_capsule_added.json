@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb2ad-69ae-7542-a20a-bfb1dfbbc76e",
+  "occurred_at": "2026-03-03T07:50:35.182837Z",
+  "knot_id": "foolery-235a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed root cause: field name mismatch between interaction logger (writes 'beatIds') and history parser (reads 'beadIds'). Parser now accepts both field names. Added regression test. Commit: 3e54246",
+    "datetime": "2026-03-03T07:50:35.182837Z",
+    "entry_id": "019cb2ad-69ae-7542-a20a-bfa497d91bfd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

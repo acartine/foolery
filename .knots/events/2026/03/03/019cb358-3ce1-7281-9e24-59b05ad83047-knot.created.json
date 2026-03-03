@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb358-3ce1-7281-9e24-59b05ad83047",
+  "occurred_at": "2026-03-03T10:57:10.369522Z",
+  "knot_id": "foolery-e108",
+  "type": "knot.created",
+  "data": {
+    "body": "After writing settings.toml in saveSettings(), set file permissions to 0600 (owner read/write only) so other users on a shared system cannot read the API key. Use fs.chmod or pass mode to writeFile.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Set file permissions to 0600 on settings.toml"
+  }
+}

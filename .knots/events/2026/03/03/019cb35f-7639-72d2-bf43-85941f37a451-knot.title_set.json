@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-7639-72d2-bf43-85941f37a451",
+  "occurred_at": "2026-03-03T11:05:03.801856Z",
+  "knot_id": "foolery-g3y1",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Knots implementation for Foolery Agent Memory API",
+    "to": "Scene affleck-goodfellas: Knots implementation for Foolery Agent Memory API"
+  }
+}

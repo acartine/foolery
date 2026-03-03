@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb375-6ae3-7330-a53d-74c2eefe5e35",
+  "occurred_at": "2026-03-03T11:29:02.691451Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-95b3",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Server-side only key storage with masked UI display",
+    "updated_at": "2026-03-03T11:29:02.691451Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb36c-ec07-7832-bca9-ccd1b1cb0604",
+  "occurred_at": "2026-03-03T11:19:45.927692Z",
+  "knot_id": "foolery-6fbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed the deprecated 'Default Agent Command' setting from UI, schemas, backend fallback logic, tests, docs, and OpenAPI spec. Replaced all settings.agent.command fallbacks with a getDefaultCommand() helper that picks the first registered agent or hardcodes 'claude'. 10 files changed (48 insertions, 120 deletions). All quality gates pass.",
+    "datetime": "2026-03-03T11:19:45.927692Z",
+    "entry_id": "019cb36c-ec07-7832-bca9-ccc680d0ecb7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

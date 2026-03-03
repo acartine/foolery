@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb2ba-61de-7030-a246-acefd64c207e",
+  "occurred_at": "2026-03-03T08:04:45.150869Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-235a",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "History tab is still totallly wrong",
+    "updated_at": "2026-03-03T08:04:45.150869Z"
+  }
+}

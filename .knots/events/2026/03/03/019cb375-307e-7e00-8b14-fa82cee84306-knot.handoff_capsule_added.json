@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-307e-7e00-8b14-fa82cee84306",
+  "occurred_at": "2026-03-03T11:28:47.742952Z",
+  "knot_id": "foolery-4a52",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented parent-rolling propagation to child beats. When a parent beat is rolling, its children now show 'Rolling...' with pulse animation but no stop button. Take\\! button and Shift+S keyboard shortcut are blocked for these children. Changes in beat-columns.tsx (parentRollingBeatIds option, action/state column rendering) and beat-table.tsx (parentRollingBeatIds computation, keyboard guard). All quality gates pass (lint, typecheck, tests). Build failure is pre-existing.",
+    "datetime": "2026-03-03T12:30:00Z",
+    "entry_id": "019cb375-307e-7e00-8b14-fa73e441c757",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "claude-opus-4-6"
+  }
+}

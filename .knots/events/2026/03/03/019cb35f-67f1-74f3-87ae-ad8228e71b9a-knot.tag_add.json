@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb35f-67f1-74f3-87ae-ad8228e71b9a",
+  "occurred_at": "2026-03-03T11:05:00.145807Z",
+  "knot_id": "foolery-vdk0.3",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "orchestration:wave:winslet-gladiator"
+  }
+}

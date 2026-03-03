@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb27c-d6e8-7820-a910-0e071b2fc998",
+  "occurred_at": "2026-03-03T06:57:31.880484Z",
+  "knot_id": "foolery-c33b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Expanded ReTakes metadata rendering in retakes-view: supports additional step/note/handoff metadata key shapes, adds legacy notes fallback when only bead.notes exists, and broadens agent badge fields (including nested agent/user/actor shapes and optional version/timestamps). Commit 7db341c landed on main and pushed to origin/main. Gates: lint warnings-only baseline, tsc pass, unit tests pass, build still fails due pre-existing Next prerender/useContext issue unrelated to this change.",
+    "datetime": "2026-03-03T06:57:31.880484Z",
+    "entry_id": "019cb27c-d6e8-7820-a910-0df2bf6d8f3b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb358-341c-78c0-918e-ba57cadb88be",
+  "occurred_at": "2026-03-03T10:57:08.124107Z",
+  "knot_id": "foolery-6241",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace plaintext storage in settings.toml with OS keychain integration (macOS Keychain, Linux secret-service) via a library like keytar or @aspect-build/secret-service. The key should be written to/read from the keychain, with settings.toml only holding a sentinel or nothing at all.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Use OS keychain for OpenRouter API key storage"
+  }
+}

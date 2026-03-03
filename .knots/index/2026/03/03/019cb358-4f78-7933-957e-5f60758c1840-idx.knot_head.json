@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb358-4f78-7933-957e-5f60758c1840",
+  "occurred_at": "2026-03-03T10:57:15.12856Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-a1c9",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Verify settings.toml is in .gitignore",
+    "updated_at": "2026-03-03T10:57:15.12856Z"
+  }
+}

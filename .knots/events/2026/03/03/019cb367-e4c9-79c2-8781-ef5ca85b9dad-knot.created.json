@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb367-e4c9-79c2-8781-ef5ca85b9dad",
+  "occurred_at": "2026-03-03T11:14:16.393485Z",
+  "knot_id": "foolery-98b4",
+  "type": "knot.created",
+  "data": {
+    "body": "let's collapse the agent message types into a kind of pull down multiselect.\n\nthen add the steps of the workflow (the queue/action pairs).",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "history console search refinements"
+  }
+}

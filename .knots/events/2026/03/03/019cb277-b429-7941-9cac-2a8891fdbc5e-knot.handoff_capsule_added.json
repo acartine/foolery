@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb277-b429-7941-9cac-2a8891fdbc5e",
+  "occurred_at": "2026-03-03T06:51:55.305809Z",
+  "knot_id": "foolery-c33b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented ReTakes detail expansion: added step rendering support (when metadata is present), preserved 6-line clamp with hover-to-expand, and broadened agent detail badges for steps/notes/handoffs. Threaded possible knot step arrays into Beat.metadata as knotsSteps, and added backend coverage assertions. Landed on main as ff719b7, pushed to origin/main. Gates: lint (warnings-only baseline), tsc pass, tests pass, build fails due pre-existing Next prerender/providers issue unrelated to this change.",
+    "datetime": "2026-03-03T06:51:55.305809Z",
+    "entry_id": "019cb277-b429-7941-9cac-2a7e2287c1df",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

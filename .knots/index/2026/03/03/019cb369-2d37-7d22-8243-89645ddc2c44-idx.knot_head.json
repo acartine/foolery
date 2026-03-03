@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2d37-7d22-8243-89645ddc2c44",
+  "occurred_at": "2026-03-03T11:15:40.471961Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.7",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Create follow-up epic for Knots-native flow/API realignment",
+    "updated_at": "2026-03-03T11:15:40.471961Z"
+  }
+}

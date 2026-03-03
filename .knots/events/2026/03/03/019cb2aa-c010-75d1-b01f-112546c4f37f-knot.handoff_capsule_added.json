@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb2aa-c010-75d1-b01f-112546c4f37f",
+  "occurred_at": "2026-03-03T07:47:40.688739Z",
+  "knot_id": "foolery-b68e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Moved SettingsVerificationSection from standalone section in settings-sheet.tsx into the Simple (actions) tab of SettingsDispatchSection. The verification settings now only appear when dispatch mode is 'actions' (Simple), not when using 'pools' (Advanced). Changes: settings-dispatch-section.tsx (added verification props and renders SettingsVerificationSection in actions tab), settings-sheet.tsx (removed standalone verification section and separator, passes verification props to SettingsDispatchSection). All tests pass (1709/1709). Commit: db88635",
+    "datetime": "2026-03-03T07:47:40.688739Z",
+    "entry_id": "019cb2aa-c010-75d1-b01f-11121b48ae7a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c19-74e3-af15-71ffb3bd69b4",
+  "occurred_at": "2026-03-03T11:15:40.185466Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.2.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add knots tracker marker and precedence rules",
+    "updated_at": "2026-03-03T11:15:40.185466Z"
+  }
+}

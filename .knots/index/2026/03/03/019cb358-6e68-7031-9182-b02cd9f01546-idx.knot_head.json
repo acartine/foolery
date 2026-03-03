@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb358-6e68-7031-9182-b02cd9f01546",
+  "occurred_at": "2026-03-03T10:57:23.042731Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c051",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Secure OpenRouter API key storage and user transparency",
+    "updated_at": "2026-03-03T10:57:23.042731Z"
+  }
+}

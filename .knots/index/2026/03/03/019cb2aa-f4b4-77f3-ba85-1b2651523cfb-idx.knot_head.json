@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb2aa-f4b4-77f3-ba85-1b2651523cfb",
+  "occurred_at": "2026-03-03T07:47:54.164737Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-b68e",
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "settings:  auto-verification should be moved to the basic tab",
+    "updated_at": "2026-03-03T07:47:54.164737Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb2aa-d171-7700-8434-44eeea7e6e60"
+  }
+}

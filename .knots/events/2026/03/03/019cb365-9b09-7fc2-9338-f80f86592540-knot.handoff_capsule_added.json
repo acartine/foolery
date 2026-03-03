@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb365-9b09-7fc2-9338-f80f86592540",
+  "occurred_at": "2026-03-03T11:11:46.441122Z",
+  "knot_id": "foolery-a1c9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added settings.toml to .gitignore as a safety measure against accidental API key commits. Verified no settings.toml exists in git history. Created src/lib/__tests__/gitignore-settings.test.ts to assert the pattern stays in .gitignore. All quality gates passed (lint, typecheck, test). Pushed to origin/main as 071df3c.",
+    "datetime": "2026-03-03T11:11:46.441122Z",
+    "entry_id": "019cb365-9b09-7fc2-9338-f7fc5b13afcf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

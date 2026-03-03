@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb371-9986-7763-8f54-8c7407e88fd4",
+  "occurred_at": "2026-03-03T11:24:52.486498Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-6fbb",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "settings: remove default agent at bottom",
+    "updated_at": "2026-03-03T11:24:52.486498Z"
+  }
+}

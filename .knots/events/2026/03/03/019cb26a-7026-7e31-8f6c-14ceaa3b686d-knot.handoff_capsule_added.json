@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb26a-7026-7e31-8f6c-14ceaa3b686d",
+  "occurred_at": "2026-03-03T06:37:25.926156Z",
+  "knot_id": "foolery-3f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed settings sheet scrolling. The content wrapper div lacked flex-1 and min-h-0, so overflow-y-auto never activated. Moved scroll classes to the outer flex child with proper height constraint. One-line CSS class change in settings-sheet.tsx.",
+    "datetime": "2026-03-03T06:45:00Z",
+    "entry_id": "019cb26a-7026-7e31-8f6c-14b2afbb7315",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

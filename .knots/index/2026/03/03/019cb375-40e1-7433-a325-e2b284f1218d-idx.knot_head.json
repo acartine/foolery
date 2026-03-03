@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb375-40e1-7433-a325-e2b284f1218d",
+  "occurred_at": "2026-03-03T11:28:51.937638Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-4a52",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "child beats should be \"rolling\" when parent is rolling",
+    "updated_at": "2026-03-03T11:28:51.937638Z"
+  }
+}

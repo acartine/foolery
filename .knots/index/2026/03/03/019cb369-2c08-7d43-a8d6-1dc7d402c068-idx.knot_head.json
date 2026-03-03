@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c08-7d43-a8d6-1dc7d402c068",
+  "occurred_at": "2026-03-03T11:15:40.168227Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.1.4",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Publish compatibility ADR",
+    "updated_at": "2026-03-03T11:15:40.168227Z"
+  }
+}

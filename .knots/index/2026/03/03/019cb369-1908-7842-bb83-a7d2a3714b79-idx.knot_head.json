@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-1908-7842-bb83-a7d2a3714b79",
+  "occurred_at": "2026-03-03T11:15:35.304564Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.1.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Define canonical Knots/Foolery field-status-dependency mapping",
+    "updated_at": "2026-03-03T11:15:35.304564Z"
+  }
+}

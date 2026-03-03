@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb2a3-788d-7243-8559-02e3fea1df08",
+  "occurred_at": "2026-03-03T07:39:43.629295Z",
+  "knot_id": "foolery-b68e",
+  "type": "knot.created",
+  "data": {
+    "body": "auto-verificaton only applies if the user is not using advanced settings (agent pools).  so move those settings into the basic tab.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "settings:  auto-verification should be moved to the basic tab"
+  }
+}

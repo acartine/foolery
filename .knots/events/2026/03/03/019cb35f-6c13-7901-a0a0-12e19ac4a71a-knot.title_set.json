@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-6c13-7901-a0a0-12e19ac4a71a",
+  "occurred_at": "2026-03-03T11:05:01.20336Z",
+  "knot_id": "foolery-vdk0.4",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Scene redmayne-noir: Planner Integration",
+    "to": "Scene adams-vertigo: Planner Integration"
+  }
+}

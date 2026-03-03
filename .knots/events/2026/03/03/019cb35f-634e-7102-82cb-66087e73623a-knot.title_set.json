@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-634e-7102-82cb-66087e73623a",
+  "occurred_at": "2026-03-03T11:04:58.958547Z",
+  "knot_id": "foolery-vdk0.2",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Scene foster-uncut: Provider Backend",
+    "to": "Scene croft-rocky: Provider Backend"
+  }
+}

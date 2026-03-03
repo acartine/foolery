@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c3c-7b83-9b91-07b195f2f4f3",
+  "occurred_at": "2026-03-03T11:15:40.220385Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.2.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Implement per-repo backend delegator with caching",
+    "updated_at": "2026-03-03T11:15:40.220385Z"
+  }
+}

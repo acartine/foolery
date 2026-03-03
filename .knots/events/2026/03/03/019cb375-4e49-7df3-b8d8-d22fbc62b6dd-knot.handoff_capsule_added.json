@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-4e49-7df3-b8d8-d22fbc62b6dd",
+  "occurred_at": "2026-03-03T11:28:55.369746Z",
+  "knot_id": "foolery-db94",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added SecurityInfoDialog component to settings-openrouter-section.tsx with ShieldCheck button. Dialog explains storage (keychain + 0600 fallback), transit (server-side only), remaining risks (localhost, memory), and recommendations (scoped key, rotation, spend limits).",
+    "datetime": "2026-03-03T11:28:55.369746Z",
+    "entry_id": "019cb375-4e49-7df3-b8d8-d2192c2591cd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

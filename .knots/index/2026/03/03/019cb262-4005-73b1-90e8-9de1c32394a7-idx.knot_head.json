@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb262-4005-73b1-90e8-9de1c32394a7",
+  "occurred_at": "2026-03-03T06:28:29.317342Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-5240",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Terminal AgentInfoBar shows global default agent instead of actual session agent",
+    "updated_at": "2026-03-03T06:28:29.317342Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb261-7d84-7172-b3b5-e779aa863010"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2ca2-70a0-a06c-d8f7073e2e3c",
+  "occurred_at": "2026-03-03T11:15:40.322694Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Implement Knots-state compression with raw state metadata",
+    "updated_at": "2026-03-03T11:15:40.322694Z"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb358-5ec9-7321-9b21-ccadcd7795c5",
+  "occurred_at": "2026-03-03T10:57:19.049687Z",
+  "knot_id": "foolery-db94",
+  "type": "knot.created",
+  "data": {
+    "body": "In the OpenRouter section of the settings sheet, add an 'Is This Secure?' link/button that opens a lightbox/dialog explaining: (1) how the API key is stored and protected, (2) what safety precautions are in place, (3) what risks remain unmitigated, and (4) recommendations for users (e.g. use a scoped key, rotate regularly). Should update as security posture improves.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add 'Is This Secure?' lightbox to OpenRouter settings section"
+  }
+}

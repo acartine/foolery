@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb35f-849f-71e2-8db6-5f19c5ebeb9a",
+  "occurred_at": "2026-03-03T11:05:07.471352Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c051",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Scene streep-arrival: Secure OpenRouter API key storage and user transparency",
+    "updated_at": "2026-03-03T11:05:07.471352Z"
+  }
+}

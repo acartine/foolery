@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb2a6-fcc3-7c23-a442-9edb1cb55db9",
+  "occurred_at": "2026-03-03T07:43:34.083825Z",
+  "knot_id": "foolery-235a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Acceptance Criteria:\nhistory shows the most recent app interactions with agents for knots/beads/beats - regardless of their state.  the state no longer has any relevance for history screen.  all that matters is that the app interacted with an agent regarding that beat.\n\nfor example, if the app prompted an agent to do the \"planning\" action and now the knot is in \"ready for impl\" state, history should show that knot and the interactions with agents for that knot up until that point.",
+    "datetime": "2026-03-03T07:43:34.083825Z",
+    "entry_id": "019cb2a6-fcc3-7c23-a442-9ec507dbd4e7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-7f76-71b0-9810-56b0cbeb8d4a",
+  "occurred_at": "2026-03-03T11:05:06.166808Z",
+  "knot_id": "foolery-g3y1.5",
+  "type": "knot.title_set",
+  "data": {
+    "from": "API/UI compatibility and guardrails",
+    "to": "Scene theron-noir: API/UI compatibility and guardrails"
+  }
+}

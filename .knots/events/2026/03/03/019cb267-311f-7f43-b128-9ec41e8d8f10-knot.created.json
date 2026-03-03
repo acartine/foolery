@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb267-311f-7f43-b128-9ec41e8d8f10",
+  "occurred_at": "2026-03-03T06:33:53.183647Z",
+  "knot_id": "foolery-075d",
+  "type": "knot.created",
+  "data": {
+    "body": "investigate why history screen doesn't show recent work.  change logic to not limit by \"closed\".  should show any recent work on any beat, regardless of state.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "History screen is very broken - showing only old stuff"
+  }
+}

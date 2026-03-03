@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb371-8377-7000-8eb2-34aa19d79337",
+  "occurred_at": "2026-03-03T11:24:46.839868Z",
+  "knot_id": "foolery-6fbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed remaining legacy [agent] settings usage from setup/agent-wizard/test scripts and cleaned stale settings test fixture; verified lint, tsc, tests, and build (with NODE_ENV=production).",
+    "datetime": "2026-03-03T11:24:46.839868Z",
+    "entry_id": "019cb371-8377-7000-8eb2-349d03546849",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

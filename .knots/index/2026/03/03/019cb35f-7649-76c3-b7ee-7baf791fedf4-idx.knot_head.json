@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb35f-7649-76c3-b7ee-7baf791fedf4",
+  "occurred_at": "2026-03-03T11:05:03.801856Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Scene affleck-goodfellas: Knots implementation for Foolery Agent Memory API",
+    "updated_at": "2026-03-03T11:05:03.801856Z"
+  }
+}

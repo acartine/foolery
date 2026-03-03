@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb36b-d94e-79e0-8e33-cc4dc21ddc9e",
+  "occurred_at": "2026-03-03T11:18:35.598394Z",
+  "knot_id": "foolery-4a52",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says\n\nyou shouldn't abe able to click on take or see take if parent is rolling.\n\nchild should say Rolling... and flicker, but not have stop button",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "child beats should be \"rolling\" when parent is rolling"
+  }
+}

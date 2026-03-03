@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb362-ec8a-79b0-b6c5-d2591d451385",
+  "occurred_at": "2026-03-03T11:08:50.698016Z",
+  "knot_id": "foolery-6fbb",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### What\nRemove the `settings.agent` (\"Default Agent Command\") setting from the settings UI and all backend code. Replace all fallback references with the first registered agent or a hardcoded \"claude\" default.\n\n### Files to Change\n\n1. **src/lib/schemas.ts** - Remove `agentSettingsSchema`, `AgentSettings` type, and `agent` field from `foolerySettingsSchema`\n2. **src/lib/settings.ts** - Remove `agent` from `SettingsPartial`, `updateSettings()`, and update fallbacks in `getAgentCommand()`, `getActionAgent()`, `getVerificationAgent()`, `getStepAgent()` to use first registered agent or hardcoded \"claude\"\n3. **src/components/settings-sheet.tsx** - Remove \"Default Agent Command\" UI section and `agent` from `SettingsData`/`DEFAULTS`/state management\n4. **src/hooks/use-agent-info.ts** - Update fallback to use first registered agent or \"claude\"\n5. **src/lib/__tests__/settings.test.ts** - Update tests to remove `agent` references\n6. **src/lib/__tests__/settings-coverage.test.ts** - Update tests\n7. **src/lib/__tests__/doctor.test.ts** and **doctor-applyfix.test.ts** - Remove `agent` from test fixtures\n8. **docs/SETTINGS.md** - Update documentation\n9. **src/lib/openapi/schemas.ts** - Remove `agent` from OpenAPI schema\n\n### Fallback Strategy\nWhen no agent is mapped to an action/step: use first registered agent from `settings.agents`. If no agents registered: hardcode \"claude\".",
+    "datetime": "2026-03-03T11:08:50.698016Z",
+    "entry_id": "019cb362-ec8a-79b0-b6c5-d24f52343175",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

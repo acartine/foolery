@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2d14-75d3-8aa3-e5a5b4b7677a",
+  "occurred_at": "2026-03-03T11:15:40.436494Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.6.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Update README, memory contract, and backend extension docs",
+    "updated_at": "2026-03-03T11:15:40.436494Z"
+  }
+}

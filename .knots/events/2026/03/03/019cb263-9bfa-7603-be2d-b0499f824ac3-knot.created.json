@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb263-9bfa-7603-be2d-b0499f824ac3",
+  "occurred_at": "2026-03-03T06:29:58.394641Z",
+  "knot_id": "foolery-3f6a",
+  "type": "knot.created",
+  "data": {
+    "body": "probably needs to be in some kind of scroll pane component.  can't scroll down so can't configure agent pools or agent settings.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Settings:  Can't scroll, bottom is cut off"
+  }
+}

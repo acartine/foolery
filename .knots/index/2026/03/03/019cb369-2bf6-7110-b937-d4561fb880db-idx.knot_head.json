@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2bf6-7110-b937-d4561fb880db",
+  "occurred_at": "2026-03-03T11:15:40.150212Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.1.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Define unsupported operation policy and capability behavior",
+    "updated_at": "2026-03-03T11:15:40.150212Z"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb375-2aeb-7bb0-b7b6-069da22b2b41",
+  "occurred_at": "2026-03-03T11:28:46.298993Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-e108",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Set file permissions to 0600 on settings.toml",
+    "updated_at": "2026-03-03T11:28:46.298993Z"
+  }
+}

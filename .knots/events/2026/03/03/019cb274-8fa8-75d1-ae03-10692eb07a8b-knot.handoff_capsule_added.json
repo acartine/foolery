@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb274-8fa8-75d1-ae03-10692eb07a8b",
+  "occurred_at": "2026-03-03T06:48:29.352365Z",
+  "knot_id": "foolery-075d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved for commit 3046158: removed goneBeatKeys filtering from agent-history-view so history includes any recent beat activity regardless of beat state/detail-fetch status. Verified bun install, lint, typecheck, and tests pass; next build fails on both 3046158 and prior commit c774a17, so build failure is pre-existing and not introduced by this change.",
+    "datetime": "2026-03-03T06:48:29.352365Z",
+    "entry_id": "019cb274-8fa8-75d1-ae03-105d3acf397c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

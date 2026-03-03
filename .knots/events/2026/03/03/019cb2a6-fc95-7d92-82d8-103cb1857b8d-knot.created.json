@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb2a6-fc95-7d92-82d8-103cb1857b8d",
+  "occurred_at": "2026-03-03T07:43:34.037188Z",
+  "knot_id": "foolery-235a",
+  "type": "knot.created",
+  "data": {
+    "body": "despite multiple beats/knots to attempt fix, history tab is still entirely stupid and broken.\n\nit appears to be locked into things that are no longer possible, probably looking at status \"closed\" which is no longer a thing.\n\nthe definition of done is:\n\nhistory shows the most recent app interactions with agents for knots/beads/beats - regardless of their state.  the state no longer has any relevance for history screen.  all that matters is that the app interacted with an agent regarding that beat.\n\nfor example, if the app prompted an agent to do the \"planning\" action and now the knot is in \"ready for impl\" state, history should show that knot and the interactions with agents for that knot up until that point.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "History tab is still totallly wrong"
+  }
+}

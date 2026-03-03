@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c4d-7141-84f3-afdabf51361b",
+  "occurred_at": "2026-03-03T11:15:40.237127Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.2.4",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Backfill and doctor checks for Knots-aware repo metadata",
+    "updated_at": "2026-03-03T11:15:40.237127Z"
+  }
+}

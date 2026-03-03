@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb35c-23d2-7800-8c00-cdd1cbba5f8b",
+  "occurred_at": "2026-03-03T11:01:26.098112Z",
+  "knot_id": "foolery-6fbb",
+  "type": "knot.created",
+  "data": {
+    "body": "this setting is now kind of pointless because you have to choose between basic and advanced dispatch.\n\nnot only should it be removed from settings, it should also be removed anywhere it is used in the codebase.\n\nif it needs to be replaced somewhere, it hsould be replaced with the relevant agent(s) from the basic or advanced dispatch settings",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "settings: remove default agent at bottom"
+  }
+}

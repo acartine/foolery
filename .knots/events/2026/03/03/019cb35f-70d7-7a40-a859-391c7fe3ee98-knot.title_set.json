@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-70d7-7a40-a859-391c7fe3ee98",
+  "occurred_at": "2026-03-03T11:05:02.423394Z",
+  "knot_id": "foolery-vdk0.5",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Scene daylewis-arrival: Hardening",
+    "to": "Scene hanks-uncut: Hardening"
+  }
+}

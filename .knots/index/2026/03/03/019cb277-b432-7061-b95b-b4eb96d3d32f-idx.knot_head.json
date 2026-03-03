@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb277-b432-7061-b95b-b4eb96d3d32f",
+  "occurred_at": "2026-03-03T06:51:55.305809Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c33b",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "ReTakes: Should show more info",
+    "updated_at": "2026-03-03T06:51:55.305809Z"
+  }
+}

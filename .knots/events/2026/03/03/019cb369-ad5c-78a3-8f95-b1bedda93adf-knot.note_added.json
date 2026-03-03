@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb369-ad5c-78a3-8f95-b1bedda93adf",
+  "occurred_at": "2026-03-03T11:16:13.276296Z",
+  "knot_id": "foolery-98b4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: replace separate agent-message type controls with a single dropdown multiselect in Agent History filters, and add workflow-step filters that expose queue/action state pairs. Update interaction-picker state derivation + label rendering, wire new filter data into agent-history view, and add/adjust tests for filter behavior. Risks: keeping existing URL/filter semantics and preserving current count badges. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-03T11:16:13.276296Z",
+    "entry_id": "019cb369-ad5c-78a3-8f95-b1a45763aff7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

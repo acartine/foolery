@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb35f-6c21-7633-92a1-20065f44bc6e",
+  "occurred_at": "2026-03-03T11:05:01.20336Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.4",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Scene adams-vertigo: Planner Integration",
+    "updated_at": "2026-03-03T11:05:01.20336Z"
+  }
+}

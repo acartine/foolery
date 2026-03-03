@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb2a8-be7d-7933-ae7f-c59ee22fbb74",
+  "occurred_at": "2026-03-03T07:45:29.213597Z",
+  "knot_id": "foolery-b68e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Move auto-verification into the Simple tab of Agent Dispatch.\n\nFiles to change:\n1. settings-dispatch-section.tsx - Add verification/onVerificationChange props, render SettingsVerificationSection inside the actions tab content\n2. settings-sheet.tsx - Remove standalone SettingsVerificationSection and its separator, pass verification props to SettingsDispatchSection\n\nThis is a small, focused UI reorganization with no schema or API changes.",
+    "datetime": "2026-03-03T07:45:29.213597Z",
+    "entry_id": "019cb2a8-be7d-7933-ae7f-c5812167486a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb372-bc44-76d0-a019-f6b83da33609",
+  "occurred_at": "2026-03-03T11:26:06.916378Z",
+  "knot_id": "foolery-98b4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented history console search refinements: replaced message-type chip filters with a dropdown multiselect, added workflow step filters using queue/action pairs, and wired filtering to session workflow states derived from beat_state log entries (with text fallback for older logs). Added agent-history parsing/test coverage for workflowStates and hardened terminal-store tests for Node partial localStorage. Validated with bun run lint, bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build.",
+    "datetime": "2026-03-03T11:26:06.916378Z",
+    "entry_id": "019cb372-bc44-76d0-a019-f6a8a5e68f1e",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "1"
+  }
+}

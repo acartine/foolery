@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c5e-7962-9273-064adaa0cd47",
+  "occurred_at": "2026-03-03T11:15:40.254758Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.4.1",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Render tracker-aware prompt commands in terminal flows",
+    "updated_at": "2026-03-03T11:15:40.254758Z"
+  }
+}

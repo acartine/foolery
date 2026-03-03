@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-306b-78e0-8ffb-88e70ac4dfa7",
+  "occurred_at": "2026-03-03T11:28:47.723419Z",
+  "knot_id": "foolery-58cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Created SECURITY.md documenting API key storage, server-side handling, remaining risks, and best practices.",
+    "datetime": "2026-03-03T11:28:47.723419Z",
+    "entry_id": "019cb375-306b-78e0-8ffb-88d02b77f557",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

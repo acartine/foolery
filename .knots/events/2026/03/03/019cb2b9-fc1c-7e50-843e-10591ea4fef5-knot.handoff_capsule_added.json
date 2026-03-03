@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb2b9-fc1c-7e50-843e-10591ea4fef5",
+  "occurred_at": "2026-03-03T08:04:19.100052Z",
+  "knot_id": "foolery-235a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed the real root cause: API route param mismatch. Client sends 'beatId' but server read 'beadId', causing session loading to always return empty. Fixed route to accept both param names. Added regression test. Verified in browser that conversation logs now load correctly. Commit: d8c351a",
+    "datetime": "2026-03-03T08:04:19.100052Z",
+    "entry_id": "019cb2b9-fc1c-7e50-843e-10484db5c2e2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

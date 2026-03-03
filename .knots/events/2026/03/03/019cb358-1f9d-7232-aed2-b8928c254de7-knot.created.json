@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb358-1f9d-7232-aed2-b8928c254de7",
+  "occurred_at": "2026-03-03T10:57:02.877835Z",
+  "knot_id": "foolery-c051",
+  "type": "knot.created",
+  "data": {
+    "body": "Parent epic: harden how the OpenRouter API key is stored, transmitted, and displayed. Includes OS keychain integration, file-permission hardening, server-side-only key handling, gitignore verification, documentation of security posture, and an in-app 'Is This Secure?' explainer.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Secure OpenRouter API key storage and user transparency"
+  }
+}

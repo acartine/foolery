@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb283-d9c3-7232-b96c-3c168dcc3902",
+  "occurred_at": "2026-03-03T07:05:11.36341Z",
+  "knot_id": "foolery-c33b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Expanded ReTakes metadata rendering robustness in retakes-view: added extra step/note/handoff key aliases, metadata description fallback, broader content key support, and deeper agent-detail extraction (including nested metadata/actor/user/agent shapes). Commit 90674f3 pushed to origin/main. Gates: lint warnings-only baseline, bunx tsc --noEmit pass, tests pass, build still fails on pre-existing Next prerender/useContext issue.",
+    "datetime": "2026-03-03T07:05:11.36341Z",
+    "entry_id": "019cb283-d9c3-7232-b96c-3c0d93b92ef8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

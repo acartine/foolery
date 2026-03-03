@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb265-cb3e-7d31-bde1-036d314b1c2d",
+  "occurred_at": "2026-03-03T06:32:21.566954Z",
+  "knot_id": "foolery-5240",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Threaded startSession agent metadata through Beads page upsertTerminal calls so AgentInfoBar reflects session-resolved agent for direct and queued launches. Quality gates: lint pass (warnings only), tsc pass, unit tests pass, build still fails on existing Next prerender/_global-error baseline issue.",
+    "datetime": "2026-03-03T06:32:21.566954Z",
+    "entry_id": "019cb265-cb3e-7d31-bde1-0353e2698d45",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

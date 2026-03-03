@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb361-0223-7241-aa07-3fa2f26ec9ef",
+  "occurred_at": "2026-03-03T11:06:45.155277Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.tag_remove",
+  "data": {
+    "tag": "commit:7186877"
+  }
+}

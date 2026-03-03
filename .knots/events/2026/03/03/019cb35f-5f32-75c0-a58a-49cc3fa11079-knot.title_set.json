@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-5f32-75c0-a58a-49cc3fa11079",
+  "occurred_at": "2026-03-03T11:04:57.90667Z",
+  "knot_id": "foolery-vdk0.1",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Scene freeman-vertigo: Settings Contract",
+    "to": "Scene washington-heat: Settings Contract"
+  }
+}

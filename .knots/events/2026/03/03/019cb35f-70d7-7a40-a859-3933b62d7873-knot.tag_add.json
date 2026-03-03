@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb35f-70d7-7a40-a859-3933b62d7873",
+  "occurred_at": "2026-03-03T11:05:02.423394Z",
+  "knot_id": "foolery-vdk0.5",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "orchestration:wave"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb376-036e-7120-86b5-c2a3c3efc512",
+  "occurred_at": "2026-03-03T11:29:41.742413Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-98b4",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "history console search refinements",
+    "updated_at": "2026-03-03T11:29:41.742413Z"
+  }
+}

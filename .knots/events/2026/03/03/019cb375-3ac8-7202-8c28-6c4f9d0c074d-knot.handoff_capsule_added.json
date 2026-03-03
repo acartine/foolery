@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-3ac8-7202-8c28-6c4f9d0c074d",
+  "occurred_at": "2026-03-03T11:28:50.376595Z",
+  "knot_id": "foolery-95b3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Settings API now returns masked API key (sk-or-...xxxx). PUT/PATCH preserve stored key when client sends masked value. Validate endpoint supports useStored mode. UI shows server-side storage hint.",
+    "datetime": "2026-03-03T11:28:50.376595Z",
+    "entry_id": "019cb375-3ac8-7202-8c28-6c3b91ee5dac",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

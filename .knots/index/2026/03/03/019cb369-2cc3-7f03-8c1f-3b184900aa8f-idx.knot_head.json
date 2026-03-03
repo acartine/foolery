@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2cc3-7f03-8c1f-3b184900aa8f",
+  "occurred_at": "2026-03-03T11:15:40.355103Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.5.3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Validate table/filter/sort/hierarchy views on Knots repos",
+    "updated_at": "2026-03-03T11:15:40.355103Z"
+  }
+}

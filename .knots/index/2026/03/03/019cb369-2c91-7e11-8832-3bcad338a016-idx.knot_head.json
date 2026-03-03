@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2c91-7e11-8832-3bcad338a016",
+  "occurred_at": "2026-03-03T11:15:40.305338Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.4.4",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add regression coverage for retry/verification on Knots repos",
+    "updated_at": "2026-03-03T11:15:40.305338Z"
+  }
+}

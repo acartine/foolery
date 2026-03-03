@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb274-8fb1-7233-9527-da505bb251b6",
+  "occurred_at": "2026-03-03T06:48:29.352365Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-075d",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "History screen is very broken - showing only old stuff",
+    "updated_at": "2026-03-03T06:48:29.352365Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb279-4eff-7e61-8a5e-b0de33d89aac",
+  "occurred_at": "2026-03-03T06:53:40.479886Z",
+  "knot_id": "foolery-075d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added regression coverage for history behavior: sessions with status=closed still contribute beat summaries, preventing reintroduction of state-based filtering. Verified bun install, lint (warnings only), typecheck, and unit tests pass; build still fails with existing prerender key/useContext error on /_global-error and /beads.",
+    "datetime": "2026-03-03T06:53:40.479886Z",
+    "entry_id": "019cb279-4eff-7e61-8a5e-b0ce2925b4a8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

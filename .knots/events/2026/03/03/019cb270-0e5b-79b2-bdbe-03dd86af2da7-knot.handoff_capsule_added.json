@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb270-0e5b-79b2-bdbe-03dd86af2da7",
+  "occurred_at": "2026-03-03T06:43:34.107951Z",
+  "knot_id": "foolery-c33b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented RetakeRow details showing description (green bg), notes (yellow bg), and handoff capsules (blue bg) with 6-line-clamp + hover-to-expand pattern. Each note/capsule shows agent badge (agentname, model, username, relative time). Commit c774a17 on main, pushed to origin/main. TSC passes, lint has no new errors, build pre-existing failure unrelated to changes.",
+    "datetime": "2026-03-03T06:43:34.107951Z",
+    "entry_id": "019cb270-0e5b-79b2-bdbe-03c523645b25",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

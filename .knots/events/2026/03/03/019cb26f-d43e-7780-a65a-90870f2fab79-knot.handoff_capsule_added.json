@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb26f-d43e-7780-a65a-90870f2fab79",
+  "occurred_at": "2026-03-03T06:43:19.230244Z",
+  "knot_id": "foolery-3f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Reviewed settings sheet scroll fix and added a regression test to lock the flex/min-h/overflow layout. Quality gates run in dedicated worktree: bun run lint, bunx tsc --noEmit, bun run test, and bun run build (with NODE_ENV unset). Integrated on main and pushed to origin/main.",
+    "datetime": "2026-03-03T06:43:19.230244Z",
+    "entry_id": "019cb26f-d43e-7780-a65a-907aa963c673",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

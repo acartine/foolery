@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb270-d791-7182-8dee-f10a9dc5f52e",
+  "occurred_at": "2026-03-03T06:44:25.617092Z",
+  "knot_id": "foolery-075d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed goneBeatKeys filtering from agent-history-view.tsx. This mechanism was hiding beats from the history list when their backend detail fetch failed (e.g. shipped/closed/deleted beats). Now all beats with agent conversation activity show in history regardless of state. The BeatDetailContent component already handles null beat gracefully.",
+    "datetime": "2026-03-03T06:44:25.617092Z",
+    "entry_id": "019cb270-d791-7182-8dee-f0f09e9b6218",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

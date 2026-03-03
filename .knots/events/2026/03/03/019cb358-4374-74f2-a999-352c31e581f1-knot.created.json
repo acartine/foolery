@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb358-4374-74f2-a999-352c31e581f1",
+  "occurred_at": "2026-03-03T10:57:12.052654Z",
+  "knot_id": "foolery-95b3",
+  "type": "knot.created",
+  "data": {
+    "body": "Stop sending the full OpenRouter API key to the browser. Store it server-side only. The settings API should return a masked version (e.g. sk-or-...xxxx) for display. The UI should only send the key during initial entry or update, never receive it back in full.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Server-side only key storage with masked UI display"
+  }
+}

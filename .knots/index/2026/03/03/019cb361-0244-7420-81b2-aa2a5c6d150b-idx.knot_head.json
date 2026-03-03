@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb361-0244-7420-81b2-aa2a5c6d150b",
+  "occurred_at": "2026-03-03T11:06:45.183697Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-xmvb",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "\"created\" notification in loewr right corner and top header component should show clickable bead id",
+    "updated_at": "2026-03-03T11:06:45.183697Z"
+  }
+}

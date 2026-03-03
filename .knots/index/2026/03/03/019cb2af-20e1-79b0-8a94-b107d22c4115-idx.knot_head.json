@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb2af-20e1-79b0-8a94-b107d22c4115",
+  "occurred_at": "2026-03-03T07:52:27.617454Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-b68e",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "settings:  auto-verification should be moved to the basic tab",
+    "updated_at": "2026-03-03T07:52:27.617454Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb261-5bf7-75d3-bbac-6da6ab7a2a41",
+  "occurred_at": "2026-03-03T06:27:30.93565Z",
+  "knot_id": "foolery-5240",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented per-session terminal agent metadata threading (TerminalSession/createSession/store/startSession callers) and TerminalPanel now renders session agent info with global fallback. Quality gates: lint, tsc, tests passed; build fails on baseline prerender bug unrelated to this change. Changes committed as 4de3826 and pushed to origin/main.",
+    "datetime": "2026-03-03T06:27:30.93565Z",
+    "entry_id": "019cb261-5bf7-75d3-bbac-6d9cdeddde2a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

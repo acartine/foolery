@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb369-2d04-7a03-b399-98c1c0f9fca0",
+  "occurred_at": "2026-03-03T11:15:40.420228Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-g3y1.6.2",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add integration tests for auto-routing and mixed trackers",
+    "updated_at": "2026-03-03T11:15:40.420228Z"
+  }
+}

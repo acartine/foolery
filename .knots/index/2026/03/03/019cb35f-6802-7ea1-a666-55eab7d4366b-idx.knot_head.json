@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb35f-6802-7ea1-a666-55eab7d4366b",
+  "occurred_at": "2026-03-03T11:05:00.145807Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.3",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Scene winslet-gladiator: Settings UI",
+    "updated_at": "2026-03-03T11:05:00.145807Z"
+  }
+}

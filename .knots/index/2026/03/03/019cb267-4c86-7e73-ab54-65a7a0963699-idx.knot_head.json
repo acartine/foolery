@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb267-4c86-7e73-ab54-65a7a0963699",
+  "occurred_at": "2026-03-03T06:34:00.198972Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-3f6a",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Settings:  Can't scroll, bottom is cut off",
+    "updated_at": "2026-03-03T06:34:00.198972Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb263-9c16-7a02-8a5c-cf612045c2b1"
+  }
+}

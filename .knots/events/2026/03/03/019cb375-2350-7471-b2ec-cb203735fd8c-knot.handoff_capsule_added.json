@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-2350-7471-b2ec-cb203735fd8c",
+  "occurred_at": "2026-03-03T11:28:44.368506Z",
+  "knot_id": "foolery-a1c9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added settings.toml to .gitignore with a test verifying the pattern. Confirmed no settings.toml has ever been committed to git history.",
+    "datetime": "2026-03-03T11:28:44.368506Z",
+    "entry_id": "019cb375-2350-7471-b2ec-cb14a1e5f455",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-465d-7742-a29e-f1cd67bac70f",
+  "occurred_at": "2026-03-03T11:28:53.341546Z",
+  "knot_id": "foolery-6241",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added src/lib/keychain.ts with macOS security CLI and Linux secret-tool integration. saveSettings stores key in OS keychain with **keychain** sentinel in TOML. loadSettings resolves sentinel from keychain. Falls back to plaintext when keychain unavailable. 15 keychain tests + 8 settings integration tests.",
+    "datetime": "2026-03-03T11:28:53.341546Z",
+    "entry_id": "019cb375-465d-7742-a29e-f1b726c7e4b3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

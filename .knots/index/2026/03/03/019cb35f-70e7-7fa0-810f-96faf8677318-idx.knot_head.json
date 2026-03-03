@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb35f-70e7-7fa0-810f-96faf8677318",
+  "occurred_at": "2026-03-03T11:05:02.423394Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-vdk0.5",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Scene hanks-uncut: Hardening",
+    "updated_at": "2026-03-03T11:05:02.423394Z"
+  }
+}

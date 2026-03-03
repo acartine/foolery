@@ -1,0 +1,10 @@
+{
+  "event_id": "019cb35f-848f-7310-a81b-aa268645c4f6",
+  "occurred_at": "2026-03-03T11:05:07.471352Z",
+  "knot_id": "foolery-c051",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Secure OpenRouter API key storage and user transparency",
+    "to": "Scene streep-arrival: Secure OpenRouter API key storage and user transparency"
+  }
+}

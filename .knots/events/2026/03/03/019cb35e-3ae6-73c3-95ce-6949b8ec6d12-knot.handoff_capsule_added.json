@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb35e-3ae6-73c3-95ce-6949b8ec6d12",
+  "occurred_at": "2026-03-03T11:03:43.07879Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Created-bead success paths now also publish header notifications with beadId (submit/create-more/breakdown), so the top header bell shows a clickable bead ID; breakdown toast now includes a clickable bead-ID action too. Gates: lint warnings-only, tsc pass, build pass with NODE_ENV=production, test fails on pre-existing terminal-store localStorage.removeItem issue.",
+    "datetime": "2026-03-03T11:03:43.07879Z",
+    "entry_id": "019cb35e-3ae6-73c3-95ce-6931ed422422",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

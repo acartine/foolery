@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb265-314a-7701-83ec-943871486e44",
+  "occurred_at": "2026-03-03T06:31:42.154031Z",
+  "knot_id": "foolery-c33b",
+  "type": "knot.created",
+  "data": {
+    "body": "show description, notes, handoff_capsules - use same 6 line text limit that beads list view does, with hover to reveal all the text.\n\nshow the agent details for each step/note/handoff.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "ReTakes: Should show more info"
+  }
+}

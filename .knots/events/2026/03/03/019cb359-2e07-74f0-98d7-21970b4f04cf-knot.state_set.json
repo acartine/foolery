@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb359-2e07-74f0-98d7-21970b4f04cf",
+  "occurred_at": "2026-03-03T10:58:12.103454Z",
+  "knot_id": "foolery-xmvb",
+  "type": "knot.state_set",
+  "data": {
+    "force": false,
+    "from": "shipment",
+    "profile_id": "autopilot",
+    "to": "ready_for_shipment_review"
+  }
+}

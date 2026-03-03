@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb375-2adb-7173-a3ae-0eec9dea756f",
+  "occurred_at": "2026-03-03T11:28:46.298993Z",
+  "knot_id": "foolery-e108",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added chmod 0600 after writeFile in saveSettings() and backfillMissingSettingsDefaults(). Tests verify the permission call.",
+    "datetime": "2026-03-03T11:28:46.298993Z",
+    "entry_id": "019cb375-2adb-7173-a3ae-0ed2003c56b0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
