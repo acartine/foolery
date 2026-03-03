@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { fetchBeads, fetchWorkflows, updateBead } from "@/lib/api";
+import { fetchBeads, fetchWorkflows } from "@/lib/api";
 import { naturalCompare } from "@/lib/beat-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
+import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { RetakeDialog } from "@/components/retake-dialog";
 import { BeatTypeBadge } from "@/components/beat-type-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
@@ -575,7 +576,7 @@ export function RetakesView() {
       };
 
       const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      return updateBead(bead.id, fields, repo);
+      return updateBeatOrThrow(beads, bead.id, fields, repo);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["beads"] });

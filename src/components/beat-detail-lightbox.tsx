@@ -7,7 +7,8 @@ import { Clapperboard, Zap } from "lucide-react";
 import { toast } from "sonner";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import { fetchBead, fetchDeps, fetchWorkflows, updateBead, addDep } from "@/lib/api";
+import { fetchBead, fetchDeps, fetchWorkflows, addDep } from "@/lib/api";
+import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { BeatDetail } from "@/components/beat-detail";
 import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
@@ -78,11 +79,11 @@ export function BeatDetailLightbox({
     refetchOnWindowFocus: false,
   });
 
+  const beat = beatData?.ok ? beatData.data : (initialBeat ?? null);
+
   const { mutateAsync: handleUpdate } = useMutation({
-    mutationFn: async (fields: UpdateBeatInput) => {
-      const result = await updateBead(detailId, fields, repo);
-      if (!result.ok) throw new Error(result.error ?? "Failed to update beat");
-    },
+    mutationFn: async (fields: UpdateBeatInput) =>
+      updateBeatOrThrow(beat ? [beat] : [], detailId, fields, repo),
     onMutate: async (fields) => {
       await queryClient.cancelQueries({ queryKey: ["bead", detailId, repo] });
       await queryClient.cancelQueries({ queryKey: ["beads"] });
@@ -144,8 +145,6 @@ export function BeatDetailLightbox({
       toast.error("Failed to add dependency");
     },
   });
-
-  const beat = beatData?.ok ? beatData.data : (initialBeat ?? null);
 
   const beatWorkflow = useMemo((): MemoryWorkflowDescriptor | null => {
     const workflows: MemoryWorkflowDescriptor[] =
