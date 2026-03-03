@@ -23,7 +23,7 @@ runBackendContractTests("StubBackend", () => {
   };
 });
 
-// ── Direct method coverage ──────────────────────────────────
+// ── Core method coverage ────────────────────────────────────
 
 describe("StubBackend direct method tests", () => {
   const backend = new StubBackend();

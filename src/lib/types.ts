@@ -354,7 +354,6 @@ export interface RegisteredAgent {
 export type ActionName =
   | "take"
   | "scene"
-  | "direct"
   | "breakdown";
 
 export interface ScannedAgent {

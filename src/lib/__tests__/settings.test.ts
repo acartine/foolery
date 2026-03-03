@@ -42,7 +42,6 @@ import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
 const DEFAULT_ACTIONS = {
   take: "",
   scene: "",
-  direct: "",
   breakdown: "",
 };
 
@@ -153,7 +152,6 @@ describe("backfillMissingSettingsDefaults", () => {
         '[actions]',
         'take = ""',
         'scene = ""',
-        'direct = ""',
         'breakdown = ""',
         '[verification]',
         'enabled = false',
@@ -309,7 +307,6 @@ describe("updateSettings", () => {
       '[actions]',
       'take = "claude"',
       'scene = "claude"',
-      'direct = ""',
       'breakdown = ""',
       '[openrouter]',
       'apiKey = ""',

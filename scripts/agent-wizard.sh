@@ -76,7 +76,7 @@ _write_settings_toml() {
 
     printf '[actions]\n'
     local action
-    for action in take scene direct breakdown; do
+    for action in take scene breakdown; do
       printf '%s = "%s"\n' "$action" "$(_kv_get ACTION_MAP "$action" "default")"
     done
   } > "$SETTINGS_FILE"
@@ -183,11 +183,10 @@ EOF
 
 # Prompt for per-action agent mappings (multiple agents).
 _prompt_action_mappings() {
-  local -a action_names=(take scene direct breakdown)
+  local -a action_names=(take scene breakdown)
   local -a action_labels=(
     '"Take!" (execute single bead)'
     '"Scene!" (multi-bead orchestration)'
-    '"Direct" (planning)'
     '"Breakdown" (decomposition)'
   )
 
@@ -236,7 +235,7 @@ maybe_agent_wizard() {
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local action
-    for action in take scene direct breakdown; do
+    for action in take scene breakdown; do
       _kv_set ACTION_MAP "$action" "$sole"
     done
     _wizard_log "Registered $sole for all actions."

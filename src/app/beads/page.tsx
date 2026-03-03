@@ -9,7 +9,6 @@ import { BeatTable } from "@/components/beat-table";
 import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
 import { FilterBar } from "@/components/filter-bar";
 import { MergeBeatsDialog } from "@/components/merge-beats-dialog";
-import { OrchestrationView } from "@/components/orchestration-view";
 import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
 import { RetakesView } from "@/components/retakes-view";
@@ -58,21 +57,18 @@ function BeadsPageInner() {
   const detailBeatId = searchParams.get("bead");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "orchestration" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
-    viewParam === "orchestration"
-      ? "orchestration"
-      : viewParam === "existing"
-        ? "existing"
-        : viewParam === "finalcut"
-          ? "finalcut"
-          : viewParam === "retakes"
-            ? "retakes"
-            : viewParam === "history"
-              ? "history"
+  const beadsView: "list" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
+    viewParam === "existing"
+      ? "existing"
+      : viewParam === "finalcut"
+        ? "finalcut"
+        : viewParam === "retakes"
+          ? "retakes"
+          : viewParam === "history"
+            ? "history"
             : viewParam === "breakdown"
               ? "breakdown"
               : "list";
-  const isOrchestrationView = beadsView === "orchestration";
   const isExistingOrchestrationView = beadsView === "existing";
   const isListView = beadsView === "list";
   const isFinalCutView = beadsView === "finalcut";
@@ -430,13 +426,7 @@ function BeadsPageInner() {
       )}
 
       <div className="mt-0.5">
-        {isOrchestrationView ? (
-          <OrchestrationView
-            onApplied={() => {
-              queryClient.invalidateQueries({ queryKey: ["beads"] });
-            }}
-          />
-        ) : isExistingOrchestrationView ? (
+        {isExistingOrchestrationView ? (
           <ExistingOrchestrationsView />
         ) : isFinalCutView ? (
           <FinalCutView />

@@ -37,13 +37,6 @@
       <br />
       <sub><b>Scenes</b></sub>
     </td>
-    <td align="center">
-      <a href="docs/screenshots/direct.png">
-        <img src="docs/screenshots/direct.png" width="160" alt="Direct Planning" />
-      </a>
-      <br />
-      <sub><b>Direct</b></sub>
-    </td>
   </tr>
   <tr>
     <td align="center">
@@ -74,7 +67,6 @@
       <br />
       <sub><b>ReTake</b></sub>
     </td>
-    <td></td>
   </tr>
 </table>
 
@@ -129,12 +121,6 @@ Browse and manage your orchestration trees. Navigate dependency hierarchies with
 One-click or bulk select - Launch an agent run from the table and monitor it live in the built-in terminal drawer without leaving the app context.
 
 ![Take terminal panel](docs/screenshots/take.png)
-
-### Direct
-
-The planning room. Select a set of beats and ask Claude to organize them into dependency-aware scenes. Watch the plan stream in real time, edit wave names and agent counts, then apply the whole orchestration with one click.
-
-![Direct workflow](docs/screenshots/direct.png)
 
 ### Final Cut
 

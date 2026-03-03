@@ -147,7 +147,6 @@ describe("isVerificationEligibleAction", () => {
 
   it("excludes non-code actions", () => {
     expect(isVerificationEligibleAction("breakdown")).toBe(false);
-    expect(isVerificationEligibleAction("direct")).toBe(false);
   });
 
   it("returns eligible actions list", () => {

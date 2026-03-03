@@ -134,7 +134,6 @@ import type { ActionName } from "@/lib/types";
  *
  * Excluded:
  * - "breakdown" — only creates child beads, no code changes
- * - "direct" — planning/orchestration only, no code changes
  */
 const CODE_PRODUCING_ACTIONS: ReadonlySet<ActionName> = new Set([
   "take",

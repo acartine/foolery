@@ -227,7 +227,7 @@ function interactionTypeTone(interactionType: AgentHistorySession["interactionTy
 function interactionTypeLabel(interactionType: AgentHistorySession["interactionType"]): string {
   if (interactionType === "scene") return "Scene!";
   if (interactionType === "verification") return "Auto-review";
-  if (interactionType === "direct") return "Direct";
+  if (interactionType === "direct") return "Planning";
   if (interactionType === "breakdown") return "Breakdown";
   return "Take!";
 }

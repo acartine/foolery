@@ -653,7 +653,7 @@ export async function createOrchestrationSession(
     objective: objective?.trim() || undefined,
   };
 
-  const agent = await getStepAgent(WorkflowStep.Planning, "direct");
+  const agent = await getStepAgent(WorkflowStep.Planning, "scene");
 
   const orchInteractionLog = await startInteractionLog({
     sessionId: session.id,

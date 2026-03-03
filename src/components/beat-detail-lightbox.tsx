@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { fetchBead, fetchDeps, fetchWorkflows, updateBead, addDep } from "@/lib/api";
-import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { BeatDetail } from "@/components/beat-detail";
 import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
@@ -163,20 +162,14 @@ export function BeatDetailLightbox({
   const handleBreakdown = useCallback(() => {
     if (!beatId) return;
 
-    setDirectPrefillPayload({
-      prompt: buildBeadBreakdownPrompt(beatId, beat?.title ?? ""),
-      autorun: true,
-      sourceBeatId: beatId,
-    });
-
     onOpenChange(false);
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", "orchestration");
+    params.set("view", "breakdown");
+    params.set("parent", beatId);
     params.delete("bead");
     params.delete("detailRepo");
-    params.delete("parent");
     router.push(`/beads?${params.toString()}`);
-  }, [beatId, beat, onOpenChange, searchParams, router]);
+  }, [beatId, onOpenChange, searchParams, router]);
 
   const deps: BeatDependency[] = depsData?.ok ? (depsData.data ?? []) : [];
 
@@ -343,7 +336,7 @@ function LightboxHeader({
           <Button
             variant="outline"
             size="xs"
-            title="Break this beat down into hierarchical tasks via Direct"
+            title="Break this beat down into hierarchical tasks"
             onClick={handleBreakdown}
           >
             <Zap className="size-3" />

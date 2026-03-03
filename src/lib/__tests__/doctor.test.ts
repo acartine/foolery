@@ -85,7 +85,6 @@ const DEFAULT_SETTINGS = {
   actions: {
     take: "",
     scene: "",
-    direct: "",
     breakdown: "",
   },
   verification: { enabled: false, agent: "", maxRetries: 3 },

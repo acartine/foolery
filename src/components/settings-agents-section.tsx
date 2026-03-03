@@ -32,7 +32,6 @@ async function setDefaultAgentForActions(agentId: string) {
   const mappings: ActionAgentMappings = {
     take: agentId,
     scene: agentId,
-    direct: agentId,
     breakdown: agentId,
   };
   await saveActions(mappings);

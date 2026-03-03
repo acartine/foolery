@@ -81,7 +81,7 @@ describe("readAgentHistory", () => {
       },
     ]);
 
-    // Direct sessions should now appear in history.
+    // Planning sessions should now appear in history.
     await writeLog(tempDir, "repo-a/2026-02-20/orch-a.jsonl", [
       {
         kind: "session_start",

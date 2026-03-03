@@ -8,13 +8,11 @@ import {
   useState,
   type JSX,
 } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Clapperboard,
   Loader2,
   Pencil,
-  RefreshCw,
   Save,
   X,
 } from "lucide-react";
@@ -23,14 +21,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchBeads, fetchBatchDeps, updateBead } from "@/lib/api";
-import { restageOrchestration } from "@/lib/orchestration-api";
-import {
-  ORCHESTRATION_RESTAGE_DRAFT_KEY,
-  type OrchestrationRestageDraft,
-} from "@/lib/orchestration-restage";
 import { naturalCompare } from "@/lib/beat-sort";
 import { startSession } from "@/lib/terminal-api";
-import type { Beat, BeatDependency, OrchestrationPlan } from "@/lib/types";
+import type { Beat, BeatDependency } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import {
@@ -120,29 +113,6 @@ function parseWaveName(title: string): string {
   return stripped || title;
 }
 
-function parseDescriptionLine(
-  description: string | undefined,
-  label: string
-): string | undefined {
-  if (!description) return undefined;
-  const pattern = new RegExp(`(?:^|\\n)${label}\\s*(.+?)(?:\\n|$)`, "i");
-  const match = description.match(pattern);
-  if (!match?.[1]) return undefined;
-  const value = match[1].trim();
-  return value || undefined;
-}
-
-function parseWaveObjective(description: string | undefined): string {
-  return (
-    parseDescriptionLine(description, "Objective:") ??
-    "Execute assigned beats for this scene."
-  );
-}
-
-function parseWaveNotes(description: string | undefined): string | undefined {
-  return parseDescriptionLine(description, "Notes:");
-}
-
 function countHierarchyNodes(nodes: HierarchyNode[]): number {
   return nodes.reduce((sum, node) => sum + 1 + countHierarchyNodes(node.children), 0);
 }
@@ -154,42 +124,6 @@ function measureDepth(nodes: HierarchyNode[], depth: number): number {
     maxDepth = Math.max(maxDepth, measureDepth(node.children, depth + 1));
   }
   return maxDepth;
-}
-
-function buildRestagePlan(tree: OrchestrationTree): OrchestrationPlan {
-  const waves = tree.waves
-    .map((wave, index) => ({
-      waveIndex: index + 1,
-      name: wave.name,
-      objective: parseWaveObjective(wave.beat.description),
-      agents: [],
-      beats: wave.children.map((child) => ({
-        id: child.id,
-        title: child.title,
-      })),
-      notes: parseWaveNotes(wave.beat.description),
-    }))
-    .filter((wave) => wave.beats.length > 0);
-
-  return {
-    summary: `Restaged ${waves.length} scene${
-      waves.length === 1 ? "" : "s"
-    } from tree ${tree.label}.`,
-    waves,
-    unassignedBeatIds: [],
-    assumptions: [`Restaged from existing scene tree ${tree.label}.`],
-  };
-}
-
-function buildRestageWaveEdits(
-  tree: OrchestrationTree
-): Record<string, { name: string; slug: string }> {
-  return Object.fromEntries(
-    tree.waves.map((wave, index) => [
-      String(index + 1),
-      { name: wave.name, slug: wave.slug },
-    ])
-  );
 }
 
 function buildChildrenIndex(beats: Beat[]): Map<string, Beat[]> {
@@ -547,8 +481,6 @@ function HierarchyList({
 }
 
 export function ExistingOrchestrationsView() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { activeRepo, registeredRepos } = useAppStore();
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
@@ -562,7 +494,6 @@ export function ExistingOrchestrationsView() {
   const [savingWaveId, setSavingWaveId] = useState<string | null>(null);
   const [triggeringWaveId, setTriggeringWaveId] = useState<string | null>(null);
   const [shootingAll, setShootingAll] = useState(false);
-  const [isRestaging, setIsRestaging] = useState(false);
   const [navigationLevel, setNavigationLevel] = useState<NavigationLevel>("tree");
   const [activeWaveIndexByTreeId, setActiveWaveIndexByTreeId] = useState<
     Record<string, number>
@@ -975,63 +906,6 @@ export function ExistingOrchestrationsView() {
     }
   }, [activeRepo, activeTree, terminals, upsertTerminal]);
 
-  const handleRewrite = useCallback(async () => {
-    if (!activeRepo || !activeTree) {
-      toast.error("No active tree to rewrite");
-      return;
-    }
-
-    const plan = buildRestagePlan(activeTree);
-    if (plan.waves.length === 0) {
-      toast.error("Active tree has no scenes with child tasks to restage");
-      return;
-    }
-
-    setIsRestaging(true);
-    let result;
-    try {
-      result = await restageOrchestration(
-        activeRepo,
-        plan,
-        `Rewrite existing scene tree ${activeTree.label}`
-      );
-    } catch {
-      setIsRestaging(false);
-      toast.error("Failed to rewrite scene tree");
-      return;
-    }
-    setIsRestaging(false);
-
-    if (!result.ok || !result.data) {
-      toast.error(result.error ?? "Failed to rewrite scene tree");
-      return;
-    }
-
-    const stagedPlan = result.data.plan ?? plan;
-    const draft: OrchestrationRestageDraft = {
-      repoPath: activeRepo,
-      session: result.data,
-      plan: stagedPlan,
-      waveEdits: buildRestageWaveEdits(activeTree),
-      objective: `Rewrite existing scene tree ${activeTree.label}`,
-      statusText: `Restaged ${stagedPlan.waves.length} scene${
-        stagedPlan.waves.length === 1 ? "" : "s"
-      } from ${activeTree.label}.`,
-    };
-
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem(
-        ORCHESTRATION_RESTAGE_DRAFT_KEY,
-        JSON.stringify(draft)
-      );
-    }
-
-    toast.success("Restaged into Scene view");
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("view", "orchestration");
-    router.push(`/beads?${params.toString()}`);
-  }, [activeRepo, activeTree, router, searchParams]);
-
   if (!activeRepo) {
     return (
       <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
@@ -1083,20 +957,6 @@ export function ExistingOrchestrationsView() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              size="sm"
-              onClick={() => void handleRewrite()}
-              disabled={!activeTree || isRestaging}
-              className="gap-1.5"
-              title="Rewrite scene plan"
-            >
-              {isRestaging ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <RefreshCw className="size-3.5" />
-              )}
-              Rewrite
-            </Button>
             <Button
               size="sm"
               className="gap-1.5"

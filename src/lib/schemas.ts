@@ -110,13 +110,11 @@ export const actionAgentMappingsSchema = z
   .object({
     take: z.string().default(""),
     scene: z.string().default(""),
-    direct: z.string().default(""),
     breakdown: z.string().default(""),
   })
   .default({
     take: "",
     scene: "",
-    direct: "",
     breakdown: "",
   });
 

@@ -366,7 +366,6 @@ export const componentSchemas = {
         properties: {
           take: { type: "string" },
           scene: { type: "string" },
-          direct: { type: "string" },
           breakdown: { type: "string" },
         },
       },

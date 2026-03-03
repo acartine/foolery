@@ -16,7 +16,6 @@ import type { RelationshipDeps } from "@/components/beat-form";
 import { createBead, addDep, fetchWorkflows } from "@/lib/api";
 import { fetchSettings } from "@/lib/settings-api";
 import type { CreateBeatInput } from "@/lib/schemas";
-import { buildBeadBreakdownPrompt, setDirectPrefillPayload } from "@/lib/breakdown-prompt";
 import { buildBeadFocusHref, stripBeadPrefix } from "@/lib/bead-navigation";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
@@ -206,14 +205,11 @@ export function CreateBeatDialog({
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["beads"] });
 
-      setDirectPrefillPayload({
-        prompt: buildBeadBreakdownPrompt(result.data.id, data.title),
-        autorun: true,
-        sourceBeatId: result.data.id,
-      });
-
       const params = new URLSearchParams(searchParams.toString());
-      params.set("view", "orchestration");
+      params.set("view", "breakdown");
+      params.set("parent", result.data.id);
+      params.delete("bead");
+      params.delete("detailRepo");
       router.push(`/beads?${params.toString()}`);
     } finally {
       submittingRef.current = false;

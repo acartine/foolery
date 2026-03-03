@@ -53,7 +53,6 @@ const DEFAULTS: SettingsData = {
   actions: {
     take: "",
     scene: "",
-    direct: "",
     breakdown: "",
   },
   verification: {
