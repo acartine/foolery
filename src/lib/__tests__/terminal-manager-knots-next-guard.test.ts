@@ -178,6 +178,43 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(interactionLog.logPrompt).toHaveBeenCalledWith("show this prompt in history", { source: "initial" });
   });
 
+  it("logs app-generated initial prompt for one-shot scene sessions", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-3000",
+        title: "Scene prompt visibility",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({
+      ok: true,
+      data: [
+        {
+          id: "foolery-3001",
+          title: "Child beat",
+          state: "ready_for_implementation",
+          isAgentClaimable: true,
+        },
+      ],
+    });
+    backend.buildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "scene app prompt" },
+    });
+
+    await createSession("foolery-3000", "/tmp/repo");
+
+    expect(spawnedChildren).toHaveLength(1);
+    expect(interactionLog.logPrompt).toHaveBeenCalledTimes(1);
+    expect(interactionLog.logPrompt).toHaveBeenCalledWith(
+      expect.stringContaining("scene app prompt"),
+      { source: "initial" },
+    );
+  });
+
   it("logs take-loop prompts for one-shot agents", async () => {
     backend.get.mockResolvedValue({
       ok: true,
