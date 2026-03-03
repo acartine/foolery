@@ -412,7 +412,7 @@ function BeadsPageInner() {
   }, [beats, detailBeatId, detailRepo]);
 
   return (
-    <div className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2">
+    <div className="mx-auto max-w-[95vw] overflow-x-hidden px-4 pt-2">
       {isListView && (
         <div className="mb-2 flex h-10 items-center border-b border-border/60 pb-2">
           <FilterBar
