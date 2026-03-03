@@ -184,15 +184,14 @@ describe("getVerificationEvents", () => {
 // ── enterVerification idempotency ───────────────────────────
 
 describe("enterVerification idempotency", () => {
-  it("skips label update when transition:verification already present", async () => {
+  it("skips label update when stage:verification already present", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
-    // Bead already has transition:verification and commit label
+    // Bead already has stage:verification and commit label
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -225,7 +224,7 @@ describe("enterVerification get failure", () => {
       // transitionToRetry get succeeds
       return {
         ok: true,
-        data: makeBeat({ labels: ["transition:verification"] }),
+        data: makeBeat({ labels: ["stage:verification"] }),
       };
     });
 
@@ -250,14 +249,14 @@ describe("ensureCommitLabel remediation", () => {
       }
       if (callCount === 2) {
         // ensureCommitLabel first check: no commit
-        return { ok: true, data: makeBeat({ labels: ["transition:verification", "stage:verification"] }) };
+        return { ok: true, data: makeBeat({ labels: ["stage:verification"] }) };
       }
       if (callCount === 3) {
         // remediation retry: get fails
         return { ok: false, error: { message: "network error" } };
       }
       // transitionToRetry
-      return { ok: true, data: makeBeat({ labels: ["transition:verification"] }) };
+      return { ok: true, data: makeBeat({ labels: ["stage:verification"] }) };
     });
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
@@ -276,7 +275,7 @@ describe("launchVerifier error paths", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -294,7 +293,7 @@ describe("launchVerifier error paths", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -313,7 +312,7 @@ describe("launchVerifier error paths", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -331,7 +330,7 @@ describe("launchVerifier error paths", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -355,7 +354,7 @@ describe("applyOutcome fail-bugs", () => {
       ok: true,
       data: makeBeat({
         notes: "Previous notes",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -389,7 +388,7 @@ describe("applyOutcome get failure", () => {
         return {
           ok: true,
           data: makeBeat({
-            labels: ["transition:verification", "stage:verification", "commit:abc123"],
+            labels: ["stage:verification", "commit:abc123"],
           }),
         };
       }
@@ -414,7 +413,7 @@ describe("appendVerifierNotes truncation", () => {
       ok: true,
       data: makeBeat({
         notes: "",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -450,7 +449,7 @@ describe("appendVerifierNotes truncation", () => {
       ok: true,
       data: makeBeat({
         notes: "",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -472,7 +471,7 @@ describe("maybeAutoRetry error handling", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -492,7 +491,7 @@ describe("maybeAutoRetry error handling", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -546,7 +545,7 @@ describe("transitionToRetry uses nextKnot", () => {
       // transitionToRetry get succeeds with retry labels
       return {
         ok: true,
-        data: makeBeat({ labels: ["transition:verification"] }),
+        data: makeBeat({ labels: ["stage:verification"] }),
       };
     });
 
@@ -591,7 +590,7 @@ describe("multiple beads processing", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -613,7 +612,7 @@ describe("launchVerifier output parsing", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -637,7 +636,7 @@ describe("launchVerifier output parsing", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -658,7 +657,7 @@ describe("launchVerifier output parsing", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -698,7 +697,7 @@ describe("enterVerification state update", () => {
       return {
         ok: true,
         data: makeBeat({
-          labels: ["transition:verification", "stage:verification", "commit:abc123"],
+          labels: ["stage:verification", "commit:abc123"],
         }),
       };
     });
@@ -726,7 +725,7 @@ describe("extractRejectionSummary edge cases", () => {
       ok: true,
       data: makeBeat({
         notes: "",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -752,7 +751,7 @@ describe("extractRejectionSummary edge cases", () => {
       ok: true,
       data: makeBeat({
         notes: "",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 
@@ -782,7 +781,7 @@ describe("verifier prompt context", () => {
         description: "Implement the feature",
         acceptance: "All tests pass",
         notes: "Note: check edge cases",
-        labels: ["transition:verification", "stage:verification", "commit:abc123"],
+        labels: ["stage:verification", "commit:abc123"],
       }),
     });
 

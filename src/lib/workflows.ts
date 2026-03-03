@@ -715,23 +715,6 @@ export function beatInRetake(
 }
 
 /**
- * Map an active-phase state to its queued counterpart.
- * e.g. "implementation" → "ready_for_implementation".
- * Returns the state unchanged if it is not in an active phase.
- */
-export function rollbackActivePhase(state: string): string {
-  const resolved = resolveStep(state);
-  if (!resolved || resolved.phase !== StepPhase.Active) return state;
-
-  for (const [candidate, res] of RESOLVED_STEP_MAP.entries()) {
-    if (res.step === resolved.step && res.phase === StepPhase.Queued) {
-      return candidate;
-    }
-  }
-  return state;
-}
-
-/**
  * Returns true when the state is a queue state (queued phase) or a terminal state.
  * An agent must never end a work iteration in an active (action) state;
  * this helper expresses the invariant check.

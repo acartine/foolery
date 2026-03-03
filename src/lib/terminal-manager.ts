@@ -32,7 +32,6 @@ import {
   isReviewStep,
   priorActionStep,
   resolveStep,
-  rollbackActivePhase,
   workflowDescriptorById,
 } from "@/lib/workflows";
 import { recordStepAgent, resolvePoolAgent, getLastStepAgent } from "@/lib/agent-pool";
@@ -935,8 +934,7 @@ export async function createSession(
     });
 
     // Layer 3: advance to the next queue/terminal state via kno next
-    const rolledBack = rollbackActivePhase(current.state);
-    console.warn(`${tag} [WARN] advancing via nextKnot (would-be rollback: ${current.state} → ${rolledBack})`);
+    console.warn(`${tag} [WARN] advancing via nextKnot from action state: ${current.state}`);
     const nextResult = await nextKnotGuarded(beatId, current.state, repoPath);
     if (nextResult.ok) {
       pushEvent({

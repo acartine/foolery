@@ -70,7 +70,6 @@ export function buildVerificationRetryCommands(
   const noDaemon = beadsNoDaemonFlag(options);
   return [
     `bd label remove ${quoteId(id)} stage:verification${noDaemon}`,
-    `bd label remove ${quoteId(id)} transition:verification${noDaemon}`,
     `bd label add ${quoteId(id)} stage:retry${noDaemon}`,
   ];
 }
@@ -87,7 +86,6 @@ export function buildVerificationPassCommands(
   const noDaemon = beadsNoDaemonFlag(options);
   return [
     `bd label remove ${quoteId(id)} stage:verification${noDaemon}`,
-    `bd label remove ${quoteId(id)} transition:verification${noDaemon}`,
     `bd close ${quoteId(id)}`,
   ];
 }

@@ -9,7 +9,6 @@ import {
   findCommitLabelRaw,
   findAllCommitLabels,
   findAllStageLabels,
-  hasTransitionLock,
   isInVerification,
   isInRetry,
   isVerificationEligibleAction,
@@ -23,7 +22,6 @@ import {
   releaseVerificationLock,
   hasVerificationLock,
   _clearAllLocks,
-  LABEL_TRANSITION_VERIFICATION,
   LABEL_STAGE_VERIFICATION,
   LABEL_STAGE_RETRY,
 } from "@/lib/verification-workflow";
@@ -121,11 +119,6 @@ describe("findAttemptLabel / findCommitLabelRaw", () => {
 // ── Beat state checks ───────────────────────────────────────
 
 describe("beat state checks", () => {
-  it("hasTransitionLock detects lock", () => {
-    expect(hasTransitionLock(makeBeat({ labels: [LABEL_TRANSITION_VERIFICATION] }))).toBe(true);
-    expect(hasTransitionLock(makeBeat({ labels: [] }))).toBe(false);
-  });
-
   it("isInVerification detects stage", () => {
     expect(isInVerification(makeBeat({ labels: [LABEL_STAGE_VERIFICATION] }))).toBe(true);
     expect(isInVerification(makeBeat({ labels: [] }))).toBe(false);
@@ -160,50 +153,34 @@ describe("isVerificationEligibleAction", () => {
 // ── State machine transitions (xmg8.1.1) ───────────────────
 
 describe("computeEntryLabels", () => {
-  it("adds transition and stage labels on fresh entry", () => {
+  it("adds stage:verification label on fresh entry", () => {
     const result = computeEntryLabels([]);
-    expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
     expect(result.add).toContain(LABEL_STAGE_VERIFICATION);
     expect(result.remove).toEqual([]);
   });
 
-  it("is idempotent when already in transition", () => {
-    const result = computeEntryLabels([LABEL_TRANSITION_VERIFICATION, LABEL_STAGE_VERIFICATION]);
+  it("is idempotent when already in verification", () => {
+    const result = computeEntryLabels([LABEL_STAGE_VERIFICATION]);
     expect(result.add).toEqual([]);
     expect(result.remove).toEqual([]);
   });
 
   it("removes stage:retry when re-entering verification", () => {
     const result = computeEntryLabels([LABEL_STAGE_RETRY]);
-    expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
     expect(result.add).toContain(LABEL_STAGE_VERIFICATION);
     expect(result.remove).toContain(LABEL_STAGE_RETRY);
-  });
-
-  it("does not re-add stage:verification if already present", () => {
-    const result = computeEntryLabels([LABEL_STAGE_VERIFICATION]);
-    expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
-    expect(result.add).not.toContain(LABEL_STAGE_VERIFICATION);
   });
 
   it("removes all stage labels when entering verification", () => {
     const result = computeEntryLabels(["stage:retry", "stage:custom"]);
     expect(result.remove).toContain("stage:retry");
     expect(result.remove).toContain("stage:custom");
-    expect(result.add).toContain(LABEL_TRANSITION_VERIFICATION);
     expect(result.add).toContain(LABEL_STAGE_VERIFICATION);
   });
 });
 
 describe("computePassLabels", () => {
-  it("removes transition and stage labels", () => {
-    const result = computePassLabels([LABEL_TRANSITION_VERIFICATION, LABEL_STAGE_VERIFICATION]);
-    expect(result.remove).toContain(LABEL_TRANSITION_VERIFICATION);
-    expect(result.remove).toContain(LABEL_STAGE_VERIFICATION);
-    expect(result.add).toEqual([]);
-  });
-
-  it("handles partial label state gracefully", () => {
+  it("removes stage labels", () => {
     const result = computePassLabels([LABEL_STAGE_VERIFICATION]);
     expect(result.remove).toContain(LABEL_STAGE_VERIFICATION);
     expect(result.add).toEqual([]);
@@ -211,12 +188,10 @@ describe("computePassLabels", () => {
 
   it("removes commit and attempt labels on pass for clean close", () => {
     const result = computePassLabels([
-      "transition:verification",
       "stage:verification",
       "commit:abc123",
       "attempt:2",
     ]);
-    expect(result.remove).toContain("transition:verification");
     expect(result.remove).toContain("stage:verification");
     expect(result.remove).toContain("commit:abc123");
     expect(result.remove).toContain("attempt:2");
@@ -224,7 +199,6 @@ describe("computePassLabels", () => {
 
   it("removes multiple commit labels on pass", () => {
     const result = computePassLabels([
-      "transition:verification",
       "stage:verification",
       "commit:abc",
       "commit:def",
@@ -237,11 +211,9 @@ describe("computePassLabels", () => {
 describe("computeRetryLabels", () => {
   it("transitions to retry with incremented attempt", () => {
     const result = computeRetryLabels([
-      LABEL_TRANSITION_VERIFICATION,
       LABEL_STAGE_VERIFICATION,
       "attempt:2",
     ]);
-    expect(result.remove).toContain(LABEL_TRANSITION_VERIFICATION);
     expect(result.remove).toContain(LABEL_STAGE_VERIFICATION);
     expect(result.remove).toContain("attempt:2");
     expect(result.add).toContain(LABEL_STAGE_RETRY);
@@ -249,14 +221,13 @@ describe("computeRetryLabels", () => {
   });
 
   it("starts at attempt:1 when no prior attempts", () => {
-    const result = computeRetryLabels([LABEL_TRANSITION_VERIFICATION, LABEL_STAGE_VERIFICATION]);
+    const result = computeRetryLabels([LABEL_STAGE_VERIFICATION]);
     expect(result.add).toContain("attempt:1");
     expect(result.add).toContain(LABEL_STAGE_RETRY);
   });
 
   it("removes existing commit label on retry", () => {
     const result = computeRetryLabels([
-      LABEL_TRANSITION_VERIFICATION,
       LABEL_STAGE_VERIFICATION,
       "commit:abc123",
     ]);
@@ -267,7 +238,6 @@ describe("computeRetryLabels", () => {
 
   it("handles retry with both commit and attempt labels", () => {
     const result = computeRetryLabels([
-      LABEL_TRANSITION_VERIFICATION,
       LABEL_STAGE_VERIFICATION,
       "commit:def456",
       "attempt:2",
@@ -280,7 +250,6 @@ describe("computeRetryLabels", () => {
 
   it("removes ALL commit labels when multiple exist", () => {
     const result = computeRetryLabels([
-      LABEL_TRANSITION_VERIFICATION,
       LABEL_STAGE_VERIFICATION,
       "commit:abc123",
       "commit:def456",
@@ -295,7 +264,6 @@ describe("computeRetryLabels", () => {
 
   it("removes all stage labels not just stage:verification", () => {
     const result = computeRetryLabels([
-      LABEL_TRANSITION_VERIFICATION,
       LABEL_STAGE_VERIFICATION,
       "stage:custom",
     ]);

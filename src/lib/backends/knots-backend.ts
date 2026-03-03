@@ -39,10 +39,8 @@ import {
   mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
   resolveStep,
-  rollbackActivePhase,
   StepPhase,
 } from "@/lib/workflows";
-import { isTransitionLocked } from "@/lib/wave-slugs";
 
 const EDGE_CACHE_TTL_MS = 2_000;
 const WORKFLOW_CACHE_TTL_MS = 10_000;
@@ -331,10 +329,7 @@ function toBeat(
 
   const tags = (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0);
   const rawWorkflowState = normalizeStateForWorkflow(knot.state, workflow);
-  // Roll back active-phase states to queued unless the beat is transition-locked
-  const workflowState = isTransitionLocked(tags)
-    ? rawWorkflowState
-    : rollbackActivePhase(rawWorkflowState);
+  const workflowState = rawWorkflowState;
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const notes = stringifyNotes(knot.notes);
 

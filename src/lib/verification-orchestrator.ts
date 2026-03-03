@@ -22,7 +22,7 @@ import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
-  LABEL_TRANSITION_VERIFICATION,
+  LABEL_STAGE_VERIFICATION,
   extractCommitLabel,
   extractAttemptNumber,
   computeEntryLabels,
@@ -194,8 +194,8 @@ async function enterVerification(beadId: string, repoPath: string): Promise<void
 
   const labels = bead.labels ?? [];
 
-  // Already in transition — idempotent noop
-  if (labels.includes(LABEL_TRANSITION_VERIFICATION)) {
+  // Already in verification — idempotent noop
+  if (labels.includes(LABEL_STAGE_VERIFICATION)) {
     return;
   }
 

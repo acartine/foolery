@@ -180,8 +180,7 @@ describe("pass path", () => {
         ok: true,
         data: makeBeat({
           labels: [
-            "transition:verification",
-            "stage:verification",
+              "stage:verification",
             "commit:abc123",
           ],
         }),
@@ -231,7 +230,7 @@ describe("retry paths", () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
-        labels: ["transition:verification", "stage:verification"],
+        labels: ["stage:verification"],
       }),
     });
 
@@ -257,7 +256,6 @@ describe("retry paths", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -289,7 +287,6 @@ describe("idempotency", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -312,20 +309,20 @@ describe("idempotency", () => {
 
 // ── Test: edit lock (xmg8.4.4) ─────────────────────────────
 
-describe("edit lock labels", () => {
-  it("entry labels include transition:verification", () => {
+describe("verification labels", () => {
+  it("entry labels include stage:verification", () => {
     const result = computeEntryLabels([]);
-    expect(result.add).toContain("transition:verification");
+    expect(result.add).toContain("stage:verification");
   });
 
-  it("pass labels remove transition:verification", () => {
-    const result = computePassLabels(["transition:verification", "stage:verification"]);
-    expect(result.remove).toContain("transition:verification");
+  it("pass labels remove stage:verification", () => {
+    const result = computePassLabels(["stage:verification"]);
+    expect(result.remove).toContain("stage:verification");
   });
 
-  it("retry labels remove transition:verification", () => {
-    const result = computeRetryLabels(["transition:verification", "stage:verification"]);
-    expect(result.remove).toContain("transition:verification");
+  it("retry labels remove stage:verification", () => {
+    const result = computeRetryLabels(["stage:verification"]);
+    expect(result.remove).toContain("stage:verification");
   });
 });
 
@@ -340,7 +337,6 @@ describe("verifier output capture on failure", () => {
       data: makeBeat({
         notes: "Existing notes here",
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -375,7 +371,6 @@ describe("verifier output capture on failure", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -398,7 +393,6 @@ describe("verifier output capture on failure", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -421,7 +415,6 @@ describe("verifier output capture on failure", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],
@@ -444,7 +437,6 @@ describe("verifier output capture on failure", () => {
       ok: true,
       data: makeBeat({
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
           "attempt:2",
@@ -470,7 +462,6 @@ describe("verifier output capture on failure", () => {
       data: makeBeat({
         notes: "",
         labels: [
-          "transition:verification",
           "stage:verification",
           "commit:abc123",
         ],

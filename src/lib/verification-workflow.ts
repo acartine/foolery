@@ -7,23 +7,21 @@
  * ## State Machine
  *
  * ```
- *  agent-complete ──► transition:verification + stage:verification
+ *  agent-complete ──► stage:verification
  *                          │
  *                          ├── commit label missing?
  *                          │     └── remediate (prompt agent / relaunch)
  *                          │           └── still missing? → stage:retry + attempt:N
  *                          │
  *                          ├── commit label present → launch verifier
- *                          │     ├── pass → remove transition/stage labels, close bead
+ *                          │     ├── pass → remove stage labels, close bead
  *                          │     └── fail → stage:retry + attempt:N
  *                          │
- *                          └── idempotent re-entry: noop if already in transition
+ *                          └── idempotent re-entry: noop if already in verification
  * ```
  *
  * ## Label Invariants
  *
- * - `transition:verification` — transient lock; present only while the workflow
- *   is actively running. Prevents edits (UI + API). Removed on every terminal state.
  * - `stage:verification` — indicates the bead is queued/undergoing verification.
  *   Set at workflow entry, removed on pass or retry.
  * - `stage:retry` — set when verification fails; mutually exclusive with stage:verification.
@@ -32,7 +30,7 @@
  *
  * ## Idempotency
  *
- * - If `transition:verification` is already present, the workflow is a noop (deduped).
+ * - If `stage:verification` is already present, the workflow is a noop (deduped).
  * - The in-memory lock map prevents concurrent launches for the same bead.
  */
 
@@ -45,7 +43,6 @@ import {
 
 // ── Label constants ─────────────────────────────────────────
 
-export const LABEL_TRANSITION_VERIFICATION = "transition:verification";
 export const LABEL_STAGE_VERIFICATION = "stage:verification";
 export const LABEL_STAGE_RETRY = "stage:retry";
 
@@ -106,11 +103,6 @@ export function findAllStageLabels(labels: string[]): string[] {
   return labels.filter((l) => l.startsWith("stage:"));
 }
 
-/** Check if a bead has the transition:verification lock. */
-export function hasTransitionLock(beat: Beat): boolean {
-  return (beat.labels ?? []).includes(LABEL_TRANSITION_VERIFICATION);
-}
-
 /** Check if a beat is in stage:verification. */
 export function isInVerification(beat: Beat): boolean {
   return (beat.labels ?? []).includes(LABEL_STAGE_VERIFICATION);
@@ -161,19 +153,15 @@ export interface VerificationTransitionLabels {
 
 /**
  * Compute the label mutations needed to enter the verification workflow.
- * Idempotent: if transition:verification is already present, returns empty mutations.
+ * Idempotent: if stage:verification is already present, returns empty mutations.
  */
 export function computeEntryLabels(currentLabels: string[]): VerificationTransitionLabels {
-  if (currentLabels.includes(LABEL_TRANSITION_VERIFICATION)) {
+  if (currentLabels.includes(LABEL_STAGE_VERIFICATION)) {
     return { add: [], remove: [] };
   }
 
-  const add: string[] = [LABEL_TRANSITION_VERIFICATION];
+  const add: string[] = [LABEL_STAGE_VERIFICATION];
   const remove: string[] = [];
-
-  if (!currentLabels.includes(LABEL_STAGE_VERIFICATION)) {
-    add.push(LABEL_STAGE_VERIFICATION);
-  }
 
   // Remove ALL other stage labels (e.g., stage:retry, stage:custom)
   for (const label of findAllStageLabels(currentLabels)) {
@@ -187,14 +175,10 @@ export function computeEntryLabels(currentLabels: string[]): VerificationTransit
 
 /**
  * Compute the label mutations for a successful verification (pass).
- * Removes both transition and stage labels, closes the bead.
+ * Removes stage labels and closes the bead.
  */
 export function computePassLabels(currentLabels: string[]): VerificationTransitionLabels {
   const remove: string[] = [];
-
-  if (currentLabels.includes(LABEL_TRANSITION_VERIFICATION)) {
-    remove.push(LABEL_TRANSITION_VERIFICATION);
-  }
 
   // Remove all stage labels
   for (const label of findAllStageLabels(currentLabels)) {
@@ -223,10 +207,6 @@ export function computePassLabels(currentLabels: string[]): VerificationTransiti
 export function computeRetryLabels(currentLabels: string[]): VerificationTransitionLabels {
   const remove: string[] = [];
   const add: string[] = [LABEL_STAGE_RETRY];
-
-  if (currentLabels.includes(LABEL_TRANSITION_VERIFICATION)) {
-    remove.push(LABEL_TRANSITION_VERIFICATION);
-  }
 
   // Remove ALL stage labels (stage:retry replaces them all)
   for (const label of findAllStageLabels(currentLabels)) {

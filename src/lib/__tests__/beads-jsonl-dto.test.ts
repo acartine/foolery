@@ -77,8 +77,7 @@ describe("normalizeFromJsonl", () => {
     expect(beat.notes).toBe("See design doc");
     expect(beat.acceptance).toBe("Widget renders correctly");
     expect(beat.type).toBe("feature");
-    // rollbackActivePhase maps "planning" → "ready_for_planning" for non-locked beats
-    expect(beat.state).toBe("ready_for_planning");
+    expect(beat.state).toBe("planning");
     expect(beat.priority).toBe(3);
     expect(beat.labels).toEqual(["frontend", "v2"]);
     expect(beat.assignee).toBe("alice");
@@ -303,10 +302,9 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.type).toBe(domain.type);
     expect(restored.state).toBe(domain.state);
     expect(restored.priority).toBe(domain.priority);
-    // rollbackActivePhase maps "planning" → "ready_for_planning" so the round-trip label reflects that
     expect(restored.labels).toEqual([
       ...domain.labels,
-      "wf:state:ready_for_planning",
+      "wf:state:planning",
       "wf:profile:autopilot",
     ]);
     expect(restored.assignee).toBe(domain.assignee);

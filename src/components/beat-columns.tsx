@@ -19,8 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, ChevronDown, X, Clapperboard, Square, ShieldCheck, Undo2 } from "lucide-react";
-import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug, isTransitionLocked } from "@/lib/wave-slugs";
+import { ChevronRight, ChevronDown, X, Clapperboard, Square, Undo2 } from "lucide-react";
+import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug } from "@/lib/wave-slugs";
 import { builtinProfileDescriptor, builtinWorkflowDescriptors, isRollbackTransition } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
@@ -139,21 +139,6 @@ function repoPathForBeat(beat: Beat): string | undefined {
   return typeof repoPath === "string" && repoPath.trim().length > 0 ? repoPath : undefined;
 }
 
-function TransitionLockBadge({ beat }: { beat: Beat }) {
-  const hasTransition = isTransitionLocked(beat.labels ?? []);
-  if (!hasTransition) return null;
-
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none bg-amber-100 text-amber-700 animate-pulse"
-      title="Auto-verification in progress"
-    >
-      <ShieldCheck className="size-3 animate-spin" style={{ animationDuration: "3s" }} />
-      Verifying
-    </span>
-  );
-}
-
 function AddLabelDropdown({
   beatId,
   existingLabels,
@@ -226,10 +211,8 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
 }) {
   const labels = beat.labels ?? [];
   const isOrchestrated = labels.some(isWaveLabel);
-  const isLocked = isTransitionLocked(labels);
   const waveSlug = extractWaveSlug(labels);
   const visibleLabels = labels.filter((l) => !isInternalLabel(l));
-  const effectiveOnUpdateBeat = isLocked ? undefined : onUpdateBeat;
   return (
     <div className="flex flex-col gap-0.5">
       {onTitleClick ? (
@@ -268,14 +251,14 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
             className={`inline-flex items-center gap-0.5 rounded px-1 py-0 text-[10px] font-medium leading-none ${labelColor(label)}`}
           >
             {label}
-            {effectiveOnUpdateBeat && !isReadOnlyLabel(label) && (
+            {onUpdateBeat && !isReadOnlyLabel(label) && (
               <button
                 type="button"
                 className="ml-0.5 rounded-full hover:bg-black/10 p-0.5 leading-none"
                 title={`Remove ${label}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  effectiveOnUpdateBeat(beat.id, { removeLabels: [label] }, repoPathForBeat(beat));
+                  onUpdateBeat(beat.id, { removeLabels: [label] }, repoPathForBeat(beat));
                 }}
               >
                 <X className="size-3" />
@@ -283,11 +266,11 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
             )}
           </span>
         ))}
-        {effectiveOnUpdateBeat && (
+        {onUpdateBeat && (
           <AddLabelDropdown
             beatId={beat.id}
             existingLabels={labels}
-            onUpdateBeat={effectiveOnUpdateBeat}
+            onUpdateBeat={onUpdateBeat}
             repoPath={repoPathForBeat(beat)}
             allLabels={allLabels}
           />
@@ -538,14 +521,12 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
       const isRolling = Boolean(shippingByBeatId[row.original.id]);
       const isParentRolling = parentRollingBeatIds.has(row.original.id);
       const isInheritedRolling = isRolling || isParentRolling;
-      const isLocked = isTransitionLocked(row.original.labels ?? []);
       const state = row.original.state;
       const isTerminal = state === "shipped" || state === "abandoned" || state === "closed";
       const pulseClass = isInheritedRolling && !isTerminal ? "animate-pulse" : "";
       return (
         <div className="flex items-center gap-0.5">
-          <TransitionLockBadge beat={row.original} />
-          {onUpdateBeat && !isLocked && !isInheritedRolling ? (() => {
+          {onUpdateBeat && !isInheritedRolling ? (() => {
             const workflow = builtinProfileDescriptor(row.original.profileId);
             const rawKnoState = typeof row.original.metadata?.knotsState === "string"
               ? row.original.metadata.knotsState
@@ -614,7 +595,6 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         const beat = row.original;
         const isTerminal = beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed";
         if (isTerminal || beat.type === "gate") return null;
-        if (isTransitionLocked(beat.labels ?? [])) return null;
         if (beat.nextActionOwnerKind === "human") return null;
         const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
         const isChildOfRolling = parentRollingBeatIds.has(beat.id);
