@@ -18,6 +18,8 @@ const MAX_LINE_CHARS = 120_000;
 const DEV_LOG_DIRNAME = ".foolery-logs";
 const DOT_GIT = ".git";
 const GITDIR_PREFIX = "gitdir:";
+const CLAUDE_WORKTREES_SEGMENT = /^(.*?)[\\/]\.claude[\\/]worktrees[\\/][^\\/]+(?:[\\/].*)?$/u;
+const SIBLING_WORKTREE_PATTERN = /^(.*)-wt-[^\\/]+$/u;
 
 interface AgentHistoryQuery {
   repoPath?: string;
@@ -77,6 +79,65 @@ function devLogRootForRepoPath(repoPath: string): string | null {
   const trimmed = repoPath.trim();
   if (!trimmed) return null;
   return join(trimmed, DEV_LOG_DIRNAME);
+}
+
+function inferCanonicalRepoPath(repoPath: string): string | null {
+  const trimmed = trimPathSeparators(repoPath.trim());
+  if (!trimmed) return null;
+
+  const claudeMatch = trimmed.match(CLAUDE_WORKTREES_SEGMENT);
+  if (claudeMatch?.[1]) {
+    return trimPathSeparators(claudeMatch[1]);
+  }
+
+  const baseName = basename(trimmed);
+  const siblingMatch = baseName.match(SIBLING_WORKTREE_PATTERN);
+  if (siblingMatch?.[1]) {
+    return trimPathSeparators(join(dirname(trimmed), siblingMatch[1]));
+  }
+
+  return null;
+}
+
+async function listSubdirectories(dir: string): Promise<string[]> {
+  try {
+    const entries = await readdir(dir, { withFileTypes: true, encoding: "utf8" });
+    return entries.filter((entry) => entry.isDirectory()).map((entry) => join(dir, entry.name));
+  } catch {
+    return [];
+  }
+}
+
+async function discoverRelatedRepoPaths(repoPath: string): Promise<string[]> {
+  const trimmed = trimPathSeparators(repoPath.trim());
+  if (!trimmed) return [];
+
+  const baseRoots = new Set<string>([trimmed]);
+  const canonicalPath = inferCanonicalRepoPath(trimmed);
+  if (canonicalPath) {
+    baseRoots.add(canonicalPath);
+  }
+
+  const related = new Set<string>(baseRoots);
+  for (const baseRoot of baseRoots) {
+    related.add(join(baseRoot, ".knots", "_worktree"));
+
+    const siblingCandidates = await listSubdirectories(dirname(baseRoot));
+    const siblingPrefix = `${basename(baseRoot)}-wt-`;
+    for (const siblingPath of siblingCandidates) {
+      const siblingName = basename(siblingPath);
+      if (siblingName.startsWith(siblingPrefix)) {
+        related.add(trimPathSeparators(siblingPath));
+      }
+    }
+
+    const claudeWorktrees = await listSubdirectories(join(baseRoot, ".claude", "worktrees"));
+    for (const worktreePath of claudeWorktrees) {
+      related.add(trimPathSeparators(worktreePath));
+    }
+  }
+
+  return Array.from(related.values());
 }
 
 function trimPathSeparators(value: string): string {
@@ -204,19 +265,27 @@ async function repoPathsEquivalent(
   return Boolean(leftIdentity && rightIdentity && leftIdentity === rightIdentity);
 }
 
-function resolveHistoryLogRoots(query: AgentHistoryQuery): string[] {
+async function resolveHistoryLogRoots(query: AgentHistoryQuery): Promise<string[]> {
   if (query.logRoot) {
     return [query.logRoot];
   }
 
   const roots = new Set<string>([resolveInteractionLogRoot()]);
+  const repoCandidates = new Set<string>();
   for (const repoPath of [query.repoPath, query.beadRepoPath]) {
     if (!repoPath) continue;
-    const devRoot = devLogRootForRepoPath(repoPath);
-    if (devRoot) {
-      roots.add(devRoot);
+    const relatedRepoPaths = await discoverRelatedRepoPaths(repoPath);
+    for (const relatedRepoPath of relatedRepoPaths) {
+      repoCandidates.add(relatedRepoPath);
     }
   }
+
+  for (const repoCandidate of repoCandidates) {
+    const devRoot = devLogRootForRepoPath(repoCandidate);
+    if (!devRoot) continue;
+    roots.add(devRoot);
+  }
+
   return Array.from(roots.values());
 }
 
@@ -460,7 +529,7 @@ export async function readAgentHistory(
   query: AgentHistoryQuery = {},
 ): Promise<AgentHistoryPayload> {
   const logFileSet = new Set<string>();
-  const roots = resolveHistoryLogRoots(query);
+  const roots = await resolveHistoryLogRoots(query);
   for (const root of roots) {
     const filesForRoot: string[] = [];
     await collectLogFiles(root, filesForRoot);

@@ -326,6 +326,94 @@ describe("readAgentHistory (additional coverage)", () => {
     }
   });
 
+  it("includes sibling worktree .foolery-logs roots for the active repository", async () => {
+    const originalHome = process.env.HOME;
+    const originalNodeEnv = process.env.NODE_ENV;
+    const fakeHome = join(tempDir, "fake-home");
+    const repoPath = join(tempDir, "repo-worktree");
+    const siblingWorktreePath = join(tempDir, "repo-worktree-wt-feature-1");
+
+    await mkdir(fakeHome, { recursive: true });
+    await mkdir(repoPath, { recursive: true });
+    await mkdir(siblingWorktreePath, { recursive: true });
+
+    await writeLog(join(siblingWorktreePath, ".foolery-logs"), "repo-worktree/2026-03-03/worktree.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-03-03T12:00:00.000Z",
+        sessionId: "sibling-worktree-1",
+        interactionType: "take",
+        repoPath: siblingWorktreePath,
+        beadIds: ["sibling-worktree-bead"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-03-03T12:01:00.000Z",
+        sessionId: "sibling-worktree-1",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    (process.env as Record<string, string | undefined>).HOME = fakeHome;
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+
+    try {
+      const history = await readAgentHistory({ repoPath });
+      expect(history.beats.map((b) => b.beadId)).toEqual(["sibling-worktree-bead"]);
+      expect(history.beats[0]?.repoPath).toBe(repoPath);
+    } finally {
+      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
+      else (process.env as Record<string, string | undefined>).HOME = originalHome;
+      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
+      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it("includes nested .claude/worktrees .foolery-logs roots for the active repository", async () => {
+    const originalHome = process.env.HOME;
+    const originalNodeEnv = process.env.NODE_ENV;
+    const fakeHome = join(tempDir, "fake-home");
+    const repoPath = join(tempDir, "repo-nested");
+    const nestedWorktreePath = join(repoPath, ".claude", "worktrees", "agent-abc123");
+
+    await mkdir(fakeHome, { recursive: true });
+    await mkdir(nestedWorktreePath, { recursive: true });
+
+    await writeLog(join(nestedWorktreePath, ".foolery-logs"), "repo-nested/2026-03-03/nested.jsonl", [
+      {
+        kind: "session_start",
+        ts: "2026-03-03T12:30:00.000Z",
+        sessionId: "nested-worktree-1",
+        interactionType: "scene",
+        repoPath: nestedWorktreePath,
+        beadIds: ["nested-worktree-bead"],
+      },
+      {
+        kind: "session_end",
+        ts: "2026-03-03T12:31:00.000Z",
+        sessionId: "nested-worktree-1",
+        status: "completed",
+        exitCode: 0,
+      },
+    ]);
+
+    (process.env as Record<string, string | undefined>).HOME = fakeHome;
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+
+    try {
+      const history = await readAgentHistory({ repoPath });
+      expect(history.beats.map((b) => b.beadId)).toEqual(["nested-worktree-bead"]);
+      expect(history.beats[0]?.repoPath).toBe(repoPath);
+      expect(history.beats[0]?.sceneCount).toBe(1);
+    } finally {
+      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
+      else (process.env as Record<string, string | undefined>).HOME = originalHome;
+      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
+      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+    }
+  });
+
   it("deduplicates sessions discovered in both default and repo-local roots", async () => {
     const originalHome = process.env.HOME;
     const originalNodeEnv = process.env.NODE_ENV;
