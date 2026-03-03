@@ -372,6 +372,7 @@ export function _clearAllLocks(): void {
 
 export type VerificationEventType =
   | "queued"
+  | "skipped-terminal"
   | "missing-commit"
   | "remediation-started"
   | "remediation-failed"

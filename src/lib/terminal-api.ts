@@ -43,10 +43,21 @@ export async function abortSession(sessionId: string): Promise<BdResult<void>> {
   return { ok: true };
 }
 
+async function fetchSessionStatus(
+  sessionId: string,
+): Promise<TerminalSession | null> {
+  try {
+    const sessions = await listSessions();
+    return sessions.find((s) => s.id === sessionId) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function connectToSession(
   sessionId: string,
   onEvent: (event: TerminalEvent) => void,
-  onError?: (error: Event) => void
+  onError?: (error: Event) => void,
 ): () => void {
   const es = new EventSource(`${BASE}/${sessionId}`);
   let gotExit = false;
@@ -76,8 +87,23 @@ export function connectToSession(
     // Defer briefly so any pending onmessage (exit) can run first.
     // EventSource fires queued messages before onerror, but a server-
     // initiated close can race with the last data frame at the TCP level.
-    setTimeout(() => {
-      if (!gotExit && !gotStreamEnd) {
+    setTimeout(async () => {
+      if (gotExit || gotStreamEnd) {
+        es.close();
+        return;
+      }
+      // Poll backend to recover from missed exit events
+      const session = await fetchSessionStatus(sessionId);
+      if (
+        session &&
+        (session.status === "completed" || session.status === "error")
+      ) {
+        onEvent({
+          type: "exit",
+          data: String(session.exitCode ?? 0),
+          timestamp: Date.now(),
+        });
+      } else {
         onError?.(err);
       }
       es.close();

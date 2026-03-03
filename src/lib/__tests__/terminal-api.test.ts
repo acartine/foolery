@@ -101,12 +101,20 @@ describe("connectToSession", () => {
     vi.advanceTimersByTime(500);
     expect(onError).not.toHaveBeenCalled();
     expect(onEvent).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: "stream_end" })
+      expect.objectContaining({ type: "stream_end" }),
     );
     expect(es.closed).toBe(true);
   });
 
-  it("calls onError (deferred) when stream drops without exit", () => {
+  it("calls onError when backend still shows running after disconnect", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: [{ id: "sess-4", status: "running" }] }),
+      }),
+    );
+
     const onEvent = vi.fn();
     const onError = vi.fn();
     connectToSession("sess-4", onEvent, onError);
@@ -118,13 +126,13 @@ describe("connectToSession", () => {
     // onError should NOT fire synchronously
     expect(onError).not.toHaveBeenCalled();
 
-    // After the 200ms deferral it should fire
-    vi.advanceTimersByTime(200);
+    // After the 200ms deferral the async handler polls and sees running → onError
+    await vi.advanceTimersByTimeAsync(200);
     expect(onError).toHaveBeenCalledTimes(1);
     expect(es.closed).toBe(true);
   });
 
-  it("cancels deferred onError if exit arrives during the deferral window", () => {
+  it("cancels deferred onError if exit arrives during the deferral window", async () => {
     const onEvent = vi.fn();
     const onError = vi.fn();
     connectToSession("sess-5", onEvent, onError);
@@ -138,7 +146,7 @@ describe("connectToSession", () => {
     es.simulateMessage(JSON.stringify({ type: "exit", data: "0" }));
 
     // Now let the deferred timer fire
-    vi.advanceTimersByTime(200);
+    await vi.advanceTimersByTimeAsync(200);
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -148,6 +156,61 @@ describe("connectToSession", () => {
 
     expect(es.closed).toBe(false);
     cleanup();
+    expect(es.closed).toBe(true);
+  });
+
+  // -- Disconnect recovery tests --
+
+  it("synthesizes exit when backend shows completed after disconnect", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          data: [{ id: "sess-r1", status: "completed", exitCode: 0 }],
+        }),
+      }),
+    );
+
+    const onEvent = vi.fn();
+    const onError = vi.fn();
+    connectToSession("sess-r1", onEvent, onError);
+
+    const es = lastES();
+    es.simulateMessage(JSON.stringify({ type: "stdout", data: "output" }));
+    es.simulateError();
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(onEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "exit", data: "0" }),
+    );
+    expect(onError).not.toHaveBeenCalled();
+    expect(es.closed).toBe(true);
+  });
+
+  it("calls onError when backend session is gone after disconnect", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: [] }),
+      }),
+    );
+
+    const onEvent = vi.fn();
+    const onError = vi.fn();
+    connectToSession("sess-r3", onEvent, onError);
+
+    const es = lastES();
+    es.simulateError();
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onEvent).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: "exit" }),
+    );
     expect(es.closed).toBe(true);
   });
 });

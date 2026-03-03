@@ -184,6 +184,14 @@ async function enterVerification(beadId: string, repoPath: string): Promise<void
   }
 
   const bead = beadResult.data;
+
+  // Skip verification for beats already in terminal states
+  const TERMINAL_STATES = ["shipped", "abandoned", "closed"];
+  if (TERMINAL_STATES.includes(bead.state)) {
+    logEvent("skipped-terminal", beadId);
+    return;
+  }
+
   const labels = bead.labels ?? [];
 
   // Already in transition — idempotent noop
