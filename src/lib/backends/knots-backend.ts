@@ -1009,7 +1009,8 @@ export class KnotsBackend implements BackendPort {
       const parent = parentResult.data!;
 
       const childLines = options.childBeatIds.map(
-        (id) => `- Run \`kno claim ${JSON.stringify(id)} --json\` first.`,
+        (id) =>
+          `- Child ${id}: run \`kno claim ${JSON.stringify(id)} --json\`, follow the returned \`prompt\`, run its completion command, then check \`kno show ${JSON.stringify(id)} --json\`. Repeat this loop until the child reaches \`shipped\` or \`abandoned\`.`,
       );
       const prompt = [
         `Parent beat ID: ${beatId}`,
@@ -1022,8 +1023,9 @@ export class KnotsBackend implements BackendPort {
         `KNOTS CLAIM MODE (required):`,
         `Always claim a knot before implementation and follow the claim output verbatim.`,
         ...childLines,
-        `- Use the returned \`prompt\` field as the source of truth for each child.`,
-        `- Run the completion command from that claim output, then stop work on that child.`,
+        `- Use the returned \`prompt\` field as the source of truth for each claim iteration.`,
+        `- Do not stop after the first claim/completion unless the child is already terminal.`,
+        `- If a child is left in an active state (e.g. implementation_review), run \`kno next <id>\` once to return it to queue, then continue the claim loop.`,
         `- Do not guess or brute-force workflow transitions outside the claim output.`,
       ].filter((line): line is string => line !== null).join("\n");
 
