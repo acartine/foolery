@@ -102,6 +102,21 @@ const mockListProfiles = vi.fn(async (_repoPath?: string) => {
           shipment_review: { kind: "agent" as const },
         },
       },
+      {
+        id: "semiauto",
+        description: "Human-gated reviews profile",
+        initial_state: "ready_for_planning",
+        states,
+        terminal_states: ["shipped"],
+        owners: {
+          planning: { kind: "agent" as const },
+          plan_review: { kind: "human" as const },
+          implementation: { kind: "agent" as const },
+          implementation_review: { kind: "human" as const },
+          shipment: { kind: "agent" as const },
+          shipment_review: { kind: "agent" as const },
+        },
+      },
     ],
   };
 });
@@ -182,6 +197,25 @@ const mockUpdateKnot = vi.fn(
         datetime: nowIso(),
       });
     }
+    knot.updated_at = nowIso();
+    return { ok: true as const };
+  },
+);
+
+const mockSetKnotProfile = vi.fn(
+  async (
+    id: string,
+    profile: string,
+    _repoPath?: string,
+    options?: { state?: string },
+  ) => {
+    const knot = store.knots.get(id);
+    if (!knot) {
+      return { ok: false as const, error: `knot '${id}' not found in local cache` };
+    }
+    knot.profile_id = profile;
+    knot.workflow_id = profile;
+    if (typeof options?.state === "string") knot.state = options.state;
     knot.updated_at = nowIso();
     return { ok: true as const };
   },
@@ -317,6 +351,12 @@ vi.mock("@/lib/knots", () => ({
     input: Record<string, unknown>,
     repoPath?: string,
   ) => mockUpdateKnot(id, input, repoPath),
+  setKnotProfile: (
+    id: string,
+    profile: string,
+    repoPath?: string,
+    options?: { state?: string },
+  ) => mockSetKnotProfile(id, profile, repoPath, options),
   listEdges: (
     id: string,
     direction: "incoming" | "outgoing" | "both",
@@ -807,14 +847,29 @@ describe("KnotsBackend coverage: update with parent manipulation", () => {
     expect(mockAddEdge).not.toHaveBeenCalled();
   });
 
-  it("returns INVALID_INPUT when trying to change profileId", async () => {
+  it("changes profileId via kno profile set", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "PID1", title: "Test" });
 
-    const result = await backend.update("PID1", { profileId: "new-profile" });
+    const result = await backend.update("PID1", { profileId: "semiauto" });
+    expect(result.ok).toBe(true);
+    expect(mockSetKnotProfile).toHaveBeenCalledWith(
+      "PID1",
+      "semiauto",
+      "/repo",
+      { state: undefined },
+    );
+    expect(store.knots.get("PID1")?.profile_id).toBe("semiauto");
+  });
+
+  it("returns INVALID_INPUT when profileId is unknown", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({ id: "PID2", title: "Test" });
+
+    const result = await backend.update("PID2", { profileId: "new-profile" });
     expect(result.ok).toBe(false);
     expect(result.error?.code).toBe("INVALID_INPUT");
-    expect(result.error?.message).toContain("profileId");
+    expect(result.error?.message).toContain("Unknown profile");
   });
 
   it("passes acceptance criteria as a note", async () => {

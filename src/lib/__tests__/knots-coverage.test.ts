@@ -56,6 +56,7 @@ import {
   claimKnot,
   pollKnot,
   updateKnot,
+  setKnotProfile,
   listEdges,
   addEdge,
   removeEdge,
@@ -439,6 +440,39 @@ describe("updateKnot", () => {
     const callArgs = execFileCallArgs[0]!;
     expect(callArgs).toContain("update");
     expect(callArgs).toContain("42");
+  });
+});
+
+describe("setKnotProfile", () => {
+  it("passes profile id and optional state", async () => {
+    responseQueue.push({});
+
+    const result = await setKnotProfile(
+      "42",
+      "semiauto",
+      "/repo",
+      { state: "ready_for_implementation" },
+    );
+    expect(result.ok).toBe(true);
+
+    const callArgs = execFileCallArgs[0]!;
+    expect(callArgs).toContain("profile");
+    expect(callArgs).toContain("set");
+    expect(callArgs).toContain("42");
+    expect(callArgs).toContain("semiauto");
+    expect(callArgs).toContain("--state");
+    expect(callArgs).toContain("ready_for_implementation");
+  });
+
+  it("returns error on non-zero exit", async () => {
+    responseQueue.push({
+      error: { name: "Error", message: "fail", code: 1 as unknown as string } as unknown as NodeJS.ErrnoException,
+      stderr: "profile set err",
+    });
+
+    const result = await setKnotProfile("42", "semiauto", "/repo");
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("profile set err");
   });
 });
 

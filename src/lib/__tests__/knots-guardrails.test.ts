@@ -100,6 +100,21 @@ const mockListProfiles = vi.fn(async () => ({
         shipment_review: { kind: "agent" as const },
       },
     },
+    {
+      id: "semiauto",
+      description: "Human-gated reviews profile",
+      initial_state: "ready_for_planning",
+      states: AUTOPILOT_STATES,
+      terminal_states: ["shipped"],
+      owners: {
+        planning: { kind: "agent" as const },
+        plan_review: { kind: "human" as const },
+        implementation: { kind: "agent" as const },
+        implementation_review: { kind: "human" as const },
+        shipment: { kind: "agent" as const },
+        shipment_review: { kind: "agent" as const },
+      },
+    },
   ],
 }));
 
@@ -166,6 +181,18 @@ const mockUpdateKnot = vi.fn(
   },
 );
 
+const mockSetKnotProfile = vi.fn(
+  async (id: string, profile: string, _repoPath?: string, options?: { state?: string }) => {
+    const knot = store.knots.get(id);
+    if (!knot) return { ok: false as const, error: `knot '${id}' not found in local cache` };
+    knot.profile_id = profile;
+    knot.workflow_id = profile;
+    if (typeof options?.state === "string") knot.state = options.state;
+    knot.updated_at = nowIso();
+    return { ok: true as const };
+  },
+);
+
 const mockListEdges = vi.fn(
   async (id: string, _direction?: string) => {
     const edges = store.edges.filter((edge) => edge.src === id || edge.dst === id);
@@ -219,6 +246,8 @@ vi.mock("@/lib/knots", () => ({
   showKnot: (id: string) => mockShowKnot(id),
   newKnot: (title: string, options?: Record<string, unknown>) => mockNewKnot(title, options as Parameters<typeof mockNewKnot>[1]),
   updateKnot: (id: string, input: Record<string, unknown>) => mockUpdateKnot(id, input),
+  setKnotProfile: (id: string, profile: string, repoPath?: string, options?: { state?: string }) =>
+    mockSetKnotProfile(id, profile, repoPath, options),
   listEdges: (id: string, direction?: string) => mockListEdges(id, direction),
   addEdge: (src: string, kind: string, dst: string) => mockAddEdge(src, kind, dst),
   removeEdge: (src: string, kind: string, dst: string) => mockRemoveEdge(src, kind, dst),
@@ -361,7 +390,27 @@ describe("Capability-aware API guard behavior", () => {
     expect(status).toBe(405);
   });
 
-  it("KnotsBackend.update() rejects profileId changes with INVALID_INPUT", async () => {
+  it("KnotsBackend.update() supports profileId changes", async () => {
+    const backend = new KnotsBackend("/repo");
+    const created = await backend.create({
+      title: "Profile change test",
+      type: "task",
+      priority: 2,
+      labels: [],
+    });
+    expect(created.ok).toBe(true);
+
+    const result = await backend.update(created.data!.id, { profileId: "semiauto" });
+    expect(result.ok).toBe(true);
+    expect(mockSetKnotProfile).toHaveBeenCalledWith(
+      created.data!.id,
+      "semiauto",
+      "/repo",
+      { state: undefined },
+    );
+  });
+
+  it("KnotsBackend.update() rejects unknown profileId changes", async () => {
     const backend = new KnotsBackend("/repo");
     const created = await backend.create({
       title: "Profile change test",

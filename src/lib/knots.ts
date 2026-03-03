@@ -482,6 +482,25 @@ export async function nextKnot(
   });
 }
 
+export interface SetKnotProfileOptions {
+  state?: string;
+  ifMatch?: string;
+}
+
+export async function setKnotProfile(
+  id: string,
+  profile: string,
+  repoPath?: string,
+  options?: SetKnotProfileOptions,
+): Promise<BdResult<void>> {
+  const args = ["profile", "set", id, profile];
+  if (options?.state) args.push("--state", options.state);
+  if (options?.ifMatch) args.push("--if-match", options.ifMatch);
+  const { stderr, exitCode } = await execWriteWithRetry(args, { repoPath });
+  if (exitCode !== 0) return { ok: false, error: stderr || "knots profile set failed" };
+  return { ok: true };
+}
+
 export interface PollKnotOptions {
   stage?: string;
   agentName?: string;

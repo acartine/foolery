@@ -788,13 +788,6 @@ export class KnotsBackend implements BackendPort {
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
 
-    if (input.profileId) {
-      return backendError(
-        "INVALID_INPUT",
-        "Knots does not support changing profileId after creation",
-      );
-    }
-
     const currentResult = await this.get(id, rp);
     if (!currentResult.ok || !currentResult.data) {
       return propagateError<void>(currentResult);
@@ -803,8 +796,36 @@ export class KnotsBackend implements BackendPort {
     const workflowsResult = await this.getWorkflowDescriptorsForRepo(rp);
     if (!workflowsResult.ok) return propagateError<void>(workflowsResult);
     const workflows = workflowsResult.data ?? [];
-    const workflow =
-      workflows.find((item) => item.id === (current.profileId ?? current.workflowId)) ?? workflows[0];
+    const currentProfileId = current.profileId ?? current.workflowId;
+    let workflow =
+      workflows.find((item) => item.id === currentProfileId) ?? workflows[0];
+    const requestedProfileId = input.profileId?.trim();
+    let stateHandledByProfileSet = false;
+
+    if (requestedProfileId) {
+      const targetWorkflow = workflows.find((item) => item.id === requestedProfileId);
+      if (!targetWorkflow) {
+        return backendError("INVALID_INPUT", `Unknown profile "${requestedProfileId}" for knots backend`);
+      }
+
+      if (requestedProfileId !== currentProfileId) {
+        const requestedState = input.state !== undefined
+          ? normalizeStateForWorkflow(input.state, targetWorkflow)
+          : undefined;
+        const profileResult = fromKnots(
+          await knots.setKnotProfile(
+            id,
+            targetWorkflow.id,
+            rp,
+            { state: requestedState },
+          ),
+        );
+        if (!profileResult.ok) return propagateError<void>(profileResult);
+        stateHandledByProfileSet = requestedState !== undefined;
+      }
+
+      workflow = targetWorkflow;
+    }
 
     const patch: KnotUpdateInput = {};
 
@@ -812,7 +833,7 @@ export class KnotsBackend implements BackendPort {
     if (input.description !== undefined) patch.description = input.description;
     if (input.priority !== undefined) patch.priority = input.priority;
 
-    if (input.state !== undefined) {
+    if (input.state !== undefined && !stateHandledByProfileSet) {
       const normalizedState = workflow
         ? normalizeStateForWorkflow(input.state, workflow)
         : input.state.trim().toLowerCase();
