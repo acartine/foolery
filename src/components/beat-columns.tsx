@@ -101,6 +101,8 @@ export interface BeatColumnOpts {
   childCountMap?: Map<string, number>;
   /** Available workflow states for the state dropdown. */
   availableStates?: string[];
+  /** Beat IDs whose parent is currently rolling (inherited rolling state). */
+  parentRollingBeatIds?: Set<string>;
 }
 
 function isVerificationState(beat: Beat): boolean {
@@ -388,6 +390,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
   const collapsedIds = typeof opts === "boolean" ? new Set<string>() : (opts.collapsedIds ?? new Set<string>());
   const onToggleCollapse = typeof opts === "boolean" ? undefined : opts.onToggleCollapse;
   const childCountMap = typeof opts === "boolean" ? new Map<string, number>() : (opts.childCountMap ?? new Map<string, number>());
+  const parentRollingBeatIds = typeof opts === "boolean" ? new Set<string>() : (opts.parentRollingBeatIds ?? new Set<string>());
 
   const columns: ColumnDef<Beat>[] = [
     {
@@ -606,10 +609,11 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     meta: { widthPercent: "15%" },
     cell: ({ row }) => {
       const isRolling = Boolean(shippingByBeatId[row.original.id]);
+      const isParentRolling = parentRollingBeatIds.has(row.original.id);
       const isLocked = isTransitionLocked(row.original.labels ?? []);
       const state = row.original.state;
       const isTerminal = state === "shipped" || state === "abandoned" || state === "closed";
-      const pulseClass = isRolling && !isTerminal ? "animate-pulse" : "";
+      const pulseClass = (isRolling || isParentRolling) && !isTerminal ? "animate-pulse" : "";
       return (
         <div className="flex items-center gap-0.5">
           <VerificationButtons
@@ -683,6 +687,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         if (isTransitionLocked(beat.labels ?? [])) return null;
         if (beat.nextActionOwnerKind === "human") return null;
         const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
+        const isChildOfRolling = parentRollingBeatIds.has(beat.id);
         const hb = beat as unknown as { _hasChildren?: boolean };
         const isParent = hb._hasChildren ?? false;
         const actionLabel = isParent ? "Scene!" : "Take!";
@@ -705,6 +710,14 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
                 <Square className="size-3" />
               </button>
             </div>
+          );
+        }
+
+        if (isChildOfRolling) {
+          return (
+            <span className="text-xs font-semibold text-green-700 animate-pulse">
+              Rolling...
+            </span>
           );
         }
 

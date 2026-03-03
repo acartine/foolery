@@ -509,6 +509,17 @@ export function BeatTable({
     return collapsed;
   }, [hierarchyData, expandedIds]);
 
+  // Beats whose parent is currently rolling — they inherit rolling visual state
+  const parentRollingBeatIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const beat of data) {
+      if (beat.parent && shippingByBeatId[beat.parent]) {
+        ids.add(beat.id);
+      }
+    }
+    return ids;
+  }, [data, shippingByBeatId]);
+
   const columns = useMemo(
     () => getBeatColumns({
       showRepoColumn,
@@ -539,8 +550,9 @@ export function BeatTable({
       collapsedIds,
       onToggleCollapse: handleToggleCollapse,
       childCountMap,
+      parentRollingBeatIds,
     }),
-    [showRepoColumn, handleUpdateBeat, onOpenBeat, searchParams, router, onShipBeat, shippingByBeatId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBeat, initiateClose, collapsedIds, handleToggleCollapse, childCountMap]
+    [showRepoColumn, handleUpdateBeat, onOpenBeat, searchParams, router, onShipBeat, shippingByBeatId, onAbortShipping, allLabels, builtForReviewIds, handleApproveReview, handleRejectReview, handleRejectBeat, initiateClose, collapsedIds, handleToggleCollapse, childCountMap, parentRollingBeatIds]
   );
 
   const handleRowFocus = useCallback((beat: Beat) => {
@@ -606,6 +618,7 @@ export function BeatTable({
     handleUpdateBeat,
     initiateClose,
     onShipBeat,
+    shippingByBeatId,
     hotkeyHelpOpen,
     setHotkeyHelpOpen,
     setNotesBeat,
@@ -878,6 +891,7 @@ function useBeatTableKeyboard({
   handleUpdateBeat,
   initiateClose,
   onShipBeat,
+  shippingByBeatId,
   hotkeyHelpOpen,
   setHotkeyHelpOpen,
   setNotesBeat,
@@ -895,6 +909,7 @@ function useBeatTableKeyboard({
   handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput }) => void;
   initiateClose: (id: string) => void;
   onShipBeat?: (beat: Beat) => void;
+  shippingByBeatId: Record<string, string>;
   hotkeyHelpOpen: boolean;
   setHotkeyHelpOpen: (fn: (prev: boolean) => boolean) => void;
   setNotesBeat: (beat: Beat | null) => void;
@@ -926,13 +941,13 @@ function useBeatTableKeyboard({
       if (handleSpaceSelect(e, rows, currentIndex, setFocusedRowId)) return;
       handleActionKeys(e, rows, currentIndex, {
         setFocusedRowId, handleUpdateBeat, initiateClose,
-        onShipBeat, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode,
+        onShipBeat, shippingByBeatId, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode,
         activeRepo, registeredRepos, updateUrl, setExpandedIds,
       });
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl, tableContainerRef, setHotkeyHelpOpen, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode, setExpandedIds, setFocusedRowId]);
+  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl, tableContainerRef, setHotkeyHelpOpen, setNotesBeat, setNotesDialogOpen, setNotesRejectionMode, setExpandedIds, setFocusedRowId]);
 }
 
 /* --- Keyboard helper functions ------------------------------------------- */
@@ -1038,6 +1053,7 @@ function handleActionKeys(
     handleUpdateBeat: (args: { id: string; fields: UpdateBeatInput }) => void;
     initiateClose: (id: string) => void;
     onShipBeat?: (beat: Beat) => void;
+    shippingByBeatId: Record<string, string>;
     setNotesBeat: (beat: Beat | null) => void;
     setNotesDialogOpen: (open: boolean) => void;
     setNotesRejectionMode: (mode: boolean) => void;
@@ -1069,6 +1085,8 @@ function handleActionKeys(
     if (!ctx.onShipBeat || currentIndex < 0) return;
     const beat = rows[currentIndex].original;
     if (beat.state === "shipped" || beat.state === "closed" || beat.type === "gate") return;
+    // Block Take! when parent is rolling
+    if (beat.parent && ctx.shippingByBeatId[beat.parent]) return;
     e.preventDefault();
     ctx.onShipBeat(beat);
   } else if (e.key === "R" && e.shiftKey && (e.metaKey || e.ctrlKey)) {
