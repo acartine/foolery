@@ -387,7 +387,7 @@ export function AppHeader() {
                     size="lg"
                     variant={beadsView === "retakes" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
-                    title="Regression tracking for closed beats"
+                    title="Regression tracking for beats in retake"
                     onClick={() => setBeadsView("retakes")}
                   >
                     <RotateCcw className="size-4" />

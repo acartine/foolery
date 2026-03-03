@@ -733,10 +733,10 @@ export function AgentHistoryView() {
           style={{ height: `${TOP_PANEL_HEIGHT_PX}px` }}
         >
           <div className="border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
-            <p className="text-xs font-semibold">Beats with Conversations</p>
+            <p className="text-xs font-semibold">Beats with Agent Sessions</p>
             <p className="text-[10px] text-muted-foreground">
               {beats.length > 0
-                ? `Showing ${windowStart + 1}–${Math.min(windowStart + WINDOW_SIZE, beats.length)} of ${beats.length}, newest first.`
+                ? `Showing ${windowStart + 1}–${Math.min(windowStart + WINDOW_SIZE, beats.length)} of ${beats.length} beats (${beats.reduce((sum, b) => sum + b.sessionCount, 0)} total sessions), newest first.`
                 : "Newest first."}
             </p>
             <div className="mt-1 inline-flex items-center gap-2 text-[9px] text-muted-foreground">

@@ -611,7 +611,7 @@ export function RetakesView() {
   if (error) {
     return (
       <div className="flex items-center justify-center py-6 text-sm text-destructive">
-        Failed to load closed beats.
+        Failed to load retake beats.
       </div>
     );
   }
@@ -619,8 +619,8 @@ export function RetakesView() {
   if (beads.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-        <p className="text-sm">No closed beats found.</p>
-        <p className="mt-1 text-xs">Closed beats will appear here for regression tracking.</p>
+        <p className="text-sm">No beats in retake found.</p>
+        <p className="mt-1 text-xs">Beats in retake will appear here for regression tracking.</p>
       </div>
     );
   }
@@ -629,7 +629,7 @@ export function RetakesView() {
     <div>
       <div className="mb-2 flex items-center justify-between px-2">
         <div className="text-xs text-muted-foreground">
-          {beads.length} closed beat{beads.length !== 1 ? "s" : ""} — most recently updated first
+          {beads.length} beat{beads.length !== 1 ? "s" : ""} in retake — most recently updated first
         </div>
       </div>
       <div className="rounded-md border border-border/60">
