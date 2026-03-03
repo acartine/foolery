@@ -141,7 +141,7 @@ export const componentSchemas = {
     type: "object",
     required: ["type", "data", "timestamp"],
     properties: {
-      type: { type: "string", enum: ["stdout", "stderr", "exit"] },
+      type: { type: "string", enum: ["stdout", "stderr", "exit", "stream_end"] },
       data: { type: "string" },
       timestamp: { type: "number" },
     },

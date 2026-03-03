@@ -50,12 +50,18 @@ export async function GET(
         send(evt);
       }
 
+      // Send a synthetic stream_end event so the client can distinguish
+      // a clean server-initiated close from an unexpected network drop.
+      const sendStreamEnd = () => {
+        send({ type: "stream_end", data: "", timestamp: Date.now() });
+      };
+
       // Subscribe to new events
       const listener = (evt: { type: string; data: string; timestamp: number }) => {
         send(evt);
         if (evt.type === "exit") {
-          // Small delay so the browser can process the message before stream closes
-          setTimeout(closeStream, 100);
+          // Give the browser time to process exit before closing the stream.
+          setTimeout(() => { sendStreamEnd(); closeStream(); }, 100);
         }
       };
       entry.emitter.on("data", listener);
@@ -65,7 +71,7 @@ export async function GET(
         const hasExit = entry.buffer.some((e) => e.type === "exit");
         if (hasExit) {
           // Give the browser time to process replayed events before closing
-          setTimeout(closeStream, 250);
+          setTimeout(() => { sendStreamEnd(); closeStream(); }, 250);
         }
       }
 

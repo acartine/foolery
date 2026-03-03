@@ -50,11 +50,17 @@ export function connectToSession(
 ): () => void {
   const es = new EventSource(`${BASE}/${sessionId}`);
   let gotExit = false;
+  let gotStreamEnd = false;
 
   es.onmessage = (msg) => {
     try {
       const event = JSON.parse(msg.data) as TerminalEvent;
       if (event.type === "exit") gotExit = true;
+      // Server sends stream_end right before a clean close; swallow it.
+      if (event.type === "stream_end") {
+        gotStreamEnd = true;
+        return;
+      }
       onEvent(event);
     } catch {
       // ignore parse errors
@@ -62,11 +68,20 @@ export function connectToSession(
   };
 
   es.onerror = (err) => {
-    // Stream closing after exit is normal, not an error
-    if (!gotExit) {
-      onError?.(err);
+    // Stream closing after exit or clean server shutdown is not an error.
+    if (gotExit || gotStreamEnd) {
+      es.close();
+      return;
     }
-    es.close();
+    // Defer briefly so any pending onmessage (exit) can run first.
+    // EventSource fires queued messages before onerror, but a server-
+    // initiated close can race with the last data frame at the TCP level.
+    setTimeout(() => {
+      if (!gotExit && !gotStreamEnd) {
+        onError?.(err);
+      }
+      es.close();
+    }, 200);
   };
 
   return () => es.close();

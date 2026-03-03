@@ -139,9 +139,13 @@ handling, severity, and what the new abstraction layer must account for.
 - **Trigger:** Client disconnects (tab close, navigation, network drop) or the
   server-side ReadableStream errors during `controller.enqueue`.
 - **Current handling:** Server side: `request.signal.addEventListener("abort")`
-  triggers cleanup. Client side: `EventSource.onerror` fires and closes the
-  connection. If an `exit` event was already received, the error is silently
-  ignored.
+  triggers cleanup. The server sends a synthetic `stream_end` event before
+  closing the SSE connection so the client can distinguish clean shutdown from
+  network drops. Client side: `EventSource.onerror` is deferred by 200 ms to
+  let any pending `onmessage` handlers (exit / stream_end) run first. If an
+  `exit` or `stream_end` event was already received, the error is silently
+  ignored. The terminal panel also tracks exit state locally and suppresses the
+  disconnect warning after a successful exit.
 - **Severity:** Low if the session is completed (exit event in buffer). Medium if
   the session is still running -- the client loses live output. Reconnection
   replays the buffer but may miss events between disconnect and reconnect.

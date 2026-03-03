@@ -139,7 +139,7 @@ export interface TerminalSession {
 }
 
 export interface TerminalEvent {
-  type: "stdout" | "stderr" | "exit";
+  type: "stdout" | "stderr" | "exit" | "stream_end";
   data: string;
   timestamp: number;
 }

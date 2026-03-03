@@ -330,6 +330,8 @@ export function TerminalPanel() {
         toast.info("Retry launched with take recovery prompt.");
       };
 
+      let sessionExited = false;
+
       const cleanup = connectToSession(
         sessionId,
         (event: TerminalEvent) => {
@@ -341,6 +343,7 @@ export function TerminalPanel() {
             appendRecentOutput(event.data);
             liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
           } else if (event.type === "exit") {
+            sessionExited = true;
             const code = parseInt(event.data, 10);
             liveTerm.writeln("");
             if (code === 0) {
@@ -393,7 +396,10 @@ export function TerminalPanel() {
           }
         },
         () => {
-          if (disposed) return;
+          // Stream disconnect after exit is expected (server closes the SSE
+          // connection once the agent process finishes).  Only warn when the
+          // stream drops while the session was still running.
+          if (disposed || sessionExited) return;
           liveTerm.writeln(
             "\x1b[33m⚠ Session stream disconnected. Reopen the tab to retry stream attachment.\x1b[0m"
           );
