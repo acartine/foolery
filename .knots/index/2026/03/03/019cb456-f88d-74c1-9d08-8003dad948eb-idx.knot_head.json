@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb456-f88d-74c1-9d08-8003dad948eb",
+  "occurred_at": "2026-03-03T15:35:24.546558Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-8ec0",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "c051 is in invalid state and can't be corrected with ui",
+    "updated_at": "2026-03-03T15:35:24.546558Z"
+  }
+}

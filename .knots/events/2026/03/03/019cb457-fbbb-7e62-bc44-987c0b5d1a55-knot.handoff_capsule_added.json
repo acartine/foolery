@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb457-fbbb-7e62-bc44-987c0b5d1a55",
+  "occurred_at": "2026-03-03T15:36:30.907155Z",
+  "knot_id": "foolery-8bbd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Hardened terminal completion refresh by invalidating beat-list queries with refetchType=all so inactive views refresh immediately when a run exits successfully; updated beat-query-cache unit test; validated lint, typecheck, unit tests, and production build in dedicated worktree; merged to main and pushed HEAD:main.",
+    "datetime": "2026-03-03T15:36:30.907155Z",
+    "entry_id": "019cb457-fbbb-7e62-bc44-98606481e570",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

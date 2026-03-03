@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb457-b93e-7aa0-b100-d8a44a2901e5",
+  "occurred_at": "2026-03-03T15:36:13.88697Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-051a",
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Remove Direct View",
+    "updated_at": "2026-03-03T15:36:13.88697Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb455-a8f2-7f31-badb-504a783eb39f"
+  }
+}
