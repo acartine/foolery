@@ -65,6 +65,25 @@ function extractCommitSha(bead: Beat): string | undefined {
 
 type MetadataEntry = Record<string, unknown>;
 
+const STEP_METADATA_KEYS = [
+  "knotsSteps",
+  "knotsStepHistory",
+  "knotsTimeline",
+  "knotsTransitions",
+  "steps",
+  "step_history",
+  "timeline",
+  "transitions",
+] as const;
+
+const NOTE_METADATA_KEYS = ["knotsNotes", "notes", "knots_notes"] as const;
+const HANDOFF_METADATA_KEYS = [
+  "knotsHandoffCapsules",
+  "handoff_capsules",
+  "handoffCapsules",
+  "knots_handoff_capsules",
+] as const;
+
 function pickString(entry: MetadataEntry, keys: string[]): string | undefined {
   for (const key of keys) {
     const value = entry[key];
@@ -93,10 +112,18 @@ function metadataEntryKey(entry: MetadataEntry, index: number): string {
   return pickString(entry, ["entry_id", "id", "step_id"]) ?? String(index);
 }
 
+function pickObject(entry: MetadataEntry, keys: string[]): MetadataEntry | null {
+  for (const key of keys) {
+    const value = entry[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as MetadataEntry;
+    }
+  }
+  return null;
+}
+
 function stepSummary(entry: MetadataEntry): string | undefined {
   const direct = pickString(entry, ["content", "summary", "description", "message", "note", "title"]);
-  if (direct) return direct;
-
   const from = pickString(entry, ["from_state", "fromState", "from"]);
   const to = pickString(entry, ["to_state", "toState", "to", "state"]);
   const action = pickString(entry, ["action", "step"]);
@@ -106,7 +133,10 @@ function stepSummary(entry: MetadataEntry): string | undefined {
   if (action) parts.push(action);
   if (from || to) parts.push(`${from ?? "?"} -> ${to ?? "?"}`);
   if (actorKind) parts.push(`actor:${actorKind}`);
-  return parts.length > 0 ? parts.join(" · ") : undefined;
+
+  if (direct && parts.length === 0) return direct;
+  if (!direct && parts.length === 0) return undefined;
+  return direct ? `${direct}\n${parts.join(" · ")}` : parts.join(" · ");
 }
 
 function safeRelativeTime(value: string): string {
@@ -153,16 +183,52 @@ function ExpandableText({
 }
 
 function AgentBadge({ entry }: { entry: MetadataEntry }) {
-  const agentname = pickString(entry, ["agentname", "agentName"]) ?? "unknown-agent";
-  const model = pickString(entry, ["model", "agentModel"]) ?? "unknown-model";
-  const username = pickString(entry, ["username", "user", "actor"]) ?? "unknown-user";
-  const datetime = pickString(entry, ["datetime", "timestamp", "ts", "created_at", "updated_at"]);
+  const agent = pickObject(entry, ["agent"]);
+  const user = pickObject(entry, ["user"]);
+  const actor = pickObject(entry, ["actor"]);
+
+  const agentname =
+    pickString(entry, ["agentname", "agentName", "agent_name"]) ??
+    (agent ? pickString(agent, ["name", "agentname", "agentName", "agent_name"]) : undefined) ??
+    "unknown-agent";
+
+  const model =
+    pickString(entry, ["model", "agentModel", "agent_model"]) ??
+    (agent ? pickString(agent, ["model", "agentModel", "agent_model"]) : undefined) ??
+    "unknown-model";
+
+  const username =
+    pickString(entry, ["username", "user", "user_name", "actor", "actor_name"]) ??
+    (user ? pickString(user, ["name", "username", "login"]) : undefined) ??
+    (actor ? pickString(actor, ["name", "username", "login"]) : undefined) ??
+    "unknown-user";
+
+  const version =
+    pickString(entry, ["version", "agentVersion", "agent_version"]) ??
+    (agent ? pickString(agent, ["version", "agentVersion", "agent_version"]) : undefined);
+
+  const datetime = pickString(entry, [
+    "datetime",
+    "timestamp",
+    "ts",
+    "created_at",
+    "createdAt",
+    "updated_at",
+    "updatedAt",
+    "time",
+  ]);
 
   return (
     <div className="mb-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
       <span className="font-medium">{agentname}</span>
       <span className="text-muted-foreground/40">|</span>
       <span>{model}</span>
+      {version ? (
+        <>
+          <span className="text-muted-foreground/40">|</span>
+          <span>{version}</span>
+        </>
+      ) : null}
       <span className="text-muted-foreground/40">|</span>
       <span>{username}</span>
       {datetime ? (
@@ -177,15 +243,18 @@ function AgentBadge({ entry }: { entry: MetadataEntry }) {
 
 function RetakeDetails({ bead }: { bead: Beat }) {
   const description = bead.description;
-  const rawSteps = readMetadataEntries(bead, [
-    "knotsSteps",
-    "knotsStepHistory",
-    "knotsTimeline",
-    "knotsTransitions",
-    "steps",
-  ]);
-  const rawNotes = readMetadataEntries(bead, ["knotsNotes", "notes"]);
-  const rawCapsules = readMetadataEntries(bead, ["knotsHandoffCapsules", "handoff_capsules"]);
+  const rawSteps = readMetadataEntries(bead, [...STEP_METADATA_KEYS]);
+  const rawNotes = readMetadataEntries(bead, [...NOTE_METADATA_KEYS]);
+  const rawCapsules = readMetadataEntries(bead, [...HANDOFF_METADATA_KEYS]);
+  const noteEntries = rawNotes.length > 0
+    ? rawNotes
+    : bead.notes
+      ? [{
+          content: bead.notes,
+          username: "legacy-notes",
+          datetime: bead.updated,
+        }]
+      : [];
 
   const renderedSteps = rawSteps.flatMap((step, index) => {
     const content = stepSummary(step);
@@ -193,7 +262,7 @@ function RetakeDetails({ bead }: { bead: Beat }) {
     return [{ entry: step, key: metadataEntryKey(step, index), content }];
   });
 
-  const renderedNotes = rawNotes.flatMap((note, index) => {
+  const renderedNotes = noteEntries.flatMap((note, index) => {
     const content = pickString(note, ["content", "note", "message"]);
     if (!content) return [];
     return [{ entry: note, key: metadataEntryKey(note, index), content }];
