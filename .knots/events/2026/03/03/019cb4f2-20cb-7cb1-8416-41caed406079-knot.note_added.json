@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4f2-20cb-7cb1-8416-41caed406079",
+  "occurred_at": "2026-03-03T18:24:52.939588Z",
+  "knot_id": "foolery-9b86",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Remove 3 polling notification hooks. Fire notifications from SessionConnectionManager on session exit instead. Clean up notification store.",
+    "datetime": "2026-03-03T18:24:52.939588Z",
+    "entry_id": "019cb4f2-20cb-7cb1-8416-41be80b7fe2c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

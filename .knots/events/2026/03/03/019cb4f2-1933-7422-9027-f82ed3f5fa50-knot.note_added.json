@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4f2-1933-7422-9027-f82ed3f5fa50",
+  "occurred_at": "2026-03-03T18:24:50.99505Z",
+  "knot_id": "foolery-9b86",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Problem\nThree React hooks fire bell notifications by diffing beat state on each polling cycle (10s refetch):\n- `useShippedNotifications` - fires when beats enter shipped/closed state\n- `useRetryNotifications` - fires when beats enter retake state  \n- `useVerificationNotifications` - fires when new beats need human action\n\nThis is wrong: notifications fire when data is loaded, not when events happen.\n\n### Fix\n1. **Delete** the three polling notification hooks and their imports\n2. **Add** notification on session exit in `SessionConnectionManager.connect()` - this is the actual event (agent conversation terminates)\n3. On exit: look up the terminal entry in the store to get beatId/beatTitle, fire a notification with exit status and beat info\n4. **Clean up** notification store: remove `lastVerificationCount`/`setLastVerificationCount` (only used by deleted hook)\n5. **Update tests**: remove shipped-notification tests, update notification-store tests, add session-exit notification test\n\n### Files changed\n- DELETE: `src/hooks/use-shipped-notifications.ts`\n- DELETE: `src/hooks/use-retry-notifications.ts`\n- DELETE: `src/hooks/use-verification-notifications.ts`\n- DELETE: `src/hooks/__tests__/use-shipped-notifications.test.ts`\n- EDIT: `src/app/beads/page.tsx` - remove hook imports and calls\n- EDIT: `src/components/final-cut-view.tsx` - remove hook import and call\n- EDIT: `src/lib/session-connection-manager.ts` - add notification on exit event\n- EDIT: `src/stores/notification-store.ts` - remove lastVerificationCount\n- EDIT: `src/stores/__tests__/notification-store.test.ts` - remove verification count test\n- EDIT: `src/lib/__tests__/session-connection-manager.test.ts` - add exit notification test",
+    "datetime": "2026-03-03T18:24:50.99505Z",
+    "entry_id": "019cb4f2-1933-7422-9027-f81b0ad3d70f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

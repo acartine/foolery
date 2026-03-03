@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4ea-1fd1-7a13-8080-b20fd7be3fc6",
+  "occurred_at": "2026-03-03T18:16:08.401626Z",
+  "knot_id": "foolery-48e6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Rebased implementation onto latest origin/main; final commit is ef664bc0e9569d34448df49f3e6943570798a44e.",
+    "datetime": "2026-03-03T18:16:08Z",
+    "entry_id": "019cb4ea-1fd1-7a13-8080-b1feb46f80f2",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4f2-5fd2-7011-b8a2-49e10a85478b",
+  "occurred_at": "2026-03-03T18:25:09.074307Z",
+  "knot_id": "foolery-277b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented notification lightbox close-on-mark behavior by controlling popover open state and invoking markAllRead+close from the header action. Added unit test coverage for action ordering in notification-bell-actions. Validation: bun run lint, bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build. Pushed commit 44782e4a81939f708c4d2e538628c19d31145ac2 to origin/main.",
+    "datetime": "2026-03-03T18:25:09Z",
+    "entry_id": "019cb4f2-5fd2-7011-b8a2-49dd28037f5e",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "1"
+  }
+}

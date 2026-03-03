@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4f2-2575-7dc1-9830-337d4fa17ef6",
+  "occurred_at": "2026-03-03T18:24:54.133164Z",
+  "knot_id": "foolery-e6d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Switched kno-next optimistic checks to canonical --expected-state usage: nextKnot now emits --expected-state, terminal-manager/backend guidance strings updated, and command-builder/tests aligned. Verified with lint, tsc, full unit tests, and production build; pushed commit cc33150 to origin/main.",
+    "datetime": "2026-03-03T18:24:54.133164Z",
+    "entry_id": "019cb4f2-2575-7dc1-9830-336def5f0c3f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

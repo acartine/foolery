@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb4e9-e339-7bc0-92d8-d8beeb275cae",
+  "occurred_at": "2026-03-03T18:15:52.889891Z",
+  "knot_id": "foolery-48e6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Patched history list focus behavior: (1) deferred initial list focus with RAF so first beat is keyboard-focused as data renders, (2) kept keyboard ownership on the list during Arrow navigation, (3) prevented row buttons from stealing focus on mouse down. Validated with lint, tsc, tests, and build (build passes with NODE_ENV=production; plain bun run build fails in this environment due non-standard NODE_ENV).",
+    "datetime": "2026-03-03T18:15:52Z",
+    "entry_id": "019cb4e9-e339-7bc0-92d8-d8a667a46301",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "1"
+  }
+}
