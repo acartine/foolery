@@ -1407,14 +1407,19 @@ export async function createSession(
     });
   }
 
-  const initialPromptSent = sendUserTurn(prompt, "initial");
-  if (!initialPromptSent) {
-    closeInput();
-    session.status = "error";
-    interactionLog.logEnd(1, "error");
-    child.kill("SIGTERM");
-    sessions.delete(id);
-    throw new Error("Failed to send initial prompt to claude");
+  // For interactive (claude) agents the prompt is sent via stdin;
+  // for one-shot (codex) agents it was already passed as a CLI arg.
+  if (isInteractive) {
+    const initialPromptSent = sendUserTurn(prompt, "initial");
+    if (!initialPromptSent) {
+      closeInput();
+      session.status = "error";
+      interactionLog.logEnd(1, "error");
+      child.kill("SIGTERM");
+      sessions.delete(id);
+      const agentDesc = `${agent.label || agent.command}${agent.model ? ` (model: ${agent.model})` : ""}`;
+      throw new Error(`Failed to send initial prompt to agent: ${agentDesc}`);
+    }
   }
 
   return session;
