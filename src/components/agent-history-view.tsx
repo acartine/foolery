@@ -236,8 +236,8 @@ function interactionTypeLabel(interactionType: AgentHistorySession["interactionT
 function BeatMetaItem({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="px-0.5 py-0.5">
-      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-0.5 break-words text-[10px]">{value?.trim() || "—"}</p>
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-0.5 break-words text-[11px]">{value?.trim() || "—"}</p>
     </div>
   );
 }
@@ -255,7 +255,7 @@ function SessionEntryRow({
 }) {
   if (entry.kind === "session_start") {
     return (
-      <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[10px] text-slate-300">
+      <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[11px] text-slate-300">
         Session started at {formatTime(entry.ts)}
       </div>
     );
@@ -263,7 +263,7 @@ function SessionEntryRow({
 
   if (entry.kind === "session_end") {
     return (
-      <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[10px] text-slate-300">
+      <div className="rounded border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[11px] text-slate-300">
         Session ended at {formatTime(entry.ts)}
         {entry.status ? ` · ${entry.status}` : ""}
         {entry.exitCode !== undefined ? ` · exit ${entry.exitCode}` : ""}
@@ -274,15 +274,15 @@ function SessionEntryRow({
   if (entry.kind === "prompt") {
     return (
       <div className="rounded border border-sky-500/50 bg-sky-950/35 px-2.5 py-1.5">
-        <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-sky-200">
+        <div className="mb-1 flex flex-wrap items-center gap-2 text-[10px] text-sky-200">
           <MessageSquareText className="size-3.5" />
           <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` · ${agentLabel}` : ""}</span>
-          <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[10px] font-normal text-sky-100">
+          <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[11px] font-normal text-sky-100">
             {promptSourceLabel(entry.promptSource)}
           </Badge>
           <span>{formatTime(entry.ts)}</span>
         </div>
-        <pre className="whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-sky-100">
+        <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-sky-100">
           {entry.prompt ?? "(empty prompt)"}
         </pre>
       </div>
@@ -295,28 +295,28 @@ function SessionEntryRow({
 
   return (
     <div className="rounded border border-slate-700 bg-slate-900/60 px-2.5 py-1.5">
-      <div className="mb-1 flex flex-wrap items-center gap-2 text-[9px] text-slate-300">
+      <div className="mb-1 flex flex-wrap items-center gap-2 text-[10px] text-slate-300">
         <Bot className="size-3.5" />
         <span className="font-semibold uppercase tracking-wide text-slate-100">Agent{agentLabel ? ` · ${agentLabel}` : ""} -&gt; App</span>
         {interactionType ? (
-          <Badge variant="outline" className={`text-[10px] font-normal ${interactionTypeTone(interactionType)}`}>
+          <Badge variant="outline" className={`text-[11px] font-normal ${interactionTypeTone(interactionType)}`}>
             {interactionTypeLabel(interactionType)}
           </Badge>
         ) : null}
         {precedingPromptSource ? (
-          <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[10px] font-normal text-slate-300">
+          <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[11px] font-normal text-slate-300">
             {promptSourceLabel(precedingPromptSource)}
           </Badge>
         ) : null}
         <span>{formatTime(entry.ts)}</span>
       </div>
-      <pre className="whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-slate-100">
+      <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-slate-100">
         {summary || "(empty response)"}
       </pre>
       {showRaw ? (
-        <details className="mt-1.5 rounded border border-slate-700 bg-black/40 px-2 py-1 text-[9px]">
+        <details className="mt-1.5 rounded border border-slate-700 bg-black/40 px-2 py-1 text-[10px]">
           <summary className="cursor-pointer text-slate-400">Raw event</summary>
-          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-[9px] leading-5 text-slate-200">
+          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-slate-200">
             {clipDisplay(raw, 16_000)}
           </pre>
         </details>
@@ -371,22 +371,22 @@ function SessionCard({
       <header className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
         <Badge
           variant="outline"
-          className={`text-[10px] uppercase ${interactionTypeTone(session.interactionType)}`}
+          className={`text-[11px] uppercase ${interactionTypeTone(session.interactionType)}`}
         >
           {interactionTypeLabel(session.interactionType)}
         </Badge>
-        <Badge variant="outline" className={`text-[10px] ${statusTone(session.status)}`}>
+        <Badge variant="outline" className={`text-[11px] ${statusTone(session.status)}`}>
           {session.status ?? "unknown"}
         </Badge>
         {agentLabel ? (
-          <span className="font-mono text-[10px] text-slate-300">{agentLabel}</span>
+          <span className="font-mono text-[11px] text-slate-300">{agentLabel}</span>
         ) : null}
-        <span className="font-mono text-[10px] text-slate-400">{session.sessionId}</span>
-        <span className="ml-auto text-[10px] text-slate-400">{formatTime(session.updatedAt)}</span>
+        <span className="font-mono text-[11px] text-slate-400">{session.sessionId}</span>
+        <span className="ml-auto text-[11px] text-slate-400">{formatTime(session.updatedAt)}</span>
       </header>
       <div className="space-y-1.5 p-2.5">
         {filteredEntries.length === 0 ? (
-          <div className="rounded border border-slate-700 bg-slate-900/70 px-2.5 py-1.5 text-[10px] text-slate-300">
+          <div className="rounded border border-slate-700 bg-slate-900/70 px-2.5 py-1.5 text-[11px] text-slate-300">
             {enrichedEntries.length === 0
               ? "No log entries captured for this session."
               : "No entries match the active filters."}
@@ -420,8 +420,8 @@ function renderLongText(label: string, value?: string) {
   if (!value?.trim()) return null;
   return (
     <section className="px-0.5 py-0.5">
-      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-[10px] leading-5 text-foreground">
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+      <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-foreground">
         {value}
       </pre>
     </section>
@@ -439,7 +439,7 @@ function BeatDetailContent({
 }) {
   if (!beat) {
     return (
-      <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
+      <div className="px-0.5 py-2 text-center text-[11px] text-muted-foreground">
         Beat details are unavailable for this repository entry.
       </div>
     );
@@ -449,10 +449,10 @@ function BeatDetailContent({
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
         <div className="px-0.5 py-0.5">
-          <p className="text-[9px] uppercase tracking-wide text-muted-foreground">Beat ID</p>
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Beat ID</p>
           <button
             type="button"
-            className="mt-0.5 break-words text-left font-mono text-[10px] underline-offset-2 hover:underline"
+            className="mt-0.5 break-words text-left font-mono text-[11px] underline-offset-2 hover:underline"
             onClick={() => onCopyBeatId(beat.id)}
             title="Click to copy ID"
           >
@@ -470,10 +470,10 @@ function BeatDetailContent({
 
       {beat.labels && beat.labels.length > 0 ? (
         <section className="px-0.5 py-0.5">
-          <p className="text-[9px] uppercase tracking-wide text-muted-foreground">Labels</p>
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Labels</p>
           <div className="mt-1 flex flex-wrap gap-1">
             {beat.labels.map((label) => (
-              <Badge key={label} variant="outline" className="text-[10px] font-normal">
+              <Badge key={label} variant="outline" className="text-[11px] font-normal">
                 {label}
               </Badge>
             ))}
@@ -768,7 +768,7 @@ export function AgentHistoryView() {
 
   if (!activeRepo && registeredRepos.length === 0) {
     return (
-      <div className="flex items-center justify-center py-10 text-xs text-muted-foreground">
+      <div className="flex items-center justify-center py-10 text-[13px] text-muted-foreground">
         Add a repository to view agent history.
       </div>
     );
@@ -782,16 +782,16 @@ export function AgentHistoryView() {
           style={{ height: `${TOP_PANEL_HEIGHT_PX}px` }}
         >
           <div className="border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
-            <p className="text-xs font-semibold">Beats with Agent Sessions</p>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[13px] font-semibold">Beats with Agent Sessions</p>
+            <p className="text-[11px] text-muted-foreground">
               {beats.length > 0
                 ? `Showing ${windowStart + 1}–${Math.min(windowStart + WINDOW_SIZE, beats.length)} of ${beats.length} beats (${beats.reduce((sum, b) => sum + b.sessionCount, 0)} total sessions), newest first.`
                 : "Newest first."}
             </p>
-            <div className="mt-1 inline-flex items-center gap-2 text-[9px] text-muted-foreground">
+            <div className="mt-1 inline-flex items-center gap-2 text-[10px] text-muted-foreground">
               <span className="inline-flex items-center gap-1"><ArrowUp className="size-3" />/<ArrowDown className="size-3" /> navigate</span>
-              <span className="inline-flex items-center gap-1"><CornerDownLeft className="size-3" />/<span className="text-[8px] font-semibold">Space</span> load logs</span>
-              <span className="inline-flex items-center gap-1"><span className="text-[8px] font-semibold">Tab</span> console focus</span>
+              <span className="inline-flex items-center gap-1"><CornerDownLeft className="size-3" />/<span className="text-[9px] font-semibold">Space</span> load logs</span>
+              <span className="inline-flex items-center gap-1"><span className="text-[9px] font-semibold">Tab</span> console focus</span>
             </div>
           </div>
 
@@ -831,16 +831,16 @@ export function AgentHistoryView() {
             className="overflow-y-auto outline-none focus-visible:ring-1 focus-visible:ring-sky-500/70"
           >
             {beatsQuery.isLoading ? (
-              <div className="flex items-center gap-2 px-2.5 py-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 px-2.5 py-3 text-[13px] text-muted-foreground">
                 <Spinner className="size-3.5" />
                 <span>Loading history… prompt histories are BIG, please be patient :-)</span>
               </div>
             ) : beatsQuery.data && !beatsQuery.data.ok ? (
-              <div className="px-2.5 py-3 text-xs text-destructive">
+              <div className="px-2.5 py-3 text-[13px] text-destructive">
                 {beatsQuery.data.error ?? "Failed to load history"}
               </div>
             ) : beats.length === 0 ? (
-              <div className="px-2.5 py-3 text-xs text-muted-foreground">
+              <div className="px-2.5 py-3 text-[13px] text-muted-foreground">
                 No beats with conversation activity.
               </div>
             ) : (
@@ -881,14 +881,14 @@ export function AgentHistoryView() {
                     style={{ minHeight: `${TITLE_ROW_HEIGHT_PX}px` }}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="min-w-0 truncate text-xs font-medium">
+                      <p className="min-w-0 truncate text-[13px] font-medium">
                         {getBeatTitle(beat)}
                       </p>
-                      <span className="shrink-0 text-[10px] text-muted-foreground">
+                      <span className="shrink-0 text-[11px] text-muted-foreground">
                         {relativeTime(beat.lastWorkedAt)}
                       </span>
                     </div>
-                    <div className={`mt-0.5 flex flex-wrap items-center gap-1 text-[9px] ${
+                    <div className={`mt-0.5 flex flex-wrap items-center gap-1 text-[10px] ${
                       loaded
                         ? "text-cyan-800 dark:text-cyan-200"
                         : focused
@@ -909,12 +909,12 @@ export function AgentHistoryView() {
                         {stripIdPrefix(beat.beadId)}
                       </span>
                       {showRepoName ? (
-                        <Badge variant="outline" className="text-[9px] font-normal">
+                        <Badge variant="outline" className="text-[10px] font-normal">
                           {repoNames.get(beat.repoPath) ?? beat.repoPath}
                         </Badge>
                       ) : null}
                       {loaded ? (
-                        <Badge variant="outline" className="border-cyan-400/60 text-[9px] font-normal">
+                        <Badge variant="outline" className="border-cyan-400/60 text-[10px] font-normal">
                           loaded
                         </Badge>
                       ) : null}
@@ -934,10 +934,10 @@ export function AgentHistoryView() {
           <div className="flex items-center gap-1.5 border-b border-border/60 px-2.5 py-1.5" style={{ height: `${TOP_PANEL_HEADER_HEIGHT_PX}px` }}>
             <FileText className="size-3.5 text-muted-foreground" />
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold">
+              <p className="truncate text-[13px] font-semibold">
                 {focusedTitle}
               </p>
-              <p className="truncate text-[9px] text-muted-foreground">
+              <p className="truncate text-[10px] text-muted-foreground">
                 {focusedSummary
                   ? `Last updated ${formatTime(focusedSummary.lastWorkedAt)}`
                   : "Select a beat from the left"}
@@ -946,7 +946,7 @@ export function AgentHistoryView() {
             {focusedSummary ? (
               <button
                 type="button"
-                className="ml-auto font-mono text-[10px] text-muted-foreground underline-offset-2 hover:underline"
+                className="ml-auto font-mono text-[11px] text-muted-foreground underline-offset-2 hover:underline"
                 onClick={() => copyBeatId(focusedSummary.beadId)}
                 title="Click to copy ID"
               >
@@ -957,16 +957,16 @@ export function AgentHistoryView() {
 
           <div className="overflow-y-auto p-2" style={{ height: `${WINDOW_SIZE * TITLE_ROW_HEIGHT_PX}px` }}>
             {!focusedSummary ? (
-              <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
+              <div className="px-0.5 py-2 text-center text-[11px] text-muted-foreground">
                 Select a beat to inspect details.
               </div>
             ) : focusedDetail.loading ? (
-              <div className="flex items-center justify-center gap-1.5 px-0.5 py-2 text-[10px] text-muted-foreground">
+              <div className="flex items-center justify-center gap-1.5 px-0.5 py-2 text-[11px] text-muted-foreground">
                 <Spinner className="size-3" />
                 <span>Loading beat details…</span>
               </div>
             ) : focusedDetail.error ? (
-              <div className="px-0.5 py-2 text-center text-[10px] text-destructive">
+              <div className="px-0.5 py-2 text-center text-[11px] text-destructive">
                 {focusedDetail.error}
               </div>
             ) : (
@@ -979,16 +979,16 @@ export function AgentHistoryView() {
       <section className="rounded-lg border border-slate-700 bg-[#05070f] text-slate-100">
         <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1.5">
           <TerminalSquare className="size-3.5 text-slate-300" />
-          <p className="text-xs font-semibold text-slate-100">Conversation Log</p>
+          <p className="text-[13px] font-semibold text-slate-100">Conversation Log</p>
           {loadedSummary ? (
-            <span className="max-w-[40ch] truncate text-[10px] text-slate-200">
+            <span className="max-w-[40ch] truncate text-[11px] text-slate-200">
               {loadedTitle}
             </span>
           ) : null}
           {loadedSummary ? (
             <button
               type="button"
-              className="font-mono text-[10px] text-slate-400 underline-offset-2 hover:underline"
+              className="font-mono text-[11px] text-slate-400 underline-offset-2 hover:underline"
               onClick={() => copyBeatId(loadedSummary.beadId)}
               title="Click to copy ID"
             >
@@ -996,7 +996,7 @@ export function AgentHistoryView() {
             </button>
           ) : null}
           {loadedSummary ? (
-            <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-slate-400">
+            <span className="ml-auto inline-flex items-center gap-1 text-[11px] text-slate-400">
               <Clock3 className="size-3" />
               Last updated {relativeTime(loadedSummary.lastWorkedAt)}
             </span>
@@ -1019,28 +1019,28 @@ export function AgentHistoryView() {
           className="max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60"
         >
           {!loadedSummary ? (
-            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[10px] text-slate-400">
+            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
               Use click or Enter on a focused beat to load app and agent logs.
             </div>
           ) : sessionsQuery.isLoading && sessions.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[10px] text-slate-400">
+            <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[11px] text-slate-400">
               <Spinner className="size-4" />
               <span>Loading logs for {stripIdPrefix(loadedSummary.beadId)}…</span>
-              <span className="text-[9px]">prompt histories are BIG, please be patient :-)</span>
+              <span className="text-[10px]">prompt histories are BIG, please be patient :-)</span>
             </div>
           ) : sessions.length === 0 ? (
-            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[10px] text-slate-400">
+            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
               No captured log sessions for this beat yet.
             </div>
           ) : (
             <div className="space-y-2">
               {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
-                <div className="flex items-center gap-1.5 text-[9px] text-slate-500">
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
                   <Spinner className="size-3" />
                   <span>Refreshing…</span>
                 </div>
               ) : null}
-              <div className="flex items-center gap-2 text-[10px] text-slate-400">
+              <div className="flex items-center gap-2 text-[11px] text-slate-400">
                 <Workflow className="size-3.5" />
                 <Sparkles className="size-3.5" />
                 {sessions.length} session{sessions.length === 1 ? "" : "s"}

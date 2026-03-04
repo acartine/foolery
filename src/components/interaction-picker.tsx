@@ -370,7 +370,7 @@ export function InteractionPicker({
     : "Select interaction";
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1 text-[10px]">
+    <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1 text-[11px]">
       <InteractionDropdown
         dropdownRef={interactionDropdownRef}
         dropdownOpen={interactionDropdownOpen}
@@ -388,7 +388,7 @@ export function InteractionPicker({
         picker={picker}
       />
 
-      <span className="ml-auto text-[10px] text-slate-400">
+      <span className="ml-auto text-[11px] text-slate-400">
         {picker.interactions.length} interaction
         {picker.interactions.length === 1 ? "" : "s"}
       </span>
@@ -418,7 +418,7 @@ function InteractionDropdown({
       <button
         type="button"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200 hover:bg-slate-700"
+        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[11px] text-slate-200 hover:bg-slate-700"
       >
         <span>{selectedLabel}</span>
         <ChevronDown className="size-3" />
@@ -427,7 +427,7 @@ function InteractionDropdown({
       {dropdownOpen && (
         <div className="absolute left-0 top-full z-50 mt-1 max-h-48 w-64 overflow-y-auto rounded border border-slate-600 bg-slate-800 shadow-lg">
           {picker.interactions.length === 0 ? (
-            <div className="px-2 py-1.5 text-[10px] text-slate-400">
+            <div className="px-2 py-1.5 text-[11px] text-slate-400">
               No interactions found
             </div>
           ) : (
@@ -439,7 +439,7 @@ function InteractionDropdown({
                   picker.selectInteraction(item.entryId);
                   setDropdownOpen(false);
                 }}
-                className={`block w-full px-2 py-1.5 text-left text-[10px] hover:bg-slate-700 ${
+                className={`block w-full px-2 py-1.5 text-left text-[11px] hover:bg-slate-700 ${
                   picker.selectedInteraction === item.id
                     ? "bg-slate-700 text-slate-100"
                     : "text-slate-300"
@@ -477,12 +477,12 @@ function FilterDropdown({
       <button
         type="button"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[10px] text-slate-200 hover:bg-slate-700"
+        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[11px] text-slate-200 hover:bg-slate-700"
       >
         <Filter className="size-3" />
         <span>Filters</span>
         {selectedCount > 0 ? (
-          <span className="rounded bg-cyan-900/70 px-1 text-[9px] text-cyan-100">
+          <span className="rounded bg-cyan-900/70 px-1 text-[10px] text-cyan-100">
             {selectedCount}
           </span>
         ) : null}
@@ -493,16 +493,16 @@ function FilterDropdown({
         <div className="absolute left-0 top-full z-50 mt-1 w-80 rounded border border-slate-600 bg-slate-800 shadow-lg">
           <div className="max-h-72 space-y-2 overflow-y-auto p-2">
             <section>
-              <p className="px-1 text-[9px] uppercase tracking-wide text-slate-500">
+              <p className="px-1 text-[10px] uppercase tracking-wide text-slate-500">
                 Agent Message Types
               </p>
               <div className="mt-1 space-y-0.5">
                 {picker.isIndexLoading ? (
-                  <p className="px-1 py-1 text-[9px] text-slate-500">
+                  <p className="px-1 py-1 text-[10px] text-slate-500">
                     Loading types…
                   </p>
                 ) : picker.availableMessageTypes.length === 0 ? (
-                  <p className="px-1 py-1 text-[9px] text-slate-500">
+                  <p className="px-1 py-1 text-[10px] text-slate-500">
                     No type index
                   </p>
                 ) : (
@@ -519,7 +519,7 @@ function FilterDropdown({
             </section>
 
             <section>
-              <p className="px-1 text-[9px] uppercase tracking-wide text-slate-500">
+              <p className="px-1 text-[10px] uppercase tracking-wide text-slate-500">
                 Workflow Steps (queue/action)
               </p>
               <div className="mt-1 space-y-0.5">
@@ -536,7 +536,7 @@ function FilterDropdown({
             </section>
           </div>
           <div className="flex items-center justify-between border-t border-slate-700 px-2 py-1">
-            <span className="text-[9px] text-slate-500">
+            <span className="text-[10px] text-slate-500">
               {selectedCount === 0
                 ? "No filters selected"
                 : `${selectedCount} active filter${selectedCount === 1 ? "" : "s"}`}
@@ -545,7 +545,7 @@ function FilterDropdown({
               <button
                 type="button"
                 onClick={picker.clearFilters}
-                className="text-[9px] text-slate-400 hover:text-slate-200"
+                className="text-[10px] text-slate-400 hover:text-slate-200"
               >
                 Clear all
               </button>
@@ -584,9 +584,9 @@ function FilterOptionRow({
         <Check className="size-2.5" />
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[10px] text-slate-200">{label}</span>
+        <span className="block truncate text-[11px] text-slate-200">{label}</span>
         {description ? (
-          <span className="block truncate text-[9px] text-slate-500">
+          <span className="block truncate text-[10px] text-slate-500">
             {description}
           </span>
         ) : null}
