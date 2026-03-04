@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, List, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox } from "lucide-react";
+import { Plus, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
