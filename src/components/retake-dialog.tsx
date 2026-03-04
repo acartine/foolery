@@ -58,8 +58,9 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
         </DialogHeader>
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            This will reopen the beat as <span className="font-semibold text-foreground">{RETAKE_TARGET_STATE}</span> for
-            regression investigation.
+            This will reopen the beat into the{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs font-semibold text-foreground">{RETAKE_TARGET_STATE}</code>{" "}
+            queue for regression investigation.
             {commitSha && (
               <>
                 {" "}The original achievement was at commit{" "}
