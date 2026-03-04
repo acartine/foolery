@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useMemo, useState } from "react";
+import {
+  type WheelEvent as ReactWheelEvent,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ChevronLeft,
@@ -35,6 +42,7 @@ import {
 } from "@/lib/terminal-tab-completion";
 import {
   getTerminalTabScrollAmount,
+  resolveTerminalTabDisplayLabel,
   resolveTerminalTabStripState,
   shouldUseCompactTerminalTabLabels,
 } from "@/lib/terminal-tab-strip";
@@ -266,6 +274,21 @@ export function TerminalPanel() {
       window.setTimeout(syncTabStripState, 180);
     },
     [syncTabStripState],
+  );
+
+  const handleTabStripWheel = useCallback(
+    (event: ReactWheelEvent<HTMLDivElement>) => {
+      const tabStrip = tabStripRef.current;
+      if (!tabStrip || !tabStripState.hasOverflow) return;
+
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      tabStrip.scrollBy({
+        left: event.deltaY,
+      });
+      syncTabStripState();
+    },
+    [syncTabStripState, tabStripState.hasOverflow],
   );
 
   // Auto-close tabs after process completion
@@ -659,12 +682,17 @@ export function TerminalPanel() {
                 ref={tabStripRef}
                 className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto pb-0.5"
                 onScroll={syncTabStripState}
+                onWheel={handleTabStripWheel}
               >
                 {terminals.map((terminal) => {
                   const isActive = terminal.sessionId === activeTerminal?.sessionId;
                   const isRunning = terminal.status === "running";
                   const isPending = pendingClose.has(terminal.sessionId);
                   const beatIdParts = splitTerminalTabBeatId(terminal.beatId);
+                  const displayLabel = resolveTerminalTabDisplayLabel(
+                    beatIdParts,
+                    compactTabLabels,
+                  );
                   return (
                     <button
                       key={terminal.sessionId}
@@ -677,7 +705,7 @@ export function TerminalPanel() {
                       }}
                       type="button"
                       className={`group inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded border px-2 py-1 text-[11px] transition-colors ${
-                        compactTabLabels ? "max-w-[150px]" : "max-w-[270px]"
+                        compactTabLabels ? "max-w-[132px]" : "max-w-[270px]"
                       } ${
                         isPending
                           ? "animate-pulse border-amber-400/40 bg-amber-500/30 text-amber-200"
@@ -692,14 +720,16 @@ export function TerminalPanel() {
                           : `${terminal.beatId}${terminal.beatTitle ? ` - ${terminal.beatTitle}` : ""}`
                       }
                     >
-                      <span className="truncate font-mono">
-                        {beatIdParts.prefix ? (
+                      <span className="flex min-w-0 items-center gap-0.5 font-mono">
+                        {displayLabel.prefix ? (
                           <>
-                            <span className="text-white/45">{beatIdParts.prefix}-</span>
-                            {beatIdParts.localId}
+                            <span className="min-w-0 truncate text-white/45">
+                              {displayLabel.prefix}
+                            </span>
+                            <span className="shrink-0">{displayLabel.localId}</span>
                           </>
                         ) : (
-                          beatIdParts.localId
+                          <span className="truncate">{displayLabel.localId}</span>
                         )}
                       </span>
                       {!compactTabLabels && terminal.beatTitle && (

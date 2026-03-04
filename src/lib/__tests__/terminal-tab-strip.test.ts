@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getTerminalTabScrollAmount,
+  resolveTerminalTabDisplayLabel,
   resolveTerminalTabStripState,
   shouldUseCompactTerminalTabLabels,
 } from "@/lib/terminal-tab-strip";
@@ -80,6 +81,51 @@ describe("terminal-tab-strip helpers", () => {
     expect(shouldUseCompactTerminalTabLabels(false, 300, 4)).toBe(false);
     expect(shouldUseCompactTerminalTabLabels(true, 1_200, 4)).toBe(false);
     expect(shouldUseCompactTerminalTabLabels(true, 520, 4)).toBe(true);
+  });
+
+  it("keeps full beat id labels in non-compact mode", () => {
+    expect(
+      resolveTerminalTabDisplayLabel(
+        {
+          prefix: "foolery",
+          localId: "b83f",
+        },
+        false,
+      ),
+    ).toEqual({
+      prefix: "foolery-",
+      localId: "b83f",
+    });
+  });
+
+  it("shortens long compact beat id labels", () => {
+    expect(
+      resolveTerminalTabDisplayLabel(
+        {
+          prefix: "extraordinaryproject",
+          localId: "1234567890abcdef",
+        },
+        true,
+      ),
+    ).toEqual({
+      prefix: "extraor...-",
+      localId: "1234...bcdef",
+    });
+  });
+
+  it("keeps short compact labels untouched", () => {
+    expect(
+      resolveTerminalTabDisplayLabel(
+        {
+          prefix: "foolery",
+          localId: "b83f",
+        },
+        true,
+      ),
+    ).toEqual({
+      prefix: "foolery-",
+      localId: "b83f",
+    });
   });
 
   it("uses a proportional tab-scroll amount with a floor", () => {
