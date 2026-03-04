@@ -31,6 +31,7 @@ import {
   InteractionPicker,
   useInteractionPicker,
 } from "@/components/interaction-picker";
+import { toast } from "sonner";
 
 const WINDOW_SIZE = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
@@ -427,7 +428,15 @@ function renderLongText(label: string, value?: string) {
   );
 }
 
-function BeatDetailContent({ beat, summary }: { beat: Beat | null; summary: AgentHistoryBeatSummary }) {
+function BeatDetailContent({
+  beat,
+  summary,
+  onCopyBeatId,
+}: {
+  beat: Beat | null;
+  summary: AgentHistoryBeatSummary;
+  onCopyBeatId: (beatId: string) => void;
+}) {
   if (!beat) {
     return (
       <div className="px-0.5 py-2 text-center text-[10px] text-muted-foreground">
@@ -439,7 +448,17 @@ function BeatDetailContent({ beat, summary }: { beat: Beat | null; summary: Agen
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
-        <BeatMetaItem label="Beat ID" value={stripIdPrefix(beat.id)} />
+        <div className="px-0.5 py-0.5">
+          <p className="text-[9px] uppercase tracking-wide text-muted-foreground">Beat ID</p>
+          <button
+            type="button"
+            className="mt-0.5 break-words text-left font-mono text-[10px] underline-offset-2 hover:underline"
+            onClick={() => onCopyBeatId(beat.id)}
+            title="Click to copy ID"
+          >
+            {stripIdPrefix(beat.id)}
+          </button>
+        </div>
         <BeatMetaItem label="Last updated" value={formatTime(summary.lastWorkedAt)} />
         <BeatMetaItem label="State" value={beat.state} />
         <BeatMetaItem label="Type" value={beat.type} />
@@ -483,6 +502,13 @@ export function AgentHistoryView() {
   const autoFocusedBeatListRef = useRef(false);
 
   const loadedBeat = useMemo(() => parseBeatKey(loadedBeatKey), [loadedBeatKey]);
+  const copyBeatId = useCallback((beatId: string) => {
+    const shortId = stripIdPrefix(beatId);
+    navigator.clipboard.writeText(shortId).then(
+      () => toast.success(`Copied: ${shortId}`),
+      () => toast.error("Failed to copy to clipboard"),
+    );
+  }, []);
 
   const focusBeatList = useCallback(() => {
     const list = beatListRef.current;
@@ -869,7 +895,19 @@ export function AgentHistoryView() {
                           ? "text-sky-800 dark:text-sky-200"
                           : "text-muted-foreground"
                     }`}>
-                      <span className="font-mono">{stripIdPrefix(beat.beadId)}</span>
+                      <span
+                        role="button"
+                        tabIndex={-1}
+                        className="cursor-pointer font-mono underline-offset-2 hover:underline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyBeatId(beat.beadId);
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        title="Click to copy ID"
+                      >
+                        {stripIdPrefix(beat.beadId)}
+                      </span>
                       {showRepoName ? (
                         <Badge variant="outline" className="text-[9px] font-normal">
                           {repoNames.get(beat.repoPath) ?? beat.repoPath}
@@ -906,7 +944,14 @@ export function AgentHistoryView() {
               </p>
             </div>
             {focusedSummary ? (
-              <span className="ml-auto font-mono text-[10px] text-muted-foreground">{stripIdPrefix(focusedSummary.beadId)}</span>
+              <button
+                type="button"
+                className="ml-auto font-mono text-[10px] text-muted-foreground underline-offset-2 hover:underline"
+                onClick={() => copyBeatId(focusedSummary.beadId)}
+                title="Click to copy ID"
+              >
+                {stripIdPrefix(focusedSummary.beadId)}
+              </button>
             ) : null}
           </div>
 
@@ -925,7 +970,7 @@ export function AgentHistoryView() {
                 {focusedDetail.error}
               </div>
             ) : (
-              <BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} />
+              <BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} onCopyBeatId={copyBeatId} />
             )}
           </div>
         </section>
@@ -941,7 +986,14 @@ export function AgentHistoryView() {
             </span>
           ) : null}
           {loadedSummary ? (
-            <span className="font-mono text-[10px] text-slate-400">{stripIdPrefix(loadedSummary.beadId)}</span>
+            <button
+              type="button"
+              className="font-mono text-[10px] text-slate-400 underline-offset-2 hover:underline"
+              onClick={() => copyBeatId(loadedSummary.beadId)}
+              title="Click to copy ID"
+            >
+              {stripIdPrefix(loadedSummary.beadId)}
+            </button>
           ) : null}
           {loadedSummary ? (
             <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-slate-400">
