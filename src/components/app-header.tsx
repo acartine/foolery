@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, List, Film, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper } from "lucide-react";
+import { Plus, List, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -36,18 +36,16 @@ export function AppHeader() {
   const isBeadsRoute =
     pathname === "/beads" || pathname.startsWith("/beads/");
   const viewParam = searchParams.get("view");
-  const beadsView: "list" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
-    viewParam === "existing"
-      ? "existing"
-      : viewParam === "finalcut"
-        ? "finalcut"
-        : viewParam === "retakes"
-          ? "retakes"
-          : viewParam === "history"
-            ? "history"
-          : viewParam === "breakdown"
-            ? "breakdown"
-            : "list";
+  const beadsView: "list" | "finalcut" | "retakes" | "history" | "breakdown" =
+    viewParam === "finalcut"
+      ? "finalcut"
+      : viewParam === "retakes"
+        ? "retakes"
+        : viewParam === "history"
+          ? "history"
+        : viewParam === "breakdown"
+          ? "breakdown"
+          : "list";
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -157,7 +155,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "list" | "existing" | "finalcut" | "retakes" | "history" | "breakdown") => {
+  const setBeadsView = useCallback((view: "list" | "finalcut" | "retakes" | "history" | "breakdown") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "list") params.delete("view");
     else params.set("view", view);
@@ -168,7 +166,7 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeadsRoute) return;
-    const views = ["list", "existing", "finalcut", "retakes", "history"] as const;
+    const views = ["list", "finalcut", "retakes", "history"] as const;
     type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
@@ -207,7 +205,7 @@ export function AppHeader() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeadsRoute, toggleTerminalPanel]);
 
-  // Button config changes per view: hidden on Scenes/Breakdown/History, "Wrap!" on Final Cut, "Add" on Beats
+  // Button config changes per view: hidden on Breakdown/History, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beadsView === "list" || beadsView === "finalcut";
 
   const actionButton = (() => {
@@ -356,17 +354,6 @@ export function AppHeader() {
                   >
                     <List className="size-4" />
                     Beats
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant={beadsView === "existing" ? "default" : "ghost"}
-                    className="h-8 gap-1.5 px-2.5"
-                    disabled={!activeRepo}
-                    title={!activeRepo ? "Select a repository to browse scenes" : "Existing scene trees"}
-                    onClick={() => setBeadsView("existing")}
-                  >
-                    <Film className="size-4" />
-                    Scenes
                   </Button>
                   <Button
                     size="lg"
