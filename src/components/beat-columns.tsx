@@ -523,12 +523,11 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     },
   });
 
-  // State column: placed rightmost so it sits after the run/ship column.
-  // Uses percentage width via meta so it can grow and consume space from the title column.
+  // State column: content can grow and consume width from the title column.
   columns.push({
     accessorKey: "state",
     header: "State",
-    meta: { widthPercent: "15%" },
+    meta: { minWidthPx: 128 },
     cell: ({ row }) => {
       const isRolling = Boolean(shippingByBeatId[row.original.id]);
       const isParentRolling = parentRollingBeatIds.has(row.original.id);

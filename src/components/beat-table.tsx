@@ -117,6 +117,10 @@ function InlineSummary({ beat }: { beat: Beat }) {
 }
 
 const HOTKEY_HELP_KEY = "foolery-hotkey-help";
+type ColumnMetaSizing = {
+  widthPercent?: string;
+  minWidthPx?: number;
+};
 
 function getStoredHotkeyHelp(): boolean {
   if (typeof window === "undefined") return true;
@@ -612,39 +616,43 @@ function BeatTableContent({
   router: ReturnType<typeof useRouter>;
 }) {
   return (
-    <Table className="table-fixed">
+    <Table className="table-auto">
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead
-                key={header.id}
-                style={{
-                  width: (header.column.columnDef.meta as Record<string, string> | undefined)?.widthPercent
-                    ?? (header.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? header.getSize() : undefined),
-                }}
-              >
-                {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                  <button
-                    type="button"
-                    title="Sort column"
-                    className="flex items-center gap-1"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {flexRender(
+            {headerGroup.headers.map((header) => {
+              const meta = header.column.columnDef.meta as ColumnMetaSizing | undefined;
+              return (
+                <TableHead
+                  key={header.id}
+                  style={{
+                    width: meta?.widthPercent
+                      ?? (header.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER ? header.getSize() : undefined),
+                    minWidth: meta?.minWidthPx,
+                  }}
+                >
+                  {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                    <button
+                      type="button"
+                      title="Sort column"
+                      className="flex items-center gap-1"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <ArrowUpDown className="size-3" />
+                    </button>
+                  ) : (
+                    flexRender(
                       header.column.columnDef.header,
                       header.getContext()
-                    )}
-                    <ArrowUpDown className="size-3" />
-                  </button>
-                ) : (
-                  flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )
-                )}
-              </TableHead>
-            ))}
+                    )
+                  )}
+                </TableHead>
+              );
+            })}
           </TableRow>
         ))}
       </TableHeader>
@@ -658,26 +666,29 @@ function BeatTableContent({
               )}
               onClick={() => handleRowFocus(row.original)}
             >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={
-                    (cell.column.columnDef.meta as Record<string, string> | undefined)?.widthPercent
-                      ? "whitespace-nowrap"
-                      : cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER
-                        ? undefined
-                        : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")
-                  }
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  {focusedRowId === row.original.id &&
-                    cell.column.id === "title" && (
-                      <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}>
-                        <InlineSummary beat={row.original} />
-                      </div>
-                    )}
-                </TableCell>
-              ))}
+              {row.getVisibleCells().map((cell) => {
+                const meta = cell.column.columnDef.meta as ColumnMetaSizing | undefined;
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={
+                      meta?.widthPercent || meta?.minWidthPx
+                        ? "whitespace-nowrap"
+                        : cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER
+                          ? undefined
+                          : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")
+                    }
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {focusedRowId === row.original.id &&
+                      cell.column.id === "title" && (
+                        <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}>
+                          <InlineSummary beat={row.original} />
+                        </div>
+                      )}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))
         ) : (
