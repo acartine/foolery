@@ -9,7 +9,6 @@ import { BeatTable } from "@/components/beat-table";
 import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
 import { FilterBar, type ViewPhase } from "@/components/filter-bar";
 import { MergeBeatsDialog } from "@/components/merge-beats-dialog";
-import { ExistingOrchestrationsView } from "@/components/existing-orchestrations-view";
 import { FinalCutView } from "@/components/final-cut-view";
 import { RetakesView } from "@/components/retakes-view";
 import { BreakdownView } from "@/components/breakdown-view";
@@ -56,21 +55,18 @@ function BeadsPageInner() {
   const detailBeatId = searchParams.get("bead");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
   const viewParam = searchParams.get("view");
-  const beadsView: "queues" | "active" | "existing" | "finalcut" | "retakes" | "history" | "breakdown" =
+  const beadsView: "queues" | "active" | "finalcut" | "retakes" | "history" | "breakdown" =
     viewParam === "active"
       ? "active"
-      : viewParam === "existing"
-        ? "existing"
-        : viewParam === "finalcut"
-          ? "finalcut"
-          : viewParam === "retakes"
-            ? "retakes"
-            : viewParam === "history"
-              ? "history"
-              : viewParam === "breakdown"
-                ? "breakdown"
-                : "queues";
-  const isExistingOrchestrationView = beadsView === "existing";
+      : viewParam === "finalcut"
+        ? "finalcut"
+        : viewParam === "retakes"
+          ? "retakes"
+          : viewParam === "history"
+            ? "history"
+            : viewParam === "breakdown"
+              ? "breakdown"
+              : "queues";
   const isListView = beadsView === "queues" || beadsView === "active";
   const viewPhase: ViewPhase = beadsView === "active" ? "active" : "queues";
   const isFinalCutView = beadsView === "finalcut";
@@ -422,9 +418,7 @@ function BeadsPageInner() {
       )}
 
       <div className="mt-0.5">
-        {isExistingOrchestrationView ? (
-          <ExistingOrchestrationsView />
-        ) : isFinalCutView ? (
+        {isFinalCutView ? (
           <FinalCutView />
         ) : isRetakesView ? (
           <RetakesView />
