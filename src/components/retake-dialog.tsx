@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { Beat } from "@/lib/types";
+import { RETAKE_TARGET_STATE } from "@/lib/retake";
 
 interface RetakeDialogProps {
   bead: Beat | null;
@@ -57,7 +58,7 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
         </DialogHeader>
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            This will reopen the beat as <span className="font-semibold text-foreground">ready_for_implementation</span> for
+            This will reopen the beat as <span className="font-semibold text-foreground">{RETAKE_TARGET_STATE}</span> for
             regression investigation.
             {commitSha && (
               <>

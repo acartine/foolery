@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { beatInRetake, workflowDescriptorById } from "@/lib/workflows";
+import { RETAKE_TARGET_STATE } from "@/lib/retake";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -566,7 +567,7 @@ export function RetakesView() {
       if (commitSha) labels.push(`regression:${commitSha}`);
 
       const fields: UpdateBeatInput = {
-        state: "ready_for_implementation",
+        state: RETAKE_TARGET_STATE,
         labels: labels.length > 0 ? labels : undefined,
         notes: notes
           ? `${bead.notes ? bead.notes + "\n" : ""}ReTake: ${notes}`
