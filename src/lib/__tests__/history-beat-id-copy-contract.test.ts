@@ -24,6 +24,13 @@ describe("history beat-id copy affordance contract", () => {
     expect(historyViewSource).toContain("onClick={() => onCopyBeatId(beat.id)}");
   });
 
+  it("renders stripped ids on every copy affordance surface", () => {
+    expect(historyViewSource).toContain("{stripIdPrefix(beat.beadId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(focusedSummary.beadId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(loadedSummary.beadId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(beat.id)}");
+  });
+
   it("retains explicit copy affordance cues for beat ids", () => {
     const affordanceTitleMatches = historyViewSource.match(/title=\"Click to copy ID\"/g) ?? [];
     expect(affordanceTitleMatches.length).toBeGreaterThanOrEqual(4);
