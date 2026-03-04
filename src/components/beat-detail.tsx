@@ -61,11 +61,15 @@ export function validNextStates(
     }
   }
 
-  // Allow direct rollback from active rows to their queued companion state.
-  if (!effectiveState.startsWith("ready_for_")) {
-    const queuedCompanion = `ready_for_${effectiveState}`;
-    if ((workflow.states ?? []).includes(queuedCompanion)) {
-      next.add(queuedCompanion);
+  // Allow rollback from active/review states to any earlier queue state.
+  const statesList = workflow.states ?? [];
+  const effectiveIndex = statesList.indexOf(effectiveState);
+  if (effectiveIndex > 0) {
+    for (let i = 0; i < effectiveIndex; i++) {
+      const earlier = statesList[i];
+      if (earlier && earlier.startsWith("ready_for_")) {
+        next.add(earlier);
+      }
     }
   }
 

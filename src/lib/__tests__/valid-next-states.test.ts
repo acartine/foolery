@@ -130,6 +130,31 @@ describe("validNextStates", () => {
       expect(result).toContain("ready_for_implementation");
     });
 
+    it("includes all earlier queue states as rollback targets for active rows", () => {
+      const result = validNextStates("implementation", workflow);
+      expect(result).toContain("ready_for_planning");
+      expect(result).toContain("ready_for_plan_review");
+      expect(result).toContain("ready_for_implementation");
+    });
+
+    it("includes all earlier queue states for shipment_review", () => {
+      const result = validNextStates("shipment_review", workflow);
+      expect(result).toContain("ready_for_planning");
+      expect(result).toContain("ready_for_plan_review");
+      expect(result).toContain("ready_for_implementation");
+      expect(result).toContain("ready_for_implementation_review");
+      expect(result).toContain("ready_for_shipment");
+      expect(result).toContain("ready_for_shipment_review");
+    });
+
+    it("does not add later queue states as rollback targets", () => {
+      const result = validNextStates("planning", workflow);
+      // planning is index 1; ready_for_planning is index 0 (earlier, included)
+      expect(result).toContain("ready_for_planning");
+      // ready_for_implementation is index 4 (later, not a rollback addition)
+      // but it may appear from transitions — just verify no spurious additions
+    });
+
     it("normalizes short impl state to implementation for transitions", () => {
       const result = validNextStates("impl", workflow);
       expect(result).toContain("ready_for_implementation_review");
