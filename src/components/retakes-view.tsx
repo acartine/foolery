@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { fetchBeads, fetchWorkflows } from "@/lib/api";
+import { fetchBeads } from "@/lib/api";
 import { naturalCompare } from "@/lib/beat-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
@@ -23,8 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { beatInRetake, workflowDescriptorById } from "@/lib/workflows";
-import { RETAKE_TARGET_STATE } from "@/lib/retake";
+import { RETAKE_TARGET_STATE, isRetakeSourceState } from "@/lib/retake";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -479,17 +478,11 @@ export function RetakesView() {
     queryFn: async () => {
       const params: Record<string, string> = {};
       if (activeRepo) {
-        const [result, workflowsResult] = await Promise.all([
-          fetchBeads(params, activeRepo),
-          fetchWorkflows(activeRepo),
-        ]);
+        const result = await fetchBeads(params, activeRepo);
         if (result.ok && result.data) {
-          const workflowsById = workflowDescriptorById(
-            workflowsResult.ok ? workflowsResult.data ?? [] : [],
-          );
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .filter((bead) => beatInRetake(bead, workflowsById))
+            .filter((bead) => isRetakeSourceState(bead.state))
             .map((bead) => ({
               ...bead,
               _repoPath: activeRepo,
@@ -501,16 +494,10 @@ export function RetakesView() {
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const [result, workflowsResult] = await Promise.all([
-              fetchBeads(params, repo.path),
-              fetchWorkflows(repo.path),
-            ]);
+            const result = await fetchBeads(params, repo.path);
             if (!result.ok || !result.data) return [];
-            const workflowsById = workflowDescriptorById(
-              workflowsResult.ok ? workflowsResult.data ?? [] : [],
-            );
             return result.data
-              .filter((bead) => beatInRetake(bead, workflowsById))
+              .filter((bead) => isRetakeSourceState(bead.state))
               .map((bead) => ({
                 ...bead,
                 _repoPath: repo.path,
@@ -520,15 +507,9 @@ export function RetakesView() {
         );
         return { ok: true as const, data: results.flat() };
       }
-      const [result, workflowsResult] = await Promise.all([
-        fetchBeads(params),
-        fetchWorkflows(),
-      ]);
+      const result = await fetchBeads(params);
       if (result.ok && result.data) {
-        const workflowsById = workflowDescriptorById(
-          workflowsResult.ok ? workflowsResult.data ?? [] : [],
-        );
-        result.data = result.data.filter((bead) => beatInRetake(bead, workflowsById));
+        result.data = result.data.filter((bead) => isRetakeSourceState(bead.state));
       }
       return result;
     },
@@ -537,7 +518,7 @@ export function RetakesView() {
     placeholderData: keepPreviousData,
   });
 
-  // Sort closed beads by updated timestamp descending (most recent first),
+  // Sort retake candidates by updated timestamp descending (most recent first),
   // with natural ID order as tiebreaker for deterministic sibling ordering.
   const beads = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
@@ -668,8 +649,8 @@ export function RetakesView() {
   if (beads.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-        <p className="text-sm">No beats in retake found.</p>
-        <p className="mt-1 text-xs">Beats in retake will appear here for regression tracking.</p>
+        <p className="text-sm">No shipped beats found.</p>
+        <p className="mt-1 text-xs">Shipped beats will appear here for regression tracking.</p>
       </div>
     );
   }
@@ -678,7 +659,7 @@ export function RetakesView() {
     <div className="space-y-2">
       <div className="flex items-center justify-between px-2">
         <div className="text-xs text-muted-foreground">
-          {beads.length} beat{beads.length !== 1 ? "s" : ""} in retake — most recently updated first
+          {beads.length} shipped beat{beads.length !== 1 ? "s" : ""} — most recently updated first
         </div>
       </div>
       {pageCount > 1 && renderPaginationControls()}
