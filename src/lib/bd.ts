@@ -708,6 +708,7 @@ export async function updateBeat(
 
   const needsCurrentContext = Boolean(selectedProfileId) ||
     typeof nextFields.workflowState === "string" ||
+    typeof nextFields.state === "string" ||
     typeof nextFields.status === "string";
   const current = needsCurrentContext ? await showBeat(id, repoPath) : null;
   if (current && !current.ok) {
@@ -718,8 +719,11 @@ export async function updateBeat(
   const explicitWorkflowState =
     typeof nextFields.workflowState === "string"
       ? normalizeStateForWorkflow(nextFields.workflowState, workflow)
-      : undefined;
+      : typeof nextFields.state === "string"
+        ? normalizeStateForWorkflow(nextFields.state, workflow)
+        : undefined;
   delete nextFields.workflowState;
+  delete nextFields.state;
 
   const explicitStatus = typeof nextFields.status === "string"
     ? (nextFields.status as string)
