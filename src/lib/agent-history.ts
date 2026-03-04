@@ -353,6 +353,9 @@ function parseSession(
   let endedAt: string | undefined;
   let status: string | undefined;
   let exitCode: number | null | undefined;
+  let promptCounter = 0;
+  let pendingPromptState: string | undefined;
+  let pendingPromptNumber: number | undefined;
   const entries: AgentHistoryEntry[] = [];
   const titleHints = new Map<string, string>();
   const workflowStates = new Set<string>();
@@ -428,6 +431,7 @@ function parseSession(
     }
 
     if (kind === "prompt") {
+      promptCounter += 1;
       const prompt = typeof parsed.prompt === "string" ? parsed.prompt : "";
       if (prompt) {
         const hints = extractBeadTitles(prompt);
@@ -438,13 +442,20 @@ function parseSession(
       }
       if (!capturesEntries || !prompt) continue;
       const promptSource = typeof parsed.source === "string" ? parsed.source : undefined;
+      const promptNumber =
+        typeof pendingPromptNumber === "number" && pendingPromptNumber > 0
+          ? pendingPromptNumber
+          : promptCounter;
       entries.push({
         id: `${start.sessionId}:prompt:${lineIndex}`,
         kind: "prompt",
         ts: ts || start.ts,
         prompt: clipText(prompt),
         ...(promptSource ? { promptSource } : {}),
+        promptNumber,
+        ...(pendingPromptState ? { workflowState: pendingPromptState } : {}),
       });
+      pendingPromptNumber = undefined;
       continue;
     }
 
@@ -470,6 +481,21 @@ function parseSession(
       const state = typeof parsed.state === "string" ? parsed.state.trim() : "";
       if (state) {
         workflowStates.add(state);
+      }
+      const phase = typeof parsed.phase === "string" ? parsed.phase.trim() : "";
+      const iteration =
+        typeof parsed.iteration === "number" &&
+        Number.isInteger(parsed.iteration) &&
+        parsed.iteration > 0
+          ? parsed.iteration
+          : undefined;
+      if (phase === "before_prompt") {
+        if (state) {
+          pendingPromptState = state;
+        }
+        if (iteration !== undefined) {
+          pendingPromptNumber = iteration;
+        }
       }
       continue;
     }

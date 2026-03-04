@@ -27,6 +27,7 @@ import { formatModelDisplay } from "@/hooks/use-agent-info";
 import type { Beat } from "@/lib/types";
 import { useAppStore } from "@/stores/app-store";
 import { Badge } from "@/components/ui/badge";
+import { resolveStep } from "@/lib/workflows";
 import {
   InteractionPicker,
   useInteractionPicker,
@@ -92,6 +93,22 @@ function promptSourceLabel(source?: string): string {
   if (source === "verification_review") return "Verification prompt";
   if (source === "auto_ask_user_response") return "Auto AskUser response";
   return source.replace(/_/g, " ");
+}
+
+function workflowStepLabelFromState(state?: string): string | null {
+  if (!state) return null;
+  const resolved = resolveStep(state);
+  if (!resolved) return null;
+  return resolved.step
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function workflowStateBadgeLabel(state?: string): string | null {
+  if (!state) return null;
+  const stepLabel = workflowStepLabelFromState(state);
+  return stepLabel ? `${stepLabel} · ${state}` : state;
 }
 
 /** Strip the repo prefix from a beat/bead ID (e.g. "foolery-drmp" → "drmp"). */
@@ -242,16 +259,22 @@ function BeatMetaItem({ label, value }: { label: string; value?: string | null }
   );
 }
 
+interface PromptContext {
+  source?: string;
+  promptNumber?: number;
+  workflowState?: string;
+}
+
 function SessionEntryRow({
   entry,
   agentLabel,
   interactionType,
-  precedingPromptSource,
+  precedingPrompt,
 }: {
   entry: AgentHistoryEntry;
   agentLabel?: string;
   interactionType?: AgentHistoryInteractionType;
-  precedingPromptSource?: string;
+  precedingPrompt?: PromptContext;
 }) {
   if (entry.kind === "session_start") {
     return (
@@ -272,14 +295,25 @@ function SessionEntryRow({
   }
 
   if (entry.kind === "prompt") {
+    const stateLabel = workflowStateBadgeLabel(entry.workflowState);
     return (
       <div className="rounded border border-sky-500/50 bg-sky-950/35 px-2.5 py-1.5">
         <div className="mb-1 flex flex-wrap items-center gap-2 text-[10px] text-sky-200">
           <MessageSquareText className="size-3.5" />
           <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` · ${agentLabel}` : ""}</span>
+          {typeof entry.promptNumber === "number" ? (
+            <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[11px] font-normal text-sky-100">
+              {`Prompt #${entry.promptNumber}`}
+            </Badge>
+          ) : null}
           <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[11px] font-normal text-sky-100">
             {promptSourceLabel(entry.promptSource)}
           </Badge>
+          {stateLabel ? (
+            <Badge variant="outline" className="border-sky-400/40 bg-sky-900/40 text-[11px] font-normal text-sky-100">
+              {stateLabel}
+            </Badge>
+          ) : null}
           <span>{formatTime(entry.ts)}</span>
         </div>
         <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-sky-100">
@@ -303,9 +337,19 @@ function SessionEntryRow({
             {interactionTypeLabel(interactionType)}
           </Badge>
         ) : null}
-        {precedingPromptSource ? (
+        {typeof precedingPrompt?.promptNumber === "number" ? (
           <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[11px] font-normal text-slate-300">
-            {promptSourceLabel(precedingPromptSource)}
+            {`Prompt #${precedingPrompt.promptNumber}`}
+          </Badge>
+        ) : null}
+        {precedingPrompt?.source ? (
+          <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[11px] font-normal text-slate-300">
+            {promptSourceLabel(precedingPrompt.source)}
+          </Badge>
+        ) : null}
+        {precedingPrompt?.workflowState ? (
+          <Badge variant="outline" className="border-slate-500/40 bg-slate-800/40 text-[11px] font-normal text-slate-300">
+            {workflowStateBadgeLabel(precedingPrompt.workflowState)}
           </Badge>
         ) : null}
         <span>{formatTime(entry.ts)}</span>
@@ -347,15 +391,21 @@ function SessionCard({
   const agentLabel = useMemo(() => buildAgentLabel(session), [session]);
 
   const enrichedEntries = useMemo(() => {
-    const result: Array<{ entry: AgentHistoryEntry; precedingPromptSource?: string }> = [];
-    let tracking: string | undefined;
+    const result: Array<{ entry: AgentHistoryEntry; precedingPrompt?: PromptContext }> = [];
+    let tracking: PromptContext | undefined;
     for (const entry of session.entries) {
       result.push({
         entry,
-        precedingPromptSource: entry.kind === "response" ? tracking : undefined,
+        precedingPrompt: entry.kind === "response" ? tracking : undefined,
       });
       if (entry.kind === "prompt") {
-        tracking = entry.promptSource;
+        tracking = {
+          ...(entry.promptSource ? { source: entry.promptSource } : {}),
+          ...(typeof entry.promptNumber === "number"
+            ? { promptNumber: entry.promptNumber }
+            : {}),
+          ...(entry.workflowState ? { workflowState: entry.workflowState } : {}),
+        };
       }
     }
     return result;
@@ -392,7 +442,7 @@ function SessionCard({
               : "No entries match the active filters."}
           </div>
         ) : (
-          filteredEntries.map(({ entry, precedingPromptSource }) => (
+          filteredEntries.map(({ entry, precedingPrompt }) => (
             <div
               key={entry.id}
               ref={(node) => entryRefCallback?.(entry.id, node)}
@@ -406,7 +456,7 @@ function SessionCard({
                 entry={entry}
                 agentLabel={agentLabel}
                 interactionType={session.interactionType}
-                precedingPromptSource={precedingPromptSource}
+                precedingPrompt={precedingPrompt}
               />
             </div>
           ))

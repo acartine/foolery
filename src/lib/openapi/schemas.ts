@@ -579,6 +579,8 @@ export const componentSchemas = {
       ts: { type: "string", format: "date-time" },
       prompt: { type: "string" },
       promptSource: { type: "string" },
+      promptNumber: { type: "integer" },
+      workflowState: { type: "string" },
       raw: { type: "string" },
       status: { type: "string" },
       exitCode: { oneOf: [{ type: "integer" }, { type: "null" }] },

@@ -6,6 +6,8 @@ export interface AgentHistoryEntry {
   ts: string;
   prompt?: string;
   promptSource?: string;
+  promptNumber?: number;
+  workflowState?: string;
   raw?: string;
   status?: string;
   exitCode?: number | null;

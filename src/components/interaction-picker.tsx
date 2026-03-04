@@ -70,6 +70,12 @@ const WORKFLOW_STATES = Array.from(
     WORKFLOW_STEP_FILTERS.flatMap((item) => [item.states[0], item.states[1]]),
   ),
 );
+const WORKFLOW_FILTER_BY_STATE = new Map<string, WorkflowStepFilterOption>(
+  WORKFLOW_STEP_FILTERS.flatMap((item) => [
+    [item.states[0], item] as const,
+    [item.states[1], item] as const,
+  ]),
+);
 
 export interface InteractionItem {
   id: string;
@@ -78,6 +84,9 @@ export interface InteractionItem {
   timestamp: string;
   entryId: string;
   sessionIndex: number;
+  promptNumber: number;
+  workflowState?: string;
+  workflowStepLabel?: string;
 }
 
 export interface InteractionPickerState {
@@ -119,6 +128,15 @@ function promptSourceLabel(source: string): string {
   if (source === "verification_review") return "Verification";
   if (source === "auto_ask_user_response") return "Auto AskUser";
   return source.replace(/_/g, " ");
+}
+
+function promptStateMeta(
+  workflowState?: string,
+  workflowStepLabel?: string,
+): string {
+  if (!workflowState) return "State unknown";
+  if (!workflowStepLabel) return workflowState;
+  return `${workflowStepLabel} · ${workflowState}`;
 }
 
 function collectWorkflowStatesFromText(
@@ -177,16 +195,26 @@ export function useInteractionPicker(
   const interactions = useMemo<InteractionItem[]>(() => {
     const items: InteractionItem[] = [];
     for (const [sessionIdx, session] of sessions.entries()) {
+      let promptFallbackNumber = 0;
       for (const entry of session.entries) {
         if (entry.kind !== "prompt") continue;
+        promptFallbackNumber += 1;
         const source = entry.promptSource || "unknown";
+        const promptNumber = entry.promptNumber ?? promptFallbackNumber;
+        const workflowState = entry.workflowState;
+        const workflowStepLabel = workflowState
+          ? WORKFLOW_FILTER_BY_STATE.get(workflowState)?.label
+          : undefined;
         items.push({
           id: entry.id,
-          label: promptSourceLabel(source),
+          label: `Prompt #${promptNumber} · ${promptSourceLabel(source)}`,
           source,
           timestamp: entry.ts,
           entryId: entry.id,
           sessionIndex: sessionIdx,
+          promptNumber,
+          ...(workflowState ? { workflowState } : {}),
+          ...(workflowStepLabel ? { workflowStepLabel } : {}),
         });
       }
     }
@@ -445,9 +473,11 @@ function InteractionDropdown({
                     : "text-slate-300"
                 }`}
               >
-                <span className="font-medium">{item.label}</span>
-                <span className="ml-1 text-slate-400">
-                  — {formatCompactTime(item.timestamp)}
+                <span className="block font-medium">{item.label}</span>
+                <span className="block text-[9px] text-slate-400">
+                  {promptStateMeta(item.workflowState, item.workflowStepLabel)}
+                  {" · "}
+                  {formatCompactTime(item.timestamp)}
                 </span>
               </button>
             ))
