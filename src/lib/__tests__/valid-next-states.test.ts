@@ -125,6 +125,13 @@ describe("validNextStates", () => {
       expect(result).toContain("ready_for_plan_review");
     });
 
+    it("normalizes short impl state to implementation for transitions", () => {
+      const result = validNextStates("impl", workflow);
+      expect(result).toContain("ready_for_implementation_review");
+      expect(result).toContain("deferred");
+      expect(result).toContain("abandoned");
+    });
+
     it("does not include the current state", () => {
       const result = validNextStates("planning", workflow);
       expect(result).not.toContain("planning");

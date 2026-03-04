@@ -30,9 +30,19 @@ export function validNextStates(
   rawKnoState?: string,
 ): string[] {
   if (!currentState) return [];
-  const normalized = currentState.trim().toLowerCase();
+  const normalizeForTransitions = (state: string | undefined): string | undefined => {
+    const normalizedState = state?.trim().toLowerCase();
+    if (!normalizedState) return undefined;
+    if (normalizedState === "impl" && (workflow.states ?? []).includes("implementation")) {
+      return "implementation";
+    }
+    return normalizedState;
+  };
+
+  const normalized = normalizeForTransitions(currentState);
+  if (!normalized) return [];
   const isQueuedDisplayState = normalized.startsWith("ready_for_");
-  const normalizedRawKnoState = rawKnoState?.trim().toLowerCase();
+  const normalizedRawKnoState = normalizeForTransitions(rawKnoState);
 
   // If the raw kno state differs from the display state, the knot is stuck in an
   // active phase that was rolled back for display. Compute transitions from the

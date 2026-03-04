@@ -72,6 +72,13 @@ describe("beat-columns validNextStates", () => {
     expect(result).toContain("ready_for_implementation_review");
   });
 
+  it("normalizes short impl state to implementation for transitions", () => {
+    const result = validNextStates("impl", workflow);
+    expect(result).toContain("ready_for_implementation_review");
+    expect(result).toContain("deferred");
+    expect(result).toContain("abandoned");
+  });
+
   it("computes from raw kno state and includes queued escape hatches when rolled back", () => {
     const result = validNextStates("ready_for_planning", workflow, "planning");
     expect(result).toContain("ready_for_plan_review");
