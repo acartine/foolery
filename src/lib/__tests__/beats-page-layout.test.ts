@@ -8,6 +8,10 @@ describe("beats page layout", () => {
     path.join(process.cwd(), "src/app/beats/page.tsx"),
     "utf8",
   );
+  const appHeaderSource = readFileSync(
+    path.join(process.cwd(), "src/components/app-header.tsx"),
+    "utf8",
+  );
 
   it("allows vertical scrolling in the main wrapper", () => {
     expect(source).toContain(
@@ -16,5 +20,17 @@ describe("beats page layout", () => {
     expect(source).not.toContain(
       'className="mx-auto max-w-[95vw] overflow-hidden px-4 pt-2"',
     );
+  });
+
+  it("binds Shift+H shortcut help globally for beats screens", () => {
+    const shiftHHandler = appHeaderSource.match(
+      /\/\/ Shift\+H toggles shortcut help in every Beats screen\.[\s\S]*?useEffect\(\(\) => \{[\s\S]*?\}, \[isBeatsRoute\]\);/,
+    )?.[0];
+
+    expect(shiftHHandler).toBeTruthy();
+    expect(shiftHHandler).toContain("if (!isBeatsRoute) return;");
+    expect(shiftHHandler).toContain("if (!isHotkeyHelpToggleKey(e)) return;");
+    expect(shiftHHandler).not.toContain('beatsView !== "queues"');
+    expect(shiftHHandler).not.toContain('beatsView !== "active"');
   });
 });
