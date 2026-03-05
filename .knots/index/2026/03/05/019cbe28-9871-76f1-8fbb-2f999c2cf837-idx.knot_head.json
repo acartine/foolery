@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbe28-9871-76f1-8fbb-2f999c2cf837",
+  "occurred_at": "2026-03-05T13:20:57.451665Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-28dc",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "UI: Agents section OpenRouter integration",
+    "updated_at": "2026-03-05T13:20:57.451665Z"
+  }
+}

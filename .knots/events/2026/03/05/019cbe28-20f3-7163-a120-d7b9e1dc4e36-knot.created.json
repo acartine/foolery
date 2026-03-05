@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-20f3-7163-a120-d7b9e1dc4e36",
+  "occurred_at": "2026-03-05T13:20:26.867447Z",
+  "knot_id": "foolery-7e3a",
+  "type": "knot.created",
+  "data": {
+    "body": "In src/lib/terminal-manager.ts: inject OPENROUTER_API_KEY into child process env for OpenRouter agents in createSession() and spawnTakeChild(). Update isInteractive check to include openrouter dialect.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Terminal manager: env injection + dialect check"
+  }
+}

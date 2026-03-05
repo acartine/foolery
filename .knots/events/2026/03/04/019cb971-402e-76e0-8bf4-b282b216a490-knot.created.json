@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb971-402e-76e0-8bf4-b282b216a490",
+  "occurred_at": "2026-03-04T15:22:12.910767Z",
+  "knot_id": "foolery-e6fd",
+  "type": "knot.created",
+  "data": {
+    "body": "In terminal-manager.ts: (1) Add nextBeatGuarded() and advanceGuarded() dispatcher alongside existing nextKnotGuarded(). (2) Replace 4 nextKnotGuarded() call sites with advanceGuarded(). (3) Remove knots-only take loop guard at line 735. (4) Parameterize QUEUE_TERMINAL_INVARIANT_INSTRUCTION by memoryManagerType. (5) Extend pre-take healing to beads at lines 559-575.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Phase 6: Terminal manager dispatch and take loop gate removal"
+  }
+}

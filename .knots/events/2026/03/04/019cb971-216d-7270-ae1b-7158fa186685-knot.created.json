@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb971-216d-7270-ae1b-7158fa186685",
+  "occurred_at": "2026-03-04T15:22:05.037295Z",
+  "knot_id": "foolery-e8d7",
+  "type": "knot.created",
+  "data": {
+    "body": "New file src/lib/beads-state-machine.ts with nextBeat() and claimBeat(). nextBeat: load beat, verify expectedState, compute forward transition, update via getBackend().update(). claimBeat: verify queued+claimable, transition to active. Error messages must contain 'expected state' and 'currently' for isExpectedStateMismatchError() compat.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Phase 2: Beads state machine module"
+  }
+}

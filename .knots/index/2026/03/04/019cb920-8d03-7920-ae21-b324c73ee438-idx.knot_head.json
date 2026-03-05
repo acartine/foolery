@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb920-8d03-7920-ae21-b324c73ee438",
+  "occurred_at": "2026-03-04T13:54:04.163071Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-5c54",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Add regression coverage for history beat-id copy affordance",
+    "updated_at": "2026-03-04T13:54:04.163071Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb920-3a02-72e0-a138-215fe09de8eb"
+  }
+}

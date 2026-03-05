@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb921-8355-72b1-a011-31af6682c187",
+  "occurred_at": "2026-03-04T13:55:07.216204Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-007e",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "tmp rollback test",
+    "updated_at": "2026-03-04T13:55:07.216204Z"
+  }
+}

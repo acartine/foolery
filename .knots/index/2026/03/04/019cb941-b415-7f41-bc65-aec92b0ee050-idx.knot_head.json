@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb941-b415-7f41-bc65-aec92b0ee050",
+  "occurred_at": "2026-03-04T14:30:16.84774Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-f34e",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "ReTakes: Totally broken, shows nothing",
+    "updated_at": "2026-03-04T14:30:16.84774Z"
+  }
+}

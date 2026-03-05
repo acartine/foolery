@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbe28-a250-7051-a1b6-2394be6b2cfa",
+  "occurred_at": "2026-03-05T13:20:59.978614Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-ea38",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Tests for OpenRouter integration",
+    "updated_at": "2026-03-05T13:20:59.978614Z"
+  }
+}

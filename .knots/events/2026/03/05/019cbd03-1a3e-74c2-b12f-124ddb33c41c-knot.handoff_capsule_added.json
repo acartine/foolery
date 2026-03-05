@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbd03-1a3e-74c2-b12f-124ddb33c41c",
+  "occurred_at": "2026-03-05T08:00:23.102462Z",
+  "knot_id": "foolery-9d97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Removed Scenes/Breakdown view wiring from Beads UI: dropped breakdown view parsing/rendering in beads page/header, removed create/detail breakdown entry points, and removed BeatForm breakdown action. Added regression test src/lib/__tests__/beads-scenes-wiring.test.ts. Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T08:00:23Z",
+    "entry_id": "019cbd03-1a3e-74c2-b12f-1237f1b35d95",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

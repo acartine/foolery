@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbd01-c05d-7b62-b8d0-86ad4cb278a1",
+  "occurred_at": "2026-03-05T07:58:54.557549Z",
+  "knot_id": "foolery-3141",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Queues/Active status dropdowns now derive from workflow queue/action states and are sorted by workflow priority. Added compareWorkflowStatePriority() in workflows plus unit coverage in workflow-step.test. Validation run: bun run lint (warnings only), bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T07:58:54.557549Z",
+    "entry_id": "019cbd01-c05d-7b62-b8d0-869bc415070f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

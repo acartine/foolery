@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb91e-2293-7d22-aef1-ae3201671882",
+  "occurred_at": "2026-03-04T13:51:25.843489Z",
+  "knot_id": "foolery-5c54",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Added regression contract coverage for history beat-id copy affordance in src/lib/__tests__/history-beat-id-copy-contract.test.ts, locking short-ID clipboard copy behavior and copy wiring across list/header/detail/log surfaces. Validated with bun run lint, bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build.",
+    "datetime": "2026-03-04T13:51:25Z",
+    "entry_id": "019cb91e-2293-7d22-aef1-ae295e1be1b4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

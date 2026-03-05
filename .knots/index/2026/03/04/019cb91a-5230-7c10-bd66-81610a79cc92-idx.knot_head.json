@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb91a-5230-7c10-bd66-81610a79cc92",
+  "occurred_at": "2026-03-04T13:47:15.888743Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-b83f",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "ui terminals:  better handling of tabs when browser width can't accomodate the tabs",
+    "updated_at": "2026-03-04T13:47:15.888743Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb91a-360b-73d1-a45b-0e768e52a582"
+  }
+}

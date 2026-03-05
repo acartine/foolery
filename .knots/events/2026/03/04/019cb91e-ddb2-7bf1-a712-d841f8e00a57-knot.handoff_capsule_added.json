@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb91e-ddb2-7bf1-a712-d841f8e00a57",
+  "occurred_at": "2026-03-04T13:52:13.746804Z",
+  "knot_id": "foolery-ae6b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review passed. Backward state rollback fully implemented in commit fc3f367: validNextStates in both beat-columns and beat-detail adds all earlier ready_for_* queue states as rollback targets for active states. Tests pass (1843/1843), typecheck clean. Build failure is pre-existing (useContext SSR issue in /beads page). No code changes needed during review.",
+    "datetime": "2026-03-04T13:52:13.746804Z",
+    "entry_id": "019cb91e-ddb2-7bf1-a712-d832ac40a4ce",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

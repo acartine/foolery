@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe1b-7359-7361-93c0-e2bab2e3b539",
+  "occurred_at": "2026-03-05T13:06:35.993848Z",
+  "knot_id": "foolery-c7e5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Refactored BeadsBackend prompt claiming so buildTakePrompt/buildPollPrompt call shared claimBeat for queued+claimable beats and keep simple fallback prompts for non-claimable beats; validated with lint, tsc, unit tests, and build.",
+    "datetime": "2026-03-05T13:06:35.993848Z",
+    "entry_id": "019cbe1b-7359-7361-93c0-e2a0ab2558d0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbd09-7cdd-7ce1-a83e-919f72e2c0dd",
+  "occurred_at": "2026-03-05T08:07:21.565754Z",
+  "knot_id": "foolery-3141",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Adjusted Queues/Active status dropdown behavior in src/components/filter-bar.tsx: dropdown now falls back to phase default when current state filter is from the other phase, and the phase default option label is now 'All'. Queue/active state options remain phase-specific and workflow-priority sorted. Validation: bun install --frozen-lockfile; bun run lint (warnings only); bunx tsc --noEmit; bun run test (pass); bun run build (fails due pre-existing Next prerender/runtime issue on /beads and /_not-found). Commit pushed to origin/main: f659b88504ae6a9bcac6679ae406e218bf790464.",
+    "datetime": "2026-03-05T08:07:21.565754Z",
+    "entry_id": "019cbd09-7cdd-7ce1-a83e-918bbd6b880f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

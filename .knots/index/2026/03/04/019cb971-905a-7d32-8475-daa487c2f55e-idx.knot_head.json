@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb971-905a-7d32-8475-daa487c2f55e",
+  "occurred_at": "2026-03-04T15:22:33.429841Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-e1f2",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Beads Workflow Integration: Claim/Next/Poll",
+    "updated_at": "2026-03-04T15:22:33.429841Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe20-6318-79a1-9d49-bf8523ed240e",
+  "occurred_at": "2026-03-05T13:11:59.51236Z",
+  "knot_id": "foolery-c7e5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Tightened BeadsBackend buildTakePrompt to call claimBeat only when the beat is both queued and agent-claimable, preserving simple prompt fallback for non-claimable beats; verified lint, tsc, unit tests (1904 passing), and build with NODE_ENV=production; pushed to origin/main at 9643efe61af7d68a7fa3f0cd07b108f14c250f14.",
+    "datetime": "2026-03-05T13:11:59.51236Z",
+    "entry_id": "019cbe20-6318-79a1-9d49-bf7bce5f8a13",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

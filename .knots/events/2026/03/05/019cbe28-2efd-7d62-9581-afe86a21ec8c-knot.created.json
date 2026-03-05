@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-2efd-7d62-9581-afe86a21ec8c",
+  "occurred_at": "2026-03-05T13:20:30.461619Z",
+  "knot_id": "foolery-28dc",
+  "type": "knot.created",
+  "data": {
+    "body": "Add 'Add from OpenRouter' button to settings-agents-section.tsx. Opens inline panel with API key field, model browser with multi-select. Selected models create entries in openrouter.agents. Remove standalone SettingsOpenRouterSection from settings-sheet.tsx. Pass openrouter state to agents section.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "UI: Agents section OpenRouter integration"
+  }
+}

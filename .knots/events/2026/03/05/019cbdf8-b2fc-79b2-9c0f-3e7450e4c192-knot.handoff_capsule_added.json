@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbdf8-b2fc-79b2-9c0f-3e7450e4c192",
+  "occurred_at": "2026-03-05T12:28:38.524087Z",
+  "knot_id": "foolery-f34e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed ReTakes blank/empty behavior when beat fetches fail: retakes-view now throws on failed active/single-repo loads, falls back to registered repos when active repo fetch fails, and only shows empty state when fetches genuinely succeed with zero retake candidates. Added regression contract test src/lib/__tests__/retakes-fetch-failure-contract.test.ts. Gates: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1899 passed), NODE_ENV=production bun run build (pass).",
+    "datetime": "2026-03-05T12:28:38.524087Z",
+    "entry_id": "019cbdf8-b2fc-79b2-9c0f-3e6415aa0163",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

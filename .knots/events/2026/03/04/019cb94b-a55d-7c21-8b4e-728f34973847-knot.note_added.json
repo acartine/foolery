@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb94b-a55d-7c21-8b4e-728f34973847",
+  "occurred_at": "2026-03-04T14:41:08.445611Z",
+  "knot_id": "foolery-7097",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1) Remove Scenes screen entry points from navigation/state handling:\n- Update src/components/app-header.tsx to remove the existing beads view mode, the Scenes tab button, and view-cycling references to existing.\n- Update explanatory comments/tooltips that currently mention Scenes as a screen.\n2) Remove Scenes screen rendering path from page composition:\n- Update src/app/beads/page.tsx to remove existing from the view union/parser, remove ExistingOrchestrationsView import/use, and keep all other views intact.\n- Ensure unknown or legacy view query values now fall back to list view.\n3) Remove orphaned Scenes screen source/tests once no longer referenced:\n- Delete src/components/existing-orchestrations-view.tsx and src/lib/__tests__/existing-orchestrations-view.test.ts if they become unreachable from app UI.\n4) Settings/UI mention audit:\n- Verify settings/navigation surfaces no longer reference a dedicated Scenes screen/tab.\n- Keep internal scene orchestration behavior unless directly tied to the removed screen to avoid broad regressions.\n5) Validation strategy:\n- Run bun install --frozen-lockfile in the implementation worktree before checks.\n- Run quality gates: bun run lint, bunx tsc --noEmit, bun run test, bun run build.\n- If full test suite duration is excessive, at minimum run targeted tests around touched files and report any skipped gates explicitly.\n\nComplexity/Risks:\n- Moderate UI wiring change with low backend risk.\n- Main risk is leaving stale imports/types/query handling that break compile or keyboard view cycling.\n- Secondary risk is removing tests/components that are still transitively referenced.",
+    "datetime": "2026-03-04T14:41:08.445611Z",
+    "entry_id": "019cb94b-a55d-7c21-8b4e-727670e89bb7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

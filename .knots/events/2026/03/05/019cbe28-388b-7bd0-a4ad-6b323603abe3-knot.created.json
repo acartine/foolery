@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-388b-7bd0-a4ad-6b323603abe3",
+  "occurred_at": "2026-03-05T13:20:32.907443Z",
+  "knot_id": "foolery-8aad",
+  "type": "knot.created",
+  "data": {
+    "body": "In settings-actions-section.tsx and settings-pools-section.tsx: replace OPENROUTER_SELECTED_AGENT_ID single virtual agent with iteration over all openrouter.agents entries. Each configured OpenRouter model appears as selectable option with pricing display.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "UI: Dispatch selector updates"
+  }
+}

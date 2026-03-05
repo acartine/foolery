@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-3e88-72c0-a977-8fa30b88774e",
+  "occurred_at": "2026-03-05T13:20:34.440027Z",
+  "knot_id": "foolery-ea38",
+  "type": "knot.created",
+  "data": {
+    "body": "Unit tests: shim stream-json output format, dialect resolution, schema migration (openrouter.model to openrouter.agents), resolveOpenRouterAgents(). Integration: verify OpenRouter agent appears in dispatch selectors.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Tests for OpenRouter integration"
+  }
+}

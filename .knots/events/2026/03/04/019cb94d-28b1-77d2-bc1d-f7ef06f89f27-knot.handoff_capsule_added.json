@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb94d-28b1-77d2-bc1d-f7ef06f89f27",
+  "occurred_at": "2026-03-04T14:42:47.601679Z",
+  "knot_id": "foolery-0143",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented history prompt visibility so every prompt appears with Prompt # and workflow state/step context. Added promptNumber/workflowState to parsed prompt entries from beat_state(before_prompt), surfaced metadata in interaction picker and conversation rows, and updated API schema/types/tests. Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test all pass. bun run build fails on current main baseline due existing prerender key/useContext issue on /_global-error and /beads.",
+    "datetime": "2026-03-04T14:42:34Z",
+    "entry_id": "019cb94d-28b1-77d2-bc1d-f7da7098eeef",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

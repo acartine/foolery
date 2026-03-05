@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb947-a67a-76e0-b881-d90d3f0a5156",
+  "occurred_at": "2026-03-04T14:36:46.586678Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-82e8",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "History: Increase font size by 1 for every single text component",
+    "updated_at": "2026-03-04T14:36:46.586678Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb947-4664-71f3-9532-ff1e98ecb2f6"
+  }
+}

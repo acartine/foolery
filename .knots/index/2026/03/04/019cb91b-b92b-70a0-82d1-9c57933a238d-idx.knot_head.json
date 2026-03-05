@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb91b-b92b-70a0-82d1-9c57933a238d",
+  "occurred_at": "2026-03-04T13:48:47.763316Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-9918",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "ReTake lightbox has wrong copy and wrong action",
+    "updated_at": "2026-03-04T13:48:47.763316Z"
+  }
+}

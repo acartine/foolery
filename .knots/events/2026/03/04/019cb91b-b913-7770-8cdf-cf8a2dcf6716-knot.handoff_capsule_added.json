@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb91b-b913-7770-8cdf-cf8a2dcf6716",
+  "occurred_at": "2026-03-04T13:48:47.763316Z",
+  "knot_id": "foolery-9918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "All changes shipped to origin/main. Four commits: fix retake dialog state+copy, lock retake contract test, allow companion rollback, expand rollback to all earlier queue states. 1883 tests pass.",
+    "datetime": "2026-03-04T13:48:47.763316Z",
+    "entry_id": "019cb91b-b913-7770-8cdf-cf724b7adc69",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

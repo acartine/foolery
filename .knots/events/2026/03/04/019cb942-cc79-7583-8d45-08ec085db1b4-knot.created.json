@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb942-cc79-7583-8d45-08ec085db1b4",
+  "occurred_at": "2026-03-04T14:31:28.633097Z",
+  "knot_id": "foolery-0143",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - especially the step/state of each prompt, the prompt #.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "History:  Filter only shows Initial Prompt, we want to see every prompt"
+  }
+}

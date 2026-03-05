@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb94f-4dfa-76c1-8d64-958c08f3d256",
+  "occurred_at": "2026-03-04T14:45:08.218582Z",
+  "knot_id": "foolery-3141",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Split Beats tab into Queues and Active screens. Queues shows ready_for_* states with per-state dropdown; Active shows action states with per-state dropdown. Filter resets on tab switch. Files changed: filter-bar.tsx (ViewPhase type, per-phase state lists), app-header.tsx (Queues+Active tabs replacing Beats), page.tsx (queues/active view handling). Build error on main is pre-existing (Next.js prerender).",
+    "datetime": "2026-03-04T14:45:08.218582Z",
+    "entry_id": "019cb94f-4dfa-76c1-8d64-9571aa1989e3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

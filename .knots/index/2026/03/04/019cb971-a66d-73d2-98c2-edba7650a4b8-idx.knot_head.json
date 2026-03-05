@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb971-a66d-73d2-98c2-edba7650a4b8",
+  "occurred_at": "2026-03-04T15:22:39.079712Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-1be4",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Phase 8: Tests for beads workflow integration",
+    "updated_at": "2026-03-04T15:22:39.079712Z"
+  }
+}

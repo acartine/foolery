@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe27-f2a5-7da2-8f46-2d456a62ccc1",
+  "occurred_at": "2026-03-05T13:20:15.013225Z",
+  "knot_id": "foolery-c736",
+  "type": "knot.created",
+  "data": {
+    "body": "Add agents map to openrouterSettingsSchema in src/lib/schemas.ts. Keys are user-chosen IDs mapping to OpenRouter model ID + label. Keep deprecated model field for migration. Auto-migrate openrouter.model to openrouter.agents if agents is empty.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Schema: multi-agent OpenRouter config"
+  }
+}

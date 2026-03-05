@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb91b-3914-77f2-a184-e36bd1b70ac7",
+  "occurred_at": "2026-03-04T13:48:14.996406Z",
+  "knot_id": "foolery-ae6b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed backward state rollback: validNextStates in both beat-columns and beat-detail now adds all earlier queue states (ready_for_*) as rollback targets for active states, not just the immediate queued companion. Added regression tests. All quality gates pass.",
+    "datetime": "2026-03-04T13:48:14.996406Z",
+    "entry_id": "019cb91b-3914-77f2-a184-e35b52b52454",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

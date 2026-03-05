@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb95a-00c1-7e03-a9a3-f97c00cb630f",
+  "occurred_at": "2026-03-04T14:56:49.345534Z",
+  "knot_id": "foolery-f34e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "ReTakes view was showing nothing because: (1) the dev server .next cache contained stale compilation artifacts with merge conflict markers from an intermediate merge state, causing a 500 error on the entire /beads page; (2) the unpushed commit c924e1d (remove scenes screen) hadn't been pushed to origin. Fix: cleared .next cache, restarted dev server, pushed pending commits. Verified via Playwright that the retakes view correctly displays 49 shipped beats. All quality gates pass (build, typecheck, 1858 tests).",
+    "datetime": "2026-03-04T14:56:49.345534Z",
+    "entry_id": "019cb95a-00c1-7e03-a9a3-f964656a7a62",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

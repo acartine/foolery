@@ -1,0 +1,9 @@
+{
+  "event_id": "019cbd06-b442-75a3-8fa5-084e75da70c8",
+  "occurred_at": "2026-03-05T08:04:19.13829Z",
+  "knot_id": "foolery-f34e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "DO NOT RUN `kill` or try to terminate/restart the foolery server process.  just use a best effort attempt."
+  }
+}

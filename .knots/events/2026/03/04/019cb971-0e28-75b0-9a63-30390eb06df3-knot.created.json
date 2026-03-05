@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb971-0e28-75b0-9a63-30390eb06df3",
+  "occurred_at": "2026-03-04T15:22:00.104929Z",
+  "knot_id": "foolery-f471",
+  "type": "knot.created",
+  "data": {
+    "body": "Add forwardTransitionTarget() to workflows.ts — given a state and workflow descriptor, return the single forward (non-rollback) transition target. Uses workflow.transitions filtered by isRollbackTransition(). Pure functions, no I/O.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Phase 1: Workflow transition helpers in workflows.ts"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb926-fe8a-7d83-9702-11c100c55d6f",
+  "occurred_at": "2026-03-04T14:01:06.442372Z",
+  "knot_id": "foolery-b83f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review passed. Commit 5b0d3c1 implements responsive terminal tab overflow: non-wrapping shrink-0 tabs, compact label mode (beat-id only when space-constrained), ChevronLeft/Right scroll arrows with edge gradient fades, auto-scroll active tab into view, Alt+Shift+Arrow keyboard scrolling. Utility in terminal-tab-strip.ts with 7 unit tests. All quality gates pass (lint clean for changed files, tsc clean, 1853 tests pass, production build clean). Dropped regressive unstaged changes that had stripped the overflow features. Pushed to origin/main.",
+    "datetime": "2026-03-04T14:01:06.442372Z",
+    "entry_id": "019cb926-fe8a-7d83-9702-11b5ca31aec3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

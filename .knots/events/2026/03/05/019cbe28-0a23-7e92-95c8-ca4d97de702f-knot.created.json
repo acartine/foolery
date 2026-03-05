@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-0a23-7e92-95c8-ca4d97de702f",
+  "occurred_at": "2026-03-05T13:20:21.027004Z",
+  "knot_id": "foolery-520e",
+  "type": "knot.created",
+  "data": {
+    "body": "Add 'openrouter' to AgentDialect type in src/lib/agent-adapter.ts. Update resolveDialect() to detect openrouter in command name. buildPromptModeArgs() mirrors Claude args. createLineNormalizer() uses identity passthrough.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Agent adapter: OpenRouter dialect"
+  }
+}

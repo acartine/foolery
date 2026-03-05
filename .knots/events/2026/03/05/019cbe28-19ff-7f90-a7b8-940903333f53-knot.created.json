@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe28-19ff-7f90-a7b8-940903333f53",
+  "occurred_at": "2026-03-05T13:20:25.087447Z",
+  "knot_id": "foolery-f1d5",
+  "type": "knot.created",
+  "data": {
+    "body": "In src/lib/settings.ts: remove OPENROUTER_SELECTED_AGENT_ID and resolveSelectedOpenRouterAgentConfig(). Add resolveOpenRouterAgents() returning virtual agents per openrouter.agents entry. Update getActionAgent(), getStepAgent(), pool resolution. In src/lib/openrouter.ts: replace single-model helpers with OPENROUTER_AGENT_PREFIX and multi-agent helpers.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Settings resolution: multi-agent virtual agents"
+  }
+}

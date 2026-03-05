@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb94b-220c-7760-87d0-fca33ef85c52",
+  "occurred_at": "2026-03-04T14:40:34.82825Z",
+  "knot_id": "foolery-3141",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Split Beats tab into Queues and Active screens. Changes: (1) app-header.tsx - replace Beats tab with Queues + Active tabs, (2) filter-bar.tsx - accept viewPhase prop to show per-phase state options, (3) page.tsx - handle queues/active views, (4) app-store.ts - update default filter. Backend already supports exact state filtering.",
+    "datetime": "2026-03-04T14:40:34.82825Z",
+    "entry_id": "019cb94b-220c-7760-87d0-fc9d29cd29f3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

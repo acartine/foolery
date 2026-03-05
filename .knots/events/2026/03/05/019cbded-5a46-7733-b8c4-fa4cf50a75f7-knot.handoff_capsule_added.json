@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbded-5a46-7733-b8c4-fa4cf50a75f7",
+  "occurred_at": "2026-03-05T12:16:14.918254Z",
+  "knot_id": "foolery-e8d7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented beads-state-machine.ts with nextBeat() and claimBeat(). nextBeat loads beat, verifies expectedState, computes forward transition via forwardTransitionTarget(), updates via getBackend().update(). claimBeat verifies queued+claimable, transitions to active. Error messages include 'expected state' and 'currently' for isExpectedStateMismatchError() compat. 14 tests added. All quality gates pass.",
+    "datetime": "2026-03-05T12:16:14.918254Z",
+    "entry_id": "019cbded-5a46-7733-b8c4-fa32864f8621",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

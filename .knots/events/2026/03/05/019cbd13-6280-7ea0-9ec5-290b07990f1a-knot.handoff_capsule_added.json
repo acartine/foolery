@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbd13-6280-7ea0-9ec5-290b07990f1a",
+  "occurred_at": "2026-03-05T08:18:10.176116Z",
+  "knot_id": "foolery-fde6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Added src/lib/beads-skill-prompts.ts with getBeadsSkillPrompt(step, beatId, currentState) covering planning, plan_review, implementation, implementation_review, shipment, and shipment_review using bd commands only (no kno references). Added unit tests in src/lib/__tests__/beads-skill-prompts.test.ts validating per-step transitions and command content. Quality gates run: bun run lint (warnings only), bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T08:17:48Z",
+    "entry_id": "019cbd13-6280-7ea0-9ec5-28fc89782617",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

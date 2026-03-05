@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbd09-7ceb-7a41-a3ae-fca67bf45205",
+  "occurred_at": "2026-03-05T08:07:21.565754Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-3141",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Beats: Refactor into two screens - Queues and Active",
+    "updated_at": "2026-03-05T08:07:21.565754Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb925-8b97-7790-8be1-b50d3f4f4451",
+  "occurred_at": "2026-03-04T13:59:31.479175Z",
+  "knot_id": "foolery-ae6b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Hardened Knots state rollback updates: backend update() now uses raw knots state with a fallback to current display state when deciding non-adjacent transitions, so backward moves still send --force even if metadata.knotsState is missing. Added regression test coverage in knots-backend.test for missing raw-state rollback forcing. Validation: lint, typecheck, full unit tests, and production build (NODE_ENV=production).",
+    "datetime": "2026-03-04T13:59:31.479175Z",
+    "entry_id": "019cb925-8b97-7790-8be1-b4f0c3e042c6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

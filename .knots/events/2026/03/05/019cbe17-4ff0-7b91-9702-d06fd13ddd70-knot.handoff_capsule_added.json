@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe17-4ff0-7b91-9702-d06fd13ddd70",
+  "occurred_at": "2026-03-05T13:02:04.784056Z",
+  "knot_id": "foolery-c7e5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented buildTakePrompt and buildPollPrompt upgrades in beads-backend.ts. buildTakePrompt now claims queued+claimable beats via inline claim logic and returns rich skill prompts. Non-claimable beats get simple prompt. buildPollPrompt calls listReady, filters to isAgentClaimable, sorts by priority, claims top beat, returns rich prompt with claimedId. All 1904 tests pass. Lint and typecheck clean.",
+    "datetime": "2026-03-05T13:00:00Z",
+    "entry_id": "019cbe17-4ff0-7b91-9702-d050d2494179",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "opus-4.6"
+  }
+}

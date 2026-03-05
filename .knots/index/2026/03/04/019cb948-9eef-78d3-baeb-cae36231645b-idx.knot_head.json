@@ -1,0 +1,17 @@
+{
+  "event_id": "019cb948-9eef-78d3-baeb-cae36231645b",
+  "occurred_at": "2026-03-04T14:37:50.19121Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-f34e",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "ReTakes: Totally broken, shows nothing",
+    "updated_at": "2026-03-04T14:37:50.19121Z"
+  },
+  "precondition": {
+    "profile_etag": "019cb947-a68d-7b20-90a7-03cf5c6126f2"
+  }
+}

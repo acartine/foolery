@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb920-88d0-7863-9032-416ed82a3a49",
+  "occurred_at": "2026-03-04T13:54:03.088985Z",
+  "knot_id": "foolery-b83f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented responsive terminal-tab overflow handling: non-wrapping tab chips, compact label mode under tight width (beat id only with project prefix), horizontal scroll arrows with edge fade indicators, and Alt+Shift+Left/Right keyboard scrolling. Added deterministic tab-strip layout helpers + unit tests. Quality gates run in worktree: bun run lint (warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-04T13:53:53Z",
+    "entry_id": "019cb920-88d0-7863-9032-415cb2e872f8",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "1"
+  }
+}

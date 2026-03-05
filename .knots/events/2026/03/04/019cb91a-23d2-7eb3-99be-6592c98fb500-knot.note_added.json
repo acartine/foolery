@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb91a-23d2-7eb3-99be-6592c98fb500",
+  "occurred_at": "2026-03-04T13:47:04.018665Z",
+  "knot_id": "foolery-b83f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\\n1) Inspect terminal tabs component/CSS to find wrapping behavior and existing keyboard/navigation patterns.\\n2) Implement a constrained-width tabs experience that prevents wrapping (single-line tabs), truncates labels to a compact beat-id form under tight widths, and adds horizontal scrolling with left/right affordances (mouse + keyboard).\\n3) Preserve existing interaction semantics and active-tab visibility (auto-scroll active into view).\\n4) Add/adjust tests for overflow handling and truncation behavior where coverage exists.\\n5) Run quality gates (lint, typecheck, test, build) and land on main.",
+    "datetime": "2026-03-04T13:47:04.018665Z",
+    "entry_id": "019cb91a-23d2-7eb3-99be-658f2e04f218",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

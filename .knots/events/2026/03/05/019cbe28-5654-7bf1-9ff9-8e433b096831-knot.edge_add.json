@@ -1,0 +1,10 @@
+{
+  "event_id": "019cbe28-5654-7bf1-9ff9-8e433b096831",
+  "occurred_at": "2026-03-05T13:20:40.532006Z",
+  "knot_id": "foolery-2722",
+  "type": "knot.edge_add",
+  "data": {
+    "dst": "foolery-c736",
+    "kind": "parent_of"
+  }
+}

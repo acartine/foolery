@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbdc3-0674-7730-aa02-9bf5a0010ad5",
+  "occurred_at": "2026-03-05T11:30:00.948613Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-7097",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove Scenes screen",
+    "updated_at": "2026-03-05T11:30:00.948613Z"
+  }
+}

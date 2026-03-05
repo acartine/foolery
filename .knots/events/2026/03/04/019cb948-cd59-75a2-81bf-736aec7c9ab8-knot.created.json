@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb948-cd59-75a2-81bf-736aec7c9ab8",
+  "occurred_at": "2026-03-04T14:38:02.073248Z",
+  "knot_id": "foolery-7097",
+  "type": "knot.created",
+  "data": {
+    "body": "it sucks, remove it and any mention of it.  also check settings and all that fun stuff.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove Scenes screen"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbd03-40bb-7750-bf4c-4fbd5b415c1a",
+  "occurred_at": "2026-03-05T08:00:32.955227Z",
+  "knot_id": "foolery-0143",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Verification completed: origin/main includes reference commit fcd9783 and identical affected files; agent-history unit tests pass (12/12).",
+    "datetime": "2026-03-05T08:00:32.955227Z",
+    "entry_id": "019cbd03-40bb-7750-bf4c-4fa39d10339c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

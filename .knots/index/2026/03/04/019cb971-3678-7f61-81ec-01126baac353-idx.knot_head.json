@@ -1,0 +1,14 @@
+{
+  "event_id": "019cb971-3678-7f61-81ec-01126baac353",
+  "occurred_at": "2026-03-04T15:22:10.424935Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-be49",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Phase 5: BdCliBackend delegation for buildTakePrompt and buildPollPrompt",
+    "updated_at": "2026-03-04T15:22:10.424935Z"
+  }
+}

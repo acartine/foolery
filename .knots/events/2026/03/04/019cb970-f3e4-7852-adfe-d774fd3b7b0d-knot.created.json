@@ -1,0 +1,12 @@
+{
+  "event_id": "019cb970-f3e4-7852-adfe-d774fd3b7b0d",
+  "occurred_at": "2026-03-04T15:21:53.380522Z",
+  "knot_id": "foolery-e1f2",
+  "type": "knot.created",
+  "data": {
+    "body": "Bring equivalent workflow depth to beads repos without touching knots code. The take loop, claim, next, and poll operations need beads-native implementations using dispatch (not abstraction). See plan: .claude/plans/crispy-leaping-whistle.md",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Beads Workflow Integration: Claim/Next/Poll"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cb92b-8576-7bb3-968b-1aa89b97d4a7",
+  "occurred_at": "2026-03-04T14:06:03.126428Z",
+  "knot_id": "foolery-b83f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Refined terminal tab overflow UX: compact beat-id label formatting now shortens long prefix/local IDs without wrapping, tab chips tightened in compact mode, and mouse wheel now scrolls horizontally when overflowed. Added unit tests for compact label formatting in terminal-tab-strip helpers. Quality gates: bun run lint (existing repo warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build. Integrated on main as 36b8b28 and pushed to origin/main.",
+    "datetime": "2026-03-04T14:06:03.126428Z",
+    "entry_id": "019cb92b-8576-7bb3-968b-1a926c87861c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

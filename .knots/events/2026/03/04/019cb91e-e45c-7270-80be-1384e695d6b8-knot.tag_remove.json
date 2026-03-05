@@ -1,0 +1,9 @@
+{
+  "event_id": "019cb91e-e45c-7270-80be-1384e695d6b8",
+  "occurred_at": "2026-03-04T13:52:15.452094Z",
+  "knot_id": "foolery-debf",
+  "type": "knot.tag_remove",
+  "data": {
+    "tag": "commit:2343c3072aec875cf01bd5bf5616c46569aeea2d"
+  }
+}

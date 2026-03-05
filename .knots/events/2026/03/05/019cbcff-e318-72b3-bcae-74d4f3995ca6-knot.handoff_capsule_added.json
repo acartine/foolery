@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbcff-e318-72b3-bcae-74d4f3995ca6",
+  "occurred_at": "2026-03-05T07:56:52.376579Z",
+  "knot_id": "foolery-f34e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed ReTakes blank view by always enabling the retakes query so single-repo fallback fetch runs even without explicit repo selection; added regression contract test retakes-query-enabled. Gates: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1859 passed), NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T07:56:52.376579Z",
+    "entry_id": "019cbcff-e318-72b3-bcae-74c1e9361665",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

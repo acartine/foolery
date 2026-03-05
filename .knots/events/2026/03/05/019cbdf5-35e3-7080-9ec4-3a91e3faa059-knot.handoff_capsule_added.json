@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbdf5-35e3-7080-9ec4-3a91e3faa059",
+  "occurred_at": "2026-03-05T12:24:49.891474Z",
+  "knot_id": "foolery-e8d7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Beads state machine module shipped to main (9c6c015). nextBeat() and claimBeat() implemented with full test coverage (14 tests). All quality gates passed: lint clean, typecheck clean, 1896 tests passing, build successful. Commit tagged on knot.",
+    "datetime": "2026-03-05T12:20:00Z",
+    "entry_id": "019cbdf5-35e3-7080-9ec4-3a8150f50400",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

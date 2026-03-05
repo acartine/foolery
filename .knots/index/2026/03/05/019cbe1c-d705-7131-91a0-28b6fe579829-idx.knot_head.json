@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbe1c-d705-7131-91a0-28b6fe579829",
+  "occurred_at": "2026-03-05T13:08:07.04592Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c7e5",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Phase 4: BeadsBackend buildTakePrompt and buildPollPrompt upgrades",
+    "updated_at": "2026-03-05T13:08:07.04592Z"
+  }
+}
