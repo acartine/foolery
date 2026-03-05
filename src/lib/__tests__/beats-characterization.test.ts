@@ -249,41 +249,7 @@ describe("schemas: enum validation", () => {
 });
 
 // ===========================================================================
-// 8. Verification Workflow (VRF-*)
-// ===========================================================================
-
-describe("verification-workflow: label helpers", () => {
-  it.todo("VRF-001: extractCommitLabel returns SHA");
-  it.todo("VRF-002: extractCommitLabel returns null when missing");
-  it.todo("VRF-003: extractAttemptNumber returns number");
-  it.todo("VRF-004: extractAttemptNumber returns 0 when missing");
-});
-
-describe("verification-workflow: transition label computation", () => {
-  it.todo("VRF-005: computeEntryLabels is idempotent");
-  it.todo("VRF-006: computeEntryLabels adds transition + stage");
-  it.todo("VRF-007: computeEntryLabels removes stage:retry on re-entry");
-  it.todo("VRF-008: computePassLabels removes transition + stage");
-  it.todo("VRF-009: computeRetryLabels increments attempt counter");
-});
-
-describe("verification-workflow: verifier result parser", () => {
-  it.todo("VRF-010: parseVerifierResult extracts outcome");
-  it.todo("VRF-011: parseVerifierResult returns null for no match");
-});
-
-describe("verification-workflow: action classification", () => {
-  it.todo("VRF-012: isVerificationEligibleAction classifies actions");
-});
-
-describe("verification-workflow: in-memory dedup lock", () => {
-  it.todo("VRF-013: acquireVerificationLock prevents double-acquire");
-  it.todo("VRF-014: acquireVerificationLock allows re-acquire after stale");
-  it.todo("VRF-015: buildVerifierPrompt includes all context fields");
-});
-
-// ===========================================================================
-// 9. Regroom (RGM-*)
+// 8. Regroom (RGM-*)
 // ===========================================================================
 
 describe("regroom: regroomAncestors", () => {

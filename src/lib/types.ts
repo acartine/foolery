@@ -169,7 +169,7 @@ export type WaveReadiness =
   | "runnable"
   | "in_progress"
   | "blocked"
-  | "verification"
+  | "humanAction"
   | "gate"
   | "unschedulable";
 
@@ -178,7 +178,7 @@ export interface WaveSummary {
   runnable: number;
   inProgress: number;
   blocked: number;
-  verification: number;
+  humanAction: number;
   gates: number;
   unschedulable: number;
 }

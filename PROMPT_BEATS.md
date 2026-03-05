@@ -24,9 +24,9 @@ Required workflow:
 11. **Hand off** - Provide context for next session as handoff capsule in the bead.
 
 Rules:
-- Use `wf:profile:*` and `wf:state:*` labels for workflow progression; do not rely on legacy `stage:verification` / `stage:retry`.
+- Use `wf:profile:*` and `wf:state:*` labels for workflow progression.
 - If the next owner is human, stop and leave the bead in the human-action queue state.
-- Keep beads open for verification handoff.
+- Keep beads open unless explicitly instructed to close.
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds

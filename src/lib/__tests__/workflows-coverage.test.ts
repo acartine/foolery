@@ -297,8 +297,7 @@ describe("normalizeStateForWorkflow", () => {
     expect(normalizeStateForWorkflow("impl", workflow)).toBe("implementation");
     expect(normalizeStateForWorkflow("  ImPl  ", workflow)).toBe("implementation");
   });
-  it("remaps verification/reviewing to implementation_review queue", () => {
-    expect(normalizeStateForWorkflow("verification", workflow)).toBe("ready_for_implementation_review");
+  it("remaps reviewing to implementation_review queue", () => {
     expect(normalizeStateForWorkflow("ready_for_review", workflow)).toBe("ready_for_implementation_review");
   });
   it("remaps legacy retake states", () => {
@@ -378,10 +377,7 @@ describe("inferFinalCutState", () => {
   it("returns ready_for_shipment_review as third choice", () => {
     expect(inferFinalCutState(["ready_for_shipment_review"])).toBe("ready_for_shipment_review");
   });
-  it("returns verification as fourth choice", () => {
-    expect(inferFinalCutState(["verification"])).toBe("verification");
-  });
-  it("returns reviewing as fifth choice", () => {
+  it("returns reviewing as fourth choice", () => {
     expect(inferFinalCutState(["reviewing"])).toBe("reviewing");
   });
   it("returns null when no preferred states present", () => {
@@ -725,15 +721,6 @@ describe("deriveProfileId metadata paths", () => {
 // ── deriveWorkflowState additional coverage ─────────────────
 
 describe("deriveWorkflowState additional branches", () => {
-  it("handles stage:verification label", () => {
-    const state = deriveWorkflowState(undefined, ["stage:verification"]);
-    expect(state).toBe("ready_for_implementation_review");
-  });
-  it("handles stage:retry label", () => {
-    const workflow = defaultWorkflowDescriptor();
-    const state = deriveWorkflowState(undefined, ["stage:retry"], workflow);
-    expect(state).toBe(workflow.retakeState);
-  });
   it("falls back to status when no label match", () => {
     const state = deriveWorkflowState("in_progress", []);
     expect(typeof state).toBe("string");

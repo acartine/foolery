@@ -57,36 +57,6 @@ handling, severity, and what the new abstraction layer must account for.
 - **Abstraction implication:** The abstraction should consider read/write priority
   lanes or at least expose queue depth metrics so the UI can show degradation.
 
-### 1.4 Verification Lock Contention
-
-- **Location:** `src/lib/verification-workflow.ts` lines 288-318
-  (`acquireVerificationLock`)
-- **Trigger:** Two verification workflows trigger for the same bead simultaneously
-  (e.g., rapid agent completions).
-- **Current handling:** In-memory `Map` with a 10-minute stale timeout. The second
-  caller gets `false` and silently skips. There is no queue; the second request is
-  simply dropped.
-- **Severity:** Silent failure -- a verification attempt is lost. If the first
-  attempt fails, the bead may be left in an inconsistent state with no automatic
-  re-trigger.
-- **Abstraction implication:** The abstraction must provide either a queue or a
-  re-check mechanism so that dropped verification requests are eventually retried.
-
-### 1.5 Verification Edit Lock (transition:verification Label)
-
-- **Location:** `src/app/api/beats/[id]/route.ts` lines 107-116 (PATCH) and
-  lines 154-164 (DELETE)
-- **Trigger:** A user attempts to edit or delete a bead while auto-verification is
-  running (`transition:verification` label present).
-- **Current handling:** HTTP 409 Conflict with a descriptive error message. The
-  frontend shows a toast but does not retry or queue the edit.
-- **Severity:** UX frustration -- the user cannot make changes during verification.
-  If verification gets stuck (verifier crashes without releasing the label), the
-  bead is permanently locked until manual label removal.
-- **Abstraction implication:** The abstraction must expose lock state to the UI and
-  provide an escape hatch (manual override or timeout-based auto-release) for stuck
-  verification labels.
-
 ---
 
 ## 2. Network and Sync
@@ -180,7 +150,7 @@ handling, severity, and what the new abstraction layer must account for.
   --no-daemon` flushes changes to JSONL so the daemon's auto-import picks up the
   direct DB writes.
 - **Severity:** High -- silent data corruption. Without the workaround, stage
-  labels are never actually removed, breaking the verification workflow.
+  labels are never actually removed, breaking the workflow.
 - **Abstraction implication:** This is a critical bd CLI bug. The abstraction must
   always use direct-write mode for label mutations and sync afterward.
 
@@ -188,7 +158,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 - **Location:** `src/lib/bd.ts` lines 610-632
 - **Trigger:** Frontend or API caller adds a `stage:*` label without removing the
-  previous one (e.g., adding `stage:retry` without removing `stage:verification`).
+  previous one (e.g., adding a new stage label without removing the old one).
 - **Current handling:** The `updateBead` function detects any `stage:*` label in
   the add list, fetches the current bead state, and auto-removes all other
   `stage:*` labels. This is a defensive measure against regressions in frontend
@@ -274,7 +244,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 - **Location:** `src/components/bead-detail-lightbox.tsx` lines 68-130
 - **Trigger:** An optimistic UI update (via `onMutate`) succeeds locally, but the
-  server rejects the PATCH (e.g., 409 verification lock or 500 bd error).
+  server rejects the PATCH (e.g., 409 conflict or 500 bd error).
 - **Current handling:** The `onError` callback restores the previous cache
   snapshot for both the individual bead and the beads list queries. A toast error
   is displayed.
@@ -379,15 +349,13 @@ handling, severity, and what the new abstraction layer must account for.
 - **Location:** `src/lib/terminal-manager.ts` lines 99-137
   (`buildSingleBeadCompletionFollowUp`, `buildSceneCompletionFollowUp`)
 - **Trigger:** After an agent session completes, a follow-up prompt is piped to
-  stdin to trigger verification state updates. If `stdin` is already closed or
+  stdin to trigger completion state updates. If `stdin` is already closed or
   the process exited before the follow-up is written, the prompt is lost.
 - **Current handling:** Fixed in commit 063d97a: scene follow-ups were restored.
   The `stdin.write` call (line 521) is wrapped in try/catch but the catch only
   returns `false` -- the caller has no retry mechanism.
-- **Severity:** Medium -- if the follow-up is lost, the bead does not transition
-  to `stage:verification` and remains in `in_progress` indefinitely. The
-  verification orchestrator's fallback (`onAgentComplete`) may or may not fire
-  depending on the exit code path.
+- **Severity:** Medium -- if the follow-up is lost, the bead remains in
+  `in_progress` indefinitely.
 - **Abstraction implication:** The abstraction must guarantee delivery of
   lifecycle events (completion, follow-up) through a durable channel rather than
   relying on stdin write success.
@@ -404,18 +372,6 @@ handling, severity, and what the new abstraction layer must account for.
   the user's intent. Settings edits via the UI will overwrite the corrupt file.
 - **Abstraction implication:** The abstraction should preserve a backup of the
   corrupt file before overwriting and present the parse error in the settings UI.
-
-### 5.6 Verification Orchestrator Interaction Log Failure
-
-- **Location:** `src/lib/verification-orchestrator.ts` lines 228-236
-- **Trigger:** `startInteractionLog` fails (e.g., disk full, permissions error).
-- **Current handling:** The error is caught and a `noopInteractionLog()` is
-  returned. The verification workflow continues without logging. No retry.
-- **Severity:** Low for functionality (verification still runs). Medium for
-  auditability (the verification session has no log trail, making debugging
-  impossible).
-- **Abstraction implication:** The abstraction should treat logging failures as
-  degraded-but-operational and surface them in the doctor report.
 
 ---
 
@@ -520,15 +476,14 @@ cross-cutting concerns:
 4. **Cache-aware error suppression** -- expose staleness metadata (age,
    consecutive failures) to the UI layer. Avoid abrupt degradation transitions.
 
-5. **Transaction-like multi-step mutations** -- merge, verification transitions,
-   and regroom cascades all involve multiple bd commands. Partial failure must
-   trigger compensating actions.
+5. **Transaction-like multi-step mutations** -- merge and regroom cascades
+   involve multiple bd commands. Partial failure must trigger compensating actions.
 
 6. **CLI version and capability probing** -- detect bd binary presence, daemon
    support (`--no-daemon`), and CLI dialect at startup rather than at first use.
 
-7. **Lifecycle event durability** -- completion follow-ups and verification
-   triggers must not depend on stdin write success. Use a persistent event queue.
+7. **Lifecycle event durability** -- completion follow-ups must not depend on
+   stdin write success. Use a persistent event queue.
 
 8. **Per-worker cache consistency** -- in-memory caches (detail cache, error
    suppression cache) are not shared across Next.js workers. Consider

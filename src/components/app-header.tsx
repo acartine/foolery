@@ -23,7 +23,7 @@ import {
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { useVerificationCount } from "@/hooks/use-verification-count";
+import { useHumanActionCount } from "@/hooks/use-human-action-count";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import {
   cycleRepoPath,
@@ -75,7 +75,7 @@ export function AppHeader() {
   const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
   const updateUrl = useUpdateUrl();
   const isFinalCutActive = beatsView === "finalcut";
-  const verificationCount = useVerificationCount(isBeatsRoute, isFinalCutActive);
+  const humanActionCount = useHumanActionCount(isBeatsRoute, isFinalCutActive);
   const activeBeatId = searchParams.get("beat");
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present
@@ -446,9 +446,9 @@ export function AppHeader() {
                   >
                     <Scissors className="size-4" />
                     Human Action
-                    {verificationCount > 0 && (
+                    {humanActionCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
-                        {verificationCount > 9 ? "9+" : verificationCount}
+                        {humanActionCount > 9 ? "9+" : humanActionCount}
                       </span>
                     )}
                   </Button>

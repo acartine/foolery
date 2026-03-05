@@ -19,7 +19,7 @@ All Next.js API route handlers under `src/app/api/` that interact with beads.
 | `src/app/api/beats/[id]/deps/route.ts` | GET, POST | List dependencies for a bead; add a blocking dependency | `listDeps`, `addDep` |
 | `src/app/api/beats/batch-deps/route.ts` | GET | Fetch dependencies for multiple beads in parallel | `listDeps` |
 | `src/app/api/beats/query/route.ts` | POST | Execute a bd query expression against the bead store | `queryBeads` |
-| `src/app/api/beats/ready/route.ts` | GET | List open + in_progress beads excluding verification queue; applies ancestor-chain filter | `listBeads` |
+| `src/app/api/beats/ready/route.ts` | GET | List open + in_progress beads; applies ancestor-chain filter | `listBeads` |
 | `src/app/api/beats/merge/route.ts` | POST | Merge two beads: append description/notes/labels from consumed bead to survivor, close consumed | `showBead`, `updateBead`, `closeBead` |
 | `src/app/api/waves/route.ts` | GET | Compute wave plan from all non-closed beads and their dependency graph | `listBeads`, `listDeps` |
 | `src/app/api/breakdown/route.ts` | POST, DELETE | Start or abort a breakdown session; fetches parent bead to seed prompt | `showBead` |
@@ -151,34 +151,8 @@ Uses `listBeads()` and `closeBead()` from `@/lib/bd`.
 |--------|---------|
 | `ORCHESTRATION_WAVE_LABEL` | Constant: `"orchestration:wave"` |
 | `isWaveLabel()`, `isInternalLabel()`, `isReadOnlyLabel()` | Label classification predicates |
-| `isTransitionLocked()` | Check if bead is locked by `transition:verification` |
 | `extractWaveSlug()`, `buildWaveSlugLabel()` | Wave slug label manipulation |
 | `allocateWaveSlug()` | Allocate unique wave slug from existing beads |
-
-### `src/lib/verification-workflow.ts` -- Verification State Machine
-
-Label constants, state transitions, and prompt generation for auto-verification.
-
-| Export | Purpose |
-|--------|---------|
-| `LABEL_TRANSITION_VERIFICATION` | `"transition:verification"` |
-| `LABEL_STAGE_VERIFICATION` | `"stage:verification"` |
-| `LABEL_STAGE_RETRY` | `"stage:retry"` |
-| `LABEL_PREFIX_COMMIT`, `LABEL_PREFIX_ATTEMPT` | Label prefixes |
-| `extractCommitLabel()` | Parse `commit:<sha>` from labels |
-| `computeEntryLabels()`, `computePassLabels()`, `computeRetryLabels()` | Compute label mutations |
-| `buildVerifierPrompt()` | Generate verification prompt from bead metadata |
-| `parseVerifierResult()` | Parse pass/fail from verifier output |
-| `acquireVerificationLock()`, `releaseVerificationLock()` | In-memory dedup locks |
-
-### `src/lib/verification-orchestrator.ts` -- Verification Driver (388 lines)
-
-| Export | Purpose |
-|--------|---------|
-| `onAgentComplete()` | Entry point: triggered after agent invocation; drives verification workflow |
-| `getVerificationEvents()` | Return recent verification lifecycle events |
-
-Uses `showBead()`, `updateBead()`, `closeBead()` from `@/lib/bd`.
 
 ### `src/lib/terminal-manager.ts` -- Terminal Session Manager (~1200 lines)
 
@@ -241,7 +215,6 @@ Uses `addDep`, `createBead`, `listBeads` from `@/lib/bd`.
 |--------|---------|
 | `runDoctor()` | Run all diagnostic checks including beads-specific ones |
 | `streamDoctor()` | Stream diagnostic check results |
-| `checkCorruptTickets()` | Detect beads with corrupt/missing fields |
 | `checkStaleParents()` | Detect orphaned parent references |
 | `checkPromptGuidance()` | Verify CLAUDE.md/AGENTS.md contain guidance prompt |
 | `runDoctorFix()` | Apply fixes for detected issues |
@@ -253,7 +226,7 @@ Uses `listBeads()` from `@/lib/bd`.
 | Export | Purpose |
 |--------|---------|
 | `startInteractionLog()` | Create log file for agent interactions; accepts `beatIds` |
-| `InteractionType` | Union includes "take", "scene", "verification", etc. |
+| `InteractionType` | Union includes "take", "scene", "direct", etc. |
 
 ### `src/lib/agent-history.ts` -- Agent History Reader
 
@@ -294,7 +267,7 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/bead-detail-lightbox.tsx` | Modal wrapper for BeadDetail | `Bead` (via BeadDetail) |
 | `src/components/bead-form.tsx` | Create/edit bead form with Zod validation | `CreateBeadInput`, `UpdateBeadInput` |
 | `src/components/bead-preview-pane.tsx` | Side panel bead preview with actions | `Bead`, fetchBead, fetchDeps, updateBead, addDep |
-| `src/components/bead-columns.tsx` | Column definitions for bead table; verify/reject button handlers | `Bead`, `ColumnDef`, updateBead, closeBead |
+| `src/components/bead-columns.tsx` | Column definitions for bead table | `Bead`, `ColumnDef`, updateBead, closeBead |
 | `src/components/bead-status-badge.tsx` | Badge component for bead status | `BeadStatus` |
 | `src/components/bead-type-badge.tsx` | Badge component for bead type | `BeadType` |
 | `src/components/bead-priority-badge.tsx` | Badge component for bead priority | `BeadPriority` |
@@ -305,9 +278,9 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/notes-dialog.tsx` | Dialog for editing bead notes field | `Bead` notes field |
 | `src/components/dep-tree.tsx` | Dependency tree visualization | `BeadDependency[]` |
 | `src/components/relationship-picker.tsx` | UI for picking bead relationships/deps | `fetchBeads`, `Bead[]` |
-| `src/components/retake-dialog.tsx` | Dialog to re-take a bead (retry verification) | `Bead` with label manipulation |
-| `src/components/retakes-view.tsx` | View for beads in retry stage | `fetchBeads`, `updateBead`, filtered by `stage:retry` |
-| `src/components/final-cut-view.tsx` | View for beads in verification stage | `fetchBeads`, filtered by `stage:verification` |
+| `src/components/retake-dialog.tsx` | Dialog to re-take a bead | `Bead` with label manipulation |
+| `src/components/retakes-view.tsx` | View for beads in retry stage | `fetchBeads`, `updateBead` |
+| `src/components/final-cut-view.tsx` | View for beads in human action queue | `fetchBeads` |
 | `src/components/breakdown-view.tsx` | Breakdown session UI; generates sub-beads from parent | `startBreakdown`, `applyBreakdown`, references parentBeatId |
 | `src/components/orchestration-view.tsx` | Orchestration session UI; plans wave execution of beads | Bead references in orchestration plans |
 | `src/components/existing-orchestrations-view.tsx` | List existing orchestration sessions | Orchestration sessions referencing beads |
@@ -319,10 +292,9 @@ Components in `src/components/` that consume or display beads data.
 | `src/components/repo-registry.tsx` | Manage registered repos | `RegisteredRepo[]` (repos containing `.beads/`) |
 | `src/components/settings-actions-section.tsx` | Settings for action-to-agent mappings | References bead actions (take, scene, direct, breakdown) |
 | `src/components/settings-repos-section.tsx` | Settings for repo management | `RegisteredRepo[]` |
-| `src/components/settings-verification-section.tsx` | Settings for auto-verification toggle | Verification settings that affect bead lifecycle |
 | `src/components/url-state-sync.tsx` | Sync URL params to Zustand store | Bead filter state (status, type, priority) |
 | `src/components/agent-history-view.tsx` | View agent interaction history | `AgentHistoryPayload` with bead references |
-| `src/components/app-header.tsx` | App header with verification badge | `useVerificationCount` for bead verification count |
+| `src/components/app-header.tsx` | App header with human action badge | `useHumanActionCount` for human action count |
 
 ---
 
@@ -333,8 +305,7 @@ Custom React hooks in `src/hooks/` that interact with beads.
 | Path | Purpose |
 |------|---------|
 | `src/hooks/use-update-url.ts` | Sync bead filter state (status, type, priority, assignee) to URL params and Zustand store |
-| `src/hooks/use-verification-count.ts` | Poll for beads with `stage:verification` label; provides count for header badge |
-| `src/hooks/use-verification-notifications.ts` | Watch verification bead list for new arrivals; fire toast notifications |
+| `src/hooks/use-human-action-count.ts` | Poll for beads in human action queue; provides count for header badge |
 
 ---
 
@@ -345,7 +316,7 @@ Zustand stores in `src/stores/` that manage beads-related state.
 | Path | Purpose | Beads State |
 |------|---------|-------------|
 | `src/stores/app-store.ts` | Global app state: filters, active repo, view mode | `Filters` (status, type, priority, assignee), `RegisteredRepo[]`, `activeRepo` |
-| `src/stores/notification-store.ts` | Notification state | `Notification` with optional `beatId`, `lastVerificationCount` |
+| `src/stores/notification-store.ts` | Notification state | `Notification` with optional `beatId`, `lastHumanActionCount` |
 | `src/stores/terminal-store.ts` | Terminal panel state | `ActiveTerminal` with `beatId`, `beadTitle`, `beatIds` |
 
 ---
@@ -442,8 +413,6 @@ Test files in `src/lib/__tests__/` that exercise beads modules.
 | `src/lib/__tests__/doctor-applyfix.test.ts` | Doctor fix application |
 | `src/lib/__tests__/ready-ancestor-filter.test.ts` | Ready ancestor-chain filter |
 | `src/lib/__tests__/ready-ancestor-cycle.test.ts` | Cycle detection in ancestor filter |
-| `src/lib/__tests__/verification-orchestrator.test.ts` | Verification orchestrator |
-| `src/lib/__tests__/verification-workflow.test.ts` | Verification state machine |
 | `src/lib/__tests__/agent-history.test.ts` | Agent history reader |
 
 ---

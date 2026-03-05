@@ -70,7 +70,7 @@
   </tr>
 </table>
 
-Foolery is a local web UI that sits on top of local memory managers ([Beads](https://github.com/steveyegge/beads) and Knots) and turns them into an agent memory engagement layer: capture work, orchestrate execution, and verify outcomes across repositories.
+Foolery is a local web UI that sits on top of local memory managers ([Beads](https://github.com/steveyegge/beads) and Knots) and turns them into an agent memory engagement layer: capture work, orchestrate execution, and review outcomes across repositories.
 
 [Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true) It won't make you dumber.
 
@@ -124,7 +124,7 @@ One-click or bulk select - Launch an agent run from the table and monitor it liv
 
 ### Final Cut
 
-The verification queue. Every beat labeled `stage:verification` lands here. Review outcomes, capture notes, and keep your done list honest.
+The human action queue. Beats requiring human review land here. Review outcomes, capture notes, and keep your done list honest.
 
 ![Final Cut view](docs/screenshots/final-cut.png)
 
@@ -150,7 +150,7 @@ Need to stay in flow? Open the keyboard shortcut overlay for a quick map of navi
 
 - **Rapid scratch pad for small bugs and big ideas alike.** Create a beat, fire off an agent, review the result — all without leaving the keyboard.
 - **Leverage agents to organize groups of work and optimize them for parallel execution.** Ask Claude to decompose a set of tasks into dependency-aware waves, then launch them scene by scene.
-- **Track "completed" work units in a first-class way.** Every finished beat flows into a verification queue where you review outcomes and annotate before it's truly done.
+- **Track "completed" work units in a first-class way.** Every finished beat flows into a human action queue where you review outcomes and annotate before it's truly done.
 - **Keyboard-first workflow.** Navigate, select, bulk-update, and trigger agent sessions entirely from the keyboard.
 - **Dependency-aware wave planning.** Visualize what's runnable, what's blocked, and what's next — across your whole project.
 - **Multi-repo support.** Switch between repositories or view beats across all of them in one place.
@@ -175,8 +175,8 @@ This appends Foolery's guidance prompt (`PROMPT.md`) into whichever default prom
 
 Why this matters:
 - Agents must move a bead to `in_progress` before any edits or commits.
-- Handoff must include `commit:<short-sha>` label first, then `stage:verification`.
-- Beads stay open for verification; do not close unless explicitly instructed.
+- Handoff must include `commit:<short-sha>` label.
+- Beads stay open; do not close unless explicitly instructed.
 - Work is not complete until changes are pushed to `origin/main`.
 
 During `foolery setup`, Foolery will ask if you want to apply this guidance to mounted repos and marks it as highly recommended.

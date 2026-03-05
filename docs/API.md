@@ -73,7 +73,7 @@ Validation errors include details:
 | 201  | Created |
 | 400  | Validation error |
 | 404  | Not found |
-| 409  | Edit lock (beat in verification state) |
+| 409  | Edit conflict |
 | 500  | Server error |
 | 503  | Backend degraded (may include cached data as fallback) |
 
@@ -196,8 +196,6 @@ Body (all fields optional):
 }
 ```
 
-Returns 409 if the beat is locked during auto-verification.
-
 Response:
 ```json
 { "ok": true }
@@ -210,8 +208,6 @@ DELETE /api/beats/{id}
 ```
 
 Query parameters: `_repo`
-
-Returns 409 if the beat is locked during auto-verification.
 
 Response:
 ```json
@@ -439,7 +435,6 @@ Response:
       "runnable": 2,
       "inProgress": 1,
       "blocked": 2,
-      "verification": 0,
       "gates": 0,
       "unschedulable": 0
     },
@@ -463,8 +458,7 @@ Response:
 | `runnable` | No blockers, eligible for execution |
 | `in_progress` | Already being worked on |
 | `blocked` | Waiting on dependencies |
-| `verification` | Awaiting verification, not shippable |
-| `gate` | Requires human verification |
+| `gate` | Requires human action |
 | `unschedulable` | Dependency cycle detected |
 
 ---
@@ -860,7 +854,6 @@ Response:
       "direct": "",
       "breakdown": ""
     },
-    "verification": { "enabled": false, "agent": "", "maxRetries": 3 },
     "backend": { "type": "auto" },
     "defaults": { "profileId": "" },
     "openrouter": { "apiKey": "", "enabled": false, "model": "" },
@@ -1374,7 +1367,7 @@ curl http://localhost:3000/api/waves?_repo=/path/to/repo
 |--------|---------|--------|
 | 400 | Validation error | Check `error` and `details` fields for field-level issues |
 | 404 | Beat or session not found | Verify the ID exists |
-| 409 | Edit lock during verification | Beat is locked for auto-verification; retry after verification completes |
+| 409 | Edit conflict | Resource conflict; retry after resolving |
 | 500 | Server error | Unexpected failure; check server logs |
 | 503 | Backend degraded | Some endpoints return cached data as fallback; check `cached` field |
 

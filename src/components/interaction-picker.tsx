@@ -125,7 +125,6 @@ function promptSourceLabel(source: string): string {
   if (source === "execution_follow_up") return "Execution follow-up";
   if (source === "ship_completion_follow_up") return "Ship follow-up";
   if (source === "scene_completion_follow_up") return "Scene follow-up";
-  if (source === "verification_review") return "Verification";
   if (source === "auto_ask_user_response") return "Auto AskUser";
   return source.replace(/_/g, " ");
 }

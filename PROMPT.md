@@ -12,9 +12,8 @@ Required workflow:
 4. **Run quality gates** (if code changed) - Tests, linters, builds
 5. Commit and capture short hash:
    `SHORT_SHA=$(git rev-parse --short HEAD)`
-6. Add handoff labels in this order:
+6. Add commit label:
    `bd update <id> --add-label commit:$SHORT_SHA`
-   `bd update <id> --add-label wf:state:verification`
 7. Do **not** close the bead unless explicitly instructed.
 8. Push work to remote before ending session:
    `git pull --rebase && bd sync && git push`
@@ -23,8 +22,8 @@ Required workflow:
 11. **Hand off** - Provide context for next session as handoff capsule in the bead.
 
 Rules:
-- Never add `wf:state:verification` without `commit:<short-sha>`.
-- Keep beads open for verification handoff.
+- Always add `commit:<short-sha>` label after committing.
+- Keep beads open unless explicitly instructed to close.
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds

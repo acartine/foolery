@@ -85,7 +85,7 @@ describe("updateBeat error paths", () => {
 
     const { updateBeat } = await import("@/lib/bd");
     const result = await updateBeat("proj-abc", {
-      labels: ["stage:verification"],
+      labels: ["stage:implementation"],
     });
 
     expect(result.ok).toBe(false);
@@ -111,7 +111,7 @@ describe("updateBeat error paths", () => {
     const { updateBeat } = await import("@/lib/bd");
     const result = await updateBeat("proj-abc", {
       status: "closed",
-      labels: ["stage:verification"],
+      labels: ["stage:implementation"],
     });
 
     expect(result.ok).toBe(false);
@@ -164,7 +164,7 @@ describe("updateBeat error paths", () => {
     const { updateBeat } = await import("@/lib/bd");
     const result = await updateBeat("proj-abc", {
       status: "closed",
-      labels: ["stage:verification"],
+      labels: ["stage:implementation"],
     });
 
     expect(result.ok).toBe(false);

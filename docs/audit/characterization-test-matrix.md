@@ -38,7 +38,7 @@ behavior so that post-refactor parity can be verified mechanically.
 | LIB-019  | `isIdempotentWriteCommand` classification                     | Various command/subcommand pairs                | Correctly identifies idempotent writes                   | must-have  | scaffolded |
 | LIB-020  | `canRetryAfterTimeout` returns true for reads+idem writes     | Read commands and idempotent write commands      | Returns true                                            | must-have  | scaffolded |
 | LIB-021  | `shouldUseNoDbByDefault` respects env vars                    | Various env flag combos                         | Returns correct boolean                                 | nice-to-have | scaffolded |
-| LIB-022  | `updateBead` stage label mutual exclusivity                   | Adding `stage:verification` with existing stage | Old stage label auto-removed                            | must-have  | scaffolded |
+| LIB-022  | `updateBead` stage label mutual exclusivity                   | Adding a stage label with existing stage         | Old stage label auto-removed                            | must-have  | scaffolded |
 | LIB-023  | `updateBead` label normalize deduplication                    | Duplicate labels in add array                   | Deduped before CLI call                                 | must-have  | scaffolded |
 
 ## 2. Library -- bd-error-suppression.ts
@@ -110,27 +110,7 @@ behavior so that post-refactor parity can be verified mechanically.
 | SCH-007  | `beadPrioritySchema` accepts 0-4                              | Each of 0, 1, 2, 3, 4                           | All accepted                                            | must-have  | scaffolded |
 | SCH-008  | `queryBeadSchema` requires expression                         | Empty object                                    | Validation fails                                        | must-have  | scaffolded |
 
-## 8. Library -- verification-workflow.ts
-
-| ID       | Description                                                    | Input / Preconditions                           | Expected Behavior (current)                             | Priority   | Status   |
-|----------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|------------|----------|
-| VRF-001  | `extractCommitLabel` returns SHA                              | Labels `["commit:abc123"]`                      | Returns `"abc123"`                                      | must-have  | scaffolded |
-| VRF-002  | `extractCommitLabel` returns null when missing                | Labels `["stage:verification"]`                 | Returns `null`                                          | must-have  | scaffolded |
-| VRF-003  | `extractAttemptNumber` returns number                         | Labels `["attempt:3"]`                          | Returns `3`                                             | must-have  | scaffolded |
-| VRF-004  | `extractAttemptNumber` returns 0 when missing                 | Empty labels                                    | Returns `0`                                             | must-have  | scaffolded |
-| VRF-005  | `computeEntryLabels` is idempotent                            | Already has `transition:verification`           | Returns empty add/remove                                | must-have  | scaffolded |
-| VRF-006  | `computeEntryLabels` adds transition + stage                  | No existing verification labels                 | Adds both labels                                        | must-have  | scaffolded |
-| VRF-007  | `computeEntryLabels` removes stage:retry on re-entry          | Has `stage:retry`                               | Removes retry, adds transition+stage                    | must-have  | scaffolded |
-| VRF-008  | `computePassLabels` removes transition + stage                | Has both verification labels                    | Removes both                                            | must-have  | scaffolded |
-| VRF-009  | `computeRetryLabels` increments attempt counter               | Has `attempt:1`                                 | Removes `attempt:1`, adds `attempt:2`                   | must-have  | scaffolded |
-| VRF-010  | `parseVerifierResult` extracts outcome                        | Output containing `VERIFICATION_RESULT:pass`    | Returns `"pass"`                                        | must-have  | scaffolded |
-| VRF-011  | `parseVerifierResult` returns null for no match               | Output without result line                      | Returns `null`                                          | must-have  | scaffolded |
-| VRF-012  | `isVerificationEligibleAction` classifies actions             | `"take"`, `"scene"`, `"breakdown"`, `"direct"`  | take+scene eligible, breakdown+direct not               | must-have  | scaffolded |
-| VRF-013  | `acquireVerificationLock` prevents double-acquire             | Acquire same bead twice                         | Second returns false                                    | must-have  | scaffolded |
-| VRF-014  | `acquireVerificationLock` allows re-acquire after stale       | Lock older than 10 minutes                      | Returns true                                            | must-have  | scaffolded |
-| VRF-015  | `buildVerifierPrompt` includes all context fields             | Full context object                             | Prompt contains bead ID, title, SHA, description, etc.  | must-have  | scaffolded |
-
-## 9. Library -- regroom.ts
+## 8. Library -- regroom.ts
 
 | ID       | Description                                                    | Input / Preconditions                           | Expected Behavior (current)                             | Priority   | Status   |
 |----------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|------------|----------|
@@ -140,7 +120,7 @@ behavior so that post-refactor parity can be verified mechanically.
 | RGM-004  | Stops cascading when ancestor has open children               | Mixed ancestry                                  | Only fully-closed ancestors are closed                  | must-have  | scaffolded |
 | RGM-005  | Swallows errors without propagating                           | `listBeads` fails                               | No exception thrown                                     | must-have  | scaffolded |
 
-## 10. Library -- api.ts (client-side API wrappers)
+## 9. Library -- api.ts (client-side API wrappers)
 
 | ID       | Description                                                    | Input / Preconditions                           | Expected Behavior (current)                             | Priority   | Status   |
 |----------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|------------|----------|
@@ -151,7 +131,7 @@ behavior so that post-refactor parity can be verified mechanically.
 | API-005  | `fetchBeadsFromAllRepos` fans out and merges                  | Two registered repos                            | Returns beads from both repos with `_repoPath`          | nice-to-have | scaffolded |
 | API-006  | Error response maps to `{ ok: false }`                        | fetch returns 500                               | Result `ok === false`                                   | nice-to-have | scaffolded |
 
-## 11. Stores -- app-store.ts (beads filter state)
+## 10. Stores -- app-store.ts (beads filter state)
 
 | ID       | Description                                                    | Input / Preconditions                           | Expected Behavior (current)                             | Priority   | Status   |
 |----------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|------------|----------|
@@ -173,11 +153,10 @@ behavior so that post-refactor parity can be verified mechanically.
 | Bead Utils                | 2     | 2         | 2           | 0          | 0        | 0       |
 | Ready Ancestor Filter     | 5     | 5         | 0           | 5          | 0        | 0       |
 | Schemas                   | 8     | 8         | 0           | 8          | 0        | 0       |
-| Verification Workflow     | 15    | 15        | 0           | 15         | 0        | 0       |
 | Regroom                   | 5     | 5         | 0           | 5          | 0        | 0       |
 | API (client)              | 6     | 0         | 0           | 6          | 0        | 0       |
 | Stores                    | 4     | 3         | 0           | 4          | 0        | 0       |
-| **Total**                 | **92**| **83**    | **15**      | **54**     | **23**   | **0**   |
+| **Total**                 | **77**| **68**    | **15**      | **39**     | **23**   | **0**   |
 
 **Notes:**
 - "Existing" means the test already exists in `src/lib/__tests__/bd.test.ts` or other existing test files.

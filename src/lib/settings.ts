@@ -10,7 +10,6 @@ import {
   foolerySettingsSchema,
   type FoolerySettings,
   type RegisteredAgentConfig,
-  type VerificationSettings,
   type OpenRouterSettings,
   type PoolsSettings,
 } from "@/lib/schemas";
@@ -286,7 +285,6 @@ export async function saveSettings(
 export type SettingsPartial = Partial<{
   agents: FoolerySettings["agents"];
   actions: Partial<FoolerySettings["actions"]>;
-  verification: Partial<FoolerySettings["verification"]>;
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
   openrouter: Partial<FoolerySettings["openrouter"]>;
@@ -307,7 +305,6 @@ export async function updateSettings(
     ...current,
     agents:       partial.agents       !== undefined ? { ...current.agents,       ...partial.agents }       : current.agents,
     actions:      partial.actions      !== undefined ? { ...current.actions,      ...partial.actions }      : current.actions,
-    verification: partial.verification !== undefined ? { ...current.verification, ...partial.verification } : current.verification,
     backend:      partial.backend      !== undefined ? { ...current.backend,      ...partial.backend }      : current.backend,
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
     openrouter:   partial.openrouter   !== undefined ? { ...current.openrouter,   ...partial.openrouter }   : current.openrouter,
@@ -422,28 +419,6 @@ export async function getActionAgent(
       };
     }
   }
-  if (agentId && agentId !== "default" && settings.agents[agentId]) {
-    const reg = settings.agents[agentId];
-    return {
-      command: reg.command,
-      ...(reg.model ? { model: reg.model } : {}),
-      ...(reg.version ? { version: reg.version } : {}),
-      ...(reg.label ? { label: reg.label } : {}),
-    };
-  }
-  return { command: getFallbackCommand(settings) };
-}
-
-/** Returns the verification settings. */
-export async function getVerificationSettings(): Promise<VerificationSettings> {
-  const settings = await loadSettings();
-  return settings.verification;
-}
-
-/** Resolves the verification agent config. Falls back to dispatch default. */
-export async function getVerificationAgent(): Promise<RegisteredAgent> {
-  const settings = await loadSettings();
-  const agentId = settings.verification.agent ?? "";
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
     const reg = settings.agents[agentId];
     return {

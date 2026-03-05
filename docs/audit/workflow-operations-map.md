@@ -29,9 +29,6 @@ Backend calls: `listBeads`, `searchBeads`, `createBead`, `showBead`,
 Close triggers `regroomAncestors` (auto-close parents whose children are all
 closed) via `src/lib/regroom.ts`.
 
-Update enforces a verification edit-lock: if `transition:verification` is
-present, PATCH and DELETE return 409.
-
 ### 1.2 Dependency Management
 
 Add/remove/list dependency edges between beads.
@@ -62,21 +59,15 @@ directly. The following conventions are observed:
 | From | To | Trigger |
 |---|---|---|
 | `open` | `in_progress` | Agent picks up work (`bd update --status in_progress`) |
-| `in_progress` | `closed` | Verification passes or manual close |
+| `in_progress` | `closed` | Manual close |
 | `in_progress` | `blocked` | External dependency discovered |
 | `blocked` | `open` | Blocker resolved |
 | `*` | `deferred` | User defers bead |
 | `*` | `closed` | `closeBead(id, reason?)` |
 
-**Label-driven transitions** (verification workflow, `src/lib/verification-workflow.ts`):
+**Label-driven transitions**:
 
-- `transition:verification` -- transient lock during active verification
-- `stage:verification` -- bead queued/undergoing verification
-- `stage:retry` -- verification failed, awaiting retry
-- `attempt:N` -- monotonic counter of verification attempts
 - `commit:<sha>` -- short SHA of implementing commit
-
-Stage labels are mutually exclusive: setting one auto-removes others.
 
 ### 1.4 Sync / Collaboration
 
@@ -119,7 +110,7 @@ Searching, filtering, and sorting beads.
 **Filter dimensions**: status, type, priority, assignee, free-text search.
 
 **Ready beads** (`/api/beats/ready`): merges `open` + `in_progress` beads,
-excludes those with `stage:verification`, and filters out descendants whose
+excludes those not ready, and filters out descendants whose
 parent chain is not visible (`filterByVisibleAncestorChain`).
 
 **Hierarchy**: `buildHierarchy` (`src/lib/bead-hierarchy.ts`) sorts beads
@@ -177,7 +168,7 @@ Backend: `src/lib/wave-planner.ts`, `src/lib/wave-slugs.ts`
 
 Computes a dependency-ordered wave plan from all non-closed beads and their
 dep edges. Classifies each bead's readiness (runnable, in_progress, blocked,
-verification, gate, unschedulable) and produces a prioritized runnable queue.
+gate, unschedulable) and produces a prioritized runnable queue.
 
 ### 1.7 Merge Operations
 
@@ -212,7 +203,6 @@ Backend: `src/lib/doctor.ts`
 | `agent-ping` | Verify registered agents are reachable |
 | `updates` | Check for new foolery releases |
 | `settings-defaults` | Verify settings.toml has required defaults |
-| `corrupt-bead-verification` | Find beads with stage:verification but wrong status |
 | `stale-parent` | Find parents where all children are closed |
 | `prompt-guidance` | Verify AGENTS.md/CLAUDE.md has foolery prompt |
 
@@ -312,8 +302,7 @@ listBeads(filters?: BeadFilters, repoPath?: string) -> Bead[]
   Filters: { status?, type?, priority?, assignee?, q? (text search) }
 
 getReadyBeads(filters?: BeadFilters, repoPath?: string) -> Bead[]
-  Returns open+in_progress beads, excluding verification-locked,
-  filtered by visible ancestor chain.
+  Returns open+in_progress beads, filtered by visible ancestor chain.
 
 queryBeads(expression: string, opts?: { limit?, sort? }, repoPath?: string) -> Bead[]
   Free-form query expression against the bead store.
@@ -332,11 +321,7 @@ updateBead(id: string, input: UpdateBeadInput, repoPath?: string) -> void
   Input: { title?, description?, type?, status?, priority?, parent?,
            labels? (to add), removeLabels?, assignee?, due?,
            acceptance?, notes?, estimate? }
-  Enforces verification edit-lock (409 if transition:verification present).
-  Stage labels are mutually exclusive (auto-removes stale stage labels).
-
 deleteBead(id: string, repoPath?: string) -> void
-  Enforces verification edit-lock.
 
 closeBead(id: string, reason?: string, repoPath?: string) -> void
   Triggers regroomAncestors (auto-close parent chain).
@@ -434,29 +419,7 @@ restageOrchestration(repoPath: string, plan: OrchestrationPlan,
 abortOrchestration(sessionId: string) -> void
 ```
 
-### 2.8 Verification Operations
-
-```
-computeEntryLabels(currentLabels: string[]) -> { add: string[], remove: string[] }
-  Idempotent: noop if transition:verification already present.
-
-computePassLabels(currentLabels: string[]) -> { add: string[], remove: string[] }
-  Removes transition and stage labels on successful verification.
-
-computeRetryLabels(currentLabels: string[]) -> { add: string[], remove: string[] }
-  Sets stage:retry, increments attempt counter.
-
-acquireVerificationLock(beatId: string) -> boolean
-releaseVerificationLock(beatId: string) -> void
-hasVerificationLock(beatId: string) -> boolean
-
-buildVerifierPrompt(ctx: VerifierPromptContext) -> string
-parseVerifierResult(output: string) -> VerificationOutcome | null
-
-isVerificationEligibleAction(action: ActionName) -> boolean
-```
-
-### 2.9 Doctor Operations
+### 2.8 Doctor Operations
 
 ```
 runDoctor() -> DoctorReport
@@ -476,7 +439,6 @@ Individual checks (each returns `Diagnostic[]`):
 checkAgents() -> Diagnostic[]
 checkUpdates() -> Diagnostic[]
 checkSettingsDefaults() -> Diagnostic[]
-checkCorruptTickets(repos: RegisteredRepo[]) -> Diagnostic[]
 checkStaleParents(repos: RegisteredRepo[]) -> Diagnostic[]
 checkPromptGuidance(repos: RegisteredRepo[]) -> Diagnostic[]
 ```
@@ -573,14 +535,12 @@ fetchBeadsFromAllRepos(repos: RegisteredRepo[], filters?) -> BeadWithRepo[]
 | **Orchestration** | `startOrchestration`, `streamOrchestrationEvents`, `listOrchestrationSessions`, `applyOrchestrationPlan` (uses `createBead`, `addDep`), `restageOrchestration`, `abortOrchestration` |
 | **Wave planning** | `computeWavePlan` (uses `listBeads`, `listDeps`, `computeWaves`, `inferReadiness`) |
 | **Merge** | `mergeBeads` (uses `getBead` x2, `updateBead`, `closeBead`) |
-| **Doctor / health** | `runDoctor`, `streamDoctor`, `runDoctorFix`, `checkAgents`, `checkUpdates`, `checkSettingsDefaults`, `checkCorruptTickets` (uses `listBeads`), `checkStaleParents` (uses `listBeads`), `checkPromptGuidance`, `listRepos` |
+| **Doctor / health** | `runDoctor`, `streamDoctor`, `runDoctorFix`, `checkAgents`, `checkUpdates`, `checkSettingsDefaults`, `checkStaleParents` (uses `listBeads`), `checkPromptGuidance`, `listRepos` |
 | **Agent history** | `readAgentHistory`, `collectLogFiles`, `readLogFile`, `parseSession` |
 | **Registry** | `listRepos`, `addRepo`, `removeRepo`, `listDirectory` |
 | **Settings** | `loadSettings`, `updateSettings`, `getActionAgent`, `getRegisteredAgents`, `inspectSettingsDefaults`, `backfillMissingSettingsDefaults`, `scanAgents` |
 | **Terminal** | `startTerminalSession`, `streamTerminalOutput` |
 | **Version** | `getReleaseVersionStatus` |
-| **Verification** | `computeEntryLabels`, `computePassLabels`, `computeRetryLabels`, `acquireVerificationLock`, `releaseVerificationLock`, `buildVerifierPrompt`, `parseVerifierResult`, `isVerificationEligibleAction`, `updateBead` |
-
 ---
 
 ## 4. Shared Infrastructure
@@ -592,7 +552,7 @@ Operations that multiple workflows depend on:
 | `bd.ts` exec pipeline (serialization, locking, timeout, retry) | All bead/dep operations |
 | Error suppression (`bd-error-suppression.ts`) | List, show, ready endpoints |
 | Bead normalization (`normalizeBead`) | All read operations |
-| Label normalization and mutual exclusion | Update, verification, doctor |
+| Label normalization and mutual exclusion | Update, doctor |
 | Wave slug allocation (`wave-slugs.ts`) | Breakdown apply, orchestration apply |
 | Interaction logger (`interaction-logger.ts`) | Breakdown, orchestration, terminal |
 | Agent adapter (`agent-adapter.ts`) | Breakdown, orchestration, terminal |

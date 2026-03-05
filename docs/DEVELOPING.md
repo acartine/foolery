@@ -277,7 +277,6 @@ bd update <id> --status in_progress         # claim it
 
 SHORT_SHA=$(git rev-parse --short HEAD)
 bd update <id> --add-label commit:$SHORT_SHA
-bd update <id> --add-label stage:verification
 bd sync
 git push
 ```

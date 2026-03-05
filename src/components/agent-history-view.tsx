@@ -90,7 +90,6 @@ function promptSourceLabel(source?: string): string {
   if (source === "execution_follow_up") return "Execution follow-up";
   if (source === "ship_completion_follow_up") return "Ship follow-up";
   if (source === "scene_completion_follow_up") return "Scene follow-up";
-  if (source === "verification_review") return "Verification prompt";
   if (source === "auto_ask_user_response") return "Auto AskUser response";
   return source.replace(/_/g, " ");
 }
@@ -230,9 +229,6 @@ function interactionTypeTone(interactionType: AgentHistorySession["interactionTy
   if (interactionType === "scene") {
     return "border-violet-500/40 bg-violet-500/20 text-violet-100";
   }
-  if (interactionType === "verification") {
-    return "border-amber-500/40 bg-amber-500/20 text-amber-100";
-  }
   if (interactionType === "direct") {
     return "border-emerald-500/40 bg-emerald-500/20 text-emerald-100";
   }
@@ -244,7 +240,6 @@ function interactionTypeTone(interactionType: AgentHistorySession["interactionTy
 
 function interactionTypeLabel(interactionType: AgentHistorySession["interactionType"]): string {
   if (interactionType === "scene") return "Scene!";
-  if (interactionType === "verification") return "Auto-review";
   if (interactionType === "direct") return "Planning";
   if (interactionType === "breakdown") return "Breakdown";
   return "Take!";

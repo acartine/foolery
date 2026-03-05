@@ -64,7 +64,7 @@ export const componentSchemas = {
       priority: { type: "integer", enum: [0, 1, 2, 3, 4] },
       labels: { type: "array", items: { type: "string" } },
       blockedBy: { type: "array", items: { type: "string" } },
-      readiness: { type: "string", enum: ["runnable", "in_progress", "blocked", "verification", "gate", "unschedulable"] },
+      readiness: { type: "string", enum: ["runnable", "in_progress", "blocked", "humanAction", "gate", "unschedulable"] },
       readinessReason: { type: "string" },
       waveLevel: { type: "integer" },
     },
@@ -82,13 +82,13 @@ export const componentSchemas = {
 
   WaveSummary: {
     type: "object",
-    required: ["total", "runnable", "inProgress", "blocked", "verification", "gates", "unschedulable"],
+    required: ["total", "runnable", "inProgress", "blocked", "humanAction", "gates", "unschedulable"],
     properties: {
       total: { type: "integer" },
       runnable: { type: "integer" },
       inProgress: { type: "integer" },
       blocked: { type: "integer" },
-      verification: { type: "integer" },
+      humanAction: { type: "integer" },
       gates: { type: "integer" },
       unschedulable: { type: "integer" },
     },
@@ -367,14 +367,6 @@ export const componentSchemas = {
           take: { type: "string" },
           scene: { type: "string" },
           breakdown: { type: "string" },
-        },
-      },
-      verification: {
-        type: "object",
-        properties: {
-          enabled: { type: "boolean" },
-          agent: { type: "string" },
-          maxRetries: { type: "integer" },
         },
       },
       backend: {

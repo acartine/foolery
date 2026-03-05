@@ -67,7 +67,6 @@ import {
   checkUpdates,
   checkSettingsDefaults,
   checkRepoMemoryManagerTypes,
-  checkCorruptTickets,
   checkStaleParents,
   checkPromptGuidance,
   checkMemoryManagerCliAvailability,
@@ -87,7 +86,6 @@ const DEFAULT_SETTINGS = {
     scene: "",
     breakdown: "",
   },
-  verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" as const },
 };
 
@@ -105,9 +103,9 @@ beforeEach(() => {
         label: "Beats (Coarse)",
         mode: "coarse_human_gated",
         initialState: "open",
-        states: ["open", "in_progress", "verification", "retake", "closed"],
+        states: ["open", "in_progress", "retake", "closed"],
         terminalStates: ["closed"],
-        finalCutState: "verification",
+        finalCutState: null,
         retakeState: "retake",
         promptProfileId: "beads-coarse-human-gated",
       },
@@ -160,7 +158,7 @@ describe("checkSettingsDefaults", () => {
   it("reports warning and fix option when settings are missing", async () => {
     mockInspectSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
-      missingPaths: ["verification.enabled", "verification.agent"],
+      missingPaths: ["defaults.profileId", "backend.type"],
       fileMissing: false,
     });
     const diags = await checkSettingsDefaults();
@@ -278,66 +276,6 @@ describe("checkUpdates", () => {
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("warning");
     expect(diags[0].message).toContain("Update available");
-  });
-});
-
-// ── checkCorruptTickets ────────────────────────────────────
-
-describe("checkCorruptTickets", () => {
-  const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
-
-  it("returns nothing when no beats", async () => {
-    mockList.mockResolvedValue({ ok: true, data: [] });
-    const diags = await checkCorruptTickets(repos);
-    expect(diags).toHaveLength(0);
-  });
-
-  it("detects verification label with wrong status", async () => {
-    mockList.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "b-1",
-          title: "Bad beat",
-          state: "open",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-      ],
-    });
-    const diags = await checkCorruptTickets(repos);
-    expect(diags).toHaveLength(1);
-    expect(diags[0].severity).toBe("error");
-    expect(diags[0].check).toBe("corrupt-beat-verification");
-    expect(diags[0].fixable).toBe(true);
-    expect(diags[0].fixOptions).toEqual([
-      { key: "set-in-progress", label: "Set state to in_progress" },
-      { key: "remove-label", label: "Remove stage:verification label" },
-    ]);
-    expect(diags[0].context?.beatId).toBe("b-1");
-  });
-
-  it("ignores verification beat already in_progress", async () => {
-    mockList.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "b-2",
-          title: "Good beat",
-          state: "in_progress",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-      ],
-    });
-    const diags = await checkCorruptTickets(repos);
-    expect(diags).toHaveLength(0);
   });
 });
 
@@ -573,14 +511,14 @@ describe("runDoctorFix", () => {
   it("fixes stale parent with default strategy", async () => {
     setupStaleParent();
 
-    const fixReport = await runDoctorFix({ "stale-parent": "mark-verification" });
+    const fixReport = await runDoctorFix({ "stale-parent": "mark-in-progress" });
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "stale-parent");
-    expect(verificationFix?.success).toBe(true);
-    expect(verificationFix?.message).toContain("state=verification");
+    const staleFix = fixReport.fixes.find((f) => f.check === "stale-parent");
+    expect(staleFix?.success).toBe(true);
+    expect(staleFix?.message).toContain("state=in_progress");
     expect(mockUpdate).toHaveBeenCalledWith(
       "parent-fix",
-      { state: "verification" },
+      { state: "in_progress" },
       "/repo",
     );
   });
@@ -598,8 +536,8 @@ describe("runDoctorFix", () => {
 
     const fixReport = await runDoctorFix();
     expect(fixReport.fixes.length).toBeGreaterThanOrEqual(1);
-    const verificationFix = fixReport.fixes.find((f) => f.check === "stale-parent");
-    expect(verificationFix?.success).toBe(true);
+    const staleFix = fixReport.fixes.find((f) => f.check === "stale-parent");
+    expect(staleFix?.success).toBe(true);
   });
 });
 

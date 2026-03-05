@@ -6,7 +6,7 @@ import { useAppStore } from "@/stores/app-store";
 import type { Beat, BdResult } from "@/lib/types";
 
 /**
- * Returns the count of beats in the verification queue.
+ * Returns the count of beats requiring human action.
  *
  * Shares the same React Query cache entry as FinalCutView
  * (queryKey: ["beats", "human-action", ...]) so:
@@ -18,7 +18,7 @@ import type { Beat, BdResult } from "@/lib/types";
  *   When false the hook still polls but at a slower cadence (30s vs 10s),
  *   reducing background traffic on other /beats views.
  */
-export function useVerificationCount(
+export function useHumanActionCount(
   enabled: boolean,
   isFinalCutActive: boolean,
 ): number {
@@ -28,7 +28,7 @@ export function useVerificationCount(
 
   const { data } = useQuery<BdResult<Beat[]>, Error, number>({
     queryKey: ["beats", "human-action", activeRepo, registeredRepos.length],
-    queryFn: () => fetchVerificationBeats(activeRepo, registeredRepos),
+    queryFn: () => fetchHumanActionBeats(activeRepo, registeredRepos),
     select: (result) => {
       if (!result.ok || !result.data) return 0;
       const beats = result.data;
@@ -46,14 +46,13 @@ export function useVerificationCount(
 }
 
 /**
- * Fetch in_progress beats in descriptor-defined Final Cut across repos.
+ * Fetch beats requiring human action across repos.
  *
  * NOTE: The multi-repo fan-out silences per-repo failures and returns
  * partial results. This matches FinalCutView's existing behaviour
- * (final-cut-view.tsx lines 51-65) and avoids hiding all results when
- * a single repo is temporarily unreachable.
+ * and avoids hiding all results when a single repo is temporarily unreachable.
  */
-async function fetchVerificationBeats(
+async function fetchHumanActionBeats(
   activeRepo: string | null,
   registeredRepos: { path: string; name: string }[],
 ): Promise<BdResult<Beat[]>> {

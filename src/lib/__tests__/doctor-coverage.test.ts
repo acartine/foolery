@@ -1,7 +1,7 @@
 /**
  * Additional coverage tests for doctor.ts.
  * Targets uncovered paths: checkMemoryImplementationCompatibility,
- * applyFix for corrupt-beat-verification (both strategies),
+ * applyFix for stale-parent (both strategies),
  * settings-defaults file-missing, stale-parent missing context,
  * prompt-guidance profile mismatch, streamDoctor exception,
  * unknown strategy for settings-defaults and repo-memory-managers,
@@ -72,7 +72,6 @@ vi.mock("@/lib/memory-manager-detection", () => ({
 
 import {
   checkMemoryImplementationCompatibility,
-  checkCorruptTickets,
   checkStaleParents,
   checkSettingsDefaults,
   checkRepoMemoryManagerTypes,
@@ -168,26 +167,6 @@ describe("checkMemoryImplementationCompatibility (additional coverage)", () => {
   });
 });
 
-// ── checkCorruptTickets additional paths ────────────────────
-
-describe("checkCorruptTickets (additional coverage)", () => {
-  it("warns when list call throws", async () => {
-    mockList.mockRejectedValue(new Error("backend down"));
-    const repos = [{ path: "/repo", name: "repo", addedAt: "2026-01-01" }];
-    const diags = await checkCorruptTickets(repos);
-    expect(diags).toHaveLength(1);
-    expect(diags[0].severity).toBe("warning");
-    expect(diags[0].message).toContain("Could not list beats");
-  });
-
-  it("skips when list returns not-ok", async () => {
-    mockList.mockResolvedValue({ ok: false });
-    const repos = [{ path: "/repo", name: "repo", addedAt: "2026-01-01" }];
-    const diags = await checkCorruptTickets(repos);
-    expect(diags).toHaveLength(0);
-  });
-});
-
 // ── checkSettingsDefaults additional paths ─────────────────
 
 describe("checkSettingsDefaults (additional coverage)", () => {
@@ -259,49 +238,6 @@ describe("checkRepoMemoryManagerTypes (additional coverage)", () => {
     });
     const diags = await checkRepoMemoryManagerTypes();
     expect(diags[0].message).toContain("+2 more");
-  });
-});
-
-// ── checkCorruptTickets standalone ──────────────────────────
-
-describe("checkCorruptTickets (standalone)", () => {
-  it("detects multiple corrupt beats in multiple repos", async () => {
-    const repos = [
-      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01" },
-      { path: "/repo-b", name: "repo-b", addedAt: "2026-01-01" },
-    ];
-    mockList.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "b-1",
-          title: "Bad1",
-          state: "open",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-        {
-          id: "b-2",
-          title: "Bad2",
-          state: "closed",
-          labels: ["stage:verification"],
-          type: "task",
-          priority: 2,
-          created: "2026-01-01",
-          updated: "2026-01-01",
-        },
-      ],
-    });
-
-    const diags = await checkCorruptTickets(repos);
-    // b-1 (open + verification) and b-2 (closed + verification) are corrupt in both repos
-    expect(diags.length).toBeGreaterThanOrEqual(2);
-    expect(diags.every((d) => d.check === "corrupt-beat-verification")).toBe(
-      true,
-    );
   });
 });
 
@@ -487,7 +423,7 @@ describe("applyFix: missing context", () => {
       ok: false,
       error: { message: "not found" },
     });
-    const report = await runDoctorFix({ "stale-parent": "mark-verification" });
+    const report = await runDoctorFix({ "stale-parent": "mark-in-progress" });
     const fix = report.fixes.find((f) => f.check === "stale-parent");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("not found");

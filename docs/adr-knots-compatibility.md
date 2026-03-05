@@ -14,7 +14,7 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 2. Memory manager marker precedence is `.knots` over `.beads` when both exist.
 3. Keep current Foolery status model in this epic; map Knots states into it.
 4. `BackendPort.close()` maps to Knots `shipped`.
-5. Keep verification lifecycle labels/stages and make prompts memory-manager-aware.
+5. Make prompts memory-manager-aware.
 6. Unsupported operations must return explicit capability-aligned API responses (not generic 500s).
 
 ## Locked Mappings

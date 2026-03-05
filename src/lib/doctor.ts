@@ -395,64 +395,10 @@ export async function checkMemoryImplementationCompatibility(
   return diagnostics;
 }
 
-// ── Corrupt beat verification checks ──────────────────────
-
-const CORRUPT_BEAT_FIX_OPTIONS: FixOption[] = [
-  { key: "set-in-progress", label: "Set state to in_progress" },
-  { key: "remove-label", label: "Remove stage:verification label" },
-];
-
-/**
- * Finds beats that have stage:verification label but state != in_progress.
- * These are inconsistent and should be fixed.
- */
-export async function checkCorruptTickets(repos: RegisteredRepo[]): Promise<Diagnostic[]> {
-  const diagnostics: Diagnostic[] = [];
-
-  for (const repo of repos) {
-    let beats: Beat[];
-    try {
-      const result = await getBackend().list(undefined, repo.path);
-      if (!result.ok || !result.data) continue;
-      beats = result.data;
-    } catch {
-      diagnostics.push({
-        check: "corrupt-beats",
-        severity: "warning",
-        message: `Could not list beats for repo "${repo.name}" (${repo.path}).`,
-        fixable: false,
-        context: { repoPath: repo.path, repoName: repo.name },
-      });
-      continue;
-    }
-
-    for (const beat of beats) {
-      const hasVerificationLabel = beat.labels.some((l) => l === "stage:verification");
-      if (hasVerificationLabel && beat.state !== "in_progress") {
-        diagnostics.push({
-          check: "corrupt-beat-verification",
-          severity: "error",
-          message: `Beat ${beat.id} ("${beat.title}") has stage:verification label but state is "${beat.state}" (expected "in_progress") in repo "${repo.name}".`,
-          fixable: true,
-          fixOptions: CORRUPT_BEAT_FIX_OPTIONS,
-          context: {
-            beatId: beat.id,
-            repoPath: repo.path,
-            repoName: repo.name,
-            currentState: beat.state,
-          },
-        });
-      }
-    }
-  }
-
-  return diagnostics;
-}
-
 // ── Stale parent checks ────────────────────────────────────
 
 const STALE_PARENT_FIX_OPTIONS: FixOption[] = [
-  { key: "mark-verification", label: "Move to in_progress with workflowState=verification" },
+  { key: "mark-in-progress", label: "Move to in_progress" },
 ];
 
 /**
@@ -835,7 +781,6 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
  * specific diagnostics.
  *
  * Examples:
- *   { "corrupt-beat-verification": "set-in-progress" }           // fix all
  *   { "prompt-guidance": { strategy: "append", contexts: [...] } } // fix specific
  *
  * If a check is absent from the map, its diagnostics are skipped.
@@ -976,33 +921,8 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       }
     }
 
-    case "corrupt-beat-verification": {
-      const { beatId, repoPath } = ctx;
-      if (!beatId || !repoPath) {
-        return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
-      }
-      try {
-        if (strategy === "remove-label") {
-          // Fix: remove the stage:verification label to match the current state
-          const result = await getBackend().update(beatId, { removeLabels: ["stage:verification"] }, repoPath);
-          if (!result.ok) {
-            return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
-          }
-          return { check: diag.check, success: true, message: `Removed stage:verification from ${beatId}.`, context: ctx };
-        }
-        // Default: set state to in_progress to match the verification label
-        const result = await getBackend().update(beatId, { state: "in_progress" }, repoPath);
-        if (!result.ok) {
-          return { check: diag.check, success: false, message: result.error?.message ?? "bd update failed", context: ctx };
-        }
-        return { check: diag.check, success: true, message: `Set ${beatId} state to in_progress.`, context: ctx };
-      } catch (e) {
-        return { check: diag.check, success: false, message: String(e), context: ctx };
-      }
-    }
-
     case "stale-parent": {
-      // Fix: move parent into verification workflow state (don't close — per project rules)
+      // Fix: move parent to in_progress (don't close — per project rules)
       const { beatId, repoPath } = ctx;
       if (!beatId || !repoPath) {
         return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
@@ -1010,7 +930,7 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
       try {
         const result = await getBackend().update(
           beatId,
-          { state: "verification" },
+          { state: "in_progress" },
           repoPath,
         );
         if (!result.ok) {
@@ -1019,7 +939,7 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         return {
           check: diag.check,
           success: true,
-          message: `Moved ${beatId} to state=verification.`,
+          message: `Moved ${beatId} to state=in_progress.`,
           context: ctx,
         };
       } catch (e) {

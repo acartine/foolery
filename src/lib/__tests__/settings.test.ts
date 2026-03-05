@@ -60,7 +60,6 @@ const DEFAULT_POOLS = {
 const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
-  verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" },
   defaults: { profileId: "" },
   openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
@@ -154,7 +153,7 @@ describe("inspectSettingsDefaults", () => {
     const result = await inspectSettingsDefaults();
     expect(result.fileMissing).toBe(false);
     expect(result.error).toBeUndefined();
-    expect(result.missingPaths).toContain("verification.enabled");
+    expect(result.missingPaths).toContain("defaults.profileId");
   });
 });
 
@@ -168,8 +167,8 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(result.fileMissing).toBe(true);
     expect(mockWriteFile).toHaveBeenCalledTimes(1);
     const written = mockWriteFile.mock.calls[0][1] as string;
-    expect(written).toContain("[verification]");
-    expect(written).toContain('enabled = false');
+    expect(written).toContain("[defaults]");
+    expect(written).toContain('profileId = ""');
     expect(mockChmod).toHaveBeenCalledWith(
       expect.stringContaining("settings.toml"),
       0o600,
@@ -184,7 +183,7 @@ describe("backfillMissingSettingsDefaults", () => {
 
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain('command = "codex"');
-    expect(written).toContain("[verification]");
+    expect(written).toContain("[defaults]");
   });
 
   it("does not write when defaults are already present", async () => {
@@ -195,10 +194,6 @@ describe("backfillMissingSettingsDefaults", () => {
         'take = ""',
         'scene = ""',
         'breakdown = ""',
-        '[verification]',
-        'enabled = false',
-        'agent = ""',
-        'maxRetries = 3',
         '[backend]',
         'type = "cli"',
         '[defaults]',
@@ -229,10 +224,6 @@ describe("backfillMissingSettingsDefaults", () => {
         'take = ""',
         'scene = ""',
         'breakdown = ""',
-        '[verification]',
-        'enabled = false',
-        'agent = ""',
-        'maxRetries = 3',
         '[backend]',
         'type = "auto"',
         '[defaults]',
@@ -267,7 +258,6 @@ describe("saveSettings", () => {
     const settings = {
       agents: { "my-agent": { command: "my-agent" } },
       actions: DEFAULT_ACTIONS,
-      verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
@@ -286,7 +276,6 @@ describe("saveSettings", () => {
     const settings = {
       agents: {},
       actions: DEFAULT_ACTIONS,
-      verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
@@ -412,12 +401,8 @@ describe("updateSettings", () => {
     expect(updated.actions.scene).toBe("claude");
   });
 
-  it("openrouter-only update does not clobber verification or defaults", async () => {
+  it("openrouter-only update does not clobber defaults", async () => {
     const toml = [
-      '[verification]',
-      'enabled = true',
-      'agent = "codex"',
-      'maxRetries = 5',
       '[defaults]',
       'profileId = "custom"',
       '[openrouter]',
@@ -432,9 +417,6 @@ describe("updateSettings", () => {
     });
 
     expect(updated.openrouter.model).toBe("openai/gpt-4o");
-    expect(updated.verification.enabled).toBe(true);
-    expect(updated.verification.agent).toBe("codex");
-    expect(updated.verification.maxRetries).toBe(5);
     expect(updated.defaults.profileId).toBe("custom");
   });
 

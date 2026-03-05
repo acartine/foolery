@@ -118,18 +118,6 @@ export const actionAgentMappingsSchema = z
     breakdown: "",
   });
 
-// Auto-verification settings
-export const verificationSettingsSchema = z
-  .object({
-    /** Whether auto-verification is enabled after code-producing actions. */
-    enabled: z.boolean().default(false),
-    /** Agent ID to use for verification (empty string = use dispatch fallback). */
-    agent: z.string().default(""),
-    /** Maximum automatic retry attempts before stopping. 0 = no auto-retry. */
-    maxRetries: z.number().int().min(0).default(3),
-  })
-  .default({ enabled: false, agent: "", maxRetries: 3 });
-
 // Backend selection (internal, non-user-facing)
 export const backendSettingsSchema = z
   .object({
@@ -223,7 +211,6 @@ export const poolsSettingsSchema = z
 export const foolerySettingsSchema = z.object({
   agents: agentsMapSchema,
   actions: actionAgentMappingsSchema,
-  verification: verificationSettingsSchema,
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
   openrouter: openrouterSettingsSchema,
@@ -234,7 +221,6 @@ export const foolerySettingsSchema = z.object({
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;
 export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
-export type VerificationSettings = z.infer<typeof verificationSettingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
 export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;

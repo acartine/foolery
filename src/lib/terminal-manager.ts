@@ -23,7 +23,6 @@ import {
 import { validateCwd } from "@/lib/validate-cwd";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
-import { onAgentComplete } from "@/lib/verification-orchestrator";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
 import type { Beat, MemoryWorkflowDescriptor, RegisteredAgent } from "@/lib/types";
 import {
@@ -32,6 +31,7 @@ import {
   isQueueOrTerminal,
   isReviewStep,
   priorActionStep,
+  queueStateForStep,
   resolveStep,
   workflowDescriptorById,
 } from "@/lib/workflows";
@@ -976,34 +976,54 @@ export async function createSession(
       timestamp: Date.now(),
     });
 
-    // Layer 3: advance to the next queue/terminal state via memory-manager transition.
-    console.warn(`${tag} [WARN] advancing from action state via manager=${memoryManagerType}: ${current.state}`);
-    const nextResult = await advanceGuarded(beatId, current.state, repoPath, memoryManagerType);
-    if (nextResult.ok) {
+    // Roll back to the same-step queue state instead of advancing forward.
+    const resolved = resolveStep(current.state);
+    if (!resolved) {
+      console.error(`${tag} cannot resolve step for state "${current.state}" — skipping rollback`);
+      return false;
+    }
+
+    const rollbackState = queueStateForStep(resolved.step);
+    console.warn(`${tag} [WARN] rolling back from "${current.state}" to "${rollbackState}"`);
+
+    try {
+      if (memoryManagerType === "knots") {
+        const cmd = `kno update ${beatId} --state ${rollbackState}`;
+        const { exec } = await import("node:child_process");
+        const { promisify } = await import("node:util");
+        const execAsync = promisify(exec);
+        await execAsync(cmd, { cwd: repoPath });
+      } else {
+        await getBackend().update(beatId, { state: rollbackState }, repoPath);
+      }
+
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Invariant fix: advanced ${beatId} from action state "${current.state}" ---\x1b[0m\n`,
+        data: `\x1b[33m--- Invariant fix: rolled back ${beatId} from "${current.state}" to "${rollbackState}" ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
-      console.warn(`${tag} [WARN] advance succeeded for ${beatId}`);
-    } else if (nextResult.expectedStateMismatch) {
-      console.warn(`${tag} [WARN] advance skipped due stale expected state: ${nextResult.error}`);
-      const refreshed = await getBackend().get(beatId, repoPath);
-      if (refreshed.ok && refreshed.data) {
-        const refreshedWorkflow = resolveWorkflowForBeat(refreshed.data, workflowsById, fallbackWorkflow);
-        if (isQueueOrTerminal(refreshed.data.state, refreshedWorkflow)) {
-          console.log(`${tag} beat=${beatId} state=${refreshed.data.state} — invariant satisfied after stale check`);
-          return true;
-        }
-      }
-    } else {
-      console.error(`${tag} advance failed: ${nextResult.error}`);
+      console.warn(`${tag} [WARN] rollback succeeded for ${beatId}`);
+    } catch (err) {
+      console.error(`${tag} rollback failed:`, err);
       pushEvent({
         type: "stderr",
-        data: `Invariant enforcement: failed to advance ${beatId} from ${current.state}: ${nextResult.error}\n`,
+        data: `Invariant enforcement: failed to roll back ${beatId} from ${current.state} to ${rollbackState}: ${err}\n`,
         timestamp: Date.now(),
       });
+      return false;
     }
+
+    // Verify the invariant after rollback
+    const refreshed = await getBackend().get(beatId, repoPath);
+    if (refreshed.ok && refreshed.data) {
+      const refreshedWorkflow = resolveWorkflowForBeat(refreshed.data, workflowsById, fallbackWorkflow);
+      if (isQueueOrTerminal(refreshed.data.state, refreshedWorkflow)) {
+        console.log(`${tag} beat=${beatId} state=${refreshed.data.state} — invariant satisfied after rollback`);
+        return true;
+      }
+      console.error(`${tag} beat=${beatId} state=${refreshed.data.state} — STILL VIOLATED after rollback`);
+    }
+
     return false;
   };
 
@@ -1020,10 +1040,6 @@ export async function createSession(
     if (exitCode === 0) {
       regroomAncestors(beatId, cwd).catch((err) => {
         console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
-      });
-      const actionBeatIds = isParent ? waveBeatIds : [beatId];
-      onAgentComplete(actionBeatIds, "take", cwd, exitCode).catch((err) => {
-        console.error(`[terminal-manager] verification hook failed for ${beatId}:`, err);
       });
       const logFile = interactionLog.filePath;
       if (logFile) {
@@ -1224,7 +1240,7 @@ export async function createSession(
           timestamp: Date.now(),
         });
         enforceQueueTerminalInvariant().finally(() => {
-          finishSession(takeCode ?? 1);
+          finishSession(1);
         });
         return;
       }
@@ -1579,7 +1595,7 @@ export async function createSession(
         timestamp: Date.now(),
       });
       enforceQueueTerminalInvariant().finally(() => {
-        finishSession(code ?? 1);
+        finishSession(1);
       });
       return;
     }

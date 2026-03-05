@@ -81,6 +81,18 @@ export function resolveStep(state: string): ResolvedStep | null {
   return RESOLVED_STEP_MAP.get(state) ?? null;
 }
 
+/** Returns the queue (ready_for_*) state for a given workflow step. */
+export function queueStateForStep(step: WorkflowStep): string {
+  switch (step) {
+    case WorkflowStep.Planning: return "ready_for_planning";
+    case WorkflowStep.PlanReview: return "ready_for_plan_review";
+    case WorkflowStep.Implementation: return "ready_for_implementation";
+    case WorkflowStep.ImplementationReview: return "ready_for_implementation_review";
+    case WorkflowStep.Shipment: return "ready_for_shipment";
+    case WorkflowStep.ShipmentReview: return "ready_for_shipment_review";
+  }
+}
+
 // ── Review-step helpers ────────────────────────────────────────
 
 /** Maps each review step to the action step it reviews. */
@@ -502,7 +514,7 @@ function remapLegacyStateForProfile(
     return firstActionState(workflow);
   }
 
-  if (normalized === "verification" || normalized === "ready_for_review" || normalized === "reviewing") {
+  if (normalized === "ready_for_review" || normalized === "reviewing") {
     if (workflow.states.includes("ready_for_implementation_review")) {
       return "ready_for_implementation_review";
     }
@@ -568,12 +580,6 @@ export function deriveWorkflowState(
   const explicit = extractWorkflowStateLabel(nextLabels);
   if (explicit) return normalizeStateForWorkflow(explicit, descriptor);
 
-  if (nextLabels.includes("stage:verification")) {
-    return normalizeStateForWorkflow("ready_for_implementation_review", descriptor);
-  }
-  if (nextLabels.includes("stage:retry")) {
-    return normalizeStateForWorkflow(descriptor.retakeState, descriptor);
-  }
   if (status) return mapStatusToDefaultWorkflowState(status, descriptor);
   return descriptor.initialState;
 }
@@ -638,7 +644,6 @@ export function inferFinalCutState(states: string[]): string | null {
     "ready_for_plan_review",
     "ready_for_implementation_review",
     "ready_for_shipment_review",
-    "verification",
     "reviewing",
   ];
   for (const candidate of preferred) {

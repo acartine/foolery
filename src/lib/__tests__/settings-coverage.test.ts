@@ -24,8 +24,6 @@ vi.mock("node:child_process", () => ({
 }));
 
 import {
-  getVerificationSettings,
-  getVerificationAgent,
   getBackendType,
   getOpenRouterSettings,
   scanForAgents,
@@ -37,75 +35,6 @@ beforeEach(() => {
   _resetCache();
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
-});
-
-describe("getVerificationSettings (line 290)", () => {
-  it("returns default verification settings when no file", async () => {
-    mockReadFile.mockRejectedValue(new Error("ENOENT"));
-    const vs = await getVerificationSettings();
-    expect(vs.enabled).toBe(false);
-    expect(vs.maxRetries).toBe(3);
-    expect(vs.agent).toBe("");
-  });
-
-  it("returns configured verification settings", async () => {
-    const toml = [
-      "[verification]",
-      "enabled = true",
-      'agent = "codex"',
-      "maxRetries = 5",
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const vs = await getVerificationSettings();
-    expect(vs.enabled).toBe(true);
-    expect(vs.agent).toBe("codex");
-    expect(vs.maxRetries).toBe(5);
-  });
-});
-
-describe("getVerificationAgent (line 296)", () => {
-  it("falls back to dispatch default command", async () => {
-    mockReadFile.mockRejectedValue(new Error("ENOENT"));
-    const agent = await getVerificationAgent();
-    expect(agent.command).toBe("claude");
-  });
-
-  it("returns registered agent when verification.agent is mapped", async () => {
-    const toml = [
-      '[agents.codex]',
-      'command = "codex"',
-      'model = "o3"',
-      'label = "Codex"',
-      '[verification]',
-      'enabled = true',
-      'agent = "codex"',
-      'maxRetries = 3',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getVerificationAgent();
-    expect(agent.command).toBe("codex");
-    expect(agent.model).toBe("o3");
-  });
-
-  it("falls back when verification agent is 'default'", async () => {
-    const toml = [
-      '[verification]',
-      'agent = "default"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getVerificationAgent();
-    expect(agent.command).toBe("claude");
-  });
-
-  it("falls back when verification agent id not registered", async () => {
-    const toml = [
-      '[verification]',
-      'agent = "nonexistent"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const agent = await getVerificationAgent();
-    expect(agent.command).toBe("claude");
-  });
 });
 
 describe("getBackendType (line 311-315)", () => {

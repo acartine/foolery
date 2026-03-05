@@ -8,9 +8,6 @@ vi.mock("@/lib/memory-manager-detection", () => ({
 
 import {
   buildShowIssueCommand,
-  buildVerificationPassCommands,
-  buildVerificationRetryCommands,
-  buildVerificationStageCommand,
   resolveMemoryManagerType,
 } from "@/lib/memory-manager-commands";
 
@@ -48,21 +45,3 @@ describe("buildShowIssueCommand", () => {
   });
 });
 
-describe("verification command rendering", () => {
-  it("renders beats verification stage command with no-daemon when requested", () => {
-    expect(
-      buildVerificationStageCommand("foolery-abc", "beads", { noDaemon: true }),
-    ).toBe('bd update "foolery-abc" --status in_progress --add-label stage:verification --no-daemon');
-  });
-
-  it("renders knots verification stage command", () => {
-    expect(buildVerificationStageCommand("foolery-abc", "knots")).toBe(
-      'kno claim "foolery-abc" --json',
-    );
-  });
-
-  it("renders knots retry and pass commands", () => {
-    expect(buildVerificationRetryCommands("foolery-abc", "knots")).toEqual([]);
-    expect(buildVerificationPassCommands("foolery-abc", "knots")).toEqual([]);
-  });
-});

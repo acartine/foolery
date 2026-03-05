@@ -23,7 +23,7 @@ import { cleanupLogs } from "@/lib/log-lifecycle";
  *   - kind:"session_end"    — exit code and final status
  */
 
-export type InteractionType = "take" | "scene" | "verification" | "direct" | "breakdown";
+export type InteractionType = "take" | "scene" | "direct" | "breakdown";
 
 interface SessionMeta {
   sessionId: string;

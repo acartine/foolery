@@ -5,14 +5,12 @@ import { Zap, Users, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsPoolsSection } from "@/components/settings-pools-section";
-import { SettingsVerificationSection } from "@/components/settings-verification-section";
 import { patchSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
   ActionAgentMappings,
   PoolsSettings,
   DispatchMode,
-  VerificationSettings,
   OpenRouterSettings,
 } from "@/lib/schemas";
 
@@ -22,11 +20,9 @@ interface DispatchSectionProps {
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
   openrouter: OpenRouterSettings;
-  verification: VerificationSettings;
   onDispatchModeChange: (mode: DispatchMode) => void;
   onActionsChange: (actions: ActionAgentMappings) => void;
   onPoolsChange: (pools: PoolsSettings) => void;
-  onVerificationChange: (verification: VerificationSettings) => void;
 }
 
 const MODES: {
@@ -55,11 +51,9 @@ export function SettingsDispatchSection({
   pools,
   agents,
   openrouter,
-  verification,
   onDispatchModeChange,
   onActionsChange,
   onPoolsChange,
-  onVerificationChange,
 }: DispatchSectionProps) {
   async function handleModeChange(mode: DispatchMode) {
     onDispatchModeChange(mode);
@@ -131,11 +125,6 @@ export function SettingsDispatchSection({
             agents={agents}
             openrouter={openrouter}
             onActionsChange={onActionsChange}
-          />
-          <SettingsVerificationSection
-            verification={verification}
-            agents={agents}
-            onVerificationChange={onVerificationChange}
           />
         </>
       ) : (

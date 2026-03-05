@@ -35,14 +35,14 @@ function inferReadiness(
   if (beat.type === "gate") {
     return {
       readiness: "gate",
-      reason: "Gate beat. Requires human verification before progressing.",
+      reason: "Gate beat. Requires human approval before progressing.",
     };
   }
 
   if (isInFinalCut) {
     return {
-      readiness: "verification",
-      reason: "Awaiting verification. Not eligible for shipping.",
+      readiness: "humanAction",
+      reason: "Awaiting human action. Not eligible for shipping.",
     };
   }
 
@@ -94,14 +94,14 @@ function computeSummary(plan: WavePlan): WaveSummary {
   let runnable = 0;
   let inProgress = 0;
   let blocked = 0;
-  let verification = 0;
+  let humanAction = 0;
   let gates = 0;
 
   for (const beat of allBeats) {
     if (beat.readiness === "runnable") runnable += 1;
     if (beat.readiness === "in_progress") inProgress += 1;
     if (beat.readiness === "blocked") blocked += 1;
-    if (beat.readiness === "verification") verification += 1;
+    if (beat.readiness === "humanAction") humanAction += 1;
     if (beat.readiness === "gate") gates += 1;
   }
 
@@ -110,7 +110,7 @@ function computeSummary(plan: WavePlan): WaveSummary {
     runnable,
     inProgress,
     blocked,
-    verification,
+    humanAction,
     gates,
     unschedulable: plan.unschedulable.length,
   };
@@ -253,7 +253,7 @@ export async function GET(request: NextRequest) {
       runnable: 0,
       inProgress: 0,
       blocked: 0,
-      verification: 0,
+      humanAction: 0,
       gates: 0,
       unschedulable: 0,
     },

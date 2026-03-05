@@ -49,7 +49,7 @@ describe("updateBeat label transitions", () => {
       issue_type: "task",
       status: "closed",
       priority: 2,
-      labels: ["stage:verification", "attempts:2", "foo"],
+      labels: ["stage:implementation", "attempts:2", "foo"],
       created_at: "2026-02-13T00:00:00.000Z",
       updated_at: "2026-02-13T00:00:00.000Z",
     });
@@ -71,7 +71,7 @@ describe("updateBeat label transitions", () => {
     expect(result).toEqual({ ok: true });
     expect(execCalls).toContainEqual(["show", "foolery-123", "--json"]);
     expect(execCalls).toContainEqual(["update", "foolery-123", "--status", "open"]);
-    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "stage:verification", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "stage:implementation", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "remove", "foolery-123", "attempts:2", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "add", "foolery-123", "stage:retry", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "add", "foolery-123", "attempts:3", "--no-daemon"]);
@@ -84,14 +84,14 @@ describe("updateBeat label transitions", () => {
       issue_type: "task",
       status: "closed",
       priority: 2,
-      labels: ["stage:verification"],
+      labels: ["stage:implementation"],
       created_at: "2026-02-13T00:00:00.000Z",
       updated_at: "2026-02-13T00:00:00.000Z",
     });
 
     queueExec(
       { stdout: beatJson }, // show
-      { stdout: "" }, // remove stage:verification
+      { stdout: "" }, // remove stage:implementation
       { stdout: "" }, // add stage:retry
       { stderr: "sync exploded", exitCode: 1 } // sync
     );
@@ -104,7 +104,7 @@ describe("updateBeat label transitions", () => {
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("sync");
-    expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:verification", "--no-daemon"]);
+    expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:implementation", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "add", "foolery-456", "stage:retry", "--no-daemon"]);
   });
 

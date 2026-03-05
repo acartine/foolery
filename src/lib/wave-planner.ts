@@ -103,7 +103,7 @@ export function computeWaves(
       runnable: 0,
       inProgress: 0,
       blocked: 0,
-      verification: 0,
+      humanAction: 0,
       gates: 0,
       unschedulable: 0,
     },

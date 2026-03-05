@@ -380,7 +380,6 @@ function parseSession(
       if (
         rawType !== "take" &&
         rawType !== "scene" &&
-        rawType !== "verification" &&
         rawType !== "direct" &&
         rawType !== "breakdown"
       ) {

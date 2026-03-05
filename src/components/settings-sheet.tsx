@@ -20,7 +20,6 @@ import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
   ActionAgentMappings,
-  VerificationSettings,
   BackendSettings,
   DefaultsSettings,
   OpenRouterSettings,
@@ -39,7 +38,6 @@ interface SettingsSheetProps {
 interface SettingsData {
   agents: Record<string, RegisteredAgent>;
   actions: ActionAgentMappings;
-  verification: VerificationSettings;
   backend: BackendSettings;
   defaults: DefaultsSettings;
   openrouter: OpenRouterSettings;
@@ -53,11 +51,6 @@ const DEFAULTS: SettingsData = {
     take: "",
     scene: "",
     breakdown: "",
-  },
-  verification: {
-    enabled: false,
-    agent: "",
-    maxRetries: 3,
   },
   backend: {
     type: "auto",
@@ -103,7 +96,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
           setSettings({
             agents: settingsResult.data.agents ?? DEFAULTS.agents,
             actions: settingsResult.data.actions ?? DEFAULTS.actions,
-            verification: settingsResult.data.verification ?? DEFAULTS.verification,
             backend: settingsResult.data.backend ?? DEFAULTS.backend,
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
             openrouter: settingsResult.data.openrouter ?? DEFAULTS.openrouter,
@@ -180,7 +172,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                   pools={settings.pools}
                   agents={settings.agents}
                   openrouter={settings.openrouter}
-                  verification={settings.verification}
                   onDispatchModeChange={(dispatchMode) =>
                     setSettings((prev) => ({ ...prev, dispatchMode }))
                   }
@@ -189,9 +180,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                   }
                   onPoolsChange={(pools) =>
                     setSettings((prev) => ({ ...prev, pools }))
-                  }
-                  onVerificationChange={(verification) =>
-                    setSettings((prev) => ({ ...prev, verification }))
                   }
                 />
 

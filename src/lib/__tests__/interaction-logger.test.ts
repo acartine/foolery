@@ -430,7 +430,7 @@ describe("cleanup scheduling", () => {
     try {
       const log = await freshStart({
         sessionId: "cleanup-error-test",
-        interactionType: "verification" as const,
+        interactionType: "take" as const,
         repoPath: "/tmp/repo",
         beatIds: [],
       });

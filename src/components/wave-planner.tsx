@@ -39,7 +39,7 @@ const READINESS_STYLES: Record<WaveReadiness, string> = {
   runnable: "border-emerald-300 bg-emerald-50/70",
   in_progress: "border-sky-300 bg-sky-50/70",
   blocked: "border-amber-300 bg-amber-50/70",
-  verification: "border-orange-300 bg-orange-50/70",
+  humanAction: "border-orange-300 bg-orange-50/70",
   gate: "border-zinc-300 bg-zinc-100/70",
   unschedulable: "border-red-300 bg-red-50/70",
 };
@@ -48,7 +48,7 @@ const READINESS_LABELS: Record<WaveReadiness, string> = {
   runnable: "Ready",
   in_progress: "In Progress",
   blocked: "Blocked",
-  verification: "Verification",
+  humanAction: "Human Action",
   gate: "Gate",
   unschedulable: "Cycle",
 };

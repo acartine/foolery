@@ -307,33 +307,33 @@ describe("readAgentHistory", () => {
     ]);
   });
 
-  it("includes verification sessions and prompt metadata for selected beats", async () => {
-    await writeLog(tempDir, "repo-a/2026-02-20/verify-a.jsonl", [
+  it("includes direct sessions and prompt metadata for selected beats", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/direct-a.jsonl", [
       {
         kind: "session_start",
         ts: "2026-02-20T13:10:00.000Z",
-        sessionId: "verify-a",
-        interactionType: "verification",
+        sessionId: "direct-a",
+        interactionType: "take",
         repoPath: "/tmp/repo-a",
         beatIds: ["foo-1"],
       },
       {
         kind: "prompt",
         ts: "2026-02-20T13:10:01.000Z",
-        sessionId: "verify-a",
-        prompt: "Verifier prompt",
-        source: "verification_review",
+        sessionId: "direct-a",
+        prompt: "Review prompt",
+        source: "initial",
       },
       {
         kind: "response",
         ts: "2026-02-20T13:10:02.000Z",
-        sessionId: "verify-a",
-        raw: "{\"type\":\"result\",\"result\":\"VERIFICATION_RESULT:pass\"}",
+        sessionId: "direct-a",
+        raw: "{\"type\":\"result\",\"result\":\"ok\"}",
       },
       {
         kind: "session_end",
         ts: "2026-02-20T13:10:03.000Z",
-        sessionId: "verify-a",
+        sessionId: "direct-a",
         status: "completed",
         exitCode: 0,
       },
@@ -347,9 +347,9 @@ describe("readAgentHistory", () => {
 
     expect(history.sessions).toHaveLength(1);
     const session = history.sessions[0];
-    expect(session?.interactionType).toBe("verification");
-    expect(session?.entries[1]?.promptSource).toBe("verification_review");
-    expect(history.beats[0]?.takeCount).toBe(0);
+    expect(session?.interactionType).toBe("take");
+    expect(session?.entries[1]?.promptSource).toBe("initial");
+    expect(history.beats[0]?.takeCount).toBe(1);
     expect(history.beats[0]?.sceneCount).toBe(0);
     expect(history.beats[0]?.sessionCount).toBe(1);
   });

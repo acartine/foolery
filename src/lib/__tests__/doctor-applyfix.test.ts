@@ -66,7 +66,6 @@ const DEFAULT_SETTINGS = {
     scene: "",
     breakdown: "",
   },
-  verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" as const },
 };
 
@@ -84,9 +83,9 @@ beforeEach(() => {
         label: "Beats (Coarse)",
         mode: "coarse_human_gated",
         initialState: "open",
-        states: ["open", "in_progress", "verification", "retake", "closed"],
+        states: ["open", "in_progress", "retake", "closed"],
         terminalStates: ["closed"],
-        finalCutState: "verification",
+        finalCutState: null,
         retakeState: "retake",
         promptProfileId: "beads-coarse-human-gated",
       },
@@ -125,12 +124,12 @@ describe("applyFix: settings-defaults", () => {
   it("backfills missing settings defaults when strategy is selected", async () => {
     mockInspectSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
-      missingPaths: ["verification.enabled"],
+      missingPaths: ["defaults.profileId"],
       fileMissing: false,
     });
     mockBackfillMissingSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
-      missingPaths: ["verification.enabled"],
+      missingPaths: ["defaults.profileId"],
       fileMissing: false,
       changed: true,
     });
@@ -145,7 +144,7 @@ describe("applyFix: settings-defaults", () => {
   it("returns failure when backfill reports an error", async () => {
     mockInspectSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
-      missingPaths: ["verification.enabled"],
+      missingPaths: ["defaults.profileId"],
       fileMissing: false,
     });
     mockBackfillMissingSettingsDefaults.mockResolvedValue({
@@ -239,17 +238,17 @@ describe("applyFix: stale-parent", () => {
     mockUpdate.mockResolvedValue({ ok: true });
   }
 
-  it("fixes stale parent by setting in_progress with verification workflow state", async () => {
+  it("fixes stale parent by setting in_progress state", async () => {
     setupStaleParent();
 
     const fixReport = await runDoctorFix({ "stale-parent": "default" });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");
     expect(fix?.success).toBe(true);
-    expect(fix?.message).toContain("verification");
+    expect(fix?.message).toContain("in_progress");
     expect(fix?.message).toContain("parent-1");
     expect(mockUpdate).toHaveBeenCalledWith(
       "parent-1",
-      { state: "verification" },
+      { state: "in_progress" },
       "/repo",
     );
   });
@@ -377,7 +376,7 @@ describe("applyFix: context filtering", () => {
     // Use context filter that matches
     const fixReport = await runDoctorFix({
       "stale-parent": {
-        strategy: "mark-verification",
+        strategy: "mark-in-progress",
         contexts: [{ beatId: "parent-1", repoPath: "/repo" }],
       },
     });
@@ -418,7 +417,7 @@ describe("applyFix: context filtering", () => {
 
     const fixReport = await runDoctorFix({
       "stale-parent": {
-        strategy: "mark-verification",
+        strategy: "mark-in-progress",
         contexts: [{ beatId: "other-beat", repoPath: "/other-repo" }],
       },
     });

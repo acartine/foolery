@@ -92,10 +92,6 @@ vi.mock("@/lib/validate-cwd", () => ({
   validateCwd: vi.fn(async () => null),
 }));
 
-vi.mock("@/lib/verification-orchestrator", () => ({
-  onAgentComplete: vi.fn(async () => undefined),
-}));
-
 vi.mock("@/lib/agent-message-type-index", () => ({
   updateMessageTypeIndexFromSession: vi.fn(async () => undefined),
 }));

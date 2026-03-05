@@ -1,4 +1,4 @@
-export type AgentHistoryInteractionType = "take" | "scene" | "verification" | "direct" | "breakdown";
+export type AgentHistoryInteractionType = "take" | "scene" | "direct" | "breakdown";
 
 export interface AgentHistoryEntry {
   id: string;
