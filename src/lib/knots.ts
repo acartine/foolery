@@ -548,18 +548,18 @@ export async function updateKnot(
 
   if (input.addNote !== undefined) {
     args.push(`--add-note=${input.addNote}`);
-    if (input.noteUsername) args.push("--note-username", input.noteUsername);
+    args.push("--note-username", input.noteUsername || "foolery");
     if (input.noteDatetime) args.push("--note-datetime", input.noteDatetime);
-    if (input.noteAgentname) args.push("--note-agentname", input.noteAgentname);
+    args.push("--note-agentname", input.noteAgentname || "foolery");
     if (input.noteModel) args.push("--note-model", input.noteModel);
     if (input.noteVersion) args.push("--note-version", input.noteVersion);
   }
 
   if (input.addHandoffCapsule !== undefined) {
     args.push(`--add-handoff-capsule=${input.addHandoffCapsule}`);
-    if (input.handoffUsername) args.push("--handoff-username", input.handoffUsername);
+    args.push("--handoff-username", input.handoffUsername || "foolery");
     if (input.handoffDatetime) args.push("--handoff-datetime", input.handoffDatetime);
-    if (input.handoffAgentname) args.push("--handoff-agentname", input.handoffAgentname);
+    args.push("--handoff-agentname", input.handoffAgentname || "foolery");
     if (input.handoffModel) args.push("--handoff-model", input.handoffModel);
     if (input.handoffVersion) args.push("--handoff-version", input.handoffVersion);
   }
