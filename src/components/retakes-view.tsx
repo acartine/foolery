@@ -513,7 +513,8 @@ export function RetakesView() {
       }
       return result;
     },
-    enabled: Boolean(activeRepo) || registeredRepos.length > 0,
+    // Keep ReTakes populated even when no explicit repo is selected in single-repo mode.
+    enabled: true,
     refetchInterval: 30_000,
     placeholderData: keepPreviousData,
   });
