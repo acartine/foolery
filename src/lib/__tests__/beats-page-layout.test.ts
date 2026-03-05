@@ -36,12 +36,13 @@ describe("beats page layout", () => {
 
   it("binds Shift+R repo cycling globally for all screens", () => {
     const repoCycleHandler = appHeaderSource.match(
-      /\/\/ Shift\+R cycles repos forward; Cmd\/Ctrl\+Shift\+R cycles backward \(all app screens\)\.[\s\S]*?useEffect\(\(\) => \{[\s\S]*?\}, \[activeRepo, registeredRepos, updateUrl\]\);/,
+      /\/\/ Shift\+R cycles repos forward; Cmd\/Ctrl\+Shift\+R cycles backward \(all app screens\)\.[\s\S]*?useEffect\(\(\) => \{[\s\S]*?\}, \[updateUrl\]\);/,
     )?.[0];
 
     expect(repoCycleHandler).toBeTruthy();
     expect(repoCycleHandler).toContain("getRepoCycleDirection(e)");
-    expect(repoCycleHandler).toContain("cycleRepoPath(repos, activeRepo, direction)");
+    expect(repoCycleHandler).toContain("useAppStore.getState()");
+    expect(repoCycleHandler).toContain("cycleRepoPath(repos, currentActiveRepo, direction)");
     expect(repoCycleHandler).toContain('window.addEventListener("keydown", handleKeyDown, { capture: true });');
     expect(repoCycleHandler).not.toContain('beatsView !== "queues"');
     expect(repoCycleHandler).not.toContain('beatsView !== "active"');

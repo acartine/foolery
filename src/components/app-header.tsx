@@ -264,14 +264,18 @@ export function AppHeader() {
       }
       e.preventDefault();
       e.stopPropagation();
-      const repos = registeredRepos.map((r) => r.path);
-      const nextRepo = cycleRepoPath(repos, activeRepo, direction);
-      if (!nextRepo || nextRepo === activeRepo) return;
+      const {
+        activeRepo: currentActiveRepo,
+        registeredRepos: currentRegisteredRepos,
+      } = useAppStore.getState();
+      const repos = currentRegisteredRepos.map((r) => r.path);
+      const nextRepo = cycleRepoPath(repos, currentActiveRepo, direction);
+      if (!nextRepo || nextRepo === currentActiveRepo) return;
       updateUrl({ repo: nextRepo });
     };
     window.addEventListener("keydown", handleKeyDown, { capture: true });
     return () => window.removeEventListener("keydown", handleKeyDown, { capture: true });
-  }, [activeRepo, registeredRepos, updateUrl]);
+  }, [updateUrl]);
 
   // Button config changes per view: hidden on History, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beatsView === "queues" || beatsView === "active" || beatsView === "finalcut";
