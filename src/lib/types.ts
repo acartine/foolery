@@ -355,6 +355,8 @@ export interface RegisteredAgent {
   model?: string;
   version?: string;
   label?: string;
+  /** Execution kind. Defaults to "cli" when omitted. */
+  kind?: "cli" | "openrouter";
   /** Pool agent ID when selected via pool dispatch. */
   agentId?: string;
 }

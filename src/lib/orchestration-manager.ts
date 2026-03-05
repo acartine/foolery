@@ -707,7 +707,7 @@ export async function createOrchestrationSession(
     .join("\n");
   pushEvent(entry, "log", promptLog);
   const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
-  const dialect = resolveDialect(agent.command);
+  const dialect = resolveDialect(agent.command ?? "openrouter-agent");
   const normalizeEvent = createLineNormalizer(dialect);
   const child = spawn(agentCmd, args, {
     cwd: repoPath,

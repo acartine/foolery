@@ -410,7 +410,7 @@ export async function createBreakdownSession(
   bkdnInteractionLog.logPrompt(prompt);
   pushEvent(entry, "log", `Starting breakdown for: ${parentTitle}\n`);
   const { command: agentCmd, args } = buildPromptModeArgs(agent, prompt);
-  const dialect = resolveDialect(agent.command);
+  const dialect = resolveDialect(agent.command ?? "openrouter-agent");
   const normalizeEvent = createLineNormalizer(dialect);
   const child = spawn(agentCmd, args, {
     cwd: repoPath,

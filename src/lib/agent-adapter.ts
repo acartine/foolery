@@ -9,6 +9,7 @@
  */
 
 import type { RegisteredAgent } from "@/lib/types";
+import type { AgentTarget } from "@/lib/types-agent-target";
 
 // ── Types ───────────────────────────────────────────────────
 
@@ -51,10 +52,13 @@ export function resolveDialect(command: string): AgentDialect {
  * | Model              | --model <m>                               | -m <m>                                        |
  */
 export function buildPromptModeArgs(
-  agent: RegisteredAgent,
+  agent: RegisteredAgent | AgentTarget,
   prompt: string,
 ): PromptModeArgs {
-  const dialect = resolveDialect(agent.command);
+  const command = "command" in agent && typeof agent.command === "string"
+    ? agent.command
+    : "openrouter-agent";
+  const dialect = resolveDialect(command);
 
   if (dialect === "codex") {
     const args = [
@@ -64,7 +68,7 @@ export function buildPromptModeArgs(
       "--dangerously-bypass-approvals-and-sandbox",
     ];
     if (agent.model) args.push("-m", agent.model);
-    return { command: agent.command, args };
+    return { command, args };
   }
 
   // openrouter and claude share the same arg shape
@@ -80,7 +84,7 @@ export function buildPromptModeArgs(
     "--dangerously-skip-permissions",
   ];
   if (agent.model) args.push("--model", agent.model);
-  return { command: agent.command, args };
+  return { command, args };
 }
 
 // ── 3) Event normalization ──────────────────────────────────

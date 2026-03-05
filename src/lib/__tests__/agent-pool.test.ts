@@ -38,6 +38,7 @@ describe("selectFromPool", () => {
     const pool: PoolEntry[] = [{ agentId: "claude", weight: 1 }];
     const result = selectFromPool(pool, AGENTS);
     expect(result).toEqual({
+      kind: "cli",
       command: "claude",
       model: "opus",
       label: "Claude Opus",
@@ -186,6 +187,7 @@ describe("resolvePoolAgent", () => {
       AGENTS,
     );
     expect(result).toEqual({
+      kind: "cli",
       command: "claude",
       model: "sonnet-4",
       label: "Claude Sonnet",

@@ -17,6 +17,7 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import { OpenRouterSessionRuntime } from "@/lib/openrouter-session-runtime";
 import { nextBeat } from "@/lib/beads-state-machine";
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
@@ -27,7 +28,8 @@ import { validateCwd } from "@/lib/validate-cwd";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
-import type { Beat, MemoryWorkflowDescriptor, RegisteredAgent } from "@/lib/types";
+import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
 import {
   StepPhase,
   defaultWorkflowDescriptor,
@@ -43,6 +45,7 @@ import { recordStepAgent, resolvePoolAgent, getLastStepAgent } from "@/lib/agent
 interface SessionEntry {
   session: TerminalSession;
   process: ChildProcess | null;
+  abort?: () => void;
   emitter: EventEmitter;
   buffer: TerminalEvent[];
   interactionLog: InteractionLog;
@@ -81,6 +84,12 @@ function buildQueueTerminalInvariantInstruction(memoryManagerType: MemoryManager
     `Never leave work in an action state (planning, plan_review, implementation, implementation_review, shipment, shipment_review).`,
     `If the ${item} is currently in an action state, run "${advanceCommand}" to advance it to the next queue state before stopping.`,
   ].join("\n");
+}
+
+function agentDisplayName(agent: AgentTarget): string {
+  if (agent.label?.trim()) return agent.label.trim();
+  if (agent.kind === "cli") return agent.command;
+  return "OpenRouter";
 }
 
 type JsonObject = Record<string, unknown>;
@@ -716,10 +725,10 @@ export async function createSession(
     beatId: beat.id,
     beatTitle: beat.title,
     repoPath: resolvedRepoPath,
-    agentName: agent.label || agent.command,
+    agentName: agentDisplayName(agent),
     agentModel: agent.model,
     agentVersion: agent.version,
-    agentCommand: agent.command,
+    ...(agent.kind === "cli" ? { agentCommand: agent.command } : {}),
     status: "running",
     startedAt: new Date().toISOString(),
   };
@@ -733,7 +742,7 @@ export async function createSession(
     interactionType: isParent ? "scene" : "take",
     repoPath: resolvedRepoPath,
     beatIds: isParent ? waveBeatIds : [beatId],
-    agentName: agent.label || agent.command,
+    agentName: agentDisplayName(agent),
     agentModel: agent.model,
   }).catch((err) => {
     console.error(`[terminal-manager] Failed to start interaction log:`, err);
@@ -769,6 +778,60 @@ export async function createSession(
   console.log(`[terminal-manager]   beatId: ${beatId}`);
   console.log(`[terminal-manager]   cwd: ${cwd}`);
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
+
+  let sessionFinished = false;
+  const finishSession = (exitCode: number) => {
+    if (sessionFinished) return;
+    sessionFinished = true;
+    session.exitCode = exitCode;
+    session.status = exitCode === 0 ? "completed" : "error";
+    interactionLog.logEnd(exitCode, session.status);
+    pushEvent({ type: "exit", data: String(exitCode), timestamp: Date.now() });
+    entry.process = null;
+    entry.abort = undefined;
+
+    if (exitCode === 0) {
+      regroomAncestors(beatId, cwd).catch((err) => {
+        console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
+      });
+      const logFile = interactionLog.filePath;
+      if (logFile) {
+        updateMessageTypeIndexFromSession(
+          logFile,
+          agentDisplayName(agent),
+          agent.model,
+        ).catch((err) => {
+          console.error(`[terminal-manager] message type index update failed:`, err);
+        });
+      }
+    }
+
+    setTimeout(() => { emitter.removeAllListeners(); }, 2000);
+    setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
+  };
+
+  if (agent.kind === "openrouter") {
+    const runtime = new OpenRouterSessionRuntime();
+    entry.abort = (
+      await runtime.startTake(agent, {
+        session,
+        repoPath: resolvedRepoPath,
+        beat,
+        beatId,
+        isParent,
+        childBeatIds: waveBeatIds,
+        customPrompt,
+        queueTerminalInvariantInstruction,
+        workflowsById,
+        fallbackWorkflow,
+        interactionLog,
+        emitter,
+        pushEvent,
+        finishSession,
+      })
+    ).abort;
+    return session;
+  }
 
   const dialect = resolveDialect(agent.command);
   const isInteractive = dialect === "claude";
@@ -816,7 +879,7 @@ export async function createSession(
     ].filter(Boolean).join("\n");
   };
 
-  const buildNextTakePrompt = async (): Promise<{ prompt: string; beatState: string; agentOverride?: RegisteredAgent } | null> => {
+  const buildNextTakePrompt = async (): Promise<{ prompt: string; beatState: string; agentOverride?: CliAgentTarget } | null> => {
     const tag = `[terminal-manager] [${id}] [take-loop]`;
 
     // Fetch the beat's current state to decide whether to continue.
@@ -908,7 +971,7 @@ export async function createSession(
     // Cross-agent review: select a different agent from the pool for review
     // steps instead of reusing the action agent. Falls back to the session
     // agent when no alternative is available (or pools not configured).
-    let reviewAgentOverride: RegisteredAgent | undefined;
+    let reviewAgentOverride: CliAgentTarget | undefined;
     if (isReviewStep(resolved.step)) {
       try {
         const settings = await loadSettings();
@@ -924,7 +987,7 @@ export async function createSession(
             excludeId,
           );
 
-          if (poolAgent) {
+          if (poolAgent?.kind === "cli") {
             reviewAgentOverride = poolAgent;
             if (poolAgent.agentId) {
               recordStepAgent(beatId, resolved.step, poolAgent.agentId);
@@ -1047,38 +1110,8 @@ export async function createSession(
     return false;
   };
 
-  let sessionFinished = false;
-  const finishSession = (exitCode: number) => {
-    if (sessionFinished) return;
-    sessionFinished = true;
-    session.exitCode = exitCode;
-    session.status = exitCode === 0 ? "completed" : "error";
-    interactionLog.logEnd(exitCode, session.status);
-    pushEvent({ type: "exit", data: String(exitCode), timestamp: Date.now() });
-    entry.process = null;
-
-    if (exitCode === 0) {
-      regroomAncestors(beatId, cwd).catch((err) => {
-        console.error(`[terminal-manager] regroom failed for ${beatId}:`, err);
-      });
-      const logFile = interactionLog.filePath;
-      if (logFile) {
-        updateMessageTypeIndexFromSession(
-          logFile,
-          agent.label || agent.command,
-          agent.model,
-        ).catch((err) => {
-          console.error(`[terminal-manager] message type index update failed:`, err);
-        });
-      }
-    }
-
-    setTimeout(() => { emitter.removeAllListeners(); }, 2000);
-    setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
-  };
-
   /** Spawn a fresh agent child process for a take-loop iteration. */
-  const spawnTakeChild = (takePrompt: string, beatState?: string, agentOverride?: RegisteredAgent): void => {
+  const spawnTakeChild = (takePrompt: string, beatState?: string, agentOverride?: CliAgentTarget): void => {
     // Resolve effective agent for this iteration
     const effectiveAgent = agentOverride ?? agent;
     const effectiveDialect = resolveDialect(effectiveAgent.command);
@@ -1718,9 +1751,14 @@ export async function createSession(
 
 export function abortSession(id: string): boolean {
   const entry = sessions.get(id);
-  if (!entry || !entry.process) return false;
+  if (!entry) return false;
 
   entry.session.status = "aborted";
+  if (entry.abort) {
+    entry.abort();
+    return true;
+  }
+  if (!entry.process) return false;
   entry.process.kill("SIGTERM");
 
   setTimeout(() => {

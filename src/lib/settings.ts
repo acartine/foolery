@@ -37,6 +37,7 @@ import type {
   ActionName,
   ScannedAgent,
 } from "@/lib/types";
+import type { AgentTarget, CliAgentTarget, OpenRouterAgentTarget } from "@/lib/types-agent-target";
 import { type WorkflowStep, isReviewStep, priorActionStep } from "@/lib/workflows";
 import { resolvePoolAgent, getLastStepAgent, recordStepAgent } from "@/lib/agent-pool";
 
@@ -346,6 +347,36 @@ function resolveSelectedOpenRouterAgentConfig(
   };
 }
 
+function toCliTarget(
+  agent: RegisteredAgentConfig | RegisteredAgent,
+  agentId?: string,
+): CliAgentTarget {
+  return {
+    kind: "cli",
+    command: agent.command,
+    ...(agent.model ? { model: agent.model } : {}),
+    ...(agent.version ? { version: agent.version } : {}),
+    ...(agent.label ? { label: agent.label } : {}),
+    ...(agentId ? { agentId } : {}),
+  };
+}
+
+function toOpenRouterTarget(
+  agent: RegisteredAgentConfig,
+  agentId?: string,
+): OpenRouterAgentTarget {
+  return {
+    kind: "openrouter",
+    provider: "openrouter",
+    authSource: "settings",
+    model: agent.model ?? "",
+    command: agent.command,
+    ...(agent.version ? { version: agent.version } : {}),
+    ...(agent.label ? { label: agent.label } : {}),
+    ...(agentId ? { agentId } : {}),
+  };
+}
+
 /**
  * Returns virtual agents for all entries in openrouter.agents.
  * Each entry maps to an agent keyed by "openrouter:<agentKey>".
@@ -406,41 +437,25 @@ export async function getRegisteredAgents(): Promise<
 /** Resolves an action name to its agent config. Falls back to dispatch default. */
 export async function getActionAgent(
   action: ActionName,
-): Promise<RegisteredAgent> {
+): Promise<AgentTarget> {
   const settings = await loadSettings();
   const agentId = settings.actions[action] ?? "";
   if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
     const selected = resolveSelectedOpenRouterAgentConfig(settings);
     if (selected) {
-      return {
-        command: selected.command,
-        ...(selected.model ? { model: selected.model } : {}),
-        ...(selected.version ? { version: selected.version } : {}),
-        ...(selected.label ? { label: selected.label } : {}),
-      };
+      return toOpenRouterTarget(selected, agentId);
     }
   }
   if (isOpenRouterAgentId(agentId)) {
     const orAgent = resolveOpenRouterAgentById(settings, agentId);
     if (orAgent) {
-      return {
-        command: orAgent.command,
-        ...(orAgent.model ? { model: orAgent.model } : {}),
-        ...(orAgent.version ? { version: orAgent.version } : {}),
-        ...(orAgent.label ? { label: orAgent.label } : {}),
-      };
+      return toOpenRouterTarget(orAgent, agentId);
     }
   }
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
-    const reg = settings.agents[agentId];
-    return {
-      command: reg.command,
-      ...(reg.model ? { model: reg.model } : {}),
-      ...(reg.version ? { version: reg.version } : {}),
-      ...(reg.label ? { label: reg.label } : {}),
-    };
+    return toCliTarget(settings.agents[agentId], agentId);
   }
-  return { command: getFallbackCommand(settings) };
+  return toCliTarget({ command: getFallbackCommand(settings) });
 }
 
 /**
@@ -643,7 +658,7 @@ export async function getStepAgent(
   step: WorkflowStep,
   fallbackAction?: ActionName,
   beatId?: string,
-): Promise<RegisteredAgent> {
+): Promise<AgentTarget> {
   const settings = await loadSettings();
 
   // Only use pools when dispatch mode is "pools"
@@ -688,38 +703,22 @@ export async function getStepAgent(
     if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
       const selected = resolveSelectedOpenRouterAgentConfig(settings);
       if (selected) {
-        return {
-          command: selected.command,
-          ...(selected.model ? { model: selected.model } : {}),
-          ...(selected.version ? { version: selected.version } : {}),
-          ...(selected.label ? { label: selected.label } : {}),
-        };
+        return toOpenRouterTarget(selected, agentId);
       }
     }
     if (isOpenRouterAgentId(agentId)) {
       const orAgent = resolveOpenRouterAgentById(settings, agentId);
       if (orAgent) {
-        return {
-          command: orAgent.command,
-          ...(orAgent.model ? { model: orAgent.model } : {}),
-          ...(orAgent.version ? { version: orAgent.version } : {}),
-          ...(orAgent.label ? { label: orAgent.label } : {}),
-        };
+        return toOpenRouterTarget(orAgent, agentId);
       }
     }
     if (agentId && agentId !== "default" && settings.agents[agentId]) {
-      const reg = settings.agents[agentId];
-      return {
-        command: reg.command,
-        ...(reg.model ? { model: reg.model } : {}),
-        ...(reg.version ? { version: reg.version } : {}),
-        ...(reg.label ? { label: reg.label } : {}),
-      };
+      return toCliTarget(settings.agents[agentId], agentId);
     }
   }
 
   // Fall back to dispatch default
-  return { command: getFallbackCommand(settings) };
+  return toCliTarget({ command: getFallbackCommand(settings) });
 }
 
 /** Returns the OpenRouter settings. */

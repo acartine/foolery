@@ -1,4 +1,5 @@
-import type { RegisteredAgent, PoolEntry } from "@/lib/types";
+import type { PoolEntry, RegisteredAgent } from "@/lib/types";
+import type { AgentTarget, CliAgentTarget, OpenRouterAgentTarget } from "@/lib/types-agent-target";
 import type { PoolsSettings, RegisteredAgentConfig } from "@/lib/schemas";
 import type { WorkflowStep } from "@/lib/workflows";
 
@@ -15,7 +16,7 @@ export function selectFromPool(
   pool: PoolEntry[],
   agents: Record<string, RegisteredAgentConfig>,
   excludeAgentId?: string,
-): RegisteredAgent | null {
+): AgentTarget | null {
   // Filter to entries that reference existing agents and have positive weight
   const valid = pool.filter(
     (entry) => entry.weight > 0 && agents[entry.agentId],
@@ -46,7 +47,7 @@ export function selectFromPool(
 function selectWeighted(
   valid: PoolEntry[],
   agents: Record<string, RegisteredAgentConfig>,
-): RegisteredAgent | null {
+): AgentTarget | null {
   const totalWeight = valid.reduce((sum, entry) => sum + entry.weight, 0);
   if (totalWeight <= 0) return null;
 
@@ -55,26 +56,13 @@ function selectWeighted(
     roll -= entry.weight;
     if (roll <= 0) {
       const reg = agents[entry.agentId]!;
-      return {
-        command: reg.command,
-        ...(reg.model ? { model: reg.model } : {}),
-        ...(reg.version ? { version: reg.version } : {}),
-        ...(reg.label ? { label: reg.label } : {}),
-        agentId: entry.agentId,
-      };
+      return toAgentTarget(reg, entry.agentId);
     }
   }
 
   // Fallback to last valid entry (shouldn't happen due to floating point)
   const last = valid[valid.length - 1]!;
-  const reg = agents[last.agentId]!;
-  return {
-    command: reg.command,
-    ...(reg.model ? { model: reg.model } : {}),
-    ...(reg.version ? { version: reg.version } : {}),
-    ...(reg.label ? { label: reg.label } : {}),
-    agentId: last.agentId,
-  };
+  return toAgentTarget(agents[last.agentId]!, last.agentId);
 }
 
 /**
@@ -88,10 +76,39 @@ export function resolvePoolAgent(
   pools: PoolsSettings,
   agents: Record<string, RegisteredAgentConfig>,
   excludeAgentId?: string,
-): RegisteredAgent | null {
+): AgentTarget | null {
   const pool = pools[step];
   if (!pool || pool.length === 0) return null;
   return selectFromPool(pool, agents, excludeAgentId);
+}
+
+function toAgentTarget(
+  reg: RegisteredAgentConfig | RegisteredAgent,
+  agentId?: string,
+): AgentTarget {
+  if (reg.command === "openrouter-agent" && reg.model) {
+    const target: OpenRouterAgentTarget = {
+      kind: "openrouter",
+      provider: "openrouter",
+      authSource: "settings",
+      model: reg.model,
+      command: reg.command,
+      ...(reg.version ? { version: reg.version } : {}),
+      ...(reg.label ? { label: reg.label } : {}),
+      ...(agentId ? { agentId } : {}),
+    };
+    return target;
+  }
+
+  const target: CliAgentTarget = {
+    kind: "cli",
+    command: reg.command,
+    ...(reg.model ? { model: reg.model } : {}),
+    ...(reg.version ? { version: reg.version } : {}),
+    ...(reg.label ? { label: reg.label } : {}),
+    ...(agentId ? { agentId } : {}),
+  };
+  return target;
 }
 
 // ── Per-beat agent tracking (in-memory) ─────────────────────
