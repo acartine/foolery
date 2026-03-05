@@ -829,6 +829,7 @@ describe("transitionToRetry dispatch", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
+    expect(resolveMemoryManagerTypeMock).toHaveBeenCalledWith("/repo");
     expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
     expect(nextBeatMock).not.toHaveBeenCalled();
   });
@@ -844,6 +845,7 @@ describe("transitionToRetry dispatch", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
+    expect(resolveMemoryManagerTypeMock).toHaveBeenCalledWith("/repo");
     expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
     expect(nextKnotMock).not.toHaveBeenCalled();
   });

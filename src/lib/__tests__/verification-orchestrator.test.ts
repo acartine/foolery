@@ -308,6 +308,7 @@ describe("retry transition dispatch", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
+    expect(resolveMemoryManagerTypeMock).toHaveBeenCalledWith("/repo");
     expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo", { expectedState: "in_progress" });
     expect(nextBeatMock).not.toHaveBeenCalled();
   });
@@ -325,6 +326,7 @@ describe("retry transition dispatch", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
+    expect(resolveMemoryManagerTypeMock).toHaveBeenCalledWith("/repo");
     expect(nextBeatMock).toHaveBeenCalledWith("foolery-test", "in_progress", "/repo");
     expect(nextKnotMock).not.toHaveBeenCalled();
   });
