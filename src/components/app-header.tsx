@@ -11,6 +11,7 @@ import { SearchBar } from "@/components/search-bar";
 import { CreateBeatDialog } from "@/components/create-beat-dialog";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { NotificationBell } from "@/components/notification-bell";
+import { HotkeyHelp } from "@/components/hotkey-help";
 import type { SettingsSection } from "@/components/settings-sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,11 @@ import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useVerificationCount } from "@/hooks/use-verification-count";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
+import {
+  isHotkeyHelpToggleKey,
+  readHotkeyHelpOpen,
+  toggleHotkeyHelpOpen,
+} from "@/lib/hotkey-help-state";
 
 type VersionBanner = {
   installedVersion: string;
@@ -49,6 +55,11 @@ export function AppHeader() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(() =>
+    readHotkeyHelpOpen(
+      typeof window === "undefined" ? null : window.localStorage
+    )
+  );
   const settingsParam = searchParams.get("settings");
   const settingsOpenFromUrl = settingsParam === "repos";
   const [settingsOpen, setSettingsOpen] = useState(settingsOpenFromUrl);
@@ -210,6 +221,27 @@ export function AppHeader() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeatsRoute, toggleTerminalPanel]);
+
+  // Shift+H toggles shortcut help in every Beats screen.
+  useEffect(() => {
+    if (!isBeatsRoute) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "INPUT" ||
+        target.tagName === "SELECT"
+      ) {
+        return;
+      }
+      if (!isHotkeyHelpToggleKey(e)) return;
+      e.preventDefault();
+      setHotkeyHelpOpen((prev) => toggleHotkeyHelpOpen(prev, window.localStorage));
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isBeatsRoute]);
 
   // Button config changes per view: hidden on History, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beatsView === "queues" || beatsView === "active" || beatsView === "finalcut";
@@ -443,6 +475,7 @@ export function AppHeader() {
         />
       ) : null}
 
+      <HotkeyHelp open={isBeatsRoute && hotkeyHelpOpen} />
       <SettingsSheet open={effectiveSettingsOpen} onOpenChange={handleSettingsOpenChange} initialSection={effectiveSettingsSection} />
     </>
   );
