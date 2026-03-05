@@ -985,6 +985,26 @@ describe("KnotsBackend coverage: create with extra fields", () => {
     ]);
   });
 
+  it("normalizes create invariants before serializing knots patch", async () => {
+    const backend = new KnotsBackend("/repo");
+
+    const result = await backend.create({
+      title: "Invariant normalization",
+      type: "task",
+      priority: 2,
+      labels: [],
+      invariants: [
+        { kind: "Scope", condition: " src/lib " },
+        { kind: "Scope", condition: "src/lib" },
+        { kind: "State", condition: "  " },
+      ],
+    });
+
+    expect(result.ok).toBe(true);
+    const patchCall = mockUpdateKnot.mock.calls.find((c) => Array.isArray(c[1]?.addInvariants));
+    expect(patchCall?.[1]?.addInvariants).toEqual(["Scope:src/lib"]);
+  });
+
   it("returns error when profiles are empty", async () => {
     mockListProfiles.mockResolvedValueOnce({
       ok: true as const,
@@ -1329,6 +1349,34 @@ describe("KnotsBackend coverage: update with state change", () => {
       addInvariants: ["Scope:src/lib"],
       removeInvariants: ["State:must stay queued"],
       clearInvariants: true,
+    });
+  });
+
+  it("normalizes invariant mutation payloads before knots update", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "IU2",
+      title: "Invariant update normalize",
+      invariants: [{ kind: "State", condition: "must stay queued" }],
+    });
+
+    const result = await backend.update("IU2", {
+      addInvariants: [
+        { kind: "Scope", condition: " src/lib " },
+        { kind: "Scope", condition: "src/lib" },
+        { kind: "State", condition: "   " },
+      ],
+      removeInvariants: [
+        { kind: "State", condition: " must stay queued " },
+        { kind: "State", condition: "must stay queued" },
+      ],
+    });
+    expect(result.ok).toBe(true);
+
+    const lastUpdateCall = mockUpdateKnot.mock.calls.at(-1);
+    expect(lastUpdateCall?.[1]).toMatchObject({
+      addInvariants: ["Scope:src/lib"],
+      removeInvariants: ["State:must stay queued"],
     });
   });
 

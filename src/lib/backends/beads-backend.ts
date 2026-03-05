@@ -20,7 +20,7 @@ import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import { isRetryableByDefault } from "@/lib/backend-errors";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
-import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
+import type { Beat, BeatDependency, Invariant, MemoryWorkflowDescriptor } from "@/lib/types";
 import { normalizeFromJsonl, denormalizeToJsonl } from "./beads-jsonl-dto";
 import type { RawBead } from "./beads-jsonl-dto";
 import {
@@ -279,7 +279,7 @@ export class BeadsBackend implements BackendPort {
       acceptance: input.acceptance,
       notes: input.notes,
       estimate: input.estimate,
-      invariants: input.invariants?.length ? input.invariants : undefined,
+      invariants: normalizeInvariants(input.invariants),
       created: now,
       updated: now,
     };
@@ -550,6 +550,21 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   });
 }
 
+function normalizeInvariants(invariants: readonly Invariant[] | undefined): Invariant[] | undefined {
+  if (!invariants?.length) return undefined;
+  const seen = new Set<string>();
+  const normalized: Invariant[] = [];
+  for (const inv of invariants) {
+    const condition = inv.condition.trim();
+    if (!condition) continue;
+    const key = `${inv.kind}:${condition}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    normalized.push({ kind: inv.kind, condition });
+  }
+  return normalized.length > 0 ? normalized : undefined;
+}
+
 function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.title !== undefined) beat.title = input.title;
   if (input.description !== undefined) beat.description = input.description;
@@ -595,18 +610,21 @@ function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.clearInvariants) {
     beat.invariants = undefined;
   }
-  if (input.removeInvariants?.length) {
-    const toRemove = new Set(input.removeInvariants.map((inv) => `${inv.kind}:${inv.condition}`));
+  const removeInvariants = normalizeInvariants(input.removeInvariants);
+  if (removeInvariants?.length) {
+    const toRemove = new Set(removeInvariants.map((inv) => `${inv.kind}:${inv.condition}`));
     beat.invariants = (beat.invariants ?? []).filter(
       (inv) => !toRemove.has(`${inv.kind}:${inv.condition}`),
     );
     if (beat.invariants.length === 0) beat.invariants = undefined;
   }
-  if (input.addInvariants?.length) {
+  const addInvariants = normalizeInvariants(input.addInvariants);
+  if (addInvariants?.length) {
     const existing = new Set((beat.invariants ?? []).map((inv) => `${inv.kind}:${inv.condition}`));
-    const toAdd = input.addInvariants.filter((inv) => !existing.has(`${inv.kind}:${inv.condition}`));
+    const toAdd = addInvariants.filter((inv) => !existing.has(`${inv.kind}:${inv.condition}`));
     beat.invariants = [...(beat.invariants ?? []), ...toAdd];
   }
+  beat.invariants = normalizeInvariants(beat.invariants);
 
   beat.labels = withWorkflowProfileLabel(
     withWorkflowStateLabel(beat.labels ?? [], beat.state),

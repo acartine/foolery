@@ -22,6 +22,7 @@ import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type {
   Beat,
   BeatDependency,
+  Invariant,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
   WorkflowMode,
@@ -140,6 +141,27 @@ function fromKnots<T>(result: { ok: boolean; data?: T; error?: string }): Backen
 function normalizePriority(raw: number | null | undefined): 0 | 1 | 2 | 3 | 4 {
   if (raw === 0 || raw === 1 || raw === 2 || raw === 3 || raw === 4) return raw;
   return 2;
+}
+
+function normalizeInvariants(invariants: readonly Invariant[] | undefined): Invariant[] {
+  if (!invariants?.length) return [];
+  const seen = new Set<string>();
+  const normalized: Invariant[] = [];
+  for (const inv of invariants) {
+    const condition = inv.condition.trim();
+    if (!condition) continue;
+    const key = `${inv.kind}:${condition}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    normalized.push({ kind: inv.kind, condition });
+  }
+  return normalized;
+}
+
+function serializeInvariants(invariants: readonly Invariant[] | undefined): string[] | undefined {
+  const normalized = normalizeInvariants(invariants);
+  if (normalized.length === 0) return undefined;
+  return normalized.map((inv) => `${inv.kind}:${inv.condition}`);
 }
 
 function stringifyNotes(raw: unknown): string | undefined {
@@ -300,6 +322,7 @@ function toBeat(
   const profileId = normalizeProfileId(knot.profile_id ?? knot.workflow_id) ?? fallback?.id ?? "autopilot";
   const workflow = workflowsById.get(profileId) ?? fallback;
   const stepEntries = knotStepEntries(knot);
+  const invariants = normalizeInvariants(knot.invariants);
 
   if (!workflow) {
     return {
@@ -320,7 +343,7 @@ function toBeat(
       parent: deriveParentId(knot.id, edges, knownIds),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
-      invariants: knot.invariants?.length ? knot.invariants : undefined,
+      invariants: invariants.length > 0 ? invariants : undefined,
       metadata: {
         knotsProfileId: profileId,
         knotsSteps: stepEntries,
@@ -359,7 +382,7 @@ function toBeat(
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
-    invariants: knot.invariants?.length ? knot.invariants : undefined,
+    invariants: invariants.length > 0 ? invariants : undefined,
     metadata: {
       knotsProfileId: profileId,
       knotsState: knot.state,
@@ -745,9 +768,7 @@ export class KnotsBackend implements BackendPort {
     if (input.type) patch.type = input.type;
     if (input.labels?.length) patch.addTags = input.labels;
     if (input.notes) patch.addNote = input.notes;
-    if (input.invariants?.length) {
-      patch.addInvariants = input.invariants.map((inv) => `${inv.kind}:${inv.condition}`);
-    }
+    patch.addInvariants = serializeInvariants(input.invariants);
 
     const hasPatch =
       patch.priority !== undefined ||
@@ -874,12 +895,8 @@ export class KnotsBackend implements BackendPort {
     if (input.labels?.length) patch.addTags = input.labels;
     if (input.removeLabels?.length) patch.removeTags = input.removeLabels;
     if (input.notes !== undefined) patch.addNote = input.notes;
-    if (input.addInvariants?.length) {
-      patch.addInvariants = input.addInvariants.map((inv) => `${inv.kind}:${inv.condition}`);
-    }
-    if (input.removeInvariants?.length) {
-      patch.removeInvariants = input.removeInvariants.map((inv) => `${inv.kind}:${inv.condition}`);
-    }
+    patch.addInvariants = serializeInvariants(input.addInvariants);
+    patch.removeInvariants = serializeInvariants(input.removeInvariants);
     if (input.clearInvariants) patch.clearInvariants = true;
 
     const hasPatch =

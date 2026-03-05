@@ -933,4 +933,49 @@ describe("BeadsBackend coverage: invariant emulation in notes", () => {
     const raw = JSON.parse(rawLines[0]!) as { notes?: string };
     expect(raw.notes).toBe("Persistent note");
   });
+
+  it("normalizes invariant conditions and deduplicates before persisting notes", async () => {
+    const { backend, repo } = createBackendWithRepo();
+
+    const created = await backend.create({
+      title: "Invariant normalize",
+      type: "task",
+      priority: 2,
+      labels: [],
+      notes: "Operator note",
+      invariants: [
+        { kind: "Scope", condition: " src/lib " },
+        { kind: "Scope", condition: "src/lib" },
+        { kind: "State", condition: "   " },
+      ],
+    });
+    expect(created.ok).toBe(true);
+
+    const fetched = await backend.get(created.data!.id);
+    expect(fetched.ok).toBe(true);
+    expect(fetched.data!.invariants).toEqual([{ kind: "Scope", condition: "src/lib" }]);
+
+    const addResult = await backend.update(created.data!.id, {
+      addInvariants: [
+        { kind: "Scope", condition: " src/lib " },
+        { kind: "State", condition: " must stay queued " },
+      ],
+    });
+    expect(addResult.ok).toBe(true);
+
+    const afterAdd = await backend.get(created.data!.id);
+    expect(afterAdd.ok).toBe(true);
+    expect(afterAdd.data!.invariants).toEqual([
+      { kind: "Scope", condition: "src/lib" },
+      { kind: "State", condition: "must stay queued" },
+    ]);
+
+    const rawLines = readFileSync(join(repo, ".beads", "issues.jsonl"), "utf-8")
+      .split("\n")
+      .filter(Boolean);
+    const raw = JSON.parse(rawLines[0]!) as { notes?: string };
+    expect(raw.notes).toBe(
+      "Operator note\n\n[Invariants]\nScope: src/lib\nState: must stay queued",
+    );
+  });
 });

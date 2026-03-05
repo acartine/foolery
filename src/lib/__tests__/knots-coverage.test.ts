@@ -428,8 +428,8 @@ describe("updateKnot", () => {
     await updateKnot(
       "42",
       {
-        addInvariants: ["Scope:src/lib", "", "   "],
-        removeInvariants: ["State:must remain queued", " "],
+        addInvariants: ["  Scope:src/lib  ", "", "   "],
+        removeInvariants: ["  State:must remain queued  ", " "],
         clearInvariants: true,
       },
       "/repo",

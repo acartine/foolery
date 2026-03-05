@@ -570,10 +570,12 @@ export async function updateKnot(
   }
 
   for (const inv of input.addInvariants ?? []) {
-    if (inv.trim()) args.push(`--add-invariant=${inv}`);
+    const normalized = inv.trim();
+    if (normalized) args.push(`--add-invariant=${normalized}`);
   }
   for (const inv of input.removeInvariants ?? []) {
-    if (inv.trim()) args.push(`--remove-invariant=${inv}`);
+    const normalized = inv.trim();
+    if (normalized) args.push(`--remove-invariant=${normalized}`);
   }
   if (input.clearInvariants) args.push("--clear-invariants");
 

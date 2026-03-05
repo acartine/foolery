@@ -25,7 +25,7 @@ export const invariantKindSchema = z.enum(["Scope", "State"]);
 
 export const invariantSchema = z.object({
   kind: invariantKindSchema,
-  condition: z.string().min(1),
+  condition: z.string().trim().min(1),
 });
 
 export const createBeatSchema = z.object({
