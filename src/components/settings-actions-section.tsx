@@ -124,7 +124,7 @@ export function SettingsActionsSection({
           return (
             <div
               key={def.name}
-              className="flex items-center justify-between rounded-lg border border-primary/20 bg-gradient-to-r from-primary/8 via-background/80 to-accent/10 px-3 py-2.5 transition-colors hover:border-accent/40 hover:from-primary/12 hover:to-accent/15"
+              className="flex items-center justify-between rounded-lg border border-primary/30 bg-gradient-to-r from-primary/14 via-background/85 to-accent/16 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/45 hover:from-primary/20 hover:to-accent/20 hover:shadow-sm"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon
@@ -146,7 +146,7 @@ export function SettingsActionsSection({
                 onValueChange={(v) => handleChange(def.name, v)}
                 disabled={disabled || optionIds.length === 0}
               >
-                <SelectTrigger className="w-[140px] shrink-0 border-primary/35 bg-background/85">
+                <SelectTrigger className="w-[140px] shrink-0 border-primary/45 bg-background/90">
                   <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>

@@ -70,15 +70,17 @@ export function SettingsDispatchSection({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <GitBranch className="size-4 text-accent" />
-        <h3 className="text-sm font-medium">Agent Dispatch</h3>
+        <GitBranch className="size-4 text-primary" />
+        <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
+          Agent Dispatch
+        </h3>
       </div>
       <p className="text-xs text-muted-foreground">
         Choose how agents are assigned to workflow actions. Only the active
         mode is used at runtime.
       </p>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 via-background/80 to-accent/12 p-2">
         {MODES.map((mode) => {
           const Icon = mode.icon;
           const active = dispatchMode === mode.value;
@@ -90,8 +92,8 @@ export function SettingsDispatchSection({
               className={cn(
                 "relative flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
                 active
-                  ? "border-primary/55 bg-gradient-to-br from-primary/18 via-primary/10 to-accent/18 ring-1 ring-primary/35 shadow-sm"
-                  : "border-muted/70 bg-background/70 hover:border-accent/35 hover:bg-accent/10",
+                  ? "border-primary/70 bg-gradient-to-br from-primary/28 via-primary/14 to-accent/24 ring-1 ring-primary/45 shadow-md"
+                  : "border-primary/20 bg-background/75 hover:-translate-y-0.5 hover:border-accent/45 hover:bg-gradient-to-br hover:from-primary/12 hover:via-background/85 hover:to-accent/14 hover:shadow-sm",
               )}
             >
               {active && (
@@ -102,13 +104,13 @@ export function SettingsDispatchSection({
               <Icon
                 className={cn(
                   "size-4",
-                  active ? "text-primary" : "text-muted-foreground",
+                  active ? "text-primary" : "text-accent/70",
                 )}
               />
               <span
                 className={cn(
                   "text-sm font-medium",
-                  active ? "text-foreground" : "text-muted-foreground",
+                  active ? "text-foreground" : "text-foreground/80",
                 )}
               >
                 {mode.label}

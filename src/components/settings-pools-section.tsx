@@ -66,14 +66,14 @@ const STEP_LABELS: Record<string, { label: string; description: string }> = {
 const ALL_STEPS = Object.values(WorkflowStep);
 
 const POOL_COLORS = [
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-amber-500",
   "bg-violet-500",
-  "bg-rose-500",
-  "bg-cyan-500",
-  "bg-orange-500",
-  "bg-teal-500",
+  "bg-emerald-500",
+  "bg-purple-500",
+  "bg-green-500",
+  "bg-fuchsia-500",
+  "bg-lime-500",
+  "bg-violet-400",
+  "bg-emerald-400",
 ];
 
 function formatPoolAgentLabel(
@@ -182,12 +182,12 @@ export function SettingsPoolsSection({
     return (
       <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
         <div className="flex items-center gap-2">
-          <Users className="size-4 text-accent" />
+          <Users className="size-4 text-primary" />
           <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
             Agent Pools
           </h3>
         </div>
-        <div className="rounded-lg border border-primary/35 bg-gradient-to-br from-primary/10 via-background/80 to-accent/12 p-3">
+        <div className="rounded-lg border border-primary/40 bg-gradient-to-br from-primary/16 via-background/85 to-accent/16 p-3">
           <p className="text-xs text-muted-foreground">
             Register agents first, then configure pools here.
           </p>
@@ -199,7 +199,7 @@ export function SettingsPoolsSection({
   return (
     <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
       <div className="flex items-center gap-2">
-        <Users className="size-4 text-accent" />
+        <Users className="size-4 text-primary" />
         <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
           Agent Pools
         </h3>
@@ -252,10 +252,13 @@ function StepPoolEditor({
   const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
 
   return (
-    <div className="rounded-lg border border-primary/25 bg-gradient-to-r from-primary/8 via-background/85 to-accent/10 p-3 space-y-2">
+    <div className="group relative overflow-hidden rounded-xl border border-primary/35 bg-gradient-to-r from-primary/14 via-background/88 to-accent/16 p-3 shadow-sm space-y-2">
+      <div className="pointer-events-none absolute -top-10 -right-10 h-20 w-20 rounded-full bg-primary/25 blur-xl" />
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-sm font-medium">{meta.label}</Label>
+          <Label className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
+            {meta.label}
+          </Label>
           <p className="text-[11px] text-muted-foreground">
             {meta.description}
           </p>
@@ -264,7 +267,7 @@ function StepPoolEditor({
           <Button
             variant="outline"
             size="sm"
-            className="border-accent/35 bg-accent/8 hover:bg-accent/18"
+            className="border-accent/40 bg-accent/12 hover:bg-accent/22"
             onClick={() => setAddingAgent(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -281,7 +284,7 @@ function StepPoolEditor({
         <div className="space-y-2">
           {/* Stacked horizontal bar */}
           {entries.length > 0 && totalWeight > 0 && (
-            <div className="flex h-3 w-full rounded-full overflow-hidden bg-accent/15">
+            <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/60 ring-1 ring-primary/20">
               {entries.map((entry, idx) => {
                 const ratio = entry.weight / totalWeight;
                 const color = POOL_COLORS[idx % POOL_COLORS.length];
@@ -312,7 +315,7 @@ function StepPoolEditor({
               return (
                 <div
                   key={entry.agentId}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-background/55"
                 >
                   <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0 flex items-start gap-2">
                     <span className={`mt-1 size-2.5 rounded-full shrink-0 ${color}`} />
@@ -334,7 +337,7 @@ function StepPoolEditor({
                     type="number"
                     min={0}
                     step={1}
-                    className="h-7 w-[64px] px-2 text-sm shrink-0"
+                    className="h-7 w-[64px] shrink-0 border-primary/35 bg-background/90 px-2 text-sm"
                     value={entry.weight}
                     onChange={(e) => {
                       const next = [...entries];
@@ -345,7 +348,7 @@ function StepPoolEditor({
                       onChange(next);
                     }}
                   />
-                  <div className="h-2.5 flex-1 min-w-0 rounded-full overflow-hidden bg-muted">
+                  <div className="h-2.5 flex-1 min-w-0 overflow-hidden rounded-full bg-muted/75 ring-1 ring-primary/15">
                     <div
                       className={`h-full ${color} transition-all`}
                       style={{ width: `${ratio * 100}%` }}
@@ -406,9 +409,9 @@ function AddPoolEntryForm({
   const [weight, setWeight] = useState(1);
 
   return (
-    <div className="flex items-center gap-2 pt-1">
+    <div className="flex items-center gap-2 rounded-md border border-primary/30 bg-gradient-to-r from-primary/12 via-background/85 to-accent/12 p-2">
       <Select value={selectedId} onValueChange={setSelectedId}>
-        <SelectTrigger className="h-7 w-[140px] border-primary/35 bg-background/85">
+        <SelectTrigger className="h-7 w-[140px] border-primary/40 bg-background/90">
           <SelectValue placeholder="select agent" />
         </SelectTrigger>
         <SelectContent>
@@ -439,7 +442,7 @@ function AddPoolEntryForm({
         type="number"
         min={1}
         step={1}
-        className="h-7 w-[70px] px-2 text-sm"
+        className="h-7 w-[70px] border-primary/35 bg-background/90 px-2 text-sm"
         value={weight}
         onChange={(e) => setWeight(Math.max(1, Number(e.target.value) || 1))}
       />
