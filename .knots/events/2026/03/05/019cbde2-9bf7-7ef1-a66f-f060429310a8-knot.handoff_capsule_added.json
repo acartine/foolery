@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbde2-9bf7-7ef1-a66f-f060429310a8",
+  "occurred_at": "2026-03-05T12:04:30.839482Z",
+  "knot_id": "foolery-97c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added forwardTransitionTarget() to src/lib/workflows.ts. Function takes (currentState, workflow) and returns the single forward transition target by filtering out rollback transitions via isRollbackTransition(). Tests in src/lib/__tests__/workflow-transition-helpers.test.ts cover all cases: queued-to-active, active-to-next-queue, rollback exclusion, terminal states, missing transitions, and builtin profiles. All 1882 tests pass, lint clean, tsc clean.",
+    "datetime": "2026-03-05T12:04:30.839482Z",
+    "entry_id": "019cbde2-9bf7-7ef1-a66f-f050ee65783a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

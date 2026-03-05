@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbde2-f3dc-78b0-8e06-b0a7a8b2d146",
+  "occurred_at": "2026-03-05T12:04:53.340125Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-97c5",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Phase 1: Workflow transition helpers in workflows.ts",
+    "updated_at": "2026-03-05T12:04:53.340125Z"
+  }
+}

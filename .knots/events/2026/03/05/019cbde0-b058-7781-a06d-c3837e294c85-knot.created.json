@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbde0-b058-7781-a06d-c3837e294c85",
+  "occurred_at": "2026-03-05T12:02:24.984602Z",
+  "knot_id": "foolery-97c5",
+  "type": "knot.created",
+  "data": {
+    "body": "Add two exported utility functions to src/lib/workflows.ts: forwardTransitionTarget(currentState, workflow) returns the single forward (non-rollback) transition target given a state and MemoryWorkflowDescriptor.",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "title": "Phase 1: Workflow transition helpers in workflows.ts"
+  }
+}
