@@ -147,7 +147,7 @@ export function SettingsAgentsSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Bot className="size-4 text-muted-foreground" />
+          <Bot className="size-4 text-primary" />
           <h3 className="text-sm font-medium">Agents</h3>
         </div>
         <div className="flex items-center gap-2">
@@ -690,7 +690,7 @@ function OpenRouterAgentPanel({
     <div className="rounded-md border p-3 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Globe className="size-4 text-muted-foreground" />
+          <Globe className="size-4 text-accent" />
           <span className="text-xs font-medium">Add from OpenRouter</span>
         </div>
         <Button variant="ghost" size="sm" onClick={onClose}>

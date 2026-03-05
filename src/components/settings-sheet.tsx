@@ -133,7 +133,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
+          <SheetTitle className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Settings</SheetTitle>
           <SheetDescription>
             Configuration stored in ~/.config/foolery/settings.toml
           </SheetDescription>

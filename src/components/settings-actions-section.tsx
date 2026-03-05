@@ -119,7 +119,7 @@ export function SettingsActionsSection({
               className="flex items-center justify-between"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Icon className="size-4 text-muted-foreground shrink-0" />
+                <Icon className="size-4 text-primary/70 shrink-0" />
                 <div className="min-w-0">
                   <Label className="text-sm">{def.label}</Label>
                   <p className="text-[11px] text-muted-foreground">
