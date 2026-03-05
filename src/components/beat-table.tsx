@@ -830,12 +830,12 @@ function useBeatTableKeyboard({
       handleActionKeys(e, rows, currentIndex, {
         setFocusedRowId, handleUpdateBeat, initiateClose,
         onShipBeat, shippingByBeatId, parentRollingBeatIds,
-        activeRepo, registeredRepos, updateUrl, setExpandedIds,
+        setExpandedIds,
       });
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, activeRepo, registeredRepos, updateUrl, tableContainerRef, setNotesBeat, setNotesDialogOpen, setExpandedIds, setFocusedRowId]);
+  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, tableContainerRef, setNotesBeat, setNotesDialogOpen, setExpandedIds, setFocusedRowId]);
 }
 
 /* --- Keyboard helper functions ------------------------------------------- */
@@ -927,9 +927,6 @@ function handleActionKeys(
     onShipBeat?: (beat: Beat) => void;
     shippingByBeatId: Record<string, string>;
     parentRollingBeatIds: Set<string>;
-    activeRepo: string | null;
-    registeredRepos: { path: string }[];
-    updateUrl: ReturnType<typeof useUpdateUrl>;
     setExpandedIds: (fn: (prev: Set<string>) => Set<string>) => void;
   },
 ): void {
@@ -942,13 +939,6 @@ function handleActionKeys(
     if (isInheritedRolling) return;
     e.preventDefault();
     ctx.onShipBeat(beat);
-  } else if (e.key === "R" && e.shiftKey && (e.metaKey || e.ctrlKey)) {
-    e.preventDefault();
-    if (ctx.registeredRepos.length === 0) return;
-    const cycle = ctx.registeredRepos.map((r) => r.path);
-    const currentIdx = ctx.activeRepo ? cycle.indexOf(ctx.activeRepo) : -1;
-    const prevIdx = currentIdx <= 0 ? cycle.length - 1 : currentIdx - 1;
-    ctx.updateUrl({ repo: cycle[prevIdx] });
   } else if (e.key === "C" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
     if (currentIndex < 0) return;
     const beat = rows[currentIndex].original;
@@ -959,13 +949,6 @@ function handleActionKeys(
     if (rows[nextFocusIdx] && rows[nextFocusIdx].original.id !== beat.id) {
       ctx.setFocusedRowId(rows[nextFocusIdx].original.id);
     }
-  } else if (e.key === "R" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
-    e.preventDefault();
-    if (ctx.registeredRepos.length === 0) return;
-    const cycle = ctx.registeredRepos.map((r) => r.path);
-    const currentIdx = ctx.activeRepo ? cycle.indexOf(ctx.activeRepo) : -1;
-    const nextIdx = currentIdx < cycle.length - 1 ? currentIdx + 1 : 0;
-    ctx.updateUrl({ repo: cycle[nextIdx] });
   } else if (e.key === "<" && e.shiftKey) {
     if (currentIndex < 0) return;
     const hb = rows[currentIndex].original as unknown as { _hasChildren?: boolean; id: string };
