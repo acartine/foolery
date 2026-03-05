@@ -33,4 +33,17 @@ describe("beats page layout", () => {
     expect(shiftHHandler).not.toContain('beatsView !== "queues"');
     expect(shiftHHandler).not.toContain('beatsView !== "active"');
   });
+
+  it("binds Shift+R repo cycling globally for beats screens", () => {
+    const repoCycleHandler = appHeaderSource.match(
+      /\/\/ Shift\+R cycles repos forward; Cmd\/Ctrl\+Shift\+R cycles backward \(all Beats screens\)\.[\s\S]*?useEffect\(\(\) => \{[\s\S]*?\}, \[isBeatsRoute, activeRepo, registeredRepos, updateUrl\]\);/,
+    )?.[0];
+
+    expect(repoCycleHandler).toBeTruthy();
+    expect(repoCycleHandler).toContain("if (!isBeatsRoute) return;");
+    expect(repoCycleHandler).toContain("getRepoCycleDirection(e)");
+    expect(repoCycleHandler).toContain("cycleRepoPath(repos, activeRepo, direction)");
+    expect(repoCycleHandler).not.toContain('beatsView !== "queues"');
+    expect(repoCycleHandler).not.toContain('beatsView !== "active"');
+  });
 });

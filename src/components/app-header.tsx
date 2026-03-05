@@ -26,6 +26,8 @@ import { useUpdateUrl } from "@/hooks/use-update-url";
 import { useVerificationCount } from "@/hooks/use-verification-count";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import {
+  cycleRepoPath,
+  getRepoCycleDirection,
   isHotkeyHelpToggleKey,
   readHotkeyHelpOpen,
   toggleHotkeyHelpOpen,
@@ -249,23 +251,16 @@ export function AppHeader() {
   useEffect(() => {
     if (!isBeatsRoute) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "R" || !e.shiftKey) return;
+      const direction = getRepoCycleDirection(e);
+      if (!direction) return;
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
-      const repos = registeredRepos.map((r) => r.path);
-      if (repos.length === 0) return;
       e.preventDefault();
-      const currentIdx = activeRepo ? repos.indexOf(activeRepo) : -1;
-      if (e.metaKey || e.ctrlKey) {
-        // Reverse: wrap from first to last
-        const prevIdx = currentIdx <= 0 ? repos.length - 1 : currentIdx - 1;
-        updateUrl({ repo: repos[prevIdx] });
-      } else {
-        // Forward: wrap from last to first
-        const nextIdx = currentIdx >= repos.length - 1 ? 0 : currentIdx + 1;
-        updateUrl({ repo: repos[nextIdx] });
-      }
+      const repos = registeredRepos.map((r) => r.path);
+      const nextRepo = cycleRepoPath(repos, activeRepo, direction);
+      if (!nextRepo || nextRepo === activeRepo) return;
+      updateUrl({ repo: nextRepo });
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
