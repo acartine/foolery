@@ -85,6 +85,12 @@ function formatPoolAgentLabel(
   return `${base} (${model})`;
 }
 
+function formatPoolPercent(ratio: number): string {
+  const percent = Number.isFinite(ratio) && ratio > 0 ? ratio * 100 : 0;
+  const rounded = Math.round(percent * 10) / 10;
+  return Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1);
+}
+
 export function SettingsPoolsSection({
   pools,
   agents,
@@ -282,7 +288,7 @@ function StepPoolEditor({
                     key={entry.agentId}
                     className={`h-full ${color} transition-all`}
                     style={{ width: `${ratio * 100}%` }}
-                    title={`${formatPoolAgentLabel(entry.agentId, agents[entry.agentId])} — ${Math.round(ratio * 100)}%`}
+                    title={`${formatPoolAgentLabel(entry.agentId, agents[entry.agentId])} — w${entry.weight} · ${formatPoolPercent(ratio)}%`}
                   />
                 );
               })}
@@ -293,7 +299,7 @@ function StepPoolEditor({
           <div className="space-y-1">
             {entries.map((entry, idx) => {
               const ratio = totalWeight > 0 ? entry.weight / totalWeight : 0;
-              const pct = Math.round(ratio * 100);
+              const pct = formatPoolPercent(ratio);
               const agent = agents[entry.agentId];
               const pricing = resolveOpenRouterPricing(
                 openRouterModels,
@@ -306,19 +312,21 @@ function StepPoolEditor({
                   key={entry.agentId}
                   className="flex items-center gap-2"
                 >
-                  <span className={`size-2.5 rounded-full shrink-0 ${color}`} />
-                  <div className="min-w-0 flex-1">
-                    <span className="text-sm block truncate" title={label}>
-                      {label}
-                    </span>
-                    {pricing && (
-                      <span
-                        className="text-[10px] text-muted-foreground font-mono"
-                        title={pricing.modelId}
-                      >
-                        P {pricing.prompt} / C {pricing.completion}
+                  <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0 flex items-start gap-2">
+                    <span className={`mt-1 size-2.5 rounded-full shrink-0 ${color}`} />
+                    <div className="min-w-0">
+                      <span className="text-sm block truncate" title={label}>
+                        {label}
                       </span>
-                    )}
+                      {pricing && (
+                        <span
+                          className="text-[10px] text-muted-foreground font-mono"
+                          title={pricing.modelId}
+                        >
+                          P {pricing.prompt} / C {pricing.completion}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Input
                     type="number"
@@ -335,8 +343,14 @@ function StepPoolEditor({
                       onChange(next);
                     }}
                   />
-                  <span className="text-xs text-muted-foreground w-10 text-right tabular-nums shrink-0">
-                    {pct}%
+                  <div className="h-2.5 flex-1 min-w-0 rounded-full overflow-hidden bg-muted">
+                    <div
+                      className={`h-full ${color} transition-all`}
+                      style={{ width: `${ratio * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground w-[88px] text-right tabular-nums shrink-0">
+                    w{entry.weight} · {pct}%
                   </span>
                   <Button
                     variant="ghost"
