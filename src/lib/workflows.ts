@@ -781,6 +781,33 @@ export function isRollbackTransition(from: string, to: string): boolean {
   return toIndex < fromIndex;
 }
 
+// ── Transition helpers ─────────────────────────────────────────
+
+/**
+ * Return the single forward (non-rollback) transition target for a given state.
+ *
+ * Searches `workflow.transitions` for edges originating at `currentState`,
+ * filters out rollback transitions (where the target is earlier in the
+ * pipeline than the source) using {@link isRollbackTransition}, and returns
+ * the first remaining target.  Returns `null` when no forward transition
+ * exists (e.g. terminal states or missing transition data).
+ */
+export function forwardTransitionTarget(
+  currentState: string,
+  workflow: MemoryWorkflowDescriptor,
+): string | null {
+  const transitions = workflow.transitions;
+  if (!transitions) return null;
+
+  for (const { from, to } of transitions) {
+    if (from !== currentState) continue;
+    if (isRollbackTransition(from, to)) continue;
+    return to;
+  }
+
+  return null;
+}
+
 // ── Deprecated aliases (use backend-agnostic names above) ──────
 
 /** @deprecated Use DEFAULT_PROFILE_ID */
