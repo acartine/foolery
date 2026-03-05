@@ -37,7 +37,6 @@ import {
 import { ArrowUpDown, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { HotkeyHelp } from "@/components/hotkey-help";
 import { NotesDialog } from "@/components/notes-dialog";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
@@ -116,18 +115,10 @@ function InlineSummary({ beat }: { beat: Beat }) {
   );
 }
 
-const HOTKEY_HELP_KEY = "foolery-hotkey-help";
 type ColumnMetaSizing = {
   widthPercent?: string;
   minWidthPx?: number;
 };
-
-function getStoredHotkeyHelp(): boolean {
-  if (typeof window === "undefined") return true;
-  const stored = localStorage.getItem(HOTKEY_HELP_KEY);
-  if (stored === null) return true;
-  return stored !== "false";
-}
 
 const EXPANDED_PARENTS_KEY = "foolery:expandedParents";
 
@@ -187,7 +178,6 @@ export function BeatTable({
   const [userSorted, setUserSorted] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(getStoredHotkeyHelp);
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [notesBeat, setNotesBeat] = useState<Beat | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(getStoredExpandedIds);
@@ -535,8 +525,6 @@ export function BeatTable({
     onShipBeat,
     shippingByBeatId,
     parentRollingBeatIds,
-    hotkeyHelpOpen,
-    setHotkeyHelpOpen,
     setNotesBeat,
     setNotesDialogOpen,
     activeRepo,
@@ -567,7 +555,6 @@ export function BeatTable({
         />
       )}
 
-      <HotkeyHelp open={hotkeyHelpOpen} />
       <NotesDialog
         beat={notesBeat}
         open={notesDialogOpen}
@@ -799,8 +786,6 @@ function useBeatTableKeyboard({
   onShipBeat,
   shippingByBeatId,
   parentRollingBeatIds,
-  hotkeyHelpOpen,
-  setHotkeyHelpOpen,
   setNotesBeat,
   setNotesDialogOpen,
   activeRepo,
@@ -817,8 +802,6 @@ function useBeatTableKeyboard({
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId: Record<string, string>;
   parentRollingBeatIds: Set<string>;
-  hotkeyHelpOpen: boolean;
-  setHotkeyHelpOpen: (fn: (prev: boolean) => boolean) => void;
   setNotesBeat: (beat: Beat | null) => void;
   setNotesDialogOpen: (open: boolean) => void;
   activeRepo: string | null;
@@ -835,7 +818,6 @@ function useBeatTableKeyboard({
       const container = tableContainerRef.current;
       if (container && container.offsetParent === null) return;
 
-      if (handleHotkeyToggle(e, setHotkeyHelpOpen)) return;
       if (handleLabelHotkey(e)) return;
       if (handleNotesHotkey(e, table, focusedRowId, setNotesBeat, setNotesDialogOpen)) return;
 
@@ -853,26 +835,10 @@ function useBeatTableKeyboard({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, hotkeyHelpOpen, activeRepo, registeredRepos, updateUrl, tableContainerRef, setHotkeyHelpOpen, setNotesBeat, setNotesDialogOpen, setExpandedIds, setFocusedRowId]);
+  }, [focusedRowId, table, handleUpdateBeat, initiateClose, onShipBeat, shippingByBeatId, parentRollingBeatIds, activeRepo, registeredRepos, updateUrl, tableContainerRef, setNotesBeat, setNotesDialogOpen, setExpandedIds, setFocusedRowId]);
 }
 
 /* --- Keyboard helper functions ------------------------------------------- */
-
-function handleHotkeyToggle(
-  e: KeyboardEvent,
-  setHotkeyHelpOpen: (fn: (prev: boolean) => boolean) => void,
-): boolean {
-  if (e.key.toLowerCase() === "h" && e.shiftKey && !e.metaKey && !e.ctrlKey) {
-    e.preventDefault();
-    setHotkeyHelpOpen((prev) => {
-      const next = !prev;
-      localStorage.setItem(HOTKEY_HELP_KEY, String(next));
-      return next;
-    });
-    return true;
-  }
-  return false;
-}
 
 function handleLabelHotkey(e: KeyboardEvent): boolean {
   if (e.key === "L" && e.shiftKey) {
