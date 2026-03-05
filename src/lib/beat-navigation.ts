@@ -5,6 +5,12 @@ export function stripBeatPrefix(beatId: string): string {
   return beatId.replace(BEAT_PREFIX_PATTERN, "");
 }
 
+/** Extract the repo-name prefix from a beat ID (e.g. "foolery-xmvb" -> "foolery"). */
+export function extractBeatPrefix(beatId: string): string | null {
+  const match = beatId.match(/^([^-]+)-/);
+  return match ? match[1] : null;
+}
+
 interface BuildBeatFocusHrefOptions {
   detailRepo?: string | null;
 }

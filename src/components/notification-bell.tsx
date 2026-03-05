@@ -9,13 +9,14 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
+import { buildBeatFocusHref, extractBeatPrefix } from "@/lib/beat-navigation";
 import { markAllNotificationsReadAndClose } from "@/components/notification-bell-actions";
 import {
   useNotificationStore,
   selectUnreadCount,
   type Notification,
 } from "@/stores/notification-store";
+import { useAppStore } from "@/stores/app-store";
 
 export function NotificationBell() {
   const router = useRouter();
@@ -24,7 +25,16 @@ export function NotificationBell() {
   const unreadCount = useNotificationStore(selectUnreadCount);
   const notifications = useNotificationStore((s) => s.notifications);
   const markAllRead = useNotificationStore((s) => s.markAllRead);
+  const registeredRepos = useAppStore((s) => s.registeredRepos);
+  const setActiveRepo = useAppStore((s) => s.setActiveRepo);
   const focusBeat = (beatId: string) => {
+    const prefix = extractBeatPrefix(beatId);
+    if (prefix) {
+      const repo = registeredRepos.find((r) => r.name === prefix);
+      if (repo) {
+        setActiveRepo(repo.path);
+      }
+    }
     router.push(buildBeatFocusHref(beatId, searchParams.toString()));
   };
 
@@ -102,7 +112,7 @@ function NotificationList({
                   title={`Focus ${beatId}`}
                   onClick={() => onFocusBeat(beatId)}
                 >
-                  {stripBeatPrefix(beatId)}
+                  {beatId}
                 </button>
               ) : null}
               <time className="mt-0.5 block text-[10px] text-muted-foreground">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
+import { buildBeatFocusHref, stripBeatPrefix, extractBeatPrefix } from "@/lib/beat-navigation";
 
 describe("stripBeatPrefix", () => {
   it("removes the leading repo prefix from beat id", () => {
@@ -8,6 +8,20 @@ describe("stripBeatPrefix", () => {
 
   it("returns original value when no hyphen exists", () => {
     expect(stripBeatPrefix("xmvb")).toBe("xmvb");
+  });
+});
+
+describe("extractBeatPrefix", () => {
+  it("extracts the repo prefix from a beat id", () => {
+    expect(extractBeatPrefix("foolery-xmvb")).toBe("foolery");
+  });
+
+  it("returns null when no hyphen exists", () => {
+    expect(extractBeatPrefix("xmvb")).toBeNull();
+  });
+
+  it("extracts prefix from multi-hyphen ids", () => {
+    expect(extractBeatPrefix("my-project-abc")).toBe("my");
   });
 });
 
