@@ -150,12 +150,15 @@ export function SettingsAgentsSection({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Bot className="size-4 text-primary" />
-          <h3 className="text-sm font-medium">Agents</h3>
+          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
+            Agents
+          </h3>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/40 bg-primary/10 hover:bg-primary/18"
             onClick={handleScan}
             disabled={scanning}
           >
@@ -165,6 +168,7 @@ export function SettingsAgentsSection({
           <Button
             variant="outline"
             size="sm"
+            className="border-accent/40 bg-accent/10 hover:bg-accent/18"
             onClick={() => setShowOpenRouterPanel(!showOpenRouterPanel)}
           >
             <Globe className="size-3.5 mr-1" />
@@ -173,6 +177,7 @@ export function SettingsAgentsSection({
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/40 bg-background/85 hover:border-accent/40 hover:bg-accent/12"
             onClick={() => setShowAddForm(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -216,10 +221,12 @@ export function SettingsAgentsSection({
       )}
 
       {agentEntries.length === 0 && Object.keys(openrouter.agents).length === 0 ? (
-        <p className="text-xs text-muted-foreground">
-          No agents registered. Use Scan to detect installed CLIs, add
-          manually, or add from OpenRouter.
-        </p>
+        <div className="rounded-lg border border-primary/35 bg-gradient-to-r from-primary/10 via-background/80 to-accent/12 p-3">
+          <p className="text-xs text-muted-foreground">
+            No agents registered. Use Scan to detect installed CLIs, add
+            manually, or add from OpenRouter.
+          </p>
+        </div>
       ) : (
         <div className="space-y-2">
           {agentEntries.map(([id, agent]) => (
@@ -286,7 +293,7 @@ function ScannedAgentsList({
   );
 
   return (
-    <div className="rounded-md border p-3 space-y-2">
+    <div className="rounded-lg border border-accent/35 bg-gradient-to-r from-accent/10 via-background/80 to-primary/10 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           Scan Results
@@ -376,7 +383,7 @@ function AddAgentForm({
   const [label, setLabel] = useState("");
 
   return (
-    <div className="rounded-md border p-3 space-y-3">
+    <div className="rounded-lg border border-primary/30 bg-gradient-to-r from-primary/10 via-background/85 to-accent/10 p-3 space-y-3">
       <span className="text-xs font-medium text-muted-foreground">
         New Agent
       </span>
@@ -466,7 +473,7 @@ function AgentRow({
   }
 
   return (
-    <div className="flex items-center justify-between rounded-md border px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg border border-primary/25 bg-gradient-to-r from-primary/8 via-background/85 to-accent/10 px-3 py-2 transition-colors hover:border-accent/40">
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-sm font-medium truncate">
           {agent.label ?? id}
@@ -506,7 +513,7 @@ function AgentEditRow({
   const [label, setLabel] = useState(agent.label ?? "");
 
   return (
-    <div className="rounded-md border p-3 space-y-2">
+    <div className="rounded-lg border border-primary/30 bg-gradient-to-r from-primary/10 via-background/85 to-accent/10 p-3 space-y-2">
       <div className="grid grid-cols-1 gap-1.5">
         <div className="space-y-0.5">
           <Label className="text-xs">Command</Label>
@@ -570,7 +577,7 @@ function OpenRouterAgentRow({
 }) {
   const displayLabel = formatOpenRouterAgentLabel(agentKey, label, model);
   return (
-    <div className="flex items-center justify-between rounded-md border px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg border border-accent/35 bg-gradient-to-r from-accent/10 via-background/80 to-primary/10 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
         <Globe className="size-3.5 text-muted-foreground shrink-0" />
         <span className="text-sm font-medium truncate">{displayLabel}</span>
@@ -706,7 +713,7 @@ function OpenRouterAgentPanel({
   );
 
   return (
-    <div className="rounded-md border p-3 space-y-3">
+    <div className="rounded-lg border border-accent/35 bg-gradient-to-br from-accent/10 via-background/85 to-primary/10 p-3 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Globe className="size-4 text-accent" />
@@ -787,9 +794,9 @@ function OpenRouterAgentPanel({
               onChange={(e) => setModelFilter(e.target.value)}
               className="h-7 text-xs"
             />
-            <div className="max-h-[200px] overflow-y-auto rounded-md border">
+            <div className="max-h-[200px] overflow-y-auto rounded-lg border border-primary/25 bg-background/80">
               <table className="w-full text-[11px]">
-                <thead className="sticky top-0 bg-background border-b">
+                <thead className="sticky top-0 border-b bg-gradient-to-r from-primary/8 via-background to-accent/8">
                   <tr className="text-left text-muted-foreground">
                     <th className="px-2 py-1.5 font-medium w-6"></th>
                     <th className="px-2 py-1.5 font-medium">Model</th>
@@ -812,8 +819,8 @@ function OpenRouterAgentPanel({
                           alreadyAdded
                             ? "opacity-50"
                             : isSelected
-                            ? "bg-primary/10 hover:bg-primary/15"
-                            : "hover:bg-muted/50"
+                            ? "bg-gradient-to-r from-primary/14 to-accent/12 hover:from-primary/18 hover:to-accent/16"
+                            : "hover:bg-accent/10"
                         }`}
                         onClick={() => !alreadyAdded && toggleModel(model.id)}
                         onKeyDown={(e) => {

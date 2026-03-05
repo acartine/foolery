@@ -88,14 +88,14 @@ export function SettingsDispatchSection({
               type="button"
               onClick={() => handleModeChange(mode.value)}
               className={cn(
-                "relative flex flex-col items-start gap-1 rounded-md border p-3 text-left transition-colors",
+                "relative flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
                 active
-                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                  : "border-muted hover:border-muted-foreground/25 hover:bg-muted/50",
+                  ? "border-primary/55 bg-gradient-to-br from-primary/18 via-primary/10 to-accent/18 ring-1 ring-primary/35 shadow-sm"
+                  : "border-muted/70 bg-background/70 hover:border-accent/35 hover:bg-accent/10",
               )}
             >
               {active && (
-                <div className="absolute top-2 right-2 flex size-4 items-center justify-center rounded-full bg-primary">
+                <div className="absolute top-2 right-2 flex size-4 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent shadow-sm">
                   <Check className="size-2.5 text-primary-foreground" />
                 </div>
               )}

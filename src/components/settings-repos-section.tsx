@@ -77,7 +77,12 @@ export function SettingsReposSection() {
           <FolderOpen className="size-4 text-accent" />
           <h3 className="text-sm font-medium">Repositories</h3>
         </div>
-        <Button size="sm" variant="outline" onClick={() => setBrowseOpen(true)}>
+        <Button
+          size="sm"
+          variant="outline"
+          className="border-accent/45 bg-accent/8 hover:bg-accent/18"
+          onClick={() => setBrowseOpen(true)}
+        >
           <Plus className="mr-1 h-3.5 w-3.5" />
           Add
         </Button>
@@ -106,14 +111,18 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
     .join(", ");
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-primary/30 py-8 text-center">
-      <Database className="size-8 text-primary/60 mb-3" />
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-primary/45 bg-gradient-to-br from-primary/10 via-background/85 to-accent/12 py-8 text-center shadow-sm">
+      <Database className="mb-3 size-8 text-primary/75" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
         Add a repository with a supported memory manager ({supported}) to get
         started.
       </p>
-      <Button size="sm" onClick={onBrowse}>
+      <Button
+        size="sm"
+        className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
+        onClick={onBrowse}
+      >
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
         Browse
       </Button>
@@ -132,7 +141,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
       {repos.map((repo) => (
         <div
           key={repo.path}
-          className="flex items-center justify-between rounded-md border px-3 py-2"
+          className="flex items-center justify-between rounded-lg border border-primary/20 bg-gradient-to-r from-primary/8 via-background/85 to-accent/10 px-3 py-2 transition-colors hover:border-accent/45 hover:from-primary/12 hover:to-accent/14"
         >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
