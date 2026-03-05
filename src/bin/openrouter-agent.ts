@@ -172,7 +172,7 @@ async function streamFromOpenRouter(
   await processStream(res.body, model);
 }
 
-async function processStream(
+export async function processStream(
   body: ReadableStream<Uint8Array>,
   model: string,
 ): Promise<void> {
@@ -180,6 +180,16 @@ async function processStream(
   const decoder = new TextDecoder();
   let buffer = "";
   let isFirst = true;
+  const writeEvents = (events: StreamEvent[]) => {
+    for (const ev of events) {
+      process.stdout.write(JSON.stringify(ev) + "\n");
+    }
+  };
+  const emitStartEventsIfNeeded = () => {
+    if (!isFirst) return;
+    writeEvents([buildMessageStart(model), buildContentBlockStart()]);
+    isFirst = false;
+  };
 
   try {
     for (;;) {
@@ -197,14 +207,11 @@ async function processStream(
 
         const result = translateChunk(payload, isFirst, model);
         if (result.done) {
-          for (const ev of buildEndEvents()) {
-            process.stdout.write(JSON.stringify(ev) + "\n");
-          }
+          emitStartEventsIfNeeded();
+          writeEvents(buildEndEvents());
           return;
         }
-        for (const ev of result.events) {
-          process.stdout.write(JSON.stringify(ev) + "\n");
-        }
+        writeEvents(result.events);
         if (isFirst && result.events.length > 0) isFirst = false;
       }
     }
@@ -213,9 +220,8 @@ async function processStream(
   }
 
   // Stream ended without [DONE] — emit closing events anyway.
-  for (const ev of buildEndEvents()) {
-    process.stdout.write(JSON.stringify(ev) + "\n");
-  }
+  emitStartEventsIfNeeded();
+  writeEvents(buildEndEvents());
 }
 
 // ---- Entry point ----------------------------------------------------------

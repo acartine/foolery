@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   buildContentBlockDelta,
@@ -9,6 +9,7 @@ import {
   buildMessageStop,
   buildMessageStart,
   parseArgs,
+  processStream,
   translateChunk,
 } from "../openrouter-agent";
 
@@ -163,5 +164,48 @@ describe("stream event builders", () => {
     expect(events[0].type).toBe("content_block_stop");
     expect(events[1].type).toBe("message_delta");
     expect(events[2].type).toBe("message_stop");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// processStream
+// ---------------------------------------------------------------------------
+
+describe("processStream", () => {
+  function makeStream(chunks: string[]): ReadableStream<Uint8Array> {
+    const encoder = new TextEncoder();
+    return new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const chunk of chunks) {
+          controller.enqueue(encoder.encode(chunk));
+        }
+        controller.close();
+      },
+    });
+  }
+
+  it("emits start events before end events when [DONE] arrives first", async () => {
+    const lines: string[] = [];
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(((line: string | Uint8Array) => {
+        lines.push(typeof line === "string" ? line : new TextDecoder().decode(line));
+        return true;
+      }) as typeof process.stdout.write);
+
+    try {
+      await processStream(makeStream(["data: [DONE]\n\n"]), "model/test");
+    } finally {
+      writeSpy.mockRestore();
+    }
+
+    const events = lines.map((line) => JSON.parse(line.trim()));
+    expect(events.map((event) => event.type)).toEqual([
+      "message_start",
+      "content_block_start",
+      "content_block_stop",
+      "message_delta",
+      "message_stop",
+    ]);
   });
 });
