@@ -25,6 +25,39 @@ const mockCloseBeat = vi.fn<(...args: any[]) => Promise<BdResult<void>>>();
 const mockListDeps = vi.fn<(...args: any[]) => Promise<BdResult<BeatDependency[]>>>();
 const mockAddDep = vi.fn<(...args: any[]) => Promise<BdResult<void>>>();
 const mockRemoveDep = vi.fn<(...args: any[]) => Promise<BdResult<void>>>();
+const {
+  mockBeadsBuildTakePrompt,
+  mockBeadsBuildPollPrompt,
+  mockBeadsBackendCtor,
+  MockBeadsBackend,
+} = vi.hoisted(() => {
+  const mockBeadsBuildTakePrompt = vi.fn<
+    (...args: any[]) => Promise<unknown>
+  >();
+  const mockBeadsBuildPollPrompt = vi.fn<
+    (...args: any[]) => Promise<unknown>
+  >();
+  const mockBeadsBackendCtor = vi.fn();
+  class MockBeadsBackend {
+    constructor(...args: unknown[]) {
+      mockBeadsBackendCtor(...args);
+    }
+
+    buildTakePrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildTakePrompt(...(args as []));
+    }
+
+    buildPollPrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildPollPrompt(...(args as []));
+    }
+  }
+  return {
+    mockBeadsBuildTakePrompt,
+    mockBeadsBuildPollPrompt,
+    mockBeadsBackendCtor,
+    MockBeadsBackend,
+  };
+});
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 vi.mock("@/lib/bd", () => ({
@@ -40,6 +73,10 @@ vi.mock("@/lib/bd", () => ({
   listDeps: (...args: unknown[]) => mockListDeps(...(args as [])),
   addDep: (...args: unknown[]) => mockAddDep(...(args as [])),
   removeDep: (...args: unknown[]) => mockRemoveDep(...(args as [])),
+}));
+
+vi.mock("@/lib/backends/beads-backend", () => ({
+  BeadsBackend: MockBeadsBackend,
 }));
 
 // ---------------------------------------------------------------------------
@@ -87,6 +124,9 @@ function resetAllMocks(): void {
   mockListDeps.mockReset();
   mockAddDep.mockReset();
   mockRemoveDep.mockReset();
+  mockBeadsBuildTakePrompt.mockReset();
+  mockBeadsBuildPollPrompt.mockReset();
+  mockBeadsBackendCtor.mockClear();
 }
 
 // ---------------------------------------------------------------------------
@@ -98,6 +138,14 @@ describe("BdCliBackend", () => {
 
   beforeEach(() => {
     resetAllMocks();
+    mockBeadsBuildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated take", claimed: false },
+    });
+    mockBeadsBuildPollPrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated poll", claimedId: "beat-1" },
+    });
     backend = new BdCliBackend();
   });
 
@@ -425,65 +473,55 @@ describe("BdCliBackend", () => {
   // ── buildTakePrompt ───────────────────────────────────────
 
   describe("buildTakePrompt", () => {
-    it("returns a prompt with beat ID", async () => {
-      const result = await backend.buildTakePrompt("beat-42");
-      expect(result.ok).toBe(true);
-      expect(result.data?.prompt).toContain("Beat ID: beat-42");
-      expect(result.data?.prompt).toContain('bd show "beat-42"');
-      expect(result.data?.claimed).toBe(false);
-    });
-
-    it("returns parent prompt with child IDs when isParent", async () => {
-      const result = await backend.buildTakePrompt("parent-1", {
+    it("delegates to BeadsBackend with options and repoPath", async () => {
+      const delegated = {
+        ok: true as const,
+        data: { prompt: "delegated take prompt", claimed: true },
+      };
+      mockBeadsBuildTakePrompt.mockResolvedValue(delegated);
+      const opts = {
         isParent: true,
         childBeatIds: ["child-a", "child-b"],
-      });
-      expect(result.ok).toBe(true);
-      expect(result.data?.prompt).toContain("Parent beat ID: parent-1");
-      expect(result.data?.prompt).toContain("child-a");
-      expect(result.data?.prompt).toContain("child-b");
-      expect(result.data?.prompt).toContain("Open child beat IDs:");
-      expect(result.data?.claimed).toBe(false);
+      };
+
+      const result = await backend.buildTakePrompt("parent-1", opts, "/repo");
+
+      expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+      expect(mockBeadsBackendCtor).toHaveBeenCalledWith("/repo");
+      expect(mockBeadsBuildTakePrompt).toHaveBeenCalledWith(
+        "parent-1",
+        opts,
+        "/repo",
+      );
+      expect(result).toEqual(delegated);
     });
 
-    it("returns non-parent prompt when isParent but no children", async () => {
-      const result = await backend.buildTakePrompt("beat-5", {
-        isParent: true,
-        childBeatIds: [],
-      });
-      expect(result.ok).toBe(true);
-      expect(result.data?.prompt).toContain("Beat ID: beat-5");
-      expect(result.data?.prompt).not.toContain("Parent beat ID:");
-    });
+    it("reuses one lazy BeadsBackend instance across prompt calls", async () => {
+      await backend.buildTakePrompt("beat-1");
+      await backend.buildPollPrompt();
 
-    it("returns non-parent prompt when isParent is false", async () => {
-      const result = await backend.buildTakePrompt("beat-5", {
-        isParent: false,
-        childBeatIds: ["child-1"],
-      });
-      expect(result.ok).toBe(true);
-      expect(result.data?.prompt).toContain("Beat ID: beat-5");
-      expect(result.data?.prompt).not.toContain("Parent beat ID:");
+      expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
     });
   });
 
   // ── buildPollPrompt ───────────────────────────────────────
 
   describe("buildPollPrompt", () => {
-    it("returns UNAVAILABLE error", async () => {
-      const result = await backend.buildPollPrompt();
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("UNAVAILABLE");
-      expect(result.error?.retryable).toBe(false);
-      expect(result.error?.message).toContain("does not support poll-based");
-    });
-
-    it("returns UNAVAILABLE even with options", async () => {
-      const result = await backend.buildPollPrompt({
+    it("delegates and returns BeadsBackend poll prompt result", async () => {
+      const delegated = {
+        ok: true as const,
+        data: { prompt: "delegated poll prompt", claimedId: "beat-42" },
+      };
+      mockBeadsBuildPollPrompt.mockResolvedValue(delegated);
+      const opts = {
         agentName: "test-agent",
-      });
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("UNAVAILABLE");
+      };
+      const result = await backend.buildPollPrompt(opts, "/repo");
+
+      expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+      expect(mockBeadsBackendCtor).toHaveBeenCalledWith("/repo");
+      expect(mockBeadsBuildPollPrompt).toHaveBeenCalledWith(opts, "/repo");
+      expect(result).toEqual(delegated);
     });
   });
 });

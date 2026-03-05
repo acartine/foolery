@@ -4,6 +4,36 @@
  */
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
+const {
+  mockBeadsBuildTakePrompt,
+  mockBeadsBuildPollPrompt,
+  mockBeadsBackendCtor,
+  MockBeadsBackend,
+} = vi.hoisted(() => {
+  const mockBeadsBuildTakePrompt = vi.fn();
+  const mockBeadsBuildPollPrompt = vi.fn();
+  const mockBeadsBackendCtor = vi.fn();
+  class MockBeadsBackend {
+    constructor(...args: unknown[]) {
+      mockBeadsBackendCtor(...args);
+    }
+
+    buildTakePrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildTakePrompt(...(args as []));
+    }
+
+    buildPollPrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildPollPrompt(...(args as []));
+    }
+  }
+  return {
+    mockBeadsBuildTakePrompt,
+    mockBeadsBuildPollPrompt,
+    mockBeadsBackendCtor,
+    MockBeadsBackend,
+  };
+});
+
 vi.mock("@/lib/bd", () => ({
   listBeats: vi.fn(),
   readyBeats: vi.fn(),
@@ -19,6 +49,10 @@ vi.mock("@/lib/bd", () => ({
   removeDep: vi.fn(),
 }));
 
+vi.mock("@/lib/backends/beads-backend", () => ({
+  BeadsBackend: MockBeadsBackend,
+}));
+
 import { BdCliBackend } from "@/lib/backends/bd-cli-backend";
 import * as bd from "@/lib/bd";
 
@@ -29,6 +63,14 @@ describe("BdCliBackend", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockBeadsBuildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated take", claimed: false },
+    });
+    mockBeadsBuildPollPrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated poll", claimedId: "beat-1" },
+    });
     backend = new BdCliBackend();
   });
 
@@ -161,32 +203,55 @@ describe("BdCliBackend", () => {
   });
 
   // --- buildTakePrompt ---
-  it("buildTakePrompt returns prompt for a regular beat", async () => {
-    const r = await backend.buildTakePrompt("beat-1");
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.data!.prompt).toContain("beat-1");
-      expect(r.data!.claimed).toBe(false);
-    }
+  it("buildTakePrompt delegates to BeadsBackend", async () => {
+    const delegated = {
+      ok: true as const,
+      data: { prompt: "delegated take prompt", claimed: true },
+    };
+    mockBeadsBuildTakePrompt.mockResolvedValue(delegated);
+
+    const r = await backend.buildTakePrompt("beat-1", undefined, "/repo");
+
+    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+    expect(mockBeadsBackendCtor).toHaveBeenCalledWith("/repo");
+    expect(mockBeadsBuildTakePrompt).toHaveBeenCalledWith(
+      "beat-1",
+      undefined,
+      "/repo",
+    );
+    expect(r).toEqual(delegated);
   });
 
-  it("buildTakePrompt returns parent prompt with child IDs", async () => {
-    const r = await backend.buildTakePrompt("parent-1", {
+  it("buildTakePrompt forwards options", async () => {
+    const opts = {
       isParent: true,
       childBeatIds: ["child-1", "child-2"],
-    });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.data!.prompt).toContain("Parent beat ID");
-      expect(r.data!.prompt).toContain("child-1");
-      expect(r.data!.prompt).toContain("child-2");
-    }
+    };
+
+    await backend.buildTakePrompt("parent-1", opts);
+    expect(mockBeadsBuildTakePrompt).toHaveBeenCalledWith(
+      "parent-1",
+      opts,
+      undefined,
+    );
   });
 
   // --- buildPollPrompt ---
-  it("buildPollPrompt returns UNAVAILABLE", async () => {
-    const r = await backend.buildPollPrompt();
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error!.code).toBe("UNAVAILABLE");
+  it("buildPollPrompt delegates to BeadsBackend and reuses lazy instance", async () => {
+    const delegated = {
+      ok: true as const,
+      data: { prompt: "delegated poll prompt", claimedId: "beat-2" },
+    };
+    mockBeadsBuildPollPrompt.mockResolvedValue(delegated);
+
+    await backend.buildTakePrompt("beat-2");
+    const r = await backend.buildPollPrompt({ agentName: "agent-x" }, "/repo");
+
+    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+    expect(mockBeadsBuildPollPrompt).toHaveBeenCalledWith(
+      { agentName: "agent-x" },
+      "/repo",
+    );
+    expect(r).toEqual(delegated);
   });
 });

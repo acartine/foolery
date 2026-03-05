@@ -3,6 +3,7 @@
  *
  * Converts BdResult<T> (string error) into BackendResult<T> (structured error)
  * using the error classification helpers from backend-errors.ts.
+ * Prompt-building methods delegate to BeadsBackend for JSONL-based claiming.
  */
 
 import type {
@@ -24,6 +25,7 @@ import {
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import { builtinWorkflowDescriptors } from "@/lib/workflows";
+import { BeadsBackend } from "@/lib/backends/beads-backend";
 import * as bd from "@/lib/bd";
 
 // ── BdResult -> BackendResult converter ───────────────────────────
@@ -68,6 +70,14 @@ function filtersToRecord(
 
 export class BdCliBackend implements BackendPort {
   readonly capabilities: BackendCapabilities = FULL_CAPABILITIES;
+  private promptBackend?: BeadsBackend;
+
+  private getPromptBackend(repoPath?: string): BeadsBackend {
+    if (!this.promptBackend) {
+      this.promptBackend = new BeadsBackend(repoPath);
+    }
+    return this.promptBackend;
+  }
 
   async listWorkflows(
     _repoPath?: string,
@@ -176,40 +186,19 @@ export class BdCliBackend implements BackendPort {
   async buildTakePrompt(
     beatId: string,
     options?: TakePromptOptions,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<TakePromptResult>> {
-    const showCmd = `bd show ${JSON.stringify(beatId)}`;
-
-    if (options?.isParent && options.childBeatIds?.length) {
-      const childIds = options.childBeatIds;
-      const prompt = [
-        `Parent beat ID: ${beatId}`,
-        `Use \`${showCmd}\` and \`bd show "<child-id>"\` to inspect full details before starting.`,
-        ``,
-        `Open child beat IDs:`,
-        ...childIds.map((id) => `- ${id}`),
-      ].join("\n");
-      return { ok: true, data: { prompt, claimed: false } };
-    }
-
-    const prompt = [
-      `Beat ID: ${beatId}`,
-      `Use \`${showCmd}\` to inspect full details before starting.`,
-    ].join("\n");
-    return { ok: true, data: { prompt, claimed: false } };
+    return this.getPromptBackend(repoPath).buildTakePrompt(
+      beatId,
+      options,
+      repoPath,
+    );
   }
 
   async buildPollPrompt(
-    _options?: PollPromptOptions,
-    _repoPath?: string,
+    options?: PollPromptOptions,
+    repoPath?: string,
   ): Promise<BackendResult<PollPromptResult>> {
-    return {
-      ok: false,
-      error: {
-        code: "UNAVAILABLE",
-        message: "This backend does not support poll-based prompt building",
-        retryable: false,
-      },
-    };
+    return this.getPromptBackend(repoPath).buildPollPrompt(options, repoPath);
   }
 }

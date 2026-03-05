@@ -4,6 +4,53 @@
  */
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
+const {
+  mockBeadsBuildTakePrompt,
+  mockBeadsBuildPollPrompt,
+  mockBeadsBackendCtor,
+  mockBeadsCapabilities,
+  MockBeadsBackend,
+} = vi.hoisted(() => {
+  const mockBeadsBuildTakePrompt = vi.fn();
+  const mockBeadsBuildPollPrompt = vi.fn();
+  const mockBeadsBackendCtor = vi.fn();
+  const mockBeadsCapabilities = {
+    canCreate: true,
+    canUpdate: true,
+    canDelete: true,
+    canClose: true,
+    canSearch: true,
+    canQuery: true,
+    canListReady: true,
+    canManageDependencies: true,
+    canManageLabels: true,
+    canSync: false,
+    maxConcurrency: 1,
+  };
+  class MockBeadsBackend {
+    capabilities = mockBeadsCapabilities;
+
+    constructor(...args: unknown[]) {
+      mockBeadsBackendCtor(...args);
+    }
+
+    buildTakePrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildTakePrompt(...(args as []));
+    }
+
+    buildPollPrompt(...args: unknown[]): Promise<unknown> {
+      return mockBeadsBuildPollPrompt(...(args as []));
+    }
+  }
+  return {
+    mockBeadsBuildTakePrompt,
+    mockBeadsBuildPollPrompt,
+    mockBeadsBackendCtor,
+    mockBeadsCapabilities,
+    MockBeadsBackend,
+  };
+});
+
 vi.mock("@/lib/memory-manager-detection", () => ({
   detectMemoryManagerType: vi.fn(() => "beads"),
 }));
@@ -24,6 +71,11 @@ vi.mock("@/lib/bd", () => ({
   removeDep: vi.fn(() => Promise.resolve({ ok: true, data: undefined })),
 }));
 
+vi.mock("@/lib/backends/beads-backend", () => ({
+  BeadsBackend: MockBeadsBackend,
+  BEADS_CAPABILITIES: mockBeadsCapabilities,
+}));
+
 import { AutoRoutingBackend, createBackend } from "@/lib/backend-factory";
 import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 
@@ -32,6 +84,14 @@ describe("AutoRoutingBackend", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockBeadsBuildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated take", claimed: false },
+    });
+    mockBeadsBuildPollPrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated poll", claimedId: "beat-1" },
+    });
     arb = new AutoRoutingBackend("cli");
   });
 
@@ -152,12 +212,13 @@ describe("AutoRoutingBackend", () => {
   it("buildTakePrompt delegates", async () => {
     const r = await arb.buildTakePrompt("id");
     expect(r.ok).toBe(true);
+    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
   });
 
   it("buildPollPrompt delegates", async () => {
     const r = await arb.buildPollPrompt();
-    // cli backend returns UNAVAILABLE for poll
-    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(true);
+    expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
   });
 });
 
