@@ -14,6 +14,7 @@ import { spawn } from "node:child_process";
 import { getBackend } from "@/lib/backend-instance";
 import type { UpdateBeatInput } from "@/lib/backend-port";
 import { nextKnot } from "@/lib/knots";
+import { nextBeat } from "@/lib/beads-state-machine";
 import { getVerificationSettings, getVerificationAgent } from "@/lib/settings";
 import { startInteractionLog, noopInteractionLog } from "@/lib/interaction-logger";
 import {
@@ -503,7 +504,12 @@ async function transitionToRetry(beatId: string, repoPath: string): Promise<void
     await getBackend().update(beatId, updateFields, repoPath);
   }
 
-  await nextKnot(beatId, repoPath, { expectedState: beatResult.data.state });
+  const memoryManagerType = resolveMemoryManagerType(repoPath);
+  if (memoryManagerType === "knots") {
+    await nextKnot(beatId, repoPath, { expectedState: beatResult.data.state });
+  } else {
+    await nextBeat(beatId, beatResult.data.state, repoPath);
+  }
 }
 
 // ── Utilities ───────────────────────────────────────────────

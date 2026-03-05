@@ -67,6 +67,22 @@ vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
 }));
 
+// Mock beads-state-machine (nextBeat used by transitionToRetry)
+const nextBeatMock = vi.fn();
+vi.mock("@/lib/beads-state-machine", () => ({
+  nextBeat: (...args: unknown[]) => nextBeatMock(...args),
+}));
+
+// Mock memory-manager-commands (resolveMemoryManagerType used by transitionToRetry)
+const resolveMemoryManagerTypeMock = vi.fn();
+vi.mock("@/lib/memory-manager-commands", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/memory-manager-commands")>();
+  return {
+    ...actual,
+    resolveMemoryManagerType: (...args: unknown[]) => resolveMemoryManagerTypeMock(...args),
+  };
+});
+
 import { onAgentComplete } from "@/lib/verification-orchestrator";
 import {
   _clearAllLocks,
@@ -134,6 +150,8 @@ beforeEach(() => {
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
   nextKnotMock.mockResolvedValue({ ok: true });
+  nextBeatMock.mockResolvedValue({ beat: makeBeat(), nextState: "ready_for_implementation" });
+  resolveMemoryManagerTypeMock.mockReturnValue("beads");
 });
 
 // ── Test: disabled verification ─────────────────────────────
@@ -236,8 +254,8 @@ describe("retry paths", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
-    // Should have called nextKnot to advance state (not state: "open")
-    expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo", { expectedState: "in_progress" });
+    // Should have called nextBeat to advance state (not state: "open")
+    expect(nextBeatMock).toHaveBeenCalledWith("foolery-test", "in_progress", "/repo");
 
     // Should have called updateBeat with retry labels (without state)
     const retryCall = mockUpdate.mock.calls.find(
@@ -271,8 +289,8 @@ describe("retry paths", () => {
     // Should NOT have called closeBeat
     expect(mockClose).not.toHaveBeenCalled();
 
-    // Should have called nextKnot to advance state (not state: "open")
-    expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo", { expectedState: "in_progress" });
+    // Should have called nextBeat to advance state (not state: "open")
+    expect(nextBeatMock).toHaveBeenCalledWith("foolery-test", "in_progress", "/repo");
   });
 });
 

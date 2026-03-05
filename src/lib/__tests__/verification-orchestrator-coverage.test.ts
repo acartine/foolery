@@ -75,6 +75,22 @@ vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
 }));
 
+// Mock beads-state-machine (nextBeat used by transitionToRetry)
+const nextBeatMock = vi.fn();
+vi.mock("@/lib/beads-state-machine", () => ({
+  nextBeat: (...args: unknown[]) => nextBeatMock(...args),
+}));
+
+// Mock memory-manager-commands (resolveMemoryManagerType used by transitionToRetry)
+const resolveMemoryManagerTypeMock = vi.fn();
+vi.mock("@/lib/memory-manager-commands", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/memory-manager-commands")>();
+  return {
+    ...actual,
+    resolveMemoryManagerType: (...args: unknown[]) => resolveMemoryManagerTypeMock(...args),
+  };
+});
+
 import { onAgentComplete, getVerificationEvents } from "@/lib/verification-orchestrator";
 import { _clearAllLocks } from "@/lib/verification-workflow";
 import { EventEmitter } from "node:events";
@@ -159,6 +175,8 @@ beforeEach(() => {
   mockClose.mockResolvedValue({ ok: true });
   createSessionMock.mockResolvedValue({ id: "mock-session", status: "running" });
   nextKnotMock.mockResolvedValue({ ok: true });
+  nextBeatMock.mockResolvedValue({ beat: makeBeat(), nextState: "ready_for_implementation" });
+  resolveMemoryManagerTypeMock.mockReturnValue("beads");
 });
 
 // ── getVerificationEvents ───────────────────────────────────
@@ -283,8 +301,8 @@ describe("launchVerifier error paths", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // Should transition to retry via nextKnot (not state: "open")
-    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
+    // Should transition to retry via nextBeat (not state: "open")
+    expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
   });
 
   it("handles verifier non-zero exit without result marker", async () => {
@@ -301,9 +319,9 @@ describe("launchVerifier error paths", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // Should transition to retry via nextKnot (not state: "open")
+    // Should transition to retry via nextBeat (not state: "open")
     expect(mockClose).not.toHaveBeenCalled();
-    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
+    expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
   });
 
   it("defaults to pass when exit code 0 but no result marker", async () => {
@@ -529,10 +547,10 @@ describe("transitionToRetry error handling", () => {
   });
 });
 
-// ── transitionToRetry uses nextKnot instead of state: "open" ─
+// ── transitionToRetry uses nextBeat instead of state: "open" ─
 
-describe("transitionToRetry uses nextKnot", () => {
-  it("calls nextKnot and does not set state: open", async () => {
+describe("transitionToRetry uses nextBeat", () => {
+  it("calls nextBeat and does not set state: open", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     let callCount = 0;
@@ -551,8 +569,8 @@ describe("transitionToRetry uses nextKnot", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // nextKnot should have been called for the retry transition
-    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
+    // nextBeat should have been called for the retry transition
+    expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
 
     // No update call should have set state: "open"
     for (const call of mockUpdate.mock.calls) {
@@ -561,7 +579,7 @@ describe("transitionToRetry uses nextKnot", () => {
     }
   });
 
-  it("calls nextKnot even when there are no label changes", async () => {
+  it("calls nextBeat even when there are no label changes", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     let callCount = 0;
@@ -576,8 +594,8 @@ describe("transitionToRetry uses nextKnot", () => {
 
     await onAgentComplete(["test-beat"], "take", "/repo", 0);
 
-    // nextKnot should still be called for state advancement
-    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
+    // nextBeat should still be called for state advancement
+    expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
   });
 });
 
@@ -794,5 +812,39 @@ describe("verifier prompt context", () => {
       expect.stringContaining("Implement the feature"),
       expect.any(Object),
     );
+  });
+});
+
+// ── transitionToRetry dispatch ──────────────────────────────
+
+describe("transitionToRetry dispatch", () => {
+  it("calls nextKnot when memory manager type is knots", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+    resolveMemoryManagerTypeMock.mockReturnValue("knots");
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBeat({ labels: [] }),
+    });
+
+    await onAgentComplete(["test-beat"], "take", "/repo", 0);
+
+    expect(nextKnotMock).toHaveBeenCalledWith("test-beat", "/repo", { expectedState: "in_progress" });
+    expect(nextBeatMock).not.toHaveBeenCalled();
+  });
+
+  it("calls nextBeat when memory manager type is beads", async () => {
+    getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
+    resolveMemoryManagerTypeMock.mockReturnValue("beads");
+
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: makeBeat({ labels: [] }),
+    });
+
+    await onAgentComplete(["test-beat"], "take", "/repo", 0);
+
+    expect(nextBeatMock).toHaveBeenCalledWith("test-beat", "in_progress", "/repo");
+    expect(nextKnotMock).not.toHaveBeenCalled();
   });
 });
