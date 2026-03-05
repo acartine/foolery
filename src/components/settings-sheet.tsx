@@ -69,6 +69,7 @@ const DEFAULTS: SettingsData = {
   openrouter: {
     apiKey: "",
     enabled: false,
+    agents: {},
     model: "",
   },
   pools: {

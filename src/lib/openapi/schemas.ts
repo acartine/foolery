@@ -392,6 +392,16 @@ export const componentSchemas = {
         properties: {
           apiKey: { type: "string" },
           enabled: { type: "boolean" },
+          agents: {
+            type: "object",
+            additionalProperties: {
+              type: "object",
+              properties: {
+                model: { type: "string" },
+                label: { type: "string" },
+              },
+            },
+          },
           model: { type: "string" },
         },
       },

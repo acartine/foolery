@@ -140,6 +140,7 @@ describe("getOpenRouterSettings (line 361-362)", () => {
     const or = await getOpenRouterSettings();
     expect(or.enabled).toBe(false);
     expect(or.apiKey).toBe("");
+    expect(or.agents).toEqual({});
     expect(or.model).toBe("");
   });
 
@@ -155,6 +156,12 @@ describe("getOpenRouterSettings (line 361-362)", () => {
     expect(or.enabled).toBe(true);
     expect(or.apiKey).toBe("sk-test");
     expect(or.model).toBe("anthropic/claude-sonnet-4");
+    expect(or.agents).toEqual({
+      default: {
+        model: "anthropic/claude-sonnet-4",
+        label: "OpenRouter (anthropic/claude-sonnet-4)",
+      },
+    });
   });
 });
 

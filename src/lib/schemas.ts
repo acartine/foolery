@@ -146,6 +146,19 @@ export const defaultsSettingsSchema = z
   })
   .default({ profileId: "" });
 
+export const openrouterAgentSchema = z.object({
+  /** OpenRouter model identifier (e.g. "anthropic/claude-sonnet-4"). */
+  model: z.string().default(""),
+  /** Human-readable label shown for this OpenRouter-backed agent. */
+  label: z.string().default(""),
+});
+
+export const openrouterAgentsMapSchema = z
+  .record(z.string(), openrouterAgentSchema)
+  .default({});
+
+const LEGACY_OPENROUTER_AGENT_ID = "default";
+
 // OpenRouter provider settings
 export const openrouterSettingsSchema = z
   .object({
@@ -153,10 +166,26 @@ export const openrouterSettingsSchema = z
     apiKey: z.string().default(""),
     /** Whether OpenRouter integration is enabled. */
     enabled: z.boolean().default(false),
-    /** Default OpenRouter model identifier (e.g. "anthropic/claude-sonnet-4"). */
+    /** OpenRouter agent map keyed by user-defined id. */
+    agents: openrouterAgentsMapSchema,
+    /** @deprecated Legacy single-model setting kept for migration compatibility. */
     model: z.string().default(""),
   })
-  .default({ apiKey: "", enabled: false, model: "" });
+  .default({ apiKey: "", enabled: false, agents: {}, model: "" })
+  .transform((openrouter) => {
+    if (Object.keys(openrouter.agents).length > 0) return openrouter;
+    const legacyModel = openrouter.model.trim();
+    if (!legacyModel) return openrouter;
+    return {
+      ...openrouter,
+      agents: {
+        [LEGACY_OPENROUTER_AGENT_ID]: {
+          model: legacyModel,
+          label: `OpenRouter (${legacyModel})`,
+        },
+      },
+    };
+  });
 
 // Agent dispatch mode: "actions" uses simple per-action mappings,
 // "pools" uses weighted per-step agent pools.
@@ -212,4 +241,3 @@ export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;
-

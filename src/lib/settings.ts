@@ -154,9 +154,10 @@ async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputat
 
   try {
     const settings = foolerySettingsSchema.parse(merged);
+    const normalized = settings as unknown as Record<string, unknown>;
     return {
       settings,
-      merged,
+      merged: normalized,
       missingPaths,
       fileMissing: raw.fileMissing,
     };

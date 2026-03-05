@@ -63,7 +63,7 @@ const DEFAULT_SETTINGS = {
   verification: { enabled: false, agent: "", maxRetries: 3 },
   backend: { type: "auto" },
   defaults: { profileId: "" },
-  openrouter: { apiKey: "", enabled: false, model: "" },
+  openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
   pools: DEFAULT_POOLS,
   dispatchMode: "actions",
 };
@@ -100,6 +100,44 @@ describe("loadSettings", () => {
     mockReadFile.mockResolvedValue('[actions]\ntake = ""');
     const settings = await loadSettings();
     expect(settings.actions.scene).toBe("");
+  });
+
+  it("migrates legacy openrouter.model into openrouter.agents when agents is empty", async () => {
+    const toml = [
+      "[openrouter]",
+      "enabled = true",
+      'model = "anthropic/claude-sonnet-4"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const settings = await loadSettings();
+    expect(settings.openrouter.model).toBe("anthropic/claude-sonnet-4");
+    expect(settings.openrouter.agents).toEqual({
+      default: {
+        model: "anthropic/claude-sonnet-4",
+        label: "OpenRouter (anthropic/claude-sonnet-4)",
+      },
+    });
+  });
+
+  it("does not overwrite existing openrouter.agents during legacy model migration", async () => {
+    const toml = [
+      "[openrouter]",
+      "enabled = true",
+      'model = "anthropic/claude-sonnet-4"',
+      "[openrouter.agents.custom]",
+      'model = "openai/gpt-4o"',
+      'label = "GPT-4o"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const settings = await loadSettings();
+    expect(settings.openrouter.agents).toEqual({
+      custom: {
+        model: "openai/gpt-4o",
+        label: "GPT-4o",
+      },
+    });
   });
 
   it("uses cache within TTL", async () => {
@@ -192,7 +230,7 @@ describe("saveSettings", () => {
       verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      openrouter: { apiKey: "", enabled: false, model: "" },
+      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "actions" as const,
     };
@@ -211,7 +249,7 @@ describe("saveSettings", () => {
       verification: { enabled: false, agent: "", maxRetries: 3 },
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      openrouter: { apiKey: "", enabled: false, model: "" },
+      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
       pools: DEFAULT_POOLS,
       dispatchMode: "actions" as const,
     };
@@ -761,7 +799,7 @@ describe("keychain integration", () => {
       ...DEFAULT_SETTINGS,
       backend: { type: "auto" as const },
       dispatchMode: "actions" as const,
-      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, model: "" },
+      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, agents: {}, model: "" },
     };
     await saveSettings(settings);
 
@@ -779,7 +817,7 @@ describe("keychain integration", () => {
       ...DEFAULT_SETTINGS,
       backend: { type: "auto" as const },
       dispatchMode: "actions" as const,
-      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, model: "" },
+      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, agents: {}, model: "" },
     };
     await saveSettings(settings);
 
@@ -793,7 +831,7 @@ describe("keychain integration", () => {
       ...DEFAULT_SETTINGS,
       backend: { type: "auto" as const },
       dispatchMode: "actions" as const,
-      openrouter: { apiKey: "", enabled: false, model: "" },
+      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
     };
     await saveSettings(settings);
 
@@ -806,7 +844,7 @@ describe("keychain integration", () => {
       ...DEFAULT_SETTINGS,
       backend: { type: "auto" as const },
       dispatchMode: "actions" as const,
-      openrouter: { apiKey: "**keychain**", enabled: true, model: "" },
+      openrouter: { apiKey: "**keychain**", enabled: true, agents: {}, model: "" },
     };
     await saveSettings(settings);
 
