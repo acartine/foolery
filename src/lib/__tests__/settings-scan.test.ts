@@ -4,11 +4,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockReadFile = vi.fn();
 const mockWriteFile = vi.fn();
 const mockMkdir = vi.fn();
+const mockReaddir = vi.fn();
+const mockAccess = vi.fn();
 
 vi.mock("node:fs/promises", () => ({
   readFile: (...args: unknown[]) => mockReadFile(...args),
   writeFile: (...args: unknown[]) => mockWriteFile(...args),
   mkdir: (...args: unknown[]) => mockMkdir(...args),
+  readdir: (...args: unknown[]) => mockReaddir(...args),
+  access: (...args: unknown[]) => mockAccess(...args),
 }));
 
 // Mock child_process.exec — promisify(exec) turns cb-based exec into promise-based.
@@ -31,6 +35,8 @@ beforeEach(() => {
   _resetCache();
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
+  mockReaddir.mockResolvedValue([]);
+  mockAccess.mockRejectedValue(new Error("not executable"));
 });
 
 describe("scanForAgents", () => {
@@ -84,5 +90,32 @@ describe("scanForAgents", () => {
     const agents = await scanForAgents();
     const ids = agents.map((a) => a.id);
     expect(ids).toEqual(["claude", "codex", "chatgpt", "gemini", "openrouter-agent"]);
+  });
+
+  it("falls back to latest versioned chatgpt binary when bare command is missing", async () => {
+    mockExecCb.mockRejectedValue(new Error("not found"));
+    mockReaddir.mockImplementation(async (directory: string) => {
+      if (directory === "/mock/bin") {
+        return ["chatgpt-4", "chatgpt5", "chatgpt-5.1", "chatgpt-beta"];
+      }
+      return [];
+    });
+    mockAccess.mockResolvedValue(undefined);
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = "/mock/bin";
+    try {
+      const agents = await scanForAgents();
+      const chatgpt = agents.find((a) => a.id === "chatgpt");
+      expect(chatgpt).toEqual({
+        id: "chatgpt",
+        command: "chatgpt-5.1",
+        path: "/mock/bin/chatgpt-5.1",
+        installed: true,
+      });
+    } finally {
+      if (originalPath === undefined) delete process.env.PATH;
+      else process.env.PATH = originalPath;
+    }
   });
 });
