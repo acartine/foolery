@@ -5,10 +5,11 @@ export function stripBeatPrefix(beatId: string): string {
   return beatId.replace(BEAT_PREFIX_PATTERN, "");
 }
 
-/** Extract the repo-name prefix from a beat ID (e.g. "foolery-xmvb" -> "foolery"). */
+/** Extract the repo-name prefix from a beat ID (e.g. "my-project-xmvb" -> "my-project"). */
 export function extractBeatPrefix(beatId: string): string | null {
-  const match = beatId.match(/^([^-]+)-/);
-  return match ? match[1] : null;
+  const pivot = beatId.lastIndexOf("-");
+  if (pivot <= 0 || pivot === beatId.length - 1) return null;
+  return beatId.slice(0, pivot);
 }
 
 interface RepoMatch {

@@ -27,7 +27,11 @@ describe("extractBeatPrefix", () => {
   });
 
   it("extracts prefix from multi-hyphen ids", () => {
-    expect(extractBeatPrefix("my-project-abc")).toBe("my");
+    expect(extractBeatPrefix("my-project-abc")).toBe("my-project");
+  });
+
+  it("returns null when id has no local segment", () => {
+    expect(extractBeatPrefix("foolery-")).toBeNull();
   });
 });
 
