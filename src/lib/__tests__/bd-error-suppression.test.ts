@@ -37,97 +37,97 @@ describe("bd-error-suppression", () => {
 
   it("passes through successful results and caches them", () => {
     const result = ok([STUB_BEAT]);
-    const out = withErrorSuppression("listBeads", result);
+    const out = withErrorSuppression("listBeats", result);
     expect(out).toEqual(result);
     expect(_internals.resultCache.size).toBe(1);
   });
 
   it("returns degraded error when no cache exists for lock errors", () => {
     const result = fail("database is locked");
-    const out = withErrorSuppression("listBeads", result);
+    const out = withErrorSuppression("listBeats", result);
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("returns cached data on first lock failure after a success", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    const out = withErrorSuppression("listBeads", fail("database locked"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    const out = withErrorSuppression("listBeats", fail("database locked"));
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAT]);
     expect(_internals.failureState.size).toBe(1);
   });
 
   it("keeps returning cached data within suppression window", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    withErrorSuppression("listBeads", fail("locked"));
-    const out = withErrorSuppression("listBeads", fail("locked again"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", fail("locked"));
+    const out = withErrorSuppression("listBeats", fail("locked again"));
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAT]);
   });
 
   it("returns degraded error after suppression window expires", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    withErrorSuppression("listBeads", fail("locked"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", fail("locked"));
 
     const state = _internals.failureState.get(
       Array.from(_internals.failureState.keys())[0]
     )!;
     state.firstFailedAt = Date.now() - 3 * 60 * 1000;
 
-    const out = withErrorSuppression("listBeads", fail("locked"));
+    const out = withErrorSuppression("listBeats", fail("locked"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
 
   it("clears failure state on recovery", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    withErrorSuppression("listBeads", fail("locked"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", fail("locked"));
     expect(_internals.failureState.size).toBe(1);
 
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
     expect(_internals.failureState.size).toBe(0);
   });
 
   it("uses separate cache entries for different call signatures", () => {
-    const beadA = { ...STUB_BEAT, id: "a" } as Beat;
-    const beadB = { ...STUB_BEAT, id: "b" } as Beat;
+    const beatA = { ...STUB_BEAT, id: "a" } as Beat;
+    const beatB = { ...STUB_BEAT, id: "b" } as Beat;
 
-    withErrorSuppression("listBeads", ok([beadA]), undefined, "/repo-a");
-    withErrorSuppression("listBeads", ok([beadB]), undefined, "/repo-b");
+    withErrorSuppression("listBeats", ok([beatA]), undefined, "/repo-a");
+    withErrorSuppression("listBeats", ok([beatB]), undefined, "/repo-b");
 
-    const outA = withErrorSuppression("listBeads", fail("locked"), undefined, "/repo-a");
+    const outA = withErrorSuppression("listBeats", fail("locked"), undefined, "/repo-a");
     expect(outA.ok).toBe(true);
-    expect(outA.data).toEqual([beadA]);
+    expect(outA.data).toEqual([beatA]);
 
-    const freshB = ok([{ ...beadB, title: "fresh" } as Beat]);
-    const outB = withErrorSuppression("listBeads", freshB, undefined, "/repo-b");
+    const freshB = ok([{ ...beatB, title: "fresh" } as Beat]);
+    const outB = withErrorSuppression("listBeats", freshB, undefined, "/repo-b");
     expect(outB.ok).toBe(true);
     expect(outB.data?.[0].title).toBe("fresh");
   });
 
-  it("distinguishes searchBeads calls by query parameter", () => {
-    withErrorSuppression("searchBeads", ok([STUB_BEAT]), undefined, undefined, "alpha");
-    withErrorSuppression("searchBeads", ok([]), undefined, undefined, "beta");
+  it("distinguishes searchBeats calls by query parameter", () => {
+    withErrorSuppression("searchBeats", ok([STUB_BEAT]), undefined, undefined, "alpha");
+    withErrorSuppression("searchBeats", ok([]), undefined, undefined, "beta");
 
-    const out = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "alpha");
+    const out = withErrorSuppression("searchBeats", fail("locked"), undefined, undefined, "alpha");
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAT]);
 
-    const outBeta = withErrorSuppression("searchBeads", fail("locked"), undefined, undefined, "beta");
+    const outBeta = withErrorSuppression("searchBeats", fail("locked"), undefined, undefined, "beta");
     expect(outBeta.ok).toBe(true);
     expect(outBeta.data).toEqual([]);
   });
 
   it("does NOT suppress non-lock errors like parse failures", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    const out = withErrorSuppression("listBeads", fail("Failed to parse bd list output"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    const out = withErrorSuppression("listBeats", fail("Failed to parse bd list output"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe("Failed to parse bd list output");
   });
 
   it("does NOT suppress generic bd failures", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    const out = withErrorSuppression("listBeads", fail("bd list failed"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    const out = withErrorSuppression("listBeats", fail("bd list failed"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe("bd list failed");
   });
@@ -135,15 +135,15 @@ describe("bd-error-suppression", () => {
   it("evicts oldest entry when cache exceeds MAX_CACHE_ENTRIES", () => {
     const max = _internals.MAX_CACHE_ENTRIES;
     for (let i = 0; i <= max; i++) {
-      withErrorSuppression("listBeads", ok([STUB_BEAT]), undefined, `/repo-${i}`);
+      withErrorSuppression("listBeats", ok([STUB_BEAT]), undefined, `/repo-${i}`);
     }
     // Should have evicted the first entry, keeping size at max
     expect(_internals.resultCache.size).toBe(max);
   });
 
   it("returns degraded error when cache TTL expires during ongoing failure", () => {
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
-    withErrorSuppression("listBeads", fail("locked"));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", fail("locked"));
 
     // Fast-forward failure past suppression window
     const failKey = Array.from(_internals.failureState.keys())[0];
@@ -154,12 +154,12 @@ describe("bd-error-suppression", () => {
     _internals.resultCache.get(cacheKey)!.timestamp = Date.now() - 11 * 60 * 1000;
 
     // First request after TTL -- should still return degraded
-    const out1 = withErrorSuppression("listBeads", fail("locked"));
+    const out1 = withErrorSuppression("listBeats", fail("locked"));
     expect(out1.ok).toBe(false);
     expect(out1.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
 
     // Subsequent request with no cache -- should still return degraded
-    const out2 = withErrorSuppression("listBeads", fail("locked"));
+    const out2 = withErrorSuppression("listBeats", fail("locked"));
     expect(out2.ok).toBe(false);
     expect(out2.error?.message).toBe(DEGRADED_ERROR_MESSAGE);
   });
@@ -168,8 +168,8 @@ describe("bd-error-suppression", () => {
     const filtersA = { status: "open", type: "bug" };
     const filtersB = { type: "bug", status: "open" };
 
-    withErrorSuppression("listBeads", ok([STUB_BEAT]), filtersA);
-    const out = withErrorSuppression("listBeads", fail("locked"), filtersB);
+    withErrorSuppression("listBeats", ok([STUB_BEAT]), filtersA);
+    const out = withErrorSuppression("listBeats", fail("locked"), filtersB);
     // Should hit the cache from filtersA since keys are the same
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAT]);

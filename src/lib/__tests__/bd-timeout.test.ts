@@ -61,8 +61,8 @@ describe("bd command timeout handling", () => {
   it("retries timed out read commands once, then returns timeout error", async () => {
     queueExec({ killed: true }, { killed: true });
 
-    const { listBeads } = await import("@/lib/bd");
-    const result = await listBeads(undefined, "/Users/cartine/foolery");
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats(undefined, "/Users/cartine/foolery");
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("bd command timed out after");
@@ -74,7 +74,7 @@ describe("bd command timeout handling", () => {
   });
 
   it("retries idempotent write commands once and succeeds", async () => {
-    const beadJson = JSON.stringify({
+    const beatJson = JSON.stringify({
       id: "foolery-123",
       title: "Retry timeout",
       status: "open",
@@ -86,16 +86,16 @@ describe("bd command timeout handling", () => {
     });
 
     queueExec(
-      { stdout: beadJson }, // show (context load)
-      { stdout: beadJson }, // show (label reconciliation)
+      { stdout: beatJson }, // show (context load)
+      { stdout: beatJson }, // show (label reconciliation)
       { killed: true }, // update timeout (attempt 1)
       { stdout: "" }, // update retry succeeds
       { stdout: "" }, // label add wf:state:*
       { stdout: "" }, // label add wf:profile:*
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead(
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat(
       "foolery-123",
       { status: "open" },
       "/Users/cartine/foolery"
@@ -111,8 +111,8 @@ describe("bd command timeout handling", () => {
   it("does not retry non-idempotent writes after timeout", async () => {
     queueExec({ killed: true });
 
-    const { createBead } = await import("@/lib/bd");
-    const result = await createBead({ title: "new" }, "/Users/cartine/foolery");
+    const { createBeat } = await import("@/lib/bd");
+    const result = await createBeat({ title: "new" }, "/Users/cartine/foolery");
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("bd command timed out after");

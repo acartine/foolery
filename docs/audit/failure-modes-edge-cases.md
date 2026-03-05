@@ -74,7 +74,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 ### 1.5 Verification Edit Lock (transition:verification Label)
 
-- **Location:** `src/app/api/beads/[id]/route.ts` lines 107-116 (PATCH) and
+- **Location:** `src/app/api/beats/[id]/route.ts` lines 107-116 (PATCH) and
   lines 154-164 (DELETE)
 - **Trigger:** A user attempts to edit or delete a bead while auto-verification is
   running (`transition:verification` label present).
@@ -201,7 +201,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 ### 3.3 Merge Operation Non-Atomicity
 
-- **Location:** `src/app/api/beads/merge/route.ts` lines 10-100
+- **Location:** `src/app/api/beats/merge/route.ts` lines 10-100
 - **Trigger:** A merge operation updates the survivor bead and then closes the
   consumed bead as two separate bd commands. If the close fails after the update
   succeeds, the survivor has merged content but the consumed bead remains open.
@@ -230,7 +230,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 ### 3.5 Batch Dependency Fetch Silent Failures
 
-- **Location:** `src/app/api/beads/batch-deps/route.ts` lines 18-25
+- **Location:** `src/app/api/beats/batch-deps/route.ts` lines 18-25
 - **Trigger:** When fetching dependencies for multiple beads, individual `listDeps`
   calls may fail. The route silently returns an empty array for failed beads.
 - **Current handling:** `result.ok ? result.data ?? [] : []` -- failed deps are
@@ -449,7 +449,7 @@ handling, severity, and what the new abstraction layer must account for.
 
 ### 6.3 Bead Detail Cache on Lock Timeout
 
-- **Location:** `src/app/api/beads/[id]/route.ts` lines 19-50, 58-90
+- **Location:** `src/app/api/beats/[id]/route.ts` lines 19-50, 58-90
 - **Trigger:** A `showBead` call fails due to a lock timeout. The detail endpoint
   checks its in-memory cache (10-minute TTL) and returns the cached bead with a
   `cached: true` flag.

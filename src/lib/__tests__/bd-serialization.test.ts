@@ -37,10 +37,10 @@ describe("bd execution serialization", () => {
 
   it("serializes concurrent calls for the same repo path", async () => {
     const repoPath = "/Users/cartine/foolery";
-    const { listBeads } = await import("@/lib/bd");
+    const { listBeats } = await import("@/lib/bd");
 
-    const first = listBeads(undefined, repoPath);
-    const second = listBeads(undefined, repoPath);
+    const first = listBeats(undefined, repoPath);
+    const second = listBeats(undefined, repoPath);
     await vi.waitFor(() => {
       expect(execCalls).toHaveLength(1);
     });
@@ -56,10 +56,10 @@ describe("bd execution serialization", () => {
   });
 
   it("allows concurrent calls for different repo paths", async () => {
-    const { listBeads } = await import("@/lib/bd");
+    const { listBeats } = await import("@/lib/bd");
 
-    const first = listBeads(undefined, "/Users/cartine/foolery");
-    const second = listBeads(undefined, "/Users/cartine/1brutus");
+    const first = listBeats(undefined, "/Users/cartine/foolery");
+    const second = listBeats(undefined, "/Users/cartine/1brutus");
     await vi.waitFor(() => {
       expect(execCalls).toHaveLength(2);
     });

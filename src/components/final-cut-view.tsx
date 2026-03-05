@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Scissors } from "lucide-react";
-import { fetchBeads } from "@/lib/api";
+import { fetchBeats } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
 import { useAppStore } from "@/stores/app-store";
@@ -14,16 +14,16 @@ export function FinalCutView() {
   const [selectionVersion] = useState(0);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beads", "human-action", activeRepo, registeredRepos.length],
+    queryKey: ["beats", "human-action", activeRepo, registeredRepos.length],
     queryFn: async () => {
       const params: Record<string, string> = { requiresHumanAction: "true" };
       if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
+        const result = await fetchBeats(params, activeRepo);
         if (result.ok && result.data) {
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .map((bead) => ({
-              ...bead,
+            .map((beat) => ({
+              ...beat,
               _repoPath: activeRepo,
               _repoName: repo?.name ?? activeRepo,
             })) as typeof result.data;
@@ -33,11 +33,11 @@ export function FinalCutView() {
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const result = await fetchBeads(params, repo.path);
+            const result = await fetchBeats(params, repo.path);
             if (!result.ok || !result.data) return [];
             return result.data
-              .map((bead) => ({
-                ...bead,
+              .map((beat) => ({
+                ...beat,
                 _repoPath: repo.path,
                 _repoName: repo.name,
               }));
@@ -45,19 +45,19 @@ export function FinalCutView() {
         );
         return { ok: true, data: results.flat() };
       }
-      return fetchBeads(params);
+      return fetchBeats(params);
     },
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     refetchInterval: 10_000,
     placeholderData: keepPreviousData,
   });
 
-  const allBeads: Beat[] = data?.ok ? (data.data ?? []) : [];
+  const allBeats: Beat[] = data?.ok ? (data.data ?? []) : [];
 
-  // Only show top-level beads (no parent) and parent beads (have children).
+  // Only show top-level beats (no parent) and parent beats (have children).
   // Leaf children are excluded to reduce clutter in the Final Cut view.
-  const parentIds = new Set(allBeads.map((b) => b.parent).filter(Boolean));
-  const beads = allBeads.filter((b) => !b.parent || parentIds.has(b.id));
+  const parentIds = new Set(allBeats.map((b) => b.parent).filter(Boolean));
+  const beats = allBeats.filter((b) => !b.parent || parentIds.has(b.id));
 
   const showRepoColumn = !activeRepo && registeredRepos.length > 1;
 
@@ -76,12 +76,12 @@ export function FinalCutView() {
               Human Action
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Knots and beads that require a human-owned next step.
+              Knots and beats that require a human-owned next step.
               This queue is explicit from profile ownership and state.
             </p>
           </div>
           <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-700">
-            {beads.length} {beads.length === 1 ? "beat" : "beats"}
+            {beats.length} {beats.length === 1 ? "beat" : "beats"}
           </Badge>
         </div>
       </section>
@@ -92,7 +92,7 @@ export function FinalCutView() {
         </div>
       ) : (
         <BeatTable
-          data={beads}
+          data={beats}
           showRepoColumn={showRepoColumn}
           onSelectionChange={handleSelectionChange}
           selectionVersion={selectionVersion}

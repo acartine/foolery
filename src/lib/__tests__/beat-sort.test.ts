@@ -92,10 +92,10 @@ describe("naturalCompare", () => {
     expect(sorted).toEqual(["alpha", "bravo", "charlie"]);
   });
 
-  it("handles beads-prefixed IDs", () => {
-    const items = ["beads-1guy.3", "beads-1guy.1", "beads-1guy.10", "beads-1guy.2"];
+  it("handles beats-prefixed IDs", () => {
+    const items = ["beats-1guy.3", "beats-1guy.1", "beats-1guy.10", "beats-1guy.2"];
     const sorted = items.slice().sort(naturalCompare);
-    expect(sorted).toEqual(["beads-1guy.1", "beads-1guy.2", "beads-1guy.3", "beads-1guy.10"]);
+    expect(sorted).toEqual(["beats-1guy.1", "beats-1guy.2", "beats-1guy.3", "beats-1guy.10"]);
   });
 });
 

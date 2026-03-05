@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchBeads } from "@/lib/api";
+import { fetchBeats } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +30,9 @@ export function RelationshipPicker({
   const [query, setQuery] = useState("");
 
   const { data } = useQuery({
-    queryKey: ["beads-search", query, repo],
+    queryKey: ["beats-search", query, repo],
     queryFn: () =>
-      fetchBeads(query ? { q: query } : undefined, repo || undefined),
+      fetchBeats(query ? { q: query } : undefined, repo || undefined),
     enabled: searchOpen && query.length > 0,
   });
 

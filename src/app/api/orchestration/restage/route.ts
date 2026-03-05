@@ -65,28 +65,28 @@ function parseWave(
     parseText(obj.objective) ?? "Execute assigned beats for this scene.";
   const notes = parseText(obj.notes);
   const agents = parseAgents(obj.agents);
-  const beadObjects = Array.isArray(obj.beads) ? obj.beads : [];
-  const beads = beadObjects
-    .map((beadValue) => {
-      const beadObj = toObject(beadValue);
-      if (!beadObj) return null;
-      const id = parseText(beadObj.id);
+  const beatObjects = Array.isArray(obj.beats) ? obj.beats : [];
+  const beats = beatObjects
+    .map((beatValue) => {
+      const beatObj = toObject(beatValue);
+      if (!beatObj) return null;
+      const id = parseText(beatObj.id);
       if (!id) return null;
       return {
         id,
-        title: parseText(beadObj.title) ?? id,
+        title: parseText(beatObj.title) ?? id,
       };
     })
-    .filter((bead): bead is { id: string; title: string } => Boolean(bead));
+    .filter((beat): beat is { id: string; title: string } => Boolean(beat));
 
-  if (beads.length === 0) return null;
+  if (beats.length === 0) return null;
 
   return {
     waveIndex,
     name,
     objective,
     agents,
-    beats: beads,
+    beats: beats,
     notes,
   };
 }

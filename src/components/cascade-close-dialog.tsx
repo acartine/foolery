@@ -50,7 +50,7 @@ export function CascadeCloseDialog({
           <DialogDescription>
             Closing <span className="font-semibold">{parentTitle}</span> will
             also close {descendants.length}{" "}
-            {descendants.length === 1 ? "child bead" : "child beads"}.
+            {descendants.length === 1 ? "child beat" : "child beats"}.
           </DialogDescription>
         </DialogHeader>
 

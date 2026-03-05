@@ -12,7 +12,7 @@ describe("memory-managers", () => {
     expect(memoryManagers.some((memoryManager) => memoryManager.type === "knots")).toBe(true);
   });
 
-  it("declares beads as a known memory manager", () => {
+  it("declares beats as a known memory manager", () => {
     const memoryManagers = listKnownMemoryManagers();
     expect(memoryManagers.some((memoryManager) => memoryManager.type === "beads")).toBe(true);
   });
@@ -47,10 +47,10 @@ describe("memory-managers", () => {
     }
   });
 
-  it("assigns knots a lower precedence number than beads", () => {
+  it("assigns knots a lower precedence number than beats", () => {
     const memoryManagers = listKnownMemoryManagers();
     const knots = memoryManagers.find((m) => m.type === "knots")!;
-    const beads = memoryManagers.find((m) => m.type === "beads")!;
-    expect(knots.precedence).toBeLessThan(beads.precedence);
+    const beats = memoryManagers.find((m) => m.type === "beads")!;
+    expect(knots.precedence).toBeLessThan(beats.precedence);
   });
 });

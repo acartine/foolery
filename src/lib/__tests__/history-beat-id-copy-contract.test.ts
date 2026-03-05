@@ -17,17 +17,17 @@ describe("history beat-id copy affordance contract", () => {
   });
 
   it("keeps every history surface wired to the shared copy handler", () => {
-    expect(historyViewSource).toContain("copyBeatId(beat.beadId)");
-    expect(historyViewSource).toContain("copyBeatId(focusedSummary.beadId)");
-    expect(historyViewSource).toContain("copyBeatId(loadedSummary.beadId)");
+    expect(historyViewSource).toContain("copyBeatId(beat.beatId)");
+    expect(historyViewSource).toContain("copyBeatId(focusedSummary.beatId)");
+    expect(historyViewSource).toContain("copyBeatId(loadedSummary.beatId)");
     expect(historyViewSource).toContain("<BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} onCopyBeatId={copyBeatId} />");
     expect(historyViewSource).toContain("onClick={() => onCopyBeatId(beat.id)}");
   });
 
   it("renders stripped ids on every copy affordance surface", () => {
-    expect(historyViewSource).toContain("{stripIdPrefix(beat.beadId)}");
-    expect(historyViewSource).toContain("{stripIdPrefix(focusedSummary.beadId)}");
-    expect(historyViewSource).toContain("{stripIdPrefix(loadedSummary.beadId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(beat.beatId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(focusedSummary.beatId)}");
+    expect(historyViewSource).toContain("{stripIdPrefix(loadedSummary.beatId)}");
     expect(historyViewSource).toContain("{stripIdPrefix(beat.id)}");
   });
 

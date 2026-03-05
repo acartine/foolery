@@ -15,7 +15,7 @@ import {
   TerminalSquare,
   Workflow,
 } from "lucide-react";
-import { fetchBead } from "@/lib/api";
+import { fetchBeat } from "@/lib/api";
 import type {
   AgentHistoryBeatSummary,
   AgentHistoryEntry,
@@ -111,7 +111,7 @@ function workflowStateBadgeLabel(state?: string): string | null {
   return stepLabel ? `${stepLabel} · ${state}` : state;
 }
 
-/** Strip the repo prefix from a beat/bead ID (e.g. "foolery-drmp" → "drmp"). */
+/** Strip the repo prefix from a beat/beat ID (e.g. "foolery-drmp" → "drmp"). */
 function stripIdPrefix(id: string): string {
   const idx = id.indexOf("-");
   return idx > 0 ? id.slice(idx + 1) : id;
@@ -605,14 +605,14 @@ export function AgentHistoryView() {
 
     const focusedStillPresent =
       focusedBeatKey !== null &&
-      beats.some((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey);
+      beats.some((beat) => beatKey(beat.beatId, beat.repoPath) === focusedBeatKey);
     if (!focusedStillPresent) {
-      setFocusedBeatKey(beatKey(beats[0].beadId, beats[0].repoPath));
+      setFocusedBeatKey(beatKey(beats[0].beatId, beats[0].repoPath));
     }
 
     const loadedStillPresent =
       loadedBeatKey === null ||
-      beats.some((beat) => beatKey(beat.beadId, beat.repoPath) === loadedBeatKey);
+      beats.some((beat) => beatKey(beat.beatId, beat.repoPath) === loadedBeatKey);
     if (!loadedStillPresent) {
       setLoadedBeatKey(null);
     }
@@ -635,7 +635,7 @@ export function AgentHistoryView() {
   /* Keep window aligned with focused beat */
   useEffect(() => {
     if (!focusedBeatKey || beats.length === 0) return;
-    const idx = beats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey);
+    const idx = beats.findIndex((b) => beatKey(b.beatId, b.repoPath) === focusedBeatKey);
     if (idx < 0) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Window position must stay in sync with focused beat index after beats list changes.
     setWindowStart((prev) => {
@@ -659,13 +659,13 @@ export function AgentHistoryView() {
       focusBeatList();
       lastScrollDirectionRef.current = direction;
       const currentIndex = focusedBeatKey
-        ? beats.findIndex((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey)
+        ? beats.findIndex((beat) => beatKey(beat.beatId, beat.repoPath) === focusedBeatKey)
         : -1;
       const nextIndex =
         currentIndex === -1
           ? 0
           : Math.max(0, Math.min(beats.length - 1, currentIndex + direction));
-      setFocusedBeatKey(beatKey(beats[nextIndex].beadId, beats[nextIndex].repoPath));
+      setFocusedBeatKey(beatKey(beats[nextIndex].beatId, beats[nextIndex].repoPath));
     },
     [beats, focusedBeatKey, focusBeatList],
   );
@@ -673,7 +673,7 @@ export function AgentHistoryView() {
   const focusedSummary = useMemo<AgentHistoryBeatSummary | null>(
     () =>
       focusedBeatKey
-        ? beats.find((beat) => beatKey(beat.beadId, beat.repoPath) === focusedBeatKey) ?? null
+        ? beats.find((beat) => beatKey(beat.beatId, beat.repoPath) === focusedBeatKey) ?? null
         : null,
     [beats, focusedBeatKey],
   );
@@ -681,7 +681,7 @@ export function AgentHistoryView() {
   const loadedSummary = useMemo<AgentHistoryBeatSummary | null>(
     () =>
       loadedBeatKey
-        ? beats.find((beat) => beatKey(beat.beadId, beat.repoPath) === loadedBeatKey) ?? null
+        ? beats.find((beat) => beatKey(beat.beatId, beat.repoPath) === loadedBeatKey) ?? null
         : null,
     [beats, loadedBeatKey],
   );
@@ -693,8 +693,8 @@ export function AgentHistoryView() {
   /* Fetch beat details for all visible beats */
   const detailQueries = useQueries({
     queries: visibleBeats.map((beat) => ({
-      queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beadId] as const,
-      queryFn: () => fetchBead(beat.beadId, beat.repoPath),
+      queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beatId] as const,
+      queryFn: () => fetchBeat(beat.beatId, beat.repoPath),
       staleTime: 60_000,
       refetchOnWindowFocus: false,
       retry: 1,
@@ -707,7 +707,7 @@ export function AgentHistoryView() {
       const q = detailQueries[i];
       const beat = visibleBeats[i];
       if (q?.data?.ok && q.data.data && beat) {
-        map.set(beatKey(beat.beadId, beat.repoPath), q.data.data);
+        map.set(beatKey(beat.beatId, beat.repoPath), q.data.data);
       }
     }
     return map;
@@ -716,7 +716,7 @@ export function AgentHistoryView() {
   /* Focused beat detail state for the right panel */
   const focusedDetail = useMemo(() => {
     if (!focusedBeatKey) return { loading: false, error: null as string | null, beat: null as Beat | null };
-    const idx = visibleBeats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey);
+    const idx = visibleBeats.findIndex((b) => beatKey(b.beatId, b.repoPath) === focusedBeatKey);
     if (idx < 0) return { loading: false, error: null, beat: null };
     const q = detailQueries[idx];
     if (q.isLoading) return { loading: true, error: null, beat: null };
@@ -727,7 +727,7 @@ export function AgentHistoryView() {
   /* Pre-cache next batch of beats when focus is near bottom of window */
   useEffect(() => {
     const focusedIndexInWindow = focusedBeatKey
-      ? visibleBeats.findIndex((b) => beatKey(b.beadId, b.repoPath) === focusedBeatKey)
+      ? visibleBeats.findIndex((b) => beatKey(b.beatId, b.repoPath) === focusedBeatKey)
       : -1;
     if (focusedIndexInWindow < Math.floor(WINDOW_SIZE / 2)) return;
 
@@ -736,8 +736,8 @@ export function AgentHistoryView() {
     for (let i = prefetchStart; i < prefetchEnd; i++) {
       const beat = beats[i];
       void queryClient.prefetchQuery({
-        queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beadId],
-        queryFn: () => fetchBead(beat.beadId, beat.repoPath),
+        queryKey: ["agent-history-beat-detail", beat.repoPath, beat.beatId],
+        queryFn: () => fetchBeat(beat.beatId, beat.repoPath),
         staleTime: 60_000,
       });
     }
@@ -747,7 +747,7 @@ export function AgentHistoryView() {
   useEffect(() => {
     const cached = cachedBeatKeysRef.current;
     for (const beat of visibleBeats) {
-      const key = beatKey(beat.beadId, beat.repoPath);
+      const key = beatKey(beat.beatId, beat.repoPath);
       const idx = cached.indexOf(key);
       if (idx >= 0) cached.splice(idx, 1);
       cached.push(key);
@@ -805,10 +805,10 @@ export function AgentHistoryView() {
       if (!summary) return "";
       const hinted = summary.title?.trim();
       if (hinted) return hinted;
-      const key = beatKey(summary.beadId, summary.repoPath);
+      const key = beatKey(summary.beatId, summary.repoPath);
       const detail = beatDetailMap.get(key);
       if (detail?.title?.trim()) return detail.title.trim();
-      return summary.beadId;
+      return summary.beatId;
     },
     [beatDetailMap],
   );
@@ -895,7 +895,7 @@ export function AgentHistoryView() {
               </div>
             ) : (
               visibleBeats.map((beat) => {
-                const key = beatKey(beat.beadId, beat.repoPath);
+                const key = beatKey(beat.beatId, beat.repoPath);
                 const focused = focusedBeatKey === key;
                 const loaded = loadedBeatKey === key;
                 return (
@@ -951,12 +951,12 @@ export function AgentHistoryView() {
                         className="cursor-pointer font-mono underline-offset-2 hover:underline"
                         onClick={(e) => {
                           e.stopPropagation();
-                          copyBeatId(beat.beadId);
+                          copyBeatId(beat.beatId);
                         }}
                         onMouseDown={(e) => e.stopPropagation()}
                         title="Click to copy ID"
                       >
-                        {stripIdPrefix(beat.beadId)}
+                        {stripIdPrefix(beat.beatId)}
                       </span>
                       {showRepoName ? (
                         <Badge variant="outline" className="text-[10px] font-normal">
@@ -997,10 +997,10 @@ export function AgentHistoryView() {
               <button
                 type="button"
                 className="ml-auto font-mono text-[11px] text-muted-foreground underline-offset-2 hover:underline"
-                onClick={() => copyBeatId(focusedSummary.beadId)}
+                onClick={() => copyBeatId(focusedSummary.beatId)}
                 title="Click to copy ID"
               >
-                {stripIdPrefix(focusedSummary.beadId)}
+                {stripIdPrefix(focusedSummary.beatId)}
               </button>
             ) : null}
           </div>
@@ -1039,10 +1039,10 @@ export function AgentHistoryView() {
             <button
               type="button"
               className="font-mono text-[11px] text-slate-400 underline-offset-2 hover:underline"
-              onClick={() => copyBeatId(loadedSummary.beadId)}
+              onClick={() => copyBeatId(loadedSummary.beatId)}
               title="Click to copy ID"
             >
-              {stripIdPrefix(loadedSummary.beadId)}
+              {stripIdPrefix(loadedSummary.beatId)}
             </button>
           ) : null}
           {loadedSummary ? (
@@ -1075,7 +1075,7 @@ export function AgentHistoryView() {
           ) : sessionsQuery.isLoading && sessions.length === 0 ? (
             <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[11px] text-slate-400">
               <Spinner className="size-4" />
-              <span>Loading logs for {stripIdPrefix(loadedSummary.beadId)}…</span>
+              <span>Loading logs for {stripIdPrefix(loadedSummary.beatId)}…</span>
               <span className="text-[10px]">prompt histories are BIG, please be patient :-)</span>
             </div>
           ) : sessions.length === 0 ? (

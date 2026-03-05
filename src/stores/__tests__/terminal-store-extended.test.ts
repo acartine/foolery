@@ -325,10 +325,10 @@ describe("rehydrateFromBackend", () => {
     });
   });
 
-  it("marks stale running terminals as completed when absent from backend", () => {
+  it("marks stale running terminals as disconnected when absent from backend", () => {
     useTerminalStore.getState().upsertTerminal(makeTerminal({ status: "running" }));
     useTerminalStore.getState().rehydrateFromBackend([]);
-    expect(useTerminalStore.getState().terminals[0].status).toBe("completed");
+    expect(useTerminalStore.getState().terminals[0].status).toBe("disconnected");
   });
 
   it("does not change non-running terminals absent from backend", () => {

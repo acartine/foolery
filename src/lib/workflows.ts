@@ -417,7 +417,7 @@ function firstActionState(workflow?: MemoryWorkflowDescriptor): string {
   return "in_progress";
 }
 
-/** @internal Used by beads backend for compat-status translation. */
+/** @internal Used by beats backend for compat-status translation. */
 function terminalStateForStatus(status: string, workflow?: MemoryWorkflowDescriptor): string {
   if (status === "deferred") {
     if (workflow?.states.includes("deferred")) return "deferred";
@@ -430,7 +430,7 @@ function terminalStateForStatus(status: string, workflow?: MemoryWorkflowDescrip
   return "closed";
 }
 
-/** @internal Beads-backend compat: maps workflow state to simple status. */
+/** @internal Beats-backend compat: maps workflow state to simple status. */
 export function mapWorkflowStateToCompatStatus(
   workflowState: string,
   context = "workflow-state",
@@ -453,7 +453,7 @@ export function mapWorkflowStateToCompatStatus(
   return "open";
 }
 
-/** @internal Beads-backend compat: maps simple status to workflow state. */
+/** @internal Beats-backend compat: maps simple status to workflow state. */
 export function mapStatusToDefaultWorkflowState(
   status: string,
   workflow?: MemoryWorkflowDescriptor,
@@ -593,7 +593,7 @@ function ownerForCurrentState(
 
 export interface WorkflowRuntimeState {
   state: string;
-  /** @internal Beads-backend compat: simple status derived from state. */
+  /** @internal Beats-backend compat: simple status derived from state. */
   compatStatus: string;
   nextActionState?: string;
   nextActionOwnerKind: ActionOwnerKind;

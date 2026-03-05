@@ -4,7 +4,7 @@ import { BEAT_LIST_QUERY_KEY, invalidateBeatListQueries } from "@/lib/beat-query
 
 describe("beat-query-cache", () => {
   it("uses the shared beat list query key", () => {
-    expect(BEAT_LIST_QUERY_KEY).toEqual(["beads"]);
+    expect(BEAT_LIST_QUERY_KEY).toEqual(["beats"]);
   });
 
   it("invalidates beat list queries with the shared key", async () => {
@@ -16,7 +16,7 @@ describe("beat-query-cache", () => {
     await invalidateBeatListQueries(queryClient);
 
     expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["beads"],
+      queryKey: ["beats"],
       refetchType: "all",
     });
   });

@@ -17,7 +17,7 @@ export interface AgentHistorySession {
   sessionId: string;
   interactionType: AgentHistoryInteractionType;
   repoPath: string;
-  beadIds: string[];
+  beatIds: string[];
   startedAt: string;
   updatedAt: string;
   endedAt?: string;
@@ -30,7 +30,7 @@ export interface AgentHistorySession {
 }
 
 export interface AgentHistoryBeatSummary {
-  beadId: string;
+  beatId: string;
   repoPath: string;
   title?: string;
   lastWorkedAt: string;
@@ -44,6 +44,6 @@ export interface AgentHistoryBeatSummary {
 export interface AgentHistoryPayload {
   beats: AgentHistoryBeatSummary[];
   sessions: AgentHistorySession[];
-  selectedBeadId?: string;
+  selectedBeatId?: string;
   selectedRepoPath?: string;
 }

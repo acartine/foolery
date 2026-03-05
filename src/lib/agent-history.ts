@@ -24,8 +24,8 @@ const SIBLING_WORKTREE_PATTERN = /^(.*)-wt-[^\\/]+$/u;
 
 interface AgentHistoryQuery {
   repoPath?: string;
-  beadId?: string;
-  beadRepoPath?: string;
+  beatId?: string;
+  beatRepoPath?: string;
   sinceHours?: number;
   logRoot?: string;
 }
@@ -34,7 +34,7 @@ interface SessionStartLine {
   sessionId: string;
   interactionType: AgentHistoryInteractionType;
   repoPath: string;
-  beadIds: string[];
+  beatIds: string[];
   ts: string;
   agentName?: string;
   agentModel?: string;
@@ -72,8 +72,8 @@ function clipText(text: string): string {
   return `${text.slice(0, MAX_LINE_CHARS)}\n... [truncated ${extra} chars]`;
 }
 
-function beadKey(repoPath: string, beadId: string): string {
-  return `${repoPath}::${beadId}`;
+function beatKey(repoPath: string, beatId: string): string {
+  return `${repoPath}::${beatId}`;
 }
 
 function devLogRootForRepoPath(repoPath: string): string | null {
@@ -278,7 +278,7 @@ async function resolveHistoryLogRoots(query: AgentHistoryQuery): Promise<string[
 
   const roots = new Set<string>([resolveInteractionLogRoot()]);
   const repoCandidates = new Set<string>();
-  for (const repoPath of [query.repoPath, query.beadRepoPath]) {
+  for (const repoPath of [query.repoPath, query.beatRepoPath]) {
     if (!repoPath) continue;
     const relatedRepoPaths = await discoverRelatedRepoPaths(repoPath);
     for (const relatedRepoPath of relatedRepoPaths) {
@@ -329,15 +329,15 @@ async function readLogFile(filePath: string): Promise<string | null> {
   }
 }
 
-function extractBeadTitles(prompt: string): Map<string, string> {
+function extractBeatTitles(prompt: string): Map<string, string> {
   const result = new Map<string, string>();
   const pairRegex = /(?:^|\n)(?:Parent ID|ID):\s*([^\n]+)\n(?:Parent Title|Title):\s*([^\n]+)/g;
   let match: RegExpExecArray | null;
   while ((match = pairRegex.exec(prompt)) !== null) {
-    const beadId = match[1]?.trim();
+    const beatId = match[1]?.trim();
     const title = match[2]?.trim();
-    if (!beadId || !title) continue;
-    result.set(beadId, title);
+    if (!beatId || !title) continue;
+    result.set(beatId, title);
   }
   return result;
 }
@@ -391,27 +391,27 @@ function parseSession(
       const repoPath = typeof parsed.repoPath === "string" ? parsed.repoPath : "";
       if (!repoPath) return null;
 
-      // Accept both field names: beadIds (legacy) and beatIds (current logger output)
-      const rawBeadIds = Array.isArray(parsed.beadIds)
-        ? parsed.beadIds
+      // Accept both field names: beatIds (legacy) and beatIds (current logger output)
+      const rawBeatIds = Array.isArray(parsed.beatIds)
+        ? parsed.beatIds
         : Array.isArray(parsed.beatIds)
           ? parsed.beatIds
           : [];
-      const beadIds = rawBeadIds.filter(isNonEmptyString).map((value) => value.trim());
-      if (beadIds.length === 0) return null;
+      const beatIds = rawBeatIds.filter(isNonEmptyString).map((value) => value.trim());
+      if (beatIds.length === 0) return null;
 
       start = {
         sessionId: sessionId || "unknown",
         interactionType,
         repoPath,
-        beadIds,
+        beatIds,
         ts: ts || new Date(0).toISOString(),
         agentName: typeof parsed.agentName === "string" ? parsed.agentName : undefined,
         agentModel: typeof parsed.agentModel === "string" ? parsed.agentModel : undefined,
       };
 
       updatedAt = newerTimestamp(updatedAt, start.ts);
-      capturesEntries = Boolean(query.beadId && beadIds.includes(query.beadId));
+      capturesEntries = Boolean(query.beatId && beatIds.includes(query.beatId));
 
       if (capturesEntries) {
         entries.push({
@@ -434,10 +434,10 @@ function parseSession(
       promptCounter += 1;
       const prompt = typeof parsed.prompt === "string" ? parsed.prompt : "";
       if (prompt) {
-        const hints = extractBeadTitles(prompt);
-        for (const [beadId, title] of hints.entries()) {
-          if (!start.beadIds.includes(beadId)) continue;
-          if (!titleHints.has(beadId)) titleHints.set(beadId, title);
+        const hints = extractBeatTitles(prompt);
+        for (const [beatId, title] of hints.entries()) {
+          if (!start.beatIds.includes(beatId)) continue;
+          if (!titleHints.has(beatId)) titleHints.set(beatId, title);
         }
       }
       if (!capturesEntries || !prompt) continue;
@@ -543,7 +543,7 @@ function sortBeats(beats: AgentHistoryBeatSummary[]): AgentHistoryBeatSummary[] 
   return [...beats].sort((a, b) => {
     const timeDiff = parseMillis(b.lastWorkedAt) - parseMillis(a.lastWorkedAt);
     if (timeDiff !== 0) return timeDiff;
-    const idDiff = naturalCompare(a.beadId, b.beadId);
+    const idDiff = naturalCompare(a.beatId, b.beatId);
     if (idDiff !== 0) return idDiff;
     return naturalCompare(a.repoPath, b.repoPath);
   });
@@ -605,8 +605,8 @@ export async function readAgentHistory(
     }
     seenSessions.add(sessionKey);
 
-    for (const beadId of start.beadIds) {
-      const key = beadKey(effectiveRepoPath, beadId);
+    for (const beatId of start.beatIds) {
+      const key = beatKey(effectiveRepoPath, beatId);
       const existing = beatMap.get(key);
       if (existing) {
         existing.lastWorkedAt = newerTimestamp(existing.lastWorkedAt, updatedAt);
@@ -615,14 +615,14 @@ export async function readAgentHistory(
         else if (start.interactionType === "scene") existing.sceneCount += 1;
         else if (start.interactionType === "direct") existing.directCount += 1;
         else if (start.interactionType === "breakdown") existing.breakdownCount += 1;
-        if (!existing.title && titleHints.has(beadId)) {
-          existing.title = titleHints.get(beadId);
+        if (!existing.title && titleHints.has(beatId)) {
+          existing.title = titleHints.get(beatId);
         }
       } else {
         beatMap.set(key, {
-          beadId,
+          beatId,
           repoPath: effectiveRepoPath,
-          title: titleHints.get(beadId),
+          title: titleHints.get(beatId),
           lastWorkedAt: updatedAt,
           sessionCount: 1,
           takeCount: start.interactionType === "take" ? 1 : 0,
@@ -634,21 +634,21 @@ export async function readAgentHistory(
     }
 
     let selectedRepoMatches = true;
-    if (query.beadRepoPath) {
+    if (query.beatRepoPath) {
       selectedRepoMatches = await repoPathsEquivalent(
-        query.beadRepoPath,
+        query.beatRepoPath,
         start.repoPath,
         repoIdentityCache,
       );
     }
-    const isSelected = Boolean(query.beadId && start.beadIds.includes(query.beadId) && selectedRepoMatches);
+    const isSelected = Boolean(query.beatId && start.beatIds.includes(query.beatId) && selectedRepoMatches);
 
     if (isSelected) {
       selectedSessions.push({
         sessionId: start.sessionId,
         interactionType: start.interactionType,
         repoPath: effectiveRepoPath,
-        beadIds: start.beadIds,
+        beatIds: start.beatIds,
         startedAt: start.ts,
         updatedAt,
         endedAt,
@@ -671,7 +671,7 @@ export async function readAgentHistory(
   return {
     beats: sortBeats(filteredBeats),
     sessions: sortSessions(selectedSessions),
-    selectedBeadId: query.beadId,
-    selectedRepoPath: query.beadRepoPath ?? query.repoPath,
+    selectedBeatId: query.beatId,
+    selectedRepoPath: query.beatRepoPath ?? query.repoPath,
   };
 }

@@ -99,23 +99,23 @@ describe("serverLog", () => {
 
 describe("logApiError", () => {
   it("writes an error entry with api category", async () => {
-    logApiError({ method: "POST", path: "/api/beads", status: 400, error: "Validation failed" });
+    logApiError({ method: "POST", path: "/api/beats", status: 400, error: "Validation failed" });
     const lines = await readLogLines();
 
     const entry = lines[0];
     expect(entry.level).toBe("error");
     expect(entry.category).toBe("api");
-    expect(entry.message).toBe("POST /api/beads → 400");
+    expect(entry.message).toBe("POST /api/beats → 400");
     expect(entry.data).toEqual({
       method: "POST",
-      path: "/api/beads",
+      path: "/api/beats",
       status: 400,
       error: "Validation failed",
     });
   });
 
   it("handles undefined error gracefully", async () => {
-    logApiError({ method: "GET", path: "/api/beads/1", status: 500, error: undefined });
+    logApiError({ method: "GET", path: "/api/beats/1", status: 500, error: undefined });
     const lines = await readLogLines();
 
     expect((lines[0].data as Record<string, unknown>).error).toBe("unknown");

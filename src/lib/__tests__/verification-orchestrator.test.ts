@@ -164,7 +164,7 @@ describe("pass path", () => {
   it("enters verification, launches verifier, and closes beat on pass", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
-    // First show: fresh bead (no labels)
+    // First show: fresh beat (no labels)
     // Second show: after entry labels applied (for commit check)
     // Third show: after commit check (with commit label)
     // Fourth show: for verifier prompt build
@@ -175,7 +175,7 @@ describe("pass path", () => {
       if (showCallCount <= 1) {
         return { ok: true, data: makeBeat({ labels: [] }) };
       }
-      // After first update, bead has transition + stage + commit labels
+      // After first update, beat has transition + stage + commit labels
       return {
         ok: true,
         data: makeBeat({
@@ -194,10 +194,10 @@ describe("pass path", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
-    // Should have called updateBead to set entry labels
+    // Should have called updateBeat to set entry labels
     expect(mockUpdate).toHaveBeenCalled();
 
-    // Should have called closeBead for the pass outcome
+    // Should have called closeBeat for the pass outcome
     expect(mockClose).toHaveBeenCalledWith(
       "foolery-test",
       "Auto-verification passed",
@@ -226,7 +226,7 @@ describe("retry paths", () => {
   it("transitions to retry when no commit label found", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
-    // Always return bead with no commit label
+    // Always return beat with no commit label
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
@@ -239,7 +239,7 @@ describe("retry paths", () => {
     // Should have called nextKnot to advance state (not state: "open")
     expect(nextKnotMock).toHaveBeenCalledWith("foolery-test", "/repo", { expectedState: "in_progress" });
 
-    // Should have called updateBead with retry labels (without state)
+    // Should have called updateBeat with retry labels (without state)
     const retryCall = mockUpdate.mock.calls.find(
       (call: unknown[]) => {
         const fields = call[1] as Record<string, unknown>;
@@ -268,7 +268,7 @@ describe("retry paths", () => {
 
     await onAgentComplete(["foolery-test"], "take", "/repo", 0);
 
-    // Should NOT have called closeBead
+    // Should NOT have called closeBeat
     expect(mockClose).not.toHaveBeenCalled();
 
     // Should have called nextKnot to advance state (not state: "open")
@@ -282,7 +282,7 @@ describe("idempotency", () => {
   it("deduplicates concurrent verification requests", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
-    // Bead with commit label ready to go
+    // Beat with commit label ready to go
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
@@ -297,7 +297,7 @@ describe("idempotency", () => {
       createMockProcess("VERIFICATION_RESULT:pass\n", 0)
     );
 
-    // Launch two concurrent verifications for the same bead
+    // Launch two concurrent verifications for the same beat
     const p1 = onAgentComplete(["foolery-test"], "take", "/repo", 0);
     const p2 = onAgentComplete(["foolery-test"], "take", "/repo", 0);
     await Promise.all([p1, p2]);

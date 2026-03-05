@@ -89,11 +89,11 @@ interface PromptScopeBeat {
   priority: Beat["priority"];
 }
 
-function extractObjectiveBeadIds(objective?: string): string[] {
+function extractObjectiveBeatIds(objective?: string): string[] {
   if (!objective?.trim()) return [];
 
-  const beadIdPattern = /\b[a-z0-9]+-[a-z0-9]+(?:\.[0-9]+)*\b/gi;
-  const matches = objective.match(beadIdPattern) ?? [];
+  const beatIdPattern = /\b[a-z0-9]+-[a-z0-9]+(?:\.[0-9]+)*\b/gi;
+  const matches = objective.match(beatIdPattern) ?? [];
   return Array.from(
     new Set(matches.map((match) => match.trim().toLowerCase()))
   );
@@ -112,7 +112,7 @@ function derivePromptScope(
     beatById.set(normalized, beat);
   }
 
-  const objectiveIds = extractObjectiveBeadIds(objective);
+  const objectiveIds = extractObjectiveBeatIds(objective);
   const scopedBeats: PromptScopeBeat[] = [];
   const unresolvedScopeIds: string[] = [];
 
@@ -155,7 +155,7 @@ function buildPrompt(
     "Scope guidance:",
     hasExplicitScope
       ? "Use the explicit work-item IDs below as the in-scope planning set."
-      : "No explicit bead IDs were provided. Infer scope from the objective and inspect beads as needed.",
+      : "No explicit beat IDs were provided. Infer scope from the objective and inspect beats as needed.",
     ...scopedBeats.map(
       (beat) =>
         `- ${beat.id} [${beat.type}, ${beat.state}, P${beat.priority}]: ${beat.title}`
@@ -170,20 +170,20 @@ function buildPrompt(
     "Use your memory manager CLI commands to inspect missing context instead of guessing.",
     "",
     "Hard rules:",
-    "- Every in-scope bead ID must appear in exactly one wave or in unassigned_bead_ids.",
+    "- Every in-scope beat ID must appear in exactly one wave or in unassigned_beat_ids.",
     "- If blocker -> blocked, blocker must be in an earlier wave than blocked when both are in-scope.",
     "- For each wave, propose agent roles and count. Specialty is optional but useful.",
     "- Keep wave names short and concrete.",
     "- Do not hide execution structure only in notes: emit separate waves whenever possible.",
-    "- If planning a single in-scope bead, put it in wave 1 and use later waves with empty bead lists for downstream phases.",
+    "- If planning a single in-scope beat, put it in wave 1 and use later waves with empty beat lists for downstream phases.",
     "",
     "Output protocol (strict):",
     "1) Emit NDJSON progress lines while thinking:",
     '   {"event":"thinking","text":"..."}',
     "2) Emit one draft line per wave:",
-    '   {"event":"wave_draft","wave":{"wave_index":1,"name":"...","objective":"...","bead_ids":["..."],"agents":[{"role":"backend","count":2,"specialty":"api"}],"notes":"..."}}',
+    '   {"event":"wave_draft","wave":{"wave_index":1,"name":"...","objective":"...","beat_ids":["..."],"agents":[{"role":"backend","count":2,"specialty":"api"}],"notes":"..."}}',
     "3) Emit one final line:",
-    `   {"event":"plan_final","plan":{"summary":"...","waves":[{"wave_index":1,"name":"...","objective":"...","beads":[{"id":"...","title":"..."}],"agents":[{"role":"...","count":1,"specialty":"..."}],"notes":"..."}],"unassigned_bead_ids":["..."],"assumptions":["..."]}}`,
+    `   {"event":"plan_final","plan":{"summary":"...","waves":[{"wave_index":1,"name":"...","objective":"...","beats":[{"id":"...","title":"..."}],"agents":[{"role":"...","count":1,"specialty":"..."}],"notes":"..."}],"unassigned_beat_ids":["..."],"assumptions":["..."]}}`,
     "4) Immediately repeat only the final plan JSON between tags:",
     `<${ORCHESTRATION_JSON_TAG}>`,
     "{...}",
@@ -222,7 +222,7 @@ function selectKnownInputBeats(
   rawBeatsForWave: Array<{ id: string; title: string }>,
   beatTitleMap: Map<string, string>
 ): Array<{ id: string; title: string }> {
-  return rawBeatsForWave.filter((bead) => beatTitleMap.has(bead.id));
+  return rawBeatsForWave.filter((beat) => beatTitleMap.has(beat.id));
 }
 
 function selectFallbackWaveBeats(
@@ -259,44 +259,44 @@ function normalizeWave(
 
   const agents = normalizeAgents(obj.agents);
 
-  const beadIds = new Set<string>();
+  const beatIds = new Set<string>();
   const explicitTitles = new Map<string, string>();
 
-  const rawBeadIds = Array.isArray(obj.bead_ids) ? obj.bead_ids : [];
-  for (const value of rawBeadIds) {
+  const rawBeatIds = Array.isArray(obj.beat_ids) ? obj.beat_ids : [];
+  for (const value of rawBeatIds) {
     if (typeof value !== "string" || !value.trim()) continue;
     const id = value.trim();
-    beadIds.add(id);
+    beatIds.add(id);
   }
 
-  const rawBeads = Array.isArray(obj.beads) ? obj.beads : [];
-  for (const value of rawBeads) {
+  const rawBeats = Array.isArray(obj.beats) ? obj.beats : [];
+  for (const value of rawBeats) {
     if (typeof value === "string" && value.trim()) {
       const id = value.trim();
-      beadIds.add(id);
+      beatIds.add(id);
       continue;
     }
 
-    const beadObj = toObject(value);
-    if (!beadObj || typeof beadObj.id !== "string" || !beadObj.id.trim()) continue;
-    const id = beadObj.id.trim();
+    const beatObj = toObject(value);
+    if (!beatObj || typeof beatObj.id !== "string" || !beatObj.id.trim()) continue;
+    const id = beatObj.id.trim();
     const title =
-      typeof beadObj.title === "string" && beadObj.title.trim()
-        ? beadObj.title.trim()
+      typeof beatObj.title === "string" && beatObj.title.trim()
+        ? beatObj.title.trim()
         : undefined;
-    beadIds.add(id);
+    beatIds.add(id);
     if (title) explicitTitles.set(id, title);
   }
 
-  const rawBeatsForWave = Array.from(beadIds).map((id) => ({
+  const rawBeatsForWave = Array.from(beatIds).map((id) => ({
     id,
     title: explicitTitles.get(id) ?? beatTitleMap.get(id) ?? id,
   }));
 
   const knownBeats = selectKnownInputBeats(rawBeatsForWave, beatTitleMap);
 
-  // Preserve the original behavior when known bead IDs are present.
-  // Fallback to raw wave beads only when the model emits layout-only IDs.
+  // Preserve the original behavior when known beat IDs are present.
+  // Fallback to raw wave beats only when the model emits layout-only IDs.
   const beats =
     knownBeats.length > 0 ? knownBeats : selectFallbackWaveBeats(rawBeatsForWave);
 
@@ -331,8 +331,8 @@ function normalizePlan(
   }
 
   const inputIds = Array.from(beatTitleMap.keys());
-  const rawUnassigned = Array.isArray(obj.unassigned_bead_ids)
-    ? obj.unassigned_bead_ids
+  const rawUnassigned = Array.isArray(obj.unassigned_beat_ids)
+    ? obj.unassigned_beat_ids
     : [];
   const normalizedUnassigned = rawUnassigned
     .filter((value): value is string => typeof value === "string")
@@ -1052,9 +1052,9 @@ export async function applyOrchestrationSession(
     throw new Error(existing.error?.message ?? "Failed to load existing scenes");
   }
   const usedWaveSlugs = new Set<string>();
-  for (const bead of existing.data) {
-    if (!bead.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
-    const slug = extractWaveSlug(bead.labels);
+  for (const beat of existing.data) {
+    if (!beat.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
+    const slug = extractWaveSlug(beat.labels);
     if (!slug || isLegacyNumericWaveSlug(slug)) continue;
     usedWaveSlugs.add(slug);
   }
@@ -1069,8 +1069,8 @@ export async function applyOrchestrationSession(
 
     let wavePriority: Beat["priority"] = 2;
     let hasPriority = false;
-    for (const bead of validChildren) {
-      const priority = entry.allBeats.get(bead.id)?.priority;
+    for (const beat of validChildren) {
+      const priority = entry.allBeats.get(beat.id)?.priority;
       if (priority === undefined) continue;
       if (!hasPriority || priority < wavePriority) {
         wavePriority = priority;
@@ -1086,8 +1086,8 @@ export async function applyOrchestrationSession(
       "Agent plan:",
       formatAgentPlan(wave.agents),
       "",
-      "Assigned beads:",
-      ...validChildren.map((bead) => `- ${bead.id}: ${bead.title}`),
+      "Assigned beats:",
+      ...validChildren.map((beat) => `- ${beat.id}: ${beat.title}`),
       wave.notes ? "" : null,
       wave.notes ? `Notes: ${wave.notes}` : null,
       plan.assumptions.length > 0 ? "" : null,
@@ -1189,7 +1189,7 @@ export async function applyOrchestrationSession(
     const refreshed = await getBackend().list(undefined, repoPath);
     if (!refreshed.ok || !refreshed.data) {
       throw new Error(
-        refreshed.error?.message ?? "Failed to refresh beads before closing rewritten source scenes"
+        refreshed.error?.message ?? "Failed to refresh beats before closing rewritten source scenes"
       );
     }
 

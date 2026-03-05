@@ -31,7 +31,7 @@ function SearchBarInner({
     if (q) params.set("q", q);
     else params.delete("q");
     const qs = params.toString();
-    return `/beads${qs ? `?${qs}` : ""}`;
+    return `/beats${qs ? `?${qs}` : ""}`;
   };
 
   const clearSearch = () => {

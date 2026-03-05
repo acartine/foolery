@@ -55,8 +55,8 @@ describe("bd auto-import retry for out-of-sync repos", () => {
       { stdout: "[]", exitCode: 0 }
     );
 
-    const { listBeads } = await import("@/lib/bd");
-    const result = await listBeads(undefined, "/Users/cartine/foolery");
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats(undefined, "/Users/cartine/foolery");
 
     expect(result).toEqual({ ok: true, data: [] });
     expect(execCalls).toEqual([
@@ -69,8 +69,8 @@ describe("bd auto-import retry for out-of-sync repos", () => {
   it("does not retry for non-out-of-sync errors", async () => {
     queueExec({ stderr: "permission denied", exitCode: 1 });
 
-    const { listBeads } = await import("@/lib/bd");
-    const result = await listBeads(undefined, "/Users/cartine/foolery");
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats(undefined, "/Users/cartine/foolery");
 
     expect(result.ok).toBe(false);
     expect(result.error).toContain("permission denied");

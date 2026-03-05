@@ -57,6 +57,7 @@ const STATUS_COLORS: Record<string, string> = {
   error: "bg-red-500",
   aborted: "bg-yellow-500",
   idle: "bg-gray-500",
+  disconnected: "bg-orange-500",
 };
 
 const AUTO_CLOSE_MS = 30_000;
@@ -88,7 +89,10 @@ function writeExitMessage(
   launchRecoverySession: (previousSessionId: string | null) => void,
 ) {
   term.writeln("");
-  if (code === 0) {
+  if (code === -2) {
+    term.writeln("\x1b[33m⚠ Session disconnected — server may have restarted\x1b[0m");
+    return;
+  } else if (code === 0) {
     term.writeln("\x1b[32m✓ Process completed successfully\x1b[0m");
   } else {
     term.writeln(`\x1b[31m✗ Process exited with code ${code}\x1b[0m`);
@@ -744,7 +748,9 @@ export function TerminalPanel() {
                           className={`shrink-0 rounded p-0.5 ${
                             terminal.status === "completed"
                               ? "text-green-400 hover:bg-white/10 hover:text-green-300"
-                              : "text-white/55 hover:bg-white/10 hover:text-white"
+                              : terminal.status === "disconnected"
+                                ? "text-orange-400 hover:bg-white/10 hover:text-orange-300"
+                                : "text-white/55 hover:bg-white/10 hover:text-white"
                           }`}
                           onClick={(event) => {
                             event.stopPropagation();
@@ -797,6 +803,10 @@ export function TerminalPanel() {
                 className="inline-block size-2 shrink-0 rounded-full bg-green-500"
                 title="completed"
               />
+            ) : activeTerminal.status === "disconnected" ? (
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-orange-400">
+                [disconnected]
+              </span>
             ) : (
               <span
                 className={`inline-block size-2 shrink-0 rounded-full ${

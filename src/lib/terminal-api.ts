@@ -14,11 +14,11 @@ export async function listSessions(): Promise<TerminalSession[]> {
 }
 
 export async function startSession(
-  beadId: string,
+  beatId: string,
   repo?: string,
   prompt?: string
 ): Promise<BdResult<TerminalSession>> {
-  const body: Record<string, string> = { beadId };
+  const body: Record<string, string> = { beatId };
   if (repo) body._repo = repo;
   if (prompt) body.prompt = prompt;
 
@@ -104,8 +104,9 @@ export function connectToSession(
           timestamp: Date.now(),
         });
       } else if (!session) {
-        // Session gone from backend — most likely completed and cleaned up.
-        onEvent({ type: "exit", data: "0", timestamp: Date.now() });
+        // Session gone from backend — server likely restarted/crashed.
+        // Use sentinel exit code -2 so callers can distinguish from clean exit.
+        onEvent({ type: "exit", data: "-2", timestamp: Date.now() });
       } else {
         onError?.(err);
       }

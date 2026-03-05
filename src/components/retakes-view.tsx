@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { fetchBeads } from "@/lib/api";
+import { fetchBeats } from "@/lib/api";
 import { naturalCompare } from "@/lib/beat-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
@@ -58,9 +58,9 @@ function relativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-/** Extract the commit sha from a bead's labels (commit:<sha>). */
-function extractCommitSha(bead: Beat): string | undefined {
-  const label = bead.labels?.find((l) => l.startsWith("commit:"));
+/** Extract the commit sha from a beat's labels (commit:<sha>). */
+function extractCommitSha(beat: Beat): string | undefined {
+  const label = beat.labels?.find((l) => l.startsWith("commit:"));
   return label ? label.slice("commit:".length) : undefined;
 }
 
@@ -105,8 +105,8 @@ function pickString(entry: MetadataEntry, keys: string[]): string | undefined {
   return undefined;
 }
 
-function readMetadataEntries(bead: Beat, keys: string[]): MetadataEntry[] {
-  const metadata = bead.metadata;
+function readMetadataEntries(beat: Beat, keys: string[]): MetadataEntry[] {
+  const metadata = beat.metadata;
   if (!metadata || typeof metadata !== "object") return [];
 
   for (const key of keys) {
@@ -118,8 +118,8 @@ function readMetadataEntries(bead: Beat, keys: string[]): MetadataEntry[] {
   return [];
 }
 
-function readMetadataString(bead: Beat, keys: string[]): string | undefined {
-  const metadata = bead.metadata;
+function readMetadataString(beat: Beat, keys: string[]): string | undefined {
+  const metadata = beat.metadata;
   if (!metadata || typeof metadata !== "object") return undefined;
   return pickString(metadata as MetadataEntry, keys);
 }
@@ -289,23 +289,23 @@ function AgentBadge({ entry }: { entry: MetadataEntry }) {
   );
 }
 
-function RetakeDetails({ bead }: { bead: Beat }) {
-  const description = bead.description ?? readMetadataString(bead, [
+function RetakeDetails({ beat }: { beat: Beat }) {
+  const description = beat.description ?? readMetadataString(beat, [
     "knotsDescription",
     "description",
     "body",
     "knotsBody",
   ]);
-  const rawSteps = readMetadataEntries(bead, [...STEP_METADATA_KEYS]);
-  const rawNotes = readMetadataEntries(bead, [...NOTE_METADATA_KEYS]);
-  const rawCapsules = readMetadataEntries(bead, [...HANDOFF_METADATA_KEYS]);
+  const rawSteps = readMetadataEntries(beat, [...STEP_METADATA_KEYS]);
+  const rawNotes = readMetadataEntries(beat, [...NOTE_METADATA_KEYS]);
+  const rawCapsules = readMetadataEntries(beat, [...HANDOFF_METADATA_KEYS]);
   const noteEntries = rawNotes.length > 0
     ? rawNotes
-    : bead.notes
+    : beat.notes
       ? [{
-          content: bead.notes,
+          content: beat.notes,
           username: "legacy-notes",
-          datetime: bead.updated,
+          datetime: beat.updated,
         }]
       : [];
 
@@ -388,47 +388,47 @@ function RetakeDetails({ bead }: { bead: Beat }) {
 }
 
 function RetakeRow({
-  bead,
+  beat,
   onRetake,
   onTitleClick,
 }: {
-  bead: Beat;
-  onRetake: (bead: Beat) => void;
-  onTitleClick?: (bead: Beat) => void;
+  beat: Beat;
+  onRetake: (beat: Beat) => void;
+  onTitleClick?: (beat: Beat) => void;
 }) {
-  const labels = bead.labels ?? [];
+  const labels = beat.labels ?? [];
   const waveSlug = extractWaveSlug(labels);
   const isOrchestrated = labels.some(isWaveLabel);
   const visibleLabels = labels.filter((l) => !isInternalLabel(l));
-  const commitSha = extractCommitSha(bead);
+  const commitSha = extractCommitSha(beat);
 
   return (
     <div className="flex items-start gap-3 border-b border-border/40 px-2 py-2.5 hover:bg-muted/30">
-      {/* Left: bead info */}
+      {/* Left: beat info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <BeatPriorityBadge priority={bead.priority} />
-          <BeatTypeBadge type={bead.type} />
+          <BeatPriorityBadge priority={beat.priority} />
+          <BeatTypeBadge type={beat.type} />
           {onTitleClick ? (
             <button
               type="button"
               title="Open beat details"
               className="truncate text-sm font-medium text-left hover:underline"
-              onClick={() => onTitleClick(bead)}
+              onClick={() => onTitleClick(beat)}
             >
               {waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}
-              {bead.title}
+              {beat.title}
             </button>
           ) : (
             <span className="truncate text-sm font-medium">
               {waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}
-              {bead.title}
+              {beat.title}
             </span>
           )}
         </div>
         <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[11px] text-muted-foreground">{bead.id.replace(/^[^-]+-/, "")}</span>
-          <span className="text-[11px] text-muted-foreground">{relativeTime(bead.updated)}</span>
+          <span className="font-mono text-[11px] text-muted-foreground">{beat.id.replace(/^[^-]+-/, "")}</span>
+          <span className="text-[11px] text-muted-foreground">{relativeTime(beat.updated)}</span>
           {commitSha && (
             <span className="inline-flex items-center rounded px-1 py-0 text-[10px] font-mono font-medium leading-none bg-slate-100 text-slate-700">
               {commitSha}
@@ -449,15 +449,15 @@ function RetakeRow({
             </span>
           ))}
         </div>
-        <RetakeDetails bead={bead} />
+        <RetakeDetails beat={beat} />
       </div>
 
       {/* Right: ReTake button */}
       <button
         type="button"
         className="shrink-0 rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 hover:border-amber-400 transition-colors"
-        title="Flag regression and reopen this bead"
-        onClick={() => onRetake(bead)}
+        title="Flag regression and reopen this beat"
+        onClick={() => onRetake(beat)}
       >
         ReTake
       </button>
@@ -469,22 +469,22 @@ export function RetakesView() {
   const { activeRepo, registeredRepos, pageSize } = useAppStore();
   const queryClient = useQueryClient();
   const updateUrl = useUpdateUrl();
-  const [retakeBead, setRetakeBead] = useState<Beat | null>(null);
+  const [retakeBeat, setRetakeBeat] = useState<Beat | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["beads", "retakes", activeRepo, registeredRepos.length],
+    queryKey: ["beats", "retakes", activeRepo, registeredRepos.length],
     queryFn: async () => {
       const params: Record<string, string> = {};
       if (activeRepo) {
-        const result = await fetchBeads(params, activeRepo);
+        const result = await fetchBeats(params, activeRepo);
         if (result.ok && result.data) {
           const repo = registeredRepos.find((r) => r.path === activeRepo);
           result.data = result.data
-            .filter((bead) => isRetakeSourceState(bead.state))
-            .map((bead) => ({
-              ...bead,
+            .filter((beat) => isRetakeSourceState(beat.state))
+            .map((beat) => ({
+              ...beat,
               _repoPath: activeRepo,
               _repoName: repo?.name ?? activeRepo,
             })) as typeof result.data;
@@ -494,12 +494,12 @@ export function RetakesView() {
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
           registeredRepos.map(async (repo) => {
-            const result = await fetchBeads(params, repo.path);
+            const result = await fetchBeats(params, repo.path);
             if (!result.ok || !result.data) return [];
             return result.data
-              .filter((bead) => isRetakeSourceState(bead.state))
-              .map((bead) => ({
-                ...bead,
+              .filter((beat) => isRetakeSourceState(beat.state))
+              .map((beat) => ({
+                ...beat,
                 _repoPath: repo.path,
                 _repoName: repo.name,
               }));
@@ -507,9 +507,9 @@ export function RetakesView() {
         );
         return { ok: true as const, data: results.flat() };
       }
-      const result = await fetchBeads(params);
+      const result = await fetchBeats(params);
       if (result.ok && result.data) {
-        result.data = result.data.filter((bead) => isRetakeSourceState(bead.state));
+        result.data = result.data.filter((beat) => isRetakeSourceState(beat.state));
       }
       return result;
     },
@@ -521,7 +521,7 @@ export function RetakesView() {
 
   // Sort retake candidates by updated timestamp descending (most recent first),
   // with natural ID order as tiebreaker for deterministic sibling ordering.
-  const beads = useMemo<Beat[]>(() => {
+  const beats = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
     return [...data.data].sort((a, b) => {
       const timeDiff = new Date(b.updated).getTime() - new Date(a.updated).getTime();
@@ -530,21 +530,21 @@ export function RetakesView() {
     });
   }, [data]);
 
-  const pageCount = Math.max(1, Math.ceil(beads.length / pageSize));
-  const paginatedBeads = useMemo(() => {
+  const pageCount = Math.max(1, Math.ceil(beats.length / pageSize));
+  const paginatedBeats = useMemo(() => {
     const start = pageIndex * pageSize;
-    return beads.slice(start, start + pageSize);
-  }, [beads, pageIndex, pageSize]);
+    return beats.slice(start, start + pageSize);
+  }, [beats, pageIndex, pageSize]);
 
   // Reset page when data changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset pagination when dataset size changes; mirrors bead-table pattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset pagination when dataset size changes; mirrors beat-table pattern.
     setPageIndex(0);
-  }, [beads.length]);
+  }, [beats.length]);
 
   const { mutate: handleRetake, isPending: isRetaking } = useMutation({
-    mutationFn: async ({ bead, notes }: { bead: Beat; notes: string }) => {
-      const commitSha = extractCommitSha(bead);
+    mutationFn: async ({ beat, notes }: { beat: Beat; notes: string }) => {
+      const commitSha = extractCommitSha(beat);
       const labels: string[] = [];
       if (commitSha) labels.push(`regression:${commitSha}`);
 
@@ -552,36 +552,36 @@ export function RetakesView() {
         state: RETAKE_TARGET_STATE,
         labels: labels.length > 0 ? labels : undefined,
         notes: notes
-          ? `${bead.notes ? bead.notes + "\n" : ""}ReTake: ${notes}`
-          : bead.notes
-            ? `${bead.notes}\nReTake: reopened for regression investigation`
+          ? `${beat.notes ? beat.notes + "\n" : ""}ReTake: ${notes}`
+          : beat.notes
+            ? `${beat.notes}\nReTake: reopened for regression investigation`
             : "ReTake: reopened for regression investigation",
       };
 
-      const repo = (bead as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      return updateBeatOrThrow(beads, bead.id, fields, repo);
+      const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
+      return updateBeatOrThrow(beats, beat.id, fields, repo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      toast.success("ReTake initiated — bead reopened for investigation");
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
+      toast.success("ReTake initiated — beat reopened for investigation");
       setDialogOpen(false);
-      setRetakeBead(null);
+      setRetakeBeat(null);
     },
     onError: () => {
       toast.error("Failed to initiate ReTake");
     },
   });
 
-  const handleOpenRetake = useCallback((bead: Beat) => {
-    setRetakeBead(bead);
+  const handleOpenRetake = useCallback((beat: Beat) => {
+    setRetakeBeat(beat);
     setDialogOpen(true);
   }, []);
 
   const handleConfirmRetake = useCallback(
     (notes: string) => {
-      if (retakeBead) handleRetake({ bead: retakeBead, notes });
+      if (retakeBeat) handleRetake({ beat: retakeBeat, notes });
     },
-    [retakeBead, handleRetake]
+    [retakeBeat, handleRetake]
   );
 
   const renderPaginationControls = () => (
@@ -647,7 +647,7 @@ export function RetakesView() {
     );
   }
 
-  if (beads.length === 0) {
+  if (beats.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
         <p className="text-sm">No shipped beats found.</p>
@@ -660,18 +660,18 @@ export function RetakesView() {
     <div className="space-y-2">
       <div className="flex items-center justify-between px-2">
         <div className="text-xs text-muted-foreground">
-          {beads.length} shipped beat{beads.length !== 1 ? "s" : ""} — most recently updated first
+          {beats.length} shipped beat{beats.length !== 1 ? "s" : ""} — most recently updated first
         </div>
       </div>
       {pageCount > 1 && renderPaginationControls()}
       <div className="rounded-md border border-border/60">
-        {paginatedBeads.map((bead) => (
-          <RetakeRow key={bead.id} bead={bead} onRetake={handleOpenRetake} />
+        {paginatedBeats.map((beat) => (
+          <RetakeRow key={beat.id} beat={beat} onRetake={handleOpenRetake} />
         ))}
       </div>
       {pageCount > 1 && renderPaginationControls()}
       <RetakeDialog
-        bead={retakeBead}
+        beat={retakeBeat}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onConfirm={handleConfirmRetake}

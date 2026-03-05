@@ -252,7 +252,7 @@ describe("SessionConnectionManager", () => {
 
     expect(mockAddNotification).toHaveBeenCalledWith({
       message: '"Fix login bug" session completed',
-      beadId: "beat-42",
+      beatId: "beat-42",
     });
   });
 
@@ -264,7 +264,7 @@ describe("SessionConnectionManager", () => {
 
     expect(mockAddNotification).toHaveBeenCalledWith({
       message: '"Deploy service" session exited with error',
-      beadId: "beat-43",
+      beatId: "beat-43",
     });
   });
 

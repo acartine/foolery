@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { BeatForm } from "@/components/beat-form";
 import type { RelationshipDeps } from "@/components/beat-form";
-import { createBead, addDep, fetchWorkflows } from "@/lib/api";
+import { createBeat, addDep, fetchWorkflows } from "@/lib/api";
 import { fetchSettings } from "@/lib/settings-api";
 import type { CreateBeatInput } from "@/lib/schemas";
-import { buildBeadFocusHref, stripBeadPrefix } from "@/lib/bead-navigation";
+import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 async function addDepsForBeat(
@@ -98,20 +98,20 @@ export function CreateBeatDialog({
     try {
       const payload = withSelectedProfile(data);
 
-      const result = await createBead(payload, repo ?? undefined);
+      const result = await createBeat(payload, repo ?? undefined);
       if (result.ok) {
         if (deps && result.data?.id) {
           await addDepsForBeat(result.data.id, deps, repo ?? undefined);
         }
         const createdId = result.data?.id;
-        const shortId = createdId ? stripBeadPrefix(createdId) : "";
-        toast.success(createdId ? `Created bead ${createdId}` : `Created ${shortId}`, {
+        const shortId = createdId ? stripBeatPrefix(createdId) : "";
+        toast.success(createdId ? `Created beat ${createdId}` : `Created ${shortId}`, {
           action: createdId
             ? {
                 label: shortId || createdId,
                 onClick: () => {
                   router.push(
-                    buildBeadFocusHref(createdId, searchParams.toString(), {
+                    buildBeatFocusHref(createdId, searchParams.toString(), {
                       detailRepo: repo,
                     }),
                   );
@@ -139,16 +139,16 @@ export function CreateBeatDialog({
     try {
       const payload = withSelectedProfile(data);
 
-      const result = await createBead(payload, repo ?? undefined);
+      const result = await createBeat(payload, repo ?? undefined);
       if (result.ok) {
         if (deps && result.data?.id) {
           await addDepsForBeat(result.data.id, deps, repo ?? undefined);
         }
         const createdId2 = result.data?.id;
-        const shortId2 = createdId2 ? stripBeadPrefix(createdId2) : "";
+        const shortId2 = createdId2 ? stripBeatPrefix(createdId2) : "";
         toast.success(
           createdId2
-            ? `Created bead ${createdId2} — ready for another`
+            ? `Created beat ${createdId2} — ready for another`
             : `Created ${shortId2} — ready for another`,
           {
           action: createdId2
@@ -156,7 +156,7 @@ export function CreateBeatDialog({
                 label: shortId2 || createdId2,
                 onClick: () => {
                   router.push(
-                    buildBeadFocusHref(createdId2, searchParams.toString(), {
+                    buildBeatFocusHref(createdId2, searchParams.toString(), {
                       detailRepo: repo,
                     }),
                   );
@@ -166,7 +166,7 @@ export function CreateBeatDialog({
           },
         );
         setFormKey((k) => k + 1);
-        queryClient.invalidateQueries({ queryKey: ["beads"] });
+        queryClient.invalidateQueries({ queryKey: ["beats"] });
       } else {
         toast.error(result.error ?? "Failed to create");
       }

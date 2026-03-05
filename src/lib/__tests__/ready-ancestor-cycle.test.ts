@@ -41,7 +41,7 @@ describe("filterByVisibleAncestorChain - cycle detection", () => {
     expect(result.map((b) => b.id)).toEqual([]);
   });
 
-  it("keeps beads unrelated to cycle", () => {
+  it("keeps beats unrelated to cycle", () => {
     const beats = [
       makeBeat({ id: "root" }),
       makeBeat({ id: "child", parent: "root" }),
@@ -53,7 +53,7 @@ describe("filterByVisibleAncestorChain - cycle detection", () => {
     expect(result.map((b) => b.id)).toEqual(["root", "child"]);
   });
 
-  it("keeps roots (beads with no parent)", () => {
+  it("keeps roots (beats with no parent)", () => {
     const beats = [
       makeBeat({ id: "a" }),
       makeBeat({ id: "b" }),

@@ -31,13 +31,13 @@ export function DepTree({ deps, beatId, repo }: DepTreeProps) {
 
         if (!linkedId) return null;
 
-        const params = new URLSearchParams({ bead: linkedId });
+        const params = new URLSearchParams({ beat: linkedId });
         if (repo) params.set("detailRepo", repo);
         return (
           <li key={dep.id} className="flex items-center gap-2 text-sm">
             <Badge variant="outline">{depLabel}</Badge>
             <Link
-              href={`/beads?${params.toString()}`}
+              href={`/beats?${params.toString()}`}
               className="text-primary hover:underline font-mono text-xs"
             >
               {linkedId.slice(0, 8)}

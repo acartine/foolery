@@ -57,9 +57,9 @@ function queueExec(...responses: MockExecResult[]): void {
   execQueue.push(...responses);
 }
 
-const BEAD_JSON = {
+const BEAT_JSON = {
   id: "proj-abc",
-  title: "Test bead",
+  title: "Test beat",
   issue_type: "task",
   status: "open",
   priority: 2,
@@ -77,7 +77,7 @@ describe("bd.ts additional coverage", () => {
   });
 
   it("queryBeats with options", async () => {
-    queueExec({ stdout: JSON.stringify([BEAD_JSON]) });
+    queueExec({ stdout: JSON.stringify([BEAT_JSON]) });
     const { queryBeats } = await import("@/lib/bd");
     const result = await queryBeats("status:open", {
       limit: 5,
@@ -255,7 +255,7 @@ describe("bd.ts additional coverage", () => {
   });
 
   it("readyBeats succeeds", async () => {
-    queueExec({ stdout: JSON.stringify([BEAD_JSON]) });
+    queueExec({ stdout: JSON.stringify([BEAT_JSON]) });
     const { readyBeats } = await import("@/lib/bd");
     const result = await readyBeats();
     expect(result.ok).toBe(true);
@@ -302,14 +302,14 @@ describe("bd.ts additional coverage", () => {
   });
 
   it("normalizeBeat infers parent from dependencies array", async () => {
-    const beadWithDeps = {
-      ...BEAD_JSON,
+    const beatWithDeps = {
+      ...BEAT_JSON,
       id: "child-1",
       dependencies: [
         { type: "parent-child", depends_on_id: "parent-1" },
       ],
     };
-    queueExec({ stdout: JSON.stringify(beadWithDeps) });
+    queueExec({ stdout: JSON.stringify(beatWithDeps) });
     const { showBeat } = await import("@/lib/bd");
     const result = await showBeat("child-1");
     expect(result.ok).toBe(true);
@@ -317,8 +317,8 @@ describe("bd.ts additional coverage", () => {
   });
 
   it("normalizeBeat infers parent from dotted ID", async () => {
-    const dotBead = { ...BEAD_JSON, id: "proj.1.2" };
-    queueExec({ stdout: JSON.stringify(dotBead) });
+    const dotBeat = { ...BEAT_JSON, id: "proj.1.2" };
+    queueExec({ stdout: JSON.stringify(dotBeat) });
     const { showBeat } = await import("@/lib/bd");
     const result = await showBeat("proj.1.2");
     expect(result.ok).toBe(true);

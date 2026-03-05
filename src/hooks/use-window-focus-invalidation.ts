@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 
 /**
- * Invalidates bead-related React Query caches when the browser tab
+ * Invalidates beat-related React Query caches when the browser tab
  * becomes visible again (e.g. user switches back to the app).
  *
  * This ensures that badges and the Final Cut view show fresh data

@@ -43,11 +43,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => runAction(() => router.push("/beads"))}>
+          <CommandItem onSelect={() => runAction(() => router.push("/beats"))}>
             <List className="mr-2 size-4" />
-            Go to Beads
+            Go to Beats
           </CommandItem>
-          <CommandItem onSelect={() => runAction(() => router.push("/beads?settings=repos"))}>
+          <CommandItem onSelect={() => runAction(() => router.push("/beats?settings=repos"))}>
             <Database className="mr-2 size-4" />
             Manage Repositories
           </CommandItem>
@@ -55,7 +55,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
         <CommandGroup heading="Actions">
           <CommandItem
-            onSelect={() => runAction(() => router.push("/beads?create=1"))}
+            onSelect={() => runAction(() => router.push("/beats?create=1"))}
           >
             <Plus className="mr-2 size-4" />
             Create Beat

@@ -22,7 +22,7 @@ describe("buildClaimCommand (line 32-34)", () => {
     );
   });
 
-  it("returns bd show command for beads (delegates to buildShowIssueCommand)", () => {
+  it("returns bd show command for beats (delegates to buildShowIssueCommand)", () => {
     expect(buildClaimCommand("foo-123", "beads")).toBe(
       'bd show "foo-123"',
     );
@@ -35,7 +35,7 @@ describe("buildWorkflowStateCommand (lines 36-48)", () => {
     expect(cmd).toBe('kno next "foo-123" --expected-state "implementation" --actor-kind agent');
   });
 
-  it("returns bd update with compat status and wf:state label for beads", () => {
+  it("returns bd update with compat status and wf:state label for beats", () => {
     const cmd = buildWorkflowStateCommand("foo-123", "implementation", "beads");
     expect(cmd).toContain('bd update "foo-123"');
     expect(cmd).toContain("--status");
@@ -47,12 +47,12 @@ describe("buildWorkflowStateCommand (lines 36-48)", () => {
     expect(cmd).toBe('kno next "foo-123" --expected-state "implementation" --actor-kind agent');
   });
 
-  it("appends --no-daemon flag when noDaemon option is set for beads", () => {
+  it("appends --no-daemon flag when noDaemon option is set for beats", () => {
     const cmd = buildWorkflowStateCommand("foo-123", "implementation", "beads", { noDaemon: true });
     expect(cmd).toContain("--no-daemon");
   });
 
-  it("omits --no-daemon flag when noDaemon is not set for beads", () => {
+  it("omits --no-daemon flag when noDaemon is not set for beats", () => {
     const cmd = buildWorkflowStateCommand("foo-123", "implementation", "beads");
     expect(cmd).not.toContain("--no-daemon");
   });
@@ -64,7 +64,7 @@ describe("quoteId helper (line 9)", () => {
     expect(cmd).toBe('kno next "id\\"special" --expected-state "state" --actor-kind agent');
   });
 
-  it("JSON-encodes special characters in id for beads", () => {
+  it("JSON-encodes special characters in id for beats", () => {
     const cmd = buildWorkflowStateCommand('id"special', "state", "beads");
     expect(cmd).toContain('"id\\"special"');
   });

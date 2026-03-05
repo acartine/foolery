@@ -16,12 +16,12 @@ Create, read, update, delete individual beads.
 | Create Bead dialog | `src/components/create-bead-dialog.tsx` | UI |
 | Bead detail page | `src/app/beads/[id]/page.tsx` | UI |
 | Bead form (edit) | `src/components/bead-form.tsx` | UI |
-| List beads | `GET /api/beads` | API |
-| Create bead | `POST /api/beads` | API |
-| Show bead | `GET /api/beads/[id]` | API |
-| Update bead | `PATCH /api/beads/[id]` | API |
-| Delete bead | `DELETE /api/beads/[id]` | API |
-| Close bead | `POST /api/beads/[id]/close` | API |
+| List beads | `GET /api/beats` | API |
+| Create bead | `POST /api/beats` | API |
+| Show bead | `GET /api/beats/[id]` | API |
+| Update bead | `PATCH /api/beats/[id]` | API |
+| Delete bead | `DELETE /api/beats/[id]` | API |
+| Close bead | `POST /api/beats/[id]/close` | API |
 
 Backend calls: `listBeads`, `searchBeads`, `createBead`, `showBead`,
 `updateBead`, `deleteBead`, `closeBead` (all in `src/lib/bd.ts`).
@@ -40,9 +40,9 @@ Add/remove/list dependency edges between beads.
 |---|---|---|
 | Dep tree component | `src/components/dep-tree.tsx` | UI |
 | Relationship picker | `src/components/relationship-picker.tsx` | UI |
-| List deps | `GET /api/beads/[id]/deps` | API |
-| Add dep | `POST /api/beads/[id]/deps` | API |
-| Batch list deps | `GET /api/beads/batch-deps?ids=...` | API |
+| List deps | `GET /api/beats/[id]/deps` | API |
+| Add dep | `POST /api/beats/[id]/deps` | API |
+| Batch list deps | `GET /api/beats/batch-deps?ids=...` | API |
 
 Backend calls: `listDeps`, `addDep`, `removeDep` (in `src/lib/bd.ts`).
 
@@ -110,15 +110,15 @@ Searching, filtering, and sorting beads.
 | Search bar | `src/components/search-bar.tsx` | UI |
 | Bead table | `src/components/bead-table.tsx` | UI |
 | URL state sync | `src/components/url-state-sync.tsx` | UI |
-| List (with filters) | `GET /api/beads?status=...&q=...` | API |
-| Ready beads | `GET /api/beads/ready` | API |
-| Query (expression) | `POST /api/beads/query` | API |
+| List (with filters) | `GET /api/beats?status=...&q=...` | API |
+| Ready beads | `GET /api/beats/ready` | API |
+| Query (expression) | `POST /api/beats/query` | API |
 | Client API | `src/lib/api.ts` | Client |
 | App store | `src/stores/app-store.ts` | State |
 
 **Filter dimensions**: status, type, priority, assignee, free-text search.
 
-**Ready beads** (`/api/beads/ready`): merges `open` + `in_progress` beads,
+**Ready beads** (`/api/beats/ready`): merges `open` + `in_progress` beads,
 excludes those with `stage:verification`, and filters out descendants whose
 parent chain is not visible (`filterByVisibleAncestorChain`).
 
@@ -186,7 +186,7 @@ Merging two beads into one.
 | Entry point | Route / File | Method |
 |---|---|---|
 | Merge dialog | `src/components/merge-beads-dialog.tsx` | UI |
-| Merge beads | `POST /api/beads/merge` | API |
+| Merge beads | `POST /api/beats/merge` | API |
 
 Flow: user selects survivor and consumed bead -> API fetches both ->
 appends consumed description/notes/labels to survivor -> closes consumed
@@ -233,7 +233,7 @@ Backend: `src/lib/agent-history.ts`, `src/lib/interaction-logger.ts`,
 
 Reads JSONL/gzipped interaction logs from disk. Each log file contains
 session_start, prompt, response, and session_end events. Produces a
-beat-summary view (beadId, session count, take/scene counts) and a
+beat-summary view (beatId, session count, take/scene counts) and a
 detailed session timeline for a selected bead.
 
 ### 1.10 Registry
@@ -345,9 +345,9 @@ closeBead(id: string, reason?: string, repoPath?: string) -> void
 ### 2.2 Dependency Operations
 
 ```
-listDeps(beadId: string, repoPath?: string, opts?: { type? }) -> BeadDependency[]
+listDeps(beatId: string, repoPath?: string, opts?: { type? }) -> BeadDependency[]
 
-listBatchDeps(beadIds: string[], repoPath?: string) -> Record<string, BeadDependency[]>
+listBatchDeps(beatIds: string[], repoPath?: string) -> Record<string, BeadDependency[]>
   Batch fetch deps for multiple beads in parallel.
 
 addDep(blockerId: string, blockedId: string, repoPath?: string) -> void
@@ -365,7 +365,7 @@ buildHierarchy(beads: Bead[], sortFn?) -> HierarchicalBead[]
 filterByVisibleAncestorChain(beads: Bead[]) -> Bead[]
   Remove beads whose parent chain is not fully present in the set.
 
-regroomAncestors(beadId: string, repoPath?: string) -> void
+regroomAncestors(beatId: string, repoPath?: string) -> void
   Walk up the parent chain; auto-close any parent whose children
   are all closed. Cascades upward.
 ```
@@ -395,8 +395,8 @@ computeWavePlan(repoPath?: string) -> WavePlan
 ### 2.6 Breakdown Operations
 
 ```
-startBreakdown(repoPath: string, parentBeadId: string) -> BreakdownSession
-  Composite: getBead(parentBeadId) + spawn agent process + stream events.
+startBreakdown(repoPath: string, parentBeatId: string) -> BreakdownSession
+  Composite: getBead(parentBeatId) + spawn agent process + stream events.
 
 streamBreakdownEvents(sessionId: string) -> AsyncStream<BreakdownEvent>
   SSE stream of log, plan, status, error, exit events.
@@ -446,9 +446,9 @@ computePassLabels(currentLabels: string[]) -> { add: string[], remove: string[] 
 computeRetryLabels(currentLabels: string[]) -> { add: string[], remove: string[] }
   Sets stage:retry, increments attempt counter.
 
-acquireVerificationLock(beadId: string) -> boolean
-releaseVerificationLock(beadId: string) -> void
-hasVerificationLock(beadId: string) -> boolean
+acquireVerificationLock(beatId: string) -> boolean
+releaseVerificationLock(beatId: string) -> void
+hasVerificationLock(beatId: string) -> boolean
 
 buildVerifierPrompt(ctx: VerifierPromptContext) -> string
 parseVerifierResult(output: string) -> VerificationOutcome | null
@@ -485,7 +485,7 @@ checkPromptGuidance(repos: RegisteredRepo[]) -> Diagnostic[]
 
 ```
 readAgentHistory(query?: AgentHistoryQuery) -> AgentHistoryPayload
-  Query: { repoPath?, beadId?, beadRepoPath?, sinceHours? }
+  Query: { repoPath?, beatId?, beadRepoPath?, sinceHours? }
   Output: { beats: AgentHistoryBeatSummary[], sessions: AgentHistorySession[],
             selectedBeadId?, selectedRepoPath? }
 ```
@@ -536,7 +536,7 @@ scanAgents() -> ScannedAgent[]
 ### 2.13 Terminal Operations
 
 ```
-startTerminalSession(beadId: string, repoPath: string, ...) -> TerminalSession
+startTerminalSession(beatId: string, repoPath: string, ...) -> TerminalSession
   Spawns an agent process for interactive work on a bead.
 
 streamTerminalOutput(sessionId: string) -> AsyncStream<TerminalEvent>

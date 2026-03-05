@@ -4,12 +4,12 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import * as memoryManagerDetection from "@/lib/memory-manager-detection";
 
-const mockListBeads = vi.fn(async () => ({
+const mockListBeats = vi.fn(async () => ({
   ok: true as const,
   data: [
     {
       id: "bd-1",
-      title: "Beads item",
+      title: "Beats item",
       type: "task",
       status: "open",
       priority: 2,
@@ -21,24 +21,15 @@ const mockListBeads = vi.fn(async () => ({
 }));
 
 vi.mock("@/lib/bd", () => ({
-  listBeats: () => mockListBeads(),
-  listBeads: () => mockListBeads(),
-  readyBeats: () => mockListBeads(),
-  readyBeads: () => mockListBeads(),
-  searchBeats: () => mockListBeads(),
-  searchBeads: () => mockListBeads(),
-  queryBeats: () => mockListBeads(),
-  queryBeads: () => mockListBeads(),
+  listBeats: () => mockListBeats(),
+  readyBeats: () => mockListBeats(),
+  searchBeats: () => mockListBeats(),
+  queryBeats: () => mockListBeats(),
   showBeat: vi.fn(async () => ({ ok: false, error: "not found" })),
-  showBead: vi.fn(async () => ({ ok: false, error: "not found" })),
   createBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  createBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   updateBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  updateBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   deleteBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  deleteBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   closeBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  closeBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   listDeps: vi.fn(async () => ({ ok: true, data: [] })),
   addDep: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   removeDep: vi.fn(async () => ({ ok: false, error: "not implemented" })),
@@ -160,7 +151,7 @@ describe("createBackend(auto)", () => {
     const result = await backend.list(undefined, repo);
     expect(result.ok).toBe(true);
     expect(result.data?.[0].id).toBe("bd-1");
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 
   it("routes .knots repos to knots backend", async () => {
@@ -190,7 +181,7 @@ describe("createBackend(auto)", () => {
     const result = await backend.list(undefined, repo);
     expect(result.ok).toBe(true);
     expect(result.data?.[0].id).toBe("bd-1");
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 });
 
@@ -294,7 +285,7 @@ describe("AutoRoutingBackend proxy methods", () => {
 
     const result = await backend.listReady(undefined, repo);
     expect(result.ok).toBe(true);
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 
   it("delegates search to resolved backend", async () => {
@@ -303,7 +294,7 @@ describe("AutoRoutingBackend proxy methods", () => {
 
     const result = await backend.search("test", undefined, repo);
     expect(result.ok).toBe(true);
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 
   it("delegates query to resolved backend", async () => {
@@ -312,7 +303,7 @@ describe("AutoRoutingBackend proxy methods", () => {
 
     const result = await backend.query("expr", undefined, repo);
     expect(result.ok).toBe(true);
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 
   it("delegates get to resolved backend", async () => {
@@ -437,9 +428,9 @@ describe("AutoRoutingBackend getBackend caching", () => {
     await backend.list(undefined, repoB);
 
     // If caching works, the second call uses the same instance.
-    // We verify indirectly: mockListBeads should be called twice
+    // We verify indirectly: mockListBeats should be called twice
     // (both calls go through the same cli backend).
-    expect(mockListBeads).toHaveBeenCalledTimes(2);
+    expect(mockListBeats).toHaveBeenCalledTimes(2);
   });
 });
 

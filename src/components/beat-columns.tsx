@@ -697,11 +697,3 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
 
 export const beatColumns = getBeatColumns({ showRepoColumn: false });
 
-// ── Deprecated re-exports ───────────────────────────────────
-
-/** @deprecated Use BeatColumnOpts */
-export type BeadColumnOpts = BeatColumnOpts;
-/** @deprecated Use getBeatColumns */
-export const getBeadColumns = getBeatColumns;
-/** @deprecated Use beatColumns */
-export const beadColumns = beatColumns;

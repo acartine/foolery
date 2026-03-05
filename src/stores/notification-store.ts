@@ -3,7 +3,7 @@ import { create } from "zustand";
 export interface Notification {
   id: string;
   message: string;
-  beadId?: string;
+  beatId?: string;
   timestamp: number;
   read: boolean;
 }

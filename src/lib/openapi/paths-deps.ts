@@ -3,7 +3,7 @@
  */
 
 export const depsPaths = {
-  "/api/beads/{id}/deps": {
+  "/api/beats/{id}/deps": {
     get: {
       tags: ["Dependencies"],
       summary: "Get dependencies for a beat",
@@ -62,7 +62,7 @@ export const depsPaths = {
     },
   },
 
-  "/api/beads/batch-deps": {
+  "/api/beats/batch-deps": {
     get: {
       tags: ["Dependencies"],
       summary: "Batch-fetch dependencies for multiple beats",

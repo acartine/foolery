@@ -66,47 +66,47 @@ function canShipBeat(
 }
 
 function BeatCard({
-  bead,
+  beat,
   onShip,
   onAbortShip,
   shippingByBeatId,
 }: {
-  bead: WaveBeat;
-  onShip?: (bead: WaveBeat) => void;
+  beat: WaveBeat;
+  onShip?: (beat: WaveBeat) => void;
   onAbortShip?: (beatId: string) => void;
   shippingByBeatId: Record<string, string>;
 }) {
-  const isActiveShipping = Boolean(shippingByBeatId[bead.id]);
-  const isShipDisabled = !canShipBeat(bead, shippingByBeatId);
+  const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
+  const isShipDisabled = !canShipBeat(beat, shippingByBeatId);
 
   return (
     <div
-      className={`flex flex-col gap-2 rounded-xl border p-3 shadow-sm ${READINESS_STYLES[bead.readiness]}`}
+      className={`flex flex-col gap-2 rounded-xl border p-3 shadow-sm ${READINESS_STYLES[beat.readiness]}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-muted-foreground">
-          {shortId(bead.id)}
+          {shortId(beat.id)}
         </span>
         <div className="flex items-center gap-1">
           <Badge variant="outline" className="text-[10px]">
-            {READINESS_LABELS[bead.readiness]}
+            {READINESS_LABELS[beat.readiness]}
           </Badge>
-          <BeatPriorityBadge priority={bead.priority} />
-          <BeatTypeBadge type={bead.type} />
+          <BeatPriorityBadge priority={beat.priority} />
+          <BeatTypeBadge type={beat.type} />
         </div>
       </div>
 
       <p className="text-sm font-semibold leading-tight line-clamp-2">
-        {bead.title}
+        {beat.title}
       </p>
 
       <p className="text-[11px] leading-tight text-muted-foreground">
-        {bead.readinessReason}
+        {beat.readinessReason}
       </p>
 
-      {bead.blockedBy.length > 0 && (
+      {beat.blockedBy.length > 0 && (
         <div className="flex flex-wrap gap-1">
-          {bead.blockedBy.map((id) => (
+          {beat.blockedBy.map((id) => (
             <Badge key={id} variant="outline" className="text-[10px]">
               waits:{shortId(id)}
             </Badge>
@@ -116,10 +116,10 @@ function BeatCard({
 
       <div className="mt-0.5 flex items-center justify-between">
         <Badge variant="secondary" className="text-[10px]">
-          scene {bead.waveLevel ?? "-"}
+          scene {beat.waveLevel ?? "-"}
         </Badge>
 
-        {onShip && bead.type !== "gate" && (
+        {onShip && beat.type !== "gate" && (
           <div className="flex items-center gap-1">
             {isActiveShipping ? (
               <>
@@ -130,7 +130,7 @@ function BeatCard({
                   type="button"
                   title="Terminating"
                     className="inline-flex h-6 w-6 items-center justify-center rounded bg-red-600 text-white hover:bg-red-500"
-                    onClick={() => onAbortShip?.(bead.id)}
+                    onClick={() => onAbortShip?.(beat.id)}
                   >
                     <Square className="size-3" />
                   </button>
@@ -141,10 +141,10 @@ function BeatCard({
                 variant="outline"
                 className="h-6 gap-1 px-2 text-xs"
                 disabled={isShipDisabled}
-                onClick={() => onShip(bead)}
+                onClick={() => onShip(beat)}
                 title={
                   isShipDisabled
-                    ? bead.readinessReason
+                    ? beat.readinessReason
                     : "Take! this beat"
                 }
               >
@@ -161,7 +161,7 @@ function BeatCard({
 
 function getWaveNextCandidate(wave: Wave): WaveBeat | undefined {
   return wave.beats
-    .filter((bead) => bead.readiness === "runnable")
+    .filter((beat) => beat.readiness === "runnable")
     .sort((a, b) => {
       if (a.priority !== b.priority) return a.priority - b.priority;
       return a.id.localeCompare(b.id);
@@ -195,7 +195,7 @@ export function WavePlanner({
 
   const plan = data?.ok ? data.data : null;
 
-  const recommendationBead = useMemo(() => {
+  const recommendationBeat = useMemo(() => {
     if (!plan?.recommendation) return null;
     const byId = new Map(plan.waves.flatMap((wave) => wave.beats).map((beat) => [beat.id, beat]));
     return byId.get(plan.recommendation.beatId) ?? null;
@@ -295,8 +295,8 @@ export function WavePlanner({
                   <Button
                     size="sm"
                     className="gap-1"
-                    disabled={!recommendationBead || !canShipBeat(recommendationBead, shippingByBeatId)}
-                    onClick={() => recommendationBead && shipBeat(recommendationBead)}
+                    disabled={!recommendationBeat || !canShipBeat(recommendationBeat, shippingByBeatId)}
+                    onClick={() => recommendationBeat && shipBeat(recommendationBeat)}
                     title="Execute recommended next beat"
                   >
                     <Workflow className="size-3.5" />
@@ -344,10 +344,10 @@ export function WavePlanner({
                       </div>
 
                       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                        {wave.beats.map((bead) => (
+                        {wave.beats.map((beat) => (
                           <BeatCard
-                            key={bead.id}
-                            bead={bead}
+                            key={beat.id}
+                            beat={beat}
                             onShip={shipBeat}
                             onAbortShip={onAbortShip}
                             shippingByBeatId={shippingByBeatId}
@@ -368,10 +368,10 @@ export function WavePlanner({
                     </span>
                   </div>
                   <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                    {plan.unschedulable.map((bead) => (
+                    {plan.unschedulable.map((beat) => (
                       <BeatCard
-                        key={bead.id}
-                        bead={bead}
+                        key={beat.id}
+                        beat={beat}
                         shippingByBeatId={shippingByBeatId}
                       />
                     ))}

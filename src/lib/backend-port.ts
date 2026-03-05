@@ -233,7 +233,3 @@ export type { CreateBeatInput, UpdateBeatInput } from "./schemas";
 
 // ── Deprecated re-exports ───────────────────────────────────
 
-/** @deprecated Use BeatListFilters */
-export type BeadListFilters = BeatListFilters;
-/** @deprecated Use BeatQueryOptions */
-export type BeadQueryOptions = BeatQueryOptions;

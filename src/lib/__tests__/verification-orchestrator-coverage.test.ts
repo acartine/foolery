@@ -187,7 +187,7 @@ describe("enterVerification idempotency", () => {
   it("skips label update when stage:verification already present", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
-    // Bead already has stage:verification and commit label
+    // Beat already has stage:verification and commit label
     mockGet.mockResolvedValue({
       ok: true,
       data: makeBeat({
@@ -581,10 +581,10 @@ describe("transitionToRetry uses nextKnot", () => {
   });
 });
 
-// ── Multiple beads in onAgentComplete ───────────────────────
+// ── Multiple beats in onAgentComplete ───────────────────────
 
-describe("multiple beads processing", () => {
-  it("processes multiple beads in parallel", async () => {
+describe("multiple beats processing", () => {
+  it("processes multiple beats in parallel", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     mockGet.mockResolvedValue({
@@ -598,7 +598,7 @@ describe("multiple beads processing", () => {
 
     await onAgentComplete(["beat-1", "beat-2"], "take", "/repo", 0);
 
-    // Both beads should be processed
+    // Both beats should be processed
     expect(spawnMock).toHaveBeenCalledTimes(2);
   });
 });
@@ -679,7 +679,7 @@ describe("launchVerifier output parsing", () => {
 // ── enterVerification state update path ─────────────────────
 
 describe("enterVerification state update", () => {
-  it("sets state to in_progress when bead is not already in_progress", async () => {
+  it("sets state to in_progress when beat is not already in_progress", async () => {
     getVerificationSettingsMock.mockResolvedValue({ enabled: true, agent: "", maxRetries: 3 });
 
     let callCount = 0;

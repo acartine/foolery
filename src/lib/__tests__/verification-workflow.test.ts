@@ -355,19 +355,19 @@ describe("verification locks", () => {
   });
 
   it("acquires and releases lock", () => {
-    expect(acquireVerificationLock("bead-1")).toBe(true);
-    expect(hasVerificationLock("bead-1")).toBe(true);
-    releaseVerificationLock("bead-1");
-    expect(hasVerificationLock("bead-1")).toBe(false);
+    expect(acquireVerificationLock("beat-1")).toBe(true);
+    expect(hasVerificationLock("beat-1")).toBe(true);
+    releaseVerificationLock("beat-1");
+    expect(hasVerificationLock("beat-1")).toBe(false);
   });
 
   it("prevents duplicate acquisition", () => {
-    expect(acquireVerificationLock("bead-1")).toBe(true);
-    expect(acquireVerificationLock("bead-1")).toBe(false);
+    expect(acquireVerificationLock("beat-1")).toBe(true);
+    expect(acquireVerificationLock("beat-1")).toBe(false);
   });
 
-  it("allows independent beads to have concurrent locks", () => {
-    expect(acquireVerificationLock("bead-1")).toBe(true);
-    expect(acquireVerificationLock("bead-2")).toBe(true);
+  it("allows independent beats to have concurrent locks", () => {
+    expect(acquireVerificationLock("beat-1")).toBe(true);
+    expect(acquireVerificationLock("beat-2")).toBe(true);
   });
 });

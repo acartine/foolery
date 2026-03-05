@@ -15,26 +15,26 @@ import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 
 interface NotesDialogProps {
-  bead: Beat | null;
+  beat: Beat | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdate: (id: string, fields: UpdateBeatInput) => void;
 }
 
-export function NotesDialog({ bead, open, onOpenChange, onUpdate }: NotesDialogProps) {
+export function NotesDialog({ beat, open, onOpenChange, onUpdate }: NotesDialogProps) {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    if (bead && open) {
+    if (beat && open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- Initializing controlled textarea value when dialog opens; mirrors prior pattern.
-      setNotes(bead.notes ?? "");
+      setNotes(beat.notes ?? "");
     }
-  }, [bead, open]);
+  }, [beat, open]);
 
-  if (!bead) return null;
+  if (!beat) return null;
 
   const handleSave = () => {
-    onUpdate(bead.id, { notes });
+    onUpdate(beat.id, { notes });
     onOpenChange(false);
   };
 
@@ -44,7 +44,7 @@ export function NotesDialog({ bead, open, onOpenChange, onUpdate }: NotesDialogP
         <DialogHeader>
           <DialogTitle>Notes</DialogTitle>
           <DialogDescription className="font-mono text-xs">
-            {bead.id} — {bead.title}
+            {beat.id} — {beat.title}
           </DialogDescription>
         </DialogHeader>
         <Textarea

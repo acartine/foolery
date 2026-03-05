@@ -18,7 +18,7 @@ const beatIdParam = {
 };
 
 export const beatsPaths = {
-  "/api/beads": {
+  "/api/beats": {
     get: {
       tags: ["Beats"],
       summary: "List beats",
@@ -99,7 +99,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/{id}": {
+  "/api/beats/{id}": {
     get: {
       tags: ["Beats"],
       summary: "Get a beat by ID",
@@ -181,7 +181,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/{id}/close": {
+  "/api/beats/{id}/close": {
     post: {
       tags: ["Beats"],
       summary: "Close a beat",
@@ -210,7 +210,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/{id}/close-cascade": {
+  "/api/beats/{id}/close-cascade": {
     post: {
       tags: ["Beats"],
       summary: "Close a beat and its descendants",
@@ -262,7 +262,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/ready": {
+  "/api/beats/ready": {
     get: {
       tags: ["Beats"],
       summary: "List ready beats",
@@ -285,7 +285,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/query": {
+  "/api/beats/query": {
     post: {
       tags: ["Beats"],
       summary: "Advanced beat query",
@@ -325,7 +325,7 @@ export const beatsPaths = {
     },
   },
 
-  "/api/beads/merge": {
+  "/api/beats/merge": {
     post: {
       tags: ["Beats"],
       summary: "Merge two beats",

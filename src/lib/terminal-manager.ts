@@ -168,7 +168,7 @@ function buildSingleTargetFollowUpLines(
 
   lines.push("Human review is required: either review manually or delegate review to an agent.");
   if (target.workflow.finalCutState) {
-    lines.push("After merge/PR handling, move bead to the next human-action queue:");
+    lines.push("After merge/PR handling, move beat to the next human-action queue:");
     lines.push(`- ${buildWorkflowStateCommand(target.id, target.workflow.finalCutState, memoryManagerType)}`);
   } else {
     lines.push("This workflow does not define a human-action queue state.");
@@ -176,7 +176,7 @@ function buildSingleTargetFollowUpLines(
   return lines;
 }
 
-function buildSingleBeadCompletionFollowUp(
+function buildSingleBeatCompletionFollowUp(
   target: WorkflowPromptTarget,
   memoryManagerType: MemoryManagerType,
 ): string {
@@ -200,13 +200,13 @@ function buildWaveCompletionFollowUp(
   return [
     "Scene completion follow-up:",
     `Handle this in one pass for scene ${waveId}.`,
-    "For EACH bead below, confirm merge/push status before workflow transitions.",
+    "For EACH beat below, confirm merge/push status before workflow transitions.",
     "Do not ask for another follow-up prompt until all listed beats are merge-confirmed (or blocked by a hard error).",
     ...safeTargets.flatMap((target) => buildSingleTargetFollowUpLines(
       target,
       memoryManagerType,
     )),
-    "Then summarize per bead: merged yes/no, pushed yes/no, workflow command results, and PR/review notes when applicable.",
+    "Then summarize per beat: merged yes/no, pushed yes/no, workflow command results, and PR/review notes when applicable.",
   ].join("\n");
 }
 
@@ -527,21 +527,21 @@ export async function createSession(
     throw new Error(`Max concurrent sessions (${MAX_SESSIONS}) reached`);
   }
 
-  // Fetch bead details for prompt
+  // Fetch beat details for prompt
   const result = await getBackend().get(beatId, repoPath);
   if (!result.ok || !result.data) {
     throw new Error(result.error?.message ?? "Failed to fetch beat");
   }
-  let bead = result.data;
+  let beat = result.data;
   const workflowsResult = await getBackend().listWorkflows(repoPath);
   const workflows = workflowsResult.ok ? workflowsResult.data ?? [] : [];
   const workflowsById = workflowDescriptorById(workflows);
   const fallbackWorkflow = workflows[0] ?? defaultWorkflowDescriptor();
-  const isWave = bead.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
-  // Check for children — both orchestrated waves and plain parent beads
+  const isWave = beat.labels?.includes(ORCHESTRATION_WAVE_LABEL) ?? false;
+  // Check for children — both orchestrated waves and plain parent beats
   let waveBeatIds: string[] = [];
   let waveBeats: Beat[] = [];
-  const childResult = await getBackend().list({ parent: bead.id }, repoPath);
+  const childResult = await getBackend().list({ parent: beat.id }, repoPath);
   const hasChildren = childResult.ok && childResult.data && childResult.data.length > 0;
   if (hasChildren) {
     waveBeats = childResult.data!
@@ -550,14 +550,14 @@ export async function createSession(
     waveBeatIds = waveBeats.map((child) => child.id);
   } else if (isWave) {
     console.warn(
-      `[terminal-manager] Failed to load scene children for ${bead.id}: ${childResult.error?.message ?? "no children found"}`
+      `[terminal-manager] Failed to load scene children for ${beat.id}: ${childResult.error?.message ?? "no children found"}`
     );
   }
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
   if (memoryManagerType === "knots") {
-    const targets = isParent ? waveBeats : [bead];
+    const targets = isParent ? waveBeats : [beat];
     const healedTargets = await Promise.all(
       targets.map((target) =>
         advanceAgentOwnedActionStateToQueue(
@@ -574,17 +574,17 @@ export async function createSession(
       waveBeatIds = waveBeats.map((child) => child.id);
       assertKnotsClaimable(waveBeats, "Scene");
     } else {
-      bead = healedTargets[0] ?? bead;
-      assertKnotsClaimable([bead], "Take");
+      beat = healedTargets[0] ?? beat;
+      assertKnotsClaimable([beat], "Take");
     }
   }
-  const primaryTarget = toWorkflowPromptTarget(bead, workflowsById, fallbackWorkflow);
+  const primaryTarget = toWorkflowPromptTarget(beat, workflowsById, fallbackWorkflow);
   const sceneTargets = waveBeats.map((child) =>
     toWorkflowPromptTarget(child, workflowsById, fallbackWorkflow),
   );
 
   // Resolve agent: try pool selection by workflow step, fall back to action mapping
-  const resolved = resolveStep(bead.state);
+  const resolved = resolveStep(beat.state);
   const agent = resolved
     ? await getStepAgent(resolved.step, "take", beatId)
     : await getActionAgent("take");
@@ -601,7 +601,7 @@ export async function createSession(
   } else {
     // Ask the backend for the task-specific prompt
     const takePromptResult = await getBackend().buildTakePrompt(
-      bead.id,
+      beat.id,
       {
         isParent,
         childBeatIds: waveBeatIds.length > 0 ? waveBeatIds : undefined,
@@ -616,14 +616,14 @@ export async function createSession(
     // Wrap backend prompt with Foolery execution instructions
     prompt = (isParent
       ? [
-          `You are executing a parent bead and its children. Implement the children beads and use the parent bead's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
+          `You are executing a parent beat and its children. Implement the children beats and use the parent beat's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
           ``,
           QUEUE_TERMINAL_INVARIANT_INSTRUCTION,
           ``,
           `IMPORTANT INSTRUCTIONS:`,
           `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-          `2. Use this parent bead's description/acceptance/notes as the source of truth for strategy and agent roles.`,
-          `3. Use the Task tool to spawn subagents for independent child beads whenever parallel execution is possible.`,
+          `2. Use this parent beat's description/acceptance/notes as the source of truth for strategy and agent roles.`,
+          `3. Use the Task tool to spawn subagents for independent child beats whenever parallel execution is possible.`,
           `4. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
           `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
           ``,
@@ -651,8 +651,8 @@ export async function createSession(
 
   const session: TerminalSession = {
     id,
-    beatId: bead.id,
-    beatTitle: bead.title,
+    beatId: beat.id,
+    beatTitle: beat.title,
     repoPath: resolvedRepoPath,
     agentName: agent.label || agent.command,
     agentModel: agent.model,
@@ -1279,11 +1279,11 @@ export async function createSession(
         ? null
       : isParent
         ? buildWaveCompletionFollowUp(
-          bead.id,
+          beat.id,
           sceneTargets,
           memoryManagerType,
         )
-        : buildSingleBeadCompletionFollowUp(
+        : buildSingleBeatCompletionFollowUp(
           primaryTarget,
           memoryManagerType,
         );
@@ -1597,7 +1597,7 @@ export async function createSession(
   if (isTakeLoop) {
     interactionLog.logBeatState({
       beatId,
-      state: bead.state ?? "unknown",
+      state: beat.state ?? "unknown",
       phase: "before_prompt",
       iteration: takeIteration,
     });

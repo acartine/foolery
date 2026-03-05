@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Beat } from "@/lib/types";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
-import { updateBead } from "@/lib/api";
+import { updateBeat } from "@/lib/api";
 
 vi.mock("@/lib/api", () => ({
-  updateBead: vi.fn(),
+  updateBeat: vi.fn(),
 }));
 
 function makeBeat(overrides: Partial<Beat> = {}): Beat {
@@ -22,18 +22,18 @@ function makeBeat(overrides: Partial<Beat> = {}): Beat {
 }
 
 describe("updateBeatOrThrow", () => {
-  const updateBeadMock = vi.mocked(updateBead);
+  const updateBeatMock = vi.mocked(updateBeat);
 
   beforeEach(() => {
-    updateBeadMock.mockReset();
+    updateBeatMock.mockReset();
   });
 
   it("passes the beat repo path when available", async () => {
     const beat = { ...makeBeat(), _repoPath: "/tmp/repo-a" } as Beat;
-    updateBeadMock.mockResolvedValue({ ok: true });
+    updateBeatMock.mockResolvedValue({ ok: true });
 
     await expect(updateBeatOrThrow([beat], beat.id, { state: "abandoned" })).resolves.toBeUndefined();
-    expect(updateBeadMock).toHaveBeenCalledWith(
+    expect(updateBeatMock).toHaveBeenCalledWith(
       beat.id,
       { state: "abandoned" },
       "/tmp/repo-a",
@@ -43,12 +43,12 @@ describe("updateBeatOrThrow", () => {
   it("prefers the explicit repo path when one is provided", async () => {
     const beatA = { ...makeBeat(), _repoPath: "/tmp/repo-a" } as Beat;
     const beatB = { ...makeBeat(), _repoPath: "/tmp/repo-b" } as Beat;
-    updateBeadMock.mockResolvedValue({ ok: true });
+    updateBeatMock.mockResolvedValue({ ok: true });
 
     await expect(
       updateBeatOrThrow([beatA, beatB], beatA.id, { state: "abandoned" }, "/tmp/repo-b"),
     ).resolves.toBeUndefined();
-    expect(updateBeadMock).toHaveBeenCalledWith(
+    expect(updateBeatMock).toHaveBeenCalledWith(
       beatA.id,
       { state: "abandoned" },
       "/tmp/repo-b",
@@ -57,7 +57,7 @@ describe("updateBeatOrThrow", () => {
 
   it("throws backend error messages so callers can surface them", async () => {
     const beat = { ...makeBeat(), _repoPath: "/tmp/repo-a" } as Beat;
-    updateBeadMock.mockResolvedValue({ ok: false, error: "transition rejected" });
+    updateBeatMock.mockResolvedValue({ ok: false, error: "transition rejected" });
 
     await expect(updateBeatOrThrow([beat], beat.id, { state: "abandoned" })).rejects.toThrow(
       "transition rejected",
@@ -66,7 +66,7 @@ describe("updateBeatOrThrow", () => {
 
   it("uses a fallback error message when backend returns none", async () => {
     const beat = makeBeat();
-    updateBeadMock.mockResolvedValue({ ok: false });
+    updateBeatMock.mockResolvedValue({ ok: false });
 
     await expect(updateBeatOrThrow([beat], beat.id, { state: "abandoned" })).rejects.toThrow(
       "Failed to update beat",

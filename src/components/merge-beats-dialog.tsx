@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Merge } from "lucide-react";
 import { toast } from "sonner";
-import { mergeBeads } from "@/lib/api";
+import { mergeBeats } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,14 +42,14 @@ export function MergeBeatsDialog({
       const repo = (survivor as unknown as Record<string, unknown>)._repoPath as
         | string
         | undefined;
-      const result = await mergeBeads(survivor.id, consumed.id, repo);
+      const result = await mergeBeats(survivor.id, consumed.id, repo);
       if (!result.ok) {
         throw new Error(result.error ?? "Merge failed");
       }
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
       toast.success("Beats merged");
       onOpenChange(false);
       setSurvivorId(null);
@@ -78,40 +78,40 @@ export function MergeBeatsDialog({
 
         <div className="py-2 space-y-2">
           <p className="text-sm font-medium mb-1">Select the survivor:</p>
-          {beats.map((bead) => (
+          {beats.map((beat) => (
             <button
-              key={bead.id}
+              key={beat.id}
               type="button"
-              onClick={() => setSurvivorId(bead.id)}
+              onClick={() => setSurvivorId(beat.id)}
               className={cn(
                 "w-full text-left rounded-md border p-3 transition-colors",
-                survivorId === bead.id
+                survivorId === beat.id
                   ? "border-primary bg-primary/10"
                   : "border-border hover:border-primary/50"
               )}
             >
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono text-muted-foreground shrink-0">
-                  {bead.id}
+                  {beat.id}
                 </span>
                 <span
                   className={cn(
                     "text-xs font-medium px-1.5 py-0.5 rounded",
-                    survivorId === bead.id
+                    survivorId === beat.id
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
-                  {survivorId === bead.id ? "SURVIVOR" : "CONSUMED"}
+                  {survivorId === beat.id ? "SURVIVOR" : "CONSUMED"}
                 </span>
               </div>
               <div className="mt-1 text-sm font-medium truncate">
-                {bead.title}
+                {beat.title}
               </div>
               <div className="mt-0.5 text-xs text-muted-foreground">
-                {bead.type} &middot; P{bead.priority} &middot; {bead.state}
-                {bead.labels.length > 0 && (
-                  <> &middot; {bead.labels.join(", ")}</>
+                {beat.type} &middot; P{beat.priority} &middot; {beat.state}
+                {beat.labels.length > 0 && (
+                  <> &middot; {beat.labels.join(", ")}</>
                 )}
               </div>
             </button>

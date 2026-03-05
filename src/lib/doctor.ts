@@ -99,7 +99,7 @@ function promptProfileTemplateFor(_profileId: string, repoPath?: string): string
   if (repoPath && detectMemoryManagerType(repoPath) === "knots") {
     return "PROMPT_KNOTS.md";
   }
-  return "PROMPT_BEADS.md";
+  return "PROMPT_BEATS.md";
 }
 
 function fallbackPromptProfileForRepoPath(repoPath: string): string {

@@ -1121,7 +1121,7 @@ function pickStrategy(options) {
 function describeItem(d) {
   const ctx = d.context || {};
   if (ctx.repoName && ctx.file) return ctx.repoName + '/' + ctx.file;
-  if (ctx.beadId) return ctx.beadId + (ctx.repoName ? ' in ' + ctx.repoName : '');
+  if (ctx.beatId) return ctx.beatId + (ctx.repoName ? ' in ' + ctx.repoName : '');
   return d.message.slice(0, 80);
 }
 

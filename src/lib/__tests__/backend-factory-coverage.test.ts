@@ -14,7 +14,7 @@ import { mkdtempSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-const mockListBeads = vi.fn(async () => ({
+const mockListBeats = vi.fn(async () => ({
   ok: true as const,
   data: [
     {
@@ -31,10 +31,10 @@ const mockListBeads = vi.fn(async () => ({
 }));
 
 vi.mock("@/lib/bd", () => ({
-  listBeats: () => mockListBeads(),
-  readyBeats: () => mockListBeads(),
-  searchBeats: () => mockListBeads(),
-  queryBeats: () => mockListBeads(),
+  listBeats: () => mockListBeats(),
+  readyBeats: () => mockListBeats(),
+  searchBeats: () => mockListBeats(),
+  queryBeats: () => mockListBeats(),
   showBeat: vi.fn(async () => ({ ok: false, error: "not found" })),
   createBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   updateBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
@@ -105,7 +105,7 @@ describe("AutoRoutingBackend fallback with no repoPath", () => {
     const backend = new AutoRoutingBackend("cli");
     const result = await backend.list();
     expect(result.ok).toBe(true);
-    expect(mockListBeads).toHaveBeenCalled();
+    expect(mockListBeats).toHaveBeenCalled();
   });
 
   it("uses stub fallback when configured", async () => {

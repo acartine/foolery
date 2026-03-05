@@ -213,27 +213,3 @@ export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;
 
-// ── Deprecated re-exports (to be removed in cleanup pass) ───
-
-/** @deprecated Use beatTypeSchema */
-export const beadTypeSchema = beatTypeSchema;
-/** @deprecated Use beatStateSchema */
-export const beadStatusSchema = beatStateSchema;
-/** @deprecated Use beatPrioritySchema */
-export const beadPrioritySchema = beatPrioritySchema;
-/** @deprecated Use createBeatSchema */
-export const createBeadSchema = createBeatSchema;
-/** @deprecated Use updateBeatSchema */
-export const updateBeadSchema = updateBeatSchema;
-/** @deprecated Use closeBeatSchema */
-export const closeBeadSchema = closeBeatSchema;
-/** @deprecated Use queryBeatSchema */
-export const queryBeadSchema = queryBeatSchema;
-/** @deprecated Use CreateBeatInput */
-export type CreateBeadInput = CreateBeatInput;
-/** @deprecated Use UpdateBeatInput */
-export type UpdateBeadInput = UpdateBeatInput;
-/** @deprecated Use CloseBeatInput */
-export type CloseBeadInput = CloseBeatInput;
-/** @deprecated Use QueryBeatInput */
-export type QueryBeadInput = QueryBeatInput;

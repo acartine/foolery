@@ -1,6 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 
-export const BEAT_LIST_QUERY_KEY = ["beads"] as const;
+export const BEAT_LIST_QUERY_KEY = ["beats"] as const;
 
 type QueryClientLike = Pick<QueryClient, "invalidateQueries">;
 

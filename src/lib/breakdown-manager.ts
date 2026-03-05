@@ -97,9 +97,9 @@ function buildBreakdownPrompt(
     "1) Emit NDJSON progress lines while thinking:",
     '   {"event":"thinking","text":"..."}',
     "2) Emit one draft line per scene:",
-    '   {"event":"wave_draft","wave":{"wave_index":1,"name":"...","objective":"...","beads":[{"title":"...","type":"task","priority":2,"description":"..."}],"notes":"..."}}',
+    '   {"event":"wave_draft","wave":{"wave_index":1,"name":"...","objective":"...","beats":[{"title":"...","type":"task","priority":2,"description":"..."}],"notes":"..."}}',
     "3) Emit one final line:",
-    `   {"event":"plan_final","plan":{"summary":"...","waves":[{"wave_index":1,"name":"...","objective":"...","beads":[{"title":"...","type":"task","priority":2,"description":"..."}],"notes":"..."}],"assumptions":["..."]}}`,
+    `   {"event":"plan_final","plan":{"summary":"...","waves":[{"wave_index":1,"name":"...","objective":"...","beats":[{"title":"...","type":"task","priority":2,"description":"..."}],"notes":"..."}],"assumptions":["..."]}}`,
     "4) Immediately repeat only the final plan JSON between tags:",
     `<${BREAKDOWN_JSON_TAG}>`,
     "{...}",
@@ -151,8 +151,8 @@ function normalizeBreakdownWave(
   const notes =
     typeof obj.notes === "string" && obj.notes.trim() ? obj.notes.trim() : undefined;
 
-  const rawBeads = Array.isArray(obj.beads) ? obj.beads : [];
-  const beats = rawBeads
+  const rawBeats = Array.isArray(obj.beats) ? obj.beats : [];
+  const beats = rawBeats
     .map((b) => normalizeBeatSpec(b))
     .filter((b): b is BreakdownBeatSpec => b !== null);
 
@@ -590,12 +590,12 @@ export async function applyBreakdownPlan(
 
   const existing = await getBackend().list(undefined, repoPath);
   if (!existing.ok || !existing.data) {
-    throw new Error(existing.error?.message ?? "Failed to load existing beads");
+    throw new Error(existing.error?.message ?? "Failed to load existing beats");
   }
   const usedWaveSlugs = new Set<string>();
-  for (const bead of existing.data) {
-    if (!bead.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
-    const slug = extractWaveSlug(bead.labels);
+  for (const beat of existing.data) {
+    if (!beat.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
+    const slug = extractWaveSlug(beat.labels);
     if (slug && !isLegacyNumericWaveSlug(slug)) usedWaveSlugs.add(slug);
   }
 
@@ -646,7 +646,7 @@ export async function applyBreakdownPlan(
     previousWaveId = waveId;
 
     for (const spec of wave.beats) {
-      const beadResult = await getBackend().create(
+      const beatResult = await getBackend().create(
         {
           title: spec.title,
           type: spec.type,
@@ -657,11 +657,11 @@ export async function applyBreakdownPlan(
         repoPath,
       );
 
-      if (!beadResult.ok || !beadResult.data?.id) {
-        throw new Error(beadResult.error?.message ?? `Failed to create bead: ${spec.title}`);
+      if (!beatResult.ok || !beatResult.data?.id) {
+        throw new Error(beatResult.error?.message ?? `Failed to create beat: ${spec.title}`);
       }
 
-      createdBeatIds.push(beadResult.data.id);
+      createdBeatIds.push(beatResult.data.id);
     }
   }
 

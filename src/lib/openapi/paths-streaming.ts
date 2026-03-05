@@ -35,9 +35,9 @@ export const terminalPaths = {
           "application/json": {
             schema: {
               type: "object",
-              required: ["beadId"],
+              required: ["beatId"],
               properties: {
-                beadId: { type: "string" },
+                beatId: { type: "string" },
                 _repo: { type: "string" },
                 prompt: { type: "string" },
               },
@@ -123,9 +123,9 @@ export const breakdownPaths = {
           "application/json": {
             schema: {
               type: "object",
-              required: ["parentBeadId", "_repo"],
+              required: ["parentBeatId", "_repo"],
               properties: {
-                parentBeadId: { type: "string" },
+                parentBeatId: { type: "string" },
                 _repo: { type: "string" },
               },
             },

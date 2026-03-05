@@ -15,7 +15,7 @@ import type { Beat } from "@/lib/types";
 import { RETAKE_TARGET_STATE } from "@/lib/retake";
 
 interface RetakeDialogProps {
-  bead: Beat | null;
+  beat: Beat | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (notes: string) => void;
@@ -23,12 +23,12 @@ interface RetakeDialogProps {
 }
 
 /** Extract the commit sha from a beat's labels (commit:<sha>). */
-function extractCommitSha(bead: Beat): string | undefined {
-  const label = bead.labels?.find((l) => l.startsWith("commit:"));
+function extractCommitSha(beat: Beat): string | undefined {
+  const label = beat.labels?.find((l) => l.startsWith("commit:"));
   return label ? label.slice("commit:".length) : undefined;
 }
 
-export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }: RetakeDialogProps) {
+export function RetakeDialog({ beat, open, onOpenChange, onConfirm, isPending }: RetakeDialogProps) {
   const [notes, setNotes] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -43,9 +43,9 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
     }
   }, [open]);
 
-  if (!bead) return null;
+  if (!beat) return null;
 
-  const commitSha = extractCommitSha(bead);
+  const commitSha = extractCommitSha(beat);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -53,7 +53,7 @@ export function RetakeDialog({ bead, open, onOpenChange, onConfirm, isPending }:
         <DialogHeader>
           <DialogTitle>ReTake</DialogTitle>
           <DialogDescription className="font-mono text-xs">
-            {bead.id} — {bead.title}
+            {beat.id} — {beat.title}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">

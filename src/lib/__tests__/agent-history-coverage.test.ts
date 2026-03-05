@@ -1,7 +1,7 @@
 /**
  * Additional coverage tests for agent-history.ts.
  * Targets uncovered parse paths: readLogFile with .gz, empty logs,
- * session with invalid interactionType, session with empty beadIds,
+ * session with invalid interactionType, session with empty beatIds,
  * response without raw field, sessions sorted by time.
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -61,7 +61,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "compressed-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["gz-bead"],
+        beatIds: ["gz-beat"],
       },
       {
         kind: "session_end",
@@ -73,7 +73,7 @@ describe("readAgentHistory (additional coverage)", () => {
     ]);
 
     const history = await readAgentHistory({ logRoot: tempDir });
-    expect(history.beats.map((b) => b.beadId)).toContain("gz-bead");
+    expect(history.beats.map((b) => b.beatId)).toContain("gz-beat");
   });
 
   it("skips sessions with invalid interactionType", async () => {
@@ -84,7 +84,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "invalid-type-1",
         interactionType: "unknown_type",
         repoPath: "/tmp/repo-a",
-        beadIds: ["bead-1"],
+        beatIds: ["beat-1"],
       },
     ]);
 
@@ -100,7 +100,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "no-repo-1",
         interactionType: "take",
         repoPath: "",
-        beadIds: ["bead-1"],
+        beatIds: ["beat-1"],
       },
     ]);
 
@@ -108,15 +108,15 @@ describe("readAgentHistory (additional coverage)", () => {
     expect(history.beats).toHaveLength(0);
   });
 
-  it("skips sessions with empty beadIds", async () => {
-    await writeLog(tempDir, "repo-a/2026-02-20/no-beads.jsonl", [
+  it("skips sessions with empty beatIds", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/no-beats.jsonl", [
       {
         kind: "session_start",
         ts: "2026-02-20T10:00:00.000Z",
-        sessionId: "no-beads-1",
+        sessionId: "no-beats-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: [],
+        beatIds: [],
       },
     ]);
 
@@ -132,7 +132,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "no-raw-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["bead-nr"],
+        beatIds: ["beat-nr"],
       },
       {
         kind: "response",
@@ -151,8 +151,8 @@ describe("readAgentHistory (additional coverage)", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "bead-nr",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "beat-nr",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     const responses = history.sessions[0]?.entries.filter((e) => e.kind === "response") ?? [];
@@ -170,7 +170,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "malf-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["bead-m"],
+        beatIds: ["beat-m"],
       }),
       "this is not json{{{",
       JSON.stringify({
@@ -184,10 +184,10 @@ describe("readAgentHistory (additional coverage)", () => {
     await writeFile(fullPath, content, "utf-8");
 
     const history = await readAgentHistory({ logRoot: tempDir });
-    expect(history.beats.map((b) => b.beadId)).toContain("bead-m");
+    expect(history.beats.map((b) => b.beatId)).toContain("beat-m");
   });
 
-  it("increments session counts for same bead across multiple files", async () => {
+  it("increments session counts for same beat across multiple files", async () => {
     await writeLog(tempDir, "repo-a/2026-02-20/s1.jsonl", [
       {
         kind: "session_start",
@@ -195,7 +195,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "s1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["shared-bead"],
+        beatIds: ["shared-beat"],
       },
     ]);
     await writeLog(tempDir, "repo-a/2026-02-20/s2.jsonl", [
@@ -205,12 +205,12 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "s2",
         interactionType: "scene",
         repoPath: "/tmp/repo-a",
-        beadIds: ["shared-bead"],
+        beatIds: ["shared-beat"],
       },
     ]);
 
     const history = await readAgentHistory({ logRoot: tempDir });
-    const beat = history.beats.find((b) => b.beadId === "shared-bead");
+    const beat = history.beats.find((b) => b.beatId === "shared-beat");
     expect(beat?.sessionCount).toBe(2);
     expect(beat?.takeCount).toBe(1);
     expect(beat?.sceneCount).toBe(1);
@@ -224,7 +224,7 @@ describe("readAgentHistory (additional coverage)", () => {
     expect(history.sessions).toEqual([]);
   });
 
-  it("extracts parent bead titles from prompt", async () => {
+  it("extracts parent beat titles from prompt", async () => {
     await writeLog(tempDir, "repo-a/2026-02-20/parent.jsonl", [
       {
         kind: "session_start",
@@ -232,18 +232,18 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "parent-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["parent-bead"],
+        beatIds: ["parent-beat"],
       },
       {
         kind: "prompt",
         ts: "2026-02-20T10:00:01.000Z",
         sessionId: "parent-1",
-        prompt: "Parent ID: parent-bead\nParent Title: The Parent Beat",
+        prompt: "Parent ID: parent-beat\nParent Title: The Parent Beat",
       },
     ]);
 
     const history = await readAgentHistory({ logRoot: tempDir });
-    const beat = history.beats.find((b) => b.beadId === "parent-bead");
+    const beat = history.beats.find((b) => b.beatId === "parent-beat");
     expect(beat?.title).toBe("The Parent Beat");
   });
 
@@ -255,7 +255,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "null-exit-1",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["exit-bead"],
+        beatIds: ["exit-beat"],
       },
       {
         kind: "session_end",
@@ -268,8 +268,8 @@ describe("readAgentHistory (additional coverage)", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "exit-bead",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "exit-beat",
+      beatRepoPath: "/tmp/repo-a",
     });
     expect(history.sessions[0]?.exitCode).toBeNull();
   });
@@ -290,7 +290,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "repo-local-1",
         interactionType: "take",
         repoPath,
-        beadIds: ["repo-local-bead"],
+        beatIds: ["repo-local-beat"],
       },
       {
         kind: "session_end",
@@ -308,7 +308,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "global-1",
         interactionType: "take",
         repoPath: "/different/repo",
-        beadIds: ["global-bead"],
+        beatIds: ["global-beat"],
       },
     ]);
 
@@ -317,7 +317,7 @@ describe("readAgentHistory (additional coverage)", () => {
 
     try {
       const history = await readAgentHistory({ repoPath });
-      expect(history.beats.map((b) => b.beadId)).toEqual(["repo-local-bead"]);
+      expect(history.beats.map((b) => b.beatId)).toEqual(["repo-local-beat"]);
     } finally {
       if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
       else (process.env as Record<string, string | undefined>).HOME = originalHome;
@@ -344,7 +344,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "sibling-worktree-1",
         interactionType: "take",
         repoPath: siblingWorktreePath,
-        beadIds: ["sibling-worktree-bead"],
+        beatIds: ["sibling-worktree-beat"],
       },
       {
         kind: "session_end",
@@ -360,7 +360,7 @@ describe("readAgentHistory (additional coverage)", () => {
 
     try {
       const history = await readAgentHistory({ repoPath });
-      expect(history.beats.map((b) => b.beadId)).toEqual(["sibling-worktree-bead"]);
+      expect(history.beats.map((b) => b.beatId)).toEqual(["sibling-worktree-beat"]);
       expect(history.beats[0]?.repoPath).toBe(repoPath);
     } finally {
       if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
@@ -387,7 +387,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "nested-worktree-1",
         interactionType: "scene",
         repoPath: nestedWorktreePath,
-        beadIds: ["nested-worktree-bead"],
+        beatIds: ["nested-worktree-beat"],
       },
       {
         kind: "session_end",
@@ -403,7 +403,7 @@ describe("readAgentHistory (additional coverage)", () => {
 
     try {
       const history = await readAgentHistory({ repoPath });
-      expect(history.beats.map((b) => b.beadId)).toEqual(["nested-worktree-bead"]);
+      expect(history.beats.map((b) => b.beatId)).toEqual(["nested-worktree-beat"]);
       expect(history.beats[0]?.repoPath).toBe(repoPath);
       expect(history.beats[0]?.sceneCount).toBe(1);
     } finally {
@@ -431,7 +431,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "knots-canonical-1",
         interactionType: "take",
         repoPath,
-        beadIds: ["knots-canonical-beat"],
+        beatIds: ["knots-canonical-beat"],
       },
       {
         kind: "session_end",
@@ -447,13 +447,13 @@ describe("readAgentHistory (additional coverage)", () => {
 
     try {
       const history = await readAgentHistory({ repoPath: knotsWorktreePath });
-      expect(history.beats.map((b) => b.beadId)).toEqual(["knots-canonical-beat"]);
+      expect(history.beats.map((b) => b.beatId)).toEqual(["knots-canonical-beat"]);
       expect(history.beats[0]?.repoPath).toBe(knotsWorktreePath);
 
       const sessionHistory = await readAgentHistory({
         repoPath: knotsWorktreePath,
-        beadId: "knots-canonical-beat",
-        beadRepoPath: knotsWorktreePath,
+        beatId: "knots-canonical-beat",
+        beatRepoPath: knotsWorktreePath,
       });
       expect(sessionHistory.sessions).toHaveLength(1);
       expect(sessionHistory.sessions[0]?.sessionId).toBe("knots-canonical-1");
@@ -482,7 +482,7 @@ describe("readAgentHistory (additional coverage)", () => {
         sessionId: "shared-session",
         interactionType: "scene",
         repoPath,
-        beadIds: ["shared-bead"],
+        beatIds: ["shared-beat"],
       },
       {
         kind: "session_end",
@@ -501,7 +501,7 @@ describe("readAgentHistory (additional coverage)", () => {
 
     try {
       const history = await readAgentHistory({ repoPath });
-      const beat = history.beats.find((b) => b.beadId === "shared-bead");
+      const beat = history.beats.find((b) => b.beatId === "shared-beat");
       expect(beat?.sessionCount).toBe(1);
       expect(beat?.sceneCount).toBe(1);
     } finally {

@@ -954,23 +954,3 @@ export async function removeDep(
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 
-/** @deprecated Use listBeats */
-export const listBeads = listBeats;
-/** @deprecated Use readyBeats */
-export const readyBeads = readyBeats;
-/** @deprecated Use searchBeats */
-export const searchBeads = searchBeats;
-/** @deprecated Use queryBeats */
-export const queryBeads = queryBeats;
-/** @deprecated Use showBeat */
-export const showBead = showBeat;
-/** @deprecated Use createBeat */
-export const createBead = createBeat;
-/** @deprecated Use updateBeat */
-export const updateBead = updateBeat;
-/** @deprecated Use deleteBeat */
-export const deleteBead = deleteBeat;
-/** @deprecated Use closeBeat */
-export const closeBead = closeBeat;
-/** @deprecated Use normalizeBeats */
-export const normalizeBeads = normalizeBeats;

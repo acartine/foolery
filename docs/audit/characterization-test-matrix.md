@@ -144,10 +144,10 @@ behavior so that post-refactor parity can be verified mechanically.
 
 | ID       | Description                                                    | Input / Preconditions                           | Expected Behavior (current)                             | Priority   | Status   |
 |----------|----------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------------|------------|----------|
-| API-001  | `fetchBeads` builds correct query string                      | Params `{ status: "open" }`, repo path          | Fetches `GET /api/beads?status=open&_repo=...`          | nice-to-have | scaffolded |
-| API-002  | `fetchReadyBeads` calls `/api/beads/ready`                    | No params                                       | Fetches correct endpoint                                | nice-to-have | scaffolded |
-| API-003  | `createBead` sends POST with body                             | CreateBeadInput                                 | POST to `/api/beads` with JSON body                     | nice-to-have | scaffolded |
-| API-004  | `mergeBeads` sends POST with survivorId/consumedId            | Two bead IDs                                    | POST to `/api/beads/merge` with body                    | nice-to-have | scaffolded |
+| API-001  | `fetchBeads` builds correct query string                      | Params `{ status: "open" }`, repo path          | Fetches `GET /api/beats?status=open&_repo=...`          | nice-to-have | scaffolded |
+| API-002  | `fetchReadyBeads` calls `/api/beats/ready`                    | No params                                       | Fetches correct endpoint                                | nice-to-have | scaffolded |
+| API-003  | `createBead` sends POST with body                             | CreateBeadInput                                 | POST to `/api/beats` with JSON body                     | nice-to-have | scaffolded |
+| API-004  | `mergeBeads` sends POST with survivorId/consumedId            | Two bead IDs                                    | POST to `/api/beats/merge` with body                    | nice-to-have | scaffolded |
 | API-005  | `fetchBeadsFromAllRepos` fans out and merges                  | Two registered repos                            | Returns beads from both repos with `_repoPath`          | nice-to-have | scaffolded |
 | API-006  | Error response maps to `{ ok: false }`                        | fetch returns 500                               | Result `ok === false`                                   | nice-to-have | scaffolded |
 

@@ -27,7 +27,7 @@ The production app runs on port 3210 by default (`foolery start`). Dev and produ
 If your clone needs Dolt-native Beads sync hooks for `git push` and merge-style `git pull`, run:
 
 ```bash
-bash scripts/setup-beads-dolt-hooks.sh
+bash scripts/setup-beats-dolt-hooks.sh
 ```
 
 Then validate:
@@ -46,7 +46,7 @@ This replaces only `pre-push`, `post-merge`, and `post-checkout` in local git ho
 src/
   app/                  Next.js 16 App Router
     api/                REST API routes (wrap bd CLI)
-    beads/              Main beats listing
+    beats/              Main beats listing
   components/           React components
     ui/                 shadcn/ui primitives (new-york style)
   hooks/                Custom React hooks
@@ -88,7 +88,7 @@ Browser  ->  React 19 + Zustand + TanStack Query
          ->  Git (.beads/issues.jsonl)
 ```
 
-The frontend never touches the filesystem directly. All mutations flow through API routes that shell out to the `bd` CLI. This keeps `bd` as the single source of truth for bead data.
+The frontend never touches the filesystem directly. All mutations flow through API routes that shell out to the `bd` CLI. This keeps `bd` as the single source of truth for beat data.
 
 ## Tech Stack
 
@@ -107,8 +107,8 @@ The frontend never touches the filesystem directly. All mutations flow through A
 
 ### File Naming
 
-- Components: kebab-case (`bead-form.tsx`, `status-badge.tsx`)
-- Utilities and hooks: kebab-case (`bead-sort.ts`, `use-update-url.ts`)
+- Components: kebab-case (`beat-form.tsx`, `status-badge.tsx`)
+- Utilities and hooks: kebab-case (`beat-sort.ts`, `use-update-url.ts`)
 - Types and schemas: kebab-case (`types.ts`, `schemas.ts`)
 - Tests: `__tests__/<module>.test.ts`
 - Stories: `<component>.stories.tsx`

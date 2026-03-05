@@ -28,7 +28,7 @@ const MAX_CACHE_ENTRIES = 64;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 export const DEGRADED_ERROR_MESSAGE =
-  "Unable to interact with beads store, try refreshing the page or restarting Foolery. If problems persist, investigate your beads install";
+  "Unable to interact with beats store, try refreshing the page or restarting Foolery. If problems persist, investigate your beats install";
 
 /** Error substrings that indicate a lock/access issue worth suppressing. */
 const SUPPRESSIBLE_PATTERNS = [

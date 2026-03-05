@@ -14,7 +14,7 @@
  *                          │           └── still missing? → stage:retry + attempt:N
  *                          │
  *                          ├── commit label present → launch verifier
- *                          │     ├── pass → remove stage labels, close bead
+ *                          │     ├── pass → remove stage labels, close beat
  *                          │     └── fail → stage:retry + attempt:N
  *                          │
  *                          └── idempotent re-entry: noop if already in verification
@@ -22,7 +22,7 @@
  *
  * ## Label Invariants
  *
- * - `stage:verification` — indicates the bead is queued/undergoing verification.
+ * - `stage:verification` — indicates the beat is queued/undergoing verification.
  *   Set at workflow entry, removed on pass or retry.
  * - `stage:retry` — set when verification fails; mutually exclusive with stage:verification.
  * - `attempt:N` — monotonically incrementing counter of verification attempts.
@@ -31,7 +31,7 @@
  * ## Idempotency
  *
  * - If `stage:verification` is already present, the workflow is a noop (deduped).
- * - The in-memory lock map prevents concurrent launches for the same bead.
+ * - The in-memory lock map prevents concurrent launches for the same beat.
  */
 
 import type { Beat } from "@/lib/types";
@@ -121,11 +121,11 @@ import type { ActionName } from "@/lib/types";
  * Actions that produce code changes and should trigger auto-verification
  * after the agent invocation completes.
  *
- * - "take" — single bead implementation
- * - "scene" — multi-bead scene implementation
+ * - "take" — single beat implementation
+ * - "scene" — multi-beat scene implementation
  *
  * Excluded:
- * - "breakdown" — only creates child beads, no code changes
+ * - "breakdown" — only creates child beats, no code changes
  */
 const CODE_PRODUCING_ACTIONS: ReadonlySet<ActionName> = new Set([
   "take",
@@ -175,7 +175,7 @@ export function computeEntryLabels(currentLabels: string[]): VerificationTransit
 
 /**
  * Compute the label mutations for a successful verification (pass).
- * Removes stage labels and closes the bead.
+ * Removes stage labels and closes the beat.
  */
 export function computePassLabels(currentLabels: string[]): VerificationTransitionLabels {
   const remove: string[] = [];
@@ -243,7 +243,7 @@ export interface VerifierPromptContext {
 
 /**
  * Build the prompt for the verification agent.
- * This prompt instructs the agent to verify the commit against bead requirements.
+ * This prompt instructs the agent to verify the commit against beat requirements.
  */
 export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
   const memoryManagerType = ctx.memoryManagerType ?? "beads";
@@ -251,10 +251,10 @@ export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
   const passCommands = buildVerificationPassCommands(ctx.beatId, memoryManagerType, { noDaemon: true });
 
   const lines: string[] = [
-    `Bead ${ctx.beatId} has just been queued for verification. You are going to verify it with the following steps:`,
+    `Beat ${ctx.beatId} has just been queued for verification. You are going to verify it with the following steps:`,
     ``,
     `## Reference`,
-    `- Bead ID: ${ctx.beatId}`,
+    `- Beat ID: ${ctx.beatId}`,
     `- Title: ${ctx.title}`,
     `- Commit: ${ctx.commitSha}`,
   ];
@@ -274,7 +274,7 @@ export function buildVerifierPrompt(ctx: VerifierPromptContext): string {
     `## Verification Steps`,
     ``,
     `1. Use commit ${ctx.commitSha} as a basis for reference.`,
-    `2. Check: Does the code on main satisfy the requirements of the bead?`,
+    `2. Check: Does the code on main satisfy the requirements of the beat?`,
     `   - If NO: run the following memory manager commands and stop:`,
     ...retryCommands.map((command) => `     ${command}`),
     `     Then output a brief rejection summary (2-4 sentences) explaining what is wrong and what needs to change, prefixed with REJECTION_SUMMARY:`,
@@ -313,30 +313,30 @@ export function parseVerifierResult(output: string): VerificationOutcome | null 
 const activeLocks = new Map<string, { startedAt: number }>();
 const LOCK_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
-/** Attempt to acquire a verification lock for a bead. Returns true if acquired. */
-export function acquireVerificationLock(beadId: string): boolean {
-  const existing = activeLocks.get(beadId);
+/** Attempt to acquire a verification lock for a beat. Returns true if acquired. */
+export function acquireVerificationLock(beatId: string): boolean {
+  const existing = activeLocks.get(beatId);
   if (existing) {
     // Allow re-acquisition if the lock is stale (timed out)
     if (Date.now() - existing.startedAt < LOCK_TIMEOUT_MS) {
       return false;
     }
   }
-  activeLocks.set(beadId, { startedAt: Date.now() });
+  activeLocks.set(beatId, { startedAt: Date.now() });
   return true;
 }
 
-/** Release the verification lock for a bead. */
-export function releaseVerificationLock(beadId: string): void {
-  activeLocks.delete(beadId);
+/** Release the verification lock for a beat. */
+export function releaseVerificationLock(beatId: string): void {
+  activeLocks.delete(beatId);
 }
 
-/** Check if a bead currently has a verification lock. */
-export function hasVerificationLock(beadId: string): boolean {
-  const existing = activeLocks.get(beadId);
+/** Check if a beat currently has a verification lock. */
+export function hasVerificationLock(beatId: string): boolean {
+  const existing = activeLocks.get(beatId);
   if (!existing) return false;
   if (Date.now() - existing.startedAt >= LOCK_TIMEOUT_MS) {
-    activeLocks.delete(beadId);
+    activeLocks.delete(beatId);
     return false;
   }
   return true;
@@ -365,7 +365,7 @@ export type VerificationEventType =
 
 export interface VerificationEvent {
   type: VerificationEventType;
-  beadId: string;
+  beatId: string;
   timestamp: string;
   detail?: string;
 }

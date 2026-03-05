@@ -38,7 +38,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-a",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
       {
         kind: "prompt",
@@ -63,7 +63,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-b",
         interactionType: "scene",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-2", "foo-3"],
+        beatIds: ["foo-2", "foo-3"],
       },
       {
         kind: "prompt",
@@ -89,7 +89,7 @@ describe("readAgentHistory", () => {
         sessionId: "orch-a",
         interactionType: "direct",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-4"],
+        beatIds: ["foo-4"],
       },
       {
         kind: "session_end",
@@ -102,7 +102,7 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({ logRoot: tempDir });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-4", "foo-2", "foo-3", "foo-1"]);
+    expect(history.beats.map((beat) => beat.beatId)).toEqual(["foo-4", "foo-2", "foo-3", "foo-1"]);
     expect(history.beats[0]?.directCount).toBe(1);
     expect(history.beats[0]?.takeCount).toBe(0);
     expect(history.beats[1]?.sceneCount).toBe(1);
@@ -119,7 +119,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-c",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
       {
         kind: "prompt",
@@ -152,8 +152,8 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "foo-1",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "foo-1",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     expect(history.sessions).toHaveLength(1);
@@ -180,7 +180,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-workflow",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
       {
         kind: "beat_state",
@@ -218,8 +218,8 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "foo-1",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "foo-1",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     expect(history.sessions).toHaveLength(1);
@@ -240,7 +240,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-workflow-multi",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
       {
         kind: "beat_state",
@@ -294,8 +294,8 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "foo-1",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "foo-1",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     expect(history.sessions).toHaveLength(1);
@@ -315,7 +315,7 @@ describe("readAgentHistory", () => {
         sessionId: "verify-a",
         interactionType: "verification",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
       {
         kind: "prompt",
@@ -341,8 +341,8 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "foo-1",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "foo-1",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     expect(history.sessions).toHaveLength(1);
@@ -362,7 +362,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-a",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-1"],
+        beatIds: ["foo-1"],
       },
     ]);
 
@@ -373,7 +373,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-b",
         interactionType: "take",
         repoPath: "/tmp/repo-b",
-        beadIds: ["bar-1"],
+        beatIds: ["bar-1"],
       },
     ]);
 
@@ -382,7 +382,7 @@ describe("readAgentHistory", () => {
       repoPath: "/tmp/repo-b",
     });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual(["bar-1"]);
+    expect(history.beats.map((beat) => beat.beatId)).toEqual(["bar-1"]);
   });
 
   it("treats worktree paths as the same repo when filtering by repoPath", async () => {
@@ -395,7 +395,7 @@ describe("readAgentHistory", () => {
         sessionId: "root-session",
         interactionType: "take",
         repoPath,
-        beadIds: ["root-beat"],
+        beatIds: ["root-beat"],
       },
     ]);
 
@@ -406,7 +406,7 @@ describe("readAgentHistory", () => {
         sessionId: "worktree-session",
         interactionType: "take",
         repoPath: "/tmp/foolery/.claude/worktrees/agent-abc123",
-        beadIds: ["worktree-beat"],
+        beatIds: ["worktree-beat"],
       },
       {
         kind: "prompt",
@@ -431,7 +431,7 @@ describe("readAgentHistory", () => {
         sessionId: "sibling-session",
         interactionType: "take",
         repoPath: "/tmp/foolery-wt-feature-1",
-        beadIds: ["sibling-beat"],
+        beatIds: ["sibling-beat"],
       },
     ]);
 
@@ -440,7 +440,7 @@ describe("readAgentHistory", () => {
       repoPath,
     });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual([
+    expect(history.beats.map((beat) => beat.beatId)).toEqual([
       "sibling-beat",
       "worktree-beat",
       "root-beat",
@@ -450,8 +450,8 @@ describe("readAgentHistory", () => {
     const sessionHistory = await readAgentHistory({
       logRoot: tempDir,
       repoPath,
-      beadId: "worktree-beat",
-      beadRepoPath: repoPath,
+      beatId: "worktree-beat",
+      beatRepoPath: repoPath,
     });
     expect(sessionHistory.sessions).toHaveLength(1);
     expect(sessionHistory.sessions[0]?.sessionId).toBe("worktree-session");
@@ -475,7 +475,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-recent",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-recent"],
+        beatIds: ["foo-recent"],
       },
     ]);
 
@@ -486,7 +486,7 @@ describe("readAgentHistory", () => {
         sessionId: "term-stale",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-stale"],
+        beatIds: ["foo-stale"],
       },
     ]);
 
@@ -495,7 +495,7 @@ describe("readAgentHistory", () => {
       sinceHours: 24,
     });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-recent"]);
+    expect(history.beats.map((beat) => beat.beatId)).toEqual(["foo-recent"]);
   });
 
   it("includes breakdown sessions in beat summaries", async () => {
@@ -506,7 +506,7 @@ describe("readAgentHistory", () => {
         sessionId: "breakdown-a",
         interactionType: "breakdown",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-bd"],
+        beatIds: ["foo-bd"],
       },
       {
         kind: "prompt",
@@ -527,7 +527,7 @@ describe("readAgentHistory", () => {
     const history = await readAgentHistory({ logRoot: tempDir });
 
     expect(history.beats).toHaveLength(1);
-    expect(history.beats[0]?.beadId).toBe("foo-bd");
+    expect(history.beats[0]?.beatId).toBe("foo-bd");
     expect(history.beats[0]?.breakdownCount).toBe(1);
     expect(history.beats[0]?.takeCount).toBe(0);
     expect(history.beats[0]?.sessionCount).toBe(1);
@@ -542,7 +542,7 @@ describe("readAgentHistory", () => {
         sessionId: "logger-fmt",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beatIds: ["foo-logger"], // Note: beatIds, not beadIds - matches actual logger output
+        beatIds: ["foo-logger"], // Note: beatIds, not beatIds - matches actual logger output
       },
       {
         kind: "prompt",
@@ -563,7 +563,7 @@ describe("readAgentHistory", () => {
     const history = await readAgentHistory({ logRoot: tempDir });
 
     expect(history.beats).toHaveLength(1);
-    expect(history.beats[0]?.beadId).toBe("foo-logger");
+    expect(history.beats[0]?.beatId).toBe("foo-logger");
     expect(history.beats[0]?.title).toBe("Logger format beat");
     expect(history.beats[0]?.takeCount).toBe(1);
   });
@@ -576,7 +576,7 @@ describe("readAgentHistory", () => {
         sessionId: "closed-status",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-closed"],
+        beatIds: ["foo-closed"],
       },
       {
         kind: "session_end",
@@ -594,7 +594,7 @@ describe("readAgentHistory", () => {
         sessionId: "recent-status",
         interactionType: "take",
         repoPath: "/tmp/repo-a",
-        beadIds: ["foo-recent"],
+        beatIds: ["foo-recent"],
       },
       {
         kind: "session_end",
@@ -607,10 +607,10 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({ logRoot: tempDir });
 
-    expect(history.beats.map((beat) => beat.beadId)).toEqual(["foo-recent", "foo-closed"]);
+    expect(history.beats.map((beat) => beat.beatId)).toEqual(["foo-recent", "foo-closed"]);
   });
 
-  it("returns sessions when queried with beadId matching beatIds in logs", async () => {
+  it("returns sessions when queried with beatId matching beatIds in logs", async () => {
     await writeLog(tempDir, "repo-a/2026-02-20/session-query.jsonl", [
       {
         kind: "session_start",
@@ -638,8 +638,8 @@ describe("readAgentHistory", () => {
 
     const history = await readAgentHistory({
       logRoot: tempDir,
-      beadId: "foo-query",
-      beadRepoPath: "/tmp/repo-a",
+      beatId: "foo-query",
+      beatRepoPath: "/tmp/repo-a",
     });
 
     expect(history.sessions).toHaveLength(1);

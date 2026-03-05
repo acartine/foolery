@@ -80,7 +80,7 @@ Validation errors include details:
 ### Multi-Repo Targeting
 
 Pass `_repo` to target a specific repository:
-- As a query parameter: `GET /api/beads?_repo=/path/to/repo`
+- As a query parameter: `GET /api/beats?_repo=/path/to/repo`
 - As a body field: `{ "_repo": "/path/to/repo", ... }`
 
 ### Cached Fallback (503)
@@ -102,7 +102,7 @@ When the backend is degraded, some GET endpoints return cached data:
 ### List Beats
 
 ```
-GET /api/beads
+GET /api/beats
 ```
 
 Query parameters:
@@ -132,7 +132,7 @@ Response:
 ### Create Beat
 
 ```
-POST /api/beads
+POST /api/beats
 ```
 
 Body:
@@ -162,7 +162,7 @@ Response (201):
 ### Get Beat
 
 ```
-GET /api/beads/{id}
+GET /api/beats/{id}
 ```
 
 Query parameters: `_repo`
@@ -178,7 +178,7 @@ Response:
 ### Update Beat
 
 ```
-PATCH /api/beads/{id}
+PATCH /api/beats/{id}
 ```
 
 Body (all fields optional):
@@ -206,7 +206,7 @@ Response:
 ### Delete Beat
 
 ```
-DELETE /api/beads/{id}
+DELETE /api/beats/{id}
 ```
 
 Query parameters: `_repo`
@@ -221,7 +221,7 @@ Response:
 ### Close Beat
 
 ```
-POST /api/beads/{id}/close
+POST /api/beats/{id}/close
 ```
 
 Body:
@@ -242,7 +242,7 @@ Response:
 ### Cascade Close
 
 ```
-POST /api/beads/{id}/close-cascade
+POST /api/beats/{id}/close-cascade
 ```
 
 Two modes: preview and confirmed.
@@ -270,7 +270,7 @@ Response:
 ### Ready Queue
 
 ```
-GET /api/beads/ready
+GET /api/beats/ready
 ```
 
 Returns beats that are `open` or `in_progress`, excluding those requiring human action and those whose parent chain is not visible.
@@ -289,7 +289,7 @@ Response:
 ### Advanced Query
 
 ```
-POST /api/beads/query
+POST /api/beats/query
 ```
 
 Body:
@@ -312,7 +312,7 @@ Response:
 ### Merge Beats
 
 ```
-POST /api/beads/merge
+POST /api/beats/merge
 ```
 
 Merges `consumedId` into `survivorId`. The consumed beat's description, notes, and labels are appended to the survivor. The consumed beat is closed.
@@ -338,7 +338,7 @@ Response:
 ### List Dependencies
 
 ```
-GET /api/beads/{id}/deps
+GET /api/beats/{id}/deps
 ```
 
 Query parameters: `_repo`
@@ -360,7 +360,7 @@ Response:
 ### Add Dependency
 
 ```
-POST /api/beads/{id}/deps
+POST /api/beats/{id}/deps
 ```
 
 Creates a "blocks" relationship: the beat identified by `blocks` blocks the beat `{id}`.
@@ -381,7 +381,7 @@ Response (201):
 ### Batch Dependencies
 
 ```
-GET /api/beads/batch-deps?ids=id1,id2,id3
+GET /api/beats/batch-deps?ids=id1,id2,id3
 ```
 
 Query parameters: `_repo`, `ids` (comma-separated, required)
@@ -501,13 +501,13 @@ POST /api/terminal
 Body:
 ```json
 {
-  "beadId": "abc-123",
+  "beatId": "abc-123",
   "prompt": "Optional custom prompt",
   "_repo": "/path/to/repo"
 }
 ```
 
-Required: `beadId`.
+Required: `beatId`.
 
 Response (201):
 ```json
@@ -562,7 +562,7 @@ POST /api/breakdown
 Body:
 ```json
 {
-  "parentBeadId": "large-beat-id",
+  "parentBeatId": "large-beat-id",
   "_repo": "/path/to/repo"
 }
 ```
@@ -1165,8 +1165,8 @@ GET /api/agent-history
 
 Query parameters:
 - `_repo` — repository path
-- `beadId` — filter by beat ID
-- `beadRepo` — repository path for the beat (only used when `beadId` is set)
+- `beatId` — filter by beat ID
+- `beatRepo` — repository path for the beat (only used when `beatId` is set)
 - `sinceHours` — only return history from the last N hours
 
 Response:
@@ -1271,20 +1271,20 @@ es.onmessage = (event) => {
 
 ```bash
 # Create a beat
-curl -X POST http://localhost:3000/api/beads \
+curl -X POST http://localhost:3000/api/beats \
   -H "Content-Type: application/json" \
   -d '{"title": "Implement auth", "_repo": "/path/to/repo"}'
 # Response: { "data": { "id": "abc-123", ... } }
 
 # Start working on it
-curl -X PATCH http://localhost:3000/api/beads/abc-123 \
+curl -X PATCH http://localhost:3000/api/beats/abc-123 \
   -H "Content-Type: application/json" \
   -d '{"state": "in_progress", "_repo": "/path/to/repo"}'
 
 # ... do work ...
 
 # Close when done
-curl -X POST http://localhost:3000/api/beads/abc-123/close \
+curl -X POST http://localhost:3000/api/beats/abc-123/close \
   -H "Content-Type: application/json" \
   -d '{"reason": "Implemented and tested", "_repo": "/path/to/repo"}'
 ```
@@ -1293,7 +1293,7 @@ curl -X POST http://localhost:3000/api/beads/abc-123/close \
 
 ```bash
 # Get beats ready for execution
-curl http://localhost:3000/api/beads/ready?_repo=/path/to/repo
+curl http://localhost:3000/api/beats/ready?_repo=/path/to/repo
 
 # Or use waves for dependency-aware ordering
 curl http://localhost:3000/api/waves?_repo=/path/to/repo
@@ -1308,7 +1308,7 @@ The `runnableQueue` array in the waves response is pre-sorted: lowest wave level
 # Start a session for a beat
 curl -X POST http://localhost:3000/api/terminal \
   -H "Content-Type: application/json" \
-  -d '{"beadId": "abc-123", "_repo": "/path/to/repo"}'
+  -d '{"beatId": "abc-123", "_repo": "/path/to/repo"}'
 # Response: { "data": { "id": "session-uuid", ... } }
 
 # Stream output (blocks until exit event)
@@ -1323,7 +1323,7 @@ curl -N http://localhost:3000/api/terminal/session-uuid
 # Start AI breakdown
 curl -X POST http://localhost:3000/api/breakdown \
   -H "Content-Type: application/json" \
-  -d '{"parentBeadId": "large-beat", "_repo": "/path/to/repo"}'
+  -d '{"parentBeatId": "large-beat", "_repo": "/path/to/repo"}'
 # Response: { "data": { "id": "session-uuid", ... } }
 
 # Stream until you receive a "plan" event
@@ -1358,7 +1358,7 @@ curl -X POST http://localhost:3000/api/orchestration/apply \
 
 ```bash
 # Make beat-B block beat-A (beat-A cannot start until beat-B is done)
-curl -X POST http://localhost:3000/api/beads/beat-A/deps \
+curl -X POST http://localhost:3000/api/beats/beat-A/deps \
   -H "Content-Type: application/json" \
   -d '{"blocks": "beat-B", "_repo": "/path/to/repo"}'
 

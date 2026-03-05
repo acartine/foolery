@@ -188,9 +188,9 @@ Foolery exposes a RESTful JSON API over Next.js API Routes. The complete referen
 
 | Domain | Key Endpoints |
 |--------|--------------|
-| Beats (CRUD) | `GET/POST /api/beads`, `GET/PATCH/DELETE /api/beads/[id]` |
-| Beat Actions | `POST /api/beads/[id]/close`, `GET /api/beads/ready`, `POST /api/beads/query` |
-| Dependencies | `GET/POST /api/beads/[id]/deps`, `GET /api/beads/batch-deps` |
+| Beats (CRUD) | `GET/POST /api/beats`, `GET/PATCH/DELETE /api/beats/[id]` |
+| Beat Actions | `POST /api/beats/[id]/close`, `GET /api/beats/ready`, `POST /api/beats/query` |
+| Dependencies | `GET/POST /api/beats/[id]/deps`, `GET /api/beats/batch-deps` |
 | Waves | `GET /api/waves` |
 | Terminal | `GET/POST/DELETE /api/terminal`, `GET /api/terminal/[sessionId]` (SSE) |
 | Breakdown | `POST/DELETE /api/breakdown`, `GET /api/breakdown/[sessionId]` (SSE), `POST /api/breakdown/apply` |

@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { buildBeadFocusHref, stripBeadPrefix } from "@/lib/bead-navigation";
+import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
 import { markAllNotificationsReadAndClose } from "@/components/notification-bell-actions";
 import {
   useNotificationStore,
@@ -24,8 +24,8 @@ export function NotificationBell() {
   const unreadCount = useNotificationStore(selectUnreadCount);
   const notifications = useNotificationStore((s) => s.notifications);
   const markAllRead = useNotificationStore((s) => s.markAllRead);
-  const focusBead = (beadId: string) => {
-    router.push(buildBeadFocusHref(beadId, searchParams.toString()));
+  const focusBeat = (beatId: string) => {
+    router.push(buildBeatFocusHref(beatId, searchParams.toString()));
   };
 
   return (
@@ -62,7 +62,7 @@ export function NotificationBell() {
             </Button>
           )}
         </div>
-        <NotificationList notifications={notifications} onFocusBead={focusBead} />
+        <NotificationList notifications={notifications} onFocusBeat={focusBeat} />
       </PopoverContent>
     </Popover>
   );
@@ -70,10 +70,10 @@ export function NotificationBell() {
 
 function NotificationList({
   notifications,
-  onFocusBead,
+  onFocusBeat,
 }: {
   notifications: readonly Notification[];
-  onFocusBead: (beadId: string) => void;
+  onFocusBeat: (beatId: string) => void;
 }) {
   if (notifications.length === 0) {
     return (
@@ -86,7 +86,7 @@ function NotificationList({
   return (
     <ul className="max-h-64 overflow-y-auto">
       {notifications.map((n) => {
-          const beadId = n.beadId;
+          const beatId = n.beatId;
           return (
             <li
               key={n.id}
@@ -95,14 +95,14 @@ function NotificationList({
               }`}
             >
               <p className="leading-snug">{n.message}</p>
-              {beadId ? (
+              {beatId ? (
                 <button
                   type="button"
                   className="mt-1 block font-mono text-[11px] text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
-                  title={`Focus ${beadId}`}
-                  onClick={() => onFocusBead(beadId)}
+                  title={`Focus ${beatId}`}
+                  onClick={() => onFocusBeat(beatId)}
                 >
-                  {stripBeadPrefix(beadId)}
+                  {stripBeatPrefix(beatId)}
                 </button>
               ) : null}
               <time className="mt-0.5 block text-[10px] text-muted-foreground">

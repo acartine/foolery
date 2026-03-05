@@ -1,0 +1,105 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getBackend } from "@/lib/backend-instance";
+import { backendErrorStatus } from "@/lib/backend-http";
+import { z } from "zod/v4";
+
+const mergeBeatsSchema = z.object({
+  survivorId: z.string().min(1),
+  consumedId: z.string().min(1),
+});
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { _repo: repoPath, ...rest } = body;
+  const parsed = mergeBeatsSchema.safeParse(rest);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Validation failed", details: parsed.error.issues },
+      { status: 400 }
+    );
+  }
+
+  const { survivorId, consumedId } = parsed.data;
+
+  // Fetch both beats in parallel
+  const [survivorResult, consumedResult] = await Promise.all([
+    getBackend().get(survivorId, repoPath),
+    getBackend().get(consumedId, repoPath),
+  ]);
+
+  if (!survivorResult.ok || !survivorResult.data) {
+    return NextResponse.json(
+      { error: survivorResult.error?.message ?? `Survivor beat ${survivorId} not found` },
+      { status: backendErrorStatus(survivorResult.error) }
+    );
+  }
+  if (!consumedResult.ok || !consumedResult.data) {
+    return NextResponse.json(
+      { error: consumedResult.error?.message ?? `Consumed beat ${consumedId} not found` },
+      { status: backendErrorStatus(consumedResult.error) }
+    );
+  }
+
+  const survivor = survivorResult.data;
+  const consumed = consumedResult.data;
+
+  // Build merged fields: append consumed's description, notes, and labels to survivor
+  const fields: Record<string, string | string[] | undefined> = {};
+
+  // Append description
+  const consumedDesc = consumed.description?.trim();
+  if (consumedDesc) {
+    const survivorDesc = survivor.description?.trim() ?? "";
+    fields.description = survivorDesc
+      ? `${survivorDesc}\n\n--- merged from ${consumedId} ---\n${consumedDesc}`
+      : consumedDesc;
+  }
+
+  // Append notes
+  const consumedNotes = consumed.notes?.trim();
+  if (consumedNotes) {
+    const survivorNotes = survivor.notes?.trim() ?? "";
+    fields.notes = survivorNotes
+      ? `${survivorNotes}\n\n--- merged from ${consumedId} ---\n${consumedNotes}`
+      : consumedNotes;
+  }
+
+  // Append labels (deduplicated — only add labels the survivor doesn't already have)
+  const survivorLabels = new Set(survivor.labels ?? []);
+  const newLabels = (consumed.labels ?? []).filter(
+    (label) => label.trim() && !survivorLabels.has(label)
+  );
+  if (newLabels.length > 0) {
+    fields.labels = newLabels;
+  }
+
+  // Update survivor with merged content (if there's anything to merge)
+  if (Object.keys(fields).length > 0) {
+    const updateResult = await getBackend().update(
+      survivorId,
+      fields as import("@/lib/backend-port").UpdateBeatInput,
+      repoPath,
+    );
+    if (!updateResult.ok) {
+      return NextResponse.json(
+        { error: updateResult.error?.message ?? "Failed to update survivor beat" },
+        { status: backendErrorStatus(updateResult.error) }
+      );
+    }
+  }
+
+  // Close the consumed beat
+  const closeResult = await getBackend().close(
+    consumedId,
+    `Merged into ${survivorId}`,
+    repoPath,
+  );
+  if (!closeResult.ok) {
+    return NextResponse.json(
+      { error: closeResult.error?.message ?? "Failed to close consumed beat" },
+      { status: backendErrorStatus(closeResult.error) }
+    );
+  }
+
+  return NextResponse.json({ ok: true, data: { survivorId, consumedId } });
+}

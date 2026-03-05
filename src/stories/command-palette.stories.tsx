@@ -35,7 +35,7 @@ export const Empty: Story = {
   },
 };
 
-export const ManyBeads: Story = {
+export const ManyBeats: Story = {
   args: {
     open: true,
     onOpenChange: (open) => console.log('Open:', open),

@@ -80,16 +80,16 @@ function extractRejectionSummary(output: string): string {
 const eventLog: VerificationEvent[] = [];
 const MAX_EVENT_LOG = 500;
 
-function logEvent(type: VerificationEventType, beadId: string, detail?: string): void {
+function logEvent(type: VerificationEventType, beatId: string, detail?: string): void {
   const event: VerificationEvent = {
     type,
-    beadId,
+    beatId,
     timestamp: new Date().toISOString(),
     detail,
   };
   if (eventLog.length >= MAX_EVENT_LOG) eventLog.shift();
   eventLog.push(event);
-  console.log(`[verification] ${type} bead=${beadId}${detail ? ` ${detail}` : ""}`);
+  console.log(`[verification] ${type} beat=${beatId}${detail ? ` ${detail}` : ""}`);
 }
 
 /** Get recent verification events (for diagnostics). */
@@ -103,13 +103,13 @@ export function getVerificationEvents(limit = 50): VerificationEvent[] {
  * Called after an agent invocation completes for an eligible action.
  * Determines whether to enqueue verification and drives the workflow.
  *
- * @param beadIds - The bead IDs that were part of the invocation
+ * @param beatIds - The beat IDs that were part of the invocation
  * @param action - The action name (take, scene, etc.)
  * @param repoPath - Repository path for bd commands
  * @param exitCode - Agent process exit code (0 = success)
  */
 export async function onAgentComplete(
-  beadIds: string[],
+  beatIds: string[],
   action: ActionName,
   repoPath: string,
   exitCode: number,
@@ -122,77 +122,77 @@ export async function onAgentComplete(
   const settings = await getVerificationSettings();
   if (!settings.enabled) return;
 
-  // Process each bead in parallel
+  // Process each beat in parallel
   await Promise.allSettled(
-    beadIds.map((beadId) => runVerificationWorkflow(beadId, action, repoPath)),
+    beatIds.map((beatId) => runVerificationWorkflow(beatId, action, repoPath)),
   );
 }
 
 // ── Core workflow ────────────────────────────────────────────
 
 async function runVerificationWorkflow(
-  beadId: string,
+  beatId: string,
   action: ActionName,
   repoPath: string,
 ): Promise<void> {
   // Idempotency: acquire lock (xmg8.2.5)
-  if (!acquireVerificationLock(beadId)) {
-    console.log(`[verification] Deduped: ${beadId} already has active verification`);
+  if (!acquireVerificationLock(beatId)) {
+    console.log(`[verification] Deduped: ${beatId} already has active verification`);
     return;
   }
 
   try {
     // Step 1: Set transition labels (xmg8.2.1)
-    await enterVerification(beadId, repoPath);
+    await enterVerification(beatId, repoPath);
 
     // Step 2: Ensure commit label exists (xmg8.2.2)
-    const commitSha = await ensureCommitLabel(beadId, repoPath);
+    const commitSha = await ensureCommitLabel(beatId, repoPath);
     if (!commitSha) {
       // Remediation failed — transition to retry
-      logEvent("remediation-failed", beadId);
-      await transitionToRetry(beadId, repoPath);
+      logEvent("remediation-failed", beatId);
+      await transitionToRetry(beatId, repoPath);
       return;
     }
 
     // Step 3: Launch verifier agent (xmg8.2.3)
-    const { outcome, output } = await launchVerifier(beadId, repoPath, commitSha);
+    const { outcome, output } = await launchVerifier(beatId, repoPath, commitSha);
 
     // Step 4: Apply outcome (xmg8.2.4)
-    await applyOutcome(beadId, action, repoPath, outcome, output, commitSha);
+    await applyOutcome(beatId, action, repoPath, outcome, output, commitSha);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    logEvent("remediation-failed", beadId, msg);
+    logEvent("remediation-failed", beatId, msg);
     // On unexpected error, transition to retry rather than leaving in limbo
     try {
-      await transitionToRetry(beadId, repoPath);
+      await transitionToRetry(beatId, repoPath);
     } catch {
       // Last resort: at least release the lock
     }
   } finally {
-    releaseVerificationLock(beadId);
+    releaseVerificationLock(beatId);
   }
 }
 
 // ── Step 1: Enter verification (xmg8.2.1) ──────────────────
 
-async function enterVerification(beadId: string, repoPath: string): Promise<void> {
-  logEvent("queued", beadId);
+async function enterVerification(beatId: string, repoPath: string): Promise<void> {
+  logEvent("queued", beatId);
 
-  const beadResult = await getBackend().get(beadId, repoPath);
-  if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId}: ${beadResult.error?.message}`);
+  const beatResult = await getBackend().get(beatId, repoPath);
+  if (!beatResult.ok || !beatResult.data) {
+    throw new Error(`Failed to load beat ${beatId}: ${beatResult.error?.message}`);
   }
 
-  const bead = beadResult.data;
+  const beat = beatResult.data;
 
   // Skip verification for beats already in terminal states
   const TERMINAL_STATES = ["shipped", "abandoned", "closed"];
-  if (TERMINAL_STATES.includes(bead.state)) {
-    logEvent("skipped-terminal", beadId);
+  if (TERMINAL_STATES.includes(beat.state)) {
+    logEvent("skipped-terminal", beatId);
     return;
   }
 
-  const labels = bead.labels ?? [];
+  const labels = beat.labels ?? [];
 
   // Already in verification — idempotent noop
   if (labels.includes(LABEL_STAGE_VERIFICATION)) {
@@ -205,33 +205,33 @@ async function enterVerification(beadId: string, repoPath: string): Promise<void
     if (mutations.add.length > 0) updateFields.labels = mutations.add;
     if (mutations.remove.length > 0) updateFields.removeLabels = mutations.remove;
     // Ensure status is in_progress for verification
-    if (bead.state !== "in_progress") {
+    if (beat.state !== "in_progress") {
       updateFields.state = "in_progress";
     }
-    await getBackend().update(beadId, updateFields, repoPath);
+    await getBackend().update(beatId, updateFields, repoPath);
   }
 }
 
 // ── Step 2: Ensure commit label (xmg8.2.2) ─────────────────
 
 async function ensureCommitLabel(
-  beadId: string,
+  beatId: string,
   repoPath: string,
 ): Promise<string | null> {
   // Check if commit label already exists
-  const beadResult = await getBackend().get(beadId, repoPath);
-  if (!beadResult.ok || !beadResult.data) return null;
+  const beatResult = await getBackend().get(beatId, repoPath);
+  if (!beatResult.ok || !beatResult.data) return null;
 
-  let sha = extractCommitLabel(beadResult.data.labels ?? []);
+  let sha = extractCommitLabel(beatResult.data.labels ?? []);
   if (sha) return sha;
 
-  logEvent("missing-commit", beadId);
+  logEvent("missing-commit", beatId);
 
   // Attempt remediation: re-check after a brief delay
-  // (the producing agent may still be labeling beads)
+  // (the producing agent may still be labeling beats)
   for (let attempt = 0; attempt < MAX_COMMIT_REMEDIATION_ATTEMPTS; attempt++) {
     await sleep(3000);
-    const refreshed = await getBackend().get(beadId, repoPath);
+    const refreshed = await getBackend().get(beatId, repoPath);
     if (!refreshed.ok || !refreshed.data) continue;
     sha = extractCommitLabel(refreshed.data.labels ?? []);
     if (sha) return sha;
@@ -244,25 +244,25 @@ async function ensureCommitLabel(
 // ── Step 3: Launch verifier (xmg8.2.3) ─────────────────────
 
 async function launchVerifier(
-  beadId: string,
+  beatId: string,
   repoPath: string,
   commitSha: string,
 ): Promise<{ outcome: VerificationOutcome; output: string }> {
-  logEvent("verifier-started", beadId, `commit=${commitSha}`);
+  logEvent("verifier-started", beatId, `commit=${commitSha}`);
 
-  const beadResult = await getBackend().get(beadId, repoPath);
-  if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId} for verifier prompt: ${beadResult.error?.message}`);
+  const beatResult = await getBackend().get(beatId, repoPath);
+  if (!beatResult.ok || !beatResult.data) {
+    throw new Error(`Failed to load beat ${beatId} for verifier prompt: ${beatResult.error?.message}`);
   }
-  const bead = beadResult.data;
+  const beat = beatResult.data;
   const memoryManagerType = resolveMemoryManagerType(repoPath);
 
   const prompt = buildVerifierPrompt({
-    beatId: beadId,
-    title: bead.title,
-    description: bead.description,
-    acceptance: bead.acceptance,
-    notes: bead.notes,
+    beatId: beatId,
+    title: beat.title,
+    description: beat.description,
+    acceptance: beat.acceptance,
+    notes: beat.notes,
     commitSha,
     memoryManagerType,
   });
@@ -275,11 +275,11 @@ async function launchVerifier(
     sessionId: generateVerifierSessionId(),
     interactionType: "verification",
     repoPath,
-    beatIds: [beadId],
+    beatIds: [beatId],
     agentName: agent.label || agent.command,
     agentModel: agent.model,
   }).catch((err) => {
-    console.error(`[verification] Failed to start interaction log for ${beadId}:`, err);
+    console.error(`[verification] Failed to start interaction log for ${beatId}:`, err);
     return noopInteractionLog();
   });
   interactionLog.logPrompt(prompt, { source: "verification_review" });
@@ -335,7 +335,7 @@ async function launchVerifier(
     });
 
     child.stderr?.on("data", (chunk: Buffer) => {
-      console.log(`[verification] [${beadId}] stderr: ${chunk.toString().slice(0, 200)}`);
+      console.log(`[verification] [${beatId}] stderr: ${chunk.toString().slice(0, 200)}`);
     });
 
     child.on("close", (code) => {
@@ -356,13 +356,13 @@ async function launchVerifier(
       const result = parseVerifierResult(output);
       if (result) {
         logEnd(code ?? 0, "completed");
-        logEvent("verifier-completed", beadId, `outcome=${result}`);
+        logEvent("verifier-completed", beatId, `outcome=${result}`);
         resolve({ outcome: result, output });
       } else if (code === 0) {
         // Agent completed successfully but no explicit result marker
         // Default to pass if exit code is 0
         logEnd(0, "completed");
-        logEvent("verifier-completed", beadId, "outcome=pass (implicit)");
+        logEvent("verifier-completed", beatId, "outcome=pass (implicit)");
         resolve({ outcome: "pass", output });
       } else {
         logEnd(code ?? 1, "error");
@@ -380,53 +380,53 @@ async function launchVerifier(
 // ── Step 4: Apply outcome (xmg8.2.4) ───────────────────────
 
 async function applyOutcome(
-  beadId: string,
+  beatId: string,
   action: ActionName,
   repoPath: string,
   outcome: VerificationOutcome,
   verifierOutput: string,
   commitSha: string,
 ): Promise<void> {
-  const beadResult = await getBackend().get(beadId, repoPath);
-  if (!beadResult.ok || !beadResult.data) {
-    throw new Error(`Failed to load bead ${beadId} for outcome application: ${beadResult.error?.message}`);
+  const beatResult = await getBackend().get(beatId, repoPath);
+  if (!beatResult.ok || !beatResult.data) {
+    throw new Error(`Failed to load beat ${beatId} for outcome application: ${beatResult.error?.message}`);
   }
 
-  const bead = beadResult.data;
-  const labels = bead.labels ?? [];
+  const beat = beatResult.data;
+  const labels = beat.labels ?? [];
 
   if (outcome === "pass") {
     // Pass: remove verification labels and close
     const mutations = computePassLabels(labels);
     if (mutations.remove.length > 0) {
-      await getBackend().update(beadId, { removeLabels: mutations.remove }, repoPath);
+      await getBackend().update(beatId, { removeLabels: mutations.remove }, repoPath);
     }
-    await getBackend().close(beadId, "Auto-verification passed", repoPath);
-    logEvent("closed", beadId);
+    await getBackend().close(beatId, "Auto-verification passed", repoPath);
+    logEvent("closed", beatId);
   } else {
-    // Fail: capture verifier feedback in bead notes
-    logEvent("retry", beadId, `reason=${outcome}`);
+    // Fail: capture verifier feedback in beat notes
+    logEvent("retry", beatId, `reason=${outcome}`);
     const attemptNum = extractAttemptNumber(labels) + 1;
 
     // Notes are best-effort — don't let failure block retry transition
     try {
-      await appendVerifierNotes(beadId, repoPath, bead.notes, outcome, verifierOutput, attemptNum, commitSha);
+      await appendVerifierNotes(beatId, repoPath, beat.notes, outcome, verifierOutput, attemptNum, commitSha);
     } catch (noteErr) {
       const msg = noteErr instanceof Error ? noteErr.message : String(noteErr);
-      console.error(`[verification] Failed to append verifier notes for ${beadId}: ${msg}`);
+      console.error(`[verification] Failed to append verifier notes for ${beatId}: ${msg}`);
     }
 
-    await transitionToRetry(beadId, repoPath);
+    await transitionToRetry(beatId, repoPath);
 
     // Auto-launch a new implementation session if within retry limit
-    await maybeAutoRetry(beadId, action, repoPath, attemptNum);
+    await maybeAutoRetry(beatId, action, repoPath, attemptNum);
   }
 }
 
-// ── Helper: append verifier feedback to bead notes ──────────
+// ── Helper: append verifier feedback to beat notes ──────────
 
 async function appendVerifierNotes(
-  beadId: string,
+  beatId: string,
   repoPath: string,
   existingNotes: string | undefined,
   outcome: VerificationOutcome,
@@ -449,14 +449,14 @@ async function appendVerifierNotes(
   ].join("\n");
 
   const updatedNotes = (existingNotes ?? "") + section;
-  await getBackend().update(beadId, { notes: updatedNotes }, repoPath);
-  logEvent("notes-updated", beadId, `attempt=${attemptNum} commit=${commitSha}`);
+  await getBackend().update(beatId, { notes: updatedNotes }, repoPath);
+  logEvent("notes-updated", beatId, `attempt=${attemptNum} commit=${commitSha}`);
 }
 
 // ── Helper: auto-retry implementation session ───────────────
 
 async function maybeAutoRetry(
-  beadId: string,
+  beatId: string,
   action: ActionName,
   repoPath: string,
   attemptNum: number,
@@ -464,7 +464,7 @@ async function maybeAutoRetry(
   const settings = await getVerificationSettings();
   if (settings.maxRetries <= 0 || attemptNum > settings.maxRetries) {
     console.log(
-      `[verification] Skipping auto-retry for ${beadId}: attempt ${attemptNum} exceeds maxRetries ${settings.maxRetries}`,
+      `[verification] Skipping auto-retry for ${beatId}: attempt ${attemptNum} exceeds maxRetries ${settings.maxRetries}`,
     );
     return;
   }
@@ -475,21 +475,21 @@ async function maybeAutoRetry(
       "@/lib/terminal-manager"
     );
 
-    await createSession(beadId, repoPath);
-    logEvent("retry-session-started", beadId, `attempt=${attemptNum} action=${action}`);
+    await createSession(beatId, repoPath);
+    logEvent("retry-session-started", beatId, `attempt=${attemptNum} action=${action}`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error(`[verification] Failed to auto-retry ${beadId}: ${msg}`);
+    console.error(`[verification] Failed to auto-retry ${beatId}: ${msg}`);
   }
 }
 
 // ── Helper: transition to retry ─────────────────────────────
 
-async function transitionToRetry(beadId: string, repoPath: string): Promise<void> {
-  const beadResult = await getBackend().get(beadId, repoPath);
-  if (!beadResult.ok || !beadResult.data) return;
+async function transitionToRetry(beatId: string, repoPath: string): Promise<void> {
+  const beatResult = await getBackend().get(beatId, repoPath);
+  if (!beatResult.ok || !beatResult.data) return;
 
-  const labels = beadResult.data.labels ?? [];
+  const labels = beatResult.data.labels ?? [];
   const mutations = computeRetryLabels(labels);
 
   const updateFields: UpdateBeatInput = {};
@@ -500,10 +500,10 @@ async function transitionToRetry(beadId: string, repoPath: string): Promise<void
     (updateFields.labels?.length ?? 0) > 0 ||
     (updateFields.removeLabels?.length ?? 0) > 0;
   if (hasLabelChanges) {
-    await getBackend().update(beadId, updateFields, repoPath);
+    await getBackend().update(beatId, updateFields, repoPath);
   }
 
-  await nextKnot(beadId, repoPath, { expectedState: beadResult.data.state });
+  await nextKnot(beatId, repoPath, { expectedState: beatResult.data.state });
 }
 
 // ── Utilities ───────────────────────────────────────────────

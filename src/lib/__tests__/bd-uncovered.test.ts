@@ -37,9 +37,9 @@ function queueExec(...responses: MockExecResult[]): void {
   execQueue.push(...responses);
 }
 
-const BEAD_JSON = {
+const BEAT_JSON = {
   id: "proj-abc",
-  title: "Test bead",
+  title: "Test beat",
   issue_type: "task",
   status: "open",
   priority: 2,
@@ -48,7 +48,7 @@ const BEAD_JSON = {
   updated_at: "2026-01-02T00:00:00Z",
 };
 
-describe("searchBeads skips empty filter values (line 185)", () => {
+describe("searchBeats skips empty filter values (line 185)", () => {
   beforeEach(() => {
     execCalls.length = 0;
     execQueue.length = 0;
@@ -58,8 +58,8 @@ describe("searchBeads skips empty filter values (line 185)", () => {
 
   it("skips filter entries with empty string values", async () => {
     queueExec({ stdout: "[]" });
-    const { searchBeads } = await import("@/lib/bd");
-    await searchBeads("query", { status: "", type: "bug" });
+    const { searchBeats } = await import("@/lib/bd");
+    await searchBeats("query", { status: "", type: "bug" });
     // status should NOT appear in args since value is empty
     expect(execCalls[0]).not.toContain("--status");
     expect(execCalls[0]).toContain("--type");
@@ -67,7 +67,7 @@ describe("searchBeads skips empty filter values (line 185)", () => {
   });
 });
 
-describe("updateBead error paths", () => {
+describe("updateBeat error paths", () => {
   beforeEach(() => {
     execCalls.length = 0;
     execQueue.length = 0;
@@ -75,16 +75,16 @@ describe("updateBead error paths", () => {
     vi.resetModules();
   });
 
-  it("returns error when showBead fails during stage label check (line 296)", async () => {
-    // updateBead calls showBead when adding stage labels.
-    // If showBead fails, it should return the error.
+  it("returns error when showBeat fails during stage label check (line 296)", async () => {
+    // updateBeat calls showBeat when adding stage labels.
+    // If showBeat fails, it should return the error.
     queueExec(
-      // showBead fails
+      // showBeat fails
       { stderr: "show failed", exitCode: 1 }
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead("proj-abc", {
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat("proj-abc", {
       labels: ["stage:verification"],
     });
 
@@ -93,23 +93,23 @@ describe("updateBead error paths", () => {
   });
 
   it("returns error when field update fails (line 317)", async () => {
-    // updateBead with field updates + stage labels.
-    // Field update runs in parallel with showBead. If field update fails,
+    // updateBeat with field updates + stage labels.
+    // Field update runs in parallel with showBeat. If field update fails,
     // it should return the error.
-    const beadJson = JSON.stringify({
-      ...BEAD_JSON,
+    const beatJson = JSON.stringify({
+      ...BEAT_JSON,
       labels: [],
     });
 
     queueExec(
       // update --status fails
       { stderr: "update exploded", exitCode: 1 },
-      // showBead succeeds
-      { stdout: beadJson }
+      // showBeat succeeds
+      { stdout: beatJson }
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead("proj-abc", {
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat("proj-abc", {
       status: "closed",
       labels: ["stage:verification"],
     });
@@ -125,8 +125,8 @@ describe("updateBead error paths", () => {
       { stderr: "label add exploded", exitCode: 1 }
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead("proj-abc", {
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat("proj-abc", {
       labels: ["my-custom-label"],
     });
 
@@ -140,8 +140,8 @@ describe("updateBead error paths", () => {
       { stderr: "", exitCode: 1 }
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead("proj-abc", {
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat("proj-abc", {
       labels: ["my-label"],
     });
 
@@ -150,19 +150,19 @@ describe("updateBead error paths", () => {
   });
 
   it("returns fallback error when update stderr is empty", async () => {
-    const beadJson = JSON.stringify({
-      ...BEAD_JSON,
+    const beatJson = JSON.stringify({
+      ...BEAT_JSON,
       labels: [],
     });
 
     queueExec(
-      { stdout: beadJson }, // show (context load)
-      { stdout: beadJson }, // show (label reconciliation)
+      { stdout: beatJson }, // show (context load)
+      { stdout: beatJson }, // show (label reconciliation)
       { stderr: "", exitCode: 1 }, // update fails with empty stderr
     );
 
-    const { updateBead } = await import("@/lib/bd");
-    const result = await updateBead("proj-abc", {
+    const { updateBeat } = await import("@/lib/bd");
+    const result = await updateBeat("proj-abc", {
       status: "closed",
       labels: ["stage:verification"],
     });

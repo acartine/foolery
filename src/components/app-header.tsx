@@ -8,7 +8,7 @@ import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
-import { CreateBeadDialog } from "@/components/create-bead-dialog";
+import { CreateBeatDialog } from "@/components/create-beat-dialog";
 import { SettingsSheet } from "@/components/settings-sheet";
 import { NotificationBell } from "@/components/notification-bell";
 import type { SettingsSection } from "@/components/settings-sheet";
@@ -22,7 +22,7 @@ import {
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useVerificationCount } from "@/hooks/use-verification-count";
-import { buildBeadFocusHref } from "@/lib/bead-navigation";
+import { buildBeatFocusHref } from "@/lib/beat-navigation";
 
 type VersionBanner = {
   installedVersion: string;
@@ -33,10 +33,10 @@ export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isBeadsRoute =
-    pathname === "/beads" || pathname.startsWith("/beads/");
+  const isBeatsRoute =
+    pathname === "/beats" || pathname.startsWith("/beats/");
   const viewParam = searchParams.get("view");
-  const beadsView: "queues" | "active" | "finalcut" | "retakes" | "history" =
+  const beatsView: "queues" | "active" | "finalcut" | "retakes" | "history" =
     viewParam === "active"
       ? "active"
       : viewParam === "retakes"
@@ -59,9 +59,9 @@ export function AppHeader() {
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
   const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
-  const isFinalCutActive = beadsView === "finalcut";
-  const verificationCount = useVerificationCount(isBeadsRoute, isFinalCutActive);
-  const activeBeadId = searchParams.get("bead");
+  const isFinalCutActive = beatsView === "finalcut";
+  const verificationCount = useVerificationCount(isBeatsRoute, isFinalCutActive);
+  const activeBeatId = searchParams.get("beat");
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present
   const effectiveSettingsOpen = settingsOpen || settingsOpenFromUrl;
@@ -75,9 +75,9 @@ export function AppHeader() {
   );
 
   useEffect(() => {
-    if (!isBeadsRoute || !canCreate) return;
+    if (!isBeatsRoute || !canCreate) return;
     // Shift+N only opens create dialog on Beats list views (queues/active)
-    if (beadsView !== "queues" && beadsView !== "active") return;
+    if (beatsView !== "queues" && beatsView !== "active") return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "N" && e.shiftKey) {
         if (document.querySelector('[role="dialog"]')) return;
@@ -96,7 +96,7 @@ export function AppHeader() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [beadsView, canCreate, defaultRepo, isBeadsRoute]);
+  }, [beatsView, canCreate, defaultRepo, isBeatsRoute]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -155,7 +155,7 @@ export function AppHeader() {
     setCreateOpen(true);
   };
 
-  const setBeadsView = useCallback((view: "queues" | "active" | "finalcut" | "retakes" | "history") => {
+  const setBeatsView = useCallback((view: "queues" | "active" | "finalcut" | "retakes" | "history") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "queues") params.delete("view");
     else params.set("view", view);
@@ -166,12 +166,12 @@ export function AppHeader() {
       params.set("state", "in_action");
     }
     const qs = params.toString();
-    router.push(`/beads${qs ? `?${qs}` : ""}`);
+    router.push(`/beats${qs ? `?${qs}` : ""}`);
   }, [searchParams, router]);
 
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
-    if (!isBeadsRoute) return;
+    if (!isBeatsRoute) return;
     const views = ["queues", "active", "finalcut", "retakes", "history"] as const;
     type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -180,24 +180,24 @@ export function AppHeader() {
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
 
       // Unknown or legacy non-tab view values default to the first tab.
-      const idx = views.indexOf(beadsView as CyclableView);
+      const idx = views.indexOf(beatsView as CyclableView);
       const safeIdx = idx === -1 ? 0 : idx;
 
       if ((e.key === "}" || e.key === "]") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        setBeadsView(views[(safeIdx + 1) % views.length]);
+        setBeatsView(views[(safeIdx + 1) % views.length]);
       } else if ((e.key === "{" || e.key === "[") && e.shiftKey && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        setBeadsView(views[(safeIdx - 1 + views.length) % views.length]);
+        setBeatsView(views[(safeIdx - 1 + views.length) % views.length]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isBeadsRoute, beadsView, setBeadsView]);
+  }, [isBeatsRoute, beatsView, setBeatsView]);
 
   // Shift+T to toggle terminal panel (global — works in all views)
   useEffect(() => {
-    if (!isBeadsRoute) return;
+    if (!isBeatsRoute) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
       const target = e.target as HTMLElement;
@@ -209,13 +209,13 @@ export function AppHeader() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isBeadsRoute, toggleTerminalPanel]);
+  }, [isBeatsRoute, toggleTerminalPanel]);
 
   // Button config changes per view: hidden on History, "Wrap!" on Final Cut, "Add" on Beats
-  const showActionButton = beadsView === "queues" || beadsView === "active" || beadsView === "finalcut";
+  const showActionButton = beatsView === "queues" || beatsView === "active" || beatsView === "finalcut";
 
   const actionButton = (() => {
-    if (beadsView === "finalcut") {
+    if (beatsView === "finalcut") {
       // Human-action queue: shortcut emphasis for review handoff.
       return (
         <Button
@@ -300,7 +300,7 @@ export function AppHeader() {
                   const params = new URLSearchParams();
                   if (activeRepo) params.set("repo", activeRepo);
                   const qs = params.toString();
-                  router.push(`/beads${qs ? `?${qs}` : ""}`);
+                  router.push(`/beats${qs ? `?${qs}` : ""}`);
                 }}
               >
                 <Image
@@ -314,18 +314,18 @@ export function AppHeader() {
               </button>
               <VersionBadge />
               <RepoSwitcher />
-              {activeBeadId && (
+              {activeBeatId && (
                 <button
                   type="button"
                   className="inline-flex max-w-[14rem] items-center gap-1 truncate rounded-md border bg-muted/50 px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  title={`Viewing ${activeBeadId} — click to focus in list`}
+                  title={`Viewing ${activeBeatId} — click to focus in list`}
                   onClick={() => {
                     router.push(
-                      buildBeadFocusHref(activeBeadId, searchParams.toString()),
+                      buildBeatFocusHref(activeBeatId, searchParams.toString()),
                     );
                   }}
                 >
-                  {activeBeadId}
+                  {activeBeatId}
                 </button>
               )}
             </div>
@@ -348,35 +348,35 @@ export function AppHeader() {
               <Settings className="size-4" />
             </Button>
 
-            {isBeadsRoute ? (
+            {isBeatsRoute ? (
               <div className="ml-auto flex items-center gap-2">
                 <div className="flex items-center gap-1 rounded-lg border bg-muted/20 p-1">
                   <Button
                     size="lg"
-                    variant={beadsView === "queues" ? "default" : "ghost"}
+                    variant={beatsView === "queues" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     title="Queue beats (ready for action)"
-                    onClick={() => setBeadsView("queues")}
+                    onClick={() => setBeatsView("queues")}
                   >
                     <Inbox className="size-4" />
                     Queues
                   </Button>
                   <Button
                     size="lg"
-                    variant={beadsView === "active" ? "default" : "ghost"}
+                    variant={beatsView === "active" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     title="Active beats (in progress)"
-                    onClick={() => setBeadsView("active")}
+                    onClick={() => setBeatsView("active")}
                   >
                     <Zap className="size-4" />
                     Active
                   </Button>
                   <Button
                     size="lg"
-                    variant={beadsView === "finalcut" ? "default" : "ghost"}
+                    variant={beatsView === "finalcut" ? "default" : "ghost"}
                     className="relative h-8 gap-1.5 px-2.5"
                     title="Human-action queue"
-                    onClick={() => setBeadsView("finalcut")}
+                    onClick={() => setBeatsView("finalcut")}
                   >
                     <Scissors className="size-4" />
                     Human Action
@@ -388,20 +388,20 @@ export function AppHeader() {
                   </Button>
                   <Button
                     size="lg"
-                    variant={beadsView === "retakes" ? "default" : "ghost"}
+                    variant={beatsView === "retakes" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     title="Regression tracking for beats in retake"
-                    onClick={() => setBeadsView("retakes")}
+                    onClick={() => setBeatsView("retakes")}
                   >
                     <RotateCcw className="size-4" />
                     ReTakes
                   </Button>
                   <Button
                     size="lg"
-                    variant={beadsView === "history" ? "default" : "ghost"}
+                    variant={beatsView === "history" ? "default" : "ghost"}
                     className="h-8 gap-1.5 px-2.5"
                     title="Take!/Scene agent history"
-                    onClick={() => setBeadsView("history")}
+                    onClick={() => setBeatsView("history")}
                   >
                     <History className="size-4" />
                     History
@@ -430,14 +430,14 @@ export function AppHeader() {
         </div>
       </header>
 
-      {isBeadsRoute ? (
-        <CreateBeadDialog
+      {isBeatsRoute ? (
+        <CreateBeatDialog
           open={createOpen}
           onOpenChange={setCreateOpen}
           onCreated={() => {
             setCreateOpen(false);
             setSelectedRepo(null);
-            queryClient.invalidateQueries({ queryKey: ["beads"] });
+            queryClient.invalidateQueries({ queryKey: ["beats"] });
           }}
           repo={selectedRepo ?? activeRepo}
         />

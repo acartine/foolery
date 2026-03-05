@@ -143,20 +143,20 @@ export function BreakdownView() {
     toast.success(
       `Created ${result.data.createdBeatIds.length} beats across ${result.data.waveCount} scenes`
     );
-    queryClient.invalidateQueries({ queryKey: ["beads"] });
+    queryClient.invalidateQueries({ queryKey: ["beats"] });
 
     const params = new URLSearchParams(searchParams.toString());
     params.delete("view");
     params.delete("parent");
-    params.set("bead", parentBeatId);
-    router.push(`/beads?${params.toString()}`);
+    params.set("beat", parentBeatId);
+    router.push(`/beats?${params.toString()}`);
   }, [session, plan, activeRepo, queryClient, searchParams, router, parentBeatId]);
 
   const handleBack = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("view");
     params.delete("parent");
-    router.push(`/beads?${params.toString()}`);
+    router.push(`/beats?${params.toString()}`);
   }, [searchParams, router]);
 
   const status = session?.status ?? "idle";
@@ -260,18 +260,18 @@ export function BreakdownView() {
                 {wave.objective}
               </p>
               <div className="space-y-1">
-                {wave.beats.map((bead, index) => (
+                {wave.beats.map((beat, index) => (
                   <div
                     key={index}
                     className="rounded-md border bg-white/90 px-2.5 py-1.5 text-xs flex items-center gap-2"
                   >
                     <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
-                      {bead.type}
+                      {beat.type}
                     </Badge>
                     <span className="text-[10px] text-muted-foreground">
-                      P{bead.priority}
+                      P{beat.priority}
                     </span>
-                    <span className="font-medium">{bead.title}</span>
+                    <span className="font-medium">{beat.title}</span>
                   </div>
                 ))}
               </div>

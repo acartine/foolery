@@ -95,16 +95,16 @@ describe("isRetryableByDefault", () => {
 
 describe("factory functions", () => {
   it("notFound creates NOT_FOUND error with id in message", () => {
-    const err = notFound("bead-42");
+    const err = notFound("beat-42");
     expect(err.code).toBe("NOT_FOUND");
-    expect(err.message).toContain("bead-42");
+    expect(err.message).toContain("beat-42");
     expect(err.retryable).toBe(false);
   });
 
   it("alreadyExists creates ALREADY_EXISTS error with id in message", () => {
-    const err = alreadyExists("bead-42");
+    const err = alreadyExists("beat-42");
     expect(err.code).toBe("ALREADY_EXISTS");
-    expect(err.message).toContain("bead-42");
+    expect(err.message).toContain("beat-42");
     expect(err.retryable).toBe(false);
   });
 
@@ -211,8 +211,8 @@ describe("classifyErrorMessage", () => {
   it.each([
     ["resource not found", "NOT_FOUND"],
     ["no such file or directory", "NOT_FOUND"],
-    ["bead does not exist", "NOT_FOUND"],
-    ["bead already exists", "ALREADY_EXISTS"],
+    ["beat does not exist", "NOT_FOUND"],
+    ["beat already exists", "ALREADY_EXISTS"],
     ["duplicate key error", "ALREADY_EXISTS"],
     ["database is locked", "LOCKED"],
     ["could not obtain lock on repo", "LOCKED"],

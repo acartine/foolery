@@ -35,10 +35,10 @@ describe("bd-error-suppression cache TTL expiry", () => {
 
   it("evicts expired cache entry and cleans up failure state (lines 122-125)", () => {
     // Populate cache with a successful result
-    withErrorSuppression("listBeads", ok([STUB_BEAT]));
+    withErrorSuppression("listBeats", ok([STUB_BEAT]));
 
     // Start a failure tracking
-    withErrorSuppression("listBeads", fail("locked"));
+    withErrorSuppression("listBeats", fail("locked"));
     expect(_internals.failureState.size).toBe(1);
 
     // Expire the cache entry past TTL (10 min) but keep failure within
@@ -53,7 +53,7 @@ describe("bd-error-suppression cache TTL expiry", () => {
 
     // Now a lock error should hit the TTL check (lines 122-125):
     // cache entry is expired, so it gets evicted and the raw error is returned
-    const out = withErrorSuppression("listBeads", fail("locked"));
+    const out = withErrorSuppression("listBeats", fail("locked"));
     expect(out.ok).toBe(false);
     expect(out.error?.message).toBe("locked");
 

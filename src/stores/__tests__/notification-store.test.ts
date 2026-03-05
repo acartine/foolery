@@ -80,12 +80,12 @@ describe("notification store", () => {
     expect(selectUnreadCount(useNotificationStore.getState())).toBe(1);
   });
 
-  it("stores optional beadId on notification", () => {
+  it("stores optional beatId on notification", () => {
     const store = useNotificationStore.getState();
-    store.addNotification({ message: "Bead ready", beadId: "foolery-42" });
+    store.addNotification({ message: "Beat ready", beatId: "foolery-42" });
 
     const n = useNotificationStore.getState().notifications[0];
-    expect(n.beadId).toBe("foolery-42");
+    expect(n.beatId).toBe("foolery-42");
   });
 
 });

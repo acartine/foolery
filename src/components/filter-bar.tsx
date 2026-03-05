@@ -76,42 +76,42 @@ interface FilterBarProps {
   selectedIds?: string[];
   onBulkUpdate?: (fields: UpdateBeatInput) => void;
   onClearSelection?: () => void;
-  onSceneBeads?: (ids: string[]) => void;
-  onMergeBeads?: (ids: string[]) => void;
+  onSceneBeats?: (ids: string[]) => void;
+  onMergeBeats?: (ids: string[]) => void;
 }
 
 export function BulkEditControls({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
-  onSceneBeads,
-  onMergeBeads,
+  onSceneBeats,
+  onMergeBeats,
 }: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
-  Pick<FilterBarProps, "onSceneBeads" | "onMergeBeads">) {
+  Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <span className="text-sm font-medium whitespace-nowrap">
         {selectedIds.length} selected
       </span>
-      {onSceneBeads && selectedIds.length >= 2 && (
+      {onSceneBeats && selectedIds.length >= 2 && (
         <Button
           variant="default"
           size="sm"
           className="gap-1"
           title="Group selected beats into a scene"
-          onClick={() => onSceneBeads(selectedIds)}
+          onClick={() => onSceneBeats(selectedIds)}
         >
           <Clapperboard className="h-3.5 w-3.5" />
           Scene!
         </Button>
       )}
-      {onMergeBeads && selectedIds.length === 2 && (
+      {onMergeBeats && selectedIds.length === 2 && (
         <Button
           variant="outline"
           size="sm"
           className="gap-1"
           title="Merge two beats into one"
-          onClick={() => onMergeBeads(selectedIds)}
+          onClick={() => onMergeBeats(selectedIds)}
         >
           <Merge className="h-3.5 w-3.5" />
           Merge
@@ -273,8 +273,8 @@ export function FilterBar({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
-  onSceneBeads,
-  onMergeBeads,
+  onSceneBeats,
+  onMergeBeats,
 }: FilterBarProps) {
   if (selectedIds && selectedIds.length > 0 && onBulkUpdate && onClearSelection) {
     return (
@@ -282,8 +282,8 @@ export function FilterBar({
         selectedIds={selectedIds}
         onBulkUpdate={onBulkUpdate}
         onClearSelection={onClearSelection}
-        onSceneBeads={onSceneBeads}
-        onMergeBeads={onMergeBeads}
+        onSceneBeats={onSceneBeats}
+        onMergeBeats={onMergeBeats}
       />
     );
   }

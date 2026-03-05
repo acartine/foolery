@@ -14,7 +14,7 @@ function quoteArg(value: string): string {
   return JSON.stringify(value);
 }
 
-function beadsNoDaemonFlag(options?: MemoryManagerCommandOptions): string {
+function beatsNoDaemonFlag(options?: MemoryManagerCommandOptions): string {
   return options?.noDaemon ? " --no-daemon" : "";
 }
 
@@ -44,7 +44,7 @@ export function buildWorkflowStateCommand(
     return `kno next ${quoteId(id)} --expected-state ${quoteArg(normalizedState)} --actor-kind agent`;
   }
   const compatStatus = mapWorkflowStateToCompatStatus(normalizedState, "memory-manager-commands");
-  return `bd update ${quoteId(id)} --status ${quoteArg(compatStatus)} --add-label ${quoteArg(`wf:state:${normalizedState}`)}${beadsNoDaemonFlag(options)}`;
+  return `bd update ${quoteId(id)} --status ${quoteArg(compatStatus)} --add-label ${quoteArg(`wf:state:${normalizedState}`)}${beatsNoDaemonFlag(options)}`;
 }
 
 export function buildVerificationStageCommand(
@@ -55,7 +55,7 @@ export function buildVerificationStageCommand(
   if (memoryManagerType === "knots") {
     return `kno claim ${quoteId(id)} --json`;
   }
-  return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification${beadsNoDaemonFlag(options)}`;
+  return `bd update ${quoteId(id)} --status in_progress --add-label stage:verification${beatsNoDaemonFlag(options)}`;
 }
 
 export function buildVerificationRetryCommands(
@@ -67,7 +67,7 @@ export function buildVerificationRetryCommands(
     return [];
   }
 
-  const noDaemon = beadsNoDaemonFlag(options);
+  const noDaemon = beatsNoDaemonFlag(options);
   return [
     `bd label remove ${quoteId(id)} stage:verification${noDaemon}`,
     `bd label add ${quoteId(id)} stage:retry${noDaemon}`,
@@ -83,7 +83,7 @@ export function buildVerificationPassCommands(
     return [];
   }
 
-  const noDaemon = beadsNoDaemonFlag(options);
+  const noDaemon = beatsNoDaemonFlag(options);
   return [
     `bd label remove ${quoteId(id)} stage:verification${noDaemon}`,
     `bd close ${quoteId(id)}`,

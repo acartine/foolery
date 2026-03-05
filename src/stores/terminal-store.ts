@@ -178,8 +178,8 @@ export const useTerminalStore = create<TerminalState>()(
       const synced = state.terminals.map((t) => {
         const backend = backendMap.get(t.sessionId);
         if (!backend) {
-          // Terminal gone from backend — mark completed
-          return t.status === "running" ? { ...t, status: "completed" as const } : t;
+          // Terminal gone from backend — server likely restarted; mark disconnected, not completed
+          return t.status === "running" ? { ...t, status: "disconnected" as const } : t;
         }
         // Sync backend-authoritative fields for known sessions.
         if (backend.status !== t.status || backend.startedAt !== t.startedAt) {

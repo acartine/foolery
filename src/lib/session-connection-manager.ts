@@ -59,12 +59,20 @@ class SessionConnectionManager {
           conn.exitReceived = true;
           conn.exitCode = parseInt(event.data, 10);
 
+          // Sentinel -2 means the session vanished from the backend
+          // (server crash / restart) — NOT a clean completion.
+          const isDisconnect = conn.exitCode === -2;
+
           // Update zustand store directly — outside React lifecycle
           useTerminalStore
             .getState()
             .updateStatus(
               sessionId,
-              conn.exitCode === 0 ? "completed" : "error",
+              isDisconnect
+                ? "disconnected"
+                : conn.exitCode === 0
+                  ? "completed"
+                  : "error",
             );
 
           // Fire in-app notification for session exit
@@ -73,15 +81,19 @@ class SessionConnectionManager {
             .terminals.find((t) => t.sessionId === sessionId);
           if (terminal) {
             const { addNotification } = useNotificationStore.getState();
-            const status = conn.exitCode === 0 ? "completed" : "exited with error";
+            const status = isDisconnect
+              ? "disconnected (server may have restarted)"
+              : conn.exitCode === 0
+                ? "completed"
+                : "exited with error";
             addNotification({
               message: `"${terminal.beatTitle}" session ${status}`,
-              beadId: terminal.beatId,
+              beatId: terminal.beatId,
             });
           }
 
-          // Invalidate beat queries on success
-          if (conn.exitCode === 0 && this.queryClientRef) {
+          // Invalidate beat queries on success (not on disconnect)
+          if (conn.exitCode === 0 && !isDisconnect && this.queryClientRef) {
             void invalidateBeatListQueries(this.queryClientRef);
           }
         }

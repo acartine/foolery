@@ -6,7 +6,7 @@ import { Clapperboard } from "lucide-react";
 import { toast } from "sonner";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import { fetchBead, fetchDeps, fetchWorkflows, addDep } from "@/lib/api";
+import { fetchBeat, fetchDeps, fetchWorkflows, addDep } from "@/lib/api";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import { BeatDetail } from "@/components/beat-detail";
@@ -53,8 +53,8 @@ export function BeatDetailLightbox({
   const detailId = beatId ?? "";
 
   const { data: beatData, isLoading: isLoadingBeat } = useQuery({
-    queryKey: ["bead", detailId, repo],
-    queryFn: () => fetchBead(detailId, repo),
+    queryKey: ["beat", detailId, repo],
+    queryFn: () => fetchBeat(detailId, repo),
     enabled: open && detailId.length > 0,
     placeholderData: initialBeat ? { ok: true, data: initialBeat } : undefined,
     retry: 1,
@@ -62,7 +62,7 @@ export function BeatDetailLightbox({
   });
 
   const { data: depsData } = useQuery({
-    queryKey: ["bead-deps", detailId, repo],
+    queryKey: ["beat-deps", detailId, repo],
     queryFn: () => fetchDeps(detailId, repo),
     enabled: open && detailId.length > 0,
     retry: 1,
@@ -83,12 +83,12 @@ export function BeatDetailLightbox({
     mutationFn: async (fields: UpdateBeatInput) =>
       updateBeatOrThrow(beat ? [beat] : [], detailId, fields, repo),
     onMutate: async (fields) => {
-      await queryClient.cancelQueries({ queryKey: ["bead", detailId, repo] });
-      await queryClient.cancelQueries({ queryKey: ["beads"] });
-      const previousBeat = queryClient.getQueryData(["bead", detailId, repo]);
-      const previousBeats = queryClient.getQueriesData({ queryKey: ["beads"] });
+      await queryClient.cancelQueries({ queryKey: ["beat", detailId, repo] });
+      await queryClient.cancelQueries({ queryKey: ["beats"] });
+      const previousBeat = queryClient.getQueryData(["beat", detailId, repo]);
+      const previousBeats = queryClient.getQueriesData({ queryKey: ["beats"] });
       queryClient.setQueryData(
-        ["bead", detailId, repo],
+        ["beat", detailId, repo],
         (old: unknown) => {
           const prev = old as { ok: boolean; data?: Beat } | undefined;
           if (!prev?.data) return prev;
@@ -99,7 +99,7 @@ export function BeatDetailLightbox({
         }
       );
       queryClient.setQueriesData(
-        { queryKey: ["beads"] },
+        { queryKey: ["beats"] },
         (old: unknown) => {
           const prev = old as { ok: boolean; data?: Beat[] } | undefined;
           if (!prev?.data) return prev;
@@ -118,7 +118,7 @@ export function BeatDetailLightbox({
     onError: (error: Error, _fields, context) => {
       toast.error(error.message);
       if (context?.previousBeat) {
-        queryClient.setQueryData(["bead", detailId, repo], context.previousBeat);
+        queryClient.setQueryData(["beat", detailId, repo], context.previousBeat);
       }
       if (context?.previousBeats) {
         for (const [key, snapData] of context.previousBeats) {
@@ -127,8 +127,8 @@ export function BeatDetailLightbox({
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      queryClient.invalidateQueries({ queryKey: ["bead", detailId, repo] });
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
+      queryClient.invalidateQueries({ queryKey: ["beat", detailId, repo] });
     },
   });
 
@@ -136,7 +136,7 @@ export function BeatDetailLightbox({
     mutationFn: ({ source, target }: { source: string; target: string }) =>
       addDep(source, { blocks: target }, repo),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bead-deps", detailId, repo] });
+      queryClient.invalidateQueries({ queryKey: ["beat-deps", detailId, repo] });
       toast.success("Dependency added");
     },
     onError: () => {

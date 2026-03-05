@@ -29,7 +29,7 @@ beforeEach(() => {
 });
 
 describe("listRepos", () => {
-  it("infers beads memoryManagerType for legacy entries missing memory manager metadata", async () => {
+  it("infers beats memoryManagerType for legacy entries missing memory manager metadata", async () => {
     mockReadFile.mockResolvedValue(
       JSON.stringify({
         repos: [

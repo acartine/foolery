@@ -1,4 +1,4 @@
-import { updateBead } from "@/lib/api";
+import { updateBeat } from "@/lib/api";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import type { Beat } from "@/lib/types";
 
@@ -25,7 +25,7 @@ export async function updateBeatOrThrow(
 ): Promise<void> {
   const beat = beats.find((entry) => entry.id === id);
   const resolvedRepoPath = normalizeRepoPath(repoPath) ?? repoPathForBeat(beat);
-  const result = await updateBead(id, fields, resolvedRepoPath);
+  const result = await updateBeat(id, fields, resolvedRepoPath);
   if (!result.ok) {
     throw new Error(result.error ?? "Failed to update beat");
   }

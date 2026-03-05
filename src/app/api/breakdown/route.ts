@@ -11,26 +11,26 @@ export async function POST(request: NextRequest) {
     typeof body?._repo === "string" && body._repo.trim()
       ? body._repo.trim()
       : "";
-  const parentBeadId =
-    typeof body?.parentBeadId === "string" && body.parentBeadId.trim()
-      ? body.parentBeadId.trim()
+  const parentBeatId =
+    typeof body?.parentBeatId === "string" && body.parentBeatId.trim()
+      ? body.parentBeatId.trim()
       : "";
 
   if (!repoPath) {
     return NextResponse.json({ error: "_repo is required" }, { status: 400 });
   }
-  if (!parentBeadId) {
+  if (!parentBeatId) {
     return NextResponse.json(
-      { error: "parentBeadId is required" },
+      { error: "parentBeatId is required" },
       { status: 400 }
     );
   }
 
   try {
-    const parentResult = await getBackend().get(parentBeadId, repoPath);
+    const parentResult = await getBackend().get(parentBeatId, repoPath);
     if (!parentResult.ok || !parentResult.data) {
       return NextResponse.json(
-        { error: `Parent bead not found: ${parentBeadId}` },
+        { error: `Parent beat not found: ${parentBeatId}` },
         { status: 404 }
       );
     }
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const parent = parentResult.data;
     const session = await createBreakdownSession(
       repoPath,
-      parentBeadId,
+      parentBeatId,
       parent.title,
       parent.description ?? ""
     );

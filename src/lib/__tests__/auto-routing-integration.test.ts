@@ -4,14 +4,14 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import * as memoryManagerDetection from "@/lib/memory-manager-detection";
 
-// ── Mock Beads/BD CLI backend ────────────────────────────────────
+// ── Mock Beats/BD CLI backend ────────────────────────────────────
 
-const mockListBeads = vi.fn(async () => ({
+const mockListBeats = vi.fn(async () => ({
   ok: true as const,
   data: [
     {
       id: "bd-1",
-      title: "Beads item",
+      title: "Beats item",
       type: "task",
       status: "open",
       priority: 2,
@@ -23,24 +23,15 @@ const mockListBeads = vi.fn(async () => ({
 }));
 
 vi.mock("@/lib/bd", () => ({
-  listBeats: () => mockListBeads(),
-  listBeads: () => mockListBeads(),
-  readyBeats: () => mockListBeads(),
-  readyBeads: () => mockListBeads(),
-  searchBeats: () => mockListBeads(),
-  searchBeads: () => mockListBeads(),
-  queryBeats: () => mockListBeads(),
-  queryBeads: () => mockListBeads(),
+  listBeats: () => mockListBeats(),
+  readyBeats: () => mockListBeats(),
+  searchBeats: () => mockListBeats(),
+  queryBeats: () => mockListBeats(),
   showBeat: vi.fn(async () => ({ ok: false, error: "not found" })),
-  showBead: vi.fn(async () => ({ ok: false, error: "not found" })),
   createBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  createBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   updateBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  updateBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   deleteBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  deleteBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   closeBeat: vi.fn(async () => ({ ok: false, error: "not implemented" })),
-  closeBead: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   listDeps: vi.fn(async () => ({ ok: true, data: [] })),
   addDep: vi.fn(async () => ({ ok: false, error: "not implemented" })),
   removeDep: vi.fn(async () => ({ ok: false, error: "not implemented" })),
@@ -161,8 +152,8 @@ describe("AutoRoutingBackend.capabilitiesForRepo", () => {
     expect(caps).toEqual(KNOTS_CAPABILITIES);
   });
 
-  it("returns FULL_CAPABILITIES for a .beads repo", () => {
-    const repo = makeRepo([".beads"]);
+  it("returns FULL_CAPABILITIES for a .beats repo", () => {
+    const repo = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
     const caps = backend.capabilitiesForRepo(repo);
     expect(caps).toEqual(FULL_CAPABILITIES);
@@ -186,20 +177,20 @@ describe("AutoRoutingBackend.capabilitiesForRepo", () => {
 // ── Test group 2: Mixed tracker operation routing ────────────────
 
 describe("Mixed tracker operation routing", () => {
-  it("routes to Knots when both .knots and .beads markers exist", async () => {
-    const repo = makeRepo([".knots", ".beads"]);
+  it("routes to Knots when both .knots and .beats markers exist", async () => {
+    const repo = makeRepo([".knots", ".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     const result = await backend.list(undefined, repo);
     expect(result.ok).toBe(true);
     expect(result.data?.[0].id).toBe("K-0001");
     expect(mockListKnots).toHaveBeenCalled();
-    expect(mockListBeads).not.toHaveBeenCalled();
+    expect(mockListBeats).not.toHaveBeenCalled();
   });
 
   it("routes different repos to different backends in the same instance", async () => {
     const knotsRepo = makeRepo([".knots"]);
-    const beadsRepo = makeRepo([".beads"]);
+    const beatsRepo = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     const knotsResult = await backend.list(undefined, knotsRepo);
@@ -207,15 +198,15 @@ describe("Mixed tracker operation routing", () => {
     expect(knotsResult.data?.[0].id).toBe("K-0001");
     expect(mockListKnots).toHaveBeenCalledTimes(1);
 
-    const beadsResult = await backend.list(undefined, beadsRepo);
-    expect(beadsResult.ok).toBe(true);
-    expect(beadsResult.data?.[0].id).toBe("bd-1");
-    expect(mockListBeads).toHaveBeenCalledTimes(1);
+    const beatsResult = await backend.list(undefined, beatsRepo);
+    expect(beatsResult.ok).toBe(true);
+    expect(beatsResult.data?.[0].id).toBe("bd-1");
+    expect(mockListBeats).toHaveBeenCalledTimes(1);
   });
 
-  it("returns Knots-shaped data for .knots and Beads-shaped data for .beads", async () => {
+  it("returns Knots-shaped data for .knots and Beats-shaped data for .beats", async () => {
     const knotsRepo = makeRepo([".knots"]);
-    const beadsRepo = makeRepo([".beads"]);
+    const beatsRepo = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     const knotsResult = await backend.list(undefined, knotsRepo);
@@ -225,12 +216,12 @@ describe("Mixed tracker operation routing", () => {
     expect(knotsItem!.id).toBe("K-0001");
     expect(knotsItem!.title).toBe("Knots item");
 
-    const beadsResult = await backend.list(undefined, beadsRepo);
-    expect(beadsResult.ok).toBe(true);
-    const beadsItem = beadsResult.data?.[0];
-    expect(beadsItem).toBeDefined();
-    expect(beadsItem!.id).toBe("bd-1");
-    expect(beadsItem!.title).toBe("Beads item");
+    const beatsResult = await backend.list(undefined, beatsRepo);
+    expect(beatsResult.ok).toBe(true);
+    const beatsItem = beatsResult.data?.[0];
+    expect(beatsItem).toBeDefined();
+    expect(beatsItem!.id).toBe("bd-1");
+    expect(beatsItem!.title).toBe("Beats item");
   });
 });
 
@@ -240,7 +231,7 @@ describe("Cache behavior with mixed repos", () => {
   it("caches per-repo so routing repo A to Knots does not affect repo B", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beads"]);
+    const repoB = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     // First call for each repo triggers detection
@@ -257,7 +248,7 @@ describe("Cache behavior with mixed repos", () => {
 
     // Verify correct routing persists from cache
     expect(mockListKnots).toHaveBeenCalledTimes(2);
-    expect(mockListBeads).toHaveBeenCalledTimes(2);
+    expect(mockListBeats).toHaveBeenCalledTimes(2);
 
     spy.mockRestore();
   });
@@ -265,7 +256,7 @@ describe("Cache behavior with mixed repos", () => {
   it("clearRepoCache(repoPath) only clears the specified repo", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beads"]);
+    const repoB = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     // Populate cache for both repos
@@ -289,7 +280,7 @@ describe("Cache behavior with mixed repos", () => {
   it("clearRepoCache() with no args clears all cached repos", async () => {
     const spy = vi.spyOn(memoryManagerDetection, "detectMemoryManagerType");
     const repoA = makeRepo([".knots"]);
-    const repoB = makeRepo([".beads"]);
+    const repoB = makeRepo([".beats"]);
     const backend = new AutoRoutingBackend("cli");
 
     // Populate cache for both repos

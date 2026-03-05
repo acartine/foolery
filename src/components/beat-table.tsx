@@ -14,7 +14,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import { closeBead, previewCascadeClose, cascadeCloseBead } from "@/lib/api";
+import { closeBeat, previewCascadeClose, cascadeCloseBeat } from "@/lib/api";
 import { buildHierarchy, type HierarchicalBeat } from "@/lib/beat-hierarchy";
 import { compareBeatsByHierarchicalOrder } from "@/lib/beat-sort";
 import { getBeatColumns } from "@/components/beat-columns";
@@ -204,12 +204,12 @@ export function BeatTable({
     mutationFn: ({ id, fields, repoPath }: { id: string; fields: UpdateBeatInput; repoPath?: string }) =>
       updateBeatOrThrow(data, id, fields, repoPath),
     onMutate: async ({ id, fields, repoPath }) => {
-      // Optimistically update the beads cache
-      await queryClient.cancelQueries({ queryKey: ["beads"] });
-      const previousBeads = queryClient.getQueriesData({ queryKey: ["beads"] });
+      // Optimistically update the beats cache
+      await queryClient.cancelQueries({ queryKey: ["beats"] });
+      const previousBeats = queryClient.getQueriesData({ queryKey: ["beats"] });
 
       queryClient.setQueriesData(
-        { queryKey: ["beads"] },
+        { queryKey: ["beats"] },
         (old: unknown) => {
           const prev = old as { ok: boolean; data?: Beat[] } | undefined;
           if (!prev?.data) return prev;
@@ -224,20 +224,20 @@ export function BeatTable({
         }
       );
 
-      return { previousBeads };
+      return { previousBeats };
     },
     onError: (error, _vars, context) => {
       const message = error instanceof Error ? error.message : "Failed to update beat";
       toast.error(message);
-      if (context?.previousBeads) {
-        for (const [key, snapData] of context.previousBeads) {
+      if (context?.previousBeats) {
+        for (const [key, snapData] of context.previousBeats) {
           queryClient.setQueryData(key, snapData);
         }
       }
     },
     onSettled: (_data, _err, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
-      queryClient.invalidateQueries({ queryKey: ["bead", id] });
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
+      queryClient.invalidateQueries({ queryKey: ["beat", id] });
     },
   });
 
@@ -245,10 +245,10 @@ export function BeatTable({
     mutationFn: (id: string) => {
       const beat = data.find((b) => b.id === id);
       const repo = repoPathForBeat(beat);
-      return closeBead(id, {}, repo);
+      return closeBeat(id, {}, repo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
       toast.success("Beat closed");
     },
     onError: () => {
@@ -260,10 +260,10 @@ export function BeatTable({
     mutationFn: (id: string) => {
       const beat = data.find((b) => b.id === id);
       const repo = repoPathForBeat(beat);
-      return cascadeCloseBead(id, {}, repo);
+      return cascadeCloseBeat(id, {}, repo);
     },
     onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({ queryKey: ["beads"] });
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
       const beat = data.find((b) => b.id === id);
       toast.success(`Closed ${beat?.title ?? id} and all children`);
       setCascadeDialogOpen(false);
@@ -451,11 +451,11 @@ export function BeatTable({
 
         const repoPath = repoPathForBeat(beat);
         const params = new URLSearchParams(searchParams.toString());
-        params.set("bead", beat.id);
+        params.set("beat", beat.id);
         if (repoPath) params.set("detailRepo", repoPath);
         else params.delete("detailRepo");
         const qs = params.toString();
-        router.push(`/beads${qs ? `?${qs}` : ""}`);
+        router.push(`/beats${qs ? `?${qs}` : ""}`);
       },
       onShipBeat,
       shippingByBeatId,
@@ -569,7 +569,7 @@ export function BeatTable({
 
       <HotkeyHelp open={hotkeyHelpOpen} />
       <NotesDialog
-        bead={notesBeat}
+        beat={notesBeat}
         open={notesDialogOpen}
         onOpenChange={setNotesDialogOpen}
         onUpdate={(id, fields) => handleUpdateBeat({ id, fields, repoPath: repoPathForBeat(notesBeat ?? undefined) })}
@@ -709,7 +709,7 @@ function BeatTableContent({
                       const params = new URLSearchParams(searchParams.toString());
                       params.delete("q");
                       const qs = params.toString();
-                      router.push(`/beads${qs ? `?${qs}` : ""}`);
+                      router.push(`/beats${qs ? `?${qs}` : ""}`);
                     }}
                   >
                     <XCircle className="size-3.5" />

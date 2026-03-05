@@ -207,9 +207,9 @@ describe("connectToSession", () => {
 
     await vi.advanceTimersByTimeAsync(200);
 
-    // Session gone from backend → synthesized exit 0 (not onError)
+    // Session gone from backend → synthesized exit with sentinel -2 (not onError)
     expect(onEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "exit", data: "0" }),
+      expect.objectContaining({ type: "exit", data: "-2" }),
     );
     expect(onError).not.toHaveBeenCalled();
     expect(es.closed).toBe(true);

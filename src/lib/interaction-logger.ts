@@ -6,7 +6,7 @@ import { cleanupLogs } from "@/lib/log-lifecycle";
 /**
  * Interaction logger for agent sessions.
  *
- * Writes JSONL log files keyed by repo, bead, and interaction type.
+ * Writes JSONL log files keyed by repo, beat, and interaction type.
  *
  * Log directory resolution:
  * - Production (installed binary / `next start`): ~/.config/foolery/logs/

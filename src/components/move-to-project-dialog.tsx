@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowRightLeft } from "lucide-react";
 import { toast } from "sonner";
-import { createBead, closeBead } from "@/lib/api";
+import { createBeat, closeBeat } from "@/lib/api";
 import { beatToCreateInput } from "@/lib/beat-utils";
 import { fetchRegistry } from "@/lib/registry-api";
 import { useAppStore } from "@/stores/app-store";
@@ -63,7 +63,7 @@ export function MoveToProjectDialog({
   const { mutate: handleMove, isPending } = useMutation({
     mutationFn: async () => {
       // Step 1: Create in target repo
-      const createResult = await createBead(
+      const createResult = await createBeat(
         beatToCreateInput(beat),
         targetRepo
       );
@@ -77,7 +77,7 @@ export function MoveToProjectDialog({
         availableRepos.find((r) => r.path === targetRepo)?.name ?? targetRepo;
 
       // Step 2: Close original
-      const closeResult = await closeBead(
+      const closeResult = await closeBeat(
         beat.id,
         { reason: `Moved to ${targetName} as ${newId}` },
         currentRepo

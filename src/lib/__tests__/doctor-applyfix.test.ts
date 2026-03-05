@@ -81,7 +81,7 @@ beforeEach(() => {
       {
         id: "beads-coarse",
         backingWorkflowId: "beads-coarse",
-        label: "Beads (Coarse)",
+        label: "Beats (Coarse)",
         mode: "coarse_human_gated",
         initialState: "open",
         states: ["open", "in_progress", "verification", "retake", "closed"],
@@ -254,7 +254,7 @@ describe("applyFix: stale-parent", () => {
     );
   });
 
-  it("returns failure when updateBead fails for stale parent", async () => {
+  it("returns failure when updateBeat fails for stale parent", async () => {
     setupStaleParent();
     mockUpdate.mockResolvedValue({ ok: false, error: { code: "UNKNOWN", message: "bd broke", retryable: false } });
 
@@ -264,7 +264,7 @@ describe("applyFix: stale-parent", () => {
     expect(fix?.message).toContain("bd broke");
   });
 
-  it("returns failure when updateBead throws for stale parent", async () => {
+  it("returns failure when updateBeat throws for stale parent", async () => {
     setupStaleParent();
     mockUpdate.mockRejectedValue(new Error("network timeout"));
 
@@ -351,7 +351,7 @@ describe("applyFix: context filtering", () => {
       data: [
         {
           id: "parent-1",
-          title: "Parent bead",
+          title: "Parent beat",
           state: "open",
           labels: [],
           type: "epic",
@@ -361,7 +361,7 @@ describe("applyFix: context filtering", () => {
         },
         {
           id: "child-1",
-          title: "Child bead",
+          title: "Child beat",
           state: "closed",
           labels: [],
           type: "task",
@@ -393,7 +393,7 @@ describe("applyFix: context filtering", () => {
       data: [
         {
           id: "parent-1",
-          title: "Parent bead",
+          title: "Parent beat",
           state: "open",
           labels: [],
           type: "epic",
@@ -403,7 +403,7 @@ describe("applyFix: context filtering", () => {
         },
         {
           id: "child-1",
-          title: "Child bead",
+          title: "Child beat",
           state: "closed",
           labels: [],
           type: "task",
@@ -419,7 +419,7 @@ describe("applyFix: context filtering", () => {
     const fixReport = await runDoctorFix({
       "stale-parent": {
         strategy: "mark-verification",
-        contexts: [{ beatId: "other-bead", repoPath: "/other-repo" }],
+        contexts: [{ beatId: "other-beat", repoPath: "/other-repo" }],
       },
     });
     const fix = fixReport.fixes.find((f) => f.check === "stale-parent");

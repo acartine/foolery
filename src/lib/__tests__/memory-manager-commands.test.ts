@@ -19,11 +19,11 @@ beforeEach(() => {
 });
 
 describe("resolveMemoryManagerType", () => {
-  it("defaults to beads when repoPath is missing", () => {
+  it("defaults to beats when repoPath is missing", () => {
     expect(resolveMemoryManagerType()).toBe("beads");
   });
 
-  it("falls back to beads when memory manager detection returns undefined", () => {
+  it("falls back to beats when memory manager detection returns undefined", () => {
     mockDetectMemoryManagerType.mockReturnValue(undefined);
     expect(resolveMemoryManagerType("/repo")).toBe("beads");
   });
@@ -35,7 +35,7 @@ describe("resolveMemoryManagerType", () => {
 });
 
 describe("buildShowIssueCommand", () => {
-  it("renders bd command for beads", () => {
+  it("renders bd command for beats", () => {
     expect(buildShowIssueCommand("foolery-abc", "beads")).toBe(
       'bd show "foolery-abc"',
     );
@@ -49,7 +49,7 @@ describe("buildShowIssueCommand", () => {
 });
 
 describe("verification command rendering", () => {
-  it("renders beads verification stage command with no-daemon when requested", () => {
+  it("renders beats verification stage command with no-daemon when requested", () => {
     expect(
       buildVerificationStageCommand("foolery-abc", "beads", { noDaemon: true }),
     ).toBe('bd update "foolery-abc" --status in_progress --add-label stage:verification --no-daemon');

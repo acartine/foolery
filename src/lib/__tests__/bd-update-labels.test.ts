@@ -35,7 +35,7 @@ function queueExec(...responses: MockExecResult[]): void {
   execQueue.push(...responses);
 }
 
-describe("updateBead label transitions", () => {
+describe("updateBeat label transitions", () => {
   beforeEach(() => {
     execCalls.length = 0;
     execQueue.length = 0;
@@ -44,7 +44,7 @@ describe("updateBead label transitions", () => {
   });
 
   it("removes stale stage label when adding a new stage label", async () => {
-    const beadJson = JSON.stringify({
+    const beatJson = JSON.stringify({
       id: "foolery-123",
       issue_type: "task",
       status: "closed",
@@ -55,14 +55,14 @@ describe("updateBead label transitions", () => {
     });
 
     queueExec(
-      { stdout: beadJson }, // show (context load)
-      { stdout: beadJson }, // show (label reconciliation)
+      { stdout: beatJson }, // show (context load)
+      { stdout: beatJson }, // show (label reconciliation)
       { stdout: "" }, // update --status
     );
 
-    const { updateBead } = await import("@/lib/bd");
+    const { updateBeat } = await import("@/lib/bd");
 
-    const result = await updateBead("foolery-123", {
+    const result = await updateBeat("foolery-123", {
       status: "open",
       removeLabels: ["attempts:2"],
       labels: ["stage:retry", "attempts:3"],
@@ -79,7 +79,7 @@ describe("updateBead label transitions", () => {
   });
 
   it("fails when sync fails after label mutation", async () => {
-    const beadJson = JSON.stringify({
+    const beatJson = JSON.stringify({
       id: "foolery-456",
       issue_type: "task",
       status: "closed",
@@ -90,15 +90,15 @@ describe("updateBead label transitions", () => {
     });
 
     queueExec(
-      { stdout: beadJson }, // show
+      { stdout: beatJson }, // show
       { stdout: "" }, // remove stage:verification
       { stdout: "" }, // add stage:retry
       { stderr: "sync exploded", exitCode: 1 } // sync
     );
 
-    const { updateBead } = await import("@/lib/bd");
+    const { updateBeat } = await import("@/lib/bd");
 
-    const result = await updateBead("foolery-456", {
+    const result = await updateBeat("foolery-456", {
       labels: ["stage:retry"],
     });
 
@@ -114,9 +114,9 @@ describe("updateBead label transitions", () => {
       { stdout: "" } // add fallback without --no-daemon
     );
 
-    const { updateBead } = await import("@/lib/bd");
+    const { updateBeat } = await import("@/lib/bd");
 
-    const result = await updateBead("foolery-789", {
+    const result = await updateBeat("foolery-789", {
       labels: ["orchestration:wave"],
     });
 
@@ -143,9 +143,9 @@ describe("updateBead label transitions", () => {
       { stdout: "" } // sync fallback without --no-daemon
     );
 
-    const { updateBead } = await import("@/lib/bd");
+    const { updateBeat } = await import("@/lib/bd");
 
-    const result = await updateBead("foolery-101", {
+    const result = await updateBeat("foolery-101", {
       removeLabels: ["legacy:label"],
     });
 

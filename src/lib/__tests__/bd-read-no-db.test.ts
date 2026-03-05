@@ -54,8 +54,8 @@ describe("bd read-mode BD_NO_DB behavior", () => {
 
   it("sets BD_NO_DB=true for read commands by default", async () => {
     queueExec({ stdout: "[]" });
-    const { listBeads } = await import("@/lib/bd");
-    const result = await listBeads();
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats();
 
     expect(result).toEqual({ ok: true, data: [] });
     expect(execInvocations).toHaveLength(1);
@@ -65,8 +65,8 @@ describe("bd read-mode BD_NO_DB behavior", () => {
 
   it("does not force BD_NO_DB for write commands", async () => {
     queueExec({ stdout: JSON.stringify({ id: "foolery-new" }) });
-    const { createBead } = await import("@/lib/bd");
-    const result = await createBead({ title: "new bead" });
+    const { createBeat } = await import("@/lib/bd");
+    const result = await createBeat({ title: "new beat" });
 
     expect(result).toEqual({ ok: true, data: { id: "foolery-new" } });
     expect(execInvocations).toHaveLength(1);
@@ -85,8 +85,8 @@ describe("bd read-mode BD_NO_DB behavior", () => {
       { stdout: "[]" }
     );
 
-    const { listBeads } = await import("@/lib/bd");
-    const result = await listBeads();
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats();
 
     expect(result).toEqual({ ok: true, data: [] });
     expect(execInvocations).toHaveLength(2);

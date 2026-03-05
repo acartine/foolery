@@ -18,13 +18,13 @@ function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
 describe("compareBeatsByPriorityThenState - ID tiebreaker", () => {
   it("falls back to id comparison when priority, status, and title are equal", () => {
     const beats = [
-      makeBeat({ id: "z-bead", title: "Same Title" }),
-      makeBeat({ id: "a-bead", title: "Same Title" }),
-      makeBeat({ id: "m-bead", title: "Same Title" }),
+      makeBeat({ id: "z-beat", title: "Same Title" }),
+      makeBeat({ id: "a-beat", title: "Same Title" }),
+      makeBeat({ id: "m-beat", title: "Same Title" }),
     ];
 
     const sorted = beats.slice().sort(compareBeatsByPriorityThenState);
-    expect(sorted.map((b) => b.id)).toEqual(["a-bead", "m-bead", "z-bead"]);
+    expect(sorted.map((b) => b.id)).toEqual(["a-beat", "m-beat", "z-beat"]);
   });
 
   it("sorts by title before falling back to id", () => {

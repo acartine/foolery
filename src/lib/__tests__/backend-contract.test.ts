@@ -140,7 +140,7 @@ function registerWriteTests(
       expect(result.data!.id.length).toBeGreaterThan(0);
     });
 
-    it("create() then get() returns the created bead", async () => {
+    it("create() then get() returns the created beat", async () => {
       const input = sampleCreateInput({ title: "Roundtrip test" });
       const created = await getPort().create(input);
       expect(created.ok).toBe(true);
@@ -151,7 +151,7 @@ function registerWriteTests(
       expect(fetched.data!.type).toBe("task");
     });
 
-    it("update() changes the bead fields", async () => {
+    it("update() changes the beat fields", async () => {
       const created = await getPort().create(sampleCreateInput());
       const id = created.data!.id;
 
@@ -191,7 +191,7 @@ function registerDeleteTests(
   getCaps: () => BackendCapabilities,
 ): void {
   describe.skipIf(!getCaps().canDelete)("delete operations", () => {
-    it("delete() removes the bead", async () => {
+    it("delete() removes the beat", async () => {
       if (!getCaps().canCreate) return;
       const created = await getPort().create(sampleCreateInput());
       const deleteResult = await getPort().delete(created.data!.id);
@@ -225,7 +225,7 @@ function registerSearchQueryTests(
       await getPort().create(
         sampleCreateInput({ title: "Unique needle alpha" }),
       );
-      await getPort().create(sampleCreateInput({ title: "Other bead" }));
+      await getPort().create(sampleCreateInput({ title: "Other beat" }));
 
       const result = await getPort().search("needle alpha");
       expect(result.ok).toBe(true);

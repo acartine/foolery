@@ -1,0 +1,88 @@
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { BeatForm } from '@/components/beat-form';
+import type { Beat } from '@/lib/types';
+import type { CreateBeatInput } from '@/lib/schemas';
+import '@/app/globals.css';
+
+const meta = {
+  title: 'Components/BeatForm',
+  component: BeatForm,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  tags: ['autodocs'],
+} satisfies Meta<typeof BeatForm>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+const mockBeat: Beat = {
+  id: '550e8400-e29b-41d4-a716-446655440000',
+  title: 'Fix login redirect issue',
+  description: 'Users are being redirected to the wrong page after login',
+  acceptance: '- Login page loads\n- User enters credentials\n- User is redirected to dashboard',
+  type: 'bug',
+  state: 'open',
+  priority: 0,
+  labels: ['frontend', 'auth'],
+  assignee: 'alice',
+  owner: 'bob',
+  due: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  estimate: 4,
+  created: new Date().toISOString(),
+  updated: new Date().toISOString(),
+};
+
+const mockSubmit = async (data: CreateBeatInput) => {
+  console.log('Form submitted:', data);
+  await new Promise((resolve) => setTimeout(resolve, 500));
+};
+
+export const Create: Story = {
+  args: {
+    onSubmit: mockSubmit,
+    isLoading: false,
+  },
+};
+
+export const Edit: Story = {
+  args: {
+    beat: mockBeat,
+    onSubmit: mockSubmit,
+    isLoading: false,
+    onCancel: () => console.log('Cancelled'),
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    onSubmit: mockSubmit,
+    isLoading: true,
+  },
+};
+
+export const WithCancel: Story = {
+  args: {
+    onSubmit: mockSubmit,
+    isLoading: false,
+    onCancel: () => console.log('Form cancelled'),
+  },
+};
+
+export const FilledForm: Story = {
+  args: {
+    beat: {
+      ...mockBeat,
+      title: 'Implement user profile page',
+      description: 'Create a new page where users can view and edit their profile information',
+      type: 'feature',
+      state: 'in_progress',
+      priority: 1,
+      labels: ['frontend', 'ui', 'user-management'],
+      assignee: 'charlie',
+    },
+    onSubmit: mockSubmit,
+    isLoading: false,
+    onCancel: () => console.log('Cancelled'),
+  },
+};

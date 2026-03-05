@@ -12,9 +12,9 @@ import {
 describe("assertCapability", () => {
   it("throws when a boolean capability is false", () => {
     expect(() =>
-      assertCapability(READ_ONLY_CAPABILITIES, "canCreate", "create bead"),
+      assertCapability(READ_ONLY_CAPABILITIES, "canCreate", "create beat"),
     ).toThrowError(
-      "Backend does not support create bead (missing capability: canCreate)",
+      "Backend does not support create beat (missing capability: canCreate)",
     );
   });
 
@@ -32,7 +32,7 @@ describe("assertCapability", () => {
 
   it("does not throw when a boolean capability is true", () => {
     expect(() =>
-      assertCapability(FULL_CAPABILITIES, "canCreate", "create bead"),
+      assertCapability(FULL_CAPABILITIES, "canCreate", "create beat"),
     ).not.toThrow();
   });
 
@@ -48,8 +48,8 @@ describe("assertCapability", () => {
 
   it("includes operation name and flag in error message", () => {
     expect(() =>
-      assertCapability(READ_ONLY_CAPABILITIES, "canDelete", "delete bead"),
-    ).toThrowError(/delete bead.*canDelete/);
+      assertCapability(READ_ONLY_CAPABILITIES, "canDelete", "delete beat"),
+    ).toThrowError(/delete beat.*canDelete/);
   });
 });
 

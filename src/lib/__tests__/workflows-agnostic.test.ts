@@ -140,10 +140,10 @@ describe("backend-agnostic workflow exports", () => {
   });
 
   describe("descriptor labels are backend-agnostic", () => {
-    it("builtin descriptors do not contain 'Beads' in label", () => {
+    it("builtin descriptors do not contain 'Beats' in label", () => {
       const descriptors = builtinWorkflowDescriptors();
       for (const d of descriptors) {
-        expect(d.label).not.toContain("Beads");
+        expect(d.label).not.toContain("Beats");
       }
     });
 

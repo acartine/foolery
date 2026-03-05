@@ -744,25 +744,25 @@ describe("Mixed All Repositories behavior", () => {
       _repoName: "knots-repo",
     };
 
-    // Simulate a Beads beat
-    const beadsBeat: BeatWithRepo = {
-      id: "bead-1",
-      title: "Beads beat",
+    // Simulate a Beats beat
+    const beatsBeat: BeatWithRepo = {
+      id: "beat-1",
+      title: "Beats beat",
       type: "task",
       state: "open",
       priority: 2,
       labels: [],
       created: nowIso(),
       updated: nowIso(),
-      _repoPath: "/beads-repo",
-      _repoName: "beads-repo",
+      _repoPath: "/beats-repo",
+      _repoName: "beats-repo",
     };
 
     // Mixed view: concatenate beats from both backends
-    const allBeats = [knotsBeat, beadsBeat];
+    const allBeats = [knotsBeat, beatsBeat];
     expect(allBeats).toHaveLength(2);
     expect(allBeats[0]._repoName).toBe("knots-repo");
-    expect(allBeats[1]._repoName).toBe("beads-repo");
+    expect(allBeats[1]._repoName).toBe("beats-repo");
 
     // Both have valid state fields
     expect(allBeats[0].state).toBeDefined();
@@ -781,9 +781,9 @@ describe("Mixed All Repositories behavior", () => {
       updated: nowIso(),
     };
 
-    const beadsBeat: Beat = {
-      id: "bead-1",
-      title: "Beads P2",
+    const beatsBeat: Beat = {
+      id: "beat-1",
+      title: "Beats P2",
       type: "task",
       state: "open",
       priority: 2,
@@ -792,9 +792,9 @@ describe("Mixed All Repositories behavior", () => {
       updated: nowIso(),
     };
 
-    const sorted = [beadsBeat, knotsBeat].sort(compareBeatsByPriorityThenState);
+    const sorted = [beatsBeat, knotsBeat].sort(compareBeatsByPriorityThenState);
     expect(sorted[0].id).toBe("knot-1"); // P0 comes first
-    expect(sorted[1].id).toBe("bead-1"); // P2 comes second
+    expect(sorted[1].id).toBe("beat-1"); // P2 comes second
   });
 
   it("hierarchy works for knots beats with dotted IDs in mixed view", () => {
@@ -821,8 +821,8 @@ describe("Mixed All Repositories behavior", () => {
         updated: nowIso(),
       },
       {
-        id: "beads-123",
-        title: "Beads task",
+        id: "beats-123",
+        title: "Beats task",
         type: "task",
         state: "open",
         priority: 2,
@@ -833,15 +833,15 @@ describe("Mixed All Repositories behavior", () => {
     ];
 
     const hierarchical = buildHierarchy(beats);
-    // Root-level items: g3y1 (parent) and beads-123 (no parent)
+    // Root-level items: g3y1 (parent) and beats-123 (no parent)
     const roots = hierarchical.filter((h) => h._depth === 0);
     expect(roots.length).toBe(2);
 
     const parent = hierarchical.find((h) => h.id === "g3y1");
     expect(parent!._hasChildren).toBe(true);
 
-    const beadItem = hierarchical.find((h) => h.id === "beads-123");
-    expect(beadItem!._hasChildren).toBe(false);
-    expect(beadItem!._depth).toBe(0);
+    const beatItem = hierarchical.find((h) => h.id === "beats-123");
+    expect(beatItem!._hasChildren).toBe(false);
+    expect(beatItem!._depth).toBe(0);
   });
 });

@@ -52,7 +52,7 @@ export async function regroomAncestors(
   repoPath?: string
 ): Promise<void> {
   try {
-    // Single call with no state filter gets --all (see bd.ts listBeads)
+    // Single call with no state filter gets --all (see bd.ts listBeats)
     const allResult = await getBackend().list({}, repoPath);
     const allBeats: Beat[] = allResult.ok && allResult.data ? allResult.data : [];
 

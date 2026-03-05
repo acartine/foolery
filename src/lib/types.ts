@@ -4,7 +4,7 @@ import type { MemoryManagerType } from "@/lib/memory-managers";
 
 /**
  * Open string type identifier.
- * Knots gives "work"; beads may give "task", "bug", "feature", etc.
+ * Knots gives "work"; beats may give "task", "bug", "feature", etc.
  */
 export type BeatType = string;
 
@@ -48,7 +48,7 @@ export interface MemoryWorkflowDescriptor {
 /**
  * Beat — the core work-item model for Foolery.
  *
- * `type` is an open string (knots: "work", beads: "task"/"bug"/etc.).
+ * `type` is an open string (knots: "work", beats: "task"/"bug"/etc.).
  * `state` is the canonical workflow state (e.g. "ready_for_implementation",
  * "shipped"), replacing the old status/compatStatus/workflowState fields.
  */
@@ -121,7 +121,7 @@ export interface BeatWithRepo extends Beat {
 
 // ── Terminal types ──────────────────────────────────────────
 
-export type TerminalSessionStatus = "idle" | "running" | "completed" | "error" | "aborted";
+export type TerminalSessionStatus = "idle" | "running" | "completed" | "error" | "aborted" | "disconnected";
 
 export interface TerminalSession {
   id: string;
@@ -375,21 +375,5 @@ export type { OpenRouterModel } from "./openrouter";
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 
-/** @deprecated Use Beat */
-export type Bead = Beat;
-/** @deprecated Use BeatType */
-export type BeadType = BeatType;
 /** @deprecated Use string for state */
-export type BeadStatus = string;
-/** @deprecated Use BeatPriority */
-export type BeadPriority = BeatPriority;
-/** @deprecated Use BeatDependency */
-export type BeadDependency = BeatDependency;
-/** @deprecated Use BeatWithRepo */
-export type BeadWithRepo = BeatWithRepo;
-/** @deprecated Use WaveBeat */
-export type WaveBead = WaveBeat;
-/** @deprecated Use BreakdownBeatSpec */
-export type BreakdownBeadSpec = BreakdownBeatSpec;
-/** @deprecated Use OrchestrationWaveBeat */
-export type OrchestrationWaveBead = OrchestrationWaveBeat;
+export type BeatStatus = string;

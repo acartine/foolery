@@ -102,7 +102,7 @@ beforeEach(() => {
       {
         id: "beads-coarse",
         backingWorkflowId: "beads-coarse",
-        label: "Beads (Coarse)",
+        label: "Beats (Coarse)",
         mode: "coarse_human_gated",
         initialState: "open",
         states: ["open", "in_progress", "verification", "retake", "closed"],
@@ -286,7 +286,7 @@ describe("checkUpdates", () => {
 describe("checkCorruptTickets", () => {
   const repos = [{ path: "/repo", name: "test-repo", addedAt: "2026-01-01" }];
 
-  it("returns nothing when no beads", async () => {
+  it("returns nothing when no beats", async () => {
     mockList.mockResolvedValue({ ok: true, data: [] });
     const diags = await checkCorruptTickets(repos);
     expect(diags).toHaveLength(0);

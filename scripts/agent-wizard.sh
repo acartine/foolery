@@ -185,8 +185,8 @@ EOF
 _prompt_action_mappings() {
   local -a action_names=(take scene breakdown)
   local -a action_labels=(
-    '"Take!" (execute single bead)'
-    '"Scene!" (multi-bead orchestration)'
+    '"Take!" (execute single beat)'
+    '"Scene!" (multi-beat orchestration)'
     '"Breakdown" (decomposition)'
   )
 
