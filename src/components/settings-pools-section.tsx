@@ -64,6 +64,17 @@ const STEP_LABELS: Record<string, { label: string; description: string }> = {
 
 const ALL_STEPS = Object.values(WorkflowStep);
 
+const POOL_COLORS = [
+  "bg-blue-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-violet-500",
+  "bg-rose-500",
+  "bg-cyan-500",
+  "bg-orange-500",
+  "bg-teal-500",
+];
+
 function formatPoolAgentLabel(
   agentId: string,
   agent: RegisteredAgent | undefined,
@@ -252,71 +263,88 @@ function StepPoolEditor({
           No pool configured — uses action mapping fallback
         </p>
       ) : (
-        <div className="space-y-1.5">
-          {entries.map((entry, idx) => {
-            const ratio = totalWeight > 0 ? entry.weight / totalWeight : 0;
-            const pct = Math.round(ratio * 100);
-            const agent = agents[entry.agentId];
-            const pricing = resolveOpenRouterPricing(
-              openRouterModels,
-              agent?.model,
-            );
-            const label = formatPoolAgentLabel(entry.agentId, agent);
-            return (
-              <div
-                key={entry.agentId}
-                className="flex items-center gap-2"
-              >
-                <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0">
-                  <span className="text-sm block truncate" title={label}>
-                    {label}
-                  </span>
-                  {pricing && (
-                    <span
-                      className="text-[10px] text-muted-foreground font-mono"
-                      title={pricing.modelId}
-                    >
-                      P {pricing.prompt} / C {pricing.completion}
-                    </span>
-                  )}
-                </div>
-                <Input
-                  type="number"
-                  min={0}
-                  step={1}
-                  className="h-7 w-[64px] sm:w-[74px] px-2 text-sm shrink-0"
-                  value={entry.weight}
-                  onChange={(e) => {
-                    const next = [...entries];
-                    next[idx] = {
-                      ...entry,
-                      weight: Math.max(0, Number(e.target.value) || 0),
-                    };
-                    onChange(next);
-                  }}
-                />
-                <div className="flex-1 min-w-0 h-2 bg-muted rounded-full overflow-hidden">
+        <div className="space-y-2">
+          {/* Stacked horizontal bar */}
+          {entries.length > 0 && totalWeight > 0 && (
+            <div className="flex h-3 w-full rounded-full overflow-hidden bg-muted">
+              {entries.map((entry, idx) => {
+                const ratio = entry.weight / totalWeight;
+                const color = POOL_COLORS[idx % POOL_COLORS.length];
+                return (
                   <div
-                    className="h-full bg-primary rounded-full transition-all"
+                    key={entry.agentId}
+                    className={`h-full ${color} transition-all`}
                     style={{ width: `${ratio * 100}%` }}
+                    title={`${formatPoolAgentLabel(entry.agentId, agents[entry.agentId])} — ${Math.round(ratio * 100)}%`}
                   />
-                </div>
-                <span className="text-xs text-muted-foreground w-[58px] sm:w-[72px] text-right tabular-nums shrink-0">
-                  w{entry.weight} · {pct}%
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0"
-                  onClick={() => {
-                    onChange(entries.filter((_, i) => i !== idx));
-                  }}
+                );
+              })}
+            </div>
+          )}
+
+          {/* Agent rows */}
+          <div className="space-y-1">
+            {entries.map((entry, idx) => {
+              const ratio = totalWeight > 0 ? entry.weight / totalWeight : 0;
+              const pct = Math.round(ratio * 100);
+              const agent = agents[entry.agentId];
+              const pricing = resolveOpenRouterPricing(
+                openRouterModels,
+                agent?.model,
+              );
+              const label = formatPoolAgentLabel(entry.agentId, agent);
+              const color = POOL_COLORS[idx % POOL_COLORS.length];
+              return (
+                <div
+                  key={entry.agentId}
+                  className="flex items-center gap-2"
                 >
-                  <Trash2 className="size-3.5 text-destructive" />
-                </Button>
-              </div>
-            );
-          })}
+                  <span className={`size-2.5 rounded-full shrink-0 ${color}`} />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-sm block truncate" title={label}>
+                      {label}
+                    </span>
+                    {pricing && (
+                      <span
+                        className="text-[10px] text-muted-foreground font-mono"
+                        title={pricing.modelId}
+                      >
+                        P {pricing.prompt} / C {pricing.completion}
+                      </span>
+                    )}
+                  </div>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    className="h-7 w-[64px] px-2 text-sm shrink-0"
+                    value={entry.weight}
+                    onChange={(e) => {
+                      const next = [...entries];
+                      next[idx] = {
+                        ...entry,
+                        weight: Math.max(0, Number(e.target.value) || 0),
+                      };
+                      onChange(next);
+                    }}
+                  />
+                  <span className="text-xs text-muted-foreground w-10 text-right tabular-nums shrink-0">
+                    {pct}%
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => {
+                      onChange(entries.filter((_, i) => i !== idx));
+                    }}
+                  >
+                    <Trash2 className="size-3.5 text-destructive" />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
