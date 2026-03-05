@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeb6-47a4-7322-9a47-146aebc23982",
+  "occurred_at": "2026-03-05T15:55:42.884832Z",
+  "knot_id": "foolery-ef46",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Reopened from shipment_review to implementation because source edits are required for this run.",
+    "datetime": "2026-03-05T15:55:42.884832Z",
+    "entry_id": "019cbeb6-47a4-7322-9a47-145c39ff43d2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbe31-463e-7401-b805-cfe2905bd74c",
+  "occurred_at": "2026-03-05T13:30:26.233068Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-c736",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Schema: multi-agent OpenRouter config",
+    "updated_at": "2026-03-05T13:30:26.233068Z"
+  }
+}

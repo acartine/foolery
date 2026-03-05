@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe32-1b61-76c0-a671-a83d76b9ba7b",
+  "occurred_at": "2026-03-05T13:31:20.801409Z",
+  "knot_id": "foolery-be49",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "BdCliBackend now lazily instantiates BeadsBackend and delegates buildTakePrompt/buildPollPrompt; updated bd-cli backend tests and backend-factory coverage to verify delegation and single-instance reuse. Lint/tsc/tests pass; build fails pre-existing on main during Next.js prerender.",
+    "datetime": "2026-03-05T13:31:20Z",
+    "entry_id": "019cbe32-1b61-76c0-a671-a82839cee6d6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe33-42d0-7713-95b2-7f3460c239c2",
+  "occurred_at": "2026-03-05T13:32:36.432405Z",
+  "knot_id": "foolery-156f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added an early-termination guard in openrouter-agent streaming so Claude stream-json start events are emitted even when OpenRouter sends [DONE] first; added unit coverage for processStream envelope ordering. Quality gates: lint, tsc, tests pass; build fails on pre-existing Next.js prerender error on /_global-error.",
+    "datetime": "2026-03-05T13:32:36.432405Z",
+    "entry_id": "019cbe33-42d0-7713-95b2-7f2642f1b492",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

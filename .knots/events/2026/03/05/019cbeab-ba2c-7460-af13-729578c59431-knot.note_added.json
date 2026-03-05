@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeab-ba2c-7460-af13-729578c59431",
+  "occurred_at": "2026-03-05T15:44:11.308013Z",
+  "knot_id": "foolery-e6fd",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Close reason: Auto-verification passed",
+    "datetime": "2026-03-05T15:44:11.308013Z",
+    "entry_id": "019cbeab-ba2c-7460-af13-72808a39bdfe",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

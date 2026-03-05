@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeb4-9b64-70d3-83be-b3d1d64d8fae",
+  "occurred_at": "2026-03-05T15:53:53.251991Z",
+  "knot_id": "foolery-ef46",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Reviewed implementation on main: transitionToRetry dispatches via resolveMemoryManagerType(), calling nextKnot for knots and nextBeat for beads. Verified with targeted orchestrator test suites (45/45) plus tsc pass; lint/build show pre-existing repo-wide baseline failures unrelated to this knot.",
+    "datetime": "2026-03-05T15:53:53.251991Z",
+    "entry_id": "019cbeb4-9b63-77b0-b66b-9e73fd0abec5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

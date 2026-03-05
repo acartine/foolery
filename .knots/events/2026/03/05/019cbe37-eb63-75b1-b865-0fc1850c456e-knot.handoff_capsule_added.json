@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe37-eb63-75b1-b865-0fc1850c456e",
+  "occurred_at": "2026-03-05T13:37:41.731405Z",
+  "knot_id": "foolery-c736",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Persisted OpenRouter legacy model migration during settings backfill by writing when schema normalization changes even without missing leaf defaults. Added a regression test for migration-only writes. Quality gates: lint (warnings only), tsc and unit tests passed; build still fails on existing Next.js prerender errors for /beats and /_global-error.",
+    "datetime": "2026-03-05T13:37:41.731405Z",
+    "entry_id": "019cbe37-eb63-75b1-b865-0fb0ae1868ea",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

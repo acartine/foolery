@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe9d-55fb-7311-bc71-4b2332e55c48",
+  "occurred_at": "2026-03-05T15:28:28.155168Z",
+  "knot_id": "foolery-f1d5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented in 18b616c. OpenRouter first-class multi-agent integration shipped.",
+    "datetime": "2026-03-05T15:28:28.155168Z",
+    "entry_id": "019cbe9d-55fb-7311-bc71-4b1386b5042e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

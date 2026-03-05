@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbea5-d59c-7923-9527-7386a311649e",
+  "occurred_at": "2026-03-05T15:37:45.116467Z",
+  "knot_id": "foolery-e6fd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Added memory-manager-aware advance dispatch in terminal-manager, generalized take-loop gating to single-beat sessions, parameterized queue/terminal invariant instructions by manager type, and extended pre-take action-state healing to beads with regression tests.",
+    "datetime": "2026-03-05T15:37:45Z",
+    "entry_id": "019cbea5-d59c-7923-9527-737edfd977e4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

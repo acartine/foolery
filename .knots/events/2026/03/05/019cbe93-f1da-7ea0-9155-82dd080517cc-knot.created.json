@@ -1,0 +1,12 @@
+{
+  "event_id": "019cbe93-f1da-7ea0-9155-82dd080517cc",
+  "occurred_at": "2026-03-05T15:18:12.698869Z",
+  "knot_id": "foolery-ff25",
+  "type": "knot.created",
+  "data": {
+    "body": "shift r should always change the repo, should move \"forward\" until the last repo, then go back to the first and so on.  \n\nright now it stops at the last repo which is shitty.\n\nsame goes for cmd-shift-r, which should do the same but in reverse.  right now it appears to really work at all.\n\nlastly, they should work on all screens - not just queues and active.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "shift-r  and cmd-shift-r does not work right, doesn't cycle through the repositories"
+  }
+}

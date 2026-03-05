@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe39-f692-7e03-8845-9c978771f72b",
+  "occurred_at": "2026-03-05T13:39:55.666591Z",
+  "knot_id": "foolery-be49",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Verified BdCliBackend prompt delegation remains lazy by simplifying getPromptBackend and adding a non-prompt lazy-instantiation test. lint, tsc --noEmit, and unit tests passed; build still fails on existing Next.js prerender errors for /_global-error and /beats.",
+    "datetime": "2026-03-05T13:39:55.666591Z",
+    "entry_id": "019cbe39-f692-7e03-8845-9c82298d262e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

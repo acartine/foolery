@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeb0-85bd-7563-a402-1612abae7e49",
+  "occurred_at": "2026-03-05T15:49:25.565017Z",
+  "knot_id": "foolery-560e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented global Shift+H handling in AppHeader so shortcut help toggles on all Beats screens; removed local BeatTable toggle handler to avoid double toggles; added hotkey-help-state unit tests; lint/typecheck/test/build verified (build requires NODE_ENV=production in this shell).",
+    "datetime": "2026-03-05T15:49:25Z",
+    "entry_id": "019cbeb0-85bd-7563-a402-160353cc486b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

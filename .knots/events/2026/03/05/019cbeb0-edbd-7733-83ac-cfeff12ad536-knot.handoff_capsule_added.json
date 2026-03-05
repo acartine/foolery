@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeb0-edbd-7733-83ac-cfeff12ad536",
+  "occurred_at": "2026-03-05T15:49:52.189329Z",
+  "knot_id": "foolery-ef46",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented dispatch in transitionToRetry() based on resolveMemoryManagerType(). Knots path calls nextKnot (unchanged), beads path calls nextBeat from beads-state-machine.ts. Updated both test files with proper mocks and added dispatch-specific tests. All 45 tests pass, lint and typecheck clean.",
+    "datetime": "2026-03-05T15:49:52.189329Z",
+    "entry_id": "019cbeb0-edbd-7733-83ac-cfda4e146658",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

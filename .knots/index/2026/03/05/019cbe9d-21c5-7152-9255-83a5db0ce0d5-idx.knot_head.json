@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbe9d-21c5-7152-9255-83a5db0ce0d5",
+  "occurred_at": "2026-03-05T15:28:14.789323Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-f1d5",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings resolution: multi-agent virtual agents",
+    "updated_at": "2026-03-05T15:28:14.789323Z"
+  }
+}

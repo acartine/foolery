@@ -1,0 +1,17 @@
+{
+  "event_id": "019cbea7-1b16-71c0-8894-a80c5b51807b",
+  "occurred_at": "2026-03-05T15:39:08.438713Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-e6fd",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Phase 6: Terminal manager dispatch and take loop gate removal",
+    "updated_at": "2026-03-05T15:39:08.438713Z"
+  },
+  "precondition": {
+    "profile_etag": "019cbea5-ec1e-7fa1-aa65-a48a54302719"
+  }
+}

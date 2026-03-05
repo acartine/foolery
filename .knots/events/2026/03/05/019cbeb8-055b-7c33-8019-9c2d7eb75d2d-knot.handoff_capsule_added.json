@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbeb8-055b-7c33-8019-9c2d7eb75d2d",
+  "occurred_at": "2026-03-05T15:57:36.987831Z",
+  "knot_id": "foolery-560e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added regression contract coverage to ensure Shift+H shortcut help stays globally bound across all Beats screens via AppHeader (not queue/active-only). Verified bun run lint, bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build; merged to main and pushed.",
+    "datetime": "2026-03-05T15:57:36.987831Z",
+    "entry_id": "019cbeb8-055b-7c33-8019-9c1dd6d69419",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe31-4639-70d0-ab33-bbaeb2dd9839",
+  "occurred_at": "2026-03-05T13:30:26.233068Z",
+  "knot_id": "foolery-c736",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Added OpenRouter multi-agent schema support via openrouter.agents (id -> model+label), retained deprecated openrouter.model, and auto-migrated legacy model into agents.default when agents is empty. Updated settings normalization so backfills persist migrated shape, plus settings/openrouter tests and settings OpenAPI schema coverage. Quality gates: lint (warnings only), tsc, and full tests passed; build fails on main baseline due existing Next.js prerender error on /beats and /_global-error.",
+    "datetime": "2026-03-05T13:30:26Z",
+    "entry_id": "019cbe31-4639-70d0-ab33-bb9567caab1e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-05"
+  }
+}

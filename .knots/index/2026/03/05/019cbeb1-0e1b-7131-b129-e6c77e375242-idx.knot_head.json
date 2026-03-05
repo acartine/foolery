@@ -1,0 +1,14 @@
+{
+  "event_id": "019cbeb1-0e1b-7131-b129-e6c77e375242",
+  "occurred_at": "2026-03-05T15:50:00.468973Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-560e",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "keyboard shortcuts shift-h only works on queues and active screens",
+    "updated_at": "2026-03-05T15:50:00.468973Z"
+  }
+}

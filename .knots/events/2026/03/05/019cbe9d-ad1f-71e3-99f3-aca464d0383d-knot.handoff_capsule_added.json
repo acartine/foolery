@@ -1,0 +1,15 @@
+{
+  "event_id": "019cbe9d-ad1f-71e3-99f3-aca464d0383d",
+  "occurred_at": "2026-03-05T15:28:50.463082Z",
+  "knot_id": "foolery-2722",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "All 6 children shipped in 18b616c. OpenRouter models now appear as first-class agents: openrouter dialect in agent-adapter, multi-agent resolution in settings, env injection in terminal-manager, integrated UI in agents section with model browser, dispatch selectors updated for all OR agents, comprehensive tests added.",
+    "datetime": "2026-03-05T15:28:50.463082Z",
+    "entry_id": "019cbe9d-ad1f-71e3-99f3-ac97be5bb4ad",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019cbe9c-e75f-7881-bf42-614a8c7ed281",
+  "occurred_at": "2026-03-05T15:27:59.839893Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "knot_id": "foolery-7e3a",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Terminal manager: env injection + dialect check",
+    "updated_at": "2026-03-05T15:27:59.839893Z"
+  },
+  "precondition": {
+    "profile_etag": "019cbe93-b42e-77b0-a622-11a54eb89c43"
+  }
+}
