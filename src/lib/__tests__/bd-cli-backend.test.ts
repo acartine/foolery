@@ -470,6 +470,15 @@ describe("BdCliBackend", () => {
     });
   });
 
+  it("does not instantiate BeadsBackend for non-prompt operations", async () => {
+    mockListBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
+
+    const result = await backend.list();
+
+    expect(result.ok).toBe(true);
+    expect(mockBeadsBackendCtor).not.toHaveBeenCalled();
+  });
+
   // ── buildTakePrompt ───────────────────────────────────────
 
   describe("buildTakePrompt", () => {

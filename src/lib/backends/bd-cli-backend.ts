@@ -73,9 +73,7 @@ export class BdCliBackend implements BackendPort {
   private promptBackend?: BeadsBackend;
 
   private getPromptBackend(repoPath?: string): BeadsBackend {
-    if (!this.promptBackend) {
-      this.promptBackend = new BeadsBackend(repoPath);
-    }
+    this.promptBackend ??= new BeadsBackend(repoPath);
     return this.promptBackend;
   }
 
