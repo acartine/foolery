@@ -108,9 +108,11 @@ export function SettingsActionsSection({
       <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
         Action Mappings
       </h3>
-      <p className="text-xs text-muted-foreground">
-        Choose which registered agent handles each action.
-      </p>
+      <div className="rounded-lg border border-accent/45 bg-gradient-to-r from-primary/20 via-primary/8 to-accent/20 px-3 py-2 ring-1 ring-primary/20">
+        <p className="text-xs text-primary/95">
+          Choose which registered agent handles each action.
+        </p>
+      </div>
       <div className="space-y-3">
         {ACTION_DEFS.map((def, idx) => {
           const Icon = def.icon;
@@ -124,7 +126,7 @@ export function SettingsActionsSection({
           return (
             <div
               key={def.name}
-              className="flex items-center justify-between rounded-lg border border-primary/30 bg-gradient-to-r from-primary/14 via-background/85 to-accent/16 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/45 hover:from-primary/20 hover:to-accent/20 hover:shadow-sm"
+              className="flex items-center justify-between rounded-lg border border-primary/50 bg-gradient-to-r from-primary/24 via-primary/10 to-accent/24 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/65 hover:from-primary/34 hover:to-accent/32 hover:shadow-sm hover:shadow-accent/20"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon
@@ -146,7 +148,7 @@ export function SettingsActionsSection({
                 onValueChange={(v) => handleChange(def.name, v)}
                 disabled={disabled || optionIds.length === 0}
               >
-                <SelectTrigger className="w-[140px] shrink-0 border-primary/45 bg-background/90">
+                <SelectTrigger className="w-[140px] shrink-0 border-primary/65 bg-gradient-to-r from-primary/18 via-background/72 to-accent/18">
                   <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>

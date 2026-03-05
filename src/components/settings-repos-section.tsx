@@ -74,7 +74,7 @@ export function SettingsReposSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FolderOpen className="size-4 text-primary" />
+          <FolderOpen className="size-4 text-primary drop-shadow-[0_0_8px_rgba(137,87,255,0.45)]" />
           <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
             Repositories
           </h3>
@@ -82,7 +82,7 @@ export function SettingsReposSection() {
         <Button
           size="sm"
           variant="outline"
-          className="border-accent/45 bg-accent/12 hover:bg-accent/22"
+          className="border-accent/65 bg-gradient-to-r from-accent/28 to-primary/24 hover:from-accent/36 hover:to-primary/32"
           onClick={() => setBrowseOpen(true)}
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
@@ -113,10 +113,10 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
     .join(", ");
 
   return (
-    <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-primary/55 bg-gradient-to-br from-primary/16 via-background/85 to-accent/18 py-8 text-center shadow-sm">
-      <div className="pointer-events-none absolute -top-12 -right-8 h-28 w-28 rounded-full bg-primary/25 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-accent/22 blur-2xl" />
-      <Database className="mb-3 size-8 text-primary/85" />
+    <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-primary/70 bg-gradient-to-br from-primary/34 via-primary/12 to-accent/30 py-8 text-center shadow-md shadow-primary/20 ring-1 ring-primary/25">
+      <div className="pointer-events-none absolute -top-12 -right-8 h-28 w-28 rounded-full bg-primary/35 blur-2xl" />
+      <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-accent/30 blur-2xl" />
+      <Database className="mb-3 size-8 text-primary drop-shadow-[0_0_12px_rgba(137,87,255,0.45)]" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
         Add a repository with a supported memory manager ({supported}) to get
@@ -124,7 +124,7 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
       </p>
       <Button
         size="sm"
-        className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
+        className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-md shadow-primary/30"
         onClick={onBrowse}
       >
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
@@ -145,9 +145,10 @@ function RepoList({ repos, onRemove }: RepoListProps) {
       {repos.map((repo) => (
         <div
           key={repo.path}
-          className="group relative flex items-center justify-between overflow-hidden rounded-lg border border-primary/25 bg-gradient-to-r from-primary/12 via-background/88 to-accent/14 px-3 py-2 transition-all hover:-translate-y-0.5 hover:border-accent/45 hover:from-primary/16 hover:to-accent/18 hover:shadow-sm"
+          className="group relative flex items-center justify-between overflow-hidden rounded-lg border border-primary/50 bg-gradient-to-r from-primary/26 via-primary/10 to-accent/24 px-3 py-2 transition-all hover:-translate-y-0.5 hover:border-accent/65 hover:from-primary/34 hover:to-accent/32 hover:shadow-sm hover:shadow-accent/20"
         >
-          <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-primary/25 blur-xl" />
+          <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-primary/35 blur-xl" />
+          <div className="pointer-events-none absolute -left-6 -bottom-6 h-14 w-14 rounded-full bg-accent/30 blur-xl" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-gradient-to-r from-primary to-accent shadow-sm" />

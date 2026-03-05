@@ -56,14 +56,15 @@ function SettingsSectionCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-primary/45 bg-gradient-to-br from-primary/28 via-background/78 to-accent/24 p-4 shadow-lg ring-1 ring-primary/18 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/60 hover:ring-accent/30 hover:shadow-xl",
+        "group relative overflow-hidden rounded-2xl border border-primary/60 bg-gradient-to-br from-primary/42 via-primary/14 to-accent/36 p-4 shadow-lg shadow-primary/15 ring-1 ring-primary/28 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/70 hover:ring-accent/40 hover:shadow-xl hover:shadow-accent/20",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/14 via-transparent to-accent/12" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/90 to-transparent" />
-      <div className="pointer-events-none absolute -top-16 -right-14 h-40 w-40 rounded-full bg-primary/34 opacity-85 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
-      <div className="pointer-events-none absolute -bottom-16 -left-14 h-40 w-40 rounded-full bg-accent/30 opacity-80 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/22 via-primary/8 to-accent/18" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-accent/85" />
+      <div className="pointer-events-none absolute inset-y-2 left-0 w-px bg-gradient-to-b from-transparent via-accent/85 to-transparent" />
+      <div className="pointer-events-none absolute -top-16 -right-14 h-44 w-44 rounded-full bg-primary/44 opacity-90 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute -bottom-16 -left-14 h-44 w-44 rounded-full bg-accent/38 opacity-90 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -155,12 +156,13 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="relative overflow-hidden border-primary/55 bg-gradient-to-br from-primary/26 via-background/88 to-accent/24 sm:max-w-xl">
+      <SheetContent className="relative overflow-hidden border-primary/70 bg-gradient-to-br from-primary/36 via-background/82 to-accent/34 shadow-2xl shadow-primary/20 sm:max-w-xl">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/28 blur-3xl" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/16 via-transparent to-accent/14" />
-          <div className="absolute inset-0 bg-[linear-gradient(140deg,transparent_0%,rgba(255,255,255,0.05)_48%,transparent_100%)]" />
+          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/40 blur-3xl" />
+          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/34 blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/24 via-primary/6 to-accent/24" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,82,255,0.24),transparent_45%),radial-gradient(circle_at_80%_90%,rgba(34,197,94,0.2),transparent_45%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(140deg,transparent_0%,rgba(255,255,255,0.07)_48%,transparent_100%)]" />
         </div>
 
         <div className="relative z-10 flex h-full flex-col">
@@ -168,7 +170,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             <SheetTitle className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
               Settings
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-primary/90">
               Configuration stored in ~/.config/foolery/settings.toml
             </SheetDescription>
           </SheetHeader>
@@ -177,7 +179,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             <div className="space-y-3 py-4">
               {/* Section: Repositories (independent data, always rendered) */}
               <SettingsSectionCard
-                className="border-accent/40 from-accent/18 via-background/88 to-primary/16"
+                className="border-accent/62 from-accent/34 via-accent/14 to-primary/22 ring-accent/28"
               >
                 <div ref={reposSectionRef}>
                   <SettingsReposSection />
@@ -189,7 +191,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                 <>
                   {/* Section 1: Agent Management */}
                   <SettingsSectionCard
-                    className="border-primary/40 from-primary/20 via-background/88 to-accent/14"
+                    className="border-primary/62 from-primary/36 via-primary/14 to-accent/24 ring-primary/30"
                   >
                     <SettingsAgentsSection
                       agents={settings.agents}
@@ -205,7 +207,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
                   {/* Section 2: Agent Dispatch (Actions + Pools with mode toggle) */}
                   <SettingsSectionCard
-                    className="border-primary/35 from-primary/18 via-background/88 to-accent/18"
+                    className="border-primary/58 from-primary/32 via-primary/14 to-accent/30 ring-accent/24"
                   >
                     <SettingsDispatchSection
                       dispatchMode={settings.dispatchMode}
@@ -227,7 +229,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
                   {/* Section 4: Defaults */}
                   <SettingsSectionCard
-                    className="border-accent/35 from-accent/18 via-background/88 to-primary/14"
+                    className="border-accent/58 from-accent/30 via-accent/12 to-primary/24 ring-accent/24"
                   >
                     <SettingsDefaultsSection
                       defaults={settings.defaults}
@@ -241,18 +243,18 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             </div>
           </div>
 
-          <Separator className="bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
-          <SheetFooter className="border-t border-primary/35 bg-gradient-to-r from-primary/16 via-background/82 to-accent/14 px-4 py-3">
+          <Separator className="bg-gradient-to-r from-transparent via-primary to-accent/90" />
+          <SheetFooter className="border-t border-primary/55 bg-gradient-to-r from-primary/30 via-primary/10 to-accent/26 px-4 py-3">
             <Button
               variant="outline"
-              className="border-primary/55 bg-background/80 hover:border-accent/60 hover:bg-accent/18"
+              className="border-primary/75 bg-primary/16 hover:border-accent/75 hover:bg-accent/24"
               onClick={handleReset}
               disabled={saving}
             >
               Reset to Defaults
             </Button>
             <Button
-              className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-95"
+              className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-lg shadow-primary/35 hover:brightness-105"
               onClick={handleSave}
               disabled={saving || loading}
             >
