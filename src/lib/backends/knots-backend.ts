@@ -320,6 +320,7 @@ function toBeat(
       parent: deriveParentId(knot.id, edges, knownIds),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
+      invariants: knot.invariants?.length ? knot.invariants : undefined,
       metadata: {
         knotsProfileId: profileId,
         knotsSteps: stepEntries,
@@ -358,6 +359,7 @@ function toBeat(
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
+    invariants: knot.invariants?.length ? knot.invariants : undefined,
     metadata: {
       knotsProfileId: profileId,
       knotsState: knot.state,
@@ -743,12 +745,16 @@ export class KnotsBackend implements BackendPort {
     if (input.type) patch.type = input.type;
     if (input.labels?.length) patch.addTags = input.labels;
     if (input.notes) patch.addNote = input.notes;
+    if (input.invariants?.length) {
+      patch.addInvariants = input.invariants.map((inv) => `${inv.kind}:${inv.condition}`);
+    }
 
     const hasPatch =
       patch.priority !== undefined ||
       patch.type !== undefined ||
       (patch.addTags?.length ?? 0) > 0 ||
-      patch.addNote !== undefined;
+      patch.addNote !== undefined ||
+      (patch.addInvariants?.length ?? 0) > 0;
 
     if (hasPatch) {
       const updateResult = fromKnots(await knots.updateKnot(id, patch, rp));
@@ -868,6 +874,13 @@ export class KnotsBackend implements BackendPort {
     if (input.labels?.length) patch.addTags = input.labels;
     if (input.removeLabels?.length) patch.removeTags = input.removeLabels;
     if (input.notes !== undefined) patch.addNote = input.notes;
+    if (input.addInvariants?.length) {
+      patch.addInvariants = input.addInvariants.map((inv) => `${inv.kind}:${inv.condition}`);
+    }
+    if (input.removeInvariants?.length) {
+      patch.removeInvariants = input.removeInvariants.map((inv) => `${inv.kind}:${inv.condition}`);
+    }
+    if (input.clearInvariants) patch.clearInvariants = true;
 
     const hasPatch =
       patch.title !== undefined ||
@@ -877,7 +890,10 @@ export class KnotsBackend implements BackendPort {
       patch.type !== undefined ||
       (patch.addTags?.length ?? 0) > 0 ||
       (patch.removeTags?.length ?? 0) > 0 ||
-      patch.addNote !== undefined;
+      patch.addNote !== undefined ||
+      (patch.addInvariants?.length ?? 0) > 0 ||
+      (patch.removeInvariants?.length ?? 0) > 0 ||
+      patch.clearInvariants === true;
 
     if (hasPatch) {
       const patchResult = fromKnots(await knots.updateKnot(id, patch, rp));

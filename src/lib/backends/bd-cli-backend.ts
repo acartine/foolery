@@ -125,7 +125,7 @@ export class BdCliBackend implements BackendPort {
   ): Promise<BackendResult<{ id: string }>> {
     return toBR(
       await bd.createBeat(
-        input as Record<string, string | string[] | number | undefined>,
+        input as unknown as Record<string, string | string[] | number | undefined>,
         repoPath,
       ),
     );
@@ -139,7 +139,7 @@ export class BdCliBackend implements BackendPort {
     return toBR(
       await bd.updateBeat(
         id,
-        input as Record<string, string | string[] | number | undefined>,
+        input as unknown as Record<string, string | string[] | number | undefined>,
         repoPath,
       ),
     );

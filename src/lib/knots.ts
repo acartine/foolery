@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { join, resolve } from "node:path";
-import type { BdResult } from "./types";
+import type { BdResult, Invariant } from "./types";
 import { classifyErrorMessage, isRetryableByDefault } from "./backend-errors";
 import { logCliFailure } from "./server-logger";
 
@@ -47,6 +47,7 @@ export interface KnotRecord {
   stepHistory?: Array<Record<string, unknown>>;
   timeline?: Array<Record<string, unknown>>;
   transitions?: Array<Record<string, unknown>>;
+  invariants?: Invariant[];
   workflow_etag?: string | null;
   created_at?: string | null;
 }
@@ -90,6 +91,7 @@ export interface KnotClaimPrompt {
   profile_id: string;
   type?: string;
   priority?: number | null;
+  invariants?: Invariant[];
   prompt: string;
 }
 
@@ -119,6 +121,9 @@ export interface KnotUpdateInput {
   handoffAgentname?: string;
   handoffModel?: string;
   handoffVersion?: string;
+  addInvariants?: string[];
+  removeInvariants?: string[];
+  clearInvariants?: boolean;
   force?: boolean;
 }
 
@@ -563,6 +568,14 @@ export async function updateKnot(
     if (input.handoffModel) args.push("--handoff-model", input.handoffModel);
     if (input.handoffVersion) args.push("--handoff-version", input.handoffVersion);
   }
+
+  for (const inv of input.addInvariants ?? []) {
+    if (inv.trim()) args.push(`--add-invariant=${inv}`);
+  }
+  for (const inv of input.removeInvariants ?? []) {
+    if (inv.trim()) args.push(`--remove-invariant=${inv}`);
+  }
+  if (input.clearInvariants) args.push("--clear-invariants");
 
   if (input.force) args.push("--force");
 

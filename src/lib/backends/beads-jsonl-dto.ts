@@ -5,7 +5,7 @@
  * field names) and the domain Beat type used internally by foolery.
  */
 
-import type { Beat, BeatPriority } from "@/lib/types";
+import type { Beat, BeatPriority, Invariant, InvariantKind } from "@/lib/types";
 import {
   builtinProfileDescriptor,
   deriveProfileId,
@@ -72,6 +72,47 @@ function inferParent(id: string, explicit?: unknown): string | undefined {
   return id.slice(0, dotIdx);
 }
 
+// ── Invariant encoding in notes ─────────────────────────────────
+
+const INVARIANTS_HEADER = "[Invariants]";
+const INVARIANT_LINE_RE = /^(Scope|State):\s*(.+)$/;
+
+function parseInvariantsFromNotes(notes: string | undefined): { invariants: Invariant[]; cleanNotes: string | undefined } {
+  if (!notes) return { invariants: [], cleanNotes: notes };
+  const headerIdx = notes.indexOf(INVARIANTS_HEADER);
+  if (headerIdx === -1) return { invariants: [], cleanNotes: notes };
+
+  const before = notes.slice(0, headerIdx).trimEnd();
+  const afterHeader = notes.slice(headerIdx + INVARIANTS_HEADER.length);
+  const lines = afterHeader.split("\n");
+  const invariants: Invariant[] = [];
+  let endIdx = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!.trim();
+    if (!line) { endIdx = i + 1; continue; }
+    const match = INVARIANT_LINE_RE.exec(line);
+    if (match) {
+      invariants.push({ kind: match[1] as InvariantKind, condition: match[2]! });
+      endIdx = i + 1;
+    } else {
+      break;
+    }
+  }
+
+  const remaining = lines.slice(endIdx).join("\n").trim();
+  const cleanNotes = [before, remaining].filter(Boolean).join("\n\n") || undefined;
+  return { invariants, cleanNotes };
+}
+
+function embedInvariantsInNotes(notes: string | undefined, invariants: Invariant[] | undefined): string | undefined {
+  if (!invariants?.length) return notes;
+  const section = [
+    INVARIANTS_HEADER,
+    ...invariants.map((inv) => `${inv.kind}: ${inv.condition}`),
+  ].join("\n");
+  return notes ? `${notes}\n\n${section}` : section;
+}
+
 // ── Normalize: JSONL → Domain ───────────────────────────────────
 
 export function normalizeFromJsonl(raw: RawBead): Beat {
@@ -100,11 +141,13 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
       ? baseMetadata
       : undefined;
 
+  const { invariants, cleanNotes } = parseInvariantsFromNotes(raw.notes);
+
   return {
     id,
     title: raw.title,
     description: raw.description,
-    notes: raw.notes,
+    notes: cleanNotes,
     acceptance: raw.acceptance_criteria ?? (raw as Record<string, unknown>).acceptance as string | undefined,
     type,
     state: runtime.state,
@@ -125,6 +168,7 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
     created: (raw.created_at ?? (raw as Record<string, unknown>).created ?? new Date().toISOString()) as string,
     updated: (raw.updated_at ?? (raw as Record<string, unknown>).updated ?? new Date().toISOString()) as string,
     closed: raw.closed_at ?? (raw as Record<string, unknown>).closed as string | undefined,
+    invariants: invariants.length > 0 ? invariants : undefined,
     metadata,
   };
 }
@@ -151,7 +195,8 @@ export function denormalizeToJsonl(beat: Beat): RawBead {
   };
 
   if (beat.description !== undefined) raw.description = beat.description;
-  if (beat.notes !== undefined) raw.notes = beat.notes;
+  const notesWithInvariants = embedInvariantsInNotes(beat.notes, beat.invariants);
+  if (notesWithInvariants !== undefined) raw.notes = notesWithInvariants;
   if (beat.acceptance !== undefined) raw.acceptance_criteria = beat.acceptance;
   if (beat.assignee !== undefined) raw.assignee = beat.assignee;
   if (beat.owner !== undefined) raw.owner = beat.owner;

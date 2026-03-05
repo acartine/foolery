@@ -16,6 +16,13 @@ export type WorkflowMode =
 
 export type ActionOwnerKind = "agent" | "human" | "none";
 
+export type InvariantKind = "Scope" | "State";
+
+export interface Invariant {
+  kind: InvariantKind;
+  condition: string;
+}
+
 export interface MemoryWorkflowOwners {
   planning: ActionOwnerKind;
   plan_review: ActionOwnerKind;
@@ -77,6 +84,7 @@ export interface Beat {
   created: string;
   updated: string;
   closed?: string;
+  invariants?: Invariant[];
   metadata?: Record<string, unknown>;
 }
 

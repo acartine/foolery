@@ -279,6 +279,7 @@ export class BeadsBackend implements BackendPort {
       acceptance: input.acceptance,
       notes: input.notes,
       estimate: input.estimate,
+      invariants: input.invariants?.length ? input.invariants : undefined,
       created: now,
       updated: now,
     };
@@ -590,6 +591,22 @@ function applyUpdate(beat: Beat, input: UpdateBeatInput): void {
   if (input.acceptance !== undefined) beat.acceptance = input.acceptance;
   if (input.notes !== undefined) beat.notes = input.notes;
   if (input.estimate !== undefined) beat.estimate = input.estimate;
+
+  if (input.clearInvariants) {
+    beat.invariants = undefined;
+  }
+  if (input.removeInvariants?.length) {
+    const toRemove = new Set(input.removeInvariants.map((inv) => `${inv.kind}:${inv.condition}`));
+    beat.invariants = (beat.invariants ?? []).filter(
+      (inv) => !toRemove.has(`${inv.kind}:${inv.condition}`),
+    );
+    if (beat.invariants.length === 0) beat.invariants = undefined;
+  }
+  if (input.addInvariants?.length) {
+    const existing = new Set((beat.invariants ?? []).map((inv) => `${inv.kind}:${inv.condition}`));
+    const toAdd = input.addInvariants.filter((inv) => !existing.has(`${inv.kind}:${inv.condition}`));
+    beat.invariants = [...(beat.invariants ?? []), ...toAdd];
+  }
 
   beat.labels = withWorkflowProfileLabel(
     withWorkflowStateLabel(beat.labels ?? [], beat.state),
