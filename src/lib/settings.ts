@@ -322,13 +322,16 @@ function getFallbackCommand(settings: FoolerySettings): string {
   return first?.command ?? "claude";
 }
 
+/** Command used for OpenRouter virtual agents (the openrouter-agent CLI shim). */
+const OPENROUTER_AGENT_COMMAND = "openrouter-agent";
+
 function resolveSelectedOpenRouterAgentConfig(
   settings: FoolerySettings,
 ): RegisteredAgentConfig | null {
   const selectedModel = getSelectedOpenRouterModel(settings.openrouter);
   if (!selectedModel) return null;
   return {
-    command: getFallbackCommand(settings),
+    command: OPENROUTER_AGENT_COMMAND,
     model: selectedModel,
     label: formatOpenRouterSelectedAgentLabel(selectedModel),
   };
@@ -344,12 +347,11 @@ export function resolveOpenRouterAgents(
 ): Record<string, RegisteredAgentConfig> {
   if (!settings.openrouter.enabled) return {};
   const result: Record<string, RegisteredAgentConfig> = {};
-  const fallbackCommand = getFallbackCommand(settings);
   for (const [key, entry] of Object.entries(settings.openrouter.agents)) {
     if (!entry.model?.trim()) continue;
     const id = openrouterAgentId(key);
     result[id] = {
-      command: fallbackCommand,
+      command: OPENROUTER_AGENT_COMMAND,
       model: entry.model,
       label: formatOpenRouterAgentLabel(key, entry.label, entry.model),
     };
@@ -371,7 +373,7 @@ function resolveOpenRouterAgentById(
   const entry = settings.openrouter.agents[key];
   if (!entry?.model?.trim()) return null;
   return {
-    command: getFallbackCommand(settings),
+    command: OPENROUTER_AGENT_COMMAND,
     model: entry.model,
     label: formatOpenRouterAgentLabel(key, entry.label, entry.model),
   };
@@ -476,7 +478,7 @@ export async function removeRegisteredAgent(
   return validated;
 }
 
-const SCANNABLE_AGENTS = ["claude", "codex", "gemini", "openrouter"] as const;
+const SCANNABLE_AGENTS = ["claude", "codex", "gemini", "openrouter-agent"] as const;
 
 /** Scans PATH for known agent CLIs and returns what was found. */
 export async function scanForAgents(): Promise<ScannedAgent[]> {

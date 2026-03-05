@@ -68,12 +68,12 @@ describe("scanForAgents", () => {
     const claude = agents.find((a) => a.id === "claude");
     const codex = agents.find((a) => a.id === "codex");
     const gemini = agents.find((a) => a.id === "gemini");
-    const openrouter = agents.find((a) => a.id === "openrouter");
+    const openrouterAgent = agents.find((a) => a.id === "openrouter-agent");
 
     expect(claude?.installed).toBe(true);
     expect(codex?.installed).toBe(false);
     expect(gemini?.installed).toBe(false);
-    expect(openrouter?.installed).toBe(false);
+    expect(openrouterAgent?.installed).toBe(false);
   });
 
   it("scans for exactly claude, codex, gemini, and openrouter", async () => {
@@ -81,6 +81,6 @@ describe("scanForAgents", () => {
 
     const agents = await scanForAgents();
     const ids = agents.map((a) => a.id);
-    expect(ids).toEqual(["claude", "codex", "gemini", "openrouter"]);
+    expect(ids).toEqual(["claude", "codex", "gemini", "openrouter-agent"]);
   });
 });

@@ -111,7 +111,7 @@ describe("scanForAgents (line 345-357)", () => {
     const codex = results.find((r) => r.id === "codex");
     expect(codex?.installed).toBe(false);
 
-    const openrouter = results.find((r) => r.id === "openrouter");
-    expect(openrouter?.installed).toBe(false);
+    const openrouterAgent = results.find((r) => r.id === "openrouter-agent");
+    expect(openrouterAgent?.installed).toBe(false);
   });
 });

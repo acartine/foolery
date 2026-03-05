@@ -570,7 +570,7 @@ describe("getActionAgent", () => {
     mockReadFile.mockResolvedValue(toml);
 
     const agent = await getActionAgent("take");
-    expect(agent.command).toBe("codex");
+    expect(agent.command).toBe("openrouter-agent");
     expect(agent.model).toBe("mistralai/devstral-small:free");
     expect(agent.label).toBe(
       "OpenRouter (mistralai/devstral-small:free)",
@@ -706,7 +706,7 @@ describe("getStepAgent", () => {
 
     const agent = await getStepAgent(WorkflowStep.Implementation, "take");
     expect(agent.agentId).toBe(OPENROUTER_SELECTED_AGENT_ID);
-    expect(agent.command).toBe("codex");
+    expect(agent.command).toBe("openrouter-agent");
     expect(agent.model).toBe("mistralai/devstral-small:free");
   });
 

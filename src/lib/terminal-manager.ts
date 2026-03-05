@@ -1,4 +1,7 @@
 import { spawn, type ChildProcess } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { homedir } from "node:os";
 import { EventEmitter } from "node:events";
 import { getBackend } from "@/lib/backend-instance";
 import {
@@ -50,6 +53,22 @@ const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
 const MAX_TAKE_ITERATIONS = 10;
+
+/**
+ * Resolve a CLI command that may not be on PATH.
+ * Checks common locations (bun global bin, project node_modules/.bin).
+ * Returns the original command if no alternative is found.
+ */
+function resolveAgentCommand(command: string): string {
+  // If it contains a path separator, it's already resolved
+  if (command.includes("/")) return command;
+
+  // Check bun global bin (where `bun link` installs)
+  const bunBin = join(homedir(), ".bun", "bin", command);
+  if (existsSync(bunBin)) return bunBin;
+
+  return command;
+}
 
 function buildQueueTerminalInvariantInstruction(memoryManagerType: MemoryManagerType): string {
   const item = memoryManagerType === "knots" ? "knot" : "beat";
@@ -752,9 +771,9 @@ export async function createSession(
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
   const dialect = resolveDialect(agent.command);
-  const isInteractive = dialect === "claude" || dialect === "openrouter";
+  const isInteractive = dialect === "claude";
 
-  // For interactive (claude) sessions, use stream-json stdin; for codex, use one-shot prompt mode
+  // For interactive (claude) sessions, use stream-json stdin; for codex/openrouter, use one-shot prompt mode
   let agentCmd: string;
   let args: string[];
   if (isInteractive) {
@@ -772,6 +791,7 @@ export async function createSession(
     agentCmd = built.command;
     args = built.args;
   }
+  agentCmd = resolveAgentCommand(agentCmd);
   const normalizeEvent = createLineNormalizer(dialect);
 
   // ── Take loop infrastructure (single-beat only) ─────────
@@ -1062,7 +1082,7 @@ export async function createSession(
     // Resolve effective agent for this iteration
     const effectiveAgent = agentOverride ?? agent;
     const effectiveDialect = resolveDialect(effectiveAgent.command);
-    const effectiveIsInteractive = effectiveDialect === "claude" || effectiveDialect === "openrouter";
+    const effectiveIsInteractive = effectiveDialect === "claude";
 
     let effectiveCmd: string;
     let effectiveArgs: string[];
@@ -1081,6 +1101,7 @@ export async function createSession(
       effectiveCmd = built.command;
       effectiveArgs = built.args;
     }
+    effectiveCmd = resolveAgentCommand(effectiveCmd);
     const effectiveNormalizeEvent = createLineNormalizer(effectiveDialect);
 
     const takeChild = spawn(effectiveCmd, effectiveArgs, {
