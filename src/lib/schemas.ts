@@ -21,6 +21,13 @@ export const beatPrioritySchema = z.union([
   z.literal(4),
 ]);
 
+export const invariantKindSchema = z.enum(["Scope", "State"]);
+
+export const invariantSchema = z.object({
+  kind: invariantKindSchema,
+  condition: z.string().min(1),
+});
+
 export const createBeatSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
@@ -33,6 +40,7 @@ export const createBeatSchema = z.object({
   notes: z.string().optional(),
   parent: z.string().optional(),
   estimate: z.number().int().positive().optional(),
+  invariants: z.array(invariantSchema).optional(),
   profileId: z.string().min(1).optional(),
   workflowId: z.string().min(1).optional(),
 });
@@ -52,6 +60,9 @@ export const updateBeatSchema = z.object({
   acceptance: z.string().optional(),
   notes: z.string().optional(),
   estimate: z.number().int().positive().optional(),
+  addInvariants: z.array(invariantSchema).optional(),
+  removeInvariants: z.array(invariantSchema).optional(),
+  clearInvariants: z.boolean().optional(),
 });
 
 export const closeBeatSchema = z.object({
