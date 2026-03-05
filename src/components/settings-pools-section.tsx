@@ -204,10 +204,12 @@ export function SettingsPoolsSection({
           Agent Pools
         </h3>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Configure weighted agent distribution for each workflow step.
-        Agents are selected randomly based on relative weights.
-      </p>
+      <div className="rounded-lg border border-accent/55 bg-gradient-to-r from-primary/26 via-primary/10 to-accent/28 px-3 py-2 ring-1 ring-primary/28 shadow-sm shadow-primary/20">
+        <p className="text-xs text-primary/95">
+          Configure weighted agent distribution for each workflow step.
+          Agents are selected randomly based on relative weights.
+        </p>
+      </div>
       <div className="space-y-5">
         {ALL_STEPS.map((step) => (
           <StepPoolEditor
@@ -252,8 +254,9 @@ function StepPoolEditor({
   const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-primary/40 bg-gradient-to-r from-primary/18 via-background/88 to-accent/20 p-3 shadow-sm shadow-primary/15 space-y-2">
+    <div className="group relative overflow-hidden rounded-xl border border-primary/55 bg-gradient-to-r from-primary/24 via-background/86 to-accent/26 p-3 shadow-sm shadow-primary/20 ring-1 ring-primary/22 space-y-2">
       <div className="pointer-events-none absolute -top-10 -right-10 h-20 w-20 rounded-full bg-primary/25 blur-xl" />
+      <div className="pointer-events-none absolute -bottom-10 -left-8 h-20 w-20 rounded-full bg-accent/24 blur-xl" />
       <div className="flex items-center justify-between">
         <div>
           <Label className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
@@ -337,7 +340,7 @@ function StepPoolEditor({
                     type="number"
                     min={0}
                     step={1}
-                    className="h-7 w-[64px] shrink-0 border-primary/40 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12 px-2 text-sm"
+                  className="h-7 w-[64px] shrink-0 border-primary/55 bg-gradient-to-r from-primary/20 via-background/85 to-accent/18 px-2 text-sm ring-1 ring-primary/15"
                     value={entry.weight}
                     onChange={(e) => {
                       const next = [...entries];
@@ -409,9 +412,9 @@ function AddPoolEntryForm({
   const [weight, setWeight] = useState(1);
 
   return (
-    <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-gradient-to-r from-primary/16 via-background/85 to-accent/16 p-2">
+    <div className="flex items-center gap-2 rounded-md border border-primary/55 bg-gradient-to-r from-primary/22 via-background/82 to-accent/20 p-2 ring-1 ring-primary/18">
       <Select value={selectedId} onValueChange={setSelectedId}>
-        <SelectTrigger className="h-7 w-[140px] border-primary/45 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12">
+        <SelectTrigger className="h-7 w-[140px] border-primary/55 bg-gradient-to-r from-primary/22 via-background/82 to-accent/16 ring-1 ring-primary/15">
           <SelectValue placeholder="select agent" />
         </SelectTrigger>
         <SelectContent>
@@ -442,7 +445,7 @@ function AddPoolEntryForm({
         type="number"
         min={1}
         step={1}
-        className="h-7 w-[70px] border-primary/40 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12 px-2 text-sm"
+        className="h-7 w-[70px] border-primary/55 bg-gradient-to-r from-primary/22 via-background/82 to-accent/16 px-2 text-sm ring-1 ring-primary/15"
         value={weight}
         onChange={(e) => setWeight(Math.max(1, Number(e.target.value) || 1))}
       />

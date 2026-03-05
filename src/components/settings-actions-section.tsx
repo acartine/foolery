@@ -113,12 +113,12 @@ export function SettingsActionsSection({
           Live
         </span>
       </div>
-      <div className="rounded-lg border border-accent/45 bg-gradient-to-r from-primary/20 via-primary/8 to-accent/20 px-3 py-2 ring-1 ring-primary/20">
+      <div className="rounded-lg border border-accent/60 bg-gradient-to-r from-primary/28 via-primary/10 to-accent/28 px-3 py-2 ring-1 ring-primary/30 shadow-sm shadow-primary/20">
         <p className="text-xs text-primary/95">
           Choose which registered agent handles each action.
         </p>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 rounded-xl border border-primary/45 bg-gradient-to-br from-primary/20 via-background/80 to-accent/20 p-2.5 ring-1 ring-accent/22">
         {ACTION_DEFS.map((def, idx) => {
           const Icon = def.icon;
           const includeLegacyOption = Boolean(
@@ -131,7 +131,7 @@ export function SettingsActionsSection({
           return (
             <div
               key={def.name}
-              className="flex items-center justify-between rounded-lg border border-primary/55 bg-gradient-to-r from-primary/26 via-primary/10 to-accent/26 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/70 hover:from-primary/36 hover:to-accent/34 hover:shadow-sm hover:shadow-accent/20"
+              className="flex items-center justify-between rounded-lg border border-primary/65 bg-gradient-to-r from-primary/34 via-primary/14 to-accent/32 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/80 hover:from-primary/44 hover:to-accent/40 hover:shadow-md hover:shadow-accent/30"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon
@@ -153,7 +153,7 @@ export function SettingsActionsSection({
                 onValueChange={(v) => handleChange(def.name, v)}
                 disabled={disabled || optionIds.length === 0}
               >
-                <SelectTrigger className="w-[140px] shrink-0 border-primary/70 bg-gradient-to-r from-primary/20 via-background/70 to-accent/20 ring-1 ring-primary/20 hover:border-accent/70">
+                <SelectTrigger className="w-[140px] shrink-0 border-primary/75 bg-gradient-to-r from-primary/26 via-background/70 to-accent/24 ring-1 ring-primary/35 shadow-sm shadow-primary/20 hover:border-accent/75 hover:shadow-accent/20">
                   <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>

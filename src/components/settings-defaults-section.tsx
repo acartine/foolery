@@ -38,7 +38,7 @@ export function SettingsDefaultsSection({
         </h3>
       </div>
 
-      <div className="space-y-2 rounded-lg border border-accent/65 bg-gradient-to-r from-accent/34 via-accent/12 to-primary/30 p-3 shadow-md shadow-accent/20 ring-1 ring-accent/30">
+      <div className="space-y-2 rounded-lg border border-accent/70 bg-gradient-to-br from-accent/42 via-accent/14 to-primary/34 p-3 shadow-md shadow-accent/30 ring-1 ring-accent/35">
         <Label htmlFor="default-profile" className="text-sm">
           Default Workflow Profile
         </Label>
@@ -53,7 +53,7 @@ export function SettingsDefaultsSection({
         >
           <SelectTrigger
             id="default-profile"
-            className="w-full border-primary/70 bg-gradient-to-r from-primary/18 via-background/70 to-accent/18 hover:border-accent/70"
+            className="w-full border-primary/75 bg-gradient-to-r from-primary/26 via-background/70 to-accent/24 ring-1 ring-primary/30 shadow-sm shadow-primary/20 hover:border-accent/75 hover:shadow-accent/20"
           >
             <SelectValue placeholder="Select profile..." />
           </SelectTrigger>
