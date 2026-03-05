@@ -105,9 +105,14 @@ export function SettingsActionsSection({
 
   return (
     <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
-      <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
-        Action Mappings
-      </h3>
+      <div className="flex items-center justify-between">
+        <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
+          Action Mappings
+        </h3>
+        <span className="rounded-full border border-primary/60 bg-gradient-to-r from-primary/28 to-accent/28 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+          Live
+        </span>
+      </div>
       <div className="rounded-lg border border-accent/45 bg-gradient-to-r from-primary/20 via-primary/8 to-accent/20 px-3 py-2 ring-1 ring-primary/20">
         <p className="text-xs text-primary/95">
           Choose which registered agent handles each action.
@@ -126,7 +131,7 @@ export function SettingsActionsSection({
           return (
             <div
               key={def.name}
-              className="flex items-center justify-between rounded-lg border border-primary/50 bg-gradient-to-r from-primary/24 via-primary/10 to-accent/24 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/65 hover:from-primary/34 hover:to-accent/32 hover:shadow-sm hover:shadow-accent/20"
+              className="flex items-center justify-between rounded-lg border border-primary/55 bg-gradient-to-r from-primary/26 via-primary/10 to-accent/26 px-3 py-2.5 transition-all hover:-translate-y-0.5 hover:border-accent/70 hover:from-primary/36 hover:to-accent/34 hover:shadow-sm hover:shadow-accent/20"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <Icon
@@ -148,7 +153,7 @@ export function SettingsActionsSection({
                 onValueChange={(v) => handleChange(def.name, v)}
                 disabled={disabled || optionIds.length === 0}
               >
-                <SelectTrigger className="w-[140px] shrink-0 border-primary/65 bg-gradient-to-r from-primary/18 via-background/72 to-accent/18">
+                <SelectTrigger className="w-[140px] shrink-0 border-primary/70 bg-gradient-to-r from-primary/20 via-background/70 to-accent/20 ring-1 ring-primary/20 hover:border-accent/70">
                   <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>

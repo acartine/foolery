@@ -78,11 +78,14 @@ export function SettingsReposSection() {
           <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
             Repositories
           </h3>
+          <span className="rounded-full border border-accent/55 bg-gradient-to-r from-primary/34 to-accent/34 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            Ready
+          </span>
         </div>
         <Button
           size="sm"
           variant="outline"
-          className="border-accent/65 bg-gradient-to-r from-accent/28 to-primary/24 hover:from-accent/36 hover:to-primary/32"
+          className="border-accent/65 bg-gradient-to-r from-accent/30 via-accent/20 to-primary/28 shadow-sm shadow-accent/25 hover:from-accent/40 hover:to-primary/36"
           onClick={() => setBrowseOpen(true)}
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
@@ -124,7 +127,7 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
       </p>
       <Button
         size="sm"
-        className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-md shadow-primary/30"
+        className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-md shadow-primary/35 hover:brightness-105"
         onClick={onBrowse}
       >
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
@@ -162,7 +165,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 text-muted-foreground hover:text-destructive"
+            className="shrink-0 border border-transparent text-muted-foreground hover:border-primary/45 hover:bg-primary/18 hover:text-accent"
             onClick={() => onRemove(repo.path)}
           >
             <Trash2 className="size-3.5" />

@@ -252,7 +252,7 @@ function StepPoolEditor({
   const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-primary/35 bg-gradient-to-r from-primary/14 via-background/88 to-accent/16 p-3 shadow-sm space-y-2">
+    <div className="group relative overflow-hidden rounded-xl border border-primary/40 bg-gradient-to-r from-primary/18 via-background/88 to-accent/20 p-3 shadow-sm shadow-primary/15 space-y-2">
       <div className="pointer-events-none absolute -top-10 -right-10 h-20 w-20 rounded-full bg-primary/25 blur-xl" />
       <div className="flex items-center justify-between">
         <div>
@@ -267,7 +267,7 @@ function StepPoolEditor({
           <Button
             variant="outline"
             size="sm"
-            className="border-accent/40 bg-accent/12 hover:bg-accent/22"
+            className="border-accent/50 bg-gradient-to-r from-accent/18 to-primary/14 hover:border-primary/55 hover:from-accent/24 hover:to-primary/20"
             onClick={() => setAddingAgent(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -284,7 +284,7 @@ function StepPoolEditor({
         <div className="space-y-2">
           {/* Stacked horizontal bar */}
           {entries.length > 0 && totalWeight > 0 && (
-            <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/60 ring-1 ring-primary/20">
+            <div className="flex h-3 w-full overflow-hidden rounded-full bg-gradient-to-r from-primary/16 to-accent/16 ring-1 ring-primary/22">
               {entries.map((entry, idx) => {
                 const ratio = entry.weight / totalWeight;
                 const color = POOL_COLORS[idx % POOL_COLORS.length];
@@ -337,7 +337,7 @@ function StepPoolEditor({
                     type="number"
                     min={0}
                     step={1}
-                    className="h-7 w-[64px] shrink-0 border-primary/35 bg-background/90 px-2 text-sm"
+                    className="h-7 w-[64px] shrink-0 border-primary/40 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12 px-2 text-sm"
                     value={entry.weight}
                     onChange={(e) => {
                       const next = [...entries];
@@ -348,7 +348,7 @@ function StepPoolEditor({
                       onChange(next);
                     }}
                   />
-                  <div className="h-2.5 flex-1 min-w-0 overflow-hidden rounded-full bg-muted/75 ring-1 ring-primary/15">
+                  <div className="h-2.5 flex-1 min-w-0 overflow-hidden rounded-full bg-gradient-to-r from-primary/14 to-accent/14 ring-1 ring-primary/18">
                     <div
                       className={`h-full ${color} transition-all`}
                       style={{ width: `${ratio * 100}%` }}
@@ -409,9 +409,9 @@ function AddPoolEntryForm({
   const [weight, setWeight] = useState(1);
 
   return (
-    <div className="flex items-center gap-2 rounded-md border border-primary/30 bg-gradient-to-r from-primary/12 via-background/85 to-accent/12 p-2">
+    <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-gradient-to-r from-primary/16 via-background/85 to-accent/16 p-2">
       <Select value={selectedId} onValueChange={setSelectedId}>
-        <SelectTrigger className="h-7 w-[140px] border-primary/40 bg-background/90">
+        <SelectTrigger className="h-7 w-[140px] border-primary/45 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12">
           <SelectValue placeholder="select agent" />
         </SelectTrigger>
         <SelectContent>
@@ -442,7 +442,7 @@ function AddPoolEntryForm({
         type="number"
         min={1}
         step={1}
-        className="h-7 w-[70px] border-primary/35 bg-background/90 px-2 text-sm"
+        className="h-7 w-[70px] border-primary/40 bg-gradient-to-r from-primary/14 via-background/85 to-accent/12 px-2 text-sm"
         value={weight}
         onChange={(e) => setWeight(Math.max(1, Number(e.target.value) || 1))}
       />

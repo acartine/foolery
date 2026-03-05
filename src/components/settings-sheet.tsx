@@ -56,11 +56,12 @@ function SettingsSectionCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-primary/60 bg-gradient-to-br from-primary/42 via-primary/14 to-accent/36 p-4 shadow-lg shadow-primary/15 ring-1 ring-primary/28 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/70 hover:ring-accent/40 hover:shadow-xl hover:shadow-accent/20",
+        "group relative overflow-hidden rounded-2xl border border-primary/65 bg-gradient-to-br from-primary/44 via-primary/14 to-accent/38 p-4 shadow-lg shadow-primary/15 ring-1 ring-primary/32 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/75 hover:ring-accent/45 hover:shadow-xl hover:shadow-accent/20",
         className,
       )}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/22 via-primary/8 to-accent/18" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(147,51,234,0.17),transparent_35%,rgba(34,197,94,0.14)_70%,transparent)] opacity-80" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-accent/85" />
       <div className="pointer-events-none absolute inset-y-2 left-0 w-px bg-gradient-to-b from-transparent via-accent/85 to-transparent" />
       <div className="pointer-events-none absolute -top-16 -right-14 h-44 w-44 rounded-full bg-primary/44 opacity-90 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
@@ -156,13 +157,16 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="relative overflow-hidden border-primary/70 bg-gradient-to-br from-primary/36 via-background/82 to-accent/34 shadow-2xl shadow-primary/20 sm:max-w-xl">
+      <SheetContent className="relative overflow-hidden border-primary/70 bg-gradient-to-br from-primary/38 via-background/82 to-accent/36 shadow-2xl shadow-primary/20 sm:max-w-xl">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/40 blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/34 blur-3xl" />
+          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/42 blur-3xl" />
+          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/36 blur-3xl" />
+          <div className="absolute top-20 left-24 h-56 w-56 rounded-full bg-primary/24 blur-3xl" />
+          <div className="absolute bottom-16 right-24 h-52 w-52 rounded-full bg-accent/22 blur-3xl" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/24 via-primary/6 to-accent/24" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,82,255,0.24),transparent_45%),radial-gradient(circle_at_80%_90%,rgba(34,197,94,0.2),transparent_45%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(140deg,transparent_0%,rgba(255,255,255,0.07)_48%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(140deg,transparent_0%,rgba(255,255,255,0.09)_48%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(35deg,rgba(168,85,247,0.18),transparent_40%,rgba(34,197,94,0.18)_75%,transparent)]" />
         </div>
 
         <div className="relative z-10 flex h-full flex-col">
@@ -186,7 +190,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                 </div>
               </SettingsSectionCard>
               {loading ? (
-                <p className="text-sm text-muted-foreground">Loading settings...</p>
+                <p className="text-sm text-primary/90">Loading settings...</p>
               ) : (
                 <>
                   {/* Section 1: Agent Management */}

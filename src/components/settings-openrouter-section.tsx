@@ -124,7 +124,7 @@ export function SettingsOpenRouterSection({
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 shrink-0 gap-1 border border-primary/35 bg-primary/12 px-2 text-[10px] text-primary hover:border-accent/60 hover:bg-accent/20"
+          className="h-6 shrink-0 gap-1 border border-primary/45 bg-gradient-to-r from-primary/20 to-accent/18 px-2 text-[10px] text-primary shadow-sm shadow-primary/20 hover:border-accent/65 hover:from-primary/28 hover:to-accent/26"
           onClick={() => setSecurityDialogOpen(true)}
         >
           <ShieldCheck className="size-3" />
@@ -210,7 +210,7 @@ function SelectedModelBadge({ modelId, model, onClear }: SelectedModelBadgeProps
           <Badge variant="secondary" className="font-mono text-[10px]">
             Prompt {formatPricing(model.pricing.prompt)}
           </Badge>
-          <Badge variant="secondary" className="font-mono text-[10px]">
+          <Badge variant="secondary" className="border border-primary/35 bg-gradient-to-r from-primary/18 to-accent/16 font-mono text-[10px]">
             Completion {formatPricing(model.pricing.completion)}
           </Badge>
         </>
@@ -241,7 +241,7 @@ function ApiKeyField({
   const isMasked = apiKey.includes("...");
 
   return (
-    <div className="space-y-1.5 rounded-lg border border-primary/45 bg-gradient-to-r from-primary/18 via-background/80 to-accent/20 p-2.5 ring-1 ring-primary/20">
+    <div className="space-y-1.5 rounded-lg border border-primary/50 bg-gradient-to-r from-primary/20 via-background/80 to-accent/22 p-2.5 ring-1 ring-primary/25 shadow-sm shadow-primary/20">
       <Label className="text-xs">API Key</Label>
       <div className="flex gap-2">
         <div className="relative flex-1">
@@ -250,7 +250,7 @@ function ApiKeyField({
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
             placeholder="sk-or-v1-..."
-            className="border-primary/55 bg-gradient-to-r from-primary/14 via-background/82 to-accent/14 pr-9 focus-visible:ring-accent/45"
+            className="border-primary/60 bg-gradient-to-r from-primary/16 via-background/82 to-accent/16 pr-9 focus-visible:ring-accent/45"
           />
           <Button
             variant="ghost"
@@ -324,7 +324,7 @@ function ModelsBrowser({
   onSelectModel,
 }: ModelsBrowserProps) {
   return (
-    <div className="space-y-2 rounded-lg border border-accent/40 bg-gradient-to-r from-accent/16 via-background/80 to-primary/16 p-2.5 ring-1 ring-accent/18">
+    <div className="space-y-2 rounded-lg border border-accent/45 bg-gradient-to-r from-accent/18 via-background/80 to-primary/18 p-2.5 ring-1 ring-accent/22 shadow-sm shadow-accent/20">
       <div className="flex items-center justify-between">
         <Label className="text-xs">Available Models</Label>
         <Button
@@ -353,7 +353,7 @@ function ModelsBrowser({
             placeholder="Filter models..."
             value={modelFilter}
             onChange={(e) => onFilterChange(e.target.value)}
-            className="h-7 border-primary/50 bg-gradient-to-r from-primary/14 via-background/84 to-accent/14 text-xs"
+            className="h-7 border-primary/55 bg-gradient-to-r from-primary/16 via-background/84 to-accent/16 text-xs"
           />
           <ModelsTable
             models={filteredModels ?? []}
@@ -377,7 +377,7 @@ interface SecurityInfoDialogProps {
 function SecurityInfoDialog({ open, onOpenChange }: SecurityInfoDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-primary/60 bg-gradient-to-br from-primary/28 via-background/90 to-accent/24 shadow-xl shadow-primary/20 sm:max-w-md">
+      <DialogContent className="border-primary/65 bg-gradient-to-br from-primary/30 via-background/90 to-accent/26 shadow-xl shadow-primary/20 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-primary" />
@@ -451,7 +451,7 @@ interface ModelsTableProps {
 
 function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProps) {
   return (
-    <div className="max-h-[240px] overflow-y-auto rounded-md border border-primary/45 bg-gradient-to-br from-primary/12 via-background/86 to-accent/12 ring-1 ring-primary/20">
+    <div className="max-h-[240px] overflow-y-auto rounded-md border border-primary/50 bg-gradient-to-br from-primary/14 via-background/86 to-accent/14 ring-1 ring-primary/25">
       <table className="w-full text-[11px]">
         <thead className="sticky top-0 border-b border-primary/35 bg-gradient-to-r from-primary/24 via-background to-accent/20">
           <tr className="text-left text-muted-foreground">
@@ -472,8 +472,8 @@ function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProp
                 aria-selected={isSelected}
                 className={`border-b border-border/50 cursor-pointer transition-colors ${
                   isSelected
-                    ? "bg-gradient-to-r from-primary/26 to-accent/22 hover:from-primary/32 hover:to-accent/28"
-                    : "hover:bg-accent/14"
+                    ? "bg-gradient-to-r from-primary/30 to-accent/24 hover:from-primary/36 hover:to-accent/32"
+                    : "hover:bg-gradient-to-r hover:from-primary/14 hover:to-accent/14"
                 }`}
                 onClick={() => onSelectModel(model.id)}
                 onKeyDown={(e) => {
@@ -495,12 +495,12 @@ function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProp
                   {formatContext(model.context_length)}
                 </td>
                 <td className="px-2 py-1.5 text-right">
-                  <Badge variant="secondary" className="text-[9px] font-mono">
+                  <Badge variant="secondary" className="border border-primary/35 bg-gradient-to-r from-primary/18 to-accent/16 text-[9px] font-mono">
                     {formatPricing(model.pricing.prompt)}
                   </Badge>
                 </td>
                 <td className="px-2 py-1.5 text-right">
-                  <Badge variant="secondary" className="text-[9px] font-mono">
+                  <Badge variant="secondary" className="border border-accent/35 bg-gradient-to-r from-accent/18 to-primary/16 text-[9px] font-mono">
                     {formatPricing(model.pricing.completion)}
                   </Badge>
                 </td>
