@@ -2,6 +2,8 @@ import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const nextKnotMock = vi.fn();
+const nextBeatMock = vi.fn();
+const resolveMemoryManagerTypeMock = vi.fn(() => "knots");
 type MockChild = EventEmitter & {
   stdout: EventEmitter;
   stderr: EventEmitter;
@@ -62,6 +64,10 @@ vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
 }));
 
+vi.mock("@/lib/beads-state-machine", () => ({
+  nextBeat: (...args: unknown[]) => nextBeatMock(...args),
+}));
+
 vi.mock("@/lib/regroom", () => ({
   regroomAncestors: vi.fn(async () => undefined),
 }));
@@ -78,7 +84,7 @@ vi.mock("@/lib/memory-manager-commands", async () => {
   );
   return {
     ...actual,
-    resolveMemoryManagerType: vi.fn(() => "knots"),
+    resolveMemoryManagerType: () => resolveMemoryManagerTypeMock(),
   };
 });
 
@@ -99,6 +105,9 @@ import { createSession } from "@/lib/terminal-manager";
 describe("terminal-manager nextKnot expected-state guard", () => {
   beforeEach(() => {
     nextKnotMock.mockReset();
+    nextBeatMock.mockReset();
+    resolveMemoryManagerTypeMock.mockReset();
+    resolveMemoryManagerTypeMock.mockReturnValue("knots");
     spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();
@@ -159,6 +168,47 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(backend.get).toHaveBeenCalledTimes(2);
   });
 
+  it("dispatches healing to nextBeat for beads-managed repos", async () => {
+    resolveMemoryManagerTypeMock.mockReturnValue("beads");
+    backend.get
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          id: "foolery-e6d5",
+          title: "Fix double bd-next",
+          state: "implementation",
+          isAgentClaimable: false,
+        },
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          id: "foolery-e6d5",
+          title: "Fix double bd-next",
+          state: "ready_for_implementation_review",
+          isAgentClaimable: true,
+        },
+      });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    nextBeatMock.mockResolvedValue({
+      beat: {
+        id: "foolery-e6d5",
+        title: "Fix double bd-next",
+        state: "implementation",
+        labels: [],
+      },
+      nextState: "ready_for_implementation_review",
+    });
+
+    await createSession("foolery-e6d5", "/tmp/repo", "custom prompt");
+
+    expect(nextBeatMock).toHaveBeenCalledTimes(1);
+    expect(nextBeatMock).toHaveBeenCalledWith("foolery-e6d5", "implementation", "/tmp/repo");
+    expect(nextKnotMock).not.toHaveBeenCalled();
+    expect(backend.get).toHaveBeenCalledTimes(2);
+  });
+
   it("logs initial prompt for one-shot agents", async () => {
     backend.get.mockResolvedValue({
       ok: true,
@@ -215,6 +265,36 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     );
   });
 
+  it("parameterizes queue/terminal invariant instructions for beads prompts", async () => {
+    resolveMemoryManagerTypeMock.mockReturnValue("beads");
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-3100",
+        title: "Beads prompt visibility",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "beads app prompt" },
+    });
+
+    await createSession("foolery-3100", "/tmp/repo");
+
+    expect(interactionLog.logPrompt).toHaveBeenCalledWith(
+      expect.stringContaining("ensure the beat is in a queue state"),
+      { source: "initial" },
+    );
+    expect(interactionLog.logPrompt).toHaveBeenCalledWith(
+      expect.stringContaining('run "bd next <id> --expected-state <currentState>"'),
+      { source: "initial" },
+    );
+  });
+
   it("logs take-loop prompts for one-shot agents", async () => {
     backend.get.mockResolvedValue({
       ok: true,
@@ -240,6 +320,35 @@ describe("terminal-manager nextKnot expected-state guard", () => {
       expect(spawnedChildren.length).toBe(2);
       expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("initial app prompt"), { source: "initial" });
       expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("loop app prompt"), { source: "take_2" });
+    });
+  });
+
+  it("runs the take loop for beads-managed single-beat sessions", async () => {
+    resolveMemoryManagerTypeMock.mockReturnValue("beads");
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-2100",
+        title: "Beads take-loop prompt visibility",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "initial beads prompt" } })
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "loop beads prompt" } });
+
+    await createSession("foolery-2100", "/tmp/repo");
+
+    expect(spawnedChildren).toHaveLength(1);
+    spawnedChildren[0].emit("close", 0, null);
+
+    await vi.waitFor(() => {
+      expect(spawnedChildren.length).toBe(2);
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("initial beads prompt"), { source: "initial" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("loop beads prompt"), { source: "take_2" });
     });
   });
 });

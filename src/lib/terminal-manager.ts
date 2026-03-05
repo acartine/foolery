@@ -14,6 +14,7 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import { nextBeat } from "@/lib/beads-state-machine";
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
   buildWorkflowStateCommand,
@@ -49,12 +50,19 @@ const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
 const MAX_TAKE_ITERATIONS = 10;
-const QUEUE_TERMINAL_INVARIANT_INSTRUCTION = [
-  `CRITICAL INVARIANT — QUEUE/TERMINAL STATE REQUIREMENT:`,
-  `Before ending your work, you MUST ensure the knot is in a queue state (ready_for_*) or terminal state (shipped/abandoned).`,
-  `Never leave work in an action state (planning, plan_review, implementation, implementation_review, shipment, shipment_review).`,
-  `If the knot is currently in an action state, run "kno next <id> --expected-state <currentState> --actor-kind agent" to advance it to the next queue state before stopping.`,
-].join("\n");
+
+function buildQueueTerminalInvariantInstruction(memoryManagerType: MemoryManagerType): string {
+  const item = memoryManagerType === "knots" ? "knot" : "beat";
+  const advanceCommand = memoryManagerType === "knots"
+    ? `kno next <id> --expected-state <currentState> --actor-kind agent`
+    : `bd next <id> --expected-state <currentState>`;
+  return [
+    `CRITICAL INVARIANT — QUEUE/TERMINAL STATE REQUIREMENT:`,
+    `Before ending your work, you MUST ensure the ${item} is in a queue state (ready_for_*) or terminal state (shipped/abandoned).`,
+    `Never leave work in an action state (planning, plan_review, implementation, implementation_review, shipment, shipment_review).`,
+    `If the ${item} is currently in an action state, run "${advanceCommand}" to advance it to the next queue state before stopping.`,
+  ].join("\n");
+}
 
 type JsonObject = Record<string, unknown>;
 
@@ -273,7 +281,7 @@ function isExpectedStateMismatchError(errorMessage: string): boolean {
   return normalized.includes("expected state") && normalized.includes("currently");
 }
 
-type GuardedNextKnotResult =
+type GuardedAdvanceResult =
   | { ok: true }
   | { ok: false; error: string; expectedStateMismatch: boolean };
 
@@ -281,7 +289,7 @@ async function nextKnotGuarded(
   knotId: string,
   expectedState: string,
   repoPath: string | undefined,
-): Promise<GuardedNextKnotResult> {
+): Promise<GuardedAdvanceResult> {
   const result = await nextKnot(knotId, repoPath, {
     actorKind: "agent",
     expectedState,
@@ -295,9 +303,40 @@ async function nextKnotGuarded(
   };
 }
 
+async function nextBeatGuarded(
+  beatId: string,
+  expectedState: string,
+  repoPath: string | undefined,
+): Promise<GuardedAdvanceResult> {
+  try {
+    await nextBeat(beatId, expectedState, repoPath);
+    return { ok: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      ok: false,
+      error: message,
+      expectedStateMismatch: isExpectedStateMismatchError(message),
+    };
+  }
+}
+
+async function advanceGuarded(
+  beatId: string,
+  expectedState: string,
+  repoPath: string | undefined,
+  memoryManagerType: MemoryManagerType,
+): Promise<GuardedAdvanceResult> {
+  if (memoryManagerType === "knots") {
+    return nextKnotGuarded(beatId, expectedState, repoPath);
+  }
+  return nextBeatGuarded(beatId, expectedState, repoPath);
+}
+
 async function advanceAgentOwnedActionStateToQueue(
   beat: Beat,
   repoPath: string | undefined,
+  memoryManagerType: MemoryManagerType,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
   fallbackWorkflow: MemoryWorkflowDescriptor,
   contextLabel: string,
@@ -308,7 +347,7 @@ async function advanceAgentOwnedActionStateToQueue(
   const tag = `[terminal-manager] [${contextLabel}] [action-heal]`;
   console.log(`${tag} advancing ${beat.id} from action state=${beat.state}`);
 
-  const nextResult = await nextKnotGuarded(beat.id, beat.state, repoPath);
+  const nextResult = await advanceGuarded(beat.id, beat.state, repoPath, memoryManagerType);
   if (!nextResult.ok && !nextResult.expectedStateMismatch) {
     console.warn(`${tag} failed to advance ${beat.id}: ${nextResult.error}`);
     return beat;
@@ -556,25 +595,29 @@ export async function createSession(
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
-  if (memoryManagerType === "knots") {
-    const targets = isParent ? waveBeats : [beat];
-    const healedTargets = await Promise.all(
-      targets.map((target) =>
-        advanceAgentOwnedActionStateToQueue(
-          target,
-          repoPath,
-          workflowsById,
-          fallbackWorkflow,
-          beatId,
-        )
-      ),
-    );
-    if (isParent) {
-      waveBeats = healedTargets.filter((child) => !isTerminalBeatState(child.state));
-      waveBeatIds = waveBeats.map((child) => child.id);
+  const queueTerminalInvariantInstruction = buildQueueTerminalInvariantInstruction(memoryManagerType);
+  const targets = isParent ? waveBeats : [beat];
+  const healedTargets = await Promise.all(
+    targets.map((target) =>
+      advanceAgentOwnedActionStateToQueue(
+        target,
+        repoPath,
+        memoryManagerType,
+        workflowsById,
+        fallbackWorkflow,
+        beatId,
+      )
+    ),
+  );
+  if (isParent) {
+    waveBeats = healedTargets.filter((child) => !isTerminalBeatState(child.state));
+    waveBeatIds = waveBeats.map((child) => child.id);
+    if (memoryManagerType === "knots") {
       assertKnotsClaimable(waveBeats, "Scene");
-    } else {
-      beat = healedTargets[0] ?? beat;
+    }
+  } else {
+    beat = healedTargets[0] ?? beat;
+    if (memoryManagerType === "knots") {
       assertKnotsClaimable([beat], "Take");
     }
   }
@@ -618,7 +661,7 @@ export async function createSession(
       ? [
           `You are executing a parent beat and its children. Implement the children beats and use the parent beat's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
           ``,
-          QUEUE_TERMINAL_INVARIANT_INSTRUCTION,
+          queueTerminalInvariantInstruction,
           ``,
           `IMPORTANT INSTRUCTIONS:`,
           `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
@@ -634,7 +677,7 @@ export async function createSession(
       : [
           `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
           ``,
-          QUEUE_TERMINAL_INVARIANT_INSTRUCTION,
+          queueTerminalInvariantInstruction,
           ``,
           `IMPORTANT INSTRUCTIONS:`,
           `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
@@ -731,15 +774,15 @@ export async function createSession(
   }
   const normalizeEvent = createLineNormalizer(dialect);
 
-  // ── Take loop infrastructure (knots single-beat only) ─────────
-  const isTakeLoop = memoryManagerType === "knots" && !isParent && !customPrompt;
+  // ── Take loop infrastructure (single-beat only) ─────────
+  const isTakeLoop = !isParent && !customPrompt;
   let takeIteration = 1;
 
   const wrapSingleBeatPrompt = (taskPrompt: string): string => {
     return [
       `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
       ``,
-      QUEUE_TERMINAL_INVARIANT_INSTRUCTION,
+      queueTerminalInvariantInstruction,
       ``,
       `IMPORTANT INSTRUCTIONS:`,
       `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
@@ -792,7 +835,7 @@ export async function createSession(
     let stepOwner = resolved ? workflow.owners?.[resolved.step] ?? "agent" : "none";
     if (resolved?.phase === StepPhase.Active && stepOwner === "agent") {
       console.log(`${tag} auto-advancing ${beatId} from active state=${current.state}`);
-      const nextResult = await nextKnotGuarded(beatId, current.state, repoPath);
+      const nextResult = await advanceGuarded(beatId, current.state, repoPath, memoryManagerType);
       if (!nextResult.ok && !nextResult.expectedStateMismatch) {
         console.log(`${tag} STOP: auto-advance failed for ${beatId}: ${nextResult.error}`);
         pushEvent({
@@ -933,18 +976,18 @@ export async function createSession(
       timestamp: Date.now(),
     });
 
-    // Layer 3: advance to the next queue/terminal state via kno next
-    console.warn(`${tag} [WARN] advancing via nextKnot from action state: ${current.state}`);
-    const nextResult = await nextKnotGuarded(beatId, current.state, repoPath);
+    // Layer 3: advance to the next queue/terminal state via memory-manager transition.
+    console.warn(`${tag} [WARN] advancing from action state via manager=${memoryManagerType}: ${current.state}`);
+    const nextResult = await advanceGuarded(beatId, current.state, repoPath, memoryManagerType);
     if (nextResult.ok) {
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Invariant fix: advanced ${beatId} from action state "${current.state}" via kno next ---\x1b[0m\n`,
+        data: `\x1b[33m--- Invariant fix: advanced ${beatId} from action state "${current.state}" ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
-      console.warn(`${tag} [WARN] nextKnot succeeded for ${beatId}`);
+      console.warn(`${tag} [WARN] advance succeeded for ${beatId}`);
     } else if (nextResult.expectedStateMismatch) {
-      console.warn(`${tag} [WARN] nextKnot skipped due stale expected state: ${nextResult.error}`);
+      console.warn(`${tag} [WARN] advance skipped due stale expected state: ${nextResult.error}`);
       const refreshed = await getBackend().get(beatId, repoPath);
       if (refreshed.ok && refreshed.data) {
         const refreshedWorkflow = resolveWorkflowForBeat(refreshed.data, workflowsById, fallbackWorkflow);
@@ -954,7 +997,7 @@ export async function createSession(
         }
       }
     } else {
-      console.error(`${tag} nextKnot failed: ${nextResult.error}`);
+      console.error(`${tag} advance failed: ${nextResult.error}`);
       pushEvent({
         type: "stderr",
         data: `Invariant enforcement: failed to advance ${beatId} from ${current.state}: ${nextResult.error}\n`,
@@ -1519,7 +1562,7 @@ export async function createSession(
     child.stderr?.removeAllListeners();
     entry.process = null;
 
-    // Take loop: check if knots-backed session should continue claiming the same beat
+    // Take loop: check if this session should continue claiming the same beat
     if (isTakeLoop && code !== 0) {
       console.log(`${tag} STOP: initial child exited with non-zero code=${code}`);
       enforceQueueTerminalInvariant().finally(() => {
