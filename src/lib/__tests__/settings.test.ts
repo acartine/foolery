@@ -220,6 +220,46 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(result.changed).toBe(false);
     expect(mockWriteFile).not.toHaveBeenCalled();
   });
+
+  it("writes migrated openrouter.agents when only schema normalization changes", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        'dispatchMode = "actions"',
+        '[actions]',
+        'take = ""',
+        'scene = ""',
+        'breakdown = ""',
+        '[verification]',
+        'enabled = false',
+        'agent = ""',
+        'maxRetries = 3',
+        '[backend]',
+        'type = "auto"',
+        '[defaults]',
+        'profileId = ""',
+        '[openrouter]',
+        'apiKey = ""',
+        'enabled = true',
+        'model = "anthropic/claude-sonnet-4"',
+        '[pools]',
+        'planning = []',
+        'plan_review = []',
+        'implementation = []',
+        'implementation_review = []',
+        'shipment = []',
+        'shipment_review = []',
+      ].join("\n"),
+    );
+
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.missingPaths).toEqual([]);
+    expect(result.changed).toBe(true);
+    expect(mockWriteFile).toHaveBeenCalledTimes(1);
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain("[openrouter.agents.default]");
+    expect(written).toContain('model = "anthropic/claude-sonnet-4"');
+    expect(written).toContain('label = "OpenRouter (anthropic/claude-sonnet-4)"');
+  });
 });
 
 describe("saveSettings", () => {

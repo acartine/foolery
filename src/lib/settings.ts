@@ -1,7 +1,7 @@
 import { parse, stringify } from "smol-toml";
 import { readFile, writeFile, mkdir, chmod } from "node:fs/promises";
 import { exec } from "node:child_process";
-import { promisify } from "node:util";
+import { isDeepStrictEqual, promisify } from "node:util";
 
 const execAsync = promisify(exec);
 import { join } from "node:path";
@@ -40,6 +40,7 @@ interface SettingsDefaultsComputation {
   settings: FoolerySettings;
   merged: Record<string, unknown>;
   missingPaths: string[];
+  normalizationChanged: boolean;
   fileMissing: boolean;
   error?: string;
 }
@@ -142,6 +143,7 @@ async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputat
       settings: DEFAULT_SETTINGS,
       merged: DEFAULT_SETTINGS as unknown as Record<string, unknown>,
       missingPaths: [],
+      normalizationChanged: false,
       fileMissing: raw.fileMissing,
       error: raw.error,
     };
@@ -159,6 +161,7 @@ async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputat
       settings,
       merged: normalized,
       missingPaths,
+      normalizationChanged: !isDeepStrictEqual(normalized, merged),
       fileMissing: raw.fileMissing,
     };
   } catch (error) {
@@ -166,6 +169,7 @@ async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputat
       settings: DEFAULT_SETTINGS,
       merged: DEFAULT_SETTINGS as unknown as Record<string, unknown>,
       missingPaths: [],
+      normalizationChanged: false,
       fileMissing: raw.fileMissing,
       error: formatError(error),
     };
@@ -191,7 +195,10 @@ export async function backfillMissingSettingsDefaults(): Promise<SettingsDefault
   const result = await computeSettingsDefaultsStatus();
   let changed = false;
 
-  if (!result.error && (result.fileMissing || result.missingPaths.length > 0)) {
+  if (
+    !result.error &&
+    (result.fileMissing || result.missingPaths.length > 0 || result.normalizationChanged)
+  ) {
     await mkdir(CONFIG_DIR, { recursive: true });
     await writeFile(SETTINGS_FILE, stringify(result.merged), "utf-8");
     await chmod(SETTINGS_FILE, 0o600);
