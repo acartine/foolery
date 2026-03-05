@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
+import { useUpdateUrl } from "@/hooks/use-update-url";
 import { useVerificationCount } from "@/hooks/use-verification-count";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import {
@@ -70,6 +71,7 @@ export function AppHeader() {
   const [versionBannerDismissed, setVersionBannerDismissed] = useState(false);
   const { activeRepo, registeredRepos } = useAppStore();
   const toggleTerminalPanel = useTerminalStore((s) => s.togglePanel);
+  const updateUrl = useUpdateUrl();
   const isFinalCutActive = beatsView === "finalcut";
   const verificationCount = useVerificationCount(isBeatsRoute, isFinalCutActive);
   const activeBeatId = searchParams.get("beat");
@@ -242,6 +244,32 @@ export function AppHeader() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isBeatsRoute]);
+
+  // Shift+R cycles repos forward; Cmd/Ctrl+Shift+R cycles backward (all Beats screens).
+  useEffect(() => {
+    if (!isBeatsRoute) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "R" || !e.shiftKey) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === "TEXTAREA" || target.tagName === "INPUT" || target.tagName === "SELECT") return;
+      const repos = registeredRepos.map((r) => r.path);
+      if (repos.length === 0) return;
+      e.preventDefault();
+      const currentIdx = activeRepo ? repos.indexOf(activeRepo) : -1;
+      if (e.metaKey || e.ctrlKey) {
+        // Reverse: wrap from first to last
+        const prevIdx = currentIdx <= 0 ? repos.length - 1 : currentIdx - 1;
+        updateUrl({ repo: repos[prevIdx] });
+      } else {
+        // Forward: wrap from last to first
+        const nextIdx = currentIdx >= repos.length - 1 ? 0 : currentIdx + 1;
+        updateUrl({ repo: repos[nextIdx] });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isBeatsRoute, activeRepo, registeredRepos, updateUrl]);
 
   // Button config changes per view: hidden on History, "Wrap!" on Final Cut, "Add" on Beats
   const showActionButton = beatsView === "queues" || beatsView === "active" || beatsView === "finalcut";
