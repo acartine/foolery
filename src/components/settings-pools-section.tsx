@@ -21,6 +21,7 @@ import {
   resolveOpenRouterPricing,
   openrouterAgentId,
   formatOpenRouterAgentLabel,
+  listUniqueOpenRouterAgentKeys,
 } from "@/lib/openrouter";
 import type { OpenRouterModel } from "@/lib/openrouter";
 import type { RegisteredAgent } from "@/lib/types";
@@ -104,8 +105,9 @@ export function SettingsPoolsSection({
   };
   if (openrouter.enabled) {
     const fallbackCommand = Object.values(agents)[0]?.command ?? "claude";
-    for (const [key, entry] of Object.entries(openrouter.agents)) {
-      if (!entry.model?.trim()) continue;
+    for (const key of listUniqueOpenRouterAgentKeys(openrouter.agents)) {
+      const entry = openrouter.agents[key];
+      if (!entry) continue;
       const id = openrouterAgentId(key);
       selectableAgents[id] = {
         command: fallbackCommand,

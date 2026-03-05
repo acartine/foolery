@@ -8,6 +8,7 @@ import {
   validateOpenRouterApiKey,
   findOpenRouterModel,
   getSelectedOpenRouterModel,
+  listUniqueOpenRouterAgentKeys,
   resolveOpenRouterPricing,
 } from "../openrouter";
 
@@ -153,6 +154,25 @@ describe("openrouter", () => {
     it("returns null when model reference is unknown", () => {
       const pricing = resolveOpenRouterPricing(models, "unknown");
       expect(pricing).toBeNull();
+    });
+  });
+
+  describe("listUniqueOpenRouterAgentKeys", () => {
+    it("deduplicates entries by normalized model id while keeping first key", () => {
+      const keys = listUniqueOpenRouterAgentKeys({
+        default: { model: "mistralai/devstral-small:free", label: "OpenRouter (devstral)" },
+        devmistral: { model: " MISTRALAI/DEVSTRAL-SMALL:FREE ", label: "Devmistral" },
+        gpt4o: { model: "openai/gpt-4o", label: "GPT-4o" },
+      });
+      expect(keys).toEqual(["default", "gpt4o"]);
+    });
+
+    it("skips blank model entries", () => {
+      const keys = listUniqueOpenRouterAgentKeys({
+        blank: { model: "   ", label: "Blank" },
+        devstral: { model: "mistralai/devstral-small:free", label: "Devstral" },
+      });
+      expect(keys).toEqual(["devstral"]);
     });
   });
 

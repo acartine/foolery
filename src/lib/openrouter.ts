@@ -224,6 +224,31 @@ export function formatOpenRouterAgentLabel(
   return `OpenRouter (${modelId || agentKey})`;
 }
 
+interface OpenRouterAgentLike {
+  model?: string;
+  label?: string;
+}
+
+/**
+ * Return OpenRouter agent keys deduplicated by normalized model id.
+ * Keeps the first key seen for each model and ignores empty model values.
+ */
+export function listUniqueOpenRouterAgentKeys(
+  agents: Record<string, OpenRouterAgentLike>,
+): string[] {
+  const keys: string[] = [];
+  const seenModels = new Set<string>();
+  for (const [key, entry] of Object.entries(agents)) {
+    const model = entry.model?.trim();
+    if (!model) continue;
+    const normalizedModel = normalizeModelRef(model);
+    if (seenModels.has(normalizedModel)) continue;
+    seenModels.add(normalizedModel);
+    keys.push(key);
+  }
+  return keys;
+}
+
 /** Resolve and format prompt/completion pricing for a model reference. */
 export function resolveOpenRouterPricing(
   models: OpenRouterModel[] | null | undefined,

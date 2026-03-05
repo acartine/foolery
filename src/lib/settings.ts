@@ -22,6 +22,7 @@ import {
   isOpenRouterAgentId,
   openrouterAgentKey,
   formatOpenRouterAgentLabel,
+  listUniqueOpenRouterAgentKeys,
 } from "@/lib/openrouter";
 import type {
   RegisteredAgent,
@@ -347,8 +348,9 @@ export function resolveOpenRouterAgents(
 ): Record<string, RegisteredAgentConfig> {
   if (!settings.openrouter.enabled) return {};
   const result: Record<string, RegisteredAgentConfig> = {};
-  for (const [key, entry] of Object.entries(settings.openrouter.agents)) {
-    if (!entry.model?.trim()) continue;
+  for (const key of listUniqueOpenRouterAgentKeys(settings.openrouter.agents)) {
+    const entry = settings.openrouter.agents[key];
+    if (!entry) continue;
     const id = openrouterAgentId(key);
     result[id] = {
       command: OPENROUTER_AGENT_COMMAND,

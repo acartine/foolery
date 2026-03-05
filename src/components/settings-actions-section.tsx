@@ -23,6 +23,7 @@ import {
   getSelectedOpenRouterModel,
   openrouterAgentId,
   formatOpenRouterAgentLabel,
+  listUniqueOpenRouterAgentKeys,
 } from "@/lib/openrouter";
 import type { LucideIcon } from "lucide-react";
 
@@ -71,7 +72,7 @@ export function SettingsActionsSection({
 }: ActionsSectionProps) {
   // Build OpenRouter virtual agent IDs from all configured agents
   const orAgentIds: string[] = openrouter.enabled
-    ? Object.keys(openrouter.agents).map((key) => openrouterAgentId(key))
+    ? listUniqueOpenRouterAgentKeys(openrouter.agents).map((key) => openrouterAgentId(key))
     : [];
 
   // Legacy support: keep OPENROUTER_SELECTED_AGENT_ID only while an action still references it.
