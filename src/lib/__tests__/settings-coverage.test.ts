@@ -3,12 +3,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockReadFile = vi.fn();
 const mockWriteFile = vi.fn();
 const mockMkdir = vi.fn();
+const mockReaddir = vi.fn();
+const mockAccess = vi.fn();
 const mockExecAsync = vi.fn();
 
 vi.mock("node:fs/promises", () => ({
   readFile: (...args: unknown[]) => mockReadFile(...args),
   writeFile: (...args: unknown[]) => mockWriteFile(...args),
   mkdir: (...args: unknown[]) => mockMkdir(...args),
+  readdir: (...args: unknown[]) => mockReaddir(...args),
+  access: (...args: unknown[]) => mockAccess(...args),
 }));
 
 vi.mock("node:child_process", () => ({
@@ -35,6 +39,8 @@ beforeEach(() => {
   _resetCache();
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
+  mockReaddir.mockResolvedValue([]);
+  mockAccess.mockRejectedValue(new Error("not executable"));
 });
 
 describe("getBackendType (line 311-315)", () => {

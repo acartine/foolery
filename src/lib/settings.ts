@@ -1,10 +1,18 @@
 import { parse, stringify } from "smol-toml";
-import { readFile, writeFile, mkdir, chmod } from "node:fs/promises";
+import {
+  readFile,
+  writeFile,
+  mkdir,
+  chmod,
+  access,
+  readdir,
+} from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import { exec } from "node:child_process";
 import { isDeepStrictEqual, promisify } from "node:util";
 
 const execAsync = promisify(exec);
-import { join } from "node:path";
+import { delimiter as pathDelimiter, join } from "node:path";
 import { homedir } from "node:os";
 import {
   foolerySettingsSchema,
@@ -480,18 +488,133 @@ export async function removeRegisteredAgent(
   return validated;
 }
 
-const SCANNABLE_AGENTS = ["claude", "codex", "chatgpt", "gemini", "openrouter-agent"] as const;
+interface ScannableAgent {
+  id: string;
+  command: string;
+  allowVersionedCommands?: boolean;
+}
+
+const SCANNABLE_AGENTS: readonly ScannableAgent[] = [
+  { id: "claude", command: "claude" },
+  { id: "codex", command: "codex" },
+  // ChatGPT CLI has version-suffixed variants (for example "chatgpt-5.1").
+  { id: "chatgpt", command: "chatgpt", allowVersionedCommands: true },
+  { id: "gemini", command: "gemini" },
+  { id: "openrouter-agent", command: "openrouter-agent" },
+] as const;
+
+function isVersionedCommandName(command: string, baseCommand: string): boolean {
+  if (!command.startsWith(baseCommand) || command === baseCommand) {
+    return false;
+  }
+  const suffix = command.slice(baseCommand.length);
+  if (suffix.startsWith("-")) {
+    return /^-\d+(?:\.\d+)*$/.test(suffix);
+  }
+  return /^\d+(?:\.\d+)*$/.test(suffix);
+}
+
+function parseVersionSegments(
+  command: string,
+  baseCommand: string,
+): number[] | null {
+  const suffix = command.slice(baseCommand.length);
+  const normalized = suffix.startsWith("-") ? suffix.slice(1) : suffix;
+  if (!/^\d+(?:\.\d+)*$/.test(normalized)) return null;
+  return normalized.split(".").map((segment) => Number(segment));
+}
+
+function compareVersionSegmentsDesc(left: number[], right: number[]): number {
+  const maxLength = Math.max(left.length, right.length);
+  for (let index = 0; index < maxLength; index += 1) {
+    const leftSegment = left[index] ?? 0;
+    const rightSegment = right[index] ?? 0;
+    if (leftSegment !== rightSegment) {
+      return rightSegment - leftSegment;
+    }
+  }
+  return 0;
+}
+
+async function findVersionedExecutable(
+  baseCommand: string,
+): Promise<{ command: string; path: string } | null> {
+  const currentPath = process.env.PATH;
+  if (!currentPath) return null;
+
+  const candidates: { command: string; path: string }[] = [];
+  const directories = currentPath.split(pathDelimiter).filter(Boolean);
+  for (const directory of directories) {
+    let entries: string[];
+    try {
+      entries = await readdir(directory);
+    } catch {
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (!isVersionedCommandName(entry, baseCommand)) continue;
+      const fullPath = join(directory, entry);
+      try {
+        await access(fullPath, fsConstants.X_OK);
+      } catch {
+        continue;
+      }
+      candidates.push({ command: entry, path: fullPath });
+    }
+  }
+
+  if (candidates.length === 0) return null;
+
+  candidates.sort((left, right) => {
+    const leftVersion = parseVersionSegments(left.command, baseCommand);
+    const rightVersion = parseVersionSegments(right.command, baseCommand);
+    if (leftVersion && rightVersion) {
+      const compared = compareVersionSegmentsDesc(leftVersion, rightVersion);
+      if (compared !== 0) return compared;
+    }
+    return right.command.localeCompare(left.command);
+  });
+
+  return candidates[0];
+}
+
+async function resolveInstalledAgentCommand(
+  agent: ScannableAgent,
+): Promise<{ command: string; path: string } | null> {
+  try {
+    const { stdout } = await execAsync(`which ${agent.command}`);
+    const installedPath = stdout.trim();
+    if (installedPath) {
+      return { command: agent.command, path: installedPath };
+    }
+  } catch {
+    // fall through to versioned scan
+  }
+
+  if (!agent.allowVersionedCommands) return null;
+  return findVersionedExecutable(agent.command);
+}
 
 /** Scans PATH for known agent CLIs and returns what was found. */
 export async function scanForAgents(): Promise<ScannedAgent[]> {
   const results = await Promise.all(
-    SCANNABLE_AGENTS.map(async (name): Promise<ScannedAgent> => {
-      try {
-        const { stdout } = await execAsync(`which ${name}`);
-        return { id: name, command: name, path: stdout.trim(), installed: true };
-      } catch {
-        return { id: name, command: name, path: "", installed: false };
+    SCANNABLE_AGENTS.map(async (agent): Promise<ScannedAgent> => {
+      const installed = await resolveInstalledAgentCommand(agent);
+      if (installed) {
+        return {
+          id: agent.id,
+          command: installed.command,
+          path: installed.path,
+          installed: true,
+        };
       }
+      return {
+        id: agent.id,
+        command: agent.command,
+        path: "",
+        installed: false,
+      };
     }),
   );
   return results;
