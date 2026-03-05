@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { buildBeatFocusHref, extractBeatPrefix } from "@/lib/beat-navigation";
+import { buildBeatFocusHref, findRepoForBeatId } from "@/lib/beat-navigation";
 import { markAllNotificationsReadAndClose } from "@/components/notification-bell-actions";
 import {
   useNotificationStore,
@@ -28,14 +28,15 @@ export function NotificationBell() {
   const registeredRepos = useAppStore((s) => s.registeredRepos);
   const setActiveRepo = useAppStore((s) => s.setActiveRepo);
   const focusBeat = (beatId: string) => {
-    const prefix = extractBeatPrefix(beatId);
-    if (prefix) {
-      const repo = registeredRepos.find((r) => r.name === prefix);
-      if (repo) {
-        setActiveRepo(repo.path);
-      }
-    }
-    router.push(buildBeatFocusHref(beatId, searchParams.toString()));
+    const repo = findRepoForBeatId(beatId, registeredRepos);
+    if (repo) setActiveRepo(repo.path);
+    router.push(
+      buildBeatFocusHref(
+        beatId,
+        searchParams.toString(),
+        repo ? { repo: repo.path, detailRepo: repo.path } : undefined,
+      ),
+    );
   };
 
   return (

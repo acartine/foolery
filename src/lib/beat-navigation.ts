@@ -11,8 +11,32 @@ export function extractBeatPrefix(beatId: string): string | null {
   return match ? match[1] : null;
 }
 
+interface RepoMatch {
+  name: string;
+  path: string;
+}
+
+/**
+ * Resolve which registered repo owns a beat ID by matching `<repo-name>-` prefix.
+ * Uses the longest matching repo name so hyphenated repo names are handled correctly.
+ */
+export function findRepoForBeatId<T extends RepoMatch>(
+  beatId: string,
+  repos: readonly T[],
+): T | null {
+  let match: T | null = null;
+  for (const repo of repos) {
+    if (!beatId.startsWith(`${repo.name}-`)) continue;
+    if (!match || repo.name.length > match.name.length) {
+      match = repo;
+    }
+  }
+  return match;
+}
+
 interface BuildBeatFocusHrefOptions {
   detailRepo?: string | null;
+  repo?: string | null;
 }
 
 /**
@@ -25,9 +49,14 @@ export function buildBeatFocusHref(
   options?: BuildBeatFocusHrefOptions,
 ): string {
   const params = new URLSearchParams(currentSearch);
+  if (options && "repo" in options) {
+    if (options.repo) params.set("repo", options.repo);
+    else params.delete("repo");
+  }
   params.set("beat", beatId);
-  if (options?.detailRepo) {
-    params.set("detailRepo", options.detailRepo);
+  if (options && "detailRepo" in options) {
+    if (options.detailRepo) params.set("detailRepo", options.detailRepo);
+    else params.delete("detailRepo");
   }
   const qs = params.toString();
   return `/beats${qs ? `?${qs}` : ""}`;
