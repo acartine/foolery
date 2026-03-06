@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1cb-0139-7e83-bf37-43928b93a2ef",
+  "occurred_at": "2026-03-06T06:17:12.761312Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed the extra inner box from the Repositories settings section, added a dispatch icon/title row so Agent Dispatch matches the other sections, and replaced the gradient Save button with a flatter solid primary treatment. Verified with bun run lint (warnings only, 0 errors), bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build. Pushed directly to origin/main as 13aa7e0.",
+    "datetime": "2026-03-06T06:17:12.761312Z",
+    "entry_id": "019cc1cb-0139-7e83-bf37-438127d866f3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
