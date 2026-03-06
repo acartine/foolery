@@ -16,7 +16,6 @@ import { swapActionsAgent, swapPoolsAgent } from "@/lib/agent-pool";
 import { patchSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type { ActionAgentMappings, PoolsSettings } from "@/lib/schemas";
-import { WorkflowStep } from "@/lib/workflows";
 
 interface DispatchGlobalSwapAgentProps {
   actions: ActionAgentMappings;
@@ -26,8 +25,6 @@ interface DispatchGlobalSwapAgentProps {
   onPoolsChange: (pools: PoolsSettings) => void;
   disabled?: boolean;
 }
-
-const ALL_STEPS = Object.values(WorkflowStep);
 
 function formatAgentLabel(
   agentId: string,
@@ -51,8 +48,8 @@ export function SettingsDispatchGlobalSwap({
   const usedAgentIds = [
     ...new Set([
       ...Object.values(actions).filter((agentId) => agentId.length > 0),
-      ...ALL_STEPS.flatMap((step) =>
-        (pools[step] ?? []).map((entry) => entry.agentId),
+      ...Object.values(pools).flatMap((entries) =>
+        entries.map((entry) => entry.agentId),
       ),
     ]),
   ];
@@ -77,12 +74,7 @@ export function SettingsDispatchGlobalSwap({
     if (swapFromAgentId === swapToAgentId) return;
 
     const actionSwap = swapActionsAgent(actions, swapFromAgentId, swapToAgentId);
-    const poolSwap = swapPoolsAgent(
-      pools,
-      swapFromAgentId,
-      swapToAgentId,
-      ALL_STEPS,
-    );
+    const poolSwap = swapPoolsAgent(pools, swapFromAgentId, swapToAgentId);
     if (actionSwap.affectedActions === 0 && poolSwap.affectedSteps === 0) {
       toast.error("Agent not found in dispatch settings");
       return;

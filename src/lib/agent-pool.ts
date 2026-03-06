@@ -184,7 +184,6 @@ export function swapPoolsAgent(
   pools: PoolsSettings,
   fromAgentId: string,
   toAgentId: string,
-  steps: readonly WorkflowStep[] = DEFAULT_POOL_STEPS,
 ): SwapPoolsAgentResult {
   if (!fromAgentId || !toAgentId || fromAgentId === toAgentId) {
     return { affectedSteps: 0, updates: {}, updatedPools: pools };
@@ -192,7 +191,7 @@ export function swapPoolsAgent(
 
   const updates: Partial<PoolsSettings> = {};
   let affectedSteps = 0;
-  for (const step of steps) {
+  for (const step of DEFAULT_POOL_STEPS) {
     const stepEntries = pools[step];
     const swappedEntries = swapPoolAgent(stepEntries, fromAgentId, toAgentId);
     if (swappedEntries !== stepEntries) {
