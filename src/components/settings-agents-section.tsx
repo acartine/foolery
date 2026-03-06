@@ -21,8 +21,8 @@ import {
   formatOpenRouterAgentLabel,
 } from "@/lib/openrouter";
 import {
+  formatAgentDisplayLabel,
   formatAgentOptionLabel,
-  formatModelDisplay,
 } from "@/lib/agent-identity";
 import {
   addAgent,
@@ -119,7 +119,8 @@ export function SettingsAgentsSection({
     const res = await addAgent(selected.id, {
       command: scanned.path,
       provider: selected.provider,
-      model: selected.model,
+      model: selected.modelId ?? selected.model,
+      flavor: selected.flavor,
       version: selected.version,
       label: formatAgentOptionLabel(selected),
     });
@@ -147,7 +148,8 @@ export function SettingsAgentsSection({
       const res = await addAgent(selected.id, {
         command: agent.path,
         provider: selected.provider,
-        model: selected.model,
+        model: selected.modelId ?? selected.model,
+        flavor: selected.flavor,
         version: selected.version,
         label: formatAgentOptionLabel(selected),
       });
@@ -441,12 +443,6 @@ function ScannedAgentRow({
             {selectedOption.label}
           </Badge>
         ) : null}
-        {selectedOption?.model ? (
-          <Badge variant="outline" className="text-[10px]">
-            {formatModelDisplay(selectedOption.model)}
-            {selectedOption.version ? ` ${selectedOption.version}` : ""}
-          </Badge>
-        ) : null}
       </div>
     </div>
   );
@@ -560,17 +556,8 @@ function AgentRow({
     <div className="flex items-center justify-between rounded-xl border border-primary/15 bg-background/60 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-xs font-medium truncate">
-          {agent.label ?? id}
+          {formatAgentDisplayLabel(agent, { includeSource: true }) || agent.label || id}
         </span>
-        <Badge variant="outline" className="text-[10px] shrink-0">
-          {agent.command}
-        </Badge>
-        {agent.model && (
-          <Badge variant="secondary" className="text-[10px] shrink-0">
-            {formatModelDisplay(agent.model)}
-            {agent.version ? ` ${agent.version}` : ""}
-          </Badge>
-        )}
       </div>
       <div className="flex items-center gap-1 shrink-0">
         <Button variant="ghost" size="sm" className="hover:bg-primary/10" onClick={onEdit}>
