@@ -38,7 +38,7 @@ import {
   scanAgents,
   saveActions,
 } from "@/lib/settings-api";
-import { stripCommonModelLabelPrefix } from "@/lib/model-labels";
+import { buildModelLabelDisplayMap } from "@/lib/model-labels";
 import type { ActionAgentMappings } from "@/lib/schemas";
 
 function resolveSelectedOption(
@@ -344,19 +344,16 @@ const SEARCHABLE_THRESHOLD = 10;
 
 function SearchableOptionCombobox({
   options,
+  displayMap,
   value,
   onValueChange,
 }: {
   options: ScannedAgentOption[];
+  displayMap: Map<string, string>;
   value: string;
   onValueChange: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-
-  // Strip common prefixes for shorter display labels
-  const rawLabels = options.map((o) => o.label);
-  const { stripped } = stripCommonModelLabelPrefix(rawLabels);
-  const displayMap = new Map(options.map((o, i) => [o.id, stripped[i]]));
 
   const selectedDisplay = value ? (displayMap.get(value) ?? value) : "select model/version";
 
@@ -384,7 +381,16 @@ function SearchableOptionCombobox({
                 return (
                   <CommandItem
                     key={option.id}
-                    value={option.label}
+                    value={option.id}
+                    keywords={[
+                      option.label,
+                      display !== option.label ? display : undefined,
+                      option.provider,
+                      option.model,
+                      option.modelId,
+                      option.flavor,
+                      option.version,
+                    ].filter((term): term is string => Boolean(term))}
                     onSelect={() => {
                       onValueChange(option.id);
                       setOpen(false);
@@ -421,6 +427,7 @@ function ScannedAgentRow({
 }) {
   const options = agent.options ?? [];
   const useSearchable = options.length >= SEARCHABLE_THRESHOLD;
+  const displayMap = buildModelLabelDisplayMap(options);
 
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-xs">
@@ -459,6 +466,7 @@ function ScannedAgentRow({
           useSearchable ? (
             <SearchableOptionCombobox
               options={options}
+              displayMap={displayMap}
               value={selectedOption?.id ?? ""}
               onValueChange={onSelectOption}
             />
@@ -473,7 +481,7 @@ function ScannedAgentRow({
               <SelectContent>
                 {options.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
-                    {option.label}
+                    {displayMap.get(option.id) ?? option.label}
                   </SelectItem>
                 ))}
               </SelectContent>

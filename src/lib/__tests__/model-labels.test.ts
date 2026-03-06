@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { stripCommonModelLabelPrefix } from "@/lib/model-labels";
+import {
+  buildModelLabelDisplayMap,
+  stripCommonModelLabelPrefix,
+} from "@/lib/model-labels";
 
 describe("stripCommonModelLabelPrefix", () => {
   it("strips a shared slash-delimited provider prefix", () => {
@@ -50,5 +53,44 @@ describe("stripCommonModelLabelPrefix", () => {
       "openrouter/anthropic/",
       "openrouter/anthropic/",
     ]);
+  });
+});
+
+describe("buildModelLabelDisplayMap", () => {
+  it("uses stripped labels when they remain unique", () => {
+    const displayMap = buildModelLabelDisplayMap([
+      {
+        id: "a",
+        label: "openrouter/anthropic/claude-sonnet-4-5",
+      },
+      {
+        id: "b",
+        label: "openrouter/google/gemini-2.5-pro",
+      },
+    ]);
+
+    expect(displayMap.get("a")).toBe("anthropic/claude-sonnet-4-5");
+    expect(displayMap.get("b")).toBe("google/gemini-2.5-pro");
+  });
+
+  it("falls back to full labels when stripped labels collide", () => {
+    const displayMap = buildModelLabelDisplayMap([
+      {
+        id: "a",
+        label: "provider/model-a",
+      },
+      {
+        id: "b",
+        label: "provider/model-a",
+      },
+      {
+        id: "c",
+        label: "provider/model-b",
+      },
+    ]);
+
+    expect(displayMap.get("a")).toBe("provider/model-a");
+    expect(displayMap.get("b")).toBe("provider/model-a");
+    expect(displayMap.get("c")).toBe("model-b");
   });
 });
