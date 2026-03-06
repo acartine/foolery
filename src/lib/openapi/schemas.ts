@@ -335,6 +335,18 @@ export const componentSchemas = {
     },
   },
 
+  ScannedAgentOption: {
+    type: "object",
+    required: ["id", "label"],
+    properties: {
+      id: { type: "string" },
+      label: { type: "string" },
+      provider: { type: "string" },
+      model: { type: "string" },
+      version: { type: "string" },
+    },
+  },
+
   ScannedAgent: {
     type: "object",
     required: ["id", "command", "path", "installed"],
@@ -343,6 +355,14 @@ export const componentSchemas = {
       command: { type: "string" },
       path: { type: "string" },
       installed: { type: "boolean" },
+      provider: { type: "string" },
+      model: { type: "string" },
+      version: { type: "string" },
+      options: {
+        type: "array",
+        items: { $ref: "#/components/schemas/ScannedAgentOption" },
+      },
+      selectedOptionId: { type: "string" },
     },
   },
 

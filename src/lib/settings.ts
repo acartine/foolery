@@ -4,6 +4,8 @@ import {
   writeFile,
   mkdir,
   chmod,
+  readdir,
+  stat,
 } from "node:fs/promises";
 import { exec } from "node:child_process";
 import { isDeepStrictEqual, promisify } from "node:util";
@@ -39,6 +41,7 @@ import { type WorkflowStep, isReviewStep, priorActionStep } from "@/lib/workflow
 import { resolvePoolAgent, getLastStepAgent, recordStepAgent } from "@/lib/agent-pool";
 import {
   agentDisplayName,
+  buildAgentImportOptions,
   normalizeAgentIdentity,
   providerLabel,
 } from "@/lib/agent-identity";
@@ -50,6 +53,8 @@ const KEYCHAIN_SENTINEL = "**keychain**";
 const DEFAULT_SETTINGS: FoolerySettings = foolerySettingsSchema.parse({});
 const CODEX_CONFIG_FILE = join(homedir(), ".codex", "config.toml");
 const CLAUDE_SETTINGS_FILE = join(homedir(), ".claude", "settings.json");
+const GEMINI_SETTINGS_FILE = join(homedir(), ".gemini", "settings.json");
+const GEMINI_TMP_ROOT = join(homedir(), ".gemini", "tmp");
 
 let cached: { value: FoolerySettings; loadedAt: number } | null = null;
 
@@ -590,6 +595,49 @@ async function readClaudeConfiguredModel(): Promise<string | undefined> {
   }
 }
 
+async function readGeminiConfiguredModel(): Promise<string | undefined> {
+  try {
+    const raw = await readFile(GEMINI_SETTINGS_FILE, "utf-8");
+    const parsed = JSON.parse(raw) as unknown;
+    const direct = findStringField(parsed, new Set(["model", "defaultModel", "selectedModel"]));
+    if (direct) return direct;
+  } catch {
+    // ignore
+  }
+
+  try {
+    const roots = await readdir(GEMINI_TMP_ROOT);
+    let newest: { path: string; mtimeMs: number } | null = null;
+    for (const root of roots) {
+      const chatsDir = join(GEMINI_TMP_ROOT, root, "chats");
+      let entries: string[];
+      try {
+        entries = await readdir(chatsDir);
+      } catch {
+        continue;
+      }
+      for (const entry of entries) {
+        const filePath = join(chatsDir, entry);
+        try {
+          const details = await stat(filePath);
+          if (!newest || details.mtimeMs > newest.mtimeMs) {
+            newest = { path: filePath, mtimeMs: details.mtimeMs };
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (!newest) return undefined;
+    const raw = await readFile(newest.path, "utf-8");
+    const parsed = JSON.parse(raw) as unknown;
+    return findStringField(parsed, new Set(["model", "modelId"]));
+  } catch {
+    return undefined;
+  }
+}
+
 async function resolveInstalledAgentCommand(
   agent: ScannableAgent,
 ): Promise<{ command: string; path: string } | null> {
@@ -636,6 +684,19 @@ async function inspectInstalledAgentMetadata(
       ...(normalized.version ? { version: normalized.version } : {}),
     };
   }
+  if (agent.id === "gemini") {
+    const model = await readGeminiConfiguredModel();
+    const normalized = normalizeAgentIdentity({
+      command: resolvedCommand,
+      provider,
+      model,
+    });
+    return {
+      ...(normalized.provider ? { provider: normalized.provider } : {}),
+      ...(normalized.model ? { model: normalized.model } : {}),
+      ...(normalized.version ? { version: normalized.version } : {}),
+    };
+  }
   const normalized = normalizeAgentIdentity({
     command: resolvedCommand,
     provider,
@@ -663,6 +724,8 @@ export async function scanForAgents(): Promise<ScannedAgent[]> {
           path: installed.path,
           installed: true,
           ...metadata,
+          options: buildAgentImportOptions(agent.id, metadata),
+          selectedOptionId: buildAgentImportOptions(agent.id, metadata)[0]?.id,
         };
       }
       return {
@@ -673,6 +736,9 @@ export async function scanForAgents(): Promise<ScannedAgent[]> {
         ...(providerLabel(undefined, agent.command)
           ? { provider: providerLabel(undefined, agent.command) }
           : {}),
+        options: buildAgentImportOptions(agent.id, {
+          provider: providerLabel(undefined, agent.command),
+        }),
       };
     }),
   );

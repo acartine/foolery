@@ -7,15 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import type { RegisteredAgent, ScannedAgent } from "@/lib/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { RegisteredAgent, ScannedAgent, ScannedAgentOption } from "@/lib/types";
 import type { OpenRouterModel } from "@/lib/openrouter";
 import {
   formatPricing,
   formatOpenRouterAgentLabel,
 } from "@/lib/openrouter";
 import {
+  formatAgentOptionLabel,
   formatModelDisplay,
-  providerLabel,
 } from "@/lib/agent-identity";
 import {
   addAgent,
@@ -28,12 +35,18 @@ import {
 } from "@/lib/settings-api";
 import type { ActionAgentMappings, OpenRouterSettings } from "@/lib/schemas";
 
-function defaultAgentLabel(id: string): string {
-  return providerLabel(undefined, id) ?? id.charAt(0).toUpperCase() + id.slice(1);
-}
-
 function normalizeModelId(model: string): string {
   return model.trim().toLowerCase();
+}
+
+function resolveSelectedOption(
+  scanned: ScannedAgent,
+  selectedOptions: Record<string, string>,
+): ScannedAgentOption | null {
+  const options = scanned.options ?? [];
+  if (options.length === 0) return null;
+  const selectedId = selectedOptions[scanned.id] ?? scanned.selectedOptionId ?? options[0]?.id;
+  return options.find((option) => option.id === selectedId) ?? options[0] ?? null;
 }
 
 async function setDefaultAgentForActions(agentId: string) {
@@ -65,6 +78,7 @@ export function SettingsAgentsSection({
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showOpenRouterPanel, setShowOpenRouterPanel] = useState(false);
+  const [selectedScannedOptions, setSelectedScannedOptions] = useState<Record<string, string>>({});
 
   async function handleScan() {
     setScanning(true);
@@ -72,6 +86,14 @@ export function SettingsAgentsSection({
       const res = await scanAgents();
       if (res.ok && res.data) {
         setScannedAgents(res.data);
+        setSelectedScannedOptions(
+          Object.fromEntries(
+            res.data.map((agent) => [
+              agent.id,
+              agent.selectedOptionId ?? agent.options?.[0]?.id ?? "",
+            ]),
+          ),
+        );
         const installed = res.data.filter((a) => a.installed);
         if (installed.length === 0) {
           toast.info("No agent CLIs found on PATH");
@@ -89,20 +111,25 @@ export function SettingsAgentsSection({
   }
 
   async function handleAddScanned(scanned: ScannedAgent) {
-    const res = await addAgent(scanned.id, {
+    const selected = resolveSelectedOption(scanned, selectedScannedOptions);
+    if (!selected) {
+      toast.error(`No import option available for ${scanned.id}`);
+      return;
+    }
+    const res = await addAgent(selected.id, {
       command: scanned.path,
-      provider: scanned.provider,
-      model: scanned.model,
-      version: scanned.version,
-      label: scanned.provider ?? defaultAgentLabel(scanned.id),
+      provider: selected.provider,
+      model: selected.model,
+      version: selected.version,
+      label: formatAgentOptionLabel(selected),
     });
     if (res.ok && res.data) {
       onAgentsChange(res.data);
       // If this is the only registered agent, set it as default
       if (Object.keys(res.data).length === 1) {
-        await setDefaultAgentForActions(scanned.id);
+        await setDefaultAgentForActions(selected.id);
       }
-      toast.success(`Added ${scanned.id}`);
+      toast.success(`Added ${selected.label}`);
     } else {
       toast.error(res.error ?? "Failed to add agent");
     }
@@ -113,16 +140,20 @@ export function SettingsAgentsSection({
       a.id.localeCompare(b.id),
     );
     let latestAgents: Record<string, RegisteredAgent> | undefined;
+    let firstAddedId: string | null = null;
     for (const agent of sorted) {
-      const res = await addAgent(agent.id, {
+      const selected = resolveSelectedOption(agent, selectedScannedOptions);
+      if (!selected) continue;
+      const res = await addAgent(selected.id, {
         command: agent.path,
-        provider: agent.provider,
-        model: agent.model,
-        version: agent.version,
-        label: agent.provider ?? defaultAgentLabel(agent.id),
+        provider: selected.provider,
+        model: selected.model,
+        version: selected.version,
+        label: formatAgentOptionLabel(selected),
       });
       if (res.ok && res.data) {
         latestAgents = res.data;
+        firstAddedId ??= selected.id;
       } else {
         toast.error(res.error ?? `Failed to add ${agent.id}`);
         return;
@@ -130,7 +161,9 @@ export function SettingsAgentsSection({
     }
     if (latestAgents) {
       onAgentsChange(latestAgents);
-      await setDefaultAgentForActions(sorted[0].id);
+      if (firstAddedId) {
+        await setDefaultAgentForActions(firstAddedId);
+      }
       toast.success(`Added ${sorted.length} agent(s)`);
     }
   }
@@ -198,6 +231,13 @@ export function SettingsAgentsSection({
         <ScannedAgentsList
           scanned={scannedAgents}
           registered={agents}
+          selectedOptions={selectedScannedOptions}
+          onSelectOption={(agentId, optionId) =>
+            setSelectedScannedOptions((current) => ({
+              ...current,
+              [agentId]: optionId,
+            }))
+          }
           onAdd={handleAddScanned}
           onAddAll={handleAddAll}
           onDismiss={() => setScannedAgents(null)}
@@ -276,18 +316,26 @@ export function SettingsAgentsSection({
 function ScannedAgentsList({
   scanned,
   registered,
+  selectedOptions,
+  onSelectOption,
   onAdd,
   onAddAll,
   onDismiss,
 }: {
   scanned: ScannedAgent[];
   registered: Record<string, RegisteredAgent>;
+  selectedOptions: Record<string, string>;
+  onSelectOption: (agentId: string, optionId: string) => void;
   onAdd: (a: ScannedAgent) => void;
   onAddAll: (agents: ScannedAgent[]) => void;
   onDismiss: () => void;
 }) {
   const unregisteredInstalled = scanned.filter(
-    (a) => a.installed && !registered[a.id],
+    (agent) => {
+      if (!agent.installed) return false;
+      const selected = resolveSelectedOption(agent, selectedOptions);
+      return selected ? !registered[selected.id] : false;
+    },
   );
 
   return (
@@ -317,7 +365,12 @@ function ScannedAgentsList({
         <ScannedAgentRow
           key={a.id}
           agent={a}
-          isRegistered={!!registered[a.id]}
+          selectedOption={resolveSelectedOption(a, selectedOptions)}
+          isRegistered={Boolean(
+            resolveSelectedOption(a, selectedOptions) &&
+            registered[resolveSelectedOption(a, selectedOptions)!.id],
+          )}
+          onSelectOption={(optionId) => onSelectOption(a.id, optionId)}
           onAdd={() => onAdd(a)}
         />
       ))}
@@ -327,53 +380,78 @@ function ScannedAgentsList({
 
 function ScannedAgentRow({
   agent,
+  selectedOption,
   isRegistered,
+  onSelectOption,
   onAdd,
 }: {
   agent: ScannedAgent;
+  selectedOption: ScannedAgentOption | null;
   isRegistered: boolean;
+  onSelectOption: (optionId: string) => void;
   onAdd: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between text-sm">
-      <div className="flex items-center gap-2 min-w-0">
-        <span className="shrink-0">{agent.id}</span>
-        {agent.provider ? (
+    <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-sm">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="shrink-0 font-medium">{agent.provider ?? agent.id}</span>
+          {agent.installed ? (
+            <Badge
+              variant="secondary"
+              className="text-[10px] max-w-[220px] truncate [direction:rtl] [text-align:left]"
+              title={agent.path}
+            >
+              {agent.path}
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="text-[10px]">
+              not found
+            </Badge>
+          )}
+        </div>
+        {agent.installed && !isRegistered && (
+          <Button variant="ghost" size="sm" onClick={onAdd}>
+            <Plus className="size-3.5 mr-1" />
+            Add
+          </Button>
+        )}
+        {agent.installed && isRegistered && (
           <Badge variant="outline" className="text-[10px]">
-            {agent.provider}
-          </Badge>
-        ) : null}
-        {agent.model ? (
-          <Badge variant="outline" className="text-[10px]">
-            {formatModelDisplay(agent.model)}
-            {agent.version ? ` ${agent.version}` : ""}
-          </Badge>
-        ) : null}
-        {agent.installed ? (
-          <Badge
-            variant="secondary"
-            className="text-[10px] max-w-[200px] truncate [direction:rtl] [text-align:left]"
-            title={agent.path}
-          >
-            {agent.path}
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="text-[10px]">
-            not found
+            registered
           </Badge>
         )}
       </div>
-      {agent.installed && !isRegistered && (
-        <Button variant="ghost" size="sm" onClick={onAdd}>
-          <Plus className="size-3.5 mr-1" />
-          Add
-        </Button>
-      )}
-      {agent.installed && isRegistered && (
-        <Badge variant="outline" className="text-[10px]">
-          registered
-        </Badge>
-      )}
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="shrink-0">{agent.id}</span>
+        {agent.installed && (agent.options?.length ?? 0) > 0 ? (
+          <Select
+            value={selectedOption?.id ?? ""}
+            onValueChange={onSelectOption}
+          >
+            <SelectTrigger className="h-7 min-w-[220px] border-primary/20 bg-background/80">
+              <SelectValue placeholder="select model/version" />
+            </SelectTrigger>
+            <SelectContent>
+              {(agent.options ?? []).map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : selectedOption ? (
+          <Badge variant="outline" className="text-[10px]">
+            {selectedOption.label}
+          </Badge>
+        ) : null}
+        {selectedOption?.model ? (
+          <Badge variant="outline" className="text-[10px]">
+            {formatModelDisplay(selectedOption.model)}
+            {selectedOption.version ? ` ${selectedOption.version}` : ""}
+          </Badge>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -494,6 +572,7 @@ function AgentRow({
         {agent.model && (
           <Badge variant="secondary" className="text-[10px] shrink-0">
             {formatModelDisplay(agent.model)}
+            {agent.version ? ` ${agent.version}` : ""}
           </Badge>
         )}
       </div>

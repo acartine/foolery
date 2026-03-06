@@ -13,6 +13,12 @@ export interface AgentIdentityLike {
   label?: string;
 }
 
+export interface AgentOptionSeed {
+  provider?: string;
+  model?: string;
+  version?: string;
+}
+
 const PROVIDER_LABELS: Record<Exclude<AgentProviderId, "unknown">, string> = {
   claude: "Claude",
   openai: "OpenAI",
@@ -22,11 +28,18 @@ const PROVIDER_LABELS: Record<Exclude<AgentProviderId, "unknown">, string> = {
 
 const MODEL_LABELS: Record<string, string> = {
   codex: "Codex",
+  "codex-spark": "Codex Spark",
+  "codex-max": "Codex Max",
+  "codex-mini": "Codex Mini",
+  gpt: "GPT",
   chatgpt: "ChatGPT",
   opus: "Opus",
   sonnet: "Sonnet",
   haiku: "Haiku",
   gemini: "Gemini",
+  pro: "Pro",
+  flash: "Flash",
+  "flash-lite": "Flash Lite",
 };
 
 function cleanValue(value?: string): string | undefined {
@@ -93,8 +106,9 @@ function normalizeGeminiModel(rawModel?: string): { model?: string; version?: st
   const cleaned = cleanValue(rawModel)?.toLowerCase();
   if (!cleaned) return { model: "gemini" };
   const versionMatch = cleaned.match(/gemini[- ](\d+(?:\.\d+)*)/i);
+  const familyMatch = cleaned.match(/(pro|flash-lite|flash)/i);
   return {
-    model: "gemini",
+    model: familyMatch?.[1]?.toLowerCase() ?? "gemini",
     ...(versionMatch?.[1] ? { version: versionMatch[1] } : {}),
   };
 }
@@ -151,4 +165,80 @@ export function formatModelDisplay(model?: string): string | undefined {
   if (!cleaned) return undefined;
   const lower = cleaned.toLowerCase();
   return MODEL_LABELS[lower] ?? cleaned;
+}
+
+export function formatAgentOptionLabel(option: AgentOptionSeed): string {
+  const provider = providerLabel(option.provider);
+  const model = formatModelDisplay(option.model);
+  const version = cleanValue(option.version);
+  return [provider, model, version].filter(Boolean).join(" ");
+}
+
+export function buildAgentOptionId(
+  agentId: string,
+  option: AgentOptionSeed,
+): string {
+  const parts = [
+    agentId,
+    cleanValue(option.model)?.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    cleanValue(option.version)?.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+  ].filter(Boolean);
+  return parts.join("-");
+}
+
+function dedupeAgentOptions(
+  agentId: string,
+  options: AgentOptionSeed[],
+): AgentOptionSeed[] {
+  const seen = new Set<string>();
+  const deduped: AgentOptionSeed[] = [];
+  for (const option of options) {
+    const id = buildAgentOptionId(agentId, option);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    deduped.push(option);
+  }
+  return deduped;
+}
+
+export function buildAgentImportOptions(
+  agentId: string,
+  detected: AgentOptionSeed,
+): Array<AgentOptionSeed & { id: string; label: string }> {
+  const provider = providerLabel(detected.provider, agentId);
+  const baseVersion = cleanValue(detected.version);
+  const hasDetectedModel = Boolean(cleanValue(detected.model) || cleanValue(detected.version));
+  const detectedSeed = hasDetectedModel ? [{ ...detected, provider }] : [];
+
+  const seeds: AgentOptionSeed[] =
+    provider === "Claude"
+      ? [
+          ...detectedSeed,
+          { provider, model: "opus", version: "4.5" },
+          { provider, model: "sonnet", version: "4.5" },
+          { provider, model: "haiku", version: "4.5" },
+        ]
+      : provider === "OpenAI"
+        ? [
+            ...detectedSeed,
+            { provider, model: "gpt", version: baseVersion },
+            { provider, model: "codex", version: baseVersion },
+            { provider, model: "codex-spark", version: baseVersion },
+            { provider, model: "codex-max", version: baseVersion },
+            { provider, model: "codex-mini", version: baseVersion },
+          ]
+        : provider === "Gemini"
+          ? [
+              ...detectedSeed,
+              { provider, model: "pro", version: baseVersion },
+              { provider, model: "flash", version: baseVersion },
+              { provider, model: "flash-lite", version: baseVersion },
+            ]
+          : [detected];
+
+  return dedupeAgentOptions(agentId, seeds).map((option) => ({
+    ...option,
+    id: buildAgentOptionId(agentId, option),
+    label: formatAgentOptionLabel(option),
+  }));
 }

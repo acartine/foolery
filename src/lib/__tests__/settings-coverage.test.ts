@@ -5,6 +5,7 @@ const mockWriteFile = vi.fn();
 const mockMkdir = vi.fn();
 const mockReaddir = vi.fn();
 const mockAccess = vi.fn();
+const mockStat = vi.fn();
 const mockExecAsync = vi.fn();
 
 vi.mock("node:fs/promises", () => ({
@@ -13,6 +14,8 @@ vi.mock("node:fs/promises", () => ({
   mkdir: (...args: unknown[]) => mockMkdir(...args),
   readdir: (...args: unknown[]) => mockReaddir(...args),
   access: (...args: unknown[]) => mockAccess(...args),
+  stat: (...args: unknown[]) => mockStat(...args),
+  chmod: vi.fn(),
 }));
 
 vi.mock("node:child_process", () => ({
@@ -41,6 +44,7 @@ beforeEach(() => {
   mockWriteFile.mockResolvedValue(undefined);
   mockReaddir.mockResolvedValue([]);
   mockAccess.mockRejectedValue(new Error("not executable"));
+  mockStat.mockResolvedValue({ mtimeMs: 0 });
 });
 
 describe("getBackendType (line 311-315)", () => {

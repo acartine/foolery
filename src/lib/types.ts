@@ -375,6 +375,16 @@ export interface ScannedAgent {
   provider?: string;
   model?: string;
   version?: string;
+  options?: ScannedAgentOption[];
+  selectedOptionId?: string;
+}
+
+export interface ScannedAgentOption {
+  id: string;
+  label: string;
+  provider?: string;
+  model?: string;
+  version?: string;
 }
 
 export interface PoolEntry {
