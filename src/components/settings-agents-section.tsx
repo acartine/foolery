@@ -181,13 +181,9 @@ export function SettingsAgentsSection({
   const agentEntries = Object.entries(agents);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Bot className="size-4 text-primary" />
-          <h3 className="text-sm font-medium text-foreground">Agents</h3>
-        </div>
-        <div className="flex items-center gap-2">
+    <div className="space-y-3">
+      <div className="flex items-center justify-end">
+        <div className="flex items-center gap-1.5">
           <Button
             variant="outline"
             size="sm"
@@ -392,7 +388,7 @@ function ScannedAgentRow({
   onAdd: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-sm">
+    <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-xs">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span className="shrink-0 font-medium">{agent.provider ?? agent.id}</span>
@@ -563,7 +559,7 @@ function AgentRow({
   return (
     <div className="flex items-center justify-between rounded-xl border border-primary/15 bg-background/60 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm font-medium truncate">
+        <span className="text-xs font-medium truncate">
           {agent.label ?? id}
         </span>
         <Badge variant="outline" className="text-[10px] shrink-0">
@@ -669,7 +665,7 @@ function OpenRouterAgentRow({
     <div className="flex items-center justify-between rounded-xl border border-accent/20 bg-background/60 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
         <Globe className="size-3.5 text-accent shrink-0" />
-        <span className="text-sm font-medium truncate">{displayLabel}</span>
+        <span className="text-xs font-medium truncate">{displayLabel}</span>
         <Badge variant="secondary" className="text-[10px] shrink-0">
           {model}
         </Badge>

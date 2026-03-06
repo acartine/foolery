@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { Zap, Users, Check, GitBranchPlus } from "lucide-react";
+import { Zap, Users, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsPoolsSection } from "@/components/settings-pools-section";
@@ -68,14 +68,9 @@ export function SettingsDispatchSection({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <GitBranchPlus className="size-4 text-primary" />
-        <h3 className="text-sm font-medium text-foreground">Agent Dispatch</h3>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        Choose how agents are assigned to workflow actions. Only the active
-        mode is used at runtime.
+    <div className="space-y-3">
+      <p className="text-[11px] text-muted-foreground">
+        Choose how agents are assigned to workflow actions.
       </p>
 
       <div className="grid grid-cols-2 gap-2 rounded-xl bg-background/55 p-2">
@@ -107,13 +102,13 @@ export function SettingsDispatchSection({
               />
               <span
                 className={cn(
-                  "text-sm font-medium",
+                  "text-xs font-medium",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {mode.label}
               </span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground">
                 {mode.description}
               </span>
             </button>

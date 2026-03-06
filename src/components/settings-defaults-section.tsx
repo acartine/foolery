@@ -1,6 +1,5 @@
 "use client";
 
-import { Settings2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,14 +29,9 @@ export function SettingsDefaultsSection({
     workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Settings2 className="size-4 text-primary" />
-        <h3 className="text-sm font-medium text-foreground">Defaults</h3>
-      </div>
-
+    <div className="space-y-3">
       <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
-        <Label htmlFor="default-profile" className="text-sm">
+        <Label htmlFor="default-profile" className="text-xs">
           Default Workflow Profile
         </Label>
         <Select
@@ -61,7 +55,7 @@ export function SettingsDefaultsSection({
             ))}
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground">
           The workflow profile pre-selected when creating new beats with
           Shift+N.
         </p>

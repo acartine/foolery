@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { FolderKanban, Bot, GitBranchPlus, Settings2 } from "lucide-react";
 import { SettingsAgentsSection } from "@/components/settings-agents-section";
 import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
@@ -23,7 +25,6 @@ import type {
   PoolsSettings,
   DispatchMode,
 } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
 
 export type SettingsSection = "repos" | null;
 
@@ -73,36 +74,26 @@ const DEFAULTS: SettingsData = {
   dispatchMode: "actions",
 };
 
-function SettingsSectionCard({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      className={cn(
-        "rounded-2xl border border-primary/15 bg-card/92 p-4 shadow-[0_18px_45px_-32px_rgba(88,28,135,0.55)] backdrop-blur-sm dark:bg-card/90",
-        className,
-      )}
-    >
-      {children}
-    </section>
-  );
-}
+type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
+
+const TAB_DEFS: { value: SettingsTab; label: string; icon: typeof Bot }[] = [
+  { value: "repos", label: "Repos", icon: FolderKanban },
+  { value: "agents", label: "Agents", icon: Bot },
+  { value: "dispatch", label: "Dispatch", icon: GitBranchPlus },
+  { value: "defaults", label: "Defaults", icon: Settings2 },
+];
 
 export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSheetProps) {
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const reposSectionRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<SettingsTab>("repos");
 
   useEffect(() => {
-    if (open && initialSection === "repos" && reposSectionRef.current) {
-      reposSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    if (open && initialSection === "repos") {
+      setActiveTab("repos");
     }
-  }, [open, initialSection, loading]);
+  }, [open, initialSection]);
 
   useEffect(() => {
     if (!open) return;
@@ -149,71 +140,90 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="overflow-hidden border-primary/20 bg-background sm:max-w-xl">
-        <div className="px-4 pt-2 flex-1 min-h-0 overflow-y-auto">
-          <div className="space-y-3 py-4">
-            {/* Section: Repositories (independent data, always rendered) */}
-            <SettingsSectionCard className="border-primary/25">
-              <div ref={reposSectionRef}>
-                <SettingsReposSection />
-              </div>
-            </SettingsSectionCard>
-
-            {loading ? (
-              <p className="text-sm text-muted-foreground">Loading settings...</p>
-            ) : (
-              <>
-                {/* Section 1: Agent Management */}
-                <SettingsSectionCard className="border-primary/25">
-                  <SettingsAgentsSection
-                    agents={settings.agents}
-                    onAgentsChange={(agents) =>
-                      setSettings((prev) => ({ ...prev, agents }))
-                    }
-                    openrouter={settings.openrouter}
-                    onOpenRouterChange={(openrouter) =>
-                      setSettings((prev) => ({ ...prev, openrouter }))
-                    }
-                  />
-                </SettingsSectionCard>
-
-                {/* Section 2: Agent Dispatch (Actions + Pools with mode toggle) */}
-                <SettingsSectionCard className="border-primary/25">
-                  <SettingsDispatchSection
-                    dispatchMode={settings.dispatchMode}
-                    actions={settings.actions}
-                    pools={settings.pools}
-                    agents={settings.agents}
-                    openrouter={settings.openrouter}
-                    onDispatchModeChange={(dispatchMode) =>
-                      setSettings((prev) => ({ ...prev, dispatchMode }))
-                    }
-                    onActionsChange={(actions) =>
-                      setSettings((prev) => ({ ...prev, actions }))
-                    }
-                    onPoolsChange={(pools) =>
-                      setSettings((prev) => ({ ...prev, pools }))
-                    }
-                  />
-                </SettingsSectionCard>
-
-                {/* Section 4: Defaults */}
-                <SettingsSectionCard className="border-accent/25">
-                  <SettingsDefaultsSection
-                    defaults={settings.defaults}
-                    onDefaultsChange={(defaults) =>
-                      setSettings((prev) => ({ ...prev, defaults }))
-                    }
-                  />
-                </SettingsSectionCard>
-              </>
-            )}
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as SettingsTab)}
+          className="flex flex-col h-full"
+        >
+          <div className="px-4 pt-2 shrink-0">
+            <TabsList className="w-full">
+              {TAB_DEFS.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="gap-1.5 text-xs"
+                  >
+                    <Icon className="size-3.5" />
+                    {tab.label}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
           </div>
-        </div>
+
+          <div className="px-4 flex-1 min-h-0 overflow-y-auto">
+            <div className="py-3">
+              {loading ? (
+                <p className="text-xs text-muted-foreground">Loading settings...</p>
+              ) : (
+                <>
+                  <TabsContent value="repos">
+                    <SettingsReposSection />
+                  </TabsContent>
+
+                  <TabsContent value="agents">
+                    <SettingsAgentsSection
+                      agents={settings.agents}
+                      onAgentsChange={(agents) =>
+                        setSettings((prev) => ({ ...prev, agents }))
+                      }
+                      openrouter={settings.openrouter}
+                      onOpenRouterChange={(openrouter) =>
+                        setSettings((prev) => ({ ...prev, openrouter }))
+                      }
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="dispatch">
+                    <SettingsDispatchSection
+                      dispatchMode={settings.dispatchMode}
+                      actions={settings.actions}
+                      pools={settings.pools}
+                      agents={settings.agents}
+                      openrouter={settings.openrouter}
+                      onDispatchModeChange={(dispatchMode) =>
+                        setSettings((prev) => ({ ...prev, dispatchMode }))
+                      }
+                      onActionsChange={(actions) =>
+                        setSettings((prev) => ({ ...prev, actions }))
+                      }
+                      onPoolsChange={(pools) =>
+                        setSettings((prev) => ({ ...prev, pools }))
+                      }
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="defaults">
+                    <SettingsDefaultsSection
+                      defaults={settings.defaults}
+                      onDefaultsChange={(defaults) =>
+                        setSettings((prev) => ({ ...prev, defaults }))
+                      }
+                    />
+                  </TabsContent>
+                </>
+              )}
+            </div>
+          </div>
+        </Tabs>
 
         <Separator className="bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
-        <SheetFooter className="px-4 py-4">
+        <SheetFooter className="px-4 py-3">
           <Button
             variant="outline"
+            size="sm"
             className="border-primary/25 bg-background/70 hover:border-accent/35 hover:bg-accent/10"
             onClick={handleReset}
             disabled={saving}
@@ -221,6 +231,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             Reset to Defaults
           </Button>
           <Button
+            size="sm"
             className="bg-primary text-primary-foreground shadow-[0_12px_30px_-18px_rgba(88,28,135,0.55)] hover:bg-primary/90"
             onClick={handleSave}
             disabled={saving || loading}

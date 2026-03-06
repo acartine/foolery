@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderOpen, Plus, Trash2, Database, FolderKanban } from "lucide-react";
+import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -71,12 +71,8 @@ export function SettingsReposSection() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FolderKanban className="size-4 text-accent" />
-          <h3 className="text-sm font-medium text-foreground">Repositories</h3>
-        </div>
+    <div className="space-y-3">
+      <div className="flex items-center justify-end">
         <Button size="sm" variant="outline" className="border-accent/30 bg-background/70 hover:bg-accent/10" onClick={() => setBrowseOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
           Add
@@ -84,7 +80,7 @@ export function SettingsReposSection() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <p className="text-xs text-muted-foreground">Loading...</p>
       ) : repos.length === 0 ? (
         <EmptyReposState onBrowse={() => setBrowseOpen(true)} />
       ) : (
@@ -108,8 +104,8 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-accent/35 bg-accent/6 py-8 text-center">
       <Database className="mb-3 size-8 text-accent" />
-      <p className="text-sm font-medium mb-1">No repositories registered</p>
-      <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
+      <p className="text-xs font-medium mb-1">No repositories registered</p>
+      <p className="text-[11px] text-muted-foreground mb-3 max-w-[260px]">
         Add a repository with a supported memory manager ({supported}) to get
         started.
       </p>
@@ -136,10 +132,10 @@ function RepoList({ repos, onRemove }: RepoListProps) {
         >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="text-sm font-medium truncate">{repo.name}</p>
+              <p className="text-xs font-medium truncate">{repo.name}</p>
               <MemoryManagerBadge type={repo.memoryManagerType} />
             </div>
-            <p className="font-mono text-xs text-muted-foreground truncate">
+            <p className="font-mono text-[11px] text-muted-foreground truncate">
               {repo.path}
             </p>
           </div>

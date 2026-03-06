@@ -104,12 +104,12 @@ export function SettingsActionsSection({
   }
 
   return (
-    <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
-      <h3 className="text-sm font-medium">Action Mappings</h3>
-      <p className="text-xs text-muted-foreground">
+    <div className={disabled ? "space-y-3 opacity-50 pointer-events-none" : "space-y-3"}>
+      <h3 className="text-xs font-medium">Action Mappings</h3>
+      <p className="text-[11px] text-muted-foreground">
         Choose which registered agent handles each action.
       </p>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {ACTION_DEFS.map((def) => {
           const Icon = def.icon;
           const includeLegacyOption = Boolean(
@@ -125,10 +125,10 @@ export function SettingsActionsSection({
               className="flex items-center justify-between rounded-xl border border-primary/15 bg-background/60 px-3 py-2.5"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <Icon className="size-4 text-primary shrink-0" />
+                <Icon className="size-3.5 text-primary shrink-0" />
                 <div className="min-w-0">
-                  <Label className="text-sm">{def.label}</Label>
-                  <p className="text-[11px] text-muted-foreground">
+                  <Label className="text-xs">{def.label}</Label>
+                  <p className="text-[10px] text-muted-foreground">
                     {def.description}
                   </p>
                 </div>

@@ -181,12 +181,8 @@ export function SettingsPoolsSection({
 
   if (!hasAgents) {
     return (
-      <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
-        <div className="flex items-center gap-2">
-          <Users className="size-4 text-primary" />
-          <h3 className="text-sm font-medium text-foreground">Agent Pools</h3>
-        </div>
-        <p className="text-xs text-muted-foreground">
+      <div className={disabled ? "space-y-3 opacity-50 pointer-events-none" : "space-y-3"}>
+        <p className="text-[11px] text-muted-foreground">
           Register agents first, then configure pools here.
         </p>
       </div>
@@ -194,16 +190,11 @@ export function SettingsPoolsSection({
   }
 
   return (
-    <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
-      <div className="flex items-center gap-2">
-        <Users className="size-4 text-primary" />
-        <h3 className="text-sm font-medium text-foreground">Agent Pools</h3>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        Configure weighted agent distribution for each workflow step.
-        Agents are selected randomly based on relative weights.
+    <div className={disabled ? "space-y-3 opacity-50 pointer-events-none" : "space-y-3"}>
+      <p className="text-[11px] text-muted-foreground">
+        Configure weighted agent distribution per workflow step.
       </p>
-      <div className="space-y-5">
+      <div className="space-y-4">
         {ALL_STEPS.map((step) => (
           <StepPoolEditor
             key={step}
@@ -268,8 +259,8 @@ function StepPoolEditor({
     <div className="rounded-xl border border-primary/18 bg-background/60 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-sm font-medium">{meta.label}</Label>
-          <p className="text-[11px] text-muted-foreground">
+          <Label className="text-xs font-medium">{meta.label}</Label>
+          <p className="text-[10px] text-muted-foreground">
             {meta.description}
           </p>
         </div>
@@ -330,7 +321,7 @@ function StepPoolEditor({
                   <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0 flex items-start gap-2">
                     <span className={`mt-1 size-2.5 rounded-full shrink-0 ${color}`} />
                     <div className="min-w-0">
-                      <span className="text-sm block truncate" title={label}>
+                      <span className="text-xs block truncate" title={label}>
                         {label}
                       </span>
                       {pricing && (
@@ -347,7 +338,7 @@ function StepPoolEditor({
                     type="number"
                     min={0}
                     step={1}
-                    className="h-7 w-[64px] px-2 text-sm shrink-0"
+                    className="h-7 w-[64px] px-2 text-xs shrink-0"
                     value={entry.weight}
                     onChange={(e) => {
                       const next = [...entries];
