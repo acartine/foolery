@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Bot, Scan, Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { Bot, Scan, Plus, Pencil, Trash2, Check, X, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandGroup,
+} from "@/components/ui/command";
 import type { RegisteredAgent, ScannedAgent, ScannedAgentOption } from "@/lib/types";
 import {
   formatAgentDisplayLabel,
@@ -325,6 +338,108 @@ function ScannedAgentsList({
   );
 }
 
+/** Threshold at which we switch from a plain Select to a searchable combobox. */
+const SEARCHABLE_THRESHOLD = 10;
+
+/**
+ * Find and strip the longest common prefix that ends at a separator
+ * (e.g. "/" or ":") so labels stay meaningful but repetitive provider
+ * prefixes like "openrouter/anthropic/" are removed.
+ */
+function stripCommonPrefix(labels: string[]): { stripped: string[]; prefix: string } {
+  if (labels.length <= 1) return { stripped: labels, prefix: "" };
+  const first = labels[0];
+  let prefixLen = first.length;
+  for (const label of labels) {
+    prefixLen = Math.min(prefixLen, label.length);
+    for (let i = 0; i < prefixLen; i++) {
+      if (label[i] !== first[i]) {
+        prefixLen = i;
+        break;
+      }
+    }
+  }
+  // Snap back to the last separator so we don't cut mid-word
+  const separators = /[/:@.]/;
+  let snapIdx = 0;
+  for (let i = prefixLen - 1; i >= 0; i--) {
+    if (separators.test(first[i])) {
+      snapIdx = i + 1; // include the separator in the prefix
+      break;
+    }
+  }
+  if (snapIdx <= 1) return { stripped: labels, prefix: "" };
+  const prefix = first.slice(0, snapIdx);
+  return {
+    stripped: labels.map((l) => l.slice(snapIdx)),
+    prefix,
+  };
+}
+
+function SearchableOptionCombobox({
+  options,
+  value,
+  onValueChange,
+}: {
+  options: ScannedAgentOption[];
+  value: string;
+  onValueChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  // Strip common prefixes for shorter display labels
+  const rawLabels = options.map((o) => o.label);
+  const { stripped, prefix } = stripCommonPrefix(rawLabels);
+  const displayMap = new Map(options.map((o, i) => [o.id, stripped[i]]));
+
+  const selectedDisplay = value ? (displayMap.get(value) ?? value) : "select model/version";
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="h-7 min-w-[220px] justify-between border-primary/20 bg-background/80 text-xs font-normal"
+        >
+          <span className="truncate">{selectedDisplay}</span>
+          <ChevronsUpDown className="ml-1 size-3 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[320px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search models..." className="h-8 text-xs" />
+          <CommandList>
+            <CommandEmpty>No models found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => {
+                const display = displayMap.get(option.id) ?? option.label;
+                return (
+                  <CommandItem
+                    key={option.id}
+                    value={option.label}
+                    onSelect={() => {
+                      onValueChange(option.id);
+                      setOpen(false);
+                    }}
+                    className="text-xs"
+                  >
+                    <Check
+                      className={`mr-1 size-3 ${option.id === value ? "opacity-100" : "opacity-0"}`}
+                    />
+                    {display}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function ScannedAgentRow({
   agent,
   selectedOption,
@@ -338,6 +453,9 @@ function ScannedAgentRow({
   onSelectOption: (optionId: string) => void;
   onAdd: () => void;
 }) {
+  const options = agent.options ?? [];
+  const useSearchable = options.length >= SEARCHABLE_THRESHOLD;
+
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-xs">
       <div className="flex items-center justify-between gap-2">
@@ -371,22 +489,30 @@ function ScannedAgentRow({
       </div>
       <div className="flex items-center gap-2 min-w-0">
         <span className="shrink-0">{agent.id}</span>
-        {agent.installed && (agent.options?.length ?? 0) > 0 ? (
-          <Select
-            value={selectedOption?.id ?? ""}
-            onValueChange={onSelectOption}
-          >
-            <SelectTrigger className="h-7 min-w-[220px] border-primary/20 bg-background/80">
-              <SelectValue placeholder="select model/version" />
-            </SelectTrigger>
-            <SelectContent>
-              {(agent.options ?? []).map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {agent.installed && options.length > 0 ? (
+          useSearchable ? (
+            <SearchableOptionCombobox
+              options={options}
+              value={selectedOption?.id ?? ""}
+              onValueChange={onSelectOption}
+            />
+          ) : (
+            <Select
+              value={selectedOption?.id ?? ""}
+              onValueChange={onSelectOption}
+            >
+              <SelectTrigger className="h-7 min-w-[220px] border-primary/20 bg-background/80">
+                <SelectValue placeholder="select model/version" />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )
         ) : selectedOption ? (
           <Badge variant="outline" className="text-[10px]">
             {selectedOption.label}
