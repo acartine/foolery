@@ -253,7 +253,8 @@ function StepPoolEditor({
     agentIds.length > 1 &&
     swapFromAgentId.length > 0 &&
     swapToAgentId.length > 0 &&
-    swapFromAgentId !== swapToAgentId;
+    swapFromAgentId !== swapToAgentId &&
+    !entries.some((entry) => entry.agentId === swapToAgentId);
 
   return (
     <div className="rounded-xl border border-primary/18 bg-background/60 p-3 space-y-2">
@@ -420,13 +421,20 @@ function StepPoolEditor({
                         openRouterModels,
                         agent?.model,
                       );
+                      const alreadyInPool =
+                        id !== swapFromAgentId && poolAgentIds.includes(id);
                       return (
-                        <SelectItem key={id} value={id}>
+                        <SelectItem key={id} value={id} disabled={alreadyInPool}>
                           <div className="flex w-full items-center justify-between gap-2">
                             <span className="truncate">{formatPoolAgentLabel(id, agent)}</span>
                             {pricing && (
                               <span className="text-[10px] font-mono text-muted-foreground">
                                 P {pricing.prompt} / C {pricing.completion}
+                              </span>
+                            )}
+                            {!pricing && alreadyInPool && (
+                              <span className="text-[10px] text-muted-foreground">
+                                already in pool
                               </span>
                             )}
                           </div>
