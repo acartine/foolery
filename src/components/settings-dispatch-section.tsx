@@ -78,7 +78,7 @@ export function SettingsDispatchSection({
         mode is used at runtime.
       </p>
 
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-primary/15 bg-background/55 p-2">
+      <div className="grid grid-cols-2 gap-2 rounded-xl bg-background/55 p-2">
         {MODES.map((mode) => {
           const Icon = mode.icon;
           const active = dispatchMode === mode.value;
