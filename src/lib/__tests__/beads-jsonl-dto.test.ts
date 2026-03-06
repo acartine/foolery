@@ -49,7 +49,7 @@ function fullDomainBeat(): Beat {
     notes: "See design doc",
     acceptance: "Widget renders correctly",
     type: "feature",
-    state: "planning",
+    state: "implementation",
     priority: 3,
     labels: ["frontend", "v2"],
     assignee: "alice",
@@ -77,7 +77,7 @@ describe("normalizeFromJsonl", () => {
     expect(beat.notes).toBe("See design doc");
     expect(beat.acceptance).toBe("Widget renders correctly");
     expect(beat.type).toBe("feature");
-    expect(beat.state).toBe("planning");
+    expect(beat.state).toBe("implementation");
     expect(beat.priority).toBe(3);
     expect(beat.labels).toEqual(["frontend", "v2"]);
     expect(beat.assignee).toBe("alice");
@@ -118,7 +118,7 @@ describe("normalizeFromJsonl", () => {
   it("defaults state to workflow initial for invalid status", () => {
     const raw: RawBead = { id: "x", title: "T", status: "limbo" };
     const beat = normalizeFromJsonl(raw);
-    expect(beat.state).toBe("ready_for_planning");
+    expect(beat.state).toBe("ready_for_implementation");
   });
 
   it("defaults priority to 2 for out-of-range values", () => {
@@ -143,7 +143,7 @@ describe("normalizeFromJsonl", () => {
     expect(beat.notes).toBeUndefined();
     expect(beat.acceptance).toBeUndefined();
     expect(beat.type).toBe("task");
-    expect(beat.state).toBe("ready_for_planning");
+    expect(beat.state).toBe("ready_for_implementation");
     expect(beat.priority).toBe(2);
     expect(beat.labels).toEqual([]);
     expect(beat.assignee).toBeUndefined();
@@ -158,6 +158,18 @@ describe("normalizeFromJsonl", () => {
     const raw: RawBead = { id: "x", title: "T", labels: ["a", "", "  ", "b"] };
     const beat = normalizeFromJsonl(raw);
     expect(beat.labels).toEqual(["a", "b"]);
+  });
+
+  it("keeps explicit workflow labels authoritative for beads records", () => {
+    const raw: RawBead = {
+      id: "x",
+      title: "T",
+      status: "open",
+      labels: ["wf:state:plan_review", "wf:profile:semiauto"],
+    };
+    const beat = normalizeFromJsonl(raw);
+    expect(beat.state).toBe("plan_review");
+    expect(beat.profileId).toBe("semiauto");
   });
 
   it("reads acceptance from acceptance field as fallback", () => {
@@ -283,7 +295,7 @@ describe("denormalizeToJsonl", () => {
     expect(raw.labels).toEqual([
       "frontend",
       "v2",
-      "wf:state:planning",
+      "wf:state:implementation",
       "wf:profile:autopilot",
     ]);
     expect(raw.assignee).toBe("alice");
@@ -419,8 +431,8 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.priority).toBe(domain.priority);
     expect(restored.labels).toEqual([
       ...domain.labels,
-      "wf:state:planning",
-      "wf:profile:autopilot",
+      "wf:state:implementation",
+      "wf:profile:autopilot_no_planning",
     ]);
     expect(restored.assignee).toBe(domain.assignee);
     expect(restored.owner).toBe(domain.owner);
@@ -445,8 +457,8 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.state).toBe(domain.state);
     expect(restored.priority).toBe(domain.priority);
     expect(restored.labels).toEqual([
-      "wf:state:ready_for_planning",
-      "wf:profile:autopilot",
+      "wf:state:ready_for_implementation",
+      "wf:profile:autopilot_no_planning",
     ]);
     expect(restored.parent).toBe(domain.parent);
   });

@@ -18,6 +18,7 @@ import {
   mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
   deriveProfileId,
+  deriveBeadsWorkflowState,
   deriveWorkflowState,
   deriveWorkflowRuntimeState,
   inferWorkflowMode,
@@ -731,6 +732,12 @@ describe("deriveWorkflowState additional branches", () => {
     const workflow = defaultWorkflowDescriptor();
     const state = deriveWorkflowState(undefined, [], workflow);
     expect(state).toBe(workflow.initialState);
+  });
+  it("maps unlabeled beads open status to implementation queue", () => {
+    expect(deriveBeadsWorkflowState("open", [])).toBe("ready_for_implementation");
+  });
+  it("maps unlabeled beads in_progress status to implementation", () => {
+    expect(deriveBeadsWorkflowState("in_progress", [])).toBe("implementation");
   });
 });
 

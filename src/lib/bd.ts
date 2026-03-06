@@ -7,8 +7,8 @@ import type { Beat, BeatDependency, BdResult, MemoryWorkflowDescriptor } from ".
 import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
   builtinProfileDescriptor,
-  deriveProfileId,
-  deriveWorkflowState,
+  deriveBeadsProfileId,
+  deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
   builtinWorkflowDescriptors,
   isWorkflowProfileLabel,
@@ -432,10 +432,10 @@ function normalizeBeat(raw: Record<string, unknown>): Beat {
   const id = raw.id as string;
   const labels = ((raw.labels ?? []) as string[]).filter(l => l.trim() !== "");
   const metadata = raw.metadata as Record<string, unknown> | undefined;
-  const profileId = deriveProfileId(labels, metadata);
+  const profileId = deriveBeadsProfileId(labels, metadata);
   const workflow = builtinProfileDescriptor(profileId);
   const rawStatus = (raw.status ?? "open") as string;
-  const workflowState = deriveWorkflowState(rawStatus, labels, workflow);
+  const workflowState = deriveBeadsWorkflowState(rawStatus, labels, metadata);
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   return {
     ...raw,
@@ -953,4 +953,3 @@ export async function removeDep(
 }
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
-

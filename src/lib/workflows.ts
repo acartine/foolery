@@ -606,6 +606,20 @@ export function deriveProfileId(
   return explicit ?? DEFAULT_PROFILE_ID;
 }
 
+function hasExplicitProfileSelection(
+  labels: string[] | undefined,
+  metadata?: Record<string, unknown>,
+): boolean {
+  if (extractWorkflowProfileLabel(labels ?? [])) return true;
+  if (!metadata) return false;
+  return [
+    metadata.profileId,
+    metadata.fooleryProfileId,
+    metadata.workflowProfileId,
+    metadata.knotsProfileId,
+  ].some((value) => typeof value === "string" && value.trim().length > 0);
+}
+
 export function deriveWorkflowState(
   status: string | undefined,
   labels: string[] | undefined,
@@ -619,6 +633,25 @@ export function deriveWorkflowState(
 
   if (status) return mapStatusToDefaultWorkflowState(status, descriptor);
   return descriptor.initialState;
+}
+
+export function deriveBeadsProfileId(
+  labels: string[] | undefined,
+  metadata?: Record<string, unknown>,
+): string {
+  const explicit = deriveProfileId(labels, metadata);
+  if (hasExplicitProfileSelection(labels, metadata)) return explicit;
+  return "autopilot_no_planning";
+}
+
+export function deriveBeadsWorkflowState(
+  status: string | undefined,
+  labels: string[] | undefined,
+  metadata?: Record<string, unknown>,
+): string {
+  const profileId = deriveBeadsProfileId(labels, metadata);
+  const workflow = builtinProfileDescriptor(profileId);
+  return deriveWorkflowState(status, labels, workflow);
 }
 
 function ownerForCurrentState(
@@ -865,7 +898,3 @@ export const beadsProfileWorkflowDescriptors = builtinWorkflowDescriptors;
 export const beadsProfileDescriptor = builtinProfileDescriptor;
 /** @deprecated Use defaultWorkflowDescriptor */
 export const beadsCoarseWorkflowDescriptor = defaultWorkflowDescriptor;
-/** @deprecated Use deriveProfileId */
-export const deriveBeadsProfileId = deriveProfileId;
-/** @deprecated Use deriveWorkflowState */
-export const deriveBeadsWorkflowState = deriveWorkflowState;

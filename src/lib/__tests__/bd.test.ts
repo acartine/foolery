@@ -545,7 +545,21 @@ describe("normalizeBeat field mapping", () => {
     queueExec({ stdout: JSON.stringify([raw]) });
     const { listBeats } = await import("@/lib/bd");
     const result = await listBeats();
-    expect(result.data![0].state).toBeTruthy();
+    expect(result.data![0].state).toBe("ready_for_implementation");
+  });
+
+  it("maps unlabeled open beats to implementation queue", async () => {
+    queueExec({ stdout: beatArrayStr({ status: "open", labels: [] }) });
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats();
+    expect(result.data![0].state).toBe("ready_for_implementation");
+  });
+
+  it("maps unlabeled in_progress beats to implementation", async () => {
+    queueExec({ stdout: beatArrayStr({ status: "in_progress", labels: [] }) });
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats();
+    expect(result.data![0].state).toBe("implementation");
   });
 
   it("defaults type to task when missing", async () => {

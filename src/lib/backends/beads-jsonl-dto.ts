@@ -8,8 +8,8 @@
 import type { Beat, BeatPriority, Invariant, InvariantKind } from "@/lib/types";
 import {
   builtinProfileDescriptor,
-  deriveProfileId,
-  deriveWorkflowState,
+  deriveBeadsProfileId,
+  deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
   mapWorkflowStateToCompatStatus,
   withWorkflowStateLabel,
@@ -134,9 +134,9 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
   const rawStatus = raw.status ?? "open";
   const status = VALID_STATUSES.has(rawStatus as string) ? rawStatus : "open";
   const labels = (raw.labels ?? []).filter((l) => l.trim() !== "");
-  const profileId = deriveProfileId(labels, raw.metadata);
+  const profileId = deriveBeadsProfileId(labels, raw.metadata);
   const workflow = builtinProfileDescriptor(profileId);
-  const rawWorkflowState = deriveWorkflowState(status, labels, workflow);
+  const rawWorkflowState = deriveBeadsWorkflowState(status, labels, raw.metadata);
   const workflowState = rawWorkflowState;
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const rawPriority = raw.priority ?? 2;

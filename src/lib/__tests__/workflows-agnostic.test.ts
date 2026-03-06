@@ -115,9 +115,13 @@ describe("backend-agnostic workflow exports", () => {
       expect(result).toBe("semiauto");
     });
 
-    it("deprecated alias returns same result", () => {
+    it("beads alias defaults unlabeled items to no-planning profile", () => {
+      expect(deriveBeadsProfileId([])).toBe("autopilot_no_planning");
+    });
+
+    it("beads alias preserves explicit profile labels", () => {
       const labels = ["wf:profile:semiauto"];
-      expect(deriveProfileId(labels)).toBe(deriveBeadsProfileId(labels));
+      expect(deriveBeadsProfileId(labels)).toBe("semiauto");
     });
   });
 
@@ -134,16 +138,24 @@ describe("backend-agnostic workflow exports", () => {
       expect(state).toBe("ready_for_planning");
     });
 
+    it("beads alias maps open status with no labels to implementation queue", () => {
+      const state = deriveBeadsWorkflowState("open", []);
+      expect(state).toBe("ready_for_implementation");
+    });
+
+    it("beads alias maps in_progress with no labels to implementation", () => {
+      const state = deriveBeadsWorkflowState("in_progress", []);
+      expect(state).toBe("implementation");
+    });
+
     it("extracts state from workflow labels", () => {
       const state = deriveWorkflowState(undefined, ["wf:state:implementation"]);
       expect(state).toBe("implementation");
     });
 
-    it("deprecated alias returns same result", () => {
+    it("beads alias respects explicit workflow labels", () => {
       const labels = ["wf:state:implementation"];
-      expect(deriveWorkflowState(undefined, labels)).toBe(
-        deriveBeadsWorkflowState(undefined, labels),
-      );
+      expect(deriveBeadsWorkflowState(undefined, labels)).toBe("implementation");
     });
   });
 
