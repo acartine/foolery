@@ -77,7 +77,9 @@ describe("extractWorkflowProfileLabel", () => {
   });
   it("normalizes legacy profile ids from labels", () => {
     expect(extractWorkflowProfileLabel(["wf:profile:beads-coarse"])).toBe("autopilot");
+    expect(extractWorkflowProfileLabel(["wf:profile:automatic"])).toBe("autopilot");
     expect(extractWorkflowProfileLabel(["wf:profile:knots-granular"])).toBe("autopilot");
+    expect(extractWorkflowProfileLabel(["wf:profile:workflow"])).toBe("semiauto");
     expect(extractWorkflowProfileLabel(["wf:profile:knots-coarse"])).toBe("semiauto");
     expect(extractWorkflowProfileLabel(["wf:profile:beads-coarse-human-gated"])).toBe("semiauto");
     expect(extractWorkflowProfileLabel(["wf:profile:knots-granular-autonomous"])).toBe("autopilot");

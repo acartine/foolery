@@ -130,6 +130,8 @@ const PROFILE_DISPLAY_NAMES: Readonly<Record<string, string>> = {
   autopilot_no_planning: "Autopilot (no planning)",
   autopilot_with_pr_no_planning: "Autopilot (PR, no planning)",
   semiauto_no_planning: "Semiauto (no planning)",
+  automatic: "Autopilot",
+  workflow: "Semiauto",
 };
 
 /** Human-friendly short descriptions for built-in profile IDs. */
@@ -144,7 +146,8 @@ export const PROFILE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 
 /** Returns a human-friendly display name for a profile ID. */
 export function profileDisplayName(profileId: string): string {
-  return PROFILE_DISPLAY_NAMES[profileId] ?? profileId;
+  const normalized = normalizeProfileId(profileId) ?? profileId;
+  return PROFILE_DISPLAY_NAMES[normalized] ?? normalized;
 }
 
 const AGENT_OWNERS: MemoryWorkflowOwners = {
@@ -233,6 +236,8 @@ function normalizeProfileId(value: string | null | undefined): string | null {
 
   if (normalized === LEGACY_BEADS_COARSE_WORKFLOW_ID) return DEFAULT_PROFILE_ID;
   if (normalized === "beads-coarse-human-gated") return "semiauto";
+  if (normalized === "automatic") return "autopilot";
+  if (normalized === "workflow") return "semiauto";
   if (normalized === "knots-granular" || normalized === "knots-granular-autonomous") {
     return "autopilot";
   }

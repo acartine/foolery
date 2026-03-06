@@ -38,10 +38,18 @@ export function SettingsDefaultsSection({
   });
   const workflows =
     workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+  const profileOptions = Array.from(
+    new Map(
+      workflows.map((wf) => {
+        const id = (wf.profileId ?? wf.id).trim().toLowerCase();
+        return [id, profileDisplayName(id)] as const;
+      }),
+    ).entries(),
+  );
   const selectedProfileId =
-    defaults.profileId ||
-    workflows.find((wf) => (wf.profileId ?? wf.id) === "autopilot")?.id ||
-    workflows[0]?.id ||
+    defaults.profileId.trim().toLowerCase() ||
+    profileOptions.find(([id]) => id === "autopilot")?.[0] ||
+    profileOptions[0]?.[0] ||
     "autopilot";
 
   return (
@@ -73,9 +81,9 @@ export function SettingsDefaultsSection({
             <SelectValue placeholder="Select profile..." />
           </SelectTrigger>
           <SelectContent>
-            {workflows.map((wf) => (
-              <SelectItem key={wf.id} value={wf.profileId ?? wf.id}>
-                {profileDisplayName(wf.profileId ?? wf.id)}
+            {profileOptions.map(([id, label]) => (
+              <SelectItem key={id} value={id}>
+                {label}
               </SelectItem>
             ))}
           </SelectContent>

@@ -17,6 +17,7 @@ import { createBeat, addDep, fetchWorkflows } from "@/lib/api";
 import { fetchSettings } from "@/lib/settings-api";
 import type { CreateBeatInput } from "@/lib/schemas";
 import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
+import { profileDisplayName } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 
 async function addDepsForBeat(
@@ -68,10 +69,15 @@ export function CreateBeatDialog({
   const settingsProfileId = settingsResult?.ok
     ? settingsResult.data?.defaults?.profileId
     : undefined;
+  const normalizedSettingsProfileName = settingsProfileId
+    ? profileDisplayName(settingsProfileId).trim().toLowerCase()
+    : undefined;
   const defaultProfileId =
-    (settingsProfileId
+    (normalizedSettingsProfileName
       ? workflows.find(
-          (w) => (w.profileId ?? w.id) === settingsProfileId,
+          (w) =>
+            profileDisplayName(w.profileId ?? w.id).trim().toLowerCase() ===
+            normalizedSettingsProfileName,
         )?.id
       : undefined) ??
     workflows.find((workflow) => workflow.id === "autopilot")?.id ??

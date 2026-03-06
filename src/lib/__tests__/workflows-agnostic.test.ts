@@ -13,6 +13,7 @@ import {
   defaultWorkflowDescriptor,
   deriveProfileId,
   deriveWorkflowState,
+  profileDisplayName,
   // Deprecated names (should still work)
   DEFAULT_BEADS_PROFILE_ID,
   BEADS_COARSE_WORKFLOW_ID,
@@ -117,6 +118,13 @@ describe("backend-agnostic workflow exports", () => {
     it("deprecated alias returns same result", () => {
       const labels = ["wf:profile:semiauto"];
       expect(deriveProfileId(labels)).toBe(deriveBeadsProfileId(labels));
+    });
+  });
+
+  describe("profileDisplayName", () => {
+    it("normalizes legacy display aliases", () => {
+      expect(profileDisplayName("automatic")).toBe("Autopilot");
+      expect(profileDisplayName("workflow")).toBe("Semiauto");
     });
   });
 
