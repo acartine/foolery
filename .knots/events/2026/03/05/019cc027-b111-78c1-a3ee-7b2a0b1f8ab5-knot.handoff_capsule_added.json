@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc027-b111-78c1-a3ee-7b2a0b1f8ab5",
+  "occurred_at": "2026-03-05T22:39:12.657223Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Integrated on main as commit 60a8178f2429 and verified remote sync (git pull --rebase && git push => up to date). Implementation adds version-aware ChatGPT CLI scan fallback and tests. Validation completed in implementation worktree: bun run lint, bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T22:39:01Z",
+    "entry_id": "019cc027-b111-78c1-a3ee-7b10df2393dc",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}

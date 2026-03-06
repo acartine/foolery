@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc016-aec4-77e3-b348-703db580b9bc",
+  "occurred_at": "2026-03-05T22:20:37.956708Z",
+  "knot_id": "foolery-d46a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Normalized invariant handling for knots and beads: trim/dedupe invariant conditions before serialization, patch generation, and notes persistence. Added coverage for normalization in knots CLI/backends and beads backend. Gates: bun run lint (warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T22:20:37.956708Z",
+    "entry_id": "019cc016-aec4-77e3-b348-702bec21122a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

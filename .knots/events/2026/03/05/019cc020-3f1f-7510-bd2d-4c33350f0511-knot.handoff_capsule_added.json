@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc020-3f1f-7510-bd2d-4c33350f0511",
+  "occurred_at": "2026-03-05T22:31:04.735741Z",
+  "knot_id": "foolery-be4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added agent/model/version columns to the Active view in beat-columns.tsx. Data sourced from metadata.knotsHandoffCapsules (last capsule) with live terminal session data taking precedence for running beats. Three new columns (Agent, Model, Version) only appear when showAgentColumns=true, which is set when viewPhase is active. All quality gates pass (tsc, tests, build).",
+    "datetime": "2026-03-05T23:32:00Z",
+    "entry_id": "019cc020-3f1f-7510-bd2d-4c27515d316e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "1"
+  }
+}

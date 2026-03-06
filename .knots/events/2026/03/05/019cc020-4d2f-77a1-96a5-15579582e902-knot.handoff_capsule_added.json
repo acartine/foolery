@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc020-4d2f-77a1-96a5-15579582e902",
+  "occurred_at": "2026-03-05T22:31:08.335963Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Strengthened settings UI pizzazz by adding prominent purple/green gradients and interaction accents across OpenRouter controls (header, info bar, API key panel, selected model badges, model browser/table, security dialog). Quality gates passed: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1943 passed), NODE_ENV=production bun run build. Integrated to origin/main as 7736672.",
+    "datetime": "2026-03-05T22:31:08.335963Z",
+    "entry_id": "019cc020-4d2f-77a1-96a5-154163c988b2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

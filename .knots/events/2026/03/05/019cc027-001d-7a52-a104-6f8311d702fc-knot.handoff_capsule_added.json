@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc027-001d-7a52-a104-6f8311d702fc",
+  "occurred_at": "2026-03-05T22:38:27.357222Z",
+  "knot_id": "foolery-be4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved on main: Active view exposes Agent/Model/Version columns via beat metadata handoff capsules with live terminal-session override for running beats. Verified commit dec88b09ac6d is present on origin/main and current main HEAD is e39715f6aafe. No invariant violations found.",
+    "datetime": "2026-03-05T22:38:19Z",
+    "entry_id": "019cc027-001d-7a52-a104-6f74258c5895",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

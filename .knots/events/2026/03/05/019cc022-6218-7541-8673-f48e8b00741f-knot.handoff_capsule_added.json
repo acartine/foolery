@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc022-6218-7541-8673-f48e8b00741f",
+  "occurred_at": "2026-03-05T22:33:24.760498Z",
+  "knot_id": "foolery-faf2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Fixed cross-project notification beat handling robustness by preserving full hyphenated project prefixes in beat ID parsing (e.g., my-project-abc -> my-project), with regression tests for trailing-hyphen invalid IDs; quality gates passed (lint warnings-only baseline, tsc, tests, NODE_ENV=production build). Commit 944abe0f2ab8 pushed to origin/main.",
+    "datetime": "2026-03-05T22:33:24Z",
+    "entry_id": "019cc022-6218-7541-8673-f4765340cdf6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

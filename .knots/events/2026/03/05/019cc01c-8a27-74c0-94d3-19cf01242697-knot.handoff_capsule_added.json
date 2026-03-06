@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01c-8a27-74c0-94d3-19cf01242697",
+  "occurred_at": "2026-03-05T22:27:01.799377Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Boosted settings pizazz with stronger purple/green treatment across sheet shell, section cards, dispatch/action containers, repos surfaces, and defaults selector controls while preserving behavior. Quality gates passed in dedicated worktree: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1941 passed), NODE_ENV=production bun run build. Feature commit 45683fd2ff3b pushed to origin/worktree-foolery-0df2-pizazz-4 and integrated to origin/main.",
+    "datetime": "2026-03-05T22:26:49Z",
+    "entry_id": "019cc01c-8a27-74c0-94d3-19bed612eaf6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "v1"
+  }
+}

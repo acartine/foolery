@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc02e-5b8a-7693-8e50-7339e15ecfa3",
+  "occurred_at": "2026-03-05T22:46:29.514254Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented another settings color/pizazz pass focused on OpenRouter and sheet shell: added stronger purple/green gradients, glow accents, richer security-dialog section cards, and brighter model-table interaction states. Quality gates passed in dedicated worktree: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1950 passed), NODE_ENV=production bun run build. Integrated to origin/main as 6d71f2c.",
+    "datetime": "2026-03-05T22:46:29Z",
+    "entry_id": "019cc02e-5b8a-7693-8e50-7327d5d9c89d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "v1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc02c-bde2-7bc2-97ed-67163ff97b14",
+  "occurred_at": "2026-03-05T22:44:43.618465Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: all implementation commits (60a8178, 3d36e3d, and others) are on origin/main. Quality gates pass: 122 test files (1950 tests), tsc --noEmit clean, working tree clean. No merge needed as code was already integrated on main.",
+    "datetime": "2026-03-05T23:45:00Z",
+    "entry_id": "019cc02c-bde2-7bc2-97ed-670d6b809d68",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

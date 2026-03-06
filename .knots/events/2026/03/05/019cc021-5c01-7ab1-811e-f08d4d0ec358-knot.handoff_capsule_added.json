@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc021-5c01-7ab1-811e-f08d4d0ec358",
+  "occurred_at": "2026-03-05T22:32:17.665705Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: all settings purple/green pizazz commits (45683fd, 7736672) already integrated on origin/main. Working tree clean, local in sync with remote. No merge needed.",
+    "datetime": "2026-03-05T22:32:17.665705Z",
+    "entry_id": "019cc021-5c01-7ab1-811e-f07511d0bf2b",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "v1"
+  }
+}

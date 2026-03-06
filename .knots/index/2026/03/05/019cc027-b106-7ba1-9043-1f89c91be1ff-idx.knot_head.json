@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc027-b106-7ba1-9043-1f89c91be1ff",
+  "occurred_at": "2026-03-05T22:39:12.638171Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-5f5b",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "settings: scan should check for new model versions",
+    "updated_at": "2026-03-05T22:39:12.638171Z"
+  }
+}

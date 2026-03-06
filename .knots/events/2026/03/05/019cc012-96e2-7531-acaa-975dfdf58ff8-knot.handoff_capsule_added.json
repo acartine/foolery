@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc012-96e2-7531-acaa-975dfdf58ff8",
+  "occurred_at": "2026-03-05T22:16:09.698004Z",
+  "knot_id": "foolery-faf2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Notification beat links now preserve full beat IDs and carry notification repoPath metadata so cross-project clicks switch to the correct repo before navigation; added tests for repo-path resolution and notification metadata propagation; lint/typecheck/test pass, build passes with NODE_ENV=production.",
+    "datetime": "2026-03-05T22:16:09.698004Z",
+    "entry_id": "019cc012-96e2-7531-acaa-974eb331316d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

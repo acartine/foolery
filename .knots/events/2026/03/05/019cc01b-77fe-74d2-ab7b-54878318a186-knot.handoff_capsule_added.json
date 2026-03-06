@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01b-77fe-74d2-ab7b-54878318a186",
+  "occurred_at": "2026-03-05T22:25:51.614259Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review approved: implementation scope is clear (scan agent list/dialect labels for new chatgpt model versions), test coverage and quality gates are specified, and no invariant conflicts were found.",
+    "datetime": "2026-03-05T22:25:44Z",
+    "entry_id": "019cc01b-77fe-74d2-ab7b-547ba5a85e40",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}

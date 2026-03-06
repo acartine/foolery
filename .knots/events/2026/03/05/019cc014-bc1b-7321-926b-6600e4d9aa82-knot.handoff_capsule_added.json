@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc014-bc1b-7321-926b-6600e4d9aa82",
+  "occurred_at": "2026-03-05T22:18:30.29962Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented stronger purple/green settings polish: enriched sheet shell glow, bolder section-card gradients/rings, and upgraded OpenRouter/defaults control surfaces and interaction states. Quality gates passed: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1934 passed), NODE_ENV=production bun run build (success). Feature commit: ddb6d5da1bc3.",
+    "datetime": "2026-03-05T22:18:30Z",
+    "entry_id": "019cc014-bc1b-7321-926b-65f861dd0605",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "v1"
+  }
+}

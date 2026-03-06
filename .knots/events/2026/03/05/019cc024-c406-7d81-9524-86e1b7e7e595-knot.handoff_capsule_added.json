@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc024-c406-7d81-9524-86e1b7e7e595",
+  "occurred_at": "2026-03-05T22:36:00.902675Z",
+  "knot_id": "foolery-be4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation. Active view now shows Agent/Model/Version columns from latest handoff capsule metadata with running terminal session data overriding when available. Wiring confirmed through beats page -> beat table -> beat columns. Validation: bunx tsc --noEmit passed; bun run test passed (121 files, 1945 tests). Repository-level lint/build currently fail due existing unrelated issues in workspace (extensive pre-existing lint errors and Next prerender key warning/typeerror), not introduced by this change.",
+    "datetime": "2026-03-05T22:36:00Z",
+    "entry_id": "019cc024-c406-7d81-9524-86d078fb1640",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

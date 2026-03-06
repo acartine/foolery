@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc017-12b3-7313-a562-dc2231b32f9e",
+  "occurred_at": "2026-03-05T22:21:03.539088Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-5f5b",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "settings: scan should check for new model versions",
+    "updated_at": "2026-03-05T22:21:03.539088Z"
+  },
+  "precondition": {
+    "profile_etag": "019cbff7-8022-7f30-b696-17e305d77aa3"
+  }
+}

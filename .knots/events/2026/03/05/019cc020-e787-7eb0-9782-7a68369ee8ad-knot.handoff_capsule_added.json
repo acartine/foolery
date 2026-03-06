@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc020-e787-7eb0-9782-7a68369ee8ad",
+  "occurred_at": "2026-03-05T22:31:47.847653Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented scan fallback for versioned ChatGPT binaries (e.g., chatgpt-5.1/chatgpt5), selecting the highest discovered version while keeping canonical id chatgpt. Updated settings scan tests and coverage mocks; added test for versioned fallback behavior. Quality gates: bun run lint (warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T22:31:28Z",
+    "entry_id": "019cc020-e787-7eb0-9782-7a5df3d76336",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}

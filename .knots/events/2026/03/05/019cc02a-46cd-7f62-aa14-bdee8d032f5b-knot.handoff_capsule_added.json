@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc02a-46cd-7f62-aa14-bdee8d032f5b",
+  "occurred_at": "2026-03-05T22:42:02.061244Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented another settings visual pass with stronger purple/green treatment in row-level controls and forms across agents/actions/pools/defaults. Increased gradients, borders, rings, and hover states while preserving behavior. Quality gates: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1946 passed), NODE_ENV=production bun run build (success). Feature commit f9606a7 integrated to main as 1f56647 and pushed to origin/main.",
+    "datetime": "2026-03-05T22:42:02Z",
+    "entry_id": "019cc02a-46cd-7f62-aa14-bdd9a2dfffa1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "v1"
+  }
+}

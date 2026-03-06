@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc025-afb6-79d3-a711-0a2997167cf8",
+  "occurred_at": "2026-03-05T22:37:01.238477Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Boosted settings with stronger purple/green visual treatment across sheet shell, repos/actions/pools cards, and OpenRouter controls/table interaction states while preserving behavior. Quality gates passed: bun run lint (warnings only), bunx tsc --noEmit, bun run test (1945 passed), NODE_ENV=production bun run build. Feature branch commit b0811e7d35ed integrated to origin/main as e39715f6aafe.",
+    "datetime": "2026-03-05T22:36:52Z",
+    "entry_id": "019cc025-afb6-79d3-a711-0a1dcf4478c6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "v1"
+  }
+}

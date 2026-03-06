@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc18a-7d5d-7001-92e0-e7254d824535",
+  "occurred_at": "2026-03-06T05:06:44.699722Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Reverted all mainline settings restyle commits associated with knot 0df2, backing out the repeated purple/green redesign passes and restoring the pre-0df2 settings presentation. Verified with bun run lint (warnings only, 0 errors), bunx tsc --noEmit, bun run test, and NODE_ENV=production bun run build. Pushed directly to origin/main as commits 3b9c5d7, 005ce9f, and 311716c.",
+    "datetime": "2026-03-06T05:06:44.699722Z",
+    "entry_id": "019cc18a-7d5d-7001-92e0-e71b05280e71",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

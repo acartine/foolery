@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc02d-dd41-77d3-8ce3-5634e74444c1",
+  "occurred_at": "2026-03-05T22:45:57.185977Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved: origin/main matches local main at 3d36e3d9bb01, required commit tags are now present for be0fbcbf7c3b/60a8178f2429/3d36e3d9bb01, and prior implementation validation evidence shows lint + tsc + tests + production build passing with no reported regressions.",
+    "datetime": "2026-03-05T22:45:34Z",
+    "entry_id": "019cc02d-dd41-77d3-8ce3-5626511465d7",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

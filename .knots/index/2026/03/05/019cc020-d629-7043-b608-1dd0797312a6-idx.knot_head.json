@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc020-d629-7043-b608-1dd0797312a6",
+  "occurred_at": "2026-03-05T22:31:43.401326Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-be4d",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Active view: Add columns for agent / model / model version",
+    "updated_at": "2026-03-05T22:31:43.401326Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc020-8240-72c3-9017-be98b2fb1ea4"
+  }
+}

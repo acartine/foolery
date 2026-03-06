@@ -1,0 +1,16 @@
+{
+  "event_id": "019cc02b-9260-7811-94b8-f91702560ee5",
+  "occurred_at": "2026-03-05T22:43:26.944482Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "gpt-5",
+    "agent_name": "codex",
+    "agent_version": "gpt-5-codex",
+    "force": false,
+    "from": "implementation_review",
+    "profile_id": "autopilot",
+    "to": "ready_for_shipment"
+  }
+}

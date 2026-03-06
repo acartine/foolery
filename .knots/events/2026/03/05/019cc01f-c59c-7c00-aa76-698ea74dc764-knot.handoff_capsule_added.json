@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01f-c59c-7c00-aa76-698ea74dc764",
+  "occurred_at": "2026-03-05T22:30:33.628393Z",
+  "knot_id": "foolery-d46a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added robust invariant normalization in knots backend to support mixed/native payload shapes, plus regression coverage for mixed string/object invariants. Quality gates passed: bun run lint, bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-05T22:30:33.628393Z",
+    "entry_id": "019cc01f-c59c-7c00-aa76-697d938bb04b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

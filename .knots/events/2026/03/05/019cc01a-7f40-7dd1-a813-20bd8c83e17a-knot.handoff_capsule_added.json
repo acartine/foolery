@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01a-7f40-7dd1-a813-20bd8c83e17a",
+  "occurred_at": "2026-03-05T22:24:47.936039Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added chatgpt CLI to SCANNABLE_AGENTS, resolveDialect (maps to codex dialect), KNOWN_AGENT_LABELS, and updated all tests. 5 files changed, all quality gates pass. Commit be0fbcb pushed to origin/main.",
+    "datetime": "2026-03-05T22:24:47.936039Z",
+    "entry_id": "019cc01a-7f40-7dd1-a813-20ac2d15ceb3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

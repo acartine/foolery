@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc02b-6859-7e40-a06b-0785b9341ab8",
+  "occurred_at": "2026-03-05T22:43:16.185253Z",
+  "knot_id": "foolery-5f5b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Expanded settings agent scan to detect versioned ChatGPT binaries with prerelease suffixes (e.g. chatgpt-6-preview), prefer stable over prerelease when numeric versions match, added unit coverage, and validated with lint, tsc, tests, and production build. Commit 3d36e3d is pushed to origin/main.",
+    "datetime": "2026-03-05T22:43:10Z",
+    "entry_id": "019cc02b-6859-7e40-a06b-077e9f53230a",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

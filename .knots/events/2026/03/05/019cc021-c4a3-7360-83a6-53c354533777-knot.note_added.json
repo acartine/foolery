@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc021-c4a3-7360-83a6-53c354533777",
+  "occurred_at": "2026-03-05T22:32:44.451477Z",
+  "knot_id": "foolery-0df2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "User requested additional implementation pass for stronger purple/green settings pizazz; returning from shipment_review to implementation.",
+    "datetime": "2026-03-05T22:32:44.451477Z",
+    "entry_id": "019cc021-c4a3-7360-83a6-53b778c1be54",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

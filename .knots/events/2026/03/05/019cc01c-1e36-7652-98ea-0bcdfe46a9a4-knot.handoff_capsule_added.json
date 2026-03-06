@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01c-1e36-7652-98ea-0bcdfe46a9a4",
+  "occurred_at": "2026-03-05T22:26:34.166844Z",
+  "knot_id": "foolery-d46a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: all invariant support code already on main from prior implementation phases. Fixed pre-existing scanForAgents test count mismatch (4->5). All 1943 tests pass, typecheck clean, build succeeds. Pushed to origin/main.",
+    "datetime": "2026-03-05T23:30:00Z",
+    "entry_id": "019cc01c-1e36-7652-98ea-0bbb99c03388",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "opus-4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc025-9c75-7e91-bd96-e0f98e7cd0b4",
+  "occurred_at": "2026-03-05T22:36:56.30994Z",
+  "knot_id": "foolery-be4d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: commit dec88b0 (feat(beats): add agent/model/version columns to active view) confirmed on origin/main. Local and remote main are in sync at e39715f.",
+    "datetime": "2026-03-05T22:40:00Z",
+    "entry_id": "019cc025-9c75-7e91-bd96-e0e638372694",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

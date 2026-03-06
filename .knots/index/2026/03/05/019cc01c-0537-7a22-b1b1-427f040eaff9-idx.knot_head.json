@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc01c-0537-7a22-b1b1-427f040eaff9",
+  "occurred_at": "2026-03-05T22:26:27.761486Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-d46a",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Add support for invariants",
+    "updated_at": "2026-03-05T22:26:27.761486Z"
+  }
+}
