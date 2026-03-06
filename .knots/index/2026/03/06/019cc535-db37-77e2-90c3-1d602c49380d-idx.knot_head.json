@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc535-db37-77e2-90c3-1d602c49380d",
+  "occurred_at": "2026-03-06T22:12:47.031823Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-4c75",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Beads: map unlabeled open/in_progress items to implementation states",
+    "updated_at": "2026-03-06T22:12:47.031823Z"
+  }
+}

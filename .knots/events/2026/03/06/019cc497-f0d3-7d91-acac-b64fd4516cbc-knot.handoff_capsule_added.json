@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc497-f0d3-7d91-acac-b64fd4516cbc",
+  "occurred_at": "2026-03-06T19:20:17.87558Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented dispatch-level global Swap Agent refinement: swap control now renders whenever a valid global replacement exists (including stale source IDs with a single available replacement), and source options are filtered to only swappable IDs via new getSwappableSourceAgentIds helper. Added regression tests for swappable source filtering and verified lint, tsc, tests, and production build.",
+    "datetime": "2026-03-06T19:20:17Z",
+    "entry_id": "019cc497-f0d3-7d91-acac-b63e8a5e0cd0",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}

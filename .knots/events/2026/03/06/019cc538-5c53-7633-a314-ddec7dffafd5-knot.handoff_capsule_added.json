@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc538-5c53-7633-a314-ddec7dffafd5",
+  "occurred_at": "2026-03-06T22:15:31.155072Z",
+  "knot_id": "foolery-4c75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Legacy unlabeled Beads items now normalize to the no-planning implementation flow: open -> ready_for_implementation, in_progress -> implementation, while explicit wf labels/profile metadata still win. Updated both JSONL and bd CLI normalization paths and added regression coverage. Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-03-06T22:15:31.155072Z",
+    "entry_id": "019cc538-5c53-7633-a314-dddac921d6c2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

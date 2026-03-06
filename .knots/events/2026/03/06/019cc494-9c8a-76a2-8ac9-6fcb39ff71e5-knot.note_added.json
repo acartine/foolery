@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc494-9c8a-76a2-8ac9-6fcb39ff71e5",
+  "occurred_at": "2026-03-06T19:16:39.690846Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Additional source edits required to finalize dispatch global swap behavior.",
+    "datetime": "2026-03-06T19:16:39.690846Z",
+    "entry_id": "019cc494-9c8a-76a2-8ac9-6fbd6fc7f0f6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
