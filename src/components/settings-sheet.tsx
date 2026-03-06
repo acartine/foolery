@@ -56,16 +56,11 @@ function SettingsSectionCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-primary/70 bg-gradient-to-br from-primary/46 via-primary/16 to-accent/40 p-4 shadow-lg shadow-primary/20 ring-1 ring-primary/35 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/80 hover:ring-accent/50 hover:shadow-xl hover:shadow-accent/25",
+        "relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background/85 to-accent/10 p-4 shadow-sm backdrop-blur-sm",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/22 via-primary/8 to-accent/18" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(147,51,234,0.2),transparent_35%,rgba(34,197,94,0.16)_70%,transparent)] opacity-90" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-accent/85" />
-      <div className="pointer-events-none absolute inset-y-2 left-0 w-px bg-gradient-to-b from-transparent via-accent/85 to-transparent" />
-      <div className="pointer-events-none absolute -top-16 -right-14 h-44 w-44 rounded-full bg-primary/44 opacity-90 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
-      <div className="pointer-events-none absolute -bottom-16 -left-14 h-44 w-44 rounded-full bg-accent/38 opacity-90 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -157,117 +152,95 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="relative overflow-hidden border-primary/70 bg-gradient-to-br from-primary/40 via-background/78 to-accent/38 shadow-2xl shadow-primary/25 sm:max-w-xl">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-primary/42 blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/36 blur-3xl" />
-          <div className="absolute top-20 left-24 h-56 w-56 rounded-full bg-primary/24 blur-3xl" />
-          <div className="absolute bottom-16 right-24 h-52 w-52 rounded-full bg-accent/22 blur-3xl" />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/24 via-primary/6 to-accent/24" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(142,82,255,0.24),transparent_45%),radial-gradient(circle_at_80%_90%,rgba(34,197,94,0.2),transparent_45%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(140deg,transparent_0%,rgba(255,255,255,0.09)_48%,transparent_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(35deg,rgba(168,85,247,0.18),transparent_40%,rgba(34,197,94,0.18)_75%,transparent)]" />
-        </div>
+      <SheetContent className="sm:max-w-xl border-primary/30 bg-gradient-to-br from-primary/8 via-background to-accent/8">
+        <SheetHeader>
+          <SheetTitle className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Settings</SheetTitle>
+          <SheetDescription>
+            Configuration stored in ~/.config/foolery/settings.toml
+          </SheetDescription>
+        </SheetHeader>
 
-        <div className="relative z-10 flex h-full flex-col">
-          <SheetHeader>
-            <SheetTitle className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
-              Settings
-            </SheetTitle>
-            <SheetDescription className="text-primary/90">
-              Configuration stored in ~/.config/foolery/settings.toml
-            </SheetDescription>
-          </SheetHeader>
+        <div className="px-4 pt-2 flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-3 py-4">
+            {/* Section: Repositories (independent data, always rendered) */}
+            <SettingsSectionCard
+              className="border-accent/35 from-accent/12 via-background/85 to-primary/10"
+            >
+              <div ref={reposSectionRef}>
+                <SettingsReposSection />
+              </div>
+            </SettingsSectionCard>
+            {loading ? (
+              <p className="text-sm text-muted-foreground">Loading settings...</p>
+            ) : (
+              <>
+                {/* Section 1: Agent Management */}
+                <SettingsSectionCard
+                  className="border-primary/35 from-primary/14 via-background/85 to-accent/10"
+                >
+                  <SettingsAgentsSection
+                    agents={settings.agents}
+                    onAgentsChange={(agents) =>
+                      setSettings((prev) => ({ ...prev, agents }))
+                    }
+                    openrouter={settings.openrouter}
+                    onOpenRouterChange={(openrouter) =>
+                      setSettings((prev) => ({ ...prev, openrouter }))
+                    }
+                  />
+                </SettingsSectionCard>
 
-          <div className="px-4 pt-2 flex-1 min-h-0 overflow-y-auto">
-            <div className="space-y-3 py-4">
-              {/* Section: Repositories (independent data, always rendered) */}
-              <SettingsSectionCard
-                className="border-accent/62 from-accent/34 via-accent/14 to-primary/22 ring-accent/28"
-              >
-                <div ref={reposSectionRef}>
-                  <SettingsReposSection />
-                </div>
-              </SettingsSectionCard>
-              {loading ? (
-                <p className="rounded-md border border-primary/45 bg-gradient-to-r from-primary/22 via-primary/8 to-accent/20 px-2.5 py-1.5 text-sm text-primary/95 ring-1 ring-primary/20">
-                  Loading settings...
-                </p>
-              ) : (
-                <>
-                  {/* Section 1: Agent Management */}
-                  <SettingsSectionCard
-                    className="border-primary/62 from-primary/36 via-primary/14 to-accent/24 ring-primary/30"
-                  >
-                    <SettingsAgentsSection
-                      agents={settings.agents}
-                      onAgentsChange={(agents) =>
-                        setSettings((prev) => ({ ...prev, agents }))
-                      }
-                      openrouter={settings.openrouter}
-                      onOpenRouterChange={(openrouter) =>
-                        setSettings((prev) => ({ ...prev, openrouter }))
-                      }
-                    />
-                  </SettingsSectionCard>
+                {/* Section 2: Agent Dispatch (Actions + Pools with mode toggle) */}
+                <SettingsSectionCard
+                  className="border-primary/30 from-primary/12 via-background/85 to-accent/12"
+                >
+                  <SettingsDispatchSection
+                    dispatchMode={settings.dispatchMode}
+                    actions={settings.actions}
+                    pools={settings.pools}
+                    agents={settings.agents}
+                    openrouter={settings.openrouter}
+                    onDispatchModeChange={(dispatchMode) =>
+                      setSettings((prev) => ({ ...prev, dispatchMode }))
+                    }
+                    onActionsChange={(actions) =>
+                      setSettings((prev) => ({ ...prev, actions }))
+                    }
+                    onPoolsChange={(pools) =>
+                      setSettings((prev) => ({ ...prev, pools }))
+                    }
+                  />
+                </SettingsSectionCard>
 
-                  {/* Section 2: Agent Dispatch (Actions + Pools with mode toggle) */}
-                  <SettingsSectionCard
-                    className="border-primary/58 from-primary/32 via-primary/14 to-accent/30 ring-accent/24"
-                  >
-                    <SettingsDispatchSection
-                      dispatchMode={settings.dispatchMode}
-                      actions={settings.actions}
-                      pools={settings.pools}
-                      agents={settings.agents}
-                      openrouter={settings.openrouter}
-                      onDispatchModeChange={(dispatchMode) =>
-                        setSettings((prev) => ({ ...prev, dispatchMode }))
-                      }
-                      onActionsChange={(actions) =>
-                        setSettings((prev) => ({ ...prev, actions }))
-                      }
-                      onPoolsChange={(pools) =>
-                        setSettings((prev) => ({ ...prev, pools }))
-                      }
-                    />
-                  </SettingsSectionCard>
-
-                  {/* Section 4: Defaults */}
-                  <SettingsSectionCard
-                    className="border-accent/58 from-accent/30 via-accent/12 to-primary/24 ring-accent/24"
-                  >
-                    <SettingsDefaultsSection
-                      defaults={settings.defaults}
-                      onDefaultsChange={(defaults) =>
-                        setSettings((prev) => ({ ...prev, defaults }))
-                      }
-                    />
-                  </SettingsSectionCard>
-                </>
-              )}
-            </div>
+                {/* Section 4: Defaults */}
+                <SettingsSectionCard
+                  className="border-accent/30 from-accent/12 via-background/85 to-primary/10"
+                >
+                  <SettingsDefaultsSection
+                    defaults={settings.defaults}
+                    onDefaultsChange={(defaults) =>
+                      setSettings((prev) => ({ ...prev, defaults }))
+                    }
+                  />
+                </SettingsSectionCard>
+              </>
+            )}
           </div>
-
-          <Separator className="bg-gradient-to-r from-transparent via-primary to-accent/90" />
-          <SheetFooter className="border-t border-primary/55 bg-gradient-to-r from-primary/30 via-primary/10 to-accent/26 px-4 py-3">
-            <Button
-              variant="outline"
-              className="border-primary/75 bg-primary/16 hover:border-accent/75 hover:bg-accent/24"
-              onClick={handleReset}
-              disabled={saving}
-            >
-              Reset to Defaults
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-lg shadow-primary/35 hover:brightness-105"
-              onClick={handleSave}
-              disabled={saving || loading}
-            >
-              {saving ? "Saving..." : "Save"}
-            </Button>
-          </SheetFooter>
         </div>
+
+        <Separator className="bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
+        <SheetFooter className="px-4 py-3 bg-gradient-to-r from-primary/6 via-background/85 to-accent/6">
+          <Button variant="outline" onClick={handleReset} disabled={saving}>
+            Reset to Defaults
+          </Button>
+          <Button
+            className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-md hover:opacity-95"
+            onClick={handleSave}
+            disabled={saving || loading}
+          >
+            {saving ? "Saving..." : "Save"}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

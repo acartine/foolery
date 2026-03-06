@@ -100,15 +100,11 @@ export function SettingsOpenRouterSection({
     models?.find((model) => model.id === openrouter.model) ?? null;
 
   return (
-    <div className="relative space-y-4 overflow-hidden rounded-xl border border-primary/60 bg-gradient-to-br from-primary/30 via-primary/10 to-accent/26 p-3 ring-1 ring-primary/24 shadow-md shadow-primary/20">
-      <div className="pointer-events-none absolute -top-12 -right-10 h-24 w-24 rounded-full bg-primary/30 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-12 -left-10 h-24 w-24 rounded-full bg-accent/28 blur-2xl" />
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Globe className="size-4 text-primary drop-shadow-[0_0_8px_rgba(137,87,255,0.45)]" />
-          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
-            OpenRouter
-          </h3>
+          <Globe className="size-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium">OpenRouter</h3>
         </div>
         <Switch
           checked={openrouter.enabled}
@@ -118,16 +114,15 @@ export function SettingsOpenRouterSection({
         />
       </div>
 
-      <div className="relative flex items-center justify-between overflow-hidden rounded-lg border border-accent/55 bg-gradient-to-r from-primary/28 via-primary/12 to-accent/26 px-3 py-2 ring-1 ring-primary/24">
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-accent/25 to-transparent" />
-        <p className="text-xs text-primary/95">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
           Connect to OpenRouter for access to 200+ AI models from multiple
           providers with unified pricing.
         </p>
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 shrink-0 gap-1 border border-primary/45 bg-gradient-to-r from-primary/20 to-accent/18 px-2 text-[10px] text-primary shadow-sm shadow-primary/20 hover:border-accent/65 hover:from-primary/28 hover:to-accent/26"
+          className="text-[10px] text-muted-foreground gap-1 h-6 px-2 shrink-0"
           onClick={() => setSecurityDialogOpen(true)}
         >
           <ShieldCheck className="size-3" />
@@ -141,7 +136,7 @@ export function SettingsOpenRouterSection({
       />
 
       {openrouter.enabled && (
-        <div className="relative space-y-3 rounded-lg border border-primary/45 bg-gradient-to-br from-primary/16 via-background/80 to-accent/18 p-2.5 ring-1 ring-accent/20">
+        <div className="space-y-3">
           <ApiKeyField
             apiKey={openrouter.apiKey}
             showKey={showKey}
@@ -192,17 +187,14 @@ interface SelectedModelBadgeProps {
 
 function SelectedModelBadge({ modelId, model, onClear }: SelectedModelBadgeProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-accent/45 bg-gradient-to-r from-accent/24 via-background/75 to-primary/20 p-2 ring-1 ring-accent/20">
+    <div className="flex flex-wrap items-center gap-2">
       <Label className="text-xs">Selected Model</Label>
-      <Badge
-        variant="outline"
-        className="gap-1 border-primary/55 bg-gradient-to-r from-primary/18 via-background/80 to-accent/18 font-mono text-[11px]"
-      >
+      <Badge variant="outline" className="gap-1 font-mono text-[11px]">
         {modelId}
         <button
           type="button"
           onClick={onClear}
-          className="ml-0.5 rounded-full hover:bg-accent/22"
+          className="ml-0.5 rounded-full hover:bg-muted"
           aria-label="Clear selected model"
         >
           <X className="size-3" />
@@ -213,7 +205,7 @@ function SelectedModelBadge({ modelId, model, onClear }: SelectedModelBadgeProps
           <Badge variant="secondary" className="font-mono text-[10px]">
             Prompt {formatPricing(model.pricing.prompt)}
           </Badge>
-          <Badge variant="secondary" className="border border-primary/35 bg-gradient-to-r from-primary/18 to-accent/16 font-mono text-[10px]">
+          <Badge variant="secondary" className="font-mono text-[10px]">
             Completion {formatPricing(model.pricing.completion)}
           </Badge>
         </>
@@ -244,7 +236,7 @@ function ApiKeyField({
   const isMasked = apiKey.includes("...");
 
   return (
-    <div className="space-y-1.5 rounded-lg border border-primary/50 bg-gradient-to-r from-primary/20 via-background/80 to-accent/22 p-2.5 ring-1 ring-primary/25 shadow-sm shadow-primary/20">
+    <div className="space-y-1.5">
       <Label className="text-xs">API Key</Label>
       <div className="flex gap-2">
         <div className="relative flex-1">
@@ -253,12 +245,12 @@ function ApiKeyField({
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
             placeholder="sk-or-v1-..."
-            className="border-primary/60 bg-gradient-to-r from-primary/16 via-background/82 to-accent/16 pr-9 focus-visible:ring-accent/45"
+            className="pr-9"
           />
           <Button
             variant="ghost"
             size="sm"
-            className="absolute right-0 top-0 h-full px-2 text-primary hover:bg-primary/14 hover:text-primary"
+            className="absolute right-0 top-0 h-full px-2"
             onClick={onToggleShow}
           >
             {showKey ? (
@@ -271,7 +263,6 @@ function ApiKeyField({
         <Button
           variant="outline"
           size="sm"
-          className="border-accent/55 bg-gradient-to-r from-accent/18 via-background/85 to-primary/16 hover:border-primary/60 hover:bg-primary/20"
           onClick={onValidate}
           disabled={validating || !apiKey.trim()}
         >
@@ -285,18 +276,18 @@ function ApiKeyField({
         </Button>
       </div>
       {isMasked && (
-        <p className="text-[10px] text-primary/80">
+        <p className="text-[10px] text-muted-foreground">
           Key is stored server-side. Clear the field and type a new key to
           update.
         </p>
       )}
-      <p className="text-[10px] text-primary/80">
+      <p className="text-[10px] text-muted-foreground">
         Get your key at{" "}
         <a
           href="https://openrouter.ai/keys"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-primary underline decoration-accent/80 underline-offset-2"
+          className="underline"
         >
           openrouter.ai/keys
         </a>
@@ -327,13 +318,12 @@ function ModelsBrowser({
   onSelectModel,
 }: ModelsBrowserProps) {
   return (
-    <div className="space-y-2 rounded-lg border border-accent/45 bg-gradient-to-r from-accent/18 via-background/80 to-primary/18 p-2.5 ring-1 ring-accent/22 shadow-sm shadow-accent/20">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label className="text-xs">Available Models</Label>
         <Button
           variant="outline"
           size="sm"
-          className="border-primary/50 bg-gradient-to-r from-primary/16 via-background/85 to-accent/14 hover:border-accent/65 hover:bg-accent/20"
           onClick={onLoadModels}
           disabled={loadingModels}
         >
@@ -356,14 +346,14 @@ function ModelsBrowser({
             placeholder="Filter models..."
             value={modelFilter}
             onChange={(e) => onFilterChange(e.target.value)}
-            className="h-7 border-primary/55 bg-gradient-to-r from-primary/16 via-background/84 to-accent/16 text-xs"
+            className="h-7 text-xs"
           />
           <ModelsTable
             models={filteredModels ?? []}
             selectedModelId={selectedModelId}
             onSelectModel={onSelectModel}
           />
-          <p className="text-[10px] text-primary/80 text-right">
+          <p className="text-[10px] text-muted-foreground text-right">
             {filteredModels?.length ?? 0} of {models.length} models
           </p>
         </div>
@@ -378,35 +368,31 @@ interface SecurityInfoDialogProps {
 }
 
 function SecurityInfoDialog({ open, onOpenChange }: SecurityInfoDialogProps) {
-  const sectionClassName =
-    "rounded-md border border-primary/45 bg-gradient-to-r from-primary/20 via-background/86 to-accent/18 p-2";
-  const headingClassName =
-    "mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-xs font-medium uppercase tracking-wide text-transparent";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-primary/65 bg-gradient-to-br from-primary/30 via-background/90 to-accent/26 shadow-xl shadow-primary/20 sm:max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <ShieldCheck className="size-4 text-primary" />
+            <ShieldCheck className="size-4" />
             Is This Secure?
           </DialogTitle>
-          <DialogDescription className="text-primary/90">
+          <DialogDescription>
             How your OpenRouter API key is protected.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 text-sm">
-          <section className={sectionClassName}>
-            <h4 className={headingClassName}>
+          <section>
+            <h4 className="font-medium text-xs uppercase tracking-wide text-muted-foreground mb-1">
               Storage
             </h4>
             <ul className="list-disc list-inside space-y-0.5 text-xs text-foreground/80">
               <li>Stored in your OS keychain (macOS Keychain / Linux secret-service) when available.</li>
-              <li>Falls back to <code className="rounded bg-primary/20 px-1 text-[10px]">~/.config/foolery/settings.toml</code> with owner-only permissions (0600).</li>
-              <li>Excluded from version control via <code className="rounded bg-accent/18 px-1 text-[10px]">.gitignore</code>.</li>
+              <li>Falls back to <code className="text-[10px] bg-muted px-1 rounded">~/.config/foolery/settings.toml</code> with owner-only permissions (0600).</li>
+              <li>Excluded from version control via <code className="text-[10px] bg-muted px-1 rounded">.gitignore</code>.</li>
             </ul>
           </section>
-          <section className={sectionClassName}>
-            <h4 className={headingClassName}>
+          <section>
+            <h4 className="font-medium text-xs uppercase tracking-wide text-muted-foreground mb-1">
               In transit
             </h4>
             <ul className="list-disc list-inside space-y-0.5 text-xs text-foreground/80">
@@ -414,8 +400,8 @@ function SecurityInfoDialog({ open, onOpenChange }: SecurityInfoDialogProps) {
               <li>Validation uses the stored key server-side; the browser does not send it.</li>
             </ul>
           </section>
-          <section className={sectionClassName}>
-            <h4 className={headingClassName}>
+          <section>
+            <h4 className="font-medium text-xs uppercase tracking-wide text-muted-foreground mb-1">
               Remaining risks
             </h4>
             <ul className="list-disc list-inside space-y-0.5 text-xs text-foreground/80">
@@ -424,8 +410,8 @@ function SecurityInfoDialog({ open, onOpenChange }: SecurityInfoDialogProps) {
               <li>If the OS keychain is unavailable, the key is stored in a local file.</li>
             </ul>
           </section>
-          <section className={sectionClassName}>
-            <h4 className={headingClassName}>
+          <section>
+            <h4 className="font-medium text-xs uppercase tracking-wide text-muted-foreground mb-1">
               Recommendations
             </h4>
             <ul className="list-disc list-inside space-y-0.5 text-xs text-foreground/80">
@@ -435,7 +421,7 @@ function SecurityInfoDialog({ open, onOpenChange }: SecurityInfoDialogProps) {
                   href="https://openrouter.ai/keys"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary underline decoration-accent/80 underline-offset-2"
+                  className="underline"
                 >
                   openrouter.ai/keys
                 </a>.
@@ -458,10 +444,10 @@ interface ModelsTableProps {
 
 function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProps) {
   return (
-    <div className="max-h-[240px] overflow-y-auto rounded-md border border-primary/55 bg-gradient-to-br from-primary/18 via-background/84 to-accent/18 ring-1 ring-primary/28 shadow-inner shadow-primary/10">
+    <div className="max-h-[240px] overflow-y-auto rounded-md border">
       <table className="w-full text-[11px]">
-        <thead className="sticky top-0 border-b border-primary/35 bg-gradient-to-r from-primary/24 via-background to-accent/20">
-          <tr className="text-left text-primary/80">
+        <thead className="sticky top-0 bg-background border-b">
+          <tr className="text-left text-muted-foreground">
             <th className="px-2 py-1.5 font-medium">Model</th>
             <th className="px-2 py-1.5 font-medium text-right">Context</th>
             <th className="px-2 py-1.5 font-medium text-right">Prompt</th>
@@ -477,10 +463,10 @@ function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProp
                 role="button"
                 tabIndex={0}
                 aria-selected={isSelected}
-                className={`border-b border-primary/25 cursor-pointer transition-colors ${
+                className={`border-b border-border/50 cursor-pointer transition-colors ${
                   isSelected
-                    ? "bg-gradient-to-r from-primary/34 to-accent/30 hover:from-primary/40 hover:to-accent/36"
-                    : "hover:bg-gradient-to-r hover:from-primary/18 hover:to-accent/18"
+                    ? "bg-primary/10 hover:bg-primary/15"
+                    : "hover:bg-muted/50"
                 }`}
                 onClick={() => onSelectModel(model.id)}
                 onKeyDown={(e) => {
@@ -498,16 +484,16 @@ function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProp
                     {model.name}
                   </div>
                 </td>
-                <td className="px-2 py-1.5 text-right text-primary/75">
+                <td className="px-2 py-1.5 text-right text-muted-foreground">
                   {formatContext(model.context_length)}
                 </td>
                 <td className="px-2 py-1.5 text-right">
-                  <Badge variant="secondary" className="border border-primary/35 bg-gradient-to-r from-primary/18 to-accent/16 text-[9px] font-mono">
+                  <Badge variant="secondary" className="text-[9px] font-mono">
                     {formatPricing(model.pricing.prompt)}
                   </Badge>
                 </td>
                 <td className="px-2 py-1.5 text-right">
-                  <Badge variant="secondary" className="border border-accent/35 bg-gradient-to-r from-accent/18 to-primary/16 text-[9px] font-mono">
+                  <Badge variant="secondary" className="text-[9px] font-mono">
                     {formatPricing(model.pricing.completion)}
                   </Badge>
                 </td>
@@ -517,7 +503,7 @@ function ModelsTable({ models, selectedModelId, onSelectModel }: ModelsTableProp
         </tbody>
       </table>
       {models.length === 0 && (
-        <p className="px-3 py-4 text-center text-xs text-primary/80">
+        <p className="px-3 py-4 text-center text-xs text-muted-foreground">
           No models match filter
         </p>
       )}

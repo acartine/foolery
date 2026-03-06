@@ -74,18 +74,13 @@ export function SettingsReposSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FolderOpen className="size-4 text-primary drop-shadow-[0_0_8px_rgba(137,87,255,0.45)]" />
-          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">
-            Repositories
-          </h3>
-          <span className="rounded-full border border-accent/55 bg-gradient-to-r from-primary/34 to-accent/34 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-            Ready
-          </span>
+          <FolderOpen className="size-4 text-accent" />
+          <h3 className="text-sm font-medium">Repositories</h3>
         </div>
         <Button
           size="sm"
           variant="outline"
-          className="border-accent/65 bg-gradient-to-r from-accent/30 via-accent/20 to-primary/28 shadow-sm shadow-accent/25 hover:from-accent/40 hover:to-primary/36"
+          className="border-accent/45 bg-accent/8 hover:bg-accent/18"
           onClick={() => setBrowseOpen(true)}
         >
           <Plus className="mr-1 h-3.5 w-3.5" />
@@ -116,10 +111,8 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
     .join(", ");
 
   return (
-    <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-primary/70 bg-gradient-to-br from-primary/34 via-primary/12 to-accent/30 py-8 text-center shadow-md shadow-primary/20 ring-1 ring-primary/25">
-      <div className="pointer-events-none absolute -top-12 -right-8 h-28 w-28 rounded-full bg-primary/35 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full bg-accent/30 blur-2xl" />
-      <Database className="mb-3 size-8 text-primary drop-shadow-[0_0_12px_rgba(137,87,255,0.45)]" />
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-primary/45 bg-gradient-to-br from-primary/10 via-background/85 to-accent/12 py-8 text-center shadow-sm">
+      <Database className="mb-3 size-8 text-primary/75" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
         Add a repository with a supported memory manager ({supported}) to get
@@ -127,7 +120,7 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
       </p>
       <Button
         size="sm"
-        className="bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-md shadow-primary/35 hover:brightness-105"
+        className="bg-gradient-to-r from-primary to-accent text-primary-foreground"
         onClick={onBrowse}
       >
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
@@ -148,13 +141,10 @@ function RepoList({ repos, onRemove }: RepoListProps) {
       {repos.map((repo) => (
         <div
           key={repo.path}
-          className="group relative flex items-center justify-between overflow-hidden rounded-lg border border-primary/50 bg-gradient-to-r from-primary/26 via-primary/10 to-accent/24 px-3 py-2 transition-all hover:-translate-y-0.5 hover:border-accent/65 hover:from-primary/34 hover:to-accent/32 hover:shadow-sm hover:shadow-accent/20"
+          className="flex items-center justify-between rounded-lg border border-primary/20 bg-gradient-to-r from-primary/8 via-background/85 to-accent/10 px-3 py-2 transition-colors hover:border-accent/45 hover:from-primary/12 hover:to-accent/14"
         >
-          <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-primary/35 blur-xl" />
-          <div className="pointer-events-none absolute -left-6 -bottom-6 h-14 w-14 rounded-full bg-accent/30 blur-xl" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-primary to-accent shadow-sm" />
               <p className="text-sm font-medium truncate">{repo.name}</p>
               <MemoryManagerBadge type={repo.memoryManagerType} />
             </div>
@@ -165,7 +155,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 border border-transparent text-muted-foreground hover:border-primary/45 hover:bg-primary/18 hover:text-accent"
+            className="shrink-0 text-muted-foreground hover:text-destructive"
             onClick={() => onRemove(repo.path)}
           >
             <Trash2 className="size-3.5" />
