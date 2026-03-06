@@ -34,7 +34,7 @@ export function AgentInfoLine({ agent }: AgentInfoLineProps) {
     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
       <Icon className={`size-3.5 ${cfg.color}`} />
       <span className="font-medium">
-        {formatAgentDisplayLabel(agent, { includeSource: true }) || agent.name}
+        {formatAgentDisplayLabel(agent) || agent.name}
       </span>
       <span className="text-muted-foreground/40">|</span>
       <span className="font-mono text-[11px]">{agent.command}</span>

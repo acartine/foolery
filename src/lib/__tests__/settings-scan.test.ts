@@ -52,8 +52,8 @@ describe("scanForAgents", () => {
     });
 
     const agents = await scanForAgents();
-    expect(agents).toHaveLength(3);
-    expect(agents.map((agent) => agent.id)).toEqual(["claude", "codex", "gemini"]);
+    expect(agents).toHaveLength(4);
+    expect(agents.map((agent) => agent.id)).toEqual(["claude", "codex", "gemini", "opencode"]);
 
     const claude = agents.find((agent) => agent.id === "claude");
     expect(claude).toEqual({
@@ -73,7 +73,7 @@ describe("scanForAgents", () => {
     mockExecCb.mockRejectedValue(new Error("not found"));
 
     const agents = await scanForAgents();
-    expect(agents).toHaveLength(3);
+    expect(agents).toHaveLength(4);
     for (const agent of agents) {
       expect(agent.installed).toBe(false);
       expect(agent.path).toBe("");

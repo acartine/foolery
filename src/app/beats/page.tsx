@@ -20,7 +20,6 @@ import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import type { AgentInfo } from "@/components/beat-columns";
 import {
-  detectAgentSource,
   formatAgentFamily,
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
@@ -60,16 +59,10 @@ function toActiveAgentInfo(input: {
     model: normalized.model,
     flavor: normalized.flavor,
   });
-  const source = detectAgentSource({
-    command: input.agentCommand,
-    kind: input.agentCommand === "openrouter-agent" ? "openrouter" : "cli",
-  });
   return {
     agentName: input.agentName,
     model: family || input.model,
-    version: normalized.version
-      ? `${normalized.version} (${source})`
-      : `(${source})`,
+    version: normalized.version,
   };
 }
 

@@ -2,7 +2,7 @@ export type AgentProviderId =
   | "claude"
   | "openai"
   | "gemini"
-  | "openrouter"
+  | "opencode"
   | "unknown";
 
 export interface AgentIdentityLike {
@@ -12,7 +12,7 @@ export interface AgentIdentityLike {
   flavor?: string;
   version?: string;
   label?: string;
-  kind?: "cli" | "openrouter";
+  kind?: "cli";
 }
 
 export interface AgentOptionSeed {
@@ -27,7 +27,7 @@ const PROVIDER_LABELS: Record<Exclude<AgentProviderId, "unknown">, string> = {
   claude: "Claude",
   openai: "OpenAI",
   gemini: "Gemini",
-  openrouter: "OpenRouter",
+  opencode: "OpenCode",
 };
 
 const MODEL_LABELS: Record<string, string> = {
@@ -51,15 +51,6 @@ const MODEL_LABELS: Record<string, string> = {
   devstral: "Devstral",
 };
 
-const OPENROUTER_PROVIDER_LABELS: Record<string, string> = {
-  mistralai: "MistralAI",
-  openai: "OpenAI",
-  anthropic: "Anthropic",
-  google: "Google",
-  meta: "Meta",
-  "meta-llama": "Meta",
-};
-
 function cleanValue(value?: string): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
@@ -68,7 +59,7 @@ function cleanValue(value?: string): string | undefined {
 export function detectAgentProviderId(command?: string): AgentProviderId {
   const lower = command?.trim().toLowerCase() ?? "";
   if (!lower) return "unknown";
-  if (lower.includes("openrouter")) return "openrouter";
+  if (lower.includes("opencode")) return "opencode";
   if (lower.includes("claude")) return "claude";
   if (
     lower.includes("codex") ||
@@ -155,57 +146,22 @@ function normalizeGeminiModel(
   };
 }
 
-function normalizeOpenRouterModel(
-  rawModel?: string,
-): { provider?: string; model?: string; flavor?: string; version?: string } {
-  const cleaned = cleanValue(rawModel)?.toLowerCase();
-  if (!cleaned) return {};
-
-  const withoutSuffix = cleaned.includes(":")
-    ? cleaned.slice(0, cleaned.indexOf(":"))
-    : cleaned;
-  const [rawProvider, rawModelName = withoutSuffix] = withoutSuffix.split("/", 2);
-  const provider = OPENROUTER_PROVIDER_LABELS[rawProvider] ?? cleanValue(rawProvider);
-
-  if (rawProvider === "mistralai" && rawModelName.startsWith("devstral")) {
-    return {
-      provider: "MistralAI",
-      model: "devstral",
-      version: "2",
-    };
-  }
-
-  const normalizedModel = cleanValue(rawModelName)
-    ?.split("-")
-    .map((part) => formatModelDisplay(part) ?? part)
-    .join(" ");
-
-  return {
-    ...(provider ? { provider } : {}),
-    ...(normalizedModel ? { model: normalizedModel } : {}),
-  };
-}
-
 export function normalizeAgentIdentity(agent: AgentIdentityLike): {
   provider?: string;
   model?: string;
   flavor?: string;
   version?: string;
 } {
-  const source = agent.kind === "openrouter" || agent.command === "openrouter-agent"
-    ? "orapi"
-    : "cli";
   const provider = providerLabel(agent.provider, agent.command);
   const version = cleanValue(agent.version);
   const flavor = cleanValue(agent.flavor);
   const rawModel = cleanValue(agent.model);
-  if (source === "orapi") {
-    const normalized = normalizeOpenRouterModel(rawModel);
+  if (provider === "OpenCode") {
     return {
-      ...(normalized.provider ? { provider: normalized.provider } : {}),
-      ...(normalized.model ? { model: normalized.model } : {}),
-      ...(flavor ?? normalized.flavor ? { flavor: flavor ?? normalized.flavor } : {}),
-      ...(version ?? normalized.version ? { version: version ?? normalized.version } : {}),
+      provider,
+      ...(rawModel ? { model: rawModel } : {}),
+      ...(flavor ? { flavor } : {}),
+      ...(version ? { version } : {}),
     };
   }
   if (provider === "OpenAI") {
@@ -263,12 +219,6 @@ export function formatFlavorDisplay(flavor?: string): string | undefined {
   return formatModelDisplay(flavor);
 }
 
-export function detectAgentSource(agent: AgentIdentityLike): "cli" | "orapi" {
-  return agent.kind === "openrouter" || agent.command === "openrouter-agent"
-    ? "orapi"
-    : "cli";
-}
-
 export function formatAgentFamily(option: AgentOptionSeed): string {
   const provider = providerLabel(option.provider, option.model);
   const model = formatModelDisplay(option.model);
@@ -293,19 +243,14 @@ export function formatAgentOptionLabel(option: AgentOptionSeed): string {
 
 export function formatAgentDisplayLabel(
   agent: AgentIdentityLike,
-  options?: { includeSource?: boolean },
 ): string {
-  const source = detectAgentSource(agent);
-  const explicitLabel = cleanValue(agent.label);
   const normalized = normalizeAgentIdentity(agent);
-  const base = formatAgentOptionLabel({
+  return formatAgentOptionLabel({
     provider: normalized.provider ?? agent.provider,
     model: normalized.model ?? agent.model,
     flavor: normalized.flavor ?? agent.flavor,
     version: normalized.version ?? agent.version,
-  }) || explicitLabel || cleanValue(agent.command) || "Unknown";
-  if (!options?.includeSource) return base;
-  return `${base} (${source})`;
+  }) || cleanValue(agent.label) || cleanValue(agent.command) || "Unknown";
 }
 
 export function buildAgentOptionId(

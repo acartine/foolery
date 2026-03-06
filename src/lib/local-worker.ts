@@ -7,7 +7,7 @@ import { StructuredExecutionBackend } from "@/lib/execution-backend";
 import type { ExecutionLease, ExecutionSnapshot, PollLeaseResult } from "@/lib/execution-port";
 import type { BackendResult } from "@/lib/backend-port";
 
-const BLOCKED_SHELL_COMMANDS = new Set(["kno", "bd", "claude", "codex", "openrouter-agent"]);
+const BLOCKED_SHELL_COMMANDS = new Set(["kno", "bd", "claude", "codex", "opencode"]);
 
 export type LocalWorkerToolName =
   | "fs_read"

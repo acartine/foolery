@@ -1,4 +1,4 @@
-export type AgentTargetKind = "cli" | "openrouter";
+export type AgentTargetKind = "cli";
 
 export interface AgentTargetBase {
   kind: AgentTargetKind;
@@ -14,12 +14,4 @@ export interface CliAgentTarget extends AgentTargetBase {
   command: string;
 }
 
-export interface OpenRouterAgentTarget extends AgentTargetBase {
-  kind: "openrouter";
-  provider: "openrouter";
-  authSource: "settings";
-  model: string;
-  command?: string;
-}
-
-export type AgentTarget = CliAgentTarget | OpenRouterAgentTarget;
+export type AgentTarget = CliAgentTarget;

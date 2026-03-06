@@ -1,5 +1,5 @@
 import type { PoolEntry, RegisteredAgent } from "@/lib/types";
-import type { AgentTarget, CliAgentTarget, OpenRouterAgentTarget } from "@/lib/types-agent-target";
+import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
 import type { PoolsSettings, RegisteredAgentConfig } from "@/lib/schemas";
 import type { WorkflowStep } from "@/lib/workflows";
 
@@ -109,21 +109,6 @@ function toAgentTarget(
   reg: RegisteredAgentConfig | RegisteredAgent,
   agentId?: string,
 ): AgentTarget {
-  if (reg.command === "openrouter-agent" && reg.model) {
-    const target: OpenRouterAgentTarget = {
-      kind: "openrouter",
-      provider: "openrouter",
-      authSource: "settings",
-      model: reg.model,
-      command: reg.command,
-      ...(reg.flavor ? { flavor: reg.flavor } : {}),
-      ...(reg.version ? { version: reg.version } : {}),
-      ...(reg.label ? { label: reg.label } : {}),
-      ...(agentId ? { agentId } : {}),
-    };
-    return target;
-  }
-
   const target: CliAgentTarget = {
     kind: "cli",
     command: reg.command,

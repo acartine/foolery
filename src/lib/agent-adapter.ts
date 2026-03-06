@@ -1,10 +1,10 @@
 /**
- * Agent adapter — encapsulates CLI dialect differences between Claude Code and Codex.
+ * Agent adapter — encapsulates CLI dialect differences between agent CLIs.
  *
  * Three responsibilities:
  *   1. Dialect resolution  — detect agent CLI type from command name
  *   2. Arg building        — construct correct CLI args per dialect
- *   3. Event normalization — convert Codex JSONL events to the Claude shapes
+ *   3. Event normalization — convert JSONL events to the Claude shapes
  *                            that orchestration/breakdown/terminal parsers expect
  */
 
@@ -13,7 +13,7 @@ import type { AgentTarget } from "@/lib/types-agent-target";
 
 // ── Types ───────────────────────────────────────────────────
 
-export type AgentDialect = "claude" | "codex" | "openrouter";
+export type AgentDialect = "claude" | "codex" | "opencode";
 
 export interface PromptModeArgs {
   command: string;
@@ -24,14 +24,15 @@ export interface PromptModeArgs {
 
 /**
  * Determine CLI dialect from a command string.
- * Any path or name containing "codex" or "chatgpt" → codex; everything else → claude.
+ * Any path or name containing "codex" or "chatgpt" → codex;
+ * "opencode" → opencode; everything else → claude.
  */
 export function resolveDialect(command: string): AgentDialect {
   const base = command.includes("/")
     ? command.slice(command.lastIndexOf("/") + 1)
     : command;
   const lower = base.toLowerCase();
-  if (lower.includes("openrouter")) return "openrouter";
+  if (lower.includes("opencode")) return "opencode";
   if (lower.includes("codex") || lower.includes("chatgpt")) return "codex";
   return "claude";
 }
@@ -41,15 +42,13 @@ export function resolveDialect(command: string): AgentDialect {
 /**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
- * | Concern            | Claude                                    | Codex                                         |
- * |--------------------|-------------------------------------------|-----------------------------------------------|
- * | Subcommand         | (none)                                    | exec                                          |
- * | Prompt             | -p <prompt>                               | positional arg after exec                     |
- * | JSONL output       | --output-format stream-json               | --json                                        |
- * | Skip approvals     | --dangerously-skip-permissions            | --dangerously-bypass-approvals-and-sandbox    |
- * | Streaming detail   | --include-partial-messages --verbose      | (not needed)                                  |
- * | Input format       | --input-format text                       | (not needed)                                  |
- * | Model              | --model <m>                               | -m <m>                                        |
+ * | Concern            | Claude                                    | Codex                                         | OpenCode                  |
+ * |--------------------|-------------------------------------------|-----------------------------------------------|---------------------------|
+ * | Subcommand         | (none)                                    | exec                                          | run                       |
+ * | Prompt             | -p <prompt>                               | positional arg after exec                     | positional arg after run  |
+ * | JSONL output       | --output-format stream-json               | --json                                        | --format json             |
+ * | Skip approvals     | --dangerously-skip-permissions            | --dangerously-bypass-approvals-and-sandbox    | (not needed)              |
+ * | Model              | --model <m>                               | -m <m>                                        | -m <m>                    |
  */
 export function buildPromptModeArgs(
   agent: RegisteredAgent | AgentTarget,
@@ -57,8 +56,15 @@ export function buildPromptModeArgs(
 ): PromptModeArgs {
   const command = "command" in agent && typeof agent.command === "string"
     ? agent.command
-    : "openrouter-agent";
+    : "claude";
   const dialect = resolveDialect(command);
+
+  if (dialect === "opencode") {
+    const args = ["run", "--format", "json"];
+    if (agent.model) args.push("-m", agent.model);
+    args.push(prompt);
+    return { command, args };
+  }
 
   if (dialect === "codex") {
     const args = [
@@ -71,7 +77,7 @@ export function buildPromptModeArgs(
     return { command, args };
   }
 
-  // openrouter and claude share the same arg shape
+  // claude dialect
   const args = [
     "-p",
     prompt,
@@ -95,16 +101,53 @@ export function buildPromptModeArgs(
  *
  * For "claude" dialect the normalizer is identity (passthrough).
  * For "codex" dialect the normalizer maps Codex events → Claude shapes.
+ * For "opencode" dialect the normalizer maps OpenCode JSON events → Claude shapes.
  *
  * Returns `null` for events that should be skipped.
  */
 export function createLineNormalizer(
   dialect: AgentDialect,
 ): (parsed: unknown) => Record<string, unknown> | null {
-  if (dialect === "claude" || dialect === "openrouter") {
+  if (dialect === "claude") {
     return (parsed) => {
       if (!parsed || typeof parsed !== "object") return null;
       return parsed as Record<string, unknown>;
+    };
+  }
+
+  if (dialect === "opencode") {
+    let accumulatedText = "";
+
+    return (parsed) => {
+      if (!parsed || typeof parsed !== "object") return null;
+      const obj = parsed as Record<string, unknown>;
+      const type = obj.type;
+
+      if (type === "step_start") return null;
+
+      if (type === "text") {
+        const part = obj.part as Record<string, unknown> | undefined;
+        const text = typeof part?.text === "string" ? part.text : "";
+        accumulatedText += (accumulatedText ? "\n" : "") + text;
+        return {
+          type: "assistant",
+          message: {
+            content: [{ type: "text", text }],
+          },
+        };
+      }
+
+      if (type === "step_finish") {
+        const part = obj.part as Record<string, unknown> | undefined;
+        const reason = typeof part?.reason === "string" ? part.reason : "";
+        return {
+          type: "result",
+          result: accumulatedText,
+          is_error: reason === "error",
+        };
+      }
+
+      return null;
     };
   }
 

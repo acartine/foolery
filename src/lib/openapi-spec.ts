@@ -37,7 +37,6 @@ export const openApiSpec = {
     { name: "Settings", description: "Application and agent configuration" },
     { name: "Registry", description: "Repository registration and browsing" },
     { name: "System", description: "Diagnostics, version, capabilities, workflows, and history" },
-    { name: "OpenRouter", description: "OpenRouter model integration" },
   ],
   paths: {
     ...beatsPaths,

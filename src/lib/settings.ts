@@ -17,26 +17,15 @@ import {
   foolerySettingsSchema,
   type FoolerySettings,
   type RegisteredAgentConfig,
-  type OpenRouterSettings,
   type PoolsSettings,
 } from "@/lib/schemas";
-import { keychainSet, keychainGet, keychainDelete } from "@/lib/keychain";
-import {
-  OPENROUTER_SELECTED_AGENT_ID,
-  formatOpenRouterSelectedAgentLabel,
-  getSelectedOpenRouterModel,
-  openrouterAgentId,
-  isOpenRouterAgentId,
-  openrouterAgentKey,
-  formatOpenRouterAgentLabel,
-  listUniqueOpenRouterAgentKeys,
-} from "@/lib/openrouter";
 import type {
   RegisteredAgent,
   ActionName,
   ScannedAgent,
+  ScannedAgentOption,
 } from "@/lib/types";
-import type { AgentTarget, CliAgentTarget, OpenRouterAgentTarget } from "@/lib/types-agent-target";
+import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
 import { type WorkflowStep, isReviewStep, priorActionStep } from "@/lib/workflows";
 import { resolvePoolAgent, getLastStepAgent, recordStepAgent } from "@/lib/agent-pool";
 import {
@@ -50,7 +39,6 @@ import {
 const CONFIG_DIR = join(homedir(), ".config", "foolery");
 const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
 const CACHE_TTL_MS = 30_000;
-const KEYCHAIN_SENTINEL = "**keychain**";
 const DEFAULT_SETTINGS: FoolerySettings = foolerySettingsSchema.parse({});
 const CODEX_CONFIG_FILE = join(homedir(), ".codex", "config.toml");
 const CLAUDE_SETTINGS_FILE = join(homedir(), ".claude", "settings.json");
@@ -247,20 +235,6 @@ export async function backfillMissingSettingsDefaults(): Promise<SettingsDefault
   };
 }
 
-/** Resolve keychain sentinel in loaded settings. */
-async function resolveKeychainSecrets(
-  settings: FoolerySettings,
-): Promise<FoolerySettings> {
-  if (settings.openrouter.apiKey !== KEYCHAIN_SENTINEL) {
-    return settings;
-  }
-  const key = await keychainGet();
-  return {
-    ...settings,
-    openrouter: { ...settings.openrouter, apiKey: key ?? "" },
-  };
-}
-
 function resolveCatalogBackedAgent(
   agentId: string,
   agent: RegisteredAgentConfig,
@@ -314,15 +288,13 @@ async function resolveCatalogBackedAgents(
  * Load settings from ~/.config/foolery/settings.toml.
  * Returns validated settings with defaults filled in.
  * Uses a 30-second TTL cache to avoid redundant disk reads.
- * Resolves keychain sentinel values for secrets.
  */
 export async function loadSettings(): Promise<FoolerySettings> {
   if (cached && Date.now() - cached.loadedAt < CACHE_TTL_MS) {
     return cached.value;
   }
   const result = await computeSettingsDefaultsStatus();
-  const resolvedSecrets = await resolveKeychainSecrets(result.settings);
-  const resolved = await resolveCatalogBackedAgents(resolvedSecrets);
+  const resolved = await resolveCatalogBackedAgents(result.settings);
   cached = { value: resolved, loadedAt: Date.now() };
   return resolved;
 }
@@ -330,33 +302,14 @@ export async function loadSettings(): Promise<FoolerySettings> {
 /**
  * Write the full settings object to disk as TOML.
  * Creates the config directory if it doesn't exist.
- * When the OS keychain is available, the API key is stored there
- * and a sentinel value is written to the TOML file instead.
  */
 export async function saveSettings(
   settings: FoolerySettings,
 ): Promise<void> {
   await mkdir(CONFIG_DIR, { recursive: true });
-
-  // Attempt to store API key in OS keychain
-  let settingsForDisk = settings;
-  const apiKey = settings.openrouter.apiKey;
-  if (!apiKey) {
-    await keychainDelete();
-  } else if (apiKey !== KEYCHAIN_SENTINEL) {
-    const stored = await keychainSet(apiKey);
-    if (stored) {
-      settingsForDisk = {
-        ...settings,
-        openrouter: { ...settings.openrouter, apiKey: KEYCHAIN_SENTINEL },
-      };
-    }
-  }
-
-  const toml = stringify(settingsForDisk);
+  const toml = stringify(settings);
   await writeFile(SETTINGS_FILE, toml, "utf-8");
   await chmod(SETTINGS_FILE, 0o600);
-  // Cache the full settings (with real key, not sentinel)
   cached = { value: settings, loadedAt: Date.now() };
 }
 
@@ -366,7 +319,6 @@ export type SettingsPartial = Partial<{
   actions: Partial<FoolerySettings["actions"]>;
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
-  openrouter: Partial<FoolerySettings["openrouter"]>;
   pools: Partial<FoolerySettings["pools"]>;
   dispatchMode: FoolerySettings["dispatchMode"];
 }>;
@@ -374,7 +326,7 @@ export type SettingsPartial = Partial<{
 /**
  * Merge a partial update into the current settings, save, and return the result.
  * Each top-level section is only touched when explicitly provided in `partial`,
- * so sending `{ openrouter: { enabled: true } }` will never clobber agent/action config.
+ * so sending `{ pools: { ... } }` will never clobber agent/action config.
  */
 export async function updateSettings(
   partial: SettingsPartial,
@@ -386,7 +338,6 @@ export async function updateSettings(
     actions:      partial.actions      !== undefined ? { ...current.actions,      ...partial.actions }      : current.actions,
     backend:      partial.backend      !== undefined ? { ...current.backend,      ...partial.backend }      : current.backend,
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
-    openrouter:   partial.openrouter   !== undefined ? { ...current.openrouter,   ...partial.openrouter }   : current.openrouter,
     pools:        partial.pools        !== undefined ? { ...current.pools,        ...partial.pools }        : current.pools,
     dispatchMode: partial.dispatchMode !== undefined ? partial.dispatchMode                                 : current.dispatchMode,
   };
@@ -399,21 +350,6 @@ export async function updateSettings(
 function getFallbackCommand(settings: FoolerySettings): string {
   const first = Object.values(settings.agents)[0];
   return first?.command ?? "claude";
-}
-
-/** Command used for OpenRouter virtual agents (the openrouter-agent CLI shim). */
-const OPENROUTER_AGENT_COMMAND = "openrouter-agent";
-
-function resolveSelectedOpenRouterAgentConfig(
-  settings: FoolerySettings,
-): RegisteredAgentConfig | null {
-  const selectedModel = getSelectedOpenRouterModel(settings.openrouter);
-  if (!selectedModel) return null;
-  return {
-    command: OPENROUTER_AGENT_COMMAND,
-    model: selectedModel,
-    label: formatOpenRouterSelectedAgentLabel(selectedModel),
-  };
 }
 
 function toCliTarget(
@@ -431,66 +367,6 @@ function toCliTarget(
       ? { label: agent.label ?? agentDisplayName(agent) }
       : {}),
     ...(agentId ? { agentId } : {}),
-  };
-}
-
-function toOpenRouterTarget(
-  agent: RegisteredAgentConfig,
-  agentId?: string,
-): OpenRouterAgentTarget {
-  return {
-    kind: "openrouter",
-    provider: "openrouter",
-    authSource: "settings",
-    model: agent.model ?? "",
-    command: agent.command,
-    ...(agent.flavor ? { flavor: agent.flavor } : {}),
-    ...(agent.version ? { version: agent.version } : {}),
-    ...(agent.label ? { label: agent.label } : {}),
-    ...(agentId ? { agentId } : {}),
-  };
-}
-
-/**
- * Returns virtual agents for all entries in openrouter.agents.
- * Each entry maps to an agent keyed by "openrouter:<agentKey>".
- * Only returns agents when OpenRouter is enabled and has agents configured.
- */
-export function resolveOpenRouterAgents(
-  settings: FoolerySettings,
-): Record<string, RegisteredAgentConfig> {
-  if (!settings.openrouter.enabled) return {};
-  const result: Record<string, RegisteredAgentConfig> = {};
-  for (const key of listUniqueOpenRouterAgentKeys(settings.openrouter.agents)) {
-    const entry = settings.openrouter.agents[key];
-    if (!entry) continue;
-    const id = openrouterAgentId(key);
-    result[id] = {
-      command: OPENROUTER_AGENT_COMMAND,
-      model: entry.model,
-      label: formatOpenRouterAgentLabel(key, entry.label, entry.model),
-    };
-  }
-  return result;
-}
-
-/**
- * Resolve a single OpenRouter virtual agent by its full ID (e.g. "openrouter:default").
- * Returns null if OpenRouter is not enabled or the agent key is not found.
- */
-function resolveOpenRouterAgentById(
-  settings: FoolerySettings,
-  agentId: string,
-): RegisteredAgentConfig | null {
-  if (!isOpenRouterAgentId(agentId)) return null;
-  if (!settings.openrouter.enabled) return null;
-  const key = openrouterAgentKey(agentId);
-  const entry = settings.openrouter.agents[key];
-  if (!entry?.model?.trim()) return null;
-  return {
-    command: OPENROUTER_AGENT_COMMAND,
-    model: entry.model,
-    label: formatOpenRouterAgentLabel(key, entry.label, entry.model),
   };
 }
 
@@ -528,18 +404,6 @@ export async function getActionAgent(
 ): Promise<AgentTarget> {
   const settings = await loadSettings();
   const agentId = settings.actions[action] ?? "";
-  if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
-    const selected = resolveSelectedOpenRouterAgentConfig(settings);
-    if (selected) {
-      return toOpenRouterTarget(selected, agentId);
-    }
-  }
-  if (isOpenRouterAgentId(agentId)) {
-    const orAgent = resolveOpenRouterAgentById(settings, agentId);
-    if (orAgent) {
-      return toOpenRouterTarget(orAgent, agentId);
-    }
-  }
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
     return toCliTarget(settings.agents[agentId], agentId);
   }
@@ -710,6 +574,7 @@ const SCANNABLE_AGENTS: readonly ScannableAgent[] = [
   { id: "claude", command: "claude" },
   { id: "codex", command: "codex" },
   { id: "gemini", command: "gemini" },
+  { id: "opencode", command: "opencode" },
 ] as const;
 
 async function readCodexConfiguredModel(): Promise<string | undefined> {
@@ -808,6 +673,26 @@ async function readGeminiConfiguredModel(): Promise<string | undefined> {
   }
 }
 
+/** Read available models from `opencode models`. */
+async function readOpenCodeModels(): Promise<ScannedAgentOption[]> {
+  try {
+    const { stdout } = await execAsync("opencode models", { timeout: 10_000 });
+    const lines = stdout.trim().split("\n").filter(Boolean);
+    return lines.map((line) => {
+      const modelId = line.trim();
+      return {
+        id: `opencode-${modelId.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        label: modelId,
+        provider: "OpenCode",
+        model: modelId,
+        modelId,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
 async function resolveInstalledAgentCommand(
   agent: ScannableAgent,
 ): Promise<{ command: string; path: string } | null> {
@@ -873,6 +758,15 @@ async function inspectInstalledAgentMetadata(
       ...(modelId ? { modelId } : {}),
     };
   }
+  if (agent.id === "opencode") {
+    const models = await readOpenCodeModels();
+    const first = models[0];
+    return {
+      provider: "OpenCode",
+      ...(first?.model ? { model: first.model } : {}),
+      ...(first?.modelId ? { modelId: first.modelId } : {}),
+    };
+  }
   const normalized = normalizeAgentIdentity({
     command: resolvedCommand,
     provider,
@@ -895,7 +789,14 @@ export async function scanForAgents(): Promise<ScannedAgent[]> {
           agent,
           installed.command,
         );
-        const options = await buildAgentImportOptions(agent.id, metadata);
+        let options: ScannedAgent["options"];
+        if (agent.id === "opencode") {
+          // OpenCode uses dynamic model discovery
+          const models = await readOpenCodeModels();
+          options = models.length > 0 ? models : await buildAgentImportOptions(agent.id, metadata);
+        } else {
+          options = await buildAgentImportOptions(agent.id, metadata);
+        }
         return {
           id: agent.id,
           command: installed.command,
@@ -951,13 +852,7 @@ export async function getStepAgent(
   if (settings.dispatchMode === "pools") {
     const poolAgents: Record<string, RegisteredAgentConfig> = {
       ...settings.agents,
-      ...resolveOpenRouterAgents(settings),
     };
-    // Legacy: single selected OpenRouter model
-    const selected = resolveSelectedOpenRouterAgentConfig(settings);
-    if (selected) {
-      poolAgents[OPENROUTER_SELECTED_AGENT_ID] = selected;
-    }
 
     // Derive exclusion for cross-agent review
     let excludeAgentId: string | undefined;
@@ -968,6 +863,11 @@ export async function getStepAgent(
       }
     }
 
+    console.log(
+      `[getStepAgent] step="${step}" dispatchMode="pools" beatId=${beatId ?? "n/a"} ` +
+      `fallbackAction=${fallbackAction ?? "n/a"} excludeAgentId=${excludeAgentId ?? "none"} ` +
+      `registeredAgents=[${Object.keys(poolAgents).join(", ")}]`,
+    );
     const poolAgent = resolvePoolAgent(
       step,
       settings.pools,
@@ -979,25 +879,18 @@ export async function getStepAgent(
       if (beatId && poolAgent.agentId) {
         recordStepAgent(beatId, step, poolAgent.agentId);
       }
+      console.log(
+        `[getStepAgent] step="${step}" => pool selection: agentId=${poolAgent.agentId ?? "n/a"} ` +
+        `kind=${poolAgent.kind} command=${poolAgent.command} model=${poolAgent.model ?? "n/a"}`,
+      );
       return poolAgent;
     }
+    console.log(`[getStepAgent] step="${step}" pool returned null, falling back to action mapping`);
   }
 
   // Fall back to action mapping
   if (fallbackAction) {
     const agentId = settings.actions[fallbackAction] ?? "";
-    if (agentId === OPENROUTER_SELECTED_AGENT_ID) {
-      const selected = resolveSelectedOpenRouterAgentConfig(settings);
-      if (selected) {
-        return toOpenRouterTarget(selected, agentId);
-      }
-    }
-    if (isOpenRouterAgentId(agentId)) {
-      const orAgent = resolveOpenRouterAgentById(settings, agentId);
-      if (orAgent) {
-        return toOpenRouterTarget(orAgent, agentId);
-      }
-    }
     if (agentId && agentId !== "default" && settings.agents[agentId]) {
       return toCliTarget(settings.agents[agentId], agentId);
     }
@@ -1005,12 +898,6 @@ export async function getStepAgent(
 
   // Fall back to dispatch default
   return toCliTarget({ command: getFallbackCommand(settings) });
-}
-
-/** Returns the OpenRouter settings. */
-export async function getOpenRouterSettings(): Promise<OpenRouterSettings> {
-  const settings = await loadSettings();
-  return settings.openrouter;
 }
 
 /** Reset the in-memory cache (useful for testing). */

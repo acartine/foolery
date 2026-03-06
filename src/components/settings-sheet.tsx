@@ -21,7 +21,6 @@ import type {
   ActionAgentMappings,
   BackendSettings,
   DefaultsSettings,
-  OpenRouterSettings,
   PoolsSettings,
   DispatchMode,
 } from "@/lib/schemas";
@@ -39,7 +38,6 @@ interface SettingsData {
   actions: ActionAgentMappings;
   backend: BackendSettings;
   defaults: DefaultsSettings;
-  openrouter: OpenRouterSettings;
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
 }
@@ -56,12 +54,6 @@ const DEFAULTS: SettingsData = {
   },
   defaults: {
     profileId: "",
-  },
-  openrouter: {
-    apiKey: "",
-    enabled: false,
-    agents: {},
-    model: "",
   },
   pools: {
     planning: [],
@@ -106,7 +98,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             actions: settingsResult.data.actions ?? DEFAULTS.actions,
             backend: settingsResult.data.backend ?? DEFAULTS.backend,
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
-            openrouter: settingsResult.data.openrouter ?? DEFAULTS.openrouter,
             pools: settingsResult.data.pools ?? DEFAULTS.pools,
             dispatchMode: settingsResult.data.dispatchMode ?? DEFAULTS.dispatchMode,
           });
@@ -179,10 +170,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       onAgentsChange={(agents) =>
                         setSettings((prev) => ({ ...prev, agents }))
                       }
-                      openrouter={settings.openrouter}
-                      onOpenRouterChange={(openrouter) =>
-                        setSettings((prev) => ({ ...prev, openrouter }))
-                      }
                     />
                   </TabsContent>
 
@@ -192,7 +179,6 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       actions={settings.actions}
                       pools={settings.pools}
                       agents={settings.agents}
-                      openrouter={settings.openrouter}
                       onDispatchModeChange={(dispatchMode) =>
                         setSettings((prev) => ({ ...prev, dispatchMode }))
                       }

@@ -1,6 +1,6 @@
 /**
  * OpenAPI path definitions for Registry, Doctor, Version, Capabilities,
- * Workflows, Agent History, and OpenRouter endpoints.
+ * Workflows and Agent History endpoints.
  */
 
 export const registryPaths = {
@@ -320,68 +320,4 @@ export const systemPaths = {
     },
   },
 
-  "/api/openrouter/models": {
-    get: {
-      tags: ["OpenRouter"],
-      summary: "List available OpenRouter models",
-      operationId: "listOpenRouterModels",
-      responses: {
-        "200": {
-          description: "Available models",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  ok: { type: "boolean" },
-                  data: { type: "array", items: { $ref: "#/components/schemas/OpenRouterModel" } },
-                },
-              },
-            },
-          },
-        },
-        "500": { description: "Server error", content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } } },
-      },
-    },
-  },
-
-  "/api/openrouter/validate": {
-    post: {
-      tags: ["OpenRouter"],
-      summary: "Validate an OpenRouter API key",
-      operationId: "validateOpenRouterKey",
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              required: ["apiKey"],
-              properties: { apiKey: { type: "string" } },
-            },
-          },
-        },
-      },
-      responses: {
-        "200": {
-          description: "Validation result",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  ok: { type: "boolean" },
-                  data: {
-                    type: "object",
-                    properties: { valid: { type: "boolean" } },
-                  },
-                },
-              },
-            },
-          },
-        },
-        "400": { description: "Validation error", content: { "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } } } },
-      },
-    },
-  },
 } as const;
