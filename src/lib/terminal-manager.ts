@@ -17,7 +17,6 @@ import {
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
-import { OpenRouterSessionRuntime } from "@/lib/openrouter-session-runtime";
 
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
@@ -29,7 +28,7 @@ import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import { ORCHESTRATION_WAVE_LABEL } from "@/lib/wave-slugs";
 import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-index";
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
-import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
+import type { CliAgentTarget } from "@/lib/types-agent-target";
 import { agentDisplayName } from "@/lib/agent-identity";
 import {
   StepPhase,
@@ -760,33 +759,11 @@ export async function createSession(
     setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
   };
 
-  if (agent.kind === "openrouter") {
-    const runtime = new OpenRouterSessionRuntime();
-    entry.abort = (
-      await runtime.startTake(agent, {
-        session,
-        repoPath: resolvedRepoPath,
-        beat,
-        beatId,
-        isParent,
-        childBeatIds: waveBeatIds,
-        customPrompt,
-        queueTerminalInvariantInstruction,
-        workflowsById,
-        fallbackWorkflow,
-        interactionLog,
-        emitter,
-        pushEvent,
-        finishSession,
-      })
-    ).abort;
-    return session;
-  }
 
   const dialect = resolveDialect(agent.command);
   const isInteractive = dialect === "claude";
 
-  // For interactive (claude) sessions, use stream-json stdin; for codex/openrouter, use one-shot prompt mode
+  // For interactive (claude) sessions, use stream-json stdin; for codex/opencode, use one-shot prompt mode
   let agentCmd: string;
   let args: string[];
   if (isInteractive) {
@@ -960,7 +937,6 @@ export async function createSession(
               settings.pools,
               settings.agents,
               excludeId,
-              beatId,
             );
 
             if (poolAgent?.kind === "cli") {
@@ -1117,7 +1093,6 @@ export async function createSession(
 
     const takeChild = spawn(effectiveCmd, effectiveArgs, {
       cwd,
-      env: childEnv,
       stdio: [effectiveIsInteractive ? "pipe" : "ignore", "pipe", "pipe"],
     });
     entry.process = takeChild;
@@ -1349,20 +1324,8 @@ export async function createSession(
     }
   };
 
-  // Inject OPENROUTER_API_KEY into child env when the agent has a model that
-  // might route through OpenRouter (the shim or any openrouter-dialect agent).
-  const childEnv = { ...process.env } as NodeJS.ProcessEnv;
-  if (dialect === "openrouter" || agent.label?.includes("OpenRouter")) {
-    try {
-      const settings = await loadSettings();
-      const orKey = settings.openrouter.apiKey;
-      if (orKey) childEnv.OPENROUTER_API_KEY = orKey;
-    } catch { /* best-effort */ }
-  }
-
   const child = spawn(agentCmd, args, {
     cwd,
-    env: childEnv,
     stdio: [isInteractive ? "pipe" : "ignore", "pipe", "pipe"],
   });
   entry.process = child;

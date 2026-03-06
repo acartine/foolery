@@ -17,21 +17,12 @@ import {
 import { saveActions } from "@/lib/settings-api";
 import type { RegisteredAgent, ActionName } from "@/lib/types";
 import { formatAgentDisplayLabel } from "@/lib/agent-identity";
-import type { ActionAgentMappings, OpenRouterSettings } from "@/lib/schemas";
-import {
-  OPENROUTER_SELECTED_AGENT_ID,
-  formatOpenRouterSelectedAgentLabel,
-  getSelectedOpenRouterModel,
-  openrouterAgentId,
-  formatOpenRouterAgentLabel,
-  listUniqueOpenRouterAgentKeys,
-} from "@/lib/openrouter";
+import type { ActionAgentMappings } from "@/lib/schemas";
 import type { LucideIcon } from "lucide-react";
 
 interface ActionsSectionProps {
   actions: ActionAgentMappings;
   agents: Record<string, RegisteredAgent>;
-  openrouter: OpenRouterSettings;
   onActionsChange: (actions: ActionAgentMappings) => void;
   disabled?: boolean;
 }
@@ -67,29 +58,11 @@ const ACTION_DEFS: ActionDef[] = [
 export function SettingsActionsSection({
   actions,
   agents,
-  openrouter,
   onActionsChange,
   disabled,
 }: ActionsSectionProps) {
-  // Build OpenRouter virtual agent IDs from all configured agents
-  const orAgentIds: string[] = openrouter.enabled
-    ? listUniqueOpenRouterAgentKeys(openrouter.agents).map((key) => openrouterAgentId(key))
-    : [];
-
-  // Legacy support: keep OPENROUTER_SELECTED_AGENT_ID only while an action still references it.
-  const selectedOpenRouterModel = getSelectedOpenRouterModel(openrouter);
-  const hasLegacySelection = Object.values(actions).includes(
-    OPENROUTER_SELECTED_AGENT_ID,
-  );
-
-  const baseOptionIds = Array.from(new Set([
-    ...orAgentIds,
-    ...Object.keys(agents),
-  ]));
-
-  const hasOptions = baseOptionIds.length > 0 || Boolean(
-    hasLegacySelection && selectedOpenRouterModel,
-  );
+  const agentIds = Object.keys(agents);
+  const hasOptions = agentIds.length > 0;
 
   async function handleChange(action: ActionName, value: string) {
     const updated = { ...actions, [action]: value };
@@ -113,13 +86,6 @@ export function SettingsActionsSection({
       <div className="space-y-2">
         {ACTION_DEFS.map((def) => {
           const Icon = def.icon;
-          const includeLegacyOption = Boolean(
-            selectedOpenRouterModel &&
-            actions[def.name] === OPENROUTER_SELECTED_AGENT_ID,
-          );
-          const optionIds = includeLegacyOption
-            ? [OPENROUTER_SELECTED_AGENT_ID, ...baseOptionIds]
-            : baseOptionIds;
           return (
             <div
               key={def.name}
@@ -137,38 +103,17 @@ export function SettingsActionsSection({
               <Select
                 value={actions[def.name] || ""}
                 onValueChange={(v) => handleChange(def.name, v)}
-                disabled={disabled || optionIds.length === 0}
+                disabled={disabled || agentIds.length === 0}
               >
                 <SelectTrigger className="w-[240px] shrink-0 border-primary/20 bg-background/80">
                   <SelectValue placeholder={hasOptions ? "select agent" : "no agents"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {optionIds.map((id) => {
-                    if (id === OPENROUTER_SELECTED_AGENT_ID) {
-                      return (
-                        <SelectItem key={id} value={id}>
-                          {formatOpenRouterSelectedAgentLabel(
-                            selectedOpenRouterModel!,
-                          )}
-                        </SelectItem>
-                      );
-                    }
-                    if (id.startsWith("openrouter:")) {
-                      const key = id.slice("openrouter:".length);
-                      const entry = openrouter.agents[key];
-                      if (!entry) return null;
-                      return (
-                        <SelectItem key={id} value={id}>
-                          {formatOpenRouterAgentLabel(key, entry.label, entry.model)}
-                        </SelectItem>
-                      );
-                    }
-                    return (
-                      <SelectItem key={id} value={id}>
-                        {agents[id] ? formatAgentDisplayLabel(agents[id]!, { includeSource: true }) : id}
-                      </SelectItem>
-                    );
-                  })}
+                  {agentIds.map((id) => (
+                    <SelectItem key={id} value={id}>
+                      {agents[id] ? formatAgentDisplayLabel(agents[id]!) : id}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -13,17 +13,6 @@ vi.mock("node:fs/promises", () => ({
   chmod: (...args: unknown[]) => mockChmod(...args),
 }));
 
-// Mock keychain — default: keychain unavailable so existing tests pass unchanged
-const mockKeychainSet = vi.fn().mockResolvedValue(false);
-const mockKeychainGet = vi.fn().mockResolvedValue(null);
-const mockKeychainDelete = vi.fn().mockResolvedValue(true);
-
-vi.mock("@/lib/keychain", () => ({
-  keychainSet: (...args: unknown[]) => mockKeychainSet(...args),
-  keychainGet: (...args: unknown[]) => mockKeychainGet(...args),
-  keychainDelete: (...args: unknown[]) => mockKeychainDelete(...args),
-}));
-
 import {
   loadSettings,
   saveSettings,
@@ -40,7 +29,6 @@ import {
 } from "@/lib/settings";
 import { WorkflowStep } from "@/lib/workflows";
 import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
-import { OPENROUTER_SELECTED_AGENT_ID } from "@/lib/openrouter";
 
 const DEFAULT_ACTIONS = {
   take: "",
@@ -62,7 +50,6 @@ const DEFAULT_SETTINGS = {
   actions: DEFAULT_ACTIONS,
   backend: { type: "auto" },
   defaults: { profileId: "" },
-  openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
   pools: DEFAULT_POOLS,
   dispatchMode: "actions",
 };
@@ -73,7 +60,6 @@ beforeEach(() => {
   mockMkdir.mockResolvedValue(undefined);
   mockWriteFile.mockResolvedValue(undefined);
   mockChmod.mockResolvedValue(undefined);
-  mockKeychainDelete.mockResolvedValue(true);
 });
 
 describe("loadSettings", () => {
@@ -99,64 +85,6 @@ describe("loadSettings", () => {
     mockReadFile.mockResolvedValue('[actions]\ntake = ""');
     const settings = await loadSettings();
     expect(settings.actions.scene).toBe("");
-  });
-
-  it("migrates legacy openrouter.model into openrouter.agents when agents is empty", async () => {
-    const toml = [
-      "[openrouter]",
-      "enabled = true",
-      'model = "anthropic/claude-sonnet-4"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const settings = await loadSettings();
-    expect(settings.openrouter.model).toBe("anthropic/claude-sonnet-4");
-    expect(settings.openrouter.agents).toEqual({
-      default: {
-        model: "anthropic/claude-sonnet-4",
-        label: "OpenRouter (anthropic/claude-sonnet-4)",
-      },
-    });
-  });
-
-  it("does not overwrite existing openrouter.agents during legacy model migration", async () => {
-    const toml = [
-      "[openrouter]",
-      "enabled = true",
-      'model = "anthropic/claude-sonnet-4"',
-      "[openrouter.agents.custom]",
-      'model = "openai/gpt-4o"',
-      'label = "GPT-4o"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const settings = await loadSettings();
-    expect(settings.openrouter.agents).toEqual({
-      custom: {
-        model: "openai/gpt-4o",
-        label: "GPT-4o",
-      },
-    });
-  });
-
-  it("deduplicates openrouter.agents that point at the same model", async () => {
-    const toml = [
-      "[openrouter]",
-      "enabled = true",
-      "[openrouter.agents.default]",
-      'model = "mistralai/devstral-small:free"',
-      'label = "OpenRouter (mistralai/devstral-small:free)"',
-      "[openrouter.agents.devmistral]",
-      'model = "mistralai/devstral-small:free"',
-      'label = "Devmistral"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const settings = await loadSettings();
-    expect(Object.keys(settings.openrouter.agents)).toEqual(["default"]);
-    expect(settings.openrouter.agents.default?.model).toBe(
-      "mistralai/devstral-small:free",
-    );
   });
 
   it("uses cache within TTL", async () => {
@@ -218,10 +146,6 @@ describe("backfillMissingSettingsDefaults", () => {
         'type = "cli"',
         '[defaults]',
         'profileId = ""',
-        '[openrouter]',
-        'apiKey = ""',
-        'enabled = false',
-        'model = ""',
         '[pools]',
         'planning = []',
         'plan_review = []',
@@ -235,42 +159,6 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(result.changed).toBe(false);
     expect(mockWriteFile).not.toHaveBeenCalled();
   });
-
-  it("writes migrated openrouter.agents when only schema normalization changes", async () => {
-    mockReadFile.mockResolvedValue(
-      [
-        'dispatchMode = "actions"',
-        '[actions]',
-        'take = ""',
-        'scene = ""',
-        'breakdown = ""',
-        '[backend]',
-        'type = "auto"',
-        '[defaults]',
-        'profileId = ""',
-        '[openrouter]',
-        'apiKey = ""',
-        'enabled = true',
-        'model = "anthropic/claude-sonnet-4"',
-        '[pools]',
-        'planning = []',
-        'plan_review = []',
-        'implementation = []',
-        'implementation_review = []',
-        'shipment = []',
-        'shipment_review = []',
-      ].join("\n"),
-    );
-
-    const result = await backfillMissingSettingsDefaults();
-    expect(result.missingPaths).toEqual([]);
-    expect(result.changed).toBe(true);
-    expect(mockWriteFile).toHaveBeenCalledTimes(1);
-    const written = mockWriteFile.mock.calls[0][1] as string;
-    expect(written).toContain("[openrouter.agents.default]");
-    expect(written).toContain('model = "anthropic/claude-sonnet-4"');
-    expect(written).toContain('label = "OpenRouter (anthropic/claude-sonnet-4)"');
-  });
 });
 
 describe("saveSettings", () => {
@@ -280,7 +168,6 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "actions" as const,
     };
@@ -298,7 +185,6 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
       pools: DEFAULT_POOLS,
       dispatchMode: "actions" as const,
     };
@@ -356,143 +242,16 @@ describe("updateSettings", () => {
     expect(updated.actions.scene).toBe("");
   });
 
-  it("merges openrouter.enabled without clobbering apiKey or model", async () => {
-    const toml = [
-      '[openrouter]',
-      'apiKey = "sk-or-v1-secret"',
-      'enabled = false',
-      'model = "anthropic/claude-sonnet-4"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { enabled: true },
-    });
-    expect(updated.openrouter.enabled).toBe(true);
-    expect(updated.openrouter.apiKey).toBe("sk-or-v1-secret");
-    expect(updated.openrouter.model).toBe("anthropic/claude-sonnet-4");
-  });
-
-  it("merges openrouter.apiKey without clobbering enabled or model", async () => {
-    const toml = [
-      '[openrouter]',
-      'apiKey = "old-key"',
-      'enabled = true',
-      'model = "meta/llama-3"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { apiKey: "new-key" },
-    });
-    expect(updated.openrouter.apiKey).toBe("new-key");
-    expect(updated.openrouter.enabled).toBe(true);
-    expect(updated.openrouter.model).toBe("meta/llama-3");
-  });
-
-  it("openrouter-only update does not clobber agent config", async () => {
-    const toml = [
-      '[agents.claude]',
-      'command = "claude"',
-      'label = "Claude Code"',
-      '[actions]',
-      'take = "claude"',
-      'scene = "claude"',
-      'breakdown = ""',
-      '[openrouter]',
-      'apiKey = ""',
-      'enabled = false',
-      'model = ""',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { enabled: true, apiKey: "sk-or-v1-new" },
-    });
-
-    // OpenRouter fields updated
-    expect(updated.openrouter.enabled).toBe(true);
-    expect(updated.openrouter.apiKey).toBe("sk-or-v1-new");
-
-    // Agents/actions untouched
-    expect(updated.agents.claude).toBeDefined();
-    expect(updated.agents.claude.command).toBe("claude");
-    expect(updated.actions.take).toBe("claude");
-    expect(updated.actions.scene).toBe("claude");
-  });
-
-  it("openrouter-only update does not clobber defaults", async () => {
-    const toml = [
-      '[defaults]',
-      'profileId = "custom"',
-      '[openrouter]',
-      'apiKey = ""',
-      'enabled = false',
-      'model = ""',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { model: "openai/gpt-4o" },
-    });
-
-    expect(updated.openrouter.model).toBe("openai/gpt-4o");
-    expect(updated.defaults.profileId).toBe("custom");
-  });
-
   it("empty partial object leaves all settings unchanged", async () => {
     const toml = [
       '[agents.codex]',
       'command = "codex"',
-      '[openrouter]',
-      'apiKey = "keep"',
-      'enabled = true',
-      'model = "keep-model"',
     ].join("\n");
     mockReadFile.mockResolvedValue(toml);
 
     const updated = await updateSettings({});
 
     expect(updated.agents.codex.command).toBe("codex");
-    expect(updated.openrouter.apiKey).toBe("keep");
-    expect(updated.openrouter.enabled).toBe(true);
-    expect(updated.openrouter.model).toBe("keep-model");
-  });
-
-  it("merges openrouter.model selection without clobbering enabled or apiKey", async () => {
-    const toml = [
-      '[openrouter]',
-      'apiKey = "sk-or-v1-mykey"',
-      'enabled = true',
-      'model = ""',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { model: "anthropic/claude-sonnet-4" },
-    });
-
-    expect(updated.openrouter.model).toBe("anthropic/claude-sonnet-4");
-    expect(updated.openrouter.apiKey).toBe("sk-or-v1-mykey");
-    expect(updated.openrouter.enabled).toBe(true);
-  });
-
-  it("clears openrouter.model by setting empty string", async () => {
-    const toml = [
-      '[openrouter]',
-      'apiKey = "sk-or-v1-mykey"',
-      'enabled = true',
-      'model = "openai/gpt-4o"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const updated = await updateSettings({
-      openrouter: { model: "" },
-    });
-
-    expect(updated.openrouter.model).toBe("");
-    expect(updated.openrouter.apiKey).toBe("sk-or-v1-mykey");
-    expect(updated.openrouter.enabled).toBe(true);
   });
 });
 
@@ -555,27 +314,6 @@ describe("getActionAgent", () => {
     expect(agent.command).toBe("codex");
     expect(agent.model).toBe("o3");
     expect(agent.label).toBe("OpenAI Codex");
-  });
-
-  it("resolves the selected OpenRouter model when mapped as an action agent", async () => {
-    const toml = [
-      "[agents.codex]",
-      'command = "codex"',
-      "[actions]",
-      `take = "${OPENROUTER_SELECTED_AGENT_ID}"`,
-      "[openrouter]",
-      "enabled = true",
-      'model = "mistralai/devstral-small:free"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const agent = await getActionAgent("take");
-    expect(agent.kind).toBe("openrouter");
-    expect(agent.command).toBe("openrouter-agent");
-    expect(agent.model).toBe("mistralai/devstral-small:free");
-    expect(agent.label).toBe(
-      "MistralAI Devstral 2 (orapi)",
-    );
   });
 
   it("falls back when mapped agent id is not registered", async () => {
@@ -689,27 +427,6 @@ describe("getStepAgent", () => {
     // No pool configured for implementation, falls back to action mapping
     expect(agent.model).toBe("opus");
     expect(agent.label).toBe("Claude Opus");
-  });
-
-  it("supports selected OpenRouter model as a pool entry", async () => {
-    const toml = [
-      'dispatchMode = "pools"',
-      "[agents.codex]",
-      'command = "codex"',
-      "[openrouter]",
-      "enabled = true",
-      'model = "mistralai/devstral-small:free"',
-      "[[pools.implementation]]",
-      `agentId = "${OPENROUTER_SELECTED_AGENT_ID}"`,
-      "weight = 1",
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-
-    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
-    expect(agent.agentId).toBe(OPENROUTER_SELECTED_AGENT_ID);
-    expect(agent.kind).toBe("openrouter");
-    expect(agent.command).toBe("openrouter-agent");
-    expect(agent.model).toBe("mistralai/devstral-small:free");
   });
 
   it("falls back to dispatch default when no pool and no action mapping", async () => {
@@ -832,116 +549,5 @@ describe("getStepAgent", () => {
       );
       expect(agent.agentId).toBe("opus");
     });
-  });
-});
-
-describe("keychain integration", () => {
-  it("stores API key in keychain when available", async () => {
-    mockKeychainSet.mockResolvedValueOnce(true);
-
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      backend: { type: "auto" as const },
-      dispatchMode: "actions" as const,
-      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, agents: {}, model: "" },
-    };
-    await saveSettings(settings);
-
-    expect(mockKeychainSet).toHaveBeenCalledWith("sk-or-v1-secret");
-    // TOML should contain sentinel, not the real key
-    const written = mockWriteFile.mock.calls[0][1] as string;
-    expect(written).toContain("**keychain**");
-    expect(written).not.toContain("sk-or-v1-secret");
-  });
-
-  it("falls back to plaintext when keychain unavailable", async () => {
-    mockKeychainSet.mockResolvedValueOnce(false);
-
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      backend: { type: "auto" as const },
-      dispatchMode: "actions" as const,
-      openrouter: { apiKey: "sk-or-v1-secret", enabled: true, agents: {}, model: "" },
-    };
-    await saveSettings(settings);
-
-    const written = mockWriteFile.mock.calls[0][1] as string;
-    expect(written).toContain("sk-or-v1-secret");
-    expect(written).not.toContain("**keychain**");
-  });
-
-  it("deletes keychain entry when key is empty", async () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      backend: { type: "auto" as const },
-      dispatchMode: "actions" as const,
-      openrouter: { apiKey: "", enabled: false, agents: {}, model: "" },
-    };
-    await saveSettings(settings);
-
-    expect(mockKeychainSet).not.toHaveBeenCalled();
-    expect(mockKeychainDelete).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not call keychainSet when key is already the sentinel", async () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      backend: { type: "auto" as const },
-      dispatchMode: "actions" as const,
-      openrouter: { apiKey: "**keychain**", enabled: true, agents: {}, model: "" },
-    };
-    await saveSettings(settings);
-
-    expect(mockKeychainSet).not.toHaveBeenCalled();
-    expect(mockKeychainDelete).not.toHaveBeenCalled();
-  });
-
-  it("resolves keychain sentinel when loading", async () => {
-    mockKeychainGet.mockResolvedValueOnce("sk-or-v1-from-keychain");
-
-    mockReadFile.mockResolvedValue(
-      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
-    );
-
-    const settings = await loadSettings();
-    expect(settings.openrouter.apiKey).toBe("sk-or-v1-from-keychain");
-    expect(mockKeychainGet).toHaveBeenCalled();
-  });
-
-  it("resolves to empty string when keychain read fails", async () => {
-    mockKeychainGet.mockResolvedValueOnce(null);
-
-    mockReadFile.mockResolvedValue(
-      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
-    );
-
-    const settings = await loadSettings();
-    expect(settings.openrouter.apiKey).toBe("");
-  });
-
-  it("does not call keychainGet when key is not the sentinel", async () => {
-    mockReadFile.mockResolvedValue(
-      '[openrouter]\napiKey = "sk-plaintext"\nenabled = true\nmodel = ""',
-    );
-
-    const settings = await loadSettings();
-    expect(settings.openrouter.apiKey).toBe("sk-plaintext");
-    expect(mockKeychainGet).not.toHaveBeenCalled();
-  });
-
-  it("caches resolved key so keychainGet is not called again", async () => {
-    mockKeychainGet.mockResolvedValueOnce("sk-or-v1-cached");
-
-    mockReadFile.mockResolvedValue(
-      '[openrouter]\napiKey = "**keychain**"\nenabled = true\nmodel = ""',
-    );
-
-    const first = await loadSettings();
-    expect(first.openrouter.apiKey).toBe("sk-or-v1-cached");
-
-    // Second call should use cache
-    const second = await loadSettings();
-    expect(second.openrouter.apiKey).toBe("sk-or-v1-cached");
-    expect(mockKeychainGet).toHaveBeenCalledTimes(1);
   });
 });

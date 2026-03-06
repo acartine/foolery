@@ -358,7 +358,7 @@ export interface RegisteredAgent {
   version?: string;
   label?: string;
   /** Execution kind. Defaults to "cli" when omitted. */
-  kind?: "cli" | "openrouter";
+  kind?: "cli";
   /** Pool agent ID when selected via pool dispatch. */
   agentId?: string;
 }
@@ -396,11 +396,6 @@ export interface PoolEntry {
   agentId: string;
   weight: number;
 }
-
-// ── OpenRouter types ──────────────────────────────────────
-
-// Canonical OpenRouterModel lives in src/lib/openrouter.ts
-export type { OpenRouterModel } from "./openrouter";
 
 // ── Deprecated re-exports (to be removed in cleanup pass) ───
 

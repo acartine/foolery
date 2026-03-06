@@ -148,7 +148,7 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         prompt: claimResult.data.prompt,
         claimed: true,
         completion: { kind: "advance", expectedState: claimResult.data.state },
-        rollback: { kind: "note", note: "OpenRouter take iteration failed before completion." },
+        rollback: { kind: "note", note: "Take iteration failed before completion." },
       };
       leaseStore.set(leaseId, { lease });
       return ok(lease);
@@ -245,7 +245,7 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         prompt: pollResult.data.prompt,
         claimed: true,
         completion: { kind: "advance", expectedState: pollResult.data.state },
-        rollback: { kind: "note", note: "OpenRouter poll iteration failed before completion." },
+        rollback: { kind: "note", note: "Poll iteration failed before completion." },
       };
       leaseStore.set(lease.leaseId, { lease });
       return ok({ lease, claimedId: pollResult.data.id });

@@ -11,7 +11,6 @@ import type {
   ActionAgentMappings,
   PoolsSettings,
   DispatchMode,
-  OpenRouterSettings,
 } from "@/lib/schemas";
 
 interface DispatchSectionProps {
@@ -19,7 +18,6 @@ interface DispatchSectionProps {
   actions: ActionAgentMappings;
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
-  openrouter: OpenRouterSettings;
   onDispatchModeChange: (mode: DispatchMode) => void;
   onActionsChange: (actions: ActionAgentMappings) => void;
   onPoolsChange: (pools: PoolsSettings) => void;
@@ -50,7 +48,6 @@ export function SettingsDispatchSection({
   actions,
   pools,
   agents,
-  openrouter,
   onDispatchModeChange,
   onActionsChange,
   onPoolsChange,
@@ -121,7 +118,6 @@ export function SettingsDispatchSection({
           <SettingsActionsSection
             actions={actions}
             agents={agents}
-            openrouter={openrouter}
             onActionsChange={onActionsChange}
           />
         </>
@@ -129,7 +125,6 @@ export function SettingsDispatchSection({
         <SettingsPoolsSection
           pools={pools}
           agents={agents}
-          openrouter={openrouter}
           onPoolsChange={onPoolsChange}
         />
       )}

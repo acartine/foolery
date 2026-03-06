@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Users } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,27 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchOpenRouterModels as fetchOpenRouterModelsApi, savePools } from "@/lib/settings-api";
+import { savePools } from "@/lib/settings-api";
 import { swapPoolAgent } from "@/lib/agent-pool";
-import {
-  OPENROUTER_SELECTED_AGENT_ID,
-  formatOpenRouterSelectedAgentLabel,
-  getSelectedOpenRouterModel,
-  resolveOpenRouterPricing,
-  openrouterAgentId,
-  formatOpenRouterAgentLabel,
-  listUniqueOpenRouterAgentKeys,
-} from "@/lib/openrouter";
 import { formatAgentDisplayLabel } from "@/lib/agent-identity";
-import type { OpenRouterModel } from "@/lib/openrouter";
 import type { RegisteredAgent } from "@/lib/types";
-import type { OpenRouterSettings, PoolEntry, PoolsSettings } from "@/lib/schemas";
+import type { PoolEntry, PoolsSettings } from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
 
 interface PoolsSectionProps {
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
-  openrouter: OpenRouterSettings;
   onPoolsChange: (pools: PoolsSettings) => void;
   disabled?: boolean;
 }
@@ -82,7 +71,7 @@ function formatPoolAgentLabel(
   agentId: string,
   agent: RegisteredAgent | undefined,
 ): string {
-  return agent ? formatAgentDisplayLabel(agent, { includeSource: true }) : agentId;
+  return agent ? formatAgentDisplayLabel(agent) : agentId;
 }
 
 function formatPoolPercent(ratio: number): string {
@@ -94,73 +83,11 @@ function formatPoolPercent(ratio: number): string {
 export function SettingsPoolsSection({
   pools,
   agents,
-  openrouter,
   onPoolsChange,
   disabled,
 }: PoolsSectionProps) {
-  // Add all configured OpenRouter agents as selectable options
-  const selectableAgents: Record<string, RegisteredAgent> = {
-    ...agents,
-  };
-  if (openrouter.enabled) {
-    for (const key of listUniqueOpenRouterAgentKeys(openrouter.agents)) {
-      const entry = openrouter.agents[key];
-      if (!entry) continue;
-      const id = openrouterAgentId(key);
-      selectableAgents[id] = {
-        command: "openrouter-agent",
-        kind: "openrouter",
-        model: entry.model,
-        label: formatOpenRouterAgentLabel(key, entry.label, entry.model),
-      };
-    }
-  }
-
-  // Legacy: keep single selected OpenRouter model if still referenced in pools
-  const selectedOpenRouterModel = getSelectedOpenRouterModel(openrouter);
-  const poolsUseLegacyOpenRouter = ALL_STEPS.some((step) =>
-    (pools[step] ?? []).some(
-      (entry) => entry.agentId === OPENROUTER_SELECTED_AGENT_ID,
-    ),
-  );
-  if (selectedOpenRouterModel && poolsUseLegacyOpenRouter) {
-    selectableAgents[OPENROUTER_SELECTED_AGENT_ID] = {
-      command: "openrouter-agent",
-      kind: "openrouter",
-      model: selectedOpenRouterModel,
-      label: formatOpenRouterSelectedAgentLabel(selectedOpenRouterModel),
-    };
-  }
-
-  // Prevent adding new legacy selected-model entries in pools.
-  const agentIds = Object.keys(selectableAgents).filter(
-    (id) => id !== OPENROUTER_SELECTED_AGENT_ID,
-  );
-  const hasAgents = agentIds.length > 0 || poolsUseLegacyOpenRouter;
-  const hasModeledAgents = agentIds.some(
-    (id) => Boolean(selectableAgents[id]?.model?.trim()),
-  );
-  const [openRouterModels, setOpenRouterModels] = useState<OpenRouterModel[] | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!hasModeledAgents || openRouterModels !== null) return;
-    fetchOpenRouterModelsApi()
-      .then((res) => {
-        if (cancelled) return;
-        if (res.ok && res.data) {
-          setOpenRouterModels(res.data);
-          return;
-        }
-        setOpenRouterModels([]);
-      })
-      .catch(() => {
-        if (!cancelled) setOpenRouterModels([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [hasModeledAgents, openRouterModels]);
+  const agentIds = Object.keys(agents);
+  const hasAgents = agentIds.length > 0;
 
   async function handlePoolChange(
     step: string,
@@ -199,9 +126,8 @@ export function SettingsPoolsSection({
             key={step}
             meta={STEP_LABELS[step]!}
             entries={pools[step] ?? []}
-            agents={selectableAgents}
+            agents={agents}
             agentIds={agentIds}
-            openRouterModels={openRouterModels}
             onChange={(entries) => handlePoolChange(step, entries)}
           />
         ))}
@@ -217,14 +143,12 @@ function StepPoolEditor({
   entries,
   agents,
   agentIds,
-  openRouterModels,
   onChange,
 }: {
   meta: { label: string; description: string };
   entries: PoolEntry[];
   agents: Record<string, RegisteredAgent>;
   agentIds: string[];
-  openRouterModels: OpenRouterModel[] | null;
   onChange: (entries: PoolEntry[]) => void;
 }) {
   const [addingAgent, setAddingAgent] = useState(false);
@@ -307,10 +231,6 @@ function StepPoolEditor({
               const ratio = totalWeight > 0 ? entry.weight / totalWeight : 0;
               const pct = formatPoolPercent(ratio);
               const agent = agents[entry.agentId];
-              const pricing = resolveOpenRouterPricing(
-                openRouterModels,
-                agent?.model,
-              );
               const label = formatPoolAgentLabel(entry.agentId, agent);
               const color = POOL_COLORS[idx % POOL_COLORS.length];
               return (
@@ -324,14 +244,6 @@ function StepPoolEditor({
                       <span className="text-xs block truncate" title={label}>
                         {label}
                       </span>
-                      {pricing && (
-                        <span
-                          className="text-[10px] text-muted-foreground font-mono"
-                          title={pricing.modelId}
-                        >
-                          P {pricing.prompt} / C {pricing.completion}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <Input
@@ -389,20 +301,9 @@ function StepPoolEditor({
                   <SelectContent>
                     {poolAgentIds.map((id) => {
                       const agent = agents[id];
-                      const pricing = resolveOpenRouterPricing(
-                        openRouterModels,
-                        agent?.model,
-                      );
                       return (
                         <SelectItem key={id} value={id}>
-                          <div className="flex w-full items-center justify-between gap-2">
-                            <span className="truncate">{formatPoolAgentLabel(id, agent)}</span>
-                            {pricing && (
-                              <span className="text-[10px] font-mono text-muted-foreground">
-                                P {pricing.prompt} / C {pricing.completion}
-                              </span>
-                            )}
-                          </div>
+                          {formatPoolAgentLabel(id, agent)}
                         </SelectItem>
                       );
                     })}
@@ -416,22 +317,13 @@ function StepPoolEditor({
                   <SelectContent>
                     {agentIds.map((id) => {
                       const agent = agents[id];
-                      const pricing = resolveOpenRouterPricing(
-                        openRouterModels,
-                        agent?.model,
-                      );
                       const alreadyInPool =
                         id !== swapFromAgentId && poolAgentIds.includes(id);
                       return (
                         <SelectItem key={id} value={id} disabled={alreadyInPool}>
                           <div className="flex w-full items-center justify-between gap-2">
                             <span className="truncate">{formatPoolAgentLabel(id, agent)}</span>
-                            {pricing && (
-                              <span className="text-[10px] font-mono text-muted-foreground">
-                                P {pricing.prompt} / C {pricing.completion}
-                              </span>
-                            )}
-                            {!pricing && alreadyInPool && (
+                            {alreadyInPool && (
                               <span className="text-[10px] text-muted-foreground">
                                 already in pool
                               </span>
@@ -478,7 +370,6 @@ function StepPoolEditor({
         <AddPoolEntryForm
           availableIds={availableIds}
           agents={agents}
-          openRouterModels={openRouterModels}
           onAdd={(agentId, weight) => {
             onChange([...entries, { agentId, weight }]);
             setAddingAgent(false);
@@ -495,13 +386,11 @@ function StepPoolEditor({
 function AddPoolEntryForm({
   availableIds,
   agents,
-  openRouterModels,
   onAdd,
   onCancel,
 }: {
   availableIds: string[];
   agents: Record<string, RegisteredAgent>;
-  openRouterModels: OpenRouterModel[] | null;
   onAdd: (agentId: string, weight: number) => void;
   onCancel: () => void;
 }) {
@@ -517,22 +406,9 @@ function AddPoolEntryForm({
         <SelectContent>
           {availableIds.map((id) => {
             const agent = agents[id];
-            const pricing = resolveOpenRouterPricing(
-              openRouterModels,
-              agent?.model,
-            );
             return (
               <SelectItem key={id} value={id}>
-                <div className="flex w-full items-center justify-between gap-2">
-                  <span className="truncate">
-                    {formatPoolAgentLabel(id, agent)}
-                  </span>
-                  {pricing && (
-                    <span className="text-[10px] font-mono text-muted-foreground">
-                      P {pricing.prompt} / C {pricing.completion}
-                    </span>
-                  )}
-                </div>
+                {formatPoolAgentLabel(id, agent)}
               </SelectItem>
             );
           })}

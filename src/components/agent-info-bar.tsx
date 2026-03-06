@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Code2, Diamond, Globe, Sparkles, Clock, Timer } from "lucide-react";
+import { Bot, Code2, Diamond, Sparkles, Clock, Timer } from "lucide-react";
 import type { ResolvedAgentInfo } from "@/hooks/use-agent-info";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
 import { formatAgentDisplayLabel } from "@/lib/agent-identity";
@@ -24,11 +24,6 @@ const VENDOR_CONFIG: Record<
     icon: Diamond,
     color: "text-blue-300",
     bg: "bg-blue-500/10",
-  },
-  openrouter: {
-    icon: Globe,
-    color: "text-orange-300",
-    bg: "bg-orange-500/10",
   },
 };
 
@@ -85,7 +80,7 @@ interface AgentInfoBarProps {
 export function AgentInfoBar({ agent, beat }: AgentInfoBarProps) {
   const cfg = VENDOR_CONFIG[agent.vendor] ?? DEFAULT_VENDOR;
   const Icon = cfg.icon;
-  const agentLabel = formatAgentDisplayLabel(agent, { includeSource: true }) || agent.name;
+  const agentLabel = formatAgentDisplayLabel(agent) || agent.name;
 
   const stateElapsed = useElapsedTime(beat?.stateChangedAt);
   const totalElapsed = useElapsedTime(resolveTerminalElapsedAnchor(beat));

@@ -404,24 +404,6 @@ export const componentSchemas = {
         type: "object",
         properties: { profileId: { type: "string" } },
       },
-      openrouter: {
-        type: "object",
-        properties: {
-          apiKey: { type: "string" },
-          enabled: { type: "boolean" },
-          agents: {
-            type: "object",
-            additionalProperties: {
-              type: "object",
-              properties: {
-                model: { type: "string" },
-                label: { type: "string" },
-              },
-            },
-          },
-          model: { type: "string" },
-        },
-      },
       pools: {
         type: "object",
         properties: {
@@ -557,41 +539,6 @@ export const componentSchemas = {
             message: { type: "string" },
             context: { type: "object", additionalProperties: { type: "string" } },
           },
-        },
-      },
-    },
-  },
-
-  OpenRouterModel: {
-    type: "object",
-    required: ["id", "name", "context_length", "pricing"],
-    properties: {
-      id: { type: "string" },
-      name: { type: "string" },
-      description: { type: "string" },
-      context_length: { type: "integer" },
-      pricing: {
-        type: "object",
-        properties: {
-          prompt: { type: "string" },
-          completion: { type: "string" },
-          image: { type: "string" },
-          request: { type: "string" },
-        },
-      },
-      top_provider: {
-        type: "object",
-        properties: {
-          max_completion_tokens: { type: "integer" },
-          is_moderated: { type: "boolean" },
-        },
-      },
-      architecture: {
-        type: "object",
-        properties: {
-          modality: { type: "string" },
-          tokenizer: { type: "string" },
-          instruct_type: { type: "string" },
         },
       },
     },

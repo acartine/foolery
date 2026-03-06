@@ -32,7 +32,6 @@ vi.mock("node:child_process", () => ({
 
 import {
   getBackendType,
-  getOpenRouterSettings,
   scanForAgents,
   _resetCache,
 } from "@/lib/settings";
@@ -47,7 +46,7 @@ beforeEach(() => {
   mockStat.mockResolvedValue({ mtimeMs: 0 });
 });
 
-describe("getBackendType (line 311-315)", () => {
+describe("getBackendType", () => {
   it("returns FOOLERY_BACKEND env var when set", async () => {
     const orig = process.env.FOOLERY_BACKEND;
     process.env.FOOLERY_BACKEND = "http";
@@ -73,38 +72,7 @@ describe("getBackendType (line 311-315)", () => {
   });
 });
 
-describe("getOpenRouterSettings (line 361-362)", () => {
-  it("returns default openrouter settings", async () => {
-    mockReadFile.mockRejectedValue(new Error("ENOENT"));
-    const or = await getOpenRouterSettings();
-    expect(or.enabled).toBe(false);
-    expect(or.apiKey).toBe("");
-    expect(or.agents).toEqual({});
-    expect(or.model).toBe("");
-  });
-
-  it("returns configured openrouter settings", async () => {
-    const toml = [
-      "[openrouter]",
-      'apiKey = "sk-test"',
-      "enabled = true",
-      'model = "anthropic/claude-sonnet-4"',
-    ].join("\n");
-    mockReadFile.mockResolvedValue(toml);
-    const or = await getOpenRouterSettings();
-    expect(or.enabled).toBe(true);
-    expect(or.apiKey).toBe("sk-test");
-    expect(or.model).toBe("anthropic/claude-sonnet-4");
-    expect(or.agents).toEqual({
-      default: {
-        model: "anthropic/claude-sonnet-4",
-        label: "OpenRouter (anthropic/claude-sonnet-4)",
-      },
-    });
-  });
-});
-
-describe("scanForAgents (line 345-357)", () => {
+describe("scanForAgents", () => {
   it("returns scan results for known agent CLIs", async () => {
     mockExecAsync.mockImplementation((cmd: string) => {
       if (cmd.includes("claude")) return { stdout: "/usr/local/bin/claude\n", stderr: "" };
@@ -112,7 +80,7 @@ describe("scanForAgents (line 345-357)", () => {
     });
 
     const results = await scanForAgents();
-    expect(results).toHaveLength(3);
+    expect(results).toHaveLength(4);
 
     const claude = results.find((r) => r.id === "claude");
     expect(claude?.installed).toBe(true);
@@ -122,5 +90,9 @@ describe("scanForAgents (line 345-357)", () => {
     const codex = results.find((r) => r.id === "codex");
     expect(codex?.installed).toBe(false);
     expect(codex?.provider).toBe("OpenAI");
+
+    const opencode = results.find((r) => r.id === "opencode");
+    expect(opencode?.installed).toBe(false);
+    expect(opencode?.provider).toBe("OpenCode");
   });
 });

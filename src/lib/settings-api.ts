@@ -95,20 +95,6 @@ export function saveActions(
   });
 }
 
-export function fetchOpenRouterModels(): Promise<
-  BdResult<import("./openrouter").OpenRouterModel[]>
-> {
-  return request<import("./openrouter").OpenRouterModel[]>("/api/openrouter/models");
-}
-
-export function validateOpenRouterKey(apiKey: string): Promise<BdResult<{ valid: boolean }>> {
-  const isMasked = apiKey.includes("...");
-  return request<{ valid: boolean }>("/api/openrouter/validate", {
-    method: "POST",
-    body: JSON.stringify(isMasked ? { useStored: true } : { apiKey }),
-  });
-}
-
 export function savePools(
   pools: Partial<PoolsSettings>,
 ): Promise<BdResult<FoolerySettings>> {

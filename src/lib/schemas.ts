@@ -147,84 +147,6 @@ export const defaultsSettingsSchema = z
   })
   .default({ profileId: "" });
 
-export const openrouterAgentSchema = z.object({
-  /** OpenRouter model identifier (e.g. "anthropic/claude-sonnet-4"). */
-  model: z.string().default(""),
-  /** Human-readable label shown for this OpenRouter-backed agent. */
-  label: z.string().default(""),
-});
-
-export const openrouterAgentsMapSchema = z
-  .record(z.string(), openrouterAgentSchema)
-  .default({});
-
-const LEGACY_OPENROUTER_AGENT_ID = "default";
-
-function normalizeOpenRouterModel(modelId: string): string {
-  return modelId.trim().toLowerCase();
-}
-
-function dedupeOpenRouterAgentsByModel(
-  agents: Record<string, { model: string; label: string }>,
-): Record<string, { model: string; label: string }> {
-  const deduped: Record<string, { model: string; label: string }> = {};
-  const seenModelIds = new Set<string>();
-
-  for (const [key, entry] of Object.entries(agents)) {
-    const model = entry.model.trim();
-    if (!model) {
-      deduped[key] = { ...entry, model };
-      continue;
-    }
-
-    const normalized = normalizeOpenRouterModel(model);
-    if (seenModelIds.has(normalized)) continue;
-    seenModelIds.add(normalized);
-    deduped[key] = { ...entry, model };
-  }
-
-  return deduped;
-}
-
-// OpenRouter provider settings
-export const openrouterSettingsSchema = z
-  .object({
-    /** OpenRouter API key for accessing models. */
-    apiKey: z.string().default(""),
-    /** Whether OpenRouter integration is enabled. */
-    enabled: z.boolean().default(false),
-    /** OpenRouter agent map keyed by user-defined id. */
-    agents: openrouterAgentsMapSchema,
-    /** @deprecated Legacy single-model setting kept for migration compatibility. */
-    model: z.string().default(""),
-  })
-  .default({ apiKey: "", enabled: false, agents: {}, model: "" })
-  .transform((openrouter) => {
-    const dedupedAgents = dedupeOpenRouterAgentsByModel(openrouter.agents);
-    if (Object.keys(dedupedAgents).length > 0) {
-      return {
-        ...openrouter,
-        agents: dedupedAgents,
-      };
-    }
-    const legacyModel = openrouter.model.trim();
-    if (!legacyModel) {
-      return {
-        ...openrouter,
-        agents: dedupedAgents,
-      };
-    }
-    return {
-      ...openrouter,
-      agents: {
-        [LEGACY_OPENROUTER_AGENT_ID]: {
-          model: legacyModel,
-          label: `OpenRouter (${legacyModel})`,
-        },
-      },
-    };
-  });
-
 // Agent dispatch mode: "actions" uses simple per-action mappings,
 // "pools" uses weighted per-step agent pools.
 export const dispatchModeSchema = z
@@ -263,7 +185,6 @@ export const foolerySettingsSchema = z.object({
   actions: actionAgentMappingsSchema,
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
-  openrouter: openrouterSettingsSchema,
   pools: poolsSettingsSchema,
   dispatchMode: dispatchModeSchema,
 });
@@ -273,7 +194,6 @@ export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
-export type OpenRouterSettings = z.infer<typeof openrouterSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;
