@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc420-3df0-7962-a4ab-993751faeba4",
+  "occurred_at": "2026-03-06T17:09:33.296066Z",
+  "knot_id": "foolery-68d7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Requested implementation follow-up: keep searchable model picker but tighten prefix stripping to avoid over-trimming decimal model names and add regression tests.",
+    "datetime": "2026-03-06T17:09:23Z",
+    "entry_id": "019cc420-3df0-7962-a4ab-99244740f46b",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-06"
+  }
+}

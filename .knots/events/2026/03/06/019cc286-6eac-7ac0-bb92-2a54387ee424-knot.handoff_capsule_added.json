@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc286-6eac-7ac0-bb92-2a54387ee424",
+  "occurred_at": "2026-03-06T09:41:56.01227Z",
+  "knot_id": "foolery-0121",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved: settings are reorganized into tabs (Repos/Agents/Dispatch/Defaults) in settings-sheet and section UIs use reduced typography classes (primarily text-xs/text-[11px]) to reduce clutter. Invariants: none declared for this knot. Validation run in workspace: bun install --frozen-lockfile passed; bunx tsc --noEmit passed; lint/test/build currently fail due broader existing workspace baseline issues and unrelated regressions.",
+    "datetime": "2026-03-06T09:41:47Z",
+    "entry_id": "019cc286-6eac-7ac0-bb92-2a452563f19c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

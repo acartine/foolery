@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc41b-db53-7743-96ee-b973b93a3044",
+  "occurred_at": "2026-03-06T17:04:45.907771Z",
+  "knot_id": "foolery-68d7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented searchable combobox for agent model picker. When a scanned agent has 10+ options (e.g. OpenCode with 100+ models), the plain Select is replaced with a Popover+Command (cmdk) based searchable dropdown. Also strips common label prefixes for shorter display. All quality gates pass (1855 tests, lint, typecheck). Commit: 4f82dfa3",
+    "datetime": "2026-03-06T17:04:45.907771Z",
+    "entry_id": "019cc41b-db53-7743-96ee-b96b6df06ffb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

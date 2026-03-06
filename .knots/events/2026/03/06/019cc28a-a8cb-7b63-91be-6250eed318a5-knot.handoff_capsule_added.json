@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc28a-a8cb-7b63-91be-6250eed318a5",
+  "occurred_at": "2026-03-06T09:46:33.035895Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved: both commits (1ceb335297cf, 6906297b2f1d) verified on main. swapPoolAgent helper correctly guards no-op, missing source, and duplicate target. UI has dual-select swap controls per pool step with disabled invalid targets. All 24 agent-pool tests pass. No invariants to check. No regressions detected in swap functionality.",
+    "datetime": "2026-03-06T10:46:00Z",
+    "entry_id": "019cc28a-a8cb-7b63-91be-6242acae8897",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "claude-opus-4-6"
+  }
+}

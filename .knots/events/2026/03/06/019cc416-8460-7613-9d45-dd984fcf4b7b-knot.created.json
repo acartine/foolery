@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc416-8460-7613-9d45-dd984fcf4b7b",
+  "occurred_at": "2026-03-06T16:58:55.968801Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.created",
+  "data": {
+    "body": "Generally if we are replacing an agent, we want to do it globally (think like a version upgrade).  so just one global swap agent at the top or bottom of dispatch, the covers all occurrences, is plenty.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Dispatch: \"Swap Agent\" functionality should be global, not per step"
+  }
+}

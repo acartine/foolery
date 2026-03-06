@@ -1,0 +1,16 @@
+{
+  "event_id": "019cc1df-f25a-78e3-8548-899af378b1f9",
+  "occurred_at": "2026-03-06T06:40:05.210722Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "codex",
+    "agent_name": "OpenAI",
+    "agent_version": "5.4",
+    "force": false,
+    "from": "planning",
+    "profile_id": "autopilot",
+    "to": "ready_for_plan_review"
+  }
+}

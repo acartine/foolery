@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc3c3-52c7-7163-91a6-52b887f26dcf",
+  "occurred_at": "2026-03-06T15:28:03.783625Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Created Obsidian architecture note at /Users/cartine/obsidian/foolery/Hosted Foolery Cloud Service Architecture.md. The note defines Foolery as a three-plane hosted system: control plane, execution plane, and model plane. It recommends ephemeral sandbox workers with checked-out repos and local tools, provider-agnostic model routing, customer-owned Git as the default hosting mode, and a stable internal runtime contract so existing coding CLIs can be used early without becoming the long-term product architecture.",
+    "datetime": "2026-03-06T16:27:58+01:00",
+    "entry_id": "019cc3c3-52c7-7163-91a6-52a84bde2dbf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

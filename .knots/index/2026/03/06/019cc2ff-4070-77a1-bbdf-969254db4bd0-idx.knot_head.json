@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc2ff-4070-77a1-bbdf-969254db4bd0",
+  "occurred_at": "2026-03-06T11:53:54.007527Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-2234",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Implement pool swap UI controls",
+    "updated_at": "2026-03-06T11:53:54.007527Z"
+  }
+}

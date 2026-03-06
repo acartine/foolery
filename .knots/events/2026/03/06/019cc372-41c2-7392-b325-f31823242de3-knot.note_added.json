@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc372-41c2-7392-b325-f31823242de3",
+  "occurred_at": "2026-03-06T13:59:31.010376Z",
+  "knot_id": "foolery-6473",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Interaction log evidence: .foolery-logs/foolery/2026-03-06/term-1772797553131-nson3u.jsonl — last 5 entries show memory_add_note x3 (ok), then kno_next (Unknown tool), then shell_exec? ((no output)), then session_end exit code 1. The dev log (next-development.log) only shows 'sending stderr (184 chars)' without the actual content — another reason knot 3985 (console log tap) is needed.",
+    "datetime": "2026-03-06T13:59:31.010376Z",
+    "entry_id": "019cc372-41c2-7392-b325-f30bf41b65ef",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

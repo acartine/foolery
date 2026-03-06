@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc248-bd96-78d1-80bc-6241006e39ce",
+  "occurred_at": "2026-03-06T08:34:32.982086Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-1239",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Settings: scanned agent versions should only show real detected versions",
+    "updated_at": "2026-03-06T08:34:32.982086Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc248-a804-7380-9916-2c3e955d8099"
+  }
+}

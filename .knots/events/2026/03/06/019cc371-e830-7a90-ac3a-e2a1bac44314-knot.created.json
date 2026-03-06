@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc371-e830-7a90-ac3a-e2a1bac44314",
+  "occurred_at": "2026-03-06T13:59:08.08087Z",
+  "knot_id": "foolery-745b",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "add kno create as an alias to kno new"
+  }
+}

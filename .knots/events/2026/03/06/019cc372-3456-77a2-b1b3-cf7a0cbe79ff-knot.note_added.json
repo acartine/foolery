@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc372-3456-77a2-b1b3-cf7a0cbe79ff",
+  "occurred_at": "2026-03-06T13:59:27.574083Z",
+  "knot_id": "foolery-46a3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Key files: src/lib/openrouter-session-runtime.ts (formatLeasePrompt lines 45-63, buildSystemPrompt lines 65-72, WORKER_TOOL_DEFS lines 18-27), src/lib/local-worker.ts (BLOCKED_SHELL_COMMANDS line 10, runTool lines 92-117). The queueTerminalInvariantInstruction is built in terminal-manager.ts and passed via RuntimeSessionContext. For OpenRouter workers, state advancement happens automatically via completeIteration — the agent never needs to call kno next.",
+    "datetime": "2026-03-06T13:59:27.574083Z",
+    "entry_id": "019cc372-3456-77a2-b1b3-cf617463c3eb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

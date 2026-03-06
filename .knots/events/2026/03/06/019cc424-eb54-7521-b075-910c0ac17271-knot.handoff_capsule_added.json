@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc424-eb54-7521-b075-910c0ac17271",
+  "occurred_at": "2026-03-06T17:14:39.82801Z",
+  "knot_id": "foolery-68d7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Refined OpenCode model picker prefix stripping by extracting helper logic to src/lib/model-labels.ts, limiting common-prefix trimming to '/' and ':' boundaries, and preventing empty-label stripping. Added regression tests in src/lib/__tests__/model-labels.test.ts (decimal-prefix and empty-label guards). Searchable picker remains in settings-agents-section and now uses the shared helper. Quality gates run: lint (warnings only), tsc --noEmit, unit tests (119 files / 1860 tests), build (passes with NODE_ENV=production). Integrated on main and pushed to origin/main at 64bb470ed772.",
+    "datetime": "2026-03-06T17:14:30Z",
+    "entry_id": "019cc424-eb54-7521-b075-90fc18b35ae3",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-06"
+  }
+}

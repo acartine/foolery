@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e1-0261-73a2-ac90-b1303ade3074",
+  "occurred_at": "2026-03-06T06:41:14.849033Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review passed. main@a59c518 is on origin/main and remote automation is green: CI run 22752307976 succeeded at 2026-03-06T06:40:00Z and Changesets run 22752307991 succeeded. Knot can close as shipped.",
+    "datetime": "2026-03-06T06:40:55Z",
+    "entry_id": "019cc1e1-0261-73a2-ac90-b12abbb89767",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc417-2b39-7121-8c08-bbc1ea556640",
+  "occurred_at": "2026-03-06T16:59:38.681208Z",
+  "knot_id": "foolery-3a1d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Verified: commit 9c664af37ff6 (merge) and ac0f1f166578 (feature) are on main and origin/main. No OpenRouter references remain in source. Both commits tagged on knot. Quality gates confirmed passing.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc417-2b39-7121-8c08-bbb99c92c353",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

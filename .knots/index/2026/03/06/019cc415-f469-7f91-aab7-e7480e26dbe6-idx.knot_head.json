@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-f469-7f91-aab7-e7480e26dbe6",
+  "occurred_at": "2026-03-06T16:58:19.107565Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-9181",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Remove OpenRouter from OpenAPI spec",
+    "updated_at": "2026-03-06T16:58:19.107565Z"
+  }
+}

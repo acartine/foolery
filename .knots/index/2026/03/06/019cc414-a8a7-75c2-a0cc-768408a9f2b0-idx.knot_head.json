@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc414-a8a7-75c2-a0cc-768408a9f2b0",
+  "occurred_at": "2026-03-06T16:56:54.183054Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-0b3c",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Remove OpenRouter from runtime and execution",
+    "updated_at": "2026-03-06T16:56:54.183054Z"
+  }
+}

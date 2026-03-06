@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc3f0-4312-75c3-940a-e4e6febd54dd",
+  "occurred_at": "2026-03-06T16:17:08.882593Z",
+  "knot_id": "foolery-0b3c",
+  "type": "knot.created",
+  "data": {
+    "body": "terminal-manager.ts: remove OpenRouterSessionRuntime import and `if (agent.kind === 'openrouter')` branch, remove OPENROUTER_API_KEY env injection. orchestration-manager.ts and breakdown-manager.ts: change fallback command from 'openrouter-agent' to 'claude'. local-worker.ts: replace 'openrouter-agent' with 'opencode' in BLOCKED_SHELL_COMMANDS.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove OpenRouter from runtime and execution"
+  }
+}

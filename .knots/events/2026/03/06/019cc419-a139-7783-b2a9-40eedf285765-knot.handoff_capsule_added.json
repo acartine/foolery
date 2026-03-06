@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc419-a139-7783-b2a9-40eedf285765",
+  "occurred_at": "2026-03-06T17:02:19.961271Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Verified: commits 9c664af37ff6 and ac0f1f166578 on origin/main. All commit tags present. 39 files changed, 4084 lines removed. All 11 child knots shipped. No regressions. Quality gates passed. Final sign-off complete.",
+    "datetime": "2026-03-06T17:10:00Z",
+    "entry_id": "019cc419-a139-7783-b2a9-40de356229dc",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc288-9e6a-7c13-8eb3-caac01d4f04b",
+  "occurred_at": "2026-03-06T09:44:19.306521Z",
+  "knot_id": "foolery-0121",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved: verified settings tabs (Repos/Agents/Dispatch/Defaults) and reduced typography are present on origin/main at ea3e09a with implementation commit 4f8cb3dfcfbd tagged. No knot invariants are defined. Local workspace remains dirty from unrelated in-progress changes; review performed read-only per shipment_review constraints.",
+    "datetime": "2026-03-06T09:44:13Z",
+    "entry_id": "019cc288-9e6a-7c13-8eb3-ca9d44c94b52",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

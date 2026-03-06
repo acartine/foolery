@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc3c3-52c7-7163-91a6-52dc838f38b1",
+  "occurred_at": "2026-03-06T15:28:03.783625Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Saved an Obsidian note describing the recommended hosted-service shape for Foolery. Main conclusion: run autonomous agents in isolated ephemeral sandboxes with local repo access, and keep orchestration, policy, audit, and model routing in Foolery’s control plane. Existing coding CLIs can be used as early worker backends, but the long-term architecture should center on a Foolery-owned runtime contract rather than shelling out to CLIs as the product boundary.",
+    "datetime": "2026-03-06T16:27:58+01:00",
+    "entry_id": "019cc3c3-52c7-7163-91a6-52c5872ea6a1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

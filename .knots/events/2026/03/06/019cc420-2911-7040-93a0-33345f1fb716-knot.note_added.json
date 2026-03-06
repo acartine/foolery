@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc420-2911-7040-93a0-33345f1fb716",
+  "occurred_at": "2026-03-06T17:09:27.953149Z",
+  "knot_id": "foolery-68d7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Searchable picker is present, but prefix stripping can over-trim decimal model names (e.g. shared 'claude-3.' prefix), and there is no regression coverage for this helper. Requesting implementation follow-up before approval.",
+    "datetime": "2026-03-06T17:09:23Z",
+    "entry_id": "019cc420-2911-7040-93a0-332582390fa6",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-06"
+  }
+}

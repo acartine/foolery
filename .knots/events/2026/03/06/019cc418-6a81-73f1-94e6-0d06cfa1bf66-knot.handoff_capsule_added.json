@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc418-6a81-73f1-94e6-0d06cfa1bf66",
+  "occurred_at": "2026-03-06T17:01:00.417925Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "All 11 child knots shipped. OpenRouter fully removed and replaced with OpenCode CLI integration. 39 files changed, 4084 lines removed. Quality gates passed: tsc clean, 0 lint errors, 1855 tests passing, build succeeds. Commits ac0f1f16 (feature) and 9c664af3 (merge) on main.",
+    "datetime": "2026-03-06T17:10:00Z",
+    "entry_id": "019cc418-6a81-73f1-94e6-0cf823ec04ac",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

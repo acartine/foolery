@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc371-c099-7a81-9665-33787da57f80",
+  "occurred_at": "2026-03-06T13:58:57.945494Z",
+  "knot_id": "foolery-3985",
+  "type": "knot.created",
+  "data": {
+    "body": "All console.log/console.warn/console.error output must be written to a persistent log file in both dev (bun dev) and prod installations. Currently console output goes to the terminal running next dev and is lost on restart. The log file should live alongside interaction logs at {logRoot}/_server/{YYYY-MM-DD}/console.log. Implementation: intercept console.log/warn/error at process startup (instrumentation.ts register()), tee to a WriteStream. Also capture uncaughtException and unhandledRejection. The server-logger.ts infrastructure (resolveInteractionLogRoot, _server slug, date stamping) already exists and should be reused. A partial implementation was started at src/lib/console-log-tap.ts but not wired in.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Console log tap: tee all console output to daily log file"
+  }
+}

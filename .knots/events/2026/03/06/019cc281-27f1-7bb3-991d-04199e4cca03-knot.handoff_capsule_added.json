@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc281-27f1-7bb3-991d-04199e4cca03",
+  "occurred_at": "2026-03-06T09:36:10.225136Z",
+  "knot_id": "foolery-0121",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Settings reorganized into tab-based layout (Repos/Agents/Dispatch/Defaults tabs via Radix Tabs). Font sizes reduced by one step throughout all settings sections. Redundant section headers removed since tabs serve as navigation. Footer buttons also downsized. Changes pushed to origin/main.",
+    "datetime": "2026-03-06T09:36:10.225136Z",
+    "entry_id": "019cc281-27f1-7bb3-991d-0405f9c1d4c8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

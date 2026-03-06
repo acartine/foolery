@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc275-98fb-72f1-abfd-176deb46d1be",
+  "occurred_at": "2026-03-06T09:23:32.731411Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved: scope, feasibility, and test strategy are adequate; no invariant conflicts detected; proceed to implementation with attention to invalid swap guards and persistence path correctness.",
+    "datetime": "2026-03-06T09:22:53Z",
+    "entry_id": "019cc275-98fb-72f1-abfd-175109699504",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

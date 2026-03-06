@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc41c-7dc5-7b41-80af-c405b92b2dde",
+  "occurred_at": "2026-03-06T17:05:27.493717Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Refactored Swap Agent from per-step to global. Removed swap UI from StepPoolEditor, added GlobalSwapAgent/GlobalSwapAgentUI components at bottom of SettingsPoolsSection. Global swap applies swapPoolAgent across all steps containing the source agent, saves all changes in one savePools call, and reports affected step count. Quality gates pass (lint, tsc, build).",
+    "datetime": "2026-03-06T00:00:00Z",
+    "entry_id": "019cc41c-7dc5-7b41-80af-c3f6bc806bf9",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

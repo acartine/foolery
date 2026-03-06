@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc418-ece6-7ea3-bd8e-b0359ab38970",
+  "occurred_at": "2026-03-06T17:01:33.798135Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-791f",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Replace OpenRouter with OpenCode CLI",
+    "updated_at": "2026-03-06T17:01:33.798135Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc418-dc07-75d1-ac45-905e506a7519"
+  }
+}

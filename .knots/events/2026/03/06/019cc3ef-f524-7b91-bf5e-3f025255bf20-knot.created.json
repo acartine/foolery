@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc3ef-f524-7b91-bf5e-3f025255bf20",
+  "occurred_at": "2026-03-06T16:16:48.932755Z",
+  "knot_id": "foolery-69c6",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove OpenRouterAgentTarget from types-agent-target.ts (simplify AgentTarget to just CliAgentTarget). Remove 'openrouter' from RegisteredAgent.kind in types.ts. Remove openrouterAgentSchema, openrouterAgentsMapSchema, openrouterSettingsSchema and helpers from schemas.ts. Remove 'openrouter' field from foolerySettingsSchema.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove OpenRouter types and schemas"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-5b3a-7cf0-a876-410be300f939",
+  "occurred_at": "2026-03-06T16:58:45.433997Z",
+  "knot_id": "foolery-8921",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Commit 9c664af37ff6 is on origin/main. Code was already merged and pushed. No merge conflicts. Quality gates passed previously (tsc, lint, 1855 tests, build).",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-5b3a-7cf0-a876-40f596319c00",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

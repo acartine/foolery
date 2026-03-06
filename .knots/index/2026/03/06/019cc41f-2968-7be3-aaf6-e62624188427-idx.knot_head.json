@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc41f-2968-7be3-aaf6-e62624188427",
+  "occurred_at": "2026-03-06T17:08:22.489597Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-46a3",
+    "profile_id": "autopilot_no_planning",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "OpenRouter prompt sends unreachable kno/bd CLI commands to worker agents",
+    "updated_at": "2026-03-06T17:08:22.489597Z"
+  }
+}

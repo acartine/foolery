@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc281-af50-7140-9ace-f9346554436d",
+  "occurred_at": "2026-03-06T09:36:44.880475Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review + re-land: cherry-picked orphaned commit 1ceb335 onto main. swapPoolAgent helper in agent-pool.ts replaces agentId in-place preserving weight/order, guards against no-op and duplicate swaps. UI adds dual-select swap controls per step in settings-pools-section.tsx. All 24 agent-pool tests pass. Lint clean (warnings only). TypeCheck clean.",
+    "datetime": "2026-03-06T09:36:44.880475Z",
+    "entry_id": "019cc281-af50-7140-9ace-f9286a030467",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc2a6-493e-7602-a8a2-8144b401c8c2",
+  "occurred_at": "2026-03-06T10:16:43.582622Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved shipment review: workflow profile labels are user-facing names only (no engine leakage), defaults profile picker uses canonical profile names, create-beat honors settings default profile, and info-icon dialogs exist in both create and settings defaults. Verified commits on main and CI success for head commit 4f704932282e; commit tags normalized to commit:<12-char-sha>.",
+    "datetime": "2026-03-06T10:16:34Z",
+    "entry_id": "019cc2a6-493e-7602-a8a2-81351b33d613",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-06"
+  }
+}

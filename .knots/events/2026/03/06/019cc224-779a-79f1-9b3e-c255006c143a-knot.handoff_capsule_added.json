@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc224-779a-79f1-9b3e-c255006c143a",
+  "occurred_at": "2026-03-06T07:54:55.770786Z",
+  "knot_id": "foolery-6503",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Settings agent scan now returns selectable import options per installed CLI, parsing provider/model/version for Claude, OpenAI Codex, and Gemini. The Agents panel presents dropdowns for those options, adds the selected variant as a distinct registered agent, and shows version labels in the registered list; scan tests cover Gemini history fallback and the OpenAPI schema now documents options/selectedOptionId.",
+    "datetime": "2026-03-06T07:54:55.770786Z",
+    "entry_id": "019cc224-779a-79f1-9b3e-c2470bdde7a7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

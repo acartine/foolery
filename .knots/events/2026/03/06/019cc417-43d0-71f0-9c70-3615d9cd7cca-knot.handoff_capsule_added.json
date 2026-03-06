@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc417-43d0-71f0-9c70-3615d9cd7cca",
+  "occurred_at": "2026-03-06T16:59:44.976535Z",
+  "knot_id": "foolery-b0f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Verified: commit 9c664af37ff6 is HEAD of origin/main. Both implementation commits tagged (commit:ac0f1f166578, commit:9c664af37ff6). No regressions — all OpenRouter code cleanly removed, OpenCode integration added. Quality gates green.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc417-43d0-71f0-9c70-360b6479eb49",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

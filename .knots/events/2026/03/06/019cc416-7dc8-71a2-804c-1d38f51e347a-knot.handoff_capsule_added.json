@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-7dc8-71a2-804c-1d38f51e347a",
+  "occurred_at": "2026-03-06T16:58:54.280663Z",
+  "knot_id": "foolery-9697",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment verified. Commit 9c664af37ff6 is on origin/main. No merge needed (work was already committed and pushed to main). Code removes all OpenRouter references and adds OpenCode CLI dialect to agent-adapter.ts. Quality gates passed prior to commit.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-7dc8-71a2-804c-1d233eec6785",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc2a1-1b16-76d1-9741-40d4fbf97284",
+  "occurred_at": "2026-03-06T10:11:04.07106Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-d156",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Workflow Profile consistency",
+    "updated_at": "2026-03-06T10:11:04.07106Z"
+  }
+}

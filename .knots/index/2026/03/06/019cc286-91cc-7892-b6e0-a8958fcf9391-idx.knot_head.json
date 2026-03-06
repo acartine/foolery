@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc286-91cc-7892-b6e0-a8958fcf9391",
+  "occurred_at": "2026-03-06T09:42:05.004468Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-ba0e",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "settings: dispatch: pools:  add a model swap function",
+    "updated_at": "2026-03-06T09:42:05.004468Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc286-4694-7943-a865-e5dbc69a2eb1"
+  }
+}

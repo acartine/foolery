@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-9385-74f0-bcea-ac2eec002ef1",
+  "occurred_at": "2026-03-06T16:58:59.837789Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-69c6",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Remove OpenRouter types and schemas",
+    "updated_at": "2026-03-06T16:58:59.837789Z"
+  }
+}

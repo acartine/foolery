@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-d277-79e0-ba22-9e199ad594b2",
+  "occurred_at": "2026-03-06T16:58:10.423674Z",
+  "knot_id": "foolery-8921",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review passed. All requirements verified: openrouter replaced with opencode in AgentProviderId, PROVIDER_LABELS updated, OPENROUTER_PROVIDER_LABELS deleted, normalizeOpenRouterModel() deleted, detectAgentProviderId() detects opencode, orapi source branch removed, detectAgentSource() removed. No openrouter references remain in codebase. 39 files changed, 181 insertions, 4084 deletions. Quality gates confirmed passing.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc415-d277-79e0-ba22-9e041232bca4",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

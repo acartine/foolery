@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc3c3-52db-7e31-b7d8-00e39d0b4453",
+  "occurred_at": "2026-03-06T15:28:03.783625Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-90c5",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Hosted Foolery architecture note for Obsidian",
+    "updated_at": "2026-03-06T15:28:03.783625Z"
+  }
+}

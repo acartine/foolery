@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-c2ba-7543-b328-7460b3946f2a",
+  "occurred_at": "2026-03-06T16:59:11.93047Z",
+  "knot_id": "foolery-b0f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Commit 9c664af37ff6 is on origin/main. No merge needed (work was done directly on main). Code already pushed. Quality gates passed: tsc clean, 0 lint errors, 1855 tests passing, build succeeds.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-c2ba-7543-b328-745b96295562",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

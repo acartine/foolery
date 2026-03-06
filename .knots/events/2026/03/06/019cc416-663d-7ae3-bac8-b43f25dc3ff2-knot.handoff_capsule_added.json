@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-663d-7ae3-bac8-b43f25dc3ff2",
+  "occurred_at": "2026-03-06T16:58:48.253408Z",
+  "knot_id": "foolery-57fc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Commit 9c664af37ff6 already on origin/main. OpenRouter removal shipped: API routes, components, tests, and libraries deleted (4084 lines removed, 39 files changed). Quality gates green.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-663d-7ae3-bac8-b427752b4803",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

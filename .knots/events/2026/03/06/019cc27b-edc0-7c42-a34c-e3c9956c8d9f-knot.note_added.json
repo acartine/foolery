@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc27b-edc0-7c42-a34c-e3c9956c8d9f",
+  "occurred_at": "2026-03-06T09:30:27.648347Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: code quality is good but commit 1ceb335 is orphaned and not on main. Rejecting to re-land the changes on main.",
+    "datetime": "2026-03-06T09:30:27.648347Z",
+    "entry_id": "019cc27b-edc0-7c42-a34c-e3b301bccc47",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

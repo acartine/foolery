@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc372-5410-70d2-b680-cc96c5d1776d",
+  "occurred_at": "2026-03-06T13:59:35.689315Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-6473",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Unknown tool calls from OpenRouter models should not be fatal",
+    "updated_at": "2026-03-06T13:59:35.689315Z"
+  }
+}

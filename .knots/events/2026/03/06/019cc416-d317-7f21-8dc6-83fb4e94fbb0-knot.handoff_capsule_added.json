@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-d317-7f21-8dc6-83fb4e94fbb0",
+  "occurred_at": "2026-03-06T16:59:16.119424Z",
+  "knot_id": "foolery-2828",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Verified: commit 9c664af37ff6 is live on main and origin/main. Commit tag present on knot. All OpenRouter files removed per requirements. No regressions - quality gates passed (tsc, lint, 1855 tests, build). Final sign-off complete.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-d317-7f21-8dc6-83e7f316ebc9",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

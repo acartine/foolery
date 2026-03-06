@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc233-05a0-75c2-a9d7-9824fefc63d0",
+  "occurred_at": "2026-03-06T08:10:49.632975Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-6503",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Settings: agent scan should offer selectable model/version imports",
+    "updated_at": "2026-03-06T08:10:49.632975Z"
+  }
+}

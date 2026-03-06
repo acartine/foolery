@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc418-ca44-7b02-adf2-e7ba33d185aa",
+  "occurred_at": "2026-03-06T17:01:24.93259Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Verified: 39 files changed, 4084 lines removed. OpenRouter API routes, client, session runtime, CLI shim, keychain, settings UI, and all related tests fully removed. OpenCode CLI integration in place via agent-adapter. Commits 9c664af3 and ac0f1f16 on main. No security issues or regressions.",
+    "datetime": "2026-03-06T17:10:00Z",
+    "entry_id": "019cc418-ca44-7b02-adf2-e7a5c0ade0bf",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

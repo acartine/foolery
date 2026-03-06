@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc417-0b1d-70e2-af59-48f2f96ce666",
+  "occurred_at": "2026-03-06T16:59:30.461988Z",
+  "knot_id": "foolery-9697",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment review approved. Verified: (1) Both commits (ac0f1f166578, 9c664af37ff6) are on origin/main and tagged on knot. (2) No OpenRouter references remain in src/. (3) OpenCode dialect implemented correctly in agent-adapter.ts. (4) Quality gates passed: tsc clean, lint clean, 1855 tests passing, build succeeds. No regressions detected.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc417-0b1d-70e2-af59-48ee84d2cc49",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

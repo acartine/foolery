@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e0-b472-7800-9c74-81a5820c5995",
+  "occurred_at": "2026-03-06T06:40:54.898331Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment approved. Commit a59c518 is merged into main and pushed to origin/main; scan metadata and downstream displays are aligned on provider/model/version, and all repo quality gates passed before push.",
+    "datetime": "2026-03-06T06:40:48Z",
+    "entry_id": "019cc1e0-b472-7800-9c74-8192e27e9310",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc405-243b-7bd1-bc84-96fa60d1fb06",
+  "occurred_at": "2026-03-06T16:39:57.243283Z",
+  "knot_id": "foolery-0b3c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Completed: All OpenRouter code removed and replaced with OpenCode CLI integration. Merged to main and pushed. Quality gates passed (tsc, lint, test, build).",
+    "datetime": "2026-03-06T16:39:57.243283Z",
+    "entry_id": "019cc405-243b-7bd1-bc84-96e2a89b5623",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

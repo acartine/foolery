@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1da-a343-70d2-a8a4-ed1e69dce0a2",
+  "occurred_at": "2026-03-06T06:34:17.283288Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Planned agent identity normalization: scan only Claude/Codex/Gemini, inspect local CLI/config metadata, persist provider/model/version, and propagate display updates through settings, active terminals, and history. No subknots created because the work is cohesive and can ship as one change.",
+    "datetime": "2026-03-06T06:34:02Z",
+    "entry_id": "019cc1da-a343-70d2-a8a4-ed08b4e64cba",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

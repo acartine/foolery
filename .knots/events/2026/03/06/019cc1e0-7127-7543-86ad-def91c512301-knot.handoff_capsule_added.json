@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e0-7127-7543-86ad-def91c512301",
+  "occurred_at": "2026-03-06T06:40:37.671454Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implemented and pushed commit a59c518 to origin/main. Settings scan now only targets Claude, Codex, and Gemini; Codex and Claude metadata are normalized into provider/model/version and propagated into settings, active terminals, and history. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-06T06:40:20Z",
+    "entry_id": "019cc1e0-7127-7543-86ad-dee6ea7a58ad",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

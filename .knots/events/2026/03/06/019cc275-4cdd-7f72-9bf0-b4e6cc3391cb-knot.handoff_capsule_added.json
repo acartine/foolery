@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc275-4cdd-7f72-9bf0-b4e6cc3391cb",
+  "occurred_at": "2026-03-06T09:23:13.245212Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete: created child knots foolery-2234 (UI swap controls) and foolery-28b0 (config mutation wiring); implementation will add dual selectors + swap action, connect to pool config persistence, and validate with lint/typecheck/test/build.",
+    "datetime": "2026-03-06T09:22:53Z",
+    "entry_id": "019cc275-4cdd-7f72-9bf0-b4dc2dce845f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

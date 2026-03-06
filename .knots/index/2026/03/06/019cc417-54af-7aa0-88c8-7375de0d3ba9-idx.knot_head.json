@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc417-54af-7aa0-88c8-7375de0d3ba9",
+  "occurred_at": "2026-03-06T16:59:49.295886Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-b0f2",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Remove OpenRouter from settings and add OpenCode scanning",
+    "updated_at": "2026-03-06T16:59:49.295886Z"
+  }
+}

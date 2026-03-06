@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc1d6-5700-7533-8971-462228d86316",
+  "occurred_at": "2026-03-06T06:29:35.616454Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.created",
+  "data": {
+    "body": "- in the settings ui it looks like foolery is scanning for OpenRouter - this is stupid and should be removed.  this is a cli scan\n- in the settings ui it looks like it is scanning for chatgpt - this is also stupid.  \n- when it scans it should look for codex and claude, and if found, use whatever commands codex and claude use to display model names and model versions.  \n- the app/ui should properly model the agent name (Claude/OpenAI/Gemeni), model (opus/sonnet/haiku/codex/chatgpt/gemini), and version (4.5,4.6, 5.3,5.4, etc.)\n\nthis needs to be more robustly handled than it currently is today, and it should be propagated into the \"Active\" view, the UI Terminals, and other screens like History.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Agent Scan still not working properly, agent names are not normalized"
+  }
+}

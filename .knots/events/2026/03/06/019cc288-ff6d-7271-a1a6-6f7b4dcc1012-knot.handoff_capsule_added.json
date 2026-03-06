@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc288-ff6d-7271-a1a6-6f7b4dcc1012",
+  "occurred_at": "2026-03-06T09:44:44.141449Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped commit 6906297b2f1d to origin/main. Pools swap UI now keeps full replacement list while disabling invalid targets already in pool; canSwap now guards duplicate targets before action. Quality gates run in dedicated worktree after bun install --frozen-lockfile: lint passed with existing warnings; typecheck failed due pre-existing missing exports in settings-agents/defaults; tests failed on pre-existing settings-sheet-layout assertion; build failed due same missing export regressions.",
+    "datetime": "2026-03-06T09:44:30Z",
+    "entry_id": "019cc288-ff6d-7271-a1a6-6f6a04a6adaf",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

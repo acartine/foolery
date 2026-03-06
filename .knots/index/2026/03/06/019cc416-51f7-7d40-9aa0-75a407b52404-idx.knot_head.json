@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc416-51f7-7d40-9aa0-75a407b52404",
+  "occurred_at": "2026-03-06T16:58:43.063105Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-3a1d",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Remove OpenRouter from UI components",
+    "updated_at": "2026-03-06T16:58:43.063105Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc416-40e7-7203-a2f0-13828a2a7910"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc27a-313b-7220-ab27-21ba0c8e3178",
+  "occurred_at": "2026-03-06T09:28:33.851953Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented pool-agent swap in Settings > Dispatch > Pools: each step now has left dropdown of current pool agents, right dropdown of all selectable agents, and a Swap action that replaces agentId in-place while preserving weight/order and preventing duplicate/no-op swaps. Added shared swapPoolAgent helper and unit tests for success + invalid cases. Quality gates: bun run lint passed (warnings only), bunx tsc --noEmit passed, bun run test passed, bun run build failed due pre-existing Next prerender/runtime issue on /_global-error and /registry (TypeError: Cannot read properties of null (reading useContext)). Commit pushed to origin/main.",
+    "datetime": "2026-03-06T09:28:02Z",
+    "entry_id": "019cc27a-313b-7220-ab27-21a0f12947b0",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

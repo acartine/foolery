@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc276-f3a0-7603-8af4-f8a0f18e2061",
+  "occurred_at": "2026-03-06T09:25:01.472901Z",
+  "knot_id": "foolery-0121",
+  "type": "knot.created",
+  "data": {
+    "body": "the settings are kind of lengthy and seem like they would do well with a tab based system (or something similar - you have flexibility here).  Let's reduce the clutter a bit and make the font one size smaller.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings:  Reorganize into tabs and smaller fonts"
+  }
+}

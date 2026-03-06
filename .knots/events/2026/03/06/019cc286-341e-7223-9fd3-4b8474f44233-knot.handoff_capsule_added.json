@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc286-341e-7223-9fd3-4b8474f44233",
+  "occurred_at": "2026-03-06T09:41:41.022936Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved: swapPoolAgent helper correctly replaces agentId in-place preserving weight/order with guards for no-op, missing source, and duplicate target. UI adds dual-select swap controls per step in settings-pools-section.tsx. All 24 agent-pool tests pass (4 swap-specific). TypeCheck clean. Lint warnings are pre-existing. No invariant violations or security concerns.",
+    "datetime": "2026-03-06T10:40:00Z",
+    "entry_id": "019cc286-341e-7223-9fd3-4b73a304788b",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "claude-opus-4-6"
+  }
+}

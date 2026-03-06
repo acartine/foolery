@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc420-88b3-7d83-ad8d-b31e549ddadc",
+  "occurred_at": "2026-03-06T17:09:52.435465Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Converted dispatch swap behavior to true global replacement semantics: swapPoolAgent now merges weights and removes the source agent when target already exists, Global Swap UI no longer disables these cases, and tests now cover merge/order behavior. Validation run: bun run lint, bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build. Integrated on main and pushed.",
+    "datetime": "2026-03-06T17:09:35Z",
+    "entry_id": "019cc420-88b3-7d83-ad8d-b305819c5065",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-06"
+  }
+}

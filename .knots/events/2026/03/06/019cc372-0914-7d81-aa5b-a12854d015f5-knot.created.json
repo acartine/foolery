@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc372-0914-7d81-aa5b-a12854d015f5",
+  "occurred_at": "2026-03-06T13:59:16.500987Z",
+  "knot_id": "foolery-6473",
+  "type": "knot.created",
+  "data": {
+    "body": "When an OpenRouter model calls a tool that doesn't exist (e.g. kno_next), local-worker.ts runTool() returns {ok: false, content: 'Unknown tool kno_next'} which is sent back as a tool_result. The model gets the error but the session still ends with exit code 1. The executeLease loop at openrouter-session-runtime.ts:184-249 should continue normally after an unknown tool (it does via 'continue' at line 245), so the fatal exit is elsewhere — likely in completeIteration or the take loop condition check. Unknown tool calls must be non-fatal; agents constantly call nonexistent tools and should just get the error response and continue working. Evidence: session term-1772797553131-nson3u (knot foolery-2234) exited code 1 after 'Unknown tool kno_next' response. The empty console was because the error was only in stderr (184 chars) with no stdout context.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Unknown tool calls from OpenRouter models should not be fatal"
+  }
+}

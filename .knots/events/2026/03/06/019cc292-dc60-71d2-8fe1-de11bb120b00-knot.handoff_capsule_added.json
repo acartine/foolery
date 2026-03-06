@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc292-dc60-71d2-8fe1-de11bb120b00",
+  "occurred_at": "2026-03-06T09:55:30.528917Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Normalized workflow profile labeling and defaults: removed synthetic defaults profile option, deduplicated settings profile list to canonical profile names, added legacy alias normalization (automatic/workflow), and normalized create-beat default profile matching so configured defaults are honored.",
+    "datetime": "2026-03-06T09:55:30.528917Z",
+    "entry_id": "019cc292-dc60-71d2-8fe1-de097c80c892",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

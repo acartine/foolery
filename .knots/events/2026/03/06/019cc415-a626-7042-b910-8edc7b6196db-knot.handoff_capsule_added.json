@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-a626-7042-b910-8edc7b6196db",
+  "occurred_at": "2026-03-06T16:57:59.078318Z",
+  "knot_id": "foolery-69c6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Verified commit 9c664af3 on main: all OpenRouter code removed (types, schemas, components, routes, tests, runtime - 4084 lines deleted across 39 files). No OpenRouter references remain in src/. Quality gates passed (tsc, lint, 1855 tests, build). Code is pushed to origin/main.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc415-a626-7042-b910-8ecd6934922d",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

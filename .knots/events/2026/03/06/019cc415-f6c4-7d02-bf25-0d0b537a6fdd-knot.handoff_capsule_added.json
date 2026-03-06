@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-f6c4-7d02-bf25-0d0b537a6fdd",
+  "occurred_at": "2026-03-06T16:58:19.716288Z",
+  "knot_id": "foolery-b0f2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Verified: all OpenRouter imports, functions (resolveSelectedOpenRouterAgentConfig, toOpenRouterTarget, resolveOpenRouterAgents, resolveOpenRouterAgentById, resolveKeychainSecrets, OPENROUTER_AGENT_COMMAND), and integration points removed from settings.ts and 38 other files (4084 lines deleted). OpenCode CLI integration added: opencode in SCANNABLE_AGENTS, readOpenCodeModels() helper, opencode case in inspectInstalledAgentMetadata(), dynamic model discovery in scanForAgents(). Commit 9c664af3 on main, pushed. Quality gates confirmed passing.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc415-f6c4-7d02-bf25-0cf2b57c59f1",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

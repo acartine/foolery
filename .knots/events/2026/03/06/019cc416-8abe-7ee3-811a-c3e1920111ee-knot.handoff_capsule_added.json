@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-8abe-7ee3-811a-c3e1920111ee",
+  "occurred_at": "2026-03-06T16:58:57.59858Z",
+  "knot_id": "foolery-3a1d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Code already merged to main and pushed to origin/main at commit 9c664af37ff6. All OpenRouter references removed from 39 files. Quality gates green: tsc clean, lint clean, 1855 tests passing, build succeeds.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-8abe-7ee3-811a-c3d3b7a10a04",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-0c77-7d21-b8c1-38ac6252ec19",
+  "occurred_at": "2026-03-06T16:58:25.271844Z",
+  "knot_id": "foolery-69c6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Code already on main (commit 9c664af37ff6) and pushed to origin/main. Tagged knot with commit hash. All quality gates passed: tsc clean, 0 lint errors, 1855 tests passing, build succeeds.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-0c77-7d21-b8c1-389c438492af",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc371-f06f-74a0-8444-ba3483e932e4",
+  "occurred_at": "2026-03-06T13:59:10.191494Z",
+  "knot_id": "foolery-46a3",
+  "type": "knot.created",
+  "data": {
+    "body": "The OpenRouter session runtime sends skill prompts (from kno skill) and queueTerminalInvariantInstruction that reference CLI commands like 'kno next', 'kno update', 'bd next'. But the OpenRouter worker blocks 'kno' and 'bd' in shell_exec (BLOCKED_SHELL_COMMANDS in local-worker.ts line 10), and there is no kno_next/kno_update tool in the worker tool set. The model reads these CLI commands in the prompt and tries to call them as tool names (e.g. kno_next), which returns 'Unknown tool'. State advancement for OpenRouter workers is handled by completeIteration in the take loop — the agent should NOT be told to advance state itself. Fix: (1) strip or replace queueTerminalInvariantInstruction for OpenRouter agents in formatLeasePrompt (openrouter-session-runtime.ts:45-63), (2) either filter CLI commands from the skill prompt taskPrompt or add an override instruction telling the model to use memory_add_note for completion instead of kno next. The prompt at openrouter-session-runtime.ts:56-62 and the system prompt at line 65-72 are the integration points. Evidence: session term-1772797553131-nson3u (knot foolery-2234) — Devstral called kno_next as a tool after reading 'kno next' in the prompt.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "OpenRouter prompt sends unreachable kno/bd CLI commands to worker agents"
+  }
+}

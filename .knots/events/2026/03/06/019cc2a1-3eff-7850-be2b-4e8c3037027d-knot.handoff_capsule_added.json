@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc2a1-3eff-7850-be2b-4e8c3037027d",
+  "occurred_at": "2026-03-06T10:11:13.27925Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipped d156: fixed 5 test files (openrouter-integration, openrouter, settings-scan, settings, settings-sheet-layout) to match new agent identity normalization and model catalog. All 1953 tests pass, typecheck clean. Committed 4f704932 and pushed to origin/main.",
+    "datetime": "2026-03-06T11:12:00Z",
+    "entry_id": "019cc2a1-3eff-7850-be2b-4e79b30eb0bb",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

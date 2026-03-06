@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc416-58bb-7681-b1ec-2c33450149b4",
+  "occurred_at": "2026-03-06T16:58:44.79584Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-2b3c",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Update tests for OpenCode and remove OpenRouter test references",
+    "updated_at": "2026-03-06T16:58:44.79584Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc416-4862-74c3-9235-bc11006355de"
+  }
+}

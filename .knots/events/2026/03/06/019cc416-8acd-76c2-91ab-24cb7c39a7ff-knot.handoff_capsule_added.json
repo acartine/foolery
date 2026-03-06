@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-8acd-76c2-91ab-24cb7c39a7ff",
+  "occurred_at": "2026-03-06T16:58:57.613453Z",
+  "knot_id": "foolery-2828",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Commit 9c664af37ff6 is on main and pushed to origin/main. No merge needed (work was done directly on main). All OpenRouter code removed, OpenCode CLI integration in place. Quality gates passed.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-8acd-76c2-91ab-24b5cf917fad",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

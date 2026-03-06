@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc275-13e4-7c81-853d-48a1440676ea",
+  "occurred_at": "2026-03-06T09:22:58.660594Z",
+  "knot_id": "foolery-2234",
+  "type": "knot.created",
+  "data": {
+    "body": "Add left/right agent selectors and swap action in settings dispatch pools screen.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Implement pool swap UI controls"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc372-263c-78d3-88a9-d41549d7ebfb",
+  "occurred_at": "2026-03-06T13:59:23.964795Z",
+  "knot_id": "foolery-3985",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Files: src/lib/console-log-tap.ts (partial impl exists), src/instrumentation.ts (wire it here), src/lib/server-logger.ts (reuse resolveInteractionLogRoot), src/lib/interaction-logger.ts (resolveInteractionLogRoot defined here). Dev log at .foolery-logs/_server/YYYY-MM-DD/console.log, prod log at ~/.config/foolery/logs/_server/YYYY-MM-DD/console.log.",
+    "datetime": "2026-03-06T13:59:23.964795Z",
+    "entry_id": "019cc372-263c-78d3-88a9-d4010df8c61a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

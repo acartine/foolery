@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc289-6856-7473-9364-a7c3fe5186d8",
+  "occurred_at": "2026-03-06T09:45:10.998427Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-d156",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Workflow Profile consistency",
+    "updated_at": "2026-03-06T09:45:10.998427Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc288-e657-7ac0-b1b1-428a424382a5"
+  }
+}

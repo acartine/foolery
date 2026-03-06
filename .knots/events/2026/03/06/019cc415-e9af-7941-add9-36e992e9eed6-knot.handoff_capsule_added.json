@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-e9af-7941-add9-36e992e9eed6",
+  "occurred_at": "2026-03-06T16:58:16.367089Z",
+  "knot_id": "foolery-0b3c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Commit 9c664af3 removes all OpenRouter code (4084 deletions across 39 files) and replaces with OpenCode CLI integration. Key changes verified: terminal-manager.ts OpenRouter runtime removed, orchestration-manager.ts and breakdown-manager.ts fallback changed to claude, local-worker.ts BLOCKED_SHELL_COMMANDS updated. Code pushed to main, quality gates passed (tsc, lint, 1855 tests, build).",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc415-e9af-7941-add9-36d81a904114",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

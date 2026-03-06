@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc275-2006-74d0-a958-b1f40e56289a",
+  "occurred_at": "2026-03-06T09:23:01.760044Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-ba0e",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "settings: dispatch: pools:  add a model swap function",
+    "updated_at": "2026-03-06T09:23:01.760044Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc419-0e4b-71c2-b721-fe53f702cda5",
+  "occurred_at": "2026-03-06T17:01:42.347521Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Code merged and pushed to origin/main. Commits 9c664af3 (merge) and ac0f1f16 (feature) confirmed on remote. All 11 child knots shipped. OpenRouter fully replaced with OpenCode CLI integration.",
+    "datetime": "2026-03-06T17:10:00Z",
+    "entry_id": "019cc419-0e4b-71c2-b721-fe472aae0b66",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

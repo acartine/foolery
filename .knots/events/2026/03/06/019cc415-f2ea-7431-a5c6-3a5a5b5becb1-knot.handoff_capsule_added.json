@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc415-f2ea-7431-a5c6-3a5a5b5becb1",
+  "occurred_at": "2026-03-06T16:58:18.730537Z",
+  "knot_id": "foolery-9697",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review passed. Verified: (1) OpenRouter fully removed — all 11 openrouter-specific files deleted, zero remaining references in src/. (2) OpenCode dialect correctly added to agent-adapter.ts — resolveDialect, buildPromptModeArgs (run --format json -m <model> <prompt>), and createLineNormalizer (step_start→skip, text→assistant message, step_finish→result) all implemented per spec. (3) Quality gates confirmed passing: tsc clean, 0 lint errors, 1855 tests passing, build succeeds. (4) Net -4084/+181 lines — clean removal with minimal additions. Approved.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc415-f2ea-7431-a5c6-3a40c4ba9c9a",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

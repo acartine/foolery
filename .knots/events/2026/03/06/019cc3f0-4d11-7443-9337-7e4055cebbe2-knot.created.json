@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc3f0-4d11-7443-9337-7e4055cebbe2",
+  "occurred_at": "2026-03-06T16:17:11.441063Z",
+  "knot_id": "foolery-57fc",
+  "type": "knot.created",
+  "data": {
+    "body": "Delete src/app/api/openrouter/models/route.ts and src/app/api/openrouter/validate/route.ts. In src/app/api/settings/route.ts: remove maskApiKey import, openrouter field masking, PATCH API key guard. In src/lib/settings-api.ts: remove OpenRouter-related functions.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove OpenRouter API routes and settings-api"
+  }
+}

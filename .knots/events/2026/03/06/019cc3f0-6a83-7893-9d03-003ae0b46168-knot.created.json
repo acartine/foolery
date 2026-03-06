@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc3f0-6a83-7893-9d03-003ae0b46168",
+  "occurred_at": "2026-03-06T16:17:18.979326Z",
+  "knot_id": "foolery-3a1d",
+  "type": "knot.created",
+  "data": {
+    "body": "Delete settings-openrouter-section.tsx. Clean up: settings-sheet.tsx (remove OpenRouter section), settings-agents-section.tsx (remove OpenRouter panel/rows), settings-actions-section.tsx (remove OpenRouter virtual agent options), settings-pools-section.tsx (remove OpenRouter injection/pricing), settings-dispatch-section.tsx (remove openrouter prop), agent-info-bar.tsx (remove openrouter field), beats/page.tsx (remove kind:openrouter detection).",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove OpenRouter from UI components"
+  }
+}

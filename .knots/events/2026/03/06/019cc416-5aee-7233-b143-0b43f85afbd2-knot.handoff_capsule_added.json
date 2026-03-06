@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-5aee-7233-b143-0b43f85afbd2",
+  "occurred_at": "2026-03-06T16:58:45.358814Z",
+  "knot_id": "foolery-9181",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Shipment complete. Code already merged to main and pushed to origin/main at commit 9c664af37ff6. Tagged knot with commit hash. All quality gates passed (tsc, lint, 1855 tests, build). No OpenRouter references remain in codebase.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-5aee-7233-b143-0b3328cf9404",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

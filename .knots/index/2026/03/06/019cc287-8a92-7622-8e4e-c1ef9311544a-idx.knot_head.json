@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc287-8a92-7622-8e4e-c1ef9311544a",
+  "occurred_at": "2026-03-06T09:43:08.681638Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-0121",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Settings:  Reorganize into tabs and smaller fonts",
+    "updated_at": "2026-03-06T09:43:08.681638Z"
+  }
+}

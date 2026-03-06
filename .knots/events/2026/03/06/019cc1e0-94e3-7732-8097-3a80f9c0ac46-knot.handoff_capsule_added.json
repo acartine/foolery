@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e0-94e3-7732-8097-3a80f9c0ac46",
+  "occurred_at": "2026-03-06T06:40:46.819776Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review passed. The scanner no longer advertises ChatGPT/OpenRouter CLIs, normalized agent identity metadata is preserved through registration and session logging, and verification passed on lint, typecheck, unit tests, and production build after pushing main.",
+    "datetime": "2026-03-06T06:40:37Z",
+    "entry_id": "019cc1e0-94e3-7732-8097-3a7b400a1b3b",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

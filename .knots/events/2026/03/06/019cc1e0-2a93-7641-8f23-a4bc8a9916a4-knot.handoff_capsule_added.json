@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e0-2a93-7641-8f23-a4bc8a9916a4",
+  "occurred_at": "2026-03-06T06:40:19.603147Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Scope is cohesive, the scan contract is narrowed to Claude/Codex/Gemini, metadata normalization is centralized, and the test strategy covers scan detection plus downstream display propagation.",
+    "datetime": "2026-03-06T06:40:04Z",
+    "entry_id": "019cc1e0-2a93-7641-8f23-a4ad3a29c7fe",
+    "model": "codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

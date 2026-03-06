@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-14a7-7c23-9e9a-529bee3bcf52",
+  "occurred_at": "2026-03-06T16:58:27.367836Z",
+  "knot_id": "foolery-2828",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation review approved. Commit 9c664af3 correctly removes all OpenRouter files (openrouter.ts, openrouter-session-runtime.ts, openrouter-agent.ts, and all tests), keychain.ts and its test, and the settings-openrouter-section component. 39 files changed, 4084 deletions, 181 additions for OpenCode CLI integration. Quality gates passed (tsc clean, 0 lint errors, 1855 tests passing, build succeeds). Code is on main and pushed.",
+    "datetime": "2026-03-06T17:00:00Z",
+    "entry_id": "019cc416-14a7-7c23-9e9a-528f8af8576d",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc27a-4711-7063-8d1e-3e74503af852",
+  "occurred_at": "2026-03-06T09:28:39.441344Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.created",
+  "data": {
+    "body": "- when you create a beat, instead of listing the profiles, it says something like \"knots\" (...).  just show the profile name.   we don't need to reveal knots as an underlying memory engine for foolery.\n- in settings/defaults, the default profile's are weird.  they list something like \"automatic\" and \"workflow\".  again, just the profile names only, the underlying memory engine should not matter.\n- when creating a new beat, the default workflow profile does not seem to be honored.\n- the Profile selection in create new, and the profile selection in settiongs/default should both have a clickable info icon that pops a lightbox explaining the different profiles and what they mean to the user.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Workflow Profile consistency"
+  }
+}

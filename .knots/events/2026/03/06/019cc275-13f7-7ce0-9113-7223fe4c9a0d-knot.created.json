@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc275-13f7-7ce0-9113-7223fe4c9a0d",
+  "occurred_at": "2026-03-06T09:22:58.679676Z",
+  "knot_id": "foolery-28b0",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement swap operation in pools config update path and persistence.",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Wire pool swap config mutation"
+  }
+}

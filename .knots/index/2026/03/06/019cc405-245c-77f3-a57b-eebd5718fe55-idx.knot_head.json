@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc405-245c-77f3-a57b-eebd5718fe55",
+  "occurred_at": "2026-03-06T16:39:57.266817Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-57fc",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Remove OpenRouter API routes and settings-api",
+    "updated_at": "2026-03-06T16:39:57.266817Z"
+  }
+}

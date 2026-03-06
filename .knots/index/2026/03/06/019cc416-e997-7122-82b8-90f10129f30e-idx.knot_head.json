@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-e997-7122-82b8-90f10129f30e",
+  "occurred_at": "2026-03-06T16:59:21.879173Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-2828",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Delete OpenRouter files and clean up keychain",
+    "updated_at": "2026-03-06T16:59:21.879173Z"
+  }
+}

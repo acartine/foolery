@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1e1-0265-7602-bd37-56f2ac47a245",
+  "occurred_at": "2026-03-06T06:41:14.849033Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-ad97",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Settings: Agent Scan still not working properly, agent names are not normalized",
+    "updated_at": "2026-03-06T06:41:14.849033Z"
+  }
+}

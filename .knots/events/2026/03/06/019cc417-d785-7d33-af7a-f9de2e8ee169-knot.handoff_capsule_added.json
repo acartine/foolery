@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc417-d785-7d33-af7a-f9de2e8ee169",
+  "occurred_at": "2026-03-06T17:00:22.789392Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Plan review approved. All 11 child knots shipped. Implementation complete: 39 files changed, 4084 lines removed, OpenRouter fully replaced with OpenCode CLI integration. Quality gates passed.",
+    "datetime": "2026-03-06T17:05:00Z",
+    "entry_id": "019cc417-d785-7d33-af7a-f9c1e48b39f5",
+    "model": "claude-opus-4-6",
+    "username": "agent",
+    "version": "claude-opus-4-6"
+  }
+}

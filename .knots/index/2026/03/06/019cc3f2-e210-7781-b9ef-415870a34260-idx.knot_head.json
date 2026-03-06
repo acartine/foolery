@@ -1,0 +1,18 @@
+{
+  "event_id": "019cc3f2-e210-7781-b9ef-415870a34260",
+  "occurred_at": "2026-03-06T16:20:00.656286Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-8921",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Replace OpenRouter with OpenCode in agent-identity",
+    "updated_at": "2026-03-06T16:20:00.656286Z"
+  },
+  "precondition": {
+    "profile_etag": "019cc3f0-cfa9-7a52-b8d8-522a98511adb"
+  }
+}

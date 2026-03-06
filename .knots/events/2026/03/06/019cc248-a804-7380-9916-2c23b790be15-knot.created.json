@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc248-a804-7380-9916-2c23b790be15",
+  "occurred_at": "2026-03-06T08:34:27.460096Z",
+  "knot_id": "foolery-1239",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: scanned agent versions should only show real detected versions"
+  }
+}

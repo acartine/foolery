@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc288-cd2c-7e32-8445-4213e4521132",
+  "occurred_at": "2026-03-06T09:44:31.276715Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented profile display name consistency: replaced 'Knots (autopilot)' and 'Workflow (autopilot)' labels with human-friendly names (Autopilot, Semiauto, etc.) via profileDisplayName(). Fixed default profile not honored in create dialog by keying BeatForm on defaultProfileId. Added info icon + lightbox dialog in both beat-form and settings-defaults explaining each profile. Updated 3 test files for new label format. All relevant tests pass (282/282).",
+    "datetime": "2026-03-06T10:42:00Z",
+    "entry_id": "019cc288-cd2c-7e32-8445-420c1f266528",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

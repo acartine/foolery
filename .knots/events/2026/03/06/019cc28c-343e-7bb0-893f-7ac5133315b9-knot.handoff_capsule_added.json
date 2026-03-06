@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc28c-343e-7bb0-893f-7ac5133315b9",
+  "occurred_at": "2026-03-06T09:48:14.270877Z",
+  "knot_id": "foolery-d156",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented workflow profile consistency polish: defaults profile selector now shows only actual profile names (no synthetic auto/engine option), preserving user-facing profile naming abstraction. Verified create/settings profile info lightboxes and create-beat default profile flow remain in place. Quality gates run: lint passed with existing warnings; typecheck/test/build currently fail on pre-existing unrelated main-branch issues in settings-agents/settings-sheet.",
+    "datetime": "2026-03-06T09:48:14Z",
+    "entry_id": "019cc28c-343e-7bb0-893f-7abbab4d8847",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-06"
+  }
+}

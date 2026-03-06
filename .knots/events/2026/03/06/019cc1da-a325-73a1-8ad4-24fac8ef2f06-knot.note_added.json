@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc1da-a325-73a1-8ad4-24fac8ef2f06",
+  "occurred_at": "2026-03-06T06:34:17.253184Z",
+  "knot_id": "foolery-ad97",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan:\\n1. Replace the settings scan allowlist so it only discovers Claude, Codex, and Gemini CLIs; remove ChatGPT/OpenRouter scan entries.\\n2. Add a centralized agent identity parser/detector that maps command/config data into provider name, model family, and version, and use CLI/config inspection for Codex and Claude where available.\\n3. Extend scanned-agent and registered-agent metadata so scan-add flows persist normalized provider/model/version instead of relying on ad hoc labels.\\n4. Update settings, active terminals, terminal info bar, and history views to render the normalized provider/model/version consistently.\\n5. Add/adjust tests for scan detection, metadata normalization, and UI-facing formatting helpers; then run lint, typecheck, tests, and build.",
+    "datetime": "2026-03-06T06:34:17.253184Z",
+    "entry_id": "019cc1da-a325-73a1-8ad4-24ec128ad958",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

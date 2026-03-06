@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc416-656e-7fa2-ab6a-685cea9c9c53",
+  "occurred_at": "2026-03-06T16:58:48.040762Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-57e8",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Simplify agent-pool to CLI-only targets",
+    "updated_at": "2026-03-06T16:58:48.040762Z"
+  }
+}

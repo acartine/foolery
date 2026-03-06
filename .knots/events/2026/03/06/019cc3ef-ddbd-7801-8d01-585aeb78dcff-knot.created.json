@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc3ef-ddbd-7801-8d01-585aeb78dcff",
+  "occurred_at": "2026-03-06T16:16:42.941073Z",
+  "knot_id": "foolery-791f",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove all OpenRouter integration (API client, session runtime, CLI shim, virtual agents, settings UI, keychain) and replace with OpenCode CLI integration. OpenCode is a standard CLI agent like claude/codex/gemini. Each selected opencode model becomes a separate registered agent invoked via `opencode run --format json -m <model>`. No direct API calls.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Replace OpenRouter with OpenCode CLI"
+  }
+}

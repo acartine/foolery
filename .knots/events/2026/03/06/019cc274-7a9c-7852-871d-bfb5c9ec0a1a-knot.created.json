@@ -1,0 +1,12 @@
+{
+  "event_id": "019cc274-7a9c-7852-871d-bfb5c9ec0a1a",
+  "occurred_at": "2026-03-06T09:22:19.420484Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.created",
+  "data": {
+    "body": "we want to have a pulldown on the left with agents currently configured as part of the pool for any step - and then a pulldown on the right with all available agents.\n\nthen a button that executes a swap in the agent pools config.\n\nthe idea is that the user can pick an agent and replace (swap) with a different agent.  Most useful for version upgrades, but can be done for any reason.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "settings: dispatch: pools:  add a model swap function"
+  }
+}

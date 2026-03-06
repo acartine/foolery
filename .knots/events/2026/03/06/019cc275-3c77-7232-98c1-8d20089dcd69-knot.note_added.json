@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc275-3c77-7232-98c1-8d20089dcd69",
+  "occurred_at": "2026-03-06T09:23:09.047448Z",
+  "knot_id": "foolery-ba0e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan: 1) locate settings dispatch pools UI and data model for configured agents per step; 2) add swap controls with two pulldowns (current pool agent on left, all available agents on right) plus Swap button; 3) implement pool config mutation that replaces selected existing agent with selected replacement while preserving ordering and preventing invalid no-op swap; 4) wire action to persistence/update path and refresh UI state; 5) add/adjust tests for swap behavior and UI interactions; 6) run quality gates (lint, typecheck, test, build). Risks: source-of-truth for available agents may differ by screen context; mitigate by deriving option lists from existing registry hooks/selectors and validating disabled/error states.",
+    "datetime": "2026-03-06T09:22:53Z",
+    "entry_id": "019cc275-3c77-7232-98c1-8d15964925eb",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}
