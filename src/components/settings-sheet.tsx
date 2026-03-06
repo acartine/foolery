@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -26,6 +26,7 @@ import type {
   PoolsSettings,
   DispatchMode,
 } from "@/lib/schemas";
+import { cn } from "@/lib/utils";
 
 export type SettingsSection = "repos" | null;
 
@@ -74,6 +75,25 @@ const DEFAULTS: SettingsData = {
   },
   dispatchMode: "actions",
 };
+
+function SettingsSectionCard({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={cn(
+        "rounded-2xl border border-primary/15 bg-[linear-gradient(135deg,rgba(168,85,247,0.08),rgba(255,255,255,0.92)_45%,rgba(74,222,128,0.08))] p-4 shadow-[0_18px_45px_-32px_rgba(88,28,135,0.55)] backdrop-blur-sm dark:bg-[linear-gradient(135deg,rgba(168,85,247,0.16),rgba(24,24,27,0.92)_48%,rgba(74,222,128,0.12))]",
+        className,
+      )}
+    >
+      {children}
+    </section>
+  );
+}
 
 export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSheetProps) {
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
@@ -131,10 +151,12 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-xl">
+      <SheetContent className="overflow-hidden border-primary/20 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(74,222,128,0.12),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(250,247,255,0.98))] sm:max-w-xl dark:bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.24),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(74,222,128,0.16),transparent_24%),linear-gradient(180deg,rgba(31,23,39,0.98),rgba(24,24,27,0.98))]">
         <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
-          <SheetDescription>
+          <SheetTitle className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
+            Settings
+          </SheetTitle>
+          <SheetDescription className="text-muted-foreground/90">
             Configuration stored in ~/.config/foolery/settings.toml
           </SheetDescription>
         </SheetHeader>
@@ -142,68 +164,79 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
         <div className="px-4 pt-2 flex-1 min-h-0 overflow-y-auto">
           <div className="space-y-3 py-4">
             {/* Section: Repositories (independent data, always rendered) */}
-            <div ref={reposSectionRef}>
-              <SettingsReposSection />
-            </div>
+            <SettingsSectionCard className="border-accent/25">
+              <div ref={reposSectionRef}>
+                <SettingsReposSection />
+              </div>
+            </SettingsSectionCard>
 
-            <Separator />
             {loading ? (
               <p className="text-sm text-muted-foreground">Loading settings...</p>
             ) : (
               <>
                 {/* Section 1: Agent Management */}
-                <SettingsAgentsSection
-                  agents={settings.agents}
-                  onAgentsChange={(agents) =>
-                    setSettings((prev) => ({ ...prev, agents }))
-                  }
-                  openrouter={settings.openrouter}
-                  onOpenRouterChange={(openrouter) =>
-                    setSettings((prev) => ({ ...prev, openrouter }))
-                  }
-                />
-
-                <Separator />
+                <SettingsSectionCard className="border-primary/25">
+                  <SettingsAgentsSection
+                    agents={settings.agents}
+                    onAgentsChange={(agents) =>
+                      setSettings((prev) => ({ ...prev, agents }))
+                    }
+                    openrouter={settings.openrouter}
+                    onOpenRouterChange={(openrouter) =>
+                      setSettings((prev) => ({ ...prev, openrouter }))
+                    }
+                  />
+                </SettingsSectionCard>
 
                 {/* Section 2: Agent Dispatch (Actions + Pools with mode toggle) */}
-                <SettingsDispatchSection
-                  dispatchMode={settings.dispatchMode}
-                  actions={settings.actions}
-                  pools={settings.pools}
-                  agents={settings.agents}
-                  openrouter={settings.openrouter}
-                  onDispatchModeChange={(dispatchMode) =>
-                    setSettings((prev) => ({ ...prev, dispatchMode }))
-                  }
-                  onActionsChange={(actions) =>
-                    setSettings((prev) => ({ ...prev, actions }))
-                  }
-                  onPoolsChange={(pools) =>
-                    setSettings((prev) => ({ ...prev, pools }))
-                  }
-                />
-
-                <Separator />
+                <SettingsSectionCard className="border-primary/25">
+                  <SettingsDispatchSection
+                    dispatchMode={settings.dispatchMode}
+                    actions={settings.actions}
+                    pools={settings.pools}
+                    agents={settings.agents}
+                    openrouter={settings.openrouter}
+                    onDispatchModeChange={(dispatchMode) =>
+                      setSettings((prev) => ({ ...prev, dispatchMode }))
+                    }
+                    onActionsChange={(actions) =>
+                      setSettings((prev) => ({ ...prev, actions }))
+                    }
+                    onPoolsChange={(pools) =>
+                      setSettings((prev) => ({ ...prev, pools }))
+                    }
+                  />
+                </SettingsSectionCard>
 
                 {/* Section 4: Defaults */}
-                <SettingsDefaultsSection
-                  defaults={settings.defaults}
-                  onDefaultsChange={(defaults) =>
-                    setSettings((prev) => ({ ...prev, defaults }))
-                  }
-                />
-
-
+                <SettingsSectionCard className="border-accent/25">
+                  <SettingsDefaultsSection
+                    defaults={settings.defaults}
+                    onDefaultsChange={(defaults) =>
+                      setSettings((prev) => ({ ...prev, defaults }))
+                    }
+                  />
+                </SettingsSectionCard>
               </>
             )}
           </div>
         </div>
 
-        <SheetFooter className="px-4">
-          <Button variant="outline" onClick={handleReset} disabled={saving}>
+        <Separator className="bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+        <SheetFooter className="px-4 py-4">
+          <Button
+            variant="outline"
+            className="border-primary/25 bg-background/70 hover:border-accent/35 hover:bg-accent/10"
+            onClick={handleReset}
+            disabled={saving}
+          >
             Reset to Defaults
           </Button>
-          <Button onClick={handleSave} disabled={saving || loading}>
+          <Button
+            className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-[0_12px_30px_-18px_rgba(88,28,135,0.75)] hover:opacity-95"
+            onClick={handleSave}
+            disabled={saving || loading}
+          >
             {saving ? "Saving..." : "Save"}
           </Button>
         </SheetFooter>

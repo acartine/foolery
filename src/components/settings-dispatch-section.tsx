@@ -75,7 +75,7 @@ export function SettingsDispatchSection({
         mode is used at runtime.
       </p>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-primary/15 bg-background/55 p-2">
         {MODES.map((mode) => {
           const Icon = mode.icon;
           const active = dispatchMode === mode.value;
@@ -85,10 +85,10 @@ export function SettingsDispatchSection({
               type="button"
               onClick={() => handleModeChange(mode.value)}
               className={cn(
-                "relative flex flex-col items-start gap-1 rounded-md border p-3 text-left transition-colors",
+                "relative flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition-colors",
                 active
-                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                  : "border-muted hover:border-muted-foreground/25 hover:bg-muted/50",
+                  ? "border-primary/35 bg-[linear-gradient(135deg,rgba(168,85,247,0.14),rgba(255,255,255,0.88),rgba(74,222,128,0.14))] ring-1 ring-primary/15 dark:bg-[linear-gradient(135deg,rgba(168,85,247,0.18),rgba(39,39,42,0.9),rgba(74,222,128,0.12))]"
+                  : "border-border/70 bg-background/70 hover:border-primary/20 hover:bg-muted/45",
               )}
             >
               {active && (

@@ -1,5 +1,6 @@
 "use client";
 
+import { Settings2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,9 +31,12 @@ export function SettingsDefaultsSection({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium">Defaults</h3>
+      <div className="flex items-center gap-2">
+        <Settings2 className="size-4 text-primary" />
+        <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">Defaults</h3>
+      </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
         <Label htmlFor="default-profile" className="text-sm">
           Default Workflow Profile
         </Label>
@@ -45,7 +49,7 @@ export function SettingsDefaultsSection({
             })
           }
         >
-          <SelectTrigger id="default-profile" className="w-full">
+          <SelectTrigger id="default-profile" className="w-full border-primary/20 bg-background/80">
             <SelectValue placeholder="Select profile..." />
           </SelectTrigger>
           <SelectContent>

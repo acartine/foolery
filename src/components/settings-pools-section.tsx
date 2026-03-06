@@ -182,8 +182,8 @@ export function SettingsPoolsSection({
     return (
       <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
         <div className="flex items-center gap-2">
-          <Users className="size-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Agent Pools</h3>
+          <Users className="size-4 text-primary" />
+          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">Agent Pools</h3>
         </div>
         <p className="text-xs text-muted-foreground">
           Register agents first, then configure pools here.
@@ -195,8 +195,8 @@ export function SettingsPoolsSection({
   return (
     <div className={disabled ? "space-y-4 opacity-50 pointer-events-none" : "space-y-4"}>
       <div className="flex items-center gap-2">
-        <Users className="size-4 text-muted-foreground" />
-        <h3 className="text-sm font-medium">Agent Pools</h3>
+        <Users className="size-4 text-primary" />
+        <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">Agent Pools</h3>
       </div>
       <p className="text-xs text-muted-foreground">
         Configure weighted agent distribution for each workflow step.
@@ -246,7 +246,7 @@ function StepPoolEditor({
   const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
 
   return (
-    <div className="rounded-md border p-3 space-y-2">
+    <div className="rounded-xl border border-primary/18 bg-background/60 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-sm font-medium">{meta.label}</Label>
@@ -258,6 +258,7 @@ function StepPoolEditor({
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/20 bg-background/70 hover:bg-primary/10"
             onClick={() => setAddingAgent(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -274,7 +275,7 @@ function StepPoolEditor({
         <div className="space-y-2">
           {/* Stacked horizontal bar */}
           {entries.length > 0 && totalWeight > 0 && (
-            <div className="flex h-3 w-full rounded-full overflow-hidden bg-muted">
+            <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/80 ring-1 ring-primary/10">
               {entries.map((entry, idx) => {
                 const ratio = entry.weight / totalWeight;
                 const color = POOL_COLORS[idx % POOL_COLORS.length];
@@ -305,7 +306,7 @@ function StepPoolEditor({
               return (
                 <div
                   key={entry.agentId}
-                  className="flex items-center gap-2"
+                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted/35"
                 >
                   <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0 flex items-start gap-2">
                     <span className={`mt-1 size-2.5 rounded-full shrink-0 ${color}`} />
@@ -350,7 +351,7 @@ function StepPoolEditor({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0"
+                    className="h-7 w-7 p-0 hover:bg-destructive/10"
                     onClick={() => {
                       onChange(entries.filter((_, i) => i !== idx));
                     }}
@@ -401,7 +402,7 @@ function AddPoolEntryForm({
   return (
     <div className="flex items-center gap-2 pt-1">
       <Select value={selectedId} onValueChange={setSelectedId}>
-        <SelectTrigger className="w-[140px] h-7">
+        <SelectTrigger className="h-7 w-[140px] border-primary/20 bg-background/80">
           <SelectValue placeholder="select agent" />
         </SelectTrigger>
         <SelectContent>
@@ -438,7 +439,7 @@ function AddPoolEntryForm({
       />
       <Button
         size="sm"
-        className="h-7"
+        className="h-7 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-95"
         disabled={!selectedId}
         onClick={() => onAdd(selectedId, weight)}
       >

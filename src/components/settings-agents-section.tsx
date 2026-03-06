@@ -149,13 +149,14 @@ export function SettingsAgentsSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Bot className="size-4 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Agents</h3>
+          <Bot className="size-4 text-primary" />
+          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">Agents</h3>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/20 bg-background/70 hover:bg-primary/10"
             onClick={handleScan}
             disabled={scanning}
           >
@@ -165,6 +166,7 @@ export function SettingsAgentsSection({
           <Button
             variant="outline"
             size="sm"
+            className="border-accent/25 bg-background/70 hover:bg-accent/10"
             onClick={() => setShowOpenRouterPanel(!showOpenRouterPanel)}
           >
             <Globe className="size-3.5 mr-1" />
@@ -173,6 +175,7 @@ export function SettingsAgentsSection({
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/20 bg-background/70 hover:bg-primary/10"
             onClick={() => setShowAddForm(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -286,7 +289,7 @@ function ScannedAgentsList({
   );
 
   return (
-    <div className="rounded-md border p-3 space-y-2">
+    <div className="rounded-xl border border-accent/25 bg-background/65 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           Scan Results
@@ -295,6 +298,7 @@ function ScannedAgentsList({
           {unregisteredInstalled.length > 1 && (
             <Button
               variant="outline"
+              className="border-primary/20 bg-background/70 hover:bg-primary/10"
               size="sm"
               onClick={() => onAddAll(unregisteredInstalled)}
             >
@@ -302,7 +306,7 @@ function ScannedAgentsList({
               Add All
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={onDismiss}>
+          <Button variant="ghost" size="sm" className="hover:bg-primary/10" onClick={onDismiss}>
             <X className="size-3.5" />
           </Button>
         </div>
@@ -376,7 +380,7 @@ function AddAgentForm({
   const [label, setLabel] = useState("");
 
   return (
-    <div className="rounded-md border p-3 space-y-3">
+    <div className="rounded-xl border border-primary/20 bg-background/65 p-3 space-y-3">
       <span className="text-xs font-medium text-muted-foreground">
         New Agent
       </span>
@@ -466,7 +470,7 @@ function AgentRow({
   }
 
   return (
-    <div className="flex items-center justify-between rounded-md border px-3 py-2">
+    <div className="flex items-center justify-between rounded-xl border border-primary/15 bg-background/60 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-sm font-medium truncate">
           {agent.label ?? id}
@@ -481,10 +485,10 @@ function AgentRow({
         )}
       </div>
       <div className="flex items-center gap-1 shrink-0">
-        <Button variant="ghost" size="sm" onClick={onEdit}>
+        <Button variant="ghost" size="sm" className="hover:bg-primary/10" onClick={onEdit}>
           <Pencil className="size-3.5" />
         </Button>
-        <Button variant="ghost" size="sm" onClick={onRemove}>
+        <Button variant="ghost" size="sm" className="hover:bg-destructive/10" onClick={onRemove}>
           <Trash2 className="size-3.5 text-destructive" />
         </Button>
       </div>
@@ -506,7 +510,7 @@ function AgentEditRow({
   const [label, setLabel] = useState(agent.label ?? "");
 
   return (
-    <div className="rounded-md border p-3 space-y-2">
+    <div className="rounded-xl border border-primary/20 bg-background/65 p-3 space-y-2">
       <div className="grid grid-cols-1 gap-1.5">
         <div className="space-y-0.5">
           <Label className="text-xs">Command</Label>
@@ -534,7 +538,7 @@ function AgentEditRow({
         </div>
       </div>
       <div className="flex justify-end gap-1">
-        <Button variant="ghost" size="sm" onClick={onCancel}>
+        <Button variant="ghost" size="sm" className="hover:bg-primary/10" onClick={onCancel}>
           <X className="size-3.5" />
         </Button>
         <Button
@@ -570,15 +574,15 @@ function OpenRouterAgentRow({
 }) {
   const displayLabel = formatOpenRouterAgentLabel(agentKey, label, model);
   return (
-    <div className="flex items-center justify-between rounded-md border px-3 py-2">
+    <div className="flex items-center justify-between rounded-xl border border-accent/20 bg-background/60 px-3 py-2">
       <div className="flex items-center gap-2 min-w-0">
-        <Globe className="size-3.5 text-muted-foreground shrink-0" />
+        <Globe className="size-3.5 text-accent shrink-0" />
         <span className="text-sm font-medium truncate">{displayLabel}</span>
         <Badge variant="secondary" className="text-[10px] shrink-0">
           {model}
         </Badge>
       </div>
-      <Button variant="ghost" size="sm" onClick={onRemove}>
+      <Button variant="ghost" size="sm" className="hover:bg-destructive/10" onClick={onRemove}>
         <Trash2 className="size-3.5 text-destructive" />
       </Button>
     </div>
@@ -706,13 +710,13 @@ function OpenRouterAgentPanel({
   );
 
   return (
-    <div className="rounded-md border p-3 space-y-3">
+    <div className="rounded-xl border border-accent/25 bg-[linear-gradient(135deg,rgba(74,222,128,0.08),rgba(255,255,255,0.82),rgba(168,85,247,0.08))] p-3 space-y-3 dark:bg-[linear-gradient(135deg,rgba(74,222,128,0.12),rgba(39,39,42,0.9),rgba(168,85,247,0.14))]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Globe className="size-4 text-muted-foreground" />
-          <span className="text-xs font-medium">Add from OpenRouter</span>
+          <Globe className="size-4 text-accent" />
+          <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-xs font-medium text-transparent">Add from OpenRouter</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button variant="ghost" size="sm" className="hover:bg-primary/10" onClick={onClose}>
           <X className="size-3.5" />
         </Button>
       </div>
@@ -728,12 +732,12 @@ function OpenRouterAgentPanel({
                 onOpenRouterChange({ ...openrouter, apiKey: e.target.value })
               }
               placeholder="sk-or-v1-..."
-              className="pr-9"
+              className="border-primary/20 bg-background/85 pr-9"
             />
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full px-2"
+              className="absolute right-0 top-0 h-full px-2 hover:bg-primary/10"
               onClick={() => setShowKey(!showKey)}
             >
               {showKey ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
@@ -742,6 +746,7 @@ function OpenRouterAgentPanel({
           <Button
             variant="outline"
             size="sm"
+            className="border-primary/20 bg-background/75 hover:bg-primary/10"
             onClick={handleValidate}
             disabled={validating || !openrouter.apiKey.trim()}
           >
@@ -767,6 +772,7 @@ function OpenRouterAgentPanel({
           <Button
             variant="outline"
             size="sm"
+            className="border-accent/25 bg-background/75 hover:bg-accent/10"
             onClick={handleLoadModels}
             disabled={loadingModels}
           >
@@ -785,11 +791,11 @@ function OpenRouterAgentPanel({
               placeholder="Filter models..."
               value={modelFilter}
               onChange={(e) => setModelFilter(e.target.value)}
-              className="h-7 text-xs"
+              className="h-7 border-primary/20 bg-background/80 text-xs"
             />
-            <div className="max-h-[200px] overflow-y-auto rounded-md border">
+            <div className="max-h-[200px] overflow-y-auto rounded-xl border border-primary/15 bg-background/70">
               <table className="w-full text-[11px]">
-                <thead className="sticky top-0 bg-background border-b">
+                <thead className="sticky top-0 border-b bg-muted/65">
                   <tr className="text-left text-muted-foreground">
                     <th className="px-2 py-1.5 font-medium w-6"></th>
                     <th className="px-2 py-1.5 font-medium">Model</th>
@@ -812,8 +818,8 @@ function OpenRouterAgentPanel({
                           alreadyAdded
                             ? "opacity-50"
                             : isSelected
-                            ? "bg-primary/10 hover:bg-primary/15"
-                            : "hover:bg-muted/50"
+                            ? "bg-primary/12 hover:bg-primary/18"
+                            : "hover:bg-accent/10"
                         }`}
                         onClick={() => !alreadyAdded && toggleModel(model.id)}
                         onKeyDown={(e) => {
@@ -862,6 +868,7 @@ function OpenRouterAgentPanel({
               </p>
               <Button
                 size="sm"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-95"
                 disabled={selected.size === 0}
                 onClick={handleAddSelected}
               >

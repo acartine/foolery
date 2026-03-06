@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderOpen, Plus, Trash2, Database } from "lucide-react";
+import { FolderOpen, Plus, Trash2, Database, FolderKanban } from "lucide-react";
 import { toast } from "sonner";
 import {
   fetchRegistry,
@@ -73,8 +73,11 @@ export function SettingsReposSection() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Repositories</h3>
-        <Button size="sm" variant="outline" onClick={() => setBrowseOpen(true)}>
+        <div className="flex items-center gap-2">
+          <FolderKanban className="size-4 text-accent" />
+          <h3 className="bg-gradient-to-r from-primary to-accent bg-clip-text text-sm font-medium text-transparent">Repositories</h3>
+        </div>
+        <Button size="sm" variant="outline" className="border-accent/30 bg-background/70 hover:bg-accent/10" onClick={() => setBrowseOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" />
           Add
         </Button>
@@ -103,14 +106,14 @@ function EmptyReposState({ onBrowse }: { onBrowse: () => void }) {
     .join(", ");
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-8 text-center">
-      <Database className="size-8 text-muted-foreground mb-3" />
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-accent/35 bg-accent/6 py-8 text-center">
+      <Database className="mb-3 size-8 text-accent" />
       <p className="text-sm font-medium mb-1">No repositories registered</p>
       <p className="text-xs text-muted-foreground mb-3 max-w-[260px]">
         Add a repository with a supported memory manager ({supported}) to get
         started.
       </p>
-      <Button size="sm" onClick={onBrowse}>
+      <Button size="sm" className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-95" onClick={onBrowse}>
         <FolderOpen className="mr-1 h-3.5 w-3.5" />
         Browse
       </Button>
@@ -129,7 +132,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
       {repos.map((repo) => (
         <div
           key={repo.path}
-          className="flex items-center justify-between rounded-md border px-3 py-2"
+          className="flex items-center justify-between rounded-xl border border-primary/15 bg-background/70 px-3 py-2 shadow-[0_10px_24px_-22px_rgba(88,28,135,0.8)]"
         >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -143,7 +146,7 @@ function RepoList({ repos, onRemove }: RepoListProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 text-muted-foreground hover:text-destructive"
+            className="shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             onClick={() => onRemove(repo.path)}
           >
             <Trash2 className="size-3.5" />
