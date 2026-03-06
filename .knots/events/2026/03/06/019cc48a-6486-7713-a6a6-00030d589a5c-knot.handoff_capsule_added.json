@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc48a-6486-7713-a6a6-00030d589a5c",
+  "occurred_at": "2026-03-06T19:05:29.990846Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented one dispatch-level Swap Agent control and removed per-step swap UI. Added SettingsDispatchGlobalSwap to replace agents globally across action mappings and pool steps in a single patchSettings save, added swapActionsAgent utility with regression tests, and kept weighted pool swap semantics intact. Integrated on main and pushed (commit 30b8ca3b). Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test, NODE_ENV=production bun run build.",
+    "datetime": "2026-03-06T19:05:29.990846Z",
+    "entry_id": "019cc48a-6486-7713-a6a5-fff30067d346",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

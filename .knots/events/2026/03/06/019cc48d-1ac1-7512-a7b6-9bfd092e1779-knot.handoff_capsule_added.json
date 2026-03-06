@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc48d-1ac1-7512-a7b6-9bfd092e1779",
+  "occurred_at": "2026-03-06T19:08:27.713281Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Revision needed: perform direct source updates for dispatch global Swap Agent behavior.",
+    "datetime": "2026-03-06T19:08:27Z",
+    "entry_id": "019cc48d-1ac1-7512-a7b6-9be43e2ff72b",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}

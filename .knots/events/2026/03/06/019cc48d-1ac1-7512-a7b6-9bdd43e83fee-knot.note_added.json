@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc48d-1ac1-7512-a7b6-9bdd43e83fee",
+  "occurred_at": "2026-03-06T19:08:27.713281Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "User requested direct source implementation updates for global swap behavior; moving back from shipment_review.",
+    "datetime": "2026-03-06T19:08:27.713281Z",
+    "entry_id": "019cc48d-1ac1-7512-a7b6-9bce06971714",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

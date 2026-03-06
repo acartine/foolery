@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc48c-4ad9-7400-9b7a-532994289fbd",
+  "occurred_at": "2026-03-06T19:07:34.489328Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: global swap agent implementation confirmed on main (30b8ca3b). All 1870 tests pass, tsc clean, no local/remote divergence. GlobalSwapAgent component in settings-dispatch-global-swap.tsx provides single dispatch-level swap control. Per-step swap UI removed.",
+    "datetime": "2026-03-06T19:07:34.489328Z",
+    "entry_id": "019cc48c-4ad9-7400-9b7a-5319c4e972bc",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "claude-opus-4-6"
+  }
+}

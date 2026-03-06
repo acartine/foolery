@@ -1,0 +1,15 @@
+{
+  "event_id": "019cc490-ed38-7ff1-a5c7-8c8c9ac8d4b0",
+  "occurred_at": "2026-03-06T19:12:38.200374Z",
+  "knot_id": "foolery-0bbe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Enforced global Swap Agent scope in dispatch: removed step-list override from swapPoolsAgent and updated SettingsDispatchGlobalSwap to swap across all pool entries by default. Validation: bun run lint; bunx tsc --noEmit; bun run test; NODE_ENV=production bun run build.",
+    "datetime": "2026-03-06T19:12:38Z",
+    "entry_id": "019cc490-ed38-7ff1-a5c7-8c7c293ab1f0",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5"
+  }
+}
