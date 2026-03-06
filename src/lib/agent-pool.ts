@@ -1,6 +1,10 @@
-import type { PoolEntry, RegisteredAgent } from "@/lib/types";
+import type { ActionName, PoolEntry, RegisteredAgent } from "@/lib/types";
 import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
-import type { PoolsSettings, RegisteredAgentConfig } from "@/lib/schemas";
+import type {
+  ActionAgentMappings,
+  PoolsSettings,
+  RegisteredAgentConfig,
+} from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
 
 /**
@@ -122,6 +126,46 @@ export function swapPoolAgent(
         : entry,
     )
     .filter((_, idx) => idx === firstFromIndex || !removeIndexes.has(idx));
+}
+
+const ACTION_NAMES: readonly ActionName[] = ["take", "scene", "breakdown"];
+
+export interface SwapActionsAgentResult {
+  affectedActions: number;
+  updates: Partial<ActionAgentMappings>;
+  updatedActions: ActionAgentMappings;
+}
+
+/**
+ * Globally replace an action-mapped agent across all dispatch actions.
+ * Returns per-action updates, affected action count, and merged mappings.
+ */
+export function swapActionsAgent(
+  actions: ActionAgentMappings,
+  fromAgentId: string,
+  toAgentId: string,
+): SwapActionsAgentResult {
+  if (!fromAgentId || !toAgentId || fromAgentId === toAgentId) {
+    return { affectedActions: 0, updates: {}, updatedActions: actions };
+  }
+
+  const updates: Partial<ActionAgentMappings> = {};
+  let affectedActions = 0;
+  for (const action of ACTION_NAMES) {
+    if (actions[action] !== fromAgentId) continue;
+    updates[action] = toAgentId;
+    affectedActions += 1;
+  }
+
+  if (affectedActions === 0) {
+    return { affectedActions: 0, updates: {}, updatedActions: actions };
+  }
+
+  return {
+    affectedActions,
+    updates,
+    updatedActions: { ...actions, ...updates },
+  };
 }
 
 const DEFAULT_POOL_STEPS = Object.values(WorkflowStep) as WorkflowStep[];

@@ -5,6 +5,7 @@ import { Zap, Users, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsPoolsSection } from "@/components/settings-pools-section";
+import { SettingsDispatchGlobalSwap } from "@/components/settings-dispatch-global-swap";
 import { patchSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
@@ -52,6 +53,8 @@ export function SettingsDispatchSection({
   onActionsChange,
   onPoolsChange,
 }: DispatchSectionProps) {
+  const hasMultipleAgents = Object.keys(agents).length > 1;
+
   async function handleModeChange(mode: DispatchMode) {
     onDispatchModeChange(mode);
     try {
@@ -125,6 +128,15 @@ export function SettingsDispatchSection({
         <SettingsPoolsSection
           pools={pools}
           agents={agents}
+          onPoolsChange={onPoolsChange}
+        />
+      )}
+      {hasMultipleAgents && (
+        <SettingsDispatchGlobalSwap
+          actions={actions}
+          pools={pools}
+          agents={agents}
+          onActionsChange={onActionsChange}
           onPoolsChange={onPoolsChange}
         />
       )}

@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { savePools } from "@/lib/settings-api";
-import { swapPoolsAgent } from "@/lib/agent-pool";
 import { formatAgentDisplayLabel } from "@/lib/agent-identity";
 import type { RegisteredAgent } from "@/lib/types";
 import type { PoolEntry, PoolsSettings } from "@/lib/schemas";
@@ -132,14 +131,6 @@ export function SettingsPoolsSection({
           />
         ))}
       </div>
-      {agentIds.length > 1 && (
-        <GlobalSwapAgent
-          pools={pools}
-          agents={agents}
-          agentIds={agentIds}
-          onPoolsChange={onPoolsChange}
-        />
-      )}
     </div>
   );
 }
@@ -288,163 +279,6 @@ function StepPoolEditor({
           onCancel={() => setAddingAgent(false)}
         />
       )}
-    </div>
-  );
-}
-
-/* ── Global swap agent ─────────────────────────────────────── */
-
-function GlobalSwapAgent({
-  pools,
-  agents,
-  agentIds,
-  onPoolsChange,
-}: {
-  pools: PoolsSettings;
-  agents: Record<string, RegisteredAgent>;
-  agentIds: string[];
-  onPoolsChange: (pools: PoolsSettings) => void;
-}) {
-  const [swapFromSelection, setSwapFromSelection] = useState("");
-  const [swapToSelection, setSwapToSelection] = useState("");
-
-  // All agents that appear in any pool across all steps
-  const pooledAgentIds = [
-    ...new Set(
-      ALL_STEPS.flatMap((step) =>
-        (pools[step] ?? []).map((e) => e.agentId),
-      ),
-    ),
-  ];
-
-  const swapFromAgentId = pooledAgentIds.includes(swapFromSelection)
-    ? swapFromSelection
-    : (pooledAgentIds[0] ?? "");
-
-  const swapToAgentId =
-    agentIds.includes(swapToSelection) && swapToSelection !== swapFromAgentId
-      ? swapToSelection
-      : ((agentIds.find((id) => id !== swapFromAgentId) ?? agentIds[0]) ?? "");
-
-  const canSwap =
-    pooledAgentIds.length > 0 &&
-    swapFromAgentId.length > 0 &&
-    swapToAgentId.length > 0 &&
-    swapFromAgentId !== swapToAgentId;
-
-  async function handleGlobalSwap() {
-    if (!swapFromAgentId || !swapToAgentId) return;
-    if (swapFromAgentId === swapToAgentId) return;
-
-    const { updates, affectedSteps, updatedPools } = swapPoolsAgent(
-      pools,
-      swapFromAgentId,
-      swapToAgentId,
-      ALL_STEPS,
-    );
-    if (affectedSteps === 0) {
-      toast.error("Agent not found in any pool");
-      return;
-    }
-    onPoolsChange(updatedPools);
-    try {
-      const res = await savePools(updates);
-      if (!res.ok) {
-        toast.error(res.error ?? "Failed to save swap");
-        return;
-      }
-    } catch {
-      toast.error("Failed to save swap");
-      return;
-    }
-    toast.success(
-      `Swapped agent across ${affectedSteps} step${affectedSteps > 1 ? "s" : ""}`,
-    );
-    setSwapFromSelection(swapToAgentId);
-  }
-
-  if (pooledAgentIds.length === 0) return null;
-
-  return (
-    <GlobalSwapAgentUI
-      agents={agents}
-      agentIds={agentIds}
-      pooledAgentIds={pooledAgentIds}
-      swapFromAgentId={swapFromAgentId}
-      swapToAgentId={swapToAgentId}
-      canSwap={canSwap}
-      onFromChange={setSwapFromSelection}
-      onToChange={setSwapToSelection}
-      onSwap={handleGlobalSwap}
-    />
-  );
-}
-
-function GlobalSwapAgentUI({
-  agents,
-  agentIds,
-  pooledAgentIds,
-  swapFromAgentId,
-  swapToAgentId,
-  canSwap,
-  onFromChange,
-  onToChange,
-  onSwap,
-}: {
-  agents: Record<string, RegisteredAgent>;
-  agentIds: string[];
-  pooledAgentIds: string[];
-  swapFromAgentId: string;
-  swapToAgentId: string;
-  canSwap: boolean;
-  onFromChange: (id: string) => void;
-  onToChange: (id: string) => void;
-  onSwap: () => void;
-}) {
-  return (
-    <div className="rounded-xl border border-primary/18 bg-background/60 p-3 space-y-2">
-      <div>
-        <Label className="text-xs font-medium">Swap Agent (Global)</Label>
-        <p className="text-[10px] text-muted-foreground">
-          Replace a pooled agent across all steps while keeping weights.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Select value={swapFromAgentId} onValueChange={onFromChange}>
-          <SelectTrigger className="h-7 w-[170px] border-primary/20 bg-background/80">
-            <SelectValue placeholder="current agent" />
-          </SelectTrigger>
-          <SelectContent>
-            {pooledAgentIds.map((id) => (
-              <SelectItem key={id} value={id}>
-                {formatPoolAgentLabel(id, agents[id])}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <span className="text-xs text-muted-foreground">to</span>
-        <Select value={swapToAgentId} onValueChange={onToChange}>
-          <SelectTrigger className="h-7 w-[190px] border-primary/20 bg-background/80">
-            <SelectValue placeholder="replacement agent" />
-          </SelectTrigger>
-          <SelectContent>
-            {agentIds.map((id) => (
-              <SelectItem key={id} value={id} disabled={id === swapFromAgentId}>
-                {formatPoolAgentLabel(id, agents[id])}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7 border-primary/20 bg-background/80"
-          disabled={!canSwap}
-          onClick={onSwap}
-        >
-          Swap
-        </Button>
-      </div>
     </div>
   );
 }

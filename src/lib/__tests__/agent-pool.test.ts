@@ -5,11 +5,16 @@ import {
   recordStepAgent,
   getLastStepAgent,
   _resetStepAgentMap,
+  swapActionsAgent,
   swapPoolAgent,
   swapPoolsAgent,
 } from "@/lib/agent-pool";
 import type { PoolEntry } from "@/lib/types";
-import type { RegisteredAgentConfig, PoolsSettings } from "@/lib/schemas";
+import type {
+  ActionAgentMappings,
+  RegisteredAgentConfig,
+  PoolsSettings,
+} from "@/lib/schemas";
 import { WorkflowStep } from "@/lib/workflows";
 
 const AGENTS: Record<string, RegisteredAgentConfig> = {
@@ -348,6 +353,42 @@ describe("swapPoolAgent", () => {
       { agentId: "sonnet", weight: 1 },
       { agentId: "codex", weight: 9 },
     ]);
+  });
+});
+
+describe("swapActionsAgent", () => {
+  const baseActions: ActionAgentMappings = {
+    take: "claude",
+    scene: "sonnet",
+    breakdown: "claude",
+  };
+
+  it("swaps the source agent across all mapped actions", () => {
+    const result = swapActionsAgent(baseActions, "claude", "codex");
+    expect(result.affectedActions).toBe(2);
+    expect(result.updates).toEqual({
+      take: "codex",
+      breakdown: "codex",
+    });
+    expect(result.updatedActions).toEqual({
+      take: "codex",
+      scene: "sonnet",
+      breakdown: "codex",
+    });
+  });
+
+  it("returns original mappings when source agent is missing", () => {
+    const result = swapActionsAgent(baseActions, "nonexistent", "codex");
+    expect(result.affectedActions).toBe(0);
+    expect(result.updates).toEqual({});
+    expect(result.updatedActions).toBe(baseActions);
+  });
+
+  it("returns original mappings for no-op swaps", () => {
+    const result = swapActionsAgent(baseActions, "claude", "claude");
+    expect(result.affectedActions).toBe(0);
+    expect(result.updates).toEqual({});
+    expect(result.updatedActions).toBe(baseActions);
   });
 });
 
