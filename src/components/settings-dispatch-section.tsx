@@ -129,13 +129,23 @@ export function SettingsDispatchSection({
           onPoolsChange={onPoolsChange}
         />
       )}
-      <SettingsDispatchGlobalSwap
-        actions={actions}
-        pools={pools}
-        agents={agents}
-        onActionsChange={onActionsChange}
-        onPoolsChange={onPoolsChange}
-      />
+      <div className="space-y-2 border-t border-border/70 pt-3">
+        <div>
+          <p className="text-[11px] font-medium text-foreground">
+            Dispatch-wide tools
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            Apply changes across the full dispatch configuration instead of editing one step at a time.
+          </p>
+        </div>
+        <SettingsDispatchGlobalSwap
+          actions={actions}
+          pools={pools}
+          agents={agents}
+          onActionsChange={onActionsChange}
+          onPoolsChange={onPoolsChange}
+        />
+      </div>
     </div>
   );
 }

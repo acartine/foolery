@@ -150,9 +150,9 @@ export function SettingsDispatchGlobalSwap({
       }
     >
       <div>
-        <Label className="text-xs font-medium">Swap Agent (Global)</Label>
+        <Label className="text-xs font-medium">Swap Agent</Label>
         <p className="text-[10px] text-muted-foreground">
-          Replace an agent everywhere in dispatch, including action mappings and matching pool entries.
+          Dispatch-wide replacement. One swap updates every matching action mapping and pool entry.
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -193,7 +193,7 @@ export function SettingsDispatchGlobalSwap({
       </div>
       {scopeParts.length > 0 && (
         <p className="text-[10px] text-muted-foreground">
-          Current global scope: {scopeParts.join(" and ")}.
+          Current scope: {scopeParts.join(" and ")}.
         </p>
       )}
     </div>
