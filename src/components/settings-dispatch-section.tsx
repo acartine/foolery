@@ -132,12 +132,12 @@ export function SettingsDispatchSection({
       <div className="space-y-2 border-t border-border/70 pt-3">
         <div>
           <p className="text-[11px] font-medium text-foreground">
-            Dispatch Tools
+            Global Swap Agent
           </p>
           <p className="text-[10px] text-muted-foreground">
-            Swap Agent is global here. One replacement updates every matching
-            action mapping and every workflow-step pool entry from this single
-            control.
+            Use this one control to replace an agent everywhere in Dispatch.
+            One replacement updates every matching action mapping and every
+            workflow-step pool entry.
           </p>
         </div>
         <SettingsDispatchGlobalSwap
