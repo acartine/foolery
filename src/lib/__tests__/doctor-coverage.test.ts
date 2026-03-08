@@ -27,11 +27,15 @@ vi.mock("@/lib/backend-instance", () => ({
 
 const mockGetRegisteredAgents = vi.fn();
 const mockInspectSettingsDefaults = vi.fn();
+const mockInspectStaleSettingsKeys = vi.fn();
 const mockBackfillMissingSettingsDefaults = vi.fn();
+const mockCleanStaleSettingsKeys = vi.fn();
 vi.mock("@/lib/settings", () => ({
   getRegisteredAgents: () => mockGetRegisteredAgents(),
   inspectSettingsDefaults: () => mockInspectSettingsDefaults(),
+  inspectStaleSettingsKeys: () => mockInspectStaleSettingsKeys(),
   backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
+  cleanStaleSettingsKeys: () => mockCleanStaleSettingsKeys(),
 }));
 
 const mockListRepos = vi.fn();
@@ -74,6 +78,7 @@ import {
   checkMemoryImplementationCompatibility,
   checkStaleParents,
   checkSettingsDefaults,
+  checkStaleSettingsKeys,
   checkRepoMemoryManagerTypes,
   checkPromptGuidance,
   runDoctorFix,
@@ -91,8 +96,16 @@ beforeEach(() => {
     missingPaths: [],
     fileMissing: false,
   });
+  mockInspectStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
+    fileMissing: false,
+  });
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
     missingPaths: [],
+    changed: false,
+  });
+  mockCleanStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
     changed: false,
   });
   mockInspectMissingRepoMemoryManagerTypes.mockResolvedValue({
@@ -241,6 +254,29 @@ describe("checkRepoMemoryManagerTypes (additional coverage)", () => {
   });
 });
 
+describe("checkStaleSettingsKeys (additional coverage)", () => {
+  it("returns info when no stale settings keys are present", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: [],
+      fileMissing: false,
+    });
+    const diags = await checkStaleSettingsKeys();
+    expect(diags).toHaveLength(1);
+    expect(diags[0]?.severity).toBe("info");
+  });
+
+  it("returns non-fixable warning when inspection fails", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: [],
+      fileMissing: false,
+      error: "parse failed",
+    });
+    const diags = await checkStaleSettingsKeys();
+    expect(diags[0]?.fixable).toBe(false);
+    expect(diags[0]?.message).toContain("parse failed");
+  });
+});
+
 // ── checkStaleParents additional paths ──────────────────────
 
 describe("checkStaleParents (additional coverage)", () => {
@@ -313,6 +349,19 @@ describe("applyFix: unknown strategy", () => {
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain('Unknown strategy');
   });
+
+  it("returns failure for unknown settings-stale-keys strategy", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent"],
+      fileMissing: false,
+    });
+    const report = await runDoctorFix({
+      "settings-stale-keys": "unknown-strategy",
+    });
+    const fix = report.fixes.find((f) => f.check === "settings-stale-keys");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("Unknown strategy");
+  });
 });
 
 // ── applyFix: settings-defaults no-change ──────────────────
@@ -376,6 +425,35 @@ describe("applyFix: repo-memory-managers no-change", () => {
     );
     const report = await runDoctorFix({ "repo-memory-managers": "backfill" });
     const fix = report.fixes.find((f) => f.check === "repo-memory-managers");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("io error");
+  });
+});
+
+describe("applyFix: settings-stale-keys no-change", () => {
+  it("succeeds with no-change message", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent"],
+      fileMissing: false,
+    });
+    mockCleanStaleSettingsKeys.mockResolvedValue({
+      stalePaths: [],
+      changed: false,
+    });
+    const report = await runDoctorFix({ "settings-stale-keys": "clean" });
+    const fix = report.fixes.find((f) => f.check === "settings-stale-keys");
+    expect(fix?.success).toBe(true);
+    expect(fix?.message).toContain("no changes needed");
+  });
+
+  it("fails when cleanup throws", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent"],
+      fileMissing: false,
+    });
+    mockCleanStaleSettingsKeys.mockRejectedValue(new Error("io error"));
+    const report = await runDoctorFix({ "settings-stale-keys": "clean" });
+    const fix = report.fixes.find((f) => f.check === "settings-stale-keys");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("io error");
   });

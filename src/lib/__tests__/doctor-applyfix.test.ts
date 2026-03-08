@@ -20,13 +20,17 @@ const mockGetRegisteredAgents = vi.fn();
 const mockScanForAgents = vi.fn();
 const mockLoadSettings = vi.fn();
 const mockInspectSettingsDefaults = vi.fn();
+const mockInspectStaleSettingsKeys = vi.fn();
 const mockBackfillMissingSettingsDefaults = vi.fn();
+const mockCleanStaleSettingsKeys = vi.fn();
 vi.mock("@/lib/settings", () => ({
   getRegisteredAgents: () => mockGetRegisteredAgents(),
   scanForAgents: () => mockScanForAgents(),
   loadSettings: () => mockLoadSettings(),
   inspectSettingsDefaults: () => mockInspectSettingsDefaults(),
+  inspectStaleSettingsKeys: () => mockInspectStaleSettingsKeys(),
   backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
+  cleanStaleSettingsKeys: () => mockCleanStaleSettingsKeys(),
 }));
 
 const mockListRepos = vi.fn();
@@ -104,9 +108,18 @@ beforeEach(() => {
     missingPaths: [],
     fileMissing: false,
   });
+  mockInspectStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
+    fileMissing: false,
+  });
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    fileMissing: false,
+    changed: false,
+  });
+  mockCleanStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
     fileMissing: false,
     changed: false,
   });
@@ -172,6 +185,44 @@ describe("applyFix: settings-defaults", () => {
 
     const fixReport = await runDoctorFix({ "settings-defaults": "backfill" });
     const fix = fixReport.fixes.find((f) => f.check === "settings-defaults");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("permission denied");
+  });
+});
+
+describe("applyFix: settings-stale-keys", () => {
+  it("removes obsolete settings keys when strategy is selected", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent", "actions.direct"],
+      fileMissing: false,
+    });
+    mockCleanStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent", "actions.direct"],
+      fileMissing: false,
+      changed: true,
+    });
+
+    const fixReport = await runDoctorFix({ "settings-stale-keys": "clean" });
+    const fix = fixReport.fixes.find((f) => f.check === "settings-stale-keys");
+    expect(fix?.success).toBe(true);
+    expect(fix?.message).toContain("Removed 2 stale setting keys");
+    expect(mockCleanStaleSettingsKeys).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns failure when cleanup reports an error", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["verification"],
+      fileMissing: false,
+    });
+    mockCleanStaleSettingsKeys.mockResolvedValue({
+      stalePaths: [],
+      fileMissing: false,
+      changed: false,
+      error: "permission denied",
+    });
+
+    const fixReport = await runDoctorFix({ "settings-stale-keys": "clean" });
+    const fix = fixReport.fixes.find((f) => f.check === "settings-stale-keys");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("permission denied");
   });

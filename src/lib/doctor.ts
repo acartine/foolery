@@ -8,7 +8,9 @@ import {
   loadSettings,
   updateSettings,
   inspectSettingsDefaults,
+  inspectStaleSettingsKeys,
   backfillMissingSettingsDefaults,
+  cleanStaleSettingsKeys,
 } from "./settings";
 import {
   listRepos,
@@ -237,6 +239,10 @@ const SETTINGS_DEFAULTS_FIX_OPTIONS: FixOption[] = [
   { key: "backfill", label: "Backfill missing settings defaults" },
 ];
 
+const SETTINGS_STALE_KEYS_FIX_OPTIONS: FixOption[] = [
+  { key: "clean", label: "Remove stale settings keys" },
+];
+
 const BACKEND_TYPE_MIGRATION_FIX_OPTIONS: FixOption[] = [
   { key: "migrate", label: "Migrate backend.type from cli to auto" },
 ];
@@ -298,6 +304,44 @@ export async function checkSettingsDefaults(): Promise<Diagnostic[]> {
     check: "settings-defaults",
     severity: "info",
     message: "Settings defaults are present in ~/.config/foolery/settings.toml.",
+    fixable: false,
+  });
+  return diagnostics;
+}
+
+export async function checkStaleSettingsKeys(): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+  const result = await inspectStaleSettingsKeys();
+
+  if (result.error) {
+    diagnostics.push({
+      check: "settings-stale-keys",
+      severity: "warning",
+      message: `Could not inspect ~/.config/foolery/settings.toml for stale keys: ${result.error}`,
+      fixable: false,
+    });
+    return diagnostics;
+  }
+
+  const stalePaths = Array.from(new Set(result.stalePaths));
+  if (stalePaths.length > 0) {
+    diagnostics.push({
+      check: "settings-stale-keys",
+      severity: "warning",
+      message: `Settings file ~/.config/foolery/settings.toml contains obsolete keys from v0.3.0: ${summarizeMissingSettings(stalePaths)}.`,
+      fixable: true,
+      fixOptions: SETTINGS_STALE_KEYS_FIX_OPTIONS,
+      context: {
+        stalePaths: stalePaths.join(","),
+      },
+    });
+    return diagnostics;
+  }
+
+  diagnostics.push({
+    check: "settings-stale-keys",
+    severity: "info",
+    message: "Settings file ~/.config/foolery/settings.toml does not contain known stale keys.",
     fixable: false,
   });
   return diagnostics;
@@ -707,6 +751,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     agentDiags,
     updateDiags,
     settingsDiags,
+    staleSettingsDiags,
     backendTypeDiags,
     repoMemoryManagerDiags,
     memoryCompatibilityDiags,
@@ -718,6 +763,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkAgents(),
     checkUpdates(),
     checkSettingsDefaults(),
+    checkStaleSettingsKeys(),
     checkBackendTypeMigration(),
     checkRepoMemoryManagerTypes(),
     checkMemoryImplementationCompatibility(repos),
@@ -731,6 +777,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...agentDiags,
     ...updateDiags,
     ...settingsDiags,
+    ...staleSettingsDiags,
     ...backendTypeDiags,
     ...repoMemoryManagerDiags,
     ...memoryCompatibilityDiags,
@@ -795,6 +842,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "agents", label: "Agent connectivity", run: () => checkAgents() },
     { category: "updates", label: "Version", run: () => checkUpdates() },
     { category: "settings-defaults", label: "Settings defaults", run: () => checkSettingsDefaults() },
+    { category: "settings-stale-keys", label: "Settings stale keys", run: () => checkStaleSettingsKeys() },
     { category: "backend-type-migration", label: "Backend type", run: () => checkBackendTypeMigration() },
     { category: "repo-memory-managers", label: "Repo memory managers", run: () => checkRepoMemoryManagerTypes() },
     { category: "memory-implementation", label: "Memory implementation", run: () => checkMemoryImplementationCompatibility(repos) },
@@ -930,6 +978,48 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
           context: {
             ...ctx,
             missingPaths: result.missingPaths.join(","),
+          },
+        };
+      } catch (e) {
+        return { check: diag.check, success: false, message: String(e), context: ctx };
+      }
+    }
+
+    case "settings-stale-keys": {
+      if (strategy && strategy !== "clean" && strategy !== "default") {
+        return {
+          check: diag.check,
+          success: false,
+          message: `Unknown strategy "${strategy}" for stale settings keys.`,
+          context: ctx,
+        };
+      }
+      try {
+        const result = await cleanStaleSettingsKeys();
+        if (result.error) {
+          return {
+            check: diag.check,
+            success: false,
+            message: `Failed to clean stale settings keys: ${result.error}`,
+            context: ctx,
+          };
+        }
+        const count = result.stalePaths.length;
+        if (!result.changed) {
+          return {
+            check: diag.check,
+            success: true,
+            message: "No stale settings keys remain; no changes needed.",
+            context: ctx,
+          };
+        }
+        return {
+          check: diag.check,
+          success: true,
+          message: `Removed ${count} stale setting key${count === 1 ? "" : "s"} from ~/.config/foolery/settings.toml.`,
+          context: {
+            ...ctx,
+            stalePaths: result.stalePaths.join(","),
           },
         };
       } catch (e) {

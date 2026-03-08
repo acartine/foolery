@@ -19,7 +19,9 @@ import {
   getAgentCommand,
   updateSettings,
   inspectSettingsDefaults,
+  inspectStaleSettingsKeys,
   backfillMissingSettingsDefaults,
+  cleanStaleSettingsKeys,
   getRegisteredAgents,
   getActionAgent,
   addRegisteredAgent,
@@ -105,6 +107,26 @@ describe("inspectSettingsDefaults", () => {
   });
 });
 
+describe("inspectStaleSettingsKeys", () => {
+  it("reports obsolete v0.3.0 settings keys", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[agent]',
+        'command = "claude"',
+        '[verification]',
+        'enabled = true',
+        '[actions]',
+        'direct = "codex"',
+      ].join("\n"),
+    );
+
+    const result = await inspectStaleSettingsKeys();
+    expect(result.fileMissing).toBe(false);
+    expect(result.error).toBeUndefined();
+    expect(result.stalePaths).toEqual(["agent", "verification", "actions.direct"]);
+  });
+});
+
 describe("backfillMissingSettingsDefaults", () => {
   it("creates settings.toml with defaults when file is missing", async () => {
     const err = new Error("ENOENT") as NodeJS.ErrnoException;
@@ -157,6 +179,44 @@ describe("backfillMissingSettingsDefaults", () => {
     );
     const result = await backfillMissingSettingsDefaults();
     expect(result.changed).toBe(false);
+    expect(mockWriteFile).not.toHaveBeenCalled();
+  });
+});
+
+describe("cleanStaleSettingsKeys", () => {
+  it("removes obsolete settings keys without touching active ones", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        'dispatchMode = "actions"',
+        '[agent]',
+        'command = "claude"',
+        '[verification]',
+        'enabled = true',
+        '[actions]',
+        'take = "claude"',
+        'direct = "codex"',
+      ].join("\n"),
+    );
+
+    const result = await cleanStaleSettingsKeys();
+    expect(result.changed).toBe(true);
+    expect(result.stalePaths).toEqual(["agent", "verification", "actions.direct"]);
+    expect(mockWriteFile).toHaveBeenCalledTimes(1);
+
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain("[actions]");
+    expect(written).toContain('take = "claude"');
+    expect(written).not.toContain("[agent]");
+    expect(written).not.toContain("[verification]");
+    expect(written).not.toContain('direct = "codex"');
+  });
+
+  it("does not write when no stale keys are present", async () => {
+    mockReadFile.mockResolvedValue('[actions]\ntake = "claude"');
+
+    const result = await cleanStaleSettingsKeys();
+    expect(result.changed).toBe(false);
+    expect(result.stalePaths).toEqual([]);
     expect(mockWriteFile).not.toHaveBeenCalled();
   });
 });

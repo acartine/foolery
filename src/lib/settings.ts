@@ -76,6 +76,23 @@ export interface SettingsDefaultsBackfillResult extends SettingsDefaultsAudit {
   changed: boolean;
 }
 
+export interface StaleSettingsAudit {
+  stalePaths: string[];
+  fileMissing: boolean;
+  error?: string;
+}
+
+export interface StaleSettingsCleanupResult extends StaleSettingsAudit {
+  changed: boolean;
+}
+
+interface StaleSettingsComputation extends StaleSettingsAudit {
+  cleaned: Record<string, unknown>;
+}
+
+const STALE_TOP_LEVEL_SETTINGS_KEYS = ["agent", "verification"] as const;
+const STALE_ACTION_SETTINGS_KEYS = ["direct"] as const;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -156,6 +173,35 @@ async function readRawSettings(): Promise<{
   }
 }
 
+function removeStaleSettingsKeys(current: unknown): {
+  cleaned: Record<string, unknown>;
+  stalePaths: string[];
+} {
+  const cleaned = structuredClone(isRecord(current) ? current : {}) as Record<string, unknown>;
+  const stalePaths: string[] = [];
+
+  for (const key of STALE_TOP_LEVEL_SETTINGS_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(cleaned, key)) {
+      delete cleaned[key];
+      stalePaths.push(key);
+    }
+  }
+
+  if (isRecord(cleaned.actions)) {
+    for (const key of STALE_ACTION_SETTINGS_KEYS) {
+      if (Object.prototype.hasOwnProperty.call(cleaned.actions, key)) {
+        delete cleaned.actions[key];
+        stalePaths.push(`actions.${key}`);
+      }
+    }
+  }
+
+  return {
+    cleaned,
+    stalePaths: Array.from(new Set(stalePaths)),
+  };
+}
+
 async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputation> {
   const raw = await readRawSettings();
   if (raw.error) {
@@ -196,12 +242,41 @@ async function computeSettingsDefaultsStatus(): Promise<SettingsDefaultsComputat
   }
 }
 
+async function computeStaleSettingsStatus(): Promise<StaleSettingsComputation> {
+  const raw = await readRawSettings();
+  if (raw.error) {
+    return {
+      cleaned: {},
+      stalePaths: [],
+      fileMissing: raw.fileMissing,
+      error: raw.error,
+    };
+  }
+
+  const { cleaned, stalePaths } = removeStaleSettingsKeys(raw.parsed);
+  return {
+    cleaned,
+    stalePaths,
+    fileMissing: raw.fileMissing,
+  };
+}
+
 /** Inspect whether settings.toml is missing any known defaults. */
 export async function inspectSettingsDefaults(): Promise<SettingsDefaultsAudit> {
   const result = await computeSettingsDefaultsStatus();
   return {
     settings: result.settings,
     missingPaths: result.missingPaths,
+    fileMissing: result.fileMissing,
+    error: result.error,
+  };
+}
+
+/** Inspect whether settings.toml still contains known stale keys from v0.3.0. */
+export async function inspectStaleSettingsKeys(): Promise<StaleSettingsAudit> {
+  const result = await computeStaleSettingsStatus();
+  return {
+    stalePaths: result.stalePaths,
     fileMissing: result.fileMissing,
     error: result.error,
   };
@@ -229,6 +304,27 @@ export async function backfillMissingSettingsDefaults(): Promise<SettingsDefault
   return {
     settings: result.settings,
     missingPaths: result.missingPaths,
+    fileMissing: result.fileMissing,
+    error: result.error,
+    changed,
+  };
+}
+
+/** Remove obsolete settings keys that are no longer used by the app. */
+export async function cleanStaleSettingsKeys(): Promise<StaleSettingsCleanupResult> {
+  const result = await computeStaleSettingsStatus();
+  let changed = false;
+
+  if (!result.error && result.stalePaths.length > 0) {
+    await mkdir(CONFIG_DIR, { recursive: true });
+    await writeFile(SETTINGS_FILE, stringify(result.cleaned), "utf-8");
+    await chmod(SETTINGS_FILE, 0o600);
+    changed = true;
+  }
+
+  cached = null;
+  return {
+    stalePaths: result.stalePaths,
     fileMissing: result.fileMissing,
     error: result.error,
     changed,

@@ -21,14 +21,18 @@ const mockScanForAgents = vi.fn();
 const mockLoadSettings = vi.fn();
 const mockUpdateSettings = vi.fn();
 const mockInspectSettingsDefaults = vi.fn();
+const mockInspectStaleSettingsKeys = vi.fn();
 const mockBackfillMissingSettingsDefaults = vi.fn();
+const mockCleanStaleSettingsKeys = vi.fn();
 vi.mock("@/lib/settings", () => ({
   getRegisteredAgents: () => mockGetRegisteredAgents(),
   scanForAgents: () => mockScanForAgents(),
   loadSettings: () => mockLoadSettings(),
   updateSettings: (...args: unknown[]) => mockUpdateSettings(...args),
   inspectSettingsDefaults: () => mockInspectSettingsDefaults(),
+  inspectStaleSettingsKeys: () => mockInspectStaleSettingsKeys(),
   backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
+  cleanStaleSettingsKeys: () => mockCleanStaleSettingsKeys(),
 }));
 
 const mockListRepos = vi.fn();
@@ -71,6 +75,7 @@ import {
   checkAgents,
   checkUpdates,
   checkSettingsDefaults,
+  checkStaleSettingsKeys,
   checkBackendTypeMigration,
   checkRepoMemoryManagerTypes,
   checkStaleParents,
@@ -122,9 +127,18 @@ beforeEach(() => {
     missingPaths: [],
     fileMissing: false,
   });
+  mockInspectStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
+    fileMissing: false,
+  });
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    fileMissing: false,
+    changed: false,
+  });
+  mockCleanStaleSettingsKeys.mockResolvedValue({
+    stalePaths: [],
     fileMissing: false,
     changed: false,
   });
@@ -179,6 +193,24 @@ describe("checkSettingsDefaults", () => {
     expect(diags[0].fixable).toBe(true);
     expect(diags[0].fixOptions).toEqual([
       { key: "backfill", label: "Backfill missing settings defaults" },
+    ]);
+  });
+});
+
+describe("checkStaleSettingsKeys", () => {
+  it("reports warning and fix option when stale keys are present", async () => {
+    mockInspectStaleSettingsKeys.mockResolvedValue({
+      stalePaths: ["agent", "verification", "actions.direct"],
+      fileMissing: false,
+    });
+
+    const diags = await checkStaleSettingsKeys();
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("warning");
+    expect(diags[0].check).toBe("settings-stale-keys");
+    expect(diags[0].fixable).toBe(true);
+    expect(diags[0].fixOptions).toEqual([
+      { key: "clean", label: "Remove stale settings keys" },
     ]);
   });
 });
@@ -615,7 +647,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 10 check events plus 1 summary event", async () => {
+  it("emits 11 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -628,10 +660,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(11);
+    expect(events).toHaveLength(12);
 
-    // First 10 are check results
-    for (let i = 0; i < 10; i++) {
+    // First 11 are check results
+    for (let i = 0; i < 11; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -642,7 +674,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[10] as DoctorStreamSummary;
+    const summary = events[11] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -663,6 +695,7 @@ describe("streamDoctor", () => {
       "agents",
       "updates",
       "settings-defaults",
+      "settings-stale-keys",
       "backend-type-migration",
       "repo-memory-managers",
       "memory-implementation",
