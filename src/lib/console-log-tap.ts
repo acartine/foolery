@@ -15,6 +15,7 @@ import { resolveServerLogDir } from "@/lib/server-logger";
 let installed = false;
 let currentDate = "";
 let stream: WriteStream | null = null;
+let streamErrorHandler: (() => void) | null = null;
 let restoreConsole: (() => void) | null = null;
 let uncaughtExceptionMonitorHandler:
   | ((error: Error | unknown) => void)
@@ -48,6 +49,10 @@ export function _setUnhandledRejectionRethrow(
 
 function closeStream(): void {
   if (!stream) return;
+  if (streamErrorHandler) {
+    stream.removeListener("error", streamErrorHandler);
+    streamErrorHandler = null;
+  }
   stream.end();
   stream = null;
   currentDate = "";
@@ -109,11 +114,21 @@ export function installConsoleTap(): void {
       }
       currentDate = date;
       stream = createWriteStream(join(dir, "console.log"), { flags: "a" });
-      stream.on("error", () => {
+      streamErrorHandler = () => {
         // Swallow and reset write errors — never crash the server due to logging.
-        stream = null;
+        const activeStream = stream;
+        const activeHandler = streamErrorHandler;
+        if (activeStream && activeHandler) {
+          activeStream.removeListener("error", activeHandler);
+          activeStream.destroy();
+        }
+        streamErrorHandler = null;
+        if (stream) {
+          stream = null;
+        }
         currentDate = "";
-      });
+      };
+      stream.on("error", streamErrorHandler);
     }
     return stream;
   }

@@ -220,6 +220,7 @@ describe("console-log-tap", () => {
     const fakeStream = Object.assign(new EventEmitter(), {
       write: vi.fn(() => true),
       end: vi.fn(),
+      destroy: vi.fn(),
     });
 
     // Use vi.doMock to intercept createWriteStream for this test only.
@@ -247,6 +248,52 @@ describe("console-log-tap", () => {
     expect(() => {
       fakeStream.emit("error", new Error("ENOSPC"));
     }).not.toThrow();
+    _resetConsoleTapForTests();
+  });
+
+  it("reopens a fresh stream after a stream error", async () => {
+    const { EventEmitter } = await import("node:events");
+
+    const firstStream = Object.assign(new EventEmitter(), {
+      write: vi.fn(() => true),
+      end: vi.fn(),
+      destroy: vi.fn(),
+    });
+    const secondStream = Object.assign(new EventEmitter(), {
+      write: vi.fn(() => true),
+      end: vi.fn(),
+      destroy: vi.fn(),
+    });
+
+    vi.doMock("node:fs", async (importOriginal) => {
+      const actual =
+        await importOriginal<typeof import("node:fs")>();
+      return {
+        ...actual,
+        createWriteStream: vi
+          .fn()
+          .mockReturnValueOnce(firstStream)
+          .mockReturnValueOnce(secondStream),
+      };
+    });
+
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
+
+    vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    installConsoleTap();
+
+    console.log("first message");
+    expect(firstStream.write).toHaveBeenCalledTimes(2);
+
+    firstStream.emit("error", new Error("ENOSPC"));
+    expect(firstStream.destroy).toHaveBeenCalledTimes(1);
+
+    console.log("second message");
+    expect(secondStream.write).toHaveBeenCalledTimes(1);
+
     _resetConsoleTapForTests();
   });
 });
