@@ -132,10 +132,12 @@ export function SettingsDispatchSection({
       <div className="space-y-2 border-t border-border/70 pt-3">
         <div>
           <p className="text-[11px] font-medium text-foreground">
-            Dispatch-wide tools
+            Global dispatch tools
           </p>
           <p className="text-[10px] text-muted-foreground">
-            Apply changes across the full dispatch configuration instead of editing one step at a time.
+            The single Swap Agent control below replaces matching agents
+            everywhere in Dispatch, including action mappings and every workflow
+            step.
           </p>
         </div>
         <SettingsDispatchGlobalSwap

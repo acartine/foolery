@@ -119,6 +119,10 @@ export function SettingsPoolsSection({
       <p className="text-[11px] text-muted-foreground">
         Configure weighted agent distribution per workflow step.
       </p>
+      <p className="text-[10px] text-muted-foreground">
+        For a full replacement across Dispatch, use the single global Swap
+        Agent control below these step editors.
+      </p>
       <div className="space-y-4">
         {ALL_STEPS.map((step) => (
           <StepPoolEditor
