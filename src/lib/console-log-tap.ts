@@ -112,23 +112,30 @@ export function installConsoleTap(): void {
       } catch {
         return null;
       }
-      currentDate = date;
-      stream = createWriteStream(join(dir, "console.log"), { flags: "a" });
-      streamErrorHandler = () => {
-        // Swallow and reset write errors — never crash the server due to logging.
-        const activeStream = stream;
-        const activeHandler = streamErrorHandler;
-        if (activeStream && activeHandler) {
-          activeStream.removeListener("error", activeHandler);
-          activeStream.destroy();
-        }
+      try {
+        currentDate = date;
+        stream = createWriteStream(join(dir, "console.log"), { flags: "a" });
+        streamErrorHandler = () => {
+          // Swallow and reset write errors — never crash the server due to logging.
+          const activeStream = stream;
+          const activeHandler = streamErrorHandler;
+          if (activeStream && activeHandler) {
+            activeStream.removeListener("error", activeHandler);
+            activeStream.destroy();
+          }
+          streamErrorHandler = null;
+          if (stream) {
+            stream = null;
+          }
+          currentDate = "";
+        };
+        stream.on("error", streamErrorHandler);
+      } catch {
+        stream = null;
         streamErrorHandler = null;
-        if (stream) {
-          stream = null;
-        }
         currentDate = "";
-      };
-      stream.on("error", streamErrorHandler);
+        return null;
+      }
     }
     return stream;
   }

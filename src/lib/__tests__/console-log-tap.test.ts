@@ -296,4 +296,46 @@ describe("console-log-tap", () => {
 
     _resetConsoleTapForTests();
   });
+
+  it("swallows synchronous stream creation failures and recovers later", async () => {
+    const { EventEmitter } = await import("node:events");
+
+    const recoveredStream = Object.assign(new EventEmitter(), {
+      write: vi.fn(() => true),
+      end: vi.fn(),
+      destroy: vi.fn(),
+    });
+
+    vi.doMock("node:fs", async (importOriginal) => {
+      const actual =
+        await importOriginal<typeof import("node:fs")>();
+      return {
+        ...actual,
+        createWriteStream: vi
+          .fn()
+          .mockImplementationOnce(() => {
+            throw new Error("EACCES");
+          })
+          .mockReturnValueOnce(recoveredStream),
+      };
+    });
+
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
+
+    vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    installConsoleTap();
+
+    expect(() => {
+      console.log("first message after failed open");
+    }).not.toThrow();
+    expect(recoveredStream.write).toHaveBeenCalledTimes(1);
+
+    console.log("second message after recovery");
+    expect(recoveredStream.write).toHaveBeenCalledTimes(2);
+
+    _resetConsoleTapForTests();
+  });
 });
