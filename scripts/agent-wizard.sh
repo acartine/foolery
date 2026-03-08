@@ -60,6 +60,8 @@ _write_settings_toml() {
   mkdir -p "$CONFIG_DIR"
 
   {
+    printf 'dispatchMode = "actions"\n\n'
+
     local aid
     for aid in "${FOUND_AGENTS[@]}"; do
       local lbl
@@ -78,6 +80,14 @@ _write_settings_toml() {
     local action
     for action in take scene breakdown; do
       printf '%s = "%s"\n' "$action" "$(_kv_get ACTION_MAP "$action" "default")"
+    done
+
+    printf '\n[backend]\ntype = "auto"\n'
+    printf '\n[defaults]\nprofileId = ""\n'
+    printf '\n[pools]\n'
+    local step
+    for step in planning plan_review implementation implementation_review shipment shipment_review; do
+      printf '%s = []\n' "$step"
     done
   } > "$SETTINGS_FILE"
 }
