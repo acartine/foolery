@@ -971,4 +971,50 @@ describe("checkRegistryConsistency", () => {
     expect(diags[0].severity).toBe("info");
     expect(diags[0].message).toContain("could not be detected");
   });
+
+  it("runDoctorFix applies the registry consistency sync fix", async () => {
+    mockListRepos.mockResolvedValue([
+      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+    ]);
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+    mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+      changed: true,
+      fileMissing: false,
+      repoFound: true,
+      previousMemoryManagerType: "beads",
+      memoryManagerType: "knots",
+    });
+
+    const fixReport = await runDoctorFix();
+    const fix = fixReport.fixes.find((entry) => entry.check === "registry-consistency");
+
+    expect(fix).toMatchObject({
+      check: "registry-consistency",
+      success: true,
+    });
+    expect(fix?.message).toContain("Updated registry memory manager metadata");
+    expect(mockUpdateRegisteredRepoMemoryManagerType).toHaveBeenCalledWith("/repo-a", "knots");
+  });
+
+  it("runDoctorFix reports a failure when the registry consistency sync cannot find the repo", async () => {
+    mockListRepos.mockResolvedValue([
+      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+    ]);
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+    mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+      changed: false,
+      fileMissing: false,
+      repoFound: false,
+      memoryManagerType: "knots",
+    });
+
+    const fixReport = await runDoctorFix();
+    const fix = fixReport.fixes.find((entry) => entry.check === "registry-consistency");
+
+    expect(fix).toMatchObject({
+      check: "registry-consistency",
+      success: false,
+    });
+    expect(fix?.message).toContain("Could not find registered repo entry");
+  });
 });
