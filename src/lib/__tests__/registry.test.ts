@@ -26,7 +26,6 @@ import {
   updateRegisteredRepoMemoryManagerType,
   inspectRegistryPermissions,
   ensureRegistryPermissions,
-  updateRegisteredRepoMemoryManagerType,
 } from "@/lib/registry";
 
 beforeEach(() => {

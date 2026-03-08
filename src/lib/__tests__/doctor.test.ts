@@ -720,13 +720,14 @@ describe("runDoctorFix", () => {
       changed: false,
       fileMissing: false,
       repoFound: false,
+      memoryManagerType: "knots",
     });
 
     const fixReport = await runDoctorFix({ "registry-consistency": "sync" });
     const rcFix = fixReport.fixes.find((f) => f.check === "registry-consistency");
     expect(rcFix).toBeDefined();
     expect(rcFix?.success).toBe(false);
-    expect(rcFix?.message).toContain("no longer registered");
+    expect(rcFix?.message).toContain("Could not find registered repo entry");
   });
 
   it("uses default first option when no strategies provided (backwards compat)", async () => {
