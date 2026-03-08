@@ -1,21 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { useAppStore } from "@/stores/app-store";
+import { useEffect, useRef } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useAppStore, getPersistedRepo } from "@/stores/app-store";
 
 const VALID_PAGE_SIZES = [25, 50, 100];
 const DEFAULT_PAGE_SIZE = 50;
 
 export function UrlStateSync() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const restoredRef = useRef(false);
 
   useEffect(() => {
     const store = useAppStore.getState();
 
     // Sync activeRepo
     const urlRepo = searchParams.get("repo");
-    if (urlRepo !== store.activeRepo) {
+
+    if (!urlRepo && !restoredRef.current) {
+      // No repo in URL on initial load — try to restore from localStorage
+      restoredRef.current = true;
+      const persisted = getPersistedRepo();
+      if (persisted && persisted !== store.activeRepo) {
+        store.setActiveRepo(persisted);
+        // Update URL to include the restored repo
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("repo", persisted);
+        router.replace(`${pathname}?${params.toString()}`);
+        return; // URL change will re-trigger this effect
+      }
+    } else if (urlRepo !== store.activeRepo) {
+      restoredRef.current = true;
       store.setActiveRepo(urlRepo);
     }
 
@@ -58,7 +75,7 @@ export function UrlStateSync() {
     if (validSize !== store.pageSize) {
       store.setPageSize(validSize);
     }
-  }, [searchParams]);
+  }, [searchParams, router, pathname]);
 
   return null;
 }
