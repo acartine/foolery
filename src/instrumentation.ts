@@ -10,6 +10,15 @@ export async function register(): Promise<void> {
     return;
   }
 
+  // Tee all console output to a daily log file before anything else runs.
+  try {
+    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    installConsoleTap();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[console-tap] startup failed: ${message}`);
+  }
+
   try {
     const { backfillMissingSettingsDefaults } = await import("@/lib/settings");
     const result = await backfillMissingSettingsDefaults();

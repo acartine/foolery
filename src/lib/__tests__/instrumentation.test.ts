@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const mockInstallConsoleTap = vi.fn();
+vi.mock("@/lib/console-log-tap", () => ({
+  installConsoleTap: () => mockInstallConsoleTap(),
+}));
+
 const mockBackfillMissingSettingsDefaults = vi.fn();
 vi.mock("@/lib/settings", () => ({
   backfillMissingSettingsDefaults: () => mockBackfillMissingSettingsDefaults(),
