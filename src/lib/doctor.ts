@@ -14,11 +14,13 @@ import {
   listRepos,
   inspectMissingRepoMemoryManagerTypes,
   backfillMissingRepoMemoryManagerTypes,
+  updateRegisteredRepoMemoryManagerType,
   type RegisteredRepo,
 } from "./registry";
 import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-version";
 import type { Beat, MemoryWorkflowDescriptor } from "./types";
 import { detectMemoryManagerType } from "./memory-manager-detection";
+import { isKnownMemoryManagerType } from "./memory-managers";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -241,6 +243,10 @@ const BACKEND_TYPE_MIGRATION_FIX_OPTIONS: FixOption[] = [
 
 const REPO_MEMORY_MANAGERS_FIX_OPTIONS: FixOption[] = [
   { key: "backfill", label: "Backfill missing repository memory manager metadata" },
+];
+
+const REGISTRY_CONSISTENCY_FIX_OPTIONS: FixOption[] = [
+  { key: "sync", label: "Update registry entry to detected type" },
 ];
 
 function summarizeMissingSettings(paths: string[]): string {
@@ -668,7 +674,8 @@ export async function checkRegistryConsistency(
       diagnostics.push({
         check: "registry-consistency",
         severity: "warning",
-        fixable: false,
+        fixable: true,
+        fixOptions: REGISTRY_CONSISTENCY_FIX_OPTIONS,
         message: `Repo "${repo.name}" is registered as "${registered ?? "unset"}" but detected as "${detected}".`,
         context: {
           repoPath: repo.path,
@@ -991,6 +998,74 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
           check: diag.check,
           success: true,
           message: `Moved ${beatId} to state=in_progress.`,
+          context: ctx,
+        };
+      } catch (e) {
+        return { check: diag.check, success: false, message: String(e), context: ctx };
+      }
+    }
+
+    case "registry-consistency": {
+      if (strategy && strategy !== "sync" && strategy !== "default") {
+        return {
+          check: diag.check,
+          success: false,
+          message: `Unknown strategy "${strategy}" for registry consistency.`,
+          context: ctx,
+        };
+      }
+
+      const { repoPath, detected } = ctx;
+      if (!repoPath || !detected) {
+        return { check: diag.check, success: false, message: "Missing context for fix.", context: ctx };
+      }
+      if (!isKnownMemoryManagerType(detected)) {
+        return {
+          check: diag.check,
+          success: false,
+          message: `Detected memory manager type "${detected}" is not supported.`,
+          context: ctx,
+        };
+      }
+
+      try {
+        const result = await updateRegisteredRepoMemoryManagerType(repoPath, detected);
+        if (result.error) {
+          return {
+            check: diag.check,
+            success: false,
+            message: `Failed to update repository memory manager metadata: ${result.error}`,
+            context: ctx,
+          };
+        }
+        if (result.fileMissing) {
+          return {
+            check: diag.check,
+            success: false,
+            message: "Repository registry ~/.config/foolery/registry.json does not exist.",
+            context: ctx,
+          };
+        }
+        if (!result.repoFound) {
+          return {
+            check: diag.check,
+            success: false,
+            message: `Repository ${repoPath} is no longer registered.`,
+            context: ctx,
+          };
+        }
+        if (!result.changed) {
+          return {
+            check: diag.check,
+            success: true,
+            message: `Repository memory manager metadata already matches detected type "${detected}".`,
+            context: ctx,
+          };
+        }
+        return {
+          check: diag.check,
+          success: true,
+          message: `Updated registry memory manager metadata for ${repoPath} to "${detected}".`,
           context: ctx,
         };
       } catch (e) {

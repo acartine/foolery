@@ -29,6 +29,15 @@ export interface RepoMemoryManagerBackfillResult {
   error?: string;
 }
 
+export interface RepoMemoryManagerSyncResult {
+  changed: boolean;
+  fileMissing: boolean;
+  repoFound: boolean;
+  previousMemoryManagerType?: MemoryManagerType;
+  memoryManagerType?: MemoryManagerType;
+  error?: string;
+}
+
 const CONFIG_DIR = `${homedir()}/.config/foolery`;
 const REGISTRY_FILE = `${CONFIG_DIR}/registry.json`;
 
@@ -246,5 +255,97 @@ export async function backfillMissingRepoMemoryManagerTypes(): Promise<RepoMemor
     changed: true,
     migratedRepoPaths,
     fileMissing: false,
+  };
+}
+
+export async function updateRegisteredRepoMemoryManagerType(
+  repoPath: string,
+  memoryManagerType: MemoryManagerType,
+): Promise<RepoMemoryManagerSyncResult> {
+  const raw = await readRawRegistry();
+  if (raw.error) {
+    return {
+      changed: false,
+      fileMissing: raw.fileMissing,
+      repoFound: false,
+      error: raw.error,
+    };
+  }
+
+  if (raw.fileMissing) {
+    return {
+      changed: false,
+      fileMissing: true,
+      repoFound: false,
+    };
+  }
+
+  if (typeof raw.parsed !== "object" || raw.parsed === null) {
+    return {
+      changed: false,
+      fileMissing: false,
+      repoFound: false,
+    };
+  }
+
+  const record = raw.parsed as Record<string, unknown>;
+  if (!Array.isArray(record.repos)) {
+    return {
+      changed: false,
+      fileMissing: false,
+      repoFound: false,
+    };
+  }
+
+  let repoFound = false;
+  let previousMemoryManagerType: MemoryManagerType | undefined;
+  const repos = record.repos.map((rawRepo) => {
+    if (typeof rawRepo !== "object" || rawRepo === null) return rawRepo;
+    const repo = rawRepo as Record<string, unknown>;
+    if (repo.path !== repoPath) return rawRepo;
+
+    repoFound = true;
+    const configuredMemoryManager =
+      typeof repo.memoryManagerType === "string" ? repo.memoryManagerType : undefined;
+    previousMemoryManagerType = isKnownMemoryManagerType(configuredMemoryManager)
+      ? configuredMemoryManager
+      : undefined;
+
+    if (previousMemoryManagerType === memoryManagerType) return rawRepo;
+    return { ...repo, memoryManagerType };
+  });
+
+  if (!repoFound) {
+    return {
+      changed: false,
+      fileMissing: false,
+      repoFound: false,
+      memoryManagerType,
+    };
+  }
+
+  if (previousMemoryManagerType === memoryManagerType) {
+    return {
+      changed: false,
+      fileMissing: false,
+      repoFound: true,
+      previousMemoryManagerType,
+      memoryManagerType,
+    };
+  }
+
+  await mkdir(CONFIG_DIR, { recursive: true });
+  await writeFile(
+    REGISTRY_FILE,
+    JSON.stringify({ ...record, repos }, null, 2),
+    "utf-8",
+  );
+
+  return {
+    changed: true,
+    fileMissing: false,
+    repoFound: true,
+    previousMemoryManagerType,
+    memoryManagerType,
   };
 }

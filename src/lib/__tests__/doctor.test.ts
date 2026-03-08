@@ -34,10 +34,13 @@ vi.mock("@/lib/settings", () => ({
 const mockListRepos = vi.fn();
 const mockInspectMissingRepoMemoryManagerTypes = vi.fn();
 const mockBackfillMissingRepoMemoryManagerTypes = vi.fn();
+const mockUpdateRegisteredRepoMemoryManagerType = vi.fn();
 vi.mock("@/lib/registry", () => ({
   listRepos: () => mockListRepos(),
   inspectMissingRepoMemoryManagerTypes: () => mockInspectMissingRepoMemoryManagerTypes(),
   backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
+  updateRegisteredRepoMemoryManagerType: (...args: unknown[]) =>
+    mockUpdateRegisteredRepoMemoryManagerType(...args),
 }));
 
 const mockGetReleaseVersionStatus = vi.fn();
@@ -133,6 +136,11 @@ beforeEach(() => {
     changed: false,
     migratedRepoPaths: [],
     fileMissing: false,
+  });
+  mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+    changed: false,
+    fileMissing: false,
+    repoFound: true,
   });
   mockGetReleaseVersionStatus.mockResolvedValue({
     installedVersion: "1.0.0",
@@ -807,6 +815,10 @@ describe("checkRegistryConsistency", () => {
     expect(diags).toHaveLength(1);
     expect(diags[0].severity).toBe("warning");
     expect(diags[0].check).toBe("registry-consistency");
+    expect(diags[0].fixable).toBe(true);
+    expect(diags[0].fixOptions).toEqual([
+      { key: "sync", label: "Update registry entry to detected type" },
+    ]);
     expect(diags[0].message).toContain("beads");
     expect(diags[0].message).toContain("knots");
   });

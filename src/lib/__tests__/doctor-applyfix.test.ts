@@ -32,10 +32,13 @@ vi.mock("@/lib/settings", () => ({
 const mockListRepos = vi.fn();
 const mockInspectMissingRepoMemoryManagerTypes = vi.fn();
 const mockBackfillMissingRepoMemoryManagerTypes = vi.fn();
+const mockUpdateRegisteredRepoMemoryManagerType = vi.fn();
 vi.mock("@/lib/registry", () => ({
   listRepos: () => mockListRepos(),
   inspectMissingRepoMemoryManagerTypes: () => mockInspectMissingRepoMemoryManagerTypes(),
   backfillMissingRepoMemoryManagerTypes: () => mockBackfillMissingRepoMemoryManagerTypes(),
+  updateRegisteredRepoMemoryManagerType: (...args: unknown[]) =>
+    mockUpdateRegisteredRepoMemoryManagerType(...args),
 }));
 
 const mockGetReleaseVersionStatus = vi.fn();
@@ -55,6 +58,11 @@ vi.mock("node:child_process", () => ({
       );
     }
   },
+}));
+
+const mockDetectMemoryManagerType = vi.fn();
+vi.mock("@/lib/memory-manager-detection", () => ({
+  detectMemoryManagerType: (...args: unknown[]) => mockDetectMemoryManagerType(...args),
 }));
 
 import { runDoctorFix } from "@/lib/doctor";
@@ -111,11 +119,18 @@ beforeEach(() => {
     migratedRepoPaths: [],
     fileMissing: false,
   });
+  mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+    changed: false,
+    fileMissing: false,
+    repoFound: true,
+  });
   mockGetReleaseVersionStatus.mockResolvedValue({
     installedVersion: "1.0.0",
     latestVersion: "1.0.0",
     updateAvailable: false,
   });
+  mockDetectMemoryManagerType.mockReturnValue(undefined);
+  mockExecFile.mockResolvedValue({ stdout: "1.0.0", stderr: "" });
 });
 
 // ── applyFix: settings-defaults ────────────────────────────
@@ -197,6 +212,46 @@ describe("applyFix: repo-memory-managers", () => {
 
     const fixReport = await runDoctorFix({ "repo-memory-managers": "backfill" });
     const fix = fixReport.fixes.find((f) => f.check === "repo-memory-managers");
+    expect(fix?.success).toBe(false);
+    expect(fix?.message).toContain("permission denied");
+  });
+});
+
+describe("applyFix: registry-consistency", () => {
+  it("updates the registered repo memory manager type when strategy is selected", async () => {
+    mockListRepos.mockResolvedValue([
+      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+    ]);
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+    mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+      changed: true,
+      fileMissing: false,
+      repoFound: true,
+      previousMemoryManagerType: "beads",
+      memoryManagerType: "knots",
+    });
+
+    const fixReport = await runDoctorFix({ "registry-consistency": "sync" });
+    const fix = fixReport.fixes.find((f) => f.check === "registry-consistency");
+    expect(fix?.success).toBe(true);
+    expect(fix?.message).toContain("Updated registry memory manager metadata");
+    expect(mockUpdateRegisteredRepoMemoryManagerType).toHaveBeenCalledWith("/repo-a", "knots");
+  });
+
+  it("returns failure when registry consistency sync reports an error", async () => {
+    mockListRepos.mockResolvedValue([
+      { path: "/repo-a", name: "repo-a", addedAt: "2026-01-01", memoryManagerType: "beads" as const },
+    ]);
+    mockDetectMemoryManagerType.mockReturnValue("knots");
+    mockUpdateRegisteredRepoMemoryManagerType.mockResolvedValue({
+      changed: false,
+      fileMissing: false,
+      repoFound: true,
+      error: "permission denied",
+    });
+
+    const fixReport = await runDoctorFix({ "registry-consistency": "sync" });
+    const fix = fixReport.fixes.find((f) => f.check === "registry-consistency");
     expect(fix?.success).toBe(false);
     expect(fix?.message).toContain("permission denied");
   });
