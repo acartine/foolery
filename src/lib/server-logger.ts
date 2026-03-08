@@ -36,10 +36,14 @@ interface CliFailureInput {
   stderr: string;
 }
 
-const SERVER_SLUG = "_server";
+export const SERVER_SLUG = "_server";
 
-function dateStamp(): string {
+export function dateStamp(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+export function resolveServerLogDir(date = dateStamp()): string {
+  return join(resolveInteractionLogRoot(), SERVER_SLUG, date);
 }
 
 /**
@@ -83,7 +87,7 @@ export function serverLog(
 ): void {
   try {
     const date = dateStamp();
-    const dir = join(resolveInteractionLogRoot(), SERVER_SLUG, date);
+    const dir = resolveServerLogDir(date);
     const filePath = join(dir, "server.jsonl");
     const entry: LogEntry = {
       ts: new Date().toISOString(),

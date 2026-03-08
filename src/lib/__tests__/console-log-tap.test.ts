@@ -26,10 +26,10 @@ describe("console-log-tap", () => {
   });
 
   afterEach(() => {
-    // Restore originals in case the tap replaced them.
     console.log = origLog;
     console.warn = origWarn;
     console.error = origError;
+    vi.restoreAllMocks();
     rmSync(TEST_LOG_ROOT, { recursive: true, force: true });
   });
 
@@ -43,7 +43,9 @@ describe("console-log-tap", () => {
   }
 
   it("creates the log file and tees console.log output", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     // Suppress actual terminal output during test.
     const spy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
@@ -61,11 +63,14 @@ describe("console-log-tap", () => {
     const contents = readFileSync(path, "utf-8");
     expect(contents).toContain("[LOG] hello from test");
 
+    _resetConsoleTapForTests();
     spy.mockRestore();
   });
 
   it("tees console.warn and console.error", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
     vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -80,10 +85,14 @@ describe("console-log-tap", () => {
     const contents = readFileSync(logFilePath(), "utf-8");
     expect(contents).toContain("[WARN] warning message");
     expect(contents).toContain("[ERROR] error message");
+
+    _resetConsoleTapForTests();
   });
 
   it("is idempotent — second call is a no-op", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     installConsoleTap();
     const firstLog = console.log;
@@ -91,10 +100,13 @@ describe("console-log-tap", () => {
 
     // console.log should not have been wrapped again.
     expect(console.log).toBe(firstLog);
+    _resetConsoleTapForTests();
   });
 
   it("formats objects and errors in log output", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
 
@@ -108,10 +120,11 @@ describe("console-log-tap", () => {
     const contents = readFileSync(logFilePath(), "utf-8");
     expect(contents).toContain('"key":"value"');
     expect(contents).toContain("boom");
+    _resetConsoleTapForTests();
   });
 
   it("rolls over to a new file when the date changes", async () => {
-    const { installConsoleTap, _setDateNow } =
+    const { installConsoleTap, _resetConsoleTapForTests, _setDateNow } =
       await import("@/lib/console-log-tap");
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
@@ -139,10 +152,14 @@ describe("console-log-tap", () => {
 
     // Day 1 file should NOT contain day-two content.
     expect(readFileSync(day1Path, "utf-8")).not.toContain("day-two message");
+    _resetConsoleTapForTests();
   });
 
   it("captures uncaughtException to the log file", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const before = process.listeners("uncaughtException").length;
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
     vi.spyOn(process.stderr, "write").mockReturnValue(true);
@@ -151,21 +168,36 @@ describe("console-log-tap", () => {
 
     // Emit a synthetic uncaughtException event.
     const fakeError = new Error("synthetic crash");
-    process.emit("uncaughtException", fakeError);
+    process.emit("uncaughtExceptionMonitor", fakeError);
 
     await new Promise((r) => setTimeout(r, 50));
 
     const contents = readFileSync(logFilePath(), "utf-8");
     expect(contents).toContain("[FATAL]");
     expect(contents).toContain("Uncaught exception: synthetic crash");
+    expect(process.listeners("uncaughtException")).toHaveLength(before);
+    _resetConsoleTapForTests();
   });
 
   it("captures unhandledRejection to the log file", async () => {
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const rethrow = vi.fn();
+    const {
+      installConsoleTap,
+      _resetConsoleTapForTests,
+      _setUnhandledRejectionRethrow,
+    } = await import("@/lib/console-log-tap");
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
     vi.spyOn(process.stderr, "write").mockReturnValue(true);
+    const originalListeners = process.listeners.bind(process);
+    vi.spyOn(process, "listeners").mockImplementation((eventName) => {
+      if (String(eventName) === "unhandledRejection") {
+        return [((): void => {})];
+      }
+      return originalListeners(eventName);
+    });
 
+    _setUnhandledRejectionRethrow(rethrow);
     installConsoleTap();
 
     // Emit a synthetic unhandledRejection event.
@@ -177,6 +209,8 @@ describe("console-log-tap", () => {
     const contents = readFileSync(logFilePath(), "utf-8");
     expect(contents).toContain("[FATAL]");
     expect(contents).toContain("Unhandled rejection: unhandled promise");
+    expect(rethrow).toHaveBeenCalledWith(fakeReason);
+    _resetConsoleTapForTests();
   });
 
   it("attaches an error handler to the write stream (no crash on error)", async () => {
@@ -195,7 +229,9 @@ describe("console-log-tap", () => {
       return { ...actual, createWriteStream: () => fakeStream };
     });
 
-    const { installConsoleTap } = await import("@/lib/console-log-tap");
+    const { installConsoleTap, _resetConsoleTapForTests } = await import(
+      "@/lib/console-log-tap"
+    );
 
     vi.spyOn(process.stdout, "write").mockReturnValue(true);
 
@@ -211,5 +247,6 @@ describe("console-log-tap", () => {
     expect(() => {
       fakeStream.emit("error", new Error("ENOSPC"));
     }).not.toThrow();
+    _resetConsoleTapForTests();
   });
 });
