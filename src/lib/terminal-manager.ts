@@ -20,8 +20,11 @@ import {
 
 import type { MemoryManagerType } from "@/lib/memory-managers";
 import {
+  assertClaimable,
   buildWorkflowStateCommand,
   resolveMemoryManagerType,
+  rollbackBeatState,
+  supportsAutoFollowUp,
 } from "@/lib/memory-manager-commands";
 import { validateCwd } from "@/lib/validate-cwd";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
@@ -229,14 +232,6 @@ function buildWaveCompletionFollowUp(
   ].join("\n");
 }
 
-function assertKnotsClaimable(beats: Beat[], action: string): void {
-  const blocked = beats.filter((beat) => beat.isAgentClaimable === false);
-  if (blocked.length === 0) return;
-  const summary = blocked
-    .map((beat) => `${beat.id}${beat.state ? ` (${beat.state})` : ""}`)
-    .join(", ");
-  throw new Error(`${action} unavailable: knot is not agent-claimable (${summary})`);
-}
 
 function resolveWorkflowForBeat(
   beat: Beat,
@@ -316,21 +311,14 @@ async function rollbackAgentOwnedActionStateToQueue(
   );
 
   try {
-    if (memoryManagerType === "knots") {
-      const cmd = `kno update ${beat.id} --status ${rollbackState}`;
-      const { exec: execCb } = await import("node:child_process");
-      const { promisify } = await import("node:util");
-      const execAsync = promisify(execCb);
-      await execAsync(cmd, { cwd: repoPath });
-
-      // Add a note on the knot documenting the rollback
-      try {
-        const noteCmd = `kno update ${beat.id} --add-note "Foolery dispatch: rolled back from ${beat.state} to ${rollbackState} — prior agent left knot in action state"`;
-        await execAsync(noteCmd, { cwd: repoPath });
-      } catch { /* note is best-effort */ }
-    } else {
-      await getBackend().update(beat.id, { state: rollbackState }, repoPath);
-    }
+    await rollbackBeatState(
+      beat.id,
+      beat.state,
+      rollbackState,
+      repoPath,
+      memoryManagerType,
+      `Foolery dispatch: rolled back from ${beat.state} to ${rollbackState} — prior agent left knot in action state`,
+    );
   } catch (err) {
     console.error(`${tag} rollback failed for ${beat.id}:`, err);
     return { beat, rolledBack: false };
@@ -589,14 +577,10 @@ export async function createSession(
   if (isParent) {
     waveBeats = healedTargets.filter((h) => !isTerminalBeatState(h.beat.state)).map(h => h.beat);
     waveBeatIds = waveBeats.map((child) => child.id);
-    if (memoryManagerType === "knots") {
-      assertKnotsClaimable(waveBeats, "Scene");
-    }
+    assertClaimable(waveBeats, "Scene", memoryManagerType);
   } else {
     beat = healedTargets[0]?.beat ?? beat;
-    if (memoryManagerType === "knots") {
-      assertKnotsClaimable([beat], "Take");
-    }
+    assertClaimable([beat], "Take", memoryManagerType);
   }
   const primaryTarget = toWorkflowPromptTarget(beat, workflowsById, fallbackWorkflow);
   const sceneTargets = waveBeats.map((child) =>
@@ -833,21 +817,14 @@ export async function createSession(
       });
 
       try {
-        if (memoryManagerType === "knots") {
-          const cmd = `kno update ${beatId} --status ${rollbackState}`;
-          const { exec: execCb } = await import("node:child_process");
-          const { promisify } = await import("node:util");
-          const execAsync = promisify(execCb);
-          await execAsync(cmd, { cwd: repoPath });
-
-          // Add a note on the knot documenting the rollback
-          try {
-            const noteCmd = `kno update ${beatId} --add-note "Foolery take-loop: rolled back from ${current.state} to ${rollbackState} — agent \\"${failedAgent}\\" left knot in action state"`;
-            await execAsync(noteCmd, { cwd: repoPath });
-          } catch { /* note is best-effort */ }
-        } else {
-          await getBackend().update(beatId, { state: rollbackState }, repoPath);
-        }
+        await rollbackBeatState(
+          beatId,
+          current.state,
+          rollbackState,
+          repoPath,
+          memoryManagerType,
+          `Foolery take-loop: rolled back from ${current.state} to ${rollbackState} — agent "${failedAgent}" left knot in action state`,
+        );
       } catch (err) {
         console.error(`${tag} rollback failed for ${beatId}:`, err);
         pushEvent({
@@ -1004,15 +981,13 @@ export async function createSession(
     console.warn(`${tag} [WARN] rolling back from "${current.state}" to "${rollbackState}"`);
 
     try {
-      if (memoryManagerType === "knots") {
-        const cmd = `kno update ${beatId} --status ${rollbackState}`;
-        const { exec } = await import("node:child_process");
-        const { promisify } = await import("node:util");
-        const execAsync = promisify(exec);
-        await execAsync(cmd, { cwd: repoPath });
-      } else {
-        await getBackend().update(beatId, { state: rollbackState }, repoPath);
-      }
+      await rollbackBeatState(
+        beatId,
+        current.state,
+        rollbackState,
+        repoPath,
+        memoryManagerType,
+      );
 
       pushEvent({
         type: "stdout",
@@ -1322,7 +1297,7 @@ export async function createSession(
     ? null
     : customPrompt
       ? null
-      : memoryManagerType === "knots"
+      : !supportsAutoFollowUp(memoryManagerType)
         ? null
       : isParent
         ? buildWaveCompletionFollowUp(
