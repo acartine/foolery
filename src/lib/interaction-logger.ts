@@ -39,13 +39,14 @@ export interface PromptLogMetadata {
   source?: string;
 }
 
-export type BeatStatePhase = "before_prompt" | "after_prompt";
+export type BeatStatePhase = "before_prompt" | "after_prompt" | "rollback";
 
 export interface BeatStateLogEntry {
   beatId: string;
   state: string;
   phase: BeatStatePhase;
-  iteration: number;
+  iteration?: number;
+  label?: string;
 }
 
 interface LogLine {
@@ -257,7 +258,8 @@ export async function startInteractionLog(
         beatId: entry.beatId,
         state: entry.state,
         phase: entry.phase,
-        iteration: entry.iteration,
+        ...(entry.iteration !== undefined ? { iteration: entry.iteration } : {}),
+        ...(entry.label ? { label: entry.label } : {}),
       });
     },
 

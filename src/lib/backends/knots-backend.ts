@@ -1132,6 +1132,7 @@ export class KnotsBackend implements BackendPort {
         `- Do not stop after the first claim/completion unless the child is already terminal.`,
         `- If a child is left in an active state (e.g. implementation_review), run \`kno next <id> --expected-state <currentState> --actor-kind agent\` once to return it to queue, then continue the claim loop.`,
         `- Do not guess or brute-force workflow transitions outside the claim output.`,
+        `- If \`kno claim\` exits with a non-zero exit code for a child, skip that child and move on. The orchestration loop will handle the rollback and re-dispatch.`,
       ].filter((line): line is string => line !== null).join("\n");
 
       return ok({ prompt, claimed: false });
@@ -1149,8 +1150,8 @@ export class KnotsBackend implements BackendPort {
       ``,
       `KNOTS CLAIM MODE (required):`,
       `Run \`kno claim "${beatId}" --json\` and follow the returned \`prompt\` field verbatim.`,
-      `If \`kno claim\` exits with a non-zero code, stop immediately — do not proceed without claim constraints.`,
       `After completing the work, run the completion command from the claim output.`,
+      `If \`kno claim\` exits with a non-zero exit code, you MUST stop immediately — do not attempt to work without a valid claim. Simply exit.`,
     ].filter((line): line is string => line !== null).join("\n");
 
     return ok({ prompt, claimed: false });

@@ -51,6 +51,16 @@ interface SessionEntry {
   interactionLog: InteractionLog;
 }
 
+/**
+ * Returns the dispatch preamble line based on whether the current step is a review step.
+ * Exported for testing.
+ */
+export function dispatchPreamble(isReview: boolean): string {
+  return isReview
+    ? `Review the following work. You are in a review step — evaluate quality, correctness, and completeness. Do NOT make code changes unless you find issues that must be fixed.`
+    : `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`;
+}
+
 const MAX_BUFFER = 5000;
 const MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
@@ -298,6 +308,13 @@ function isAgentOwnedActionState(
   return ownerKind === "agent";
 }
 
+interface RollbackResult {
+  beat: Beat;
+  rolledBack: boolean;
+  fromState?: string;
+  toState?: string;
+}
+
 async function rollbackAgentOwnedActionStateToQueue(
   beat: Beat,
   repoPath: string | undefined,
@@ -305,12 +322,12 @@ async function rollbackAgentOwnedActionStateToQueue(
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
   fallbackWorkflow: MemoryWorkflowDescriptor,
   contextLabel: string,
-): Promise<Beat> {
+): Promise<RollbackResult> {
   const workflow = resolveWorkflowForBeat(beat, workflowsById, fallbackWorkflow);
-  if (!isAgentOwnedActionState(beat, workflow)) return beat;
+  if (!isAgentOwnedActionState(beat, workflow)) return { beat, rolledBack: false };
 
   const resolved = resolveStep(beat.state);
-  if (!resolved) return beat;
+  if (!resolved) return { beat, rolledBack: false };
 
   const rollbackState = queueStateForStep(resolved.step);
   const tag = `[terminal-manager] [${contextLabel}] [step-failure]`;
@@ -326,24 +343,30 @@ async function rollbackAgentOwnedActionStateToQueue(
       const { promisify } = await import("node:util");
       const execAsync = promisify(execCb);
       await execAsync(cmd, { cwd: repoPath });
+
+      // Add a note on the knot documenting the rollback
+      try {
+        const noteCmd = `kno update ${beat.id} --add-note "Foolery dispatch: rolled back from ${beat.state} to ${rollbackState} — prior agent left knot in action state"`;
+        await execAsync(noteCmd, { cwd: repoPath });
+      } catch { /* note is best-effort */ }
     } else {
       await getBackend().update(beat.id, { state: rollbackState }, repoPath);
     }
   } catch (err) {
     console.error(`${tag} rollback failed for ${beat.id}:`, err);
-    return beat;
+    return { beat, rolledBack: false };
   }
 
   const refreshed = await getBackend().get(beat.id, repoPath);
   if (!refreshed.ok || !refreshed.data) {
     console.warn(`${tag} failed to reload ${beat.id} after rollback`);
-    return beat;
+    return { beat, rolledBack: false };
   }
 
   console.log(
     `${tag} rolled back ${beat.id}: ${beat.state} -> ${refreshed.data.state} claimable=${refreshed.data.isAgentClaimable}`,
   );
-  return refreshed.data;
+  return { beat: refreshed.data, rolledBack: true, fromState: beat.state, toState: rollbackState };
 }
 
 function compactValue(value: unknown, max = 220): string {
@@ -586,13 +609,13 @@ export async function createSession(
     ),
   );
   if (isParent) {
-    waveBeats = healedTargets.filter((child) => !isTerminalBeatState(child.state));
+    waveBeats = healedTargets.filter((h) => !isTerminalBeatState(h.beat.state)).map(h => h.beat);
     waveBeatIds = waveBeats.map((child) => child.id);
     if (memoryManagerType === "knots") {
       assertKnotsClaimable(waveBeats, "Scene");
     }
   } else {
-    beat = healedTargets[0] ?? beat;
+    beat = healedTargets[0]?.beat ?? beat;
     if (memoryManagerType === "knots") {
       assertKnotsClaimable([beat], "Take");
     }
@@ -654,9 +677,7 @@ export async function createSession(
           taskPrompt,
         ]
       : [
-          isReview
-            ? `Review the following work. You are in a review step — evaluate quality, correctness, and completeness. Do NOT make code changes unless you find issues that must be fixed.`
-            : `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
+          dispatchPreamble(isReview),
           ``,
           queueTerminalInvariantInstruction,
           ``,
@@ -713,6 +734,23 @@ export async function createSession(
     buffer.push(evt);
     emitter.emit("data", evt);
   };
+
+  // Log pre-dispatch rollbacks to UI terminal and interaction log
+  for (const healed of healedTargets) {
+    if (healed.rolledBack) {
+      pushEvent({
+        type: "stdout",
+        data: `\x1b[33m--- Pre-dispatch rollback: ${healed.beat.id} rolled back from "${healed.fromState}" to "${healed.toState}" ---\x1b[0m\n`,
+        timestamp: Date.now(),
+      });
+      interactionLog.logBeatState({
+        beatId: healed.beat.id,
+        state: healed.toState!,
+        phase: "rollback",
+        label: `pre-dispatch rollback from ${healed.fromState}`,
+      });
+    }
+  }
 
   // Validate CWD exists before spawning — emit structured error on failure
   // so classifyTerminalFailure detects it as a missing_cwd failure.
@@ -793,9 +831,9 @@ export async function createSession(
   const isTakeLoop = !isParent && !customPrompt;
   let takeIteration = 1;
 
-  const wrapSingleBeatPrompt = (taskPrompt: string): string => {
+  const wrapSingleBeatPrompt = (taskPrompt: string, isReview = false): string => {
     return [
-      `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`,
+      dispatchPreamble(isReview),
       ``,
       queueTerminalInvariantInstruction,
       ``,
@@ -871,6 +909,12 @@ export async function createSession(
           const { promisify } = await import("node:util");
           const execAsync = promisify(execCb);
           await execAsync(cmd, { cwd: repoPath });
+
+          // Add a note on the knot documenting the rollback
+          try {
+            const noteCmd = `kno update ${beatId} --add-note "Foolery take-loop: rolled back from ${current.state} to ${rollbackState} — agent \\"${failedAgent}\\" left knot in action state"`;
+            await execAsync(noteCmd, { cwd: repoPath });
+          } catch { /* note is best-effort */ }
         } else {
           await getBackend().update(beatId, { state: rollbackState }, repoPath);
         }
@@ -987,7 +1031,8 @@ export async function createSession(
       timestamp: Date.now(),
     });
 
-    return { prompt: wrapSingleBeatPrompt(takeResult.data.prompt), beatState: current.state, agentOverride: reviewAgentOverride };
+    const takeIsReview = resolved ? isReviewStep(resolved.step) : false;
+    return { prompt: wrapSingleBeatPrompt(takeResult.data.prompt, takeIsReview), beatState: current.state, agentOverride: reviewAgentOverride };
   };
 
   /**
