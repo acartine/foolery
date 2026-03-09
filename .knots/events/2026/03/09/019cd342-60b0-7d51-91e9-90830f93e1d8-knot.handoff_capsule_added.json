@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd342-60b0-7d51-91e9-90830f93e1d8",
+  "occurred_at": "2026-03-09T15:41:08.656513Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added test verifying [agent: Codex] label appears in Claimed and TAKE terminal log lines. Implementation was already done in commit 125e3233. Test uses getSession() to access event buffer and asserts agent label presence in stdout events. All quality gates pass (lint, typecheck, tests). Branch foolery-e6cd pushed to origin.",
+    "datetime": "2026-03-09T16:41:00Z",
+    "entry_id": "019cd342-60b0-7d51-91e9-9075c63033a9",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd34c-732d-70b2-a1a6-0c373e8018e7",
+  "occurred_at": "2026-03-09T15:52:08.749335Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed terminal-manager-knots-next-guard.test.ts: replaced vi.importActual with explicit mock stubs, replaced vi.mocked with direct casts, updated rollback test assertions to verify rollbackBeatState mock instead of exec/backend.update, and added test asserting [agent: Codex] label appears in Claimed and TAKE log lines. All 9 tests pass under vitest. Commit e782dbc362be pushed to main.",
+    "datetime": "2026-03-09T16:50:00Z",
+    "entry_id": "019cd34c-732d-70b2-a1a6-0c2f49c25100",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

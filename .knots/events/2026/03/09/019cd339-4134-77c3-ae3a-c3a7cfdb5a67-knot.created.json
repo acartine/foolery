@@ -1,0 +1,12 @@
+{
+  "event_id": "019cd339-4134-77c3-ae3a-c3a7cfdb5a67",
+  "occurred_at": "2026-03-09T15:31:10.772767Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.created",
+  "data": {
+    "body": "this:\n\n--- 2026-03-09T15:28:40.402Z ready_for_implementation Claimed brutus-e753 (iteration 3) ---\n\n--- 2026-03-09T15:28:40.402Z ready_for_implementation TAKE 3/10 ---\n\nshould show the selected agent for the take",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "improve UI Terminal logging"
+  }
+}

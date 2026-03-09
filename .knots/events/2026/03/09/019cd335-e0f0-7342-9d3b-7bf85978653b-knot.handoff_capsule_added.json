@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd335-e0f0-7342-9d3b-7bf85978653b",
+  "occurred_at": "2026-03-09T15:27:29.520452Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Constrained the selected queue-row description and notes summary panes to 75% of their prior combined width, keeping each subcolumn at 37.5% so the focused row fits laptop screens. Added a layout regression test. Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build. Branch: work/foolery-813a. Commit: 8c87638b.",
+    "datetime": "2026-03-09T15:27:06Z",
+    "entry_id": "019cd335-e0f0-7342-9d3b-7be95e58bf1f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

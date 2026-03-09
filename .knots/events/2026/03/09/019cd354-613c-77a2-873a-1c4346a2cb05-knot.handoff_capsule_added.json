@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd354-613c-77a2-873a-1c4346a2cb05",
+  "occurred_at": "2026-03-09T16:00:48.444416Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed vi.waitFor test compatibility: replaced 4 occurrences of vi.waitFor (unavailable in Bun Vitest) with a local polling waitFor helper. All 9 tests in terminal-manager-knots-next-guard.test.ts now pass. The selected-agent label logic in terminal-manager.ts was already correct from prior work — the [agent: <label>] tag appears in both Claimed and TAKE log lines. This commit only fixes the test harness.",
+    "datetime": "2026-03-09T16:00:00Z",
+    "entry_id": "019cd354-613c-77a2-873a-1c321cf9b777",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

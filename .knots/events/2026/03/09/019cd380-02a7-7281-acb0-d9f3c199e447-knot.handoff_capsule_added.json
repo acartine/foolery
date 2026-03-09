@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd380-02a7-7281-acb0-d9f3c199e447",
+  "occurred_at": "2026-03-09T16:48:27.815247Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review: APPROVED. Verified commits 8c87638b, e9563d0753c8, 8069506bcc99, 87462b4d4fd9 all on main. CI run 22864370531 green, Changesets 22864370573 green, Coverage Badge 22864370564 green. Two rounds of changes: (1) initial 75%/37.5% column constraint, (2) parent shrink-wrap via inline-grid at 56.25% with grid-cols-2. Layout regression test updated. No invariants. No regressions in subsequent commits.",
+    "datetime": "2026-03-09T17:00:00Z",
+    "entry_id": "019cd380-02a7-7281-acb0-d9e274178ad0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

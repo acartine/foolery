@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd30f-8600-7e20-8f89-8872df74862d",
+  "occurred_at": "2026-03-09T14:45:35.867204Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-1c2e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "beat description:  dependencies should be grouped and visible",
+    "updated_at": "2026-03-09T14:45:35.867204Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd361-14fc-7240-bc69-c1bcbd6b0f6d",
+  "occurred_at": "2026-03-09T16:14:40.892086Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on main. HEAD/origin/main at ef2df766b800 includes the selected-agent terminal logging change from 125e32331c77 and the follow-up test fixes from e782dbc362be and ef2df766b800. Knot commit tags cover those shipped commits. No invariants defined. GitHub Actions CI, Changesets, and Coverage Badge completed successfully for ef2df766b800, and bun test src/lib/__tests__/terminal-manager-knots-next-guard.test.ts passes locally on main, including the Claimed/TAKE agent-label assertion.",
+    "datetime": "2026-03-09T16:14:33Z",
+    "entry_id": "019cd361-14fc-7240-bc69-c1a2d00cd3e3",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd336-cca4-7172-807a-31c77f4e11d6",
+  "occurred_at": "2026-03-09T15:28:29.860117Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Changes in beat-table.tsx correctly constrain the queue summary columns — InlineSummary container capped at max-w-[75%], each SummaryColumn set to basis-[37.5%] (down from flex-1). Regression test added. All sanity gates pass (0 lint errors, typecheck clean, 1957/1957 tests pass).",
+    "datetime": "2026-03-09T16:30:00Z",
+    "entry_id": "019cd336-cca4-7172-807a-31b9a0e7008d",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

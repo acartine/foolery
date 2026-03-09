@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd26a-1954-7e52-b2a8-411d34a0e025",
+  "occurred_at": "2026-03-09T11:44:54.612366Z",
+  "knot_id": "foolery-1d12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Implementation commit 2cd9bd06 already merged and pushed to origin/main. CI green (all 3 workflows passed). HandoffCapsules component displays capsules in reverse chronological order with section-level and individual collapsibility, scroll overflow, and defensive type checks.",
+    "datetime": "2026-03-09T12:00:00Z",
+    "entry_id": "019cd26a-1954-7e52-b2a8-410e7da2c8e2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

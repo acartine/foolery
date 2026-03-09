@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd33e-3d91-7001-be03-0a990a737503",
+  "occurred_at": "2026-03-09T15:36:37.521706Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged work/foolery-813a into main as e9563d0753c8 and pushed to origin/main. Remote workflows passed: CI 22861228632, Changesets 22861228642, Coverage Badge 22861228681. Approved queue summary width constraint shipped without scope leakage.",
+    "datetime": "2026-03-09T15:34:58Z",
+    "entry_id": "019cd33e-3d91-7001-be03-0a81e7b55157",
+    "model": "gpt-5",
+    "username": "Andrew Cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "event_id": "019cd33b-b21d-70b1-a208-e61fe248fab9",
+  "occurred_at": "2026-03-09T15:33:50.749457Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-813a",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "queue screen:  much too wide minimum width when notes and description are visible",
+    "updated_at": "2026-03-09T15:33:50.749457Z"
+  },
+  "precondition": {
+    "profile_etag": "019cd336-deab-7912-a22e-2892aaeccb4e"
+  }
+}

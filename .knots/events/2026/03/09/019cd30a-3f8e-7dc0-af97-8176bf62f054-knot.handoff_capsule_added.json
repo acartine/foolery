@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd30a-3f8e-7dc0-af97-8176bf62f054",
+  "occurred_at": "2026-03-09T14:39:50.15815Z",
+  "knot_id": "foolery-1c2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rewrote dep-tree.tsx: deps are now grouped by type (blocks/blocked by/etc) with sub-headers, project prefixes stripped from IDs via regex, and pills use whitespace-nowrap to prevent truncation. Single commit 0b2cf1136836 pushed to main.",
+    "datetime": "2026-03-09T14:39:50.15815Z",
+    "entry_id": "019cd30a-3f8e-7dc0-af97-81638f18b40f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

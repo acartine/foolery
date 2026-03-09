@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd33c-0692-7a00-a6b6-8b8dd070f45a",
+  "occurred_at": "2026-03-09T15:34:12.370844Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added agent label to all terminal TAKE N/M and Claimed log lines in terminal-manager.ts. The effective agent (override or default) is now always shown via [agent: <label>] suffix. Three log sites updated: the Claimed line in buildNextTakePrompt, and both TAKE iteration log sites in the take-loop close handlers. All quality gates pass (lint, tsc, 1956 tests, build). Commit 125e3233 pushed to main.",
+    "datetime": "2026-03-09T16:35:00Z",
+    "entry_id": "019cd33c-0692-7a00-a6b6-8b775c81b973",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

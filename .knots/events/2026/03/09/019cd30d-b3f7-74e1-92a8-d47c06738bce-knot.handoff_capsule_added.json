@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd30d-b3f7-74e1-92a8-d47c06738bce",
+  "occurred_at": "2026-03-09T14:43:36.56785Z",
+  "knot_id": "foolery-1c2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. All 3 requirements met: (1) stripPrefix regex strips project prefix from dep IDs, (2) whitespace-nowrap on badges prevents truncation with flex-wrap layout, (3) deps grouped by type (blocks/blocked by/depends) under uppercase sub-headers using Map grouping. Build and typecheck pass. No security or regression concerns.",
+    "datetime": "2026-03-09T16:00:00Z",
+    "entry_id": "019cd30d-b3f7-74e1-92a8-d46c9446ed64",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd308-e75d-7fe2-9712-2f1c8f9420e5",
+  "occurred_at": "2026-03-09T14:38:22.037075Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-9460",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Foolery: harden workflow prompts to single-step authority",
+    "updated_at": "2026-03-09T14:38:22.037075Z"
+  }
+}

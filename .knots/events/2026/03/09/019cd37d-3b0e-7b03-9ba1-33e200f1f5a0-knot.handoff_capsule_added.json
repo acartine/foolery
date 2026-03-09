@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd37d-3b0e-7b03-9ba1-33e200f1f5a0",
+  "occurred_at": "2026-03-09T16:45:25.646695Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. Changes in beat-table.tsx correctly address the requirement: InlineSummary parent changed from flex to inline-grid (shrink-wraps to content, no excess parent width), max-w reduced from 75% to 56.25% (25% smaller as requested), SummaryColumn basis-[37.5%] removed (grid-cols-2 handles sizing). Layout regression test updated. All quality gates pass (lint, typecheck, tests, build). Note: branch work/foolery-813a-parent-width not yet merged to main — merge needed during shipment.",
+    "datetime": "2026-03-09T00:00:00Z",
+    "entry_id": "019cd37d-3b0e-7b03-9ba1-33db4b915fc7",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

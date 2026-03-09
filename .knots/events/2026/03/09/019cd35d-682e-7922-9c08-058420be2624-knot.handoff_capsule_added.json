@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd35d-682e-7922-9c08-058420be2624",
+  "occurred_at": "2026-03-09T16:10:40.0461Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: merged foolery-e6cd feature branch into main. The feature branch test (using vi.waitFor) was superseded by the main branch version using the local polling waitFor helper. All 9 tests pass. Lint and typecheck clean. Code already pushed to origin/main. Key commits: 125e3233 (feat: show selected agent in terminal TAKE/Claimed lines), ef2df766 (fix: replace vi.waitFor with local polling helper).",
+    "datetime": "2026-03-09T17:11:00Z",
+    "entry_id": "019cd35d-682e-7922-9c08-0574920cfd5b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

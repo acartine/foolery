@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd30f-85fb-7803-9419-8fd64d81bb24",
+  "occurred_at": "2026-03-09T14:45:35.867204Z",
+  "knot_id": "foolery-1c2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit 0b2cf113 already merged to main and pushed to origin. CI green on all 3 checks (CI, Changesets, Coverage Badge). Feature groups dependencies by type, strips project prefix, and prevents pill truncation with flex-wrap layout.",
+    "datetime": "2026-03-09T15:00:00Z",
+    "entry_id": "019cd30f-85fb-7803-9419-8fc37b96edad",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "event_id": "019cd32b-ca30-7673-8246-ff158be37b2e",
+  "occurred_at": "2026-03-09T15:16:28.336805Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.created",
+  "data": {
+    "body": "The dispatch mode values 'actions' and 'pools' are meaningless. Rename to something that reflects what they actually do (e.g. 'basic'/'advanced'). Update schema, settings, UI, and all references.",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Rename dispatch mode values to meaningful names"
+  }
+}

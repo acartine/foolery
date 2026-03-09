@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd26a-cb7e-7f32-965a-b38d63f5bde6",
+  "occurred_at": "2026-03-09T11:45:40.222594Z",
+  "knot_id": "foolery-1d12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit 2cd9bd068eab verified on main. CI green (all 3 workflows). Implementation correctly shows handoff capsules in beat detail right sidebar with reverse chronological order, section and individual collapsibility, scroll overflow, and defensive type checks. No regressions detected. No invariants to verify.",
+    "datetime": "2026-03-09T13:00:00+01:00",
+    "entry_id": "019cd26a-cb7e-7f32-965a-b3727f3a9d98",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

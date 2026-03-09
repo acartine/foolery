@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd35d-6837-71e0-8e8c-e2581889b678",
+  "occurred_at": "2026-03-09T16:10:40.0461Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "invariants": [],
+    "knot_id": "foolery-e6cd",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "improve UI Terminal logging",
+    "updated_at": "2026-03-09T16:10:40.0461Z"
+  }
+}

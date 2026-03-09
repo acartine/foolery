@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd378-177d-7af0-affc-5e6412c4bfb3",
+  "occurred_at": "2026-03-09T16:39:48.861701Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "ReTake: the 2 subcolumns were made smaller but the parent column is still ridiculous big, causing lots of empty yellow space.\n\nensure that the parent component is only as wide as the 2 subcolumns.",
+    "datetime": "2026-03-09T16:39:48.861701Z",
+    "entry_id": "019cd378-177d-7af0-affc-5e50b6482ab2",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd344-8f0a-7e03-886e-3e9ade19ffd0",
+  "occurred_at": "2026-03-09T15:43:31.5941Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Needs changes: src/lib/terminal-manager.ts:946, src/lib/terminal-manager.ts:1228, and src/lib/terminal-manager.ts:1573 correctly append [agent: <label>] to the Claimed and TAKE log lines, so the behavior change itself appears implemented. However, the required automated coverage is still not reviewable because bun test src/lib/__tests__/terminal-manager-knots-next-guard.test.ts fails before assertions; src/lib/__tests__/terminal-manager-knots-next-guard.test.ts:86 calls vi.importActual, which is undefined in this runner, producing TypeError: vi.importActual is not a function. Until that test file executes and asserts the logging behavior, this does not satisfy implementation_review.",
+    "datetime": "2026-03-09T15:43:12Z",
+    "entry_id": "019cd344-8f0a-7e03-886e-3e8524b66494",
+    "model": "GPT-5",
+    "username": "Andrew Cartine",
+    "version": "GPT-5"
+  }
+}

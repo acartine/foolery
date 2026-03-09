@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd344-8f0a-7e03-886e-3e7e51d0eb99",
+  "occurred_at": "2026-03-09T15:43:31.5941Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation adds selected-agent labels to the Claimed and TAKE terminal log lines in src/lib/terminal-manager.ts, but implementation_review cannot approve because bun test src/lib/__tests__/terminal-manager-knots-next-guard.test.ts still crashes before running assertions at line 86 with TypeError: vi.importActual is not a function. Add or repair an automated assertion that verifies both log lines include the selected agent label, then rerun the relevant sanity checks.",
+    "datetime": "2026-03-09T15:43:31.5941Z",
+    "entry_id": "019cd344-8f0a-7e03-886e-3e62f76f7894",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

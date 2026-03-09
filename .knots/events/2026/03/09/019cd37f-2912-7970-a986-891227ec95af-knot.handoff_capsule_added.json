@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd37f-2912-7970-a986-891227ec95af",
+  "occurred_at": "2026-03-09T16:47:32.114816Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Merged work/foolery-813a-parent-width into main as 87462b4d4fd9, pushed to origin/main, and verified GitHub Actions Changesets run 22864370573 passed for commit 87462b4d4fd9.",
+    "datetime": "2026-03-09T16:47:27Z",
+    "entry_id": "019cd37f-2912-7970-a986-89090f06cc4b",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

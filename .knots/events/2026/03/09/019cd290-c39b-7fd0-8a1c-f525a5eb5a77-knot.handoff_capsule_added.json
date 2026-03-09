@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd290-c39b-7fd0-8a1c-f525a5eb5a77",
+  "occurred_at": "2026-03-09T12:27:08.571912Z",
+  "knot_id": "foolery-9460",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Foolery-only prompt hardening: added reusable execution guardrails, applied single-step authority wording to Beads/Knots prompts, wrapped terminal-manager and local-worker take/scene/poll prompts, and tightened ship follow-up prompts. Verified with bunx tsc --noEmit, bun run test, and bun run build; bun run lint still reports 117 pre-existing warnings.",
+    "datetime": "2026-03-09T12:27:08.571912Z",
+    "entry_id": "019cd290-c39b-7fd0-8a1c-f513bf67d200",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

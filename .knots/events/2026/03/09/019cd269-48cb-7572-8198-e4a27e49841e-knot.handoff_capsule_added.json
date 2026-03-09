@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd269-48cb-7572-8198-e4a27e49841e",
+  "occurred_at": "2026-03-09T11:44:01.227125Z",
+  "knot_id": "foolery-1d12",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. HandoffCapsules component in beat-detail-lightbox.tsx satisfies all requirements: (1) displayed in right sidebar, (2) reverse chronological order via [...capsules].reverse(), (3) section-level + individual item collapsibility via ChevronDown/ChevronRight, (4) scroll overflow via max-h-[50vh] overflow-y-auto, (5) defensive type checks throughout. Typecheck clean, no lint issues in changed file, no security concerns.",
+    "datetime": "2026-03-09T12:00:00Z",
+    "entry_id": "019cd269-48cb-7572-8198-e4964edc7d6f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

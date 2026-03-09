@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd34d-f3b1-7d50-b7db-3b11988a861c",
+  "occurred_at": "2026-03-09T15:53:47.185323Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review blocked: the targeted sanity gate fails under bun test because src/lib/__tests__/terminal-manager-knots-next-guard.test.ts calls vi.waitFor, which is undefined in this Bun/Vitest environment. The selected-agent label logic in src/lib/terminal-manager.ts appears correct, but the required automated coverage is not currently passing.",
+    "datetime": "2026-03-09T15:53:47.185323Z",
+    "entry_id": "019cd34d-f3b1-7d50-b7db-3b05e2c8c879",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd383-ce9f-7eb3-9bdb-d45cd0907dcd",
+  "occurred_at": "2026-03-09T16:52:36.639189Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Follow-up layout fix after the shipped regression: removed the hard 56.25% cap from the queue row overview, made the description/notes grid span the full title width with repeat(2,minmax(0,1fr)), and added min-w-0/break-word guards so the title cell can still shrink on laptop widths. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-09T16:52:36.639189Z",
+    "entry_id": "019cd383-ce9f-7eb3-9bdb-d44869756391",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

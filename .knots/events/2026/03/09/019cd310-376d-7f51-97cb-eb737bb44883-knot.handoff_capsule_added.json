@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd310-376d-7f51-97cb-eb737bb44883",
+  "occurred_at": "2026-03-09T14:46:21.293571Z",
+  "knot_id": "foolery-1c2e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit 0b2cf1136836 verified on main. CI green (3/3 checks). All 3 requirements confirmed in dep-tree.tsx: stripPrefix regex strips project prefix, whitespace-nowrap prevents pill truncation, deps grouped by type under uppercase sub-headers. No invariants, no regressions.",
+    "datetime": "2026-03-09T16:00:00Z",
+    "entry_id": "019cd310-376d-7f51-97cb-eb6f41387e28",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

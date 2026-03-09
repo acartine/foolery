@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd37a-cedd-70e2-aa21-a399edc79e41",
+  "occurred_at": "2026-03-09T16:42:46.877936Z",
+  "knot_id": "foolery-813a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Tightened the selected-row queue summary wrapper so description and notes render in an inline two-column grid capped at 56.25% width, eliminating the oversized parent column and empty yellow space. Updated the queue layout regression test. Validated with bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Branch: work/foolery-813a-parent-width Commit: 8069506bcc99.",
+    "datetime": "2026-03-09T16:42:15Z",
+    "entry_id": "019cd37a-cedd-70e2-aa21-a3841910efb8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

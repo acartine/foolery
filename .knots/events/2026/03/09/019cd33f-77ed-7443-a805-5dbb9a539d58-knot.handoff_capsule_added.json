@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd33f-77ed-7443-a805-5dbb9a539d58",
+  "occurred_at": "2026-03-09T15:37:57.997862Z",
+  "knot_id": "foolery-e6cd",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Requested changes from implementation review: src/lib/terminal-manager.ts now appends [agent: <label>] to the Claimed and TAKE log lines at the three expected emission sites, but there is no direct automated assertion for that UI logging behavior yet. I verified build and typecheck pass in this checkout. I also ran bun test src/lib/__tests__/terminal-manager-knots-next-guard.test.ts, and it currently fails before executing assertions with TypeError: vi.importActual is not a function, so I could not verify the relevant terminal-manager behavior through tests. Add a focused test that asserts the emitted terminal log lines include the selected agent label for both claim and take iterations, then rerun the affected sanity checks before re-review.",
+    "datetime": "2026-03-09T15:37:50Z",
+    "entry_id": "019cd33f-77ed-7443-a805-5dac73cf3f97",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}
