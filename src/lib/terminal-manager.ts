@@ -51,15 +51,6 @@ interface SessionEntry {
   interactionLog: InteractionLog;
 }
 
-/**
- * Returns the dispatch preamble line based on whether the current step is a review step.
- * Exported for testing.
- */
-export function dispatchPreamble(isReview: boolean): string {
-  return isReview
-    ? `Review the following work. You are in a review step — evaluate quality, correctness, and completeness. Do NOT make code changes unless you find issues that must be fixed.`
-    : `Implement the following task. You MUST edit the actual source files to make the change — do not just describe what to do.`;
-}
 
 const MAX_BUFFER = 5000;
 const MAX_SESSIONS = 5;
@@ -83,18 +74,6 @@ function resolveAgentCommand(command: string): string {
   return command;
 }
 
-function buildQueueTerminalInvariantInstruction(memoryManagerType: MemoryManagerType): string {
-  const item = memoryManagerType === "knots" ? "knot" : "beat";
-  const advanceCommand = memoryManagerType === "knots"
-    ? `kno next <id> --expected-state <currentState> --actor-kind agent`
-    : `bd next <id> --expected-state <currentState>`;
-  return [
-    `CRITICAL INVARIANT — QUEUE/TERMINAL STATE REQUIREMENT:`,
-    `Before ending your work, you MUST ensure the ${item} is in a queue state (ready_for_*) or terminal state (shipped/abandoned).`,
-    `Never leave work in an action state (planning, plan_review, implementation, implementation_review, shipment, shipment_review).`,
-    `If the ${item} is currently in an action state, run "${advanceCommand}" to advance it to the next queue state before stopping.`,
-  ].join("\n");
-}
 
 type JsonObject = Record<string, unknown>;
 
@@ -594,7 +573,6 @@ export async function createSession(
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
-  const queueTerminalInvariantInstruction = buildQueueTerminalInvariantInstruction(memoryManagerType);
   const targets = isParent ? waveBeats : [beat];
   const healedTargets = await Promise.all(
     targets.map((target) =>
@@ -655,43 +633,9 @@ export async function createSession(
     }
     const taskPrompt = takePromptResult.data.prompt;
 
-    // Wrap backend prompt with Foolery execution instructions
-    const isReview = resolved ? isReviewStep(resolved.step) : false;
-    prompt = (isParent
-      ? [
-          isReview
-            ? `You are reviewing a parent beat and its children. Evaluate quality, correctness, and completeness. Do NOT make code changes unless you find issues that must be fixed.`
-            : `You are executing a parent beat and its children. Implement the children beats and use the parent beat's notes/description for context and guidance. You MUST edit source files directly — do not just describe what to do.`,
-          ``,
-          queueTerminalInvariantInstruction,
-          ``,
-          `IMPORTANT INSTRUCTIONS:`,
-          `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-          `2. Use this parent beat's description/acceptance/notes as the source of truth for strategy and agent roles.`,
-          `3. Use the Task tool to spawn subagents for independent child beats whenever parallel execution is possible.`,
-          `4. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
-          `5. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-          ``,
-          `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
-          ``,
-          taskPrompt,
-        ]
-      : [
-          dispatchPreamble(isReview),
-          ``,
-          queueTerminalInvariantInstruction,
-          ``,
-          `IMPORTANT INSTRUCTIONS:`,
-          `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-          `2. Use the Task tool to spawn subagents for independent subtasks whenever parallel execution is possible.`,
-          `3. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
-          `4. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-          ``,
-          `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
-          ``,
-          taskPrompt,
-        ]
-    ).filter(Boolean).join("\n");
+    // The backend's buildTakePrompt already provides beat context and
+    // kno claim instructions.  We only add a thin execution-mode wrapper.
+    prompt = taskPrompt;
   }
 
   const session: TerminalSession = {
@@ -831,22 +775,8 @@ export async function createSession(
   const isTakeLoop = !isParent && !customPrompt;
   let takeIteration = 1;
 
-  const wrapSingleBeatPrompt = (taskPrompt: string, isReview = false): string => {
-    return [
-      dispatchPreamble(isReview),
-      ``,
-      queueTerminalInvariantInstruction,
-      ``,
-      `IMPORTANT INSTRUCTIONS:`,
-      `1. Execute immediately in accept-edits mode; do not enter plan mode and do not wait for an execution follow-up prompt.`,
-      `2. Use the Task tool to spawn subagents for independent subtasks whenever parallel execution is possible.`,
-      `3. Each subagent must work in a dedicated git worktree on an isolated short-lived branch.`,
-      `4. Land final integrated changes on local main and push to origin/main. Do not require PRs unless explicitly requested.`,
-      ``,
-      `AUTONOMY: This is non-interactive Ship mode. If you call AskUserQuestion, the system may auto-answer using deterministic defaults. Prefer making reasonable assumptions and continue when possible.`,
-      ``,
-      taskPrompt,
-    ].filter(Boolean).join("\n");
+  const wrapSingleBeatPrompt = (taskPrompt: string, _isReview = false): string => {
+    return taskPrompt;
   };
 
   const buildNextTakePrompt = async (): Promise<{ prompt: string; beatState: string; agentOverride?: CliAgentTarget } | null> => {

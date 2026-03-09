@@ -261,12 +261,12 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(spawnedChildren).toHaveLength(1);
     expect(interactionLog.logPrompt).toHaveBeenCalledTimes(1);
     expect(interactionLog.logPrompt).toHaveBeenCalledWith(
-      expect.stringContaining("scene app prompt"),
+      "scene app prompt",
       { source: "initial" },
     );
   });
 
-  it("parameterizes queue/terminal invariant instructions for beads prompts", async () => {
+  it("passes backend prompt through for beads-managed beats", async () => {
     resolveMemoryManagerTypeMock.mockReturnValue("beads");
     backend.get.mockResolvedValue({
       ok: true,
@@ -287,11 +287,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     await createSession("foolery-3100", "/tmp/repo");
 
     expect(interactionLog.logPrompt).toHaveBeenCalledWith(
-      expect.stringContaining("ensure the beat is in a queue state"),
-      { source: "initial" },
-    );
-    expect(interactionLog.logPrompt).toHaveBeenCalledWith(
-      expect.stringContaining('run "bd next <id> --expected-state <currentState>"'),
+      "beads app prompt",
       { source: "initial" },
     );
   });
@@ -319,8 +315,8 @@ describe("terminal-manager nextKnot expected-state guard", () => {
 
     await vi.waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
-      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("initial app prompt"), { source: "initial" });
-      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("loop app prompt"), { source: "take_2" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith("initial app prompt", { source: "initial" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith("loop app prompt", { source: "take_2" });
     });
   });
 
@@ -348,13 +344,13 @@ describe("terminal-manager nextKnot expected-state guard", () => {
 
     await vi.waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
-      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("initial beads prompt"), { source: "initial" });
-      expect(interactionLog.logPrompt).toHaveBeenCalledWith(expect.stringContaining("loop beads prompt"), { source: "take_2" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith("initial beads prompt", { source: "initial" });
+      expect(interactionLog.logPrompt).toHaveBeenCalledWith("loop beads prompt", { source: "take_2" });
     });
   });
 
 
-  it("uses review preamble when take-loop iteration reaches a review state", async () => {
+  it("passes backend prompt through without wrapper in take-loop iterations", async () => {
     const reviewBeat = {
       id: "foolery-3000",
       title: "Review preamble regression",
@@ -393,23 +389,19 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     await vi.waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
 
-      // Initial prompt should contain implementation preamble
+      // Initial prompt is the backend prompt passed through directly
       expect(interactionLog.logPrompt).toHaveBeenCalledWith(
-        expect.stringContaining("Implement the following task"),
+        "initial impl prompt",
         { source: "initial" },
       );
 
-      // Take-loop prompt should contain review preamble, NOT implementation preamble
+      // Take-loop prompt is also the backend prompt passed through directly
       const take2Calls = interactionLog.logPrompt.mock.calls.filter(
         (args: unknown[]) =>
           (args[1] as Record<string, unknown>)?.source === "take_2",
       );
       expect(take2Calls).toHaveLength(1);
-      const take2Prompt = take2Calls[0][0] as string;
-      expect(take2Prompt).toContain("Review the following work");
-      expect(take2Prompt).toContain("Do NOT make code changes unless you find issues");
-      expect(take2Prompt).not.toContain("Implement the following task");
-      expect(take2Prompt).not.toContain("You MUST edit the actual source files");
+      expect(take2Calls[0][0]).toBe("review iteration prompt");
     });
   });
 });
