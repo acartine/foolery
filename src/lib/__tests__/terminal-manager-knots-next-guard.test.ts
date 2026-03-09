@@ -100,7 +100,7 @@ vi.mock("@/lib/agent-message-type-index", () => ({
   updateMessageTypeIndexFromSession: vi.fn(async () => undefined),
 }));
 
-import { createSession } from "@/lib/terminal-manager";
+import { createSession, getSession, listSessions } from "@/lib/terminal-manager";
 
 describe("terminal-manager nextKnot expected-state guard", () => {
   beforeEach(async () => {
@@ -377,6 +377,63 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     });
   });
 
+
+  it("includes selected agent label in Claimed and TAKE log lines", async () => {
+    const reviewBeat = {
+      id: "foolery-4000",
+      title: "Agent label in logs",
+      state: "ready_for_implementation_review",
+      isAgentClaimable: true,
+    };
+    // 1) Initial fetch
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-4000",
+        title: "Agent label in logs",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    // 2) enforceQueueTerminalInvariant after first child closes
+    backend.get.mockResolvedValueOnce({ ok: true, data: reviewBeat });
+    // 3) buildNextTakePrompt fetches current state
+    backend.get.mockResolvedValueOnce({ ok: true, data: reviewBeat });
+    // 4) enforceQueueTerminalInvariant after second child closes
+    backend.get.mockResolvedValueOnce({ ok: true, data: { ...reviewBeat, state: "shipped" } });
+
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "impl prompt" } })
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "review prompt" } });
+
+    const session = await createSession("foolery-4000", "/tmp/repo");
+
+    // First agent finishes — triggers take-loop claim + TAKE
+    expect(spawnedChildren).toHaveLength(1);
+    spawnedChildren[0].emit("close", 0, null);
+
+    await vi.waitFor(() => {
+      expect(spawnedChildren.length).toBe(2);
+
+      const entry = getSession(session.id);
+      expect(entry).toBeDefined();
+      const stdoutEvents = entry!.buffer
+        .filter((e) => e.type === "stdout")
+        .map((e) => e.data);
+
+      // Claimed line should include [agent: Codex]
+      const claimedLine = stdoutEvents.find((d) => d.includes("Claimed foolery-4000"));
+      expect(claimedLine).toBeDefined();
+      expect(claimedLine).toContain("[agent: Codex]");
+
+      // TAKE line should include [agent: Codex]
+      const takeLine = stdoutEvents.find((d) => /TAKE \d+\/\d+/.test(d) && !d.includes("stopped"));
+      expect(takeLine).toBeDefined();
+      expect(takeLine).toContain("[agent: Codex]");
+    });
+  });
 
   it("wraps backend prompt during take-loop iterations", async () => {
     const reviewBeat = {
