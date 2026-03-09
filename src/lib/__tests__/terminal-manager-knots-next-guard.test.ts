@@ -106,6 +106,20 @@ vi.mock("@/lib/agent-message-type-index", () => ({
 import { createSession, getSession } from "@/lib/terminal-manager";
 import { rollbackBeatState } from "@/lib/memory-manager-commands";
 
+/** Polls `fn` until it stops throwing, or rejects after `timeout` ms. */
+async function waitFor(fn: () => void, { timeout = 2000, interval = 10 } = {}): Promise<void> {
+  const start = Date.now();
+  while (true) {
+    try {
+      fn();
+      return;
+    } catch (err) {
+      if (Date.now() - start >= timeout) throw err;
+      await new Promise((r) => setTimeout(r, interval));
+    }
+  }
+}
+
 describe("terminal-manager nextKnot expected-state guard", () => {
   beforeEach(async () => {
     nextKnotMock.mockReset();
@@ -326,7 +340,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
       const initialPrompt = interactionLog.logPrompt.mock.calls.find(
         (args: unknown[]) => (args[1] as Record<string, unknown>)?.source === "initial",
@@ -367,7 +381,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
       const initialPrompt = interactionLog.logPrompt.mock.calls.find(
         (args: unknown[]) => (args[1] as Record<string, unknown>)?.source === "initial",
@@ -423,7 +437,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
 
       const initialPrompt = interactionLog.logPrompt.mock.calls.find(
@@ -466,7 +480,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
     });
 
