@@ -8,6 +8,10 @@ describe("beats page layout", () => {
     path.join(process.cwd(), "src/app/beats/page.tsx"),
     "utf8",
   );
+  const beatTableSource = readFileSync(
+    path.join(process.cwd(), "src/components/beat-table.tsx"),
+    "utf8",
+  );
   const appHeaderSource = readFileSync(
     path.join(process.cwd(), "src/components/app-header.tsx"),
     "utf8",
@@ -46,5 +50,10 @@ describe("beats page layout", () => {
     expect(repoCycleHandler).toContain('window.addEventListener("keydown", handleKeyDown, { capture: true });');
     expect(repoCycleHandler).not.toContain('beatsView !== "queues"');
     expect(repoCycleHandler).not.toContain('beatsView !== "active"');
+  });
+
+  it("constrains selected-row description and notes summaries on laptop widths", () => {
+    expect(beatTableSource).toContain('className={`mt-1.5 flex max-w-[75%] text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}');
+    expect(beatTableSource).toContain('className={`min-w-0 basis-[37.5%] ${rounded} px-2 py-1 ${bg}`}');
   });
 });
