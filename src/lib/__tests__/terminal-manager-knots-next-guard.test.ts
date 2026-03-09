@@ -82,15 +82,18 @@ vi.mock("@/lib/settings", () => ({
   loadSettings: vi.fn(async () => ({ dispatchMode: "single" })),
 }));
 
-vi.mock("@/lib/memory-manager-commands", async () => {
-  const actual = await vi.importActual<typeof import("@/lib/memory-manager-commands")>(
-    "@/lib/memory-manager-commands",
-  );
-  return {
-    ...actual,
-    resolveMemoryManagerType: () => resolveMemoryManagerTypeMock(),
-  };
-});
+vi.mock("@/lib/memory-manager-commands", () => ({
+  resolveMemoryManagerType: () => resolveMemoryManagerTypeMock(),
+  buildShowIssueCommand: vi.fn((id: string) => `kno show ${JSON.stringify(id)}`),
+  buildClaimCommand: vi.fn((id: string) => `kno claim ${JSON.stringify(id)} --json`),
+  buildWorkflowStateCommand: vi.fn(
+    (id: string, state: string) =>
+      `kno next ${JSON.stringify(id)} --expected-state ${JSON.stringify(state)} --actor-kind agent`,
+  ),
+  rollbackBeatState: vi.fn(async () => undefined),
+  assertClaimable: vi.fn(),
+  supportsAutoFollowUp: vi.fn(() => false),
+}));
 
 vi.mock("@/lib/validate-cwd", () => ({
   validateCwd: vi.fn(async () => null),
@@ -100,7 +103,8 @@ vi.mock("@/lib/agent-message-type-index", () => ({
   updateMessageTypeIndexFromSession: vi.fn(async () => undefined),
 }));
 
-import { createSession } from "@/lib/terminal-manager";
+import { createSession, getSession } from "@/lib/terminal-manager";
+import { rollbackBeatState } from "@/lib/memory-manager-commands";
 
 describe("terminal-manager nextKnot expected-state guard", () => {
   beforeEach(async () => {
@@ -121,7 +125,7 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     interactionLog.logBeatState.mockReset();
     interactionLog.logEnd.mockReset();
     const { exec } = await import("node:child_process");
-    vi.mocked(exec).mockClear();
+    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
 
     const sessions = (globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions;
     sessions?.clear();
@@ -159,15 +163,17 @@ describe("terminal-manager nextKnot expected-state guard", () => {
 
     await createSession("foolery-e6d4", "/tmp/repo", "custom prompt");
 
-    // Should NOT advance forward via nextKnot — rollback uses kno update instead
+    // Should NOT advance forward via nextKnot — rollback uses rollbackBeatState instead
     expect(nextKnotMock).not.toHaveBeenCalled();
     // Backend.get called twice: initial fetch + post-rollback refresh
     expect(backend.get).toHaveBeenCalledTimes(2);
-    const { exec } = await import("node:child_process");
-    expect(vi.mocked(exec)).toHaveBeenCalledWith(
-      expect.stringContaining("kno update foolery-e6d4 --status ready_for_implementation"),
-      expect.objectContaining({ cwd: "/tmp/repo" }),
-      expect.any(Function),
+    expect(rollbackBeatState).toHaveBeenCalledWith(
+      "foolery-e6d4",
+      "implementation",
+      "ready_for_implementation",
+      "/tmp/repo",
+      "knots",
+      expect.any(String),
     );
   });
 
@@ -202,11 +208,14 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     // Should NOT advance forward via nextBeat
     expect(nextBeatMock).not.toHaveBeenCalled();
     expect(nextKnotMock).not.toHaveBeenCalled();
-    // Should rollback via backend.update
-    expect(backend.update).toHaveBeenCalledWith(
+    // Should rollback via rollbackBeatState
+    expect(rollbackBeatState).toHaveBeenCalledWith(
       "foolery-e6d5",
-      { state: "ready_for_implementation" },
+      "implementation",
+      "ready_for_implementation",
       "/tmp/repo",
+      "beads",
+      expect.any(String),
     );
   });
 
@@ -433,5 +442,48 @@ describe("terminal-manager nextKnot expected-state guard", () => {
       expect(take2Calls[0]?.[0]).toContain("FOOLERY EXECUTION BOUNDARY:");
       expect(take2Calls[0]?.[0]).toContain("review iteration prompt");
     });
+  });
+
+  it("includes selected agent label in Claimed and TAKE log lines", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-4000",
+        title: "Agent label in logs",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "initial prompt" } })
+      .mockResolvedValueOnce({ ok: true, data: { prompt: "loop prompt" } });
+
+    const session = await createSession("foolery-4000", "/tmp/repo");
+
+    // First child finishes — triggers take-loop iteration 2
+    expect(spawnedChildren).toHaveLength(1);
+    spawnedChildren[0].emit("close", 0, null);
+
+    await vi.waitFor(() => {
+      expect(spawnedChildren.length).toBe(2);
+    });
+
+    const entry = getSession(session.id);
+    expect(entry).toBeDefined();
+    const stdoutEvents = entry!.buffer
+      .filter((e: { type: string; data: string }) => e.type === "stdout")
+      .map((e: { type: string; data: string }) => e.data);
+
+    // Claimed line should include [agent: Codex]
+    const claimedLine = stdoutEvents.find((d) => d.includes("Claimed"));
+    expect(claimedLine).toBeDefined();
+    expect(claimedLine).toContain("[agent: Codex]");
+
+    // TAKE line should include [agent: Codex]
+    const takeLine = stdoutEvents.find((d) => d.includes("TAKE 2/"));
+    expect(takeLine).toBeDefined();
+    expect(takeLine).toContain("[agent: Codex]");
   });
 });
