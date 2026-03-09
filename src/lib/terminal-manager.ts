@@ -792,7 +792,7 @@ export async function createSession(
       console.log(`${tag} STOP: terminal state "${current.state}"`);
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Take loop stopped: reached terminal state "${current.state}" after ${takeIteration} iteration(s) ---\x1b[0m\n`,
+        data: `\x1b[33m--- ${new Date().toISOString()} ${current.state} Take loop stopped: reached terminal state after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
       return null;
@@ -860,7 +860,7 @@ export async function createSession(
       );
       pushEvent({
         type: "stdout",
-        data: `\x1b[33m--- Take loop stopped: state "${current.state}" is not agent-owned (step=${resolved?.step ?? "none"}, owner=${stepOwner}) after ${takeIteration} iteration(s) ---\x1b[0m\n`,
+        data: `\x1b[33m--- ${new Date().toISOString()} ${current.state} Take loop stopped: not agent-owned (step=${resolved?.step ?? "none"}, owner=${stepOwner}) after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
       });
       return null;
@@ -934,7 +934,7 @@ export async function createSession(
     console.log(`${tag} CONTINUE: claimed ${beatId} → iteration ${takeIteration + 1}`);
     pushEvent({
       type: "stdout",
-      data: `\x1b[36m--- Claimed ${beatId} (iteration ${takeIteration + 1}) ---\x1b[0m\n`,
+      data: `\x1b[36m--- ${new Date().toISOString()} ${current.state} Claimed ${beatId} (iteration ${takeIteration + 1}) ---\x1b[0m\n`,
       timestamp: Date.now(),
     });
 
@@ -1198,7 +1198,7 @@ export async function createSession(
         console.log(`${tag} STOP: max iterations reached (${takeIteration}/${MAX_TAKE_ITERATIONS})`);
         pushEvent({
           type: "stdout",
-          data: `\x1b[33m--- Take loop stopped: max ${MAX_TAKE_ITERATIONS} iterations reached ---\x1b[0m\n`,
+          data: `\x1b[33m--- ${new Date().toISOString()} TAKE ${takeIteration}/${MAX_TAKE_ITERATIONS} Take loop stopped: max iterations reached ---\x1b[0m\n`,
           timestamp: Date.now(),
         });
         enforceQueueTerminalInvariant().finally(() => {
@@ -1218,7 +1218,7 @@ export async function createSession(
               : "";
             pushEvent({
               type: "stdout",
-              data: `\n\x1b[36m--- Take ${takeIteration}/${MAX_TAKE_ITERATIONS}${switchLabel} ---\x1b[0m\n`,
+              data: `\n\x1b[36m--- ${new Date().toISOString()} ${nextTake.beatState ?? "unknown"} TAKE ${takeIteration}/${MAX_TAKE_ITERATIONS}${switchLabel} ---\x1b[0m\n`,
               timestamp: Date.now(),
             });
             spawnTakeChild(nextTake.prompt, nextTake.beatState, nextTake.agentOverride);
@@ -1564,7 +1564,7 @@ export async function createSession(
               : "";
             pushEvent({
               type: "stdout",
-              data: `\n\x1b[36m--- Take ${takeIteration}/${MAX_TAKE_ITERATIONS}${switchLabel} ---\x1b[0m\n`,
+              data: `\n\x1b[36m--- ${new Date().toISOString()} ${nextTake.beatState ?? "unknown"} TAKE ${takeIteration}/${MAX_TAKE_ITERATIONS}${switchLabel} ---\x1b[0m\n`,
               timestamp: Date.now(),
             });
             console.log(`${tag} starting iteration ${takeIteration}/${MAX_TAKE_ITERATIONS}`);
