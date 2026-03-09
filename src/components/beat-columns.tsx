@@ -246,12 +246,12 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
   const waveSlug = extractWaveSlug(labels);
   const visibleLabels = labels.filter((l) => !isInternalLabel(l));
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="min-w-0 flex flex-1 flex-col gap-0.5">
       {onTitleClick ? (
         <button
           type="button"
           title="Open beat details"
-          className="font-medium text-left hover:underline"
+          className="text-left font-medium break-words hover:underline"
           onClick={(e) => {
             e.stopPropagation();
             onTitleClick(beat);
@@ -260,7 +260,7 @@ function TitleCell({ beat, onTitleClick, onUpdateBeat, allLabels }: {
           {waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{beat.title}
         </button>
       ) : (
-        <span className="font-medium">{waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{beat.title}</span>
+        <span className="font-medium break-words">{waveSlug && <span className="text-xs font-mono text-muted-foreground mr-1">[{waveSlug}]</span>}{beat.title}</span>
       )}
       <div className="flex items-center gap-1 flex-wrap">
         <span className="text-muted-foreground text-xs">

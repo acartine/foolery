@@ -94,7 +94,7 @@ function InlineSummary({ beat }: { beat: Beat }) {
 
   return (
     <div
-      className={`mt-1.5 inline-grid max-w-[56.25%] grid-cols-2 text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}
+      className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(2,minmax(0,1fr))] text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}
       onMouseLeave={() => setExpanded(false)}
     >
       <SummaryColumn
@@ -675,7 +675,10 @@ function BeatTableContent({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     {focusedRowId === row.original.id &&
                       cell.column.id === "title" && (
-                        <div style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}>
+                        <div
+                          className="min-w-0"
+                          style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}
+                        >
                           <InlineSummary beat={row.original} />
                         </div>
                       )}
