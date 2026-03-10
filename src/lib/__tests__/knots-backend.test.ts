@@ -3,6 +3,7 @@ import { runBackendContractTests } from "./backend-contract.test";
 
 interface MockKnot {
   id: string;
+  aliases?: string[];
   title: string;
   state: string;
   profile_id?: string;
@@ -551,6 +552,60 @@ describe("KnotsBackend mapping behaviour", () => {
 
     const child = listed.data?.find((knot) => knot.id === "foolery-g3y1.1");
     expect(child?.parent).toBe("foolery-g3y1");
+  });
+
+  it("infers parent from hierarchical dotted alias when id has no dots", async () => {
+    const now = nowIso();
+    store.knots.set("8792", {
+      id: "8792",
+      title: "Parent",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "epic",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-parent",
+      created_at: now,
+    });
+    store.knots.set("c5cd", {
+      id: "c5cd",
+      aliases: ["brutus-8792.5"],
+      title: "Child",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: null,
+      priority: 2,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-child",
+      created_at: now,
+    });
+
+    mockListEdges.mockImplementationOnce(
+      async () =>
+        ({
+          ok: false as const,
+          error: "knots command timed out after 20000ms",
+        }) as never,
+    );
+
+    const backend = new KnotsBackend("/repo");
+    const listed = await backend.list();
+    expect(listed.ok).toBe(true);
+
+    const child = listed.data?.find((knot) => knot.id === "c5cd");
+    expect(child?.parent).toBe("8792");
   });
 
   it("returns UNSUPPORTED for delete", async () => {

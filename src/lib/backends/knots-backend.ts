@@ -254,12 +254,50 @@ function parentFromHierarchicalId(
   return undefined;
 }
 
-function deriveParentId(
-  id: string,
-  edges: KnotEdge[],
+function stripAliasBeatPrefix(alias: string): string {
+  const parts = alias.split("-");
+  if (parts.length <= 1) return alias;
+  return parts.slice(1).join("-");
+}
+
+function parentFromHierarchicalAlias(
+  alias: string | null | undefined,
+  aliasToId: ReadonlyMap<string, string>,
   knownIds: ReadonlySet<string>,
 ): string | undefined {
-  return parentFromEdges(id, edges) ?? parentFromHierarchicalId(id, knownIds);
+  if (!alias) return undefined;
+
+  let cursor = alias;
+  while (cursor.includes(".")) {
+    cursor = cursor.slice(0, cursor.lastIndexOf("."));
+
+    const resolvedId = aliasToId.get(cursor);
+    if (resolvedId) return resolvedId;
+    if (knownIds.has(cursor)) return cursor;
+
+    const stripped = stripAliasBeatPrefix(cursor);
+    if (stripped !== cursor) {
+      const strippedResolvedId = aliasToId.get(stripped);
+      if (strippedResolvedId) return strippedResolvedId;
+      if (knownIds.has(stripped)) return stripped;
+    }
+  }
+
+  return undefined;
+}
+
+function deriveParentId(
+  id: string,
+  alias: string | null | undefined,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
+): string | undefined {
+  return (
+    parentFromEdges(id, edges) ??
+    parentFromHierarchicalId(id, knownIds) ??
+    parentFromHierarchicalAlias(alias, aliasToId, knownIds)
+  );
 }
 
 function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
@@ -354,6 +392,7 @@ function toBeat(
   knot: KnotRecord,
   edges: KnotEdge[],
   knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): Beat {
   const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
@@ -380,7 +419,7 @@ function toBeat(
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
-      parent: deriveParentId(knot.id, edges, knownIds),
+      parent: deriveParentId(knot.id, aliases[0], edges, knownIds, aliasToId),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
       invariants: invariants.length > 0 ? invariants : undefined,
@@ -419,7 +458,7 @@ function toBeat(
     labels: tags,
     aliases: aliases.length > 0 ? aliases : undefined,
     notes,
-    parent: deriveParentId(knot.id, edges, knownIds),
+    parent: deriveParentId(knot.id, aliases[0], edges, knownIds, aliasToId),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
@@ -678,8 +717,16 @@ export class KnotsBackend implements BackendPort {
       edgesById.set(record.id, edgeResult.data ?? []);
     }
 
+    const aliasToId = new Map<string, string>();
+    for (const record of records) {
+      const aliases = normalizeAliases(record.aliases);
+      for (const alias of aliases) {
+        aliasToId.set(alias, record.id);
+      }
+    }
+
     const beats = records.map((record) =>
-      toBeat(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
+      toBeat(record, edgesById.get(record.id) ?? [], knownIds, aliasToId, workflowMap),
     );
     return ok(beats);
   }
@@ -766,7 +813,20 @@ export class KnotsBackend implements BackendPort {
     const workflowMapResult = await this.workflowMapByProfileId(rp);
     if (!workflowMapResult.ok) return propagateError<Beat>(workflowMapResult);
 
-    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
+    const aliasToId = new Map<string, string>();
+    for (const alias of normalizeAliases(knotResult.data?.aliases)) {
+      aliasToId.set(alias, id);
+    }
+
+    return ok(
+      toBeat(
+        knotResult.data!,
+        edgesResult.data ?? [],
+        new Set([id]),
+        aliasToId,
+        workflowMapResult.data ?? new Map(),
+      ),
+    );
   }
 
   async create(
