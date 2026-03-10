@@ -77,7 +77,6 @@ export interface Beat {
   isAgentClaimable?: boolean;
   priority: BeatPriority;
   labels: string[];
-  aliases?: string[];
   assignee?: string;
   owner?: string;
   parent?: string;
