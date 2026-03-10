@@ -14,7 +14,6 @@ import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
 import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogClose,
@@ -231,6 +230,29 @@ export function getDisplayedBeatAliases(
   return Array.from(aliases);
 }
 
+// ── Shared click-to-copy ID chip ──
+
+function ClickToCopyId({ value, suffix }: { value: string; suffix?: string }) {
+  return (
+    <button
+      type="button"
+      className="cursor-pointer rounded px-0.5 hover:bg-muted/70"
+      title="Click to copy"
+      onClick={() => {
+        navigator.clipboard.writeText(value).then(
+          () => toast.success(`Copied: ${value}`),
+          () => toast.error("Failed to copy to clipboard"),
+        );
+      }}
+    >
+      {value}
+      {suffix && (
+        <span className="ml-1 text-muted-foreground">{suffix}</span>
+      )}
+    </button>
+  );
+}
+
 // ── Header sub-component ──
 
 interface LightboxHeaderProps {
@@ -268,30 +290,15 @@ function LightboxHeader({
     <DialogHeader className="border-b border-border/70 px-3 py-2 space-y-1.5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1 space-y-1">
-          <DialogDescription
-            className="cursor-pointer break-all font-mono text-[11px]"
-            onClick={() => {
-              navigator.clipboard.writeText(displayedBeatId).then(
-                () => toast.success(`Copied: ${displayedBeatId}`),
-                () => toast.error("Failed to copy to clipboard"),
-              );
-            }}
-            title="Click to copy ID"
-          >
-            {displayedBeatId}
-          </DialogDescription>
-          {displayedAliases.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Aliases
+          <DialogDescription className="flex flex-wrap items-center gap-1 break-all font-mono text-[11px]">
+            <ClickToCopyId value={displayedBeatId} />
+            {displayedAliases.map((alias) => (
+              <span key={alias} className="flex items-center gap-1">
+                <span className="text-muted-foreground">|</span>
+                <ClickToCopyId value={alias} suffix="(alias)" />
               </span>
-              {displayedAliases.map((alias) => (
-                <Badge key={alias} variant="outline" className="font-mono text-[10px]">
-                  {alias}
-                </Badge>
-              ))}
-            </div>
-          )}
+            ))}
+          </DialogDescription>
           {isEditingTitle ? (
             <input
               autoFocus
