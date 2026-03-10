@@ -72,7 +72,7 @@ export function DepTree({ deps, beatId, repo }: DepTreeProps) {
                     variant="outline"
                     className="whitespace-nowrap font-mono text-xs hover:bg-accent"
                   >
-                    {stripPrefix(linkedId)}
+                    {dep.alias ?? stripPrefix(linkedId)}
                   </Badge>
                 </Link>
               );

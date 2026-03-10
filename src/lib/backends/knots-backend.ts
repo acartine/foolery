@@ -352,6 +352,7 @@ function toBeat(
   if (!workflow) {
     return {
       id: knot.id,
+      alias: knot.alias ?? undefined,
       title: knot.title,
       description: typeof knot.description === "string" ? knot.description : knot.body ?? undefined,
       type: knot.type ?? "work",
@@ -384,6 +385,7 @@ function toBeat(
 
   return {
     id: knot.id,
+    alias: knot.alias ?? undefined,
     title: knot.title,
     description:
       typeof knot.description === "string"
@@ -1056,6 +1058,22 @@ export class KnotsBackend implements BackendPort {
           dependency_type: "parent_of",
         });
       }
+    }
+
+    // Enrich deps with linked knot aliases
+    const uniqueLinkedIds = [...new Set(deps.map((d) => d.id))];
+    const aliasMap = new Map<string, string>();
+    await Promise.allSettled(
+      uniqueLinkedIds.map(async (linkedId) => {
+        const linkedKnot = fromKnots(await knots.showKnot(linkedId, rp));
+        if (linkedKnot.ok && linkedKnot.data?.alias) {
+          aliasMap.set(linkedId, linkedKnot.data.alias);
+        }
+      }),
+    );
+    for (const dep of deps) {
+      const linkedAlias = aliasMap.get(dep.id);
+      if (linkedAlias) dep.alias = linkedAlias;
     }
 
     return ok(deps);

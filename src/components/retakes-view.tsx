@@ -427,7 +427,7 @@ function RetakeRow({
           )}
         </div>
         <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[11px] text-muted-foreground">{beat.id.replace(/^[^-]+-/, "")}</span>
+          <span className="font-mono text-[11px] text-muted-foreground">{beat.alias ?? beat.id.replace(/^[^-]+-/, "")}</span>
           <span className="text-[11px] text-muted-foreground">{relativeTime(beat.updated)}</span>
           {commitSha && (
             <span className="inline-flex items-center rounded px-1 py-0 text-[10px] font-mono font-medium leading-none bg-slate-100 text-slate-700">

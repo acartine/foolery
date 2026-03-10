@@ -61,6 +61,7 @@ export interface MemoryWorkflowDescriptor {
  */
 export interface Beat {
   id: string;
+  alias?: string;
   title: string;
   description?: string;
   notes?: string;
@@ -90,6 +91,7 @@ export interface Beat {
 
 export interface BeatDependency {
   id: string;
+  alias?: string;
   type?: string;
   source?: string;
   target?: string;
@@ -156,6 +158,7 @@ export interface TerminalEvent {
 
 export interface WaveBeat {
   id: string;
+  alias?: string;
   title: string;
   type: string;
   state: string;

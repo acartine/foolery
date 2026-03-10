@@ -374,7 +374,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               );
             }}
           >
-            {shortId}
+            {row.original.alias ?? shortId}
           </span>
         );
       },

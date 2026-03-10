@@ -154,7 +154,7 @@ function SearchDropdown({
                 onClick={() => onSelect(beat.id)}
               >
                 <span className="font-mono text-muted-foreground">
-                  {beat.id.replace(/^[^-]+-/, "")}
+                  {beat.alias ?? beat.id.replace(/^[^-]+-/, "")}
                 </span>
                 <span className="truncate">{beat.title}</span>
               </button>

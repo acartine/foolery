@@ -254,7 +254,7 @@ function LightboxHeader({
             }}
             title="Click to copy ID"
           >
-            {beatId.replace(/^[^-]+-/, "")}
+            {beat?.alias ?? beatId.replace(/^[^-]+-/, "")}
           </DialogDescription>
           {isEditingTitle ? (
             <input

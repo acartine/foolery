@@ -94,7 +94,7 @@ function DescendantList({ descendants }: { descendants: CascadeDescendant[] }) {
         {descendants.map((d) => (
           <li key={d.id} className="flex items-center gap-2 text-sm">
             <span className="font-mono text-xs text-muted-foreground">
-              {d.id.replace(/^[^-]+-/, "")}
+              {d.alias ?? d.id.replace(/^[^-]+-/, "")}
             </span>
             <span className="truncate">{d.title}</span>
             <span className="ml-auto shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium">

@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
   for (const [index, result] of depResults.entries()) {
     if (result.status === "fulfilled" && result.value.ok && result.value.data) {
       for (const dep of result.value.data) {
-        if (dep.dependency_type !== "blocks") continue;
+        if (dep.type !== "blocks") continue;
         const blocker = dep.id;
         const blocked = beats[index]?.id;
         if (!blocker || !blocked) continue;
@@ -207,6 +207,7 @@ export async function GET(request: NextRequest) {
       .map((d) => d.source);
     return {
       id: b.id,
+      alias: b.alias,
       title: b.title,
       type: b.type,
       state: b.state,

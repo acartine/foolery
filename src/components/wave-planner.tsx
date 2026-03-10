@@ -70,11 +70,13 @@ function BeatCard({
   onShip,
   onAbortShip,
   shippingByBeatId,
+  aliasById,
 }: {
   beat: WaveBeat;
   onShip?: (beat: WaveBeat) => void;
   onAbortShip?: (beatId: string) => void;
   shippingByBeatId: Record<string, string>;
+  aliasById?: Map<string, string>;
 }) {
   const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
   const isShipDisabled = !canShipBeat(beat, shippingByBeatId);
@@ -85,7 +87,7 @@ function BeatCard({
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-muted-foreground">
-          {shortId(beat.id)}
+          {beat.alias ?? shortId(beat.id)}
         </span>
         <div className="flex items-center gap-1">
           <Badge variant="outline" className="text-[10px]">
@@ -108,7 +110,7 @@ function BeatCard({
         <div className="flex flex-wrap gap-1">
           {beat.blockedBy.map((id) => (
             <Badge key={id} variant="outline" className="text-[10px]">
-              waits:{shortId(id)}
+              waits:{aliasById?.get(id) ?? shortId(id)}
             </Badge>
           ))}
         </div>
@@ -194,6 +196,21 @@ export function WavePlanner({
   });
 
   const plan = data?.ok ? data.data : null;
+
+  const aliasById = useMemo(() => {
+    if (!plan) return new Map<string, string>();
+    const map = new Map<string, string>();
+    for (const wave of plan.waves) {
+      for (const beat of wave.beats) {
+        if (beat.alias) map.set(beat.id, beat.alias);
+      }
+      if (wave.gate?.alias) map.set(wave.gate.id, wave.gate.alias);
+    }
+    for (const beat of plan.unschedulable) {
+      if (beat.alias) map.set(beat.id, beat.alias);
+    }
+    return map;
+  }, [plan]);
 
   const recommendationBeat = useMemo(() => {
     if (!plan?.recommendation) return null;
@@ -351,6 +368,7 @@ export function WavePlanner({
                             onShip={shipBeat}
                             onAbortShip={onAbortShip}
                             shippingByBeatId={shippingByBeatId}
+                            aliasById={aliasById}
                           />
                         ))}
                       </div>
@@ -373,6 +391,7 @@ export function WavePlanner({
                         key={beat.id}
                         beat={beat}
                         shippingByBeatId={shippingByBeatId}
+                        aliasById={aliasById}
                       />
                     ))}
                   </div>
