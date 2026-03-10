@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { fetchBeat, fetchDeps, fetchWorkflows, addDep } from "@/lib/api";
+import { stripBeatPrefix } from "@/lib/beat-display";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import { BeatDetail } from "@/components/beat-detail";
@@ -212,7 +213,7 @@ export function getDisplayedBeatId(
   beatId: string,
   beat: Pick<Beat, "id"> | null | undefined,
 ): string {
-  return beat?.id ?? beatId;
+  return stripBeatPrefix(beat?.id ?? beatId);
 }
 
 export function getDisplayedBeatAliases(
@@ -223,7 +224,8 @@ export function getDisplayedBeatAliases(
   const aliases = new Set<string>();
   for (const alias of beat.aliases) {
     if (typeof alias !== "string") continue;
-    const normalized = alias.trim();
+    const trimmed = alias.trim();
+    const normalized = trimmed.split("-").length > 2 ? stripBeatPrefix(trimmed) : trimmed;
     if (!normalized) continue;
     aliases.add(normalized);
   }
@@ -284,7 +286,7 @@ function LightboxHeader({
 }: LightboxHeaderProps) {
   const isInheritedRolling = beat ? (isParentRollingBeat?.(beat) ?? false) : false;
   const displayedBeatId = getDisplayedBeatId(beatId, beat);
-  const displayedAliases = getDisplayedBeatAliases(beat);
+  const displayedAliases = getDisplayedBeatAliases(beat).filter((alias) => alias !== displayedBeatId);
 
   return (
     <DialogHeader className="border-b border-border/70 px-3 py-2 space-y-1.5">
