@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { CascadeDescendant } from "@/lib/cascade-close";
+import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
 
 interface CascadeCloseDialogProps {
   open: boolean;
@@ -93,8 +94,13 @@ function DescendantList({ descendants }: { descendants: CascadeDescendant[] }) {
       <ul className="space-y-1">
         {descendants.map((d) => (
           <li key={d.id} className="flex items-center gap-2 text-sm">
-            <span className="font-mono text-xs text-muted-foreground">
-              {d.alias ?? d.id.replace(/^[^-]+-/, "")}
+            <span className="inline-flex items-center gap-1 font-mono text-xs text-muted-foreground">
+              <span>{displayBeatLabel(d.id, d.aliases)}</span>
+              {displayBeatLabel(d.id, d.aliases) !== stripBeatPrefix(d.id) && (
+                <span className="text-[10px] text-muted-foreground/80">
+                  {stripBeatPrefix(d.id)}
+                </span>
+              )}
             </span>
             <span className="truncate">{d.title}</span>
             <span className="ml-auto shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium">

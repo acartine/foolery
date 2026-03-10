@@ -86,7 +86,7 @@ describe("getOpenDescendants", () => {
       data: [
         makeBeat({ id: "gp", state: "open" }),
         makeBeat({ id: "parent", parent: "gp", state: "open", title: "Parent" }),
-        makeBeat({ id: "leaf", parent: "parent", state: "open", title: "Leaf" }),
+        makeBeat({ id: "leaf", parent: "parent", state: "open", title: "Leaf", aliases: ["leaf-alias"] }),
       ],
     });
 
@@ -94,6 +94,7 @@ describe("getOpenDescendants", () => {
     expect(result.ok).toBe(true);
     // Leaf should appear before parent (post-order traversal)
     expect(result.data!.map((d) => d.id)).toEqual(["leaf", "parent"]);
+    expect(result.data?.[0]?.aliases).toEqual(["leaf-alias"]);
   });
 });
 

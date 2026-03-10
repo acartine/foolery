@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronRight, ChevronDown, X, Clapperboard, Square, Undo2 } from "lucide-react";
+import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
 import { isWaveLabel, isInternalLabel, isReadOnlyLabel, extractWaveSlug } from "@/lib/wave-slugs";
 import { builtinProfileDescriptor, builtinWorkflowDescriptors, isRollbackTransition } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
@@ -356,15 +357,17 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
     {
       accessorKey: "id",
       header: "",
-      size: 75,
-      minSize: 75,
-      maxSize: 75,
+      size: 120,
+      minSize: 90,
+      maxSize: 160,
       enableSorting: false,
       cell: ({ row }) => {
-        const shortId = row.original.id.replace(/^[^-]+-/, "");
+        const shortId = stripBeatPrefix(row.original.id);
+        const displayId = displayBeatLabel(row.original.id, row.original.aliases);
         return (
-          <span
-            className="font-mono text-xs text-muted-foreground cursor-pointer hover:text-foreground"
+          <button
+            type="button"
+            className="flex max-w-full cursor-pointer flex-col items-start text-left hover:text-foreground"
             title="Click to copy ID"
             onClick={(e) => {
               e.stopPropagation();
@@ -374,8 +377,15 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
               );
             }}
           >
-            {row.original.alias ?? shortId}
-          </span>
+            <span className="max-w-full truncate font-mono text-xs text-muted-foreground">
+              {displayId}
+            </span>
+            {displayId !== shortId && (
+              <span className="max-w-full truncate text-[10px] text-muted-foreground/80">
+                {shortId}
+              </span>
+            )}
+          </button>
         );
       },
     },

@@ -29,7 +29,7 @@ interface ExecOptions {
 
 export interface KnotRecord {
   id: string;
-  alias?: string | null;
+  aliases?: string[];
   title: string;
   state: string;
   profile_id?: string;
@@ -41,7 +41,6 @@ export interface KnotRecord {
   priority?: number | null;
   type?: string | null;
   tags?: string[];
-  aliases?: string[];
   notes?: Array<Record<string, unknown>>;
   handoff_capsules?: Array<Record<string, unknown>>;
   steps?: Array<Record<string, unknown>>;

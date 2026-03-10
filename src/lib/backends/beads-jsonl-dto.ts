@@ -20,6 +20,7 @@ import {
 
 export interface RawBead {
   id: string;
+  aliases?: string[];
   title: string;
   description?: string;
   notes?: string;
@@ -157,6 +158,7 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
 
   return {
     id,
+    aliases: raw.aliases?.filter((alias) => typeof alias === "string" && alias.trim().length > 0),
     title: raw.title,
     description: raw.description,
     notes: cleanNotes,
@@ -197,6 +199,7 @@ export function denormalizeToJsonl(beat: Beat): RawBead {
   );
   const raw: RawBead = {
     id: beat.id,
+    aliases: beat.aliases,
     title: beat.title,
     status,
     priority: beat.priority,

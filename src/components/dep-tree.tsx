@@ -1,16 +1,12 @@
 import Link from "next/link";
 import type { BeatDependency } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
 
 interface DepTreeProps {
   deps: BeatDependency[];
   beatId: string;
   repo?: string;
-}
-
-/** Strip the project prefix (e.g. "foolery-abc12345" → "abc12345"). */
-function stripPrefix(id: string): string {
-  return id.replace(/^[^-]+-/, "");
 }
 
 /** Derive the display label and linked beat ID from a dependency edge. */
@@ -60,6 +56,8 @@ export function DepTree({ deps, beatId, repo }: DepTreeProps) {
           </h4>
           <div className="flex flex-wrap gap-1.5">
             {items.map(({ linkedId, dep }) => {
+              const shortId = stripBeatPrefix(linkedId);
+              const displayId = displayBeatLabel(linkedId, dep.aliases);
               const params = new URLSearchParams({ beat: linkedId });
               if (repo) params.set("detailRepo", repo);
               return (
@@ -70,9 +68,12 @@ export function DepTree({ deps, beatId, repo }: DepTreeProps) {
                 >
                   <Badge
                     variant="outline"
-                    className="whitespace-nowrap font-mono text-xs hover:bg-accent"
+                    className="inline-flex items-center gap-1 whitespace-nowrap font-mono text-xs hover:bg-accent"
                   >
-                    {dep.alias ?? stripPrefix(linkedId)}
+                    <span>{displayId}</span>
+                    {displayId !== shortId && (
+                      <span className="text-[10px] text-muted-foreground">{shortId}</span>
+                    )}
                   </Badge>
                 </Link>
               );

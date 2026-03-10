@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { BeatTypeBadge } from "@/components/beat-type-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { fetchWavePlan } from "@/lib/wave-api";
+import { displayBeatLabel } from "@/lib/beat-display";
 import { useAppStore } from "@/stores/app-store";
 import type { Wave, WaveBeat, WaveReadiness } from "@/lib/types";
 
@@ -53,10 +54,6 @@ const READINESS_LABELS: Record<WaveReadiness, string> = {
   unschedulable: "Cycle",
 };
 
-function shortId(id: string): string {
-  return id.replace(/^[^-]+-/, "");
-}
-
 function canShipBeat(
   beat: WaveBeat,
   shippingByBeatId: Record<string, string>
@@ -67,16 +64,16 @@ function canShipBeat(
 
 function BeatCard({
   beat,
+  planBeatAliases,
   onShip,
   onAbortShip,
   shippingByBeatId,
-  aliasById,
 }: {
   beat: WaveBeat;
+  planBeatAliases: ReadonlyMap<string, readonly string[] | undefined>;
   onShip?: (beat: WaveBeat) => void;
   onAbortShip?: (beatId: string) => void;
   shippingByBeatId: Record<string, string>;
-  aliasById?: Map<string, string>;
 }) {
   const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
   const isShipDisabled = !canShipBeat(beat, shippingByBeatId);
@@ -87,7 +84,7 @@ function BeatCard({
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-muted-foreground">
-          {beat.alias ?? shortId(beat.id)}
+          {displayBeatLabel(beat.id, beat.aliases)}
         </span>
         <div className="flex items-center gap-1">
           <Badge variant="outline" className="text-[10px]">
@@ -110,7 +107,7 @@ function BeatCard({
         <div className="flex flex-wrap gap-1">
           {beat.blockedBy.map((id) => (
             <Badge key={id} variant="outline" className="text-[10px]">
-              waits:{aliasById?.get(id) ?? shortId(id)}
+              waits:{displayBeatLabel(id, planBeatAliases.get(id))}
             </Badge>
           ))}
         </div>
@@ -170,6 +167,25 @@ function getWaveNextCandidate(wave: Wave): WaveBeat | undefined {
     })[0];
 }
 
+function indexBeatAliases(
+  plan: { waves: Wave[]; unschedulable: WaveBeat[] } | null | undefined,
+) {
+  const aliases = new Map<string, string[] | undefined>();
+  if (!plan) return aliases;
+
+  for (const beat of plan.waves.flatMap((wave) => [
+    ...wave.beats,
+    ...(wave.gate ? [wave.gate] : []),
+  ])) {
+    aliases.set(beat.id, beat.aliases);
+  }
+  for (const beat of plan.unschedulable) {
+    aliases.set(beat.id, beat.aliases);
+  }
+
+  return aliases;
+}
+
 export function WavePlanner({
   open,
   onOpenChange,
@@ -197,26 +213,12 @@ export function WavePlanner({
 
   const plan = data?.ok ? data.data : null;
 
-  const aliasById = useMemo(() => {
-    if (!plan) return new Map<string, string>();
-    const map = new Map<string, string>();
-    for (const wave of plan.waves) {
-      for (const beat of wave.beats) {
-        if (beat.alias) map.set(beat.id, beat.alias);
-      }
-      if (wave.gate?.alias) map.set(wave.gate.id, wave.gate.alias);
-    }
-    for (const beat of plan.unschedulable) {
-      if (beat.alias) map.set(beat.id, beat.alias);
-    }
-    return map;
-  }, [plan]);
-
   const recommendationBeat = useMemo(() => {
     if (!plan?.recommendation) return null;
     const byId = new Map(plan.waves.flatMap((wave) => wave.beats).map((beat) => [beat.id, beat]));
     return byId.get(plan.recommendation.beatId) ?? null;
   }, [plan]);
+  const planBeatAliases = useMemo(() => indexBeatAliases(plan), [plan]);
 
   const shipBeat = (beat: WaveBeat) => {
     onOpenChange(false);
@@ -341,7 +343,7 @@ export function WavePlanner({
                           {wave.gate && (
                             <Badge variant="secondary" className="gap-1">
                               <Shield className="size-3" />
-                              Gate {shortId(wave.gate.id)}
+                              Gate {displayBeatLabel(wave.gate.id, wave.gate.aliases)}
                             </Badge>
                           )}
                         </div>
@@ -362,15 +364,15 @@ export function WavePlanner({
 
                       <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
                         {wave.beats.map((beat) => (
-                          <BeatCard
-                            key={beat.id}
-                            beat={beat}
-                            onShip={shipBeat}
-                            onAbortShip={onAbortShip}
-                            shippingByBeatId={shippingByBeatId}
-                            aliasById={aliasById}
-                          />
-                        ))}
+                        <BeatCard
+                          key={beat.id}
+                          beat={beat}
+                          planBeatAliases={planBeatAliases}
+                          onShip={shipBeat}
+                          onAbortShip={onAbortShip}
+                          shippingByBeatId={shippingByBeatId}
+                        />
+                      ))}
                       </div>
                     </section>
                   );
@@ -390,8 +392,8 @@ export function WavePlanner({
                       <BeatCard
                         key={beat.id}
                         beat={beat}
+                        planBeatAliases={planBeatAliases}
                         shippingByBeatId={shippingByBeatId}
-                        aliasById={aliasById}
                       />
                     ))}
                   </div>

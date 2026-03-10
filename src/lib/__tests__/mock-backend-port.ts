@@ -240,6 +240,7 @@ export class MockBackendPort implements BackendPort {
     }
     const result: BeatDependency[] = matches.map((d) => ({
       id: d.blockerId === id ? d.blockedId : d.blockerId,
+      aliases: this.beats.get(d.blockerId === id ? d.blockedId : d.blockerId)?.aliases,
       type: "blocks",
       source: d.blockerId,
       target: d.blockedId,

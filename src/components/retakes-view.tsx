@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { RETAKE_TARGET_STATE, isRetakeSourceState } from "@/lib/retake";
+import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -401,6 +402,8 @@ function RetakeRow({
   const isOrchestrated = labels.some(isWaveLabel);
   const visibleLabels = labels.filter((l) => !isInternalLabel(l));
   const commitSha = extractCommitSha(beat);
+  const shortId = stripBeatPrefix(beat.id);
+  const displayId = displayBeatLabel(beat.id, beat.aliases);
 
   return (
     <div className="flex items-start gap-3 border-b border-border/40 px-2 py-2.5 hover:bg-muted/30">
@@ -427,7 +430,12 @@ function RetakeRow({
           )}
         </div>
         <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[11px] text-muted-foreground">{beat.alias ?? beat.id.replace(/^[^-]+-/, "")}</span>
+          <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+            <span>{displayId}</span>
+            {displayId !== shortId && (
+              <span className="text-[10px] text-muted-foreground/80">{shortId}</span>
+            )}
+          </span>
           <span className="text-[11px] text-muted-foreground">{relativeTime(beat.updated)}</span>
           {commitSha && (
             <span className="inline-flex items-center rounded px-1 py-0 text-[10px] font-mono font-medium leading-none bg-slate-100 text-slate-700">

@@ -8,6 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { BeadsBackend } from "@/lib/backends/beads-backend";
 import type { CreateBeatInput } from "@/lib/schemas";
+import type { Beat } from "@/lib/types";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -82,6 +83,10 @@ describe("BeadsBackend lifecycle", () => {
       const blockerId = (res1 as { ok: true; data: { id: string } }).data.id;
       const blockedId = (res2 as { ok: true; data: { id: string } }).data.id;
 
+      const blockedRes = await backend.get(blockedId);
+      expect(blockedRes.ok).toBe(true);
+      (blockedRes as { ok: true; data: Beat }).data.aliases = ["blocked-alias"];
+
       const addRes = await backend.addDependency(blockerId, blockedId);
       expect(addRes.ok).toBe(true);
 
@@ -94,6 +99,7 @@ describe("BeadsBackend lifecycle", () => {
       expect(deps).toHaveLength(1);
       expect(deps[0]!.source).toBe(blockerId);
       expect(deps[0]!.target).toBe(blockedId);
+      expect((deps[0] as { aliases?: string[] }).aliases).toEqual(["blocked-alias"]);
     });
 
     it("persists dependency removal across cache resets", async () => {

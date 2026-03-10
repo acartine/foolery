@@ -22,6 +22,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 interface MockKnot {
   id: string;
   title: string;
+  aliases?: string[];
   state: string;
   profile_id?: string;
   workflow_id?: string;
@@ -31,7 +32,6 @@ interface MockKnot {
   priority: number | null;
   type: string | null;
   tags: string[];
-  aliases?: string[];
   notes: Array<Record<string, unknown>>;
   handoff_capsules: Array<Record<string, unknown>>;
   steps?: Array<Record<string, unknown>>;
@@ -435,6 +435,7 @@ function insertKnot(overrides: Partial<MockKnot> & { id: string }): void {
   store.knots.set(overrides.id, {
     id: overrides.id,
     title: overrides.title ?? "Untitled",
+    aliases: overrides.aliases ?? [],
     state: overrides.state ?? "ready_for_planning",
     profile_id: overrides.profile_id ?? "autopilot",
     workflow_id: overrides.workflow_id ?? "autopilot",
@@ -444,7 +445,6 @@ function insertKnot(overrides: Partial<MockKnot> & { id: string }): void {
     priority: overrides.priority ?? null,
     type: overrides.type ?? null,
     tags: overrides.tags ?? [],
-    aliases: overrides.aliases,
     notes: overrides.notes ?? [],
     handoff_capsules: overrides.handoff_capsules ?? [],
     steps: overrides.steps ?? [],
@@ -520,7 +520,7 @@ describe("KnotsBackend coverage: listDependencies parent_of edges", () => {
   it("returns both blocked_by and parent_of dependencies", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "X1", title: "Main" });
-    insertKnot({ id: "X2", title: "Blocker" });
+    insertKnot({ id: "X2", title: "Blocker", aliases: ["blocker-alias"] });
     insertKnot({ id: "X3", title: "Child" });
     store.edges.push({ src: "X1", kind: "blocked_by", dst: "X2" });
     store.edges.push({ src: "X1", kind: "parent_of", dst: "X3" });
@@ -528,6 +528,7 @@ describe("KnotsBackend coverage: listDependencies parent_of edges", () => {
     const result = await backend.listDependencies("X1");
     expect(result.ok).toBe(true);
     expect(result.data?.length).toBe(2);
+    expect(result.data?.find((dep) => dep.id === "X2")?.aliases).toEqual(["blocker-alias"]);
   });
 
   it("skips blocked_by edges where id is neither src nor dst", async () => {

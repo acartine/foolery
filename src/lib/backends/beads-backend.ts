@@ -373,6 +373,7 @@ export class BeadsBackend implements BackendPort {
     }
     const result: BeatDependency[] = matches.map((d) => ({
       id: d.blockerId === id ? d.blockedId : d.blockerId,
+      aliases: entry.beads.get(d.blockerId === id ? d.blockedId : d.blockerId)?.aliases,
       type: "blocks",
       source: d.blockerId,
       target: d.blockedId,
