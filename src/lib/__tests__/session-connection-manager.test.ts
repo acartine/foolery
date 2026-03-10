@@ -297,4 +297,43 @@ describe("SessionConnectionManager", () => {
 
     expect(mockAddNotification).toHaveBeenCalledTimes(1);
   });
+
+  it("preserves aborted status when exit event arrives", () => {
+    mockTerminals.push({
+      sessionId: "sess-aborted",
+      status: "aborted",
+      beatId: "beat-50",
+      beatTitle: "Aborted session",
+      repoPath: "/repos/test",
+    });
+    sessionConnections.connect("sess-aborted");
+
+    // Exit event arrives after session was already marked aborted
+    capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
+
+    // updateStatus should NOT have been called — status stays "aborted"
+    expect(mockUpdateStatus).not.toHaveBeenCalled();
+
+    // Notification should say "terminated" instead of "completed"
+    expect(mockAddNotification).toHaveBeenCalledWith({
+      message: '"Aborted session" session terminated',
+      beatId: "beat-50",
+      repoPath: "/repos/test",
+    });
+  });
+
+  it("does not preserve aborted if exit arrives for running session", () => {
+    mockTerminals.push({
+      sessionId: "sess-running-exit",
+      status: "running",
+      beatId: "beat-51",
+      beatTitle: "Running session",
+    });
+    sessionConnections.connect("sess-running-exit");
+
+    capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
+
+    // Should update status normally
+    expect(mockUpdateStatus).toHaveBeenCalledWith("sess-running-exit", "completed");
+  });
 });

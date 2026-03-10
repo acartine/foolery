@@ -703,11 +703,19 @@ export async function createSession(
   console.log(`[terminal-manager]   prompt: ${prompt.slice(0, 120)}...`);
 
   let sessionFinished = false;
+  let sessionAborted = false;
+
+  // Wire up entry.abort so abortSession() can set the in-session flag.
+  // This prevents the take-loop from spawning new iterations after terminate.
+  entry.abort = () => { sessionAborted = true; };
+
   const finishSession = (exitCode: number) => {
     if (sessionFinished) return;
     sessionFinished = true;
     session.exitCode = exitCode;
-    session.status = exitCode === 0 ? "completed" : "error";
+    // Preserve "aborted" status if the session was terminated by the user,
+    // regardless of the exit code the child process reported.
+    session.status = sessionAborted ? "aborted" : exitCode === 0 ? "completed" : "error";
     interactionLog.logEnd(exitCode, session.status);
     pushEvent({ type: "exit", data: String(exitCode), timestamp: Date.now() });
     entry.process = null;
@@ -1057,6 +1065,7 @@ export async function createSession(
     const takeChild = spawn(effectiveCmd, effectiveArgs, {
       cwd,
       stdio: [effectiveIsInteractive ? "pipe" : "ignore", "pipe", "pipe"],
+      detached: true,
     });
     entry.process = takeChild;
 
@@ -1178,7 +1187,14 @@ export async function createSession(
       entry.process = null;
 
       const tag = `[terminal-manager] [${id}] [take-loop]`;
-      console.log(`${tag} child close: code=${takeCode} iteration=${takeIteration}/${MAX_TAKE_ITERATIONS} beat=${beatId}`);
+      console.log(`${tag} child close: code=${takeCode} iteration=${takeIteration}/${MAX_TAKE_ITERATIONS} beat=${beatId} aborted=${sessionAborted}`);
+
+      // If the session was aborted, skip take-loop continuation and finish immediately.
+      if (sessionAborted) {
+        console.log(`${tag} STOP: session was aborted`);
+        finishSession(takeCode ?? 1);
+        return;
+      }
 
       getBackend().get(beatId, repoPath).then((r) => {
         const state = r.ok && r.data ? r.data.state : "unknown";
@@ -1301,6 +1317,7 @@ export async function createSession(
   const child = spawn(agentCmd, args, {
     cwd,
     stdio: [isInteractive ? "pipe" : "ignore", "pipe", "pipe"],
+    detached: true,
   });
   entry.process = child;
 
@@ -1549,6 +1566,13 @@ export async function createSession(
     child.stderr?.removeAllListeners();
     entry.process = null;
 
+    // If the session was aborted, skip take-loop continuation and finish immediately.
+    if (sessionAborted) {
+      console.log(`${tag} STOP: session was aborted`);
+      finishSession(code ?? 1);
+      return;
+    }
+
     // Take loop: check if this session should continue claiming the same beat
     if (isTakeLoop && code !== 0) {
       console.log(`${tag} STOP: initial child exited with non-zero code=${code}`);
@@ -1689,16 +1713,41 @@ export function abortSession(id: string): boolean {
   if (!entry) return false;
 
   entry.session.status = "aborted";
+
+  // Signal the in-session abort flag so finishSession preserves "aborted"
+  // and the take-loop close handlers stop spawning new iterations.
   if (entry.abort) {
     entry.abort();
-    return true;
   }
-  if (!entry.process) return false;
-  entry.process.kill("SIGTERM");
 
+  if (!entry.process) return entry.abort != null;
+
+  const proc = entry.process;
+  const pid = proc.pid;
+
+  // Try to kill the entire process group so descendant processes don't
+  // survive.  process.kill(-pid) sends to the group; fall back to direct
+  // kill if the group signal fails (e.g. if detached).
+  try {
+    if (pid) process.kill(-pid, "SIGTERM");
+  } catch {
+    try { proc.kill("SIGTERM"); } catch { /* already dead */ }
+  }
+
+  // Escalate to SIGKILL after 5 s if the process is still alive.
   setTimeout(() => {
-    if (entry.process && !entry.process.killed) {
-      entry.process.kill("SIGKILL");
+    try {
+      // process.kill(pid, 0) throws if the process is gone — use it as a
+      // liveness check instead of the unreliable child.killed flag.
+      if (pid) process.kill(pid, 0);
+      // Still alive — force-kill the group (or single process).
+      try {
+        if (pid) process.kill(-pid, "SIGKILL");
+      } catch {
+        try { proc.kill("SIGKILL"); } catch { /* already dead */ }
+      }
+    } catch {
+      // Process already exited — nothing to do.
     }
   }, 5000);
 

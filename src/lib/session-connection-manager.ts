@@ -73,29 +73,41 @@ class SessionConnectionManager {
           // (server crash / restart) — NOT a clean completion.
           const isDisconnect = conn.exitCode === -2;
 
-          // Update zustand store directly — outside React lifecycle
-          useTerminalStore
+          // If the store already shows "aborted" (set by the terminate
+          // action), preserve that status instead of overwriting it with
+          // completed/error derived from the exit code.
+          const currentTerminal = useTerminalStore
             .getState()
-            .updateStatus(
-              sessionId,
-              isDisconnect
-                ? "disconnected"
-                : conn.exitCode === 0
-                  ? "completed"
-                  : "error",
-            );
+            .terminals.find((t) => t.sessionId === sessionId);
+          const alreadyAborted = currentTerminal?.status === "aborted";
+
+          // Update zustand store directly — outside React lifecycle
+          if (!alreadyAborted) {
+            useTerminalStore
+              .getState()
+              .updateStatus(
+                sessionId,
+                isDisconnect
+                  ? "disconnected"
+                  : conn.exitCode === 0
+                    ? "completed"
+                    : "error",
+              );
+          }
 
           // Fire in-app notification for session exit
-          const terminal = useTerminalStore
+          const terminal = currentTerminal ?? useTerminalStore
             .getState()
             .terminals.find((t) => t.sessionId === sessionId);
           if (terminal) {
             const { addNotification } = useNotificationStore.getState();
-            const status = isDisconnect
-              ? "disconnected (server may have restarted)"
-              : conn.exitCode === 0
-                ? "completed"
-                : "exited with error";
+            const status = alreadyAborted
+              ? "terminated"
+              : isDisconnect
+                ? "disconnected (server may have restarted)"
+                : conn.exitCode === 0
+                  ? "completed"
+                  : "exited with error";
 
             // Extract last stderr content for error context
             let errorDetail = "";
