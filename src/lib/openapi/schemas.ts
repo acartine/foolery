@@ -8,6 +8,7 @@ export const componentSchemas = {
     required: ["id", "title", "type", "state", "priority", "labels", "created", "updated"],
     properties: {
       id: { type: "string" },
+      aliases: { type: "array", items: { type: "string" } },
       title: { type: "string" },
       description: { type: "string" },
       notes: { type: "string" },
@@ -58,6 +59,7 @@ export const componentSchemas = {
     required: ["id", "title", "type", "state", "priority", "labels", "blockedBy", "readiness", "readinessReason"],
     properties: {
       id: { type: "string" },
+      aliases: { type: "array", items: { type: "string" } },
       title: { type: "string" },
       type: { type: "string" },
       state: { type: "string" },

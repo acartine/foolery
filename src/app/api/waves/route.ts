@@ -10,20 +10,25 @@ import type {
   WaveSummary,
 } from "@/lib/types";
 import { beatInFinalCut, workflowDescriptorById } from "@/lib/workflows";
+import { displayBeatLabel } from "@/lib/beat-display";
 
 interface DepEdge {
   source: string; // blocker
   target: string; // blocked
 }
 
-function shortId(id: string): string {
-  return id.replace(/^[^-]+-/, "");
+function labelBeat(
+  id: string,
+  aliasesById: ReadonlyMap<string, readonly string[] | undefined>,
+): string {
+  return displayBeatLabel(id, aliasesById.get(id));
 }
 
 function inferReadiness(
   beat: WaveBeat,
   isUnschedulable: boolean,
   isInFinalCut: boolean,
+  aliasesById: ReadonlyMap<string, readonly string[] | undefined>,
 ): { readiness: WaveReadiness; reason: string } {
   if (isUnschedulable) {
     return {
@@ -57,7 +62,7 @@ function inferReadiness(
     return {
       readiness: "blocked",
       reason: beat.blockedBy.length > 0
-        ? `Waiting on ${beat.blockedBy.map(shortId).join(", ")}`
+        ? `Waiting on ${beat.blockedBy.map((id) => labelBeat(id, aliasesById)).join(", ")}`
         : "Marked blocked.",
     };
   }
@@ -65,7 +70,7 @@ function inferReadiness(
   if (beat.blockedBy.length > 0) {
     return {
       readiness: "blocked",
-      reason: `Waiting on ${beat.blockedBy.map(shortId).join(", ")}`,
+      reason: `Waiting on ${beat.blockedBy.map((id) => labelBeat(id, aliasesById)).join(", ")}`,
     };
   }
 
@@ -180,6 +185,9 @@ export async function GET(request: NextRequest) {
       .filter((beat) => beatInFinalCut(beat, workflowsById))
       .map((beat) => beat.id),
   );
+  const aliasesById = new Map(
+    beats.map((beat) => [beat.id, beat.aliases] as const),
+  );
 
   // Fetch deps for all beats in parallel
   const depResults = await Promise.allSettled(
@@ -207,6 +215,7 @@ export async function GET(request: NextRequest) {
       .map((d) => d.source);
     return {
       id: b.id,
+      aliases: b.aliases,
       title: b.title,
       type: b.type,
       state: b.state,
@@ -223,13 +232,23 @@ export async function GET(request: NextRequest) {
 
   for (const wave of basePlan.waves) {
     for (const beat of wave.beats) {
-      const { readiness, reason } = inferReadiness(beat, false, finalCutIds.has(beat.id));
+      const { readiness, reason } = inferReadiness(
+        beat,
+        false,
+        finalCutIds.has(beat.id),
+        aliasesById,
+      );
       beat.readiness = readiness;
       beat.readinessReason = reason;
       beat.waveLevel = wave.level;
     }
     if (wave.gate) {
-      const { readiness, reason } = inferReadiness(wave.gate, false, finalCutIds.has(wave.gate.id));
+      const { readiness, reason } = inferReadiness(
+        wave.gate,
+        false,
+        finalCutIds.has(wave.gate.id),
+        aliasesById,
+      );
       wave.gate.readiness = readiness;
       wave.gate.readinessReason = reason;
       wave.gate.waveLevel = wave.level;
@@ -241,6 +260,7 @@ export async function GET(request: NextRequest) {
       beat,
       unschedulableIds.has(beat.id),
       finalCutIds.has(beat.id),
+      aliasesById,
     );
     beat.readiness = readiness;
     beat.readinessReason = reason;

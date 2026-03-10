@@ -29,6 +29,7 @@ interface ExecOptions {
 
 export interface KnotRecord {
   id: string;
+  aliases?: string[];
   title: string;
   state: string;
   profile_id?: string;

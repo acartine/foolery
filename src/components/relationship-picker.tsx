@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchBeats } from "@/lib/api";
+import { useQuery, useQueries } from "@tanstack/react-query";
+import { fetchBeat, fetchBeats } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus, Search } from "lucide-react";
 import type { Beat } from "@/lib/types";
+import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
 
 interface RelationshipPickerProps {
   label: string;
@@ -36,6 +37,14 @@ export function RelationshipPicker({
     enabled: searchOpen && query.length > 0,
   });
 
+  const selectedQueries = useQueries({
+    queries: selectedIds.map((id) => ({
+      queryKey: ["beat", id, repo],
+      queryFn: () => fetchBeat(id, repo || undefined),
+      enabled: selectedIds.length > 0,
+    })),
+  });
+
   const results = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
     return data.data.filter(
@@ -43,13 +52,29 @@ export function RelationshipPicker({
     );
   }, [data, excludeId, selectedIds]);
 
+  const knownBeats = useMemo(() => {
+    const byId = new Map<string, Beat>();
+    for (const beat of results) {
+      byId.set(beat.id, beat);
+    }
+    for (const queryResult of selectedQueries) {
+      if (!queryResult.data?.ok || !queryResult.data.data) continue;
+      byId.set(queryResult.data.data.id, queryResult.data.data);
+    }
+    return byId;
+  }, [results, selectedQueries]);
+
   return (
     <div className="space-y-1.5">
       <PickerHeader
         label={label}
         onToggle={() => setSearchOpen(!searchOpen)}
       />
-      <SelectedBadges selectedIds={selectedIds} onRemove={onRemove} />
+      <SelectedBadges
+        selectedIds={selectedIds}
+        knownBeats={knownBeats}
+        onRemove={onRemove}
+      />
       {searchOpen && (
         <SearchDropdown
           query={query}
@@ -92,9 +117,11 @@ function PickerHeader({
 
 function SelectedBadges({
   selectedIds,
+  knownBeats,
   onRemove,
 }: {
   selectedIds: string[];
+  knownBeats: Map<string, Beat>;
   onRemove: (id: string) => void;
 }) {
   if (selectedIds.length === 0) return null;
@@ -105,8 +132,9 @@ function SelectedBadges({
           key={id}
           variant="outline"
           className="gap-1 pr-1 font-mono text-xs"
+          title={knownBeats.get(id)?.title ?? id}
         >
-          {id.replace(/^[^-]+-/, "")}
+          {displayBeatLabel(id, knownBeats.get(id)?.aliases)}
           <button
             type="button"
             className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
@@ -154,9 +182,14 @@ function SearchDropdown({
                 onClick={() => onSelect(beat.id)}
               >
                 <span className="font-mono text-muted-foreground">
-                  {beat.id.replace(/^[^-]+-/, "")}
+                  {displayBeatLabel(beat.id, beat.aliases)}
                 </span>
                 <span className="truncate">{beat.title}</span>
+                {displayBeatLabel(beat.id, beat.aliases) !== stripBeatPrefix(beat.id) && (
+                  <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+                    {stripBeatPrefix(beat.id)}
+                  </span>
+                )}
               </button>
             </li>
           ))}

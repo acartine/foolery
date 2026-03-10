@@ -366,6 +366,7 @@ function toBeat(
   if (!workflow) {
     return {
       id: knot.id,
+      aliases: knot.aliases?.filter((alias) => typeof alias === "string" && alias.trim().length > 0),
       title: knot.title,
       description: typeof knot.description === "string" ? knot.description : knot.body ?? undefined,
       type: knot.type ?? "work",
@@ -399,6 +400,7 @@ function toBeat(
 
   return {
     id: knot.id,
+    aliases: knot.aliases?.filter((alias) => typeof alias === "string" && alias.trim().length > 0),
     title: knot.title,
     description:
       typeof knot.description === "string"
