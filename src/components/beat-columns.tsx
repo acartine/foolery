@@ -686,9 +686,10 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         if (beat.nextActionOwnerKind === "human") return null;
         const isActiveShipping = Boolean(shippingByBeatId[beat.id]);
         const isChildOfRolling = parentRollingBeatIds.has(beat.id);
-        const hb = beat as unknown as { _hasChildren?: boolean };
+        const hb = beat as unknown as { _hasChildren?: boolean; _memoryManagerType?: string };
         const isParent = hb._hasChildren ?? false;
-        const actionLabel = isParent ? "Scene!" : "Take!";
+        const isKnotsParent = isParent && hb._memoryManagerType === "knots";
+        const actionLabel = isParent && !isKnotsParent ? "Scene!" : "Take!";
 
         if (isActiveShipping) {
           return (
@@ -722,7 +723,7 @@ export function getBeatColumns(opts: BeatColumnOpts | boolean = false): ColumnDe
         return (
           <button
             type="button"
-            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${isParent ? "text-purple-700 hover:bg-purple-100" : "text-blue-700 hover:bg-blue-100"}`}
+            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${isParent && !isKnotsParent ? "text-purple-700 hover:bg-purple-100" : "text-blue-700 hover:bg-blue-100"}`}
             title={actionLabel}
             onClick={(e) => {
               e.stopPropagation();

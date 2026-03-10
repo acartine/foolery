@@ -127,6 +127,7 @@ export interface DirEntry {
 export interface BeatWithRepo extends Beat {
   _repoPath: string;
   _repoName: string;
+  _memoryManagerType?: MemoryManagerType;
 }
 
 // ── Terminal types ──────────────────────────────────────────

@@ -564,7 +564,10 @@ export async function createSession(
   const isParent = isWave || Boolean(hasChildren && waveBeatIds.length > 0);
   const resolvedRepoPath = repoPath || process.cwd();
   const memoryManagerType = resolveMemoryManagerType(resolvedRepoPath);
-  const targets = isParent ? waveBeats : [beat];
+  // In knots repos, parent beats use single-beat Take mode, not Scene orchestration.
+  // Scene orchestration asserts child claimability which fails for knots parents.
+  const effectiveParent = isParent && memoryManagerType !== "knots";
+  const targets = effectiveParent ? waveBeats : [beat];
   const healedTargets = await Promise.all(
     targets.map((target) =>
       rollbackAgentOwnedActionStateToQueue(
@@ -577,7 +580,7 @@ export async function createSession(
       )
     ),
   );
-  if (isParent) {
+  if (effectiveParent) {
     waveBeats = healedTargets.filter((h) => !isTerminalBeatState(h.beat.state)).map(h => h.beat);
     waveBeatIds = waveBeats.map((child) => child.id);
     assertClaimable(waveBeats, "Scene", memoryManagerType);
@@ -610,8 +613,8 @@ export async function createSession(
     const takePromptResult = await getBackend().buildTakePrompt(
       beat.id,
       {
-        isParent,
-        childBeatIds: waveBeatIds.length > 0 ? waveBeatIds : undefined,
+        isParent: effectiveParent,
+        childBeatIds: effectiveParent && waveBeatIds.length > 0 ? waveBeatIds : undefined,
       },
       repoPath,
     );
@@ -622,7 +625,7 @@ export async function createSession(
 
     // The backend's buildTakePrompt already provides beat context and
     // kno claim instructions.  We only add a thin execution-mode wrapper.
-    prompt = wrapExecutionPrompt(taskPrompt, isParent ? "scene" : "take");
+    prompt = wrapExecutionPrompt(taskPrompt, effectiveParent ? "scene" : "take");
   }
 
   const session: TerminalSession = {
@@ -644,9 +647,9 @@ export async function createSession(
 
   const interactionLog = await startInteractionLog({
     sessionId: id,
-    interactionType: isParent ? "scene" : "take",
+    interactionType: effectiveParent ? "scene" : "take",
     repoPath: resolvedRepoPath,
-    beatIds: isParent ? waveBeatIds : [beatId],
+    beatIds: effectiveParent ? waveBeatIds : [beatId],
     agentName: agentDisplayName(agent),
     agentModel: agent.model,
     agentVersion: agent.version,
@@ -767,7 +770,7 @@ export async function createSession(
   const normalizeEvent = createLineNormalizer(dialect);
 
   // ── Take loop infrastructure (single-beat only) ─────────
-  const isTakeLoop = !isParent && !customPrompt;
+  const isTakeLoop = !effectiveParent && !customPrompt;
   let takeIteration = 1;
 
   const wrapSingleBeatPrompt = (taskPrompt: string): string => {
@@ -1335,7 +1338,7 @@ export async function createSession(
       ? null
       : !supportsAutoFollowUp(memoryManagerType)
         ? null
-      : isParent
+      : effectiveParent
         ? buildWaveCompletionFollowUp(
           beat.id,
           sceneTargets,

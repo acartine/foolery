@@ -230,6 +230,7 @@ export async function fetchBeatsFromAllRepos(
         ...beat,
         _repoPath: repo.path,
         _repoName: repo.name,
+        _memoryManagerType: repo.memoryManagerType,
       }));
     })
   );

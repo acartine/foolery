@@ -253,6 +253,8 @@ describe("terminal-manager nextKnot expected-state guard", () => {
   });
 
   it("wraps app-generated initial prompt for one-shot scene sessions", async () => {
+    // Scene orchestration only applies to beads repos; knots parents use Take mode.
+    resolveMemoryManagerTypeMock.mockReturnValue("beads");
     backend.get.mockResolvedValue({
       ok: true,
       data: {
@@ -289,6 +291,48 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     expect(initialPrompt).toContain("Execute only the child beats explicitly listed below.");
     expect(initialPrompt).toContain("scene app prompt");
     expect(interactionLog.logPrompt).toHaveBeenCalledWith(initialPrompt, { source: "initial" });
+  });
+
+  it("wraps knots parent prompt as Take instead of Scene", async () => {
+    // Knots parents should use single-beat Take mode, not Scene orchestration.
+    resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-3050",
+        title: "Knots parent beat",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({
+      ok: true,
+      data: [
+        {
+          id: "foolery-3051",
+          title: "Child knot",
+          state: "ready_for_implementation",
+          isAgentClaimable: true,
+        },
+      ],
+    });
+    backend.buildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "knots parent prompt" },
+    });
+
+    await createSession("foolery-3050", "/tmp/repo");
+
+    expect(spawnedChildren).toHaveLength(1);
+    expect(interactionLog.logPrompt).toHaveBeenCalledTimes(1);
+    const initialPrompt = interactionLog.logPrompt.mock.calls[0]?.[0];
+    expect(typeof initialPrompt).toBe("string");
+    expect(initialPrompt).toContain("FOOLERY EXECUTION BOUNDARY:");
+    // Should use Take wrapping, not Scene wrapping
+    expect(initialPrompt).toContain("Execute only the currently assigned workflow action described below.");
+    expect(initialPrompt).not.toContain("Execute only the child beats explicitly listed below.");
+    expect(initialPrompt).toContain("knots parent prompt");
   });
 
   it("wraps backend prompt for beads-managed beats", async () => {
