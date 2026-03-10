@@ -54,7 +54,7 @@ describe("beats page layout", () => {
 
   it("constrains selected-row description and notes summaries on laptop widths", () => {
     expect(beatTableSource).toContain('className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(2,minmax(0,1fr))] text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}');
-    expect(beatTableSource).toContain('className={`min-w-0 ${rounded} px-2 py-1 ${bg}`}');
-    expect(beatTableSource).toContain('className="min-w-0"');
+    expect(beatTableSource).toContain('const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");');
+    expect(beatTableSource).toContain('<TableCell colSpan={visibleCells.length - titleCellIndex} className="whitespace-normal pt-0">');
   });
 });

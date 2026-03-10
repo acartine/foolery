@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { Fragment, useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useReactTable,
@@ -651,42 +651,57 @@ function BeatTableContent({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              className={cn(
-                focusedRowId === row.original.id && "bg-muted/50",
-              )}
-              onClick={() => handleRowFocus(row.original)}
-            >
-              {row.getVisibleCells().map((cell) => {
-                const meta = cell.column.columnDef.meta as ColumnMetaSizing | undefined;
-                return (
-                  <TableCell
-                    key={cell.id}
-                    className={
-                      meta?.widthPercent || meta?.minWidthPx
-                        ? "whitespace-nowrap"
-                        : cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER
-                          ? undefined
-                          : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    {focusedRowId === row.original.id &&
-                      cell.column.id === "title" && (
-                        <div
-                          className="min-w-0"
-                          style={{ paddingLeft: `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px` }}
-                        >
-                          <InlineSummary beat={row.original} />
-                        </div>
-                      )}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))
+          table.getRowModel().rows.map((row) => {
+            const visibleCells = row.getVisibleCells();
+            const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");
+            const detailColSpan = titleCellIndex === -1 ? 0 : visibleCells.length - titleCellIndex;
+            const detailIndent = `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px`;
+            const showInlineSummary =
+              focusedRowId === row.original.id &&
+              detailColSpan > 0 &&
+              Boolean(row.original.description || row.original.notes);
+
+            return (
+              <Fragment key={row.id}>
+                <TableRow
+                  className={cn(
+                    focusedRowId === row.original.id && "bg-muted/50",
+                  )}
+                  onClick={() => handleRowFocus(row.original)}
+                >
+                  {visibleCells.map((cell) => {
+                    const meta = cell.column.columnDef.meta as ColumnMetaSizing | undefined;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          meta?.widthPercent || meta?.minWidthPx
+                            ? "whitespace-nowrap"
+                            : cell.column.columnDef.maxSize! < Number.MAX_SAFE_INTEGER
+                              ? undefined
+                              : cn("whitespace-normal", cell.column.id === "title" ? "overflow-visible" : "overflow-hidden")
+                        }
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+                {showInlineSummary && (
+                  <TableRow className="bg-muted/30">
+                    {visibleCells.slice(0, titleCellIndex).map((cell) => (
+                      <TableCell key={`${cell.id}-summary-pad`} />
+                    ))}
+                    <TableCell colSpan={visibleCells.length - titleCellIndex} className="whitespace-normal pt-0">
+                      <div className="min-w-0" style={{ paddingLeft: detailIndent }}>
+                        <InlineSummary beat={row.original} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
+            );
+          })
         ) : (
           <TableRow>
             <TableCell
