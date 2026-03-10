@@ -45,13 +45,152 @@ import { CascadeCloseDialog } from "@/components/cascade-close-dialog";
 import type { CascadeDescendant } from "@/lib/cascade-close";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 
+type MetadataEntry = Record<string, unknown>;
+type RenderedCapsule = {
+  entry: MetadataEntry;
+  key: string;
+  content: string;
+};
+
+const HANDOFF_METADATA_KEYS = [
+  "knotsHandoffCapsules",
+  "knots_handoff_capsules",
+  "handoff_capsules",
+  "handoffCapsules",
+  "handoff_capsule_history",
+] as const;
+
+function pickString(entry: MetadataEntry, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = entry[key];
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed) return trimmed;
+    }
+  }
+  return undefined;
+}
+
+function pickObject(entry: MetadataEntry, keys: string[]): MetadataEntry | null {
+  for (const key of keys) {
+    const value = entry[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as MetadataEntry;
+    }
+  }
+  return null;
+}
+
+function readMetadataEntries(beat: Beat, keys: string[]): MetadataEntry[] {
+  const metadata = beat.metadata;
+  if (!metadata || typeof metadata !== "object") return [];
+
+  for (const key of keys) {
+    const raw = (metadata as Record<string, unknown>)[key];
+    if (!Array.isArray(raw)) continue;
+    return raw.filter((entry): entry is MetadataEntry => Boolean(entry && typeof entry === "object"));
+  }
+
+  return [];
+}
+
+function metadataEntryKey(entry: MetadataEntry, index: number): string {
+  return pickString(entry, ["entry_id", "id", "step_id", "uuid"]) ?? String(index);
+}
+
+function relativeTime(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 30) return `${diffDay}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function safeRelativeTime(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? value : relativeTime(value);
+}
+
+function capsuleMeta(entry: MetadataEntry): string | undefined {
+  const metadata = pickObject(entry, ["metadata", "meta", "details"]);
+  const agent = pickObject(entry, ["agent", "executor", "worker"]) ??
+    (metadata ? pickObject(metadata, ["agent", "executor", "worker"]) : null);
+  const user = pickObject(entry, ["user", "author", "created_by", "createdBy"]) ??
+    (metadata ? pickObject(metadata, ["user", "author", "created_by", "createdBy"]) : null);
+  const actor = pickObject(entry, ["actor", "updated_by", "updatedBy", "by"]) ??
+    (metadata ? pickObject(metadata, ["actor", "updated_by", "updatedBy", "by"]) : null);
+
+  const agentName =
+    pickString(entry, ["agentname", "agentName", "agent_name"]) ??
+    (metadata ? pickString(metadata, ["agentname", "agentName", "agent_name"]) : undefined) ??
+    (agent ? pickString(agent, ["name", "agentname", "agentName", "agent_name"]) : undefined);
+  const model =
+    pickString(entry, ["model", "agentModel", "agent_model"]) ??
+    (metadata ? pickString(metadata, ["model", "agentModel", "agent_model"]) : undefined) ??
+    (agent ? pickString(agent, ["model", "agentModel", "agent_model"]) : undefined);
+  const version =
+    pickString(entry, ["version", "agentVersion", "agent_version"]) ??
+    (metadata ? pickString(metadata, ["version", "agentVersion", "agent_version"]) : undefined) ??
+    (agent ? pickString(agent, ["version", "agentVersion", "agent_version"]) : undefined);
+  const username =
+    pickString(entry, ["username", "user", "user_name", "actor", "actor_name"]) ??
+    (metadata ? pickString(metadata, ["username", "user", "user_name", "actor", "actor_name"]) : undefined) ??
+    (user ? pickString(user, ["name", "username", "login"]) : undefined) ??
+    (actor ? pickString(actor, ["name", "username", "login"]) : undefined);
+  const datetime = safeRelativeTime(
+    pickString(entry, [
+      "datetime",
+      "timestamp",
+      "ts",
+      "created_at",
+      "createdAt",
+      "updated_at",
+      "updatedAt",
+      "time",
+    ]) ??
+      (metadata ? pickString(metadata, [
+        "datetime",
+        "timestamp",
+        "ts",
+        "created_at",
+        "createdAt",
+        "updated_at",
+        "updatedAt",
+        "time",
+        "at",
+        "occurred_at",
+      ]) : undefined),
+  );
+
+  return [agentName, model, version, username, datetime].filter(Boolean).join(" | ") || undefined;
+}
+
+function renderedHandoffCapsules(beat: Beat): RenderedCapsule[] {
+  return readMetadataEntries(beat, [...HANDOFF_METADATA_KEYS])
+    .flatMap((capsule, index) => {
+      const content = pickString(capsule, ["content", "summary", "message", "description", "note"]);
+      if (!content) return [];
+      return [{ entry: capsule, key: metadataEntryKey(capsule, index), content }];
+    })
+    .reverse();
+}
+
 function SummaryColumn({
+  label,
   text,
   bg,
   rounded,
   expanded,
   onExpand,
 }: {
+  label: string;
   text: string;
   bg: string;
   rounded: string;
@@ -69,6 +208,9 @@ function SummaryColumn({
 
   return (
     <div className={`min-w-0 ${rounded} px-2 py-1 ${bg}`}>
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
       <div
         ref={ref}
         className={`whitespace-pre-wrap break-words ${expanded ? "" : "line-clamp-[7]"}`}
@@ -88,16 +230,75 @@ function SummaryColumn({
   );
 }
 
-function InlineSummary({ beat }: { beat: Beat }) {
+function HandoffCapsulesColumn({
+  capsules,
+  expanded,
+  onExpand,
+}: {
+  capsules: RenderedCapsule[];
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const canExpand = capsules.length > 2 || capsules.some((capsule) => capsule.content.length > 280);
+  const visibleCapsules = expanded ? capsules : capsules.slice(0, 2);
+
+  return (
+    <div className="min-w-0 rounded-r bg-blue-50 px-2 py-1">
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-800">
+        Handoff Capsules
+      </div>
+      {visibleCapsules.length > 0 ? (
+        <div className="space-y-1">
+          {visibleCapsules.map((capsule) => {
+            const meta = capsuleMeta(capsule.entry);
+            return (
+              <div key={capsule.key} className="rounded bg-white/70 px-1.5 py-1">
+                {meta && (
+                  <div className="mb-0.5 text-[10px] text-muted-foreground">
+                    {meta}
+                  </div>
+                )}
+                <div className={`whitespace-pre-wrap break-words ${expanded ? "" : "line-clamp-[4]"}`}>
+                  {capsule.content}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-muted-foreground">-</div>
+      )}
+      {!expanded && canExpand && (
+        <button
+          type="button"
+          title="Expand handoff capsules"
+          className="mt-0.5 cursor-pointer font-bold text-green-700"
+          onMouseEnter={onExpand}
+        >
+          ...show more...
+        </button>
+      )}
+    </div>
+  );
+}
+
+function InlineSummary({
+  beat,
+  capsules,
+}: {
+  beat: Beat;
+  capsules: RenderedCapsule[];
+}) {
   const [expanded, setExpanded] = useState(false);
-  if (!beat.description && !beat.notes) return null;
+  if (!beat.description && !beat.notes && capsules.length === 0) return null;
 
   return (
     <div
-      className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(2,minmax(0,1fr))] text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}
+      className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(3,minmax(0,1fr))] gap-1 text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}
       onMouseLeave={() => setExpanded(false)}
     >
       <SummaryColumn
+        label="Description"
         text={beat.description || ""}
         bg="bg-green-50"
         rounded="rounded-l"
@@ -105,9 +306,15 @@ function InlineSummary({ beat }: { beat: Beat }) {
         onExpand={() => setExpanded(true)}
       />
       <SummaryColumn
+        label="Notes"
         text={beat.notes || ""}
         bg={beat.notes ? "bg-yellow-50" : ""}
-        rounded="rounded-r"
+        rounded="rounded-none"
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
+      <HandoffCapsulesColumn
+        capsules={capsules}
         expanded={expanded}
         onExpand={() => setExpanded(true)}
       />
@@ -656,10 +863,11 @@ function BeatTableContent({
             const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");
             const detailColSpan = titleCellIndex === -1 ? 0 : visibleCells.length - titleCellIndex;
             const detailIndent = `${((row.original as unknown as { _depth?: number })._depth ?? 0) * 16 + 16}px`;
+            const capsules = renderedHandoffCapsules(row.original);
             const showInlineSummary =
               focusedRowId === row.original.id &&
               detailColSpan > 0 &&
-              Boolean(row.original.description || row.original.notes);
+              Boolean(row.original.description || row.original.notes || capsules.length > 0);
 
             return (
               <Fragment key={row.id}>
@@ -694,7 +902,7 @@ function BeatTableContent({
                     ))}
                     <TableCell colSpan={visibleCells.length - titleCellIndex} className="whitespace-normal pt-0">
                       <div className="min-w-0" style={{ paddingLeft: detailIndent }}>
-                        <InlineSummary beat={row.original} />
+                        <InlineSummary beat={row.original} capsules={capsules} />
                       </div>
                     </TableCell>
                   </TableRow>
