@@ -337,6 +337,19 @@ function normalizeProfileId(value: string | null | undefined): string | null {
   return normalized || null;
 }
 
+function normalizeAliases(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  const aliases = new Set<string>();
+  for (const item of value) {
+    if (typeof item !== "string") continue;
+    const normalized = item.trim();
+    if (!normalized) continue;
+    aliases.add(normalized);
+  }
+  return Array.from(aliases);
+}
+
 function toBeat(
   knot: KnotRecord,
   edges: KnotEdge[],
@@ -348,6 +361,7 @@ function toBeat(
   const workflow = workflowsById.get(profileId) ?? fallback;
   const stepEntries = knotStepEntries(knot);
   const invariants = normalizeInvariants(knot.invariants);
+  const aliases = normalizeAliases(knot.aliases);
 
   if (!workflow) {
     return {
@@ -364,6 +378,7 @@ function toBeat(
       isAgentClaimable: false,
       priority: normalizePriority(knot.priority),
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
+      aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
       parent: deriveParentId(knot.id, edges, knownIds),
       created: knot.created_at ?? knot.updated_at,
@@ -402,6 +417,7 @@ function toBeat(
     isAgentClaimable: runtime.isAgentClaimable,
     priority: normalizePriority(knot.priority),
     labels: tags,
+    aliases: aliases.length > 0 ? aliases : undefined,
     notes,
     parent: deriveParentId(knot.id, edges, knownIds),
     created: knot.created_at ?? knot.updated_at,

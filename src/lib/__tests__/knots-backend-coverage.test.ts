@@ -31,6 +31,7 @@ interface MockKnot {
   priority: number | null;
   type: string | null;
   tags: string[];
+  aliases?: string[];
   notes: Array<Record<string, unknown>>;
   handoff_capsules: Array<Record<string, unknown>>;
   steps?: Array<Record<string, unknown>>;
@@ -443,6 +444,7 @@ function insertKnot(overrides: Partial<MockKnot> & { id: string }): void {
     priority: overrides.priority ?? null,
     type: overrides.type ?? null,
     tags: overrides.tags ?? [],
+    aliases: overrides.aliases,
     notes: overrides.notes ?? [],
     handoff_capsules: overrides.handoff_capsules ?? [],
     steps: overrides.steps ?? [],
@@ -1194,6 +1196,19 @@ describe("KnotsBackend coverage: toBeat edge cases", () => {
     const result = await backend.get("BD1");
     expect(result.ok).toBe(true);
     expect(result.data?.description).toBe("The body text");
+  });
+
+  it("maps knot aliases onto beat aliases", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AL1",
+      title: "Alias mapping",
+      aliases: [" aa57 ", "project-aa57", "aa57", "", "   "],
+    });
+
+    const result = await backend.get("AL1");
+    expect(result.ok).toBe(true);
+    expect(result.data?.aliases).toEqual(["aa57", "project-aa57"]);
   });
 
   it("normalizes invalid priority to 2", async () => {

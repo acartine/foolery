@@ -40,6 +40,7 @@ export interface KnotRecord {
   priority?: number | null;
   type?: string | null;
   tags?: string[];
+  aliases?: string[];
   notes?: Array<Record<string, unknown>>;
   handoff_capsules?: Array<Record<string, unknown>>;
   steps?: Array<Record<string, unknown>>;

@@ -14,6 +14,7 @@ import { DepTree } from "@/components/dep-tree";
 import { RelationshipPicker } from "@/components/relationship-picker";
 import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogClose,
@@ -208,6 +209,28 @@ export function BeatDetailLightbox({
   );
 }
 
+export function getDisplayedBeatId(
+  beatId: string,
+  beat: Pick<Beat, "id"> | null | undefined,
+): string {
+  return beat?.id ?? beatId;
+}
+
+export function getDisplayedBeatAliases(
+  beat: Pick<Beat, "aliases"> | null | undefined,
+): string[] {
+  if (!Array.isArray(beat?.aliases)) return [];
+
+  const aliases = new Set<string>();
+  for (const alias of beat.aliases) {
+    if (typeof alias !== "string") continue;
+    const normalized = alias.trim();
+    if (!normalized) continue;
+    aliases.add(normalized);
+  }
+  return Array.from(aliases);
+}
+
 // ── Header sub-component ──
 
 interface LightboxHeaderProps {
@@ -238,24 +261,37 @@ function LightboxHeader({
   onMoved,
 }: LightboxHeaderProps) {
   const isInheritedRolling = beat ? (isParentRollingBeat?.(beat) ?? false) : false;
+  const displayedBeatId = getDisplayedBeatId(beatId, beat);
+  const displayedAliases = getDisplayedBeatAliases(beat);
 
   return (
     <DialogHeader className="border-b border-border/70 px-3 py-2 space-y-1.5">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-baseline gap-2">
+        <div className="min-w-0 flex-1 space-y-1">
           <DialogDescription
-            className="shrink-0 cursor-pointer font-mono text-[11px]"
+            className="cursor-pointer break-all font-mono text-[11px]"
             onClick={() => {
-              const shortId = beatId.replace(/^[^-]+-/, "");
-              navigator.clipboard.writeText(shortId).then(
-                () => toast.success(`Copied: ${shortId}`),
+              navigator.clipboard.writeText(displayedBeatId).then(
+                () => toast.success(`Copied: ${displayedBeatId}`),
                 () => toast.error("Failed to copy to clipboard"),
               );
             }}
             title="Click to copy ID"
           >
-            {beatId.replace(/^[^-]+-/, "")}
+            {displayedBeatId}
           </DialogDescription>
+          {displayedAliases.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Aliases
+              </span>
+              {displayedAliases.map((alias) => (
+                <Badge key={alias} variant="outline" className="font-mono text-[10px]">
+                  {alias}
+                </Badge>
+              ))}
+            </div>
+          )}
           {isEditingTitle ? (
             <input
               autoFocus
