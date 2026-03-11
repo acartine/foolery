@@ -200,7 +200,25 @@ Use:
 foolery prompt
 ```
 
-This appends Foolery's guidance prompt (`PROMPT.md`) into whichever default prompt files already exist in the current repository.
+This appends Foolery's guidance prompt into whichever default prompt files already exist in the current repository.
+
+Preview changes first:
+
+```bash
+foolery prompt --dry-run
+```
+
+Remove Foolery-managed guidance blocks:
+
+```bash
+foolery prompt --remove
+```
+
+See prompt-specific options:
+
+```bash
+foolery prompt --help
+```
 
 Why this matters:
 - Agents must move a bead to `in_progress` before any edits or commits.
