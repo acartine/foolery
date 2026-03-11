@@ -10,16 +10,26 @@ describe("beat detail lightbox identity helpers", () => {
     expect(getDisplayedBeatId("foolery-aa57", { id: "other-bb11" })).toBe("other-bb11");
   });
 
-  it("normalizes beat aliases for display", () => {
+  it("deduplicates aliases against the beat id", () => {
     expect(
       getDisplayedBeatAliases({
-        aliases: ["  aa57  ", "project-aa57", "aa57", "", "   "],
+        id: "foolery-aa57",
+        aliases: ["  aa57  ", "project-aa57", "aa57", "foolery-aa57", "", "   "],
       }),
     ).toEqual(["aa57", "project-aa57"]);
   });
 
+  it("retains full project-qualified aliases from other projects", () => {
+    expect(
+      getDisplayedBeatAliases({
+        id: "proj-1234",
+        aliases: ["proj-5678.3"],
+      }),
+    ).toEqual(["proj-5678.3"]);
+  });
+
   it("returns an empty list when no aliases are present", () => {
     expect(getDisplayedBeatAliases(null)).toEqual([]);
-    expect(getDisplayedBeatAliases({ aliases: undefined })).toEqual([]);
+    expect(getDisplayedBeatAliases({ id: "x", aliases: undefined })).toEqual([]);
   });
 });

@@ -216,15 +216,16 @@ export function getDisplayedBeatId(
 }
 
 export function getDisplayedBeatAliases(
-  beat: Pick<Beat, "aliases"> | null | undefined,
+  beat: Pick<Beat, "id" | "aliases"> | null | undefined,
 ): string[] {
   if (!Array.isArray(beat?.aliases)) return [];
 
+  const beatId = beat.id;
   const aliases = new Set<string>();
   for (const alias of beat.aliases) {
     if (typeof alias !== "string") continue;
     const normalized = alias.trim();
-    if (!normalized) continue;
+    if (!normalized || normalized === beatId) continue;
     aliases.add(normalized);
   }
   return Array.from(aliases);
