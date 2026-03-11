@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { Beat, BeatDependency, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { fetchBeat, fetchDeps, fetchWorkflows, addDep } from "@/lib/api";
+import { displayBeatLabel } from "@/lib/beat-display";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import { BeatDetail } from "@/components/beat-detail";
@@ -210,21 +211,23 @@ export function BeatDetailLightbox({
 
 export function getDisplayedBeatId(
   beatId: string,
-  beat: Pick<Beat, "id"> | null | undefined,
+  beat: Pick<Beat, "id" | "aliases"> | null | undefined,
 ): string {
-  return beat?.id ?? beatId;
+  return displayBeatLabel(beat?.id ?? beatId, beat?.aliases);
 }
 
 export function getDisplayedBeatAliases(
-  beat: Pick<Beat, "aliases"> | null | undefined,
+  beat: Pick<Beat, "id" | "aliases"> | null | undefined,
 ): string[] {
   if (!Array.isArray(beat?.aliases)) return [];
 
+  const displayedBeatId = displayBeatLabel(beat.id, beat.aliases);
   const aliases = new Set<string>();
   for (const alias of beat.aliases) {
     if (typeof alias !== "string") continue;
     const normalized = alias.trim();
     if (!normalized) continue;
+    if (normalized === displayedBeatId) continue;
     aliases.add(normalized);
   }
   return Array.from(aliases);

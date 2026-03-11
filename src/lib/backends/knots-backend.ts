@@ -243,23 +243,38 @@ function parentFromEdges(id: string, edges: KnotEdge[]): string | undefined {
 }
 
 function parentFromHierarchicalId(
-  id: string,
-  knownIds: ReadonlySet<string>,
+  ids: readonly string[],
+  hierarchyIndex: ReadonlyMap<string, string>,
 ): string | undefined {
-  let cursor = id;
-  while (cursor.includes(".")) {
-    cursor = cursor.slice(0, cursor.lastIndexOf("."));
-    if (knownIds.has(cursor)) return cursor;
+  for (const id of ids) {
+    let cursor = id;
+    while (cursor.includes(".")) {
+      cursor = cursor.slice(0, cursor.lastIndexOf("."));
+      const parentId = hierarchyIndex.get(cursor);
+      if (parentId) return parentId;
+    }
   }
   return undefined;
 }
 
 function deriveParentId(
   id: string,
+  aliases: readonly string[] | undefined,
   edges: KnotEdge[],
-  knownIds: ReadonlySet<string>,
+  hierarchyIndex: ReadonlyMap<string, string>,
 ): string | undefined {
-  return parentFromEdges(id, edges) ?? parentFromHierarchicalId(id, knownIds);
+  return parentFromEdges(id, edges) ?? parentFromHierarchicalId([id, ...(aliases ?? [])], hierarchyIndex);
+}
+
+function buildHierarchyIndex(records: readonly KnotRecord[]): Map<string, string> {
+  const hierarchyIndex = new Map<string, string>();
+  for (const record of records) {
+    hierarchyIndex.set(record.id, record.id);
+    for (const alias of normalizeAliases(record.aliases)) {
+      hierarchyIndex.set(alias, record.id);
+    }
+  }
+  return hierarchyIndex;
 }
 
 function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
@@ -353,7 +368,7 @@ function normalizeAliases(value: unknown): string[] {
 function toBeat(
   knot: KnotRecord,
   edges: KnotEdge[],
-  knownIds: ReadonlySet<string>,
+  hierarchyIndex: ReadonlyMap<string, string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): Beat {
   const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
@@ -380,7 +395,7 @@ function toBeat(
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
-      parent: deriveParentId(knot.id, edges, knownIds),
+      parent: deriveParentId(knot.id, aliases, edges, hierarchyIndex),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
       invariants: invariants.length > 0 ? invariants : undefined,
@@ -419,7 +434,7 @@ function toBeat(
     labels: tags,
     aliases: aliases.length > 0 ? aliases : undefined,
     notes,
-    parent: deriveParentId(knot.id, edges, knownIds),
+    parent: deriveParentId(knot.id, aliases, edges, hierarchyIndex),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
@@ -661,7 +676,7 @@ export class KnotsBackend implements BackendPort {
     if (!listResult.ok) return propagateError<Beat[]>(listResult);
 
     const records = listResult.data ?? [];
-    const knownIds = new Set(records.map((record) => record.id));
+    const hierarchyIndex = buildHierarchyIndex(records);
 
     // Fetch edges sequentially to avoid CLI lock contention.
     // Cached entries are returned instantly; only uncached IDs hit the CLI.
@@ -679,7 +694,7 @@ export class KnotsBackend implements BackendPort {
     }
 
     const beats = records.map((record) =>
-      toBeat(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
+      toBeat(record, edgesById.get(record.id) ?? [], hierarchyIndex, workflowMap),
     );
     return ok(beats);
   }
@@ -766,7 +781,14 @@ export class KnotsBackend implements BackendPort {
     const workflowMapResult = await this.workflowMapByProfileId(rp);
     if (!workflowMapResult.ok) return propagateError<Beat>(workflowMapResult);
 
-    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
+    return ok(
+      toBeat(
+        knotResult.data!,
+        edgesResult.data ?? [],
+        buildHierarchyIndex([knotResult.data!]),
+        workflowMapResult.data ?? new Map(),
+      ),
+    );
   }
 
   async create(
