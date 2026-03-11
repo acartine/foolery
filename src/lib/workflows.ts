@@ -230,7 +230,7 @@ function normalizeState(value: string | null | undefined): string | null {
   return normalized ? normalized : null;
 }
 
-function normalizeProfileId(value: string | null | undefined): string | null {
+export function normalizeProfileId(value: string | null | undefined): string | null {
   const normalized = value?.trim().toLowerCase();
   if (!normalized) return null;
 

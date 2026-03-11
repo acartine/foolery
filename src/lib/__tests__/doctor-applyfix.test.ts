@@ -454,7 +454,7 @@ describe("applyFix: stale-parent", () => {
 // ── applyFix: prompt-guidance ────────────────────────────────
 
 describe("applyFix: prompt-guidance", () => {
-  it("appends template content when PROMPT.md exists", async () => {
+  it("appends template content when PROMPT.md exists and no managed block present", async () => {
     const repoPath = await mkdtemp(join(tmpdir(), "foolery-fix-prompt-"));
     try {
       // Create AGENTS.md without the marker so doctor detects the issue
@@ -477,6 +477,83 @@ describe("applyFix: prompt-guidance", () => {
       // Verify file was actually modified
       const content = await readFile(join(repoPath, "AGENTS.md"), "utf8");
       expect(content).toContain("FOOLERY_GUIDANCE_PROMPT_START");
+
+      process.chdir(originalCwd);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
+  it("replaces existing managed block instead of duplicating", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-fix-upsert-"));
+    try {
+      const oldBlock =
+        "# Agents\n\n<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: old-profile\nOld guidance\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->\n";
+      await writeFile(join(repoPath, "CLAUDE.md"), oldBlock);
+      const originalCwd = process.cwd();
+      process.chdir(repoPath);
+      await writeFile(
+        join(repoPath, "PROMPT.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: autopilot\nNew guidance\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->",
+      );
+
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "autopilot", promptProfileId: "autopilot" }],
+      });
+      mockListRepos.mockResolvedValue([
+        { path: repoPath, name: "test-repo", addedAt: "2026-01-01" },
+      ]);
+      mockList.mockResolvedValue({ ok: true, data: [] });
+
+      const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
+      const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
+      expect(fix?.success).toBe(true);
+      expect(fix?.message).toContain("Updated Foolery guidance");
+
+      const content = await readFile(join(repoPath, "CLAUDE.md"), "utf8");
+      // Should contain new guidance, not old
+      expect(content).toContain("New guidance");
+      expect(content).not.toContain("Old guidance");
+      expect(content).not.toContain("old-profile");
+      // Should not have duplicate start markers
+      expect(content.split("FOOLERY_GUIDANCE_PROMPT_START").length).toBe(2); // 1 occurrence = 2 parts
+
+      process.chdir(originalCwd);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
+  it("injects profile marker into knots template that lacks one", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-fix-knots-"));
+    try {
+      await writeFile(join(repoPath, "AGENTS.md"), "# Agents\n");
+      const originalCwd = process.cwd();
+      process.chdir(repoPath);
+      // Knots template without profile marker
+      await writeFile(
+        join(repoPath, "PROMPT_KNOTS.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\n## Foolery Agent Handoff Contract\nKnots rules\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->",
+      );
+
+      mockDetectMemoryManagerType.mockReturnValue("knots");
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "autopilot", promptProfileId: "autopilot" }],
+      });
+      mockListRepos.mockResolvedValue([
+        { path: repoPath, name: "knots-repo", addedAt: "2026-01-01" },
+      ]);
+      mockList.mockResolvedValue({ ok: true, data: [] });
+
+      const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
+      const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
+      expect(fix?.success).toBe(true);
+
+      const content = await readFile(join(repoPath, "AGENTS.md"), "utf8");
+      expect(content).toContain("FOOLERY_PROMPT_PROFILE: autopilot");
+      expect(content).toContain("Knots rules");
 
       process.chdir(originalCwd);
     } finally {

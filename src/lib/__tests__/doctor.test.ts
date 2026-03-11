@@ -563,7 +563,7 @@ describe("checkPromptGuidance", () => {
       expect(diags[0].severity).toBe("warning");
       expect(diags[0].fixable).toBe(true);
       expect(diags[0].fixOptions).toEqual([
-        { key: "append", label: "Append Foolery guidance prompt" },
+        { key: "append", label: "Append or update Foolery guidance prompt" },
       ]);
       expect(diags[0].message).toContain("missing Foolery guidance prompt");
       expect(diags[0].context?.file).toBe("AGENTS.md");
@@ -572,16 +572,67 @@ describe("checkPromptGuidance", () => {
     }
   });
 
-  it("does not warn when prompt marker is present", async () => {
+  it("does not warn when prompt marker is present with matching canonical profile", async () => {
     const repoPath = await mkdtemp(join(tmpdir(), "foolery-doctor-guidance-"));
     try {
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "semiauto", promptProfileId: "semiauto" }],
+      });
       await writeFile(
         join(repoPath, "CLAUDE.md"),
-        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: beads-coarse-human-gated\n## rules\n"
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: semiauto\n## rules\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->"
       );
 
       const diags = await checkPromptGuidance([
         { path: repoPath, name: "repo-b", addedAt: "2026-01-01" },
+      ]);
+
+      expect(diags).toHaveLength(0);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
+  it("does not warn when file has legacy alias that normalizes to expected profile", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-doctor-guidance-"));
+    try {
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "semiauto", promptProfileId: "semiauto" }],
+      });
+      // File uses legacy alias "beads-coarse-human-gated" which normalizes to "semiauto"
+      await writeFile(
+        join(repoPath, "CLAUDE.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: beads-coarse-human-gated\n## rules\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->"
+      );
+
+      const diags = await checkPromptGuidance([
+        { path: repoPath, name: "repo-legacy", addedAt: "2026-01-01" },
+      ]);
+
+      expect(diags).toHaveLength(0);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
+  it("does not warn when expected profile is legacy alias and file has canonical ID", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-doctor-guidance-"));
+    try {
+      // Backend returns legacy promptProfileId
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "bc", promptProfileId: "beads-coarse-human-gated" }],
+      });
+      // File uses canonical profile
+      await writeFile(
+        join(repoPath, "CLAUDE.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: semiauto\n## rules\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->"
+      );
+
+      const diags = await checkPromptGuidance([
+        { path: repoPath, name: "repo-reverse", addedAt: "2026-01-01" },
       ]);
 
       expect(diags).toHaveLength(0);

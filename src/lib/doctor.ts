@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { constants as fsConstants } from "node:fs";
-import { access, appendFile, readFile } from "node:fs/promises";
+import { access, appendFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getBackend } from "./backend-instance";
 import {
@@ -27,6 +27,7 @@ import { getReleaseVersionStatus, type ReleaseVersionStatus } from "./release-ve
 import type { Beat, MemoryWorkflowDescriptor } from "./types";
 import { detectMemoryManagerType } from "./memory-manager-detection";
 import { isKnownMemoryManagerType } from "./memory-managers";
+import { normalizeProfileId } from "./workflows";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -99,10 +100,14 @@ export interface DoctorStreamSummary {
 
 export type DoctorStreamEvent = DoctorCheckResult | DoctorStreamSummary;
 
-const PROMPT_GUIDANCE_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
+const PROMPT_GUIDANCE_START_MARKER = "FOOLERY_GUIDANCE_PROMPT_START";
+const PROMPT_GUIDANCE_END_MARKER = "FOOLERY_GUIDANCE_PROMPT_END";
 const PROMPT_PROFILE_MARKER = "FOOLERY_PROMPT_PROFILE:";
 const PROMPT_PROFILE_REGEX = new RegExp(
   `${PROMPT_PROFILE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*([A-Za-z0-9._-]+)`,
+);
+const MANAGED_BLOCK_REGEX = new RegExp(
+  `(<!-- ${PROMPT_GUIDANCE_START_MARKER} -->)[\\s\\S]*?(<!-- ${PROMPT_GUIDANCE_END_MARKER} -->)`,
 );
 
 function promptProfileTemplateFor(_profileId: string, repoPath?: string): string {
@@ -654,7 +659,7 @@ async function fileExists(path: string): Promise<boolean> {
 }
 
 const PROMPT_GUIDANCE_FIX_OPTIONS: FixOption[] = [
-  { key: "append", label: "Append Foolery guidance prompt" },
+  { key: "append", label: "Append or update Foolery guidance prompt" },
 ];
 
 /**
@@ -665,11 +670,16 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
 
   for (const repo of repos) {
     const workflows = await listWorkflowsSafe(repo.path);
-    const expectedProfiles = Array.from(
+    const rawExpectedProfiles = Array.from(
       new Set(workflows.map((workflow) => workflow.promptProfileId)),
     );
     const fallbackProfile = fallbackPromptProfileForRepoPath(repo.path);
-    if (expectedProfiles.length === 0) expectedProfiles.push(fallbackProfile);
+    if (rawExpectedProfiles.length === 0) rawExpectedProfiles.push(fallbackProfile);
+
+    // Normalize expected profiles so canonical and legacy aliases are treated equivalently.
+    const expectedProfiles = Array.from(
+      new Set(rawExpectedProfiles.map((p) => normalizeProfileId(p) ?? p)),
+    );
 
     for (const fileName of ["AGENTS.md", "CLAUDE.md"]) {
       const filePath = join(repo.path, fileName);
@@ -677,7 +687,7 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
 
       try {
         const content = await readFile(filePath, "utf8");
-        if (!content.includes(PROMPT_GUIDANCE_MARKER)) {
+        if (!content.includes(PROMPT_GUIDANCE_START_MARKER)) {
           diagnostics.push({
             check: "prompt-guidance",
             severity: "warning",
@@ -695,15 +705,18 @@ export async function checkPromptGuidance(repos: RegisteredRepo[]): Promise<Diag
           continue;
         }
 
-        const profileMatch = content.match(PROMPT_PROFILE_REGEX);
-        const actualProfile = profileMatch?.[1];
+        // Extract the profile from the managed block only (not the whole file).
+        const managedBlock = content.match(MANAGED_BLOCK_REGEX)?.[0] ?? content;
+        const profileMatch = managedBlock.match(PROMPT_PROFILE_REGEX);
+        const actualProfileRaw = profileMatch?.[1];
+        const actualProfile = normalizeProfileId(actualProfileRaw) ?? actualProfileRaw;
         if (!actualProfile || !expectedProfiles.includes(actualProfile)) {
           diagnostics.push({
             check: "prompt-guidance",
             severity: "warning",
             fixable: true,
             fixOptions: PROMPT_GUIDANCE_FIX_OPTIONS,
-            message: `Repo "${repo.name}" has ${fileName} with mismatched prompt profile${actualProfile ? ` (${actualProfile})` : ""}. Expected one of: ${expectedProfiles.join(", ")}.`,
+            message: `Repo "${repo.name}" has ${fileName} with mismatched prompt profile${actualProfileRaw ? ` (${actualProfileRaw})` : ""}. Expected one of: ${expectedProfiles.join(", ")}.`,
             context: {
               repoPath: repo.path,
               repoName: repo.name,
@@ -1319,7 +1332,7 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         const templateCandidates = expectedProfile
           ? [promptProfileTemplateFor(expectedProfile, repoPath), "PROMPT.md"]
           : ["PROMPT.md"];
-        const templateContent = await readPromptTemplate(templateCandidates);
+        let templateContent = await readPromptTemplate(templateCandidates);
         if (!templateContent) {
           return {
             check: diag.check,
@@ -1328,7 +1341,41 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
             context: ctx,
           };
         }
+
+        // Inject or replace the profile marker in the template with the expected canonical profile.
+        if (expectedProfile) {
+          const canonicalProfile = normalizeProfileId(expectedProfile) ?? expectedProfile;
+          if (templateContent.match(PROMPT_PROFILE_REGEX)) {
+            templateContent = templateContent.replace(
+              PROMPT_PROFILE_REGEX,
+              `${PROMPT_PROFILE_MARKER} ${canonicalProfile}`,
+            );
+          } else {
+            // Template has no profile marker (e.g. PROMPT_KNOTS.md); inject one after the start marker line.
+            templateContent = templateContent.replace(
+              new RegExp(`(<!-- ${PROMPT_GUIDANCE_START_MARKER} -->\\n[^\\n]*\\n)`),
+              `$1${PROMPT_PROFILE_MARKER} ${canonicalProfile}\n`,
+            );
+          }
+        }
+
         const filePath = join(repoPath, file);
+        const existingContent = await readFile(filePath, "utf8");
+
+        if (existingContent.match(MANAGED_BLOCK_REGEX)) {
+          // Replace existing managed block in-place instead of appending a duplicate.
+          const managedBlock = templateContent.match(MANAGED_BLOCK_REGEX)?.[0] ?? templateContent;
+          const updatedContent = existingContent.replace(MANAGED_BLOCK_REGEX, managedBlock);
+          await writeFile(filePath, updatedContent, "utf8");
+          return {
+            check: diag.check,
+            success: true,
+            message: `Updated Foolery guidance in ${file} in "${ctx.repoName}".`,
+            context: ctx,
+          };
+        }
+
+        // No existing managed block — append.
         await appendFile(filePath, "\n\n" + templateContent + "\n", "utf8");
         return {
           check: diag.check,
