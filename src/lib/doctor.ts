@@ -1363,9 +1363,20 @@ async function applyFix(diag: Diagnostic, strategy?: string): Promise<FixResult>
         const existingContent = await readFile(filePath, "utf8");
 
         if (existingContent.match(MANAGED_BLOCK_REGEX)) {
-          // Replace existing managed block in-place instead of appending a duplicate.
+          // Replace the first managed block with the canonical one and remove all
+          // subsequent duplicates so the file ends up with exactly one block.
           const managedBlock = templateContent.match(MANAGED_BLOCK_REGEX)?.[0] ?? templateContent;
-          const updatedContent = existingContent.replace(MANAGED_BLOCK_REGEX, managedBlock);
+          const globalBlockRegex = new RegExp(MANAGED_BLOCK_REGEX.source, "g");
+          let replaced = false;
+          const updatedContent = existingContent
+            .replace(globalBlockRegex, () => {
+              if (!replaced) {
+                replaced = true;
+                return managedBlock;
+              }
+              return "";
+            })
+            .replace(/\n{3,}/g, "\n\n");
           await writeFile(filePath, updatedContent, "utf8");
           return {
             check: diag.check,

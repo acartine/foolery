@@ -525,6 +525,58 @@ describe("applyFix: prompt-guidance", () => {
     }
   });
 
+  it("collapses duplicate managed blocks to one canonical block", async () => {
+    const repoPath = await mkdtemp(join(tmpdir(), "foolery-fix-dedup-"));
+    try {
+      // File with two managed blocks (polluted state)
+      const dupeBlocks = [
+        "# Agents\n",
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: old-profile\nStale block 1\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->\n",
+        "\nSome content between blocks\n",
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: beads-coarse-human-gated\nStale block 2\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->\n",
+      ].join("\n");
+      await writeFile(join(repoPath, "CLAUDE.md"), dupeBlocks);
+      const originalCwd = process.cwd();
+      process.chdir(repoPath);
+      await writeFile(
+        join(repoPath, "PROMPT.md"),
+        "<!-- FOOLERY_GUIDANCE_PROMPT_START -->\nFOOLERY_PROMPT_PROFILE: autopilot\nCanonical guidance\n<!-- FOOLERY_GUIDANCE_PROMPT_END -->",
+      );
+
+      mockListWorkflows.mockResolvedValue({
+        ok: true,
+        data: [{ id: "autopilot", promptProfileId: "autopilot" }],
+      });
+      mockListRepos.mockResolvedValue([
+        { path: repoPath, name: "test-repo", addedAt: "2026-01-01" },
+      ]);
+      mockList.mockResolvedValue({ ok: true, data: [] });
+
+      const fixReport = await runDoctorFix({ "prompt-guidance": "append" });
+      const fix = fixReport.fixes.find((f) => f.check === "prompt-guidance");
+      expect(fix?.success).toBe(true);
+      expect(fix?.message).toContain("Updated Foolery guidance");
+
+      const content = await readFile(join(repoPath, "CLAUDE.md"), "utf8");
+      // Should contain canonical guidance, not stale blocks
+      expect(content).toContain("Canonical guidance");
+      expect(content).not.toContain("Stale block 1");
+      expect(content).not.toContain("Stale block 2");
+      expect(content).not.toContain("old-profile");
+      expect(content).not.toContain("beads-coarse-human-gated");
+      // Exactly one managed block (2 parts when split by START marker)
+      expect(content.split("FOOLERY_GUIDANCE_PROMPT_START").length).toBe(2);
+      expect(content.split("FOOLERY_GUIDANCE_PROMPT_END").length).toBe(2);
+      // Content between blocks is preserved (but extra blank lines collapsed)
+      expect(content).toContain("Some content between blocks");
+      expect(content).toContain("# Agents");
+
+      process.chdir(originalCwd);
+    } finally {
+      await rm(repoPath, { recursive: true, force: true });
+    }
+  });
+
   it("injects profile marker into knots template that lacks one", async () => {
     const repoPath = await mkdtemp(join(tmpdir(), "foolery-fix-knots-"));
     try {
