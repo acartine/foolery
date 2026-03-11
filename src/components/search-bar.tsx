@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import { buildBeatsSearchHref } from "@/lib/beats-view";
 import { cn } from "@/lib/utils";
 
 interface SearchBarInnerProps {
@@ -26,23 +27,14 @@ function SearchBarInner({
     setQuery(urlQuery);
   }, [urlQuery]);
 
-  const buildUrl = (q: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (q) params.set("q", q);
-    else params.delete("q");
-    const qs = params.toString();
-    return `/beats${qs ? `?${qs}` : ""}`;
-  };
-
   const clearSearch = () => {
     setQuery("");
-    router.push(buildUrl(null));
+    router.push(buildBeatsSearchHref(searchParams, ""));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = query.trim();
-    router.push(buildUrl(trimmed || null));
+    router.push(buildBeatsSearchHref(searchParams, query));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

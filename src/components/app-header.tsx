@@ -25,6 +25,7 @@ import { useTerminalStore } from "@/stores/terminal-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { useHumanActionCount } from "@/hooks/use-human-action-count";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
+import { parseBeatsView } from "@/lib/beats-view";
 import {
   cycleRepoPath,
   getRepoCycleDirection,
@@ -44,17 +45,7 @@ export function AppHeader() {
   const searchParams = useSearchParams();
   const isBeatsRoute =
     pathname === "/beats" || pathname.startsWith("/beats/");
-  const viewParam = searchParams.get("view");
-  const beatsView: "queues" | "active" | "finalcut" | "retakes" | "history" =
-    viewParam === "active"
-      ? "active"
-      : viewParam === "retakes"
-        ? "retakes"
-        : viewParam === "history"
-          ? "history"
-          : viewParam === "finalcut"
-            ? "finalcut"
-            : "queues";
+  const beatsView = parseBeatsView(searchParams.get("view"));
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);

@@ -52,6 +52,25 @@ describe("beats page layout", () => {
     expect(repoCycleHandler).not.toContain('beatsView !== "active"');
   });
 
+  it("uses shared beats view parsing in the header so search view is recognized", () => {
+    expect(appHeaderSource).toContain('import { parseBeatsView } from "@/lib/beats-view";');
+    expect(appHeaderSource).toContain(
+      'const beatsView = parseBeatsView(searchParams.get("view"));',
+    );
+  });
+
+  it("treats search as a list/data view on the beats page", () => {
+    expect(source).toContain(
+      'import { isListBeatsView, parseBeatsView } from "@/lib/beats-view";',
+    );
+    expect(source).toContain(
+      'const beatsView = parseBeatsView(searchParams.get("view"));',
+    );
+    expect(source).toContain(
+      "const isListView = isListBeatsView(beatsView);",
+    );
+  });
+
   it("constrains selected-row description and notes summaries on laptop widths", () => {
     expect(beatTableSource).toContain('className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(3,minmax(0,1fr))] gap-1 text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}');
     expect(beatTableSource).toContain('const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");');

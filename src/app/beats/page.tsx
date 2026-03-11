@@ -25,6 +25,7 @@ import {
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import { isListBeatsView, parseBeatsView } from "@/lib/beats-view";
 
 const DEGRADED_ERROR_PREFIX = "Unable to interact with beats store";
 const MAX_SESSIONS = 5;
@@ -87,18 +88,8 @@ function BeatsPageInner() {
   const searchQuery = searchParams.get("q") ?? "";
   const detailBeatId = searchParams.get("beat");
   const detailRepo = searchParams.get("detailRepo") ?? undefined;
-  const viewParam = searchParams.get("view");
-  const beatsView: "queues" | "active" | "finalcut" | "retakes" | "history" =
-    viewParam === "active"
-      ? "active"
-      : viewParam === "finalcut"
-        ? "finalcut"
-        : viewParam === "retakes"
-          ? "retakes"
-          : viewParam === "history"
-            ? "history"
-            : "queues";
-  const isListView = beatsView === "queues" || beatsView === "active";
+  const beatsView = parseBeatsView(searchParams.get("view"));
+  const isListView = isListBeatsView(beatsView);
   const viewPhase: ViewPhase = beatsView === "active" ? "active" : "queues";
   const isFinalCutView = beatsView === "finalcut";
   const isRetakesView = beatsView === "retakes";
