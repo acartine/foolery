@@ -1408,22 +1408,28 @@ NODE
 }
 
 usage() {
-  cat <<USAGE
-Usage: foolery <command>
+  local b="" c="" d="" r=""
+  if supports_color 1; then
+    b="\$(printf '\033[1m')"
+    c="\$(color_code cyan)"
+    d="\$(printf '\033[2m')"
+    r="\$(color_code reset)"
+  fi
 
-Commands:
-  start     Start Foolery in the background and open browser
-  open      Open Foolery in your browser (skips if already open)
-  setup     Configure repos and agents interactively
-  prompt    Append Foolery guidance prompt to AGENTS.md/CLAUDE.md
-  update    Download and install the latest Foolery runtime
-  stop      Stop the background Foolery process
-  restart   Restart Foolery
-  status    Show process/log status
-  doctor    Run diagnostics (--fix to auto-fix issues)
-  uninstall Remove Foolery runtime, logs/state, and launcher
-  help      Show this help
-USAGE
+  printf '%b%bUsage:%b foolery %b<command>%b\n' "\$b" "\$c" "\$r" "\$d" "\$r"
+  printf '\n'
+  printf '%bCommands:%b\n' "\$b" "\$r"
+  printf '  %b%-11s%b %s\n' "\$c" "start"     "\$r" "Start Foolery in the background and open browser"
+  printf '  %b%-11s%b %s\n' "\$c" "open"      "\$r" "Open Foolery in your browser (skips if already open)"
+  printf '  %b%-11s%b %s\n' "\$c" "setup"     "\$r" "Configure repos and agents interactively"
+  printf '  %b%-11s%b %s\n' "\$c" "prompt"    "\$r" "Append Foolery guidance prompt to AGENTS.md/CLAUDE.md"
+  printf '  %b%-11s%b %s\n' "\$c" "update"    "\$r" "Download and install the latest Foolery runtime"
+  printf '  %b%-11s%b %s\n' "\$c" "stop"      "\$r" "Stop the background Foolery process"
+  printf '  %b%-11s%b %s\n' "\$c" "restart"   "\$r" "Restart Foolery"
+  printf '  %b%-11s%b %s\n' "\$c" "status"    "\$r" "Show process/log status"
+  printf '  %b%-11s%b %s\n' "\$c" "doctor"    "\$r" "Run diagnostics (--fix to auto-fix issues)"
+  printf '  %b%-11s%b %s\n' "\$c" "uninstall" "\$r" "Remove Foolery runtime, logs/state, and launcher"
+  printf '  %b%-11s%b %s\n' "\$d" "help"      "\$r" "Show this help"
 }
 
 main() {
