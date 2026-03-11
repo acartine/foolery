@@ -254,12 +254,46 @@ function parentFromHierarchicalId(
   return undefined;
 }
 
-function deriveParentId(
-  id: string,
-  edges: KnotEdge[],
+/**
+ * Try dot-based parent derivation on the knot's alias, resolving through
+ * an alias→ID lookup. Handles cases where hierarchy is encoded in aliases
+ * (e.g. alias "brutus-8792.5" → parent "8792").
+ */
+function parentFromHierarchicalAlias(
+  alias: string | null | undefined,
+  aliasToId: ReadonlyMap<string, string>,
   knownIds: ReadonlySet<string>,
 ): string | undefined {
-  return parentFromEdges(id, edges) ?? parentFromHierarchicalId(id, knownIds);
+  if (!alias) return undefined;
+  let cursor = alias;
+  while (cursor.includes(".")) {
+    cursor = cursor.slice(0, cursor.lastIndexOf("."));
+    const resolvedId = aliasToId.get(cursor);
+    if (resolvedId !== undefined) return resolvedId;
+    if (knownIds.has(cursor)) return cursor;
+    // Strip repo prefix (e.g. "brutus-8792" → "8792") and check again
+    const stripped = cursor.replace(/^[^-]+-/, "");
+    if (stripped !== cursor) {
+      const strippedResolved = aliasToId.get(stripped);
+      if (strippedResolved !== undefined) return strippedResolved;
+      if (knownIds.has(stripped)) return stripped;
+    }
+  }
+  return undefined;
+}
+
+function deriveParentId(
+  id: string,
+  alias: string | null | undefined,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
+): string | undefined {
+  return (
+    parentFromEdges(id, edges) ??
+    parentFromHierarchicalId(id, knownIds) ??
+    parentFromHierarchicalAlias(alias, aliasToId, knownIds)
+  );
 }
 
 function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
@@ -337,23 +371,31 @@ function normalizeProfileId(value: string | null | undefined): string | null {
   return normalized || null;
 }
 
-function normalizeAliases(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  const aliases = new Set<string>();
-  for (const item of value) {
-    if (typeof item !== "string") continue;
-    const normalized = item.trim();
-    if (!normalized) continue;
-    aliases.add(normalized);
+/**
+ * Collect aliases from a KnotRecord.  The kno CLI returns `alias` (singular
+ * string|null); the codebase historically used `aliases` (string[]).
+ * This helper merges both into a deduplicated array.
+ */
+function collectAliases(knot: KnotRecord): string[] {
+  const result = new Set<string>();
+  // singular field from CLI
+  if (typeof knot.alias === "string" && knot.alias.trim()) {
+    result.add(knot.alias.trim());
   }
-  return Array.from(aliases);
+  // plural array (may be populated by future CLI versions or tests)
+  if (Array.isArray(knot.aliases)) {
+    for (const item of knot.aliases) {
+      if (typeof item === "string" && item.trim()) result.add(item.trim());
+    }
+  }
+  return Array.from(result);
 }
 
 function toBeat(
   knot: KnotRecord,
   edges: KnotEdge[],
   knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
   workflowsById: Map<string, MemoryWorkflowDescriptor>,
 ): Beat {
   const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
@@ -361,7 +403,7 @@ function toBeat(
   const workflow = workflowsById.get(profileId) ?? fallback;
   const stepEntries = knotStepEntries(knot);
   const invariants = normalizeInvariants(knot.invariants);
-  const aliases = normalizeAliases(knot.aliases);
+  const aliases = collectAliases(knot);
 
   if (!workflow) {
     return {
@@ -380,7 +422,7 @@ function toBeat(
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
-      parent: deriveParentId(knot.id, edges, knownIds),
+      parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
       invariants: invariants.length > 0 ? invariants : undefined,
@@ -419,7 +461,7 @@ function toBeat(
     labels: tags,
     aliases: aliases.length > 0 ? aliases : undefined,
     notes,
-    parent: deriveParentId(knot.id, edges, knownIds),
+    parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
     closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
@@ -663,6 +705,14 @@ export class KnotsBackend implements BackendPort {
     const records = listResult.data ?? [];
     const knownIds = new Set(records.map((record) => record.id));
 
+    // Build alias→ID map so dot-based hierarchy works on aliases too.
+    const aliasToId = new Map<string, string>();
+    for (const record of records) {
+      for (const a of collectAliases(record)) {
+        aliasToId.set(a, record.id);
+      }
+    }
+
     // Fetch edges sequentially to avoid CLI lock contention.
     // Cached entries are returned instantly; only uncached IDs hit the CLI.
     const edgesById = new Map<string, KnotEdge[]>();
@@ -679,7 +729,7 @@ export class KnotsBackend implements BackendPort {
     }
 
     const beats = records.map((record) =>
-      toBeat(record, edgesById.get(record.id) ?? [], knownIds, workflowMap),
+      toBeat(record, edgesById.get(record.id) ?? [], knownIds, aliasToId, workflowMap),
     );
     return ok(beats);
   }
@@ -766,7 +816,7 @@ export class KnotsBackend implements BackendPort {
     const workflowMapResult = await this.workflowMapByProfileId(rp);
     if (!workflowMapResult.ok) return propagateError<Beat>(workflowMapResult);
 
-    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), workflowMapResult.data ?? new Map()));
+    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), new Map(), workflowMapResult.data ?? new Map()));
   }
 
   async create(
@@ -1048,9 +1098,10 @@ export class KnotsBackend implements BackendPort {
       const knotResult = beatId === id
         ? showResult
         : fromKnots(await knots.showKnot(beatId, rp));
-      const aliases = knotResult.ok && knotResult.data
-        ? knotResult.data.aliases?.filter((alias) => typeof alias === "string" && alias.trim().length > 0)
-        : undefined;
+      const collected = knotResult.ok && knotResult.data
+        ? collectAliases(knotResult.data)
+        : [];
+      const aliases = collected.length > 0 ? collected : undefined;
       aliasCache.set(beatId, aliases);
       return aliases;
     };
@@ -1097,8 +1148,9 @@ export class KnotsBackend implements BackendPort {
     await Promise.allSettled(
       uniqueLinkedIds.map(async (linkedId) => {
         const linkedKnot = fromKnots(await knots.showKnot(linkedId, rp));
-        if (linkedKnot.ok && linkedKnot.data?.aliases?.length) {
-          aliasMap.set(linkedId, linkedKnot.data.aliases);
+        if (linkedKnot.ok && linkedKnot.data) {
+          const a = collectAliases(linkedKnot.data);
+          if (a.length) aliasMap.set(linkedId, a);
         }
       }),
     );

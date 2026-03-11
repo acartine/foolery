@@ -29,6 +29,9 @@ interface ExecOptions {
 
 export interface KnotRecord {
   id: string;
+  /** Singular alias returned by `kno show --json` / `kno ls --json`. */
+  alias?: string | null;
+  /** Array form (may be absent from CLI output; prefer {@link collectAliases}). */
   aliases?: string[];
   title: string;
   state: string;
