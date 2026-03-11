@@ -15,7 +15,14 @@ ARTIFACT_URL="${FOOLERY_ARTIFACT_URL:-}"
 
 _supports_color() {
   local fd="${1:-1}"
-  if [[ -n "${NO_COLOR:-}" || -n "${CI:-}" || "${TERM:-}" == "dumb" ]]; then
+  if [[ -n "${NO_COLOR:-}" ]]; then
+    return 1
+  fi
+  case "${FORCE_COLOR:-}" in
+    ""|0|false|False|FALSE|no|No|NO) ;;
+    *) return 0 ;;
+  esac
+  if [[ -n "${CI:-}" || "${TERM:-}" == "dumb" ]]; then
     return 1
   fi
   if [[ "$fd" == "2" ]]; then
@@ -216,7 +223,14 @@ fi
 
 supports_color() {
   local fd="\${1:-1}"
-  if [[ -n "\${NO_COLOR:-}" || -n "\${CI:-}" || "\${TERM:-}" == "dumb" ]]; then
+  if [[ -n "\${NO_COLOR:-}" ]]; then
+    return 1
+  fi
+  case "\${FORCE_COLOR:-}" in
+    ""|0|false|False|FALSE|no|No|NO) ;;
+    *) return 0 ;;
+  esac
+  if [[ -n "\${CI:-}" || "\${TERM:-}" == "dumb" ]]; then
     return 1
   fi
   if [[ "\$fd" == "2" ]]; then
@@ -247,6 +261,19 @@ color_code() {
     red) printf '\033[1;31m' ;;
     cyan) printf '\033[1;36m' ;;
     reset) printf '\033[0m' ;;
+  esac
+}
+
+help_command_color() {
+  if ! supports_color 1; then
+    return 0
+  fi
+  case "\$1" in
+    start|open|restart) color_code green ;;
+    setup|prompt|update) color_code blue ;;
+    status|doctor|help) color_code yellow ;;
+    stop|uninstall) color_code red ;;
+    *) color_code cyan ;;
   esac
 }
 
@@ -1498,17 +1525,21 @@ usage() {
   printf '%b%bUsage:%b foolery %b<command>%b\n' "\$b" "\$c" "\$r" "\$d" "\$r"
   printf '\n'
   printf '%bCommands:%b\n' "\$b" "\$r"
-  printf '  %b%-11s%b %s\n' "\$c" "start"     "\$r" "Start Foolery in the background and open browser"
-  printf '  %b%-11s%b %s\n' "\$c" "open"      "\$r" "Open Foolery in your browser (skips if already open)"
-  printf '  %b%-11s%b %s\n' "\$c" "setup"     "\$r" "Configure repos and agents interactively"
-  printf '  %b%-11s%b %s\n' "\$c" "prompt"    "\$r" "Manage Foolery guidance prompt in AGENTS.md/CLAUDE.md"
-  printf '  %b%-11s%b %s\n' "\$c" "update"    "\$r" "Download and install the latest Foolery runtime"
-  printf '  %b%-11s%b %s\n' "\$c" "stop"      "\$r" "Stop the background Foolery process"
-  printf '  %b%-11s%b %s\n' "\$c" "restart"   "\$r" "Restart Foolery"
-  printf '  %b%-11s%b %s\n' "\$c" "status"    "\$r" "Show process/log status"
-  printf '  %b%-11s%b %s\n' "\$c" "doctor"    "\$r" "Run diagnostics (--fix to auto-fix issues)"
-  printf '  %b%-11s%b %s\n' "\$c" "uninstall" "\$r" "Remove Foolery runtime, logs/state, and launcher"
-  printf '  %b%-11s%b %s\n' "\$d" "help"      "\$r" "Show this help"
+  local desc_style=""
+  if [[ -n "\$d" ]]; then
+    desc_style="\$d"
+  fi
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background and open browser" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color open)"      "open"      "\$r" "\$desc_style" "Open Foolery in your browser (skips if already open)" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Configure repos and agents interactively" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color prompt)"    "prompt"    "\$r" "\$desc_style" "Manage Foolery guidance prompt in AGENTS.md/CLAUDE.md" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color stop)"      "stop"      "\$r" "\$desc_style" "Stop the background Foolery process" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color restart)"   "restart"   "\$r" "\$desc_style" "Restart Foolery" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color status)"    "status"    "\$r" "\$desc_style" "Show process/log status" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color doctor)"    "doctor"    "\$r" "\$desc_style" "Run diagnostics (--fix to auto-fix issues)" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color uninstall)" "uninstall" "\$r" "\$desc_style" "Remove Foolery runtime, logs/state, and launcher" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color help)"      "help"      "\$r" "\$desc_style" "Show this help" "\$r"
 }
 
 main() {
