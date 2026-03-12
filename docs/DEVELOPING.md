@@ -1,6 +1,6 @@
 # Developing Foolery
 
-A guide for contributors working on [Foolery](https://github.com/acartine/foolery), an agentic orchestration interface for [Knots](https://github.com/acartine/knots) and [Beads](https://github.com/steveyegge/beads) memory managers.
+A guide for contributors working on [Foolery](https://github.com/acartine/foolery), a keyboard-first orchestration app for agent-driven software work built on top of [Knots](https://github.com/acartine/knots) and [Beads](https://github.com/steveyegge/beads) backends.
 
 ## Prerequisites
 
@@ -47,12 +47,12 @@ This replaces only `pre-push`, `post-merge`, and `post-checkout` in local git ho
 ```
 src/
   app/                  Next.js 16 App Router
-    api/                REST API routes (wrap bd CLI)
-    beats/              Main beats listing
+    api/                REST API routes
+    beats/              Main beats workspace
   components/           React components
     ui/                 shadcn/ui primitives (new-york style)
   hooks/                Custom React hooks
-  lib/                  Utilities, types, services
+  lib/                  Utilities, types, backend adapters, orchestration logic
     __tests__/          Unit tests (Vitest)
   stores/               Zustand state management
   stories/              Storybook stories
@@ -85,12 +85,13 @@ docs/                   Project documentation
 ```
 Browser  ->  React 19 + Zustand + TanStack Query
          ->  Next.js 16 API Routes
+         ->  BackendPort / orchestration services
          ->  Bun.spawn() / execFile()
-         ->  bd CLI
-         ->  Git (.beads/issues.jsonl)
+         ->  Knots or Beads CLI
+         ->  Repo-local memory data + Git
 ```
 
-The frontend never touches the filesystem directly. All mutations flow through API routes that shell out to the `bd` CLI. This keeps `bd` as the single source of truth for beat data.
+The frontend never touches the filesystem directly. Reads and mutations flow through API routes and service layers that talk to a backend adapter (`BackendPort`), which then invokes the active memory manager for the target repo. In practice that usually means Knots first, with Beads supported through the same contract.
 
 ## Tech Stack
 

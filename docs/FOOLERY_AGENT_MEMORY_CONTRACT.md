@@ -1,10 +1,10 @@
 # Foolery Agent Memory Contract
 
-This tutorial defines how Foolery talks to an agent-memory backend and shows exactly how to implement one. Foolery currently ships two production backends: Beads (`bd`) and Knots (`kno`). Both are fully supported and selected automatically per repository based on memory manager marker detection (`.beads` or `.knots`).
+This guide defines how Foolery talks to a memory backend and shows how to implement one. Foolery currently ships two production backends: Knots (`kno`) as the primary path, and Beads (`bd`) for compatibility. Backend selection happens automatically per repository based on marker detection (`.knots` or `.beads`).
 
 ## What This Contract Does
 
-Foolery's UI, API routes, and orchestration logic call one backend contract instead of memory-manager-specific code.
+Foolery's UI, API routes, and orchestration logic all talk to one backend contract instead of importing memory-manager-specific code directly.
 
 Core source files:
 

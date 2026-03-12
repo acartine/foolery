@@ -2,20 +2,20 @@
 
 ## Project Overview
 
-**Foolery** is an agentic orchestration interface for local memory managers. It supports Knots (`kno`) as its primary backend and Beads (`bd`) as an alternative. The application provides a web-based interface for viewing, creating, and managing work items ("beats") through a Next.js-based web application with pluggable backend adapters.
+**Foolery** is a keyboard-first orchestration app for agent-driven software work. It uses local memory-manager backends — Knots (`kno`) as the primary path, with Beads (`bd`) also supported — to track work items ("beats"), stage execution, dispatch agents, and review outcomes across repositories.
 
 ### Purpose
 
-Foolery provides a keyboard-first web interface for orchestrating agent work across repositories. It bridges command-line memory managers (Knots, Beads) with a responsive web UI for capturing work, dispatching agents, and reviewing outcomes.
+Foolery exists to make multi-step software work legible. Instead of juggling terminal tabs, chat transcripts, and half-remembered plans, you get a control surface for what is queued, active, waiting on a human, ready for review, and already captured in history.
 
 ### Key Features
 
-- **Issue Viewing & Filtering**: Browse and search Beads with advanced filtering capabilities
-- **Issue Creation & Editing**: Create and modify Beads through an intuitive form interface
-- **Dependency Management**: Visualize and manage Bead dependencies with an interactive dependency tree
-- **Command Palette**: Fast keyboard-driven navigation and actions via Cmd+K
-- **Real-time Data**: React Query-powered data fetching with optimistic updates
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
+- **Beat capture and triage**: Create, edit, filter, and organize beats across repos
+- **Agent dispatch**: Launch single-beat work, multi-beat scenes, and breakdown passes from one UI
+- **Review lanes**: Separate active execution, human follow-up, retakes, and history into distinct operating surfaces
+- **Backend abstraction**: Route per repo to Knots or Beads through the same app contract
+- **Keyboard-first workflow**: Fast navigation and action execution without living in terminal tabs
+- **Responsive UI with live data**: React Query-backed updates, streaming session state, and mobile-aware layouts
 
 ---
 
@@ -23,18 +23,20 @@ Foolery provides a keyboard-first web interface for orchestrating agent work acr
 
 ### High-Level Overview
 
-Foolery uses a **Next.js-based architecture** with clear separation of concerns:
+Foolery uses a **Next.js-based architecture** with clear separation between UI, orchestration logic, backend adapters, and repo-local memory data:
 
 ```
 Client (React 19 + TypeScript)
     ↓
-Next.js API Routes (Backend Gateway)
+Next.js API Routes / SSE endpoints
     ↓
-Bun.spawn() Process
+Foolery services (orchestration, sessions, settings, review flows)
     ↓
-Memory Manager CLI (kno / bd)
+BackendPort adapters + agent adapters
     ↓
-Git Repository (Data Storage)
+Knots / Beads CLI + agent CLIs
+    ↓
+Repo-local memory data + Git
 ```
 
 ### Layer Breakdown
@@ -44,35 +46,35 @@ Git Repository (Data Storage)
 - **Routing**: Next.js 16 App Router
 - **State Management**:
   - Zustand for global UI state (modals, filters, sidebar state)
-  - TanStack React Query for server state caching and synchronization
+  - TanStack React Query for server data caching and synchronization
 - **Form Handling**: react-hook-form for validation + Zod for schema validation
 - **Component Library**: shadcn/ui (new-york style) with Tailwind CSS v4
 
-#### **API Layer (Next.js Routes)**
+#### **API + Service Layer**
 - Server-side request handlers in `/src/app/api/`
-- Bridge between frontend and memory manager CLIs (`kno`, `bd`)
-- Spawns child processes using `Bun.spawn()` to execute CLI commands
-- Handles JSON serialization/deserialization
-- Implements error handling and status code mapping
+- Application services for beats, orchestration, settings, terminal sessions, and review flows
+- JSON APIs plus SSE streams for long-running work
+- Error handling, status mapping, and request validation
 
-#### **CLI Integration Layer**
-- Memory manager CLIs (`kno`, `bd`) are invoked as subprocesses via the `BackendPort` abstraction
-- Communicates via stdin/stdout using JSON protocol
+#### **Backend Integration Layer**
+- Memory manager CLIs (`kno`, `bd`) are invoked through the `BackendPort` abstraction
 - Backend selection is automatic per repository based on marker detection (`.knots` or `.beads`)
+- Agent CLIs are resolved separately through agent adapters and dispatch settings
 
 #### **Data Storage**
-- Git repository containing Bead definitions
-- `bd` CLI manages serialization and persistence
-- All data is version-controlled
+- Repo-local memory data managed by Knots or Beads
+- Git remains the durable history layer for repo state
+- Foolery also writes session, log, and runtime artifacts outside the repo where appropriate
 
 ### Data Flow
 
-1. **User Action** (e.g., create Bead) → React component
-2. **API Call** → Next.js API route
-3. **CLI Invocation** → `Bun.spawn()` executes `bd` command
-4. **Data Mutation** → Git repository updated
-5. **Response** → JSON returned to client
-6. **State Update** → React Query invalidates cache & re-fetches
+1. **User action** (for example, create a beat or start a Take! session) → React component
+2. **API call / stream subscription** → Next.js route
+3. **Service orchestration** → Foolery service layer resolves repo, backend, and workflow behavior
+4. **Backend or agent invocation** → `Bun.spawn()` / `execFile()` runs the selected CLI
+5. **Repo or runtime mutation** → memory manager state, agent session state, or logs update
+6. **Response / stream event** → JSON or SSE returned to client
+7. **State refresh** → React Query invalidates and re-fetches as needed
 
 ---
 
@@ -474,7 +476,7 @@ bun run build
 foolery/
 ├── src/
 │   ├── app/                  # Next.js App Router
-│   │   ├── api/              # API routes (bd CLI wrappers)
+│   │   ├── api/              # API routes and SSE endpoints
 │   │   ├── (routes)/         # Page routes
 │   │   ├── layout.tsx        # Root layout
 │   │   └── globals.css       # Global styles

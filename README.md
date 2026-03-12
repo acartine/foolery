@@ -1,7 +1,8 @@
 # Foolery
 
-**Agentic orchestration interface** — one layer up from managing 8 agent terminals, one level down from massively multi-agent chaos.
+**A keyboard-first control room for multi-agent software work.**
 
+Foolery helps you capture work, break it down, dispatch agents, review what they did, and keep the whole thing legible across repositories.
 
 [![Latest Release](https://img.shields.io/github/v/release/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/releases)
 [![License](https://img.shields.io/github/license/acartine/foolery?style=for-the-badge)](https://github.com/acartine/foolery/blob/main/LICENSE)
@@ -34,10 +35,10 @@
   <tr>
     <td align="center">
       <a href="docs/screenshots/retakes.png">
-        <img src="docs/screenshots/retakes.png" width="160" alt="ReTakes" />
+        <img src="docs/screenshots/retakes.png" width="160" alt="Retakes" />
       </a>
       <br />
-      <sub><b>ReTakes</b></sub>
+      <sub><b>Retakes</b></sub>
     </td>
     <td align="center">
       <a href="docs/screenshots/history.png">
@@ -56,32 +57,57 @@
   </tr>
 </table>
 
-Foolery is an agentic orchestration interface that sits on top of local memory managers ([Knots](https://github.com/acartine/knots) and [Beads](https://github.com/steveyegge/beads)) to capture work, orchestrate execution, and review outcomes across repositories. Its memory agent of choice is Knots; it also supports Beads.
+Foolery is a local orchestration app for agent-driven software work. It sits on top of memory-manager backends — primarily [Knots](https://github.com/acartine/knots), with [Beads](https://github.com/steveyegge/beads) also supported — and gives you one place to stage work, run agents, and review outcomes across repos.
 
-[Check out the substack on why I built this.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true) It won't make you dumber.
+It is not trying to be just another chat box around a coding model. The point is to make multi-step work visible: what is queued, what is active, what needs a human, what is ready for review, and what happened in the session history.
+
+[Read the Substack post on why I built it.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)
 
 ## Install
 
-**Prerequisites:** [Node.js](http://nodejs.org), [curl](http://curl.se), [tar](http://www.gnu.org/software/tar/), plus at least one supported memory manager CLI:
-- [Beads](https://github.com/steveyegge/beads) (`bd`)
-- Knots (`kno`)
+### Prerequisites
+
+You need:
+- [Node.js](http://nodejs.org)
+- [curl](http://curl.se)
+- [tar](http://www.gnu.org/software/tar/)
+- at least one supported memory manager CLI:
+  - [Knots](https://github.com/acartine/knots) (`kno`) — primary path
+  - [Beads](https://github.com/steveyegge/beads) (`bd`)
+
+### 1. Install Foolery
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
 ```
 
-If `~/.local/bin` is not on your `PATH`:
+### 2. Make sure the launcher is on your PATH
+
+If `~/.local/bin` is not already on your `PATH`:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Then run the following commands:
+### 3. Run setup
 
 ```bash
 foolery setup
+```
+
+`foolery setup` helps you:
+- discover repos
+- detect available memory-manager backends
+- scan for installed agent CLIs
+- configure the app for first use
+
+### 4. Start Foolery
+
+```bash
 foolery start
 ```
+
+That launches the local server, opens the app in your browser, and leaves the backend running in the background.
 
 ## Supported Agent CLIs
 
@@ -102,13 +128,13 @@ Foolery supports two dispatch modes for assigning agents to work, configurable u
 
 ### Simple (One agent per action)
 
-Map a single registered agent to each action type: **Take!** (execute a single beat), **Scene!** (multi-beat orchestration), and **Breakdown** (decompose into sub-beats). The dispatch-wide Swap Agent tool lets you replace one agent with another across all mappings in one shot.
+Map one registered agent to each action type: **Take!** (execute a single beat), **Scene!** (multi-beat orchestration), and **Breakdown** (decompose work into sub-beats). If you want to change your default agent, the Swap Agent tool updates all matching mappings at once.
 
 ![Simple dispatch](docs/screenshots/dispatch-simple.png)
 
 ### Advanced (Weighted pools per step)
 
-Assign multiple agents with weights to each workflow step: Planning, Plan Review, Implementation, Impl Review, Shipment, and Ship Review. Foolery selects an agent probabilistically based on relative weights, enabling A/B testing across agents or distributing work across different models. The single Swap Agent tool at the bottom of Dispatch still applies globally, replacing every matching occurrence instead of requiring step-by-step edits.
+Assign weighted agent pools to each workflow step: Planning, Plan Review, Implementation, Implementation Review, Shipment, and Ship Review. Foolery picks from each pool according to the weights, which makes it useful for A/B testing models, mixing agent strengths, or spreading work across different tools. The Swap Agent tool still works across the whole dispatch configuration.
 
 ![Advanced dispatch](docs/screenshots/dispatch-advanced.png)
 
@@ -132,11 +158,11 @@ The human action queue. Beats requiring a human-owned next step land here based 
 
 ![Human Action view](docs/screenshots/human-action.png)
 
-### ReTakes
+### Retakes
 
-The review lane for shipped beats. Browse handoff capsules from agent sessions, inspect implementation history, and trigger follow-up passes when needed.
+The review lane for shipped beats. Browse handoff capsules from agent sessions, inspect what changed, and trigger follow-up passes when something needs another look.
 
-![ReTakes view](docs/screenshots/retakes.png)
+![Retakes view](docs/screenshots/retakes.png)
 
 ### History
 
@@ -152,11 +178,11 @@ Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick m
 
 ## Why Foolery?
 
-- **Rapid scratch pad for small bugs and big ideas alike.** Create a beat, fire off an agent, review the result — all without leaving the keyboard.
-- **Leverage agents to organize groups of work and optimize them for parallel execution.** Ask Claude to decompose a set of tasks into dependency-aware waves, then launch them in sequence.
-- **Track "completed" work units in a first-class way.** Every finished beat flows into a human action queue where you review outcomes and annotate before it's truly done.
-- **Keyboard-first workflow.** Navigate, select, bulk-update, and trigger agent sessions entirely from the keyboard.
-- **Multi-repo support.** Switch between repositories or view beats across all of them in one place.
+- **Keep software work legible.** See what is queued, running, waiting on a human, ready for review, and already discussed.
+- **Turn loose tasks into structured execution.** Break work into beats, stage dependency-aware waves, and run agents without losing the plot.
+- **Review outcomes instead of trusting vibes.** Finished work lands in a human-owned lane before it counts as done.
+- **Stay fast without living in terminal tabs.** Navigate, select, bulk-update, and launch work from a keyboard-first interface.
+- **Work across repos from one place.** Keep the orchestration layer above any single repository.
 
 ## How to Contribute
 

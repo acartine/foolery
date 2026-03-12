@@ -25,16 +25,17 @@ Reference for agent clients automating Foolery operations. All endpoints live un
 
 ## Overview
 
-Foolery is a web UI and API for the Beads/Knots memory manager. It provides a JSON API for creating, querying, and managing work items ("beats"), their dependencies, execution waves, terminal sessions, AI-powered breakdown, and multi-agent orchestration.
+Foolery is a local web UI and API for agent-driven software work. It sits on top of Knots and Beads backends and exposes JSON endpoints for creating, querying, and managing beats, dependencies, execution waves, terminal sessions, breakdown runs, and multi-agent orchestration.
 
 Key facts:
 - All endpoints return JSON and accept JSON request bodies.
-- Multi-repo support via the `_repo` query parameter or body field.
-- Base URL is the Foolery server, default `http://localhost:3000`.
+- Multi-repo support works via the `_repo` query parameter or body field.
+- The default base URL is `http://localhost:3000`.
+- Long-running workflows also expose SSE endpoints for live progress.
 
 ## Authentication
 
-No authentication is required. Foolery runs as a local service.
+Current local deployments do not require authentication. Foolery runs as a local service.
 
 ## Common Patterns
 
