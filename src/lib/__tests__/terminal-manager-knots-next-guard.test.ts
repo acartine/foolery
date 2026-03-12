@@ -104,7 +104,7 @@ vi.mock("@/lib/agent-message-type-index", () => ({
 }));
 
 import { createSession, getSession } from "@/lib/terminal-manager";
-import { rollbackBeatState } from "@/lib/memory-manager-commands";
+import { rollbackBeatState, assertClaimable } from "@/lib/memory-manager-commands";
 
 /** Polls `fn` until it stops throwing, or rejects after `timeout` ms. */
 async function waitFor(fn: () => void, { timeout = 2000, interval = 10 } = {}): Promise<void> {
@@ -549,5 +549,126 @@ describe("terminal-manager nextKnot expected-state guard", () => {
     const takeLine = stdoutEvents.find((d) => d.includes("TAKE 2/"));
     expect(takeLine).toBeDefined();
     expect(takeLine).toContain("[agent: Codex]");
+  });
+
+  describe("pre-dispatch rollback edge cases", () => {
+    it("handles rollbackBeatState throwing without crashing the session", async () => {
+      const rollbackMock = vi.mocked(rollbackBeatState);
+      rollbackMock.mockRejectedValueOnce(new Error("rollback command failed"));
+
+      // After rollback fails, backend.get is NOT called a second time;
+      // the function returns the original beat with rolledBack: false.
+      // assertClaimable then runs on the original non-claimable beat.
+      backend.get.mockResolvedValueOnce({
+        ok: true,
+        data: {
+          id: "foolery-e700",
+          title: "Rollback throws",
+          state: "implementation",
+          isAgentClaimable: false,
+        },
+      });
+      backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+      backend.list.mockResolvedValue({ ok: true, data: [] });
+
+      // assertClaimable is called with the original non-claimable beat,
+      // which for knots will throw. The session creation rejects.
+      const assertMock = vi.mocked(assertClaimable);
+      assertMock.mockImplementationOnce(() => {
+        throw new Error("Take unavailable: knot is not agent-claimable (foolery-e700 (implementation))");
+      });
+
+      await expect(
+        createSession("foolery-e700", "/tmp/repo", "test prompt"),
+      ).rejects.toThrow("not agent-claimable");
+
+      // Verify rollback was attempted
+      expect(rollbackBeatState).toHaveBeenCalledWith(
+        "foolery-e700",
+        "implementation",
+        "ready_for_implementation",
+        "/tmp/repo",
+        "knots",
+        expect.any(String),
+      );
+      // No second backend.get because rollback failed
+      expect(backend.get).toHaveBeenCalledTimes(1);
+      // Agent should not have been spawned
+      expect(spawnedChildren).toHaveLength(0);
+    });
+
+    it("rejects when beat remains non-claimable after rollback", async () => {
+      backend.get
+        .mockResolvedValueOnce({
+          ok: true,
+          data: {
+            id: "foolery-e701",
+            title: "Still non-claimable",
+            state: "implementation",
+            isAgentClaimable: false,
+          },
+        })
+        // After rollback, backend.get returns beat still non-claimable
+        .mockResolvedValueOnce({
+          ok: true,
+          data: {
+            id: "foolery-e701",
+            title: "Still non-claimable",
+            state: "implementation",
+            isAgentClaimable: false,
+          },
+        });
+      backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+      backend.list.mockResolvedValue({ ok: true, data: [] });
+
+      // assertClaimable sees the still-non-claimable beat and throws
+      const assertMock = vi.mocked(assertClaimable);
+      assertMock.mockImplementationOnce(() => {
+        throw new Error("Take unavailable: knot is not agent-claimable (foolery-e701 (implementation))");
+      });
+
+      await expect(
+        createSession("foolery-e701", "/tmp/repo", "test prompt"),
+      ).rejects.toThrow("not agent-claimable");
+
+      // Rollback was attempted
+      expect(rollbackBeatState).toHaveBeenCalledWith(
+        "foolery-e701",
+        "implementation",
+        "ready_for_implementation",
+        "/tmp/repo",
+        "knots",
+        expect.any(String),
+      );
+      // backend.get called twice: initial + post-rollback refresh
+      expect(backend.get).toHaveBeenCalledTimes(2);
+      expect(spawnedChildren).toHaveLength(0);
+    });
+
+    it("skips rollback when beat is already in a claimable queue state", async () => {
+      // Clear rollbackBeatState calls from prior tests in this suite
+      vi.mocked(rollbackBeatState).mockClear();
+
+      backend.get.mockResolvedValueOnce({
+        ok: true,
+        data: {
+          id: "foolery-e702",
+          title: "Already queued",
+          state: "ready_for_implementation",
+          isAgentClaimable: true,
+        },
+      });
+      backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+      backend.list.mockResolvedValue({ ok: true, data: [] });
+
+      await createSession("foolery-e702", "/tmp/repo", "test prompt");
+
+      // rollbackBeatState should NOT be called — beat is already claimable
+      expect(rollbackBeatState).not.toHaveBeenCalled();
+      // backend.get called only once — no rollback refresh needed
+      expect(backend.get).toHaveBeenCalledTimes(1);
+      // Agent should have been spawned normally
+      expect(spawnedChildren).toHaveLength(1);
+    });
   });
 });
