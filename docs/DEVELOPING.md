@@ -80,6 +80,42 @@ docs/                   Project documentation
 | `bash scripts/release/channel-install.sh release\|local [--activate]` | Install release/local channel launcher and runtime |
 | `bash scripts/release/channel-use.sh release\|local\|show` | Switch or inspect active `foolery` channel symlink |
 
+## Release Channels
+
+### Install a Specific Release Tag
+
+```bash
+FOOLERY_RELEASE_TAG=v0.1.0 curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash
+```
+
+Re-run the same install command to upgrade or reinstall that tagged runtime.
+
+### Toggle Between Release and Local Channels
+
+Use the channel scripts to keep both launchers installed and switch with a symlink:
+
+```bash
+# Install latest GitHub release into ~/.local/share/foolery/channels/release/bin/foolery
+bash scripts/release/channel-install.sh release
+
+# Build from current checkout and install into ~/.local/share/foolery/channels/local/bin/foolery
+bash scripts/release/channel-install.sh local
+
+# Switch active ~/.local/bin/foolery symlink
+bash scripts/release/channel-use.sh release
+bash scripts/release/channel-use.sh local
+
+# Show active link and installed channel details
+bash scripts/release/channel-use.sh show
+```
+
+You can override defaults with:
+- `FOOLERY_CHANNEL_ROOT` (default: `~/.local/share/foolery/channels`)
+- `FOOLERY_ACTIVE_LINK` (default: `~/.local/bin/foolery`)
+- `FOOLERY_RELEASE_INSTALLER_URL` (default: `https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh`)
+- `FOOLERY_LOCAL_ARTIFACT_PATH` (optional prebuilt local runtime tarball)
+- `FOOLERY_LOCAL_DIST_DIR` (optional output dir for local artifact build)
+
 ## Architecture
 
 ```
