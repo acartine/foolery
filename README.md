@@ -25,21 +25,14 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
       <sub><b>Active</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/human-action.png">
-        <img src="docs/screenshots/human-action.png" width="160" alt="Human Action" />
-      </a>
-      <br />
-      <sub><b>Human Action</b></sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
       <a href="docs/screenshots/retakes.png">
         <img src="docs/screenshots/retakes.png" width="160" alt="Retakes" />
       </a>
       <br />
       <sub><b>Retakes</b></sub>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <a href="docs/screenshots/history.png">
         <img src="docs/screenshots/history.png" width="160" alt="History" />
@@ -59,7 +52,7 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
 
 Foolery is a local orchestration app for agent-driven software work. It sits on top of memory-manager backends — primarily [Knots](https://github.com/acartine/knots), with [Beads](https://github.com/steveyegge/beads) also supported — and gives you one place to stage work, run agents, and review outcomes across repos.
 
-It is not trying to be just another chat box around a coding model. The point is to make multi-step work visible: what is queued, what is active, what needs a human, what is ready for review, and what happened in the session history.
+It is not trying to be just another chat box around a coding model. The point is to make multi-step work visible: what is queued, what is active, what is ready for review, and what happened in the session history.
 
 [Read the Substack post on why I built it.](https://open.substack.com/pub/thecartine/p/foolery-the-app?r=1rb8nt&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true)
 
@@ -152,12 +145,6 @@ Beats currently in progress. See which agents are working, their model, version,
 
 ![Active view](docs/screenshots/active.png)
 
-### Human Action
-
-The human action queue. Beats requiring a human-owned next step land here based on profile ownership and state. Review outcomes, capture notes, and keep your done list honest.
-
-![Human Action view](docs/screenshots/human-action.png)
-
 ### Retakes
 
 The review lane for shipped beats. Browse handoff capsules from agent sessions, inspect what changed, and trigger follow-up passes when something needs another look.
@@ -178,9 +165,9 @@ Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick m
 
 ## Why Foolery?
 
-- **Keep software work legible.** See what is queued, running, waiting on a human, ready for review, and already discussed.
+- **Keep software work legible.** See what is queued, running, ready for review, and already discussed.
 - **Turn loose tasks into structured execution.** Break work into beats, stage dependency-aware waves, and run agents without losing the plot.
-- **Review outcomes instead of trusting vibes.** Finished work lands in a human-owned lane before it counts as done.
+- **Review outcomes instead of trusting vibes.** Finished work lands in a review lane before it counts as done.
 - **Stay fast without living in terminal tabs.** Navigate, select, bulk-update, and launch work from a keyboard-first interface.
 - **Work across repos from one place.** Keep the orchestration layer above any single repository.
 
