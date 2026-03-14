@@ -1,0 +1,15 @@
+{
+  "event_id": "019ceceb-083a-7353-8dfa-f6e98996a5f5",
+  "occurred_at": "2026-03-14T15:15:51.994717Z",
+  "knot_id": "foolery-2ac4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation verified: expanded rollbackBeatState tests in memory-manager-commands-coverage.test.ts with beads path, exec failure propagation, special character escaping, empty string reason, and undefined reason cases. All quality gates pass.",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019ceceb-083a-7353-8dfa-f6d0ce34b439",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}
