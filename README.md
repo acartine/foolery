@@ -217,24 +217,6 @@ Commands:
 ➜ ~
 ```
 
-`foolery` is the default open flow: if the server is down it starts it, then opens the app URL only if it is not already open.
-`foolery start` launches the backend in the background, prints log paths, opens your browser automatically, and returns immediately.
-`foolery open` opens Foolery in your browser without spawning duplicate tabs when one is already open.
-`foolery update` downloads and installs the latest Foolery runtime.
-Default logs are in `~/.local/state/foolery/logs/stdout.log` and `~/.local/state/foolery/logs/stderr.log`.
-`foolery uninstall` removes the runtime bundle, local state/logs, and the launcher binary.
-The launcher also shows an update banner when a newer Foolery release is available.
-
-Foolery reads from registered repos that contain `.beads` or `.knots` memory manager markers.
-If both markers are present, Foolery treats the repo as Knots-backed.
-
-If you need to bootstrap a new Beads repo:
-
-```bash
-cd your-project
-bd init
-```
-
 ## Tech Stack
 
 Next.js 16 / React 19 / TypeScript / Tailwind CSS 4 / Zustand / TanStack Query / xterm.js
