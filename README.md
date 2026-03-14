@@ -11,22 +11,22 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
 <table align="center">
   <tr>
     <td align="center">
-      <a href="docs/screenshots/queues.png">
-        <img src="docs/screenshots/queues.png" width="160" alt="Queues View" />
+      <a href="docs/screenshots/queues-20260314.png">
+        <img src="docs/screenshots/queues-20260314.png" width="160" alt="Queues View" />
       </a>
       <br />
       <sub><b>Queues</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/active.png">
-        <img src="docs/screenshots/active.png" width="160" alt="Active View" />
+      <a href="docs/screenshots/active-20260314.png">
+        <img src="docs/screenshots/active-20260314.png" width="160" alt="Active View" />
       </a>
       <br />
       <sub><b>Active</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/retakes.png">
-        <img src="docs/screenshots/retakes.png" width="160" alt="Retakes" />
+      <a href="docs/screenshots/retakes-20260314.png">
+        <img src="docs/screenshots/retakes-20260314.png" width="160" alt="Retakes" />
       </a>
       <br />
       <sub><b>Retakes</b></sub>
@@ -41,8 +41,8 @@ Foolery helps you capture work, break it down, dispatch agents, review what they
       <sub><b>History</b></sub>
     </td>
     <td align="center">
-      <a href="docs/screenshots/hot-keys.png">
-        <img src="docs/screenshots/hot-keys.png" width="160" alt="Hot Keys" />
+      <a href="docs/screenshots/hot-keys-20260314.png">
+        <img src="docs/screenshots/hot-keys-20260314.png" width="160" alt="Hot Keys" />
       </a>
       <br />
       <sub><b>Hot Keys</b></sub>
@@ -137,19 +137,19 @@ Assign weighted agent pools to each workflow step: Planning, Plan Review, Implem
 
 The default view. All beats queued and ready for action — filter by type, priority, or free-text search. Select rows with spacebar, bulk-update fields, drill into inline summaries, and trigger agent sessions on any beat. Create new beats with Shift+N.
 
-![Queues view](docs/screenshots/queues.png)
+![Queues view](docs/screenshots/queues-20260314.png)
 
 ### Active
 
 Beats currently in progress. See which agents are working, their model, version, and state at a glance. The Active view adds Agent, Model, and Version columns so you can monitor running work.
 
-![Active view](docs/screenshots/active.png)
+![Active view](docs/screenshots/active-20260314.png)
 
 ### Retakes
 
 The review lane for shipped beats. Browse handoff capsules from agent sessions, inspect what changed, and trigger follow-up passes when something needs another look.
 
-![Retakes view](docs/screenshots/retakes.png)
+![Retakes view](docs/screenshots/retakes-20260314.png)
 
 ### History
 
@@ -161,7 +161,7 @@ A focused history feed for agent sessions. Browse recent beat activity, inspect 
 
 Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick map of navigation, actions, editing, and panel controls across views.
 
-![Keyboard shortcuts overlay](docs/screenshots/hot-keys.png)
+![Keyboard shortcuts overlay](docs/screenshots/hot-keys-20260314.png)
 
 ## Why Foolery?
 
