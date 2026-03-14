@@ -53,7 +53,7 @@ const DEFAULT_SETTINGS = {
   backend: { type: "auto" },
   defaults: { profileId: "" },
   pools: DEFAULT_POOLS,
-  dispatchMode: "actions",
+  dispatchMode: "basic",
 };
 
 beforeEach(() => {
@@ -87,6 +87,12 @@ describe("loadSettings", () => {
     mockReadFile.mockResolvedValue('[actions]\ntake = ""');
     const settings = await loadSettings();
     expect(settings.actions.scene).toBe("");
+  });
+
+  it("normalizes legacy dispatch mode values on read", async () => {
+    mockReadFile.mockResolvedValue('dispatchMode = "actions"');
+    const settings = await loadSettings();
+    expect(settings.dispatchMode).toBe("basic");
   });
 
   it("uses cache within TTL", async () => {
@@ -156,10 +162,21 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(written).toContain("[defaults]");
   });
 
+  it("rewrites legacy dispatch mode values to canonical ones when backfilling", async () => {
+    mockReadFile.mockResolvedValue('dispatchMode = "pools"');
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.changed).toBe(true);
+    expect(result.settings.dispatchMode).toBe("advanced");
+
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain('dispatchMode = "advanced"');
+    expect(written).not.toContain('dispatchMode = "pools"');
+  });
+
   it("does not write when defaults are already present", async () => {
     mockReadFile.mockResolvedValue(
       [
-        'dispatchMode = "actions"',
+        'dispatchMode = "basic"',
         '[actions]',
         'take = ""',
         'scene = ""',
@@ -187,7 +204,7 @@ describe("cleanStaleSettingsKeys", () => {
   it("removes obsolete settings keys without touching active ones", async () => {
     mockReadFile.mockResolvedValue(
       [
-        'dispatchMode = "actions"',
+        'dispatchMode = "basic"',
         '[agent]',
         'command = "claude"',
         '[verification]',
@@ -229,7 +246,7 @@ describe("saveSettings", () => {
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
-      dispatchMode: "actions" as const,
+      dispatchMode: "basic" as const,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -246,7 +263,7 @@ describe("saveSettings", () => {
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       pools: DEFAULT_POOLS,
-      dispatchMode: "actions" as const,
+      dispatchMode: "basic" as const,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(
@@ -423,9 +440,9 @@ describe("removeRegisteredAgent", () => {
 });
 
 describe("getStepAgent", () => {
-  it("uses pool when dispatchMode is pools and pool is configured", async () => {
+  it("uses pool when dispatchMode is advanced and pool is configured", async () => {
     const toml = [
-      'dispatchMode = "pools"',
+      'dispatchMode = "advanced"',
       '[agents.sonnet]',
       'command = "claude"',
       'model = "sonnet-4"',
@@ -443,9 +460,9 @@ describe("getStepAgent", () => {
     expect(agent.label).toBe("Claude Sonnet");
   });
 
-  it("ignores pool when dispatchMode is actions even if pool is configured", async () => {
+  it("ignores pool when dispatchMode is basic even if pool is configured", async () => {
     const toml = [
-      'dispatchMode = "actions"',
+      'dispatchMode = "basic"',
       '[agents.sonnet]',
       'command = "claude"',
       'model = "sonnet-4"',
@@ -468,9 +485,9 @@ describe("getStepAgent", () => {
     expect(agent.label).toBe("Claude Opus");
   });
 
-  it("falls back to action mapping when pool step is empty in pools mode", async () => {
+  it("falls back to action mapping when pool step is empty in advanced mode", async () => {
     const toml = [
-      'dispatchMode = "pools"',
+      'dispatchMode = "advanced"',
       '[agents.opus]',
       'command = "claude"',
       'model = "opus"',
@@ -491,7 +508,7 @@ describe("getStepAgent", () => {
 
   it("falls back to dispatch default when no pool and no action mapping", async () => {
     const toml = [
-      'dispatchMode = "pools"',
+      'dispatchMode = "advanced"',
       '[agents.my-default]',
       'command = "my-default"',
     ].join("\n");
@@ -501,7 +518,7 @@ describe("getStepAgent", () => {
     expect(agent.command).toBe("my-default");
   });
 
-  it("defaults dispatchMode to actions when not specified", async () => {
+  it("defaults dispatchMode to basic when not specified", async () => {
     const toml = [
       '[agents.sonnet]',
       'command = "claude"',
@@ -519,7 +536,7 @@ describe("getStepAgent", () => {
     ].join("\n");
     mockReadFile.mockResolvedValue(toml);
 
-    // dispatchMode defaults to "actions", so pools should be ignored
+    // dispatchMode defaults to "basic", so pools should be ignored
     const agent = await getStepAgent(WorkflowStep.Implementation, "take");
     expect(agent.model).toBe("opus");
     expect(agent.label).toBe("Claude Opus");
@@ -532,7 +549,7 @@ describe("getStepAgent", () => {
 
     it("excludes prior action agent when selecting for a review step", async () => {
       const toml = [
-        'dispatchMode = "pools"',
+        'dispatchMode = "advanced"',
         '[agents.opus]',
         'command = "claude"',
         'model = "opus"',
@@ -568,7 +585,7 @@ describe("getStepAgent", () => {
 
     it("does not exclude when no prior agent is recorded", async () => {
       const toml = [
-        'dispatchMode = "pools"',
+        'dispatchMode = "advanced"',
         '[agents.opus]',
         'command = "claude"',
         'model = "opus"',
@@ -590,7 +607,7 @@ describe("getStepAgent", () => {
 
     it("does not exclude for non-review steps", async () => {
       const toml = [
-        'dispatchMode = "pools"',
+        'dispatchMode = "advanced"',
         '[agents.opus]',
         'command = "claude"',
         'model = "opus"',

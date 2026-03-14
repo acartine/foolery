@@ -103,6 +103,10 @@ interface StaleSettingsComputation extends StaleSettingsAudit {
 
 const STALE_TOP_LEVEL_SETTINGS_KEYS = ["agent", "verification"] as const;
 const STALE_ACTION_SETTINGS_KEYS = ["direct"] as const;
+const LEGACY_DISPATCH_MODE_MAP = {
+  actions: "basic",
+  pools: "advanced",
+} as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -165,6 +169,17 @@ function normalizeMode(mode: number): number {
   return mode & 0o777;
 }
 
+function normalizeLegacyDispatchModeValue(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  return LEGACY_DISPATCH_MODE_MAP[value as keyof typeof LEGACY_DISPATCH_MODE_MAP] ?? value;
+}
+
+function normalizeLegacySettings(current: unknown): Record<string, unknown> {
+  const normalized = structuredClone(isRecord(current) ? current : {}) as Record<string, unknown>;
+  normalized.dispatchMode = normalizeLegacyDispatchModeValue(normalized.dispatchMode);
+  return normalized;
+}
+
 async function readRawSettings(): Promise<{
   parsed: unknown;
   fileMissing: boolean;
@@ -182,7 +197,7 @@ async function readRawSettings(): Promise<{
   }
 
   try {
-    return { parsed: parse(raw), fileMissing: false };
+    return { parsed: normalizeLegacySettings(parse(raw)), fileMissing: false };
   } catch (error) {
     return { parsed: {}, fileMissing: false, error: formatError(error) };
   }
@@ -1002,8 +1017,8 @@ export async function getStepAgent(
 ): Promise<AgentTarget> {
   const settings = await loadSettings();
 
-  // Only use pools when dispatch mode is "pools"
-  if (settings.dispatchMode === "pools") {
+  // Only use pools when dispatch mode is "advanced"
+  if (settings.dispatchMode === "advanced") {
     const poolAgents: Record<string, RegisteredAgentConfig> = {
       ...settings.agents,
     };
@@ -1018,7 +1033,7 @@ export async function getStepAgent(
     }
 
     console.log(
-      `[getStepAgent] step="${step}" dispatchMode="pools" beatId=${beatId ?? "n/a"} ` +
+      `[getStepAgent] step="${step}" dispatchMode="advanced" beatId=${beatId ?? "n/a"} ` +
       `fallbackAction=${fallbackAction ?? "n/a"} excludeAgentId=${excludeAgentId ?? "none"} ` +
       `registeredAgents=[${Object.keys(poolAgents).join(", ")}]`,
     );
