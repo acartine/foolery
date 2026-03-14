@@ -31,13 +31,13 @@ const MODES: {
   icon: typeof Zap;
 }[] = [
   {
-    value: "actions",
+    value: "basic",
     label: "Simple",
     description: "One agent per action",
     icon: Zap,
   },
   {
-    value: "pools",
+    value: "advanced",
     label: "Advanced",
     description: "Weighted pools per step",
     icon: Users,
@@ -114,7 +114,7 @@ export function SettingsDispatchSection({
         })}
       </div>
 
-      {dispatchMode === "actions" ? (
+      {dispatchMode === "basic" ? (
         <>
           <SettingsActionsSection
             actions={actions}

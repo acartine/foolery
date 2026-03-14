@@ -63,7 +63,7 @@ const DEFAULTS: SettingsData = {
     shipment: [],
     shipment_review: [],
   },
-  dispatchMode: "actions",
+  dispatchMode: "basic",
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";

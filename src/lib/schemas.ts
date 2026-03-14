@@ -147,11 +147,11 @@ export const defaultsSettingsSchema = z
   })
   .default({ profileId: "" });
 
-// Agent dispatch mode: "actions" uses simple per-action mappings,
-// "pools" uses weighted per-step agent pools.
+// Agent dispatch mode: "basic" uses simple per-action mappings,
+// "advanced" uses weighted per-step agent pools.
 export const dispatchModeSchema = z
-  .enum(["actions", "pools"])
-  .default("actions");
+  .enum(["basic", "advanced"])
+  .default("basic");
 
 // Agent pool entry: weighted agent selection
 export const poolEntrySchema = z.object({

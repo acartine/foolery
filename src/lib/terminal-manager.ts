@@ -892,7 +892,7 @@ export async function createSession(
 
       try {
         const settings = await loadSettings();
-        if (settings.dispatchMode === "pools") {
+        if (settings.dispatchMode === "advanced") {
           const isReview = isReviewStep(resolved.step);
           const actionStep = isReview ? priorActionStep(resolved.step) : null;
           // For review steps, exclude the agent that did the prior action step.

@@ -418,7 +418,7 @@ export const componentSchemas = {
           shipment_review: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
         },
       },
-      dispatchMode: { type: "string", enum: ["actions", "pools"] },
+      dispatchMode: { type: "string", enum: ["basic", "advanced"] },
     },
   },
 

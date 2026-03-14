@@ -858,7 +858,7 @@ Response:
     "backend": { "type": "auto" },
     "defaults": { "profileId": "" },
     "openrouter": { "apiKey": "", "enabled": false, "model": "" },
-    "dispatchMode": "actions",
+    "dispatchMode": "basic",
     "pools": { ... }
   }
 }

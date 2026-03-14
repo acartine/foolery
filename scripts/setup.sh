@@ -532,7 +532,7 @@ _write_settings_toml() {
   mkdir -p "$_AGENT_CONFIG_DIR"
 
   {
-    printf 'dispatchMode = "actions"\n\n'
+    printf 'dispatchMode = "basic"\n\n'
 
     local aid
     for aid in "${FOUND_AGENTS[@]}"; do

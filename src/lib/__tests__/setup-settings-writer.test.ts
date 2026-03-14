@@ -55,13 +55,13 @@ describe("settings writers", () => {
     async (scriptName) => {
       const { raw, parsed } = await runWriter(scriptName);
 
-      expect(raw.startsWith('dispatchMode = "actions"\n\n')).toBe(true);
+      expect(raw.startsWith('dispatchMode = "basic"\n\n')).toBe(true);
       expect(raw).toContain("[backend]");
       expect(raw).toContain("[defaults]");
       expect(raw).toContain("[pools]");
 
       expect(parsed).toMatchObject({
-        dispatchMode: "actions",
+        dispatchMode: "basic",
         actions: {
           take: "codex",
           scene: "claude",
