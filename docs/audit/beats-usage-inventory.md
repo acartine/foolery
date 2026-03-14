@@ -382,8 +382,6 @@ Configuration and infrastructure files that reference beads.
 | `.beads/.gitignore` | Ignores SQLite DBs, daemon files, Dolt database, merge artifacts, sync state |
 | `.beads/README.md` | Beads directory documentation |
 | `.gitattributes` | Custom merge driver: `.beads/issues.jsonl merge=beads` |
-| `CLAUDE.md` | Agent instructions: mandates `bd` usage, handoff contract with `bd update`/`bd sync` commands |
-| `AGENTS.md` | Agent instructions (subset of CLAUDE.md): `bd show`, `bd update`, `bd sync` commands |
 | `.claude/settings.local.json` | Claude Code local settings (may reference beads repo paths) |
 
 ---

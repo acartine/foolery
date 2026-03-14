@@ -97,11 +97,6 @@ export interface DoctorStreamSummary {
 
 export type DoctorStreamEvent = DoctorCheckResult | DoctorStreamSummary;
 
-function fallbackPromptProfileForRepoPath(repoPath: string): string {
-  void repoPath;
-  return "autopilot";
-}
-
 async function listWorkflowsSafe(repoPath: string): Promise<MemoryWorkflowDescriptor[]> {
   try {
     const backend = getBackend() as {
@@ -529,17 +524,15 @@ export async function checkMemoryImplementationCompatibility(
 
     const workflows = await listWorkflowsSafe(repo.path);
     if (workflows.length === 0) {
-      const fallbackProfile = fallbackPromptProfileForRepoPath(repo.path);
       diagnostics.push({
         check: "memory-implementation",
         severity: "warning",
         fixable: false,
-        message: `Repo "${repo.name}" could not enumerate workflows; falling back to ${fallbackProfile}.`,
+        message: `Repo "${repo.name}" could not enumerate workflows.`,
         context: {
           repoPath: repo.path,
           repoName: repo.name,
           memoryManagerType: detected,
-          fallbackProfile,
         },
       });
       continue;
