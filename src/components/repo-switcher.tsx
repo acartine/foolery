@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Database } from "lucide-react";
@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 export function RepoSwitcher() {
   const { activeRepo, registeredRepos, setRegisteredRepos } =
     useAppStore();
+  const didBootstrapRepoRef = useRef(false);
   const updateUrl = useUpdateUrl();
   const router = useRouter();
   const pathname = usePathname();
@@ -34,14 +35,18 @@ export function RepoSwitcher() {
   useEffect(() => {
     if (data?.ok && data.data) {
       setRegisteredRepos(data.data);
-      // Restore last selected repo, or default to first repo
-      if (!activeRepo && data.data.length > 0) {
-        const persisted = getPersistedRepo();
-        const match = persisted && data.data.find((r) => r.path === persisted);
-        updateUrl({ repo: match ? match.path : data.data[0].path });
+      if (didBootstrapRepoRef.current) return;
+      didBootstrapRepoRef.current = true;
+
+      if (activeRepo || data.data.length === 0 || searchParams.has("repo")) {
+        return;
       }
+
+      const persisted = getPersistedRepo();
+      const match = persisted && data.data.find((r) => r.path === persisted);
+      updateUrl({ repo: match ? match.path : data.data[0].path });
     }
-  }, [data, setRegisteredRepos, activeRepo, updateUrl]);
+  }, [data, setRegisteredRepos, activeRepo, updateUrl, searchParams]);
 
   const currentName = activeRepo
     ? registeredRepos.find((r) => r.path === activeRepo)?.name ?? "Unknown"

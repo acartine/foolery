@@ -48,6 +48,7 @@ export function AppHeader() {
   const beatsView = parseBeatsView(searchParams.get("view"));
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [createRepoMenuOpen, setCreateRepoMenuOpen] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [hotkeyHelpOpen, setHotkeyHelpOpen] = useState(() =>
     readHotkeyHelpOpen(
@@ -80,6 +81,21 @@ export function AppHeader() {
     [activeRepo, registeredRepos]
   );
 
+  const openCreateDialog = useCallback((repo: string | null) => {
+    setCreateRepoMenuOpen(false);
+    setSelectedRepo(repo);
+    setCreateOpen(true);
+  }, []);
+
+  const openCreateFlow = useCallback(() => {
+    if (shouldChooseRepo) {
+      setCreateRepoMenuOpen(true);
+      return;
+    }
+
+    openCreateDialog(defaultRepo);
+  }, [defaultRepo, openCreateDialog, shouldChooseRepo]);
+
   useEffect(() => {
     if (!isBeatsRoute || !canCreate) return;
     // Shift+N only opens create dialog on Beats list views (queues/active)
@@ -96,13 +112,12 @@ export function AppHeader() {
           return;
         }
         e.preventDefault();
-        setSelectedRepo(defaultRepo);
-        setCreateOpen(true);
+        openCreateFlow();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [beatsView, canCreate, defaultRepo, isBeatsRoute]);
+  }, [beatsView, canCreate, isBeatsRoute, openCreateFlow]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -155,11 +170,6 @@ export function AppHeader() {
     setSettingsSection("repos");
     setSettingsOpen(true);
   }
-
-  const openCreateDialog = (repo: string | null) => {
-    setSelectedRepo(repo);
-    setCreateOpen(true);
-  };
 
   const setBeatsView = useCallback((view: "queues" | "active" | "finalcut" | "retakes" | "history") => {
     const params = new URLSearchParams(searchParams.toString());
@@ -290,11 +300,11 @@ export function AppHeader() {
     // Beats list: original Add / New behavior
     if (shouldChooseRepo) {
       return (
-        <DropdownMenu>
+        <DropdownMenu open={createRepoMenuOpen} onOpenChange={setCreateRepoMenuOpen}>
           <DropdownMenuTrigger asChild>
-            <Button size="lg" variant="success" className="gap-1.5 px-2.5" title="Create new beat (Shift+N)">
+            <Button size="lg" variant="success" className="gap-1.5 px-2.5" title="Choose repository to create beat (Shift+N)">
               <Plus className="size-4" />
-              New
+              Add
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -317,7 +327,7 @@ export function AppHeader() {
         variant="success"
         className="gap-1.5 px-2.5"
         title="Create new beat (Shift+N)"
-        onClick={() => openCreateDialog(defaultRepo)}
+        onClick={openCreateFlow}
       >
         <Plus className="size-4" />
         Add
