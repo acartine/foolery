@@ -6,6 +6,7 @@ import {
   Bot,
   ArrowDown,
   ArrowUp,
+  Bug,
   Clock3,
   CornerDownLeft,
   FileText,
@@ -33,6 +34,9 @@ import {
   useInteractionPicker,
 } from "@/components/interaction-picker";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { HistoryDebugPanel } from "@/components/history-debug-panel";
+import { cn } from "@/lib/utils";
 
 const WINDOW_SIZE = 5;
 const TITLE_ROW_HEIGHT_PX = 48;
@@ -545,6 +549,7 @@ export function AgentHistoryView() {
   const [focusedBeatKey, setFocusedBeatKey] = useState<string | null>(null);
   const [loadedBeatKey, setLoadedBeatKey] = useState<string | null>(null);
   const [windowStart, setWindowStart] = useState(0);
+  const [debugPanelOpen, setDebugPanelOpen] = useState(false);
   const beatButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const beatListRef = useRef<HTMLDivElement | null>(null);
   const consolePanelRef = useRef<HTMLDivElement | null>(null);
@@ -817,6 +822,11 @@ export function AgentHistoryView() {
   const focusedTitle = focusedSummary ? getBeatTitle(focusedSummary) : "Beat details";
   const loadedTitle = loadedSummary ? getBeatTitle(loadedSummary) : null;
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Debug panel must close when loaded beat changes.
+    setDebugPanelOpen(false);
+  }, [loadedBeatKey]);
+
   if (!activeRepo && registeredRepos.length === 0) {
     return (
       <div className="flex items-center justify-center py-10 text-[13px] text-muted-foreground">
@@ -1046,6 +1056,17 @@ export function AgentHistoryView() {
               {stripIdPrefix(loadedSummary.beatId)}
             </button>
           ) : null}
+          {loadedSummary && sessions.length > 0 ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 gap-1 px-2 text-[11px] text-slate-300 hover:text-white"
+              onClick={() => setDebugPanelOpen((prev) => !prev)}
+            >
+              <Bug className="size-3" />
+              {debugPanelOpen ? "Close Debug" : "Debug"}
+            </Button>
+          ) : null}
           {loadedSummary ? (
             <span className="ml-auto inline-flex items-center gap-1 text-[11px] text-slate-400">
               <Clock3 className="size-3" />
@@ -1058,55 +1079,70 @@ export function AgentHistoryView() {
           <InteractionPicker picker={picker} />
         ) : null}
 
-        <div
-          ref={consolePanelRef}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === "Tab" && event.shiftKey) {
-              event.preventDefault();
-              beatListRef.current?.focus();
-            }
-          }}
-          className="max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60"
-        >
-          {!loadedSummary ? (
-            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
-              Use click or Enter on a focused beat to load app and agent logs.
-            </div>
-          ) : sessionsQuery.isLoading && sessions.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[11px] text-slate-400">
-              <Spinner className="size-4" />
-              <span>Loading logs for {stripIdPrefix(loadedSummary.beatId)}…</span>
-              <span className="text-[10px]">prompt histories are BIG, please be patient :-)</span>
-            </div>
-          ) : sessions.length === 0 ? (
-            <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
-              No captured log sessions for this beat yet.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
-                  <Spinner className="size-3" />
-                  <span>Refreshing…</span>
-                </div>
-              ) : null}
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <Workflow className="size-3.5" />
-                <Sparkles className="size-3.5" />
-                {sessions.length} session{sessions.length === 1 ? "" : "s"}
+        <div className={debugPanelOpen && sessions.length > 0 ? "grid grid-cols-2 gap-0" : ""}>
+          <div
+            ref={consolePanelRef}
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === "Tab" && event.shiftKey) {
+                event.preventDefault();
+                beatListRef.current?.focus();
+              }
+            }}
+            className={cn(
+              "max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60",
+              debugPanelOpen && sessions.length > 0 ? "border-r border-slate-700" : "",
+            )}
+          >
+            {!loadedSummary ? (
+              <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
+                Use click or Enter on a focused beat to load app and agent logs.
               </div>
-              {sessions.map((session) => (
-                <SessionCard
-                  key={session.sessionId}
-                  session={session}
-                  entryRefCallback={picker.entryRefCallback}
-                  highlightedEntryId={picker.highlightedEntryId}
-                  filterEntry={picker.filterEntry}
-                />
-              ))}
+            ) : sessionsQuery.isLoading && sessions.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-700 px-3 py-6 text-[11px] text-slate-400">
+                <Spinner className="size-4" />
+                <span>Loading logs for {stripIdPrefix(loadedSummary.beatId)}…</span>
+                <span className="text-[10px]">prompt histories are BIG, please be patient :-)</span>
+              </div>
+            ) : sessions.length === 0 ? (
+              <div className="rounded border border-dashed border-slate-700 px-3 py-6 text-center text-[11px] text-slate-400">
+                No captured log sessions for this beat yet.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
+                  <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+                    <Spinner className="size-3" />
+                    <span>Refreshing…</span>
+                  </div>
+                ) : null}
+                <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                  <Workflow className="size-3.5" />
+                  <Sparkles className="size-3.5" />
+                  {sessions.length} session{sessions.length === 1 ? "" : "s"}
+                </div>
+                {sessions.map((session) => (
+                  <SessionCard
+                    key={session.sessionId}
+                    session={session}
+                    entryRefCallback={picker.entryRefCallback}
+                    highlightedEntryId={picker.highlightedEntryId}
+                    filterEntry={picker.filterEntry}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {debugPanelOpen && sessions.length > 0 && loadedSummary ? (
+            <div className="max-h-[calc(100vh-500px)] overflow-y-auto">
+              <HistoryDebugPanel
+                beatId={loadedSummary.beatId}
+                session={sessions[0]}
+                repoPath={loadedSummary.repoPath}
+                beatTitle={loadedTitle ?? undefined}
+              />
             </div>
-          )}
+          ) : null}
         </div>
       </section>
     </div>
