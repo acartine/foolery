@@ -210,8 +210,6 @@ RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
 UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
-PROMPT_TEMPLATE_FILE="\${FOOLERY_PROMPT_TEMPLATE_FILE:-\$APP_DIR/PROMPT.md}"
-PROMPT_MARKER="FOOLERY_GUIDANCE_PROMPT_START"
 
 if [[ "\$HOST" == "0.0.0.0" && -z "\${FOOLERY_URL:-}" ]]; then
   URL="http://127.0.0.1:\$PORT"
@@ -270,7 +268,7 @@ help_command_color() {
   fi
   case "\$1" in
     start|open|restart) color_code green ;;
-    setup|prompt|update) color_code blue ;;
+    setup|update) color_code blue ;;
     status|doctor|help) color_code yellow ;;
     stop|uninstall) color_code red ;;
     *) color_code cyan ;;
@@ -952,172 +950,6 @@ setup_cmd() {
   foolery_setup "\$@"
 }
 
-append_guidance_prompt() {
-  local target_file="\$1"
-  local prompt_template_file="\$2"
-
-  if grep -Fq "\$PROMPT_MARKER" "\$target_file" 2>/dev/null; then
-    return 2
-  fi
-
-  printf '\n\n' >>"\$target_file"
-  cat "\$prompt_template_file" >>"\$target_file"
-  printf '\n' >>"\$target_file"
-  return 0
-}
-
-remove_guidance_prompt() {
-  local target_file="\$1"
-  local tmp_file
-  tmp_file="\$(mktemp "\${TMPDIR:-/tmp}/foolery-prompt-remove.XXXXXX")" || return 1
-
-  if ! awk '
-    index(\$0, "<!-- FOOLERY_GUIDANCE_PROMPT_START -->") { skip = 1; next }
-    index(\$0, "<!-- FOOLERY_GUIDANCE_PROMPT_END -->") { skip = 0; next }
-    !skip { print }
-  ' "\$target_file" >"\$tmp_file"; then
-    rm -f "\$tmp_file"
-    return 1
-  fi
-
-  mv "\$tmp_file" "\$target_file"
-}
-
-prompt_usage() {
-  cat <<USAGE
-Usage: foolery prompt [options]
-
-Without options, appends Foolery guidance prompt to AGENTS.md/CLAUDE.md
-in the current repository.
-
-Options:
-  --remove              Remove Foolery guidance prompt from AGENTS.md/CLAUDE.md
-  --dry-run             Preview changes without modifying files
-  -h, --help            Show this help message
-USAGE
-}
-
-detect_repo_prompt_profile() {
-  local repo_path="\$1"
-  if [[ -d "\$repo_path/.knots" ]]; then
-    printf '%s' "knots"
-    return 0
-  fi
-  if [[ -d "\$repo_path/.beads" ]]; then
-    printf '%s' "beads"
-    return 0
-  fi
-  printf '%s' "beads"
-}
-
-resolve_prompt_template_for_profile() {
-  local profile="\$1"
-  local upper_profile
-  upper_profile="\$(printf '%s' "\$profile" | tr '[:lower:]' '[:upper:]')"
-
-  if [[ -n "\${FOOLERY_PROMPT_TEMPLATE_FILE:-}" && -f "\$FOOLERY_PROMPT_TEMPLATE_FILE" ]]; then
-    printf '%s\n' "\$FOOLERY_PROMPT_TEMPLATE_FILE"
-    return 0
-  fi
-
-  local candidate="\$APP_DIR/PROMPT_\${upper_profile}.md"
-  if [[ -f "\$candidate" ]]; then
-    printf '%s\n' "\$candidate"
-    return 0
-  fi
-
-  if [[ -f "\$PROMPT_TEMPLATE_FILE" ]]; then
-    printf '%s\n' "\$PROMPT_TEMPLATE_FILE"
-    return 0
-  fi
-
-  return 1
-}
-
-prompt_cmd() {
-  local cwd target_file prompt_template_file profile
-  local found=0 changed=0 skipped=0
-  local remove_mode=0 dry_run=0
-
-  while [[ "\$#" -gt 0 ]]; do
-    case "\$1" in
-      --remove)
-        remove_mode=1
-        ;;
-      --dry-run)
-        dry_run=1
-        ;;
-      -h|--help)
-        prompt_usage
-        return 0
-        ;;
-      *)
-        fail "Unknown option for foolery prompt: \$1"
-        ;;
-    esac
-    shift
-  done
-
-  cwd="\$(pwd)"
-  if [[ "\$remove_mode" -ne 1 ]]; then
-    profile="\$(detect_repo_prompt_profile "\$cwd")"
-    prompt_template_file="\$(resolve_prompt_template_for_profile "\$profile")" || {
-      fail "Guidance prompt template not found for profile \$profile. Run foolery update."
-    }
-  fi
-
-  for target_file in "\$cwd/AGENTS.md" "\$cwd/CLAUDE.md"; do
-    if [[ ! -f "\$target_file" ]]; then
-      continue
-    fi
-
-    found=\$((found + 1))
-    if grep -Fq "\$PROMPT_MARKER" "\$target_file" 2>/dev/null; then
-      if [[ "\$remove_mode" -eq 1 ]]; then
-        if [[ "\$dry_run" -eq 1 ]]; then
-          tip "Would remove Foolery guidance: \$target_file"
-          changed=\$((changed + 1))
-        elif remove_guidance_prompt "\$target_file"; then
-          success "Removed Foolery guidance: \$target_file"
-          changed=\$((changed + 1))
-        else
-          fail "Failed removing Foolery guidance from \$target_file"
-        fi
-      else
-        tip "Already contains Foolery guidance: \$target_file"
-        skipped=\$((skipped + 1))
-      fi
-    else
-      if [[ "\$remove_mode" -eq 1 ]]; then
-        tip "No Foolery guidance found: \$target_file"
-        skipped=\$((skipped + 1))
-      elif [[ "\$dry_run" -eq 1 ]]; then
-        tip "Would update: \$target_file"
-        changed=\$((changed + 1))
-      elif append_guidance_prompt "\$target_file" "\$prompt_template_file"; then
-        success "Updated: \$target_file"
-        changed=\$((changed + 1))
-      else
-        fail "Failed updating \$target_file"
-      fi
-    fi
-  done
-
-  if [[ "\$found" -eq 0 ]]; then
-    fail "No AGENTS.md or CLAUDE.md found in \$cwd."
-  fi
-
-  if [[ "\$dry_run" -eq 1 && "\$remove_mode" -eq 1 ]]; then
-    success "Prompt dry run complete: \$changed would remove, \$skipped had no Foolery guidance."
-  elif [[ "\$dry_run" -eq 1 ]]; then
-    success "Prompt dry run complete: \$changed would update, \$skipped already up to date."
-  elif [[ "\$remove_mode" -eq 1 ]]; then
-    success "Prompt removal complete: \$changed removed, \$skipped had no Foolery guidance."
-  else
-    success "Prompt update complete: \$changed updated, \$skipped already up to date."
-  fi
-}
-
 render_doctor_report() {
   local response="\$1" fix_mode="\$2"
 
@@ -1532,7 +1364,6 @@ usage() {
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background and open browser" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color open)"      "open"      "\$r" "\$desc_style" "Open Foolery in your browser (skips if already open)" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Configure repos and agents interactively" "\$r"
-  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color prompt)"    "prompt"    "\$r" "\$desc_style" "Manage Foolery guidance prompt in AGENTS.md/CLAUDE.md" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color stop)"      "stop"      "\$r" "\$desc_style" "Stop the background Foolery process" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color restart)"   "restart"   "\$r" "\$desc_style" "Restart Foolery" "\$r"
@@ -1557,9 +1388,6 @@ main() {
       ;;
     setup)
       setup_cmd "\$@"
-      ;;
-    prompt)
-      prompt_cmd "\$@"
       ;;
     update)
       update_cmd "\$@"
@@ -1674,7 +1502,7 @@ main() {
   fi
 
   success "Install complete"
-  tip "Commands: foolery start | foolery setup | foolery prompt | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
+  tip "Commands: foolery start | foolery setup | foolery update | foolery stop | foolery restart | foolery status | foolery uninstall"
 
   case ":$PATH:" in
     *":$BIN_DIR:"*)
