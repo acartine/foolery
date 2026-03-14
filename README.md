@@ -123,13 +123,13 @@ Foolery supports two dispatch modes for assigning agents to work, configurable u
 
 Map one registered agent to each action type: **Take!** (execute a single beat), **Scene!** (multi-beat orchestration), and **Breakdown** (decompose work into sub-beats). If you want to change your default agent, the Swap Agent tool updates all matching mappings at once.
 
-![Simple dispatch](docs/screenshots/dispatch-simple.png)
+![Simple dispatch](docs/screenshots/dispatch-simple-20260314.png)
 
 ### Advanced (Weighted pools per step)
 
 Assign weighted agent pools to each workflow step: Planning, Plan Review, Implementation, Implementation Review, Shipment, and Ship Review. Foolery picks from each pool according to the weights, which makes it useful for A/B testing models, mixing agent strengths, or spreading work across different tools. The Swap Agent tool still works across the whole dispatch configuration.
 
-![Advanced dispatch](docs/screenshots/dispatch-advanced.png)
+![Advanced dispatch](docs/screenshots/dispatch-advanced-20260314.png)
 
 ## Flow & Features
 
