@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 /**
  * Verify the bulk-edit "Set state" dropdown passes the correct terminal-state
@@ -27,5 +27,10 @@ describe("BulkEditControls – terminal state options", () => {
 
     // The dropdown should wire through onBulkUpdate({ state: v })
     expect(src).toContain('onBulkUpdate({ state: v })');
+
+    // The state select should remount after apply so the same terminal state
+    // can be applied twice in a row.
+    expect(src).toContain("key={bulkStateSelectKey}");
+    expect(src).toContain("setBulkStateSelectKey((key) => key + 1)");
   });
 });
