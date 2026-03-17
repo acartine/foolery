@@ -32,7 +32,7 @@ describe("retake action contract", () => {
   it("checks for rolling ancestor before starting session", () => {
     // hasRollingAncestor must be called between updateBeatOrThrow and startSession
     const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
-    const ancestorIdx = retakesViewSource.indexOf("hasRollingAncestor(beat, parentByBeatId");
+    const ancestorIdx = retakesViewSource.indexOf("hasRollingAncestor(");
     const startIdx = retakesViewSource.indexOf("startSession(beat.id");
     expect(ancestorIdx).toBeGreaterThan(updateIdx);
     expect(ancestorIdx).toBeLessThan(startIdx);
@@ -42,6 +42,13 @@ describe("retake action contract", () => {
     const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
     const existingIdx = retakesViewSource.indexOf("terminals.find");
     expect(existingIdx).toBeGreaterThan(updateIdx);
+  });
+
+  it("scopes running-session and ancestry lookups by repo path", () => {
+    expect(retakesViewSource).toContain("repoScopedBeatKey");
+    expect(retakesViewSource).toContain("t.repoPath === repo");
+    expect(retakesViewSource).toContain("repoScopedBeatKey(beat.parent, repo)");
+    expect(retakesViewSource).toContain("repoScopedBeatKey(terminal.beatId, terminal.repoPath)");
   });
 
   it("builds parentByBeatId from allBeats not just retake candidates", () => {

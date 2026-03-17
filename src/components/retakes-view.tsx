@@ -69,6 +69,14 @@ function extractCommitSha(beat: Beat): string | undefined {
   return label ? label.slice("commit:".length) : undefined;
 }
 
+function getBeatRepoPath(beat: Beat): string | undefined {
+  return (beat as Beat & { _repoPath?: string })._repoPath;
+}
+
+function repoScopedBeatKey(beatId: string, repoPath?: string): string {
+  return `${repoPath ?? ""}::${beatId}`;
+}
+
 type MetadataEntry = Record<string, unknown>;
 
 const STEP_METADATA_KEYS = [
@@ -489,7 +497,9 @@ export function RetakesView() {
   const shippingByBeatId = useMemo(() => {
     const acc: Record<string, string> = {};
     for (const terminal of terminals) {
-      if (terminal.status === "running") acc[terminal.beatId] = terminal.sessionId;
+      if (terminal.status === "running") {
+        acc[repoScopedBeatKey(terminal.beatId, terminal.repoPath)] = terminal.sessionId;
+      }
     }
     return acc;
   }, [terminals]);
@@ -576,7 +586,13 @@ export function RetakesView() {
     const map = new Map<string, string | undefined>();
     const allBeats = (data as { allBeats?: Beat[] })?.allBeats;
     if (allBeats) {
-      for (const beat of allBeats) map.set(beat.id, beat.parent);
+      for (const beat of allBeats) {
+        const repoPath = getBeatRepoPath(beat);
+        map.set(
+          repoScopedBeatKey(beat.id, repoPath),
+          beat.parent ? repoScopedBeatKey(beat.parent, repoPath) : undefined
+        );
+      }
     }
     return map;
   }, [data]);
@@ -620,13 +636,13 @@ export function RetakesView() {
             : "ReTake: reopened for regression investigation",
       };
 
-      const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      const updated = await updateBeatOrThrow(beats, beat.id, fields, repo);
+      const repo = getBeatRepoPath(beat);
+      await updateBeatOrThrow(beats, beat.id, fields, repo);
 
       if (action === "retake-now") {
         // Check for already-running session
         const existingRunning = terminals.find(
-          (t) => t.beatId === beat.id && t.status === "running"
+          (t) => t.beatId === beat.id && t.repoPath === repo && t.status === "running"
         );
         if (existingRunning) {
           setActiveSession(existingRunning.sessionId);
@@ -634,7 +650,14 @@ export function RetakesView() {
         }
 
         // Check for rolling ancestor using full beat set
-        if (hasRollingAncestor(beat, parentByBeatId, shippingByBeatId)) {
+        if (hasRollingAncestor(
+          {
+            id: repoScopedBeatKey(beat.id, repo),
+            parent: beat.parent ? repoScopedBeatKey(beat.parent, repo) : undefined,
+          },
+          parentByBeatId,
+          shippingByBeatId
+        )) {
           return { staged: true, sessionResult: "ancestor-rolling" as const };
         }
 
