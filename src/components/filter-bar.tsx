@@ -24,6 +24,12 @@ const commonTypes: string[] = [
   "work",
 ];
 
+const bulkTerminalStates = [
+  { value: "shipped", label: "Shipped" },
+  { value: "abandoned", label: "Abandoned" },
+  { value: "deferred", label: "Deferred" },
+] as const;
+
 function formatLabel(val: string): string {
   return val
     .split(/[_-]/)
@@ -157,6 +163,20 @@ export function BulkEditControls({
           {builtinWorkflowDescriptors().map((p) => (
             <SelectItem key={p.id} value={p.id}>
               {formatLabel(p.id)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select
+        onValueChange={(v) => onBulkUpdate({ state: v })}
+      >
+        <SelectTrigger className="w-[130px] h-7">
+          <SelectValue placeholder="Set state..." />
+        </SelectTrigger>
+        <SelectContent>
+          {bulkTerminalStates.map((s) => (
+            <SelectItem key={s.value} value={s.value}>
+              {s.label}
             </SelectItem>
           ))}
         </SelectContent>
