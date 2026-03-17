@@ -27,4 +27,23 @@ describe("retake lightbox contract", () => {
     expect(retakeDialogSource).toContain("{RETAKE_TARGET_STATE}");
     expect(retakeDialogSource).not.toContain("as in_progress");
   });
+
+  it("exposes Stage and Retake Now buttons instead of a single ReTake submit", () => {
+    // Dialog must have both action buttons
+    expect(retakeDialogSource).toContain('"Stage"');
+    expect(retakeDialogSource).toContain('"Retake Now"');
+    // The old single ReTake submit button should be gone
+    expect(retakeDialogSource).not.toMatch(/>\s*{[^}]*"ReTake"\s*}\s*</);
+  });
+
+  it("exports RetakeAction type for callers", () => {
+    expect(retakeDialogSource).toContain('export type RetakeAction');
+    expect(retakeDialogSource).toContain('"stage"');
+    expect(retakeDialogSource).toContain('"retake-now"');
+  });
+
+  it("dialog onConfirm passes the action to the caller", () => {
+    // onConfirm signature accepts action parameter
+    expect(retakeDialogSource).toContain('onConfirm: (notes: string, action: RetakeAction)');
+  });
 });

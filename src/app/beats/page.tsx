@@ -26,6 +26,7 @@ import {
 } from "@/lib/agent-identity";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { isListBeatsView, parseBeatsView } from "@/lib/beats-view";
+import { hasRollingAncestor as hasRollingAncestorLib } from "@/lib/rolling-ancestor";
 
 const DEGRADED_ERROR_PREFIX = "Unable to interact with beats store";
 const MAX_SESSIONS = 5;
@@ -183,19 +184,11 @@ function BeatsPageInner() {
     return map;
   }, [beats]);
 
-  const hasRollingAncestor = useCallback((beat: Pick<Beat, "id" | "parent">): boolean => {
-    let parentId = beat.parent;
-    const visited = new Set<string>();
-
-    while (parentId) {
-      if (shippingByBeatId[parentId]) return true;
-      if (visited.has(parentId)) break;
-      visited.add(parentId);
-      parentId = parentByBeatId.get(parentId);
-    }
-
-    return false;
-  }, [parentByBeatId, shippingByBeatId]);
+  const hasRollingAncestor = useCallback(
+    (beat: Pick<Beat, "id" | "parent">): boolean =>
+      hasRollingAncestorLib(beat, parentByBeatId, shippingByBeatId),
+    [parentByBeatId, shippingByBeatId],
+  );
 
   const partialDegradedMsg = data?.ok ? (data as { _degraded?: string })._degraded : undefined;
   const isDegradedError = queryError instanceof DegradedStoreError || Boolean(partialDegradedMsg);

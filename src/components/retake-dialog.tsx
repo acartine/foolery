@@ -14,11 +14,13 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Beat } from "@/lib/types";
 import { RETAKE_TARGET_STATE } from "@/lib/retake";
 
+export type RetakeAction = "stage" | "retake-now";
+
 interface RetakeDialogProps {
   beat: Beat | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (notes: string) => void;
+  onConfirm: (notes: string, action: RetakeAction) => void;
   isPending?: boolean;
 }
 
@@ -81,12 +83,21 @@ export function RetakeDialog({ beat, open, onOpenChange, onConfirm, isPending }:
             Cancel
           </Button>
           <Button
-            className="bg-amber-600 text-white hover:bg-amber-700"
-            title="Reopen beat for regression investigation"
-            onClick={() => onConfirm(notes)}
+            variant="outline"
+            className="border-amber-300 text-amber-800 hover:bg-amber-50"
+            title="Stage retake — apply state change and reject reason only"
+            onClick={() => onConfirm(notes, "stage")}
             disabled={isPending}
           >
-            {isPending ? "Reopening..." : "ReTake"}
+            {isPending ? "Staging..." : "Stage"}
+          </Button>
+          <Button
+            className="bg-amber-600 text-white hover:bg-amber-700"
+            title="Stage retake and immediately start a Take session"
+            onClick={() => onConfirm(notes, "retake-now")}
+            disabled={isPending}
+          >
+            {isPending ? "Reopening..." : "Retake Now"}
           </Button>
         </DialogFooter>
       </DialogContent>

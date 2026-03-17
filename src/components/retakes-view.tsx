@@ -25,6 +25,10 @@ import {
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { RETAKE_TARGET_STATE, isRetakeSourceState } from "@/lib/retake";
 import { displayBeatLabel, stripBeatPrefix } from "@/lib/beat-display";
+import { startSession } from "@/lib/terminal-api";
+import { useTerminalStore } from "@/stores/terminal-store";
+import { hasRollingAncestor } from "@/lib/rolling-ancestor";
+import type { RetakeAction } from "@/components/retake-dialog";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -480,74 +484,83 @@ export function RetakesView() {
   const [retakeBeat, setRetakeBeat] = useState<Beat | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
+  const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
+
+  const shippingByBeatId = useMemo(() => {
+    const acc: Record<string, string> = {};
+    for (const terminal of terminals) {
+      if (terminal.status === "running") acc[terminal.beatId] = terminal.sessionId;
+    }
+    return acc;
+  }, [terminals]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["beats", "retakes", activeRepo, registeredRepos.length],
     queryFn: async () => {
-      type RepoRetakesResult =
-        | { ok: true; data: Beat[] }
+      type RepoResult =
+        | { ok: true; allBeats: Beat[]; retakeCandidates: Beat[] }
         | { ok: false; error: string };
 
       const params: Record<string, string> = {};
-      const toRetakeCandidates = (items: Beat[]): Beat[] =>
-        items.filter((beat) => isRetakeSourceState(beat.state));
 
-      const loadRepoRetakes = async (repoPath: string, repoName?: string): Promise<RepoRetakesResult> => {
+      const loadRepo = async (repoPath: string, repoName?: string): Promise<RepoResult> => {
         const result = await fetchBeats(params, repoPath);
         if (!result.ok) {
           return { ok: false, error: result.error ?? `Failed to load retake beats for ${repoPath}` };
         }
-        const filtered = toRetakeCandidates(result.data ?? []);
-        return {
-          ok: true,
-          data: filtered.map((beat) => ({
-            ...beat,
-            _repoPath: repoPath,
-            _repoName: repoName ?? repoPath,
-          })) as Beat[],
-        };
+        const all = (result.data ?? []).map((beat) => ({
+          ...beat,
+          _repoPath: repoPath,
+          _repoName: repoName ?? repoPath,
+        })) as Beat[];
+        const candidates = all.filter((beat) => isRetakeSourceState(beat.state));
+        return { ok: true, allBeats: all, retakeCandidates: candidates };
       };
 
       if (activeRepo) {
-        const activeRepoResult = await loadRepoRetakes(
+        const activeRepoResult = await loadRepo(
           activeRepo,
           registeredRepos.find((repo) => repo.path === activeRepo)?.name
         );
         if (activeRepoResult.ok) {
-          return { ok: true as const, data: activeRepoResult.data };
+          return { ok: true as const, data: activeRepoResult.retakeCandidates, allBeats: activeRepoResult.allBeats };
         }
         if (registeredRepos.length > 0) {
           const fallbackResults = await Promise.all(
-            registeredRepos.map((repo) => loadRepoRetakes(repo.path, repo.name))
+            registeredRepos.map((repo) => loadRepo(repo.path, repo.name))
           );
-          const merged = fallbackResults.flatMap((result) => (result.ok ? result.data : []));
-          if (merged.length > 0) {
-            return { ok: true as const, data: merged };
+          const mergedCandidates = fallbackResults.flatMap((r) => (r.ok ? r.retakeCandidates : []));
+          const mergedAll = fallbackResults.flatMap((r) => (r.ok ? r.allBeats : []));
+          if (mergedCandidates.length > 0) {
+            return { ok: true as const, data: mergedCandidates, allBeats: mergedAll };
           }
         }
         throw new Error(activeRepoResult.error);
       }
       if (registeredRepos.length > 0) {
         const results = await Promise.all(
-          registeredRepos.map((repo) => loadRepoRetakes(repo.path, repo.name))
+          registeredRepos.map((repo) => loadRepo(repo.path, repo.name))
         );
-        const merged = results.flatMap((result) => (result.ok ? result.data : []));
-        if (merged.length > 0) {
-          return { ok: true as const, data: merged };
+        const mergedCandidates = results.flatMap((r) => (r.ok ? r.retakeCandidates : []));
+        const mergedAll = results.flatMap((r) => (r.ok ? r.allBeats : []));
+        if (mergedCandidates.length > 0) {
+          return { ok: true as const, data: mergedCandidates, allBeats: mergedAll };
         }
         const firstError = results.find((result) => !result.ok);
         if (firstError && !firstError.ok) {
           throw new Error(firstError.error);
         }
-        return { ok: true as const, data: [] as Beat[] };
+        return { ok: true as const, data: [] as Beat[], allBeats: [] as Beat[] };
       }
       const result = await fetchBeats(params);
       if (!result.ok) {
         throw new Error(result.error ?? "Failed to load retake beats.");
       }
+      const allBeats = result.data ?? [];
       return {
         ok: true as const,
-        data: toRetakeCandidates(result.data ?? []),
+        data: allBeats.filter((beat) => isRetakeSourceState(beat.state)),
+        allBeats,
       };
     },
     // Keep ReTakes populated even when no explicit repo is selected in single-repo mode.
@@ -555,6 +568,18 @@ export function RetakesView() {
     refetchInterval: 30_000,
     placeholderData: keepPreviousData,
   });
+
+  // Build parentByBeatId from all beats (not just retake candidates) so
+  // rolling-ancestor detection can walk through intermediate parents that
+  // are not themselves in a retake-source state.
+  const parentByBeatId = useMemo(() => {
+    const map = new Map<string, string | undefined>();
+    const allBeats = (data as { allBeats?: Beat[] })?.allBeats;
+    if (allBeats) {
+      for (const beat of allBeats) map.set(beat.id, beat.parent);
+    }
+    return map;
+  }, [data]);
 
   // Sort retake candidates by updated timestamp descending (most recent first),
   // with natural ID order as tiebreaker for deterministic sibling ordering.
@@ -580,7 +605,7 @@ export function RetakesView() {
   }, [beats.length]);
 
   const { mutate: handleRetake, isPending: isRetaking } = useMutation({
-    mutationFn: async ({ beat, notes }: { beat: Beat; notes: string }) => {
+    mutationFn: async ({ beat, notes, action }: { beat: Beat; notes: string; action: RetakeAction }) => {
       const commitSha = extractCommitSha(beat);
       const labels: string[] = [];
       if (commitSha) labels.push(`regression:${commitSha}`);
@@ -596,13 +621,80 @@ export function RetakesView() {
       };
 
       const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      return updateBeatOrThrow(beats, beat.id, fields, repo);
+      const updated = await updateBeatOrThrow(beats, beat.id, fields, repo);
+
+      if (action === "retake-now") {
+        // Check for already-running session
+        const existingRunning = terminals.find(
+          (t) => t.beatId === beat.id && t.status === "running"
+        );
+        if (existingRunning) {
+          setActiveSession(existingRunning.sessionId);
+          return { staged: true, sessionResult: "already-running" as const };
+        }
+
+        // Check for rolling ancestor using full beat set
+        if (hasRollingAncestor(beat, parentByBeatId, shippingByBeatId)) {
+          return { staged: true, sessionResult: "ancestor-rolling" as const };
+        }
+
+        // Start session
+        const sessionResult = await startSession(beat.id, repo ?? activeRepo ?? undefined);
+        if (!sessionResult.ok || !sessionResult.data) {
+          return {
+            staged: true,
+            sessionResult: "start-failed" as const,
+            sessionError: sessionResult.error ?? "Failed to start session",
+          };
+        }
+
+        upsertTerminal({
+          sessionId: sessionResult.data.id,
+          beatId: beat.id,
+          beatTitle: beat.title,
+          repoPath: sessionResult.data.repoPath ?? repo ?? activeRepo ?? undefined,
+          agentName: sessionResult.data.agentName,
+          agentModel: sessionResult.data.agentModel,
+          agentVersion: sessionResult.data.agentVersion,
+          agentCommand: sessionResult.data.agentCommand,
+          status: "running",
+          startedAt: sessionResult.data.startedAt,
+        });
+
+        return { staged: true, sessionResult: "started" as const };
+      }
+
+      return { staged: true, sessionResult: "stage-only" as const };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["beats"] });
-      toast.success("ReTake initiated — beat reopened for investigation");
       setDialogOpen(false);
       setRetakeBeat(null);
+
+      if (!result) {
+        toast.success("ReTake staged — beat reopened for investigation");
+        return;
+      }
+
+      switch (result.sessionResult) {
+        case "stage-only":
+          toast.success("ReTake staged — beat reopened for investigation");
+          break;
+        case "started":
+          toast.success("ReTake staged and session started");
+          break;
+        case "already-running":
+          toast.info("ReTake staged — opened existing active session");
+          break;
+        case "ancestor-rolling":
+          toast.info("ReTake staged — parent beat is already rolling, session not started");
+          break;
+        case "start-failed":
+          toast.info(
+            `ReTake staged but session failed to start: ${(result as { sessionError?: string }).sessionError ?? "unknown error"}`
+          );
+          break;
+      }
     },
     onError: () => {
       toast.error("Failed to initiate ReTake");
@@ -615,8 +707,8 @@ export function RetakesView() {
   }, []);
 
   const handleConfirmRetake = useCallback(
-    (notes: string) => {
-      if (retakeBeat) handleRetake({ beat: retakeBeat, notes });
+    (notes: string, action: RetakeAction) => {
+      if (retakeBeat) handleRetake({ beat: retakeBeat, notes, action });
     },
     [retakeBeat, handleRetake]
   );
