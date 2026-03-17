@@ -16,6 +16,10 @@ describe("beats page layout", () => {
     path.join(process.cwd(), "src/components/app-header.tsx"),
     "utf8",
   );
+  const searchBarSource = readFileSync(
+    path.join(process.cwd(), "src/components/search-bar.tsx"),
+    "utf8",
+  );
 
   it("allows vertical scrolling in the main wrapper", () => {
     expect(source).toContain(
@@ -56,6 +60,18 @@ describe("beats page layout", () => {
     expect(appHeaderSource).toContain('import { parseBeatsView } from "@/lib/beats-view";');
     expect(appHeaderSource).toContain(
       'const beatsView = parseBeatsView(searchParams.get("view"));',
+    );
+  });
+
+  it("keeps the beats search control at a 20 character minimum before wrapping", () => {
+    expect(searchBarSource).toContain(
+      'className={cn("relative mx-2 flex-1 min-w-[20ch] max-w-md", className)}',
+    );
+    expect(searchBarSource).toContain(
+      'fallback={<div className={cn("mx-2 flex-1 min-w-[20ch] max-w-md", className)} />}',
+    );
+    expect(appHeaderSource).toContain(
+      'className="order-3 mx-0 basis-full md:order-none md:basis-auto md:flex-1 md:max-w-none"',
     );
   });
 

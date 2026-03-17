@@ -47,7 +47,7 @@ function SearchBarInner({
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn("relative mx-2 flex-1 max-w-md", className)}
+      className={cn("relative mx-2 flex-1 min-w-[20ch] max-w-md", className)}
     >
       <Input
         type="text"
@@ -84,7 +84,7 @@ export function SearchBar({
   placeholder,
 }: SearchBarProps = {}) {
   return (
-    <Suspense fallback={<div className={cn("mx-2 flex-1 max-w-md", className)} />}>
+    <Suspense fallback={<div className={cn("mx-2 flex-1 min-w-[20ch] max-w-md", className)} />}>
       <SearchBarInner
         className={className}
         inputClassName={inputClassName}
