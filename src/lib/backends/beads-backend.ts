@@ -524,7 +524,10 @@ export class BeadsBackend implements BackendPort {
 
 function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
-  return beats.filter((b) => {
+
+  const isPhaseFilter = filters.state === "queued" || filters.state === "in_action";
+
+  const filtered = beats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
@@ -549,6 +552,63 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     if (filters.parent && b.parent !== filters.parent) return false;
     return true;
   });
+
+  // When using a phase filter, also include all descendants of parents that
+  // are in a queue state so the user can see every child regardless of its
+  // own state.
+  if (isPhaseFilter) {
+    return includeDescendantsOfQueueParents(beats, filtered);
+  }
+
+  return filtered;
+}
+
+/**
+ * Given the full beat list and an already-filtered subset, include any beat
+ * from the full list whose ancestor (recursively) is in a queue state.
+ * This ensures the queues view always shows every child of a queued parent.
+ */
+function includeDescendantsOfQueueParents(
+  allBeats: Beat[],
+  filtered: Beat[],
+): Beat[] {
+  const filteredIds = new Set(filtered.map((b) => b.id));
+  const byId = new Map(allBeats.map((b) => [b.id, b]));
+
+  // Collect IDs of all beats in a queue state from the full list.
+  const queueParentIds = new Set<string>();
+  for (const b of allBeats) {
+    if (resolveStep(b.state)?.phase === StepPhase.Queued) {
+      queueParentIds.add(b.id);
+    }
+  }
+  if (queueParentIds.size === 0) return filtered;
+
+  // Check whether a beat has an ancestor in a queue state.
+  const ancestorCache = new Map<string, boolean>();
+  function hasQueueAncestor(id: string): boolean {
+    if (ancestorCache.has(id)) return ancestorCache.get(id)!;
+    const beat = byId.get(id);
+    if (!beat?.parent) {
+      ancestorCache.set(id, false);
+      return false;
+    }
+    if (queueParentIds.has(beat.parent)) {
+      ancestorCache.set(id, true);
+      return true;
+    }
+    const result = hasQueueAncestor(beat.parent);
+    ancestorCache.set(id, result);
+    return result;
+  }
+
+  const extras: Beat[] = [];
+  for (const b of allBeats) {
+    if (filteredIds.has(b.id)) continue;
+    if (hasQueueAncestor(b.id)) extras.push(b);
+  }
+
+  return extras.length > 0 ? [...filtered, ...extras] : filtered;
 }
 
 function normalizeInvariants(invariants: readonly Invariant[] | undefined): Invariant[] | undefined {

@@ -857,4 +857,114 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(result.ok).toBe(false);
     });
   });
+
+  describe("queue children inclusion", () => {
+    function seedKnot(id: string, state: string, overrides?: Partial<MockKnot>) {
+      const now = nowIso();
+      store.knots.set(id, {
+        id,
+        title: `knot ${id}`,
+        state,
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: now,
+        body: null,
+        description: null,
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: `${id}-etag`,
+        created_at: now,
+        ...overrides,
+      });
+    }
+
+    it("includes shipped/abandoned children when parent is in a queue state (queued filter)", async () => {
+      // Parent in queue state
+      seedKnot("parent-1", "ready_for_implementation", { type: "epic" });
+      // Children in various non-queue states
+      seedKnot("child-shipped", "shipped");
+      seedKnot("child-abandoned", "abandoned");
+      seedKnot("child-active", "implementation");
+      seedKnot("child-queued", "ready_for_planning");
+      // Unrelated beat - should NOT appear
+      seedKnot("unrelated", "shipped");
+
+      // Set up parent_of edges
+      store.edges.push({ src: "parent-1", kind: "parent_of", dst: "child-shipped" });
+      store.edges.push({ src: "parent-1", kind: "parent_of", dst: "child-abandoned" });
+      store.edges.push({ src: "parent-1", kind: "parent_of", dst: "child-active" });
+      store.edges.push({ src: "parent-1", kind: "parent_of", dst: "child-queued" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id).sort();
+      // Should include parent (queue state), child-queued (queue state),
+      // AND child-shipped, child-abandoned, child-active (descendants of queue parent)
+      expect(ids).toContain("parent-1");
+      expect(ids).toContain("child-queued");
+      expect(ids).toContain("child-shipped");
+      expect(ids).toContain("child-abandoned");
+      expect(ids).toContain("child-active");
+      // Unrelated shipped beat should NOT be included
+      expect(ids).not.toContain("unrelated");
+    });
+
+    it("includes deeply nested descendants of queue parents", async () => {
+      seedKnot("root", "ready_for_planning", { type: "epic" });
+      seedKnot("mid", "implementation");
+      seedKnot("leaf", "shipped");
+
+      store.edges.push({ src: "root", kind: "parent_of", dst: "mid" });
+      store.edges.push({ src: "mid", kind: "parent_of", dst: "leaf" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id).sort();
+      expect(ids).toContain("root");
+      expect(ids).toContain("mid");
+      expect(ids).toContain("leaf");
+    });
+
+    it("includes children when using in_action filter and parent is in queue state", async () => {
+      seedKnot("parent-q", "ready_for_implementation", { type: "epic" });
+      seedKnot("child-impl", "implementation");
+      seedKnot("child-done", "shipped");
+
+      store.edges.push({ src: "parent-q", kind: "parent_of", dst: "child-impl" });
+      store.edges.push({ src: "parent-q", kind: "parent_of", dst: "child-done" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "in_action" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id).sort();
+      // child-impl passes the in_action filter directly
+      expect(ids).toContain("child-impl");
+      // child-done should be included because its parent is in a queue state
+      expect(ids).toContain("child-done");
+    });
+
+    it("does not include children when using a specific state filter", async () => {
+      seedKnot("parent-q", "ready_for_implementation", { type: "epic" });
+      seedKnot("child-done", "shipped");
+
+      store.edges.push({ src: "parent-q", kind: "parent_of", dst: "child-done" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "ready_for_implementation" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id);
+      expect(ids).toContain("parent-q");
+      // Specific state filter should NOT include descendants
+      expect(ids).not.toContain("child-done");
+    });
+  });
 });
