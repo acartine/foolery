@@ -8,6 +8,10 @@ describe("retake action contract", () => {
     path.join(process.cwd(), "src/components/retakes-view.tsx"),
     "utf8",
   );
+  const retakeScopeSource = readFileSync(
+    path.join(process.cwd(), "src/lib/retake-session-scope.ts"),
+    "utf8",
+  );
 
   it("performs updateBeatOrThrow before startSession in retake-now path", () => {
     // The mutation must call updateBeatOrThrow first, then startSession.
@@ -40,24 +44,24 @@ describe("retake action contract", () => {
 
   it("checks for existing running session before starting a new one", () => {
     const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
-    const existingIdx = retakesViewSource.indexOf("terminals.find");
+    const existingIdx = retakesViewSource.indexOf("findRunningTerminalForBeat(");
     expect(existingIdx).toBeGreaterThan(updateIdx);
   });
 
   it("scopes running-session and ancestry lookups by repo path", () => {
     expect(retakesViewSource).toContain("repoScopedBeatKey");
-    expect(retakesViewSource).toContain("t.repoPath === repo");
     expect(retakesViewSource).toContain("repoScopedBeatKey(beat.parent, repo)");
-    expect(retakesViewSource).toContain("repoScopedBeatKey(terminal.beatId, terminal.repoPath)");
+    expect(retakeScopeSource).toContain("repoScopedBeatKey(terminal.beatId, terminal.repoPath)");
+    expect(retakeScopeSource).toContain("repoScopedBeatKey(beatId, repoPath)");
   });
 
   it("builds parentByBeatId from allBeats not just retake candidates", () => {
     // The parent map must be built from allBeats to avoid the ancestry bug
     expect(retakesViewSource).toContain("allBeats");
-    // Verify allBeats is used to build the parent map that references beat.parent
+    // Verify allBeats feeds the helper that builds the parent map from beat.parent.
     const allBeatsIdx = retakesViewSource.indexOf("allBeats");
-    const parentIdx = retakesViewSource.indexOf("beat.parent", allBeatsIdx);
+    const parentIdx = retakeScopeSource.indexOf("beat.parent");
     expect(allBeatsIdx).toBeGreaterThan(-1);
-    expect(parentIdx).toBeGreaterThan(allBeatsIdx);
+    expect(parentIdx).toBeGreaterThan(-1);
   });
 });

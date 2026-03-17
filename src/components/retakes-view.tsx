@@ -29,6 +29,13 @@ import { startSession } from "@/lib/terminal-api";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { hasRollingAncestor } from "@/lib/rolling-ancestor";
 import type { RetakeAction } from "@/components/retake-dialog";
+import {
+  buildRetakeParentIndex,
+  buildRetakeShippingIndex,
+  findRunningTerminalForBeat,
+  getBeatRepoPath,
+  repoScopedBeatKey,
+} from "@/lib/retake-session-scope";
 
 const LABEL_COLORS = [
   "bg-red-100 text-red-800",
@@ -67,14 +74,6 @@ function relativeTime(dateStr: string): string {
 function extractCommitSha(beat: Beat): string | undefined {
   const label = beat.labels?.find((l) => l.startsWith("commit:"));
   return label ? label.slice("commit:".length) : undefined;
-}
-
-function getBeatRepoPath(beat: Beat): string | undefined {
-  return (beat as Beat & { _repoPath?: string })._repoPath;
-}
-
-function repoScopedBeatKey(beatId: string, repoPath?: string): string {
-  return `${repoPath ?? ""}::${beatId}`;
 }
 
 type MetadataEntry = Record<string, unknown>;
@@ -494,15 +493,7 @@ export function RetakesView() {
   const [pageIndex, setPageIndex] = useState(0);
   const { terminals, setActiveSession, upsertTerminal } = useTerminalStore();
 
-  const shippingByBeatId = useMemo(() => {
-    const acc: Record<string, string> = {};
-    for (const terminal of terminals) {
-      if (terminal.status === "running") {
-        acc[repoScopedBeatKey(terminal.beatId, terminal.repoPath)] = terminal.sessionId;
-      }
-    }
-    return acc;
-  }, [terminals]);
+  const shippingByBeatId = useMemo(() => buildRetakeShippingIndex(terminals), [terminals]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["beats", "retakes", activeRepo, registeredRepos.length],
@@ -582,20 +573,10 @@ export function RetakesView() {
   // Build parentByBeatId from all beats (not just retake candidates) so
   // rolling-ancestor detection can walk through intermediate parents that
   // are not themselves in a retake-source state.
-  const parentByBeatId = useMemo(() => {
-    const map = new Map<string, string | undefined>();
-    const allBeats = (data as { allBeats?: Beat[] })?.allBeats;
-    if (allBeats) {
-      for (const beat of allBeats) {
-        const repoPath = getBeatRepoPath(beat);
-        map.set(
-          repoScopedBeatKey(beat.id, repoPath),
-          beat.parent ? repoScopedBeatKey(beat.parent, repoPath) : undefined
-        );
-      }
-    }
-    return map;
-  }, [data]);
+  const parentByBeatId = useMemo(
+    () => buildRetakeParentIndex((data as { allBeats?: Beat[] })?.allBeats ?? []),
+    [data]
+  );
 
   // Sort retake candidates by updated timestamp descending (most recent first),
   // with natural ID order as tiebreaker for deterministic sibling ordering.
@@ -641,9 +622,7 @@ export function RetakesView() {
 
       if (action === "retake-now") {
         // Check for already-running session
-        const existingRunning = terminals.find(
-          (t) => t.beatId === beat.id && t.repoPath === repo && t.status === "running"
-        );
+        const existingRunning = findRunningTerminalForBeat(terminals, beat.id, repo);
         if (existingRunning) {
           setActiveSession(existingRunning.sessionId);
           return { staged: true, sessionResult: "already-running" as const };
