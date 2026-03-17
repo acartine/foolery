@@ -173,7 +173,7 @@ export function BeatDetailLightbox({
     >
       <DialogContent
         showCloseButton={false}
-        className="flex h-[92vh] max-h-[calc(100vh-1rem)] w-[80vw] max-w-[80vw] flex-col gap-0 overflow-hidden p-0"
+        className="flex h-[92vh] max-h-[calc(100vh-1rem)] w-[95vw] max-w-[1600px] flex-col gap-0 overflow-hidden p-0"
       >
         <LightboxHeader
           beatId={beatId}
