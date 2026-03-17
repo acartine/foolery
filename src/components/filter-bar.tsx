@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -94,6 +95,8 @@ export function BulkEditControls({
   onMergeBeats,
 }: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
   Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
+  const [bulkStateSelectKey, setBulkStateSelectKey] = useState(0);
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <span className="text-sm font-medium whitespace-nowrap">
@@ -168,7 +171,11 @@ export function BulkEditControls({
         </SelectContent>
       </Select>
       <Select
-        onValueChange={(v) => onBulkUpdate({ state: v })}
+        key={bulkStateSelectKey}
+        onValueChange={(v) => {
+          onBulkUpdate({ state: v });
+          setBulkStateSelectKey((key) => key + 1);
+        }}
       >
         <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set state..." />
