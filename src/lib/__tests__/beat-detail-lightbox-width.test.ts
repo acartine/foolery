@@ -11,6 +11,8 @@ describe("beat detail lightbox sizing", () => {
   it("keeps the detail dialog at the widened desktop width", () => {
     const source = readSource("src/components/beat-detail-lightbox.tsx");
 
-    expect(source).toContain('w-[95vw] max-w-[1600px]');
+    // Must override both the unprefixed and sm: breakpoint max-width
+    // because DialogContent's base class includes sm:max-w-lg
+    expect(source).toContain('w-[95vw] max-w-[1600px] sm:max-w-[1600px]');
   });
 });
