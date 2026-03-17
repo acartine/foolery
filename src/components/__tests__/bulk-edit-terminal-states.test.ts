@@ -1,18 +1,13 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 /**
- * Verify the bulk-edit "Set state" dropdown passes the correct terminal-state
- * value through onBulkUpdate. We import the component module and inspect the
- * constant indirectly by confirming the three expected values are present in
- * the source. (Full render tests would require a DOM environment; this is a
- * lightweight smoke-check that the constant is wired correctly.)
+ * Verify the bulk-edit controls use an Apply-button pattern with
+ * key-based remount for dropdown reset, and that the terminal-state
+ * dropdown values are wired correctly.
  */
 
-describe("BulkEditControls – terminal state options", () => {
-  it("calls onBulkUpdate with { state } for each terminal state value", async () => {
-    // We can't render JSX without a DOM env, so instead we verify the module
-    // exports compile and the constant values match expectations by reading
-    // the source.
+describe("BulkEditControls – Apply button pattern", () => {
+  it("contains the expected terminal state values", async () => {
     const fs = await import("node:fs");
     const path = await import("node:path");
     const src = fs.readFileSync(
@@ -20,12 +15,47 @@ describe("BulkEditControls – terminal state options", () => {
       "utf-8",
     );
 
-    // The bulkTerminalStates array should contain exactly these values
     for (const state of ["shipped", "abandoned", "deferred"]) {
       expect(src).toContain(`value: "${state}"`);
     }
+  });
 
-    // The dropdown should wire through onBulkUpdate({ state: v })
-    expect(src).toContain('onBulkUpdate({ state: v })');
+  it("uses pending state and Apply button instead of immediate onBulkUpdate", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const src = fs.readFileSync(
+      path.resolve(__dirname, "../filter-bar.tsx"),
+      "utf-8",
+    );
+
+    // Dropdowns should set pending state, not call onBulkUpdate directly
+    expect(src).toContain("setPending(");
+    // Apply button should exist
+    expect(src).toContain("handleApply");
+    // Key-based remount for dropdown reset
+    expect(src).toContain("resetKey");
+    // The Apply button should call onBulkUpdate with accumulated fields
+    expect(src).toContain("onBulkUpdate(fields)");
+  });
+
+  it("does not call onBulkUpdate directly from any Select onValueChange", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const src = fs.readFileSync(
+      path.resolve(__dirname, "../filter-bar.tsx"),
+      "utf-8",
+    );
+
+    // In the BulkEditControls function body, onValueChange handlers should
+    // only call setPending, not onBulkUpdate directly
+    const bulkEditSection = src.slice(
+      src.indexOf("export function BulkEditControls"),
+      src.indexOf("function FilterControls"),
+    );
+
+    const onValueChangeBlocks = bulkEditSection.match(/onValueChange=\{[^}]+\}/g) ?? [];
+    for (const block of onValueChangeBlocks) {
+      expect(block).not.toContain("onBulkUpdate");
+    }
   });
 });

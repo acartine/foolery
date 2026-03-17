@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -10,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { X, Clapperboard, Merge } from "lucide-react";
+import { X, Clapperboard, Merge, Check } from "lucide-react";
 import type { BeatPriority } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { builtinWorkflowDescriptors, compareWorkflowStatePriority } from "@/lib/workflows";
@@ -86,6 +87,13 @@ interface FilterBarProps {
   onMergeBeats?: (ids: string[]) => void;
 }
 
+interface PendingBulkFields {
+  type?: string;
+  priority?: BeatPriority;
+  profileId?: string;
+  state?: string;
+}
+
 export function BulkEditControls({
   selectedIds,
   onBulkUpdate,
@@ -94,6 +102,26 @@ export function BulkEditControls({
   onMergeBeats,
 }: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
   Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
+  const [pending, setPending] = useState<PendingBulkFields>({});
+  const [resetKey, setResetKey] = useState(0);
+
+  const hasPending = pending.type !== undefined
+    || pending.priority !== undefined
+    || pending.profileId !== undefined
+    || pending.state !== undefined;
+
+  const handleApply = useCallback(() => {
+    if (!hasPending) return;
+    const fields: UpdateBeatInput = {};
+    if (pending.type !== undefined) fields.type = pending.type;
+    if (pending.priority !== undefined) fields.priority = pending.priority;
+    if (pending.profileId !== undefined) fields.profileId = pending.profileId;
+    if (pending.state !== undefined) fields.state = pending.state;
+    onBulkUpdate(fields);
+    setPending({});
+    setResetKey((k) => k + 1);
+  }, [hasPending, pending, onBulkUpdate]);
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       <span className="text-sm font-medium whitespace-nowrap">
@@ -124,7 +152,8 @@ export function BulkEditControls({
         </Button>
       )}
       <Select
-        onValueChange={(v) => onBulkUpdate({ type: v })}
+        key={`type-${resetKey}`}
+        onValueChange={(v) => setPending((p) => ({ ...p, type: v }))}
       >
         <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set type..." />
@@ -138,8 +167,9 @@ export function BulkEditControls({
         </SelectContent>
       </Select>
       <Select
+        key={`priority-${resetKey}`}
         onValueChange={(v) =>
-          onBulkUpdate({ priority: Number(v) as BeatPriority })
+          setPending((p) => ({ ...p, priority: Number(v) as BeatPriority }))
         }
       >
         <SelectTrigger className="w-[130px] h-7">
@@ -154,7 +184,8 @@ export function BulkEditControls({
         </SelectContent>
       </Select>
       <Select
-        onValueChange={(v) => onBulkUpdate({ profileId: v })}
+        key={`profile-${resetKey}`}
+        onValueChange={(v) => setPending((p) => ({ ...p, profileId: v }))}
       >
         <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set profile..." />
@@ -168,7 +199,8 @@ export function BulkEditControls({
         </SelectContent>
       </Select>
       <Select
-        onValueChange={(v) => onBulkUpdate({ state: v })}
+        key={`state-${resetKey}`}
+        onValueChange={(v) => setPending((p) => ({ ...p, state: v }))}
       >
         <SelectTrigger className="w-[130px] h-7">
           <SelectValue placeholder="Set state..." />
@@ -181,6 +213,12 @@ export function BulkEditControls({
           ))}
         </SelectContent>
       </Select>
+      {hasPending && (
+        <Button variant="default" size="sm" className="gap-1" title="Apply changes to selected beats" onClick={handleApply}>
+          <Check className="h-3.5 w-3.5" />
+          Apply
+        </Button>
+      )}
       <Button variant="ghost" size="sm" title="Clear selection" onClick={onClearSelection}>
         <X className="h-4 w-4 mr-1" />
         Clear
