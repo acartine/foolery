@@ -633,6 +633,46 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(result.data!.length).toBeGreaterThanOrEqual(1);
   });
 
+  it("keeps terminal descendants when a parent is queued", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const parent = await backend.create({
+      title: "Queued parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+    });
+    expect(parent.ok).toBe(true);
+
+    const child = await backend.create({
+      title: "Queued child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(child.ok).toBe(true);
+
+    const grandchild = await backend.create({
+      title: "Shipped grandchild",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: child.data!.id,
+    });
+    expect(grandchild.ok).toBe(true);
+
+    await backend.update(grandchild.data!.id, { state: "shipped" });
+
+    const result = await backend.list({ state: "queued" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((beat) => beat.id);
+    expect(ids).toContain(parent.data!.id);
+    expect(ids).toContain(child.data!.id);
+    expect(ids).toContain(grandchild.data!.id);
+  });
+
   it("filters by state in_action", async () => {
     const { backend } = createBackendWithRepo();
 

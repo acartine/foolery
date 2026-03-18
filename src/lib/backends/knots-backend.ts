@@ -478,32 +478,73 @@ function toBeat(
   };
 }
 
+function matchesFiltersExceptState(beat: Beat, filters: BeatListFilters): boolean {
+  if (filters.workflowId && beat.workflowId !== filters.workflowId) return false;
+  if (filters.profileId && beat.profileId !== filters.profileId) return false;
+  if (filters.requiresHumanAction !== undefined && (beat.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
+    return false;
+  }
+  if (filters.nextOwnerKind && beat.nextActionOwnerKind !== filters.nextOwnerKind) return false;
+  if (filters.type && beat.type !== filters.type) return false;
+  if (filters.priority !== undefined && beat.priority !== filters.priority) return false;
+  if (filters.assignee && beat.assignee !== filters.assignee) return false;
+  if (filters.label && !beat.labels.includes(filters.label)) return false;
+  if (filters.owner && beat.owner !== filters.owner) return false;
+  if (filters.parent && beat.parent !== filters.parent) return false;
+  return true;
+}
+
+function matchesStateFilter(beat: Beat, state: string | undefined): boolean {
+  if (!state) return true;
+  if (state === "queued") return resolveStep(beat.state)?.phase === StepPhase.Queued;
+  if (state === "in_action") return resolveStep(beat.state)?.phase === StepPhase.Active;
+  return beat.state === state;
+}
+
+function includeRecursiveDescendants(beats: Beat[], roots: Beat[]): Beat[] {
+  if (roots.length === 0) return [];
+
+  const childrenByParent = new Map<string, Beat[]>();
+  for (const beat of beats) {
+    if (!beat.parent) continue;
+    const siblings = childrenByParent.get(beat.parent) ?? [];
+    siblings.push(beat);
+    childrenByParent.set(beat.parent, siblings);
+  }
+
+  const included = new Set(roots.map((beat) => beat.id));
+  const ordered: Beat[] = [];
+  for (const beat of beats) {
+    if (included.has(beat.id)) ordered.push(beat);
+  }
+
+  const stack = [...roots];
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    for (const child of childrenByParent.get(current.id) ?? []) {
+      if (included.has(child.id)) continue;
+      included.add(child.id);
+      ordered.push(child);
+      stack.push(child);
+    }
+  }
+
+  return ordered;
+}
+
 function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
-  return beats.filter((b) => {
-    if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
-    if (filters.state) {
-      if (filters.state === "queued") {
-        if (resolveStep(b.state)?.phase !== StepPhase.Queued) return false;
-      } else if (filters.state === "in_action") {
-        if (resolveStep(b.state)?.phase !== StepPhase.Active) return false;
-      } else {
-        if (b.state !== filters.state) return false;
-      }
-    }
-    if (filters.profileId && b.profileId !== filters.profileId) return false;
-    if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
-      return false;
-    }
-    if (filters.nextOwnerKind && b.nextActionOwnerKind !== filters.nextOwnerKind) return false;
-    if (filters.type && b.type !== filters.type) return false;
-    if (filters.priority !== undefined && b.priority !== filters.priority) return false;
-    if (filters.assignee && b.assignee !== filters.assignee) return false;
-    if (filters.label && !b.labels.includes(filters.label)) return false;
-    if (filters.owner && b.owner !== filters.owner) return false;
-    if (filters.parent && b.parent !== filters.parent) return false;
-    return true;
-  });
+
+  if (filters.state === "queued" && !filters.parent) {
+    const visibleRoots = beats.filter((beat) =>
+      matchesFiltersExceptState(beat, filters) && matchesStateFilter(beat, filters.state),
+    );
+    return includeRecursiveDescendants(beats, visibleRoots);
+  }
+
+  return beats.filter((beat) =>
+    matchesFiltersExceptState(beat, filters) && matchesStateFilter(beat, filters.state),
+  );
 }
 
 function matchExpression(beat: Beat, expression: string): boolean {
