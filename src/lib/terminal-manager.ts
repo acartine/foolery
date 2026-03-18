@@ -1091,24 +1091,50 @@ export async function createSession(
    * Classify whether an iteration outcome is a success.
    * Success = exit code 0 AND beat moved to either:
    *   - the next queue state (agent advanced the workflow), OR
-   *   - the prior queue state (valid review rejection / rollback).
+   *   - the queue state prior to the one it claimed.
    */
   const classifyIterationSuccess = (
     exitCode: number,
     claimedState: string,
     postExitState: string,
-  ): boolean => {
-    if (exitCode !== 0) return false;
+    iterationAgent: CliAgentTarget,
+  ): { success: boolean; outcome: AgentOutcomeClassification; agentType: string } => {
+    const agentType = [iterationAgent.command, iterationAgent.model].filter(Boolean).join(":") || iterationAgent.command;
+    if (exitCode !== 0) {
+      return { success: false, outcome: "non_zero_exit", agentType };
+    }
 
     const resolved = resolveStep(claimedState);
-    if (!resolved) return false;
+    if (!resolved) {
+      return { success: false, outcome: "unresolved_claimed_state", agentType };
+    }
 
+    const priorQueue = resolved.phase === StepPhase.Active
+      ? queueStateForStep(resolved.step)
+      : priorQueueStateForStep(resolved.step);
     const nextQueue = nextQueueStateForStep(resolved.step);
-    const priorQueue = priorQueueStateForStep(resolved.step);
 
-    if (nextQueue && postExitState === nextQueue) return true;
-    if (priorQueue && postExitState === priorQueue) return true;
-    return false;
+    if (priorQueue && postExitState === priorQueue) {
+      return { success: true, outcome: "returned_to_prior_queue", agentType };
+    }
+    if (nextQueue && postExitState === nextQueue) {
+      return { success: true, outcome: "advanced_to_next_queue", agentType };
+    }
+
+    if (postExitState === claimedState) {
+      return { success: false, outcome: "same_claimed_queue", agentType };
+    }
+
+    const postResolved = resolveStep(postExitState);
+    if (postResolved?.phase === StepPhase.Active) {
+      return { success: false, outcome: "left_in_action_state", agentType };
+    }
+
+    if (isTerminalBeatState(postExitState)) {
+      return { success: false, outcome: "moved_to_terminal", agentType };
+    }
+
+    return { success: false, outcome: "unknown_transition", agentType };
   };
 
   /**
