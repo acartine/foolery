@@ -1010,17 +1010,22 @@ export async function createSession(
     return { prompt: wrapSingleBeatPrompt(takeResult.data.prompt), beatState: current.state, agentOverride: stepAgentOverride };
   };
 
+  interface QueueTerminalInvariantResult {
+    valid: boolean;
+    rolledBack: boolean;
+  }
+
   /**
    * Enforce queue/terminal invariant after a take-loop iteration.
-   * Returns true if the beat is already in a valid resting state.
-   * If the beat is in an action state after retry exhaustion, forces rollback.
+   * Returns whether the beat is in a valid resting state, and whether this
+   * call had to roll the beat back to get there.
    */
-  const enforceQueueTerminalInvariant = async (): Promise<boolean> => {
+  const enforceQueueTerminalInvariant = async (): Promise<QueueTerminalInvariantResult> => {
     const tag = `[terminal-manager] [${id}] [invariant]`;
     const currentResult = await getBackend().get(beatId, repoPath);
     if (!currentResult.ok || !currentResult.data) {
       console.log(`${tag} failed to fetch beat state for invariant check`);
-      return true; // cannot verify — treat as ok to avoid blocking
+      return { valid: true, rolledBack: false }; // cannot verify — treat as ok to avoid blocking
     }
 
     const current = currentResult.data;
@@ -1028,7 +1033,7 @@ export async function createSession(
 
     if (isQueueOrTerminal(current.state, workflow)) {
       console.log(`${tag} beat=${beatId} state=${current.state} — invariant satisfied`);
-      return true;
+      return { valid: true, rolledBack: false };
     }
 
     console.warn(`${tag} [WARN] beat=${beatId} state=${current.state} — VIOLATION: action state on exit`);
@@ -1042,7 +1047,7 @@ export async function createSession(
     const resolved = resolveStep(current.state);
     if (!resolved) {
       console.error(`${tag} cannot resolve step for state "${current.state}" — skipping rollback`);
-      return false;
+      return { valid: false, rolledBack: false };
     }
 
     const rollbackState = queueStateForStep(resolved.step);
@@ -1070,7 +1075,7 @@ export async function createSession(
         data: `Invariant enforcement: failed to roll back ${beatId} from ${current.state} to ${rollbackState}: ${err}\n`,
         timestamp: Date.now(),
       });
-      return false;
+      return { valid: false, rolledBack: false };
     }
 
     // Verify the invariant after rollback
@@ -1079,12 +1084,12 @@ export async function createSession(
       const refreshedWorkflow = resolveWorkflowForBeat(refreshed.data, workflowsById, fallbackWorkflow);
       if (isQueueOrTerminal(refreshed.data.state, refreshedWorkflow)) {
         console.log(`${tag} beat=${beatId} state=${refreshed.data.state} — invariant satisfied after rollback`);
-        return true;
+        return { valid: true, rolledBack: true };
       }
       console.error(`${tag} beat=${beatId} state=${refreshed.data.state} — STILL VIOLATED after rollback`);
     }
 
-    return false;
+    return { valid: false, rolledBack: true };
   };
 
   /**
@@ -1202,8 +1207,8 @@ export async function createSession(
       console.log(`${tag} non-zero exit code=${code} — attempting rollback and retry`);
 
       // Rollback if the beat is stuck in an action state.
-      const invariantOk = await enforceQueueTerminalInvariant();
-      record.rolledBack = invariantOk; // true if rollback happened and succeeded
+      const invariant = await enforceQueueTerminalInvariant();
+      record.rolledBack = invariant.rolledBack;
 
       // Persist stats before retry attempt.
       appendOutcomeRecord(record).catch((err) => {
