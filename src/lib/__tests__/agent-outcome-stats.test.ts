@@ -47,19 +47,90 @@ describe("agent-outcome-stats", () => {
       },
       claimedState: "ready_for_implementation",
       claimedStep: "implementation",
+      agentType: "claude:opus",
       exitCode: 0,
       postExitState: "ready_for_implementation_review",
       rolledBack: false,
       alternativeAgentAvailable: true,
+      outcome: "advanced_to_next_queue",
       success: true,
     }, tempDir);
 
     await expect(stats.readOutcomeStats(tempDir)).resolves.toEqual([
       expect.objectContaining({
         beatId: "foolery-1f10",
+        agentType: "claude:opus",
+        outcome: "advanced_to_next_queue",
         postExitState: "ready_for_implementation_review",
         success: true,
       }),
     ]);
+  });
+
+  it("writes aggregate success summaries by agent type", async () => {
+    await stats.appendOutcomeRecord({
+      timestamp: "2026-03-18T12:00:00.000Z",
+      beatId: "foolery-1f10",
+      sessionId: "session-1",
+      iteration: 1,
+      agent: {
+        agentId: "agent-a",
+        label: "Claude",
+        model: "opus",
+        version: "4.6",
+        command: "claude",
+      },
+      claimedState: "ready_for_implementation",
+      claimedStep: "implementation",
+      agentType: "claude:opus",
+      exitCode: 0,
+      postExitState: "ready_for_implementation_review",
+      rolledBack: false,
+      alternativeAgentAvailable: true,
+      outcome: "advanced_to_next_queue",
+      success: true,
+    }, tempDir);
+
+    await stats.appendOutcomeRecord({
+      timestamp: "2026-03-18T12:05:00.000Z",
+      beatId: "foolery-1f11",
+      sessionId: "session-2",
+      iteration: 1,
+      agent: {
+        agentId: "agent-a",
+        label: "Claude",
+        model: "opus",
+        version: "4.6",
+        command: "claude",
+      },
+      claimedState: "ready_for_implementation",
+      claimedStep: "implementation",
+      agentType: "claude:opus",
+      exitCode: 1,
+      postExitState: "ready_for_implementation",
+      rolledBack: false,
+      alternativeAgentAvailable: false,
+      outcome: "non_zero_exit",
+      success: false,
+    }, tempDir);
+
+    await expect(stats.readOutcomeStatsReport(tempDir)).resolves.toEqual(
+      expect.objectContaining({
+        version: 1,
+        records: expect.arrayContaining([
+          expect.objectContaining({ beatId: "foolery-1f10" }),
+          expect.objectContaining({ beatId: "foolery-1f11" }),
+        ]),
+        summaries: [
+          expect.objectContaining({
+            agentType: "claude:opus",
+            attempts: 2,
+            successes: 1,
+            failures: 1,
+            successRate: 0.5,
+          }),
+        ],
+      }),
+    );
   });
 });
