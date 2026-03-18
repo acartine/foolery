@@ -539,6 +539,70 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       expect(ids).not.toContain("g3y1.2"); // shipped, not queued
     });
 
+    it("keeps all descendants of queued parents in the queues view", async () => {
+      await seedKnots();
+      store.knots.set("g3y1.3", {
+        id: "g3y1.3",
+        title: "Queued child with terminal descendants",
+        state: "ready_for_implementation",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: nowIso(),
+        body: null,
+        description: "Queued child",
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-5",
+        created_at: nowIso(),
+      });
+      store.knots.set("g3y1.3.1", {
+        id: "g3y1.3.1",
+        title: "Shipped grandchild",
+        state: "shipped",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: nowIso(),
+        body: null,
+        description: "Terminal descendant",
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-6",
+        created_at: nowIso(),
+      });
+      store.knots.set("g3y1.3.2", {
+        id: "g3y1.3.2",
+        title: "Abandoned grandchild",
+        state: "abandoned",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: nowIso(),
+        body: null,
+        description: "Another terminal descendant",
+        priority: 2,
+        type: "task",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-7",
+        created_at: nowIso(),
+      });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((beat) => beat.id);
+      expect(ids).toContain("g3y1.3");
+      expect(ids).toContain("g3y1.3.1");
+      expect(ids).toContain("g3y1.3.2");
+    });
+
     it("filters by 'in_action' (action states)", async () => {
       await seedKnots();
       const backend = new KnotsBackend("/repo");
