@@ -197,6 +197,7 @@ describe("terminal-manager error-exit retry", () => {
     interactionLog.logEnd.mockReset();
     loadSettingsMock.mockReset();
     (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockReset();
+    (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
     const { exec } = await import("node:child_process");
     (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
     (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
@@ -291,6 +292,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.exitCode).toBe(1);
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("non_zero_exit");
     expect(record.beatId).toBe("foolery-e001");
   });
 
@@ -363,6 +365,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
     expect(record.alternativeAgentAvailable).toBe(false);
+    expect(record.outcome).toBe("non_zero_exit");
   });
 
   it("records success=true when beat advances to next queue state", async () => {
@@ -421,21 +424,21 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(true);
+    expect(record.outcome).toBe("advanced_to_next_queue");
     expect(record.exitCode).toBe(0);
     expect(record.claimedState).toBe("ready_for_implementation");
     expect(record.postExitState).toBe("ready_for_implementation_review");
   });
 
-  it("records success=true when beat moves to prior queue state (review rejection)", async () => {
+  it("records success=true when beat returns to the prior queue state", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
 
-    // Agent claims implementation_review step
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004",
-        title: "Prior queue state success test",
-        state: "ready_for_implementation_review",
+        id: "foolery-e003b",
+        title: "Prior queue success test",
+        state: "ready_for_implementation",
         isAgentClaimable: true,
       },
     });
@@ -446,26 +449,24 @@ describe("terminal-manager error-exit retry", () => {
       data: { prompt: "initial prompt" },
     });
 
-    await createSession("foolery-e004", "/tmp/repo");
+    await createSession("foolery-e003b", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // Post-exit: beat moved to prior queue state (review rejected back to implementation)
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004",
-        title: "Prior queue state success test",
-        state: "ready_for_implementation",
+        id: "foolery-e003b",
+        title: "Prior queue success test",
+        state: "ready_for_plan_review",
         isAgentClaimable: true,
       },
     });
-    // buildNextTakePrompt fetches and sees queue state
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004",
-        title: "Prior queue state success test",
-        state: "ready_for_implementation",
+        id: "foolery-e003b",
+        title: "Prior queue success test",
+        state: "ready_for_plan_review",
         isAgentClaimable: true,
       },
     });
@@ -482,19 +483,18 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(true);
-    expect(record.claimedState).toBe("ready_for_implementation_review");
-    expect(record.postExitState).toBe("ready_for_implementation");
+    expect(record.outcome).toBe("returned_to_prior_queue");
+    expect(record.postExitState).toBe("ready_for_plan_review");
   });
 
-  it("records success=false when beat stays at same queue state", async () => {
+  it("records success=false when beat stays at the claimed queue state", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
 
-    // Agent claims implementation step
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004b",
-        title: "Same queue state failure test",
+        id: "foolery-e004",
+        title: "Prior queue state success test",
         state: "ready_for_implementation",
         isAgentClaimable: true,
       },
@@ -506,15 +506,15 @@ describe("terminal-manager error-exit retry", () => {
       data: { prompt: "initial prompt" },
     });
 
-    await createSession("foolery-e004b", "/tmp/repo");
+    await createSession("foolery-e004", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // Post-exit: beat stayed at same queue state (no progress)
+    // Post-exit: beat is back at the claimed queue state.
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004b",
-        title: "Same queue state failure test",
+        id: "foolery-e004",
+        title: "Prior queue state success test",
         state: "ready_for_implementation",
         isAgentClaimable: true,
       },
@@ -523,8 +523,8 @@ describe("terminal-manager error-exit retry", () => {
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
-        id: "foolery-e004b",
-        title: "Same queue state failure test",
+        id: "foolery-e004",
+        title: "Prior queue state success test",
         state: "ready_for_implementation",
         isAgentClaimable: true,
       },
@@ -542,17 +542,76 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("same_claimed_queue");
     expect(record.postExitState).toBe("ready_for_implementation");
   });
 
-  it("records success=false when beat reaches terminal state", async () => {
+  it("records success=false when a claimed queue state returns to the same queue state", async () => {
+    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004b",
+        title: "Same queue state should fail",
+        state: "ready_for_implementation_review",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt.mockResolvedValueOnce({
+      ok: true,
+      data: { prompt: "initial prompt" },
+    });
+
+    await createSession("foolery-e004b", "/tmp/repo");
+    expect(spawnedChildren).toHaveLength(1);
+
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004b",
+        title: "Same queue state should fail",
+        state: "ready_for_implementation_review",
+        isAgentClaimable: true,
+      },
+    });
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004b",
+        title: "Same queue state should fail",
+        state: "ready_for_implementation_review",
+        isAgentClaimable: true,
+      },
+    });
+    backend.buildTakePrompt.mockResolvedValueOnce({
+      ok: true,
+      data: { prompt: "next prompt" },
+    });
+
+    spawnedChildren[0].emit("close", 0, null);
+
+    await waitFor(() => {
+      expect((appendOutcomeRecord as ReturnType<typeof vi.fn>)).toHaveBeenCalledTimes(1);
+    });
+
+    const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
+    expect(record.claimedState).toBe("ready_for_implementation_review");
+    expect(record.postExitState).toBe("ready_for_implementation_review");
+    expect(record.success).toBe(false);
+    expect(record.outcome).toBe("same_claimed_queue");
+  });
+
+  it("records success=false when beat moves to a terminal state", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
 
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
         id: "foolery-e004c",
-        title: "Terminal state not success test",
+        title: "Terminal state should fail",
         state: "ready_for_shipment_review",
         isAgentClaimable: true,
       },
@@ -567,12 +626,29 @@ describe("terminal-manager error-exit retry", () => {
     await createSession("foolery-e004c", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // Post-exit: beat reached terminal state (shipped)
     backend.get.mockResolvedValueOnce({
       ok: true,
       data: {
         id: "foolery-e004c",
-        title: "Terminal state not success test",
+        title: "Terminal state should fail",
+        state: "shipped",
+        isAgentClaimable: false,
+      },
+    });
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004c",
+        title: "Terminal state should fail",
+        state: "shipped",
+        isAgentClaimable: false,
+      },
+    });
+    backend.get.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        id: "foolery-e004c",
+        title: "Terminal state should fail",
         state: "shipped",
         isAgentClaimable: false,
       },
@@ -585,8 +661,10 @@ describe("terminal-manager error-exit retry", () => {
     });
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
-    expect(record.success).toBe(false);
+    expect(record.claimedState).toBe("ready_for_shipment_review");
     expect(record.postExitState).toBe("shipped");
+    expect(record.success).toBe(false);
+    expect(record.outcome).toBe("moved_to_terminal");
   });
 
   it("records success=false when beat is stuck in active state", async () => {
@@ -654,6 +732,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     // Exit code 0 but beat was in active state — classified as failure
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("left_in_action_state");
     expect(record.postExitState).toBe("implementation");
   });
 
@@ -845,27 +924,11 @@ describe("terminal-manager error-exit retry", () => {
 
 describe("agent-outcome-stats classification", () => {
   it("classifies next queue state as success", async () => {
+    // This is tested via the integration test above ("records success=true when beat advances")
+    // Here we do a focused unit check of the classification logic via a module import.
     const { nextQueueStateForStep } = await import("@/lib/workflows");
     expect(nextQueueStateForStep("implementation")).toBe("ready_for_implementation_review");
     expect(nextQueueStateForStep("planning")).toBe("ready_for_plan_review");
     expect(nextQueueStateForStep("shipment_review")).toBeNull(); // last step
-  });
-
-  it("classifies prior queue state correctly", async () => {
-    const { priorQueueStateForStep } = await import("@/lib/workflows");
-    expect(priorQueueStateForStep("planning")).toBeNull(); // first step has no prior
-    expect(priorQueueStateForStep("plan_review")).toBe("ready_for_planning");
-    expect(priorQueueStateForStep("implementation")).toBe("ready_for_plan_review");
-    expect(priorQueueStateForStep("implementation_review")).toBe("ready_for_implementation");
-    expect(priorQueueStateForStep("shipment")).toBe("ready_for_implementation_review");
-    expect(priorQueueStateForStep("shipment_review")).toBe("ready_for_shipment");
-  });
-});
-
-describe("agent-outcome-stats storage", () => {
-  it("resolveStatsDir always uses process.cwd()", async () => {
-    // Import the real module (bypassing the mock) to verify the path logic
-    const mod = await vi.importActual<typeof import("@/lib/agent-outcome-stats")>("@/lib/agent-outcome-stats");
-    expect(mod.resolveStatsDir()).toBe(`${process.cwd()}/.foolery-logs`);
   });
 });

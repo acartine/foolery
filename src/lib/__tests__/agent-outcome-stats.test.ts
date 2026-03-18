@@ -3,22 +3,20 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { appendOutcomeRecord, readOutcomeStats, resolveStatsDir, resolveStatsPath } from "@/lib/agent-outcome-stats";
+type AgentOutcomeStatsModule = typeof import("../agent-outcome-stats");
 
 describe("agent-outcome-stats", () => {
   let tempDir: string;
-  let originalCwd: string;
   let originalNodeEnv: string | undefined;
+  let stats: AgentOutcomeStatsModule;
 
   beforeEach(async () => {
     tempDir = await mkdtemp(join(tmpdir(), "agent-outcome-stats-"));
-    originalCwd = process.cwd();
     originalNodeEnv = process.env.NODE_ENV;
-    process.chdir(tempDir);
+    stats = await import(`../agent-outcome-stats?test=${Date.now()}`);
   });
 
   afterEach(async () => {
-    process.chdir(originalCwd);
     if (originalNodeEnv === undefined) {
       delete (process.env as Record<string, string | undefined>).NODE_ENV;
     } else {
@@ -30,12 +28,12 @@ describe("agent-outcome-stats", () => {
   it("always resolves stats into the application working directory", () => {
     (process.env as Record<string, string | undefined>).NODE_ENV = "production";
 
-    expect(resolveStatsDir()).toBe(join(process.cwd(), ".foolery-logs"));
-    expect(resolveStatsPath()).toBe(join(process.cwd(), ".foolery-logs", "agent-success-rates.json"));
+    expect(stats.resolveStatsDir(tempDir)).toBe(join(tempDir, ".foolery-logs"));
+    expect(stats.resolveStatsPath(tempDir)).toBe(join(tempDir, ".foolery-logs", "agent-success-rates.json"));
   });
 
   it("persists outcome records under the working directory", async () => {
-    await appendOutcomeRecord({
+    await stats.appendOutcomeRecord({
       timestamp: "2026-03-18T12:00:00.000Z",
       beatId: "foolery-1f10",
       sessionId: "session-1",
@@ -54,9 +52,9 @@ describe("agent-outcome-stats", () => {
       rolledBack: false,
       alternativeAgentAvailable: true,
       success: true,
-    });
+    }, tempDir);
 
-    await expect(readOutcomeStats()).resolves.toEqual([
+    await expect(stats.readOutcomeStats(tempDir)).resolves.toEqual([
       expect.objectContaining({
         beatId: "foolery-1f10",
         postExitState: "ready_for_implementation_review",

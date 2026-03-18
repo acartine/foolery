@@ -38,19 +38,19 @@ export interface AgentOutcomeRecord {
 
 // ── Stats file resolution ──────────────────────────────────────
 
-export function resolveStatsDir(): string {
-  return join(process.cwd(), ".foolery-logs");
+export function resolveStatsDir(baseDir = process.cwd()): string {
+  return join(baseDir, ".foolery-logs");
 }
 
-export function resolveStatsPath(): string {
-  return join(resolveStatsDir(), "agent-success-rates.json");
+export function resolveStatsPath(baseDir = process.cwd()): string {
+  return join(resolveStatsDir(baseDir), "agent-success-rates.json");
 }
 
 // ── Read / Write ───────────────────────────────────────────────
 
-export async function readOutcomeStats(): Promise<AgentOutcomeRecord[]> {
+export async function readOutcomeStats(baseDir = process.cwd()): Promise<AgentOutcomeRecord[]> {
   try {
-    const raw = await readFile(resolveStatsPath(), "utf-8");
+    const raw = await readFile(resolveStatsPath(baseDir), "utf-8");
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed as AgentOutcomeRecord[];
     return [];
@@ -61,10 +61,11 @@ export async function readOutcomeStats(): Promise<AgentOutcomeRecord[]> {
 
 export async function appendOutcomeRecord(
   record: AgentOutcomeRecord,
+  baseDir = process.cwd(),
 ): Promise<void> {
-  const dir = resolveStatsDir();
+  const dir = resolveStatsDir(baseDir);
   await mkdir(dir, { recursive: true });
-  const existing = await readOutcomeStats();
+  const existing = await readOutcomeStats(baseDir);
   existing.push(record);
-  await writeFile(resolveStatsPath(), JSON.stringify(existing, null, 2) + "\n");
+  await writeFile(resolveStatsPath(baseDir), JSON.stringify(existing, null, 2) + "\n");
 }
