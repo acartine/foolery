@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc92-e14d-7f32-9a47-a2a4848276b3",
+  "occurred_at": "2026-03-17T16:13:30.317161Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. The bulk terminal-state Select (Shipped/Abandoned/Deferred) is correctly wired: bulkTerminalStates constant defines the three values, onBulkUpdate({ state: v }) flows through handleBulkUpdate to updateBeatOrThrow with valid UpdateBeatInput schema. Pattern is consistent with existing bulk selects (type, priority, profile). Test covers constant values and wiring. No security issues or regressions. The key-based remount concern from prior notes is a pre-existing UX limitation shared by all bulk selects, not a regression.",
+    "datetime": "2026-03-17T17:14:00Z",
+    "entry_id": "019cfc92-e14d-7f32-9a47-a2918e85e511",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

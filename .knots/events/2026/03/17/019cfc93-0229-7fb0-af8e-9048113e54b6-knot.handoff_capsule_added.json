@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc93-0229-7fb0-af8e-9048113e54b6",
+  "occurred_at": "2026-03-17T16:13:38.729554Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review approved. The proposed split between Stage and Retake Now matches the existing ReTake mutation and queued Take semantics, and it correctly calls out the current ancestry bug in RetakesView where filtered retake candidates are insufficient to detect rolling grandparents. Extracting the rolling-ancestor walk into shared lib code is maintainable and keeps RetakesView aligned with the main beats page. Test coverage is appropriately targeted: dialog contract assertions, multi-generation rolling-ancestor regression coverage, and a staged-before-startSession unit path that preserves the state change when launch fails.",
+    "datetime": "2026-03-17T16:13:29Z",
+    "entry_id": "019cfc93-0229-7fb0-af8e-9034e47a66aa",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

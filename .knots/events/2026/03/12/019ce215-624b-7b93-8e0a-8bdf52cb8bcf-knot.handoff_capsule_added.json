@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce215-624b-7b93-8e0a-8bdf52cb8bcf",
+  "occurred_at": "2026-03-12T12:46:18.187636Z",
+  "knot_id": "foolery-99a8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 5 step-failure rollback and invariant enforcement tests in new file terminal-manager-step-failure-rollback.test.ts: non-zero exit triggers rollback, take-loop step failure rollback, max iterations rollback, post-rollback queue state verification, concurrent abort during rollback. All quality gates pass.",
+    "datetime": "2026-03-12T13:45:00+01:00",
+    "entry_id": "019ce215-624b-7b93-8e0a-8bcb594ac1af",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce23c-df03-7682-ada6-e70026cc09d7",
+  "occurred_at": "2026-03-12T13:29:26.019125Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review against work/foolery-9c9a-impl-20260312-132154. README and audit docs no longer reference prompt-guidance, scripts/build-runtime-artifact.sh no longer copies PROMPT.md into the runtime bundle, prompt-specific test coverage was removed or updated, and no prompt-guidance references remain under README.md or docs/ for this change. Verified sanity gates in /private/tmp/foolery-9c9a-20260312-132154: bun run lint (warnings only, exit 0), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-12T13:28:34Z",
+    "entry_id": "019ce23c-df03-7682-ada6-e6fafd97ddb9",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

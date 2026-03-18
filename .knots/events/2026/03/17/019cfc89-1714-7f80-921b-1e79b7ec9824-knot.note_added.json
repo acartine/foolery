@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc89-1714-7f80-921b-1e79b7ec9824",
+  "occurred_at": "2026-03-17T16:02:48.724583Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Implementation Plan: Replace ReTake button with Stage + Retake Now\n\n## Summary\nReplace the single \"ReTake\" button in the Retake Dialog with two buttons:\n- **Stage**: Applies the state change (→ ready_for_implementation) and reject reason/notes only\n- **Retake Now**: Applies the state change + reject reason/notes, then immediately triggers a Take! (starts a terminal session)\n\n## File Changes\n\n### 1. `src/components/retake-dialog.tsx`\n- Change `onConfirm` prop to accept a mode parameter: `onConfirm: (notes: string, mode: \"stage\" | \"retake-now\") => void`\n- Replace the single \"ReTake\" button with two buttons in the footer:\n  - **Stage** (amber-600 styling): calls `onConfirm(notes, \"stage\")`\n  - **Retake Now** (destructive/red styling or stronger amber): calls `onConfirm(notes, \"retake-now\")`\n- Update loading states: show \"Staging...\" or \"Retaking...\" depending on which was clicked\n- Need a local state to track which button was pressed for the loading label\n\n### 2. `src/components/retakes-view.tsx`\n- Import `startSession` from `@/lib/terminal-api`\n- Import `useTerminalStore` from `@/stores/terminal-store`\n- Import `useAppStore` for `activeRepo` (already imported)\n- Update `handleConfirmRetake` to accept the mode parameter\n- In the mutation's `onSuccess`:\n  - If mode was \"stage\": just close dialog (current behavior)\n  - If mode was \"retake-now\": after state update succeeds, call `startSession(beat.id, repo)` and `upsertTerminal(...)` to immediately begin the Take flow\n\n### 3. No changes to `src/lib/retake.ts` — constants unchanged\n\n## Complexity\nLow-medium. Two files, straightforward prop threading. Main risk is ensuring the startSession call works correctly from RetakesView (it currently only happens in beats/page.tsx).\n\n## Test Strategy\n- Verify existing retake-dialog tests still pass (if any)\n- Manual: open retake dialog → click Stage → beat moves to ready_for_implementation, no session starts\n- Manual: open retake dialog → click Retake Now → beat moves to ready_for_implementation AND terminal session starts\n- Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`",
+    "datetime": "2026-03-17T16:02:48.724583Z",
+    "entry_id": "019cfc89-1714-7f80-921b-1e642a7d84b4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

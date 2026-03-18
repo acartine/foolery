@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf8-0198-7c83-8c94-685c2432388c",
+  "occurred_at": "2026-03-14T15:30:02.264417Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review could not be completed because the main worktree was dirty during review. Verified that origin/main and local main point to merge commit 527d1b65d14b, and knot tags include commit:19eb28e7f9df, commit:7975dfaa0e33, and commit:527d1b65d14b, but the required read-only shipment review gate was blocked by the untracked repository file agent-metadata-normalization.md. Rolled back to ready_for_implementation per failure-path instructions.",
+    "datetime": "2026-03-14T15:29:42Z",
+    "entry_id": "019cecf8-0198-7c83-8c94-684907ff3eb3",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

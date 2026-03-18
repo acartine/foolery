@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced13-1a2e-71e3-9f0e-085ccc7f2d97",
+  "occurred_at": "2026-03-14T15:59:38.030864Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Component meets all requirements: Expected/Actual Outcome form with validation, Debug submit button with loading state, embedded xterm.js terminal with SSE via connectToSession, and reuses terminal-panel.tsx patterns (dynamic xterm import, FitAddon, CSS injection, disposed guard, event handling). Error handling for startSession failures properly addressed per prior feedback — launchHistoryDebugSession wraps errors into BdResult, handleSubmit uses try/catch/finally. Tests cover validation, prompt builder, SSR rendering, and error recovery. No security issues or regressions.",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019ced13-1a2e-71e3-9f0e-084ebc57d6ca",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

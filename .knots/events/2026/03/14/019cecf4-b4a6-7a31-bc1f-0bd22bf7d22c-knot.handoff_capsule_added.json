@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf4-b4a6-7a31-bc1f-0bd22bf7d22c",
+  "occurred_at": "2026-03-14T15:26:25.958697Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. 5 tests in terminal-manager-step-failure-rollback.test.ts correctly verify: (1) non-zero exit triggers enforceQueueTerminalInvariant rollback, (2) take-loop step failure triggers rollback with reason message, (3) initial child non-zero exit on take-loop triggers invariant enforcement, (4) post-rollback state is claimable with clean session termination, (5) concurrent abort during in-flight rollback sets status to aborted. All tests pass, no lint errors in the file, typecheck clean. Mock setup accurately reflects terminal-manager.ts internals.",
+    "datetime": "2026-03-14T15:25:00Z",
+    "entry_id": "019cecf4-b4a6-7a31-bc1f-0bc6443d6742",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

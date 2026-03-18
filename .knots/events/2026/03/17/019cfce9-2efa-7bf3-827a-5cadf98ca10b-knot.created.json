@@ -1,0 +1,16 @@
+{
+  "event_id": "019cfce9-2efa-7bf3-827a-5cadf98ca10b",
+  "occurred_at": "2026-03-17T17:47:46.298944Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.created",
+  "data": {
+    "body": "it's really annoying not being able to see the children that have been abandoned or shipped or whatever, just show them all if the parent is in queue state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "queues view:  always show all children recursively if the parent is in a queue state",
+    "type": "work"
+  }
+}

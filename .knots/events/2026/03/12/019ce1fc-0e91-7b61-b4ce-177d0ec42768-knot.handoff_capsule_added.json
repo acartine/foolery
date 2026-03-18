@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fc-0e91-7b61-b4ce-177d0ec42768",
+  "occurred_at": "2026-03-12T12:18:38.353129Z",
+  "knot_id": "foolery-99a8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "REJECTED: No code changes found. Implementation step completed in ~8 seconds with no commits or handoff. No step-failure rollback or invariant enforcement tests exist in any terminal-manager test file. Required: tests covering terminal-manager behavior when step execution fails and needs rollback, and invariant enforcement on state transitions.",
+    "datetime": "2026-03-12T12:30:00Z",
+    "entry_id": "019ce1fc-0e91-7b61-b4ce-176009301b55",
+    "model": "claude-opus-4-6",
+    "username": "system",
+    "version": "opus-4.6"
+  }
+}

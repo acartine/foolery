@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf7-612e-7aa1-8057-5e359d6e8efe",
+  "occurred_at": "2026-03-14T15:29:21.198733Z",
+  "knot_id": "foolery-99a8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) merge commit 527d1b65d14b and implementation commit 19eb28e7f9df are on main. (2) All 2018 tests pass across 138 test files, including the 5 new step-failure rollback tests. (3) TypeScript compiles cleanly. (4) Build succeeds. (5) New test file passes lint. (6) No regressions detected. The test file covers non-zero exit rollback, take-loop failure rollback, max iterations rollback, post-rollback queue state verification, and concurrent abort during rollback.",
+    "datetime": "2026-03-14T16:30:00Z",
+    "entry_id": "019cecf7-612e-7aa1-8057-5e2e94eb9b81",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

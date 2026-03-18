@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced96-ab8f-7472-8c56-7745f31b4b5c",
+  "occurred_at": "2026-03-14T18:23:20.463043Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) merge commit a36d4159026e and impl commit d44a8c679b4b are on main. (2) PROMPT.md, PROMPT_BEATS.md, PROMPT_KNOTS.md deleted. (3) fallbackPromptProfileForRepoPath removed from doctor.ts. (4) Audit doc correctly removes CLAUDE.md/AGENTS.md rows (previous rejection concern resolved). (5) No remaining references in src/. (6) CI run 23093656242 green. No regressions detected.",
+    "datetime": "2026-03-14T21:00:00Z",
+    "entry_id": "019ced96-ab8f-7472-8c56-7737f19d070f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

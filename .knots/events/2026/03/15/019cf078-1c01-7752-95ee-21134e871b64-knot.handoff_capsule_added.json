@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf078-1c01-7752-95ee-21134e871b64",
+  "occurred_at": "2026-03-15T07:48:49.281895Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review failed. Required behavior says the user should be able to select a conversation from history and debug that conversation. In AgentHistoryView, the debug panel is opened from the beat-level header and HistoryDebugPanel is always bound to sessions[0] rather than a user-selected session (src/components/agent-history-view.tsx:1059-1143). That means multiple captured conversations cannot be individually chosen for debugging, which is a direct mismatch with the knot description. Test coverage does not catch this drift because the integration harness also hardcodes sessions[0] (src/components/__tests__/agent-history-view-debug-integration.test.ts:45-52). Sanity gates passed during review: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-15T07:48:37Z",
+    "entry_id": "019cf078-1c01-7752-95ee-2104337b6846",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

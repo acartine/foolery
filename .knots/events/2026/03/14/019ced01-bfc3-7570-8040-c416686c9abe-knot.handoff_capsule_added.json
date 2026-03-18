@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced01-bfc3-7570-8040-c416686c9abe",
+  "occurred_at": "2026-03-14T15:40:40.771388Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit 26dfbd5b3d18 is on main and pushed to origin/main. CI workflow passes; Coverage Badge passes. Changesets workflow failure is pre-existing (missing .changeset dir) and unrelated to this knot. No merge needed — work was already integrated to main.",
+    "datetime": "2026-03-14T16:00:00Z",
+    "entry_id": "019ced01-bfc3-7570-8040-c400ef3b5d48",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

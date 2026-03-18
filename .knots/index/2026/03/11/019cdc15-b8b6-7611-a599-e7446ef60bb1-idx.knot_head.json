@@ -1,0 +1,19 @@
+{
+  "event_id": "019cdc15-b8b6-7611-a599-e7446ef60bb1",
+  "occurred_at": "2026-03-11T08:48:56.997135Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d164",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "add execution-backend rollbackIteration tests",
+    "type": "work",
+    "updated_at": "2026-03-11T08:48:56.997135Z"
+  }
+}

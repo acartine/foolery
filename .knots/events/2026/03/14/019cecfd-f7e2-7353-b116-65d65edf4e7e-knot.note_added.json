@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfd-f7e2-7353-b116-65d65edf4e7e",
+  "occurred_at": "2026-03-14T15:36:32.994324Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment blocked on remote CI for commit 26dfbd5b3d18: GitHub Actions workflow 'Changesets' failed with 'There is no .changeset directory in this project'. CI and Coverage Badge passed; shipment cannot complete until the failing release workflow is addressed or adjusted.",
+    "datetime": "2026-03-14T16:01:00+01:00",
+    "entry_id": "019cecfd-f7e2-7353-b116-65c886ed8c6a",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

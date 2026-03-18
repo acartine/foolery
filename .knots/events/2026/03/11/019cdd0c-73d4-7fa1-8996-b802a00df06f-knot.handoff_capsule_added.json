@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd0c-73d4-7fa1-8996-b802a00df06f",
+  "occurred_at": "2026-03-11T13:18:26.772876Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved plan. Root cause is split across both prompt-guidance paths: the checker compares raw FOOLERY_PROMPT_PROFILE values and searches the whole file, while doctor --fix appends static templates that can omit or hardcode the wrong profile and create duplicate managed blocks. Implement by reusing canonical workflow profile normalization, scoping parsing to the managed guidance block, and upserting a rendered profile-aware block with regression tests covering legacy aliases, genuine mismatches, and duplicate-block replacement behavior.",
+    "datetime": "2026-03-11T13:17:47Z",
+    "entry_id": "019cdd0c-73d4-7fa1-8996-b7ff4b054d1c",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

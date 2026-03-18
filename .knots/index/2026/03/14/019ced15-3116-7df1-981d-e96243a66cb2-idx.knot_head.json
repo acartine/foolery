@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced15-3116-7df1-981d-e96243a66cb2",
+  "occurred_at": "2026-03-14T16:01:54.954817Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-afbb",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "test rollback behavior",
+    "type": "work",
+    "updated_at": "2026-03-14T16:01:54.954817Z"
+  }
+}

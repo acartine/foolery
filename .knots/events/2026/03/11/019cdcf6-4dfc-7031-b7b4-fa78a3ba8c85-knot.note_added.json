@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdcf6-4dfc-7031-b7b4-fa78a3ba8c85",
+  "occurred_at": "2026-03-11T12:54:15.292703Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning summary:\n- Scope: polish the installer/setup terminal UX with color and emoji while keeping the install flow, commands, and non-interactive behavior intact. Primary targets are scripts/install.sh and scripts/agent-wizard.sh; touch scripts/setup.sh only if setup output should match.\n- Implementation plan:\n  1. Add a small TTY-aware formatting layer in scripts/install.sh for installer logs (info/success/warn/error/step icons). Gate ANSI and emoji behind terminal detection plus NO_COLOR/CI fallbacks so piped output stays readable.\n  2. Mirror minimal styling helpers inside the generated launcher heredoc only if runtime commands (foolery, foolery start/status/update/uninstall) should stay visually consistent. Keep the helper self-contained and escape shell variables correctly inside the heredoc.\n  3. Apply the same helper pattern to scripts/agent-wizard.sh prompts/logs so agent discovery, model selection, and saved-settings confirmation feel less flat without changing prompt semantics or answer parsing. Preserve Bash 3.2 compatibility and /dev/tty routing.\n  4. Refresh the final installer summary lines so next actions (foolery, foolery setup, PATH export) stand out more clearly.\n  5. Update docs only if the user-facing copy changes enough to make README.md or docs/DEVELOPING.md inaccurate; otherwise avoid doc churn.\n- Expected file changes: scripts/install.sh, scripts/agent-wizard.sh, possibly scripts/setup.sh for consistency, and README.md only if wording changes require it.\n- Test strategy:\n  1. bash -n scripts/install.sh\n  2. bash -n scripts/agent-wizard.sh\n  3. If setup.sh changes, bash -n scripts/setup.sh\n  4. Smoke-test the installer in temp directories with FOOLERY_* overrides and a local/prebuilt runtime artifact, verifying styled output on TTY and readable plain output when redirected.\n  5. Smoke-test the interactive wizard with at least one supported agent on PATH and confirm settings.toml output is unchanged except for presentation.\n- Risks and constraints:\n  - ANSI sequences must not leak into redirected output, logs, or non-TTY environments.\n  - Emoji width/rendering varies by terminal, so icons need safe plain-text degradation.\n  - scripts/install.sh generates the launcher via heredoc, so any styling added there must keep \\$ escaping correct and pass bash -n.\n  - scripts/agent-wizard.sh must remain Bash 3.2 compatible and keep prompts on /dev/tty.\n- Complexity: medium. The surface area is localized, but shell UX changes are brittle because the outer installer, generated launcher, and interactive wizard each have different runtime constraints.",
+    "datetime": "2026-03-11T12:54:15.292703Z",
+    "entry_id": "019cdcf6-4dfc-7031-b7b4-fa611be14795",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

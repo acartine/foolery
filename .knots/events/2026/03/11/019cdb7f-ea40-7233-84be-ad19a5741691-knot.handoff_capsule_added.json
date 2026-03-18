@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7f-ea40-7233-84be-ad19a5741691",
+  "occurred_at": "2026-03-11T06:05:19.296407Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved: origin/main is at commit 725010d71aee, rollbackBeatState now invokes 'kno rb' in src/lib/memory-manager-commands.ts, coverage assertions match, all knot commit tags are present with commit: short hashes, and GitHub Actions workflows CI, Changesets, and Coverage Badge completed successfully for this commit. Review completed against the shipped git object despite unrelated local workspace modifications outside this change scope.",
+    "datetime": "2026-03-11T06:05:11Z",
+    "entry_id": "019cdb7f-ea40-7233-84be-ad05521d2271",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

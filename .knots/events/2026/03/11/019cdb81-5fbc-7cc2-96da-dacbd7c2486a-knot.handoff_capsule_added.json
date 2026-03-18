@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb81-5fbc-7cc2-96da-dacbd7c2486a",
+  "occurred_at": "2026-03-11T06:06:54.908612Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review REJECTED. The getDisplayedBeatAliases function at beat-detail-lightbox.tsx:228 applies .replace(/^[^-]+-/, '') which strips project prefixes from all aliases. This violates the requirement format 'proj-1234 | proj-5678.3 (alias)' — aliases must keep their full project-qualified form. The rendering logic (ClickToCopyId, header layout with | separator and (alias) suffix) is correct. Fix needed: (1) Remove prefix stripping from getDisplayedBeatAliases — aliases should display and copy as-is. (2) For deduplication, compare full alias against beat.id rather than stripping all prefixes — may need to pass beat.id into the function. (3) Update the test to verify cross-project aliases retain their prefix. Unrelated changes in knots-backend.ts (promoteTerminalParents), agent-pool.ts, settings-sheet.tsx, wave-planner.tsx are also in the working tree but are not part of this beat.",
+    "datetime": "2026-03-11T07:07:00Z",
+    "entry_id": "019cdb81-5fbc-7cc2-96da-dabd8616b442",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

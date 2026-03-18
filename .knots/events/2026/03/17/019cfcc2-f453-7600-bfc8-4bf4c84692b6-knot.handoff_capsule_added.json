@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc2-f453-7600-bfc8-4bf4c84692b6",
+  "occurred_at": "2026-03-17T17:06:00.915157Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment verified on main at 51137ecb2d98. Remote main already contains the retake dialog change plus repo-scoped retake lookup fix, and GitHub Actions CI and Coverage Badge both passed for this push on 2026-03-17. No additional merge commit was required during this shipment step.",
+    "datetime": "2026-03-17T17:10:00Z",
+    "entry_id": "019cfcc2-f453-7600-bfc8-4be1fcfe09cf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

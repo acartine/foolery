@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd91d-5c2e-7423-aa54-84e6009194ce",
+  "occurred_at": "2026-03-10T18:58:25.966504Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review rejected. 1) Acceptance criteria not met: beat detail still preserves full alias strings instead of showing only the natural beat id before '(alias)'; current helper keeps raw aliases in src/components/beat-detail-lightbox.tsx:219-230 and the corresponding test still expects the prefixed alias in src/lib/__tests__/beat-detail-lightbox.test.ts:13-18. 2) Required sanity gates are not green: bun run test failed on 2026-03-10 with src/lib/__tests__/knots-backend.test.ts > KnotsBackend mapping behaviour > infers parent from hierarchical dotted alias when id has no dots, so implementation_review cannot approve this state.",
+    "datetime": "2026-03-10T18:57:39Z",
+    "entry_id": "019cd91d-5c2e-7423-aa54-84dfb9e9dcc7",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

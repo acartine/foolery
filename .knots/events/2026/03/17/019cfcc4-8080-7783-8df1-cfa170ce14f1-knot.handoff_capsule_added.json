@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc4-8080-7783-8df1-cfa170ce14f1",
+  "occurred_at": "2026-03-17T17:07:42.336923Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review REJECTED. Two repo-scoping fix commits (c92de1df5bf4 and 3cd8bf7cab57) were never merged to main — they remain on work/foolery-6428 only. The shipped code on main (51137ecb2d98) still has bare beatId keying in shippingByBeatId (line ~493), existingRunning (line ~628), and parentByBeatId (line ~576) in retakes-view.tsx, meaning duplicate beat IDs across repos can collide. The retake-session-scope.ts module does not exist on main. Next step: merge the two fix commits to main and re-run quality gates.",
+    "datetime": "2026-03-17T18:00:00Z",
+    "entry_id": "019cfcc4-8080-7783-8df1-cf9ebb9d29aa",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "event_id": "019cdd89-f8a7-7c91-80a1-50ba2e45a2a2",
+  "occurred_at": "2026-03-11T15:35:32.766889Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c38b",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Foolery prompt: add --remove, --dry-run, and --help options",
+    "type": "work",
+    "updated_at": "2026-03-11T15:35:32.766889Z"
+  }
+}

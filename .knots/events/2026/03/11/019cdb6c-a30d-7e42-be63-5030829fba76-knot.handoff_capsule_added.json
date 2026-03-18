@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb6c-a30d-7e42-be63-5030829fba76",
+  "occurred_at": "2026-03-11T05:44:15.88548Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review rejected: bun run test fails at knots-backend.test.ts:551 (child?.parent is undefined not '8792'). Root cause is alias/aliases field name mismatch between MockKnot (alias?: string singular) and KnotRecord (aliases?: string[] plural). The implementation reads knot.aliases?.[0] and record.aliases to build aliasToId, but mock data sets alias (singular), leaving aliases undefined. Fix requires either updating MockKnot+test data to use aliases: ['brutus-8792.5'] or normalizing alias→aliases in the backend code. Also check real kno CLI output shape to confirm which field name is returned.",
+    "datetime": "2026-03-11T06:45:00Z",
+    "entry_id": "019cdb6c-a30d-7e42-be63-502e8b427772",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

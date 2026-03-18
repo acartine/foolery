@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd88-40d5-7f70-816f-91201cb90262",
+  "occurred_at": "2026-03-11T15:33:40.181004Z",
+  "knot_id": "foolery-c38b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented foolery prompt support for --remove, --dry-run, and --help in scripts/install.sh; documented the new options in README.md; and added end-to-end CLI regression coverage in src/lib/__tests__/prompt-cli.test.ts. Verified with bash -n scripts/install.sh, bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Branch: work/foolery-c38b; commit: f846d4e9458b.",
+    "datetime": "2026-03-11T15:32:29Z",
+    "entry_id": "019cdd88-40d5-7f70-816f-9117c895c900",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "0.98.0"
+  }
+}

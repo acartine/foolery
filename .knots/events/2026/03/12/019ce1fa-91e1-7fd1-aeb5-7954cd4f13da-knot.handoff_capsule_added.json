@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fa-91e1-7fd1-aeb5-7954cd4f13da",
+  "occurred_at": "2026-03-12T12:17:00.897051Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Changes add semantic color coding to foolery --help output (green=lifecycle, blue=setup, yellow=diagnostics, red=destructive) with dimmed descriptions, FORCE_COLOR support, and test coverage. All quality gates pass (lint 0 errors, typecheck clean, 2012 tests pass, build success). No security issues or regressions.",
+    "datetime": "2026-03-12T13:20:00-07:00",
+    "entry_id": "019ce1fa-91e1-7fd1-aeb5-7948fd032b8c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

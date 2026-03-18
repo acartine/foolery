@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd05-c42f-7243-83f1-0a970098ba99",
+  "occurred_at": "2026-03-11T13:11:08.591665Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review sent back for revision. Root cause analysis is mostly correct: checkPromptGuidance compares raw file profile IDs without normalization, and prompt-guidance fixes are append-only. The blocking issue is the proposed PROMPT_KNOTS change: runDoctorFix currently ignores expectedProfile and reads PROMPT_KNOTS.md or PROMPT_BEATS.md verbatim, so hardcoding autopilot would still mis-fix semiauto repos. Revise the plan to make prompt guidance generation profile-aware, either by exporting and reusing canonical normalization plus injecting the expected profile at fix time, or by adding real profile-specific templates. Also account for the fact that normalizeProfileId in src/lib/workflows.ts is not exported today.",
+    "datetime": "2026-03-11T13:09:14Z",
+    "entry_id": "019cdd05-c42f-7243-83f1-0a86616d4659",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

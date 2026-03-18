@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc1-40c8-7023-8403-7b15e45d4110",
+  "occurred_at": "2026-03-17T17:04:09.416356Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Two-button retake dialog (Stage / Retake Now) correctly implements the spec: Stage applies state+reason only, Retake Now also triggers a Take session. Repo-scoping fix from prior review is properly addressed via retake-session-scope.ts with repoScopedBeatKey(). Rolling ancestor logic extracted to shared utility. All quality gates pass (tsc, 2062 tests, build). No security issues or regressions.",
+    "datetime": "2026-03-17T18:04:00Z",
+    "entry_id": "019cfcc1-40c8-7023-8403-7b0a666459d0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

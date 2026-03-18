@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced15-3134-7041-9edb-e2c9324d2528",
+  "occurred_at": "2026-03-14T16:01:54.995989Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review failed: src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts claims to cover max-iterations rollback but explicitly exercises the non-zero exit path instead, so the take-loop max-iterations branch in src/lib/terminal-manager.ts is still untested.",
+    "datetime": "2026-03-14T16:01:54.995989Z",
+    "entry_id": "019ced15-3133-7100-9765-68dcef40e78a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

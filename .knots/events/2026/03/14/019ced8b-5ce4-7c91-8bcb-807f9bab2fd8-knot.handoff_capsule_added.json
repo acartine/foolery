@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8b-5ce4-7c91-8bcb-807f9bab2fd8",
+  "occurred_at": "2026-03-14T18:10:59.428764Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented dispatch mode rename from actions/pools to basic/advanced across schema, settings loading, runtime branches, setup writers, OpenAPI/docs, and UI state. Added legacy normalization on settings read so existing TOML values actions/pools still load and backfill/save rewrite canonical values. Updated unit tests and writer tests for canonical values plus legacy-read coverage. Verification: bun run lint (passes with pre-existing warnings outside this change), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-14T18:09:05Z",
+    "entry_id": "019ced8b-5ce4-7c91-8bcb-8068605b616e",
+    "model": "GPT-5",
+    "username": "Andrew Cartine",
+    "version": "GPT-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd00-3e15-7071-bf31-47ba9889055b",
+  "occurred_at": "2026-03-11T13:05:06.581352Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Added TTY-aware color and emoji helpers to install/setup shell UX, refreshed installer and wizard prompts/summaries, and validated with bash -n, launcher generation, targeted settings-writer tests, lint, typecheck, full unit tests, and production build.",
+    "datetime": "2026-03-11T13:04:40Z",
+    "entry_id": "019cdd00-3e15-7071-bf31-47aaf779b4bd",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced07-1136-7f03-8847-df1af7d2cbac",
+  "occurred_at": "2026-03-14T15:46:29.302895Z",
+  "knot_id": "foolery-59fb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented src/lib/history-debug-prompt.ts with buildDebugPrompt() and summarizeSessionEntries(), added unit coverage in src/lib/__tests__/history-debug-prompt.test.ts, and verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build on branch work/foolery-59fb-impl (commit deb3d8859faf).",
+    "datetime": "2026-03-14T15:46:21Z",
+    "entry_id": "019ced07-1136-7f03-8847-df00787e61cd",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-14"
+  }
+}

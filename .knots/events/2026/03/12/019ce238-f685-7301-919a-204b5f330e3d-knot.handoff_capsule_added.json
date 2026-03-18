@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce238-f685-7301-919a-204b5f330e3d",
+  "occurred_at": "2026-03-12T13:25:09.893377Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented prompt-guidance cleanup in work/foolery-9c9a-impl-20260312-132154: removed README and audit-doc references, stopped runtime packaging from copying PROMPT.md, deleted the prompt CLI test, and relaxed remaining test expectations. Sanity gates passed in /private/tmp/foolery-9c9a-20260312-132154: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-12T13:24:49Z",
+    "entry_id": "019ce238-f685-7301-919a-203140dd89f6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

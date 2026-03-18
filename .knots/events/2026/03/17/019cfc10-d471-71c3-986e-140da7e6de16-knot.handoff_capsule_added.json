@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc10-d471-71c3-986e-140da7e6de16",
+  "occurred_at": "2026-03-17T13:51:27.345181Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. The fix on branch worktree-foolery-bcc2-dialog-width correctly addresses the root cause. DialogContent base class includes sm:max-w-lg (512px) which overrode the unprefixed max-w-[1600px]. The fix adds sm:max-w-[1600px] to explicitly win the specificity fight at the sm: breakpoint. Test asserts the sm: override is present. No security issues, no regressions. Single commit b8a2cad1 ready for merge to main.",
+    "datetime": "2026-03-17T15:00:00+01:00",
+    "entry_id": "019cfc10-d471-71c3-986e-13f51294fd86",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cff75-b8e8-70f0-b285-4494061a1659",
+  "occurred_at": "2026-03-18T05:40:31.080418Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "ReTake: quite simply this does not work.  if you look at the maestro project, beat fo16, you can see that it isnot showing all the child beats even though there are 2 parent beats in queue state.",
+    "datetime": "2026-03-18T05:40:31.080418Z",
+    "entry_id": "019cff75-b8e8-70f0-b285-4486231457a2",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

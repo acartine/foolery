@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfb-a762-7831-8e4c-7ebcc3684e93",
+  "occurred_at": "2026-03-14T15:34:01.314373Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked on 2026-03-14: /Users/cartine/foolery main is dirty due to untracked file agent-metadata-normalization.md, so read-only shipment review cannot be completed safely.",
+    "datetime": "2026-03-14T15:34:01.314373Z",
+    "entry_id": "019cecfb-a762-7831-8e4c-7ea9d3523263",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

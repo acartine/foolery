@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc0f-7c8f-7670-841e-5588be32014d",
+  "occurred_at": "2026-03-11T08:42:08.399322Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review APPROVED. Commit ac2393374f61 verified on main, all CI green (CI, Changesets, Coverage Badge). Code correctly preserves full project-qualified aliases — getDisplayedBeatAliases deduplicates by exact beat.id match, no prefix stripping. Tests cover dedup, cross-project alias retention, and null cases. No invariants to check. No regressions.",
+    "datetime": "2026-03-11T12:00:00Z",
+    "entry_id": "019cdc0f-7c8f-7670-841e-557790aae6d6",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

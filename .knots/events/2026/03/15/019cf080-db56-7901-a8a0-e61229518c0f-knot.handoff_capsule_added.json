@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf080-db56-7901-a8a0-e61229518c0f",
+  "occurred_at": "2026-03-15T07:58:22.550864Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped on main as merge commit 06a663ef3c42 after merging work/foolery-70ec. The history debugger now binds to the user-selected conversation instead of always using the first session, with integration coverage added for the selector and selected-session debug flow. Pushed to origin/main and verified GitHub Actions CI run 23106253250 passed for commit 06a663ef3c42 on 2026-03-15. CI emitted non-blocking annotations for existing coverage regression warnings and a future Node 20 deprecation notice on actions/checkout@v4.",
+    "datetime": "2026-03-15T07:58:09Z",
+    "entry_id": "019cf080-db56-7901-a8a0-e6095881745a",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

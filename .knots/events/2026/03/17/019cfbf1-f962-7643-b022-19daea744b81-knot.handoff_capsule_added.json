@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfbf1-f962-7643-b022-19daea744b81",
+  "occurred_at": "2026-03-17T13:17:45.186763Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: merged work/foolery-bcc2 to main (commit:9ff23a0c31aa), pushed to origin. CI green on run 23196064578.",
+    "datetime": "2026-03-17T13:17:00Z",
+    "entry_id": "019cfbf1-f962-7643-b022-19cf51ccc362",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

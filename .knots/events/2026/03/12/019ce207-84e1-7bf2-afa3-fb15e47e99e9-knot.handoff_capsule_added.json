@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce207-84e1-7bf2-afa3-fb15e47e99e9",
+  "occurred_at": "2026-03-12T12:31:09.53715Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved shipment review: origin/main is shipped commit 57d25cee3c97, with tagged ancestor implementation commits 63c9ce7d5059 and 3b1290788d0b. Diff remains scoped to scripts/install.sh and src/lib/__tests__/help-cli.test.ts, no knot invariants are defined, and GitHub CI run 23001883129 plus Coverage Badge run 23001883137 both passed on this SHA. The separate Changesets run 23001883154 fails because the repository has no .changeset directory, which is a repo configuration issue rather than a regression from this shipment.",
+    "datetime": "2026-03-12T12:30:56Z",
+    "entry_id": "019ce207-84e1-7bf2-afa3-fb0b6949d4c5",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-12"
+  }
+}

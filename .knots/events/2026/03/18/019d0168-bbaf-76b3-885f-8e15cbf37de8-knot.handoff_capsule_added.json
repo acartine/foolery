@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0168-bbaf-76b3-885f-8e15cbf37de8",
+  "occurred_at": "2026-03-18T14:45:34.255024Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected. 1. [src/lib/agent-outcome-stats.ts:46] The new stats writer is repo-local only in development; production mode writes to ~/.config/foolery/logs instead of the application working directory, so the feature does not satisfy the storage requirement. 2. [src/lib/terminal-manager.ts:1111] Success classification is broader than specified because it also marks terminal states as success on exit code 0; the requirement limits success to next-queue or prior-queue outcomes only. Verification: bunx tsc --noEmit passed, bun run test passed, bun run build passed. bun run lint did not complete because package.json currently runs bare eslint without a target.",
+    "datetime": "2026-03-18T14:45:17Z",
+    "entry_id": "019d0168-bbaf-76b3-885f-8e007fe670b5",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf4-2308-7372-a2a1-76c7e321c12b",
+  "occurred_at": "2026-03-14T15:25:48.680707Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved for implementation. The plan is feasible against the current codebase: agent-history-view already has the loaded beat context plus session data needed for a debug side pane, and terminal-api already supports launching a session with a custom prompt. Test coverage for the prompt builder is appropriate for this step. Implementation cautions: keep embedded terminal setup and cleanup aligned with terminal-panel/session connection patterns to avoid xterm lifecycle leaks, preserve repoPath/beat context when launching the session, and cover prompt truncation plus empty-session cases in unit tests.",
+    "datetime": "2026-03-14T15:25:25Z",
+    "entry_id": "019cecf4-2308-7372-a2a1-76b433c9db8c",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

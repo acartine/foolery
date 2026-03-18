@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf8-9ea0-74f0-ba1c-88977291329a",
+  "occurred_at": "2026-03-14T15:30:42.46452Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation already merged to main (527d1b65). Previous shipment review failed due to untracked file agent-metadata-normalization.md, not code issues. All 5 step-failure rollback tests pass. Re-advancing to review.",
+    "datetime": "2026-03-14T16:30:00Z",
+    "entry_id": "019cecf8-9ea0-74f0-ba1c-888a30a017dd",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

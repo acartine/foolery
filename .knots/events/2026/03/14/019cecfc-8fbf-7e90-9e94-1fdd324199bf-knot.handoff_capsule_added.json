@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfc-8fbf-7e90-9e94-1fdd324199bf",
+  "occurred_at": "2026-03-14T15:35:00.799193Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review: scripts/install.sh removes the launcher prompt command, prompt helper functions, AGENTS.md/CLAUDE.md mutation flow, and prompt-related help/tips; scripts/setup.sh removes prompt template resolution and the prompt-guidance wizard so setup no longer mutates prompt files. Acceptance criteria match the committed diff. Read-only validation: bash -n passed for both scripts; bunx tsc --noEmit, bun run test (2018 passed), and bun run build passed. bun run lint in this checkout reported unrelated generated files under .claude/worktrees/.../.next rather than issues in the reviewed change.",
+    "datetime": "2026-03-14T15:34:51Z",
+    "entry_id": "019cecfc-8fbf-7e90-9e94-1fc08d50eb38",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

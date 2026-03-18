@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fb-d9a1-7851-a35a-589f23abd691",
+  "occurred_at": "2026-03-12T12:18:24.801712Z",
+  "knot_id": "foolery-99a8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "No implementation found. No step-failure rollback or invariant enforcement tests were added to any terminal-manager test file. The existing terminal-manager-abort.test.ts covers abort behavior only, not step-failure rollback or invariant enforcement.",
+    "datetime": "2026-03-12T12:18:24.801712Z",
+    "entry_id": "019ce1fb-d9a1-7851-a35a-588d77e5a234",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced93-a9f7-7952-9ee8-07bd2479cb54",
+  "occurred_at": "2026-03-14T18:20:03.447444Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Single commit removes prompt guidance management: deletes PROMPT.md/PROMPT_BEATS.md/PROMPT_KNOTS.md templates, removes fallbackPromptProfileForRepoPath from doctor.ts, cleans audit doc references. No remaining references in codebase. All quality gates pass (0 lint errors, tsc clean, 2037 tests pass, build succeeds). No unrelated changes bundled.",
+    "datetime": "2026-03-14T19:22:00Z",
+    "entry_id": "019ced93-a9f7-7952-9ee8-07ae9eda2732",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

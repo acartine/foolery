@@ -1,0 +1,15 @@
+{
+  "event_id": "019cff7a-2b64-7a33-9f30-b96fbe6b9d19",
+  "occurred_at": "2026-03-18T05:45:22.532639Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented queued-view descendant retention so any beat shown because it is in a queue state now keeps its full descendant subtree visible, including shipped/abandoned children. Applied the same queued-filter behavior to both Knots and Beads backends, preserving direct-parent queries, and added regressions in knots-guardrails and beads-backend-coverage. Validation: bun run test -- src/lib/__tests__/knots-guardrails.test.ts; bun run test -- src/lib/__tests__/beads-backend-coverage.test.ts; bunx tsc --noEmit; bun run test; bun run build; bun run lint (warnings only, no errors).",
+    "datetime": "2026-03-18T05:44:44Z",
+    "entry_id": "019cff7a-2b64-7a33-9f30-b951fd99b061",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-18"
+  }
+}

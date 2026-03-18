@@ -1,0 +1,15 @@
+{
+  "event_id": "019d016e-1ff9-73d1-9217-c00134007fa4",
+  "occurred_at": "2026-03-18T14:51:27.609146Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected. 1. src/lib/agent-outcome-stats.ts resolves stats to ~/.config/foolery/logs outside development instead of persisting detailed success-rate data in the application working directory. 2. src/lib/terminal-manager.ts classifyIterationSuccess still marks terminal post-exit states as success on exit code 0, which exceeds the spec's allowed success outcomes of next queue state or prior queue state only. Validation: bunx tsc --noEmit passed; bun run test passed; bun run build passed; bun run lint did not complete because package.json runs bare eslint with no target.",
+    "datetime": "2026-03-18T14:51:10Z",
+    "entry_id": "019d016e-1ff9-73d1-9217-bff3a4cc4496",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex"
+  }
+}

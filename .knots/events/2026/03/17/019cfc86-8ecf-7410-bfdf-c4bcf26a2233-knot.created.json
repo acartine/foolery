@@ -1,0 +1,16 @@
+{
+  "event_id": "019cfc86-8ecf-7410-bfdf-c4bcf26a2233",
+  "occurred_at": "2026-03-17T16:00:02.767939Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.created",
+  "data": {
+    "body": "Stage just applies the state change and the reject reason.\nRetake Now applies the state change and the reject reason, and then immediately triggers Take! as if the user clicked on the Take! button from the queued screen",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Retake Dialog:  Replace button with two buttons, Stage and Retake Now",
+    "type": "work"
+  }
+}

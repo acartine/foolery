@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce215-6cc5-7750-9476-795957690169",
+  "occurred_at": "2026-03-12T12:46:20.869244Z",
+  "knot_id": "foolery-d164",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Created execution-backend-rollback.test.ts with 6 tests: kind=note happy path, kind=noop, unknown lease NOT_FOUND, updateKnot failure retains lease, falsy note skips block, non-knots repo skips block. All quality gates pass.",
+    "datetime": "2026-03-12T13:45:00+01:00",
+    "entry_id": "019ce215-6cc5-7750-9476-794333fe7f2e",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

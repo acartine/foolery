@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd16-d5eb-7d51-8da4-8cac977b6506",
+  "occurred_at": "2026-03-11T13:29:47.243192Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Needs changes: the prompt-guidance fix is not fully idempotent for already-corrupted files.  replaces only the first managed block, leaving later duplicate FOOLERY guidance blocks intact; the new tests cover single-block replacement but not duplicate cleanup. Please make  collapse multiple managed blocks to one canonical block, then rerun the doctor test suite.",
+    "datetime": "2026-03-11T13:29:36Z",
+    "entry_id": "019cdd16-d5eb-7d51-8da4-8c96883c32dc",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced1c-df8a-7d43-9c6a-147dceec56dd",
+  "occurred_at": "2026-03-14T16:10:18.378961Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) merge commit 50e999521e9b and impl commit 07a6d6a1f190 are on main. (2) 4 files changed as planned: repo-switcher.tsx bootstrap guard prevents re-overriding all-repos selection, app-header.tsx Shift+N routes through repo chooser in all-repos mode, button relabeled to Add, plus 2 contract tests. (3) No invariants defined; scope matches plan. (4) tsc clean, lint clean on changed files (pre-existing errors elsewhere), build succeeds, all 4 new contract tests pass. (5) No regressions in dependent systems.",
+    "datetime": "2026-03-14T17:10:00+01:00",
+    "entry_id": "019ced1c-df8a-7d43-9c6a-146dcd258300",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

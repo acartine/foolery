@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd16-d5eb-7d51-8da4-8c87841b9342",
+  "occurred_at": "2026-03-11T13:29:47.243192Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review requested changes. In src/lib/doctor.ts the prompt-guidance fix path only replaces the first managed guidance block (), so repositories already polluted by duplicate FOOLERY guidance blocks keep stale duplicate content after . That falls short of a clean/upsert-style repair for the bug being fixed. Please collapse all managed guidance blocks to one canonical block and add a regression test covering a file with two existing managed blocks. Verified doctor tests still pass locally: 93/93 across doctor.test.ts, doctor-applyfix.test.ts, and doctor-coverage.test.ts.",
+    "datetime": "2026-03-11T13:29:47.243192Z",
+    "entry_id": "019cdd16-d5eb-7d51-8da4-8c72abbb7e9d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

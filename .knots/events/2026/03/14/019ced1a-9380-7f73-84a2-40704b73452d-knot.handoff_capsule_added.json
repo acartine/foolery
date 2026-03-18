@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced1a-9380-7f73-84a2-40704b73452d",
+  "occurred_at": "2026-03-14T16:07:47.840314Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commits 50cc10735ee7 and 5a7347f889ce live on main, (2) all 5 tests pass, (3) max-iterations test (line 273) correctly drives 10 take-loop iterations hitting terminal-manager.ts:1224-1231, verifying logEnd(1,error), no 11th child spawn, and no spurious rollback, (4) single test file changed with 38 insertions/61 deletions, (5) no regressions. Prior rejection issue (test not exercising take-loop branch) is resolved.",
+    "datetime": "2026-03-14T17:08:00+01:00",
+    "entry_id": "019ced1a-9380-7f73-84a2-406bdc73f4a5",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

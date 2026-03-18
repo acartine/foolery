@@ -1,0 +1,22 @@
+{
+  "event_id": "019cfc8e-50a8-7722-936a-ee3ddba5952b",
+  "occurred_at": "2026-03-17T16:08:31.144154Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6428",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Retake Dialog:  Replace button with two buttons, Stage and Retake Now",
+    "type": "work",
+    "updated_at": "2026-03-17T16:08:31.144154Z"
+  },
+  "precondition": {
+    "profile_etag": "019cfc8d-fecf-7ce2-8e47-f09a5cbd8a32"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced16-e04b-7081-a0a0-06a3764bfc3f",
+  "occurred_at": "2026-03-14T16:03:45.355034Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: merged work/foolery-742c-impl to main (commit 13ebc43e8acb), pushed to origin. CI green (run 23091381635). 2 files added: history-debug-panel.tsx (component) and history-debug-panel.test.ts (tests). All 140 test files pass (2025 tests), typecheck clean, no new lint errors.",
+    "datetime": "2026-03-14T16:03:00Z",
+    "entry_id": "019ced16-e04b-7081-a0a0-069256665404",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

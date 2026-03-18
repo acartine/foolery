@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce22a-867c-7353-929f-910f0384881f",
+  "occurred_at": "2026-03-12T13:09:23.708086Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: prompt-guidance references still remain in docs/audit/workflow-operations-map.md at lines 442 and 537, where removed checkPromptGuidance is still documented. This leaves the README/docs cleanup incomplete even though lint, typecheck, test, and build pass.",
+    "datetime": "2026-03-12T13:09:23.708086Z",
+    "entry_id": "019ce22a-867c-7353-929f-90f72435bd3f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

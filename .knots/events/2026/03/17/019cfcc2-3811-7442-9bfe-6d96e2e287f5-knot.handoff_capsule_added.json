@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc2-3811-7442-9bfe-6d96e2e287f5",
+  "occurred_at": "2026-03-17T17:05:12.721496Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation: replaced immediate-fire bulk edit dropdowns with a pending-state + Apply button pattern. Dropdowns now accumulate changes locally in useState; clicking Apply sends all pending fields in one onBulkUpdate call, then resets all dropdowns via key-based remount (resetKey). This fixes the repeated-same-value bug and enables multi-attribute changes in one shot. All quality gates pass: 2060 tests, tsc clean, lint 0 errors, build clean. Feature branch: worktree-62fa-apply-button, commit e45ebf2b.",
+    "datetime": "2026-03-17T18:06:00Z",
+    "entry_id": "019cfcc2-3811-7442-9bfe-6d8912177a80",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce187-9ecf-7730-8fd7-965abf029b9f",
+  "occurred_at": "2026-03-12T10:11:27.56782Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. The 6-step plan with 3 child knots (e01f: doctor, c891: CLI/setup, 9c9a: docs/tests) is complete, correct, and feasible. Prompt-guidance code is well-isolated from execution prompts — no shared constants or functions at risk. All affected files identified: doctor.ts, install.sh, setup.sh, build-runtime-artifact.sh, PROMPT*.md, README, docs, and 3 test files. normalizeProfileId() import cleanup in doctor.ts is safe since the function is defined in workflows.ts. Ready for implementation.",
+    "datetime": "2026-03-12T10:30:00Z",
+    "entry_id": "019ce187-9ecf-7730-8fd7-964dd339bb75",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

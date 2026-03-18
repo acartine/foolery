@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce235-33aa-74f1-8a8a-614ee09879da",
+  "occurred_at": "2026-03-12T13:21:03.402168Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Docs cleanup is incomplete: docs/audit/workflow-operations-map.md still documents prompt-guidance/checkPromptGuidance at lines 207, 443, and 538, and docs/audit/beats-usage-inventory.md still references checkPromptGuidance/PROMPT.md at lines 221 and 388.\n2. Runtime packaging still ships prompt template assets: scripts/build-runtime-artifact.sh line 78 copies PROMPT.md into the runtime bundle.\n3. Tests still expect prompt-guidance behavior: src/lib/__tests__/prompt-cli.test.ts lines 42-80 exercises the prompt CLI and asserts FOOLERY_GUIDANCE_PROMPT_START insertion/removal.\n4. Sanity gates are not all green: bun run lint failed in this checkout with 622 errors and 10620 warnings (including generated files under .claude/worktrees/agent-ab52a67d/.next/...); bunx tsc --noEmit, bun run test, and bun run build passed.",
+    "datetime": "2026-03-12T13:20:24Z",
+    "entry_id": "019ce235-33aa-74f1-8a8a-613d03c05314",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

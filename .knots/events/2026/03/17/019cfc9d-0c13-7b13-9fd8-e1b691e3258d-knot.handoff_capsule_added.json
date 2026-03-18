@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc9d-0c13-7b13-9fd8-e1b691e3258d",
+  "occurred_at": "2026-03-17T16:24:36.627912Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Acceptance-criteria violation: src/components/retakes-view.tsx builds shippingByBeatId from all running terminals keyed only by beatId and parentByBeatId from merged allBeats keyed only by beat.id. When multiple repos are loaded, duplicate beat IDs can collide and make Retake Now open an existing session from another repo or incorrectly block on an ancestor from another checkout. This violates the requirement that ancestry data remain repo-scoped. Relevant lines: shippingByBeatId at 489-495, merged allBeats at 532-547, parentByBeatId at 575-582, existing-session lookup at 628-633, ancestor check at 637-638. 2. Validation performed: targeted retake tests passed, typecheck passed, build passed. bun run lint did not finish during the review window, so I could not independently confirm that gate.",
+    "datetime": "2026-03-17T16:24:22Z",
+    "entry_id": "019cfc9d-0c13-7b13-9fd8-e1a8aabe6816",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

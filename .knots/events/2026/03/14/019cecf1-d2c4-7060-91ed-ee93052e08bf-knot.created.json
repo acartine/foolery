@@ -1,0 +1,16 @@
+{
+  "event_id": "019cecf1-d2c4-7060-91ed-ee93052e08bf",
+  "occurred_at": "2026-03-14T15:23:17.060978Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.created",
+  "data": {
+    "body": "New component with Expected/Actual Outcome form, Debug submit button, embedded xterm.js terminal connecting via SSE. Reuse terminal-panel.tsx patterns.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Create HistoryDebugPanel component with form and embedded terminal",
+    "type": "work"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc28-a03a-7133-bd8f-7477717f77bd",
+  "occurred_at": "2026-03-17T14:17:26.842709Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review. The diff is limited to adding a bulk 'Set state' dropdown in src/components/filter-bar.tsx for shipped, abandoned, and deferred, plus a focused smoke test in src/components/__tests__/bulk-edit-terminal-states.test.ts. Verified the selected values match valid terminal workflow states used elsewhere in the codebase. Validation in /Users/cartine/foolery/.claude/worktrees/foolery-62fa-bulk-state: bun run lint (warnings only, exit 0), bunx tsc --noEmit, bun run test (2041 passed, 11 skipped, 42 todo), and bun run build all passed. No invariant, security, or regression issues found for the requested behavior.",
+    "datetime": "2026-03-17T14:17:14Z",
+    "entry_id": "019cfc28-a03a-7133-bd8f-7465cfdbc644",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

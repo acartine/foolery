@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc91-7f93-7213-bd74-9ec7a3389f12",
+  "occurred_at": "2026-03-17T16:11:59.763969Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the bulk terminal-state select reset so Shipped, Abandoned, and Deferred can be applied repeatedly during multi-select. Added a regression assertion for the key-based remount behavior. Validation in /private/tmp/foolery-62fa-impl-20260317: bun run lint (pre-existing warnings only), bunx tsc --noEmit, bun run test, bun run build, plus focused bulk-edit-terminal-states test. Branch: work/foolery-62fa-impl-20260317. Commit: 48e2e21ec1ee.",
+    "datetime": "2026-03-17T16:11:19Z",
+    "entry_id": "019cfc91-7f93-7213-bd74-9eb1a1c9d85f",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "2026-03-17"
+  }
+}

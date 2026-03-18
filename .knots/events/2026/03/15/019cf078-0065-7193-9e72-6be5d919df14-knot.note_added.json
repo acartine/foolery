@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf078-0065-7193-9e72-6be5d919df14",
+  "occurred_at": "2026-03-15T07:48:42.213343Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review blocked: the history debugger is not wired to a user-selected conversation. AgentHistoryView always passes sessions[0] into HistoryDebugPanel, so users cannot choose which conversation to debug when a beat has multiple sessions. Tests mirror that assumption and do not verify conversation selection behavior.",
+    "datetime": "2026-03-15T07:48:42.213343Z",
+    "entry_id": "019cf078-0065-7193-9e72-6bded1fc4706",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

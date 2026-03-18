@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced88-482b-7b82-8f61-3ff263e7ae96",
+  "occurred_at": "2026-03-14T18:07:37.51534Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. The plan correctly identifies all 14 files with dispatchMode references, properly distinguishes enum values (actions/pools) from settings object field names (actions/pools sections), includes legacy-value normalization for migration safety, and has adequate test coverage strategy. No invariants to check. No security/performance concerns. Ready for implementation.",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019ced88-482b-7b82-8f61-3fec50a53199",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

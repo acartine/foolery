@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced05-b6ed-74b1-831b-bde7d797355c",
+  "occurred_at": "2026-03-14T15:45:00.65365Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c891",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "Remove prompt-guidance commands from launcher and setup",
+    "type": "work",
+    "updated_at": "2026-03-14T15:45:00.65365Z"
+  }
+}

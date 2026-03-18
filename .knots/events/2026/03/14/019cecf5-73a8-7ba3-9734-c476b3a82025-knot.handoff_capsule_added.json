@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf5-73a8-7ba3-9734-c476b3a82025",
+  "occurred_at": "2026-03-14T15:27:14.8564Z",
+  "knot_id": "foolery-2ac4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit 9a819c733b5e verified on main. CI green (Changesets failure is pre-existing/non-blocking). Change is test-only: 38 lines added to memory-manager-commands-coverage.test.ts with 5 new rollbackBeatState test cases (beads backend, exec errors, special chars, empty/undefined reason). No invariants to verify. No regressions.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019cecf5-73a8-7ba3-9734-c46756307583",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

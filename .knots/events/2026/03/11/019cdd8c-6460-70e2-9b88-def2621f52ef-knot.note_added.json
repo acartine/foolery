@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd8c-6460-70e2-9b88-def2621f52ef",
+  "occurred_at": "2026-03-11T15:38:11.424067Z",
+  "knot_id": "foolery-c38b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment blocked by merge conflict against origin/main at 63c9ce7d in scripts/install.sh usage(). origin/main added colorized --help output while work/foolery-c38b changes prompt subcommand help and flags in the same block.",
+    "datetime": "2026-03-11T15:37:25Z",
+    "entry_id": "019cdd8c-6460-70e2-9b88-dee46a1654cd",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

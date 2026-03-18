@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce20d-2e0f-7112-b238-e4a0c75caf3a",
+  "occurred_at": "2026-03-12T12:37:20.52781Z",
+  "knot_id": "foolery-e01f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Verified commit 1a591cd2 removes prompt-guidance diagnostics and fix paths from src/lib/doctor.ts, leaves no AGENTS.md/CLAUDE.md prompt-file handling in doctor, and updates the three doctor test suites accordingly. Re-ran doctor-focused verification in the review worktree: bun test src/lib/__tests__/doctor.test.ts src/lib/__tests__/doctor-coverage.test.ts src/lib/__tests__/doctor-applyfix.test.ts (83 passing) and bunx tsc --noEmit (pass). bun run lint completed with existing unrelated repository warnings only; no blocking findings for this knot.",
+    "datetime": "2026-03-12T12:37:13Z",
+    "entry_id": "019ce20d-2e0f-7112-b238-e498ca3aca41",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

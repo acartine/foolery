@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced02-9860-7ca1-bc03-10f98331eb52",
+  "occurred_at": "2026-03-14T15:41:36.224737Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review could not be completed from a clean checkout.  and  point at commit 26dfbd5b3d18 and the knot carries tag , but the workspace had untracked file , so I followed the dirty-workspace failure path and rolled the knot back to ready_for_implementation without approving shipment.",
+    "datetime": "2026-03-14T15:41:25Z",
+    "entry_id": "019ced02-9860-7ca1-bc03-10e2203f21ff",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

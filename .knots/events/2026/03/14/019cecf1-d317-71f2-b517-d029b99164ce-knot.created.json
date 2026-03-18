@@ -1,0 +1,16 @@
+{
+  "event_id": "019cecf1-d317-71f2-b517-d029b99164ce",
+  "occurred_at": "2026-03-14T15:23:17.143484Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.created",
+  "data": {
+    "body": "Add Debug button to conversation log header, manage panel state, adjust layout for side-by-side conversation log + debug panel.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Integrate HistoryDebugPanel into AgentHistoryView",
+    "type": "work"
+  }
+}

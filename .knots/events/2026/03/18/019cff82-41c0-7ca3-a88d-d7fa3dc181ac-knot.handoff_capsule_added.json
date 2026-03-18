@@ -1,0 +1,15 @@
+{
+  "event_id": "019cff82-41c0-7ca3-a88d-d7fa3dc181ac",
+  "occurred_at": "2026-03-18T05:54:12.544743Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. All 4 commits verified on main and tagged. CI green (run for a1343a906fae). 2070 tests pass, 0 failures. Implementation correctly adds recursive descendant inclusion for queue-state parents in both beads-backend and knots-backend phase filters. No regressions detected.",
+    "datetime": "2026-03-18T06:55:00+01:00",
+    "entry_id": "019cff82-41c0-7ca3-a88d-d7e2867e6d4e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

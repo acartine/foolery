@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd928-d367-7222-afd6-fee79ac7f8c3",
+  "occurred_at": "2026-03-10T19:10:57.383621Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: the knot description requires migrating rollbackBeatState to use 'kno rb <id>', but the code and tests were changed to use 'kno rollback <id>' instead.",
+    "datetime": "2026-03-10T19:10:57.383621Z",
+    "entry_id": "019cd928-d367-7222-afd6-fed4c3fea518",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce223-492a-7b72-9b73-021f8ef1cfe9",
+  "occurred_at": "2026-03-12T13:01:29.258291Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked on commit e83c56dc0f01: GitHub Actions CI passed, but the Changesets workflow failed on push to main because the repository has no .changeset directory (run 23002474080, step 'Create release PR or publish release'). Shipment cannot be signed off until the release/deployment workflow is green or intentionally exempted for this change.",
+    "datetime": "2026-03-12T13:01:29.258291Z",
+    "entry_id": "019ce223-492a-7b72-9b73-020b2edf8fa1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

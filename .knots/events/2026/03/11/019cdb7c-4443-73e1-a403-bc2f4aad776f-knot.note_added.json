@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7c-4443-73e1-a403-bc2f4aad776f",
+  "occurred_at": "2026-03-11T06:01:20.195354Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment blocked on 2026-03-11 while merging beat/foolery-02d0 (83a4f926f003) into main (61bb0efcc9f7): merge conflict in src/lib/backends/knots-backend.ts. Auto-merges succeeded in src/components/beat-detail-lightbox.tsx, src/lib/__tests__/beat-detail-lightbox.test.ts, and src/lib/__tests__/knots-backend.test.ts, but the backend conflict needs a fresh implementation pass before shipment can continue.",
+    "datetime": "2026-03-11T06:00:53Z",
+    "entry_id": "019cdb7c-4443-73e1-a403-bc150ea389c9",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

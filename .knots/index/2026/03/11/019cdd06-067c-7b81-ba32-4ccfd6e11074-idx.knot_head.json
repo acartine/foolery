@@ -1,0 +1,22 @@
+{
+  "event_id": "019cdd06-067c-7b81-ba32-4ccfd6e11074",
+  "occurred_at": "2026-03-11T13:11:25.564987Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fe17",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "foolery doctor: Not handling readme's/prompts gracefully",
+    "type": "work",
+    "updated_at": "2026-03-11T13:11:25.564987Z"
+  },
+  "precondition": {
+    "profile_etag": "019cdd05-c438-7081-8fb6-02c85f482baa"
+  }
+}

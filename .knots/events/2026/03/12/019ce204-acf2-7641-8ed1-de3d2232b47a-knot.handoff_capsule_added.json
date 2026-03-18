@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce204-acf2-7641-8ed1-de3d2232b47a",
+  "occurred_at": "2026-03-12T12:28:03.186273Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped approved help color polish by merging origin/work/foolery-76ec-impl as 57d25cee3c97 onto origin/main. Local quality gates passed in a clean shipment worktree after bun install --frozen-lockfile: bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Remote CI run 23001883129 passed on commit 57d25cee3c97; Coverage Badge run 23001883137 also passed. Separate Changesets run 23001883154 failed because the repository does not contain a .changeset directory, which appears to be a workflow/configuration issue rather than a regression from this shipment.",
+    "datetime": "2026-03-12T12:27:51Z",
+    "entry_id": "019ce204-acf2-7641-8ed1-de297ba349de",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-12"
+  }
+}

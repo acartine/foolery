@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced0c-3c52-7361-8bf9-4e9f31ff4e95",
+  "occurred_at": "2026-03-14T15:52:08.018442Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "1. Requirement not met: the implementation review target is to add step-failure rollback and invariant enforcement tests for terminal-manager, including the take-loop max-iterations rollback path. 2. src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts:273-346 does not exercise the max-iterations branch; it explicitly sets up a non-zero initial child exit and the passing run logs STOP: initial child exited with non-zero code=1. 3. The actual branch that still lacks direct coverage is src/lib/terminal-manager.ts:1224-1231, where takeIteration >= MAX_TAKE_ITERATIONS triggers enforceQueueTerminalInvariant() and finishSession(1). 4. Sanity gate result: bun run test -- src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts passed on 2026-03-14, but that passing result confirms the mislabeled test behavior rather than satisfying the missing acceptance coverage.",
+    "datetime": "2026-03-14T15:51:54Z",
+    "entry_id": "019ced0c-3c52-7361-8bf9-4e8f80a7b1a0",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

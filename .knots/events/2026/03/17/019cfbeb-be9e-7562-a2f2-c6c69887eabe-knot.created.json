@@ -1,0 +1,16 @@
+{
+  "event_id": "019cfbeb-be9e-7562-a2f2-c6c69887eabe",
+  "occurred_at": "2026-03-17T13:10:56.926363Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.created",
+  "data": {
+    "body": "it's too narrow and hard to read.  make it twice as wide.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Bead Detail Dialog:  Make it twice as wide",
+    "type": "work"
+  }
+}

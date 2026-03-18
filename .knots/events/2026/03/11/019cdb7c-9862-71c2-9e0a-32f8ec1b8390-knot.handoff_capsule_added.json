@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7c-9862-71c2-9e0a-32f8ec1b8390",
+  "occurred_at": "2026-03-11T06:01:41.730683Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Changed 'kno rollback' to 'kno rb' in rollbackBeatState (memory-manager-commands.ts:60) and updated all test assertions in memory-manager-commands-coverage.test.ts. All 134 test files pass (1995 tests). Typecheck clean. Committed as 725010d7 and pushed to origin/main.",
+    "datetime": "2026-03-11T07:02:00Z",
+    "entry_id": "019cdb7c-9862-71c2-9e0a-32e1d68500ab",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8f-548e-70d0-8b0e-1246d7f07db0",
+  "occurred_at": "2026-03-14T18:15:19.438893Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Integrated HistoryDebugPanel into AgentHistoryView. Added Debug toggle button in conversation log header (visible when sessions loaded), debugPanelOpen state with auto-close on beat change, and side-by-side grid layout for conversation log + debug panel. Tests added in agent-history-view-debug-integration.test.ts (6 tests). All quality gates pass: lint, typecheck, 2035 tests, build.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019ced8f-548e-70d0-8b0e-12367edf31f7",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

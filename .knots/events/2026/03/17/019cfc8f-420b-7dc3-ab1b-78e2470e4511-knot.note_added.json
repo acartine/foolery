@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8f-420b-7dc3-ab1b-78e2470e4511",
+  "occurred_at": "2026-03-17T16:09:32.939011Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan needs revision: RetakesView does not currently fetch the full beat graph; it only loads retake-source beats. Building parentByBeatId from that filtered set would miss deeper rolling ancestors when an intermediate parent is not itself a retake candidate. Revise the plan to source full ancestry data (or pass/reuse a complete parent map from shared beats data) before reusing Take! ancestor blocking, and add a test covering a rolling grandparent with a non-retake intermediate parent.",
+    "datetime": "2026-03-17T16:09:32.939011Z",
+    "entry_id": "019cfc8f-420b-7dc3-ab1b-78db93192c64",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7e-5a52-75d0-93ed-83633a6c5c14",
+  "occurred_at": "2026-03-11T06:03:36.914186Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Validated work/foolery-02d0 at 4c2a5e36a0e5 for the natural-id detail header behavior: the lightbox shows the natural beat id first and preserves alias copy chips in the form 'proj-1234 | proj-5678.3 (alias)'. Focused tests for beat detail and knots backend passed, and project sanity gates completed in the dedicated worktree: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-11T06:03:28Z",
+    "entry_id": "019cdb7e-5a52-75d0-93ed-8355af7d622a",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

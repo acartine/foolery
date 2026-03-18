@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8f-301f-7eb0-9b76-042952b5b105",
+  "occurred_at": "2026-03-14T18:15:10.111608Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged knot/foolery-2f7b to main via fast-forward (rebased onto latest remote main). Commit ba6bfafa230e pushed to origin/main. CI passed: lint, tests, coverage check, and build all green. Coverage annotations show minor regression warnings (lines -1.45%, functions -0.11%) but these are pre-existing and not introduced by this change.",
+    "datetime": "2026-03-14T18:15:00Z",
+    "entry_id": "019ced8f-301f-7eb0-9b76-041154a3a3f3",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

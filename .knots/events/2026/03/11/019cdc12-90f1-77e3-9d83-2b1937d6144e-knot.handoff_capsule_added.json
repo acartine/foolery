@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc12-90f1-77e3-9d83-2b1937d6144e",
+  "occurred_at": "2026-03-11T08:45:30.225655Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan reviewed and approved. Architecture is well-suited for adding view=search: union type extension in 2 places, isListView update, SearchBar submit navigation, no API changes needed. Test strategy adequate. Risks (state leakage, clear-from-search UX, detail params) are valid and manageable at implementation. Ready for implementation.",
+    "datetime": "2026-03-11T00:00:00Z",
+    "entry_id": "019cdc12-90f1-77e3-9d83-2b03d9b0aca3",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

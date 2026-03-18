@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcf6-9fa2-7941-90c3-13bab261f444",
+  "occurred_at": "2026-03-17T18:02:27.106441Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on 2026-03-17. Verified shipped behavior in commit b87a2347d6f8 matches the queue-state descendant inclusion requirement, confirmed shipment merge 628940235305 is contained in origin/main, confirmed required commit tags commit:b87a2347d6f8 and commit:628940235305 are present, observed no knot invariants to violate, and relied on the recorded green local verification plus green GitHub Actions/coverage status from the shipment handoff.",
+    "datetime": "2026-03-17T18:02:20Z",
+    "entry_id": "019cfcf6-9fa2-7941-90c3-13a76220a75d",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

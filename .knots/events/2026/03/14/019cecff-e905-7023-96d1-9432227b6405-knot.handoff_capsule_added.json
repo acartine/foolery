@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecff-e905-7023-96d1-9432227b6405",
+  "occurred_at": "2026-03-14T15:38:40.261573Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Validated that the requested script-only implementation is already present on origin/main at 26dfbd5b3d18. scripts/install.sh no longer contains prompt guidance globals/functions or a prompt command path, and scripts/setup.sh no longer contains AGENTS.md/CLAUDE.md prompt mutation flow. Ran bun install --frozen-lockfile in the implementation worktree and verified targeted coverage with: bun run test -- src/lib/__tests__/help-cli.test.ts src/lib/__tests__/setup-settings-writer.test.ts (pass). No code changes or new commits were needed in this implementation step.",
+    "datetime": "2026-03-14T15:38:24Z",
+    "entry_id": "019cecff-e905-7023-96d1-942afe1b2e51",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

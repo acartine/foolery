@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf076-2080-7260-b3e9-23b7fef0d55b",
+  "occurred_at": "2026-03-15T07:46:39.360627Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation is complete and merged to main. All 4 planned files exist and pass quality gates (lint, typecheck, test, build). Key commits: deb3d885 (prompt builder), 9d3bbd1b (debug panel component), 013f5086 (submit fix), 13ebc43e (merge), 500874fb (integration into AgentHistoryView). The feature allows selecting a conversation in history view, opening a side debug panel with Expected/Actual outcome form, and launching an agent terminal session for investigation.",
+    "datetime": "2026-03-15T08:45:00Z",
+    "entry_id": "019cf076-2080-7260-b3e9-23a7f5a875e8",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc8-4a26-7930-b3f7-339d3142d106",
+  "occurred_at": "2026-03-17T17:11:50.56633Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged worktree-62fa-apply-button into main as ee3ef1dc0477 and pushed to origin/main. Bulk multi-select now supports terminal state changes plus the Apply-button/reset pattern, so the same terminal state can be applied repeatedly. Verified remote GitHub Actions for ee3ef1dc04770a0d94ee7658b3c40117be047bd8: CI success (run 23206761339) and Coverage Badge success (run 23206761365).",
+    "datetime": "2026-03-17T17:09:13Z",
+    "entry_id": "019cfcc8-4a26-7930-b3f7-338744beff2c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-17"
+  }
+}

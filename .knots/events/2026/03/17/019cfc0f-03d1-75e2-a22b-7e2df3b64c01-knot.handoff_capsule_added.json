@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc0f-03d1-75e2-a22b-7e2df3b64c01",
+  "occurred_at": "2026-03-17T13:49:28.401106Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed beat detail dialog width. Root cause: DialogContent base class includes sm:max-w-lg (512px) which silently overrode the unprefixed max-w-[1600px] because tailwind-merge treats them as separate utilities. Fix: added sm:max-w-[1600px] to explicitly override at the sm: breakpoint. All quality gates pass (lint, typecheck, 144 test files). Branch: worktree-foolery-bcc2-dialog-width",
+    "datetime": "2026-03-17T14:50:00Z",
+    "entry_id": "019cfc0f-03d1-75e2-a22b-7e11d80d13b9",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

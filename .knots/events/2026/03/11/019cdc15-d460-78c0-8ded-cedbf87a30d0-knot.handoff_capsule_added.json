@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc15-d460-78c0-8ded-cedbf87a30d0",
+  "occurred_at": "2026-03-11T08:49:04.09664Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Revised section 5 (execution-backend rollbackIteration tests) to match actual contract: unknown lease returns NOT_FOUND error (not silent success). Added 3 new edge-case tests (updateKnot failure retains lease, falsy note skips block, non-knots repo skips block) for 6 total in that section. Sections 1-4 unchanged. Updated child knot d164 with corrected test plan. Ready for re-review.",
+    "datetime": "2026-03-11T09:00:00Z",
+    "entry_id": "019cdc15-d460-78c0-8ded-cecd18710463",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

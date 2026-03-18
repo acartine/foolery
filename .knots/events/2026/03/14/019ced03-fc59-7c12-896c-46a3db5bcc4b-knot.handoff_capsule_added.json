@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced03-fc59-7c12-896c-46a3db5bcc4b",
+  "occurred_at": "2026-03-14T15:43:07.353169Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation already completed in commit 26dfbd5b3d18. Verified: no prompt-guidance references remain in scripts/install.sh or scripts/setup.sh. TypeScript compiles clean, all 2018 tests pass. Lint errors are pre-existing and unrelated.",
+    "datetime": "2026-03-14T15:44:00Z",
+    "entry_id": "019ced03-fc59-7c12-896c-469d06cdbb0e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

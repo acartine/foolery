@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcf5-54cc-7f81-b6dc-5f87c796462a",
+  "occurred_at": "2026-03-17T18:01:02.412673Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped via merge commit 628940235305 to origin/main. Local shipment verification passed: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build. Remote GitHub Actions CI and Coverage Badge workflows are green for 628940235305.",
+    "datetime": "2026-03-17T18:00:49Z",
+    "entry_id": "019cfcf5-54cc-7f81-b6dc-5f782c8b47c8",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

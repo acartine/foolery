@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce223-6743-75a0-8018-dce48e68e2d6",
+  "occurred_at": "2026-03-12T13:01:36.963817Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review rejected. Commit e83c56dc0f01 is live on origin/main and tagged on the knot, and the main CI workflow succeeded, but the push-time release workflow failed: GitHub Actions run 23002474080 ('Changesets') errored with 'There is no .changeset directory in this project'. This is a deployment/shipment blocker, so the knot was returned to ready_for_shipment pending a green release workflow or an explicit exemption.",
+    "datetime": "2026-03-12T13:00:49Z",
+    "entry_id": "019ce223-6743-75a0-8018-dcd212b68b0a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

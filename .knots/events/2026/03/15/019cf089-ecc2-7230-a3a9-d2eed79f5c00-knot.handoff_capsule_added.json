@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf089-ecc2-7230-a3a9-d2eed79f5c00",
+  "occurred_at": "2026-03-15T08:08:16.834209Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: merged worktree-foolery-afbb-impl to main (dde1d339), resolved merge conflict in test file by taking feature branch version (max-iterations rollback test). Pushed to origin/main. CI green (run 23106395923). All 5 rollback tests pass, lint and typecheck clean on changed file.",
+    "datetime": "2026-03-15T08:10:00Z",
+    "entry_id": "019cf089-ecc2-7230-a3a9-d2daec0afe16",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

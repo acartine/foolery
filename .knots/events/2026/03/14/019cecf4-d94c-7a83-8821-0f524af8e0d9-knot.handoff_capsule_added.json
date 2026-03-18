@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf4-d94c-7a83-8821-0f524af8e0d9",
+  "occurred_at": "2026-03-14T15:26:35.340868Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved. Verified main matches origin/main at 0a24d68cc09a, confirmed knot tag commit:0a24d68cc09a is present, confirmed shipped Obsidian note exists at /Users/cartine/obsidian/Mynotes/foolery/Hosted Foolery Cloud Service Architecture.md, found no knot invariants to validate, and confirmed GitHub Actions CI plus Coverage Badge succeeded for 0a24d68cc09a. Changesets failed on the same commit but is release automation and not a code regression gate for this beat; no dependent-system regressions were identified because the shipment introduced no repo-tracked code changes.",
+    "datetime": "2026-03-14T15:26:28Z",
+    "entry_id": "019cecf4-d94c-7a83-8821-0f452a05805f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "event_id": "019ce17f-c13c-78b2-9b01-78bf88261764",
+  "occurred_at": "2026-03-12T10:02:52.09247Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.created",
+  "data": {
+    "body": "it is applying a beads prompt for knots repos.  it should be applying knots prompts where it finds .knots in the project directory.\n\nfor now let's just remove the main prompt (CLAUDE.md/AGENTS.md) functionality entirely.  strip it from doctor, the cli.  anything having to do with updating those files anywhere should be removed",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "doctor --fix applies the wrong prompt",
+    "type": "work"
+  }
+}

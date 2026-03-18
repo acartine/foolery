@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf4-9ec5-71a3-9862-d31030eb24cd",
+  "occurred_at": "2026-03-14T15:26:20.357415Z",
+  "knot_id": "foolery-2ac4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Shipment complete: commit 9a819c733b5e already on main and pushed to origin/main. CI green (CI workflow success on head 0a24d68c). Changesets workflow failure is pre-existing and non-blocking.",
+    "datetime": "2026-03-14T15:30:00Z",
+    "entry_id": "019cecf4-9ec5-71a3-9862-d306e848e5f0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

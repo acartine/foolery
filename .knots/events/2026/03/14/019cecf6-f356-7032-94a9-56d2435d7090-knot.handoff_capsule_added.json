@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf6-f356-7032-94a9-56d2435d7090",
+  "occurred_at": "2026-03-14T15:28:53.078489Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged test/step-failure-rollback (7975dfaa0e33) to main via merge commit 527d1b65d14b. Pushed to origin/main. CI green: lint, tests, coverage check, and build all passed.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019cecf6-f356-7032-94a9-56ce2d421266",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

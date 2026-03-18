@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd09-d54a-7f23-9ae9-a479d6f56256",
+  "occurred_at": "2026-03-11T13:15:35.114749Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Root cause is split across both doctor paths: checkPromptGuidance compares raw prompt-profile markers against canonical workflow profile IDs, and the prompt-guidance fixer appends static template content that can be missing or legacy-profiled on the next run. Plan is to reuse exported workflow profile normalization, parse/update only the managed guidance block, and make prompt-guidance fixes render the expected canonical profile dynamically before replacing the block in place. Tests should cover legacy alias acceptance, genuine mismatches, knots/beads fix rendering, and idempotent replacement instead of duplicate appends.",
+    "datetime": "2026-03-11T13:15:35Z",
+    "entry_id": "019cdd09-d54a-7f23-9ae9-a461aed89249",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

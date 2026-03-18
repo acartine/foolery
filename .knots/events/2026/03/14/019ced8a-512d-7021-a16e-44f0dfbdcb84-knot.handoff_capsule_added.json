@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8a-512d-7021-a16e-44f0dfbdcb84",
+  "occurred_at": "2026-03-14T18:09:50.893047Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Removed AGENTS.md/CLAUDE.md prompt management from the product surface. Deleted the foolery prompt CLI and setup wizard, stopped packaging prompt templates, removed prompt-template assets/docs, and simplified doctor’s workflow fallback wording. Validation: bun run test -- doctor; bun run test -- help-cli; bun run lint (warnings only, no errors); bunx tsc --noEmit; bun run test; bun run build. Commit: ca614d8bf11d on branch work/foolery-79f6.",
+    "datetime": "2026-03-14T18:09:16Z",
+    "entry_id": "019ced8a-512d-7021-a16e-44e3d5dc222b",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

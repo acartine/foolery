@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced11-c647-7180-90a8-bd7dfa2eb32e",
+  "occurred_at": "2026-03-14T15:58:11.015737Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Patched HistoryDebugPanel submission failure handling so thrown startSession errors are converted into a user-facing error, debug status flips to error, and the form always leaves the submitting state. Added a unit test covering the thrown startSession path. Validation in /Users/cartine/foolery-wt-foolery-742c: bun install --frozen-lockfile, bun run lint (passes with existing repo warnings), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-14T15:57:46Z",
+    "entry_id": "019ced11-c647-7180-90a8-bd6f75222ae0",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

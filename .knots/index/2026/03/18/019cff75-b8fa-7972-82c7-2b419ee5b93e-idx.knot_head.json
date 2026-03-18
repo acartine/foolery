@@ -1,0 +1,19 @@
+{
+  "event_id": "019cff75-b8fa-7972-82c7-2b419ee5b93e",
+  "occurred_at": "2026-03-18T05:40:31.080418Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ce5a",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "queues view:  always show all children recursively if the parent is in a queue state",
+    "type": "work",
+    "updated_at": "2026-03-18T05:40:31.080418Z"
+  }
+}

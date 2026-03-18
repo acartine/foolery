@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced0f-302b-7102-815d-9baea47ec2a5",
+  "occurred_at": "2026-03-14T15:55:21.515151Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "1. [blocking] src/components/history-debug-panel.tsx:170-201 awaits startSession without catch/finally. src/lib/terminal-api.ts:16-32 can throw on fetch or res.json failures, so a backend outage or malformed response leaves isSubmitting=true, the Debug button disabled, and no user-visible error. Required fix: catch thrown startSession failures, reset submission state, and surface an actionable error; add a test covering the thrown-startSession path. Validation rerun on commit 9d3bbd1b43ac: bun install --frozen-lockfile, bun run lint (passes with existing repo warnings), bunx tsc --noEmit, bun run test, and bun run build all succeeded.",
+    "datetime": "2026-03-14T15:55:11Z",
+    "entry_id": "019ced0f-302b-7102-815d-9b94965e29fb",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb8b-165f-7431-b386-f0234ed591a2",
+  "occurred_at": "2026-03-11T06:17:31.487239Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. Verified committed code (ac239337): getDisplayedBeatAliases now takes Pick<Beat, 'id' | 'aliases'>, deduplicates against beat.id, and preserves full project-qualified aliases. Header renders format 'proj-1234 | proj-5678.3 (alias)' with ClickToCopyId on both. Tests cover dedup, cross-project retention, and null cases. All quality gates pass (tests, typecheck, lint on changed files). Note: working tree has uncommitted changes that revert the fix — these should be investigated/discarded by the next actor.",
+    "datetime": "2026-03-11T07:15:00Z",
+    "entry_id": "019cdb8b-165f-7431-b386-f01430dc9206",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

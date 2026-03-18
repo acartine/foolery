@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc15-75e5-7570-9f85-62fb43c69758",
+  "occurred_at": "2026-03-17T13:56:30.821902Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commits 9ff23a0c31aa, b8a2cad10821, 6510d0135647 are on main; (2) dialog width changed from w-[80vw]/max-w-[80vw] to w-[95vw]/max-w-[1600px]/sm:max-w-[1600px], correctly overriding DialogContent's sm:max-w-lg base class; (3) regression test added verifying the width string; (4) CI and Coverage Badge runs both green on 6510d01. No invariants defined. No regressions detected.",
+    "datetime": "2026-03-17T14:57:00+01:00",
+    "entry_id": "019cfc15-75e5-7570-9f85-62e5eedb8233",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc4-63d3-7f23-b6f6-4263213fb670",
+  "occurred_at": "2026-03-17T17:07:34.995945Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review: bulk edit now supports terminal state updates (shipped, abandoned, deferred) during multi-select via the Set state control, and the apply-button/resetKey pattern resolves the repeated-same-state dropdown reset bug. Verified bulk updates flow through the existing state-capable update path and sanity gates passed in /Users/cartine/foolery/.claude/worktrees/62fa-apply-button: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test (2060 passed), and bun run build.",
+    "datetime": "2026-03-17T17:07:26Z",
+    "entry_id": "019cfcc4-63d3-7f23-b6f6-425d8d82fe8c",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

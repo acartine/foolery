@@ -1,0 +1,22 @@
+{
+  "event_id": "019cecfe-0e9d-7322-868b-d332cef3f043",
+  "occurred_at": "2026-03-14T15:36:38.813926Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-705e",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "add step-failure rollback and invariant enforcement tests for terminal-manager",
+    "type": "work",
+    "updated_at": "2026-03-14T15:36:38.813926Z"
+  },
+  "precondition": {
+    "profile_etag": "019cecfd-e404-70b1-83a0-abba9b73a5ed"
+  }
+}

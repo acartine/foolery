@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc85-0b87-73b3-bb31-fce27370c917",
+  "occurred_at": "2026-03-17T15:58:23.623606Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "ReTake: this MOSTLY works but there is a small bug that the pulldown does not reset have the state is applied.  this makes it kind of impossible to apply the same state in bulk twice in a row",
+    "datetime": "2026-03-17T15:58:23.623606Z",
+    "entry_id": "019cfc85-0b87-73b3-bb31-fcdf8f75a1b6",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fb-d800-7ff1-a015-a4869e94d114",
+  "occurred_at": "2026-03-12T12:18:24.384303Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "No implementation found. The existing terminal-manager-knots-next-guard.test.ts contains only pre-existing rollback tests (knots and beads basic paths). No pre-dispatch rollback edge case tests were added. Missing edge cases: rollbackBeatState throwing, backend.get after rollback returning non-claimable state, beat already in queue state (no rollback needed).",
+    "datetime": "2026-03-12T12:18:24.384303Z",
+    "entry_id": "019ce1fb-d800-7ff1-a015-a47e81fab41e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

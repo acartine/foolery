@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced02-86b0-77c0-95b6-dd9bf23c068e",
+  "occurred_at": "2026-03-14T15:41:31.696386Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked by dirty workspace: untracked file agent-metadata-normalization.md present in /Users/cartine/foolery during shipment_review, so approval was not performed from a clean checkout.",
+    "datetime": "2026-03-14T15:41:31.696386Z",
+    "entry_id": "019ced02-86b0-77c0-95b6-dd8f4cf65412",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

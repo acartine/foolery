@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8e-26ae-77c0-8f14-2df2a1598fb1",
+  "occurred_at": "2026-03-17T16:08:20.398828Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Re-applied bulk state dropdown reset fix (key-based remount via useState + setBulkStateSelectKey). The Select for 'Set state' now remounts after each value change, allowing the same terminal state to be applied consecutively. Tests updated to assert key={bulkStateSelectKey} and setBulkStateSelectKey patterns. All quality gates pass (145 test files, 2042 tests, lint 0 errors, tsc clean, build ok). Branch: worktree-foolery-62fa-reset-fix, commit 2ffbad1a42c1.",
+    "datetime": "2026-03-17T17:10:00+01:00",
+    "entry_id": "019cfc8e-26ae-77c0-8f14-2de61b01f5c3",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

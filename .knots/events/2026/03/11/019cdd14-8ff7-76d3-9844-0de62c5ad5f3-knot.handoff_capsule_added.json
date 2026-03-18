@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd14-8ff7-76d3-9844-0de62c5ad5f3",
+  "occurred_at": "2026-03-11T13:27:18.263146Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented fix for doctor prompt guidance false positives. Root cause: checkPromptGuidance compared raw FOOLERY_PROMPT_PROFILE values without normalizing legacy aliases (e.g., beads-coarse-human-gated → semiauto), causing warnings even when the profile was semantically correct. applyFix was append-only, creating duplicate managed blocks on repeated runs, and didn't inject profile markers into templates that lacked them (PROMPT_KNOTS.md). Changes: (1) Exported normalizeProfileId from workflows.ts. (2) checkPromptGuidance now normalizes both actual and expected profile IDs, and scopes profile extraction to the managed block. (3) applyFix upserts managed blocks (replaces existing, appends only when absent) and injects canonical profile markers. (4) Added regression tests for legacy alias acceptance, managed block replacement, and knots template profile injection. All 93 doctor tests pass. Commit 185c1dea pushed to main.",
+    "datetime": "2026-03-11T14:30:00Z",
+    "entry_id": "019cdd14-8ff7-76d3-9844-0dd1a6b25692",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

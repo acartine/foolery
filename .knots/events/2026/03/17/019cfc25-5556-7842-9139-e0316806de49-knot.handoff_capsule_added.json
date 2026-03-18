@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc25-5556-7842-9139-e0316806de49",
+  "occurred_at": "2026-03-17T14:13:51.062346Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the beats header search minimum width by adding a 20ch min-width to the shared search form and suspense fallback in src/components/search-bar.tsx. Extended src/lib/__tests__/beats-page-layout.test.ts to lock the 20ch contract and preserve the wrapping header usage in src/components/app-header.tsx. Validation run: bun run test -- src/lib/__tests__/beats-page-layout.test.ts and bun run lint src/components/search-bar.tsx src/lib/__tests__/beats-page-layout.test.ts.",
+    "datetime": "2026-03-17T14:12:47Z",
+    "entry_id": "019cfc25-5556-7842-9139-e027a0f02d98",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-17"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "event_id": "019ced0f-3652-7f91-a0da-529b950a0492",
+  "occurred_at": "2026-03-14T15:55:23.090031Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-121b",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Repository Selection:  All Repostories immediately changes away",
+    "type": "work",
+    "updated_at": "2026-03-14T15:55:23.090031Z"
+  },
+  "precondition": {
+    "profile_etag": "019cdc1e-f541-76b3-85a6-6495e389ac24"
+  }
+}

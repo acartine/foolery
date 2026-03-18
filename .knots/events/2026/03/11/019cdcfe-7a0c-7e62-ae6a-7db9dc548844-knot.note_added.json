@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdcfe-7a0c-7e62-ae6a-7db9dc548844",
+  "occurred_at": "2026-03-11T13:03:10.860244Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan revision needed before implementation. The normalization root cause in checkPromptGuidance() is real, but the plan is incomplete: PROMPT_KNOTS.md currently has no FOOLERY_PROMPT_PROFILE line while doctor/fix logic always requires one, so updating only PROMPT.md leaves the knots template path inconsistent. The replace-vs-append change also needs to specify single-block canonicalization behavior for files that already contain multiple guidance blocks, because the current duplicated-block state is part of the observed failure mode. Please revise the plan to include: (1) aligning PROMPT_KNOTS.md with the doctor heuristic or explicitly changing the heuristic/template contract, and (2) explicit regression tests for runDoctorFix on mismatched/duplicated guidance blocks plus the knots template path.",
+    "datetime": "2026-03-11T13:01:32Z",
+    "entry_id": "019cdcfe-7a0c-7e62-ae6a-7da81e202849",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf3-d077-76c1-800d-7454bc81cea4",
+  "occurred_at": "2026-03-14T15:25:27.543597Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Work branch work/foolery-90c5 is identical to origin/main (0a24d68c) — no merge required since this beat delivered an external Obsidian note at /Users/cartine/obsidian/Mynotes/foolery/Hosted Foolery Cloud Service Architecture.md, not repo-tracked code. CI green on main (CI workflow success, Coverage Badge success; Changesets failure is release automation, not a code gate). Tagged commit.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019cecf3-d077-76c1-800d-7442ca9db62b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

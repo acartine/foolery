@@ -1,0 +1,16 @@
+{
+  "event_id": "019cfc20-10a3-7101-94b9-17ea1fcae3aa",
+  "occurred_at": "2026-03-17T14:08:05.795022Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.created",
+  "data": {
+    "body": "currently let's you set priority, type, and profile.\n\nshould also let you set state to a terminal state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Queues:  You should be able to set state to Shipped, Abandon or Deferred during multi-select",
+    "type": "work"
+  }
+}

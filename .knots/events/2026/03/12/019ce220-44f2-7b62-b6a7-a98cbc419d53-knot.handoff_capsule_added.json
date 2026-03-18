@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce220-44f2-7b62-b6a7-a98cbc419d53",
+  "occurred_at": "2026-03-12T12:58:11.570946Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved: src/lib/__tests__/terminal-manager-knots-next-guard.test.ts includes the three requested pre-dispatch rollback edge case tests for rollbackBeatState throwing, post-rollback non-claimable state, and already-claimable queue state. Scope is test-only and matches the knot description. Verification: focused vitest file passed (13/13), full unit suite passed (139 files, 2020 tests), bunx tsc --noEmit passed, and bun run build passed. bun run lint fails in this checkout due pre-existing repo-wide issues, primarily generated .claude/worktrees/*/.next artifacts and unrelated baseline warnings/errors, not this change.",
+    "datetime": "2026-03-12T12:57:53Z",
+    "entry_id": "019ce220-44f2-7b62-b6a7-a9781d181c7d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

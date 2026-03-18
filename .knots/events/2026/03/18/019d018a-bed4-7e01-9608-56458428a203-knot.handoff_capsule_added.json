@@ -1,0 +1,15 @@
+{
+  "event_id": "019d018a-bed4-7e01-9608-56458428a203",
+  "occurred_at": "2026-03-18T15:22:43.284499Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented retry outcome fixes for take-loop execution. Success classification now only counts transitions to the next queue or the queue prior to the claimed state, with explicit coverage for same-queue and terminal outcomes. Agent outcome stats remain written under the app working directory and the helper now accepts an explicit base dir for stable tests. Validation: bun run test passed (2089 passed, 11 skipped, 42 todo); bunx tsc --noEmit passed; bun run build passed; bun run lint . completed with existing repository warnings only, no lint errors.",
+    "datetime": "2026-03-18T15:22:01Z",
+    "entry_id": "019d018a-bed4-7e01-9608-5632816feb57",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

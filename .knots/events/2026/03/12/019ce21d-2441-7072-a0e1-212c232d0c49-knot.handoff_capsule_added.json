@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce21d-2441-7072-a0e1-212c232d0c49",
+  "occurred_at": "2026-03-12T12:54:46.593745Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "All 3 pre-dispatch rollback edge case tests already exist and pass (13/13 tests green): rollbackBeatState throwing, beat remaining non-claimable after rollback, and beat already in claimable queue state. No code changes needed.",
+    "datetime": "2026-03-12T13:55:00Z",
+    "entry_id": "019ce21d-2441-7072-a0e1-2116e5a34971",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

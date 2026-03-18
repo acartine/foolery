@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc2f-dd96-76b3-989c-0eb8d3f57ccc",
+  "occurred_at": "2026-03-17T14:25:21.302684Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped by merging worktree-foolery-62fa-bulk-state into main as commit 217ae27552f4 and pushing to origin/main. Scope stayed limited to the bulk terminal-state multi-select and its focused smoke test. Validation on a clean shipping worktree (/private/tmp/foolery-62fa-ship-CIeJIu): bun run lint exited 0 with warnings only, bunx tsc --noEmit passed, bun run test passed (2042 passed, 11 skipped, 42 todo), and bun run build passed. Remote verification: GitHub Actions CI run 23199057007 for 217ae27552f4 completed with conclusion=success; coverage check also completed successfully.",
+    "datetime": "2026-03-17T14:23:01Z",
+    "entry_id": "019cfc2f-dd96-76b3-989c-0eaedb030dc7",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

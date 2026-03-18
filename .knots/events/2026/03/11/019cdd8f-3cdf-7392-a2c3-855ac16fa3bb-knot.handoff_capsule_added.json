@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd8f-3cdf-7392-a2c3-855ac16fa3bb",
+  "occurred_at": "2026-03-11T15:41:17.919033Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review failed. The shipped commit 63c9ce7d5059 is live on origin/main and the knot tag is present, but GitHub Actions run 22960783522 for that SHA has a failed Changesets job with 'There is no .changeset directory in this project'. Returning to ready_for_shipment so the release automation failure can be resolved before sign-off.",
+    "datetime": "2026-03-11T15:40:39Z",
+    "entry_id": "019cdd8f-3cdf-7392-a2c3-854a6135c17b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfb-a77b-7d43-9b40-f1e4cdb0979a",
+  "occurred_at": "2026-03-14T15:34:01.339388Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review blocked because /Users/cartine/foolery on main is still dirty with untracked file agent-metadata-normalization.md. Per shipment_review failure mode, status was rolled back to ready_for_implementation without changing repository code or git state.",
+    "datetime": "2026-03-14T16:00:00+01:00",
+    "entry_id": "019cecfb-a77b-7d43-9b40-f1d2284dfa63",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

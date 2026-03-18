@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0168-bbaf-76b3-885f-8df2e7f4c54a",
+  "occurred_at": "2026-03-18T14:45:34.255024Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected. Findings: (1) src/lib/agent-outcome-stats.ts resolves stats to ~/.config/foolery/logs whenever NODE_ENV is not development, which violates the requirement to store detailed success-rate data in the application working directory. (2) src/lib/terminal-manager.ts classifies terminal states as successful iterations on exit code 0, but the spec defines success only as advancing to the next queue state or returning to the prior queue state. Sanity gates: bunx tsc --noEmit passed, bun run test passed, bun run build passed; bun run lint did not complete because the script invokes bare eslint with no target.",
+    "datetime": "2026-03-18T14:45:34.255024Z",
+    "entry_id": "019d0168-bbaf-76b3-885f-8dea24b390a6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcef-9dc6-7c52-af63-692124528f7d",
+  "occurred_at": "2026-03-17T17:54:47.878896Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented includeDescendantsOfQueueParents in both knots-backend and beads-backend applyFilters. When using phase filters (queued/in_action), all descendants of beats in queue states are now included regardless of their own state. Added 4 tests covering: basic parent-child inclusion, deep nesting, in_action filter, and non-phase-filter exclusion. Branch: worktree-ce5a-queue-children.",
+    "datetime": "2026-03-17T18:55:00Z",
+    "entry_id": "019cfcef-9dc6-7c52-af63-691d64e857a0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

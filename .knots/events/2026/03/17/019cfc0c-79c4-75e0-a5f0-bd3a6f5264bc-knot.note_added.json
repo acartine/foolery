@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc0c-79c4-75e0-a5f0-bd3a6f5264bc",
+  "occurred_at": "2026-03-17T13:46:41.98815Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "ReTake: this entirely did not work.  i reloaded with bun dev and i can clearly see nothing changed.  the implementation was a failure.",
+    "datetime": "2026-03-17T13:46:41.98815Z",
+    "entry_id": "019cfc0c-79c4-75e0-a5f0-bd202646b4b6",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

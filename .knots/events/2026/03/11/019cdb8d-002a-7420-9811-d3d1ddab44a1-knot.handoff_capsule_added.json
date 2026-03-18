@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb8d-002a-7420-9811-d3d1ddab44a1",
+  "occurred_at": "2026-03-11T06:19:36.874559Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment complete: origin/main already contains commit ac239337 fixing beat detail alias display, so no merge or main push was required in this step. Remote GitHub Actions for ac239337 all passed on March 11, 2026: CI, Changesets, and Coverage Badge.",
+    "datetime": "2026-03-11T06:18:05Z",
+    "entry_id": "019cdb8d-002a-7420-9811-d3c39c4f1d54",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

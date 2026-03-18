@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdcfb-8bb9-7181-962d-534df2aa946e",
+  "occurred_at": "2026-03-11T12:59:58.777694Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Root cause identified: doctor.ts checkPromptGuidance() compares raw profile from file against canonical expected profiles without normalizing legacy names. normalizeProfileId() exists in workflows.ts but isn't used in the check. PROMPT.md template also uses legacy name. Plan written with 5 steps: export normalizeProfileId, normalize in check, update template, fix tests, enhance fix to replace instead of append. Ready for plan review.",
+    "datetime": "2026-03-11T12:00:00Z",
+    "entry_id": "019cdcfb-8bb9-7181-962d-533bdc68853f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

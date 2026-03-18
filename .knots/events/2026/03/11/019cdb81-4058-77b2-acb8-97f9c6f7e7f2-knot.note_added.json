@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb81-4058-77b2-acb8-97f9c6f7e7f2",
+  "occurred_at": "2026-03-11T06:06:46.872272Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: getDisplayedBeatAliases strips project prefixes from aliases via .replace(/^[^-]+-/, '') at line 228. Requirement shows format 'proj-1234 | proj-5678.3 (alias)' where aliases retain full project-qualified form. Current code turns 'proj-5678.3' into '5678.3'. Fix: remove the prefix stripping from getDisplayedBeatAliases — keep aliases as-is and only deduplicate exact matches against beat.id (may require passing beat.id into the function). Update the test to verify cross-project aliases retain their prefix.",
+    "datetime": "2026-03-11T06:06:46.872272Z",
+    "entry_id": "019cdb81-4058-77b2-acb8-97ea04bd8fe1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

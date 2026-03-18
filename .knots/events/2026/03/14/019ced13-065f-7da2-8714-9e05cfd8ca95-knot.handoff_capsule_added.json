@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced13-065f-7da2-8714-9e05cfd8ca95",
+  "occurred_at": "2026-03-14T15:59:32.959535Z",
+  "knot_id": "foolery-59fb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Code verified on main (merge 58b47489f313, impl deb3d8859faf). Both buildDebugPrompt() and summarizeSessionEntries() exported correctly. Tests pass (3/3). Typecheck clean. No regressions.",
+    "datetime": "2026-03-14T17:00:00Z",
+    "entry_id": "019ced13-065f-7da2-8714-9dfcffcba4b6",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

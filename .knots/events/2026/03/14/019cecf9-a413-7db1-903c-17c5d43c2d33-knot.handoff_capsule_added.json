@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf9-a413-7db1-903c-17c5d43c2d33",
+  "occurred_at": "2026-03-14T15:31:49.395105Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Removed all prompt-guidance commands from scripts/install.sh (176 lines: PROMPT_TEMPLATE_FILE/PROMPT_MARKER vars, append_guidance_prompt, remove_guidance_prompt, prompt_usage, detect_repo_prompt_profile, resolve_prompt_template_for_profile, prompt_cmd functions, prompt case in main(), help line, tip string) and scripts/setup.sh (100 lines: _PROMPT_MARKER var, _resolve_prompt_template, _append_guidance_prompt_to_file, _prompt_guidance_wizard functions, wizard call in foolery_setup). All quality gates pass (lint, typecheck, 2018 tests, build).",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019cecf9-a413-7db1-903c-17bf0bb7e6da",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

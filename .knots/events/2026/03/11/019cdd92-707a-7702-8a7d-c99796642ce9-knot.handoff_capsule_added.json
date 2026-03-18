@@ -1,0 +1,18 @@
+{
+  "event_id": "019cdd92-707a-7702-8a7d-c99796642ce9",
+  "occurred_at": "2026-03-11T15:44:47.738422Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Deployment issue: shipped help colorization is live on origin/main and commit tag commit:63c9ce7d5059 is present, but shipment review cannot approve while the Changesets workflow is failing on the shipped commit and on current main due to the missing .changeset directory. Return to ready_for_shipment until release automation is reconciled or this workflow is intentionally removed.",
+    "datetime": "2026-03-11T15:42:59Z",
+    "entry_id": "019cdd92-707a-7702-8a7d-c980bb6a63d2",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  },
+  "precondition": {
+    "profile_etag": "019cdd90-915c-73b2-b96b-90a189807673"
+  }
+}

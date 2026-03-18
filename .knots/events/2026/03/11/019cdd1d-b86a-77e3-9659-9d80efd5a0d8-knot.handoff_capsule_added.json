@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd1d-b86a-77e3-9659-9d80efd5a0d8",
+  "occurred_at": "2026-03-11T13:37:18.442796Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed duplicate managed block handling in doctor --fix. The applyPromptGuidanceFix now uses a global regex to replace the first managed block with the canonical one and remove all subsequent duplicates. Added regression test covering files with two existing managed blocks. All 94 doctor tests pass. Branch: fix/fe17-doctor-duplicate-blocks, commit df74e15fb326, pushed to origin.",
+    "datetime": "2026-03-11T14:37:00Z",
+    "entry_id": "019cdd1d-b86a-77e3-9659-9d7c9aa6f3ee",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

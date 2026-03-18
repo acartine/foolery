@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc14-04b0-7f61-8219-a417bdeb393a",
+  "occurred_at": "2026-03-11T08:47:05.392069Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review requested revision. The rollback/unit and terminal-manager coverage is directionally sound and respects the no-code-write boundary, but the execution-backend section is not yet accurate: rollbackIteration returns NOT_FOUND for an unknown lease rather than succeeding silently. Update the plan to match the current contract or call out an intended production change, then resubmit for plan review.",
+    "datetime": "2026-03-11T08:46:31Z",
+    "entry_id": "019cdc14-04b0-7f61-8219-a40516f2186f",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced12-2f73-7b20-b3c6-7aa885dafdf5",
+  "occurred_at": "2026-03-14T15:58:37.939454Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation complete: all 4 planned test files exist with 41 passing tests covering rollbackIteration (6 tests), rollbackBeatState (8 tests), pre-dispatch rollback edge cases (13 tests), and step-failure/invariant enforcement rollback (5 tests). All quality gates pass (lint, typecheck, tests). No source code changes — test-only.",
+    "datetime": "2026-03-14T17:00:00Z",
+    "entry_id": "019ced12-2f73-7b20-b3c6-7a934112f68a",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

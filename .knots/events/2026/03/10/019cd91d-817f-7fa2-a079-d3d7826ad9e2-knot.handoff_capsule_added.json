@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd91d-817f-7fa2-a079-d3d7826ad9e2",
+  "occurred_at": "2026-03-10T18:58:35.519674Z",
+  "knot_id": "foolery-8caa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved: origin/main contains a3dee9a5726b, the knot includes tag commit:a3dee9a5726b, no invariants are defined, and GitHub checks for the shipped commit (ci, coverage, changesets) all completed successfully on 2026-03-10.",
+    "datetime": "2026-03-10T18:57:53Z",
+    "entry_id": "019cd91d-817f-7fa2-a079-d3c8eed9a048",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

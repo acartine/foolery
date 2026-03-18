@@ -1,0 +1,19 @@
+{
+  "event_id": "019cfc8f-2566-7393-8a43-2d5b0dc9ed38",
+  "occurred_at": "2026-03-17T16:09:25.59802Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-62fa",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Queues:  You should be able to set state to Shipped, Abandon or Deferred during multi-select",
+    "type": "work",
+    "updated_at": "2026-03-17T16:09:25.59802Z"
+  }
+}

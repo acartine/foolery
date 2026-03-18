@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced0f-3047-7603-b36f-bdabeecccaef",
+  "occurred_at": "2026-03-14T15:55:21.543053Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review requested changes: HistoryDebugPanel leaves the Debug button stuck in loading state if startSession throws before returning a BdResult. handleSubmit awaits startSession without try/finally or catch, and startSession itself can throw on fetch/JSON failures, so API/network outages turn into an unhandled rejection instead of surfacing an error and re-enabling the form.",
+    "datetime": "2026-03-14T15:55:21.543053Z",
+    "entry_id": "019ced0f-3047-7603-b36f-bd924f76e777",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

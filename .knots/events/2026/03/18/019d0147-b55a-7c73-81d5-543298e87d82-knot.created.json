@@ -1,0 +1,16 @@
+{
+  "event_id": "019d0147-b55a-7c73-81d5-543298e87d82",
+  "occurred_at": "2026-03-18T14:09:29.945897Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.created",
+  "data": {
+    "body": "For the knots project, beat bdfa, Claude terminated it's session like so:\n\nAgent · Claude · Opus 4.6 -> App\nTake!\nPrompt #1\nInitial prompt\nShipment · ready_for_shipment\n3/18/2026, 2:05:24 PM\nAPI Error: 529 {\"type\":\"error\",\"error\":{\"type\":\"overloaded_error\",\"message\":\"Overloaded\"},\"request_id\":\"req_011CZAbRBH6fCa7MSsB6bkMV\"}\n(232.6s)\nRaw event\n{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":true,\"duration_ms\":232592,\"duration_api_ms\":0,\"num_turns\":1,\"result\":\"API Error: 529 {\\\"type\\\":\\\"error\\\",\\\"error\\\":{\\\"type\\\":\\\"overloaded_error\\\",\\\"message\\\":\\\"Overloaded\\\"},\\\"request_id\\\":\\\"req_011CZAbRBH6fCa7MSsB6bkMV\\\"}\",\"stop_reason\":\"stop_sequence\",\"session_id\":\"c922ee61-14da-47ac-afb0-d8be25beb2db\",\"total_cost_usd\":0,\"usage\":{\"input_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"},\"modelUsage\":{},\"permission_denials\":[],\"fast_mode_state\":\"off\",\"uuid\":\"4f4a954a-285a-4d33-88ed-f6a2f392a41c\"}\nSession ended at 3/18/2026, 2:05:28 PM · error · exit 1\n\nthere are a few things we want to do here:\n\n1) Let's capture success rates by agent type.  \"Success\" is when the agent exited successfully AND moved the beat into either \n- the next queue state OR\n- the queue state PRIOR to the one it claimed\nwe should store that information in detail in the application's working directory\n2) If the agent completes with error exit - instead of terminating, examine the knot state.\nif it is in an action state, roll it back.\neither way, do another iteration in the claim loop but force the next iteration to use a different agent is available.  if no other agent is available, and the prior claim iteration exited in error, then terminate the loop.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Claude Error detection - catch and try different agent",
+    "type": "work"
+  }
+}

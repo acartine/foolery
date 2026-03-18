@@ -1,0 +1,15 @@
+{
+  "event_id": "019d014c-dd14-76a1-9859-4b75e224d161",
+  "occurred_at": "2026-03-18T14:15:07.796016Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan covers two features: (1) agent-success-tracker.ts module that records per-iteration outcomes (agent ID, exit code, state transitions, success boolean) to JSONL files in the app data dir, integrated into terminal-manager.ts close handler; (2) error-exit recovery in the take-loop that rolls back action state, excludes the failed agent, and retries with a different pool agent — terminating only when no alternative agents remain or consecutive errors exhaust all options. Key design: reuse existing buildNextTakePrompt() step-failure path. New hasAlternativeAgent() helper in agent-pool.ts. Files: new agent-success-tracker.ts, modified terminal-manager.ts and agent-pool.ts.",
+    "datetime": "2026-03-18T22:00:00Z",
+    "entry_id": "019d014c-dd14-76a1-9859-4b6c3d74dc61",
+    "model": "opus",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

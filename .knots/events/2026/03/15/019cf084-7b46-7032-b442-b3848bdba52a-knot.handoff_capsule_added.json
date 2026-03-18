@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf084-7b46-7032-b442-b3848bdba52a",
+  "occurred_at": "2026-03-15T08:02:20.102633Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on main at 06a663ef3c42. Verified HEAD and origin/main both point to the shipped merge commit, confirmed commit tags include 500874fb1e6c, 294904cd55af, and 06a663ef3c42, and confirmed CI workflow run 23106253250 completed successfully for commit 06a663ef3c42 on 2026-03-15. Reviewed the shipped diff in src/components/agent-history-view.tsx and src/components/__tests__/agent-history-view-debug-integration.test.ts: the history debugger now targets the user-selected conversation instead of always defaulting to the first session. Validated the debugging prompt contract still includes Expected Outcome and Actual Outcome plus 2-4 knot-convertible next-step options in src/lib/history-debug-prompt.ts. Ran targeted regression coverage with bun test for the history debug panel, prompt builder, and selected-session integration tests; all 14 tests passed.",
+    "datetime": "2026-03-15T08:06:00Z",
+    "entry_id": "019cf084-7b46-7032-b442-b3749e13c1c6",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

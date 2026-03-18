@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd2d-3768-72c0-99f6-dff47966a5bf",
+  "occurred_at": "2026-03-11T13:54:13.99264Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-fe17 (ff-only) to main at 5797d21b303c. Pushed to origin/main. CI green (lint, tests, build all pass). The fix collapses duplicate managed prompt guidance blocks and normalizes legacy profile IDs so doctor --fix is idempotent.",
+    "datetime": "2026-03-11T13:55:00Z",
+    "entry_id": "019cdd2d-3768-72c0-99f6-dfe3f8311fef",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

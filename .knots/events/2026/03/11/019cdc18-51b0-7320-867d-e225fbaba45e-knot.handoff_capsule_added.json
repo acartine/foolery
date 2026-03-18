@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc18-51b0-7320-867d-e225fbaba45e",
+  "occurred_at": "2026-03-11T08:51:47.248672Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. Verified: (1) Enter in search bar routes to /beats?view=search&q=..., (2) shared beats-view.ts eliminates duplicate parsing in page.tsx and app-header.tsx, (3) search treated as list view for data fetching, (4) clearing q from search view exits to queues while preserving non-search views, (5) no security issues, (6) 5 unit tests + 2 layout regression tests cover all paths, (7) all quality gates pass (lint 0 errors, tsc clean, 2003 tests pass, build succeeds).",
+    "datetime": "2026-03-11T09:55:00+01:00",
+    "entry_id": "019cdc18-51b0-7320-867d-e2174558e56c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

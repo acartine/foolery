@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc10-1e9a-7860-a200-6ce7a3ed1291",
+  "occurred_at": "2026-03-11T08:42:49.882238Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan for Search view entry on Enter:\n\n1. Introduce a first-class `search` beats view in the shared URL/view parsing used by the header and `/beats` page. Treat `view=search` as a list-capable view so the page fetches beat data when `q` is present, while preserving existing queues/active/finalcut/retakes/history behavior.\n\n2. Update `src/components/search-bar.tsx` so submit semantics are explicit: pressing Enter with a non-empty query should navigate to `/beats?view=search&q=...` and preserve unrelated URL state that should survive search (`repo`, filters, page size, detail params if still valid). Clearing search should remove `q` and, if currently on `view=search`, fall back to the default non-search list view instead of leaving the user in an empty special state.\n\n3. Update `src/components/app-header.tsx` to recognize `search` in `beatsView`, keep global header controls stable on that screen, and decide whether the Search screen appears as its own highlighted tab/chip or as a neutral state outside the existing tab strip. The minimal path is no new tab button but correct parsing and button visibility; if product wants a visible Search tab, add it consistently there.\n\n4. Update `src/app/beats/page.tsx` to render search results through the existing table/lightbox path. Define `isListView` to include `search`, choose how `viewPhase` defaults when search is active (likely reuse queue filters rather than invent new search-only filters), and ensure detail/lightbox behavior remains valid while browsing results.\n\n5. Add focused regression tests. At minimum: source/layout tests for header/page recognition of `view=search`; behavioral tests for SearchBar submit/clear URL generation; and a page-level test that search mode is treated as a list/data-fetching view. If no component interaction test harness exists yet, add the smallest new test surface necessary rather than broad end-to-end coverage.\n\nFiles likely touched:\n- src/components/search-bar.tsx\n- src/components/app-header.tsx\n- src/app/beats/page.tsx\n- src/lib/__tests__/beats-page-layout.test.ts\n- new/updated tests around SearchBar or page URL handling\n\nComplexity: low to medium.\nRisks:\n- accidental leakage of queue/active default state rules into search mode\n- unclear UX for what happens when clearing `q` from `view=search`\n- preserving/stripping detail params incorrectly when switching from non-list screens\n\nNo child knots appear necessary for this scope.",
+    "datetime": "2026-03-11T08:42:49.882238Z",
+    "entry_id": "019cdc10-1e9a-7860-a200-6cd5a7816638",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

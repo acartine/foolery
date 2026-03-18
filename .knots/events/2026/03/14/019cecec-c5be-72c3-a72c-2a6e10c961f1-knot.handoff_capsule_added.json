@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecec-c5be-72c3-a72c-2a6e10c961f1",
+  "occurred_at": "2026-03-14T15:17:46.046105Z",
+  "knot_id": "foolery-d164",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation verified: 6 rollbackIteration tests in execution-backend-rollback.test.ts. Tests cover kind=note happy path, kind=noop, unknown lease NOT_FOUND, updateKnot failure retains lease, falsy note skips block, non-knots repo skips block. All quality gates pass.",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019cecec-c5be-72c3-a72c-2a5045f1ee1d",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

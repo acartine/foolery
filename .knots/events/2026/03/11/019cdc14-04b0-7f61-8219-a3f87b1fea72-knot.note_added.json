@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc14-04b0-7f61-8219-a3f87b1fea72",
+  "occurred_at": "2026-03-11T08:47:05.392069Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan needs one correction before implementation approval: the execution-backend rollbackIteration plan says a missing lease should succeed silently, but src/lib/execution-backend.ts currently returns NOT_FOUND for an unknown lease. Revise that section so the tests assert the real contract or explicitly propose changing the implementation.",
+    "datetime": "2026-03-11T08:47:05.392069Z",
+    "entry_id": "019cdc14-04b0-7f61-8219-a3ef1a79b007",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

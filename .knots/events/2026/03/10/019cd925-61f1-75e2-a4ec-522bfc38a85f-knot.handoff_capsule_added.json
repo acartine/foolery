@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd925-61f1-75e2-a4ec-522bfc38a85f",
+  "occurred_at": "2026-03-10T19:07:11.729186Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Restored dotted-alias parent inference in the knots backend, added a regression test for alias-only hierarchy, and re-ran lint, tsc, test, and build successfully.",
+    "datetime": "2026-03-10T19:06:59Z",
+    "entry_id": "019cd925-61f1-75e2-a4ec-521ae0641dca",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced88-4834-7170-a40f-d4463c3346d4",
+  "occurred_at": "2026-03-14T18:07:37.51534Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2f7b",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Rename dispatch mode values to meaningful names",
+    "type": "work",
+    "updated_at": "2026-03-14T18:07:37.51534Z"
+  }
+}

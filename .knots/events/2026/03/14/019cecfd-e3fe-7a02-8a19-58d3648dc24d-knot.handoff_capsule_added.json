@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfd-e3fe-7a02-8a19-58d3648dc24d",
+  "occurred_at": "2026-03-14T15:36:27.902567Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review requested changes. Findings: (1) src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts:273 claims to verify max-iterations rollback, but lines 274-331 explicitly set up and assert the non-zero initial child exit path instead. (2) The dedicated max-iterations branch in src/lib/terminal-manager.ts:1225-1231 was therefore not exercised during review, so rollback coverage for that required scenario is still missing. Sanity check run: bun run test src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts passed (5 tests).",
+    "datetime": "2026-03-14T15:36:17Z",
+    "entry_id": "019cecfd-e3fe-7a02-8a19-58c15fe468ec",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

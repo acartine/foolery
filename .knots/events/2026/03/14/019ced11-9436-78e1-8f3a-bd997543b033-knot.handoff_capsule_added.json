@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced11-9436-78e1-8f3a-bd997543b033",
+  "occurred_at": "2026-03-14T15:57:58.198011Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Rewrote the max-iterations test to properly exercise terminal-manager.ts:1224-1231. The test drives 10 take-loop iterations by chaining child close(0) events through buildNextTakePrompt, incrementing takeIteration from 1 to 10. When the 10th child closes with code 0, the guard takeIteration >= MAX_TAKE_ITERATIONS fires, calling enforceQueueTerminalInvariant().finally(() => finishSession(1)). All 5 tests pass, lint clean, typecheck clean.",
+    "datetime": "2026-03-14T17:00:00Z",
+    "entry_id": "019ced11-9436-78e1-8f3a-bd8fad6d6bf5",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

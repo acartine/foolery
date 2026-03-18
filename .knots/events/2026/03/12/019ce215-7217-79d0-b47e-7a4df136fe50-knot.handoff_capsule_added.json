@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce215-7217-79d0-b47e-7a4df136fe50",
+  "occurred_at": "2026-03-12T12:46:22.231403Z",
+  "knot_id": "foolery-e991",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Expanded rollbackBeatState tests with 5 new cases: beads path using backend.update, exec failure propagation, special character escaping in beatId, empty string reason, undefined reason. All quality gates pass.",
+    "datetime": "2026-03-12T13:45:00+01:00",
+    "entry_id": "019ce215-7217-79d0-b47e-7a303e0456e4",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce19f-4faa-76c0-a756-ebc4ceafccc4",
+  "occurred_at": "2026-03-12T10:37:20.170237Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Removed all prompt-guidance functionality from docs, runtime packaging, and tests. Deleted PROMPT.md, PROMPT_BEATS.md, PROMPT_KNOTS.md template files. Stripped prompt-guidance check/fix from doctor.ts and all related tests from doctor-applyfix.test.ts, doctor.test.ts, and doctor-coverage.test.ts. Removed prompt-guidance references from README.md and audit docs. All 135 test files pass (1997 tests), TypeScript compiles clean. Branch: feat/strip-prompt-guidance-docs-tests",
+    "datetime": "2026-03-12T11:40:00Z",
+    "entry_id": "019ce19f-4faa-76c0-a756-ebb05a7eac96",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

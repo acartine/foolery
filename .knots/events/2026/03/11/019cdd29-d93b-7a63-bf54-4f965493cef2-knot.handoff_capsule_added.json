@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd29-d93b-7a63-bf54-4f965493cef2",
+  "occurred_at": "2026-03-11T13:50:33.275716Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Reviewed commit 5797d21b (collapse duplicate prompt guidance blocks) on work/foolery-fe17. The fix correctly adds replaceManagedBlocks helper that iterates all managed blocks, replaces the first with canonical content, drops subsequent duplicates, and preserves interstitial prose. Combined with 185c1dea (normalize profile IDs, already on main), this addresses the full bug: mismatched profile warnings persisting after doctor --fix. Test covers the duplicate block scenario comprehensively. No security issues or regressions.",
+    "datetime": "2026-03-11T16:00:00+01:00",
+    "entry_id": "019cdd29-d93b-7a63-bf54-4f8050ba779e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd1f-b7ae-72a3-a22a-b9151d9d96c8",
+  "occurred_at": "2026-03-11T13:39:29.326106Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. [src/lib/doctor.ts:109](src/lib/doctor.ts:109) defines MANAGED_BLOCK_REGEX without the global flag, and [src/lib/doctor.ts:1368](src/lib/doctor.ts:1368) uses a single String.replace call. That only rewrites the first managed FOOLERY guidance block, so repos already polluted by duplicate managed blocks remain dirty after doctor --fix. This falls short of the requested clean upsert-style repair. 2. The regression test at [src/lib/__tests__/doctor-applyfix.test.ts:487](src/lib/__tests__/doctor-applyfix.test.ts:487) covers only a file with one existing managed block, so the duplicate-block case that triggered re-review is still untested.",
+    "datetime": "2026-03-11T13:39:12Z",
+    "entry_id": "019cdd1f-b7ae-72a3-a22a-b9023c711352",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

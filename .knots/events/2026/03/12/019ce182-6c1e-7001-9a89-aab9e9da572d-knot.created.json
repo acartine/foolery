@@ -1,0 +1,16 @@
+{
+  "event_id": "019ce182-6c1e-7001-9a89-aab9e9da572d",
+  "occurred_at": "2026-03-12T10:05:46.910819Z",
+  "knot_id": "foolery-e01f",
+  "type": "knot.created",
+  "data": {
+    "body": "Delete the AGENTS.md/CLAUDE.md prompt-guidance diagnostic and auto-fix path from src/lib/doctor.ts and update doctor tests so doctor/doctor --fix no longer inspect or modify prompt files.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove prompt-guidance checks and fixes from doctor",
+    "type": "work"
+  }
+}

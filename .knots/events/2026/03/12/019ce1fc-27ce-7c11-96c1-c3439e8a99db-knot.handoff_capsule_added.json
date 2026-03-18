@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fc-27ce-7c11-96c1-c3439e8a99db",
+  "occurred_at": "2026-03-12T12:18:44.814127Z",
+  "knot_id": "foolery-e991",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "REJECTED: No code changes found. Implementation step completed in ~3 seconds with no commits or handoff. Existing memory-manager-commands-coverage.test.ts has only 3 rollbackBeatState tests (knots path: basic rb, with reason note, without reason). Required expansion: beads path tests (uses backend.update), exec failure handling, special character escaping in beatId, empty/undefined reason edge cases.",
+    "datetime": "2026-03-12T12:30:00Z",
+    "entry_id": "019ce1fc-27ce-7c11-96c1-c335767d74b8",
+    "model": "claude-opus-4-6",
+    "username": "system",
+    "version": "opus-4.6"
+  }
+}

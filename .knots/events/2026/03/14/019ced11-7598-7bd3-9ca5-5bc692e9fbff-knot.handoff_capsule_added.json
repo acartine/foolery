@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced11-7598-7bd3-9ca5-5bc692e9fbff",
+  "occurred_at": "2026-03-14T15:57:50.360398Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Fix plan is scoped to two concrete changes: stop RepoSwitcher from re-selecting a repo after the user chooses all repos, and make the all-repos create flow require explicit repo selection for both the header button and Shift+N. Existing multi-repo aggregation already exists in beats, human-action, retakes, and history; implementation should focus on preserving the null repo selection and adding regression tests around that behavior.",
+    "datetime": "2026-03-14T15:56:49Z",
+    "entry_id": "019ced11-7598-7bd3-9ca5-5bbab08c92b5",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03"
+  }
+}

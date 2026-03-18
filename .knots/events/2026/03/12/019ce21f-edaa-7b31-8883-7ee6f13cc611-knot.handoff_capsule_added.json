@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce21f-edaa-7b31-8883-7ee6f13cc611",
+  "occurred_at": "2026-03-12T12:57:49.226713Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: REJECTED. Violations: (1) build-runtime-artifact.sh still copies PROMPT.md to runtime — violates 'stop shipping prompt template assets in runtime packaging'. (2) setup.sh _prompt_guidance_wizard and PROMPT.md references not cleaned. (3) ~840 lines of unrelated rollback/step-failure tests deleted — execution-backend-rollback.test.ts, terminal-manager-step-failure-rollback.test.ts, pre-dispatch rollback edge cases, and rollbackBeatState edge cases are NOT prompt-guidance tests and must be preserved. (4) doctor.ts comment at line 876 introduces new prompt-guidance reference (swapped stale-parent example for prompt-guidance). (5) Unused imports added to 3 doctor test files. Quality gates pass but scope drift is severe — the implementation must be limited to prompt-guidance removal only.",
+    "datetime": "2026-03-12T14:05:00Z",
+    "entry_id": "019ce21f-edaa-7b31-8883-7edddb28cf52",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

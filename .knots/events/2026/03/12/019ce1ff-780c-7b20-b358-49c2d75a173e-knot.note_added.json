@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1ff-780c-7b20-b358-49c2d75a173e",
+  "occurred_at": "2026-03-12T12:22:21.964055Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review failed on 2026-03-12: approved implementation commit 3b1290788d0b is tagged on the knot but is not an ancestor of origin/main. Current main still contains the earlier 63c9ce7d5059 help colorization only, so the shipped code is missing the later semantic command colors, FORCE_COLOR handling, and help-cli test coverage even though CI is green for main.",
+    "datetime": "2026-03-12T12:22:21.964055Z",
+    "entry_id": "019ce1ff-780c-7b20-b358-49b0e18a9469",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

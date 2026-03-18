@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb68-6f7d-7333-8bbb-4cf293831e6b",
+  "occurred_at": "2026-03-11T05:39:40.541714Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented beat-detail natural ID rendering/copy semantics and restored dotted parent inference via alias hierarchy fallback. Added focused regression coverage; bun run lint, bunx tsc --noEmit, bun run test, and bun run build all passed in worktree branch beat/foolery-02d0.",
+    "datetime": "2026-03-11T05:39:26Z",
+    "entry_id": "019cdb68-6f7d-7333-8bbb-4ce1dc98c31b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

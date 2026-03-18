@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfca0-e27f-72d1-8afc-993e2af52b05",
+  "occurred_at": "2026-03-17T16:28:48.127197Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Scoped Retake Now ancestry and running-session lookups by repo path so duplicate beat IDs across loaded repos cannot collide. Added a regression contract for repo-scoped retake lookups. Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-17T16:27:37Z",
+    "entry_id": "019cfca0-e27f-72d1-8afc-9929fb936e6e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

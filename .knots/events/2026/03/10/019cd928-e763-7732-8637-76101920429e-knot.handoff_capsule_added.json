@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd928-e763-7732-8637-76101920429e",
+  "occurred_at": "2026-03-10T19:11:02.499167Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Requirement mismatch: [src/lib/memory-manager-commands.ts:60] invokes 'kno rollback' instead of the specified 'kno rb'. 2. Test drift: [src/lib/__tests__/memory-manager-commands-coverage.test.ts:82] and related expectations were updated to assert the wrong command, so the review basis is not met. Validation performed: 'bun run test src/lib/__tests__/memory-manager-commands-coverage.test.ts' passed; 'bunx tsc --noEmit' passed.",
+    "datetime": "2026-03-10T19:10:52Z",
+    "entry_id": "019cd928-e763-7732-8637-760e487b48ac",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

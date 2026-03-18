@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfc-68a6-7ce0-9674-cebf9069f582",
+  "occurred_at": "2026-03-14T15:34:50.790092Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation already on main (527d1b65). All 5 step-failure rollback tests pass: non-zero exit rollback, take-loop step failure rollback, max iterations rollback, post-rollback claimable state, concurrent abort during rollback. No new code changes needed — re-advancing to review.",
+    "datetime": "2026-03-14T16:35:00Z",
+    "entry_id": "019cecfc-68a6-7ce0-9674-ceaa7e9a6c77",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

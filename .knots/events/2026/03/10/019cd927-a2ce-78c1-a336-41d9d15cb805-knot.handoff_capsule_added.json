@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd927-a2ce-78c1-a336-41d9d15cb805",
+  "occurred_at": "2026-03-10T19:09:39.406589Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Switched rollbackBeatState to call `kno rb` for knots, updated rollback coverage expectations, and validated with `bunx tsc --noEmit`, `bun run test`, and `bun run build`; `bun run lint` completed with pre-existing warnings only.",
+    "datetime": "2026-03-10T19:09:23Z",
+    "entry_id": "019cd927-a2ce-78c1-a336-41ce5550e09b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

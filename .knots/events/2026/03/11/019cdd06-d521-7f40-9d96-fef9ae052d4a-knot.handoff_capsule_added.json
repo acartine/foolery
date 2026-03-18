@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd06-d521-7f40-9d96-fef9ae052d4a",
+  "occurred_at": "2026-03-11T13:12:18.465759Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit e483701c2e76 verified on main. CI green (Changesets failure pre-existing). All three scripts pass bash -n syntax check. Changes scoped to install.sh, agent-wizard.sh, setup.sh with TTY-aware color/emoji formatting, NO_COLOR/CI gates, and UTF-8 fallbacks. No invariants to verify. No regressions detected.",
+    "datetime": "2026-03-11T00:00:00Z",
+    "entry_id": "019cdd06-d521-7f40-9d96-feed18ca7c9e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

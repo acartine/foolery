@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced17-f0d2-7ad2-9717-978f94f2d48c",
+  "occurred_at": "2026-03-14T16:04:55.122725Z",
+  "knot_id": "foolery-742c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) Both commits live on main — merge commit 13ebc43e8acb and submit-recovery fix 013f50865076. (2) CI green (run 23091381635, conclusion: success). (3) Typecheck clean, all 4 component tests pass. (4) handleSubmit uses try/catch/finally to prevent button stuck in loading state; launchHistoryDebugSession wraps startSession in try/catch — review note from implementation_review fully addressed. (5) No invariant violations. Approved for shipped.",
+    "datetime": "2026-03-14T17:05:00Z",
+    "entry_id": "019ced17-f0d2-7ad2-9717-9772bccabc14",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

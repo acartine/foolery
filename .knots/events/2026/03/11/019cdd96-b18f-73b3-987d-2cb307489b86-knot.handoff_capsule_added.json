@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd96-b18f-73b3-987d-2cb307489b86",
+  "occurred_at": "2026-03-11T15:49:26.543783Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment blocked on 2026-03-11. The help colorization commit 63c9ce7d5059 is still present on origin/main, but current remote main tip 8081c3a4b74b has a failed GitHub Actions Changesets run (22960997723) because there is no .changeset directory in the repository. CI and Coverage Badge succeeded, but shipment cannot proceed while remote main is not fully green.",
+    "datetime": "2026-03-11T15:48:28Z",
+    "entry_id": "019cdd96-b18f-73b3-987d-2ca074fb329f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

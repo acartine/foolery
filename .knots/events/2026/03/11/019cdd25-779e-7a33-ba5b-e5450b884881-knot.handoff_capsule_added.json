@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd25-779e-7a33-ba5b-e5450b884881",
+  "occurred_at": "2026-03-11T13:45:46.142342Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Root cause was doctor --fix only replacing the first managed prompt block. Updated prompt-guidance repair to collapse duplicate managed blocks to one canonical block, added a regression for stale duplicate profiles, and validated with lint, typecheck, full tests, and build on branch work/foolery-fe17 at commit 5797d21b303c.",
+    "datetime": "2026-03-11T13:45:18Z",
+    "entry_id": "019cdd25-779e-7a33-ba5b-e5359494edb5",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

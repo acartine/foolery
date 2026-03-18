@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0175-1c1f-7190-bd8d-c43be27b7862",
+  "occurred_at": "2026-03-18T14:59:05.375407Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed both review-rejected issues: (1) resolveStatsDir() now always uses process.cwd()/.foolery-logs instead of ~/.config/foolery/logs in production, satisfying the working-directory storage requirement. (2) classifyIterationSuccess() no longer treats terminal states or same-step queue states as success — only next-queue-state and prior-queue-state transitions qualify, matching the spec exactly. Added priorQueueStateForStep() to workflows.ts. Tests: prior-queue success (review rejection), same-state=failure, terminal=failure, storage path verification. Sanity gates: tsc, 2089 tests, build, lint all pass.",
+    "datetime": "2026-03-18T16:00:00Z",
+    "entry_id": "019d0175-1c1f-7190-bd8d-c42025edb1eb",
+    "model": "opus",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

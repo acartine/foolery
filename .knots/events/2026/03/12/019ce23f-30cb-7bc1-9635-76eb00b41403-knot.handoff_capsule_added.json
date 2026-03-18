@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce23f-30cb-7bc1-9635-76eb00b41403",
+  "occurred_at": "2026-03-12T13:31:58.027332Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: merged work/foolery-9c9a-impl-20260312-132154 to main (fast-forward to 8157f20dfecc). Pushed to origin/main. CI run 23004423966 passed (lint, tests, coverage, build all green). Coverage annotations show minor regression warnings but no failures.",
+    "datetime": "2026-03-12T13:32:00Z",
+    "entry_id": "019ce23f-30cb-7bc1-9635-76d916670318",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

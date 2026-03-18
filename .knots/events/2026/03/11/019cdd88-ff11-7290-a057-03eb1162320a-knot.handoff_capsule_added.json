@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd88-ff11-7290-a057-03eb1162320a",
+  "occurred_at": "2026-03-11T15:34:28.881954Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Diff is limited to scripts/install.sh usage() help rendering on commit 63c9ce7. The implementation replaces the heredoc with printf-based formatting, uses existing supports_color/color_code helpers, and falls back to plain text when color is unavailable. Manual TTY validation confirmed colored Usage/Commands output and plain output with NO_COLOR. Sanity gates in /private/tmp/foolery-76ec passed: bun run lint (warnings only, exit 0), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-11T15:33:45Z",
+    "entry_id": "019cdd88-ff11-7290-a057-03d2e9ba6f17",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

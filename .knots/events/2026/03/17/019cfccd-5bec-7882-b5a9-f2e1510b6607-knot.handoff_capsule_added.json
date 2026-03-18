@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfccd-5bec-7882-b5a9-f2e1510b6607",
+  "occurred_at": "2026-03-17T17:17:22.796297Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. All 3 commits verified on main: 51137ecb2d98 (two-button dialog), 7d430d9c0905 (repo-scoped ancestry), c57a25514934 (retake-session-scope module). CI green. 2064 tests pass. Feature confirmed: Stage and Retake Now buttons render in retake-dialog.tsx, retake-session-scope.ts correctly imported in retakes-view.tsx. No regressions detected.",
+    "datetime": "2026-03-17T18:18:00Z",
+    "entry_id": "019cfccd-5bec-7882-b5a9-f2def1db1698",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

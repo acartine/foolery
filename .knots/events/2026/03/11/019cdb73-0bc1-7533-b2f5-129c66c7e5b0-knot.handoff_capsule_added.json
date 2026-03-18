@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb73-0bc1-7533-b2f5-129c66c7e5b0",
+  "occurred_at": "2026-03-11T05:51:15.905714Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed alias/aliases field mismatch: kno CLI returns alias (singular string|null) but code read aliases (plural string[]). Added collectAliases() helper in knots-backend.ts that merges both forms. Updated KnotRecord to include alias field. Fixed all consumers: toBeat, buildBeatsForRepo aliasToId map, loadAliases for deps, and dependency enrichment. Added parentFromHierarchicalAlias for alias-based parent inference. Added test for alias-based parent derivation with singular alias field matching real CLI output. All 1995 tests pass, lint/typecheck/build clean.",
+    "datetime": "2026-03-11T06:52:00Z",
+    "entry_id": "019cdb73-0bc1-7533-b2f5-1283b4592865",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

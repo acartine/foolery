@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0183-f946-7392-ab32-89f923b3b4b3",
+  "occurred_at": "2026-03-18T15:15:19.494559Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected. Findings: (1) src/lib/agent-outcome-stats.ts:46-50 still writes production stats to ~/.config/foolery/logs instead of the application working directory, so it does not satisfy the requirement to store detailed success-rate data in the app working directory. (2) src/lib/terminal-manager.ts:1090-1114 still classifies same-step queue states and terminal states as success on exit code 0, but success is only defined as advancing to the next queue state or returning to the prior queue state. Sanity gates: bun install --frozen-lockfile passed; bunx tsc --noEmit passed; bun run test passed (2085 tests); bun run build passed; bun run lint . did not finish within the review session, so lint remains unconfirmed.",
+    "datetime": "2026-03-18T15:15:19.494559Z",
+    "entry_id": "019d0183-f946-7392-ab32-89e7d20027b3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "event_id": "019cf076-2088-7fb1-9501-668adf03f2ed",
+  "occurred_at": "2026-03-15T07:46:39.360627Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-70ec",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "History Debugger:  From history view, interactive UI Terminal for debugging.",
+    "type": "work",
+    "updated_at": "2026-03-15T07:46:39.360627Z"
+  }
+}

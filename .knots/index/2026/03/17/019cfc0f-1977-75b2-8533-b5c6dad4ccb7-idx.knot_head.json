@@ -1,0 +1,19 @@
+{
+  "event_id": "019cfc0f-1977-75b2-8533-b5c6dad4ccb7",
+  "occurred_at": "2026-03-17T13:49:33.934794Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-bcc2",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Bead Detail Dialog:  Make it twice as wide",
+    "type": "work",
+    "updated_at": "2026-03-17T13:49:33.934794Z"
+  }
+}

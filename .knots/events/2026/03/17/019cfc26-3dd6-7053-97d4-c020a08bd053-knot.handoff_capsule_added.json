@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc26-3dd6-7053-97d4-c020a08bd053",
+  "occurred_at": "2026-03-17T14:14:50.582273Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 'Set state' bulk action dropdown to BulkEditControls in filter-bar.tsx. Users can now set selected beats to Shipped, Abandoned, or Deferred during multi-select. Follows existing pattern of type/priority/profile dropdowns. All quality gates pass (lint, typecheck, 2040 tests, build). Branch: worktree-foolery-62fa-bulk-state",
+    "datetime": "2026-03-17T15:15:00Z",
+    "entry_id": "019cfc26-3dd6-7053-97d4-c012f54c7416",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd96-9996-7522-a12c-4bfcd811fabd",
+  "occurred_at": "2026-03-11T15:49:20.40642Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment blocked on 2026-03-11: origin/main tip 8081c3a4b74b still has failing GitHub Actions run 22960997723 for the Changesets workflow ('There is no .changeset directory in this project'). Commit 63c9ce7d5059 remains shipped on origin/main, but the remote pipeline is not fully green.",
+    "datetime": "2026-03-11T15:48:28Z",
+    "entry_id": "019cdd96-9996-7522-a12c-4be579a62539",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

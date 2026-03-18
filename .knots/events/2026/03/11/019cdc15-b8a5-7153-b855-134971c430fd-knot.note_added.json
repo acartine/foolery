@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc15-b8a5-7153-b855-134971c430fd",
+  "occurred_at": "2026-03-11T08:48:56.997135Z",
+  "knot_id": "foolery-d164",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Revised test plan per plan review feedback. Key correction: unknown lease returns NOT_FOUND (not silent success). 6 test cases: (1) kind=note with knots repo happy path, (2) kind=noop no note appended, (3) unknown lease → NOT_FOUND error, (4) updateKnot fails → early return with lease retained, (5) kind=note with falsy note → block skipped, (6) kind=note on non-knots repo → block skipped.",
+    "datetime": "2026-03-11T08:48:56.997135Z",
+    "entry_id": "019cdc15-b8a5-7153-b855-133918a4e7ac",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

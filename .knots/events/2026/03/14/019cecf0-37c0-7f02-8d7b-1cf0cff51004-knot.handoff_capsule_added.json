@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf0-37c0-7f02-8d7b-1cf0cff51004",
+  "occurred_at": "2026-03-14T15:21:31.840356Z",
+  "knot_id": "foolery-e01f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit 1a591cd2 (fix: remove prompt-guidance checks and fixes from doctor) is already merged to main and pushed to origin/main. CI is green on main branch. No merge conflicts encountered.",
+    "datetime": "2026-03-14T15:00:00Z",
+    "entry_id": "019cecf0-37c0-7f02-8d7b-1ce878b53693",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

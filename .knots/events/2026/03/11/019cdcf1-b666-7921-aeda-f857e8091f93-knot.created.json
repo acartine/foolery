@@ -1,0 +1,16 @@
+{
+  "event_id": "019cdcf1-b666-7921-aeda-f857e8091f93",
+  "occurred_at": "2026-03-11T12:49:14.34287Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.created",
+  "data": {
+    "body": "Let's add some colors and emojis, ",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Foolery Install: Boring as hell",
+    "type": "work"
+  }
+}

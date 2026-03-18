@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc16-f85b-7260-904e-e3e642be268a",
+  "occurred_at": "2026-03-11T08:50:18.843826Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan approved for implementation. The revised rollbackIteration coverage now matches the current contract: unknown leases return NOT_FOUND, updateKnot failures retain the lease, and note writes are correctly gated by truthy note content plus knots repo type. Sections 1-4 remain feasible and complete for rollbackBeatState, pre-dispatch rollback, step-failure rollback, and invariant enforcement. No knot invariants are present, and the work remains test-only across the four planned files.",
+    "datetime": "2026-03-11T08:50:09Z",
+    "entry_id": "019cdc16-f85b-7260-904e-e3d7813c6026",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

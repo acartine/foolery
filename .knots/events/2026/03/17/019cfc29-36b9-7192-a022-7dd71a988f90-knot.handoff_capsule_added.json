@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc29-36b9-7192-a022-7dd71a988f90",
+  "occurred_at": "2026-03-17T14:18:05.369915Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Fast-forward merged work/foolery-7171 (commit 950d194bf6e3) to main and pushed to origin. CI green on remote. Changes: min-w-[20ch] added to search bar in search-bar.tsx, plus layout contract test in beats-page-layout.test.ts.",
+    "datetime": "2026-03-17T14:20:00Z",
+    "entry_id": "019cfc29-36b9-7192-a022-7dcdd4d3e62f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

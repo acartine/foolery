@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc9a-698b-7b22-96ba-e74700e91cc4",
+  "occurred_at": "2026-03-17T16:21:43.947474Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented Stage and Retake Now buttons in the retake dialog. Stage applies state change and reject reason only. Retake Now applies state change then immediately starts a Take session (with rolling-ancestor check, existing-session detection, and graceful failure handling that preserves the staged mutation). Extracted rolling-ancestor walk into shared src/lib/rolling-ancestor.ts used by both BeatsPage and RetakesView. Fixed ancestry bug: parentByBeatId is now built from full beat set, not just retake candidates, so rolling grandparents are detected through intermediate non-retake-source parents. All quality gates pass (lint, typecheck, 2058 tests, build).",
+    "datetime": "2026-03-17T17:22:00Z",
+    "entry_id": "019cfc9a-698b-7b22-96ba-e736bf9a1e93",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

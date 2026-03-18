@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced92-0349-7a32-a8c1-56d5b9e85d12",
+  "occurred_at": "2026-03-14T18:18:15.241002Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. AgentHistoryView adds debugPanelOpen state and closes it on loaded beat changes, exposes a Debug/Close Debug button in the conversation log header when sessions exist, and renders the conversation log plus HistoryDebugPanel side-by-side with the loaded beat title and latest session wired through. Verified against the knot description with no invariant violations found. Test coverage in src/components/__tests__/agent-history-view-debug-integration.test.ts covers button visibility, open/closed labels, and panel rendering. Sanity checks passed in this checkout: bun run lint src/components/agent-history-view.tsx src/components/__tests__/agent-history-view-debug-integration.test.ts, bunx tsc --noEmit, bun run test -- src/components/__tests__/agent-history-view-debug-integration.test.ts src/components/__tests__/history-debug-panel.test.ts, and bun run build.",
+    "datetime": "2026-03-14T18:18:05Z",
+    "entry_id": "019ced92-0349-7a32-a8c1-56ce81fe9167",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0166-3366-7aa0-aae2-5e03eac92fb5",
+  "occurred_at": "2026-03-18T14:42:48.294698Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented error-exit retry with different agent in take-loop. Key changes: (1) Shared handleTakeIterationClose function consolidates close handling across initial and take-loop child handlers. (2) On non-zero exit, rolls back action state via enforceQueueTerminalInvariant, then tries buildNextTakePrompt with strict agent exclusion (selectFromPoolStrict). If no alternative agent exists, terminates. (3) Per-iteration outcome stats persisted to .foolery-logs/agent-success-rates.json with success classification (next-queue, same-queue, or terminal state = success). (4) nextQueueStateForStep added to workflows.ts for deriving the expected next state. (5) 20 tests covering retry, no-alternative stop, success/failure classification, rollback-before-retry, and take-loop child parity.",
+    "datetime": "2026-03-18T15:45:00Z",
+    "entry_id": "019d0166-3366-7aa0-aae2-5dfdb52816b6",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

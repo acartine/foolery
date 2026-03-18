@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7c-5ed9-7b20-8842-3b27ffa874f5",
+  "occurred_at": "2026-03-11T06:01:27.001895Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment attempt on 2026-03-11 was blocked by a merge conflict when merging beat/foolery-02d0 (83a4f926f003) into main (61bb0efcc9f7). The only unresolved file is src/lib/backends/knots-backend.ts in /private/tmp/foolery-02d0-ship; lightbox and backend tests auto-merged cleanly. Resume from ready_for_implementation by reconciling that backend conflict, then re-run shipment.",
+    "datetime": "2026-03-11T06:00:53Z",
+    "entry_id": "019cdb7c-5ed9-7b20-8842-3b1c9543c5a2",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

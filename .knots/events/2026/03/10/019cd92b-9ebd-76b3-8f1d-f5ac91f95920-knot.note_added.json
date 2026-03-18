@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd92b-9ebd-76b3-8f1d-f5ac91f95920",
+  "occurred_at": "2026-03-10T19:14:00.509337Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: src/lib/memory-manager-commands.ts uses 'kno rollback <id>' instead of the required 'kno rb <id>', and src/lib/__tests__/memory-manager-commands-coverage.test.ts asserts the wrong command. Targeted vitest coverage passes, but it only validates the incorrect CLI invocation.",
+    "datetime": "2026-03-10T19:14:00.509337Z",
+    "entry_id": "019cd92b-9ebd-76b3-8f1d-f59b5d2aee7e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

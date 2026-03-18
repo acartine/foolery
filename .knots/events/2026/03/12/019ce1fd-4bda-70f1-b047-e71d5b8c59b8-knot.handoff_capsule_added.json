@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fd-4bda-70f1-b047-e71d5b8c59b8",
+  "occurred_at": "2026-03-12T12:19:59.578321Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit 63c9ce7d5059 (feat: colorize foolery --help output) was already on origin/main. Rebased local main onto origin/main, resolved merge conflict in doctor.test.ts (accepted upstream removal of checkPromptGuidance tests), pushed to remote. CI workflow green on main; Changesets failure is pre-existing/unrelated.",
+    "datetime": "2026-03-12T14:30:00-07:00",
+    "entry_id": "019ce1fd-4bda-70f1-b047-e700051cf34b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

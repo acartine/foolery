@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced00-fe3d-7e43-a086-e2b9cb738f7e",
+  "occurred_at": "2026-03-14T15:39:51.229003Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review. Verified the reviewed state removes any launcher-level 'prompt' command and leaves the exposed CLI commands as start/open/setup/update/stop/restart/status/doctor/uninstall/help only. Confirmed scripts/install.sh and scripts/setup.sh contain no AGENTS.md or CLAUDE.md mutation flow, and reran targeted coverage with bun run test -- src/lib/__tests__/help-cli.test.ts src/lib/__tests__/setup-settings-writer.test.ts (4 tests passed).",
+    "datetime": "2026-03-14T15:39:43Z",
+    "entry_id": "019ced00-fe3d-7e43-a086-e2a7efab7259",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

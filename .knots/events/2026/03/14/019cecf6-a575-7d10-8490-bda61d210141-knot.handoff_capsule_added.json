@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf6-a575-7d10-8490-bda61d210141",
+  "occurred_at": "2026-03-14T15:28:33.141341Z",
+  "knot_id": "foolery-f37c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. 6 rollbackIteration tests correctly cover all branches: kind=note happy path with updateKnot call, kind=noop skipping updateKnot, unknown lease NOT_FOUND, updateKnot failure retaining lease, falsy note skipping note block, non-knots repo skipping note block. All tests pass. No invariant violations, no security concerns.",
+    "datetime": "2026-03-14T15:28:00Z",
+    "entry_id": "019cecf6-a575-7d10-8490-bd94a2616110",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

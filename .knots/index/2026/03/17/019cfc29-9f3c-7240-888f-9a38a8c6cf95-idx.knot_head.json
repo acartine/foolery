@@ -1,0 +1,22 @@
+{
+  "event_id": "019cfc29-9f3c-7240-888f-9a38a8c6cf95",
+  "occurred_at": "2026-03-17T14:18:32.124104Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7171",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "search should be a minimum view of 20 characters",
+    "type": "work",
+    "updated_at": "2026-03-17T14:18:32.124104Z"
+  },
+  "precondition": {
+    "profile_etag": "019cfc29-541f-7233-b77f-ce02f3d2b7d7"
+  }
+}

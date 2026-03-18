@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd920-291f-7c01-ab47-bb5b2886fabb",
+  "occurred_at": "2026-03-10T19:01:29.503637Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Normalized beat detail IDs to natural forms, collapsed repo-qualified aliases to their natural alias IDs, filtered duplicate alias chips, and added helper coverage for the proj-1234 | proj-5678.3 case. Sanity gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-10T19:01:29Z",
+    "entry_id": "019cd920-291f-7c01-ab47-bb4e575ee5a4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-10"
+  }
+}

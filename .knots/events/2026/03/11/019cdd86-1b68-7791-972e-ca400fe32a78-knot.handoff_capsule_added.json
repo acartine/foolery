@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd86-1b68-7791-972e-ca400fe32a78",
+  "occurred_at": "2026-03-11T15:31:19.528599Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented colorized --help output in scripts/install.sh. The usage() function now uses bold+cyan for the Usage header, bold for Commands header, cyan for command names, and dim for the help command. Falls back gracefully to plain text when NO_COLOR is set, terminal is dumb, or stdout is not a TTY. All quality gates pass (lint, typecheck, test, build). Branch: feat/help-colors.",
+    "datetime": "2026-03-11T15:33:00Z",
+    "entry_id": "019cdd86-1b68-7791-972e-ca339b2abfe4",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

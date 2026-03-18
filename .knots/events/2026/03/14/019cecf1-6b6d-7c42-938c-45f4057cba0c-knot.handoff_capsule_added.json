@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf1-6b6d-7c42-938c-45f4057cba0c",
+  "occurred_at": "2026-03-14T15:22:50.605416Z",
+  "knot_id": "foolery-e991",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit 9a819c733b5e verified on main. All 17 tests pass. Change scoped to memory-manager-commands-coverage.test.ts only (38 insertions). No invariants. Build succeeds. No regressions.",
+    "datetime": "2026-03-14T16:22:00Z",
+    "entry_id": "019cecf1-6b6d-7c42-938c-45ea149227f4",
+    "model": "claude-opus-4-6",
+    "username": "claude",
+    "version": "4.6"
+  }
+}

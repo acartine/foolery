@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced0e-6b98-7f32-9b75-83e28aa20a17",
+  "occurred_at": "2026-03-14T15:54:31.192766Z",
+  "knot_id": "foolery-59fb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation_review. Reviewed commit deb3d8859faf1aea4ff8881afbedc3ebdf09c342 adding src/lib/history-debug-prompt.ts and unit tests. buildDebugPrompt() and summarizeSessionEntries() align with existing agent history parsing patterns for assistant, user, result, and system payloads, include session metadata plus transcript summary, and tests cover populated and empty-entry paths. Knot notes report lint, typecheck, unit tests, and build passing on branch work/foolery-59fb-impl.",
+    "datetime": "2026-03-14T15:54:25Z",
+    "entry_id": "019ced0e-6b98-7f32-9b75-83dc4f7464ae",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

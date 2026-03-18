@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc22-a988-70d0-8365-ba0d38c3fc89",
+  "occurred_at": "2026-03-17T14:10:56.008639Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n- Update the header/search layout so the search control keeps a minimum inline size of 20 characters instead of collapsing under the nav tabs and Add button.\n- Primary implementation surface is src/components/search-bar.tsx, where the form currently uses flex-1 with no minimum width and still carries a max-width default. Add a 20ch minimum width on the search container (or equivalent class passed from the header) so the field cannot shrink below the requested visible size.\n- Confirm the header usage in src/components/app-header.tsx still allows wrapping. The current top-level row already uses flex-wrap; keep the search item on its own wrapped row when space is tight rather than letting it compress below 20ch.\n- Preserve existing mobile behavior where the search bar already spans the full row, and avoid changing non-beats routes or unrelated header controls.\n- Add or extend a source-contract/layout test to lock in the new class contract, most likely in src/lib/__tests__/beats-page-layout.test.ts or a new focused header/search layout test, so regressions are caught without requiring browser-only assertions.\n\nValidation strategy:\n- Run the targeted test covering the new layout contract.\n- If the implementation step allows broader verification, run the standard UI quality gates relevant to the touched files.\n\nComplexity and risks:\n- Complexity is low.\n- Main risk is applying the minimum width at the wrong layer, which could either leave the input shrinkable or force overflow instead of wrapping. The implementation should prefer flex wrapping plus min-width over fixed widths.",
+    "datetime": "2026-03-17T14:10:27Z",
+    "entry_id": "019cfc22-a988-70d0-8365-b9fd09be12c8",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

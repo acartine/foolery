@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecef-e5a8-7f23-b102-da7b8583b7a9",
+  "occurred_at": "2026-03-14T15:21:10.824322Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. The Obsidian architecture note is comprehensive, covering three-plane architecture, sandboxing model, runtime contract, multi-agent coordination, security/isolation, cost model, and phased build path. No invariants to verify. No concerns identified.",
+    "datetime": "2026-03-14T15:21:00Z",
+    "entry_id": "019cecef-e5a8-7f23-b102-da6d1c2968a0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

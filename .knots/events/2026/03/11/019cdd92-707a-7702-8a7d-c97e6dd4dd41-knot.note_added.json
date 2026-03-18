@@ -1,0 +1,18 @@
+{
+  "event_id": "019cdd92-707a-7702-8a7d-c97e6dd4dd41",
+  "occurred_at": "2026-03-11T15:44:47.738422Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review blocked: commit 63c9ce7d5059 is on origin/main and tagged, and the shipped help colorization is present on main, but GitHub Actions Changesets runs 22960783522 (this commit) and 22960997723 (current origin/main) both fail with 'There is no .changeset directory in this project'. CI and Coverage Badge succeed, but the CI/CD pipeline is not fully green, so shipment cannot be approved from shipment_review.",
+    "datetime": "2026-03-11T15:42:59Z",
+    "entry_id": "019cdd92-707a-7702-8a7d-c96419546a73",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  },
+  "precondition": {
+    "profile_etag": "019cdd90-915c-73b2-b96b-90a189807673"
+  }
+}

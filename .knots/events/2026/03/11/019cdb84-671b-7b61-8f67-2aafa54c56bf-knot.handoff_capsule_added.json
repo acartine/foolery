@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb84-671b-7b61-8f67-2aafa54c56bf",
+  "occurred_at": "2026-03-11T06:10:13.403163Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed getDisplayedBeatAliases: changed type to Pick<Beat, 'id' | 'aliases'>, removed prefix stripping, added deduplication against beat.id. Cross-project aliases now display in full form (e.g. proj-5678.3). Updated tests to verify cross-project alias retention and id deduplication. All quality gates pass (tests, typecheck, lint, build). Merged to main and pushed.",
+    "datetime": "2026-03-11T07:10:00Z",
+    "entry_id": "019cdb84-671b-7b61-8f67-2a9abd1c7fee",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

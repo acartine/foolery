@@ -1,0 +1,19 @@
+{
+  "event_id": "019cfc23-75a2-7b20-8c12-5332ea9b0c92",
+  "occurred_at": "2026-03-17T14:11:48.252254Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7171",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "search should be a minimum view of 20 characters",
+    "type": "work",
+    "updated_at": "2026-03-17T14:11:48.252254Z"
+  }
+}

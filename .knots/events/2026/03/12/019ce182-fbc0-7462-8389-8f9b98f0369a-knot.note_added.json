@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce182-fbc0-7462-8389-8f9b98f0369a",
+  "occurred_at": "2026-03-12T10:06:23.680353Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation plan:\n1. Scope the removal to the main prompt-guidance feature only. Delete AGENTS.md/CLAUDE.md guidance detection and auto-fix behavior while leaving agent execution prompts and knot/bead workflow prompts untouched.\n2. Update doctor internals in src/lib/doctor.ts. Remove prompt-guidance constants/helpers, the checkPromptGuidance diagnostic, its runDoctor/streamDoctor registration, the runDoctorFix/applyFix branch, and any prompt-guidance-specific strategy/examples or unused imports.\n3. Remove CLI/install/setup mutations for AGENTS.md/CLAUDE.md. In scripts/install.sh delete prompt template env vars/helpers, drop the foolery prompt command and help text, and keep doctor --fix limited to remaining diagnostics. In scripts/setup.sh remove the prompt-guidance wizard and template resolution/update helpers.\n4. Remove packaging/docs references tied to prompt guidance. Update scripts/build-runtime-artifact.sh so runtime bundles stop carrying prompt templates, then scrub README and any docs/audit references that mention foolery prompt or doctor prompt-guidance checks. If PROMPT.md / PROMPT_BEATS.md / PROMPT_KNOTS.md become unreferenced after that, delete them as dead assets.\n5. Rewrite tests around the new behavior. Delete or replace prompt-guidance-focused coverage in src/lib/__tests__/doctor.test.ts, src/lib/__tests__/doctor-coverage.test.ts, and src/lib/__tests__/doctor-applyfix.test.ts; adjust any streamDoctor category-count/order assertions; add targeted assertions that doctor no longer emits prompt-guidance diagnostics.\n6. Validation for implementation: run targeted tests for doctor/install/setup affected suites first, then the repo quality gates required by AGENTS.md (bun run lint, bunx tsc --noEmit, bun run test, bun run build).\n\nPlanned child knots:\n- foolery-e01f: Remove prompt-guidance checks and fixes from doctor.\n- foolery-c891: Remove prompt-guidance commands from launcher and setup.\n- foolery-9c9a: Clean prompt-guidance docs, runtime packaging, and tests.\n\nComplexity: moderate.\nRisks:\n- The codebase uses the word prompt for both AGENTS/CLAUDE guidance and runtime agent instructions; implementation must avoid deleting execution-prompt plumbing outside the prompt-guidance feature.\n- scripts/install.sh and scripts/setup.sh share overlapping prompt-template behavior, so removing only one side will leave stale UX and dead runtime assets.\n- Streamed doctor tests assert category count/order, so removing prompt-guidance will require coordinated test updates rather than narrow snapshots.",
+    "datetime": "2026-03-12T10:06:05Z",
+    "entry_id": "019ce182-fbc0-7462-8389-8f83f614edef",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

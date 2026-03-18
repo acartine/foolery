@@ -1,0 +1,22 @@
+{
+  "event_id": "019cdc0f-01cb-7992-8850-7a7e4f3e4d73",
+  "occurred_at": "2026-03-11T08:41:36.971364Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d08e",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Search should work on every screen",
+    "type": "work",
+    "updated_at": "2026-03-11T08:41:36.971364Z"
+  },
+  "precondition": {
+    "profile_etag": "019cd6b8-bc47-7832-be7c-fb812ea9dbab"
+  }
+}

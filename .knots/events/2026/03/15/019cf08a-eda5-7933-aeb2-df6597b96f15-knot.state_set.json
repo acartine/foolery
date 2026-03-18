@@ -1,0 +1,18 @@
+{
+  "event_id": "019cf08a-eda5-7933-aeb2-df6597b96f15",
+  "occurred_at": "2026-03-15T08:09:22.597489Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "claude-opus-4-6",
+    "agent_name": "claude-code",
+    "agent_version": "claude-opus-4-6",
+    "cascade_approved": true,
+    "cascade_root_id": "foolery-afbb",
+    "force": false,
+    "from": "shipment_review",
+    "profile_id": "autopilot",
+    "to": "shipped"
+  }
+}

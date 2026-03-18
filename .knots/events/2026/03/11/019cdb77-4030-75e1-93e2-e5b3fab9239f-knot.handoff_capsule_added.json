@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb77-4030-75e1-93e2-e5b3fab9239f",
+  "occurred_at": "2026-03-11T05:55:51.472879Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Core requirement satisfied: beat detail lightbox displays both natural beat ID and aliases inline, both click-to-copy, with '| alias (alias)' format. getDisplayedBeatAliases strips repo prefix for concise display. All quality gates pass (1995 tests, lint clean, typecheck clean). Backend alias→ID map and parentFromHierarchicalAlias correctly resolve alias-based hierarchy. Note: diff includes out-of-scope changes (promoteTerminalParents, knots Scene routing, agent pool diagnostics, settings layout) that pass all tests but should ideally be in separate beats.",
+    "datetime": "2026-03-11T06:56:00Z",
+    "entry_id": "019cdb77-4030-75e1-93e2-e5a6211d2c38",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

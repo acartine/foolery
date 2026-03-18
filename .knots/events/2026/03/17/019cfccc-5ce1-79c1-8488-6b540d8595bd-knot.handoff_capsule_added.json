@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfccc-5ce1-79c1-8488-6b540d8595bd",
+  "occurred_at": "2026-03-17T17:16:17.505846Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Cherry-picked 2 commits from work/foolery-6428 to main: 7d430d9c (scope retake-now repo ancestry lookups) and c57a2551 (fix repo-scoped retake session lookup, add retake-session-scope.ts module). All quality gates pass locally (lint clean, tsc clean, 2064 tests, build ok). Pushed to origin/main. CI green (run 23206977788). Combined with prior commit 51137ecb already on main, the full feature is now shipped: two-button retake dialog (Stage / Retake Now) with repo-scoped session lookups.",
+    "datetime": "2026-03-17T18:16:00+01:00",
+    "entry_id": "019cfccc-5ce1-79c1-8488-6b431aadb248",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

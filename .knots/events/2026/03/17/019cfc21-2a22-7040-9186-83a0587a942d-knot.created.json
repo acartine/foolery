@@ -1,0 +1,16 @@
+{
+  "event_id": "019cfc21-2a22-7040-9186-83a0587a942d",
+  "occurred_at": "2026-03-17T14:09:17.858956Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.created",
+  "data": {
+    "body": "search box will shring super tiny to make space for the navigation bar and \"Add\" button.\n\nit should always require 20 characters of view, forcing the search bar and add button to wrap if more room is needed.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "search should be a minimum view of 20 characters",
+    "type": "work"
+  }
+}

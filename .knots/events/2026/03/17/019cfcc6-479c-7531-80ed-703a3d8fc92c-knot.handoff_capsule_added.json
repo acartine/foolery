@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc6-479c-7531-80ed-703a3d8fc92c",
+  "occurred_at": "2026-03-17T17:09:38.844604Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation branch work/foolery-6428 contains the Stage/Retake Now flow commit (51137ecb2d98) plus the required repo-scoping follow-up commits (3cd8bf7cab57, c92de1df5bf4). Verified on /private/tmp/foolery-6428-impl: bun run lint exited 0 with existing warnings only; bunx tsc --noEmit passed; bun run test passed (148 files, 2062 tests); bun run build passed.",
+    "datetime": "2026-03-17T17:09:09Z",
+    "entry_id": "019cfcc6-479c-7531-80ed-702e90079381",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

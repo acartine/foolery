@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd93-3792-7530-af2d-2a0a3919fae8",
+  "occurred_at": "2026-03-11T15:45:38.706991Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: commit 63c9ce7d5059 is on origin/main. CI workflow passes, Coverage Badge passes. Changesets workflow failure is pre-existing (unrelated to this knot — .changeset directory was intentionally removed in 5f780695). Help colorization is live on main.",
+    "datetime": "2026-03-11T00:00:00Z",
+    "entry_id": "019cdd93-3792-7530-af2d-29fdbbb58f2f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

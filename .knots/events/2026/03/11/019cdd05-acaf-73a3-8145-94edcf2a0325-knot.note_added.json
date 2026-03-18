@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd05-acaf-73a3-8145-94edcf2a0325",
+  "occurred_at": "2026-03-11T13:11:02.57546Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review rejected: normalization and append-only fix issues are real, but the proposed template fix is incomplete. runDoctorFix ignores expectedProfile and just reads PROMPT_KNOTS.md or PROMPT_BEATS.md verbatim, so adding FOOLERY_PROMPT_PROFILE: autopilot to PROMPT_KNOTS.md would still generate wrong guidance for repos whose expected profile is semiauto, and the same risk exists for beads. The implementation plan should be revised to either export or reuse canonical profile normalization and inject the expected profile dynamically when applying prompt guidance, or add truly profile-specific templates. Also note normalizeProfileId in src/lib/workflows.ts is not currently exported, so the plan cannot import it as written.",
+    "datetime": "2026-03-11T13:11:02.57546Z",
+    "entry_id": "019cdd05-acaf-73a3-8145-94d3d4f0ae5d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

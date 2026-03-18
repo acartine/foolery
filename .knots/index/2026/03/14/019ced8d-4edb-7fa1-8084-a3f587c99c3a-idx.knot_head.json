@@ -1,0 +1,22 @@
+{
+  "event_id": "019ced8d-4edb-7fa1-8084-a3f587c99c3a",
+  "occurred_at": "2026-03-14T18:13:06.907782Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2f7b",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Rename dispatch mode values to meaningful names",
+    "type": "work",
+    "updated_at": "2026-03-14T18:13:06.907782Z"
+  },
+  "precondition": {
+    "profile_etag": "019ced8d-12b5-7e10-91f1-e44cf7cb0e25"
+  }
+}

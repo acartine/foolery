@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced16-0192-75f2-bdc2-bf0a7c863279",
+  "occurred_at": "2026-03-14T16:02:48.333539Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-121b",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Repository Selection:  All Repostories immediately changes away",
+    "type": "work",
+    "updated_at": "2026-03-14T16:02:48.333539Z"
+  }
+}

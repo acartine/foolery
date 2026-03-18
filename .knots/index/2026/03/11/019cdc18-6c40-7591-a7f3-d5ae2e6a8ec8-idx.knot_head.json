@@ -1,0 +1,19 @@
+{
+  "event_id": "019cdc18-6c40-7591-a7f3-d5ae2e6a8ec8",
+  "occurred_at": "2026-03-11T08:51:54.048055Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d08e",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "Search should work on every screen",
+    "type": "work",
+    "updated_at": "2026-03-11T08:51:54.048055Z"
+  }
+}

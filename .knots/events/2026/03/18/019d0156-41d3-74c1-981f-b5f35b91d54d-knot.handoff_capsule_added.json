@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0156-41d3-74c1-981f-b5f35b91d54d",
+  "occurred_at": "2026-03-18T14:25:23.41167Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved for implementation. The plan correctly targets the missing initial take-loop non-zero-exit branch in terminal-manager, keeps success classification based on observed workflow states instead of unavailable buildTakePrompt claim metadata, stores detailed per-iteration agent outcome data in a repo-local .foolery-logs path, and adds coverage for rollback, alternate-agent retry, no-alternative termination, and later-iteration parity. No invariant conflicts found.",
+    "datetime": "2026-03-18T14:25:05Z",
+    "entry_id": "019d0156-41d3-74c1-981f-b5ea1b63a9a7",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced90-1042-7902-96a1-67eda00cbe1c",
+  "occurred_at": "2026-03-14T18:16:07.490421Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commit ba6bfafa230e is HEAD of main, (2) all 11 files changed match the implementation plan (schemas, settings, UI, scripts, docs, tests), (3) legacy value normalization (actions→basic, pools→advanced) is in place at settings-load boundary, (4) CI green — both CI and Coverage Badge workflows passed on ba6bfafa230e, (5) no invariants defined, (6) no regressions detected.",
+    "datetime": "2026-03-14T18:20:00Z",
+    "entry_id": "019ced90-1042-7902-96a1-67d0218c2ce4",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

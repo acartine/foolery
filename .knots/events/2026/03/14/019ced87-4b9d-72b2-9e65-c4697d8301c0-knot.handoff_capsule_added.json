@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced87-4b9d-72b2-9e65-c4697d8301c0",
+  "occurred_at": "2026-03-14T18:06:32.861904Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan: rename persisted dispatch mode enum values from `actions`/`pools` to meaningful names (recommended `basic`/`advanced`), add legacy-value normalization during settings load so existing TOML continues to parse, then update schema/runtime/UI/scripts/docs/tests that serialize or compare the mode. Key files identified: `src/lib/schemas.ts`, `src/lib/settings.ts`, `src/lib/terminal-manager.ts`, `src/components/settings-sheet.tsx`, `src/components/settings-dispatch-section.tsx`, `src/lib/openapi/schemas.ts`, `scripts/setup.sh`, `scripts/agent-wizard.sh`, `src/lib/__tests__/settings.test.ts`, `src/lib/__tests__/setup-settings-writer.test.ts`, plus README/API docs. Main risk is config breakage without read-time migration.",
+    "datetime": "2026-03-14T18:06:04Z",
+    "entry_id": "019ced87-4b9d-72b2-9e65-c45add6d1b7b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

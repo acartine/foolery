@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf2-53a5-7a23-be46-fddb30021e97",
+  "occurred_at": "2026-03-14T15:23:50.053359Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete for History Debugger feature. Plan creates 3 child knots:\n1. foolery-59fb: Prompt builder (history-debug-prompt.ts) — buildDebugPrompt() + summarizeSessionEntries() + tests\n2. foolery-742c: HistoryDebugPanel component — form (Expected/Actual Outcome) + embedded xterm.js terminal + SSE connection\n3. foolery-e7a3: Integration into AgentHistoryView — Debug button, panel state, side-by-side layout\n\nKey decisions: No new dependencies needed. No backend changes. Reuses existing terminal API (POST /api/terminal with prompt). Panel is ephemeral (local state, no Zustand store). Layout adjusts conversation log to flex row when debug panel is open.\n\nDependency chain: e7a3 (integration) depends on 59fb (prompt builder) and 742c (panel component).",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019cecf2-53a5-7a23-be46-fdcbf1b996a2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

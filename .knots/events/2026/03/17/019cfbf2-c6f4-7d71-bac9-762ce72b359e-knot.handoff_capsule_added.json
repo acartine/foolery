@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfbf2-c6f4-7d71-bac9-762ce72b359e",
+  "occurred_at": "2026-03-17T13:18:37.812904Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit 9ff23a0c31aa on main widens beat detail dialog from 80vw to 95vw/max-w-1600px. CI green (CI + Coverage Badge). Test added. No invariants, no regressions.",
+    "datetime": "2026-03-17T14:30:00+01:00",
+    "entry_id": "019cfbf2-c6f4-7d71-bac9-761424cc5557",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

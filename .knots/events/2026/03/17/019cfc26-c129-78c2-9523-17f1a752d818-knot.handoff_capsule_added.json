@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc26-c129-78c2-9523-17f1a752d818",
+  "occurred_at": "2026-03-17T14:15:24.201464Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. The diff adds min-w-[20ch] to both the SearchBarInner form and its Suspense fallback in search-bar.tsx, preventing the search control from shrinking below 20 characters. The app-header.tsx flex-wrap layout already supports wrapping when space is tight—no changes needed there. A new layout-contract test locks in the 20ch minimum and the header wrapping classes. Clean, minimal, focused change with no regressions.",
+    "datetime": "2026-03-17T15:30:00+01:00",
+    "entry_id": "019cfc26-c129-78c2-9523-17e793c9c7ec",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

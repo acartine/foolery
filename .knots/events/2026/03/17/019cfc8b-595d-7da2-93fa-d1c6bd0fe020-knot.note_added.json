@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8b-595d-7da2-93fa-d1c6bd0fe020",
+  "occurred_at": "2026-03-17T16:05:16.765578Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: the dropdown reset fix (commit 6a4d2c1b) was not merged into main. The Select for 'Set state' lacks the key-based remount that allows applying the same terminal state twice in a row. Cherry-pick or re-apply that commit and merge to main.",
+    "datetime": "2026-03-17T16:05:16.765578Z",
+    "entry_id": "019cfc8b-595d-7da2-93fa-d1bf41aa793b",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

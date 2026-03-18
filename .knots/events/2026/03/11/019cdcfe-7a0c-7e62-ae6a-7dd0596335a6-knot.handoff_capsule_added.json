@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdcfe-7a0c-7e62-ae6a-7dd0596335a6",
+  "occurred_at": "2026-03-11T13:03:10.860244Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review rejected for incompleteness. Root cause analysis correctly identified missing profile normalization in doctor.ts and the append-vs-replace issue, but the plan misses that PROMPT_KNOTS.md lacks FOOLERY_PROMPT_PROFILE even though checkPromptGuidance() requires it. Current repository files also demonstrate duplicated guidance blocks, so the implementation plan should explicitly define canonicalization to one prompt block and add regression coverage for runDoctorFix on mismatched/duplicate blocks and the knots template path before implementation proceeds.",
+    "datetime": "2026-03-11T13:01:32Z",
+    "entry_id": "019cdcfe-7a0c-7e62-ae6a-7dc87fb4feaf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce22a-a6bf-7fb3-b1b4-1c1163e3e157",
+  "occurred_at": "2026-03-12T13:09:31.967733Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Needs changes. Remaining violation against the knot description: docs/audit/workflow-operations-map.md still contains prompt-guidance references at lines 442 and 537 by documenting checkPromptGuidance in the individual checks list and Doctor/health workflow map, but that check has been removed from code. README/docs cleanup is therefore incomplete. Runtime packaging is fixed (scripts/build-runtime-artifact.sh no longer copies PROMPT.md), setup/install prompt-guidance flows were removed, rollback tests remain intact, and sanity gates passed in /private/tmp/foolery-9c9a-r2: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-12T13:09:10Z",
+    "entry_id": "019ce22a-a6bf-7fb3-b1b4-1c00deff97d7",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

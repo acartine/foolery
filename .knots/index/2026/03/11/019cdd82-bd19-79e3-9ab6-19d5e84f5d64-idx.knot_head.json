@@ -1,0 +1,22 @@
+{
+  "event_id": "019cdd82-bd19-79e3-9ab6-19d5e84f5d64",
+  "occurred_at": "2026-03-11T15:27:38.777765Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-76ec",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Foolery --help:  Add some colors to commands",
+    "type": "work",
+    "updated_at": "2026-03-11T15:27:38.777765Z"
+  },
+  "precondition": {
+    "profile_etag": "019cdd80-e4a6-7fb0-9693-feed9fa39442"
+  }
+}

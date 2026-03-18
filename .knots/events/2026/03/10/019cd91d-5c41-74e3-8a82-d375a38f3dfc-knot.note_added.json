@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd91d-5c41-74e3-8a82-d375a38f3dfc",
+  "occurred_at": "2026-03-10T18:58:25.985666Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Needs changes: beat detail still renders full aliases instead of the natural beat id required by the spec. Current code keeps raw aliases in src/components/beat-detail-lightbox.tsx and the test in src/lib/__tests__/beat-detail-lightbox.test.ts still expects ['aa57','project-aa57'] instead of only the natural alias id. Sanity gates are also not green: bun run test failed in src/lib/__tests__/knots-backend.test.ts with 'infers parent from hierarchical dotted alias when id has no dots'.",
+    "datetime": "2026-03-10T18:58:25.985666Z",
+    "entry_id": "019cd91d-5c41-74e3-8a82-d3683a6a7d4e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

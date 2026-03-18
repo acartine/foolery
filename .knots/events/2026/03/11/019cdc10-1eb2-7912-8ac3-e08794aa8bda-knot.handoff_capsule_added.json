@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc10-1eb2-7912-8ac3-e08794aa8bda",
+  "occurred_at": "2026-03-11T08:42:49.9064Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned a dedicated `view=search` flow so Enter in the global search bar always lands on visible results, even from Final Cut, ReTakes, or History. Main work is URL/view parsing in SearchBar/AppHeader/BeatsPage plus regression tests for search-mode recognition and submit/clear behavior.",
+    "datetime": "2026-03-11T09:42:49+01:00",
+    "entry_id": "019cdc10-1eb2-7912-8ac3-e076d201712b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

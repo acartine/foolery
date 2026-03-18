@@ -1,0 +1,19 @@
+{
+  "event_id": "019cecf5-8232-7931-ae2b-03edcb8ceafe",
+  "occurred_at": "2026-03-14T15:27:18.578958Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2ac4",
+    "profile_id": "autopilot_with_pr",
+    "state": "shipped",
+    "terminal": true,
+    "title": "expand rollbackBeatState unit tests in memory-manager-commands-coverage",
+    "type": "work",
+    "updated_at": "2026-03-14T15:27:18.578958Z"
+  }
+}

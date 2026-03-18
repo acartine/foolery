@@ -1,0 +1,16 @@
+{
+  "event_id": "019ce182-7f93-7142-bd75-61a2f125874c",
+  "occurred_at": "2026-03-12T10:05:51.891827Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.created",
+  "data": {
+    "body": "Strip the foolery prompt command, installer/setup prompt-guidance helpers, and any AGENTS.md/CLAUDE.md update flow from scripts/install.sh and scripts/setup.sh so the CLI no longer offers or performs prompt file mutations.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Remove prompt-guidance commands from launcher and setup",
+    "type": "work"
+  }
+}

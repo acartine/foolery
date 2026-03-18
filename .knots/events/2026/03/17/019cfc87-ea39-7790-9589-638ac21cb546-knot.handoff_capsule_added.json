@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc87-ea39-7790-9589-638ac21cb546",
+  "occurred_at": "2026-03-17T16:01:31.705452Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the remaining bulk terminal-state reset bug in the queue multi-select. The Set state select now remounts after apply so shipped, abandoned, or deferred can be applied repeatedly in consecutive bulk actions. Added a focused smoke assertion covering the reset hook-up. Validation in /private/tmp/foolery-62fa-impl-78352: bun run lint passed with existing repo warnings only, bunx tsc --noEmit passed, bun run test passed, and bun run build passed.",
+    "datetime": "2026-03-17T16:00:52Z",
+    "entry_id": "019cfc87-ea39-7790-9589-637dfd13230a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced07-a83a-7d71-8fe7-a7479ca96d98",
+  "occurred_at": "2026-03-14T15:47:07.962193Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Deferred implementation because foolery-742c must create HistoryDebugPanel before AgentHistoryView can wire the Debug button, panel state, and split layout around a concrete component contract.",
+    "datetime": "2026-03-14T15:46:21Z",
+    "entry_id": "019ced07-a83a-7d71-8fe7-a731bde94cd1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-14"
+  }
+}

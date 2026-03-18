@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdcf6-62c5-7670-ac3b-534d7a5d6e2b",
+  "occurred_at": "2026-03-11T12:54:20.613748Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned a TTY-aware installer UX refresh centered on scripts/install.sh and scripts/agent-wizard.sh, with plain-text fallback, Bash 3.2 safety, heredoc escaping checks, and syntax plus smoke-test validation.",
+    "datetime": "2026-03-11T12:53:44Z",
+    "entry_id": "019cdcf6-62c5-7670-ac3b-53397b08b586",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

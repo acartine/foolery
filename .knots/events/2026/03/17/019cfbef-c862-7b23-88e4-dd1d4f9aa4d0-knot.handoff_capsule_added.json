@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfbef-c862-7b23-88e4-dd1d4f9aa4d0",
+  "occurred_at": "2026-03-17T13:15:21.570592Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Approved: Dialog widened from w-[80vw]/max-w-[80vw] to w-[95vw]/max-w-[1600px]. Change is minimal and focused. Contract test added. Quality gates passed per implementation notes.",
+    "datetime": "2026-03-17T00:00:00Z",
+    "entry_id": "019cfbef-c862-7b23-88e4-dd0098c05d3c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

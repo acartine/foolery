@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce226-d87a-75d2-9c85-af9c01ccf9a3",
+  "occurred_at": "2026-03-12T13:05:22.554285Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved: commit e83c56dc0f01 is tagged on the knot and remains reachable from main. The shipped diff is test-only (src/lib/__tests__/terminal-manager-knots-next-guard.test.ts), and main still contains the requested pre-dispatch rollback edge case coverage for rollbackBeatState throwing, post-rollback non-claimable beats, and already-claimable queue-state beats. CI succeeded for the shipped commit (run 23002474073) and later main remained green (run 23002648048). The only failing workflow was Changesets on run 23002474080, which errors with 'There is no .changeset directory in this project' and also fails on unrelated later main pushes, so this is a pre-existing repo release-workflow issue rather than a regression from this test-only change.",
+    "datetime": "2026-03-12T13:03:49Z",
+    "entry_id": "019ce226-d87a-75d2-9c85-af8c6b01cffc",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

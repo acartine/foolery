@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8c-49b4-7f23-aaf7-ef4059280c8f",
+  "occurred_at": "2026-03-14T18:12:00.052763Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review rejected. Two issues: (1) docs/audit/beats-usage-inventory.md and docs/audit/workflow-operations-map.md incorrectly ADD checkPromptGuidance() references — this function does not exist in the codebase and the knot goal is to remove prompt guidance, not document it. Remove these added lines. (2) Commit bundles ~1900 lines of unrelated changes (history-debug-panel deletion, changesets.yml workflow, screenshot swaps, README overhaul, unrelated test deletions). The actual prompt-guidance removal in doctor.ts and PROMPT*.md deletions is correct.",
+    "datetime": "2026-03-14T22:00:00Z",
+    "entry_id": "019ced8c-49b4-7f23-aaf7-ef302052d5a2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

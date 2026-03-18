@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd925-87f8-75d3-bbad-3d1a0c74afb0",
+  "occurred_at": "2026-03-10T19:07:21.464747Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. rollbackBeatState now uses kno rollback with quoted knot IDs, matching the knot description. 2. Added rollback coverage tests that assert kno rollback and note behavior; the focused test file passed. 3. Implementation review is blocked because the full lint sanity gate could not be verified: bun run lint was still running after 60 seconds and had to be terminated, so the knot is returned to ready_for_implementation until lint can be made to pass cleanly in review.",
+    "datetime": "2026-03-10T19:07:07Z",
+    "entry_id": "019cd925-87f8-75d3-bbad-3d08737dd344",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

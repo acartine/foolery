@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc89-380f-7a40-b5be-9d81f5598b5e",
+  "occurred_at": "2026-03-17T16:02:57.167454Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete for replacing single ReTake button with Stage + Retake Now buttons. Stage applies state change + notes only. Retake Now does the same then immediately starts a terminal session (Take!). Changes in retake-dialog.tsx (new mode param on onConfirm, two buttons) and retakes-view.tsx (import startSession/terminal store, branch on mode in mutation onSuccess). Low-medium complexity, 2 files.",
+    "datetime": "2026-03-17T12:00:00Z",
+    "entry_id": "019cfc89-380f-7a40-b5be-9d78ee52b167",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

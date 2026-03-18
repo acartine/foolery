@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd8b-d9f9-7e01-94e7-4ec74c8e28b8",
+  "occurred_at": "2026-03-11T15:37:35.993961Z",
+  "knot_id": "foolery-c38b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment blocked by merge conflict when merging work/foolery-c38b into origin/main (63c9ce7d). The only conflicted file is scripts/install.sh in usage(), where main's colorized help output overlaps this knot's prompt help and flag changes. Rebase or resolve that help-text conflict, rerun shipment, then verify CI on the resulting main commit.",
+    "datetime": "2026-03-11T15:37:25Z",
+    "entry_id": "019cdd8b-d9f9-7e01-94e7-4ebb73a7d0bd",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

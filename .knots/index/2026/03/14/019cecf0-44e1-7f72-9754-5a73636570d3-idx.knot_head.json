@@ -1,0 +1,19 @@
+{
+  "event_id": "019cecf0-44e1-7f72-9754-5a73636570d3",
+  "occurred_at": "2026-03-14T15:21:35.201276Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e01f",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Remove prompt-guidance checks and fixes from doctor",
+    "type": "work",
+    "updated_at": "2026-03-14T15:21:35.201276Z"
+  }
+}

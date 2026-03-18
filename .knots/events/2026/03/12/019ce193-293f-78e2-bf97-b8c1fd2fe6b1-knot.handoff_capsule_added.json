@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce193-293f-78e2-bf97-b8c1fd2fe6b1",
+  "occurred_at": "2026-03-12T10:24:03.90338Z",
+  "knot_id": "foolery-e01f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Removed all prompt-guidance code from doctor.ts: constants, checkPromptGuidance function, prompt-guidance case in applyFix, readPromptTemplate, promptProfileTemplateFor, fileExists helper, and PROMPT_GUIDANCE_FIX_OPTIONS. Kept listWorkflowsSafe and fallbackPromptProfileForRepoPath (used by checkMemoryImplementationCompatibility). Updated all 3 test files: doctor.test.ts, doctor-coverage.test.ts, doctor-applyfix.test.ts. Stream event count reduced from 13 to 12. All quality gates pass (lint, typecheck, 1999 tests, build). Commit 1a591cd2 pushed to origin/main.",
+    "datetime": "2026-03-12T11:00:00Z",
+    "entry_id": "019ce193-293f-78e2-bf97-b8b60867a319",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

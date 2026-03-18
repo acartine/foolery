@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce21f-a773-7193-8b5e-7f1400ba6374",
+  "occurred_at": "2026-03-12T12:57:31.251663Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected. (1) build-runtime-artifact.sh still ships PROMPT.md — description requires stopping prompt template shipping. (2) setup.sh still has _prompt_guidance_wizard and PROMPT.md references. (3) ~840 lines of unrelated rollback/step-failure tests deleted (execution-backend-rollback.test.ts, terminal-manager-step-failure-rollback.test.ts, pre-dispatch edge cases, rollbackBeatState edge cases) — these test critical rollback behavior, not prompt-guidance. (4) doctor.ts line 876 comment changed FROM stale-parent TO prompt-guidance, introducing a new reference instead of removing one. (5) Unused imports added to doctor test files.",
+    "datetime": "2026-03-12T12:57:31.251663Z",
+    "entry_id": "019ce21f-a773-7193-8b5e-7f0a1ddd70f4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

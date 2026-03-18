@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd1f-b7ae-72a3-a22a-b9368bcf74d9",
+  "occurred_at": "2026-03-11T13:39:29.326106Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Needs changes. The prompt-profile normalization looks correct and targeted doctor tests pass (93/93), but applyFix('prompt-guidance') still replaces only the first managed guidance block because the managed-block regex is non-global and the code performs a single replace. That means files already containing duplicate FOOLERY guidance blocks are not collapsed to one canonical block, which does not satisfy the requested neat/clean fix. Add a duplicate-block regression test and update the fix path to replace the first managed block with the canonical block while removing subsequent duplicates.",
+    "datetime": "2026-03-11T13:39:12Z",
+    "entry_id": "019cdd1f-b7ae-72a3-a22a-b92c7cc3a5a9",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

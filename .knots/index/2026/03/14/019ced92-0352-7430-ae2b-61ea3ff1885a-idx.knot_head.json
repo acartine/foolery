@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced92-0352-7430-ae2b-61ea3ff1885a",
+  "occurred_at": "2026-03-14T18:18:15.241002Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e7a3",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Integrate HistoryDebugPanel into AgentHistoryView",
+    "type": "work",
+    "updated_at": "2026-03-14T18:18:15.241002Z"
+  }
+}

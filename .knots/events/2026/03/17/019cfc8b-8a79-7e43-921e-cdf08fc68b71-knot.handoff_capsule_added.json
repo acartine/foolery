@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8b-8a79-7e43-921e-cdf08fc68b71",
+  "occurred_at": "2026-03-17T16:05:29.337176Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review rejected: the bulk terminal-state Select dropdown works for one-shot use but the reset fix (commit 6a4d2c1b 'Fix bulk state dropdown reset') was not included in merge 217ae275 to main. The fix adds useState + key-based remount so the Select resets after each apply, allowing the same state to be applied consecutively. This was the exact bug flagged by the user. Action: cherry-pick or re-apply 6a4d2c1b and merge to main, then verify the test assertions for key={bulkStateSelectKey} pass.",
+    "datetime": "2026-03-17T17:10:00+01:00",
+    "entry_id": "019cfc8b-8a79-7e43-921e-cdeb8cbd59c1",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

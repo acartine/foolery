@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced95-a465-71d2-bf68-bfa6953ec2f7",
+  "occurred_at": "2026-03-14T18:22:13.09374Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-79f6 into main (commit a36d4159026e). Pushed to origin/main. CI passed (run 23093656242): lint, tests, build all green. Coverage annotations are pre-existing warnings, not failures.",
+    "datetime": "2026-03-14T18:22:00Z",
+    "entry_id": "019ced95-a465-71d2-bf68-bf91ecf22d6b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd9c-4f27-78b3-9964-019c6394dccf",
+  "occurred_at": "2026-03-11T15:55:34.56716Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Polished `foolery --help` with a clearer command palette: lifecycle commands are green, setup/update commands blue, diagnostics/help yellow, and destructive commands red, with dimmed descriptions when color is enabled. Added FORCE_COLOR support so help styling can be exercised without a TTY, and added src/lib/__tests__/help-cli.test.ts to cover both plain-text and ANSI-colored output. Quality gates: bun run lint (118 pre-existing warnings, 0 errors), bunx tsc --noEmit, bun run test (2012 passed, 11 skipped, 42 todo), bun run build (success). Feature branch: work/foolery-76ec-impl. Feature commit: 3b1290788d0b.",
+    "datetime": "2026-03-11T15:55:00Z",
+    "entry_id": "019cdd9c-4f27-78b3-9964-018c9b48c990",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "v1"
+  }
+}

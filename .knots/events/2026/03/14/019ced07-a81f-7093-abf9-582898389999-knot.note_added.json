@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced07-a81f-7093-abf9-582898389999",
+  "occurred_at": "2026-03-14T15:47:07.935187Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Blocked by dependency foolery-742c: HistoryDebugPanel component/state contract is not implemented yet, so AgentHistoryView integration cannot be completed safely in this single-step claim.",
+    "datetime": "2026-03-14T15:47:07.935187Z",
+    "entry_id": "019ced07-a81f-7093-abf9-581c558e3a12",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

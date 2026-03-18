@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8f-3dee-7ed2-92c2-7b936aeaea91",
+  "occurred_at": "2026-03-17T16:09:31.885983Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review rejected: the key-based remount fix (worktree-foolery-62fa-reset-fix branch, commit 2ffbad1a) has not been merged to main. On main, the Set state Select (filter-bar.tsx:170-183) does not remount after applying a value, so selecting the same terminal state twice consecutively fails silently. The fix branch has the correct implementation (useState + key prop + setBulkStateSelectKey increment) and updated tests. Action needed: merge worktree-foolery-62fa-reset-fix into main and verify quality gates pass.",
+    "datetime": "2026-03-17T18:00:00Z",
+    "entry_id": "019cfc8f-3dee-7ed2-92c2-7b84421e5812",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

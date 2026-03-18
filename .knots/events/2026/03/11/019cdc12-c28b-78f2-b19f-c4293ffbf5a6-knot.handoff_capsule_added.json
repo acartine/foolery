@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc12-c28b-78f2-b19f-c4293ffbf5a6",
+  "occurred_at": "2026-03-11T08:45:42.923552Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete for rollback behavior tests. Created 4 child knots: (1) e991 — expand rollbackBeatState unit tests (error paths, beads path, special chars), (2) 38a0 — pre-dispatch rollback edge cases (failure, reload fail, human-owned, queue/terminal states), (3) 99a8 — step-failure rollback + invariant enforcement tests (take-loop integration), (4) d164 — execution-backend rollbackIteration tests. ~22 new test cases across 4 files. No source code changes — test-only.",
+    "datetime": "2026-03-11T08:50:00Z",
+    "entry_id": "019cdc12-c28b-78f2-b19f-c4121ffbcd00",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

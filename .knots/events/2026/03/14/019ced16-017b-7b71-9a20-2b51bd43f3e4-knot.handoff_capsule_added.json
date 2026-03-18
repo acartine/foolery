@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced16-017b-7b71-9a20-2b51bd43f3e4",
+  "occurred_at": "2026-03-14T16:02:48.315455Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the all-repositories fix on branch foolery-121b. RepoSwitcher now bootstraps repo selection only once so selecting All Repositories remains sticky instead of being overwritten on registry refresh. AppHeader routes both the add button and Shift+N through a controlled repo chooser when multiple repos are available and no repo is selected, forcing an explicit repo choice before opening CreateBeatDialog. Added source-contract tests covering the one-shot repo bootstrap and chooser-driven create flow. Quality gates passed in /Users/cartine/foolery-121b: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build. Commit: 07a6d6a1f190.",
+    "datetime": "2026-03-14T16:01:58Z",
+    "entry_id": "019ced16-017b-7b71-9a20-2b478150ee3d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

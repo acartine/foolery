@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fc-0bb5-7f03-8b85-a2deae248825",
+  "occurred_at": "2026-03-12T12:18:37.621784Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "REJECTED: No code changes found. Implementation step completed in ~14 seconds with no commits or handoff. Existing tests in terminal-manager-knots-next-guard.test.ts are pre-existing, not new. Required: edge case tests for pre-dispatch rollback (rollbackBeatState failure, already-in-queue-state, backend.get post-rollback failure).",
+    "datetime": "2026-03-12T12:30:00Z",
+    "entry_id": "019ce1fc-0bb5-7f03-8b85-a2c998eafc49",
+    "model": "claude-opus-4-6",
+    "username": "system",
+    "version": "opus-4.6"
+  }
+}

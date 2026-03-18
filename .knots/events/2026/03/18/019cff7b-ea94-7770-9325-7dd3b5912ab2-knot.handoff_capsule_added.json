@@ -1,0 +1,15 @@
+{
+  "event_id": "019cff7b-ea94-7770-9325-7dd3b5912ab2",
+  "occurred_at": "2026-03-18T05:47:17.012305Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Changes in knots-backend.ts and beads-backend.ts add includeDescendantsOfQueueParents to phase-filtered views (queued/in_action), correctly walking parent chains recursively with memoization to include all descendants of queue-state parents regardless of child state. Tests cover: basic parent-child inclusion, deep nesting, in_action filter, and specific-state-filter exclusion. All quality gates pass: 2068 tests green, typecheck clean, lint 0 errors. Minor note: the helper is duplicated across both backends but this is acceptable given the separate data models.",
+    "datetime": "2026-03-18T06:48:00Z",
+    "entry_id": "019cff7b-ea94-7770-9325-7dcbd6424fe9",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

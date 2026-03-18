@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced17-f0d7-7430-890b-0fd60e051fc1",
+  "occurred_at": "2026-03-14T16:04:55.122725Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-742c",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Create HistoryDebugPanel component with form and embedded terminal",
+    "type": "work",
+    "updated_at": "2026-03-14T16:04:55.122725Z"
+  }
+}

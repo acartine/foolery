@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcbc-dec0-7a61-95cc-ad6bf8098fdc",
+  "occurred_at": "2026-03-17T16:59:22.176664Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented repo-scoped retake session lookup by extracting scoped key/index helpers from RetakesView, wiring existing-running and rolling-ancestor checks through them, and adding behavior tests that cover duplicate beat IDs across repos. Validation: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-17T16:58:38Z",
+    "entry_id": "019cfcbc-dec0-7a61-95cc-ad52a710d21b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03"
+  }
+}

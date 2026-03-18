@@ -1,0 +1,19 @@
+{
+  "event_id": "019ce21d-244d-7e82-a146-5f67102c1012",
+  "occurred_at": "2026-03-12T12:54:46.593745Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-38a0",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "add pre-dispatch rollback edge case tests to terminal-manager-knots-next-guard",
+    "type": "work",
+    "updated_at": "2026-03-12T12:54:46.593745Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fc-1e2f-79d0-8870-eccfdc96e02e",
+  "occurred_at": "2026-03-12T12:18:42.351209Z",
+  "knot_id": "foolery-d164",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "REJECTED: No code changes found. Implementation step completed in ~4 seconds with no commits or handoff. No execution-backend test file exists. Required: 6 test cases per plan notes — (1) kind=note with knots repo happy path, (2) kind=noop no note appended, (3) unknown lease returns NOT_FOUND, (4) updateKnot fails with early return and lease retained, (5) kind=note with falsy note skips block, (6) kind=note on non-knots repo skips block. Source: execution-backend.ts:301-317 rollbackIteration method.",
+    "datetime": "2026-03-12T12:30:00Z",
+    "entry_id": "019ce1fc-1e2f-79d0-8870-ecb0c40bb1ab",
+    "model": "claude-opus-4-6",
+    "username": "system",
+    "version": "opus-4.6"
+  }
+}

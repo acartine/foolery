@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf08a-c918-7a63-85a6-861cab771756",
+  "occurred_at": "2026-03-15T08:09:13.240949Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Merge commit dde1d33933d4 is live on main. CI green (both CI and Coverage Badge workflows succeeded). All 5 rollback tests pass locally: non-zero exit rollback, take-loop step failure rollback, max-iterations rollback (the previously missing coverage), post-rollback invariant check, and concurrent abort during rollback. The max-iterations test at line 273 properly exercises the take-loop MAX_TAKE_ITERATIONS branch by driving 10 iterations and verifying rollbackBeatState is called. No regressions detected.",
+    "datetime": "2026-03-15T09:09:00Z",
+    "entry_id": "019cf08a-c918-7a63-85a6-8607a86b120f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

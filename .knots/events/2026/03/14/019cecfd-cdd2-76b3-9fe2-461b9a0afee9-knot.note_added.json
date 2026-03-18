@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfd-cdd2-76b3-9fe2-461b9a0afee9",
+  "occurred_at": "2026-03-14T15:36:22.226492Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review requested changes on 2026-03-14: src/lib/__tests__/terminal-manager-step-failure-rollback.test.ts:273 is labeled as a max-iterations rollback test, but the body explicitly exercises the initial non-zero child exit path instead. The actual max-iterations branch in src/lib/terminal-manager.ts:1225-1231 remains untested, so the required rollback coverage is incomplete.",
+    "datetime": "2026-03-14T15:36:22.226492Z",
+    "entry_id": "019cecfd-cdd2-76b3-9fe2-46080af50492",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

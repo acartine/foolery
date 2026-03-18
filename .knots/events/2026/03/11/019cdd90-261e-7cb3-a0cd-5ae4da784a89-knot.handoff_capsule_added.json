@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd90-261e-7cb3-a0cd-5ae4da784a89",
+  "occurred_at": "2026-03-11T15:42:17.630547Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified: commit 63c9ce7d5059 is on origin/main. CI check passed (success), Coverage check passed (success). Changesets workflow failure is a known pre-existing issue (no .changeset directory, removed in commit 5f780695) and is unrelated to this knot. Feature branch feat/help-colors was previously merged and pushed.",
+    "datetime": "2026-03-11T15:45:00Z",
+    "entry_id": "019cdd90-261e-7cb3-a0cd-5adec7699e2c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

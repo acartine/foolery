@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc15-d961-7e53-ab51-d4e33e0ec3e6",
+  "occurred_at": "2026-03-11T08:49:05.377627Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Added a dedicated beats search view flow: Enter in the shared search bar now routes to /beats?view=search&q=..., clearing q exits search view cleanly, header/page parsing now recognize view=search, and regression tests cover parsing plus URL generation. Validation: bun run lint (pre-existing warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-11T08:48:34Z",
+    "entry_id": "019cdc15-d961-7e53-ab51-d4d12bd2080b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced04-8ca0-7843-b439-516a3a291169",
+  "occurred_at": "2026-03-14T15:43:44.288404Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Renamed misleading test 'max iterations on take-loop triggers enforceQueueTerminalInvariant with rollback' to 'non-zero exit on initial take-loop child triggers enforceQueueTerminalInvariant rollback' since it was testing the non-zero exit path, not max-iterations. Added a new test that drives the take-loop through all 10 iterations (MAX_TAKE_ITERATIONS) with code-0 exits, so the max-iterations branch at terminal-manager.ts:1224-1234 is actually exercised. All 6 tests pass. Branch: feat/705e-max-iterations-test.",
+    "datetime": "2026-03-14T16:43:00Z",
+    "entry_id": "019ced04-8ca0-7843-b439-5153aec11da0",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

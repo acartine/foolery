@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd928-7378-79a1-b88a-b5f27ac6fc5a",
+  "occurred_at": "2026-03-10T19:10:32.824973Z",
+  "knot_id": "foolery-02d0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "1. Beat detail does not meet the requested display contract yet: getDisplayedBeatId returns beat?.id ?? beatId, so the header chip still shows and copies the raw stored id instead of the natural beat id; aliases are normalized, but the primary id path is not. 2. The required sanity gates do not all pass: bunx tsc --noEmit and bun run build succeeded, focused beat-detail tests passed, but bun run test failed in src/lib/__tests__/knots-backend.test.ts:551 with expected 8792 but received undefined for hierarchical dotted alias parent inference. 3. Because acceptance criteria are not fully met and the full test gate is red, this implementation cannot be approved for shipment.",
+    "datetime": "2026-03-10T19:10:19Z",
+    "entry_id": "019cd928-7378-79a1-b88a-b5ef9bdb20f2",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfd-f7fd-7b82-8b64-5b81cb2fa4a3",
+  "occurred_at": "2026-03-14T15:36:33.021657Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment attempt blocked after confirming origin/main at 26dfbd5b3d18. Remote CI was not green: workflow 'Changesets' failed because the repository has no .changeset directory ('There is no .changeset directory in this project'). No merge was required because the approved implementation was already on main. Returned knot to ready_for_implementation for follow-up on the failing release workflow.",
+    "datetime": "2026-03-14T16:01:00+01:00",
+    "entry_id": "019cecfd-f7fd-7b82-8b64-5b7281eb4f5e",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

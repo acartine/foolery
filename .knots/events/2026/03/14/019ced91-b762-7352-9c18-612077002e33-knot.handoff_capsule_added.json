@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced91-b762-7352-9c18-612077002e33",
+  "occurred_at": "2026-03-14T18:17:55.810816Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Clean implementation: deleted PROMPT.md, PROMPT_BEATS.md, PROMPT_KNOTS.md template files. Removed fallbackPromptProfileForRepoPath function from doctor.ts and its usage in checkMemoryImplementationCompatibility (now just reports 'could not enumerate workflows' without fallback profile reference). Removed CLAUDE.md/AGENTS.md lines from docs/audit/beats-usage-inventory.md. All quality gates pass (lint, tsc, 2037 tests, build). Branch work/foolery-79f6 pushed. No unrelated changes bundled.",
+    "datetime": "2026-03-14T19:20:00Z",
+    "entry_id": "019ced91-b762-7352-9c18-61148d41bee7",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

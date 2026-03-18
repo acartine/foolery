@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecfa-e74c-76a0-81b1-3478eac808f5",
+  "occurred_at": "2026-03-14T15:33:12.140634Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: code already merged to main (527d1b65d14b) and pushed to origin. CI workflow passed on main. Changesets workflow failure is unrelated (release management). Tagged with merge commit and feature commit hashes.",
+    "datetime": "2026-03-14T15:45:00Z",
+    "entry_id": "019cecfa-e74c-76a0-81b1-346bc43c101c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

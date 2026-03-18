@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd92-4bfc-7f40-a170-39902f7d5db7",
+  "occurred_at": "2026-03-11T15:44:38.396615Z",
+  "knot_id": "foolery-c38b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commit 8081c3a4b74b is on origin/main with parent 63c9ce7d, (2) CI run 22960997684 passed (status=completed, conclusion=success), (3) no invariants defined, (4) all three features implemented correctly: --remove strips guidance marker blocks via awk, --dry-run previews without writes, --help/-h shows prompt_usage(). Tests in prompt-cli.test.ts cover all three paths. README updated with documentation. Both commits tagged: commit:f846d4e9458b (implementation), commit:8081c3a4b74b (merge).",
+    "datetime": "2026-03-11T17:00:00+01:00",
+    "entry_id": "019cdd92-4bfc-7f40-a170-398863aed47d",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

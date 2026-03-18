@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced93-010e-7910-9d07-b35190b6b644",
+  "occurred_at": "2026-03-14T18:19:20.206942Z",
+  "knot_id": "foolery-e7a3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Feature branch work/history-debug-integration was already merged to main (commit 500874fb). Main pushed to origin. CI green on remote (both CI and Coverage Badge workflows passed). Tagged knot with commit:500874fb1e6c.",
+    "datetime": "2026-03-14T18:30:00Z",
+    "entry_id": "019ced93-010e-7910-9d07-b34d20261c40",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce17f-c16a-75c0-8163-5bc1f3e9ede9",
+  "occurred_at": "2026-03-12T10:02:52.1386Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Acceptance Criteria:\nno \"prompts\" in the cli, no prompt checking in doctor or doctor --fix, nothing in the install.",
+    "datetime": "2026-03-12T10:02:52.1386Z",
+    "entry_id": "019ce17f-c16a-75c0-8163-5bbd6f8f513e",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce241-b831-72c0-9440-3dfe5cca3815",
+  "occurred_at": "2026-03-12T13:34:43.76193Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved. HEAD and origin/main are both 8157f20dfecc, CI run 23004423966 succeeded for that SHA, and knot commit tags cover b52aa63bcec4, 3d8593f7b3f1, 99412107791d, and 8157f20dfecc. README/docs, scripts/build-runtime-artifact.sh, and the current shipped tests no longer reference prompt guidance; prompt-cli.test.ts is no longer present. One untracked local file (agent-metadata-normalization.md) exists in this checkout, but tracked files match origin/main for the shipped tree.",
+    "datetime": "2026-03-12T13:34:24Z",
+    "entry_id": "019ce241-b831-72c0-9440-3de26dc68a32",
+    "model": "gpt-5",
+    "username": "Andrew Cartine",
+    "version": "gpt-5"
+  }
+}

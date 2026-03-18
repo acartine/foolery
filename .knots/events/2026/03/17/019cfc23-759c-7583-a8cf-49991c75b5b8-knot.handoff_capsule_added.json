@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc23-759c-7583-a8cf-49991c75b5b8",
+  "occurred_at": "2026-03-17T14:11:48.252254Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan approved. Reviewed search-bar.tsx and app-header.tsx — the form container at search-bar.tsx:50 lacks a min-width and the parent at app-header.tsx:360 already uses flex-wrap. Adding min-w-[20ch] to the search container will enforce the 20-character minimum and trigger wrapping correctly. Test strategy is adequate.",
+    "datetime": "2026-03-17T00:00:00Z",
+    "entry_id": "019cfc23-759c-7583-a8cf-4989a6eb304f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

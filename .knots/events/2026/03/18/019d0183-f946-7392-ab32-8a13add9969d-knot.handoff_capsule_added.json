@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0183-f946-7392-ab32-8a13add9969d",
+  "occurred_at": "2026-03-18T15:15:19.494559Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Rejected in implementation_review. The submitted code does not meet the knot requirements. Violations: 1. [src/lib/agent-outcome-stats.ts] still uses ~/.config/foolery/logs for production writes instead of always storing detailed agent success-rate data in the application's working directory. 2. [src/lib/terminal-manager.ts] still counts same-step queue states and terminal states as successful iterations when exit code is 0, which exceeds the specified success definition. Validation completed during review: bun install --frozen-lockfile passed, bunx tsc --noEmit passed, bun run test passed, bun run build passed. bun run lint . was started but did not complete during the review window.",
+    "datetime": "2026-03-18T15:15:10Z",
+    "entry_id": "019d0183-f946-7392-ab32-8a04c1fa97ac",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex"
+  }
+}

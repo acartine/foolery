@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd8f-2b51-73f1-8d9a-71335db7108f",
+  "occurred_at": "2026-03-11T15:41:13.425537Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review blocked: commit 63c9ce7d5059 is on origin/main and tagged, but GitHub Actions run 22960783522 for that SHA has a failed Changesets workflow because the repository no longer contains a .changeset directory. CI and Coverage Badge succeeded, but release automation did not complete successfully.",
+    "datetime": "2026-03-11T15:40:39Z",
+    "entry_id": "019cdd8f-2b51-73f1-8d9a-712cec852cbf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

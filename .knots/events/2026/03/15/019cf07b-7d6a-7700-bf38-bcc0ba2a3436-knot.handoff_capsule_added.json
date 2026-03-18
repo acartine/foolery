@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf07b-7d6a-7700-bf38-bcc0ba2a3436",
+  "occurred_at": "2026-03-15T07:52:30.826042Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented conversation selection for the history debugger in AgentHistoryView so the debug pane targets the user-selected session instead of always binding to the first session. Added a conversation selector above the log view, preserved selection across debug panel toggles, and expanded the debug integration test to cover multi-session selection. Sanity gates passed in /Users/cartine/foolery-wt-foolery-70ec: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Branch: work/foolery-70ec. Commit: 294904cd55af.",
+    "datetime": "2026-03-15T07:51:53Z",
+    "entry_id": "019cf07b-7d6a-7700-bf38-bcb13426ddc6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

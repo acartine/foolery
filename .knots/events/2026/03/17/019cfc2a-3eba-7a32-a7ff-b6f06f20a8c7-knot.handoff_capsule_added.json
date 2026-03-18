@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc2a-3eba-7a32-a7ff-b6f06f20a8c7",
+  "occurred_at": "2026-03-17T14:19:12.954103Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commit 950d194bf6e3 is on main, (2) min-w-[20ch] applied to both SearchBarInner form and Suspense fallback in search-bar.tsx, (3) app-header.tsx flex-wrap layout preserved with order-3/basis-full for mobile wrapping, (4) layout contract test covers the new class contract (7/7 passing), (5) no invariants to check, (6) only search-bar.tsx and beats-page-layout.test.ts modified — no unrelated changes.",
+    "datetime": "2026-03-17T15:19:00Z",
+    "entry_id": "019cfc2a-3eba-7a32-a7ff-b6e99b190774",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

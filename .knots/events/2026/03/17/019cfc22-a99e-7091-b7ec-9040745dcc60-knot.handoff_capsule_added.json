@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc22-a99e-7091-b7ec-9040745dcc60",
+  "occurred_at": "2026-03-17T14:10:56.030657Z",
+  "knot_id": "foolery-7171",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan recorded for the header search-width fix. Likely change set is confined to src/components/search-bar.tsx plus a small header/layout contract test update. Implement by enforcing a 20ch minimum width on the search container while preserving the header's existing flex-wrap behavior so the search bar and Add button wrap instead of compressing.",
+    "datetime": "2026-03-17T14:10:27Z",
+    "entry_id": "019cfc22-a99e-7091-b7ec-90334dd174a5",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

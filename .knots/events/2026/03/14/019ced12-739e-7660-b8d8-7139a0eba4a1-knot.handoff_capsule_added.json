@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced12-739e-7660-b8d8-7139a0eba4a1",
+  "occurred_at": "2026-03-14T15:58:55.390296Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. Root cause diagnosis verified: repo-switcher effect at lines 34-44 re-selects a repo whenever activeRepo becomes null, undoing the All Repositories selection. Shift+N shortcut bypass confirmed at app-header line 99. Existing aggregation paths and shouldChooseRepo dropdown already work correctly. Hydration guard approach is sound; test strategy covers regression risk. No invariant violations. Ready for implementation.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019ced12-739e-7660-b8d8-712be9faa0eb",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd2f-e24f-73e1-a1df-251857f2b53d",
+  "occurred_at": "2026-03-11T13:57:08.81525Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review APPROVED. All 3 commits verified on main (185c1deab415, df74e15fb326, 5797d21b303c). TSC clean, 63/63 doctor tests pass on clean worktree at 5797d21b. Fix correctly: (1) uses global regex to find/collapse duplicate managed guidance blocks, (2) normalizes legacy profile IDs like beads-coarse-human-gated→semiauto bidirectionally, (3) has regression tests for duplicate blocks and legacy alias normalization. No regressions detected.",
+    "datetime": "2026-03-11T15:00:00+01:00",
+    "entry_id": "019cdd2f-e24f-73e1-a1df-250f8fb7471e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

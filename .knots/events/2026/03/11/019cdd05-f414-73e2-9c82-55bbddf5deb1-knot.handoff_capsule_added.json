@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd05-f414-73e2-9c82-55bbddf5deb1",
+  "occurred_at": "2026-03-11T13:11:20.852634Z",
+  "knot_id": "foolery-7afc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-7afc (commit e483701c2e76) to main via fast-forward. Pushed to origin/main. CI green (CI + Coverage Badge pass; Changesets failure is pre-existing — missing .changeset dir, same on prior commit). Changes: color/emoji polish for install.sh, agent-wizard.sh, setup.sh with TTY-aware formatting, NO_COLOR/CI gates, and UTF-8 locale-gated emoji with plain-text fallbacks.",
+    "datetime": "2026-03-11T13:12:00Z",
+    "entry_id": "019cdd05-f414-73e2-9c82-55a6755d7910",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

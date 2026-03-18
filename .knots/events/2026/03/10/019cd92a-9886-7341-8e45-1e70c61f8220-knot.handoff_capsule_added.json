@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd92a-9886-7341-8e45-1e70c61f8220",
+  "occurred_at": "2026-03-10T19:12:53.382007Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Validated the rollback command migration to use 'kno rb <id>' in rollbackBeatState. Feature branch commit 2df43d01ca25 is pushed; targeted vitest and TypeScript checks passed.",
+    "datetime": "2026-03-10T19:12:37Z",
+    "entry_id": "019cd92a-9886-7341-8e45-1e6059fa037d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

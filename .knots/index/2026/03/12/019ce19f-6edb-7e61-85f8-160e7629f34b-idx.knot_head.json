@@ -1,0 +1,19 @@
+{
+  "event_id": "019ce19f-6edb-7e61-85f8-160e7629f34b",
+  "occurred_at": "2026-03-12T10:37:28.155906Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9c9a",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Clean prompt-guidance docs, runtime packaging, and tests",
+    "type": "work",
+    "updated_at": "2026-03-12T10:37:28.155906Z"
+  }
+}

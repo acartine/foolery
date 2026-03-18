@@ -1,0 +1,22 @@
+{
+  "event_id": "019ced12-7aa0-7422-ac75-7403ce12523f",
+  "occurred_at": "2026-03-14T15:58:57.184552Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-59fb",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Create history-debug-prompt.ts — prompt builder for debug investigation",
+    "type": "work",
+    "updated_at": "2026-03-14T15:58:57.184552Z"
+  },
+  "precondition": {
+    "profile_etag": "019ced12-4100-7050-8dd5-15c48026994b"
+  }
+}

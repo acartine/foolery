@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce227-2d85-7fe0-bfec-a31f86badebb",
+  "occurred_at": "2026-03-12T13:05:44.325895Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Removed prompt-guidance docs and setup flows, stopped runtime packaging of PROMPT.md, retired the prompt CLI surface, and rewrote CLI/tests accordingly. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build on branch work/foolery-9c9a-impl2.",
+    "datetime": "2026-03-12T13:05:11Z",
+    "entry_id": "019ce227-2d85-7fe0-bfec-a301c0634281",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf0-1157-7893-83bd-92bde3f6a8e3",
+  "occurred_at": "2026-03-14T15:21:22.007255Z",
+  "knot_id": "foolery-d164",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit fa94d4c81ba6 already merged to main and pushed to origin. CI green on remote (CI workflow passed). The 6 rollbackIteration tests for execution-backend are live on main.",
+    "datetime": "2026-03-14T12:00:00Z",
+    "entry_id": "019cecf0-1157-7893-83bd-92af3390f5db",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

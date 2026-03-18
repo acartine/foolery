@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0154-006d-7cc1-a9ff-4fbcd9675e0a",
+  "occurred_at": "2026-03-18T14:22:55.597138Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Revised planning note now covers the missing initial take-loop non-zero-exit path, derives success from observed workflow state transitions instead of unavailable buildTakePrompt claim metadata, and places detailed per-agent outcome stats in a repo-local working-directory file under .foolery-logs. Implementation should centralize close-path handling, roll back active states on error, retry with a different agent when available, and stop only when the failed iteration has no alternate agent.",
+    "datetime": "2026-03-18T14:22:07Z",
+    "entry_id": "019d0154-006d-7cc1-a9ff-4fa408e869e5",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex CLI"
+  }
+}

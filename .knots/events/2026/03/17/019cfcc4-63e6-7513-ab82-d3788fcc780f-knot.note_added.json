@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc4-63e6-7513-ab82-d3788fcc780f",
+  "occurred_at": "2026-03-17T17:07:35.014453Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review rejection: commits c92de1df (Fix repo-scoped retake session lookup) and 3cd8bf7c (scope retake-now repo ancestry lookups) exist only on work/foolery-6428 branch, not on main. Only 51137ecb was shipped to main. The repo-scoping fix for shippingByBeatId, existingRunning, and parentByBeatId is missing from the shipped code. The retake-session-scope.ts module does not exist on main. Previous shipment note incorrectly claimed these fixes were on main.",
+    "datetime": "2026-03-17T17:07:35.014453Z",
+    "entry_id": "019cfcc4-63e6-7513-ab82-d369daa3b46a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

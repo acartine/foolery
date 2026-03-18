@@ -1,0 +1,15 @@
+{
+  "event_id": "019cf07d-922a-7d72-b259-52f784971423",
+  "occurred_at": "2026-03-15T07:54:47.210923Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review. AgentHistoryView now tracks selectedSessionId, renders a conversation selector for multi-session beats, and passes the selected session into HistoryDebugPanel instead of always binding to sessions[0], which satisfies the requirement to debug the user-selected conversation from history. The added integration coverage verifies selector rendering and that the debug panel binds to the selected session. Sanity gates passed in /Users/cartine/foolery-wt-foolery-70ec: bun run lint (existing warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-15T07:54:25Z",
+    "entry_id": "019cf07d-922a-7d72-b259-52ecea06fcb8",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

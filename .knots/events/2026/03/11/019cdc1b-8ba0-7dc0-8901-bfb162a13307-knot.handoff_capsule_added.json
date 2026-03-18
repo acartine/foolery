@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc1b-8ba0-7dc0-8901-bfb162a13307",
+  "occurred_at": "2026-03-11T08:55:18.688431Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: fast-forward merged work/foolery-d08e (a41cfd47) into main and pushed to origin. All quality gates pass on committed code (tsc clean, 135 test files / 2003 tests pass, lint clean). Pre-existing unstaged changes in working tree are unrelated.",
+    "datetime": "2026-03-11T09:55:00-07:00",
+    "entry_id": "019cdc1b-8ba0-7dc0-8901-bfa6b1362771",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

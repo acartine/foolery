@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8d-ed35-7e80-976f-22a8c0922b0f",
+  "occurred_at": "2026-03-17T16:08:05.685002Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete for splitting RetakeDialog button into Stage (state change only) and Retake Now (state change + immediate Take! with full session semantics). Key design decisions: (1) Retake Now replicates all three branches of handleShipBeat — existing session reuse, rolling ancestor blocking, and new session start. (2) If session start fails after state update, the beat remains correctly staged and user can manually Take! later. (3) RetakesView already fetches all beats, providing data needed for ancestor rolling checks. Changes span retake-dialog.tsx (new dual-button UI + props), retakes-view.tsx (new retakeNow mutation with Take! logic), and new/extended tests.",
+    "datetime": "2026-03-17T12:00:00Z",
+    "entry_id": "019cfc8d-ed35-7e80-976f-2291e199fbd7",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

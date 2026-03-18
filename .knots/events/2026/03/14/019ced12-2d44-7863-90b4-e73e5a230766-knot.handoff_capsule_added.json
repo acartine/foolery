@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced12-2d44-7863-90b4-e73e5a230766",
+  "occurred_at": "2026-03-14T15:58:37.380298Z",
+  "knot_id": "foolery-59fb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-59fb-impl to main (commit 58b47489f313). CI green on remote. Typecheck, tests (2021 passing), and build all pass. No new lint errors introduced.",
+    "datetime": "2026-03-14T17:00:00Z",
+    "entry_id": "019ced12-2d44-7863-90b4-e726dee8726f",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

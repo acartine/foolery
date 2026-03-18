@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce224-4500-7c60-a070-a88b9ab96ca8",
+  "occurred_at": "2026-03-12T13:02:33.728281Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit e83c56dc0f01 is on origin/main with CI green (run 23002648048). Changesets workflow failure is a pre-existing repo infrastructure issue (no .changeset directory) unrelated to this test-only change — exempted.",
+    "datetime": "2026-03-12T14:30:00Z",
+    "entry_id": "019ce224-4500-7c60-a070-a87f6a42ac47",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

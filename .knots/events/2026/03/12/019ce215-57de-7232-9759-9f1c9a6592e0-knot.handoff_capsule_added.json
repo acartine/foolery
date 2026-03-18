@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce215-57de-7232-9759-9f1c9a6592e0",
+  "occurred_at": "2026-03-12T12:46:15.518272Z",
+  "knot_id": "foolery-38a0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Added 3 pre-dispatch rollback edge case tests: rollbackBeatState throwing, backend.get returning non-claimable after rollback, and beat already in queue state. All quality gates pass (2020 tests, lint, typecheck).",
+    "datetime": "2026-03-12T13:45:00+01:00",
+    "entry_id": "019ce215-57de-7232-9759-9f0a03a57b02",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf1-eaf1-7f71-8f98-07b343d6e9ec",
+  "occurred_at": "2026-03-14T15:23:23.249699Z",
+  "knot_id": "foolery-90c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Confirmed the Hosted Foolery architecture note exists in the active Obsidian vault at /Users/cartine/obsidian/Mynotes/foolery/Hosted Foolery Cloud Service Architecture.md. Refreshed the note metadata to reflect the current vault path after consolidation and updated the note date to 2026-03-14. Created implementation worktree /private/tmp/foolery-90c5 on branch work/foolery-90c5 to satisfy workflow isolation. No repo-tracked code changes, commit hashes, or tests applied because this beat’s deliverable is the external Obsidian markdown note.",
+    "datetime": "2026-03-14T16:23:13+01:00",
+    "entry_id": "019cecf1-eaf1-7f71-8f98-07a91faf872a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-14"
+  }
+}

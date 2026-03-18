@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcbe-a265-7641-9060-bb26bdeb8bc6",
+  "occurred_at": "2026-03-17T17:01:17.79724Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "[2026-03-17T15:58:23.623606Z] foolery: ReTake: this MOSTLY works but there is a small bug that the pulldown does not reset have the state is applied.  this makes it kind of impossible to apply the same state in bulk twice in a row\n\n[2026-03-17T16:05:16.765578Z] unknown: Implementation review: the dropdown reset fix (commit 6a4d2c1b) was not merged into main. The Select for 'Set state' lacks the key-based remount that allows applying the same terminal state twice in a row. Cherry-pick or re-apply that commit and merge to main.\n\n[2026-03-17T16:09:25.59802Z] unknown: Implementation review: the reset-fix branch (worktree-foolery-62fa-reset-fix, commit 2ffbad1a) is still not merged to main. The 'Set state' Select on main (filter-bar.tsx:170-183) lacks the key-based remount pattern, so selecting the same terminal state consecutively won't fire onValueChange. The fix branch correctly adds useState/key remount and updates the test. This must be merged to main before the feature is complete.\nReTake: still fails to reset pulldown state after the beat states have changed (or not changed)\n\nperhaps a better way to solve this is with an apply button, making all the bulk settings (other than merge and scene) require clicking apply.  then you can reset the pulldowns after apply is clicked.  that also allows for multiple attribute changes in one shot.",
+    "datetime": "2026-03-17T17:01:17.79724Z",
+    "entry_id": "019cfcbe-a265-7641-9060-bb134e78e639",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

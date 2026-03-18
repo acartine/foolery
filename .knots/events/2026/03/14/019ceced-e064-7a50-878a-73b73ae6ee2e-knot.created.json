@@ -1,0 +1,16 @@
+{
+  "event_id": "019ceced-e064-7a50-878a-73b73ae6ee2e",
+  "occurred_at": "2026-03-14T15:18:58.404609Z",
+  "knot_id": "foolery-70ec",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to select a conversation, reveal an interactive terminal on the right in it's own pane, fill out a short form, and ask an agent to debug the problem and plan a fix.\n\nthe form should say:\n\nExpected Outcome\nActual Outcome\n\nAnd when you hit \"debug, should forward a prompt to the agent asking it to investigate why the actual outcome happened instead of the expected, and offer some options that the agent can convert into knots if the user approves.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "History Debugger:  From history view, interactive UI Terminal for debugging.",
+    "type": "work"
+  }
+}

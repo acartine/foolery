@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcc8-3c9f-7df0-a91e-7f536bd28a5e",
+  "occurred_at": "2026-03-17T17:11:47.1035Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. Two-button retake dialog (Stage / Retake Now) correctly implements the spec: Stage applies state+reason only; Retake Now stages then starts a Take session with existing-session, rolling-ancestor, and start-failure guards. Repo-scoping extraction into retake-session-scope.ts (commits 3cd8bf7c, c92de1df) correctly prevents cross-repo beat ID collisions in shipping index, parent index, and terminal lookups. All quality gates pass (lint 0 errors, tsc clean, 2062 tests, build ok). SHIPMENT NOTE: branch diverges from main on filter-bar.tsx/bulk-edit test (missing Apply button merge ee3ef1dc) — cherry-pick only 3cd8bf7c and c92de1df to avoid regressing that feature.",
+    "datetime": "2026-03-17T18:15:00+01:00",
+    "entry_id": "019cfcc8-3c9f-7df0-a91e-7f48b0f18207",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

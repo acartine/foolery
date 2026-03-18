@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7d-88dd-7fb3-8126-16f95fa24345",
+  "occurred_at": "2026-03-11T06:02:43.293007Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review: rollbackBeatState now uses kno rb for knots in src/lib/memory-manager-commands.ts:60, and rollback coverage asserts kno rb plus note behavior in src/lib/__tests__/memory-manager-commands-coverage.test.ts:82. Targeted vitest coverage passed (12/12) and bunx tsc --noEmit exited cleanly.",
+    "datetime": "2026-03-11T06:02:35Z",
+    "entry_id": "019cdb7d-88dd-7fb3-8126-16ecff721906",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

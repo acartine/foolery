@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd91-105a-7bb2-b01e-70004712ae70",
+  "occurred_at": "2026-03-11T15:43:17.594819Z",
+  "knot_id": "foolery-c38b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped work/foolery-c38b on main as 8081c3a4b74b. Resolved the scripts/install.sh usage() merge conflict by keeping the colorized help formatter and the prompt command wording for manage/remove/dry-run/help support. Local checks passed: bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, bun run build. Remote CI succeeded for 8081c3a4b74b at https://github.com/acartine/foolery/actions/runs/22960997684; Coverage Badge also passed.",
+    "datetime": "2026-03-11T15:43:17Z",
+    "entry_id": "019cdd91-105a-7bb2-b01e-6ff2b767c690",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

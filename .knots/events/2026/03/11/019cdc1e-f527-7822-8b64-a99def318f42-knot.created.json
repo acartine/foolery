@@ -1,0 +1,16 @@
+{
+  "event_id": "019cdc1e-f527-7822-8b64-a99def318f42",
+  "occurred_at": "2026-03-11T08:59:02.31187Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.created",
+  "data": {
+    "body": "There is an all repositories option in the repositories pulldown, but it doesn't work when you select it.\n\nit should be able to just aggregate all the data for all the screens, with the one exception being that the \"+ Add\" button should become some kind of pulldown button, forcing you to select a project to create the beat in.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Repository Selection:  All Repostories immediately changes away",
+    "type": "work"
+  }
+}

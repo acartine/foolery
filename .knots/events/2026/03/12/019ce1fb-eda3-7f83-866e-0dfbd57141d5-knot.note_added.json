@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1fb-eda3-7f83-866e-0dfbd57141d5",
+  "occurred_at": "2026-03-12T12:18:29.923471Z",
+  "knot_id": "foolery-e991",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "No implementation found. The existing memory-manager-commands-coverage.test.ts has only 3 rollbackBeatState tests covering the knots path. No expansion was done — missing beads path tests, error handling, edge cases (empty reason, special chars in beatId, exec failure).",
+    "datetime": "2026-03-12T12:18:29.923471Z",
+    "entry_id": "019ce1fb-eda3-7f83-866e-0de75c06cadc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

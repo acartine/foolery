@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfcf2-0e4b-7862-8c16-078aa01fe53a",
+  "occurred_at": "2026-03-17T17:57:27.755944Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. The queue-phase filter change in both knots and beads backends now preserves all descendants of queued parents recursively, which matches the knot description. Verified with targeted unit coverage in knots-backend, regression coverage in beads-backend, and clean typecheck; lint produced only existing warnings unrelated to this change.",
+    "datetime": "2026-03-17T17:56:43Z",
+    "entry_id": "019cfcf2-0e4b-7862-8c16-077b0ac086c2",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-17"
+  }
+}

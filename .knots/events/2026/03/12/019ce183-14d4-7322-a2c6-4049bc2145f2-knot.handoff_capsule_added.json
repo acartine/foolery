@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce183-14d4-7322-a2c6-4049bc2145f2",
+  "occurred_at": "2026-03-12T10:06:30.1006Z",
+  "knot_id": "foolery-79f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan recorded for removing the AGENTS.md/CLAUDE.md prompt-guidance feature. The work is split into three child knots: foolery-e01f for doctor diagnostics/fixes, foolery-c891 for launcher/setup command removal, and foolery-9c9a for docs/runtime packaging/test cleanup. Implementation should preserve runtime execution prompts and only remove the main prompt-guidance surface.",
+    "datetime": "2026-03-12T10:06:05Z",
+    "entry_id": "019ce183-14d4-7322-a2c6-4035a012a0ed",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

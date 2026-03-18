@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced19-8e36-75d0-91dd-85874af3dd91",
+  "occurred_at": "2026-03-14T16:06:40.950356Z",
+  "knot_id": "foolery-705e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged test/step-failure-rollback into main (commit 50cc10735ee7). 5 tests pass, typecheck clean, CI green. Single test file changed: terminal-manager-step-failure-rollback.test.ts. Max-iterations test properly exercises terminal-manager.ts:1224-1231 take-loop branch.",
+    "datetime": "2026-03-14T17:06:00Z",
+    "entry_id": "019ced19-8e36-75d0-91dd-857818f855aa",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdd95-0bd5-7d73-986b-c8996a251323",
+  "occurred_at": "2026-03-11T15:47:38.581938Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review rejected on 2026-03-11. Verified that commit 63c9ce7d5059 (tagged as commit:63c9ce7d5059) is on origin/main and its help colorization is shipped, but current remote main tip 8081c3a4b74b still has a failing Changesets workflow run 22960997723 with 'There is no .changeset directory in this project'. CI and Coverage Badge pass, yet the CI/CD pipeline is not fully green, so this knot is returned to ready_for_shipment pending a successful shipment review.",
+    "datetime": "2026-03-11T15:49:00Z",
+    "entry_id": "019cdd95-0bd5-7d73-986b-c8886861c6b2",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-11"
+  }
+}

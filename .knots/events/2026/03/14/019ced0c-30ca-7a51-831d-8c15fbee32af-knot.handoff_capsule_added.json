@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced0c-30ca-7a51-831d-8c15fbee32af",
+  "occurred_at": "2026-03-14T15:52:05.066641Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified commit 26dfbd5b3d18 is on main, removes all prompt-guidance commands from scripts/install.sh (176 lines) and scripts/setup.sh (100 lines). No PROMPT_TEMPLATE_FILE, PROMPT_MARKER, or AGENTS.md/CLAUDE.md mutation code remains. Both scripts pass bash -n syntax check. CI green on main (Changesets failure was obsolete workflow, removed in c49b91a0). No invariants defined. Commit tag already present. Untracked agent-metadata-normalization.md is unrelated.",
+    "datetime": "2026-03-14T18:00:00Z",
+    "entry_id": "019ced0c-30ca-7a51-831d-8c02fb2e7d24",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

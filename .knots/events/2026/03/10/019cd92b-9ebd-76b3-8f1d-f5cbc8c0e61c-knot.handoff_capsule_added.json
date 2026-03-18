@@ -1,0 +1,15 @@
+{
+  "event_id": "019cd92b-9ebd-76b3-8f1d-f5cbc8c0e61c",
+  "occurred_at": "2026-03-10T19:14:00.509337Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. [src/lib/memory-manager-commands.ts:60] rollbackBeatState invokes 'kno rollback <id>' instead of the knot-specified 'kno rb <id>'. 2. [src/lib/__tests__/memory-manager-commands-coverage.test.ts:82] The regression test suite codifies the same wrong command, so current test coverage would preserve the spec drift rather than catch it. 3. Sanity check: 'bun run vitest src/lib/__tests__/memory-manager-commands-coverage.test.ts' passed on 2026-03-10, confirming the implementation is internally consistent but still fails the knot requirement.",
+    "datetime": "2026-03-10T19:13:53Z",
+    "entry_id": "019cd92b-9ebd-76b3-8f1d-f5beb300a3bc",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

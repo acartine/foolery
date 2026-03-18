@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc14-4325-7182-992d-051f478c00f5",
+  "occurred_at": "2026-03-17T13:55:12.293334Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Merged approved branch worktree-foolery-bcc2-dialog-width into main as 6510d0135647 and pushed to origin/main. Remote GitHub Actions runs CI (23197688202) and Coverage Badge (23197688126) both completed successfully for commit 6510d01356479b0d4c48bc1355422d9abf5e6666. CI emitted non-blocking warnings for Node 20 action deprecation and coverage-regression annotations.",
+    "datetime": "2026-03-17T13:55:03Z",
+    "entry_id": "019cfc14-4325-7182-992d-050a8943c38a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

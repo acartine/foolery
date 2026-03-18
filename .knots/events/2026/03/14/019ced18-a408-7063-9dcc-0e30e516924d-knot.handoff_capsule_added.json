@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced18-a408-7063-9dcc-0e30e516924d",
+  "occurred_at": "2026-03-14T16:05:41.000663Z",
+  "knot_id": "foolery-afbb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Replaced the max-iterations test that incorrectly exercised the non-zero exit path with one that drives the take-loop through all 10 iterations, hitting the actual max-iterations branch at terminal-manager.ts:1224-1233. The test verifies enforceQueueTerminalInvariant triggers rollback when the beat is left in active state after max iterations. All 5 tests pass, lint and typecheck clean. Branch: worktree-foolery-afbb-impl.",
+    "datetime": "2026-03-14T17:10:00Z",
+    "entry_id": "019ced18-a408-7063-9dcc-0e23c98328a5",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

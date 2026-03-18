@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced1a-4030-7bf3-a4a8-58a875419ce5",
+  "occurred_at": "2026-03-14T16:07:26.512351Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged foolery-121b branch to main (commit 50e999521e9b). 4 files changed: repo-switcher.tsx (bootstrap guard for sticky all-repos selection), app-header.tsx (Shift+N respects repo chooser in all-repos mode), plus 2 contract tests. All quality gates pass: lint clean on changed files, tsc clean, 2029/2029 tests passed, build OK. Pushed to origin/main.",
+    "datetime": "2026-03-14T17:10:00Z",
+    "entry_id": "019ced1a-4030-7bf3-a4a8-589f437a978a",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

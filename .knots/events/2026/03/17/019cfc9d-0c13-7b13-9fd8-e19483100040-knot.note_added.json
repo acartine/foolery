@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc9d-0c13-7b13-9fd8-e19483100040",
+  "occurred_at": "2026-03-17T16:24:36.627912Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review failed: RetakesView merges parent and running-session ancestry by bare beat ID across all loaded repos, which violates the requirement that Retake Now keep ancestry data repo-scoped so a beat never resolves parents or rolling sessions from another checkout.",
+    "datetime": "2026-03-17T16:24:36.627912Z",
+    "entry_id": "019cfc9d-0c13-7b13-9fd8-e18d70f7f353",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdb7e-adb0-7981-b32d-21c40754d653",
+  "occurred_at": "2026-03-11T06:03:58.25608Z",
+  "knot_id": "foolery-9c91",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete: implementation already merged to main via commit 725010d71aee (CI green on all 3 workflows). Cleaned up worktree and deleted feature branch codex/foolery-9c91 from local and remote.",
+    "datetime": "2026-03-11T12:00:00Z",
+    "entry_id": "019cdb7e-adb0-7981-b32d-21b603035d58",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

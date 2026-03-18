@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfbef-1d28-7110-b914-480a24ecf849",
+  "occurred_at": "2026-03-17T13:14:37.736731Z",
+  "knot_id": "foolery-bcc2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Widened the beat detail dialog by changing BeatDetailLightbox from 80vw capped at 80vw to 95vw capped at 1600px, and added a contract test to lock the sizing. Validation passed in /Users/cartine/foolery-wt-foolery-bcc2 with bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Branch: work/foolery-bcc2. Commit: 42a672330aa1.",
+    "datetime": "2026-03-17T13:14:10Z",
+    "entry_id": "019cfbef-1d28-7110-b914-47f1d8b03b52",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "5"
+  }
+}

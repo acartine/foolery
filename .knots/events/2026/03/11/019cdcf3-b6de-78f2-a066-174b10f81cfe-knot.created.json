@@ -1,0 +1,16 @@
+{
+  "event_id": "019cdcf3-b6de-78f2-a066-174b10f81cfe",
+  "occurred_at": "2026-03-11T12:51:25.534638Z",
+  "knot_id": "foolery-fe17",
+  "type": "knot.created",
+  "data": {
+    "body": "on first doctor run:\n\n       ⚠  Repo \"foolery\" has AGENTS.md with mismatched prompt profile. Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"foolery\" has CLAUDE.md with mismatched prompt profile. Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"knots\" has AGENTS.md but it is missing Foolery guidance prompt. Run `foolery prompt` in /Users/cartine/knots.\n       ⚠  Repo \"knots\" has CLAUDE.md but it is missing Foolery guidance prompt. Run `foolery prompt` in /Users/cartine/knots.\n       ⚠  Repo \"1brutus\" has AGENTS.md but it is missing Foolery guidance prompt. Run `foolery prompt` in /Users/cartine/1brutus.\n       ⚠  Repo \"1brutus\" has CLAUDE.md but it is missing Foolery guidance prompt. Run `foolery prompt` in /Users/cartine/1brutus.\n\nran `kno doctor --fix`\n\nsecond doctor run:\n  ⚠  Prompt guidance         6 warnings\n       ⚠  Repo \"foolery\" has AGENTS.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"foolery\" has CLAUDE.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"knots\" has AGENTS.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"knots\" has CLAUDE.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"1brutus\" has AGENTS.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n       ⚠  Repo \"1brutus\" has CLAUDE.md with mismatched prompt profile (beads-coarse-human-gated). Expected one of: autopilot, autopilot_no_planning, autopilot_with_pr, autopilot_with_pr_no_planning, semiauto, semiauto_no_planning.\n\nidentify root cause - is doctor --fix doing something wrong?  or is doctor's heuristic wrong?\n\ndesign neat/clean fix",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "foolery doctor: Not handling readme's/prompts gracefully",
+    "type": "work"
+  }
+}

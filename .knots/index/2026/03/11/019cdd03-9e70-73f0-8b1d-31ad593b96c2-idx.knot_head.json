@@ -1,0 +1,22 @@
+{
+  "event_id": "019cdd03-9e70-73f0-8b1d-31ad593b96c2",
+  "occurred_at": "2026-03-11T13:08:47.856593Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7afc",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Foolery Install: Boring as hell",
+    "type": "work",
+    "updated_at": "2026-03-11T13:08:47.856593Z"
+  },
+  "precondition": {
+    "profile_etag": "019cdd03-600c-73f2-adaa-c73bcf5357ff"
+  }
+}

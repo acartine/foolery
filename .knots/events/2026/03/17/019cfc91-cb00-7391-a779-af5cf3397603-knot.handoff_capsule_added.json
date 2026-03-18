@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc91-cb00-7391-a779-af5cf3397603",
+  "occurred_at": "2026-03-17T16:12:19.072656Z",
+  "knot_id": "foolery-6428",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete. Implementation should split the dialog into `Stage` and `Retake Now`, share the retake-state mutation path, and extract queued-screen rolling-ancestor detection into a shared helper so RetakesView checks full ancestry from unfiltered per-repo beats before launching `Take!`. Required regression coverage: a rolling grandparent behind a non-retake intermediate parent, plus tests that `Retake Now` updates first and only then starts the session.",
+    "datetime": "2026-03-17T16:11:27Z",
+    "entry_id": "019cfc91-cb00-7391-a779-af43d4902c6c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

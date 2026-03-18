@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc8f-255e-7ba3-87a9-600b75c55482",
+  "occurred_at": "2026-03-17T16:09:25.59802Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: the reset-fix branch (worktree-foolery-62fa-reset-fix, commit 2ffbad1a) is still not merged to main. The 'Set state' Select on main (filter-bar.tsx:170-183) lacks the key-based remount pattern, so selecting the same terminal state consecutively won't fire onValueChange. The fix branch correctly adds useState/key remount and updates the test. This must be merged to main before the feature is complete.",
+    "datetime": "2026-03-17T16:09:25.59802Z",
+    "entry_id": "019cfc8f-255e-7ba3-87a9-5ff4b14f49f6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

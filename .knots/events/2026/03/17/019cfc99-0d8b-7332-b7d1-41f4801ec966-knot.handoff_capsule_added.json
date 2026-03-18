@@ -1,0 +1,15 @@
+{
+  "event_id": "019cfc99-0d8b-7332-b7d1-41f4801ec966",
+  "occurred_at": "2026-03-17T16:20:14.859773Z",
+  "knot_id": "foolery-62fa",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Feature commits 09ad156b2d2a and 217ae27552f4 verified on main. Bulk terminal-state Select (Shipped/Abandoned/Deferred) is correctly wired: bulkTerminalStates constant, onBulkUpdate({ state: v }) flow. All quality gates pass: 2042 tests passed, build clean, tsc clean. No new lint issues. Unmerged reset-fix branches address pre-existing UX limitation (repeated same-value selection) shared by all bulk selects — not a regression.",
+    "datetime": "2026-03-17T17:20:00+01:00",
+    "entry_id": "019cfc99-0d8b-7332-b7d1-41ef7e1c15cc",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

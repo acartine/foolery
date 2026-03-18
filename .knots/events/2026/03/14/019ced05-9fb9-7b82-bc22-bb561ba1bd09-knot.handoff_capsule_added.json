@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced05-9fb9-7b82-bc22-bb561ba1bd09",
+  "occurred_at": "2026-03-14T15:44:54.713742Z",
+  "knot_id": "foolery-c891",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. Verified commit 26dfbd5b3d18 removes the launcher's foolery prompt command, drops prompt-template and AGENTS.md/CLAUDE.md mutation helpers from scripts/install.sh and scripts/setup.sh, and no longer runs prompt-guidance updates during setup. Sanity checks passed: bash -n scripts/install.sh scripts/setup.sh, bunx tsc --noEmit, bun run test (2018 passed), and bun run build. Residual risk: there is no direct automated test focused on these shell-script prompt-removal paths.",
+    "datetime": "2026-03-14T15:44:47Z",
+    "entry_id": "019ced05-9fb9-7b82-bc22-bb41680cd197",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

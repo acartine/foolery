@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced8d-022d-7ca3-ad98-f5ef71844bb2",
+  "occurred_at": "2026-03-14T18:12:47.277648Z",
+  "knot_id": "foolery-2f7b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Verified all 11 changed files. Schema enum renamed actions/pools to basic/advanced with correct default. Legacy normalization added in readRawSettings() before schema parse — backward compatible. All runtime branches, UI state, setup scripts, OpenAPI schema, docs, and tests updated consistently. Two new test cases cover legacy value normalization on read and backfill rewrite. No stale references remain. No security issues or regressions.",
+    "datetime": "2026-03-14T00:00:00Z",
+    "entry_id": "019ced8d-022d-7ca3-ad98-f5de42bb7321",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

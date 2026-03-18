@@ -1,0 +1,19 @@
+{
+  "event_id": "019ced8a-5132-7123-a08d-a56cb7a784cc",
+  "occurred_at": "2026-03-14T18:09:50.893047Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-79f6",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "doctor --fix applies the wrong prompt",
+    "type": "work",
+    "updated_at": "2026-03-14T18:09:50.893047Z"
+  }
+}

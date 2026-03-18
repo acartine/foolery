@@ -1,0 +1,15 @@
+{
+  "event_id": "019cdc1e-763e-7220-bd22-4d1cffeee2de",
+  "occurred_at": "2026-03-11T08:58:29.822552Z",
+  "knot_id": "foolery-d08e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit a41cfd477eeb live on main/origin. Quality gates clean on committed code: tsc clean, 135 test files / 2003 tests pass. New beats-view.ts module correctly adds search as first-class view. SearchBar navigates to view=search&q=... on Enter, clears gracefully. Shared parsing deduplicated across page.tsx and app-header.tsx. 5 new unit tests cover all key behaviors. No invariants, no regressions.",
+    "datetime": "2026-03-11T10:00:00+01:00",
+    "entry_id": "019cdc1e-763e-7220-bd22-4d0f68921dc5",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

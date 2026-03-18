@@ -1,0 +1,15 @@
+{
+  "event_id": "019cecf3-cc00-74a3-92c5-bb101f2c8fa0",
+  "occurred_at": "2026-03-14T15:25:26.400421Z",
+  "knot_id": "foolery-2ac4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review: rollbackBeatState coverage now exercises knots and beads rollback paths, propagates knots exec failures, verifies JSON escaping for quoted beat IDs, and confirms empty/undefined reasons do not emit notes. Verified against src/lib/memory-manager-commands.ts and reran bun run test -- src/lib/__tests__/memory-manager-commands-coverage.test.ts, bunx tsc --noEmit, bun run lint src/lib/__tests__/memory-manager-commands-coverage.test.ts, and bun run build successfully.",
+    "datetime": "2026-03-14T15:25:20Z",
+    "entry_id": "019cecf3-cc00-74a3-92c5-bb07a44a0d09",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

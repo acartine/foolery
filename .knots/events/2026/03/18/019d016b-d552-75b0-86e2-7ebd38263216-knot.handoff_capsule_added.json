@@ -1,0 +1,15 @@
+{
+  "event_id": "019d016b-d552-75b0-86e2-7ebd38263216",
+  "occurred_at": "2026-03-18T14:48:57.426522Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Stored agent outcome stats in the application working directory, restricted success classification to next-queue or same-step queue outcomes only, and added regression coverage. Sanity gates: bun run lint . (passes with existing repo warnings), bunx tsc --noEmit, bun run test, bun run build. Branch: work/foolery-1f10. Commit: cf289f1ffc08.",
+    "datetime": "2026-03-18T14:48:06Z",
+    "entry_id": "019d016b-d552-75b0-86e2-7ea967853033",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

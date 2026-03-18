@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce231-fa0f-75e1-9be0-337d7151b83d",
+  "occurred_at": "2026-03-12T13:17:32.047806Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented on branch work/foolery-9c9a-impl3 (commit 99412107791d). Removed prompt-guidance references from README and audit docs, stopped shipping prompt template assets in runtime packaging, removed prompt-guidance setup/install flows from the generated CLI, deleted prompt CLI coverage, and aligned remaining help/doctor tests. Verified in /private/tmp/foolery-9c9a-r3 with bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-12T13:17:25Z",
+    "entry_id": "019ce231-fa0f-75e1-9be0-3364c2a07095",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

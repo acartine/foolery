@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce1ff-8e8e-7522-ae17-6cc2e5ba8d0f",
+  "occurred_at": "2026-03-12T12:22:27.726326Z",
+  "knot_id": "foolery-76ec",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review on 2026-03-12 rejected the shipment. Verified current origin/main tip 301dca8197da has a green CI run (23001643023) and still contains commit 63c9ce7d5059, but the later approved implementation commit 3b1290788d0b is not on origin/main. Its changes were the semantic per-command color accents, FORCE_COLOR support for help rendering, and src/lib/__tests__/help-cli.test.ts coverage. Because the shipped code on main does not match the implementation approved in ready_for_implementation_review, this is a deployment/shipment issue and the knot is returned to ready_for_shipment for an actual shipment of 3b1290788d0b or an equivalent commit.",
+    "datetime": "2026-03-12T12:22:14Z",
+    "entry_id": "019ce1ff-8e8e-7522-ae17-6cbd6b540373",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-12"
+  }
+}

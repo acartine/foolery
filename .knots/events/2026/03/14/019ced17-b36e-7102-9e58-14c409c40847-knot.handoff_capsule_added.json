@@ -1,0 +1,15 @@
+{
+  "event_id": "019ced17-b36e-7102-9e58-14c409c40847",
+  "occurred_at": "2026-03-14T16:04:39.406024Z",
+  "knot_id": "foolery-121b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Verified 4 changed files (repo-switcher.tsx, app-header.tsx, 2 contract tests). Core fix uses useRef bootstrap guard to make all-repos selection sticky. Create flow properly routes through repo chooser in all-repos mode for both button click and Shift+N. All quality gates pass (lint 0 errors, tsc clean, 2025 tests passed, build OK). No security issues or regressions found.",
+    "datetime": "2026-03-14T17:10:00Z",
+    "entry_id": "019ced17-b36e-7102-9e58-14b51029fe00",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

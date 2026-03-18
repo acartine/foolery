@@ -1,0 +1,15 @@
+{
+  "event_id": "019ce235-147a-7a10-ace4-1ae412e48f01",
+  "occurred_at": "2026-03-12T13:20:55.418493Z",
+  "knot_id": "foolery-9c9a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: prompt-guidance cleanup is incomplete in docs, runtime packaging still ships PROMPT.md, tests still expect prompt-guidance behavior, and the required bun run lint gate fails in this checkout (while typecheck, test, and build pass).",
+    "datetime": "2026-03-12T13:20:55.418493Z",
+    "entry_id": "019ce235-147a-7a10-ace4-1adc0f9c89f1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

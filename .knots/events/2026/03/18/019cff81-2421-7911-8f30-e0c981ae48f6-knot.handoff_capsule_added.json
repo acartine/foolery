@@ -1,0 +1,15 @@
+{
+  "event_id": "019cff81-2421-7911-8f30-e0c981ae48f6",
+  "occurred_at": "2026-03-18T05:52:59.425126Z",
+  "knot_id": "foolery-ce5a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Rebased feature branch onto latest main (resolved conflicts keeping approved implementation, feature commit added tests only). Pushed commit a1343a906fae to origin/main. CI green (run 23231140264). All quality gates pass: 2070 tests, typecheck clean, lint 0 errors, build OK.",
+    "datetime": "2026-03-18T06:52:00Z",
+    "entry_id": "019cff81-2421-7911-8f30-e0b453b53397",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}
