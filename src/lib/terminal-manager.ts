@@ -42,6 +42,7 @@ import {
   isReviewStep,
   nextQueueStateForStep,
   priorActionStep,
+  priorQueueStateForStep,
   queueStateForStep,
   resolveStep,
   workflowDescriptorById,
@@ -1090,7 +1091,7 @@ export async function createSession(
    * Classify whether an iteration outcome is a success.
    * Success = exit code 0 AND beat moved to either:
    *   - the next queue state (agent advanced the workflow), OR
-   *   - the same-step queue state (agent rolled back / deferred correctly).
+   *   - the prior queue state (valid review rejection / rollback).
    */
   const classifyIterationSuccess = (
     exitCode: number,
@@ -1102,15 +1103,11 @@ export async function createSession(
     const resolved = resolveStep(claimedState);
     if (!resolved) return false;
 
-    const sameStepQueue = queueStateForStep(resolved.step);
     const nextQueue = nextQueueStateForStep(resolved.step);
+    const priorQueue = priorQueueStateForStep(resolved.step);
 
-    // Success: beat is in the next queue state or the same-step queue state
-    if (postExitState === sameStepQueue) return true;
     if (nextQueue && postExitState === nextQueue) return true;
-    // Also treat terminal states (shipped, abandoned, etc.) as success when exit=0
-    const workflow = resolveWorkflowForBeat({ state: postExitState } as Beat, workflowsById, fallbackWorkflow);
-    if (workflow.terminalStates.includes(postExitState)) return true;
+    if (priorQueue && postExitState === priorQueue) return true;
     return false;
   };
 

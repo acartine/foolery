@@ -115,6 +115,16 @@ export function nextQueueStateForStep(step: WorkflowStep): string | null {
   return queueStateForStep(STEP_ORDER[idx + 1]!);
 }
 
+/**
+ * Returns the queue state for the step that precedes the given step,
+ * or null if the given step is the first step (planning).
+ */
+export function priorQueueStateForStep(step: WorkflowStep): string | null {
+  const idx = STEP_ORDER.indexOf(step);
+  if (idx <= 0) return null;
+  return queueStateForStep(STEP_ORDER[idx - 1]!);
+}
+
 // ── Review-step helpers ────────────────────────────────────────
 
 /** Maps each review step to the action step it reviews. */

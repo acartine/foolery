@@ -1,6 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { homedir } from "node:os";
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -39,15 +38,8 @@ export interface AgentOutcomeRecord {
 
 // ── Stats file resolution ──────────────────────────────────────
 
-function isDev(): boolean {
-  return process.env.NODE_ENV === "development";
-}
-
 export function resolveStatsDir(): string {
-  if (isDev()) {
-    return join(process.cwd(), ".foolery-logs");
-  }
-  return join(homedir(), ".config", "foolery", "logs");
+  return join(process.cwd(), ".foolery-logs");
 }
 
 export function resolveStatsPath(): string {
