@@ -197,6 +197,7 @@ describe("terminal-manager error-exit retry", () => {
     interactionLog.logEnd.mockReset();
     loadSettingsMock.mockReset();
     (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockReset();
+    (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
     const { exec } = await import("node:child_process");
     (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
     (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
@@ -291,6 +292,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.exitCode).toBe(1);
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("non_zero_exit");
     expect(record.beatId).toBe("foolery-e001");
   });
 
@@ -363,6 +365,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
     expect(record.alternativeAgentAvailable).toBe(false);
+    expect(record.outcome).toBe("non_zero_exit");
   });
 
   it("records success=true when beat advances to next queue state", async () => {
@@ -421,6 +424,7 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(true);
+    expect(record.outcome).toBe("advanced_to_next_queue");
     expect(record.exitCode).toBe(0);
     expect(record.claimedState).toBe("ready_for_implementation");
     expect(record.postExitState).toBe("ready_for_implementation_review");
@@ -482,6 +486,7 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(true);
+    expect(record.outcome).toBe("returned_to_prior_queue");
     expect(record.claimedState).toBe("ready_for_implementation_review");
     expect(record.postExitState).toBe("ready_for_implementation");
   });
@@ -542,6 +547,7 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("same_claimed_queue");
     expect(record.postExitState).toBe("ready_for_implementation");
   });
 
@@ -586,6 +592,7 @@ describe("terminal-manager error-exit retry", () => {
 
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("moved_to_terminal");
     expect(record.postExitState).toBe("shipped");
   });
 
@@ -654,6 +661,7 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     // Exit code 0 but beat was in active state — classified as failure
     expect(record.success).toBe(false);
+    expect(record.outcome).toBe("left_in_action_state");
     expect(record.postExitState).toBe("implementation");
   });
 

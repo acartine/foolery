@@ -48,7 +48,11 @@ import {
   workflowDescriptorById,
 } from "@/lib/workflows";
 import { recordStepAgent, resolvePoolAgent, selectFromPoolStrict, getLastStepAgent } from "@/lib/agent-pool";
-import { appendOutcomeRecord, type AgentOutcomeRecord } from "@/lib/agent-outcome-stats";
+import {
+  appendOutcomeRecord,
+  type AgentOutcomeClassification,
+  type AgentOutcomeRecord,
+} from "@/lib/agent-outcome-stats";
 
 interface SessionEntry {
   session: TerminalSession;
@@ -1012,15 +1016,15 @@ export async function createSession(
 
   /**
    * Enforce queue/terminal invariant after a take-loop iteration.
-   * Returns true if the beat is already in a valid resting state.
-   * If the beat is in an action state after retry exhaustion, forces rollback.
+   * Returns whether the beat is in a valid resting state and whether a rollback
+   * was actually performed to restore that invariant.
    */
-  const enforceQueueTerminalInvariant = async (): Promise<boolean> => {
+  const enforceQueueTerminalInvariant = async (): Promise<{ ok: boolean; rolledBack: boolean }> => {
     const tag = `[terminal-manager] [${id}] [invariant]`;
     const currentResult = await getBackend().get(beatId, repoPath);
     if (!currentResult.ok || !currentResult.data) {
       console.log(`${tag} failed to fetch beat state for invariant check`);
-      return true; // cannot verify — treat as ok to avoid blocking
+      return { ok: true, rolledBack: false }; // cannot verify — treat as ok to avoid blocking
     }
 
     const current = currentResult.data;
@@ -1028,7 +1032,7 @@ export async function createSession(
 
     if (isQueueOrTerminal(current.state, workflow)) {
       console.log(`${tag} beat=${beatId} state=${current.state} — invariant satisfied`);
-      return true;
+      return { ok: true, rolledBack: false };
     }
 
     console.warn(`${tag} [WARN] beat=${beatId} state=${current.state} — VIOLATION: action state on exit`);
@@ -1042,7 +1046,7 @@ export async function createSession(
     const resolved = resolveStep(current.state);
     if (!resolved) {
       console.error(`${tag} cannot resolve step for state "${current.state}" — skipping rollback`);
-      return false;
+      return { ok: false, rolledBack: false };
     }
 
     const rollbackState = queueStateForStep(resolved.step);
@@ -1070,7 +1074,7 @@ export async function createSession(
         data: `Invariant enforcement: failed to roll back ${beatId} from ${current.state} to ${rollbackState}: ${err}\n`,
         timestamp: Date.now(),
       });
-      return false;
+      return { ok: false, rolledBack: false };
     }
 
     // Verify the invariant after rollback
@@ -1079,12 +1083,12 @@ export async function createSession(
       const refreshedWorkflow = resolveWorkflowForBeat(refreshed.data, workflowsById, fallbackWorkflow);
       if (isQueueOrTerminal(refreshed.data.state, refreshedWorkflow)) {
         console.log(`${tag} beat=${beatId} state=${refreshed.data.state} — invariant satisfied after rollback`);
-        return true;
+        return { ok: true, rolledBack: true };
       }
       console.error(`${tag} beat=${beatId} state=${refreshed.data.state} — STILL VIOLATED after rollback`);
     }
 
-    return false;
+    return { ok: false, rolledBack: true };
   };
 
   /**
@@ -1097,18 +1101,41 @@ export async function createSession(
     exitCode: number,
     claimedState: string,
     postExitState: string,
-  ): boolean => {
-    if (exitCode !== 0) return false;
+    iterationAgent: CliAgentTarget,
+  ): { success: boolean; outcome: AgentOutcomeClassification; agentType: string } => {
+    const agentType = [iterationAgent.command, iterationAgent.model].filter(Boolean).join(":") || iterationAgent.command;
+    if (exitCode !== 0) {
+      return { success: false, outcome: "non_zero_exit", agentType };
+    }
 
     const resolved = resolveStep(claimedState);
-    if (!resolved) return false;
+    if (!resolved) {
+      return { success: false, outcome: "unresolved_claimed_state", agentType };
+    }
 
     const nextQueue = nextQueueStateForStep(resolved.step);
     const priorQueue = priorQueueStateForStep(resolved.step);
 
-    if (nextQueue && postExitState === nextQueue) return true;
-    if (priorQueue && postExitState === priorQueue) return true;
-    return false;
+    if (nextQueue && postExitState === nextQueue) {
+      return { success: true, outcome: "advanced_to_next_queue", agentType };
+    }
+    if (priorQueue && postExitState === priorQueue) {
+      return { success: true, outcome: "returned_to_prior_queue", agentType };
+    }
+    if (postExitState === claimedState) {
+      return { success: false, outcome: "same_claimed_queue", agentType };
+    }
+
+    const postResolved = resolveStep(postExitState);
+    if (postResolved?.phase === StepPhase.Active) {
+      return { success: false, outcome: "left_in_action_state", agentType };
+    }
+
+    if (isTerminalBeatState(postExitState)) {
+      return { success: false, outcome: "moved_to_terminal", agentType };
+    }
+
+    return { success: false, outcome: "unknown_transition", agentType };
   };
 
   /**
@@ -1155,7 +1182,7 @@ export async function createSession(
 
     // Classify outcome and compute whether an alternative agent is available.
     const resolved = resolveStep(claimedState);
-    const success = classifyIterationSuccess(code, claimedState, postExitState);
+    const classification = classifyIterationSuccess(code, claimedState, postExitState, iterationAgent);
     let alternativeAgentAvailable = false;
     const iterAgentId = iterationAgent.agentId;
     if (iterAgentId && resolved) {
@@ -1190,11 +1217,13 @@ export async function createSession(
       },
       claimedState,
       claimedStep: resolved?.step,
+      agentType: classification.agentType,
       exitCode: code,
       postExitState,
       rolledBack: false,
       alternativeAgentAvailable,
-      success,
+      outcome: classification.outcome,
+      success: classification.success,
     };
 
     // ── Non-zero exit: rollback + retry with different agent ──
@@ -1202,8 +1231,8 @@ export async function createSession(
       console.log(`${tag} non-zero exit code=${code} — attempting rollback and retry`);
 
       // Rollback if the beat is stuck in an action state.
-      const invariantOk = await enforceQueueTerminalInvariant();
-      record.rolledBack = invariantOk; // true if rollback happened and succeeded
+      const invariantResult = await enforceQueueTerminalInvariant();
+      record.rolledBack = invariantResult.rolledBack;
 
       // Persist stats before retry attempt.
       appendOutcomeRecord(record).catch((err) => {
