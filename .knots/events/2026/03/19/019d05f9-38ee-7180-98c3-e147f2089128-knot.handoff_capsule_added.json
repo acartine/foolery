@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05f9-38ee-7180-98c3-e147f2089128",
+  "occurred_at": "2026-03-19T12:01:52.366419Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit e700cca079bd correctly addresses both prior rejection issues: (1) page-level Switch replaced with per-beat ChevronRight disclosure toggle defaulting to collapsed, (2) steps section now included in the collapsible block alongside notes and handoff capsules. Description remains always visible. CI green (both CI and Coverage Badge passed on e700cca0). All commits tagged. No regressions detected.",
+    "datetime": "2026-03-19T14:00:00+01:00",
+    "entry_id": "019d05f9-38ee-7180-98c3-e136c533e907",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05db-8c66-7602-b6fd-c81e687d789f",
+  "occurred_at": "2026-03-19T11:29:27.653998Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) merge commit 7afe39ea6273 is HEAD of origin/main containing impl commit ab19e0fb1dff; (2) all three commit tags present (9082028272b8, ab19e0fb1dff, 7afe39ea6273); (3) no invariants to check; (4) CI and Coverage Badge both passed with conclusion=success on merge commit; (5) diff is correctly scoped — 7 files changed across schemas, settings UI, beats page, terminal-manager, and settings tests. The prior stale-cache issue (rejected in earlier impl review) is fixed via queryClient.invalidateQueries on save. No regressions detected.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d05db-8c66-7602-b6fd-c80b51fa2805",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

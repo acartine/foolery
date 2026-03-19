@@ -1,0 +1,20 @@
+{
+  "event_id": "019d05af-be2e-7e03-bbed-f41859bd0ed7",
+  "occurred_at": "2026-03-19T10:41:36.814648Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5fc1",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Make max concurrent sessions a configurable setting in the settings view",
+    "type": "work",
+    "updated_at": "2026-03-19T10:41:36.814648Z",
+    "workflow_id": "compatibility"
+  }
+}

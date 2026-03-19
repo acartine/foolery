@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0601-9099-7291-b5d3-3239a68340c5",
+  "occurred_at": "2026-03-19T12:10:59.097919Z",
+  "knot_id": "foolery-6240",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete for `foolery-6240`.\n\nChild split:\n- `foolery-6a61`: replace take-loop max-iterations with per-queue-type claim counters and repeated-queue agent rotation.\n- `foolery-3727`: persist queue-claim events / daily aggregates keyed by normalized agent identity, queue type, outcome, and claim date, using worktree-aware log discovery.\n- `foolery-447e`: add the Dispatch setting for `maxClaimsPerQueueType` and a dedicated Audit screen/API for the aggregated stats.\n\nKey implementation choices:\n- Treat queue type as the resolved workflow step.\n- Keep normal repeated-queue selection as soft exclusion in advanced dispatch; keep non-zero-exit retry behavior strict.\n- Derive shipped success retrospectively from persisted claim events so only the last claimant for a queue type on a shipped beat lands in the success bucket.",
+    "datetime": "2026-03-19T12:07:05Z",
+    "entry_id": "019d0601-9099-7291-b5d3-322bdbf8517c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "0.111.0"
+  }
+}

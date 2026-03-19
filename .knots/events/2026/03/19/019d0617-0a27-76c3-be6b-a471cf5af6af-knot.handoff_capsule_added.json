@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0617-0a27-76c3-be6b-a471cf5af6af",
+  "occurred_at": "2026-03-19T12:34:26.471637Z",
+  "knot_id": "foolery-447e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "[claude-code 2026-03-19] Shipped to main. Commit 23b3abb3 on main, push confirmed.",
+    "datetime": "2026-03-19T13:15:00Z",
+    "entry_id": "019d0617-0a27-76c3-be6b-a4653e03e760",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

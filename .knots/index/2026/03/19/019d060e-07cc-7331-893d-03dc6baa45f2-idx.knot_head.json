@@ -1,0 +1,20 @@
+{
+  "event_id": "019d060e-07cc-7331-893d-03dc6baa45f2",
+  "occurred_at": "2026-03-19T12:24:36.03539Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3727",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Persist queue-type audit counters and aggregation",
+    "type": "work",
+    "updated_at": "2026-03-19T12:24:36.03539Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0600-037b-7920-aa90-3a6bc4eface6",
+  "occurred_at": "2026-03-19T12:09:17.435132Z",
+  "knot_id": "foolery-447e",
+  "type": "knot.created",
+  "data": {
+    "body": "Add a Dispatch settings control for max claims per queue type and a dedicated audit UI that shows the new queue-type counters and shipped success/fail statistics.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Dispatch settings control and audit screen",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

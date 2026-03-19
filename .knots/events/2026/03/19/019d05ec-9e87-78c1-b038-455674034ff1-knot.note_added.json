@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05ec-9e87-78c1-b038-455674034ff1",
+  "occurred_at": "2026-03-19T11:48:06.407543Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review rejected: implementation does not match updated user requirements. Two issues: (1) Toggle is page-level (a Switch in the header) but user explicitly asked for per-beat toggles ('instead of a toggle for the whole page, let's make the toggle per beat - it can be a simple >^ type thing or a button or a link'). (2) Steps section is rendered unconditionally but user asked to include steps in the collapsible block ('let's include the steps section in the collapsible block as well'). Both of these were specified in the planning note update but were not implemented.",
+    "datetime": "2026-03-19T11:48:06.407543Z",
+    "entry_id": "019d05ec-9e87-78c1-b038-454f7b5d5e56",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0595-9008-7711-9fbe-0558ac767cae",
+  "occurred_at": "2026-03-19T10:13:01.064887Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review could not be completed because this main checkout is dirty, including files in the shipped search path, so the shipped state could not be verified safely from this workspace. Rolled back to ready_for_implementation per the dirty-workspace failure path.",
+    "datetime": "2026-03-19T10:12:47Z",
+    "entry_id": "019d0595-9008-7711-9fbe-05492e40d529",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

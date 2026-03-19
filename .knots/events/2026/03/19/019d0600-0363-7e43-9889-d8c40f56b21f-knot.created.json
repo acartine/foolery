@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0600-0363-7e43-9889-d8c40f56b21f",
+  "occurred_at": "2026-03-19T12:09:17.411582Z",
+  "knot_id": "foolery-3727",
+  "type": "knot.created",
+  "data": {
+    "body": "Persist queue-claim events and daily counters keyed by normalized agent vendor/model/version, queue type, success/fail, and date; expose read helpers/API that can aggregate across repo and related worktree log roots.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Persist queue-type audit counters and aggregation",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

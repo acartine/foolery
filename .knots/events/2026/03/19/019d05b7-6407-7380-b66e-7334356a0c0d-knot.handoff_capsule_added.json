@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05b7-6407-7380-b66e-7334356a0c0d",
+  "occurred_at": "2026-03-19T10:49:58.023775Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented configurable max concurrent sessions on branch impl/foolery-5fc1. Added maxConcurrentSessions (1-20, default 5) to the settings schema. Exposed as a number input in Settings > Defaults tab. Beats page reads the value via a ['settings'] React Query (staleTime 30s) and the settings sheet invalidates this query on save, fixing the stale-cache issue from the prior rejected implementation. Terminal-manager reads from loadSettings() (30s TTL cache). All quality gates pass: 150 test files (2096 tests), tsc --noEmit, lint (pre-existing warnings only), build. Commit: ab19e0fb1dff.",
+    "datetime": "2026-03-19T11:50:00Z",
+    "entry_id": "019d05b7-6407-7380-b66e-732288ac087b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

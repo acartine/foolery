@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0595-9008-7711-9fbe-05308dd13562",
+  "occurred_at": "2026-03-19T10:13:01.064887Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked in /Users/cartine/foolery: local main checkout is dirty, including tracked repository files such as src/lib/backends/knots-backend.ts, so shipped main cannot be verified from this workspace under read-only shipment_review constraints.",
+    "datetime": "2026-03-19T10:13:01.064887Z",
+    "entry_id": "019d0595-9008-7711-9fbe-0521aea409ea",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

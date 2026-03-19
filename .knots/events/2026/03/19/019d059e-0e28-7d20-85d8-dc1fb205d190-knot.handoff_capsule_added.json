@@ -1,0 +1,15 @@
+{
+  "event_id": "019d059e-0e28-7d20-85d8-dc1fb205d190",
+  "occurred_at": "2026-03-19T10:22:17.640327Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Verified committed implementation matches beat-id search by full ID and suffix-only ID, and search bypasses state filtering so knots remain discoverable in any state. Reviewed HEAD search paths and focused coverage in knots/beads backends plus beats page behavior. Sanity checks: targeted tests passed (99/99), bunx tsc --noEmit passed, bun run build passed, lint completed with warnings only and no errors.",
+    "datetime": "2026-03-19T10:22:07Z",
+    "entry_id": "019d059e-0e28-7d20-85d8-dc0f8b70d4d3",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

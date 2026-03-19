@@ -1,0 +1,15 @@
+{
+  "event_id": "019d059b-9aeb-7fc2-a724-b1be3cf98ae5",
+  "occurred_at": "2026-03-19T10:19:37.067562Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation already on main (commits 51a59f08, 345d04a3). Verified in clean worktree: lint 0 errors, typecheck clean, 2096/2096 tests pass, build succeeds. Beat ID search matches full IDs, suffixes, and aliases in KnotsBackend, BeadsBackend, and mock backend. State filter bypassed when search query present (page.tsx:124). No new code changes needed - prior implementation is complete and correct.",
+    "datetime": "2026-03-19T11:20:00Z",
+    "entry_id": "019d059b-9aeb-7fc2-a724-b1a4f5e68773",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

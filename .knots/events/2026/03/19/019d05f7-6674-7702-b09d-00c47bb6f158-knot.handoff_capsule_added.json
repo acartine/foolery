@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05f7-6674-7702-b09d-00c47bb6f158",
+  "occurred_at": "2026-03-19T11:59:52.948461Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Per-beat disclosure toggle correctly implemented: each RetakeRow owns local useState(false) for collapsed-by-default behavior. Steps, notes, and handoff capsules are all gated behind showExpandedDetails. Description remains always visible. ChevronRight icon with rotate-90 transition and proper aria-expanded/aria-label attributes. Page-level Switch fully removed. Tests cover default-collapsed state, section gating, and absence of page-level toggle (4/4 pass). No security issues or regressions.",
+    "datetime": "2026-03-19T13:00:00+01:00",
+    "entry_id": "019d05f7-6674-7702-b09d-00b4d19d92ec",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

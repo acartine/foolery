@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05f6-1993-77d1-8cb3-e4b97aa25d78",
+  "occurred_at": "2026-03-19T11:58:27.731473Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Per-beat disclosure toggle implemented. Each RetakeRow now owns its own collapse state (default false) with a ChevronRight disclosure button. Steps, notes, and handoff capsules are all gated behind the toggle; only description remains always visible. Page-level Switch removed. Tests updated to verify per-row control, default-collapsed state, and steps/notes/capsules gating. All quality gates pass (0 lint errors, tsc clean, 2097 tests pass, build succeeds). Commit e700cca0 pushed to origin/main.",
+    "datetime": "2026-03-19T12:57:00Z",
+    "entry_id": "019d05f6-1993-77d1-8cb3-e4a317bfcbec",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

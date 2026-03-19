@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05d7-79a1-7f12-977f-0bf4bf96d3d5",
+  "occurred_at": "2026-03-19T11:25:00.705033Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved. Verified the configurable max concurrent sessions setting is added to the settings schema and Defaults UI, persisted through settings load/save/update paths, consumed by beats-page launch/queue slot calculations, and enforced by terminal-manager session creation. The prior stale-settings issue is addressed by invalidating the ['settings'] query after save. Reviewed test coverage for settings persistence/defaults; no acceptance-criteria regressions found.",
+    "datetime": "2026-03-19T11:24:50Z",
+    "entry_id": "019d05d7-79a1-7f12-977f-0be45a209259",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

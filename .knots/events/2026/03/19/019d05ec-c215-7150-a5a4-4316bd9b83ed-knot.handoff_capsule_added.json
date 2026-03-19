@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05ec-c215-7150-a5a4-4316bd9b83ed",
+  "occurred_at": "2026-03-19T11:48:15.50919Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review rejected. Two requirement mismatches found: (1) The toggle is implemented as a single page-level Switch in the RetakesView header, but the user explicitly requested per-beat toggles (a >^ chevron, button, or link on each row). (2) The steps section renders unconditionally outside the toggle guard, but the user requested steps be included in the collapsible block alongside notes and handoff capsules. The test file (retakes-pagination-layout.test.ts) also asserts the page-level toggle pattern, so tests will need updating when the implementation is corrected. Commits 4949c62e129e and 69e26409ae38 are on main and CI is green, but the feature behavior needs revision.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d05ec-c215-7150-a5a4-4302aa4446ec",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

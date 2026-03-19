@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05b2-1990-7cb2-a8b6-6b26e6fc75f4",
+  "occurred_at": "2026-03-19T10:44:11.280861Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review rejected. 1. [src/components/settings-sheet.tsx:115] saves settings directly and only updates local sheet state; it never invalidates or updates the shared ['settings'] React Query cache. 2. [src/app/beats/page.tsx:123] derives maxConcurrentSessions from that cached query and [src/app/beats/page.tsx:361] uses it for queue/launch decisions. After saving a new limit, the backend enforcement changes immediately, but the beats page can continue using the stale limit until refetch or reload. User-visible result: lowering the limit can launch too many start attempts instead of queueing them, and raising it can keep queueing unnecessarily. Focused validation rerun in /Users/cartine/foolery-wt-foolery-5fc1: bun run test -- src/lib/__tests__/settings.test.ts src/lib/__tests__/terminal-manager-max-sessions.test.ts passed; bunx tsc --noEmit passed; bun run lint passed with pre-existing warnings only. No test covers cache refresh between settings save and beats-page scheduling.",
+    "datetime": "2026-03-19T10:43:53Z",
+    "entry_id": "019d05b2-1990-7cb2-a8b6-6b1e24ae60f4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

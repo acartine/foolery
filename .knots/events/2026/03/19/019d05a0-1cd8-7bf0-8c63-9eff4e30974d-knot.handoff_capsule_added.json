@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05a0-1cd8-7bf0-8c63-9eff4e30974d",
+  "occurred_at": "2026-03-19T10:24:32.472433Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment verified without creating a new merge: origin/main (01067b4322e8) already contains shipment commit 345d04a35395 for this beat via ancestry 51a59f08 -> 345d04a3 -> 69e26409 -> 01067b43. Remote GitHub Actions are green for the shipped merge commit (345d04a35395: CI and Coverage Badge succeeded on 2026-03-19) and for current origin/main head 01067b4322e8 (CI and Coverage Badge succeeded on 2026-03-19). Existing commit tags already cover implementation and shipment commits, so no new commit tag was needed in this session.",
+    "datetime": "2026-03-19T10:24:20Z",
+    "entry_id": "019d05a0-1cd8-7bf0-8c63-9eec40aae1a6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

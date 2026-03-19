@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0603-3411-7791-9ab8-ed6cfc0eb03e",
+  "occurred_at": "2026-03-19T12:12:46.481Z",
+  "knot_id": "foolery-6240",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. All 6 existing touchpoints verified against codebase (MAX_TAKE_ITERATIONS, agent-pool step tracking, settings schema, outcome stats, worktree discovery, dispatch UI). Plan covers all requirements: per-queue-type counters replacing max iterations, UI setting, agent rotation with soft exclusion, retrospective shipped-success persistence, and audit screen. Child knot split (6a61/3727/447e) is clean. Key risk around retrospective success attribution is well-identified. Test strategy adequate.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d0603-3411-7791-9ab8-ed5b1c738795",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05eb-8b1a-7c90-aa02-521eb82f7395",
+  "occurred_at": "2026-03-19T11:46:55.898504Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Feature branch work/foolery-6df0 was merged to main (69e26409ae38) and pushed to remote. CI green on main (both CI and Coverage Badge workflows passed). Commits tagged: 4949c62e129e (feat: collapse retake notes and handoffs by default) and 69e26409ae38 (merge commit). No merge conflicts. Ready for shipment review.",
+    "datetime": "2026-03-19T10:00:00Z",
+    "entry_id": "019d05eb-8b1a-7c90-aa02-5201c64e539e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

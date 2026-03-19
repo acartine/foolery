@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05da-518a-72c3-b045-3fbd739ea848",
+  "occurred_at": "2026-03-19T11:28:07.050886Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped approved implementation from impl/foolery-5fc1 by merging commit ab19e0fb1dff into origin/main as merge commit 7afe39ea6273. Remote workflows passed on the shipped commit: CI run 23292655779 and Coverage Badge run 23292655777. GitHub Actions reported non-blocking annotations for Node.js 20 action deprecation and a coverage regression warning, but the CI workflow concluded success.",
+    "datetime": "2026-03-19T11:26:44Z",
+    "entry_id": "019d05da-518a-72c3-b045-3faf06f630a9",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

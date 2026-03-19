@@ -1,0 +1,17 @@
+{
+  "event_id": "019d05f3-3c9b-7fd3-97cd-e61c86af38ee",
+  "occurred_at": "2026-03-19T11:55:20.091668Z",
+  "knot_id": "foolery-6240",
+  "type": "knot.created",
+  "data": {
+    "body": "Let's move a way from using \"max iterations\" in the claim loop.  \n\ninstead let's use a \"max claims per queue type\" approach.\n\n- have a UI configurable setting for \"max claims per queue type\" alongside the other settings in a sane way\n\nnow when we loop we should\n- increment a counter for this beat's queue type:\n- if counter > \"max claims per queue type\" for the queue type, exit loop with error.\n- note the last agent to work on this beat's queue type:\n- if not null, try to use a different agent from the pool (if advanced dispatch mode, else skip this step)\n- if null, proceed\n\nwe want to globally persist these counters, keyed by agent (vendor/model/version), queue type, success/fail (where success means, knot advanced to shipped state and agent was last to claim from the queue type), and date.\n\nwe want to have an audit screen that displays the statistics\n",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Ralph Wiggum Loop (ish) - counters per action step",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

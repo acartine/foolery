@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0616-c84f-7680-96b5-6327b003c105",
+  "occurred_at": "2026-03-19T12:34:09.615035Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-447e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Dispatch settings control and audit screen",
+    "type": "work",
+    "updated_at": "2026-03-19T12:34:09.615035Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0616-9d65-7b51-a59e-a7eb7e804433"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05af-a3d2-7d91-bf1c-165f21ffb513",
+  "occurred_at": "2026-03-19T10:41:30.066181Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented configurable max concurrent sessions on branch work/foolery-5fc1. Added settings schema support with default 5 and range 1-20, exposed the control in Settings > Defaults, and wired both the beats page queue logic and terminal-manager limit enforcement to use the configured value. Validation in /Users/cartine/foolery-wt-foolery-5fc1: bun install --frozen-lockfile, bun run lint (passes with existing repo warnings only), bunx tsc --noEmit, bun run test, and bun run build all succeeded. Current implementation commit: 9082028272b8.",
+    "datetime": "2026-03-19T10:41:15Z",
+    "entry_id": "019d05af-a3d2-7d91-bf1c-164e9ce2a980",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

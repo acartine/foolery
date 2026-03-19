@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05f8-4f6c-7123-afcb-27af4fec5b4d",
+  "occurred_at": "2026-03-19T12:00:52.588333Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Commit e700cca0 (per-beat disclosure toggle for retakes detail sections) was already merged to main and pushed to origin/main. CI green: both CI and Coverage Badge workflows passed on e700cca0. No merge conflicts or additional commits needed.",
+    "datetime": "2026-03-19T14:00:00+01:00",
+    "entry_id": "019d05f8-4f6c-7123-afcb-27932cef6084",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

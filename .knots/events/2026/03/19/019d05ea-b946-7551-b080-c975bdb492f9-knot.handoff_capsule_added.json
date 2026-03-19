@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05ea-b946-7551-b080-c975bdb492f9",
+  "occurred_at": "2026-03-19T11:46:02.182142Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review passed. Verified: (1) per-beat collapse toggle defaults to collapsed via useState(false), (2) steps/notes/handoff capsules gated behind showExpandedDetails while description stays visible, (3) accessible disclosure button with aria-expanded/aria-label/title, (4) source-based contract tests cover default state and per-row control, (5) all quality gates pass (lint 0 errors, tsc clean, 3/3 tests pass, build succeeds). No security issues or regressions.",
+    "datetime": "2026-03-19T12:46:00Z",
+    "entry_id": "019d05ea-b946-7551-b080-c96dca265323",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

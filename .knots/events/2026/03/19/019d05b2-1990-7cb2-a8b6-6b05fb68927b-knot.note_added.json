@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05b2-1990-7cb2-a8b6-6b05fb68927b",
+  "occurred_at": "2026-03-19T10:44:11.280861Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: saving maxConcurrentSessions does not invalidate or refresh the ['settings'] query used by the beats page, so the page can keep using the old concurrency limit until a later refetch/reload. That breaks the new setting in the same session and can cause scene launches to over-launch or over-queue relative to the saved value.",
+    "datetime": "2026-03-19T10:44:11.280861Z",
+    "entry_id": "019d05b2-1990-7cb2-a8b6-6afd8c0950ae",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

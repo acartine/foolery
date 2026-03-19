@@ -1,0 +1,15 @@
+{
+  "event_id": "019d05e9-5b5c-7392-83df-8c4e04365cb0",
+  "occurred_at": "2026-03-19T11:44:32.604487Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Retakes view now keeps each row collapsed by default and uses a per-beat disclosure control instead of a page-level toggle. Description stays visible; expanding a row reveals steps, notes, and handoff capsules together. Validation: bun run lint, bunx tsc --noEmit, bun run test -- src/lib/__tests__/retakes-pagination-layout.test.ts, bun run test, bun run build.",
+    "datetime": "2026-03-19T11:44:32Z",
+    "entry_id": "019d05e9-5b5c-7392-83df-8c3c5e36a666",
+    "model": "gpt-5",
+    "username": "Andrew Cartine",
+    "version": "2026-03-19"
+  }
+}
