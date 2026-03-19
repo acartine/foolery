@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 // ── Types ──────────────────────────────────────────────────────
@@ -38,33 +38,50 @@ export interface AgentOutcomeRecord {
 
 // ── Stats file resolution ──────────────────────────────────────
 
-export function resolveStatsDir(): string {
-  return join(process.cwd(), ".foolery-logs");
+export function resolveStatsDir(baseDir?: string): string {
+  return join(baseDir ?? process.cwd(), ".foolery-logs");
 }
 
-export function resolveStatsPath(): string {
-  return join(resolveStatsDir(), "agent-success-rates.json");
+export function resolveStatsPath(baseDir?: string): string {
+  return join(resolveStatsDir(baseDir), "agent-success-rates.jsonl");
 }
 
 // ── Read / Write ───────────────────────────────────────────────
 
-export async function readOutcomeStats(): Promise<AgentOutcomeRecord[]> {
+/**
+ * Read all outcome records from the JSONL stats file.
+ * Each line is an independent JSON object, so concurrent appends
+ * from different sessions cannot corrupt each other's data.
+ */
+export async function readOutcomeStats(baseDir?: string): Promise<AgentOutcomeRecord[]> {
   try {
-    const raw = await readFile(resolveStatsPath(), "utf-8");
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed as AgentOutcomeRecord[];
-    return [];
+    const raw = await readFile(resolveStatsPath(baseDir), "utf-8");
+    const records: AgentOutcomeRecord[] = [];
+    for (const line of raw.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        records.push(JSON.parse(trimmed) as AgentOutcomeRecord);
+      } catch {
+        // Skip malformed lines (e.g. partial writes from a crash)
+      }
+    }
+    return records;
   } catch {
     return [];
   }
 }
 
+/**
+ * Append a single outcome record as a JSONL line.
+ * Uses appendFile which is safe under concurrent sessions —
+ * small appends (< PIPE_BUF, typically 4096 bytes) are atomic on POSIX.
+ */
 export async function appendOutcomeRecord(
   record: AgentOutcomeRecord,
+  baseDir?: string,
 ): Promise<void> {
-  const dir = resolveStatsDir();
+  const dir = resolveStatsDir(baseDir);
   await mkdir(dir, { recursive: true });
-  const existing = await readOutcomeStats();
-  existing.push(record);
-  await writeFile(resolveStatsPath(), JSON.stringify(existing, null, 2) + "\n");
+  await appendFile(resolveStatsPath(baseDir), JSON.stringify(record) + "\n");
 }
