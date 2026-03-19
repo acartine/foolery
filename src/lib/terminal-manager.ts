@@ -1305,8 +1305,17 @@ export async function createSession(
       console.log(`${tag} non-zero exit code=${code} — attempting rollback and retry`);
 
       // Rollback if the beat is stuck in an action state.
+      let rollbackNeeded = false;
+      if (postExitState !== "unknown") {
+        const postExitWorkflow = resolveWorkflowForBeat(
+          { ...beat, state: postExitState },
+          workflowsById,
+          fallbackWorkflow,
+        );
+        rollbackNeeded = !isQueueOrTerminal(postExitState, postExitWorkflow);
+      }
       const invariantOk = await enforceQueueTerminalInvariant();
-      record.rolledBack = invariantOk; // true if rollback happened and succeeded
+      record.rolledBack = rollbackNeeded && invariantOk;
 
       // Persist stats before retry attempt.
       Promise.resolve(appendOutcomeRecord(record)).catch((err) => {

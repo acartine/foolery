@@ -379,6 +379,8 @@ describe("terminal-manager error-exit retry", () => {
     const record = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls[0]![0] as unknown as Record<string, unknown>;
     expect(record.success).toBe(false);
     expect(record.alternativeAgentAvailable).toBe(false);
+    expect(record.rolledBack).toBe(false);
+    expect(rollbackBeatState).not.toHaveBeenCalled();
   });
 
   it("records success=true when beat advances to next queue state", async () => {
