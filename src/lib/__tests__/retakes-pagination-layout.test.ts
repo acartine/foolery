@@ -14,16 +14,17 @@ describe("retakes pagination layout", () => {
     expect(matches).toHaveLength(2);
   });
 
-  it("defaults the shared notes and handoff toggle to collapsed", () => {
-    expect(source).toContain("const [showNotesAndHandoffs, setShowNotesAndHandoffs] = useState(false);");
-    expect(source).toContain("{showNotesAndHandoffs && renderedNotes.length > 0 && (");
-    expect(source).toContain("{showNotesAndHandoffs && renderedCapsules.length > 0 && (");
+  it("defaults each beat row details disclosure to collapsed", () => {
+    expect(source).toContain("const [showExpandedDetails, setShowExpandedDetails] = useState(false);");
+    expect(source).toContain("{showExpandedDetails && renderedSteps.length > 0 && (");
+    expect(source).toContain("{showExpandedDetails && renderedNotes.length > 0 && (");
+    expect(source).toContain("{showExpandedDetails && renderedCapsules.length > 0 && (");
   });
 
-  it("exposes one header toggle for notes and handoff capsules", () => {
-    const toggleMatches = source.match(/Show notes and handoff capsules/g) ?? [];
-    expect(toggleMatches).toHaveLength(2);
-    expect(source).toContain('htmlFor="retakes-details-toggle"');
-    expect(source).toContain('id="retakes-details-toggle"');
+  it("uses a per-row disclosure control instead of a shared page toggle", () => {
+    expect(source).toContain("aria-label={showExpandedDetails ? \"Collapse retake activity details\" : \"Expand retake activity details\"}");
+    expect(source).toContain("title={showExpandedDetails ? \"Hide steps, notes, and handoff capsules\" : \"Show steps, notes, and handoff capsules\"}");
+    expect(source).not.toContain("retakes-details-toggle");
+    expect(source).not.toContain("Show notes and handoff capsules");
   });
 });
