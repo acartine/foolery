@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const nextKnotMock = vi.fn();
 const nextBeatMock = vi.fn();
 const resolveMemoryManagerTypeMock = vi.fn(() => "knots");
+const createLeaseMock = vi.fn();
+const terminateLeaseMock = vi.fn();
 type MockChild = EventEmitter & {
   stdout: EventEmitter;
   stderr: EventEmitter;
@@ -60,12 +62,20 @@ vi.mock("@/lib/backend-instance", () => ({
 }));
 
 vi.mock("@/lib/interaction-logger", () => ({
+  resolveInteractionLogRoot: vi.fn(() => "/tmp/foolery-logs"),
   startInteractionLog: vi.fn(async () => interactionLog),
   noopInteractionLog: vi.fn(() => interactionLog),
 }));
 
 vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
+  createLease: (...args: unknown[]) => createLeaseMock(...args),
+  terminateLease: (...args: unknown[]) => terminateLeaseMock(...args),
+}));
+
+vi.mock("@/lib/lease-audit", () => ({
+  appendLeaseAuditEvent: vi.fn(async () => undefined),
+  logLeaseAudit: vi.fn(),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({
@@ -103,10 +113,6 @@ vi.mock("@/lib/agent-message-type-index", () => ({
   updateMessageTypeIndexFromSession: vi.fn(async () => undefined),
 }));
 
-vi.mock("@/lib/lease-audit", () => ({
-  appendLeaseAuditEvent: vi.fn(async () => undefined),
-}));
-
 import { createSession, abortSession, getSession } from "@/lib/terminal-manager";
 
 /** Polls `fn` until it stops throwing, or rejects after `timeout` ms. */
@@ -127,8 +133,12 @@ describe("terminal-manager abort behavior", () => {
   beforeEach(async () => {
     nextKnotMock.mockReset();
     nextBeatMock.mockReset();
+    createLeaseMock.mockReset();
+    terminateLeaseMock.mockReset();
     resolveMemoryManagerTypeMock.mockReset();
     resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    terminateLeaseMock.mockResolvedValue({ ok: true });
     spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();

@@ -8,6 +8,8 @@ export interface ExecutionAgentInfo {
   agentName?: string;
   agentModel?: string;
   agentVersion?: string;
+  agentProvider?: string;
+  agentType?: string;
 }
 
 export interface ExecutionCompletionAction {

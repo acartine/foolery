@@ -28,15 +28,56 @@ export interface LeaseAuditAggregate {
   count: number;
 }
 
+export type LeaseLifecycleOutcome = "success" | "warning" | "error";
+
+export interface LeaseLifecycleEvent {
+  ts: string;
+  event: string;
+  repoPath?: string;
+  repoSlug?: string;
+  sessionId?: string;
+  executionLeaseId?: string;
+  knotsLeaseId?: string;
+  beatId?: string;
+  claimedId?: string;
+  interactionType?: string;
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  outcome: LeaseLifecycleOutcome;
+  message: string;
+  data?: Record<string, unknown>;
+}
+
+export interface LogLeaseAuditInput {
+  event: string;
+  repoPath?: string;
+  sessionId?: string;
+  executionLeaseId?: string;
+  knotsLeaseId?: string;
+  beatId?: string;
+  claimedId?: string;
+  interactionType?: string;
+  agentName?: string;
+  agentModel?: string;
+  agentVersion?: string;
+  outcome: LeaseLifecycleOutcome;
+  message: string;
+  data?: Record<string, unknown>;
+}
+
 // ── Constants ──────────────────────────────────────────────────
 
 const AUDIT_FILENAME = "lease-audit.jsonl";
+const LEASE_LIFECYCLE_FILENAME = "leases.jsonl";
+export const LEASES_SLUG = "_leases";
 const DEV_LOG_DIRNAME = ".foolery-logs";
 const SIBLING_WORKTREE_PATTERN = /^(.*)-wt-[^\\/]+$/u;
 const CLAUDE_WORKTREES_SEGMENT =
   /^(.*?)[\\/]\.claude[\\/]worktrees[\\/][^\\/]+(?:[\\/].*)?$/u;
 const KNOTS_WORKTREE_SEGMENT =
   /^(.*?)[\\/]\.knots[\\/]_worktree(?:[\\/].*)?$/u;
+const leaseLifecycleWriteQueue = new Map<string, Promise<void>>();
 
 // ── Path helpers ───────────────────────────────────────────────
 
@@ -46,6 +87,32 @@ function trimPathSeparators(value: string): string {
 
 function auditFilePath(logRoot: string): string {
   return join(logRoot, AUDIT_FILENAME);
+}
+
+function leaseLifecycleDirPath(logRoot: string, date: string): string {
+  return join(logRoot, LEASES_SLUG, date);
+}
+
+function leaseLifecycleFilePath(logRoot: string, date: string): string {
+  return join(leaseLifecycleDirPath(logRoot, date), LEASE_LIFECYCLE_FILENAME);
+}
+
+function repoSlugFor(repoPath?: string): string | undefined {
+  if (!repoPath) return undefined;
+  const trimmed = trimPathSeparators(repoPath.trim());
+  if (!trimmed) return undefined;
+  return basename(trimmed);
+}
+
+function enqueueWrite(filePath: string, task: () => Promise<void>): Promise<void> {
+  const pending = leaseLifecycleWriteQueue.get(filePath) ?? Promise.resolve();
+  const next = pending.catch(() => undefined).then(task);
+  leaseLifecycleWriteQueue.set(filePath, next.finally(() => {
+    if (leaseLifecycleWriteQueue.get(filePath) === next) {
+      leaseLifecycleWriteQueue.delete(filePath);
+    }
+  }));
+  return next;
 }
 
 // ── Worktree discovery (mirrors agent-history.ts) ──────────────
@@ -127,6 +194,42 @@ export async function resolveAuditLogRoots(
   }
 
   return Array.from(roots.values());
+}
+
+export function resolveLeaseAuditDir(date = new Date()): string {
+  const day = date.toISOString().slice(0, 10);
+  return leaseLifecycleDirPath(resolveInteractionLogRoot(), day);
+}
+
+export async function logLeaseAudit(input: LogLeaseAuditInput): Promise<void> {
+  const ts = new Date().toISOString();
+  const date = ts.slice(0, 10);
+  const logRoot = resolveInteractionLogRoot();
+  const dirPath = leaseLifecycleDirPath(logRoot, date);
+  const filePath = leaseLifecycleFilePath(logRoot, date);
+  const payload: LeaseLifecycleEvent = {
+    ts,
+    event: input.event,
+    repoPath: input.repoPath,
+    repoSlug: repoSlugFor(input.repoPath),
+    sessionId: input.sessionId,
+    executionLeaseId: input.executionLeaseId,
+    knotsLeaseId: input.knotsLeaseId,
+    beatId: input.beatId,
+    claimedId: input.claimedId,
+    interactionType: input.interactionType,
+    agentName: input.agentName,
+    agentModel: input.agentModel,
+    agentVersion: input.agentVersion,
+    outcome: input.outcome,
+    message: input.message,
+    data: input.data,
+  };
+
+  await enqueueWrite(filePath, async () => {
+    await mkdir(dirPath, { recursive: true });
+    await appendFile(filePath, `${JSON.stringify(payload)}\n`, "utf-8");
+  });
 }
 
 // ── Append ─────────────────────────────────────────────────────

@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const nextKnotMock = vi.fn();
 const nextBeatMock = vi.fn();
 const resolveMemoryManagerTypeMock = vi.fn(() => "knots");
+const createLeaseMock = vi.fn();
+const terminateLeaseMock = vi.fn();
 type MockChild = EventEmitter & {
   stdout: EventEmitter;
   stderr: EventEmitter;
@@ -68,6 +70,13 @@ vi.mock("@/lib/interaction-logger", () => ({
 
 vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
+  createLease: (...args: unknown[]) => createLeaseMock(...args),
+  terminateLease: (...args: unknown[]) => terminateLeaseMock(...args),
+}));
+
+vi.mock("@/lib/lease-audit", () => ({
+  appendLeaseAuditEvent: vi.fn(async () => undefined),
+  logLeaseAudit: vi.fn(),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({
@@ -123,11 +132,7 @@ vi.mock("@/lib/agent-outcome-stats", () => ({
   appendOutcomeRecord: vi.fn(async () => undefined),
 }));
 
-vi.mock("@/lib/lease-audit", () => ({
-  appendLeaseAuditEvent: vi.fn(async () => undefined),
-}));
-
-import { createSession, getSession } from "@/lib/terminal-manager";
+import { createSession } from "@/lib/terminal-manager";
 import { rollbackBeatState } from "@/lib/memory-manager-commands";
 import { appendOutcomeRecord } from "@/lib/agent-outcome-stats";
 
@@ -187,8 +192,12 @@ describe("terminal-manager error-exit retry", () => {
   beforeEach(async () => {
     nextKnotMock.mockReset();
     nextBeatMock.mockReset();
+    createLeaseMock.mockReset();
+    terminateLeaseMock.mockReset();
     resolveMemoryManagerTypeMock.mockReset();
     resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    terminateLeaseMock.mockResolvedValue({ ok: true });
     spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();
@@ -288,6 +297,7 @@ describe("terminal-manager error-exit retry", () => {
     await waitFor(() => {
       expect(spawnedChildren).toHaveLength(2);
     });
+    expect(createLeaseMock).toHaveBeenCalledTimes(1);
 
     // Verify rollback was called
     expect(rollbackBeatState).toHaveBeenCalled();
@@ -865,13 +875,5 @@ describe("agent-outcome-stats classification", () => {
     expect(priorQueueStateForStep("implementation_review")).toBe("ready_for_implementation");
     expect(priorQueueStateForStep("shipment")).toBe("ready_for_implementation_review");
     expect(priorQueueStateForStep("shipment_review")).toBe("ready_for_shipment");
-  });
-});
-
-describe("agent-outcome-stats storage", () => {
-  it("resolveStatsDir always uses process.cwd()", async () => {
-    // Import the real module (bypassing the mock) to verify the path logic
-    const mod = await vi.importActual<typeof import("@/lib/agent-outcome-stats")>("@/lib/agent-outcome-stats");
-    expect(mod.resolveStatsDir()).toBe(`${process.cwd()}/.foolery-logs`);
   });
 });

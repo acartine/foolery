@@ -59,6 +59,16 @@ vi.mock("@/lib/release-version", () => ({
   getReleaseVersionStatus: () => mockGetReleaseVersionStatus(),
 }));
 
+const mockListLeases = vi.fn();
+vi.mock("@/lib/knots", () => ({
+  listLeases: (...args: unknown[]) => mockListLeases(...args),
+}));
+
+const mockLogLeaseAudit = vi.fn();
+vi.mock("@/lib/lease-audit", () => ({
+  logLeaseAudit: (...args: unknown[]) => mockLogLeaseAudit(...args),
+}));
+
 const mockExecFile = vi.fn();
 vi.mock("node:child_process", () => ({
   execFile: (...args: unknown[]) => {
@@ -88,6 +98,7 @@ import {
   checkRepoMemoryManagerTypes,
   runDoctorFix,
   streamDoctor,
+  checkActiveKnotsLeases,
   type DoctorCheckResult,
   type DoctorStreamSummary,
 } from "@/lib/doctor";
@@ -149,6 +160,7 @@ beforeEach(() => {
     updateAvailable: false,
   });
   mockDetectMemoryManagerType.mockReturnValue(undefined);
+  mockListLeases.mockResolvedValue({ ok: true, data: [] });
 });
 
 // ── checkMemoryImplementationCompatibility ─────────────────
@@ -219,6 +231,40 @@ describe("checkConfigPermissions (additional coverage)", () => {
     expect(diags[0].severity).toBe("warning");
     expect(diags[0].message).toContain("permission denied");
     expect(diags[0].fixable).toBe(false);
+  });
+});
+
+describe("checkActiveKnotsLeases", () => {
+  it("reports info when a knots repo has no active leases", async () => {
+    mockListLeases.mockResolvedValue({ ok: true, data: [] });
+
+    const diags = await checkActiveKnotsLeases([
+      { path: "/repo-k", name: "knots-repo", addedAt: "2026-01-01", memoryManagerType: "knots" },
+    ]);
+
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("info");
+    expect(diags[0].message).toContain("no active Knots leases");
+  });
+
+  it("reports warning and logs audit data when active leases exist", async () => {
+    mockListLeases.mockResolvedValue({
+      ok: true,
+      data: [{ id: "lease-1" }, { id: "lease-2" }],
+    });
+
+    const diags = await checkActiveKnotsLeases([
+      { path: "/repo-k", name: "knots-repo", addedAt: "2026-01-01", memoryManagerType: "knots" },
+    ]);
+
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("warning");
+    expect(diags[0].message).toContain("2 active Knots leases");
+    expect(mockLogLeaseAudit).toHaveBeenCalledWith(expect.objectContaining({
+      event: "orphan_leases_detected",
+      repoPath: "/repo-k",
+      outcome: "warning",
+    }));
   });
 });
 

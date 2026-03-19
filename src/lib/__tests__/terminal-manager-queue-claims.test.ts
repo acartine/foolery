@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const nextKnotMock = vi.fn();
 const nextBeatMock = vi.fn();
 const resolveMemoryManagerTypeMock = vi.fn(() => "knots");
+const createLeaseMock = vi.fn();
+const terminateLeaseMock = vi.fn();
 type MockChild = EventEmitter & {
   stdout: EventEmitter;
   stderr: EventEmitter;
@@ -66,6 +68,8 @@ vi.mock("@/lib/interaction-logger", () => ({
 
 vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
+  createLease: (...args: unknown[]) => createLeaseMock(...args),
+  terminateLease: (...args: unknown[]) => terminateLeaseMock(...args),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({
@@ -123,9 +127,10 @@ vi.mock("@/lib/agent-outcome-stats", () => ({
 
 vi.mock("@/lib/lease-audit", () => ({
   appendLeaseAuditEvent: vi.fn(async () => undefined),
+  logLeaseAudit: vi.fn(),
 }));
 
-import { createSession, getSession } from "@/lib/terminal-manager";
+import { createSession } from "@/lib/terminal-manager";
 import { appendLeaseAuditEvent } from "@/lib/lease-audit";
 
 /** Polls `fn` until it stops throwing, or rejects after `timeout` ms. */
@@ -166,8 +171,12 @@ describe("terminal-manager per-queue-type claim limits", () => {
   beforeEach(async () => {
     nextKnotMock.mockReset();
     nextBeatMock.mockReset();
+    createLeaseMock.mockReset();
+    terminateLeaseMock.mockReset();
     resolveMemoryManagerTypeMock.mockReset();
     resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    terminateLeaseMock.mockResolvedValue({ ok: true });
     spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();
@@ -240,13 +249,7 @@ describe("terminal-manager per-queue-type claim limits", () => {
     // 1 initial + 2 take-loop = 3 total
     expect(spawnedChildren).toHaveLength(3);
 
-    // Verify the stop message mentions queue type
-    const entry = getSession(
-      Array.from(
-        ((globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions ?? new Map()).keys(),
-      )[0] ?? "",
-    );
-    // Session may be cleaned up; check log output instead
+    // Session may already be cleaned up here; behavior is validated by termination and spawn count.
   });
 
   it("emits lease audit events on successful claim", async () => {

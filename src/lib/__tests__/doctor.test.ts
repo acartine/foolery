@@ -701,7 +701,7 @@ describe("streamDoctor", () => {
     return events;
   }
 
-  it("emits 11 check events plus 1 summary event", async () => {
+  it("emits 12 check events plus 1 summary event", async () => {
     mockGetRegisteredAgents.mockResolvedValue({
       claude: { command: "claude", label: "Claude" },
     });
@@ -714,10 +714,10 @@ describe("streamDoctor", () => {
     });
 
     const events = await collectStream();
-    expect(events).toHaveLength(12);
+    expect(events).toHaveLength(13);
 
-    // First 11 are check results
-    for (let i = 0; i < 11; i++) {
+    // First 12 are check results
+    for (let i = 0; i < 12; i++) {
       const ev = events[i] as DoctorCheckResult;
       expect(ev.done).toBeUndefined();
       expect(ev.category).toBeTruthy();
@@ -728,7 +728,7 @@ describe("streamDoctor", () => {
     }
 
     // Last is summary
-    const summary = events[11] as DoctorStreamSummary;
+    const summary = events[12] as DoctorStreamSummary;
     expect(summary.done).toBe(true);
     expect(typeof summary.passed).toBe("number");
     expect(typeof summary.failed).toBe("number");
@@ -757,6 +757,7 @@ describe("streamDoctor", () => {
       "stale-parents",
       "memory-manager-cli",
       "registry-consistency",
+      "active-knots-leases",
     ]);
   });
 

@@ -267,6 +267,13 @@ Server-side logs are always written to disk in both dev and production so errors
 
 Server logs use JSONL format with `ts`, `level`, `category`, `message`, and optional `data` fields. They capture API errors and CLI failures automatically.
 
+Knots lease lifecycle events are written to a dedicated repo-wide JSONL audit stream:
+
+- Dev: `.foolery-logs/_leases/{date}/leases.jsonl`
+- Production: `~/.config/foolery/logs/_leases/{date}/leases.jsonl`
+
+Each entry includes stable correlation fields such as `sessionId`, `executionLeaseId`, `knotsLeaseId`, `beatId`, `interactionType`, `outcome`, and a structured `data` payload so lease behavior can be debugged after the fact.
+
 ## Commit Style
 
 Follow conventional commits with a scope:

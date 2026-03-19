@@ -33,9 +33,13 @@ import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-inde
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import { agentDisplayName, normalizeAgentIdentity, toExecutionAgentInfo } from "@/lib/agent-identity";
-import { terminateLease } from "@/lib/knots";
 import { appendLeaseAuditEvent } from "@/lib/lease-audit";
 import { buildShipFollowUpBoundaryLines, wrapExecutionPrompt } from "@/lib/agent-prompt-guardrails";
+import {
+  ensureKnotsLease,
+  logAttachedKnotsLease,
+  terminateKnotsRuntimeLease,
+} from "@/lib/knots-lease-runtime";
 import {
   StepPhase,
   defaultWorkflowDescriptor,
@@ -55,6 +59,11 @@ interface SessionEntry {
   session: TerminalSession;
   process: ChildProcess | null;
   abort?: () => void;
+  releaseKnotsLease?: (
+    reason: string,
+    outcome?: "success" | "warning" | "error",
+    data?: Record<string, unknown>,
+  ) => void;
   emitter: EventEmitter;
   buffer: TerminalEvent[];
   interactionLog: InteractionLog;
@@ -670,6 +679,54 @@ export async function createSession(
   const entry: SessionEntry = { session, process: null, emitter, buffer, interactionLog };
   sessions.set(id, entry);
 
+  let knotsLeaseTerminationStarted = false;
+  entry.releaseKnotsLease = (
+    reason: string,
+    outcome: "success" | "warning" | "error" = "warning",
+    data?: Record<string, unknown>,
+  ) => {
+    if (knotsLeaseTerminationStarted) return;
+    knotsLeaseTerminationStarted = true;
+    const knotsLeaseId = entry.knotsLeaseId;
+    entry.knotsLeaseId = undefined;
+    void terminateKnotsRuntimeLease({
+      repoPath: resolvedRepoPath,
+      source: "terminal_manager_take",
+      sessionId: id,
+      knotsLeaseId,
+      beatId: beat.id,
+      interactionType: effectiveParent ? "scene" : "take",
+      agentInfo,
+      reason,
+      outcome,
+      data,
+    });
+  };
+
+  if (memoryManagerType === "knots" && !effectiveParent) {
+    const knotsLeaseId = await ensureKnotsLease({
+      repoPath: resolvedRepoPath,
+      source: "terminal_manager_take",
+      sessionId: id,
+      beatId: beat.id,
+      interactionType: "take",
+      agentInfo,
+    });
+    entry.knotsLeaseId = knotsLeaseId;
+    logAttachedKnotsLease({
+      repoPath: resolvedRepoPath,
+      source: "terminal_manager_take",
+      sessionId: id,
+      beatId: beat.id,
+      interactionType: "take",
+      agentInfo,
+      knotsLeaseId,
+    });
+    if (!knotsLeaseId) {
+      console.warn(`[terminal-manager] Failed to create Knots lease for session ${id}`);
+    }
+  }
+
   const cwd = resolvedRepoPath;
 
   const pushEvent = (evt: TerminalEvent) => {
@@ -704,6 +761,7 @@ export async function createSession(
     interactionLog.logEnd(1, "error");
     pushEvent({ type: "stderr", data: `${cwdError}\n`, timestamp: Date.now() });
     pushEvent({ type: "exit", data: "1", timestamp: Date.now() });
+    entry.releaseKnotsLease?.("invalid_cwd", "error", { cwdError });
     setTimeout(() => { emitter.removeAllListeners(); }, 2000);
     setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
     return session;
@@ -749,11 +807,11 @@ export async function createSession(
       }
     }
 
-    if (entry.knotsLeaseId && memoryManagerType === "knots") {
-      terminateLease(entry.knotsLeaseId, resolvedRepoPath).catch((err) => {
-        console.warn(`[terminal-manager] Failed to terminate lease ${entry.knotsLeaseId}:`, err);
-      });
-    }
+    entry.releaseKnotsLease?.(
+      sessionAborted ? "session_aborted" : exitCode === 0 ? "session_completed" : "session_error",
+      exitCode === 0 ? "success" : "warning",
+      { exitCode, finalStatus: session.status },
+    );
 
     setTimeout(() => { emitter.removeAllListeners(); }, 2000);
     setTimeout(() => { buffer.length = 0; sessions.delete(id); }, CLEANUP_DELAY_MS);
@@ -1251,7 +1309,7 @@ export async function createSession(
       record.rolledBack = invariantOk; // true if rollback happened and succeeded
 
       // Persist stats before retry attempt.
-      appendOutcomeRecord(record).catch((err) => {
+      Promise.resolve(appendOutcomeRecord(record)).catch((err) => {
         console.error(`${tag} failed to write outcome stats:`, err);
       });
 
@@ -1299,7 +1357,7 @@ export async function createSession(
     // ── Zero exit: persist stats and continue normally ──
 
     // Persist stats for successful iterations.
-    appendOutcomeRecord(record).catch((err) => {
+    Promise.resolve(appendOutcomeRecord(record)).catch((err) => {
       console.error(`${tag} failed to write outcome stats:`, err);
     });
 
@@ -1844,6 +1902,7 @@ export async function createSession(
       session.status = "error";
       interactionLog.logEnd(1, "error");
       child.kill("SIGTERM");
+      entry.releaseKnotsLease?.("initial_prompt_send_failed", "error");
       sessions.delete(id);
       const agentDesc = `${agentDisplayName(agent)}${agent.model ? ` (model: ${agent.model})` : ""}`;
       throw new Error(`Failed to send initial prompt to agent: ${agentDesc}`);
@@ -1869,7 +1928,10 @@ export function abortSession(id: string): boolean {
     entry.abort();
   }
 
-  if (!entry.process) return entry.abort != null;
+  if (!entry.process) {
+    entry.releaseKnotsLease?.("abort_without_process", "warning");
+    return entry.abort != null;
+  }
 
   const proc = entry.process;
   const pid = proc.pid;

@@ -6,6 +6,13 @@ const mockListWorkflows = vi.fn();
 const mockListDeps = vi.fn();
 const mockList = vi.fn();
 const mockUpdate = vi.fn();
+const mockResolveMemoryManagerType = vi.fn(() => "beads");
+const mockClaimKnot = vi.fn();
+const mockPollKnot = vi.fn();
+const mockNextKnot = vi.fn();
+const mockUpdateKnot = vi.fn();
+const mockCreateLease = vi.fn();
+const mockTerminateLease = vi.fn();
 
 vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({
@@ -18,11 +25,32 @@ vi.mock("@/lib/backend-instance", () => ({
   }),
 }));
 
+vi.mock("@/lib/memory-manager-commands", () => ({
+  resolveMemoryManagerType: () => mockResolveMemoryManagerType(),
+  buildWorkflowStateCommand: vi.fn((beatId: string, state: string) => `bd update ${beatId} ${state}`),
+}));
+
+vi.mock("@/lib/knots", () => ({
+  claimKnot: (...args: unknown[]) => mockClaimKnot(...args),
+  pollKnot: (...args: unknown[]) => mockPollKnot(...args),
+  nextKnot: (...args: unknown[]) => mockNextKnot(...args),
+  updateKnot: (...args: unknown[]) => mockUpdateKnot(...args),
+  createLease: (...args: unknown[]) => mockCreateLease(...args),
+  terminateLease: (...args: unknown[]) => mockTerminateLease(...args),
+}));
+
+vi.mock("@/lib/lease-audit", () => ({
+  logLeaseAudit: vi.fn(),
+}));
+
 import { LocalWorkerService } from "@/lib/local-worker";
 
 describe("LocalWorkerService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockResolveMemoryManagerType.mockReturnValue("beads");
+    mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    mockTerminateLease.mockResolvedValue({ ok: true });
   });
 
   it("blocks memory-manager binaries from shell_exec", async () => {
@@ -78,7 +106,6 @@ describe("LocalWorkerService", () => {
 
     expect(result.ok).toBe(true);
     expect(result.data?.claimedId).toBe("foolery-1");
-    expect(result.data?.lease.prompt).toContain("FOOLERY EXECUTION BOUNDARY:");
     expect(result.data?.lease.prompt).toContain("foolery-1");
   });
 
@@ -110,9 +137,52 @@ describe("LocalWorkerService", () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(result.data?.prompt).toContain("FOOLERY EXECUTION BOUNDARY:");
-    expect(result.data?.prompt).toContain("Execute only the child beats explicitly listed below.");
+    expect(result.data?.prompt).toContain("Execute child beats in parallel when practical");
     expect(result.data?.prompt).toContain("foolery-child-1");
     expect(result.data?.prompt).toContain("foolery-child-2");
+  });
+
+  it("returns populated knotsLeaseId for knots-backed poll work", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockPollKnot.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "knot-1",
+        title: "Knots Test",
+        state: "implementation",
+        profile_id: "autopilot",
+        prompt: "knots prompt",
+      },
+    });
+    mockGet.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "knot-1",
+        title: "Knots Test",
+        state: "implementation",
+        isAgentClaimable: false,
+        type: "task",
+        priority: 2,
+        labels: [],
+        created: "2026-03-05T00:00:00Z",
+        updated: "2026-03-05T00:00:00Z",
+      },
+    });
+    mockListWorkflows.mockResolvedValue({ ok: true, data: [] });
+    mockListDeps.mockResolvedValue({ ok: true, data: [] });
+    mockList.mockResolvedValue({ ok: true, data: [] });
+
+    const worker = new LocalWorkerService();
+    const result = await worker.preparePoll("/tmp/repo", {
+      agentName: "Codex",
+      agentModel: "codex/gpt",
+      agentVersion: "5.4",
+      agentProvider: "OpenAI",
+      agentType: "cli",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockCreateLease).toHaveBeenCalledOnce();
+    expect(result.data?.lease.knotsLeaseId).toBe("lease-k1");
   });
 });

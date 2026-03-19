@@ -1,5 +1,7 @@
 import { execFile } from "node:child_process";
 import { getBackend } from "./backend-instance";
+import { listLeases } from "./knots";
+import { logLeaseAudit } from "./lease-audit";
 import {
   getRegisteredAgents,
   loadSettings,
@@ -722,6 +724,78 @@ export async function checkRegistryConsistency(
   return diagnostics;
 }
 
+// ── Active Knots lease checks ─────────────────────────────
+
+export async function checkActiveKnotsLeases(
+  repos: RegisteredRepo[],
+): Promise<Diagnostic[]> {
+  const diagnostics: Diagnostic[] = [];
+
+  for (const repo of repos) {
+    const memoryManagerType = repo.memoryManagerType ?? detectMemoryManagerType(repo.path);
+    if (memoryManagerType !== "knots") continue;
+
+    const result = await listLeases(repo.path);
+    if (!result.ok) {
+      diagnostics.push({
+        check: "active-knots-leases",
+        severity: "warning",
+        fixable: false,
+        message: `Repo "${repo.name}" could not list active Knots leases: ${result.error}`,
+        context: {
+          repoPath: repo.path,
+          repoName: repo.name,
+          memoryManagerType,
+        },
+      });
+      continue;
+    }
+
+    const leases = result.data ?? [];
+    if (leases.length === 0) {
+      diagnostics.push({
+        check: "active-knots-leases",
+        severity: "info",
+        fixable: false,
+        message: `Repo "${repo.name}" has no active Knots leases.`,
+        context: {
+          repoPath: repo.path,
+          repoName: repo.name,
+          memoryManagerType,
+        },
+      });
+      continue;
+    }
+
+    logLeaseAudit({
+      event: "orphan_leases_detected",
+      repoPath: repo.path,
+      interactionType: "doctor_active_leases",
+      outcome: "warning",
+      message: `Detected ${leases.length} active Knots lease(s) in repo "${repo.name}".`,
+      data: {
+        repoName: repo.name,
+        leaseIds: leases.map((lease) => lease.id),
+      },
+    });
+
+    diagnostics.push({
+      check: "active-knots-leases",
+      severity: "warning",
+      fixable: false,
+      message: `Repo "${repo.name}" has ${leases.length} active Knots lease${leases.length === 1 ? "" : "s"}: ${leases.map((lease) => lease.id).join(", ")}.`,
+      context: {
+        repoPath: repo.path,
+        repoName: repo.name,
+        memoryManagerType,
+        leaseIds: leases.map((lease) => lease.id).join(","),
+      },
+    });
+  }
+
+  return diagnostics;
+}
+
 // ── Run all checks ─────────────────────────────────────────
 
 export async function runDoctor(): Promise<DoctorReport> {
@@ -739,6 +813,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     staleDiags,
     cliAvailDiags,
     registryConsistencyDiags,
+    activeKnotsLeaseDiags,
   ] = await Promise.all([
     checkAgents(),
     checkUpdates(),
@@ -751,6 +826,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     checkStaleParents(repos),
     checkMemoryManagerCliAvailability(repos),
     checkRegistryConsistency(repos),
+    checkActiveKnotsLeases(repos),
   ]);
 
   const diagnostics = [
@@ -765,6 +841,7 @@ export async function runDoctor(): Promise<DoctorReport> {
     ...staleDiags,
     ...cliAvailDiags,
     ...registryConsistencyDiags,
+    ...activeKnotsLeaseDiags,
   ];
 
   return {
@@ -830,6 +907,7 @@ export async function* streamDoctor(): AsyncGenerator<DoctorStreamEvent> {
     { category: "stale-parents", label: "Stale parents", run: () => checkStaleParents(repos) },
     { category: "memory-manager-cli", label: "Memory manager CLI", run: () => checkMemoryManagerCliAvailability(repos) },
     { category: "registry-consistency", label: "Registry consistency", run: () => checkRegistryConsistency(repos) },
+    { category: "active-knots-leases", label: "Active Knots leases", run: () => checkActiveKnotsLeases(repos) },
   ];
 
   let passed = 0;

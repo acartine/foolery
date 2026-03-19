@@ -16,6 +16,11 @@ import { nextBeat } from "@/lib/beads-state-machine";
 import { nextKnot } from "@/lib/knots";
 import { wrapExecutionPrompt } from "@/lib/agent-prompt-guardrails";
 import { getBeatsSkillPrompt } from "@/lib/beats-skill-prompts";
+import {
+  ensureKnotsLease,
+  logAttachedKnotsLease,
+  terminateKnotsRuntimeLease,
+} from "@/lib/knots-lease-runtime";
 import { resolveMemoryManagerType } from "@/lib/memory-manager-commands";
 import { builtinProfileDescriptor, defaultWorkflowDescriptor, forwardTransitionTarget, resolveStep, StepPhase } from "@/lib/workflows";
 
@@ -120,12 +125,31 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
     }
 
     if (memoryManagerType === "knots") {
+      const knotsLeaseId = await ensureKnotsLease({
+        repoPath: input.repoPath,
+        source: "structured_prepare_take",
+        executionLeaseId: leaseId,
+        beatId: input.beatId,
+        interactionType: input.mode,
+        agentInfo: input.agentInfo,
+      });
       const claimResult = await claimKnot(input.beatId, input.repoPath, {
         agentName: input.agentInfo?.agentName,
         agentModel: input.agentInfo?.agentModel,
         agentVersion: input.agentInfo?.agentVersion,
       });
       if (!claimResult.ok || !claimResult.data) {
+        await terminateKnotsRuntimeLease({
+          repoPath: input.repoPath,
+          source: "structured_prepare_take",
+          executionLeaseId: leaseId,
+          knotsLeaseId,
+          beatId: input.beatId,
+          interactionType: input.mode,
+          agentInfo: input.agentInfo,
+          reason: "prepare_take_claim_failed",
+          outcome: "warning",
+        });
         return fail(
           claimResult.error ?? `Failed to claim knot ${input.beatId}`,
           "INTERNAL",
@@ -135,6 +159,17 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
 
       const claimedSnapshot = await loadBeatSnapshot(this.backend, input.beatId, input.repoPath);
       if (!claimedSnapshot.ok || !claimedSnapshot.data) {
+        await terminateKnotsRuntimeLease({
+          repoPath: input.repoPath,
+          source: "structured_prepare_take",
+          executionLeaseId: leaseId,
+          knotsLeaseId,
+          beatId: input.beatId,
+          interactionType: input.mode,
+          agentInfo: input.agentInfo,
+          reason: "prepare_take_reload_failed",
+          outcome: "warning",
+        });
         return fail(
           claimedSnapshot.error?.message ?? `Failed to reload beat ${input.beatId}`,
           claimedSnapshot.error?.code ?? "INTERNAL",
@@ -155,8 +190,18 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         completion: { kind: "advance", expectedState: claimResult.data.state },
         rollback: { kind: "note", note: "Take iteration failed before completion." },
         agentInfo: input.agentInfo,
+        knotsLeaseId,
       };
       leaseStore.set(leaseId, { lease });
+      logAttachedKnotsLease({
+        repoPath: input.repoPath,
+        source: "structured_prepare_take",
+        executionLeaseId: leaseId,
+        beatId: input.beatId,
+        interactionType: input.mode,
+        agentInfo: input.agentInfo,
+        knotsLeaseId,
+      });
       return ok(lease);
     }
 
@@ -231,12 +276,42 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
   async preparePoll(input: PreparePollInput): Promise<BackendResult<PollLeaseResult>> {
     const memoryManagerType = resolveMemoryManagerType(input.repoPath);
     if (memoryManagerType === "knots") {
+      const executionLeaseId = generateLeaseId();
+      const knotsLeaseId = await ensureKnotsLease({
+        repoPath: input.repoPath,
+        source: "structured_prepare_poll",
+        executionLeaseId,
+        interactionType: "poll",
+        agentInfo: input.agentInfo,
+      });
       const pollResult = await pollKnot(input.repoPath, input.agentInfo);
       if (!pollResult.ok || !pollResult.data) {
+        await terminateKnotsRuntimeLease({
+          repoPath: input.repoPath,
+          source: "structured_prepare_poll",
+          executionLeaseId,
+          knotsLeaseId,
+          interactionType: "poll",
+          agentInfo: input.agentInfo,
+          reason: "prepare_poll_claim_failed",
+          outcome: "warning",
+        });
         return fail(pollResult.error ?? "Failed to poll knot");
       }
       const snapshotResult = await loadBeatSnapshot(this.backend, pollResult.data.id, input.repoPath);
       if (!snapshotResult.ok || !snapshotResult.data) {
+        await terminateKnotsRuntimeLease({
+          repoPath: input.repoPath,
+          source: "structured_prepare_poll",
+          executionLeaseId,
+          knotsLeaseId,
+          beatId: pollResult.data.id,
+          claimedId: pollResult.data.id,
+          interactionType: "poll",
+          agentInfo: input.agentInfo,
+          reason: "prepare_poll_reload_failed",
+          outcome: "warning",
+        });
         return fail(
           snapshotResult.error?.message ?? `Failed to load beat ${pollResult.data.id}`,
           snapshotResult.error?.code ?? "INTERNAL",
@@ -244,7 +319,7 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         );
       }
       const lease: ExecutionLease = {
-        leaseId: generateLeaseId(),
+        leaseId: executionLeaseId,
         mode: "poll",
         beatId: pollResult.data.id,
         repoPath: input.repoPath,
@@ -256,8 +331,19 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         completion: { kind: "advance", expectedState: pollResult.data.state },
         rollback: { kind: "note", note: "Poll iteration failed before completion." },
         agentInfo: input.agentInfo,
+        knotsLeaseId,
       };
       leaseStore.set(lease.leaseId, { lease });
+      logAttachedKnotsLease({
+        repoPath: input.repoPath,
+        source: "structured_prepare_poll",
+        executionLeaseId,
+        beatId: pollResult.data.id,
+        claimedId: pollResult.data.id,
+        interactionType: "poll",
+        agentInfo: input.agentInfo,
+        knotsLeaseId,
+      });
       return ok({ lease, claimedId: pollResult.data.id });
     }
 
@@ -300,6 +386,19 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
         await nextBeat(lease.beatId, lease.completion.expectedState, lease.repoPath);
       }
     }
+    if (resolveMemoryManagerType(lease.repoPath) === "knots") {
+      await terminateKnotsRuntimeLease({
+        repoPath: lease.repoPath,
+        source: "structured_complete_iteration",
+        executionLeaseId: lease.leaseId,
+        knotsLeaseId: lease.knotsLeaseId,
+        beatId: lease.beatId,
+        claimedId: lease.beatId,
+        interactionType: lease.mode,
+        agentInfo: lease.agentInfo,
+        reason: `complete:${input.outcome}`,
+      });
+    }
     leaseStore.delete(input.leaseId);
     return this.getExecutionSnapshot({ beatId: lease.beatId, repoPath: lease.repoPath });
   }
@@ -322,6 +421,19 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
           return fail(result.error ?? `Failed to record rollback note for ${lease.beatId}`);
         }
       }
+    }
+    if (resolveMemoryManagerType(lease.repoPath) === "knots") {
+      await terminateKnotsRuntimeLease({
+        repoPath: lease.repoPath,
+        source: "structured_rollback_iteration",
+        executionLeaseId: lease.leaseId,
+        knotsLeaseId: lease.knotsLeaseId,
+        beatId: lease.beatId,
+        claimedId: lease.beatId,
+        interactionType: lease.mode,
+        agentInfo: lease.agentInfo,
+        reason: `rollback:${input.reason}`,
+      });
     }
     leaseStore.delete(input.leaseId);
     return ok(undefined);

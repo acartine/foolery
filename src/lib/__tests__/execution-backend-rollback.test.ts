@@ -13,11 +13,19 @@ const mockClaimKnot = vi.fn();
 const mockUpdateKnot = vi.fn();
 const mockPollKnot = vi.fn();
 const mockNextKnot = vi.fn();
+const mockCreateLease = vi.fn();
+const mockTerminateLease = vi.fn();
 vi.mock("@/lib/knots", () => ({
   claimKnot: (...args: unknown[]) => mockClaimKnot(...args),
   updateKnot: (...args: unknown[]) => mockUpdateKnot(...args),
   pollKnot: (...args: unknown[]) => mockPollKnot(...args),
   nextKnot: (...args: unknown[]) => mockNextKnot(...args),
+  createLease: (...args: unknown[]) => mockCreateLease(...args),
+  terminateLease: (...args: unknown[]) => mockTerminateLease(...args),
+}));
+
+vi.mock("@/lib/lease-audit", () => ({
+  logLeaseAudit: vi.fn(),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({
@@ -94,6 +102,7 @@ function createMockBackend(): BackendPort {
 /** Seed a lease with rollback.kind="note" via the knots prepareTake path. */
 async function seedNoteLease(backend: StructuredExecutionBackend): Promise<string> {
   mockResolveMemoryManagerType.mockReturnValue("knots");
+  mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
   mockClaimKnot.mockResolvedValue({
     ok: true,
     data: { id: "beat-1", title: "Test", state: "in_progress", profile_id: "default", prompt: "do work" },
@@ -126,6 +135,36 @@ describe("rollbackIteration", () => {
     const mockBackend = createMockBackend();
     mockGetBackend.mockReturnValue(mockBackend);
     seb = new StructuredExecutionBackend(mockBackend);
+    mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    mockTerminateLease.mockResolvedValue({ ok: true });
+  });
+
+  it("populates knotsLeaseId during prepareTake on knots repos", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockClaimKnot.mockResolvedValue({
+      ok: true,
+      data: { id: "beat-1", title: "Test", state: "in_progress", profile_id: "default", prompt: "do work" },
+    });
+
+    const result = await seb.prepareTake({ beatId: "beat-1", repoPath: "/repo", mode: "take" });
+
+    expect(result.ok).toBe(true);
+    expect(mockCreateLease).toHaveBeenCalledOnce();
+    expect(result.data?.knotsLeaseId).toBe("lease-k1");
+  });
+
+  it("populates knotsLeaseId during preparePoll on knots repos", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockPollKnot.mockResolvedValue({
+      ok: true,
+      data: { id: "beat-1", title: "Test", state: "in_progress", profile_id: "default", prompt: "poll work" },
+    });
+
+    const result = await seb.preparePoll({ repoPath: "/repo" });
+
+    expect(result.ok).toBe(true);
+    expect(mockCreateLease).toHaveBeenCalledOnce();
+    expect(result.data?.lease.knotsLeaseId).toBe("lease-k1");
   });
 
   it("records rollback note and deletes lease for kind=note on knots repo", async () => {
@@ -141,6 +180,7 @@ describe("rollbackIteration", () => {
     expect(beatId).toBe("beat-1");
     expect(updateInput.addNote).toContain("Take iteration failed before completion.");
     expect(updateInput.addNote).toContain("Reason: agent crashed");
+    expect(mockTerminateLease).toHaveBeenCalledWith("lease-k1", "/repo");
 
     // Lease should be deleted: a second rollback with same id should return NOT_FOUND
     const again = await seb.rollbackIteration({ leaseId, reason: "retry" });
@@ -179,6 +219,7 @@ describe("rollbackIteration", () => {
 
     expect(result.ok).toBe(false);
     expect(result.error?.message).toContain("db write failed");
+    expect(mockTerminateLease).not.toHaveBeenCalled();
 
     // Lease should still exist because the early return happens before delete.
     // A subsequent rollback with a passing updateKnot should succeed.
@@ -241,6 +282,43 @@ describe("rollbackIteration", () => {
     expect(updateInput.noteAgentname).toBe("Claude");
     expect(updateInput.noteModel).toBe("opus/claude");
     expect(updateInput.noteVersion).toBe("4.6");
+  });
+
+  it("terminates the knots lease on completeIteration", async () => {
+    const leaseId = await seedNoteLease(seb);
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockNextKnot.mockResolvedValue({ ok: true });
+
+    const result = await seb.completeIteration({ leaseId, outcome: "success" });
+
+    expect(result.ok).toBe(true);
+    expect(mockNextKnot).toHaveBeenCalled();
+    expect(mockTerminateLease).toHaveBeenCalledWith("lease-k1", "/repo");
+  });
+
+  it("warn-and-continues when createLease fails during prepareTake", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockCreateLease.mockResolvedValue({ ok: false, error: "lease create failed" });
+    mockClaimKnot.mockResolvedValue({
+      ok: true,
+      data: { id: "beat-1", title: "Test", state: "in_progress", profile_id: "default", prompt: "do work" },
+    });
+
+    const result = await seb.prepareTake({ beatId: "beat-1", repoPath: "/repo", mode: "take" });
+
+    expect(result.ok).toBe(true);
+    expect(result.data?.knotsLeaseId).toBeUndefined();
+  });
+
+  it("releases the knots lease when preparePoll fails after lease creation", async () => {
+    mockResolveMemoryManagerType.mockReturnValue("knots");
+    mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+    mockPollKnot.mockResolvedValue({ ok: false, error: "no work" });
+
+    const result = await seb.preparePoll({ repoPath: "/repo" });
+
+    expect(result.ok).toBe(false);
+    expect(mockTerminateLease).toHaveBeenCalledWith("lease-k1", "/repo");
   });
 
   it("skips note block when kind=note on non-knots repo", async () => {
