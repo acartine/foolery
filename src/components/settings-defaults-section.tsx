@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,11 @@ import {
 import { fetchWorkflows } from "@/lib/api";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
 import type { DefaultsSettings } from "@/lib/schemas";
+import {
+  clampMaxConcurrentSessions,
+  MAX_MAX_CONCURRENT_SESSIONS,
+  MIN_MAX_CONCURRENT_SESSIONS,
+} from "@/lib/max-concurrent-sessions";
 
 interface SettingsDefaultsSectionProps {
   defaults: DefaultsSettings;
@@ -51,6 +57,17 @@ export function SettingsDefaultsSection({
     profileOptions.find(([id]) => id === "autopilot")?.[0] ||
     profileOptions[0]?.[0] ||
     "autopilot";
+
+  function handleMaxConcurrentSessionsChange(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    onDefaultsChange({
+      ...defaults,
+      maxConcurrentSessions: clampMaxConcurrentSessions(
+        Number.parseInt(event.target.value, 10),
+      ),
+    });
+  }
 
   return (
     <div className="space-y-3">
@@ -91,6 +108,30 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           The workflow profile pre-selected when creating new beats with
           Shift+N.
+        </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <div className="space-y-1">
+          <Label htmlFor="max-concurrent-sessions" className="text-xs">
+            Max Concurrent Sessions
+          </Label>
+          <p className="text-[11px] text-muted-foreground">
+            Limits how many take sessions can run at once before extra beats queue.
+          </p>
+        </div>
+        <Input
+          id="max-concurrent-sessions"
+          type="number"
+          min={MIN_MAX_CONCURRENT_SESSIONS}
+          max={MAX_MAX_CONCURRENT_SESSIONS}
+          step={1}
+          value={defaults.maxConcurrentSessions}
+          onChange={handleMaxConcurrentSessionsChange}
+          className="border-primary/20 bg-background/80"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Choose a value between {MIN_MAX_CONCURRENT_SESSIONS} and {MAX_MAX_CONCURRENT_SESSIONS}.
         </p>
       </div>
 

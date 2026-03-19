@@ -16,6 +16,7 @@ import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
 import { SettingsDispatchSection } from "@/components/settings-dispatch-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
+import { DEFAULT_MAX_CONCURRENT_SESSIONS } from "@/lib/max-concurrent-sessions";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
   ActionAgentMappings,
@@ -54,6 +55,7 @@ const DEFAULTS: SettingsData = {
   },
   defaults: {
     profileId: "",
+    maxConcurrentSessions: DEFAULT_MAX_CONCURRENT_SESSIONS,
   },
   pools: {
     planning: [],

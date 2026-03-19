@@ -51,7 +51,7 @@ const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
   backend: { type: "auto" },
-  defaults: { profileId: "" },
+  defaults: { profileId: "", maxConcurrentSessions: 5 },
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
 };
@@ -110,6 +110,7 @@ describe("inspectSettingsDefaults", () => {
     expect(result.fileMissing).toBe(false);
     expect(result.error).toBeUndefined();
     expect(result.missingPaths).toContain("defaults.profileId");
+    expect(result.missingPaths).toContain("defaults.maxConcurrentSessions");
   });
 });
 
@@ -145,6 +146,7 @@ describe("backfillMissingSettingsDefaults", () => {
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain("[defaults]");
     expect(written).toContain('profileId = ""');
+    expect(written).toContain("maxConcurrentSessions = 5");
     expect(mockChmod).toHaveBeenCalledWith(
       expect.stringContaining("settings.toml"),
       0o600,
@@ -185,6 +187,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'type = "cli"',
         '[defaults]',
         'profileId = ""',
+        'maxConcurrentSessions = 5',
         '[pools]',
         'planning = []',
         'plan_review = []',
@@ -244,7 +247,7 @@ describe("saveSettings", () => {
       agents: { "my-agent": { command: "my-agent" } },
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
-      defaults: { profileId: "" },
+      defaults: { profileId: "", maxConcurrentSessions: 5 },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "basic" as const,
     };
@@ -261,7 +264,7 @@ describe("saveSettings", () => {
       agents: {},
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
-      defaults: { profileId: "" },
+      defaults: { profileId: "", maxConcurrentSessions: 5 },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
     };
