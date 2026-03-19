@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox } from "lucide-react";
+import { Plus, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox, BarChart3 } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -171,7 +171,7 @@ export function AppHeader() {
     setSettingsOpen(true);
   }
 
-  const setBeatsView = useCallback((view: "queues" | "active" | "finalcut" | "retakes" | "history") => {
+  const setBeatsView = useCallback((view: "queues" | "active" | "finalcut" | "retakes" | "history" | "audit") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "queues") params.delete("view");
     else params.set("view", view);
@@ -188,7 +188,7 @@ export function AppHeader() {
   // Shift+] / Shift+[ to cycle views
   useEffect(() => {
     if (!isBeatsRoute) return;
-    const views = ["queues", "active", "finalcut", "retakes", "history"] as const;
+    const views = ["queues", "active", "finalcut", "retakes", "history", "audit"] as const;
     type CyclableView = (typeof views)[number];
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.querySelector('[role="dialog"]')) return;
@@ -472,6 +472,16 @@ export function AppHeader() {
                   >
                     <History className="size-4" />
                     History
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant={beatsView === "audit" ? "default" : "ghost"}
+                    className="h-8 gap-1.5 px-2.5"
+                    title="Lease audit statistics"
+                    onClick={() => setBeatsView("audit")}
+                  >
+                    <BarChart3 className="size-4" />
+                    Audit
                   </Button>
                 </div>
                 <div className="grid w-[88px]">

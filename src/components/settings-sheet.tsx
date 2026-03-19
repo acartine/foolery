@@ -42,6 +42,7 @@ interface SettingsData {
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
   maxConcurrentSessions: number;
+  maxClaimsPerQueueType: number;
 }
 
 const DEFAULTS: SettingsData = {
@@ -67,6 +68,7 @@ const DEFAULTS: SettingsData = {
   },
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
+  maxClaimsPerQueueType: 10,
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
@@ -105,6 +107,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             pools: settingsResult.data.pools ?? DEFAULTS.pools,
             dispatchMode: settingsResult.data.dispatchMode ?? DEFAULTS.dispatchMode,
             maxConcurrentSessions: settingsResult.data.maxConcurrentSessions ?? DEFAULTS.maxConcurrentSessions,
+            maxClaimsPerQueueType: settingsResult.data.maxClaimsPerQueueType ?? DEFAULTS.maxClaimsPerQueueType,
           });
         }
       })
@@ -185,6 +188,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       actions={settings.actions}
                       pools={settings.pools}
                       agents={settings.agents}
+                      maxClaimsPerQueueType={settings.maxClaimsPerQueueType}
                       onDispatchModeChange={(dispatchMode) =>
                         setSettings((prev) => ({ ...prev, dispatchMode }))
                       }
@@ -193,6 +197,9 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       }
                       onPoolsChange={(pools) =>
                         setSettings((prev) => ({ ...prev, pools }))
+                      }
+                      onMaxClaimsPerQueueTypeChange={(maxClaimsPerQueueType) =>
+                        setSettings((prev) => ({ ...prev, maxClaimsPerQueueType }))
                       }
                     />
                   </TabsContent>

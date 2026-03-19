@@ -12,6 +12,7 @@ import { MergeBeatsDialog } from "@/components/merge-beats-dialog";
 import { FinalCutView } from "@/components/final-cut-view";
 import { RetakesView } from "@/components/retakes-view";
 import { AgentHistoryView } from "@/components/agent-history-view";
+import { LeaseAuditView } from "@/components/lease-audit-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore, type QueuedBeat } from "@/stores/terminal-store";
 import { toast } from "sonner";
@@ -96,6 +97,7 @@ function BeatsPageInner() {
   const isFinalCutView = beatsView === "finalcut";
   const isRetakesView = beatsView === "retakes";
   const isHistoryView = beatsView === "history";
+  const isAuditView = beatsView === "audit";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionVersion, setSelectionVersion] = useState(0);
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
@@ -484,6 +486,8 @@ function BeatsPageInner() {
           <RetakesView />
         ) : isHistoryView ? (
           <AgentHistoryView />
+        ) : isAuditView ? (
+          <LeaseAuditView repoPath={activeRepo ?? undefined} />
         ) : (
           <div className="overflow-x-auto">
           {isLoading ? (

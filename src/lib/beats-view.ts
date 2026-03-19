@@ -4,7 +4,8 @@ export type BeatsView =
   | "search"
   | "finalcut"
   | "retakes"
-  | "history";
+  | "history"
+  | "audit";
 
 export function parseBeatsView(viewParam: string | null): BeatsView {
   switch (viewParam) {
@@ -13,6 +14,7 @@ export function parseBeatsView(viewParam: string | null): BeatsView {
     case "finalcut":
     case "retakes":
     case "history":
+    case "audit":
       return viewParam;
     default:
       return "queues";

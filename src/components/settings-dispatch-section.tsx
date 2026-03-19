@@ -3,6 +3,8 @@
 import { toast } from "sonner";
 import { Zap, Users, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { SettingsActionsSection } from "@/components/settings-actions-section";
 import { SettingsPoolsSection } from "@/components/settings-pools-section";
 import { SettingsDispatchGlobalSwap } from "@/components/settings-dispatch-global-swap";
@@ -19,9 +21,11 @@ interface DispatchSectionProps {
   actions: ActionAgentMappings;
   pools: PoolsSettings;
   agents: Record<string, RegisteredAgent>;
+  maxClaimsPerQueueType: number;
   onDispatchModeChange: (mode: DispatchMode) => void;
   onActionsChange: (actions: ActionAgentMappings) => void;
   onPoolsChange: (pools: PoolsSettings) => void;
+  onMaxClaimsPerQueueTypeChange: (value: number) => void;
 }
 
 const MODES: {
@@ -49,9 +53,11 @@ export function SettingsDispatchSection({
   actions,
   pools,
   agents,
+  maxClaimsPerQueueType,
   onDispatchModeChange,
   onActionsChange,
   onPoolsChange,
+  onMaxClaimsPerQueueTypeChange,
 }: DispatchSectionProps) {
   async function handleModeChange(mode: DispatchMode) {
     onDispatchModeChange(mode);
@@ -129,6 +135,30 @@ export function SettingsDispatchSection({
           onPoolsChange={onPoolsChange}
         />
       )}
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <Label htmlFor="max-claims-per-queue-type" className="text-xs">
+          Max Claims Per Queue Type
+        </Label>
+        <Input
+          id="max-claims-per-queue-type"
+          type="number"
+          min={1}
+          max={50}
+          value={maxClaimsPerQueueType}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val >= 1 && val <= 50) {
+              onMaxClaimsPerQueueTypeChange(val);
+            }
+          }}
+          className="w-24 border-primary/20 bg-background/80"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Maximum number of times a beat can be claimed from the same queue type before the take-loop exits with an error (1–50).
+        </p>
+      </div>
+
       <div className="space-y-2 border-t border-border/70 pt-3">
         <div>
           <p className="text-[11px] font-medium text-foreground">

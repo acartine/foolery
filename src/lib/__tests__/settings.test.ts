@@ -55,6 +55,7 @@ const DEFAULT_SETTINGS = {
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
+  maxClaimsPerQueueType: 10,
 };
 
 beforeEach(() => {
@@ -179,6 +180,7 @@ describe("backfillMissingSettingsDefaults", () => {
       [
         'dispatchMode = "basic"',
         'maxConcurrentSessions = 5',
+        'maxClaimsPerQueueType = 10',
         '[actions]',
         'take = ""',
         'scene = ""',
@@ -250,6 +252,7 @@ describe("saveSettings", () => {
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
+      maxClaimsPerQueueType: 10,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -268,6 +271,7 @@ describe("saveSettings", () => {
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
+      maxClaimsPerQueueType: 10,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(

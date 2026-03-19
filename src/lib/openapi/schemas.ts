@@ -419,6 +419,7 @@ export const componentSchemas = {
         },
       },
       dispatchMode: { type: "string", enum: ["basic", "advanced"] },
+      maxClaimsPerQueueType: { type: "integer", minimum: 1, maximum: 50, default: 10 },
     },
   },
 
