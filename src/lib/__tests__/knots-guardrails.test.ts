@@ -539,6 +539,62 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       expect(ids).not.toContain("g3y1.2"); // shipped, not queued
     });
 
+    it("hides lease knots from the queued view", async () => {
+      await seedKnots();
+      store.knots.set("lease-1", {
+        id: "lease-1",
+        title: "Runtime lease",
+        state: "ready_for_planning",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: nowIso(),
+        body: null,
+        description: "Lease row",
+        priority: 2,
+        type: "lease",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-lease-1",
+        created_at: nowIso(),
+      });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((beat) => beat.id);
+      expect(ids).not.toContain("lease-1");
+    });
+
+    it("hides lease knots from exact queue-state filters", async () => {
+      await seedKnots();
+      store.knots.set("lease-2", {
+        id: "lease-2",
+        title: "Exact-state lease",
+        state: "ready_for_planning",
+        profile_id: "autopilot",
+        workflow_id: "autopilot",
+        updated_at: nowIso(),
+        body: null,
+        description: "Lease row",
+        priority: 2,
+        type: "lease",
+        tags: [],
+        notes: [],
+        handoff_capsules: [],
+        workflow_etag: "etag-lease-2",
+        created_at: nowIso(),
+      });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "ready_for_planning" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((beat) => beat.id);
+      expect(ids).not.toContain("lease-2");
+    });
+
     it("keeps all descendants of queued parents in the queues view", async () => {
       await seedKnots();
       store.knots.set("g3y1.3", {

@@ -482,8 +482,11 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
 
   const isPhaseFilter = filters.state === "queued" || filters.state === "in_action";
+  const hidesLeaseType = filters.state === "queued"
+    || (typeof filters.state === "string" && resolveStep(filters.state)?.phase === StepPhase.Queued);
+  const visibleBeats = hidesLeaseType ? beats.filter((beat) => beat.type !== "lease") : beats;
 
-  const filtered = beats.filter((b) => {
+  const filtered = visibleBeats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
@@ -512,7 +515,7 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   // are in a queue state so the user can see every child regardless of its
   // own state.
   if (isPhaseFilter) {
-    return includeDescendantsOfQueueParents(beats, filtered);
+    return includeDescendantsOfQueueParents(visibleBeats, filtered);
   }
 
   return filtered;
