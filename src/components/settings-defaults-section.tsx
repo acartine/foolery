@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { fetchWorkflows } from "@/lib/api";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
 import type { DefaultsSettings } from "@/lib/schemas";
@@ -25,11 +26,15 @@ import type { DefaultsSettings } from "@/lib/schemas";
 interface SettingsDefaultsSectionProps {
   defaults: DefaultsSettings;
   onDefaultsChange: (defaults: DefaultsSettings) => void;
+  maxConcurrentSessions: number;
+  onMaxConcurrentSessionsChange: (value: number) => void;
 }
 
 export function SettingsDefaultsSection({
   defaults,
   onDefaultsChange,
+  maxConcurrentSessions,
+  onMaxConcurrentSessionsChange,
 }: SettingsDefaultsSectionProps) {
   const [infoOpen, setInfoOpen] = useState(false);
   const { data: workflowResult } = useQuery({
@@ -91,6 +96,29 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           The workflow profile pre-selected when creating new beats with
           Shift+N.
+        </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <Label htmlFor="max-concurrent-sessions" className="text-xs">
+          Max Concurrent Sessions
+        </Label>
+        <Input
+          id="max-concurrent-sessions"
+          type="number"
+          min={1}
+          max={20}
+          value={maxConcurrentSessions}
+          onChange={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val >= 1 && val <= 20) {
+              onMaxConcurrentSessionsChange(val);
+            }
+          }}
+          className="w-24 border-primary/20 bg-background/80"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Maximum number of agent sessions that can run at the same time (1–20).
         </p>
       </div>
 

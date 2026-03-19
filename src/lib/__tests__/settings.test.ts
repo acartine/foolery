@@ -54,6 +54,7 @@ const DEFAULT_SETTINGS = {
   defaults: { profileId: "" },
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
+  maxConcurrentSessions: 5,
 };
 
 beforeEach(() => {
@@ -177,6 +178,7 @@ describe("backfillMissingSettingsDefaults", () => {
     mockReadFile.mockResolvedValue(
       [
         'dispatchMode = "basic"',
+        'maxConcurrentSessions = 5',
         '[actions]',
         'take = ""',
         'scene = ""',
@@ -247,6 +249,7 @@ describe("saveSettings", () => {
       defaults: { profileId: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "basic" as const,
+      maxConcurrentSessions: 5,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -264,6 +267,7 @@ describe("saveSettings", () => {
       defaults: { profileId: "" },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
+      maxConcurrentSessions: 5,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(

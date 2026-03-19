@@ -187,6 +187,7 @@ export const foolerySettingsSchema = z.object({
   defaults: defaultsSettingsSchema,
   pools: poolsSettingsSchema,
   dispatchMode: dispatchModeSchema,
+  maxConcurrentSessions: z.number().int().min(1).max(20).default(5),
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;

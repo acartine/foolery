@@ -490,6 +490,7 @@ export type SettingsPartial = Partial<{
   defaults: Partial<FoolerySettings["defaults"]>;
   pools: Partial<FoolerySettings["pools"]>;
   dispatchMode: FoolerySettings["dispatchMode"];
+  maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];
 }>;
 
 /**
@@ -509,6 +510,7 @@ export async function updateSettings(
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
     pools:        partial.pools        !== undefined ? { ...current.pools,        ...partial.pools }        : current.pools,
     dispatchMode: partial.dispatchMode !== undefined ? partial.dispatchMode                                 : current.dispatchMode,
+    maxConcurrentSessions: partial.maxConcurrentSessions !== undefined ? partial.maxConcurrentSessions      : current.maxConcurrentSessions,
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);

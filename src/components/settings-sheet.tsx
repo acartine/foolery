@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -40,6 +41,7 @@ interface SettingsData {
   defaults: DefaultsSettings;
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
+  maxConcurrentSessions: number;
 }
 
 const DEFAULTS: SettingsData = {
@@ -64,6 +66,7 @@ const DEFAULTS: SettingsData = {
     shipment_review: [],
   },
   dispatchMode: "basic",
+  maxConcurrentSessions: 5,
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
@@ -76,6 +79,7 @@ const TAB_DEFS: { value: SettingsTab; label: string; icon: typeof Bot }[] = [
 ];
 
 export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSheetProps) {
+  const queryClient = useQueryClient();
   const [settings, setSettings] = useState<SettingsData>(DEFAULTS);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -100,6 +104,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
             pools: settingsResult.data.pools ?? DEFAULTS.pools,
             dispatchMode: settingsResult.data.dispatchMode ?? DEFAULTS.dispatchMode,
+            maxConcurrentSessions: settingsResult.data.maxConcurrentSessions ?? DEFAULTS.maxConcurrentSessions,
           });
         }
       })
@@ -114,6 +119,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
       if (res.ok) {
         toast.success("Settings saved");
         if (res.data) setSettings(res.data);
+        queryClient.invalidateQueries({ queryKey: ["settings"] });
       } else {
         toast.error(res.error ?? "Failed to save settings");
       }
@@ -196,6 +202,10 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       defaults={settings.defaults}
                       onDefaultsChange={(defaults) =>
                         setSettings((prev) => ({ ...prev, defaults }))
+                      }
+                      maxConcurrentSessions={settings.maxConcurrentSessions}
+                      onMaxConcurrentSessionsChange={(maxConcurrentSessions) =>
+                        setSettings((prev) => ({ ...prev, maxConcurrentSessions }))
                       }
                     />
                   </TabsContent>
