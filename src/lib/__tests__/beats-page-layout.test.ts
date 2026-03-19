@@ -87,6 +87,11 @@ describe("beats page layout", () => {
     );
   });
 
+  it("does not send the state filter when a search query is active", () => {
+    expect(source).toContain('if (!searchQuery && filters.state) params.state = filters.state;');
+    expect(source).toContain('if (searchQuery) params.q = searchQuery;');
+  });
+
   it("constrains selected-row description and notes summaries on laptop widths", () => {
     expect(beatTableSource).toContain('className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(3,minmax(0,1fr))] gap-1 text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}');
     expect(beatTableSource).toContain('const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");');

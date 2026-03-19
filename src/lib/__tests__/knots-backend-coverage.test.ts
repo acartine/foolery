@@ -694,20 +694,36 @@ describe("KnotsBackend coverage: buildTakePrompt parent/scene mode", () => {
 });
 
 describe("KnotsBackend coverage: search and query", () => {
-  it("search matches on id, title, description, and notes", async () => {
+  it("search matches on id, aliases, title, description, and notes", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
-      id: "S1",
+      id: "foolery-1789",
       title: "Alpha",
+      aliases: ["search-1789"],
       description: "beta search target",
       notes: [{ content: "gamma note", username: "u", datetime: nowIso() }],
     });
     insertKnot({ id: "S2", title: "Unrelated" });
 
+    const byFullId = await backend.search("foolery-1789");
+    expect(byFullId.ok).toBe(true);
+    expect(byFullId.data?.length).toBe(1);
+    expect(byFullId.data?.[0]?.id).toBe("foolery-1789");
+
+    const bySuffix = await backend.search("1789");
+    expect(bySuffix.ok).toBe(true);
+    expect(bySuffix.data?.length).toBe(1);
+    expect(bySuffix.data?.[0]?.id).toBe("foolery-1789");
+
+    const byAlias = await backend.search("search-1789");
+    expect(byAlias.ok).toBe(true);
+    expect(byAlias.data?.length).toBe(1);
+    expect(byAlias.data?.[0]?.id).toBe("foolery-1789");
+
     const byDesc = await backend.search("beta");
     expect(byDesc.ok).toBe(true);
     expect(byDesc.data?.length).toBe(1);
-    expect(byDesc.data?.[0]?.id).toBe("S1");
+    expect(byDesc.data?.[0]?.id).toBe("foolery-1789");
 
     const byNotes = await backend.search("gamma");
     expect(byNotes.ok).toBe(true);

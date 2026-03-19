@@ -841,6 +841,7 @@ export class KnotsBackend implements BackendPort {
     const lower = query.toLowerCase();
     const matches = (result.data ?? []).filter((beat) =>
       beat.id.toLowerCase().includes(lower) ||
+      (beat.aliases ?? []).some((alias) => alias.toLowerCase().includes(lower)) ||
       beat.title.toLowerCase().includes(lower) ||
       (beat.description ?? "").toLowerCase().includes(lower) ||
       (beat.notes ?? "").toLowerCase().includes(lower),

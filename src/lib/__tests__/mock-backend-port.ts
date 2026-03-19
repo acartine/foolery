@@ -112,6 +112,8 @@ export class MockBackendPort implements BackendPort {
     const lower = query.toLowerCase();
     let items = Array.from(this.beats.values()).filter(
       (b) =>
+        b.id.toLowerCase().includes(lower) ||
+        (b.aliases ?? []).some((alias) => alias.toLowerCase().includes(lower)) ||
         b.title.toLowerCase().includes(lower) ||
         (b.description ?? "").toLowerCase().includes(lower),
     );

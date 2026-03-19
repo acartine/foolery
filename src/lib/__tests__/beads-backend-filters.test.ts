@@ -239,3 +239,42 @@ describe("BeadsBackend query expression operations", () => {
     });
   });
 });
+
+describe("BeadsBackend search operations", () => {
+  let tempDir: string;
+  let backend: BeadsBackend;
+
+  afterEach(() => {
+    backend._reset();
+    rmSync(tempDir, { recursive: true, force: true });
+  });
+
+  beforeEach(() => {
+    tempDir = makeTempRepo([
+      jsonlRecord({
+        id: "foolery-1789",
+        title: "Target beat",
+        aliases: ["search-1789"],
+        status: "closed",
+      }),
+      jsonlRecord({ id: "foolery-2222", title: "Other beat" }),
+    ]);
+    backend = new BeadsBackend(tempDir);
+  });
+
+  it("matches the full beat id and suffix", async () => {
+    const byFullId = await backend.search("foolery-1789");
+    expect(byFullId.ok).toBe(true);
+    expect(byFullId.data?.map((beat) => beat.id)).toEqual(["foolery-1789"]);
+
+    const bySuffix = await backend.search("1789");
+    expect(bySuffix.ok).toBe(true);
+    expect(bySuffix.data?.map((beat) => beat.id)).toEqual(["foolery-1789"]);
+  });
+
+  it("matches beat aliases", async () => {
+    const result = await backend.search("search-1789");
+    expect(result.ok).toBe(true);
+    expect(result.data?.map((beat) => beat.id)).toEqual(["foolery-1789"]);
+  });
+});

@@ -121,7 +121,7 @@ function BeatsPageInner() {
   );
 
   const params: Record<string, string> = {};
-  if (filters.state) params.state = filters.state;
+  if (!searchQuery && filters.state) params.state = filters.state;
   if (filters.type) params.type = filters.type;
   if (filters.priority !== undefined) params.priority = String(filters.priority);
   if (searchQuery) params.q = searchQuery;
