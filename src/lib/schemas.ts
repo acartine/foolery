@@ -144,8 +144,10 @@ export const defaultsSettingsSchema = z
   .object({
     /** Default workflow profile ID for new beats (empty = "autopilot" fallback). */
     profileId: z.string().default(""),
+    /** Maximum number of concurrent terminal sessions allowed. */
+    maxConcurrentSessions: z.number().int().min(1).max(20).default(5),
   })
-  .default({ profileId: "" });
+  .default({ profileId: "", maxConcurrentSessions: 5 });
 
 // Agent dispatch mode: "basic" uses simple per-action mappings,
 // "advanced" uses weighted per-step agent pools.

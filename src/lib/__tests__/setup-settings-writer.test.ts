@@ -68,7 +68,7 @@ describe("settings writers", () => {
           breakdown: "codex",
         },
         backend: { type: "auto" },
-        defaults: { profileId: "" },
+        defaults: { profileId: "", maxConcurrentSessions: 5 },
         pools: {
           planning: [],
           plan_review: [],

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -21,6 +22,10 @@ import {
 import { fetchWorkflows } from "@/lib/api";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
 import type { DefaultsSettings } from "@/lib/schemas";
+
+function clampMaxConcurrentSessions(value: number): number {
+  return Math.min(20, Math.max(1, value));
+}
 
 interface SettingsDefaultsSectionProps {
   defaults: DefaultsSettings;
@@ -91,6 +96,35 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           The workflow profile pre-selected when creating new beats with
           Shift+N.
+        </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor="max-concurrent-sessions" className="text-xs">
+            Max Concurrent Sessions
+          </Label>
+        </div>
+        <Input
+          id="max-concurrent-sessions"
+          type="number"
+          min={1}
+          max={20}
+          step={1}
+          value={defaults.maxConcurrentSessions}
+          onChange={(event) => {
+            const nextValue = Number.parseInt(event.target.value, 10);
+            if (!Number.isFinite(nextValue)) return;
+            onDefaultsChange({
+              ...defaults,
+              maxConcurrentSessions: clampMaxConcurrentSessions(nextValue),
+            });
+          }}
+          className="w-full border-primary/20 bg-background/80"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Limits how many beat sessions can run at once before additional work
+          is queued. Choose a value from 1 to 20.
         </p>
       </div>
 

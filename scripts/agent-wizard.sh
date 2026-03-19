@@ -156,7 +156,7 @@ _write_settings_toml() {
     done
 
     printf '\n[backend]\ntype = "auto"\n'
-    printf '\n[defaults]\nprofileId = ""\n'
+    printf '\n[defaults]\nprofileId = ""\nmaxConcurrentSessions = 5\n'
     printf '\n[pools]\n'
     local step
     for step in planning plan_review implementation implementation_review shipment shipment_review; do

@@ -54,6 +54,7 @@ const DEFAULTS: SettingsData = {
   },
   defaults: {
     profileId: "",
+    maxConcurrentSessions: 5,
   },
   pools: {
     planning: [],

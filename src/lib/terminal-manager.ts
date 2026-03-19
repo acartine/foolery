@@ -62,7 +62,7 @@ interface SessionEntry {
 
 
 const MAX_BUFFER = 5000;
-const MAX_SESSIONS = 5;
+const DEFAULT_MAX_CONCURRENT_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 const INPUT_CLOSE_GRACE_MS = 2000;
 const MAX_TAKE_ITERATIONS = 10;
@@ -532,12 +532,16 @@ export async function createSession(
   repoPath?: string,
   customPrompt?: string
 ): Promise<TerminalSession> {
+  const settings = await loadSettings();
+  const maxConcurrentSessions =
+    settings.defaults?.maxConcurrentSessions ?? DEFAULT_MAX_CONCURRENT_SESSIONS;
+
   // Enforce max concurrent sessions
   const running = Array.from(sessions.values()).filter(
     (e) => e.session.status === "running"
   );
-  if (running.length >= MAX_SESSIONS) {
-    throw new Error(`Max concurrent sessions (${MAX_SESSIONS}) reached`);
+  if (running.length >= maxConcurrentSessions) {
+    throw new Error(`Max concurrent sessions (${maxConcurrentSessions}) reached`);
   }
 
   // Fetch beat details for prompt
