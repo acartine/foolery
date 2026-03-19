@@ -222,9 +222,10 @@ function registerSearchQueryTests(
   describe.skipIf(!getCaps().canSearch)("search operations", () => {
     it("search() returns matching results", async () => {
       if (!getCaps().canCreate) return;
-      await getPort().create(
+      const created = await getPort().create(
         sampleCreateInput({ title: "Unique needle alpha" }),
       );
+      expect(created.ok).toBe(true);
       await getPort().create(sampleCreateInput({ title: "Other beat" }));
 
       const result = await getPort().search("needle alpha");
@@ -233,6 +234,11 @@ function registerSearchQueryTests(
       expect(
         result.data!.some((b: Beat) => b.title.includes("needle")),
       ).toBe(true);
+
+      const createdId = created.data!.id;
+      const byId = await getPort().search(createdId);
+      expect(byId.ok).toBe(true);
+      expect(byId.data!.some((b: Beat) => b.id === createdId)).toBe(true);
     });
   });
 
