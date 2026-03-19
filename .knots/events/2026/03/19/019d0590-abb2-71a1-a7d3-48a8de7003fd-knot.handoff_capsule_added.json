@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0590-abb2-71a1-a7d3-48a8de7003fd",
+  "occurred_at": "2026-03-19T10:07:40.466126Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation already merged to main via commits 51a59f08 and 345d04a3. Previous shipment review failed only due to dirty local workspace, not code issues. Verified: all quality gates pass (lint clean, typecheck clean, 2092/2092 tests pass). Search matches beat IDs (full and suffix), aliases, title, and description across both beads and knots backends. State filter is bypassed when search query is present.",
+    "datetime": "2026-03-19T11:10:00Z",
+    "entry_id": "019d0590-abb2-71a1-a7d3-489a67e31ffb",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

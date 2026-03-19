@@ -1,0 +1,17 @@
+{
+  "event_id": "019d057e-24fc-7653-a941-0cb103d31e4e",
+  "occurred_at": "2026-03-19T09:47:26.332343Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.created",
+  "data": {
+    "body": "you should be able to find a knot in any state simply by typing the beat id, with or without the suffix",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Improve Search:  Search by beat ids (with and without suffix)",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

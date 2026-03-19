@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058a-6ba5-7391-874a-17f0f1b2a893",
+  "occurred_at": "2026-03-19T10:00:50.85348Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete. Single-file fix in beat-display.ts: apply stripBeatPrefix to aliases in displayBeatLabel(). Key risk: aliases like 'ship-views' would also get stripped to 'views' — implementer should verify whether prefix-stripping should be conditional (only when alias matches project-id pattern) or unconditional. Test file needs update + new hierarchical alias test case.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d058a-6ba5-7391-874a-17e4a94b5a0b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

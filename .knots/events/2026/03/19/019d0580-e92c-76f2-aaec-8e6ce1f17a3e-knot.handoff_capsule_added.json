@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0580-e92c-76f2-aaec-8e6ce1f17a3e",
+  "occurred_at": "2026-03-19T09:50:27.628752Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete for beat ID search improvement. Key changes: (1) Add beat.id matching to BeadsBackend and mock backend search, (2) Skip state filters when search query is present so results span all states, (3) Add alias searching to both backends, (4) Add tests for full ID, suffix-only, and cross-state search. All changes are localized — no API or schema changes needed. KnotsBackend already matches on beat.id but needs alias support. BeadsBackend needs both id and alias matching added.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d0580-e92c-76f2-aaec-8e5dcced993e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0591-1e97-7ea0-99ba-7b6e4769d95f",
+  "occurred_at": "2026-03-19T10:08:09.879496Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented hierarchical queue label tightening by stripping the project prefix only for dotted aliases in displayBeatLabel(). Added coverage for dotted aliases and unchanged human-friendly aliases. Validation in worktree /Users/cartine/foolery-c4cc: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, bun run build. Branch: codex/foolery-c4cc. Commit: ba7207797280.",
+    "datetime": "2026-03-19T10:07:20Z",
+    "entry_id": "019d0591-1e97-7ea0-99ba-7b50db66ae64",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

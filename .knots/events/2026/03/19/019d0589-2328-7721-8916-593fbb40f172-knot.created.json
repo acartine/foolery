@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0589-2328-7721-8916-593fbb40f172",
+  "occurred_at": "2026-03-19T09:59:26.760512Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.created",
+  "data": {
+    "body": "the parent is correctly shown as 562b (in ~/knots project), but children alias are the full knots-562b.1\n\nshould just be 562b.1 - we can strip the prefix in the queue view",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "queue view: hierarchical id dispaly tightening",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

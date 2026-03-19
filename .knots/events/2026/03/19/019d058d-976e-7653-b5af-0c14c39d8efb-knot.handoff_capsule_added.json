@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058d-976e-7653-b5af-0c14c39d8efb",
+  "occurred_at": "2026-03-19T10:04:18.670394Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan (rev 2) addresses prior review feedback by scoping prefix stripping narrowly: only aliases containing a dot (hierarchical aliases like knots-562b.1) get stripped to 562b.1. Human-friendly aliases like ship-views pass through unchanged. The fix is in displayBeatLabel() in src/lib/beat-display.ts, with new unit tests covering both cases. All existing call sites benefit automatically.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d058d-976e-7653-b5af-0c05d39c65b4",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

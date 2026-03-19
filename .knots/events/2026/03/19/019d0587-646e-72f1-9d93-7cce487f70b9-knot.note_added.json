@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0587-646e-72f1-9d93-7cce487f70b9",
+  "occurred_at": "2026-03-19T09:57:32.398613Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\\n1. Update the retakes view in src/components/retakes-view.tsx to introduce a single view-level boolean for showing or hiding detail content, defaulting to hidden so the list is title/id-first on first render.\\n2. Thread that boolean through RetakeRow and RetakeDetails instead of always rendering notes and handoff capsules. Keep description and steps visible so workflow context is still scannable while the high-volume notes/capsule content stays collapsed by default.\\n3. Add one toggle control in the RetakesView header that switches both notes and handoff capsules together, with copy that makes the shared behavior explicit.\\n4. Preserve existing pagination, retake actions, sorting, and metadata parsing; this should be a presentation-only change with no API or backend impact.\\n5. Add or extend a source-based unit contract test under src/lib/__tests__ to assert that retakes-view defaults the shared details toggle off and exposes a single control for notes plus handoff capsules.\\n\\nFiles likely touched:\\n- src/components/retakes-view.tsx\\n- src/lib/__tests__/retakes-*.test.ts\\n\\nTest strategy:\\n- Run the targeted Vitest test covering the new retakes contract.\\n- If implementation scope stays localized, optionally run the broader retakes-related test slice after the change.\\n\\nRisks and considerations:\\n- The main product ambiguity is whether description and step history should remain visible; based on the request wording, only notes and handoff capsules should be hidden by the shared toggle.\\n- Keep the toggle state local to the retakes view unless product wants persistence; no persistence is implied by the request.",
+    "datetime": "2026-03-19T09:57:15Z",
+    "entry_id": "019d0587-646e-72f1-9d93-7cbc516ab543",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-19"
+  }
+}

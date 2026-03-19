@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0591-3c8f-7b20-919c-839c7a932826",
+  "occurred_at": "2026-03-19T10:08:17.551055Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1789",
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Improve Search:  Search by beat ids (with and without suffix)",
+    "type": "work",
+    "updated_at": "2026-03-19T10:08:17.551055Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0590-bbf7-7510-a435-c32f8399fda6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0589-28ed-7dc2-9cad-25610c647ed0",
+  "occurred_at": "2026-03-19T09:59:28.23781Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Acceptance Criteria:\nchildren beats have their id prefix stripped just like parent beats.",
+    "datetime": "2026-03-19T09:59:28.23781Z",
+    "entry_id": "019d0589-28ed-7dc2-9cad-2555013abb5c",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

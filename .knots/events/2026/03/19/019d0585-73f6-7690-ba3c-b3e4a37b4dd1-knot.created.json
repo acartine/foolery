@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0585-73f6-7690-ba3c-b3e4a37b4dd1",
+  "occurred_at": "2026-03-19T09:55:25.302504Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.created",
+  "data": {
+    "body": "it's hard to see all the beats in the retake view.\n\nby default toggle off the notes and handoff capsules (one toggle total that hides or shows both at the same time) \n\nthis way the user can scan the beat titles and ids more quickly and then simply untoggle the details with one click.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Retakes view:  collapse notes and handoff capsules by default, provide toggle to uncollapse",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

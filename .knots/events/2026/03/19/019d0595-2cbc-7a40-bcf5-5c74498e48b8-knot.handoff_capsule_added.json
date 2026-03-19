@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0595-2cbc-7a40-bcf5-5c74498e48b8",
+  "occurred_at": "2026-03-19T10:12:35.644846Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipped commit 01067b4322e8 to main. Merged codex/foolery-c4cc which tightens hierarchical queue beat labels by stripping project prefix from dotted aliases (e.g. knots-562b.1 → 562b.1). CI green on main (run 23289934106). Files changed: src/lib/beat-display.ts, src/lib/__tests__/beat-display.test.ts.",
+    "datetime": "2026-03-19T10:12:00Z",
+    "entry_id": "019d0595-2cbc-7a40-bcf5-5c6df67bd4a8",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

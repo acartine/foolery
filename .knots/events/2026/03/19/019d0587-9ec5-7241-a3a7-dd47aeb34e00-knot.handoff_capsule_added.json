@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0587-9ec5-7241-a3a7-dd47aeb34e00",
+  "occurred_at": "2026-03-19T09:57:47.333597Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement in src/components/retakes-view.tsx by adding a single shared details toggle, defaulting notes and handoff capsules to hidden while leaving the rest of each retake row intact. Cover the change with a source-based retakes contract test under src/lib/__tests__ that locks in the default-collapsed behavior and the one-toggle control.",
+    "datetime": "2026-03-19T09:57:15Z",
+    "entry_id": "019d0587-9ec5-7241-a3a7-dd38a1919a43",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-19"
+  }
+}

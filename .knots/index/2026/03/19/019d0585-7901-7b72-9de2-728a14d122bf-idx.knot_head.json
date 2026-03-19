@@ -1,0 +1,20 @@
+{
+  "event_id": "019d0585-7901-7b72-9de2-728a14d122bf",
+  "occurred_at": "2026-03-19T09:55:26.585342Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6df0",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Retakes view:  collapse notes and handoff capsules by default, provide toggle to uncollapse",
+    "type": "work",
+    "updated_at": "2026-03-19T09:55:26.585342Z",
+    "workflow_id": "compatibility"
+  }
+}

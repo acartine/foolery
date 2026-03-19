@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0588-d8a5-7751-aceb-a304d8df6d65",
+  "occurred_at": "2026-03-19T09:59:07.685786Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Verified beat search now matches full IDs, numeric suffixes, and aliases in both beads and knots backends; the beats page omits the state filter when q is present so ID lookup can find beats regardless of current state filter. Reviewed tests covering backend contract parity, beads backend ID/suffix/alias search, knots backend ID/suffix/alias search, and beats page param behavior. Re-ran sanity gates in /private/tmp/foolery-1789-impl: bun run lint (warnings only), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-19T09:58:43Z",
+    "entry_id": "019d0588-d8a5-7751-aceb-a2ff3e05738e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

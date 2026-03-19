@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058c-1cd9-74a0-9ca1-fdab5ebfb092",
+  "occurred_at": "2026-03-19T10:02:41.753344Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the retakes view detail toggle in a dedicated worktree. Notes and handoff capsules now share one header toggle, default collapsed, while descriptions and steps remain visible. Added a source contract test covering the default-off state and shared control. Validation in /private/tmp/foolery-6df0-impl: bun run test -- src/lib/__tests__/retakes-pagination-layout.test.ts, bun run lint, bunx tsc --noEmit, bun run test, bun run build. Lint completed with pre-existing warnings only; test, typecheck, and build passed.",
+    "datetime": "2026-03-19T10:02:11Z",
+    "entry_id": "019d058c-1cd9-74a0-9ca1-fd91bb711a4d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

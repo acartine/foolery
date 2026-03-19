@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0592-a206-7bc1-afb2-e1b6dff237e2",
+  "occurred_at": "2026-03-19T10:09:49.062923Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation_review. Reviewed commit ba720779 in /Users/cartine/foolery-c4cc. The change is limited to display label formatting in src/lib/beat-display.ts, where dotted aliases now strip only the project prefix before display, so knots-562b.1 renders as 562b.1 while human-friendly aliases remain unchanged. Added unit coverage in src/lib/__tests__/beat-display.test.ts for hierarchical aliases, multi-dot aliases, and unchanged friendly aliases. Verification rerun in the implementation worktree: bun run lint completed with existing warnings only and no errors; bunx tsc --noEmit passed; bun run test passed (150 files, 2094 tests); bun run build passed. No invariants were defined for this knot, and I found no security or regression concerns within the reviewed scope.",
+    "datetime": "2026-03-19T10:09:37Z",
+    "entry_id": "019d0592-a206-7bc1-afb2-e1a1f9f77778",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

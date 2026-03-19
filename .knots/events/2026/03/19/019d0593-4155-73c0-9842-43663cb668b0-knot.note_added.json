@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0593-4155-73c0-9842-43663cb668b0",
+  "occurred_at": "2026-03-19T10:10:29.845483Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan: Make Max Concurrent Sessions Configurable\n\n### Summary\nThe max concurrent sessions limit is hardcoded to `5` in two locations. This plan adds it as a user-configurable setting in the settings sheet, persisted to `~/.config/foolery/settings.toml`.\n\n### Hardcoded Locations\n1. `src/lib/terminal-manager.ts:65` — `const MAX_SESSIONS = 5;` (enforced in `createSession()`)\n2. `src/app/beats/page.tsx:32` — `const MAX_SESSIONS = 5;` (used for UI slot calculations)\n\n### Steps\n\n**Step 1: Schema Update** (`src/lib/schemas.ts`)\n- Add `maxConcurrentSessions` field to `foolerySettingsSchema` with `z.number().int().min(1).max(20).default(5)`\n- This auto-propagates to the `FoolerySettings` type\n\n**Step 2: Settings UI — New Section Component** (`src/components/settings-sessions-section.tsx`)\n- Create a simple section component following the pattern in `settings-defaults-section.tsx`\n- Number input or slider for max concurrent sessions (range 1–20, default 5)\n- Brief description explaining the setting\n\n**Step 3: Settings Sheet Integration** (`src/components/settings-sheet.tsx`)\n- Add the new sessions section to an appropriate tab (likely a new \"General\" or \"Sessions\" tab, or add to existing Defaults tab)\n- Wire up state and onChange handler following existing patterns\n\n**Step 4: Terminal Manager** (`src/lib/terminal-manager.ts`)\n- Replace hardcoded `MAX_SESSIONS = 5` with a dynamic read from settings\n- Use `loadSettings()` from `src/lib/settings.ts` (already cached with 30s TTL)\n\n**Step 5: Beats Page** (`src/app/beats/page.tsx`)\n- Replace hardcoded `MAX_SESSIONS = 5` with value from settings\n- Fetch settings on mount or use a shared settings hook/context if available\n\n### Test Strategy\n- Unit test: schema validates maxConcurrentSessions correctly (valid range, default)\n- Integration: verify settings round-trip (save → load) includes new field\n- Manual: confirm UI renders input, saves value, and terminal manager respects new limit\n\n### Risks & Complexity\n- **Low complexity** — follows well-established settings patterns\n- **Risk**: terminal-manager reads settings at session creation time; if settings load is async, need to ensure it doesn't block or race. The existing 30s cache mitigates this.\n- **Risk**: TOML migration — existing settings files without this field will use the schema default (5), so backward-compatible.",
+    "datetime": "2026-03-19T10:10:29.845483Z",
+    "entry_id": "019d0593-4155-73c0-9842-43544616f71e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

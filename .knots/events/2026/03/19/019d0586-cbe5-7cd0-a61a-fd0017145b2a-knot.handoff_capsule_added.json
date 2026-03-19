@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0586-cbe5-7cd0-a61a-fd0017145b2a",
+  "occurred_at": "2026-03-19T09:56:53.349515Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented beat ID search across backends and tests. Search now matches full IDs, suffix matches, and aliases; the beats page omits the state filter when q is present so ID search can find beats in any state. Validation in /private/tmp/foolery-1789-impl: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, bun run build. Branch: work/foolery-1789. Commit: 51a59f081418.",
+    "datetime": "2026-03-19T09:56:09Z",
+    "entry_id": "019d0586-cbe5-7cd0-a61a-fcf8b809cc0b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

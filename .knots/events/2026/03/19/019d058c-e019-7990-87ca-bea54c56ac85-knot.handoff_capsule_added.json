@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058c-e019-7990-87ca-bea54c56ac85",
+  "occurred_at": "2026-03-19T10:03:31.737905Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review could not be completed because this checkout is on main with local modifications present and main is 2 commits behind origin/main. Knot metadata shows shipment commit labels commit:51a59f081418 and commit:345d04a35395, but I did not approve shipment because the local workspace is not a clean review baseline.",
+    "datetime": "2026-03-19T10:03:16Z",
+    "entry_id": "019d058c-e019-7990-87ca-be921c76c62e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

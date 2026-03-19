@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0594-51bf-71b2-b17f-4f191a0aa64b",
+  "occurred_at": "2026-03-19T10:11:39.583539Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Beat ID search feature (foolery-1789) is merged to main and pushed to origin. CI green on commit 345d04a3. Commits: 51a59f08 (Improve beat ID search coverage) and 345d04a3 (merge into ship branch). KnotsBackend now matches beat IDs directly so full IDs and suffixes resolve across all states. Beats page omits state filter when q is present. 117/117 tests passing.",
+    "datetime": "2026-03-19T10:12:00Z",
+    "entry_id": "019d0594-51bf-71b2-b17f-4f0c205817be",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

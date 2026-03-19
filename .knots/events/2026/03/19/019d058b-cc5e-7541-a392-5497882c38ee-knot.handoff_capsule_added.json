@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058b-cc5e-7541-a392-5497882c38ee",
+  "occurred_at": "2026-03-19T10:02:21.150549Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped work/foolery-1789 to origin/main via merge commit 345d04a35395. Search now matches beat IDs with and without project prefix and bypasses state-filter narrowing during explicit search. Remote GitHub Actions passed for commit 345d04a35395: CI #23289549596 and Coverage Badge #23289549578. CI emitted non-blocking annotations for Node 20 action deprecation and a coverage-regression warning, but both workflows concluded success.",
+    "datetime": "2026-03-19T10:00:32Z",
+    "entry_id": "019d058b-cc5e-7541-a392-548ad2cbe2fe",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

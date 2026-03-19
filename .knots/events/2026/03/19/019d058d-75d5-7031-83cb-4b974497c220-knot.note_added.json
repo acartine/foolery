@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058d-75d5-7031-83cb-4b974497c220",
+  "occurred_at": "2026-03-19T10:04:10.069946Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan (Revision 2)\n\n### Problem\n`displayBeatLabel()` returns aliases verbatim, so hierarchical aliases like `knots-562b.1` display with the project prefix. The lightbox's `getDisplayedBeatAliases()` already strips prefixes correctly, but it strips ALL aliases unconditionally — which happens to work there because it displays multiple aliases. For the single-label `displayBeatLabel()` path, we need a targeted approach.\n\n### Approach: Strip prefix only from hierarchical (dotted) aliases\n\nA hierarchical alias is one containing a `.` (e.g., `knots-562b.1`, `brutus-8792.5`). Human-friendly aliases like `ship-views` never contain dots. The fix:\n\n1. **In `displayBeatLabel()`**: After selecting the first alias, check if it contains a dot. If so, apply `stripBeatPrefix()` to it. Otherwise return it as-is.\n2. **Alternatively, create a new helper** `stripHierarchicalPrefix(alias)` that only strips the prefix when the alias contains a `.` — keeping the logic centralized.\n\n### File Changes\n\n1. **`src/lib/beat-display.ts`**:\n   - Add a new export: `stripHierarchicalPrefix(alias: string): string` — returns `stripBeatPrefix(alias)` if alias contains `.`, otherwise returns alias unchanged.\n   - Update `displayBeatLabel()` to apply `stripHierarchicalPrefix` to the chosen alias.\n\n2. **`src/lib/__tests__/beat-display.test.ts`**:\n   - Add test: hierarchical alias `knots-562b.1` → displays as `562b.1`\n   - Add test: human-friendly alias `ship-views` → displays as `ship-views` (unchanged)\n   - Add test: multi-dot alias `proj-a.b.c` → displays as `a.b.c`\n   - Existing tests must continue to pass (e.g., `ship-views` preferred over stripped ID)\n\n### Risk Assessment\n- **Low risk**: Change is scoped to a single display function with a clear dot-detection heuristic.\n- **No false positives**: Human-friendly aliases don't use dots; hierarchical aliases always do.\n- **All existing call sites** (`beat-columns`, `retakes-view`, `wave-planner`, `dep-tree`, `cascade-close-dialog`) benefit automatically since they all call `displayBeatLabel()`.\n\n### Test Strategy\n- Unit tests in `beat-display.test.ts` for the new stripping logic\n- Existing `alias-view-contract.test.ts` tests remain unchanged (they verify wiring, not display values)\n- Run full quality gates: lint, typecheck, test, build",
+    "datetime": "2026-03-19T10:04:10.069946Z",
+    "entry_id": "019d058d-75d5-7031-83cb-4b8f654bc11a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d019a-bddd-7753-a403-9444fc724b0a",
+  "occurred_at": "2026-03-18T15:40:11.613762Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment blocked on 2026-03-18 during merge of work/foolery-1f10 into main. Conflicts in src/lib/agent-outcome-stats.ts, src/lib/terminal-manager.ts, src/lib/workflows.ts, and src/lib/__tests__/terminal-manager-error-retry.test.ts.",
+    "datetime": "2026-03-18T15:39:16Z",
+    "entry_id": "019d019a-bddd-7753-a403-94346de34307",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

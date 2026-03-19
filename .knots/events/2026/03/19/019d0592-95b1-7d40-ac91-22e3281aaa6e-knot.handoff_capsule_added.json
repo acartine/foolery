@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0592-95b1-7d40-ac91-22e3281aaa6e",
+  "occurred_at": "2026-03-19T10:09:45.905406Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified merge commit 69e26409ae38 is live on origin/main with CI green (CI run 23289760831, Coverage Badge run 23289760838). Code review confirms clean, minimal implementation: single showNotesAndHandoffs boolean (default false) threaded through RetakeRow/RetakeDetails, Switch toggle in header, notes and handoff capsules gated. Description and steps remain visible per spec. Two source-based contract tests added. No regressions, no invariant violations. Both commit tags (4949c62e129e, 69e26409ae38) present on knot.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d0592-95b1-7d40-ac91-22d96c75775e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

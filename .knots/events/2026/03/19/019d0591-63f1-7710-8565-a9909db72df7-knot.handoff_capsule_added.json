@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0591-63f1-7710-8565-a9909db72df7",
+  "occurred_at": "2026-03-19T10:08:27.633486Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped merge commit 69e26409ae38 to origin/main. Scope stayed limited to the retakes shared notes/handoff toggle in src/components/retakes-view.tsx plus source-based coverage in src/lib/__tests__/retakes-pagination-layout.test.ts. Remote CI passed for commit 69e26409ae38: CI https://github.com/acartine/foolery/actions/runs/23289760831 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23289760838.",
+    "datetime": "2026-03-19T10:08:00Z",
+    "entry_id": "019d0591-63f1-7710-8565-a9889da746f8",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-19"
+  }
+}

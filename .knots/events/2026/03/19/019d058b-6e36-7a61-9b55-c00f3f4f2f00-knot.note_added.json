@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058b-6e36-7a61-9b55-c00f3f4f2f00",
+  "occurred_at": "2026-03-19T10:01:57.046214Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review rejected: applying stripBeatPrefix() to the chosen alias would break existing human-friendly aliases such as 'ship-views' that are intentionally displayed verbatim across the UI and tests. Revise the plan to strip only hierarchical/project-prefixed aliases like 'knots-562b.1' while preserving non-prefixed aliases, and add tests covering both cases.",
+    "datetime": "2026-03-19T10:01:57.046214Z",
+    "entry_id": "019d058b-6e36-7a61-9b55-bffaf63a2a10",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

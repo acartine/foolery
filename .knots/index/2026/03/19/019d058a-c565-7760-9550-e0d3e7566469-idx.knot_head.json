@@ -1,0 +1,23 @@
+{
+  "event_id": "019d058a-c565-7760-9550-e0d3e7566469",
+  "occurred_at": "2026-03-19T10:01:13.829223Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c4cc",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "queue view: hierarchical id dispaly tightening",
+    "type": "work",
+    "updated_at": "2026-03-19T10:01:13.829223Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d058a-7f08-7080-8cf4-98a23aa4e2be"
+  }
+}

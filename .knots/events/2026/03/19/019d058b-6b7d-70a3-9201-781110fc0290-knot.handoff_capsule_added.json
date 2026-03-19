@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058b-6b7d-70a3-9201-781110fc0290",
+  "occurred_at": "2026-03-19T10:01:56.349622Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review: revision required. The proposed unconditional alias stripping is not feasible because current contracts and tests expect human-friendly aliases like 'ship-views' to remain unchanged. A revised plan should scope normalization narrowly to project-prefixed hierarchical aliases (for example 'knots-562b.1' -> '562b.1') and include regression coverage for both preserved aliases and stripped hierarchical aliases.",
+    "datetime": "2026-03-19T10:01:48Z",
+    "entry_id": "019d058b-6b7d-70a3-9201-7802fc759fb6",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

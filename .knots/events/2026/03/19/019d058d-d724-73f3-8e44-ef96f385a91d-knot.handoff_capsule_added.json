@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058d-d724-73f3-8e44-ef96f385a91d",
+  "occurred_at": "2026-03-19T10:04:34.980686Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. Single toggle (Switch component) in RetakesView header controls visibility of notes and handoff capsules together, defaulting to collapsed. Description and steps remain always visible. Prop threading is clean: RetakesView -> RetakeRow -> RetakeDetails. Source-based contract tests verify default-off state and single toggle control. All quality gates pass (lint 0 errors, typecheck clean, tests green). No security issues, no API changes.",
+    "datetime": "2026-03-19T11:05:00Z",
+    "entry_id": "019d058d-d724-73f3-8e44-ef8cea2a4fcd",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

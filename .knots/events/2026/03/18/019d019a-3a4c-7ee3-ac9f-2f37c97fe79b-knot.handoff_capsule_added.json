@@ -1,0 +1,15 @@
+{
+  "event_id": "019d019a-3a4c-7ee3-ac9f-2f37c97fe79b",
+  "occurred_at": "2026-03-18T15:39:37.932117Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment failed on 2026-03-18. Merging work/foolery-1f10 into main in clean worktree /private/tmp/foolery-1f10-ship produced content conflicts in src/lib/agent-outcome-stats.ts, src/lib/terminal-manager.ts, src/lib/workflows.ts, and src/lib/__tests__/terminal-manager-error-retry.test.ts. Knot moved back to ready_for_implementation for conflict resolution before another shipment attempt.",
+    "datetime": "2026-03-18T15:39:16Z",
+    "entry_id": "019d019a-3a4c-7ee3-ac9f-2f266ff3be44",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

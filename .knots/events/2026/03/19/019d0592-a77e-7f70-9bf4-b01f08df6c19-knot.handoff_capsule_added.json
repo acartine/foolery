@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0592-a77e-7f70-9bf4-b01f08df6c19",
+  "occurred_at": "2026-03-19T10:09:50.462627Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review: search now matches beat IDs directly in KnotsBackend, so full IDs and suffixes resolve across states; alias matching remains covered; beats page omits the state filter whenever q is present; targeted verification passed with bunx tsc --noEmit and 117/117 tests across backend-contract, knots-backend-coverage, beads-backend-filters, and beats-page-layout.",
+    "datetime": "2026-03-19T10:09:42Z",
+    "entry_id": "019d0592-a77e-7f70-9bf4-b00c5ed153dd",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5 Codex"
+  }
+}

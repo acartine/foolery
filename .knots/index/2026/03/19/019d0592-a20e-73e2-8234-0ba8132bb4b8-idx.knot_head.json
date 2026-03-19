@@ -1,0 +1,20 @@
+{
+  "event_id": "019d0592-a20e-73e2-8234-0ba8132bb4b8",
+  "occurred_at": "2026-03-19T10:09:49.062923Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c4cc",
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "queue view: hierarchical id dispaly tightening",
+    "type": "work",
+    "updated_at": "2026-03-19T10:09:49.062923Z",
+    "workflow_id": "compatibility"
+  }
+}

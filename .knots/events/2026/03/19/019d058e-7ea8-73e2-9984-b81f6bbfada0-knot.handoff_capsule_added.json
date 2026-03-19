@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058e-7ea8-73e2-9984-b81f6bbfada0",
+  "occurred_at": "2026-03-19T10:05:17.864255Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. Current displayBeatLabel() returns the first alias verbatim, so hierarchical aliases like knots-562b.1 would currently leak the project prefix. The proposed change is correctly scoped to src/lib/beat-display.ts by stripping prefixes only for dotted hierarchical aliases while leaving human-friendly aliases unchanged. Proposed tests in src/lib/__tests__/beat-display.test.ts cover the target regression, the unchanged ship-views case, and a multi-dot hierarchical alias. No knot invariants are present, and the plan is feasible with low security, performance, and maintainability risk.",
+    "datetime": "2026-03-19T10:04:54Z",
+    "entry_id": "019d058e-7ea8-73e2-9984-b80a0a5218b1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

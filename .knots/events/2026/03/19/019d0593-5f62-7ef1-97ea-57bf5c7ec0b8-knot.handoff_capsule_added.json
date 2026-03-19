@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0593-5f62-7ef1-97ea-57bf5c7ec0b8",
+  "occurred_at": "2026-03-19T10:10:37.538677Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete for max concurrent sessions configurability. The value is hardcoded to 5 in two files: terminal-manager.ts:65 and beats/page.tsx:32. Plan adds a maxConcurrentSessions field to the settings schema (default 5, range 1-20), creates a UI section following the defaults-section pattern, and wires both consumption sites to read from settings. Low complexity, backward-compatible (schema default handles existing configs). No child knots needed — single deliverable.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d0593-5f62-7ef1-97ea-57add0149723",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

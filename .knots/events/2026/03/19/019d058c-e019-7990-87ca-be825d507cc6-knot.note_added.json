@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058c-e019-7990-87ca-be825d507cc6",
+  "occurred_at": "2026-03-19T10:03:31.737905Z",
+  "knot_id": "foolery-1789",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked: local main workspace is dirty and 2 commits behind origin/main, so the shipped state cannot be verified from this checkout.",
+    "datetime": "2026-03-19T10:03:31.737905Z",
+    "entry_id": "019d058c-e019-7990-87ca-be7c72acabbf",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

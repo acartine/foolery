@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0198-a03a-7e12-b5f0-a80157e9de99",
+  "occurred_at": "2026-03-18T15:37:52.954839Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. All sanity gates pass (tsc clean, 2089 tests pass, build OK, lint 0 errors). Requirement 1: resolveStatsDir() unconditionally uses process.cwd()/.foolery-logs (working directory). AgentOutcomeRecord captures full details. classifyIterationSuccess correctly returns true only for nextQueueState or priorQueueState transitions with exit code 0. Requirement 2: non-zero exit triggers enforceQueueTerminalInvariant() rollback then buildNextTakePrompt(iterAgentId) with strict pool exclusion via selectFromPoolStrict. Returns null (terminates loop) when no alternative agent exists. Both initial and take-loop child close handlers delegate to handleTakeIterationClose. Test coverage validates all scenarios: retry with different agent, stop when no alternative, rollback before retry, success classification for next/prior/same/terminal/active states.",
+    "datetime": "2026-03-18T22:30:00Z",
+    "entry_id": "019d0198-a03a-7e12-b5f0-a7fe55b75a43",
+    "model": "claude",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

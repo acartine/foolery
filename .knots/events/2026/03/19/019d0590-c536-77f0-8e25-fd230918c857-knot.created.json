@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0590-c536-77f0-8e25-fd230918c857",
+  "occurred_at": "2026-03-19T10:07:46.998514Z",
+  "knot_id": "foolery-5fc1",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  right now it's hardcoded to 5 which is super annoying",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Make max concurrent sessions a configurable setting in the settings view",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

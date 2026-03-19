@@ -1,0 +1,15 @@
+{
+  "event_id": "019d058a-4766-7ed2-8c89-e7da16830cd5",
+  "occurred_at": "2026-03-19T10:00:41.57414Z",
+  "knot_id": "foolery-c4cc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Problem\n`displayBeatLabel()` in `src/lib/beat-display.ts` returns the raw alias without stripping the project prefix. For child beats with aliases like `knots-562b.1`, the queue view shows the full `knots-562b.1` instead of just `562b.1`.\n\n### Root Cause\nLine 13: `return firstBeatAlias(aliases) ?? stripBeatPrefix(id)` — `stripBeatPrefix` is only applied to the ID fallback, not to the alias.\n\n### Fix (1 file)\n**`src/lib/beat-display.ts`** — Change `displayBeatLabel` to strip the prefix from the alias too:\n```ts\nexport function displayBeatLabel(id: string, aliases?: readonly string[]): string {\n  return stripBeatPrefix(firstBeatAlias(aliases) ?? id);\n}\n```\n\nThis applies `stripBeatPrefix` uniformly to whichever value is chosen (alias or id).\n\n### Test updates\n**`src/lib/__tests__/beat-display.test.ts`** — Update existing test and add a new case:\n- Update line 10: `displayBeatLabel('foolery-df3a', ['ship-views', 'df3a'])` should now return `'views'` (stripped) — or better, add a test with a hierarchical alias like `knots-562b.1` → `562b.1`.\n- Add test: `displayBeatLabel('knots-562b.1', ['knots-562b.1'])` → `'562b.1'`.\n\n### Risks\n- Low. `stripBeatPrefix` strips everything before and including the first `-`. For aliases like `ship-views`, this would strip to `views`. Need to verify this is acceptable or if aliases without a project prefix should be left as-is.\n- **Mitigation**: Check if aliases in practice always carry the project prefix. If some aliases are human-friendly names (like `ship-views`), we may want to only strip if the alias matches the `<project>-<id>` pattern. Inspect alias data to confirm.\n\n### Complexity\nTrivial — single function change + test update.",
+    "datetime": "2026-03-19T10:00:41.57414Z",
+    "entry_id": "019d058a-4766-7ed2-8c89-e7c5cac03db9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

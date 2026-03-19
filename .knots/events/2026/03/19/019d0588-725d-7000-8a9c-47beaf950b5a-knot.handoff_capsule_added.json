@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0588-725d-7000-8a9c-47beaf950b5a",
+  "occurred_at": "2026-03-19T09:58:41.501138Z",
+  "knot_id": "foolery-6df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. The plan correctly targets RetakeDetails notes/capsules sections (lines 371-397) with a single shared toggle defaulting to collapsed. Description and steps remain visible. Implementation is a clean presentation-only change: useState in RetakesView, prop through RetakeRow/RetakeDetails, one header toggle button. Test strategy covers default-collapsed assertion and toggle behavior. No invariant violations, no security/performance concerns.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d0588-725d-7000-8a9c-47aadb0c97ce",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}
