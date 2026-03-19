@@ -405,7 +405,10 @@ export const componentSchemas = {
       },
       defaults: {
         type: "object",
-        properties: { profileId: { type: "string" } },
+        properties: {
+          profileId: { type: "string" },
+          maxConcurrentSessions: { type: "integer", minimum: 1, maximum: 20 },
+        },
       },
       pools: {
         type: "object",

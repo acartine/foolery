@@ -4,6 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const nextKnotMock = vi.fn();
 const nextBeatMock = vi.fn();
 const resolveMemoryManagerTypeMock = vi.fn(() => "knots");
+const loadSettingsMock = vi.fn(async () => ({
+  dispatchMode: "single",
+  defaults: { maxConcurrentSessions: 5 },
+}));
 type MockChild = EventEmitter & {
   stdout: EventEmitter;
   stderr: EventEmitter;
@@ -79,7 +83,7 @@ vi.mock("@/lib/regroom", () => ({
 vi.mock("@/lib/settings", () => ({
   getActionAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
   getStepAgent: vi.fn(async () => ({ command: "codex", label: "Codex" })),
-  loadSettings: vi.fn(async () => ({ dispatchMode: "single" })),
+  loadSettings: () => loadSettingsMock(),
 }));
 
 vi.mock("@/lib/memory-manager-commands", () => ({
@@ -125,6 +129,11 @@ describe("terminal-manager abort behavior", () => {
     nextBeatMock.mockReset();
     resolveMemoryManagerTypeMock.mockReset();
     resolveMemoryManagerTypeMock.mockReturnValue("knots");
+    loadSettingsMock.mockReset();
+    loadSettingsMock.mockResolvedValue({
+      dispatchMode: "single",
+      defaults: { maxConcurrentSessions: 5 },
+    });
     spawnedChildren.length = 0;
     backend.get.mockReset();
     backend.list.mockReset();
@@ -178,6 +187,30 @@ describe("terminal-manager abort behavior", () => {
       // Status should remain "aborted", NOT "completed"
       expect(entry!.session.status).toBe("aborted");
     });
+  });
+
+  it("enforces the configured max concurrent session limit", async () => {
+    loadSettingsMock.mockResolvedValue({
+      dispatchMode: "single",
+      defaults: { maxConcurrentSessions: 1 },
+    });
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-limit-001",
+        title: "First session",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+
+    await createSession("foolery-limit-001", "/tmp/repo", "custom prompt");
+
+    await expect(
+      createSession("foolery-limit-002", "/tmp/repo", "custom prompt"),
+    ).rejects.toThrow("Max concurrent sessions (1) reached");
   });
 
   it("abortSession stops take-loop from spawning next iteration", async () => {

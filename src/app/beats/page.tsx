@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, useCallback, useMemo, useRef } from "rea
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchBeats } from "@/lib/api";
+import { fetchSettings } from "@/lib/settings-api";
 import { startSession, abortSession } from "@/lib/terminal-api";
 import { BeatTable } from "@/components/beat-table";
 import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
@@ -27,9 +28,9 @@ import {
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import { isListBeatsView, parseBeatsView } from "@/lib/beats-view";
 import { hasRollingAncestor as hasRollingAncestorLib } from "@/lib/rolling-ancestor";
+import { normalizeMaxConcurrentSessions } from "@/lib/schemas";
 
 const DEGRADED_ERROR_PREFIX = "Unable to interact with beats store";
-const MAX_SESSIONS = 5;
 
 /** Thrown when the backend reports a degraded beats store.
  *  React Query keeps previous data when the queryFn throws. */
@@ -176,6 +177,13 @@ function BeatsPageInner() {
     refetchInterval: 10_000,
     retry: (count, error) => !(error instanceof DegradedStoreError) && count < 3,
   });
+  const { data: settingsResult } = useQuery({
+    queryKey: ["settings"],
+    queryFn: () => fetchSettings(),
+  });
+  const maxConcurrentSessions = normalizeMaxConcurrentSessions(
+    settingsResult?.ok ? settingsResult.data?.defaults?.maxConcurrentSessions : undefined,
+  );
 
   const beats = useMemo<Beat[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
   const parentByBeatId = useMemo(() => {
@@ -355,7 +363,7 @@ function BeatsPageInner() {
       if (selectedBeats.length === 0) return;
 
       const runningCount = terminals.filter((t) => t.status === "running").length;
-      const availableSlots = Math.max(0, MAX_SESSIONS - runningCount);
+      const availableSlots = Math.max(0, maxConcurrentSessions - runningCount);
 
       const toLaunch = selectedBeats.slice(0, availableSlots);
       const toQueue = selectedBeats.slice(availableSlots);
@@ -374,7 +382,7 @@ function BeatsPageInner() {
         toast.info(`${toQueue.length} beat${toQueue.length > 1 ? "s" : ""} queued (waiting for available slots)`);
       }
     },
-    [beats, terminals, handleShipBeat, enqueueSceneBeats]
+    [beats, terminals, handleShipBeat, enqueueSceneBeats, maxConcurrentSessions]
   );
 
   // Drain the scene queue as sessions complete and slots open up
@@ -382,9 +390,9 @@ function BeatsPageInner() {
     if (sceneQueue.length === 0 || drainingRef.current) return;
 
     const runningCount = terminals.filter((t) => t.status === "running").length;
-    if (runningCount >= MAX_SESSIONS) return;
+    if (runningCount >= maxConcurrentSessions) return;
 
-    const slotsAvailable = MAX_SESSIONS - runningCount;
+    const slotsAvailable = maxConcurrentSessions - runningCount;
     const batch = dequeueSceneBeats(slotsAvailable);
     if (batch.length === 0) return;
 
@@ -396,7 +404,7 @@ function BeatsPageInner() {
       drainingRef.current = false;
     };
     launch();
-  }, [sceneQueue, terminals, dequeueSceneBeats, launchTakeForQueuedBeat]);
+  }, [sceneQueue, terminals, dequeueSceneBeats, launchTakeForQueuedBeat, maxConcurrentSessions]);
 
   const handleMergeBeats = useCallback(
     (ids: string[]) => {

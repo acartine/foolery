@@ -140,12 +140,41 @@ export const backendSettingsSchema = z
   .default({ type: "auto" });
 
 // User-facing defaults for beat creation
+export const DEFAULT_MAX_CONCURRENT_SESSIONS = 5;
+export const MIN_MAX_CONCURRENT_SESSIONS = 1;
+export const MAX_MAX_CONCURRENT_SESSIONS = 20;
+
+export function normalizeMaxConcurrentSessions(value: unknown): number {
+  const numeric =
+    typeof value === "number"
+      ? value
+      : typeof value === "string" && value.trim()
+        ? Number(value)
+        : Number.NaN;
+
+  if (!Number.isFinite(numeric)) return DEFAULT_MAX_CONCURRENT_SESSIONS;
+  return Math.min(
+    MAX_MAX_CONCURRENT_SESSIONS,
+    Math.max(MIN_MAX_CONCURRENT_SESSIONS, Math.trunc(numeric)),
+  );
+}
+
 export const defaultsSettingsSchema = z
   .object({
     /** Default workflow profile ID for new beats (empty = "autopilot" fallback). */
     profileId: z.string().default(""),
+    /** Max number of concurrent terminal sessions. */
+    maxConcurrentSessions: z
+      .number()
+      .int()
+      .min(MIN_MAX_CONCURRENT_SESSIONS)
+      .max(MAX_MAX_CONCURRENT_SESSIONS)
+      .default(DEFAULT_MAX_CONCURRENT_SESSIONS),
   })
-  .default({ profileId: "" });
+  .default({
+    profileId: "",
+    maxConcurrentSessions: DEFAULT_MAX_CONCURRENT_SESSIONS,
+  });
 
 // Agent dispatch mode: "basic" uses simple per-action mappings,
 // "advanced" uses weighted per-step agent pools.

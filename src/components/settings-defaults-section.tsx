@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -20,7 +21,12 @@ import {
 } from "@/components/ui/dialog";
 import { fetchWorkflows } from "@/lib/api";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
-import type { DefaultsSettings } from "@/lib/schemas";
+import {
+  MAX_MAX_CONCURRENT_SESSIONS,
+  MIN_MAX_CONCURRENT_SESSIONS,
+  normalizeMaxConcurrentSessions,
+  type DefaultsSettings,
+} from "@/lib/schemas";
 
 interface SettingsDefaultsSectionProps {
   defaults: DefaultsSettings;
@@ -91,6 +97,33 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           The workflow profile pre-selected when creating new beats with
           Shift+N.
+        </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <Label htmlFor="max-concurrent-sessions" className="text-xs">
+          Max Concurrent Sessions
+        </Label>
+        <Input
+          id="max-concurrent-sessions"
+          type="number"
+          min={MIN_MAX_CONCURRENT_SESSIONS}
+          max={MAX_MAX_CONCURRENT_SESSIONS}
+          step={1}
+          className="w-full border-primary/20 bg-background/80"
+          value={normalizeMaxConcurrentSessions(defaults.maxConcurrentSessions)}
+          onChange={(event) =>
+            onDefaultsChange({
+              ...defaults,
+              maxConcurrentSessions: normalizeMaxConcurrentSessions(
+                event.target.value,
+              ),
+            })
+          }
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Limit how many agent terminal sessions can run at once. Extra scene
+          launches stay queued until a slot opens.
         </p>
       </div>
 

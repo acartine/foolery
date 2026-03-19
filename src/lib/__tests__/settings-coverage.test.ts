@@ -32,8 +32,9 @@ vi.mock("node:child_process", () => ({
 
 import {
   getBackendType,
-  scanForAgents,
+  loadSettings,
   _resetCache,
+  scanForAgents,
 } from "@/lib/settings";
 
 beforeEach(() => {
@@ -94,5 +95,15 @@ describe("scanForAgents", () => {
     const opencode = results.find((r) => r.id === "opencode");
     expect(opencode?.installed).toBe(false);
     expect(opencode?.provider).toBe("OpenCode");
+  });
+});
+
+describe("loadSettings maxConcurrentSessions defaults", () => {
+  it("clamps invalid saved values through schema defaults", async () => {
+    mockReadFile.mockResolvedValue("[defaults]\nmaxConcurrentSessions = 99");
+
+    const settings = await loadSettings();
+
+    expect(settings.defaults.maxConcurrentSessions).toBe(5);
   });
 });

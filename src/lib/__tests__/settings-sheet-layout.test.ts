@@ -8,6 +8,10 @@ describe("settings sheet scroll layout", () => {
     path.join(process.cwd(), "src/components/settings-sheet.tsx"),
     "utf8",
   );
+  const defaultsSource = readFileSync(
+    path.join(process.cwd(), "src/components/settings-defaults-section.tsx"),
+    "utf8",
+  );
 
   it("keeps overflow scrolling on the constrained outer wrapper", () => {
     expect(source).toContain(
@@ -20,5 +24,10 @@ describe("settings sheet scroll layout", () => {
     expect(source).not.toContain(
       'className="py-3 overflow-y-auto flex-1"',
     );
+  });
+
+  it("includes a configurable max concurrent sessions field in defaults", () => {
+    expect(defaultsSource).toContain('id="max-concurrent-sessions"');
+    expect(defaultsSource).toContain("Max Concurrent Sessions");
   });
 });
