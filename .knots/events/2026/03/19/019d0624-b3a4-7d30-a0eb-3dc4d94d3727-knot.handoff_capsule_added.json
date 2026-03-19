@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0624-b3a4-7d30-a0eb-3dc4d94d3727",
+  "occurred_at": "2026-03-19T12:49:21.828558Z",
+  "knot_id": "foolery-6a61",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "[claude-code 2026-03-19] Implementation review approved. Per-queue-type counters correctly replace flat MAX_TAKE_ITERATIONS. Soft rotation logic properly integrated. Audit events fire-and-forget. Tests comprehensive.",
+    "datetime": "2026-03-19T14:05:00Z",
+    "entry_id": "019d0624-b3a4-7d30-a0eb-3dbea48cc4bb",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0624-cf98-7e72-a65e-e985a6a2dc61",
+  "occurred_at": "2026-03-19T12:49:28.984784Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6a61",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Queue-type claim limit and agent rotation",
+    "type": "work",
+    "updated_at": "2026-03-19T12:49:28.984784Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0624-b7c1-7ad1-8adb-119040f514c5"
+  }
+}

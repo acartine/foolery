@@ -1,0 +1,20 @@
+{
+  "event_id": "019d0625-b9fd-7692-bbbc-08fb78bda8cf",
+  "occurred_at": "2026-03-19T12:50:28.989251Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6240",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Ralph Wiggum Loop (ish) - counters per action step",
+    "type": "work",
+    "updated_at": "2026-03-19T12:50:28.989251Z",
+    "workflow_id": "compatibility"
+  }
+}

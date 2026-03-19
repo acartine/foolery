@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0625-8d52-7d20-86a4-afc19e337ac8",
+  "occurred_at": "2026-03-19T12:50:17.554488Z",
+  "knot_id": "foolery-6240",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "ready_for_implementation_review",
+    "profile_id": "autopilot",
+    "to": "implementation_review",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0625-7009-78b3-98b1-f0ec42248d0e"
+  }
+}
