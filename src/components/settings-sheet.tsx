@@ -15,6 +15,7 @@ import { SettingsAgentsSection } from "@/components/settings-agents-section";
 import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
 import { SettingsDispatchSection } from "@/components/settings-dispatch-section";
+import { SettingsSessionsSection } from "@/components/settings-sessions-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
@@ -40,6 +41,7 @@ interface SettingsData {
   defaults: DefaultsSettings;
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
+  maxConcurrentSessions: number;
 }
 
 const DEFAULTS: SettingsData = {
@@ -64,6 +66,7 @@ const DEFAULTS: SettingsData = {
     shipment_review: [],
   },
   dispatchMode: "basic",
+  maxConcurrentSessions: 5,
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
@@ -100,6 +103,8 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
             pools: settingsResult.data.pools ?? DEFAULTS.pools,
             dispatchMode: settingsResult.data.dispatchMode ?? DEFAULTS.dispatchMode,
+            maxConcurrentSessions:
+              settingsResult.data.maxConcurrentSessions ?? DEFAULTS.maxConcurrentSessions,
           });
         }
       })
@@ -192,12 +197,20 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                   </TabsContent>
 
                   <TabsContent value="defaults">
-                    <SettingsDefaultsSection
-                      defaults={settings.defaults}
-                      onDefaultsChange={(defaults) =>
-                        setSettings((prev) => ({ ...prev, defaults }))
-                      }
-                    />
+                    <div className="space-y-3">
+                      <SettingsDefaultsSection
+                        defaults={settings.defaults}
+                        onDefaultsChange={(defaults) =>
+                          setSettings((prev) => ({ ...prev, defaults }))
+                        }
+                      />
+                      <SettingsSessionsSection
+                        maxConcurrentSessions={settings.maxConcurrentSessions}
+                        onMaxConcurrentSessionsChange={(maxConcurrentSessions) =>
+                          setSettings((prev) => ({ ...prev, maxConcurrentSessions }))
+                        }
+                      />
+                    </div>
                   </TabsContent>
                 </>
               )}

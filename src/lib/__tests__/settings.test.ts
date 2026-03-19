@@ -54,6 +54,7 @@ const DEFAULT_SETTINGS = {
   defaults: { profileId: "" },
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
+  maxConcurrentSessions: 5,
 };
 
 beforeEach(() => {
@@ -87,6 +88,13 @@ describe("loadSettings", () => {
     mockReadFile.mockResolvedValue('[actions]\ntake = ""');
     const settings = await loadSettings();
     expect(settings.actions.scene).toBe("");
+    expect(settings.maxConcurrentSessions).toBe(5);
+  });
+
+  it("parses maxConcurrentSessions when configured", async () => {
+    mockReadFile.mockResolvedValue("maxConcurrentSessions = 7");
+    const settings = await loadSettings();
+    expect(settings.maxConcurrentSessions).toBe(7);
   });
 
   it("normalizes legacy dispatch mode values on read", async () => {
@@ -110,6 +118,7 @@ describe("inspectSettingsDefaults", () => {
     expect(result.fileMissing).toBe(false);
     expect(result.error).toBeUndefined();
     expect(result.missingPaths).toContain("defaults.profileId");
+    expect(result.missingPaths).toContain("maxConcurrentSessions");
   });
 });
 
@@ -145,6 +154,7 @@ describe("backfillMissingSettingsDefaults", () => {
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain("[defaults]");
     expect(written).toContain('profileId = ""');
+    expect(written).toContain("maxConcurrentSessions = 5");
     expect(mockChmod).toHaveBeenCalledWith(
       expect.stringContaining("settings.toml"),
       0o600,
@@ -177,6 +187,7 @@ describe("backfillMissingSettingsDefaults", () => {
     mockReadFile.mockResolvedValue(
       [
         'dispatchMode = "basic"',
+        'maxConcurrentSessions = 5',
         '[actions]',
         'take = ""',
         'scene = ""',
@@ -247,6 +258,7 @@ describe("saveSettings", () => {
       defaults: { profileId: "" },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
       dispatchMode: "basic" as const,
+      maxConcurrentSessions: 5,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -264,6 +276,7 @@ describe("saveSettings", () => {
       defaults: { profileId: "" },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
+      maxConcurrentSessions: 5,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(
@@ -329,6 +342,12 @@ describe("updateSettings", () => {
     const updated = await updateSettings({});
 
     expect(updated.agents.codex.command).toBe("codex");
+  });
+
+  it("merges maxConcurrentSessions updates", async () => {
+    mockReadFile.mockResolvedValue("");
+    const updated = await updateSettings({ maxConcurrentSessions: 9 });
+    expect(updated.maxConcurrentSessions).toBe(9);
   });
 });
 

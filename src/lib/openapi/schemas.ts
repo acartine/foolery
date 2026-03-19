@@ -419,6 +419,12 @@ export const componentSchemas = {
         },
       },
       dispatchMode: { type: "string", enum: ["basic", "advanced"] },
+      maxConcurrentSessions: {
+        type: "integer",
+        minimum: 1,
+        maximum: 20,
+        default: 5,
+      },
     },
   },
 
