@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 // ── Types ──────────────────────────────────────────────────────
@@ -43,6 +43,10 @@ export function resolveStatsDir(): string {
 }
 
 export function resolveStatsPath(): string {
+  return join(resolveStatsDir(), "agent-success-rates.jsonl");
+}
+
+function resolveLegacyStatsPath(): string {
   return join(resolveStatsDir(), "agent-success-rates.json");
 }
 
@@ -51,20 +55,32 @@ export function resolveStatsPath(): string {
 export async function readOutcomeStats(): Promise<AgentOutcomeRecord[]> {
   try {
     const raw = await readFile(resolveStatsPath(), "utf-8");
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed as AgentOutcomeRecord[];
-    return [];
+    const trimmed = raw.trim();
+    if (trimmed.length === 0) return [];
+    if (trimmed.startsWith("[")) {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed as AgentOutcomeRecord[];
+      return [];
+    }
+
+    return trimmed
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => JSON.parse(line) as AgentOutcomeRecord);
   } catch {
-    return [];
+    try {
+      const raw = await readFile(resolveLegacyStatsPath(), "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed as AgentOutcomeRecord[];
+      return [];
+    } catch {
+      return [];
+    }
   }
 }
 
-export async function appendOutcomeRecord(
-  record: AgentOutcomeRecord,
-): Promise<void> {
-  const dir = resolveStatsDir();
-  await mkdir(dir, { recursive: true });
-  const existing = await readOutcomeStats();
-  existing.push(record);
-  await writeFile(resolveStatsPath(), JSON.stringify(existing, null, 2) + "\n");
+export async function appendOutcomeRecord(record: AgentOutcomeRecord): Promise<void> {
+  await mkdir(resolveStatsDir(), { recursive: true });
+  await appendFile(resolveStatsPath(), `${JSON.stringify(record)}\n`, "utf-8");
 }
