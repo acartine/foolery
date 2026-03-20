@@ -32,3 +32,13 @@ export async function fetchLeaseAudit(
   }
   return (await res.json()) as LeaseAuditResponse;
 }
+
+export async function resetLeaseAudit(): Promise<void> {
+  const res = await fetch("/api/lease-audit", { method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(
+      (body as { error?: string }).error ?? "Failed to reset audit data",
+    );
+  }
+}

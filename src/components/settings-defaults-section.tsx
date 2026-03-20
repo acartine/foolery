@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Info } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -18,8 +20,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { fetchWorkflows } from "@/lib/api";
+import { resetLeaseAudit } from "@/lib/lease-audit-api";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
 import type { DefaultsSettings } from "@/lib/schemas";
 
@@ -37,6 +51,8 @@ export function SettingsDefaultsSection({
   onMaxConcurrentSessionsChange,
 }: SettingsDefaultsSectionProps) {
   const [infoOpen, setInfoOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const queryClient = useQueryClient();
   const { data: workflowResult } = useQuery({
     queryKey: ["workflows"],
     queryFn: () => fetchWorkflows(),
@@ -120,6 +136,56 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           Maximum number of agent sessions that can run at the same time (1–20).
         </p>
+      </div>
+
+      <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <Label className="text-xs">Reset Audit Data</Label>
+        <p className="text-[11px] text-muted-foreground">
+          Clear all audit events and agent success rate counters. Useful when
+          testing or starting fresh.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" size="sm" disabled={resetting}>
+              {resetting ? "Resetting…" : "Reset Audit Counters"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reset audit counters?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete all audit events and agent success
+                rate aggregates. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-white hover:bg-destructive/90"
+                onClick={async () => {
+                  setResetting(true);
+                  try {
+                    await resetLeaseAudit();
+                    await queryClient.invalidateQueries({
+                      queryKey: ["lease-audit"],
+                    });
+                    toast.success("Audit counters reset");
+                  } catch (err) {
+                    toast.error(
+                      err instanceof Error
+                        ? err.message
+                        : "Failed to reset audit data",
+                    );
+                  } finally {
+                    setResetting(false);
+                  }
+                }}
+              >
+                Reset
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <ProfileInfoDialog open={infoOpen} onOpenChange={setInfoOpen} />

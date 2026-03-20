@@ -1,3 +1,5 @@
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { NextRequest, NextResponse } from "next/server";
 import {
   readLeaseAuditEvents,
@@ -5,6 +7,7 @@ import {
   resolveAuditLogRoots,
 } from "@/lib/lease-audit";
 import type { LeaseAuditEvent } from "@/lib/lease-audit";
+import { resolveStatsPath } from "@/lib/agent-outcome-stats";
 
 export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("repoPath") ?? undefined;
@@ -24,6 +27,40 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to load lease audit data";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+const AUDIT_FILENAME = "lease-audit.jsonl";
+
+export async function DELETE() {
+  try {
+    const roots = await resolveAuditLogRoots();
+    const truncated: string[] = [];
+
+    // Truncate lease-audit.jsonl in all roots
+    for (const root of roots) {
+      const filePath = join(root, AUDIT_FILENAME);
+      try {
+        await writeFile(filePath, "", "utf-8");
+        truncated.push(filePath);
+      } catch {
+        // File may not exist yet — that's fine
+      }
+    }
+
+    // Truncate agent-success-rates.jsonl
+    try {
+      await writeFile(resolveStatsPath(), "", "utf-8");
+      truncated.push(resolveStatsPath());
+    } catch {
+      // File may not exist yet — that's fine
+    }
+
+    return NextResponse.json({ ok: true, truncated });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Failed to reset audit data";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
