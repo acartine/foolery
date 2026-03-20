@@ -45,3 +45,5 @@ Before committing changes, ensure that the codebase passes all quality checks. R
 - **Building:** `bun run build`
 
 Do not push code that fails these checks unless explicitly instructed.
+
+**Fix all failures, not just yours.** Unless you are working on a specific non-implementation knot step (e.g., plan review, shipment review), you must fix all broken lint errors, type errors, formatting issues, and failing tests — even if they are pre-existing and not caused by your changes. Leave the codebase cleaner than you found it.

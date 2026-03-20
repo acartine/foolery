@@ -23,7 +23,6 @@ function agentLabel(agent: LeaseAuditAggregate["agent"]): string {
 
 interface AuditRow {
   agentDisplay: string;
-  queueType: string;
   date: string;
   claims: number;
   successes: number;
@@ -36,12 +35,11 @@ function buildRows(aggregates: LeaseAuditAggregate[]): AuditRow[] {
 
   for (const agg of aggregates) {
     const display = agentLabel(agg.agent);
-    const key = `${display}::${agg.queueType}::${agg.date}`;
+    const key = `${display}::${agg.date}`;
     let row = map.get(key);
     if (!row) {
       row = {
         agentDisplay: display,
-        queueType: agg.queueType,
         date: agg.date,
         claims: 0,
         successes: 0,
@@ -174,7 +172,6 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
             <thead>
               <tr className="border-b border-border/60 bg-muted/30">
                 <th className="px-3 py-2 text-left font-medium text-muted-foreground">Agent</th>
-                <th className="px-3 py-2 text-left font-medium text-muted-foreground">Queue Type</th>
                 <th className="px-3 py-2 text-left font-medium text-muted-foreground">Date</th>
                 <th className="px-3 py-2 text-right font-medium text-muted-foreground">Claims</th>
                 <th className="px-3 py-2 text-right font-medium text-muted-foreground">Successes</th>
@@ -185,11 +182,10 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
             <tbody>
               {rows.map((row, i) => (
                 <tr
-                  key={`${row.agentDisplay}-${row.queueType}-${row.date}`}
+                  key={`${row.agentDisplay}-${row.date}`}
                   className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}
                 >
                   <td className="px-3 py-1.5 text-foreground">{row.agentDisplay}</td>
-                  <td className="px-3 py-1.5 text-foreground">{row.queueType}</td>
                   <td className="px-3 py-1.5 text-muted-foreground">{row.date}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums">{row.claims}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">

@@ -33,7 +33,7 @@ import { updateMessageTypeIndexFromSession } from "@/lib/agent-message-type-inde
 import type { Beat, MemoryWorkflowDescriptor } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import { agentDisplayName, normalizeAgentIdentity, toExecutionAgentInfo } from "@/lib/agent-identity";
-import { appendLeaseAuditEvent } from "@/lib/lease-audit";
+import { appendLeaseAuditEvent, markBeatShipped } from "@/lib/lease-audit";
 import { buildShipFollowUpBoundaryLines, wrapExecutionPrompt } from "@/lib/agent-prompt-guardrails";
 import {
   ensureKnotsLease,
@@ -886,6 +886,10 @@ export async function createSession(
         type: "stdout",
         data: `\x1b[33m--- ${new Date().toISOString()} ${current.state} Take loop stopped: reached terminal state after ${takeIteration} iteration(s) ---\x1b[0m\n`,
         timestamp: Date.now(),
+      });
+      // Retrospectively attribute audit success/fail to claimants
+      markBeatShipped(beatId).catch((err) => {
+        console.error(`${tag} failed to mark beat shipped for audit:`, err);
       });
       return null;
     }
