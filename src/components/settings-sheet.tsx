@@ -143,7 +143,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
         <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as SettingsTab)}
-          className="flex flex-col h-full"
+          className="flex flex-col flex-1 min-h-0"
         >
           <div className="px-4 pt-2 shrink-0">
             <TabsList className="w-full">
@@ -222,8 +222,8 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
           </div>
         </Tabs>
 
-        <Separator className="bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
-        <SheetFooter className="px-4 py-3">
+        <Separator className="shrink-0 bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+        <SheetFooter className="shrink-0 px-4 py-3">
           <Button
             variant="outline"
             size="sm"
