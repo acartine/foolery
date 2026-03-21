@@ -134,4 +134,111 @@ describe("createDetailFilter", () => {
     const result = f.filter(input);
     expect(result).toBe("");
   });
+
+  // New tests for broader tool output suppression
+
+  it("suppresses command output after ▶ Bash", () => {
+    const f = createDetailFilter();
+    const input = [
+      "Let me list the files.",
+      "▶ Bash ls -la",
+      "total 42",
+      "drwxr-xr-x  5 user staff  160 Mar 20 10:00 .",
+      "-rw-r--r--  1 user staff 1234 Mar 20 10:00 package.json",
+      "",
+      "I can see the package.json file.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "Let me list the files.\n▶ Bash ls -la\nI can see the package.json file.\n\n"
+    );
+  });
+
+  it("suppresses grep results after ▶ Grep", () => {
+    const f = createDetailFilter();
+    const input = [
+      "▶ Grep thinkingDetail",
+      "src/components/interaction-picker.tsx:177",
+      "src/components/terminal-panel.tsx:186",
+      "",
+      "Found two matches across the codebase.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "▶ Grep thinkingDetail\nFound two matches across the codebase.\n\n"
+    );
+  });
+
+  it("suppresses JSON output after ▶ Bash", () => {
+    const f = createDetailFilter();
+    const input = [
+      "▶ Bash cat config.json",
+      '{',
+      '  "name": "foolery",',
+      '  "version": "1.0.0"',
+      '}',
+      "",
+      "The config looks correct.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "▶ Bash cat config.json\nThe config looks correct.\n\n"
+    );
+  });
+
+  it("suppresses single-word file listings after ▶", () => {
+    const f = createDetailFilter();
+    const input = [
+      "▶ Bash ls",
+      "README.md",
+      "package.json",
+      "src",
+      "",
+      "Let me look at the source.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "▶ Bash ls\nLet me look at the source.\n\n"
+    );
+  });
+
+  it("shows consecutive agent prose without suppression", () => {
+    const f = createDetailFilter();
+    const input = [
+      "First I'll analyze the code.",
+      "Then I'll make the changes.",
+      "Finally I'll run the tests.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "First I'll analyze the code.\nThen I'll make the changes.\nFinally I'll run the tests.\n\n"
+    );
+  });
+
+  it("handles multiple tool blocks interspersed with prose", () => {
+    const f = createDetailFilter();
+    const input = [
+      "Let me read the file.",
+      "▶ Read /src/app.tsx",
+      '     1→import React from "react";',
+      '     2→',
+      "",
+      "I see the issue. Let me fix it.",
+      "▶ Edit /src/app.tsx",
+      "old_string: foo",
+      "new_string: bar",
+      "",
+      "Now let me verify the fix.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "Let me read the file.\n▶ Read /src/app.tsx\nI see the issue. Let me fix it.\n▶ Edit /src/app.tsx\nNow let me verify the fix.\n\n"
+    );
+  });
 });

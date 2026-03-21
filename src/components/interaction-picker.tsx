@@ -334,8 +334,13 @@ export function useInteractionPicker(
           return messageTypeFilters.has(type);
         }
 
-        // When thinking detail is hidden, suppress tool results and system events
-        if (!thinkingDetailVisible && (type === "user" || type === "system")) {
+        // When thinking detail is hidden, suppress tool results, system events,
+        // and execution result summaries — show only assistant messages (agent
+        // words + action headers like "▶ Read …").
+        if (
+          !thinkingDetailVisible &&
+          (type === "user" || type === "system" || type === "result")
+        ) {
           return false;
         }
 

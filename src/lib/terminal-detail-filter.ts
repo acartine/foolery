@@ -1,6 +1,10 @@
 /**
  * Stateful line filter for terminal output that strips "thinking detail"
- * lines (numbered file content, etc.) when detail mode is off.
+ * when detail mode is off.
+ *
+ * Hides:
+ * 1. Numbered file content lines (e.g. `     1→"use client";`)
+ * 2. All tool output following a `▶` action header until agent prose resumes
  *
  * The filter buffers partial lines (chunks that don't end with a newline)
  * so that pattern matching works correctly across chunk boundaries.
@@ -14,6 +18,21 @@ function stripAnsi(text: string): string {
 /** Matches numbered file content lines like `     1→"use client";` */
 const NUMBERED_LINE_RE = /^\s+\d+[→│]/;
 
+/** Matches action header lines like `▶ Read /path/to/file` */
+const ACTION_HEADER_RE = /^▶\s/;
+
+/**
+ * Heuristic: does this line look like natural-language agent prose?
+ * Must start with a letter and contain a space (i.e. a phrase, not a
+ * single-word path or identifier).
+ */
+function isAgentProse(stripped: string): boolean {
+  // Agents use proper capitalization; tool output (paths, commands, code)
+  // typically starts lowercase or with symbols.
+  if (!/^[A-Z]/.test(stripped)) return false;
+  return stripped.includes(" ");
+}
+
 export interface TerminalDetailFilter {
   /** Filter a chunk of terminal output, returning only non-detail lines. */
   filter(chunk: string): string;
@@ -23,12 +42,7 @@ export interface TerminalDetailFilter {
 
 export function createDetailFilter(): TerminalDetailFilter {
   let pending = "";
-  let inDetailBlock = false;
-
-  function isDetailLine(raw: string): boolean {
-    const stripped = stripAnsi(raw);
-    return NUMBERED_LINE_RE.test(stripped);
-  }
+  let inToolBlock = false;
 
   function filter(chunk: string): string {
     const input = pending + chunk;
@@ -48,20 +62,38 @@ export function createDetailFilter(): TerminalDetailFilter {
 
     const output: string[] = [];
     for (const line of lines) {
-      const stripped = stripAnsi(line).trim();
+      const stripped = stripAnsi(line);
+      const trimmed = stripped.trim();
 
-      if (isDetailLine(line)) {
-        inDetailBlock = true;
+      // Numbered file content — always suppress, enter tool block
+      if (NUMBERED_LINE_RE.test(stripped)) {
+        inToolBlock = true;
         continue;
       }
 
-      if (inDetailBlock && stripped === "") {
-        // Blank line inside a detail block — suppress
+      // Action header — always show, enter tool block
+      if (ACTION_HEADER_RE.test(stripped)) {
+        inToolBlock = true;
+        output.push(line);
         continue;
       }
 
-      // Non-detail, non-blank line: exit detail block
-      inDetailBlock = false;
+      if (inToolBlock) {
+        // Blank line in tool block — suppress
+        if (trimmed === "") continue;
+
+        // Agent prose detected — exit tool block, show
+        if (isAgentProse(trimmed)) {
+          inToolBlock = false;
+          output.push(line);
+          continue;
+        }
+
+        // Non-prose tool output — suppress
+        continue;
+      }
+
+      // Normal mode — show everything
       output.push(line);
     }
 
@@ -71,7 +103,7 @@ export function createDetailFilter(): TerminalDetailFilter {
 
   function reset(): void {
     pending = "";
-    inDetailBlock = false;
+    inToolBlock = false;
   }
 
   return { filter, reset };
