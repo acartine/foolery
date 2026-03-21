@@ -19,9 +19,10 @@ describe("retakes pagination layout", () => {
   });
 
   it("gates steps, notes, and handoff capsules behind the per-beat toggle", () => {
-    expect(source).toContain("{showExpandedDetails && renderedSteps.length > 0 && (");
-    expect(source).toContain("{showExpandedDetails && renderedNotes.length > 0 && (");
-    expect(source).toContain("{showExpandedDetails && renderedCapsules.length > 0 && (");
+    expect(source).toContain("import { BeatMetadataDetails } from \"@/components/beat-metadata-details\"");
+    expect(source).toContain("<BeatMetadataDetails");
+    expect(source).toContain("showExpandedDetails={showExpandedDetails}");
+    expect(source).toContain("formatRelativeTime={relativeTime}");
   });
 
   it("uses a per-row disclosure control, not a page-level toggle", () => {
