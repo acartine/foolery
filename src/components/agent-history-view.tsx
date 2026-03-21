@@ -7,6 +7,7 @@ import {
   ArrowDown,
   ArrowUp,
   Bug,
+  ChevronRight,
   Clock3,
   CornerDownLeft,
   FileText,
@@ -36,6 +37,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { HistoryDebugPanel } from "@/components/history-debug-panel";
+import { BeatMetadataDetails } from "@/components/beat-metadata-details";
 import { cn } from "@/lib/utils";
 
 const WINDOW_SIZE = 5;
@@ -486,10 +488,12 @@ function renderLongText(label: string, value?: string) {
 function BeatDetailContent({
   beat,
   summary,
+  showExpandedDetails,
   onCopyBeatId,
 }: {
   beat: Beat | null;
   summary: AgentHistoryBeatSummary;
+  showExpandedDetails: boolean;
   onCopyBeatId: (beatId: string) => void;
 }) {
   if (!beat) {
@@ -536,9 +540,12 @@ function BeatDetailContent({
         </section>
       ) : null}
 
-      {renderLongText("Description", beat.description)}
+      <BeatMetadataDetails
+        beat={beat}
+        showExpandedDetails={showExpandedDetails}
+        formatRelativeTime={relativeTime}
+      />
       {renderLongText("Acceptance", beat.acceptance)}
-      {renderLongText("Notes", beat.notes)}
     </div>
   );
 }
@@ -550,6 +557,7 @@ export function AgentHistoryView() {
   const [loadedBeatKey, setLoadedBeatKey] = useState<string | null>(null);
   const [windowStart, setWindowStart] = useState(0);
   const [debugPanelOpen, setDebugPanelOpen] = useState(false);
+  const [showExpandedDetails, setShowExpandedDetails] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const beatButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const beatListRef = useRef<HTMLDivElement | null>(null);
@@ -1022,9 +1030,23 @@ export function AgentHistoryView() {
               </p>
             </div>
             {focusedSummary ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="ml-auto h-6 gap-1 px-2 text-[11px]"
+                aria-expanded={showExpandedDetails}
+                aria-label={showExpandedDetails ? "Collapse details" : "Expand details"}
+                title={showExpandedDetails ? "Collapse details" : "Expand details"}
+                onClick={() => setShowExpandedDetails((prev) => !prev)}
+              >
+                <ChevronRight className={cn("size-3.5 transition-transform", showExpandedDetails && "rotate-90")} />
+                <span>{showExpandedDetails ? "Hide extras" : "Show extras"}</span>
+              </Button>
+            ) : null}
+            {focusedSummary ? (
               <button
                 type="button"
-                className="ml-auto font-mono text-[11px] text-muted-foreground underline-offset-2 hover:underline"
+                className="font-mono text-[11px] text-muted-foreground underline-offset-2 hover:underline"
                 onClick={() => copyBeatId(focusedSummary.beatId)}
                 title="Click to copy ID"
               >
@@ -1048,7 +1070,12 @@ export function AgentHistoryView() {
                 {focusedDetail.error}
               </div>
             ) : (
-              <BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} onCopyBeatId={copyBeatId} />
+              <BeatDetailContent
+                beat={focusedDetail.beat}
+                summary={focusedSummary}
+                showExpandedDetails={showExpandedDetails}
+                onCopyBeatId={copyBeatId}
+              />
             )}
           </div>
         </section>

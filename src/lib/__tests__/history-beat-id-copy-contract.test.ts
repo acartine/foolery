@@ -20,7 +20,8 @@ describe("history beat-id copy affordance contract", () => {
     expect(historyViewSource).toContain("copyBeatId(beat.beatId)");
     expect(historyViewSource).toContain("copyBeatId(focusedSummary.beatId)");
     expect(historyViewSource).toContain("copyBeatId(loadedSummary.beatId)");
-    expect(historyViewSource).toContain("<BeatDetailContent beat={focusedDetail.beat} summary={focusedSummary} onCopyBeatId={copyBeatId} />");
+    expect(historyViewSource).toContain("showExpandedDetails={showExpandedDetails}");
+    expect(historyViewSource).toContain("onCopyBeatId={copyBeatId}");
     expect(historyViewSource).toContain("onClick={() => onCopyBeatId(beat.id)}");
   });
 
