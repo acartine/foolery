@@ -8,6 +8,7 @@ import type {
   AgentHistorySession,
 } from "@/lib/agent-history-types";
 import { fetchMessageTypeIndex } from "@/lib/agent-message-type-api";
+import { shouldShowHistoryResponseType } from "@/lib/history-response-visibility";
 import { Switch } from "@/components/ui/switch";
 
 /* ------------------------------------------------------------------ */
@@ -334,13 +335,7 @@ export function useInteractionPicker(
           return messageTypeFilters.has(type);
         }
 
-        // When thinking detail is hidden, suppress tool results, system events,
-        // and execution result summaries — show only assistant messages (agent
-        // words + action headers like "▶ Read …").
-        if (
-          !thinkingDetailVisible &&
-          (type === "user" || type === "system" || type === "result")
-        ) {
+        if (!shouldShowHistoryResponseType(type, thinkingDetailVisible)) {
           return false;
         }
 

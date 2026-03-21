@@ -22,6 +22,10 @@ import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { abortSession, startSession, listSessions } from "@/lib/terminal-api";
 import { sessionConnections } from "@/lib/session-connection-manager";
 import { createDetailFilter } from "@/lib/terminal-detail-filter";
+import {
+  getVisibleTerminalStreamChunk,
+  type TerminalStreamKind,
+} from "@/lib/terminal-stream-visibility";
 import { Switch } from "@/components/ui/switch";
 import {
   detectVendor,
@@ -532,13 +536,12 @@ export function TerminalPanel() {
       const detailFilter = detailFilterRef.current;
       detailFilter.reset();
 
-      const writeFiltered = (data: string) => {
-        if (thinkingDetailVisible) {
-          liveTerm.write(data);
-        } else {
-          const filtered = detailFilter.filter(data);
-          if (filtered) liveTerm.write(filtered);
-        }
+      const writeStreamChunk = (data: string, stream: TerminalStreamKind) => {
+        const visibleChunk = getVisibleTerminalStreamChunk(detailFilter, data, {
+          stream,
+          thinkingDetailVisible,
+        });
+        if (visibleChunk) liveTerm.write(visibleChunk);
       };
 
       // Replay buffered output from the connection manager
@@ -546,10 +549,10 @@ export function TerminalPanel() {
       for (const entry of buffer) {
         if (entry.type === "stdout") {
           appendRecentOutput(entry.data);
-          writeFiltered(entry.data);
+          writeStreamChunk(entry.data, "stdout");
         } else if (entry.type === "stderr") {
           appendRecentOutput(entry.data);
-          liveTerm.write(`\x1b[31m${entry.data}\x1b[0m`);
+          writeStreamChunk(entry.data, "stderr");
         } else if (entry.type === "exit") {
           writeExitMessage(liveTerm, parseInt(entry.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
         }
@@ -567,10 +570,10 @@ export function TerminalPanel() {
         if (disposed) return;
         if (event.type === "stdout") {
           appendRecentOutput(event.data);
-          writeFiltered(event.data);
+          writeStreamChunk(event.data, "stdout");
         } else if (event.type === "stderr") {
           appendRecentOutput(event.data);
-          liveTerm.write(`\x1b[31m${event.data}\x1b[0m`);
+          writeStreamChunk(event.data, "stderr");
         } else if (event.type === "exit") {
           writeExitMessage(liveTerm, parseInt(event.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
         }
