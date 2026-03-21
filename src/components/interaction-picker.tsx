@@ -416,7 +416,7 @@ export function InteractionPicker({
     : "Select interaction";
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-2.5 py-1 text-[12px]">
+    <div className="flex flex-wrap items-center gap-2 border-b border-slate-600 bg-slate-950/50 px-2.5 py-1 text-[13px]">
       <InteractionDropdown
         dropdownRef={interactionDropdownRef}
         dropdownOpen={interactionDropdownOpen}
@@ -425,7 +425,7 @@ export function InteractionPicker({
         picker={picker}
       />
 
-      <span className="text-slate-500">|</span>
+      <span className="text-slate-400">|</span>
 
       <FilterDropdown
         dropdownRef={filterDropdownRef}
@@ -434,10 +434,10 @@ export function InteractionPicker({
         picker={picker}
       />
 
-      <span className="text-slate-500">|</span>
+      <span className="text-slate-400">|</span>
 
       <label className="inline-flex items-center gap-1.5">
-        <span className="text-[12px] text-slate-300">Detail</span>
+        <span className="text-[13px] text-slate-200">Detail</span>
         <Switch
           checked={picker.thinkingDetailVisible}
           onCheckedChange={picker.toggleThinkingDetail}
@@ -445,7 +445,7 @@ export function InteractionPicker({
         />
       </label>
 
-      <span className="ml-auto text-[12px] text-slate-300">
+      <span className="ml-auto text-[13px] text-slate-200">
         {picker.interactions.length} interaction
         {picker.interactions.length === 1 ? "" : "s"}
       </span>
@@ -475,16 +475,16 @@ function InteractionDropdown({
       <button
         type="button"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[12px] text-slate-200 hover:bg-slate-700"
+        className="inline-flex items-center gap-1 rounded border border-slate-500 bg-slate-800/95 px-2 py-0.5 text-[13px] text-slate-100 hover:bg-slate-700/90"
       >
         <span>{selectedLabel}</span>
-        <ChevronDown className="size-3.5" />
+        <ChevronDown className="size-4" />
       </button>
 
       {dropdownOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-48 w-64 overflow-y-auto rounded border border-slate-600 bg-slate-800 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-48 w-64 overflow-y-auto rounded border border-slate-500 bg-slate-900/95 shadow-lg">
           {picker.interactions.length === 0 ? (
-            <div className="px-2 py-1.5 text-[12px] text-slate-300">
+            <div className="px-2 py-1.5 text-[13px] text-slate-200">
               No interactions found
             </div>
           ) : (
@@ -496,14 +496,14 @@ function InteractionDropdown({
                   picker.selectInteraction(item.entryId);
                   setDropdownOpen(false);
                 }}
-                className={`block w-full px-2 py-1.5 text-left text-[12px] hover:bg-slate-700 ${
+                className={`block w-full px-2 py-1.5 text-left text-[13px] hover:bg-slate-700/90 ${
                   picker.selectedInteraction === item.id
-                    ? "bg-slate-700 text-slate-100"
-                    : "text-slate-300"
+                    ? "bg-slate-700/90 text-slate-50"
+                    : "text-slate-200"
                 }`}
               >
                 <span className="block font-medium">{item.label}</span>
-                <span className="block text-[10px] text-slate-300">
+                <span className="block text-[11px] text-slate-200">
                   {promptStateMeta(item.workflowState, item.workflowStepLabel)}
                   {" · "}
                   {formatCompactTime(item.timestamp)}
@@ -536,32 +536,32 @@ function FilterDropdown({
       <button
         type="button"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="inline-flex items-center gap-1 rounded border border-slate-600 bg-slate-800 px-2 py-0.5 text-[12px] text-slate-200 hover:bg-slate-700"
+        className="inline-flex items-center gap-1 rounded border border-slate-500 bg-slate-800/95 px-2 py-0.5 text-[13px] text-slate-100 hover:bg-slate-700/90"
       >
-        <Filter className="size-3.5" />
+        <Filter className="size-4" />
         <span>Filters</span>
         {selectedCount > 0 ? (
-          <span className="rounded bg-cyan-900/70 px-1 text-[11px] text-cyan-100">
+          <span className="rounded bg-cyan-800/80 px-1 text-[12px] text-cyan-50">
             {selectedCount}
           </span>
         ) : null}
-        <ChevronDown className="size-3.5" />
+        <ChevronDown className="size-4" />
       </button>
 
       {dropdownOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-80 rounded border border-slate-600 bg-slate-800 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-1 w-80 rounded border border-slate-500 bg-slate-900/95 shadow-lg">
           <div className="max-h-72 space-y-2 overflow-y-auto p-2">
             <section>
-              <p className="px-1 text-[11px] uppercase tracking-wide text-slate-400">
+              <p className="px-1 text-[12px] uppercase tracking-wide text-slate-300">
                 Agent Message Types
               </p>
               <div className="mt-1 space-y-0.5">
                 {picker.isIndexLoading ? (
-                  <p className="px-1 py-1 text-[11px] text-slate-400">
+                  <p className="px-1 py-1 text-[12px] text-slate-300">
                     Loading types…
                   </p>
                 ) : picker.availableMessageTypes.length === 0 ? (
-                  <p className="px-1 py-1 text-[11px] text-slate-400">
+                  <p className="px-1 py-1 text-[12px] text-slate-300">
                     No type index
                   </p>
                 ) : (
@@ -578,7 +578,7 @@ function FilterDropdown({
             </section>
 
             <section>
-              <p className="px-1 text-[11px] uppercase tracking-wide text-slate-400">
+              <p className="px-1 text-[12px] uppercase tracking-wide text-slate-300">
                 Workflow Steps (queue/action)
               </p>
               <div className="mt-1 space-y-0.5">
@@ -594,8 +594,8 @@ function FilterDropdown({
               </div>
             </section>
           </div>
-          <div className="flex items-center justify-between border-t border-slate-700 px-2 py-1">
-            <span className="text-[11px] text-slate-400">
+          <div className="flex items-center justify-between border-t border-slate-600 bg-slate-950/60 px-2 py-1">
+            <span className="text-[12px] text-slate-300">
               {selectedCount === 0
                 ? "No filters selected"
                 : `${selectedCount} active filter${selectedCount === 1 ? "" : "s"}`}
@@ -604,7 +604,7 @@ function FilterDropdown({
               <button
                 type="button"
                 onClick={picker.clearFilters}
-                className="text-[11px] text-slate-300 hover:text-slate-200"
+                className="text-[12px] text-slate-200 hover:text-white"
               >
                 Clear all
               </button>
@@ -631,10 +631,10 @@ function FilterOptionRow({
     <button
       type="button"
       onClick={onToggle}
-      className="flex w-full items-start gap-2 rounded px-1 py-1 text-left hover:bg-slate-700/60"
+      className="flex w-full items-start gap-2 rounded px-1 py-1 text-left hover:bg-slate-700/75"
     >
       <span
-        className={`mt-[1px] inline-flex size-3.5 shrink-0 items-center justify-center rounded border ${
+        className={`mt-[1px] inline-flex size-4 shrink-0 items-center justify-center rounded border ${
           selected
             ? "border-cyan-400 bg-cyan-700 text-cyan-100"
             : "border-slate-500 text-transparent"
@@ -643,9 +643,9 @@ function FilterOptionRow({
         <Check className="size-2.5" />
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[12px] text-slate-200">{label}</span>
+        <span className="block truncate text-[13px] text-slate-100">{label}</span>
         {description ? (
-          <span className="block truncate text-[11px] text-slate-400">
+          <span className="block truncate text-[12px] text-slate-300">
             {description}
           </span>
         ) : null}
