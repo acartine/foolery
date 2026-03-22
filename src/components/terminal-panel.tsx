@@ -21,11 +21,6 @@ import {
 import { useTerminalStore, getActiveTerminal } from "@/stores/terminal-store";
 import { abortSession, startSession, listSessions } from "@/lib/terminal-api";
 import { sessionConnections } from "@/lib/session-connection-manager";
-import { createDetailFilter } from "@/lib/terminal-detail-filter";
-import {
-  getVisibleTerminalStreamChunk,
-  type TerminalStreamKind,
-} from "@/lib/terminal-stream-visibility";
 import { Switch } from "@/components/ui/switch";
 import {
   detectVendor,
@@ -188,7 +183,6 @@ export function TerminalPanel() {
   const failureHintBySession = useRef<Map<string, TerminalFailureGuidance>>(new Map());
   const hasRehydrated = useRef(false);
   const [thinkingDetailVisible, setThinkingDetailVisible] = useState(false);
-  const detailFilterRef = useRef(createDetailFilter());
   const [completionAnimationEnabled, setCompletionAnimationEnabled] = useState(false);
   const [tabStripState, setTabStripState] = useState(() =>
     resolveTerminalTabStripState({ scrollLeft: 0, scrollWidth: 0, clientWidth: 0 }),
@@ -532,30 +526,27 @@ export function TerminalPanel() {
         toast.info("Retry launched with take recovery prompt.");
       };
 
-      // Reset the detail filter for a fresh replay
-      const detailFilter = detailFilterRef.current;
-      detailFilter.reset();
-
-      const writeStreamChunk = (data: string, stream: TerminalStreamKind) => {
-        const visibleChunk = getVisibleTerminalStreamChunk(detailFilter, data, {
-          stream,
-          thinkingDetailVisible,
-        });
-        if (visibleChunk) liveTerm.write(visibleChunk);
+      const writeTerminalEvent = (type: string, data: string) => {
+        if (type === "stdout") {
+          appendRecentOutput(data);
+          liveTerm.write(data);
+        } else if (type === "stdout_detail") {
+          appendRecentOutput(data);
+          if (thinkingDetailVisible) liveTerm.write(data);
+        } else if (type === "stderr") {
+          appendRecentOutput(data);
+          if (thinkingDetailVisible) {
+            liveTerm.write(`\x1b[31m${data}\x1b[0m`);
+          }
+        } else if (type === "exit") {
+          writeExitMessage(liveTerm, parseInt(data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
+        }
       };
 
       // Replay buffered output from the connection manager
       const buffer = sessionConnections.getBuffer(sessionId);
       for (const entry of buffer) {
-        if (entry.type === "stdout") {
-          appendRecentOutput(entry.data);
-          writeStreamChunk(entry.data, "stdout");
-        } else if (entry.type === "stderr") {
-          appendRecentOutput(entry.data);
-          writeStreamChunk(entry.data, "stderr");
-        } else if (entry.type === "exit") {
-          writeExitMessage(liveTerm, parseInt(entry.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
-        }
+        writeTerminalEvent(entry.type, entry.data);
       }
 
       // If exit was already received (e.g., completed while on another tab),
@@ -568,15 +559,7 @@ export function TerminalPanel() {
       // Subscribe to live events going forward
       const unsubscribe = sessionConnections.subscribe(sessionId, (event) => {
         if (disposed) return;
-        if (event.type === "stdout") {
-          appendRecentOutput(event.data);
-          writeStreamChunk(event.data, "stdout");
-        } else if (event.type === "stderr") {
-          appendRecentOutput(event.data);
-          writeStreamChunk(event.data, "stderr");
-        } else if (event.type === "exit") {
-          writeExitMessage(liveTerm, parseInt(event.data, 10), sessionId, recentOutputBySession, failureHintBySession, agentInfo?.command, launchRecoverySession);
-        }
+        writeTerminalEvent(event.type, event.data);
       });
 
       cleanupRef.current = unsubscribe;

@@ -211,10 +211,9 @@ export function createLineNormalizer(
       if (item?.type === "command_execution") {
         const cmd = typeof item.command === "string" ? item.command : "";
         return {
-          type: "stream_event",
-          event: {
-            type: "content_block_delta",
-            delta: { type: "text_delta", text: `[executing] ${cmd}\n` },
+          type: "assistant",
+          message: {
+            content: [{ type: "tool_use", name: "Bash", input: { command: cmd } }],
           },
         };
       }

@@ -150,7 +150,7 @@ export interface TerminalSession {
 }
 
 export interface TerminalEvent {
-  type: "stdout" | "stderr" | "exit" | "stream_end" | "agent_switch";
+  type: "stdout" | "stdout_detail" | "stderr" | "exit" | "stream_end" | "agent_switch";
   data: string;
   timestamp: number;
 }

@@ -454,8 +454,23 @@ export function listSessions(): TerminalSession[] {
   return Array.from(sessions.values()).map((e) => e.session);
 }
 
+interface FormattedEvent {
+  text: string;
+  /** When true, this output is tool/detail content (hidden when detail toggle is off). */
+  isDetail: boolean;
+}
+
+/** Push formatted event to the terminal, using stdout_detail for detail content. */
+function pushFormattedEvent(
+  formatted: FormattedEvent,
+  push: (evt: TerminalEvent) => void,
+): void {
+  const evtType = formatted.isDetail ? "stdout_detail" : "stdout";
+  push({ type: evtType, data: formatted.text, timestamp: Date.now() });
+}
+
 /** Format a stream-json event into human-readable terminal output. */
-function formatStreamEvent(obj: Record<string, unknown>): string | null {
+function formatStreamEvent(obj: Record<string, unknown>): FormattedEvent | null {
   // Assistant message content blocks
   if (obj.type === "assistant" && typeof obj.message === "object" && obj.message) {
     const msg = obj.message as Record<string, unknown>;
@@ -478,18 +493,20 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
         parts.push(`\x1b[36m▶ ${name}${summary}\x1b[0m\n`);
       }
     }
-    return parts.join("") || null;
+    const text = parts.join("");
+    return text ? { text, isDetail: false } : null;
   }
 
   if (obj.type === "stream_event") {
     const streamEvent = toObject(obj.event);
     if (!streamEvent) return null;
     const payload = extractEventPayload(streamEvent);
-    if (payload) return formatEventPayload(payload);
+    if (payload) return { text: formatEventPayload(payload), isDetail: true };
 
     const delta = toObject(streamEvent.delta);
     if (typeof delta?.text === "string") {
-      return formatEventTextLines(delta.text);
+      const text = formatEventTextLines(delta.text);
+      return text ? { text, isDetail: true } : null;
     }
   }
 
@@ -506,13 +523,13 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
         // Show abbreviated result (first 500 chars)
         const abbrev = text.length > 500 ? text.slice(0, 500) + "...\n" : text;
         const rendered = formatEventTextLines(abbrev);
-        return `\x1b[90m${rendered || abbrev}\x1b[0m\n`;
+        return { text: `\x1b[90m${rendered || abbrev}\x1b[0m\n`, isDetail: true };
       }
     }
   }
 
   const adHocEvent = extractEventPayload(obj);
-  if (adHocEvent) return formatEventPayload(adHocEvent);
+  if (adHocEvent) return { text: formatEventPayload(adHocEvent), isDetail: true };
 
   // Final result
   if (obj.type === "result") {
@@ -530,7 +547,7 @@ function formatStreamEvent(obj: Record<string, unknown>): string | null {
       if (dur !== undefined) meta.push(`${(dur / 1000).toFixed(1)}s`);
       parts.push(`\x1b[90m(${meta.join(", ")})\x1b[0m`);
     }
-    return parts.join(" ") + "\n";
+    return { text: parts.join(" ") + "\n", isDetail: true };
   }
 
   return null;
@@ -1588,9 +1605,7 @@ export async function createSession(
             takeCancelInputClose();
           }
           const display = formatStreamEvent(obj);
-          if (display) {
-            pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
-          }
+          if (display) pushFormattedEvent(display, pushEvent);
         } catch {
           pushEvent({ type: "stdout", data: line + "\n", timestamp: Date.now() });
         }
@@ -1610,7 +1625,7 @@ export async function createSession(
           takeAutoAnswerAskUser(obj);
           if (obj.type === "result") takeScheduleInputClose();
           const display = formatStreamEvent(obj);
-          if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+          if (display) pushFormattedEvent(display, pushEvent);
         } catch {
           pushEvent({ type: "stdout", data: takeLineBuffer + "\n", timestamp: Date.now() });
         }
@@ -1852,8 +1867,9 @@ export async function createSession(
 
         const display = formatStreamEvent(obj);
         if (display) {
-          console.log(`[terminal-manager] [${id}] display (${display.length} chars): ${display.slice(0, 150).replace(/\n/g, "\\n")}`);
-          pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+          const evtType = display.isDetail ? "stdout_detail" : "stdout";
+          console.log(`[terminal-manager] [${id}] display (${display.text.length} chars, ${evtType}): ${display.text.slice(0, 150).replace(/\n/g, "\\n")}`);
+          pushEvent({ type: evtType, data: display.text, timestamp: Date.now() });
         }
       } catch {
         // Not valid JSON — pass through raw
@@ -1887,7 +1903,7 @@ export async function createSession(
         }
 
         const display = formatStreamEvent(obj);
-        if (display) pushEvent({ type: "stdout", data: display, timestamp: Date.now() });
+        if (display) pushFormattedEvent(display, pushEvent);
       } catch {
         pushEvent({ type: "stdout", data: lineBuffer + "\n", timestamp: Date.now() });
       }
