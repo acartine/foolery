@@ -189,14 +189,17 @@ function serializeInvariants(invariants: readonly Invariant[] | undefined): stri
   return normalized.map((inv) => `${inv.kind}:${inv.condition}`);
 }
 
+/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
 const ACCEPTANCE_MARKER = "Acceptance Criteria:\n";
 
+/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
 function isAcceptanceNote(entry: unknown): boolean {
   if (!entry || typeof entry !== "object") return false;
   const content = (entry as Record<string, unknown>).content;
   return typeof content === "string" && content.trimStart().startsWith(ACCEPTANCE_MARKER);
 }
 
+/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
 function extractAcceptanceFromNotes(raw: unknown): string | undefined {
   if (!Array.isArray(raw) || raw.length === 0) return undefined;
   // Walk in reverse to find the latest acceptance note
@@ -428,6 +431,14 @@ function toBeat(
   const invariants = normalizeInvariants(knot.invariants);
   const aliases = collectAliases(knot);
 
+  const hasNativeAcceptance = Object.prototype.hasOwnProperty.call(knot, "acceptance");
+  const nativeAcceptance = typeof knot.acceptance === "string"
+    ? knot.acceptance.trim() || undefined
+    : undefined;
+  const acceptance = hasNativeAcceptance
+    ? nativeAcceptance
+    : extractAcceptanceFromNotes(knot.notes);
+
   if (!workflow) {
     return {
       id: knot.id,
@@ -445,7 +456,7 @@ function toBeat(
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
-      acceptance: extractAcceptanceFromNotes(knot.notes),
+      acceptance,
       parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
@@ -462,8 +473,6 @@ function toBeat(
   const workflowState = rawWorkflowState;
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const notes = stringifyNotes(knot.notes);
-  const acceptance = extractAcceptanceFromNotes(knot.notes);
-
   return {
     id: knot.id,
     title: knot.title,
@@ -934,6 +943,7 @@ export class KnotsBackend implements BackendPort {
         input.title,
         {
           description: input.description,
+          acceptance: input.acceptance,
           state: selectedWorkflow.initialState,
           profile: selectedWorkflow.id,
         },
@@ -961,17 +971,6 @@ export class KnotsBackend implements BackendPort {
     if (hasPatch) {
       const updateResult = fromKnots(await knots.updateKnot(id, patch, rp));
       if (!updateResult.ok) return propagateError<{ id: string }>(updateResult);
-    }
-
-    if (input.acceptance) {
-      const acceptanceUpdate = fromKnots(
-        await knots.updateKnot(
-          id,
-          { addNote: `${ACCEPTANCE_MARKER}${input.acceptance}` },
-          rp,
-        ),
-      );
-      if (!acceptanceUpdate.ok) return propagateError<{ id: string }>(acceptanceUpdate);
     }
 
     if (input.parent) {
@@ -1044,6 +1043,7 @@ export class KnotsBackend implements BackendPort {
 
     if (input.title !== undefined) patch.title = input.title;
     if (input.description !== undefined) patch.description = input.description;
+    if (input.acceptance !== undefined) patch.acceptance = input.acceptance;
     if (input.priority !== undefined) patch.priority = input.priority;
 
     if (input.state !== undefined && !stateHandledByProfileSet) {
@@ -1083,6 +1083,7 @@ export class KnotsBackend implements BackendPort {
     const hasPatch =
       patch.title !== undefined ||
       patch.description !== undefined ||
+      patch.acceptance !== undefined ||
       patch.priority !== undefined ||
       patch.status !== undefined ||
       patch.type !== undefined ||
@@ -1096,17 +1097,6 @@ export class KnotsBackend implements BackendPort {
     if (hasPatch) {
       const patchResult = fromKnots(await knots.updateKnot(id, patch, rp));
       if (!patchResult.ok) return propagateError<void>(patchResult);
-    }
-
-    if (input.acceptance !== undefined) {
-      const acceptanceResult = fromKnots(
-        await knots.updateKnot(
-          id,
-          { addNote: `${ACCEPTANCE_MARKER}${input.acceptance}` },
-          rp,
-        ),
-      );
-      if (!acceptanceResult.ok) return propagateError<void>(acceptanceResult);
     }
 
     if (input.parent !== undefined) {

@@ -29,6 +29,7 @@ interface MockKnot {
   updated_at: string;
   body: string | null;
   description: string | null;
+  acceptance?: string | null;
   priority: number | null;
   type: string | null;
   tags: string[];
@@ -148,7 +149,12 @@ const mockShowKnot = vi.fn(async (id: string, _repoPath?: string) => {
 const mockNewKnot = vi.fn(
   async (
     title: string,
-    options?: { description?: string; state?: string; profile?: string },
+    options?: {
+      description?: string;
+      acceptance?: string;
+      state?: string;
+      profile?: string;
+    },
     _repoPath?: string,
   ) => {
     const id = nextId();
@@ -163,6 +169,7 @@ const mockNewKnot = vi.fn(
       updated_at: now,
       body: options?.description ?? null,
       description: options?.description ?? null,
+      acceptance: options?.acceptance ?? null,
       priority: null,
       type: null,
       tags: [],
@@ -186,6 +193,9 @@ const mockUpdateKnot = vi.fn(
     if (typeof input.description === "string") {
       knot.description = input.description;
       knot.body = input.description;
+    }
+    if ("acceptance" in input) {
+      knot.acceptance = typeof input.acceptance === "string" ? input.acceptance : null;
     }
     if (typeof input.priority === "number") knot.priority = input.priority;
     if (typeof input.status === "string") knot.state = input.status;
@@ -432,7 +442,7 @@ beforeEach(() => {
 
 function insertKnot(overrides: Partial<MockKnot> & { id: string }): void {
   const now = nowIso();
-  store.knots.set(overrides.id, {
+  const knot: MockKnot = {
     id: overrides.id,
     title: overrides.title ?? "Untitled",
     aliases: overrides.aliases ?? [],
@@ -452,7 +462,11 @@ function insertKnot(overrides: Partial<MockKnot> & { id: string }): void {
     workflow_etag: overrides.workflow_etag ?? "etag",
     profile_etag: overrides.profile_etag,
     created_at: overrides.created_at ?? now,
-  });
+  };
+  if ("acceptance" in overrides) {
+    knot.acceptance = overrides.acceptance ?? null;
+  }
+  store.knots.set(overrides.id, knot);
 }
 
 // ── Tests ───────────────────────────────────────────────────
@@ -879,7 +893,7 @@ describe("KnotsBackend coverage: update with parent manipulation", () => {
     expect(result.error?.message).toContain("Unknown profile");
   });
 
-  it("passes acceptance criteria as a note", async () => {
+  it("passes acceptance criteria through the native acceptance field", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "AC1", title: "Accept test" });
 
@@ -887,14 +901,11 @@ describe("KnotsBackend coverage: update with parent manipulation", () => {
       acceptance: "Must pass all tests",
     });
     expect(result.ok).toBe(true);
-
-    const calls = mockUpdateKnot.mock.calls;
-    const acceptanceCall = calls.find(
-      (c) =>
-        typeof c[1].addNote === "string" &&
-        c[1].addNote.includes("Acceptance Criteria"),
+    expect(mockUpdateKnot).toHaveBeenCalledWith(
+      "AC1",
+      expect.objectContaining({ acceptance: "Must pass all tests" }),
+      "/repo",
     );
-    expect(acceptanceCall).toBeDefined();
   });
 });
 
@@ -962,7 +973,23 @@ describe("KnotsBackend coverage: knot with notes and metadata", () => {
   });
 });
 
-describe("KnotsBackend coverage: acceptance round-trip via notes", () => {
+describe("KnotsBackend coverage: acceptance read paths", () => {
+  it("reads acceptance from the native knot field", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-NATIVE1",
+      title: "Native acceptance",
+      acceptance: "Native criteria",
+      notes: [
+        { content: "Regular note", username: "alice", datetime: "2026-01-01" },
+      ],
+    });
+
+    const result = await backend.get("AC-NATIVE1");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBe("Native criteria");
+  });
+
   it("extracts acceptance from tagged notes into beat.acceptance", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
@@ -977,6 +1004,22 @@ describe("KnotsBackend coverage: acceptance round-trip via notes", () => {
     const result = await backend.get("AC-RT1");
     expect(result.ok).toBe(true);
     expect(result.data?.acceptance).toBe("Must pass all tests");
+  });
+
+  it("prefers native acceptance over note fallback when both exist", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-NATIVE2",
+      title: "Acceptance precedence",
+      acceptance: "Native criteria",
+      notes: [
+        { content: "Acceptance Criteria:\nLegacy criteria", username: "system", datetime: "2026-01-02" },
+      ],
+    });
+
+    const result = await backend.get("AC-NATIVE2");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBe("Native criteria");
   });
 
   it("excludes acceptance-marker notes from visible beat.notes", async () => {
@@ -1063,9 +1106,13 @@ describe("KnotsBackend coverage: create with extra fields", () => {
     });
 
     expect(result.ok).toBe(true);
-    // updateKnot should have been called for patch and acceptance
     const updateCalls = mockUpdateKnot.mock.calls;
-    expect(updateCalls.length).toBeGreaterThanOrEqual(2);
+    expect(updateCalls).toHaveLength(1);
+    expect(mockNewKnot).toHaveBeenCalledWith(
+      "Full create",
+      expect.objectContaining({ acceptance: "All tests pass" }),
+      "/repo",
+    );
     // addEdge should have been called for parent
     expect(mockAddEdge).toHaveBeenCalled();
   });
