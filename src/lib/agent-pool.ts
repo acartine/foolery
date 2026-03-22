@@ -121,7 +121,7 @@ function selectWeighted(
  * @param excludeAgentId - Agent ID to exclude for cross-agent review.
  */
 export function resolvePoolAgent(
-  step: WorkflowStep,
+  step: keyof PoolsSettings,
   pools: PoolsSettings,
   agents: Record<string, RegisteredAgentConfig>,
   excludeAgentId?: string,
@@ -173,7 +173,12 @@ export function swapPoolAgent(
     .filter((_, idx) => idx === firstFromIndex || !removeIndexes.has(idx));
 }
 
-const ACTION_NAMES: readonly ActionName[] = ["take", "scene", "breakdown"];
+const ACTION_NAMES: readonly ActionName[] = [
+  "take",
+  "scene",
+  "breakdown",
+  "scopeRefinement",
+];
 
 export interface SwapActionsAgentResult {
   affectedActions: number;
@@ -213,7 +218,15 @@ export function swapActionsAgent(
   };
 }
 
-const DEFAULT_POOL_STEPS = Object.values(WorkflowStep) as WorkflowStep[];
+const DEFAULT_POOL_STEPS: ReadonlyArray<keyof PoolsSettings> = [
+  WorkflowStep.Planning,
+  WorkflowStep.PlanReview,
+  WorkflowStep.Implementation,
+  WorkflowStep.ImplementationReview,
+  WorkflowStep.Shipment,
+  WorkflowStep.ShipmentReview,
+  "scope_refinement",
+];
 
 export interface SwapPoolsAgentResult {
   affectedEntries: number;

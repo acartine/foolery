@@ -370,7 +370,21 @@ export interface RegisteredAgent {
 export type ActionName =
   | "take"
   | "scene"
-  | "breakdown";
+  | "breakdown"
+  | "scopeRefinement";
+
+export interface ScopeRefinementCompletion {
+  id: string;
+  beatId: string;
+  beatTitle: string;
+  repoPath?: string;
+  timestamp: number;
+}
+
+export interface ScopeRefinementStatus {
+  queueSize: number;
+  completions: ScopeRefinementCompletion[];
+}
 
 export interface ScannedAgent {
   id: string;

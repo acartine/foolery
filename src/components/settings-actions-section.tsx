@@ -5,6 +5,7 @@ import {
   Zap,
   Clapperboard,
   Layers,
+  Sparkles,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -53,6 +54,12 @@ const ACTION_DEFS: ActionDef[] = [
     label: "Breakdown",
     description: "Decompose into sub-beats",
     icon: Layers,
+  },
+  {
+    name: "scopeRefinement",
+    label: "Scope Refinement",
+    description: "Refine new beats after creation",
+    icon: Sparkles,
   },
 ];
 

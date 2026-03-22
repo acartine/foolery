@@ -27,7 +27,7 @@ interface PoolsSectionProps {
   disabled?: boolean;
 }
 
-const STEP_LABELS: Record<string, { label: string; description: string }> = {
+const STEP_LABELS: Record<keyof PoolsSettings, { label: string; description: string }> = {
   [WorkflowStep.Planning]: {
     label: "Planning",
     description: "Agent writes the implementation plan",
@@ -52,9 +52,21 @@ const STEP_LABELS: Record<string, { label: string; description: string }> = {
     label: "Ship Review",
     description: "Agent reviews the shipment",
   },
+  scope_refinement: {
+    label: "Scope Refinement",
+    description: "Agent refines new beats after creation",
+  },
 };
 
-const ALL_STEPS = Object.values(WorkflowStep);
+const ALL_STEPS: ReadonlyArray<keyof PoolsSettings> = [
+  WorkflowStep.Planning,
+  WorkflowStep.PlanReview,
+  WorkflowStep.Implementation,
+  WorkflowStep.ImplementationReview,
+  WorkflowStep.Shipment,
+  WorkflowStep.ShipmentReview,
+  "scope_refinement",
+];
 
 const POOL_COLORS = [
   "bg-blue-500",
@@ -118,7 +130,7 @@ export function SettingsPoolsSection({
   return (
     <div className={disabled ? "space-y-3 opacity-50 pointer-events-none" : "space-y-3"}>
       <p className="text-[11px] text-muted-foreground">
-        Configure weighted agent distribution per workflow step.
+        Configure weighted agent distribution per workflow step and dispatch target.
       </p>
       <div className="space-y-4">
         {ALL_STEPS.map((step) => (

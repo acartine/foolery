@@ -5,6 +5,7 @@ import type {
   BdResult,
   MemoryWorkflowDescriptor,
   RegisteredRepo,
+  ScopeRefinementStatus,
 } from "./types";
 import type {
   CreateBeatInput,
@@ -105,6 +106,10 @@ export function fetchWorkflows(
 ): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
   const qs = repoQs(repo);
   return request<MemoryWorkflowDescriptor[]>(`/api/workflows${qs}`);
+}
+
+export function fetchScopeRefinementStatus(): Promise<BdResult<ScopeRefinementStatus>> {
+  return request<ScopeRefinementStatus>("/api/scope-refinement/status");
 }
 
 export function updateBeat(
@@ -236,4 +241,3 @@ export async function fetchBeatsFromAllRepos(
   );
   return { ok: true, data: results.flat() };
 }
-

@@ -73,4 +73,12 @@ export async function register(): Promise<void> {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[message-types] startup index build failed: ${message}`);
   }
+
+  try {
+    const { startScopeRefinementWorker } = await import("@/lib/scope-refinement-worker");
+    startScopeRefinementWorker();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[scope-refinement] worker startup failed: ${message}`);
+  }
 }
