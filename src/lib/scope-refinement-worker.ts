@@ -173,7 +173,12 @@ async function runScopeRefinementPrompt(
       }
 
       if (obj.type === "result") {
-        if (typeof obj.result === "string") {
+        if (obj.is_error === true) {
+          const msg = typeof obj.result === "string" ? obj.result
+            : typeof obj.error === "string" ? obj.error
+            : "agent result error";
+          reject(new Error(msg));
+        } else if (typeof obj.result === "string") {
           resultText = obj.result;
         } else if (obj.error && typeof obj.error === "string") {
           reject(new Error(`agent result error: ${obj.error}`));
@@ -280,9 +285,9 @@ export async function processScopeRefinementJob(job: ScopeRefinementJob): Promis
 
   const beatResult = await getBackend().get(job.beatId, job.repoPath);
   if (!beatResult.ok || !beatResult.data) {
-    console.warn(
-      `[scope-refinement] failed to load beat ${job.beatId}: ${beatResult.error ?? "unknown error"}`,
-    );
+    const reason = `failed to load beat: ${beatResult.error?.message ?? beatResult.error ?? "unknown error"}`;
+    console.warn(`[scope-refinement] ${job.beatId}: ${reason}`);
+    maybeReenqueue(job, reason);
     return;
   }
 

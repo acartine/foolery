@@ -163,6 +163,48 @@ describe("processScopeRefinementJob", () => {
     expect(getScopeRefinementQueueSize()).toBe(1);
   });
 
+  it("rejects result events with is_error=true instead of treating as success", async () => {
+    // Simulates a normalized event from codex/opencode with is_error flag
+    const errorResult = JSON.stringify({
+      type: "result",
+      result: "Turn failed",
+      is_error: true,
+    });
+    const child = createMockChild(`${errorResult}\n`);
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      createdAt: Date.now(),
+    });
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+    child.emitOutput();
+    await promise;
+
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(getScopeRefinementQueueSize()).toBe(1);
+  });
+
+  it("re-enqueues job when backend.get fails", async () => {
+    mockGet.mockResolvedValue({
+      ok: false,
+      error: { message: "not found", code: "NOT_FOUND", retryable: false },
+    });
+
+    await processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      createdAt: Date.now(),
+    });
+
+    expect(mockSpawn).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(getScopeRefinementQueueSize()).toBe(1);
+  });
+
   it("re-enqueues job on unparseable output", async () => {
     const child = createMockChild(
       `${JSON.stringify({ type: "result", result: "not json at all" })}\n`,
