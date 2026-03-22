@@ -395,6 +395,7 @@ export const componentSchemas = {
           take: { type: "string" },
           scene: { type: "string" },
           breakdown: { type: "string" },
+          scopeRefinement: { type: "string" },
         },
       },
       backend: {
@@ -407,6 +408,13 @@ export const componentSchemas = {
         type: "object",
         properties: { profileId: { type: "string" } },
       },
+      scopeRefinement: {
+        type: "object",
+        properties: {
+          enabled: { type: "boolean" },
+          prompt: { type: "string" },
+        },
+      },
       pools: {
         type: "object",
         properties: {
@@ -416,6 +424,7 @@ export const componentSchemas = {
           implementation_review: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           shipment: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           shipment_review: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
+          scope_refinement: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
         },
       },
       dispatchMode: { type: "string", enum: ["basic", "advanced"] },

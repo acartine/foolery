@@ -32,14 +32,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { fetchWorkflows } from "@/lib/api";
 import { resetLeaseAudit } from "@/lib/lease-audit-api";
+import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
-import type { DefaultsSettings } from "@/lib/schemas";
+import type { DefaultsSettings, ScopeRefinementSettings } from "@/lib/schemas";
 
 interface SettingsDefaultsSectionProps {
   defaults: DefaultsSettings;
   onDefaultsChange: (defaults: DefaultsSettings) => void;
+  scopeRefinement: ScopeRefinementSettings;
+  onScopeRefinementChange: (settings: ScopeRefinementSettings) => void;
   maxConcurrentSessions: number;
   onMaxConcurrentSessionsChange: (value: number) => void;
 }
@@ -47,6 +52,8 @@ interface SettingsDefaultsSectionProps {
 export function SettingsDefaultsSection({
   defaults,
   onDefaultsChange,
+  scopeRefinement,
+  onScopeRefinementChange,
   maxConcurrentSessions,
   onMaxConcurrentSessionsChange,
 }: SettingsDefaultsSectionProps) {
@@ -136,6 +143,66 @@ export function SettingsDefaultsSection({
         <p className="text-[11px] text-muted-foreground">
           Maximum number of agent sessions that can run at the same time (1–20).
         </p>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-accent/20 bg-background/60 p-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="space-y-1">
+            <Label htmlFor="scope-refinement-enabled" className="text-xs">
+              Scope Refinement
+            </Label>
+            <p className="text-[11px] text-muted-foreground">
+              Queue a background refinement pass for newly created beats.
+            </p>
+          </div>
+          <Switch
+            id="scope-refinement-enabled"
+            checked={scopeRefinement.enabled}
+            onCheckedChange={(enabled) =>
+              onScopeRefinementChange({
+                ...scopeRefinement,
+                enabled,
+              })
+            }
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="scope-refinement-prompt" className="text-xs">
+              Prompt Template
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 border-primary/20 bg-background/70 hover:bg-primary/10"
+              onClick={() =>
+                onScopeRefinementChange({
+                  ...scopeRefinement,
+                  prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+                })
+              }
+            >
+              Reset Prompt
+            </Button>
+          </div>
+          <Textarea
+            id="scope-refinement-prompt"
+            value={scopeRefinement.prompt}
+            onChange={(event) =>
+              onScopeRefinementChange({
+                ...scopeRefinement,
+                prompt: event.target.value,
+              })
+            }
+            className="min-h-40 border-primary/20 bg-background/80 text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Supports <code>{"{{title}}"}</code>, <code>{"{{description}}"}</code>,
+            and <code>{"{{acceptance}}"}</code>. The JSON response contract is enforced automatically.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">

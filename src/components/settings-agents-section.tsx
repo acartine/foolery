@@ -57,6 +57,7 @@ async function setDefaultAgentForActions(agentId: string) {
     take: agentId,
     scene: agentId,
     breakdown: agentId,
+    scopeRefinement: agentId,
   };
   await saveActions(mappings);
 }
