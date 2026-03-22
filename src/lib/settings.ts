@@ -16,6 +16,7 @@ import { homedir } from "node:os";
 import {
   foolerySettingsSchema,
   type FoolerySettings,
+  type ScopeRefinementSettings,
   type RegisteredAgentConfig,
   type PoolsSettings,
 } from "@/lib/schemas";
@@ -488,9 +489,11 @@ export type SettingsPartial = Partial<{
   actions: Partial<FoolerySettings["actions"]>;
   backend: Partial<FoolerySettings["backend"]>;
   defaults: Partial<FoolerySettings["defaults"]>;
+  scopeRefinement: Partial<FoolerySettings["scopeRefinement"]>;
   pools: Partial<FoolerySettings["pools"]>;
   dispatchMode: FoolerySettings["dispatchMode"];
   maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];
+  maxClaimsPerQueueType: FoolerySettings["maxClaimsPerQueueType"];
 }>;
 
 /**
@@ -508,9 +511,15 @@ export async function updateSettings(
     actions:      partial.actions      !== undefined ? { ...current.actions,      ...partial.actions }      : current.actions,
     backend:      partial.backend      !== undefined ? { ...current.backend,      ...partial.backend }      : current.backend,
     defaults:     partial.defaults     !== undefined ? { ...current.defaults,     ...partial.defaults }     : current.defaults,
+    scopeRefinement: partial.scopeRefinement !== undefined
+      ? { ...current.scopeRefinement, ...partial.scopeRefinement }
+      : current.scopeRefinement,
     pools:        partial.pools        !== undefined ? { ...current.pools,        ...partial.pools }        : current.pools,
     dispatchMode: partial.dispatchMode !== undefined ? partial.dispatchMode                                 : current.dispatchMode,
     maxConcurrentSessions: partial.maxConcurrentSessions !== undefined ? partial.maxConcurrentSessions      : current.maxConcurrentSessions,
+    maxClaimsPerQueueType: partial.maxClaimsPerQueueType !== undefined
+      ? partial.maxClaimsPerQueueType
+      : current.maxClaimsPerQueueType,
   };
   const validated = foolerySettingsSchema.parse(merged);
   await saveSettings(validated);
@@ -578,6 +587,31 @@ export async function getActionAgent(
   if (agentId && agentId !== "default" && settings.agents[agentId]) {
     return toCliTarget(settings.agents[agentId], agentId);
   }
+  return toCliTarget({ command: getFallbackCommand(settings) });
+}
+
+export async function getScopeRefinementSettings(): Promise<ScopeRefinementSettings> {
+  const settings = await loadSettings();
+  return settings.scopeRefinement;
+}
+
+export async function getScopeRefinementAgent(): Promise<AgentTarget> {
+  const settings = await loadSettings();
+
+  if (settings.dispatchMode === "advanced") {
+    const poolAgent = resolvePoolAgent(
+      "scope_refinement",
+      settings.pools,
+      settings.agents,
+    );
+    if (poolAgent) return poolAgent;
+  }
+
+  const agentId = settings.actions.scopeRefinement ?? "";
+  if (agentId && agentId !== "default" && settings.agents[agentId]) {
+    return toCliTarget(settings.agents[agentId], agentId);
+  }
+
   return toCliTarget({ command: getFallbackCommand(settings) });
 }
 

@@ -55,6 +55,7 @@ describe("hasAlternativeAgent", () => {
     implementation_review: pool,
     shipment: singlePool,
     shipment_review: singlePool,
+    scope_refinement: [],
   };
 
   it("returns true when alternative exists in step pool", () => {
@@ -73,6 +74,7 @@ describe("hasAlternativeAgent", () => {
       implementation_review: [],
       shipment: [],
       shipment_review: [],
+      scope_refinement: [],
     };
     expect(hasAlternativeAgent("implementation", emptyPools, agents, "agent-a")).toBe(false);
   });

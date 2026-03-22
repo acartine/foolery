@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 
 // ── Beat schemas ────────────────────────────────────────────
 
@@ -124,11 +125,13 @@ export const actionAgentMappingsSchema = z
     take: z.string().default(""),
     scene: z.string().default(""),
     breakdown: z.string().default(""),
+    scopeRefinement: z.string().default(""),
   })
   .default({
     take: "",
     scene: "",
     breakdown: "",
+    scopeRefinement: "",
   });
 
 // Backend selection (internal, non-user-facing)
@@ -146,6 +149,16 @@ export const defaultsSettingsSchema = z
     profileId: z.string().default(""),
   })
   .default({ profileId: "" });
+
+export const scopeRefinementSettingsSchema = z
+  .object({
+    enabled: z.boolean().default(true),
+    prompt: z.string().default(DEFAULT_SCOPE_REFINEMENT_PROMPT),
+  })
+  .default({
+    enabled: true,
+    prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+  });
 
 // Agent dispatch mode: "basic" uses simple per-action mappings,
 // "advanced" uses weighted per-step agent pools.
@@ -170,6 +183,7 @@ export const poolsSettingsSchema = z
     implementation_review: z.array(poolEntrySchema).default([]),
     shipment: z.array(poolEntrySchema).default([]),
     shipment_review: z.array(poolEntrySchema).default([]),
+    scope_refinement: z.array(poolEntrySchema).default([]),
   })
   .default({
     planning: [],
@@ -178,6 +192,7 @@ export const poolsSettingsSchema = z
     implementation_review: [],
     shipment: [],
     shipment_review: [],
+    scope_refinement: [],
   });
 
 export const foolerySettingsSchema = z.object({
@@ -185,6 +200,7 @@ export const foolerySettingsSchema = z.object({
   actions: actionAgentMappingsSchema,
   backend: backendSettingsSchema,
   defaults: defaultsSettingsSchema,
+  scopeRefinement: scopeRefinementSettingsSchema,
   pools: poolsSettingsSchema,
   dispatchMode: dispatchModeSchema,
   maxConcurrentSessions: z.number().int().min(1).max(20).default(5),
@@ -196,6 +212,7 @@ export type RegisteredAgentConfig = z.infer<typeof registeredAgentSchema>;
 export type ActionAgentMappings = z.infer<typeof actionAgentMappingsSchema>;
 export type BackendSettings = z.infer<typeof backendSettingsSchema>;
 export type DefaultsSettings = z.infer<typeof defaultsSettingsSchema>;
+export type ScopeRefinementSettings = z.infer<typeof scopeRefinementSettingsSchema>;
 export type PoolEntry = z.infer<typeof poolEntrySchema>;
 export type PoolsSettings = z.infer<typeof poolsSettingsSchema>;
 export type DispatchMode = z.infer<typeof dispatchModeSchema>;

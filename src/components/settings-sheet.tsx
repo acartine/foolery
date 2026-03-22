@@ -17,11 +17,13 @@ import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
 import { SettingsDispatchSection } from "@/components/settings-dispatch-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
+import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
   ActionAgentMappings,
   BackendSettings,
   DefaultsSettings,
+  ScopeRefinementSettings,
   PoolsSettings,
   DispatchMode,
 } from "@/lib/schemas";
@@ -39,6 +41,7 @@ interface SettingsData {
   actions: ActionAgentMappings;
   backend: BackendSettings;
   defaults: DefaultsSettings;
+  scopeRefinement: ScopeRefinementSettings;
   pools: PoolsSettings;
   dispatchMode: DispatchMode;
   maxConcurrentSessions: number;
@@ -51,12 +54,17 @@ const DEFAULTS: SettingsData = {
     take: "",
     scene: "",
     breakdown: "",
+    scopeRefinement: "",
   },
   backend: {
     type: "auto",
   },
   defaults: {
     profileId: "",
+  },
+  scopeRefinement: {
+    enabled: true,
+    prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   },
   pools: {
     planning: [],
@@ -65,6 +73,7 @@ const DEFAULTS: SettingsData = {
     implementation_review: [],
     shipment: [],
     shipment_review: [],
+    scope_refinement: [],
   },
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
@@ -104,6 +113,7 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
             actions: settingsResult.data.actions ?? DEFAULTS.actions,
             backend: settingsResult.data.backend ?? DEFAULTS.backend,
             defaults: settingsResult.data.defaults ?? DEFAULTS.defaults,
+            scopeRefinement: settingsResult.data.scopeRefinement ?? DEFAULTS.scopeRefinement,
             pools: settingsResult.data.pools ?? DEFAULTS.pools,
             dispatchMode: settingsResult.data.dispatchMode ?? DEFAULTS.dispatchMode,
             maxConcurrentSessions: settingsResult.data.maxConcurrentSessions ?? DEFAULTS.maxConcurrentSessions,
@@ -209,6 +219,10 @@ export function SettingsSheet({ open, onOpenChange, initialSection }: SettingsSh
                       defaults={settings.defaults}
                       onDefaultsChange={(defaults) =>
                         setSettings((prev) => ({ ...prev, defaults }))
+                      }
+                      scopeRefinement={settings.scopeRefinement}
+                      onScopeRefinementChange={(scopeRefinement) =>
+                        setSettings((prev) => ({ ...prev, scopeRefinement }))
                       }
                       maxConcurrentSessions={settings.maxConcurrentSessions}
                       onMaxConcurrentSessionsChange={(maxConcurrentSessions) =>

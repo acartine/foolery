@@ -43,7 +43,7 @@ const MODES: {
   {
     value: "advanced",
     label: "Advanced",
-    description: "Weighted pools per step",
+    description: "Weighted pools per step/dispatch target",
     icon: Users,
   },
 ];

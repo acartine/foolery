@@ -24,6 +24,7 @@ import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import { useHumanActionCount } from "@/hooks/use-human-action-count";
+import { useScopeRefinementNotifications } from "@/hooks/use-scope-refinement-notifications";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import { parseBeatsView } from "@/lib/beats-view";
 import {
@@ -68,6 +69,7 @@ export function AppHeader() {
   const updateUrl = useUpdateUrl();
   const isFinalCutActive = beatsView === "finalcut";
   const humanActionCount = useHumanActionCount(isBeatsRoute, isFinalCutActive);
+  useScopeRefinementNotifications();
   const activeBeatId = searchParams.get("beat");
 
   // Derive settings sheet state from URL param — open when ?settings=repos is present

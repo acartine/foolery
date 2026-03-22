@@ -24,11 +24,13 @@ import {
   cleanStaleSettingsKeys,
   getRegisteredAgents,
   getActionAgent,
+  getScopeRefinementAgent,
   addRegisteredAgent,
   removeRegisteredAgent,
   getStepAgent,
   _resetCache,
 } from "@/lib/settings";
+import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 import { WorkflowStep } from "@/lib/workflows";
 import { recordStepAgent, _resetStepAgentMap } from "@/lib/agent-pool";
 
@@ -36,6 +38,7 @@ const DEFAULT_ACTIONS = {
   take: "",
   scene: "",
   breakdown: "",
+  scopeRefinement: "",
 };
 
 const DEFAULT_POOLS = {
@@ -45,6 +48,7 @@ const DEFAULT_POOLS = {
   implementation_review: [],
   shipment: [],
   shipment_review: [],
+  scope_refinement: [],
 };
 
 const DEFAULT_SETTINGS = {
@@ -52,6 +56,10 @@ const DEFAULT_SETTINGS = {
   actions: DEFAULT_ACTIONS,
   backend: { type: "auto" },
   defaults: { profileId: "" },
+  scopeRefinement: {
+    enabled: true,
+    prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+  },
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
@@ -185,10 +193,14 @@ describe("backfillMissingSettingsDefaults", () => {
         'take = ""',
         'scene = ""',
         'breakdown = ""',
+        'scopeRefinement = ""',
         '[backend]',
         'type = "cli"',
         '[defaults]',
         'profileId = ""',
+        '[scopeRefinement]',
+        'enabled = true',
+        `prompt = """${DEFAULT_SCOPE_REFINEMENT_PROMPT}"""`,
         '[pools]',
         'planning = []',
         'plan_review = []',
@@ -196,6 +208,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'implementation_review = []',
         'shipment = []',
         'shipment_review = []',
+        'scope_refinement = []',
       ].join("\n"),
     );
     const result = await backfillMissingSettingsDefaults();
@@ -249,7 +262,11 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
-      pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [] },
+      scopeRefinement: {
+        enabled: true,
+        prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+      },
+      pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [], scope_refinement: [] },
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
       maxClaimsPerQueueType: 10,
@@ -268,6 +285,10 @@ describe("saveSettings", () => {
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
+      scopeRefinement: {
+        enabled: true,
+        prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
+      },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
@@ -410,6 +431,45 @@ describe("getActionAgent", () => {
 
     const agent = await getActionAgent("take");
     expect(agent.command).toBe("claude");
+  });
+});
+
+describe("getScopeRefinementAgent", () => {
+  it("uses the scope refinement action mapping in basic mode", async () => {
+    const toml = [
+      '[agents.codex]',
+      'command = "codex"',
+      'label = "Codex"',
+      '[actions]',
+      'scopeRefinement = "codex"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getScopeRefinementAgent();
+    expect(agent.command).toBe("codex");
+    expect(agent.agentId).toBe("codex");
+  });
+
+  it("uses the scope refinement pool in advanced mode", async () => {
+    const toml = [
+      'dispatchMode = "advanced"',
+      '[agents.codex]',
+      'command = "codex"',
+      'label = "Codex"',
+      '[pools]',
+      'planning = []',
+      'plan_review = []',
+      'implementation = []',
+      'implementation_review = []',
+      'shipment = []',
+      'shipment_review = []',
+      'scope_refinement = [{ agentId = "codex", weight = 1 }]',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getScopeRefinementAgent();
+    expect(agent.command).toBe("codex");
+    expect(agent.agentId).toBe("codex");
   });
 });
 

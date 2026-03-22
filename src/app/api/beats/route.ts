@@ -5,6 +5,7 @@ import { withErrorSuppression, DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-sup
 import { backendErrorStatus } from "@/lib/backend-http";
 import { createBeatSchema } from "@/lib/schemas";
 import { logApiError } from "@/lib/server-logger";
+import { enqueueBeatScopeRefinement } from "@/lib/scope-refinement-worker";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -81,5 +82,12 @@ export async function POST(request: NextRequest) {
       { status: createStatus },
     );
   }
+  const createdBeatId = result.data!.id;
+  void enqueueBeatScopeRefinement(createdBeatId, repoPath).catch((error) => {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[scope-refinement] failed to enqueue beat ${createdBeatId}: ${message}`,
+    );
+  });
   return NextResponse.json({ data: result.data }, { status: 201 });
 }
