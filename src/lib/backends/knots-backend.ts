@@ -431,13 +431,10 @@ function toBeat(
   const invariants = normalizeInvariants(knot.invariants);
   const aliases = collectAliases(knot);
 
-  const hasNativeAcceptance = Object.prototype.hasOwnProperty.call(knot, "acceptance");
   const nativeAcceptance = typeof knot.acceptance === "string"
     ? knot.acceptance.trim() || undefined
     : undefined;
-  const acceptance = hasNativeAcceptance
-    ? nativeAcceptance
-    : extractAcceptanceFromNotes(knot.notes);
+  const acceptance = nativeAcceptance ?? extractAcceptanceFromNotes(knot.notes);
 
   if (!workflow) {
     return {

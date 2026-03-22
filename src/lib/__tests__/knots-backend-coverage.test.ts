@@ -1087,6 +1087,38 @@ describe("KnotsBackend coverage: acceptance read paths", () => {
     expect(result.ok).toBe(true);
     expect(result.data?.acceptance).toBeUndefined();
   });
+
+  it("falls back to legacy notes when acceptance is null", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-NULL1",
+      title: "Null acceptance with legacy note",
+      acceptance: null,
+      notes: [
+        { content: "Acceptance Criteria:\nLegacy criteria from note", username: "system", datetime: "2026-01-01" },
+      ],
+    });
+
+    const result = await backend.get("AC-NULL1");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBe("Legacy criteria from note");
+  });
+
+  it("returns undefined when acceptance is null and no legacy notes exist", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-NULL2",
+      title: "Null acceptance no notes",
+      acceptance: null,
+      notes: [
+        { content: "Regular note", username: "alice", datetime: "2026-01-01" },
+      ],
+    });
+
+    const result = await backend.get("AC-NULL2");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBeUndefined();
+  });
 });
 
 describe("KnotsBackend coverage: create with extra fields", () => {
