@@ -595,7 +595,7 @@ export async function getScopeRefinementSettings(): Promise<ScopeRefinementSetti
   return settings.scopeRefinement;
 }
 
-export async function getScopeRefinementAgent(): Promise<AgentTarget> {
+export async function getScopeRefinementAgent(): Promise<AgentTarget | null> {
   const settings = await loadSettings();
 
   if (settings.dispatchMode === "advanced") {
@@ -612,7 +612,7 @@ export async function getScopeRefinementAgent(): Promise<AgentTarget> {
     return toCliTarget(settings.agents[agentId], agentId);
   }
 
-  return toCliTarget({ command: getFallbackCommand(settings) });
+  return null;
 }
 
 /**

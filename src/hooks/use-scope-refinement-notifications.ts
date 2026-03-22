@@ -33,6 +33,14 @@ export function useScopeRefinementNotifications(enabled = true): void {
 
     if (sawNewCompletion) {
       void invalidateBeatListQueries(queryClient);
+      // Also invalidate any open beat-detail queries so the refined
+      // title/description/acceptance appear without a manual refresh.
+      for (const completion of completions) {
+        void queryClient.invalidateQueries({
+          queryKey: ["beat", completion.beatId],
+          refetchType: "all",
+        });
+      }
     }
   });
 

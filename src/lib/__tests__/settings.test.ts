@@ -57,7 +57,7 @@ const DEFAULT_SETTINGS = {
   backend: { type: "auto" },
   defaults: { profileId: "" },
   scopeRefinement: {
-    enabled: true,
+    enabled: false,
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   },
   pools: DEFAULT_POOLS,
@@ -446,8 +446,9 @@ describe("getScopeRefinementAgent", () => {
     mockReadFile.mockResolvedValue(toml);
 
     const agent = await getScopeRefinementAgent();
-    expect(agent.command).toBe("codex");
-    expect(agent.agentId).toBe("codex");
+    expect(agent).not.toBeNull();
+    expect(agent!.command).toBe("codex");
+    expect(agent!.agentId).toBe("codex");
   });
 
   it("uses the scope refinement pool in advanced mode", async () => {
@@ -468,8 +469,16 @@ describe("getScopeRefinementAgent", () => {
     mockReadFile.mockResolvedValue(toml);
 
     const agent = await getScopeRefinementAgent();
-    expect(agent.command).toBe("codex");
-    expect(agent.agentId).toBe("codex");
+    expect(agent).not.toBeNull();
+    expect(agent!.command).toBe("codex");
+    expect(agent!.agentId).toBe("codex");
+  });
+
+  it("returns null when no agent is configured", async () => {
+    mockReadFile.mockResolvedValue("");
+
+    const agent = await getScopeRefinementAgent();
+    expect(agent).toBeNull();
   });
 });
 

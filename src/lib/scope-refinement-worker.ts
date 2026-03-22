@@ -20,6 +20,7 @@ import { interpolateScopeRefinementPrompt } from "@/lib/scope-refinement-default
 
 const SCOPE_REFINEMENT_JSON_TAG = "scope_refinement_json";
 const DEFAULT_POLL_INTERVAL_MS = 2_000;
+const MAX_RETRIES = 2;
 
 const refinementOutputSchema = z.object({
   title: z.string().trim().min(1),
@@ -31,6 +32,8 @@ interface WorkerState {
   intervalMs: number;
   timer: ReturnType<typeof setInterval> | null;
   processing: boolean;
+  /** Track retry counts by job beatId to prevent infinite loops. */
+  retryCounts: Map<string, number>;
 }
 
 const g = globalThis as typeof globalThis & {
@@ -43,6 +46,7 @@ function getWorkerState(): WorkerState {
       intervalMs: DEFAULT_POLL_INTERVAL_MS,
       timer: null,
       processing: false,
+      retryCounts: new Map(),
     };
   }
   return g.__scopeRefinementWorkerState;
@@ -108,6 +112,9 @@ async function runScopeRefinementPrompt(
   repoPath?: string,
 ): Promise<string> {
   const agent = await getScopeRefinementAgent();
+  if (!agent) {
+    throw new Error("no scope refinement agent configured");
+  }
   const built = buildPromptModeArgs(agent, prompt);
   const dialect = resolveDialect(agent.command);
   const normalizeEvent = createLineNormalizer(dialect);
@@ -165,8 +172,12 @@ async function runScopeRefinementPrompt(
         return;
       }
 
-      if (obj.type === "result" && typeof obj.result === "string") {
-        resultText = obj.result;
+      if (obj.type === "result") {
+        if (typeof obj.result === "string") {
+          resultText = obj.result;
+        } else if (obj.error && typeof obj.error === "string") {
+          reject(new Error(`agent result error: ${obj.error}`));
+        }
       }
     };
 
@@ -233,9 +244,39 @@ function buildRefinementUpdate(
   return next;
 }
 
+/**
+ * Re-enqueue a failed job if it has not exceeded the retry limit.
+ * Returns true if the job was re-enqueued.
+ */
+function maybeReenqueue(job: ScopeRefinementJob, reason: string): boolean {
+  const state = getWorkerState();
+  const retries = state.retryCounts.get(job.beatId) ?? 0;
+  if (retries >= MAX_RETRIES) {
+    console.warn(
+      `[scope-refinement] dropping job for ${job.beatId} after ${retries} retries: ${reason}`,
+    );
+    state.retryCounts.delete(job.beatId);
+    return false;
+  }
+  state.retryCounts.set(job.beatId, retries + 1);
+  enqueueScopeRefinementJob({ beatId: job.beatId, repoPath: job.repoPath });
+  console.warn(
+    `[scope-refinement] re-enqueued ${job.beatId} (retry ${retries + 1}/${MAX_RETRIES}): ${reason}`,
+  );
+  return true;
+}
+
 export async function processScopeRefinementJob(job: ScopeRefinementJob): Promise<void> {
   const settings = await getScopeRefinementSettings();
   if (!settings.enabled) return;
+
+  const agent = await getScopeRefinementAgent();
+  if (!agent) {
+    console.warn(
+      `[scope-refinement] skipping ${job.beatId}: no scope refinement agent configured`,
+    );
+    return;
+  }
 
   const beatResult = await getBackend().get(job.beatId, job.repoPath);
   if (!beatResult.ok || !beatResult.data) {
@@ -259,12 +300,14 @@ export async function processScopeRefinementJob(job: ScopeRefinementJob): Promis
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.warn(`[scope-refinement] agent failed for ${job.beatId}: ${message}`);
+    maybeReenqueue(job, message);
     return;
   }
 
   const refined = parseScopeRefinementOutput(rawResponse);
   if (!refined) {
     console.warn(`[scope-refinement] could not parse agent output for ${job.beatId}`);
+    maybeReenqueue(job, "unparseable agent output");
     return;
   }
 
@@ -275,9 +318,13 @@ export async function processScopeRefinementJob(job: ScopeRefinementJob): Promis
       console.warn(
         `[scope-refinement] failed to update ${job.beatId}: ${updateResult.error ?? "unknown error"}`,
       );
+      maybeReenqueue(job, `update failed: ${updateResult.error ?? "unknown"}`);
       return;
     }
   }
+
+  // Clear retry count on success
+  getWorkerState().retryCounts.delete(job.beatId);
 
   recordScopeRefinementCompletion({
     beatId: job.beatId,
@@ -295,7 +342,13 @@ export async function drainScopeRefinementQueue(): Promise<void> {
     while (true) {
       const job = dequeueScopeRefinementJob();
       if (!job) break;
-      await processScopeRefinementJob(job);
+      try {
+        await processScopeRefinementJob(job);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.warn(`[scope-refinement] unexpected error processing ${job.beatId}: ${message}`);
+        maybeReenqueue(job, message);
+      }
     }
   } finally {
     state.processing = false;
@@ -320,12 +373,22 @@ export function stopScopeRefinementWorker(): void {
   state.timer = null;
 }
 
+/** Reset worker state including retry counts. Useful for testing. */
+export function resetScopeRefinementWorkerState(): void {
+  stopScopeRefinementWorker();
+  const state = getWorkerState();
+  state.retryCounts.clear();
+}
+
 export async function enqueueBeatScopeRefinement(
   beatId: string,
   repoPath?: string,
 ): Promise<ScopeRefinementJob | null> {
   const settings = await getScopeRefinementSettings();
   if (!settings.enabled) return null;
+
+  const agent = await getScopeRefinementAgent();
+  if (!agent) return null;
 
   startScopeRefinementWorker();
   return enqueueScopeRefinementJob({ beatId, repoPath });
