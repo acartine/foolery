@@ -63,7 +63,7 @@ const DEFAULTS: SettingsData = {
     profileId: "",
   },
   scopeRefinement: {
-    enabled: true,
+    enabled: false,
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   },
   pools: {

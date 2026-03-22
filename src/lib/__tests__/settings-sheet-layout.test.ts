@@ -21,4 +21,8 @@ describe("settings sheet scroll layout", () => {
       'className="py-3 overflow-y-auto flex-1"',
     );
   });
+
+  it("keeps scope refinement disabled by default in the settings UI fallback", () => {
+    expect(source).toContain("enabled: false");
+  });
 });
