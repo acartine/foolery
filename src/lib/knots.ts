@@ -41,6 +41,7 @@ export interface KnotRecord {
   updated_at: string;
   body?: string | null;
   description?: string | null;
+  acceptance?: string | null;
   priority?: number | null;
   type?: string | null;
   tags?: string[];
@@ -121,6 +122,7 @@ export interface KnotEdge {
 export interface KnotUpdateInput {
   title?: string;
   description?: string;
+  acceptance?: string;
   priority?: number;
   status?: string;
   type?: string;
@@ -427,12 +429,20 @@ export async function showKnot(id: string, repoPath?: string): Promise<BdResult<
 
 export async function newKnot(
   title: string,
-  options?: { description?: string; body?: string; state?: string; profile?: string; workflow?: string },
+  options?: {
+    description?: string;
+    body?: string;
+    acceptance?: string;
+    state?: string;
+    profile?: string;
+    workflow?: string;
+  },
   repoPath?: string,
 ): Promise<BdResult<{ id: string }>> {
   const args = ["new"];
   const description = options?.description ?? options?.body;
   if (description) args.push(`--desc=${description}`);
+  if (options?.acceptance !== undefined) args.push(`--acceptance=${options.acceptance}`);
   if (options?.state) args.push("--state", options.state);
 
   const selectedProfile = options?.profile ?? options?.workflow;
@@ -561,6 +571,7 @@ export async function updateKnot(
 
   if (input.title !== undefined) args.push(`--title=${input.title}`);
   if (input.description !== undefined) args.push(`--description=${input.description}`);
+  if (input.acceptance !== undefined) args.push(`--acceptance=${input.acceptance}`);
   if (input.priority !== undefined) args.push("--priority", String(input.priority));
   if (input.status !== undefined) args.push("--status", input.status);
   if (input.type !== undefined) args.push("--type", input.type);
