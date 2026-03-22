@@ -279,7 +279,7 @@ function SessionEntryRow({
 }) {
   if (entry.kind === "session_start") {
     return (
-      <div className="rounded border border-slate-500/60 bg-[#16162a] px-2.5 py-1.5 text-[14px] text-[#e0e0e0]">
+      <div className="rounded border border-white/10 bg-[#16162a] px-3 py-2 font-mono text-[15px] leading-6 text-[#e0e0e0] subpixel-antialiased">
         Session started at {formatTime(entry.ts)}
       </div>
     );
@@ -287,7 +287,7 @@ function SessionEntryRow({
 
   if (entry.kind === "session_end") {
     return (
-      <div className="rounded border border-slate-500/60 bg-[#16162a] px-2.5 py-1.5 text-[14px] text-[#e0e0e0]">
+      <div className="rounded border border-white/10 bg-[#16162a] px-3 py-2 font-mono text-[15px] leading-6 text-[#e0e0e0] subpixel-antialiased">
         Session ended at {formatTime(entry.ts)}
         {entry.status ? ` · ${entry.status}` : ""}
         {entry.exitCode !== undefined ? ` · exit ${entry.exitCode}` : ""}
@@ -298,26 +298,26 @@ function SessionEntryRow({
   if (entry.kind === "prompt") {
     const stateLabel = workflowStateBadgeLabel(entry.workflowState);
     return (
-      <div className="rounded border border-sky-400/50 bg-sky-950/80 px-2.5 py-1.5">
-        <div className="mb-1 flex flex-wrap items-center gap-2 text-[13px] text-sky-50">
-          <MessageSquareText className="size-4.5" />
-          <span className="font-semibold uppercase tracking-wide">App -&gt; Agent{agentLabel ? ` · ${agentLabel}` : ""}</span>
+      <div className="rounded border border-cyan-400/25 bg-[#101522] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+        <div className="mb-1.5 flex flex-wrap items-center gap-2 font-mono text-[14px] leading-6 text-[#e0e0e0] subpixel-antialiased">
+          <MessageSquareText className="size-5 text-sky-100" />
+          <span className="font-semibold uppercase tracking-[0.18em] text-sky-100">App -&gt; Agent{agentLabel ? ` · ${agentLabel}` : ""}</span>
           {typeof entry.promptNumber === "number" ? (
-            <Badge variant="outline" className="border-sky-300/50 bg-sky-900/70 text-[14px] font-normal text-sky-50">
+            <Badge variant="outline" className="border-cyan-300/40 bg-cyan-400/10 text-[13px] font-normal text-sky-100">
               {`Prompt #${entry.promptNumber}`}
             </Badge>
           ) : null}
-          <Badge variant="outline" className="border-sky-300/50 bg-sky-900/70 text-[14px] font-normal text-sky-50">
+          <Badge variant="outline" className="border-cyan-300/40 bg-cyan-400/10 text-[13px] font-normal text-sky-100">
             {promptSourceLabel(entry.promptSource)}
           </Badge>
           {stateLabel ? (
-            <Badge variant="outline" className="border-sky-300/50 bg-sky-900/70 text-[14px] font-normal text-sky-50">
+            <Badge variant="outline" className="border-cyan-300/40 bg-cyan-400/10 text-[13px] font-normal text-sky-100">
               {stateLabel}
             </Badge>
           ) : null}
-          <span>{formatTime(entry.ts)}</span>
+          <span className="text-white/65">{formatTime(entry.ts)}</span>
         </div>
-        <pre className="whitespace-pre-wrap break-words font-mono text-[14px] leading-6 text-sky-50">
+        <pre className="whitespace-pre-wrap break-words font-mono text-[15px] leading-7 text-[#e0e0e0] subpixel-antialiased">
           {entry.prompt ?? "(empty prompt)"}
         </pre>
       </div>
@@ -329,39 +329,39 @@ function SessionEntryRow({
   const showRaw = raw.trim().length > 0 && summary.trim() !== raw.trim();
 
   return (
-    <div className="rounded border border-slate-500/60 bg-[#16162a] px-2.5 py-1.5">
-      <div className="mb-1 flex flex-wrap items-center gap-2 text-[13px] text-[#e0e0e0]">
-        <Bot className="size-4.5" />
-        <span className="font-semibold uppercase tracking-wide text-[#e0e0e0]">Agent{agentLabel ? ` · ${agentLabel}` : ""} -&gt; App</span>
+    <div className="rounded border border-white/10 bg-[#16162a] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="mb-1.5 flex flex-wrap items-center gap-2 font-mono text-[14px] leading-6 text-[#e0e0e0] subpixel-antialiased">
+        <Bot className="size-5 text-white/80" />
+        <span className="font-semibold uppercase tracking-[0.18em] text-[#e0e0e0]">Agent{agentLabel ? ` · ${agentLabel}` : ""} -&gt; App</span>
         {interactionType ? (
-          <Badge variant="outline" className={`text-[14px] font-normal ${interactionTypeTone(interactionType)}`}>
+          <Badge variant="outline" className={`text-[13px] font-normal ${interactionTypeTone(interactionType)}`}>
             {interactionTypeLabel(interactionType)}
           </Badge>
         ) : null}
         {typeof precedingPrompt?.promptNumber === "number" ? (
-          <Badge variant="outline" className="border-slate-400/50 bg-slate-700/80 text-[14px] font-normal text-[#e0e0e0]">
+          <Badge variant="outline" className="border-white/10 bg-white/5 text-[13px] font-normal text-[#e0e0e0]">
             {`Prompt #${precedingPrompt.promptNumber}`}
           </Badge>
         ) : null}
         {precedingPrompt?.source ? (
-          <Badge variant="outline" className="border-slate-400/50 bg-slate-700/80 text-[14px] font-normal text-[#e0e0e0]">
+          <Badge variant="outline" className="border-white/10 bg-white/5 text-[13px] font-normal text-[#e0e0e0]">
             {promptSourceLabel(precedingPrompt.source)}
           </Badge>
         ) : null}
         {precedingPrompt?.workflowState ? (
-          <Badge variant="outline" className="border-slate-400/50 bg-slate-700/80 text-[14px] font-normal text-[#e0e0e0]">
+          <Badge variant="outline" className="border-white/10 bg-white/5 text-[13px] font-normal text-[#e0e0e0]">
             {workflowStateBadgeLabel(precedingPrompt.workflowState)}
           </Badge>
         ) : null}
-        <span>{formatTime(entry.ts)}</span>
+        <span className="text-white/65">{formatTime(entry.ts)}</span>
       </div>
-      <pre className="whitespace-pre-wrap break-words font-mono text-[14px] leading-6 text-[#e0e0e0]">
+      <pre className="whitespace-pre-wrap break-words font-mono text-[15px] leading-7 text-[#e0e0e0] subpixel-antialiased">
         {summary || "(empty response)"}
       </pre>
       {showRaw ? (
-        <details className="mt-1.5 rounded border border-slate-500/60 bg-[#121222] px-2 py-1 text-[13px]">
-          <summary className="cursor-pointer text-[#e0e0e0]">Raw event</summary>
-          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-[13px] leading-6 text-[#e0e0e0]">
+        <details className="mt-2 rounded border border-white/10 bg-[#101522] px-2.5 py-2 text-[14px] font-mono text-[#e0e0e0] subpixel-antialiased">
+          <summary className="cursor-pointer text-white/75">Raw event</summary>
+          <pre className="mt-1.5 whitespace-pre-wrap break-words font-mono text-[14px] leading-6 text-[#e0e0e0]">
             {clipDisplay(raw, 16_000)}
           </pre>
         </details>
@@ -424,26 +424,26 @@ function SessionCard({
   }, [enrichedEntries, filterEntry, session]);
 
   return (
-    <section className="rounded border border-slate-500/60 bg-[#1a1a2e]">
-      <header className="flex flex-wrap items-center gap-2 border-b border-slate-500/60 bg-[#16162a] px-2.5 py-1.5">
+    <section className="rounded border border-white/10 bg-[#1a1a2e] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+      <header className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#16162a] px-3 py-2 font-mono text-[14px] leading-6 text-[#e0e0e0] subpixel-antialiased">
         <Badge
           variant="outline"
-          className={`text-[14px] uppercase ${interactionTypeTone(session.interactionType)}`}
+          className={`text-[13px] uppercase ${interactionTypeTone(session.interactionType)}`}
         >
           {interactionTypeLabel(session.interactionType)}
         </Badge>
-        <Badge variant="outline" className={`text-[14px] ${statusTone(session.status)}`}>
+        <Badge variant="outline" className={`text-[13px] ${statusTone(session.status)}`}>
           {session.status ?? "unknown"}
         </Badge>
         {agentLabel ? (
-          <span className="font-mono text-[14px] text-[#e0e0e0]">{agentLabel}</span>
+          <span className="font-mono text-[15px] text-[#e0e0e0]">{agentLabel}</span>
         ) : null}
-        <span className="font-mono text-[14px] text-slate-300">{session.sessionId}</span>
-        <span className="ml-auto text-[14px] text-slate-300">{formatTime(session.updatedAt)}</span>
+        <span className="font-mono text-[14px] text-white/65">{session.sessionId}</span>
+        <span className="ml-auto text-[14px] text-white/65">{formatTime(session.updatedAt)}</span>
       </header>
-      <div className="space-y-1.5 p-2.5">
+      <div className="space-y-2 p-3">
         {filteredEntries.length === 0 ? (
-          <div className="rounded border border-slate-500/60 bg-[#16162a] px-2.5 py-1.5 text-[14px] text-[#e0e0e0]">
+          <div className="rounded border border-white/10 bg-[#16162a] px-3 py-2 font-mono text-[15px] leading-6 text-[#e0e0e0] subpixel-antialiased">
             {enrichedEntries.length === 0
               ? "No log entries captured for this session."
               : "No entries match the active filters."}
@@ -455,7 +455,7 @@ function SessionCard({
               ref={(node) => entryRefCallback?.(entry.id, node)}
               className={
                 highlightedEntryId === entry.id
-                  ? "rounded ring-2 ring-sky-400/70 transition-all duration-300"
+                  ? "rounded ring-2 ring-cyan-400/70 shadow-[0_0_0_1px_rgba(34,211,238,0.15)] transition-all duration-300"
                   : "transition-all duration-300"
               }
             >
@@ -1081,19 +1081,19 @@ export function AgentHistoryView() {
         </section>
       </div>
 
-      <section className="rounded-lg border border-slate-500/60 bg-[#1a1a2e] text-[#e0e0e0]">
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-500/60 bg-[#16162a] px-2.5 py-1.5">
-          <TerminalSquare className="size-[18px] text-[#e0e0e0]" />
-          <p className="text-[16px] font-semibold text-white">Conversation Log</p>
+      <section className="rounded-lg border border-white/10 bg-[#1a1a2e] font-mono text-[#e0e0e0] subpixel-antialiased shadow-[0_12px_32px_rgba(8,12,24,0.32)]">
+        <div className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#16162a] px-3 py-2">
+          <TerminalSquare className="size-5 text-cyan-200" />
+          <p className="text-[17px] font-semibold tracking-[0.08em] text-white">Conversation Log</p>
           {loadedSummary ? (
-            <span className="max-w-[40ch] truncate text-[14px] text-[#e0e0e0]">
+            <span className="max-w-[40ch] truncate text-[15px] text-white/80">
               {loadedTitle}
             </span>
           ) : null}
           {loadedSummary ? (
             <button
               type="button"
-              className="font-mono text-[14px] text-slate-300 underline-offset-2 hover:text-white hover:underline"
+              className="font-mono text-[14px] text-white/65 underline-offset-2 hover:text-white hover:underline"
               onClick={() => copyBeatId(loadedSummary.beatId)}
               title="Click to copy ID"
             >
@@ -1104,16 +1104,16 @@ export function AgentHistoryView() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 gap-1 px-2 text-[14px] text-[#e0e0e0] hover:bg-slate-700/80 hover:text-white"
+              className="h-7 gap-1.5 border border-white/10 bg-white/5 px-2.5 font-mono text-[13px] text-white/80 hover:bg-white/10 hover:text-white"
               onClick={() => setDebugPanelOpen((prev) => !prev)}
             >
-              <Bug className="size-4.5" />
+              <Bug className="size-4" />
               {debugPanelOpen ? "Close Debug" : "Debug"}
             </Button>
           ) : null}
           {loadedSummary ? (
-            <span className="ml-auto inline-flex items-center gap-1 text-[14px] text-slate-300">
-              <Clock3 className="size-4.5" />
+            <span className="ml-auto inline-flex items-center gap-1.5 text-[13px] text-white/60">
+              <Clock3 className="size-4" />
               Last updated {relativeTime(loadedSummary.lastWorkedAt)}
             </span>
           ) : null}
@@ -1124,8 +1124,8 @@ export function AgentHistoryView() {
         ) : null}
 
         {loadedSummary && sessions.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-2 border-b border-slate-500/60 bg-[#16162a] px-2.5 py-2 text-[14px]">
-            <span className="font-medium text-[#e0e0e0]">Conversation</span>
+          <div className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#16162a] px-3 py-2 text-[14px]">
+            <span className="font-semibold uppercase tracking-[0.18em] text-white/75">Conversation</span>
             {sessions.map((session, index) => {
               const selected = session.sessionId === selectedDebugSession?.sessionId;
               return (
@@ -1134,10 +1134,10 @@ export function AgentHistoryView() {
                   type="button"
                   onClick={() => setSelectedSessionId(session.sessionId)}
                   className={cn(
-                    "rounded-full border px-2.5 py-1 text-[14px] font-mono transition-colors",
+                    "rounded-full border px-3 py-1.5 text-[14px] font-mono leading-none transition-colors",
                     selected
-                      ? "border-cyan-300/70 bg-cyan-500/25 text-cyan-50"
-                      : "border-slate-500 text-slate-300 hover:border-slate-400 hover:bg-slate-700/80 hover:text-white",
+                      ? "border-cyan-300/40 bg-cyan-400/12 text-cyan-50 shadow-[0_0_0_1px_rgba(34,211,238,0.18)]"
+                      : "border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:bg-white/10 hover:text-white",
                   )}
                   title={`Select conversation ${session.sessionId} for debugging`}
                 >
@@ -1146,7 +1146,7 @@ export function AgentHistoryView() {
               );
             })}
             {selectedDebugSession ? (
-              <span className="ml-auto text-[14px] text-slate-300">
+              <span className="ml-auto text-[13px] text-white/60">
                 Debug target: {selectedDebugSession.sessionId}
               </span>
             ) : null}
@@ -1164,35 +1164,35 @@ export function AgentHistoryView() {
               }
             }}
             className={cn(
-              "max-h-[calc(100vh-500px)] overflow-y-auto p-2.5 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60",
-              debugPanelOpen && sessions.length > 0 ? "border-r border-slate-600" : "",
+              "max-h-[calc(100vh-500px)] overflow-y-auto bg-[#1a1a2e] p-3 outline-none focus-visible:ring-1 focus-visible:ring-cyan-500/60",
+              debugPanelOpen && sessions.length > 0 ? "border-r border-white/10" : "",
             )}
           >
             {!loadedSummary ? (
-              <div className="rounded border border-dashed border-slate-500/60 bg-[#16162a] px-3 py-6 text-center text-[14px] text-slate-300">
+              <div className="rounded border border-dashed border-white/15 bg-[#16162a] px-4 py-7 text-center font-mono text-[15px] leading-6 text-white/75">
                 Use click or Enter on a focused beat to load app and agent logs.
               </div>
             ) : sessionsQuery.isLoading && sessions.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 rounded border border-dashed border-slate-500/60 bg-[#16162a] px-3 py-6 text-[14px] text-[#e0e0e0]">
-                <Spinner className="size-4.5" />
+              <div className="flex flex-col items-center gap-2 rounded border border-dashed border-white/15 bg-[#16162a] px-4 py-7 font-mono text-[15px] text-[#e0e0e0]">
+                <Spinner className="size-5" />
                 <span>Loading logs for {stripIdPrefix(loadedSummary.beatId)}…</span>
-                <span className="text-[13px] text-slate-300">prompt histories are BIG, please be patient :-)</span>
+                <span className="text-[14px] text-white/60">prompt histories are BIG, please be patient :-)</span>
               </div>
             ) : sessions.length === 0 ? (
-              <div className="rounded border border-dashed border-slate-500/60 bg-[#16162a] px-3 py-6 text-center text-[14px] text-slate-300">
+              <div className="rounded border border-dashed border-white/15 bg-[#16162a] px-4 py-7 text-center font-mono text-[15px] leading-6 text-white/70">
                 No captured log sessions for this beat yet.
               </div>
             ) : (
               <div className="space-y-2">
                 {sessionsQuery.isFetching && !sessionsQuery.isLoading ? (
-                  <div className="flex items-center gap-1.5 text-[13px] text-slate-300">
+                  <div className="flex items-center gap-1.5 text-[14px] text-white/70">
                     <Spinner className="size-4" />
                     <span>Refreshing…</span>
                   </div>
                 ) : null}
-                <div className="flex items-center gap-2 text-[14px] text-[#e0e0e0]">
-                  <Workflow className="size-4.5" />
-                  <Sparkles className="size-4.5" />
+                <div className="flex items-center gap-2 text-[15px] text-[#e0e0e0]">
+                  <Workflow className="size-5 text-cyan-200" />
+                  <Sparkles className="size-5 text-cyan-200" />
                   {sessions.length} session{sessions.length === 1 ? "" : "s"}
                 </div>
                 {sessions.map((session) => (
