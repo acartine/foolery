@@ -206,6 +206,24 @@ describe("createDetailFilter", () => {
     );
   });
 
+  it("suppresses raw [executing] blocks and their tool output", () => {
+    const f = createDetailFilter();
+    const input = [
+      "Let me inspect the file.",
+      "[executing] sed -n '1,5p' src/app.tsx",
+      '     1→import React from "react";',
+      "     2→",
+      '     3→console.log("debug");',
+      "",
+      "I found the problematic branch.",
+      "",
+    ].join("\n") + "\n";
+    const result = f.filter(input);
+    expect(result).toBe(
+      "Let me inspect the file.\nI found the problematic branch.\n\n"
+    );
+  });
+
   it("shows consecutive agent prose without suppression", () => {
     const f = createDetailFilter();
     const input = [

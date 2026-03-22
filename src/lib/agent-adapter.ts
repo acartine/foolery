@@ -154,6 +154,24 @@ export function createLineNormalizer(
   // codex normalizer — accumulates text across item.completed events
   let accumulatedText = "";
 
+  function commandExecutionStartedEvent(
+    item: Record<string, unknown>,
+  ): Record<string, unknown> {
+    const command = typeof item.command === "string" ? item.command : "";
+    return {
+      type: "assistant",
+      message: {
+        content: [
+          {
+            type: "tool_use",
+            name: "Bash",
+            input: { command },
+          },
+        ],
+      },
+    };
+  }
+
   return (parsed) => {
     if (!parsed || typeof parsed !== "object") return null;
     const obj = parsed as Record<string, unknown>;
@@ -209,14 +227,7 @@ export function createLineNormalizer(
     if (type === "item.started") {
       const item = obj.item as Record<string, unknown> | undefined;
       if (item?.type === "command_execution") {
-        const cmd = typeof item.command === "string" ? item.command : "";
-        return {
-          type: "stream_event",
-          event: {
-            type: "content_block_delta",
-            delta: { type: "text_delta", text: `[executing] ${cmd}\n` },
-          },
-        };
+        return commandExecutionStartedEvent(item);
       }
       return null;
     }

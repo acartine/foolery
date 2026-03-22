@@ -21,6 +21,9 @@ const NUMBERED_LINE_RE = /^\s+\d+[→│]/;
 /** Matches action header lines like `▶ Read /path/to/file` */
 const ACTION_HEADER_RE = /^▶\s/;
 
+/** Matches raw Codex command-execution headers like `[executing] ls -la` */
+const EXECUTING_HEADER_RE = /^\[executing\]\s/;
+
 /**
  * Heuristic: does this line look like natural-language agent prose?
  * Must start with a letter and contain a space (i.e. a phrase, not a
@@ -75,6 +78,13 @@ export function createDetailFilter(): TerminalDetailFilter {
       if (ACTION_HEADER_RE.test(stripped)) {
         inToolBlock = true;
         output.push(line);
+        continue;
+      }
+
+      // Raw command-execution header — suppress header text but hide the
+      // following tool output until agent prose resumes.
+      if (EXECUTING_HEADER_RE.test(stripped)) {
+        inToolBlock = true;
         continue;
       }
 

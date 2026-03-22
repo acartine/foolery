@@ -152,7 +152,7 @@ describe("createLineNormalizer — codex dialect", () => {
     });
   });
 
-  it("normalizes command_execution item.started to stream_event", () => {
+  it("normalizes command_execution item.started to assistant tool_use", () => {
     const normalize = createLineNormalizer("codex");
     const result = normalize({
       type: "item.started",
@@ -164,10 +164,15 @@ describe("createLineNormalizer — codex dialect", () => {
       },
     });
     expect(result).toEqual({
-      type: "stream_event",
-      event: {
-        type: "content_block_delta",
-        delta: { type: "text_delta", text: "[executing] ls -la\n" },
+      type: "assistant",
+      message: {
+        content: [
+          {
+            type: "tool_use",
+            name: "Bash",
+            input: { command: "ls -la" },
+          },
+        ],
       },
     });
   });
