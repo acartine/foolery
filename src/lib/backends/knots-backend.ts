@@ -189,11 +189,34 @@ function serializeInvariants(invariants: readonly Invariant[] | undefined): stri
   return normalized.map((inv) => `${inv.kind}:${inv.condition}`);
 }
 
+const ACCEPTANCE_MARKER = "Acceptance Criteria:\n";
+
+function isAcceptanceNote(entry: unknown): boolean {
+  if (!entry || typeof entry !== "object") return false;
+  const content = (entry as Record<string, unknown>).content;
+  return typeof content === "string" && content.trimStart().startsWith(ACCEPTANCE_MARKER);
+}
+
+function extractAcceptanceFromNotes(raw: unknown): string | undefined {
+  if (!Array.isArray(raw) || raw.length === 0) return undefined;
+  // Walk in reverse to find the latest acceptance note
+  for (let i = raw.length - 1; i >= 0; i--) {
+    const entry = raw[i];
+    if (isAcceptanceNote(entry)) {
+      const content = ((entry as Record<string, unknown>).content as string).trimStart();
+      const body = content.slice(ACCEPTANCE_MARKER.length).trim();
+      return body.length > 0 ? body : undefined;
+    }
+  }
+  return undefined;
+}
+
 function stringifyNotes(raw: unknown): string | undefined {
   if (!Array.isArray(raw) || raw.length === 0) return undefined;
   const parts = raw
     .flatMap((entry) => {
       if (!entry || typeof entry !== "object") return [] as string[];
+      if (isAcceptanceNote(entry)) return [] as string[];
       const record = entry as Record<string, unknown>;
       const content = typeof record.content === "string" ? record.content.trim() : "";
       if (!content) return [] as string[];
@@ -422,6 +445,7 @@ function toBeat(
       labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
       aliases: aliases.length > 0 ? aliases : undefined,
       notes: stringifyNotes(knot.notes),
+      acceptance: extractAcceptanceFromNotes(knot.notes),
       parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
       created: knot.created_at ?? knot.updated_at,
       updated: knot.updated_at,
@@ -438,6 +462,7 @@ function toBeat(
   const workflowState = rawWorkflowState;
   const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
   const notes = stringifyNotes(knot.notes);
+  const acceptance = extractAcceptanceFromNotes(knot.notes);
 
   return {
     id: knot.id,
@@ -461,6 +486,7 @@ function toBeat(
     labels: tags,
     aliases: aliases.length > 0 ? aliases : undefined,
     notes,
+    acceptance,
     parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
     created: knot.created_at ?? knot.updated_at,
     updated: knot.updated_at,
@@ -941,7 +967,7 @@ export class KnotsBackend implements BackendPort {
       const acceptanceUpdate = fromKnots(
         await knots.updateKnot(
           id,
-          { addNote: `Acceptance Criteria:\n${input.acceptance}` },
+          { addNote: `${ACCEPTANCE_MARKER}${input.acceptance}` },
           rp,
         ),
       );
@@ -1076,7 +1102,7 @@ export class KnotsBackend implements BackendPort {
       const acceptanceResult = fromKnots(
         await knots.updateKnot(
           id,
-          { addNote: `Acceptance Criteria:\n${input.acceptance}` },
+          { addNote: `${ACCEPTANCE_MARKER}${input.acceptance}` },
           rp,
         ),
       );

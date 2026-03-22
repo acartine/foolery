@@ -962,6 +962,90 @@ describe("KnotsBackend coverage: knot with notes and metadata", () => {
   });
 });
 
+describe("KnotsBackend coverage: acceptance round-trip via notes", () => {
+  it("extracts acceptance from tagged notes into beat.acceptance", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-RT1",
+      title: "Acceptance round-trip",
+      notes: [
+        { content: "Regular note", username: "alice", datetime: "2026-01-01" },
+        { content: "Acceptance Criteria:\nMust pass all tests", username: "system", datetime: "2026-01-02" },
+      ],
+    });
+
+    const result = await backend.get("AC-RT1");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBe("Must pass all tests");
+  });
+
+  it("excludes acceptance-marker notes from visible beat.notes", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-RT2",
+      title: "Acceptance hidden from notes",
+      notes: [
+        { content: "Regular note", username: "alice", datetime: "2026-01-01" },
+        { content: "Acceptance Criteria:\nMust pass all tests", username: "system", datetime: "2026-01-02" },
+      ],
+    });
+
+    const result = await backend.get("AC-RT2");
+    expect(result.ok).toBe(true);
+    expect(result.data?.notes).toContain("alice: Regular note");
+    expect(result.data?.notes).not.toContain("Acceptance Criteria");
+  });
+
+  it("uses the latest acceptance note when multiple exist", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-RT3",
+      title: "Multiple acceptance notes",
+      notes: [
+        { content: "Acceptance Criteria:\nOld criteria", username: "system", datetime: "2026-01-01" },
+        { content: "Some regular note", username: "bob", datetime: "2026-01-02" },
+        { content: "Acceptance Criteria:\nUpdated criteria", username: "system", datetime: "2026-01-03" },
+      ],
+    });
+
+    const result = await backend.get("AC-RT3");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBe("Updated criteria");
+    expect(result.data?.notes).not.toContain("Acceptance Criteria");
+    expect(result.data?.notes).toContain("bob: Some regular note");
+  });
+
+  it("returns undefined acceptance when no acceptance notes exist", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-RT4",
+      title: "No acceptance",
+      notes: [
+        { content: "Just a note", username: "alice", datetime: "2026-01-01" },
+      ],
+    });
+
+    const result = await backend.get("AC-RT4");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBeUndefined();
+  });
+
+  it("returns undefined acceptance when acceptance note body is empty", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "AC-RT5",
+      title: "Empty acceptance",
+      notes: [
+        { content: "Acceptance Criteria:\n", username: "system", datetime: "2026-01-01" },
+      ],
+    });
+
+    const result = await backend.get("AC-RT5");
+    expect(result.ok).toBe(true);
+    expect(result.data?.acceptance).toBeUndefined();
+  });
+});
+
 describe("KnotsBackend coverage: create with extra fields", () => {
   it("creates with priority, type, labels, notes, acceptance, and parent", async () => {
     const backend = new KnotsBackend("/repo");
