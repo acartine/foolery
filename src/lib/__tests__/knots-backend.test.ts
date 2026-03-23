@@ -953,6 +953,30 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(ids).toContain("parent-q");
     });
 
+    it("includes multi-level ancestors of active beats without leaking siblings", async () => {
+      seedKnot("grandparent", "ready_for_planning", { type: "epic" });
+      seedKnot("parent-mid", "ready_for_implementation", { type: "epic" });
+      seedKnot("active-leaf", "implementation");
+      seedKnot("sibling-shipped", "shipped");
+
+      store.edges.push({ src: "grandparent", kind: "parent_of", dst: "parent-mid" });
+      store.edges.push({ src: "parent-mid", kind: "parent_of", dst: "active-leaf" });
+      store.edges.push({ src: "parent-mid", kind: "parent_of", dst: "sibling-shipped" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "in_action" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id).sort();
+      // Active leaf passes the filter directly
+      expect(ids).toContain("active-leaf");
+      // Both ancestors are included via the parent chain
+      expect(ids).toContain("parent-mid");
+      expect(ids).toContain("grandparent");
+      // Shipped sibling must NOT appear
+      expect(ids).not.toContain("sibling-shipped");
+    });
+
     it("does not include children when using a specific state filter", async () => {
       seedKnot("parent-q", "ready_for_implementation", { type: "epic" });
       seedKnot("child-done", "shipped");

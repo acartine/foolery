@@ -367,4 +367,41 @@ describe("bd.ts additional coverage", () => {
     expect(result.ok).toBe(true);
     expect(result.data?.map((beat) => beat.id)).toEqual(["active-1"]);
   });
+
+  it("listBeats in_action includes queued parent of active child but not shipped sibling", async () => {
+    queueExec({
+      stdout: JSON.stringify([
+        { ...BEAT_JSON, id: "proj", status: "open", labels: [] },
+        { ...BEAT_JSON, id: "proj.1", status: "in_progress", labels: [] },
+        { ...BEAT_JSON, id: "proj.2", status: "closed", labels: [] },
+      ]),
+    });
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats({ state: "in_action" });
+    expect(result.ok).toBe(true);
+    const ids = result.data!.map((beat) => beat.id);
+    // Active child passes the filter directly
+    expect(ids).toContain("proj.1");
+    // Queued parent is included as ancestor of the active child
+    expect(ids).toContain("proj");
+    // Shipped sibling must NOT appear
+    expect(ids).not.toContain("proj.2");
+  });
+
+  it("listBeats in_action includes multi-level ancestors of active beat", async () => {
+    queueExec({
+      stdout: JSON.stringify([
+        { ...BEAT_JSON, id: "root", status: "open", labels: [] },
+        { ...BEAT_JSON, id: "root.mid", status: "open", labels: [] },
+        { ...BEAT_JSON, id: "root.mid.leaf", status: "in_progress", labels: [] },
+      ]),
+    });
+    const { listBeats } = await import("@/lib/bd");
+    const result = await listBeats({ state: "in_action" });
+    expect(result.ok).toBe(true);
+    const ids = result.data!.map((beat) => beat.id);
+    expect(ids).toContain("root.mid.leaf");
+    expect(ids).toContain("root.mid");
+    expect(ids).toContain("root");
+  });
 });
