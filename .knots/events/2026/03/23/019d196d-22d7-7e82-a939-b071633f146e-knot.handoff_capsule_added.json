@@ -1,0 +1,15 @@
+{
+  "event_id": "019d196d-22d7-7e82-a939-b071633f146e",
+  "occurred_at": "2026-03-23T06:41:15.991892Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Root cause confirmed: both knots-backend.ts and beads-backend.ts share isPhaseFilter for queued and in_action, causing includeDescendantsOfQueueParents to run for Active view. Plan to restrict descendant expansion to queued-only filter is correct, complete, and low-risk. Test strategy properly replaces the existing bug-codifying test and adds beads parity coverage.",
+    "datetime": "2026-03-23T06:41:15.991892Z",
+    "entry_id": "019d196d-22d7-7e82-a939-b066244f6308",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
