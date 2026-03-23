@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1a17-f4a8-73f2-ac06-5239791d4336",
+  "occurred_at": "2026-03-23T09:47:50.824699Z",
+  "knot_id": "foolery-b72e",
+  "type": "knot.created",
+  "data": {
+    "body": "- remove knot type, it's not useful info\n- remove prio, it's not useful info\n- replace them with the fully qualified knot id (or hierarchy alias, if it has one) so we can see what project it belonged to.\n- remove the abbreviated knot id from the byline, slide the byline items (last_updated, tags) to the left",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Retakes Screen: Minor cleanups",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a1a-3863-7a63-9060-4df3844701a3",
+  "occurred_at": "2026-03-23T09:50:19.23556Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning completed for fc07. Relevant implementation surface is `src/components/retakes-view.tsx`, with optional extraction into `src/lib/beat-sort.ts` and regression coverage in `src/lib/__tests__/beat-sort.test.ts` or a dedicated ReTakes contract test. Important nuance: the current checkout already includes an inline `updated`-descending sort in ReTakes, so implementation should first verify the reported disorder on the actual worktree/base and then harden or centralize the comparator plus tests rather than assume the sort is absent.",
+    "datetime": "2026-03-23T09:49:34Z",
+    "entry_id": "019d1a1a-3863-7a63-9060-4de28764d0ac",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-23"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1a15-f7ff-78d1-b048-87b16e52d22c",
+  "occurred_at": "2026-03-23T09:45:40.607937Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  current view seems random, there are knots from 13 days ago at the top of the list",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "ReTakes Screen:  Display beats in order of when they were last updated, most recently first",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
