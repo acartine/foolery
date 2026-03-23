@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b72-9129-7010-91d6-c7cb22fc30f8",
+  "occurred_at": "2026-03-23T16:06:26.345077Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment complete. All changes merged to main via feat/foolery-c2ee-audit-ux branch (merge commit 9c9340b3). Key commits: 2d4b8fc3 (audit UX: remove tally, add combined chart, last-24h preset, per-step leaderboard), 67259f75 (queue screen: ancestor chain for queued children). Code pushed to origin/main. CI green — both CI and Coverage Badge workflows passed on head SHA 9c9340b3. Child b2b7 advanced to ready_for_shipment_review.",
+    "datetime": "2026-03-23T16:06:26.345077Z",
+    "entry_id": "019d1b72-9129-7010-91d6-c7b5733727d6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

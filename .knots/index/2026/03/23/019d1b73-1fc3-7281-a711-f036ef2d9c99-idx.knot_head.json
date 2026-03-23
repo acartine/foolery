@@ -1,0 +1,23 @@
+{
+  "event_id": "019d1b73-1fc3-7281-a711-f036ef2d9c99",
+  "occurred_at": "2026-03-23T16:07:02.851064Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c2ee",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Audit: UX Design Improvements",
+    "type": "work",
+    "updated_at": "2026-03-23T16:07:02.851064Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d1b72-bba7-7b51-90f5-35a2092a1b3a"
+  }
+}

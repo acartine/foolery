@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b77-3adf-70e2-a735-d2dbc7874c31",
+  "occurred_at": "2026-03-23T16:11:31.93555Z",
+  "knot_id": "foolery-b2b7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. All changes merged to main (merge 9c9340b340d6, impl 2d4b8fc379ee). CI green — both CI and Coverage Badge workflows passed. Tests: 165 files, 2237 passed. Code verified: rolling last-24h filter, combined all-steps series, per-step leaderboard helpers all present and tested. No invariants to check. No regressions detected.",
+    "datetime": "2026-03-23T16:11:31.93555Z",
+    "entry_id": "019d1b77-3adf-70e2-a735-d2cf583e76ae",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
