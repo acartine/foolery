@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1ae5-35ec-7e71-9941-f0712ba75ba7",
+  "occurred_at": "2026-03-23T13:32:02.412881Z",
+  "knot_id": "foolery-5c85",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped by fast-forwarding main to 1d7bed6c2ef9 (existing feature commit; no new merge commit created). Pushed origin/main and verified remote CI success in run 23439814626: https://github.com/acartine/foolery/actions/runs/23439814626. Non-blocking annotations: Node.js 20 action deprecation notice and coverage regression warnings reported by CI.",
+    "datetime": "2026-03-23T13:32:43Z",
+    "entry_id": "019d1ae5-35ec-7e71-9941-f0618a4fdd0c",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}
