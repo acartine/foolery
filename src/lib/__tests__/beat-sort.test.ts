@@ -3,6 +3,7 @@ import type { Beat } from "@/lib/types";
 import { buildHierarchy } from "@/lib/beat-hierarchy";
 import {
   compareBeatsByPriorityThenState,
+  compareBeatsByMostRecentlyUpdated,
   compareBeatsByHierarchicalOrder,
   naturalCompare,
 } from "@/lib/beat-sort";
@@ -134,5 +135,46 @@ describe("compareBeatsByHierarchicalOrder", () => {
       ["1guy.4", 1],
       ["1guy.5", 1],
     ]);
+  });
+});
+
+describe("compareBeatsByMostRecentlyUpdated", () => {
+  it("sorts beats by updated descending", () => {
+    const beats = [
+      makeBeat({ id: "beat-2", updated: "2025-01-02T00:00:00Z" }),
+      makeBeat({ id: "beat-1", updated: "2025-01-03T00:00:00Z" }),
+      makeBeat({ id: "beat-3", updated: "2025-01-01T00:00:00Z" }),
+    ];
+
+    const sorted = beats.slice().sort(compareBeatsByMostRecentlyUpdated);
+    expect(sorted.map((b) => b.id)).toEqual(["beat-1", "beat-2", "beat-3"]);
+  });
+
+  it("treats invalid updated timestamps as the oldest beats", () => {
+    const beats = [
+      makeBeat({ id: "beat-2", updated: "not-a-date" }),
+      makeBeat({ id: "beat-1", updated: "2025-01-03T00:00:00Z" }),
+      makeBeat({ id: "beat-3", updated: "2025-01-01T00:00:00Z" }),
+    ];
+
+    const sorted = beats.slice().sort(compareBeatsByMostRecentlyUpdated);
+    expect(sorted.map((b) => b.id)).toEqual(["beat-1", "beat-3", "beat-2"]);
+  });
+
+  it("breaks full ties by repo scope for deterministic multi-repo ordering", () => {
+    const beatA = {
+      ...makeBeat({ id: "same-id", updated: "2025-01-03T00:00:00Z" }),
+      _repoPath: "/repos/b",
+      _repoName: "repo-b",
+    } as Beat;
+    const beatB = {
+      ...makeBeat({ id: "same-id", updated: "2025-01-03T00:00:00Z" }),
+      _repoPath: "/repos/a",
+      _repoName: "repo-a",
+    } as Beat;
+
+    const sorted = [beatA, beatB].sort(compareBeatsByMostRecentlyUpdated);
+    expect((sorted[0] as Beat & { _repoPath?: string })._repoPath).toBe("/repos/a");
+    expect((sorted[1] as Beat & { _repoPath?: string })._repoPath).toBe("/repos/b");
   });
 });
