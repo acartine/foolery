@@ -26,10 +26,10 @@ describe("history beat-id copy affordance contract", () => {
   });
 
   it("renders stripped ids on every copy affordance surface", () => {
-    expect(historyViewSource).toContain("{stripIdPrefix(beat.beatId)}");
-    expect(historyViewSource).toContain("{stripIdPrefix(focusedSummary.beatId)}");
-    expect(historyViewSource).toContain("{stripIdPrefix(loadedSummary.beatId)}");
-    expect(historyViewSource).toContain("{stripIdPrefix(beat.id)}");
+    expect(historyViewSource).toContain("const displayId = displayBeatLabel(beat.beatId, beatDetailMap.get(key)?.aliases)");
+    expect(historyViewSource).toContain("{displayBeatLabel(focusedSummary.beatId, focusedDetail.beat?.aliases)}");
+    expect(historyViewSource).toContain("{displayBeatLabel(loadedSummary.beatId, loadedDetail?.aliases)}");
+    expect(historyViewSource).toContain("{displayBeatLabel(beat.id, beat.aliases)}");
   });
 
   it("retains explicit copy affordance cues for beat ids", () => {

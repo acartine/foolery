@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { HistoryDebugPanel } from "@/components/history-debug-panel";
 import { BeatMetadataDetails } from "@/components/beat-metadata-details";
+import { displayBeatLabel } from "@/lib/beat-display";
 import { cn } from "@/lib/utils";
 
 const WINDOW_SIZE = 5;
@@ -508,14 +509,14 @@ function BeatDetailContent({
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
         <div className="px-0.5 py-0.5">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Beat ID</p>
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Beat</p>
           <button
             type="button"
             className="mt-0.5 break-words text-left font-mono text-[11px] underline-offset-2 hover:underline"
             onClick={() => onCopyBeatId(beat.id)}
             title="Click to copy ID"
           >
-            {stripIdPrefix(beat.id)}
+            {displayBeatLabel(beat.id, beat.aliases)}
           </button>
         </div>
         <BeatMetaItem label="Last updated" value={formatTime(summary.lastWorkedAt)} />
@@ -728,6 +729,24 @@ export function AgentHistoryView() {
     return map;
   }, [detailQueries, visibleBeats]);
 
+  const loadedDetailQuery = useQuery({
+    queryKey: [
+      "agent-history-beat-detail",
+      loadedBeat?.repoPath ?? null,
+      loadedBeat?.beatId ?? null,
+    ],
+    queryFn: () => fetchBeat(loadedBeat!.beatId, loadedBeat!.repoPath),
+    enabled: Boolean(loadedBeat),
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
+  const loadedDetail = useMemo(
+    () => (loadedDetailQuery.data?.ok ? loadedDetailQuery.data.data ?? null : null),
+    [loadedDetailQuery.data],
+  );
+
   /* Focused beat detail state for the right panel */
   const focusedDetail = useMemo(() => {
     if (!focusedBeatKey) return { loading: false, error: null as string | null, beat: null as Beat | null };
@@ -934,6 +953,7 @@ export function AgentHistoryView() {
                 const key = beatKey(beat.beatId, beat.repoPath);
                 const focused = focusedBeatKey === key;
                 const loaded = loadedBeatKey === key;
+                const displayId = displayBeatLabel(beat.beatId, beatDetailMap.get(key)?.aliases);
                 return (
                   <button
                     type="button"
@@ -992,7 +1012,7 @@ export function AgentHistoryView() {
                         onMouseDown={(e) => e.stopPropagation()}
                         title="Click to copy ID"
                       >
-                        {stripIdPrefix(beat.beatId)}
+                        {displayId}
                       </span>
                       {showRepoName ? (
                         <Badge variant="outline" className="text-[10px] font-normal">
@@ -1050,7 +1070,7 @@ export function AgentHistoryView() {
                 onClick={() => copyBeatId(focusedSummary.beatId)}
                 title="Click to copy ID"
               >
-                {stripIdPrefix(focusedSummary.beatId)}
+                {displayBeatLabel(focusedSummary.beatId, focusedDetail.beat?.aliases)}
               </button>
             ) : null}
           </div>
@@ -1097,7 +1117,7 @@ export function AgentHistoryView() {
               onClick={() => copyBeatId(loadedSummary.beatId)}
               title="Click to copy ID"
             >
-              {stripIdPrefix(loadedSummary.beatId)}
+              {displayBeatLabel(loadedSummary.beatId, loadedDetail?.aliases)}
             </button>
           ) : null}
           {loadedSummary && sessions.length > 0 ? (
@@ -1175,7 +1195,7 @@ export function AgentHistoryView() {
             ) : sessionsQuery.isLoading && sessions.length === 0 ? (
               <div className="flex flex-col items-center gap-2 rounded border border-dashed border-white/15 bg-[#16162a] px-4 py-7 font-mono text-[15px] text-[#e0e0e0]">
                 <Spinner className="size-5" />
-                <span>Loading logs for {stripIdPrefix(loadedSummary.beatId)}…</span>
+                <span>Loading logs for {displayBeatLabel(loadedSummary.beatId, loadedDetail?.aliases)}…</span>
                 <span className="text-[14px] text-white/60">prompt histories are BIG, please be patient :-)</span>
               </div>
             ) : sessions.length === 0 ? (
