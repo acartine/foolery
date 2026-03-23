@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b6c-194e-72c1-88fd-cd154c710b29",
+  "occurred_at": "2026-03-23T15:59:22.446521Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected again. The update API no longer passes identity flags, but newly written notes and handoff capsules still come back from Knots as username/agentname/model/version = unknown. /tmp/foolery-177c/src/lib/backends/knots-backend.ts only repairs username via fallbackUsername; it does not rehydrate agent metadata from the active lease or lease-audit history, so the ReTakes metadata contract is still incomplete.",
+    "datetime": "2026-03-23T15:59:22.446521Z",
+    "entry_id": "019d1b6c-194e-72c1-88fd-cd0893bf6064",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

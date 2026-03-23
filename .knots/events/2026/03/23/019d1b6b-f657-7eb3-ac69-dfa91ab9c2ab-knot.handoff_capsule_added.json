@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b6b-f657-7eb3-ac69-dfa91ab9c2ab",
+  "occurred_at": "2026-03-23T15:59:13.495223Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Tests verified on main: lease-audit-filters.test.ts (10 tests covering rolling last-24h filter semantics with boundary conditions and preset precedence), lease-audit-view-helpers.test.ts (26 tests covering buildCombinedSeries aggregation across queue types by agent and buildLeaderboard margin calculations with tie-breaking), lease-audit.test.ts (18 tests covering core audit persistence and aggregation). All 2237 tests pass (165 suites). Commits 2d4b8fc379ee and 9c9340b340d6 tagged and present on main.",
+    "datetime": "2026-03-23T15:59:13.495223Z",
+    "entry_id": "019d1b6b-f657-7eb3-ac69-df966f5340e7",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b6c-192d-7031-8437-d76fa8bc2b71",
+  "occurred_at": "2026-03-23T15:59:22.413153Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected on remaining metadata drift. The transport contract is now correct because identity flags are only sent at lease creation, but the read path still leaves note and handoff agent metadata as unknown for newly written entries. Backend normalization must fill agentname/model/version from lease-owned identity (active lease when present, lease-audit fallback when shipped) so ReTakes consistently shows standardized metadata without passing identity flags on update.",
+    "datetime": "2026-03-23T15:59:22.413153Z",
+    "entry_id": "019d1b6c-192d-7031-8437-d75c0d7751d7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

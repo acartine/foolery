@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b6b-26c1-7482-bb77-df6e9d63e4e3",
+  "occurred_at": "2026-03-23T15:58:20.353428Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Follow-up implementation after review rejection: updateKnot() no longer forwards any note or handoff identity flags. Foolery now sends identity fields only during lease creation; claim, poll, update, notes, and handoff capsules all avoid passing agent or username metadata through Knots commands. The lease-derived display normalization and shipped-step fallback from the earlier implementation remain in place.\n\nValidation on commit dc931030fa15: bun run lint (0 errors, warnings only), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-23T15:58:20.353428Z",
+    "entry_id": "019d1b6b-26c1-7482-bb77-df593565148d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
