@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a02-4a2f-7e82-9f07-2e0453058d99",
+  "occurred_at": "2026-03-23T09:24:10.927334Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation review: commit 84e47100afc2 wires a shared active-ancestor helper into the Knots, Beads, and bd in_action filters so active beats keep their parent chains without reintroducing descendant expansion or terminal sibling leakage. Revalidated with bunx tsc --noEmit, bun run test, bun run build, and bun run lint (warnings only).",
+    "datetime": "2026-03-23T09:24:10.927334Z",
+    "entry_id": "019d1a02-4a2f-7e82-9f07-2df828e1ed4a",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

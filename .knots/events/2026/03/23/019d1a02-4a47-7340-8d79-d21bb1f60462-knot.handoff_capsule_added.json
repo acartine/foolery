@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a02-4a47-7340-8d79-d21bb1f60462",
+  "occurred_at": "2026-03-23T09:24:10.95138Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation review: commit 84e47100afc2 updates the active-view regressions so Knots, direct Beads, bd CLI, and the auto-routed .beads path keep active ancestors visible while terminal siblings remain excluded. Revalidated with bunx tsc --noEmit, bun run test, bun run build, and bun run lint (warnings only).",
+    "datetime": "2026-03-23T09:24:10.95138Z",
+    "entry_id": "019d1a02-4a47-7340-8d79-d20a50148762",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
