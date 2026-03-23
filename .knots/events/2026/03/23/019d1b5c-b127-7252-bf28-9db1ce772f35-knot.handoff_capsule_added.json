@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5c-b127-7252-bf28-9db1ce772f35",
+  "occurred_at": "2026-03-23T15:42:32.743918Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved. The proposed work is feasible and correctly centers the lease as the sole identity authority, which matches the required contract. The implementation split is sound: remove non-lease identity propagation from Knots calls, normalize lease-derived metadata for display, and restore ReTakes step visibility through backend metadata hydration rather than UI-specific patching. The test strategy is adequate because it covers both the contract boundary (no identity flags outside lease creation) and the user-facing regression (normalized handoff metadata plus visible shipped-step history in ReTakes). No knot invariants are defined, and the plan does not introduce obvious security or performance concerns beyond the need to keep any shipped-step fallback durable and read-efficient.",
+    "datetime": "2026-03-23T15:42:32.743918Z",
+    "entry_id": "019d1b5c-b127-7252-bf28-9da5092714a6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

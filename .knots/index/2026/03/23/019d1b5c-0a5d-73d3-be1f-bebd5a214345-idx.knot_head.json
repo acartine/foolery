@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1b5c-0a5d-73d3-be1f-bebd5a214345",
+  "occurred_at": "2026-03-23T15:41:50.033112Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2288",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Refresh lease audit view layout and controls",
+    "type": "work",
+    "updated_at": "2026-03-23T15:41:50.033112Z",
+    "workflow_id": "compatibility"
+  }
+}

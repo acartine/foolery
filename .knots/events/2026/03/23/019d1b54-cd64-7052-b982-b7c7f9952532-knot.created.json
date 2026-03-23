@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1b54-cd64-7052-b982-b7c7f9952532",
+  "occurred_at": "2026-03-23T15:33:55.684375Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.created",
+  "data": {
+    "body": "Handoff Capsule metadata should be standardized by how foolery integrates with the knots lease and what agents are installed.\n\nFor example, we know that Claude Opus 4.6 should be partitioned as\n\nClaude | Opus | 4.6\n\nand we also know to get the 'user' from $USER or `whoami`\n\nand yet i fyou look at the handoff capsules for recently completed knots, you can see that they have random, mixed up agent breakdowns and constantly \"unknown\" for user.\n\nwhen foolery creates the knots leases, all of this stuff should be constant/consistent.  it should NOT come from the agents, but from the Knots lease as created by Foolery.\n\nLastly - the Steps section, showing the claimer of the step, is just gone now from the ReTakes view.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "ReTakes:  Handoff capsules have bad agent metadata, steps are missing",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5c-14e7-7db1-b696-9e25d24a1da8",
+  "occurred_at": "2026-03-23T15:41:52.743645Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Added tests: buildCombinedSeries (4 tests), discoverQueueTypes (2 tests), buildLeaderboard (6 tests including single-agent edge case and tie-breaking), applyFilters route test (8 tests covering manual date range, last24h preset with fake timers, and filter passthrough). All 35 tests pass.",
+    "datetime": "2026-03-23T15:41:52.743645Z",
+    "entry_id": "019d1b5c-14e7-7db1-b696-9e182077f568",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

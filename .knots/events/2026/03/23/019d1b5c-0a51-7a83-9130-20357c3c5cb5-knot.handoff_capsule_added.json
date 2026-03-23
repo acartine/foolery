@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5c-0a51-7a83-9130-20357c3c5cb5",
+  "occurred_at": "2026-03-23T15:41:50.033112Z",
+  "knot_id": "foolery-2288",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Refactored lease-audit-view.tsx: removed summary tally card, added buildCombinedSeries for All Steps chart, added buildLeaderboard for per-step best-agent table with margin, improved date selectors with Last 24h button and range label, dynamically discovers queue types via discoverQueueTypes helper.",
+    "datetime": "2026-03-23T15:41:50.033112Z",
+    "entry_id": "019d1b5c-0a51-7a83-9130-202a03fcd529",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

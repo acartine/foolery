@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b58-3d07-7533-acb3-94bb85b45a6d",
+  "occurred_at": "2026-03-23T15:37:40.871282Z",
+  "knot_id": "foolery-fdcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Queue-filter planning complete. The queue screen uses the phase-level `queued` backend filter, and the likely fix is to add ancestor-chain inclusion for queued matches in both `src/lib/backends/beads-backend.ts` and `src/lib/backends/knots-backend.ts`, while preserving the existing descendant expansion for queued parents. Planned regression coverage targets `src/lib/__tests__/beads-backend-coverage.test.ts` and `src/lib/__tests__/knots-backend.test.ts`, with exact-state filters kept unchanged.",
+    "datetime": "2026-03-23T15:36:40Z",
+    "entry_id": "019d1b58-3d07-7533-acb3-94af80f099c7",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

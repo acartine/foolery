@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b59-9088-7010-b8d2-ee9dc990ec67",
+  "occurred_at": "2026-03-23T15:39:07.784658Z",
+  "knot_id": "foolery-fdcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. The implementation plan correctly identifies the root cause (missing upward ancestor expansion in queued-phase filtering) and proposes a sound fix modeled on the existing includeActiveAncestors pattern. Both backends are covered, the test strategy is adequate, and exact-state filters are explicitly preserved. No invariant violations. Ready for implementation.",
+    "datetime": "2026-03-23T15:39:07.784658Z",
+    "entry_id": "019d1b59-9088-7010-b8d2-ee8c472b6396",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

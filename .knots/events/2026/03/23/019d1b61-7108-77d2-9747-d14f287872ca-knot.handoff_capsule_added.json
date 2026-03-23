@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b61-7108-77d2-9747-d14f287872ca",
+  "occurred_at": "2026-03-23T15:47:44.008729Z",
+  "knot_id": "foolery-fdcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete. Fixed queued-phase filtering in both beads-backend.ts and knots-backend.ts to include ancestor chains for queued children whose parents are not in a queued state. The fix composes includeDescendantsOfQueueParents (existing downward expansion) with includeActiveAncestors (upward expansion) so the queue screen shows both directions. Added 5 regression tests across beads-backend-coverage, knots-backend, and knots-guardrails test files. All 2217 tests pass, lint/typecheck/build clean.",
+    "datetime": "2026-03-23T15:47:44.008729Z",
+    "entry_id": "019d1b61-7108-77d2-9747-d1315aee3e57",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

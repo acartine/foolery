@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5a-8fa9-7a20-a5c0-4d44b38588c3",
+  "occurred_at": "2026-03-23T15:40:13.097645Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. The fix should enforce lease-only identity propagation: no agent identity flags on claim/next/update flows, lease-derived normalization for handoff metadata and usernames, and a Foolery-side fallback for ReTakes step metadata if shipped knots no longer expose `step_history`. Primary implementation targets are the Knots execution wrappers, lease runtime, agent identity normalization, and Knots backend metadata hydration, with regression tests covering both the lease contract and shipped ReTakes rendering.",
+    "datetime": "2026-03-23T15:40:13.097645Z",
+    "entry_id": "019d1b5a-8fa9-7a20-a5c0-4d32e5ee4d43",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

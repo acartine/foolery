@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1b58-3d0d-7722-a0c9-8390c6e45a90",
+  "occurred_at": "2026-03-23T15:37:40.871282Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fdcc",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Queue Screen:  Shows children without parent",
+    "type": "work",
+    "updated_at": "2026-03-23T15:37:40.871282Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b60-ff04-78f0-a21c-b8ca51b981f2",
+  "occurred_at": "2026-03-23T15:47:14.820652Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. Tests comprehensively cover all three new capabilities: rolling filter semantics (last24h preset with fake timers, precedence over manual range), combined-series aggregation (cross-queue success rate by agent with null gaps), and per-step leaderboard margin calculations (tie-breaking by volume, single-agent edge case). 35 tests all pass. Quality gates clean.",
+    "datetime": "2026-03-23T15:47:14.820652Z",
+    "entry_id": "019d1b60-ff04-78f0-a21c-b8be3f46b4c2",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

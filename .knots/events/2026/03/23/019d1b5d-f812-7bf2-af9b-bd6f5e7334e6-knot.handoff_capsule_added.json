@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5d-f812-7bf2-af9b-bd6f5e7334e6",
+  "occurred_at": "2026-03-23T15:43:56.434001Z",
+  "knot_id": "foolery-2288",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. Tally card removed, buildCombinedSeries adds All Steps chart, Last 24h button with active styling and rangeLabel shows current selection, buildLeaderboard replaces agent totals with per-step best-agent table with margin. Queue types discovered dynamically. All quality gates pass (0 lint errors, typecheck clean, 2232 tests passing, build succeeds).",
+    "datetime": "2026-03-23T15:43:56.434001Z",
+    "entry_id": "019d1b5d-f812-7bf2-af9b-bd5b1fae00d3",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

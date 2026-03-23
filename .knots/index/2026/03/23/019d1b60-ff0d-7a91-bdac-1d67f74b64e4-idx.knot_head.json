@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1b60-ff0d-7a91-bdac-1d67f74b64e4",
+  "occurred_at": "2026-03-23T15:47:14.820652Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dafe",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Add lease audit regression coverage for new UX metrics",
+    "type": "work",
+    "updated_at": "2026-03-23T15:47:14.820652Z",
+    "workflow_id": "compatibility"
+  }
+}

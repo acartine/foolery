@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b5c-1df9-75b0-a3b4-d1449fd8e5ec",
+  "occurred_at": "2026-03-23T15:41:55.065281Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "All three children implemented in a single commit on feat/foolery-c2ee-audit-ux. Data layer: preset=last24h with timestamp-aware filtering. View: removed tally, added combined All Steps chart, improved selectors with Last 24h button and range label, replaced agent table with per-step leaderboard. Tests: 35 tests covering all new helpers and filter behavior. All quality gates pass (lint, typecheck, tests, build).",
+    "datetime": "2026-03-23T15:41:55.065281Z",
+    "entry_id": "019d1b5c-1df9-75b0-a3b4-d132925bcc06",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
