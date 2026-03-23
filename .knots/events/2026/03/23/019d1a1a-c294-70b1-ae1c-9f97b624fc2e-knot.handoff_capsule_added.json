@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a1a-c294-70b1-ae1c-9f97b624fc2e",
+  "occurred_at": "2026-03-23T09:50:54.612646Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. The inline updated-descending sort already exists at retakes-view.tsx:290-297. Implementation should verify the reported disorder (possibly stale build or malformed timestamps), harden the comparator for edge cases, and add regression test coverage. Scope and test strategy are appropriate.",
+    "datetime": "2026-03-23T09:50:54.612646Z",
+    "entry_id": "019d1a1a-c294-70b1-ae1c-9f840743d963",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
