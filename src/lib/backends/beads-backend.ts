@@ -557,13 +557,15 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     return true;
   });
 
-  // When using the queued filter, also include all descendants of parents
-  // that are in a queue state so the user can see every child regardless of
-  // its own state.  The active (in_action) view must NOT expand descendants
+  // When using the queued filter, expand in both directions: include all
+  // descendants of queued parents (so the user sees every child) AND include
+  // ancestor chains of queued children (so orphaned children get their
+  // parent context).  The active (in_action) view must NOT expand descendants
   // because that surfaces terminal beats (shipped/abandoned) whose only
   // connection to the active view is an ancestor in a queue state.
   if (isQueuedPhaseFilter) {
-    return includeDescendantsOfQueueParents(beats, filtered);
+    const withDescendants = includeDescendantsOfQueueParents(beats, filtered);
+    return includeActiveAncestors(beats, withDescendants);
   }
   if (isActivePhaseFilter) {
     return includeActiveAncestors(beats, filtered);

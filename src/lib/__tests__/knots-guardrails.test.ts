@@ -535,7 +535,7 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       const ids = result.data!.map((b) => b.id);
       expect(ids).toContain("g3y1.1");
       expect(ids).toContain("g3y1.1.1");
-      expect(ids).not.toContain("g3y1"); // implementation is active, not queued
+      expect(ids).toContain("g3y1"); // included as ancestor of queued children
       expect(ids).not.toContain("g3y1.2"); // shipped, not queued
     });
 

@@ -867,6 +867,108 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(noResult.ok).toBe(true);
     expect(noResult.data!.length).toBe(0);
   });
+
+  it("includes ancestor chain when a queued child's parent is not in a queued state", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const parent = await backend.create({
+      title: "Active parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+    });
+    expect(parent.ok).toBe(true);
+    // Move parent to an active (non-queued) state
+    await backend.update(parent.data!.id, { state: "implementation" });
+
+    const child = await backend.create({
+      title: "Queued child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(child.ok).toBe(true);
+    // Child stays in default queued state (ready_for_planning)
+
+    const result = await backend.list({ state: "queued" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((b) => b.id);
+    // The queued child should appear
+    expect(ids).toContain(child.data!.id);
+    // The non-queued parent must also appear as an ancestor
+    expect(ids).toContain(parent.data!.id);
+  });
+
+  it("includes full ancestor chain for deeply nested queued descendants", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const grandparent = await backend.create({
+      title: "Shipped grandparent",
+      type: "initiative",
+      priority: 2,
+      labels: [],
+    });
+    expect(grandparent.ok).toBe(true);
+    await backend.update(grandparent.data!.id, { state: "shipped" });
+
+    const parent = await backend.create({
+      title: "Active parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+      parent: grandparent.data!.id,
+    });
+    expect(parent.ok).toBe(true);
+    await backend.update(parent.data!.id, { state: "implementation" });
+
+    const child = await backend.create({
+      title: "Queued child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(child.ok).toBe(true);
+
+    const result = await backend.list({ state: "queued" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((b) => b.id);
+    expect(ids).toContain(child.data!.id);
+    expect(ids).toContain(parent.data!.id);
+    expect(ids).toContain(grandparent.data!.id);
+  });
+
+  it("exact state filter does not pull in ancestors", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const parent = await backend.create({
+      title: "Shipped parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+    });
+    expect(parent.ok).toBe(true);
+    await backend.update(parent.data!.id, { state: "shipped" });
+
+    const child = await backend.create({
+      title: "Ready child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(child.ok).toBe(true);
+
+    const result = await backend.list({ state: "ready_for_planning" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((b) => b.id);
+    expect(ids).toContain(child.data!.id);
+    expect(ids).not.toContain(parent.data!.id);
+  });
 });
 
 describe("BeadsBackend coverage: update profileId without state", () => {

@@ -971,5 +971,38 @@ describe("KnotsBackend mapping behaviour", () => {
       // Specific state filter should NOT include descendants
       expect(ids).not.toContain("child-done");
     });
+
+    it("includes ancestor chain when a queued child's parent is not in a queued state", async () => {
+      seedKnot("active-parent", "implementation", { type: "epic" });
+      seedKnot("queued-child", "ready_for_planning");
+
+      store.edges.push({ src: "active-parent", kind: "parent_of", dst: "queued-child" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id);
+      expect(ids).toContain("queued-child");
+      expect(ids).toContain("active-parent");
+    });
+
+    it("includes full ancestor chain for deeply nested queued descendants", async () => {
+      seedKnot("shipped-gp", "shipped", { type: "initiative" });
+      seedKnot("active-parent", "implementation", { type: "epic" });
+      seedKnot("queued-child", "ready_for_planning");
+
+      store.edges.push({ src: "shipped-gp", kind: "parent_of", dst: "active-parent" });
+      store.edges.push({ src: "active-parent", kind: "parent_of", dst: "queued-child" });
+
+      const backend = new KnotsBackend("/repo");
+      const result = await backend.list({ state: "queued" });
+      expect(result.ok).toBe(true);
+
+      const ids = result.data!.map((b) => b.id);
+      expect(ids).toContain("queued-child");
+      expect(ids).toContain("active-parent");
+      expect(ids).toContain("shipped-gp");
+    });
   });
 });
