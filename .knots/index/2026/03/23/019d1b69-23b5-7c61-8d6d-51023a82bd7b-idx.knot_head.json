@@ -1,0 +1,23 @@
+{
+  "event_id": "019d1b69-23b5-7c61-8d6d-51023a82bd7b",
+  "occurred_at": "2026-03-23T15:56:08.501787Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b2b7",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Implement lease audit data derivations and rolling time filters",
+    "type": "work",
+    "updated_at": "2026-03-23T15:56:08.501787Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d1b68-21e9-70f0-90bd-3f8a55bdc7aa"
+  }
+}

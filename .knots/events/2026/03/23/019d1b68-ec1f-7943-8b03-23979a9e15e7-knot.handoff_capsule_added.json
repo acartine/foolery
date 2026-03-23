@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-ec1f-7943-8b03-23979a9e15e7",
+  "occurred_at": "2026-03-23T15:55:54.271714Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected on spec compliance. The current commit removes non-lease agent flags from claim and poll and restores shipped step metadata, but it still sends note/handoff identity flags through updateKnot(). That is a contract failure under the clarified requirement that all identity flags are lease-owned and may only be provided at lease creation. Return to implementation and remove note/handoff identity flag forwarding, then revalidate the regression tests and quality gates.",
+    "datetime": "2026-03-23T15:55:54.271714Z",
+    "entry_id": "019d1b68-ec1f-7943-8b03-23882d91b4f6",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

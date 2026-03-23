@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-ebec-7841-a3a2-1069b7bdfe15",
+  "occurred_at": "2026-03-23T15:55:54.22082Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected. /tmp/foolery-177c/src/lib/knots.ts still injects --note-username/--note-agentname and --handoff-username/--handoff-agentname inside updateKnot() whenever Foolery adds a note or handoff capsule. Your clarified contract is stricter: identity flags may only be sent at lease creation time. Claim and poll were fixed, but update still leaks identity outside the lease boundary and needs to stop providing those flags entirely.",
+    "datetime": "2026-03-23T15:55:54.22082Z",
+    "entry_id": "019d1b68-ebec-7841-a3a2-10518c774062",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

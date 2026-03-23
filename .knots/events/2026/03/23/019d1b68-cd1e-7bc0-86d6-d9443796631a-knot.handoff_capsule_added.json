@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-cd1e-7bc0-86d6-d9443796631a",
+  "occurred_at": "2026-03-23T15:55:46.334567Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. All 4 requirements verified on main (commits 2d4b8fc379ee, 9c9340b340d6): (1) Tally removed - no summary card in component, (2) Combined All Steps chart added via buildCombinedSeries aggregating across all queue types by agent, (3) Date selectors improved with Last 24h preset button, rangeLabel showing current selection, preset precedence over manual dates, (4) Per-step leaderboard table with buildLeaderboard computing best agent, runner-up, and margin in pp with volume tiebreaker. Quality gates: TypeScript clean, 2237/2237 tests pass (165 suites), no audit-related lint issues. Test coverage comprehensive across 3 test files (773 lines). Child status: 2288 shipped, b2b7 advanced to ready_for_implementation_review, dafe advanced to ready_for_shipment_review.",
+    "datetime": "2026-03-23T15:55:46.334567Z",
+    "entry_id": "019d1b68-cd1e-7bc0-86d6-d93d592b0774",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

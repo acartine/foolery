@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-68dd-7271-b6b4-4b64aec12cb9",
+  "occurred_at": "2026-03-23T15:55:20.669116Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Tests already shipped to main as part of merge commit 9c9340b340d6. Coverage includes: rolling filter semantics (lease-audit-filters.test.ts, 10 tests), combined-series aggregation (lease-audit-view-helpers.test.ts), and per-step leaderboard margin calculations (lease-audit-view-helpers.test.ts). Total 2237 tests passing, 165 suites. All quality gates green.",
+    "datetime": "2026-03-23T15:55:20.669116Z",
+    "entry_id": "019d1b68-68dd-7271-b6b4-4b5864acae43",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

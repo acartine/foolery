@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-5aa7-7842-8139-3054b53e8609",
+  "occurred_at": "2026-03-23T15:55:17.031621Z",
+  "knot_id": "foolery-2288",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. Verified on main via merge commit 9c9340b340d6. All 4 requirements confirmed: tally removed, combined All Steps chart via buildCombinedSeries, Last 24h preset with rangeLabel display on date selectors, per-step leaderboard with margin in pp format. Quality gates: TypeScript clean, 2237 tests passing, no audit-related lint errors. No regressions.",
+    "datetime": "2026-03-23T15:55:17.031621Z",
+    "entry_id": "019d1b68-5aa7-7842-8139-30476d8d49ec",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
