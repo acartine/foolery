@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19fd-d48f-7840-b73c-ead2e3fd768d",
+  "occurred_at": "2026-03-23T09:19:18.671636Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented active-view ancestor reinclusion across the Knots, Beads, and bd CLI backends with a shared parent-chain helper. The in_action filter now keeps each active beat's ancestors visible without reintroducing descendant expansion or terminal sibling leakage. Validation: bunx tsc --noEmit; bun run test; bun run build; bun run lint (warnings only). Branch: feat/foolery-e805-active-ancestor. Commit: 84e47100afc2.",
+    "datetime": "2026-03-23T09:19:09Z",
+    "entry_id": "019d19fd-d48f-7840-b73c-eace99a7c1b3",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

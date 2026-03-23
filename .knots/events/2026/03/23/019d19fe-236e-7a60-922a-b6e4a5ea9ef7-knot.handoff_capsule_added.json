@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19fe-236e-7a60-922a-b6e4a5ea9ef7",
+  "occurred_at": "2026-03-23T09:19:38.862051Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Updated active-view regressions for Knots, direct Beads, bd CLI, and the auto-routed .beads backend so active children keep their queued ancestors visible while shipped siblings remain hidden. Validation: bunx tsc --noEmit; bun run test; bun run build; bun run lint (warnings only). Branch: feat/foolery-e805-active-ancestor. Commit: 84e47100afc2.",
+    "datetime": "2026-03-23T09:19:09Z",
+    "entry_id": "019d19fe-236e-7a60-922a-b6de187f385b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

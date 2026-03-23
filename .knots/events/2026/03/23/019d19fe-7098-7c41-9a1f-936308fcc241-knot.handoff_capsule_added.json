@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19fe-7098-7c41-9a1f-936308fcc241",
+  "occurred_at": "2026-03-23T09:19:58.616582Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Completed the child implementation work for active ancestor visibility: the Knots, Beads, and bd CLI backends now keep active beats' parent chains visible, and regression coverage now asserts that behavior for direct and auto-routed backends. Validation: bunx tsc --noEmit; bun run test; bun run build; bun run lint (warnings only). Branch: feat/foolery-e805-active-ancestor. Commit: 84e47100afc2.",
+    "datetime": "2026-03-23T09:19:09Z",
+    "entry_id": "019d19fe-7098-7c41-9a1f-935bc7003106",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}
