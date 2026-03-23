@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1976-3ec9-7633-bcdc-b8398f5abb61",
+  "occurred_at": "2026-03-23T06:51:12.96912Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: APPROVED. Fix correctly removes 'in_action' from isPhaseFilter in both knots-backend.ts and beads-backend.ts, preventing includeDescendantsOfQueueParents from running on the Active view. This stops shipped/terminal beats from surfacing in Active just because they have a queued ancestor. Tests updated to assert correct behavior. Minimal, well-scoped change with no regressions.",
+    "datetime": "2026-03-23T06:51:12.96912Z",
+    "entry_id": "019d1976-3ec9-7633-bcdc-b8268cb43353",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
