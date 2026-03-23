@@ -358,13 +358,26 @@ describe("bd.ts additional coverage", () => {
   it("listBeats filters in_action as a workflow phase alias", async () => {
     queueExec({
       stdout: JSON.stringify([
-        { ...BEAT_JSON, id: "queued-1", status: "open", labels: [] },
-        { ...BEAT_JSON, id: "active-1", status: "in_progress", labels: [] },
+        { ...BEAT_JSON, id: "parent-1", status: "open", labels: [] },
+        {
+          ...BEAT_JSON,
+          id: "active-1",
+          status: "in_progress",
+          labels: [],
+          dependencies: [{ type: "parent-child", depends_on_id: "parent-1" }],
+        },
+        {
+          ...BEAT_JSON,
+          id: "done-1",
+          status: "closed",
+          labels: [],
+          dependencies: [{ type: "parent-child", depends_on_id: "parent-1" }],
+        },
       ]),
     });
     const { listBeats } = await import("@/lib/bd");
     const result = await listBeats({ state: "in_action" });
     expect(result.ok).toBe(true);
-    expect(result.data?.map((beat) => beat.id)).toEqual(["active-1"]);
+    expect(result.data?.map((beat) => beat.id)).toEqual(["parent-1", "active-1"]);
   });
 });

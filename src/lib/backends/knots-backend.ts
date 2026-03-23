@@ -18,6 +18,7 @@ import type {
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import { isRetryableByDefault } from "@/lib/backend-errors";
+import { includeActiveAncestors } from "@/lib/active-ancestor-filter";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type {
   Beat,
@@ -513,7 +514,8 @@ function toBeat(
 function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
 
-  const isPhaseFilter = filters.state === "queued";
+  const isQueuedPhaseFilter = filters.state === "queued";
+  const isActivePhaseFilter = filters.state === "in_action";
   const hidesLeaseType = filters.state === "queued"
     || (typeof filters.state === "string" && resolveStep(filters.state)?.phase === StepPhase.Queued);
   const visibleBeats = hidesLeaseType ? beats.filter((beat) => beat.type !== "lease") : beats;
@@ -548,8 +550,11 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   // its own state.  The active (in_action) view must NOT expand descendants
   // because that surfaces terminal beats (shipped/abandoned) whose only
   // connection to the active view is an ancestor in a queue state.
-  if (isPhaseFilter) {
+  if (isQueuedPhaseFilter) {
     return includeDescendantsOfQueueParents(visibleBeats, filtered);
+  }
+  if (isActivePhaseFilter) {
+    return includeActiveAncestors(visibleBeats, filtered);
   }
 
   return filtered;

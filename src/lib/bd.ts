@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { includeActiveAncestors } from "./active-ancestor-filter";
 import type { Beat, BeatDependency, BdResult, MemoryWorkflowDescriptor } from "./types";
 import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
@@ -469,7 +470,8 @@ function applyWorkflowFilters(
   filters?: Record<string, string>,
 ): Beat[] {
   if (!filters) return beats;
-  return beats.filter((beat) => {
+  const isActivePhaseFilter = filters.state === "in_action";
+  const filtered = beats.filter((beat) => {
     if (filters.workflowId && beat.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
@@ -488,6 +490,12 @@ function applyWorkflowFilters(
     if (filters.nextOwnerKind && beat.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     return true;
   });
+
+  if (isActivePhaseFilter) {
+    return includeActiveAncestors(beats, filtered);
+  }
+
+  return filtered;
 }
 
 function normalizeLabels(labels: string[]): string[] {

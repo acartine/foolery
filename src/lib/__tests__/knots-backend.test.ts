@@ -932,11 +932,13 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(ids).toContain("leaf");
     });
 
-    it("does not include terminal children when using in_action filter even if parent is in queue state", async () => {
+    it("includes each active beat's queued ancestors without surfacing terminal siblings", async () => {
+      seedKnot("grandparent-q", "ready_for_planning", { type: "initiative" });
       seedKnot("parent-q", "ready_for_implementation", { type: "epic" });
       seedKnot("child-impl", "implementation");
       seedKnot("child-done", "shipped");
 
+      store.edges.push({ src: "grandparent-q", kind: "parent_of", dst: "parent-q" });
       store.edges.push({ src: "parent-q", kind: "parent_of", dst: "child-impl" });
       store.edges.push({ src: "parent-q", kind: "parent_of", dst: "child-done" });
 
@@ -945,12 +947,13 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(result.ok).toBe(true);
 
       const ids = result.data!.map((b) => b.id).sort();
-      // child-impl passes the in_action filter directly
+      // Active child still appears directly.
       expect(ids).toContain("child-impl");
-      // child-done is shipped — descendant expansion must NOT surface it in Active
+      // Parent chain must remain visible in Active.
+      expect(ids).toContain("parent-q");
+      expect(ids).toContain("grandparent-q");
+      // Terminal sibling must NOT be surfaced in Active.
       expect(ids).not.toContain("child-done");
-      // the queued parent itself should not appear either
-      expect(ids).not.toContain("parent-q");
     });
 
     it("does not include children when using a specific state filter", async () => {
