@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a4a-741b-7473-b703-fe43d8d3ee40",
+  "occurred_at": "2026-03-23T10:43:00.251555Z",
+  "knot_id": "foolery-b72e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Removed BeatTypeBadge and BeatPriorityBadge from RetakeRow header. Replaced with fully qualified knot ID (firstBeatAlias or beat.id). Removed abbreviated knot ID from byline so last_updated and tags slide left. Updated alias-view-contract test. All quality gates pass (lint 0 errors, tsc clean, 2212 tests pass, build succeeds). Branch: feat/foolery-b72e-retakes-cleanup",
+    "datetime": "2026-03-23T10:43:00.251555Z",
+    "entry_id": "019d1a4a-741b-7473-b703-fe3fa9b67350",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
