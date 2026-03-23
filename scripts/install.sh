@@ -75,7 +75,7 @@ _icon_for() {
     success) printf '[ok]' ;;
     warn) printf '[!]' ;;
     error) printf '[x]' ;;
-    tip) printf '->' ;;
+    tip) printf '%s' '->' ;;
     *) printf '[i]' ;;
   esac
 }
@@ -294,7 +294,7 @@ icon_for() {
     success) printf '[ok]' ;;
     warn) printf '[!]' ;;
     error) printf '[x]' ;;
-    tip) printf '->' ;;
+    tip) printf '%s' '->' ;;
     *) printf '[i]' ;;
   esac
 }
