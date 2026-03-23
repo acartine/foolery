@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b62-9bd2-7d01-a198-64dfab08a430",
+  "occurred_at": "2026-03-23T15:49:00.498672Z",
+  "knot_id": "foolery-2288",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped to main via merge commit 9c9340b340d6. Feature branch feat/foolery-c2ee-audit-ux merged cleanly into main (1 new commit on main since branch). All quality gates pass after merge: typecheck clean, 2237 tests passing (165 suites), 0 lint errors. Changes: removed tally summary card, added combined All Steps chart via buildCombinedSeries, improved date selectors with Last 24h preset button and range label, replaced agent table with per-step leaderboard showing best agent and margin to runner-up.",
+    "datetime": "2026-03-23T15:49:00.498672Z",
+    "entry_id": "019d1b62-9bd2-7d01-a198-64cf3e2495a2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

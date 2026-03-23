@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b63-a0cc-7f31-a21b-3be0711b7179",
+  "occurred_at": "2026-03-23T15:50:07.308479Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Parent implementation complete. All code merged to main (commit 9c9340b340d6). Quality gates pass: typecheck clean, 2237 tests passing, 0 lint errors. Child status: 2288 advanced to ready_for_shipment_review (shipped), dafe advanced to ready_for_shipment (review approved), b2b7 stuck in implementation_review (active state from prior agent session, not claimable). Implementation covers all 4 requirements: tally removed, combined All Steps chart added, Last 24h preset with range label on selectors, per-step leaderboard with margin.",
+    "datetime": "2026-03-23T15:50:07.308479Z",
+    "entry_id": "019d1b63-a0cc-7f31-a21b-3bdca9d61926",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
