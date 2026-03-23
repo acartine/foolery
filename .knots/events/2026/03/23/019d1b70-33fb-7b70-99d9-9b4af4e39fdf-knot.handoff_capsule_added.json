@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b70-33fb-7b70-99d9-9b4af4e39fdf",
+  "occurred_at": "2026-03-23T16:03:51.419144Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Both children handled: (1) b2b7 — implementation review passed, advanced to ready_for_shipment. All 4 requirements verified: rolling last-24h filter with preset precedence, buildCombinedSeries for all-steps aggregation, buildLeaderboard with margin calculations, existing date-range behavior preserved. (2) dafe — shipment review passed, shipped. 54 tests across 3 test files cover rolling filters, combined series, and leaderboard margins. All quality gates green: TypeScript clean, 2237/2237 tests pass, no lint issues in changed files.",
+    "datetime": "2026-03-23T16:03:51.419144Z",
+    "entry_id": "019d1b70-33fb-7b70-99d9-9b34be4da590",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

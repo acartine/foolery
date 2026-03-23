@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b6f-2e64-72c3-a6ac-adcbe91d98bc",
+  "occurred_at": "2026-03-23T16:02:44.452254Z",
+  "knot_id": "foolery-b2b7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. Verified against description: (1) Rolling last-24h view: applyFilters uses Date.now()-based cutoff with preset precedence over manual dates — correct and tested (10 filter tests). (2) Combined all-steps success-rate series: buildCombinedSeries aggregates across all queue types by agent with proper success/(success+fail) calculation — tested (5 tests). (3) Per-step leaderboard summaries: buildLeaderboard ranks agents by success rate with volume tiebreaker and calculates margin in pp — tested (4 tests). (4) Existing date-range behavior preserved: manual dateFrom/dateTo path unchanged, preset path is additive. TypeScript clean, no lint issues in changed files, all 2237 tests pass.",
+    "datetime": "2026-03-23T16:02:44.452254Z",
+    "entry_id": "019d1b6f-2e64-72c3-a6ac-adb2675dac4f",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
