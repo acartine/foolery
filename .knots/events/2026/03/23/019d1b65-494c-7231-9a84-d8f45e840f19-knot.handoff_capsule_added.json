@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b65-494c-7231-9a84-d8f45e840f19",
+  "occurred_at": "2026-03-23T15:51:55.980211Z",
+  "knot_id": "foolery-fdcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit 67259f750b34 verified on main, CI green. Fix correctly reuses includeActiveAncestors() in the queued filter path of both beads-backend.ts and knots-backend.ts to include ancestor chains for queued children with non-queued parents. 5 regression tests added covering single-parent, deep-nesting, and exact-state guard cases. No regressions detected.",
+    "datetime": "2026-03-23T15:51:55.980211Z",
+    "entry_id": "019d1b65-494c-7231-9a84-d8e6e86aba86",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

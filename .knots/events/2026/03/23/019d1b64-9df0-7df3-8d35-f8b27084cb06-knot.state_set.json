@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1b64-9df0-7df3-8d35-f8b27084cb06",
+  "occurred_at": "2026-03-23T15:51:12.112059Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "ready_for_shipment",
+    "profile_id": "autopilot_no_planning",
+    "to": "shipment",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d1b61-358e-7b40-b561-06c91103e4c0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b64-6e9a-7811-a65f-67593c7f1544",
+  "occurred_at": "2026-03-23T15:50:59.99456Z",
+  "knot_id": "foolery-fdcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Implementation commit 67259f750b34 is on main and pushed to origin. CI green (both CI and Coverage Badge workflows passed). The fix adds ancestor chain inclusion for queued children with non-queued parents in both beads-backend.ts and knots-backend.ts, with 5 regression tests.",
+    "datetime": "2026-03-23T15:50:59.99456Z",
+    "entry_id": "019d1b64-6e9a-7811-a65f-67450ea83a03",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

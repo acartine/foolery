@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b67-fff4-7120-8ce6-f82f83be7e3c",
+  "occurred_at": "2026-03-23T15:54:53.812969Z",
+  "knot_id": "foolery-b2b7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation already on main (commits 2d4b8fc379ee, 9c9340b340d6). Data derivations complete: applyFilters with last24h preset support (timestamp-aware filtering, preset precedence over manual dates), buildCombinedSeries for all-steps aggregation, buildLeaderboard with margin calculations and tiebreaker logic. All tests pass (2237/2237). TypeScript clean.",
+    "datetime": "2026-03-23T15:54:53.812969Z",
+    "entry_id": "019d1b67-fff4-7120-8ce6-f81f80321a27",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

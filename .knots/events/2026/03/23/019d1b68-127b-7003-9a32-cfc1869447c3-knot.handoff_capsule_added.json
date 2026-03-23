@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b68-127b-7003-9a32-cfc1869447c3",
+  "occurred_at": "2026-03-23T15:54:58.555381Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented the lease-only identity contract end to end in Foolery. Claims and poll paths no longer forward --agent-name/--agent-model/--agent-version; lease creation remains the only place identity flags are sent to Knots. Foolery now resolves a local username for note and handoff authorship, normalizes displayed metadata for notes/capsules from lease-derived identity helpers, and restores shipped ReTakes step ownership by hydrating fallback steps from lease-audit claim history when Knots step_history is absent.\n\nValidation on commit 6bb920fa42e2: bun run lint (0 errors, warnings only), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-23T15:54:58.555381Z",
+    "entry_id": "019d1b68-127b-7003-9a32-cfbd1e32a8c7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}
