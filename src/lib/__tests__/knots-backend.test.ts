@@ -949,8 +949,8 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(ids).toContain("child-impl");
       // child-done is shipped — descendant expansion must NOT surface it in Active
       expect(ids).not.toContain("child-done");
-      // the queued parent itself should not appear either
-      expect(ids).not.toContain("parent-q");
+      // the queued parent IS included as an ancestor of the active child
+      expect(ids).toContain("parent-q");
     });
 
     it("does not include children when using a specific state filter", async () => {

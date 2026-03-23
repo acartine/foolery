@@ -734,8 +734,8 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(ids).toContain(activeChild.data!.id);
     // Shipped child must NOT appear in Active view
     expect(ids).not.toContain(shippedChild.data!.id);
-    // Queued parent must NOT appear in Active view
-    expect(ids).not.toContain(parent.data!.id);
+    // Queued parent IS included as an ancestor of the active child
+    expect(ids).toContain(parent.data!.id);
   });
 
   it("filters by exact state name", async () => {

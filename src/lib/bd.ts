@@ -469,7 +469,7 @@ function applyWorkflowFilters(
   filters?: Record<string, string>,
 ): Beat[] {
   if (!filters) return beats;
-  return beats.filter((beat) => {
+  const filtered = beats.filter((beat) => {
     if (filters.workflowId && beat.workflowId !== filters.workflowId) return false;
     if (filters.state) {
       if (filters.state === "queued") {
@@ -488,6 +488,43 @@ function applyWorkflowFilters(
     if (filters.nextOwnerKind && beat.nextActionOwnerKind !== filters.nextOwnerKind) return false;
     return true;
   });
+
+  // When using the in_action filter, include each active beat's ancestor
+  // chain so the parent context is visible even if the parent itself is not
+  // in an active state (e.g. it is queued).
+  if (filters.state === "in_action") {
+    return includeAncestorsOfActiveBeats(beats, filtered);
+  }
+
+  return filtered;
+}
+
+/**
+ * Walk each filtered beat's parent chain and include any ancestors from the
+ * full list that are not already in the filtered set.
+ */
+function includeAncestorsOfActiveBeats(
+  allBeats: Beat[],
+  filtered: Beat[],
+): Beat[] {
+  const filteredIds = new Set(filtered.map((b) => b.id));
+  const byId = new Map(allBeats.map((b) => [b.id, b]));
+  const extras: Beat[] = [];
+  const added = new Set<string>();
+
+  for (const beat of filtered) {
+    let parentId = beat.parent;
+    while (parentId) {
+      if (filteredIds.has(parentId) || added.has(parentId)) break;
+      const parent = byId.get(parentId);
+      if (!parent) break;
+      extras.push(parent);
+      added.add(parentId);
+      parentId = parent.parent;
+    }
+  }
+
+  return extras.length > 0 ? [...filtered, ...extras] : filtered;
 }
 
 function normalizeLabels(labels: string[]): string[] {

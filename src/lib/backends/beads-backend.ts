@@ -564,6 +564,13 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     return includeDescendantsOfQueueParents(beats, filtered);
   }
 
+  // When using the in_action filter, include each active beat's ancestor
+  // chain so the parent context is visible even if the parent itself is not
+  // in an active state (e.g. it is queued).
+  if (filters.state === "in_action") {
+    return includeAncestorsOfActiveBeats(beats, filtered);
+  }
+
   return filtered;
 }
 
@@ -610,6 +617,36 @@ function includeDescendantsOfQueueParents(
   for (const b of allBeats) {
     if (filteredIds.has(b.id)) continue;
     if (hasQueueAncestor(b.id)) extras.push(b);
+  }
+
+  return extras.length > 0 ? [...filtered, ...extras] : filtered;
+}
+
+/**
+ * Given the full beat list and an already-filtered subset (active beats),
+ * walk each active beat's parent chain and include any ancestors that are
+ * not already in the filtered set. This ensures the active view shows
+ * parent context without expanding descendants or leaking terminal siblings.
+ */
+function includeAncestorsOfActiveBeats(
+  allBeats: Beat[],
+  filtered: Beat[],
+): Beat[] {
+  const filteredIds = new Set(filtered.map((b) => b.id));
+  const byId = new Map(allBeats.map((b) => [b.id, b]));
+  const extras: Beat[] = [];
+  const added = new Set<string>();
+
+  for (const beat of filtered) {
+    let parentId = beat.parent;
+    while (parentId) {
+      if (filteredIds.has(parentId) || added.has(parentId)) break;
+      const parent = byId.get(parentId);
+      if (!parent) break;
+      extras.push(parent);
+      added.add(parentId);
+      parentId = parent.parent;
+    }
   }
 
   return extras.length > 0 ? [...filtered, ...extras] : filtered;
