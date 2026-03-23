@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b54-2680-77e1-b7d4-ab25661e57f0",
+  "occurred_at": "2026-03-23T15:33:12.960389Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Three-knot decomposition is clean: b2b7 for timestamp-aware API filtering (Last 24h), 2288 for view refactor (remove tally, add combined chart, improved selectors, per-step leaderboard with margin), dafe for regression coverage. Key design decisions validated: margin as pp delta with dash for single-agent steps, preset state separate from manual dates, queue-type agnostic helpers. No invariants, security, or feasibility concerns.",
+    "datetime": "2026-03-23T15:33:12.960389Z",
+    "entry_id": "019d1b54-2680-77e1-b7d4-ab1e5d29d3cb",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
