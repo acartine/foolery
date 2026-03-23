@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b52-c945-7ca0-b242-32b6fd45f48d",
+  "occurred_at": "2026-03-23T15:31:43.55758Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planned the audit UX refresh across three child knots: `foolery-b2b7` for timestamp-aware filtering and derived combined/leaderboard metrics, `foolery-2288` for the `LeaseAuditView` layout and control changes, and `foolery-dafe` for helper and route regression coverage. Main implementation risk is `Last 24h`: filter raw events by timestamp before aggregation, keep manual `dateFrom` and `dateTo` support for calendar ranges, and define leaderboard margin as winner minus runner-up success-rate points with `-` when no runner-up exists.",
+    "datetime": "2026-03-23T15:31:43Z",
+    "entry_id": "019d1b52-c945-7ca0-b242-32ae251676d5",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

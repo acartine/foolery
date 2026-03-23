@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1b51-80e6-7141-ad09-f0a80aec8fc7",
+  "occurred_at": "2026-03-23T15:30:19.494127Z",
+  "knot_id": "foolery-dafe",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover the rolling filter semantics, combined-series aggregation, and best-agent-by-step margin calculations so the audit dashboard changes are testable and stable.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add lease audit regression coverage for new UX metrics",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

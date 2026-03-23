@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1b51-80ce-7f02-a63c-e89533134dd6",
+  "occurred_at": "2026-03-23T15:30:19.470443Z",
+  "knot_id": "foolery-2288",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove the summary tally, add a third all-steps chart, improve the from/to controls so the active selection is visible, add a last-24-hours shortcut, and replace the generic totals table with the requested step leaderboard.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Refresh lease audit view layout and controls",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

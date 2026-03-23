@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1b4e-b907-7373-8d9a-33017a8a230b",
+  "occurred_at": "2026-03-23T15:27:17.255702Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.created",
+  "data": {
+    "body": "- remove the tally at the top\n- add a third graph like the other two, but for all steps combined (still dimensioned by agent)\n- improve the from/to selectors to show the current selections, also add a \"last 24h\"\n- add a 4th component, a table showing the best agent by step, and the margin between the best agent and the agent after it.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Audit: UX Design Improvements",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
