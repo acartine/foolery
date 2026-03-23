@@ -4,24 +4,41 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import * as memoryManagerDetection from "@/lib/memory-manager-detection";
 
-const mockListBeats = vi.fn(async () => ({
-  ok: true as const,
-  data: [
-    {
-      id: "bd-1",
-      title: "Beats item",
-      type: "task",
-      status: "open",
-      priority: 2,
-      labels: [],
-      created: "2026-01-01T00:00:00Z",
-      updated: "2026-01-01T00:00:00Z",
-    },
-  ],
-}));
+type MockBdBeat = {
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  priority: number;
+  labels: string[];
+  created: string;
+  updated: string;
+  parent?: string;
+};
+
+const mockListBeats = vi.fn<
+  (...args: unknown[]) => Promise<{ ok: true; data: MockBdBeat[] }>
+>(async (...args: unknown[]) => {
+  void args;
+  return {
+    ok: true,
+    data: [
+      {
+        id: "bd-1",
+        title: "Beats item",
+        type: "task",
+        status: "open",
+        priority: 2,
+        labels: [],
+        created: "2026-01-01T00:00:00Z",
+        updated: "2026-01-01T00:00:00Z",
+      },
+    ],
+  };
+});
 
 vi.mock("@/lib/bd", () => ({
-  listBeats: () => mockListBeats(),
+  listBeats: (...args: unknown[]) => mockListBeats(...args),
   readyBeats: () => mockListBeats(),
   searchBeats: () => mockListBeats(),
   queryBeats: () => mockListBeats(),
@@ -152,6 +169,43 @@ describe("createBackend(auto)", () => {
     expect(result.ok).toBe(true);
     expect(result.data?.[0].id).toBe("bd-1");
     expect(mockListBeats).toHaveBeenCalled();
+  });
+
+  it("preserves active ancestor visibility on the auto-routed .beads cli path", async () => {
+    mockListBeats.mockResolvedValueOnce({
+      ok: true as const,
+      data: [
+        {
+          id: "parent-1",
+          title: "Queued parent",
+          type: "epic",
+          status: "open",
+          priority: 2,
+          labels: [],
+          created: "2026-01-01T00:00:00Z",
+          updated: "2026-01-01T00:00:00Z",
+        },
+        {
+          id: "child-1",
+          title: "Active child",
+          type: "task",
+          status: "in_progress",
+          priority: 2,
+          labels: [],
+          parent: "parent-1",
+          created: "2026-01-01T00:00:00Z",
+          updated: "2026-01-01T00:00:00Z",
+        },
+      ],
+    });
+
+    const repo = makeRepo([".beads"]);
+    const backend = createBackend("auto").port;
+
+    const result = await backend.list({ state: "in_action" }, repo);
+    expect(result.ok).toBe(true);
+    expect(result.data?.map((beat) => beat.id)).toEqual(["parent-1", "child-1"]);
+    expect(mockListBeats).toHaveBeenCalledWith({ state: "in_action" }, repo);
   });
 
   it("routes .knots repos to knots backend", async () => {
