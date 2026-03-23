@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { fetchBeats } from "@/lib/api";
-import { naturalCompare } from "@/lib/beat-sort";
+import { compareBeatsByMostRecentlyUpdated } from "@/lib/beat-sort";
 import { useAppStore } from "@/stores/app-store";
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
@@ -285,15 +285,11 @@ export function RetakesView() {
     [data]
   );
 
-  // Sort retake candidates by updated timestamp descending (most recent first),
-  // with natural ID order as tiebreaker for deterministic sibling ordering.
+  // Sort retake candidates by updated timestamp descending (most recent first)
+  // and keep ties deterministic across repos.
   const beats = useMemo<Beat[]>(() => {
     if (!data?.ok || !data.data) return [];
-    return [...data.data].sort((a, b) => {
-      const timeDiff = new Date(b.updated).getTime() - new Date(a.updated).getTime();
-      if (timeDiff !== 0) return timeDiff;
-      return naturalCompare(a.id, b.id);
-    });
+    return [...data.data].sort(compareBeatsByMostRecentlyUpdated);
   }, [data]);
 
   const pageCount = Math.max(1, Math.ceil(beats.length / pageSize));

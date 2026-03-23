@@ -24,6 +24,29 @@ export function naturalCompare(a: string, b: string): number {
   return aParts.length - bParts.length;
 }
 
+type BeatWithRepoScope = Beat & { _repoPath?: string; _repoName?: string };
+
+function parseUpdatedTimestamp(updated: string | undefined): number {
+  const timestamp = Date.parse(updated ?? "");
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
+}
+
+function compareBeatRepoScope(a: Beat, b: Beat): number {
+  const aScope = (a as BeatWithRepoScope)._repoPath ?? (a as BeatWithRepoScope)._repoName ?? "";
+  const bScope = (b as BeatWithRepoScope)._repoPath ?? (b as BeatWithRepoScope)._repoName ?? "";
+  return aScope.localeCompare(bScope);
+}
+
+export function compareBeatsByMostRecentlyUpdated(a: Beat, b: Beat): number {
+  const timeDiff = parseUpdatedTimestamp(b.updated) - parseUpdatedTimestamp(a.updated);
+  if (timeDiff !== 0) return timeDiff;
+
+  const idDiff = naturalCompare(a.id, b.id);
+  if (idDiff !== 0) return idDiff;
+
+  return compareBeatRepoScope(a, b);
+}
+
 function stateSortRank(state: Beat["state"]): number {
   const resolved = resolveStep(state);
   if (resolved) {
