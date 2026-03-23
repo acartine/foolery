@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a4e-fde8-7bd2-bc88-ab57c2ba6624",
+  "occurred_at": "2026-03-23T10:47:57.672677Z",
+  "knot_id": "foolery-b72e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified on main (HEAD=cee1868e). Diff matches all 4 requirements: BeatTypeBadge and BeatPriorityBadge removed, replaced with fully qualified knot ID (firstBeatAlias ?? beat.id), abbreviated ID removed from byline with items slid left. Contract test updated. CI green: 0 lint errors, tsc clean, 2212 tests pass. Commit tags present.",
+    "datetime": "2026-03-23T10:47:57.672677Z",
+    "entry_id": "019d1a4e-fde8-7bd2-bc88-ab413ad823dc",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
