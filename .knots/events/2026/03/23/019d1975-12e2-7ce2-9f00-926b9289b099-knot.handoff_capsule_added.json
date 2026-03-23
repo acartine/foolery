@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1975-12e2-7ce2-9f00-926b9289b099",
+  "occurred_at": "2026-03-23T06:49:56.194268Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch fix/be1c-active-view-shipped-beats. Changed isPhaseFilter in both knots-backend.ts and beads-backend.ts to only match 'queued' (not 'in_action'), so includeDescendantsOfQueueParents no longer runs for the Active view. Updated the knots-backend test that codified the bug to assert the opposite (shipped children excluded from Active), and added a new beads-backend-coverage test for parity. All 2191 tests pass, lint/typecheck/build clean.",
+    "datetime": "2026-03-23T06:49:56.194268Z",
+    "entry_id": "019d1975-12e2-7ce2-9f00-925464e76478",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
