@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a1f-a0e9-7101-9f17-fa0bef5c10f7",
+  "occurred_at": "2026-03-23T09:56:13.67324Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented a shared updated-descending retakes comparator that treats invalid timestamps as oldest and breaks full ties by repo scope. Retakes view now uses the shared comparator, and regression coverage was added in beat-sort tests. Validation: bun run lint (pre-existing warnings only), bunx tsc --noEmit, bun run test, bun run build. Branch: fc07-retakes-updated-order. Commit: 1624a772c1a8.",
+    "datetime": "2026-03-23T09:55:02Z",
+    "entry_id": "019d1a1f-a0e9-7101-9f17-f9f3a6b35f77",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-23"
+  }
+}

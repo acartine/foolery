@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a22-472b-7663-8c57-5a0d5ba08a11",
+  "occurred_at": "2026-03-23T09:59:07.307962Z",
+  "knot_id": "foolery-b555",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All 5 beat-ID display surfaces correctly use displayBeatLabel() showing first alias when available, falling back to stripped ID. Copy-on-click still passes raw beat.id preserving debug workflow. loadedDetailQuery added for loaded-beat alias access, shares cache with existing detail queries. Contract test updated. All quality gates pass (0 lint errors, typecheck clean, 2206/2206 tests pass).",
+    "datetime": "2026-03-23T09:59:07.307962Z",
+    "entry_id": "019d1a22-472b-7663-8c57-59f039dceada",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

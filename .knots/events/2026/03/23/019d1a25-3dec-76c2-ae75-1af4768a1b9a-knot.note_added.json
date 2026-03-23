@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a25-3dec-76c2-ae75-1af4768a1b9a",
+  "occurred_at": "2026-03-23T10:02:21.548769Z",
+  "knot_id": "foolery-c938",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "## Investigation & Root Cause\n\n### Error flow\nUser creates beat → gets notification with beatId + repoPath → clicks notification → navigates to `/beats?beat=foolery-b555&detailRepo=/path/to/repo` → lightbox opens and fetches beat successfully → clicks \"Take!\" → error \"no issue found matching\"\n\n### Root cause\nThe `handleShipBeat` function in `src/app/beats/page.tsx` (line 284-320) tries to extract the repo path from the beat object via `beat._repoPath`:\n\n```typescript\nconst repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;\nconst result = await startSession(beat.id, repo ?? activeRepo ?? undefined);\n```\n\nBut `_repoPath` is only present on beats fetched from the **beats list** (injected at lines 149-152 of page.tsx). When the beat is opened via the lightbox (e.g., from a notification click), the beat comes from `fetchBeat()` API response which does **not** include `_repoPath`.\n\nThe fallback is `activeRepo` from the store, which may also be `undefined` (e.g., viewing all repos). With `undefined` repo, the `AutoRoutingBackend` falls back to the `BdCliBackend` (which uses `bd show`) instead of `KnotsBackend` (which uses `kno show`). Since this project uses knots, `bd show` can't find the beat → \"no issue found matching\".\n\nThe lightbox **does** have the repo via its `repo` prop (sourced from the URL `detailRepo` param), but doesn't pass it through to `onShipBeat`.\n\n### Fix plan\n\n**Option A (recommended, minimal change):** In `beat-detail-lightbox.tsx`, augment the beat object with `_repoPath` when calling `onShipBeat`:\n\n```typescript\n// Line 356, change from:\nonClick={() => onShipBeat?.(beat)}\n// to:\nonClick={() => onShipBeat?.(repo ? { ...beat, _repoPath: repo } as Beat : beat)}\n```\n\nThis mirrors the pattern already used in the beats list fetch (page.tsx lines 149-152).\n\n**Option B (also viable):** Add `detailRepo` as a fallback in `handleShipBeat`:\n\n```typescript\nconst repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;\nconst result = await startSession(beat.id, repo ?? detailRepo ?? activeRepo ?? undefined);\n```\n\nBut this requires adding `detailRepo` to the dependency array and is less self-contained.\n\n### Files to change\n1. `src/components/beat-detail-lightbox.tsx` — line 356: pass repo context with beat in `onShipBeat` call\n\n### Test strategy\n- Verify that clicking \"Take!\" from the lightbox (opened via notification for a knots-managed beat) correctly passes the repo path to `startSession`\n- Verify that clicking \"Take!\" from the beats table still works (it already has `_repoPath`)\n- Check that the existing test suite passes (bun run test)",
+    "datetime": "2026-03-23T10:02:21.548769Z",
+    "entry_id": "019d1a25-3dec-76c2-ae75-1ae4a72bb094",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

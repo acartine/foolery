@@ -1,0 +1,9 @@
+{
+  "event_id": "019d1a21-fe9f-7da3-a09a-c1a1a85e5840",
+  "occurred_at": "2026-03-23T09:58:48.72201Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "success + failures = total claims (in all dimensions)\ngraph charts show success rate and not agg sum."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a21-0c35-7fb0-ba91-4dcff514f12a",
+  "occurred_at": "2026-03-23T09:57:46.677675Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. The comparator correctly sorts by updated descending, handles invalid timestamps as oldest, and breaks ties deterministically by ID then repo scope. Three regression tests cover the key scenarios. All quality gates pass (lint 0 errors, tsc clean, 2209 tests pass, build succeeds). No security issues or regressions.",
+    "datetime": "2026-03-23T09:57:46.677675Z",
+    "entry_id": "019d1a21-0c35-7fb0-ba91-4dbb048e4abc",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

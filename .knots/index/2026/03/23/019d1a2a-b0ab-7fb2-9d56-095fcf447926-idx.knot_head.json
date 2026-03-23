@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a2a-b0ab-7fb2-9d56-095fcf447926",
+  "occurred_at": "2026-03-23T10:08:18.603952Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d8cb",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Audit Page loaded with mistakes",
+    "type": "work",
+    "updated_at": "2026-03-23T10:08:18.603952Z",
+    "workflow_id": "compatibility"
+  }
+}

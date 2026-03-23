@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a23-78ae-7251-9d77-8c08a4c023a8",
+  "occurred_at": "2026-03-23T10:00:25.518939Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged fc07-retakes-updated-order to main (commit 44f834568138) via no-ff merge. All quality gates pass: 0 lint errors, clean tsc, 2209 tests passing, build OK. CI green on remote (run 23431586421). Coverage note: minor statement coverage dip (-0.33%) but CI passed.",
+    "datetime": "2026-03-23T10:00:25.518939Z",
+    "entry_id": "019d1a23-78ae-7251-9d77-8bff2d0d1a4f",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a2f-3164-7352-9f60-c80d956250ee",
+  "occurred_at": "2026-03-23T10:13:13.700369Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged feat/foolery-d8cb-audit-page to main (merge commit b411e0ab1ced, feature commit d6e4b0ff49e6). All quality gates passed: 0 lint errors, no type errors, 2212 tests passed. Pushed to origin/main. CI green (run 23432090354). Changes: replaced 'Total Claims' with 'Completed' (successes+failures) in summary cards and agent rows; rewrote queue charts to show daily success rate percentages instead of raw count aggregations.",
+    "datetime": "2026-03-23T10:13:13.700369Z",
+    "entry_id": "019d1a2f-3164-7352-9f60-c7f3842c120a",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

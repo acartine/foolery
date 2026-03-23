@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1a1c-9de1-7690-adb3-64ba3432f406",
+  "occurred_at": "2026-03-23T09:52:56.289214Z",
+  "knot_id": "foolery-c938",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.\n\ncreated a beat, got notification with newly created beat id, clicked on, beat detail opened, hit Take!, got error message as in title",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "beat detail:  Take! button fails with \"Error fetching foolery-b555 no issue found matching\"",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

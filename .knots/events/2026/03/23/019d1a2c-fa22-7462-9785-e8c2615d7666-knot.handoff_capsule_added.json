@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a2c-fa22-7462-9785-e8c2615d7666",
+  "occurred_at": "2026-03-23T10:10:48.482075Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review: lease audit summary and agent rows now derive totals from completed outcomes (successes + failures), queue charts show daily success-rate percentages from completed outcomes only, and helper tests cover the new completed-count and percentage behavior. Verified branch feat/foolery-d8cb-audit-page against acceptance criteria with isolated validation: bun install --frozen-lockfile, bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-23T10:10:40Z",
+    "entry_id": "019d1a2c-fa22-7462-9785-e8b560bfeddf",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026.03"
+  }
+}

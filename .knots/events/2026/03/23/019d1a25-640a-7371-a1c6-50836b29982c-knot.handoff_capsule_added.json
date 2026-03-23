@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a25-640a-7371-a1c6-50836b29982c",
+  "occurred_at": "2026-03-23T10:02:31.30676Z",
+  "knot_id": "foolery-fc07",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified: (1) merge commit 44f834568138 is on main, containing implementation commit 1624a772c1a8; (2) CI run 23431586421 passed green; (3) compareBeatsByMostRecentlyUpdated correctly sorts by descending updated timestamp with deterministic tiebreakers (natural ID compare, then repo scope); (4) retakes-view.tsx uses the extracted comparator at line 292; (5) regression tests added in beat-sort.test.ts. No invariants to check. No regressions detected.",
+    "datetime": "2026-03-23T10:02:31.30676Z",
+    "entry_id": "019d1a25-640a-7371-a1c6-507014b5faf3",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

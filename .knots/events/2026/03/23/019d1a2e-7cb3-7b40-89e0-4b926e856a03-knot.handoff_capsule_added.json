@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a2e-7cb3-7b40-89e0-4b926e856a03",
+  "occurred_at": "2026-03-23T10:12:27.443843Z",
+  "knot_id": "foolery-c938",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged feat/foolery-c938-take-button to main (merge commit 8cda64f2729f). Pushed to origin/main. CI passed (run 23432065226): lint, tests, coverage check, and build all green.",
+    "datetime": "2026-03-23T10:12:27.443843Z",
+    "entry_id": "019d1a2e-7cb3-7b40-89e0-4b8015eb9083",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

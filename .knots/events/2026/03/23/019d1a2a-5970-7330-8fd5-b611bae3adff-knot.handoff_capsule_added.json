@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a2a-5970-7330-8fd5-b611bae3adff",
+  "occurred_at": "2026-03-23T10:07:56.272164Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented lease audit totals and charts on branch feat/foolery-d8cb-audit-page. Summary and agent table now use completed claims (successes + failures), queue charts show per-day success rate percentages from completed outcomes only, and helper coverage now exercises mixed rates, missing completed days, and rounding. Validation: bun run lint (repo-wide warnings only, none from lease audit files), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-23T10:07:08Z",
+    "entry_id": "019d1a2a-5970-7330-8fd5-b60b8043b5b2",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "0.98.0"
+  }
+}

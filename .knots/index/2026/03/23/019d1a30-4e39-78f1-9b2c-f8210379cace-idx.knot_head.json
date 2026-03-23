@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a30-4e39-78f1-9b2c-f8210379cace",
+  "occurred_at": "2026-03-23T10:14:26.61714Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c938",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "beat detail:  Take! button fails with \"Error fetching foolery-b555 no issue found matching\"",
+    "type": "work",
+    "updated_at": "2026-03-23T10:14:26.61714Z",
+    "workflow_id": "compatibility"
+  }
+}

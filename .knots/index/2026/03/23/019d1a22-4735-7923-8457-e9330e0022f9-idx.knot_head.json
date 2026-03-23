@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a22-4735-7923-8457-e9330e0022f9",
+  "occurred_at": "2026-03-23T09:59:07.307962Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b555",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "History: Beats with Agent Sessions:  Show beat id alias instead of beat id if alias is available",
+    "type": "work",
+    "updated_at": "2026-03-23T09:59:07.307962Z",
+    "workflow_id": "compatibility"
+  }
+}

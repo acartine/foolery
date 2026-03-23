@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1a21-fe92-7221-a253-f07b2da01359",
+  "occurred_at": "2026-03-23T09:58:48.72201Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.created",
+  "data": {
+    "body": "- successes + failures is > total claims, so obviously the counters are broken.  it is possible for success + failures to be less than total claims, because there may be claims in flight.  however we can fix that too by only using \"completed claims\" rather than \"total\"\n- the graphs are stupid - we don't want to sum aggregations, we want to see success rates.  of course that is based on the idea that we fix the data to be accurate.\n",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Audit Page loaded with mistakes",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

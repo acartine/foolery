@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a2c-8510-7b22-98d2-c885cde2e008",
+  "occurred_at": "2026-03-23T10:10:18.512533Z",
+  "knot_id": "foolery-b555",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review passed. Verified: merge commit 2af2941c on main, CI green, commits tagged, displayBeatLabel correctly replaces stripIdPrefix in all 5 surfaces (list item, focused header, loaded header, detail panel, loading message). Tests updated. No regressions.",
+    "datetime": "2026-03-23T10:10:18.512533Z",
+    "entry_id": "019d1a2c-8510-7b22-98d2-c87e04ba47d8",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d1a23-eca6-7161-8d22-5a95bbe0f59a",
+  "occurred_at": "2026-03-23T10:00:55.206461Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fc07",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "ReTakes Screen:  Display beats in order of when they were last updated, most recently first",
+    "type": "work",
+    "updated_at": "2026-03-23T10:00:55.206461Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d1a23-87ce-70d1-a7bb-e8b00b298474"
+  }
+}

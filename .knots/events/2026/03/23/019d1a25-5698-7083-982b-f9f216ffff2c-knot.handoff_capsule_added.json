@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a25-5698-7083-982b-f9f216ffff2c",
+  "occurred_at": "2026-03-23T10:02:27.864026Z",
+  "knot_id": "foolery-c938",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Root cause: lightbox onShipBeat callback doesn't pass repo context with the beat. The beat from fetchBeat() lacks _repoPath, so handleShipBeat falls back to activeRepo (possibly undefined), causing AutoRoutingBackend to use BdCliBackend instead of KnotsBackend. Fix: augment beat with _repoPath in lightbox before calling onShipBeat (1 line change in beat-detail-lightbox.tsx:356).",
+    "datetime": "2026-03-23T10:02:27.864026Z",
+    "entry_id": "019d1a25-5698-7083-982b-f9e88d139386",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

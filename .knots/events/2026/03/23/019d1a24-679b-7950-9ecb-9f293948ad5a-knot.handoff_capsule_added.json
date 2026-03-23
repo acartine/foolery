@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a24-679b-7950-9ecb-9f293948ad5a",
+  "occurred_at": "2026-03-23T10:01:26.683816Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan fixes two audit page bugs: (1) Replace \"Total Claims\" counter with \"Completed\" (successes+failures) so the math is always consistent. (2) Rewrite buildQueueSeries() to show success rate percentages instead of raw claim counts. Changes span lease-audit-view.tsx (helpers, chart component, summary cards) and corresponding tests. No data model or API changes needed.",
+    "datetime": "2026-03-23T10:01:26.683816Z",
+    "entry_id": "019d1a24-679b-7950-9ecb-9f11edd0d64d",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

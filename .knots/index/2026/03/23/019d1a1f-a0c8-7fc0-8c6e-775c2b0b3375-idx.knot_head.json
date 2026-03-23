@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a1f-a0c8-7fc0-8c6e-775c2b0b3375",
+  "occurred_at": "2026-03-23T09:56:13.614455Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fc07",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "ReTakes Screen:  Display beats in order of when they were last updated, most recently first",
+    "type": "work",
+    "updated_at": "2026-03-23T09:56:13.614455Z",
+    "workflow_id": "compatibility"
+  }
+}

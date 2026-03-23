@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a25-7cc3-7852-833d-602bf7cfdba3",
+  "occurred_at": "2026-03-23T10:02:37.635337Z",
+  "knot_id": "foolery-b555",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped by merging feat/foolery-b555-history-alias into main as 2af2941cd5f7. Local validation passed (lint with existing warnings only, typecheck, test, build). Remote CI passed for 2af2941cd5f7637b19290b82d789fcd5660415ec: https://github.com/acartine/foolery/actions/runs/23431673512.",
+    "datetime": "2026-03-23T10:02:37Z",
+    "entry_id": "019d1a25-7cc3-7852-833d-601299003bf2",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

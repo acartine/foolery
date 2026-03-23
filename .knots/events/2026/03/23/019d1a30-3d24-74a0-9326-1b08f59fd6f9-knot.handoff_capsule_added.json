@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a30-3d24-74a0-9326-1b08f59fd6f9",
+  "occurred_at": "2026-03-23T10:14:22.244066Z",
+  "knot_id": "foolery-c938",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified origin/main contains merge commit 8cda64f2729f for this knot and current main still includes the shipped lightbox repo-scope change plus regression coverage. Knot tags cover implementation commit 0f00b7979b2c and shipment merge commit 8cda64f2729f. CI run 23432065226 succeeded on commit 8cda64f2729f (lint, unit tests with coverage, coverage regression check, build). Focused post-merge validation on current main passed: bun run test src/lib/__tests__/beat-detail-lightbox.test.ts. No knot invariants were defined, and no dependent-system regression was evident from the shipped diff or validation.",
+    "datetime": "2026-03-23T10:14:22.244066Z",
+    "entry_id": "019d1a30-3d24-74a0-9326-1af03ab37943",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

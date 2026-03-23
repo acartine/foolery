@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a25-bd83-7491-ba51-2584d11159c9",
+  "occurred_at": "2026-03-23T10:02:54.210999Z",
+  "knot_id": "foolery-d8cb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan approved. The proposed scope is contained to lease-audit-view helpers and presentation, addresses both acceptance criteria by switching displayed totals to completed claims and converting per-queue charts to success-rate percentages, and has adequate test coverage via helper updates plus lint/typecheck/test verification. No invariants are present or violated; no security or performance concerns identified for this UI-only change.",
+    "datetime": "2026-03-23T10:02:47Z",
+    "entry_id": "019d1a25-bd83-7491-ba51-257ad84f8ccf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

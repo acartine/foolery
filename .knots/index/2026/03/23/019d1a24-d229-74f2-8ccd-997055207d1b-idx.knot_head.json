@@ -1,0 +1,23 @@
+{
+  "event_id": "019d1a24-d229-74f2-8ccd-997055207d1b",
+  "occurred_at": "2026-03-23T10:01:53.961145Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d8cb",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Audit Page loaded with mistakes",
+    "type": "work",
+    "updated_at": "2026-03-23T10:01:53.961145Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d1a24-76a5-7322-87d4-247adf7f14a4"
+  }
+}

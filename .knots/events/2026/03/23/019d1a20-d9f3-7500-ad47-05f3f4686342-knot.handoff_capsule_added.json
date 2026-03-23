@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a20-d9f3-7500-ad47-05f3f4686342",
+  "occurred_at": "2026-03-23T09:57:33.811378Z",
+  "knot_id": "foolery-b555",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented alias-aware beat labels in Agent History so visible history rows and detail/log headers show the first beat alias when available while preserving ID copy behavior. Added a contract test update for the alias-aware labels. Validation in /private/tmp/foolery-b555: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, bun run build. Branch: feat/foolery-b555-history-alias. Commit: 790bbb517a4c.",
+    "datetime": "2026-03-23T09:57:23Z",
+    "entry_id": "019d1a20-d9f3-7500-ad47-05e059d1a1d1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "cli"
+  }
+}
