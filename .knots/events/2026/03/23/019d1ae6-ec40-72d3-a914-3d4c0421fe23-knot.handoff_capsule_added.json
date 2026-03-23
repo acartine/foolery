@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1ae6-ec40-72d3-a914-3d4c0421fe23",
+  "occurred_at": "2026-03-23T13:33:54.624555Z",
+  "knot_id": "foolery-5c85",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved shipment review. Verified main and origin/main both at 1d7bed6c2ef9, knot tag commit:1d7bed6c2ef9 is present, no invariants are defined for this knot, the shipped diff is limited to visible Escalations label changes in app-header/final-cut-view/wave-planner, repo-wide search found no remaining Human Action label text, and GitHub Actions CI run 23439814626 completed successfully for the same head SHA. No regression signal found beyond the previously noted non-blocking CI annotations.",
+    "datetime": "2026-03-23T13:33:54.624555Z",
+    "entry_id": "019d1ae6-ec40-72d3-a914-3d308ec0ca54",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1ae6-ec49-7781-b041-a53dc38d5550",
+  "occurred_at": "2026-03-23T13:33:54.624555Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5c85",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "replace Human Action link with Escalations",
+    "type": "work",
+    "updated_at": "2026-03-23T13:33:54.624555Z",
+    "workflow_id": "compatibility"
+  }
+}
