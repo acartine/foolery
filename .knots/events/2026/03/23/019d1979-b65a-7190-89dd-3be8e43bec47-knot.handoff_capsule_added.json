@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1979-b65a-7190-89dd-3be8e43bec47",
+  "occurred_at": "2026-03-23T06:55:00.186339Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified commit daacf005ec98 on main. Fix correctly restricts descendant expansion to queued-only filter, preventing shipped/abandoned beats from appearing in the Active view. All 2161 tests pass (157 files). No invariants defined. No regressions detected.",
+    "datetime": "2026-03-23T06:55:00.186339Z",
+    "entry_id": "019d1979-b65a-7190-89dd-3bde00eb5c47",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
