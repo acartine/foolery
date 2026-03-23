@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b72-1cdf-7012-a6a8-bad77a7041c0",
+  "occurred_at": "2026-03-23T16:05:56.57577Z",
+  "knot_id": "foolery-b2b7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Feature branch feat/foolery-c2ee-audit-ux already merged to main (merge commit 9c9340b3, implementation commit 2d4b8fc3). Pushed to remote. CI green on main — both CI and Coverage Badge workflows passed on head SHA 9c9340b3.",
+    "datetime": "2026-03-23T16:05:56.57577Z",
+    "entry_id": "019d1b72-1cdf-7012-a6a8-bac056a1d1ed",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
