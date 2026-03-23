@@ -44,6 +44,17 @@ interface AgentSeries {
   points: TimeseriesPoint[];
 }
 
+export interface LeaderboardEntry {
+  step: string;
+  bestAgent: string;
+  bestRate: string;
+  runnerUp: string;
+  runnerUpRate: string;
+  margin: string;
+}
+
+type RangePreset = "last24h" | "custom";
+
 // ── Helpers ─────────────────────────────────────────────────────────
 
 /** Produce a human-readable label from the aggregate agent fields. */
@@ -123,6 +134,52 @@ export function buildQueueSeries(
   return series.sort((a, b) => a.agent.localeCompare(b.agent));
 }
 
+/** Build per-agent timeseries across ALL queue types combined. */
+export function buildCombinedSeries(
+  aggregates: LeaseAuditAggregate[],
+): AgentSeries[] {
+  const filtered = aggregates.filter(
+    (a) => a.outcome === "success" || a.outcome === "fail",
+  );
+  if (filtered.length === 0) return [];
+
+  const allDates = aggregates.map((a) => a.date);
+  const dateRange = buildDateRange(allDates);
+
+  const agentMap = new Map<
+    string,
+    Map<string, { successes: number; failures: number }>
+  >();
+  for (const agg of filtered) {
+    const agent = agentLabel(agg.agent);
+    let dateMap = agentMap.get(agent);
+    if (!dateMap) {
+      dateMap = new Map<string, { successes: number; failures: number }>();
+      agentMap.set(agent, dateMap);
+    }
+    const totals = dateMap.get(agg.date) ?? { successes: 0, failures: 0 };
+    if (agg.outcome === "success") totals.successes += agg.count;
+    else totals.failures += agg.count;
+    dateMap.set(agg.date, totals);
+  }
+
+  const series: AgentSeries[] = [];
+  for (const [agent, dateMap] of agentMap) {
+    const points = dateRange.map((date) => ({
+      date,
+      value: (() => {
+        const totals = dateMap.get(date);
+        if (!totals) return null;
+        const completed = totals.successes + totals.failures;
+        if (completed === 0) return null;
+        return Math.round((totals.successes / completed) * 100);
+      })(),
+    }));
+    series.push({ agent, points });
+  }
+  return series.sort((a, b) => a.agent.localeCompare(b.agent));
+}
+
 /** Build agent-only table rows (no date dimension). */
 export function buildAgentRows(aggregates: LeaseAuditAggregate[]): AgentRow[] {
   const map = new Map<string, AgentRow>();
@@ -152,6 +209,61 @@ export function buildAgentRows(aggregates: LeaseAuditAggregate[]): AgentRow[] {
 
   // Sort by highest completed activity
   return Array.from(map.values()).sort((a, b) => b.completed - a.completed);
+}
+
+/** Discover all distinct queue types present in the aggregates. */
+export function discoverQueueTypes(aggregates: LeaseAuditAggregate[]): string[] {
+  return [...new Set(aggregates.map((a) => a.queueType))].sort();
+}
+
+/** Build a per-step leaderboard: best agent per queue type, margin to runner-up. */
+export function buildLeaderboard(
+  aggregates: LeaseAuditAggregate[],
+): LeaderboardEntry[] {
+  const steps = discoverQueueTypes(aggregates);
+  const entries: LeaderboardEntry[] = [];
+
+  for (const step of steps) {
+    // Aggregate per-agent success rates for this step
+    const agentStats = new Map<string, { successes: number; failures: number }>();
+    for (const agg of aggregates) {
+      if (agg.queueType !== step) continue;
+      if (agg.outcome !== "success" && agg.outcome !== "fail") continue;
+      const agent = agentLabel(agg.agent);
+      const stats = agentStats.get(agent) ?? { successes: 0, failures: 0 };
+      if (agg.outcome === "success") stats.successes += agg.count;
+      else stats.failures += agg.count;
+      agentStats.set(agent, stats);
+    }
+
+    // Rank by success rate descending
+    const ranked = [...agentStats.entries()]
+      .map(([agent, stats]) => {
+        const total = stats.successes + stats.failures;
+        const rate = total > 0 ? (stats.successes / total) * 100 : 0;
+        return { agent, rate, total };
+      })
+      .filter((r) => r.total > 0)
+      .sort((a, b) => b.rate - a.rate || b.total - a.total);
+
+    if (ranked.length === 0) continue;
+
+    const best = ranked[0]!;
+    const runnerUp = ranked.length > 1 ? ranked[1]! : null;
+
+    entries.push({
+      step,
+      bestAgent: best.agent,
+      bestRate: `${Math.round(best.rate)}%`,
+      runnerUp: runnerUp ? runnerUp.agent : "-",
+      runnerUpRate: runnerUp ? `${Math.round(runnerUp.rate)}%` : "-",
+      margin: runnerUp
+        ? `${Math.round(best.rate - runnerUp.rate)}pp`
+        : "-",
+    });
+  }
+
+  return entries;
 }
 
 // ── Chart component ─────────────────────────────────────────────────
@@ -328,43 +440,48 @@ function TimeseriesChart({
 export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
+  const [preset, setPreset] = useState<RangePreset>("custom");
 
-  // Fetch ALL data (no queueType filter) so both charts can render
+  // Fetch data with either preset or manual date range
   const { data, isLoading } = useQuery({
-    queryKey: ["lease-audit", repoPath, dateFrom, dateTo],
+    queryKey: ["lease-audit", repoPath, preset, dateFrom, dateTo],
     queryFn: () =>
       fetchLeaseAudit({
         repoPath,
-        dateFrom: dateFrom || undefined,
-        dateTo: dateTo || undefined,
+        ...(preset === "last24h"
+          ? { preset: "last24h" }
+          : {
+              dateFrom: dateFrom || undefined,
+              dateTo: dateTo || undefined,
+            }),
       }),
   });
 
   const aggregates = useMemo(() => data?.aggregates ?? [], [data]);
 
-  const planningSeries = useMemo(
-    () => buildQueueSeries(aggregates, "planning"),
-    [aggregates],
-  );
-  const implementationSeries = useMemo(
-    () => buildQueueSeries(aggregates, "implementation"),
-    [aggregates],
-  );
-  const rows = useMemo(() => buildAgentRows(aggregates), [aggregates]);
+  // Discover queue types dynamically
+  const queueTypes = useMemo(() => discoverQueueTypes(aggregates), [aggregates]);
 
-  const totals = useMemo(() => {
-    let completed = 0;
-    let successes = 0;
-    let failures = 0;
-    for (const row of rows) {
-      completed += row.completed;
-      successes += row.successes;
-      failures += row.failures;
+  // Per-queue charts
+  const queueSeriesMap = useMemo(() => {
+    const map = new Map<string, AgentSeries[]>();
+    for (const qt of queueTypes) {
+      map.set(qt, buildQueueSeries(aggregates, qt));
     }
-    const successRate =
-      completed > 0 ? `${Math.round((successes / completed) * 100)}%` : "-";
-    return { completed, successes, failures, successRate };
-  }, [rows]);
+    return map;
+  }, [aggregates, queueTypes]);
+
+  // Combined "All Steps" chart
+  const combinedSeries = useMemo(
+    () => buildCombinedSeries(aggregates),
+    [aggregates],
+  );
+
+  // Leaderboard
+  const leaderboard = useMemo(
+    () => buildLeaderboard(aggregates),
+    [aggregates],
+  );
 
   if (isLoading) {
     return (
@@ -374,18 +491,35 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
     );
   }
 
+  /** Format a human-readable description of the current range selection. */
+  function rangeLabel(): string {
+    if (preset === "last24h") return "Last 24 hours";
+    if (dateFrom && dateTo) return `${dateFrom} to ${dateTo}`;
+    if (dateFrom) return `From ${dateFrom}`;
+    if (dateTo) return `Through ${dateTo}`;
+    return "All time";
+  }
+
   return (
     <div className="space-y-4">
-      {/* Summary card */}
-      <div className="flex items-center gap-4 rounded-lg border border-border/60 bg-muted/20 px-4 py-3">
-        <SummaryItem label="Completed" value={totals.completed} />
-        <SummaryItem label="Successes" value={totals.successes} />
-        <SummaryItem label="Failures" value={totals.failures} />
-        <SummaryItem label="Success Rate" value={totals.successRate} />
-      </div>
-
-      {/* Filters (date only — queue type filter removed since charts show both) */}
+      {/* Range controls */}
       <div className="flex flex-wrap items-end gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            setPreset("last24h");
+            setDateFrom("");
+            setDateTo("");
+          }}
+          className={`h-8 rounded-md border px-3 text-xs transition-colors ${
+            preset === "last24h"
+              ? "border-foreground/30 bg-foreground/10 text-foreground"
+              : "border-border/70 bg-background text-muted-foreground hover:bg-muted/30"
+          }`}
+        >
+          Last 24h
+        </button>
+
         <div className="space-y-1">
           <label htmlFor="audit-date-from" className="text-[11px] text-muted-foreground">
             From
@@ -394,7 +528,10 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
             id="audit-date-from"
             type="date"
             value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            onChange={(e) => {
+              setDateFrom(e.target.value);
+              setPreset("custom");
+            }}
             className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
           />
         </div>
@@ -406,26 +543,36 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
             id="audit-date-to"
             type="date"
             value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
+            onChange={(e) => {
+              setDateTo(e.target.value);
+              setPreset("custom");
+            }}
             className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
           />
         </div>
+
+        <span className="pb-1 text-[11px] text-muted-foreground">
+          {rangeLabel()}
+        </span>
       </div>
 
-      {/* Timeseries charts */}
+      {/* Timeseries charts: per-queue + combined */}
       <div className="flex flex-col gap-4 sm:flex-row">
+        {queueTypes.map((qt) => (
+          <TimeseriesChart
+            key={qt}
+            title={`${qt.charAt(0).toUpperCase() + qt.slice(1)} Success Rate`}
+            seriesList={queueSeriesMap.get(qt) ?? []}
+          />
+        ))}
         <TimeseriesChart
-          title="Planning Success Rate"
-          seriesList={planningSeries}
-        />
-        <TimeseriesChart
-          title="Implementation Success Rate"
-          seriesList={implementationSeries}
+          title="All Steps Success Rate"
+          seriesList={combinedSeries}
         />
       </div>
 
-      {/* Agent-only table */}
-      {rows.length === 0 ? (
+      {/* Per-step leaderboard */}
+      {leaderboard.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
           No audit data available.
         </p>
@@ -434,43 +581,40 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-border/60 bg-muted/30">
-                <th className="px-3 py-2 text-left font-medium text-muted-foreground">Agent</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Completed</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Successes</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Failures</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Success Rate</th>
+                <th className="px-3 py-2 text-left font-medium text-muted-foreground">Step</th>
+                <th className="px-3 py-2 text-left font-medium text-muted-foreground">Best Agent</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Rate</th>
+                <th className="px-3 py-2 text-left font-medium text-muted-foreground">Runner-up</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Rate</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Margin</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
+              {leaderboard.map((entry, i) => (
                 <tr
-                  key={row.agentDisplay}
+                  key={entry.step}
                   className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}
                 >
-                  <td className="px-3 py-1.5 text-foreground">{row.agentDisplay}</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{row.completed}</td>
+                  <td className="px-3 py-1.5 font-medium text-foreground">
+                    {entry.step.charAt(0).toUpperCase() + entry.step.slice(1)}
+                  </td>
+                  <td className="px-3 py-1.5 text-foreground">{entry.bestAgent}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">
-                    {row.successes}
+                    {entry.bestRate}
                   </td>
-                  <td className="px-3 py-1.5 text-right tabular-nums text-red-600 dark:text-red-400">
-                    {row.failures}
+                  <td className="px-3 py-1.5 text-muted-foreground">{entry.runnerUp}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
+                    {entry.runnerUpRate}
                   </td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{row.successRate}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">
+                    {entry.margin}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-    </div>
-  );
-}
-
-function SummaryItem({ label, value }: { label: string; value: number | string }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-[11px] text-muted-foreground">{label}</span>
-      <span className="text-lg font-semibold tabular-nums">{value}</span>
     </div>
   );
 }
