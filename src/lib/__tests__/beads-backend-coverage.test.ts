@@ -692,6 +692,52 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(result.data!.length).toBeGreaterThanOrEqual(1);
   });
 
+  it("does not include terminal descendants in in_action filter even when parent is queued", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const parent = await backend.create({
+      title: "Queued parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+    });
+    expect(parent.ok).toBe(true);
+
+    const activeChild = await backend.create({
+      title: "Active child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(activeChild.ok).toBe(true);
+
+    // Move to an active state
+    await backend.update(activeChild.data!.id, { state: "planning" });
+
+    const shippedChild = await backend.create({
+      title: "Shipped child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(shippedChild.ok).toBe(true);
+
+    await backend.update(shippedChild.data!.id, { state: "shipped" });
+
+    const result = await backend.list({ state: "in_action" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((beat) => beat.id);
+    // Active child passes the filter directly
+    expect(ids).toContain(activeChild.data!.id);
+    // Shipped child must NOT appear in Active view
+    expect(ids).not.toContain(shippedChild.data!.id);
+    // Queued parent must NOT appear in Active view
+    expect(ids).not.toContain(parent.data!.id);
+  });
+
   it("filters by exact state name", async () => {
     const { backend } = createBackendWithRepo();
 
