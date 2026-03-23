@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1098-5303-7260-871c-e4cea27f6dd7",
+  "occurred_at": "2026-03-21T13:31:51.42737Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented conversation-log readability pass on branch work/foolery-c355-impl-20260321. Updated src/components/agent-history-view.tsx and src/components/interaction-picker.tsx to raise conversation-log typography by one step, increase header/card surface contrast, and brighten secondary metadata text for better legibility on dark backgrounds. Validation: bun run lint (pre-existing warnings only, no errors), bunx tsc --noEmit, bun run test, bun run build. Commit: fcba1f7d06f7.",
+    "datetime": "2026-03-21T13:30:53Z",
+    "entry_id": "019d1098-5303-7260-871c-e4b4c7b2d6cd",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

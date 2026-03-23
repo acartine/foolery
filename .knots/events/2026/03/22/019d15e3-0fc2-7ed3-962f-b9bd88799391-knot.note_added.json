@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15e3-0fc2-7ed3-962f-b9bd88799391",
+  "occurred_at": "2026-03-22T14:11:35.490256Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "The completion-notification slice is not correct yet: useScopeRefinementNotifications() only invalidates beat list queries, so an already-open beat detail view stays stale after refinement completes. See src/hooks/use-scope-refinement-notifications.ts:34-35 and the detail query in src/components/beat-detail-lightbox.tsx:55. Direct coverage for the status endpoint/hook contract is also missing.",
+    "datetime": "2026-03-22T14:11:35.490256Z",
+    "entry_id": "019d15e3-0fc2-7ed3-962f-b9adc5b40ebc",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

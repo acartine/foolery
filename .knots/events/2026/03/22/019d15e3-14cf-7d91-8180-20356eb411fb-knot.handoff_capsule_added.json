@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15e3-14cf-7d91-8180-20356eb411fb",
+  "occurred_at": "2026-03-22T14:11:36.782945Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Needs changes: 1. Completion notifications invalidate only list queries, not the beat detail query, so users can get a completion toast while the open beat panel still shows pre-refinement fields (src/hooks/use-scope-refinement-notifications.ts:34-35 and src/components/beat-detail-lightbox.tsx:55). 2. The new /api/scope-refinement/status route and notification hook have no direct automated contract coverage, leaving delivery and cache-refresh behavior unverified.",
+    "datetime": "2026-03-22T14:11:36.782945Z",
+    "entry_id": "019d15e3-14ce-71b1-b1cc-71d795c96bd6",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

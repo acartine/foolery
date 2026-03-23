@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1587-2ae7-7471-8397-0b6e4fe5e90d",
+  "occurred_at": "2026-03-22T12:31:13.127405Z",
+  "knot_id": "foolery-2d86",
+  "type": "knot.created",
+  "data": {
+    "body": "## Problem\n\nThe \"Steps\" section in the Retakes screen's individual knot view shows \"unknown_agent\", \"unknown_model\", \"unknown_user\" for every step. Agent metadata (name, model, version) IS captured when leases are created but is never written to knot step records.\n\n## Root Cause\n\nThe lease lifecycle correctly captures agent info (agentName, agentModel, agentVersion) in:\n- `knots-lease-runtime.ts` → `ensureKnotsLease()` creates leases with full agent info\n- `lease-audit.ts` → audit log records agent metadata per session\n- `.foolery-logs/_leases/` → lifecycle JSONL has all agent fields\n\nBut the step recording pipeline is disconnected:\n- `KnotUpdateInput` in `knots.ts` (lines 121-145) has NO step-related fields — only notes and handoff capsules support agent metadata\n- `updateKnot()` in `knots.ts` (lines 555-608) doesn't build CLI args for steps\n- `execution-backend.ts` writes agent info to notes on rollback (lines 416-421) but has NO equivalent for step recording\n\n## Display Side (already ready)\n\n`beat-metadata-details.tsx` (lines 76-97) already tries to read `agentname`, `model`, `username`, `version` from step entries — it just falls back to \"unknown-X\" because the data was never written.\n\n## Data Flow Summary\n\n```\nAgent config → terminal-manager.ts → ensureKnotsLease() → kno lease create (with --agent-name, --model, --model-version)\n                                                              ↓\n                                                    lease audit log ✅\n                                                    knots event store ✅ (lease_data_set, lease_id_set)\n                                                              ↓\n                                                    step records ❌ (NOT CONNECTED)\n                                                              ↓\n                                                    beat-metadata-details.tsx → \"unknown_agent\" fallback\n```\n\n## Fix Required\n\n1. Add step fields to `KnotUpdateInput` in `knots.ts` (addStep, stepAgentname, stepModel, stepVersion, stepActorKind)\n2. Build corresponding CLI args in `updateKnot()` for `kno update --add-step`\n3. In `execution-backend.ts`, record steps with agent metadata at iteration boundaries (completeIteration, rollbackIteration) and state transitions\n4. Verify `kno` CLI supports `--add-step` with agent metadata flags, or add note-based step recording as fallback\n\n## Secondary Gap\n\nConversation log entries (`.foolery-logs/foolery/`) don't carry `knotsLeaseId` as a field, preventing per-entry lease correlation. Currently linkage is only through sessionId matching between log systems.\n\n## Files to Modify\n\n- `src/lib/knots.ts` — KnotUpdateInput type + updateKnot() CLI arg builder\n- `src/lib/execution-backend.ts` — record steps with agent info at iteration boundaries\n- `src/lib/knots-lease-runtime.ts` — potentially pass lease data to step recording\n- `src/components/beat-metadata-details.tsx` — no changes needed (already reads agent fields)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Wire lease agent metadata into knot step records",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

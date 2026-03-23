@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fac-6911-79c3-a2cb-af2a563a2c6a",
+  "occurred_at": "2026-03-21T09:14:10.577031Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment complete. Local main fast-forwarded to commit 4793a2f29e5b37be18b8209306d33e0c2c2edd03, matching origin/main. Scope remains limited to src/components/agent-history-view.tsx and src/components/interaction-picker.tsx. Remote CI and Coverage Badge workflows for commit 4793a2f29e5b37be18b8209306d33e0c2c2edd03 both completed successfully on 2026-03-21.",
+    "datetime": "2026-03-21T09:13:48Z",
+    "entry_id": "019d0fac-6911-79c3-a2cb-af1423b5da2e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

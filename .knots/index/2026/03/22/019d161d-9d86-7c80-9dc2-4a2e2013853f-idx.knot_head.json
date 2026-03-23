@@ -1,0 +1,20 @@
+{
+  "event_id": "019d161d-9d86-7c80-9dc2-4a2e2013853f",
+  "occurred_at": "2026-03-22T15:15:32.859153Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-47a2",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Hook beat creation to enqueue scope refinement jobs",
+    "type": "work",
+    "updated_at": "2026-03-22T15:15:32.859153Z",
+    "workflow_id": "compatibility"
+  }
+}

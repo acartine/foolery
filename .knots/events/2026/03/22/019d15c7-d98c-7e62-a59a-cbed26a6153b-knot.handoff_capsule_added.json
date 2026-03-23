@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15c7-d98c-7e62-a59a-cbed26a6153b",
+  "occurred_at": "2026-03-22T13:41:52.140396Z",
+  "knot_id": "foolery-1901",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Diagnosis confirmed: toBeat() never extracts acceptance from tagged notes back into beat.acceptance. Plan is complete, correct, and feasible — marker-based parse/filter on notes with latest-note-wins semantics is the right approach. Test coverage for round-trip is correctly identified as a gap. No invariant violations. Ready for implementation.",
+    "datetime": "2026-03-22T13:41:52.140396Z",
+    "entry_id": "019d15c7-d98c-7e62-a59a-cbd4a36ac970",
+    "knot_state": "plan_review",
+    "knot_step": "plan_review",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d147c-d129-7492-a094-a0e1a5017693",
+  "occurred_at": "2026-03-22T07:40:17.577294Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the Thinking Detail default-off fix for Codex paths. command_execution item.started now normalizes to an assistant tool_use block so Conversation History preserves action rows while hiding tool results when detail is off. The terminal detail filter also suppresses raw [executing] blocks and their follow-on tool output when detail is off. Added regression tests for the Codex normalizer and terminal filter. Sanity gates in /Users/cartine/foolery/work/foolery-d486: bun run lint completed with warnings only, bunx tsc --noEmit passed, bun run test passed, bun run build passed. Branch work/foolery-d486-impl-20260321 pushed with commit b2de69b9ceae.",
+    "datetime": "2026-03-22T07:39:27Z",
+    "entry_id": "019d147c-d129-7492-a094-a0d520a57237",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

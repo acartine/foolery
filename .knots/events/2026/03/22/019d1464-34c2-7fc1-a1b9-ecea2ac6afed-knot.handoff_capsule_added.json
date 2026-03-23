@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1464-34c2-7fc1-a1b9-ecea2ac6afed",
+  "occurred_at": "2026-03-22T07:13:24.674811Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved on main at 8eb78058b8bc. Verified implementation commit bb2f93548370 and merge commit 8eb78058b8bc are both tagged on the knot and present on main. No knot invariants are defined. Reviewed the shipped diff in src/components/agent-history-view.tsx and src/components/interaction-picker.tsx: changes are limited to font-size increases, higher-contrast colors, and related presentation polish with no logic/API changes. Confirmed remote CI and Coverage Badge workflows both completed successfully on 8eb78058b8bc, so no dependent-system regressions are indicated.",
+    "datetime": "2026-03-22T07:13:17Z",
+    "entry_id": "019d1464-34c2-7fc1-a1b9-ecd0ffe2858f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

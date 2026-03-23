@@ -1,0 +1,20 @@
+{
+  "event_id": "019d161d-9d17-7ac3-976f-ff021919bb63",
+  "occurred_at": "2026-03-22T15:15:32.748626Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-26e7",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Add scope refinement settings to Dispatch and Defaults UI tabs",
+    "type": "work",
+    "updated_at": "2026-03-22T15:15:32.748626Z",
+    "workflow_id": "compatibility"
+  }
+}

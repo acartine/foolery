@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06be-23da-76b3-8faf-56e48d716bdc",
+  "occurred_at": "2026-03-19T15:36:57.56272Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed concurrent safety issue in agent-outcome-stats.ts. Switched from read-modify-write JSON array to append-only JSONL format using appendFile, which is atomic for small writes on POSIX. readOutcomeStats now parses JSONL line-by-line, gracefully skipping malformed lines. Added baseDir parameter for testability. New test file agent-outcome-stats.test.ts with 7 tests including a concurrent-append safety test that verifies 20 parallel appends produce 20 records. All quality gates pass: tsc clean, 2134 tests pass, build OK. Branch: work/foolery-1f10-concurrent-fix.",
+    "datetime": "2026-03-19T16:15:00Z",
+    "entry_id": "019d06be-23da-76b3-8faf-56daea7a4452",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

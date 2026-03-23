@@ -1,0 +1,15 @@
+{
+  "event_id": "019d074f-8038-7db1-8ae7-969f8007147f",
+  "occurred_at": "2026-03-19T18:15:43.928088Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged work/foolery-1f10-concurrent-fix to main (commit 199dc33e5e8c). Changes: error-exit rollback telemetry fix in terminal-manager.ts — sets rolledBack=true only when post-exit state required rollback and invariant enforcement succeeded. Tests pass (18/18), typecheck clean, CI green on remote.",
+    "datetime": "2026-03-19T12:00:00-07:00",
+    "entry_id": "019d074f-8038-7db1-8ae7-968e3fe68d22",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

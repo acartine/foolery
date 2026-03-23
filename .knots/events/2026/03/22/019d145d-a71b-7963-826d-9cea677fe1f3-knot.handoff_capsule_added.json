@@ -1,0 +1,15 @@
+{
+  "event_id": "019d145d-a71b-7963-826d-9cea677fe1f3",
+  "occurred_at": "2026-03-22T07:06:15.195168Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review result: needs changes. 1. Scoped UI review passed: the Conversation Log and interaction picker styling in src/components/agent-history-view.tsx and src/components/interaction-picker.tsx uses larger type and stronger terminal-style contrast, with no obvious behavior regression in the reviewed surface. 2. Required sanity gates failed, so the knot cannot advance: bunx tsc --noEmit fails on Storybook files under work/, including work/foolery-c355/src/stories/beat-form.stories.tsx:44 (invalid isLoading prop), repeated invalid story args in work/foolery-d486 and work/foolery-ee66, and a missing module in work/*/src/stories/beat-status-badge.stories.tsx. 3. bun run build fails on the same type errors. 4. bun run test passes with 2172 passing tests. Return to implementation to clear the repo-level type/build failures before resubmitting.",
+    "datetime": "2026-03-22T07:05:56Z",
+    "entry_id": "019d145d-a71b-7963-826d-9cd5d5416000",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

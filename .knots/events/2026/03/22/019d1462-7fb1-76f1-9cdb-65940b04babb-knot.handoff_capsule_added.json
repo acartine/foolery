@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1462-7fb1-76f1-9cdb-65940b04babb",
+  "occurred_at": "2026-03-22T07:11:32.785594Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Feature branch work/foolery-c355-impl-20260321 was already merged to main (commit 8eb78058b8bc) and pushed to origin. CI is green on remote — both CI and Coverage Badge workflows passed. Tagged with commit:8eb78058b8bc (merge) and commit:bb2f93548370 (implementation).",
+    "datetime": "2026-03-22T12:00:00Z",
+    "entry_id": "019d1462-7fb1-76f1-9cdb-658ce9b9a70c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

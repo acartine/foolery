@@ -1,0 +1,15 @@
+{
+  "event_id": "019d069d-acbf-7de1-a688-fee941e2bdfa",
+  "occurred_at": "2026-03-19T15:01:29.91892Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Single commit (cd7c6e04) adds lease-type filtering to applyFilters in knots-backend.ts. Beats with type=lease are excluded when state filter is 'queued' or resolves to StepPhase.Queued. includeDescendantsOfQueueParents correctly receives visibleBeats so lease knots are not re-included. Two guardrail tests cover queued and exact queue-state scenarios. No security issues, no regressions, minimal and well-scoped change.",
+    "datetime": "2026-03-19T00:00:00Z",
+    "entry_id": "019d069d-acbe-7832-bb44-6a8ae7ae6cc2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

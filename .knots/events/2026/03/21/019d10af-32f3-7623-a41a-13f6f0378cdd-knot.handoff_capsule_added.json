@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10af-32f3-7623-a41a-13f6f0378cdd",
+  "occurred_at": "2026-03-21T13:56:50.547869Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment complete: fast-forwarded origin/main to a1d6fb14addc from work/foolery-d486-impl-20260321. Scope remained limited to interaction-picker, terminal-panel, shared history/terminal visibility helpers, and regression tests. Remote checks passed for commit a1d6fb14addc: CI https://github.com/acartine/foolery/actions/runs/23381171542 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23381171560.",
+    "datetime": "2026-03-21T13:56:44Z",
+    "entry_id": "019d10af-32f3-7623-a41a-13eab0e1535b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

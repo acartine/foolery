@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1611-d577-7762-8039-338766a4b0fd",
+  "occurred_at": "2026-03-22T15:02:40.711318Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1061",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Add scope refinement completion notification hook and status endpoint",
+    "type": "work",
+    "updated_at": "2026-03-22T15:02:40.711318Z",
+    "workflow_id": "compatibility"
+  }
+}

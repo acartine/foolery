@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06d0-7c93-7170-ac36-2dd6b0733835",
+  "occurred_at": "2026-03-19T15:56:59.923683Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merge commit bc1963b82eca already on origin/main (merged work/foolery-1f10-concurrent-fix). CI workflows passed: CI run 23303799900 (success) and Coverage Badge run 23303799969 (success). Features shipped: agent outcome stats with JSONL append for concurrent session safety, per-queue-type claim limits, lease lifecycle management, lease knots hidden from queue filters.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d06d0-7c93-7170-ac36-2dc38d09e0b8",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

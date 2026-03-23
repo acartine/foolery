@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0749-427d-7413-a401-50e04b372763",
+  "occurred_at": "2026-03-19T18:08:54.909023Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. The terminal-manager change now sets rolledBack=true only when the post-exit state required rollback and invariant enforcement succeeded; queue-state error exits remain rolledBack=false while still recording failure and retry availability. I verified the touched-file lint command, targeted unit tests for terminal-manager error retry and agent outcome stats (18/18 passing), bunx tsc --noEmit, and bun run build.",
+    "datetime": "2026-03-19T18:08:41Z",
+    "entry_id": "019d0749-427d-7413-a401-50d5f331814c",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

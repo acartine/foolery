@@ -1,0 +1,15 @@
+{
+  "event_id": "019d069b-da81-7252-9c10-04112485dd33",
+  "occurred_at": "2026-03-19T14:59:30.561582Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented queue-phase filtering so Knots items with type=lease are excluded from queue listings, including exact queue-state filters. Added guardrail coverage for queued and exact queue-state behavior. Validated in worktree branch work/foolery-1b9c-impl with bun run lint (existing warnings only), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-19T14:58:33Z",
+    "entry_id": "019d069b-da81-7252-9c10-0407ec1793bb",
+    "model": "gpt-5-codex",
+    "username": "cartine",
+    "version": "5"
+  }
+}

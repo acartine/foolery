@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15f3-b852-7110-a7b3-9a1da704beb7",
+  "occurred_at": "2026-03-22T14:29:47.218843Z",
+  "knot_id": "foolery-26e7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejecting shipment: src/components/settings-sheet.tsx:65-67 sets scopeRefinement.enabled to true in the Settings UI defaults, while src/lib/schemas.ts:153-160 and src/lib/settings.ts:593-615 default scope refinement to disabled unless explicitly configured. Saving or resetting settings from the UI can therefore re-enable automatic scope refinement on installs that were meant to stay opted out.",
+    "datetime": "2026-03-22T14:29:47.218843Z",
+    "entry_id": "019d15f3-b852-7110-a7b3-9a005e7f562a",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

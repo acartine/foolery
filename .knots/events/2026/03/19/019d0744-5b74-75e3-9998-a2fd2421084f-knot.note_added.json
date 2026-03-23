@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0744-5b74-75e3-9998-a2fd2421084f",
+  "occurred_at": "2026-03-19T18:03:33.619967Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked by dirty workspace: active checkout was work/foolery-1f10-concurrent-fix with untracked file agent-metadata-normalization.md, so I could not complete a read-only main-branch review in this session.",
+    "datetime": "2026-03-19T18:03:33.619967Z",
+    "entry_id": "019d0744-5b74-75e3-9998-a2eaf43b4c02",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

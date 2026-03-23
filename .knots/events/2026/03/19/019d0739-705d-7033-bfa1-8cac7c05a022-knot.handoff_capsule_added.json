@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0739-705d-7033-bfa1-8cac7c05a022",
+  "occurred_at": "2026-03-19T17:51:38.077375Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment verified: feature branch work/foolery-1f10-concurrent-fix already merged to main (bc1963b82eca) and pushed to origin/main by prior session. CI green (both CI and Coverage Badge workflows passed). Changes: (1) JSONL-based agent outcome stats in .foolery-logs/agent-success-rates.jsonl with atomic appendFile for concurrent safety, (2) error exit handling with action-state rollback and retry with different agent via pool exclusion.",
+    "datetime": "2026-03-19T16:10:00Z",
+    "entry_id": "019d0739-705d-7033-bfa1-8c95e56e4aee",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

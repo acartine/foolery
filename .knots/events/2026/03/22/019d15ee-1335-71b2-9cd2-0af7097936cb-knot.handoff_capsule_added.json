@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ee-1335-71b2-9cd2-0af7097936cb",
+  "occurred_at": "2026-03-22T14:23:37.269622Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Beat creation hook: enqueueBeatScopeRefinement checks both enabled setting and agent configuration before enqueuing. Added beat-creation-scope-refinement.test.ts covering the enqueue contract.",
+    "datetime": "2026-03-22T14:23:37.269622Z",
+    "entry_id": "019d15ee-1335-71b2-9cd2-0ae97e7269f4",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

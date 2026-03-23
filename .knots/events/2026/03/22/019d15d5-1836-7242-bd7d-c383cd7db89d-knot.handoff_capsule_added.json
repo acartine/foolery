@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15d5-1836-7242-bd7d-c383cd7db89d",
+  "occurred_at": "2026-03-22T13:56:20.150716Z",
+  "knot_id": "foolery-1901",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged foolery-1901 branch (1 commit: 9906897f302b) into main via merge commit 43d4f06c1200. Pushed to origin/main. CI green — lint, tests (2157 passed), coverage check, and build all passed. Tagged both commits.",
+    "datetime": "2026-03-22T13:56:20.150716Z",
+    "entry_id": "019d15d5-1836-7242-bd7d-c37d76f42731",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

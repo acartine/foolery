@@ -1,0 +1,17 @@
+{
+  "event_id": "019d160c-fb9e-7402-9708-5e812e2f9b96",
+  "occurred_at": "2026-03-22T14:57:22.846724Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed two worker bugs: (1) runScopeRefinementPrompt now checks is_error=true on normalized result events before treating result text as success. (2) processScopeRefinementJob now calls maybeReenqueue when getBackend().get() fails instead of silently returning. Both paths covered by new tests.",
+    "datetime": "2026-03-22T14:57:22.846724Z",
+    "entry_id": "019d160c-fb9e-7402-9708-5e7c2cf9d078",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c2b-831f-77e3-a2b5-46e8773c1f5e",
+  "occurred_at": "2026-03-20T16:54:31.455233Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review: APPROVED. Fix correctly replaces h-full with flex-1 min-h-0 on Tabs container and adds shrink-0 to Separator/SheetFooter in settings-sheet.tsx. Standard flexbox pattern that ensures Save/Reset buttons remain visible in both basic and advanced dispatch modes. Single file, 3 class changes, 0 logic changes. All quality gates pass (lint 0 errors, typecheck clean, build succeeds).",
+    "datetime": "2026-03-20T18:00:00+01:00",
+    "entry_id": "019d0c2b-831f-77e3-a2b5-46d23c141c62",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

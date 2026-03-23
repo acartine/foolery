@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10b1-0490-7fb2-bc93-de51d0ca3023",
+  "occurred_at": "2026-03-21T13:58:49.744061Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved: origin/main and local main both resolve to a1d6fb14addc. Verified commit tags commit:149a398c1a49, commit:6e921ed4a276, commit:da1e229ff181, and commit:a1d6fb14addc on the knot. No invariants are defined for this knot. Remote CI and Coverage Badge runs succeeded for a1d6fb14addc (23381171542, 23381171560), and local targeted regression tests for history/terminal visibility passed on main.",
+    "datetime": "2026-03-21T13:58:49Z",
+    "entry_id": "019d10b1-0490-7fb2-bc93-de46e806e9cb",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

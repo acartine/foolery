@@ -1,0 +1,15 @@
+{
+  "event_id": "019d109f-8010-7fe1-a86e-13b2ded0b89f",
+  "occurred_at": "2026-03-21T13:39:41.712345Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Fixed the thinking detail toggle so it actually filters tool output. Two changes: (1) History view: filterEntry now also hides 'result' type entries when detail is off, not just 'user' and 'system'. (2) Terminal filter: rewrote as a state machine that suppresses ALL content after ▶ action headers (not just numbered file lines) until agent prose resumes. Prose detection uses uppercase-letter-start heuristic. All 2164 tests pass, 18 terminal-detail-filter tests (6 new). Build failure in work/foolery-c355 is pre-existing and unrelated.",
+    "datetime": "2026-03-21T14:45:00Z",
+    "entry_id": "019d109f-8010-7fe1-a86e-13a11907ed1d",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

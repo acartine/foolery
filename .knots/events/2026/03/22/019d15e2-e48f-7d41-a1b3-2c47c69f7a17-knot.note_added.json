@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15e2-e48f-7d41-a1b3-2c47c69f7a17",
+  "occurred_at": "2026-03-22T14:11:24.431633Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "The worker is not reviewable as shipped: bunx tsc --noEmit fails in src/lib/__tests__/scope-refinement-worker.test.ts:42 and :77, failed jobs are dropped permanently after dequeue in src/lib/scope-refinement-worker.ts:256-299, and runScopeRefinementPrompt() ignores agent-level result errors at src/lib/scope-refinement-worker.ts:168-195.",
+    "datetime": "2026-03-22T14:11:24.431633Z",
+    "entry_id": "019d15e2-e48f-7d41-a1b3-2c3b8f4afcdb",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

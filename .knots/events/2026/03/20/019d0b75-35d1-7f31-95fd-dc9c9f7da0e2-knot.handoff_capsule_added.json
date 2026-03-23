@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b75-35d1-7f31-95fd-dc9c9f7da0e2",
+  "occurred_at": "2026-03-20T13:35:24.113884Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commits 73bf083c11da and 3f343f384634 are on main, (2) CI green on merge commit, (3) 4 planned files changed — DELETE handler, client API, AlertDialog primitive, settings reset button, (4) commit tags present on knot, (5) no invariants to check, (6) no regressions detected.",
+    "datetime": "2026-03-20T00:00:00Z",
+    "entry_id": "019d0b75-35d1-7f31-95fd-dc8132825584",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

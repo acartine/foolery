@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-039f-7143-b29d-47ec8060afa7",
+  "occurred_at": "2026-03-22T14:45:23.998827Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: scope-refinement-status-endpoint.test.ts only exercises queue and event helpers and never calls the status route or notification hook, so the endpoint envelope, worker startup, notification emission, and beat-detail invalidation path remain unverified.",
+    "datetime": "2026-03-22T14:45:23.998827Z",
+    "entry_id": "019d1602-039e-71b3-919a-1dfd649cce52",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

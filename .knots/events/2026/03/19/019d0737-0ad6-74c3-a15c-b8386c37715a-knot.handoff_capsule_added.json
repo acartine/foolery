@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0737-0ad6-74c3-a15c-b8386c37715a",
+  "occurred_at": "2026-03-19T17:49:01.014117Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review: APPROVED. Both requirements fully implemented and tested. (1) Agent outcome stats captured as JSONL in .foolery-logs/agent-success-rates.jsonl with AgentOutcomeRecord tracking per-iteration agent identity, exit codes, state transitions, rollback status, and computed success classification (success = exit 0 AND beat moved to next or prior queue state). Concurrent session safety via atomic appendFile. (2) Error exit handling: non-zero exit triggers enforceQueueTerminalInvariant rollback of action states, then retry with different agent via strict pool exclusion; terminates when no alternative agent available. 26 tests pass across 4 test files covering all edge cases.",
+    "datetime": "2026-03-19T18:50:00Z",
+    "entry_id": "019d0737-0ad6-74c3-a15c-b827b46fc757",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

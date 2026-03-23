@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0fb4-f4c2-7df3-83ee-44d5c54d4ebb",
+  "occurred_at": "2026-03-21T09:23:30.626845Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ee66",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "History view: Should show description, notes, handoff_capsules, and states when toggled.",
+    "type": "work",
+    "updated_at": "2026-03-21T09:23:30.626845Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0fb4-7b94-7851-a927-d83388005813"
+  }
+}

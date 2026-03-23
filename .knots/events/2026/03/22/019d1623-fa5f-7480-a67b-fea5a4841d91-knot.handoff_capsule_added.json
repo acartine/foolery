@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1623-fa5f-7480-a67b-fea5a4841d91",
+  "occurred_at": "2026-03-22T15:22:29.855433Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified merge commit feb1bdb127ca is live on origin/main, corrected shipped commit tags to match the actual landed commit set, confirmed no knot invariants apply, and confirmed GitHub Actions CI run 23405982215 plus Coverage Badge run 23405982239 both completed successfully for feb1bdb127ca with no regression signal.",
+    "datetime": "2026-03-22T15:22:29.855433Z",
+    "entry_id": "019d1623-fa5f-7480-a67b-fe9b608eb4ca",
+    "knot_state": "shipment_review",
+    "knot_step": "shipment_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

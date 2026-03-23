@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0c1a-894e-7441-b21f-ea1d52c0ffca",
+  "occurred_at": "2026-03-20T16:35:58.926446Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.created",
+  "data": {
+    "body": "When  new beats are submitted, they should save immediately but also add \"Scope Refinement\" job to a queue that is picked up by a ScopeRefinement worker.  The worker asks an agent to:\n\n- Tighten up the title\n- Tighten up the description for clarity \n- Define or tighten clear acceptance criteria based on the scope of the beat.\n\nThe ScopeRefinement worker should have a prompt that is configurable within Settings, in a place htat makes sense.\n\nScope Refinement should also be treated as a poolable dispatch state (even though it is not a \"state\")",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create New:  Spawn asynchronous  Scope Refinement job when ticket is created.",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

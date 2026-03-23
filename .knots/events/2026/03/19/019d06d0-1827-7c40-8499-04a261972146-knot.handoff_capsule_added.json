@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06d0-1827-7c40-8499-04a261972146",
+  "occurred_at": "2026-03-19T15:56:34.215466Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Dirty workspace blocked shipment review. Active checkout was work/foolery-1f10-concurrent-fix with untracked file agent-metadata-normalization.md, so I used the documented failure path and rolled the knot back to ready_for_implementation without modifying repository code or git state.",
+    "datetime": "2026-03-19T15:55:57Z",
+    "entry_id": "019d06d0-1827-7c40-8499-049f17472b1e",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex"
+  }
+}

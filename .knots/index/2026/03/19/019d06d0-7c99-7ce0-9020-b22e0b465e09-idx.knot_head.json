@@ -1,0 +1,20 @@
+{
+  "event_id": "019d06d0-7c99-7ce0-9020-b22e0b465e09",
+  "occurred_at": "2026-03-19T15:56:59.923683Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1f10",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Claude Error detection - catch and try different agent",
+    "type": "work",
+    "updated_at": "2026-03-19T15:56:59.923683Z",
+    "workflow_id": "compatibility"
+  }
+}

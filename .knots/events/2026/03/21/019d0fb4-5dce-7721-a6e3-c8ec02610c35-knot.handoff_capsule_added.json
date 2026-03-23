@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fb4-5dce-7721-a6e3-c8ec02610c35",
+  "occurred_at": "2026-03-21T09:22:51.982948Z",
+  "knot_id": "foolery-ee66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged work/foolery-ee66 into main as 10346b61f6fb, pushed origin/main, and verified remote GitHub Actions runs 23376601741 (CI) and 23376601739 (Coverage Badge) succeeded for commit 10346b61f6fb74b2dbeb07fdeb803af5d2a8443c.",
+    "datetime": "2026-03-21T09:22:45Z",
+    "entry_id": "019d0fb4-5dce-7721-a6e3-c8da03f902f8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

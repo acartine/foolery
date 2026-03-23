@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15e3-5506-7db2-8007-ba230d261f84",
+  "occurred_at": "2026-03-22T14:11:53.222376Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Child implementation reviews did not all pass. Returned to implementation because foolery-e382 enables scope refinement plus fallback agent execution by default, foolery-47a2 wires that unsafe default into beat creation, foolery-681b drops failed jobs and fails bunx tsc --noEmit, and foolery-1061 leaves open beat detail views stale after completion notifications.",
+    "datetime": "2026-03-22T14:11:53.222376Z",
+    "entry_id": "019d15e3-5506-7db2-8007-ba1f1b30cdf3",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

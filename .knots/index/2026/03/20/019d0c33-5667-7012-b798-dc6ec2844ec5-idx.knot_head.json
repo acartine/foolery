@@ -1,0 +1,20 @@
+{
+  "event_id": "019d0c33-5667-7012-b798-dc6ec2844ec5",
+  "occurred_at": "2026-03-20T17:03:04.295002Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3bcc",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings: Dispatch: Advanced: Save/Reset buttons missing",
+    "type": "work",
+    "updated_at": "2026-03-20T17:03:04.295002Z",
+    "workflow_id": "compatibility"
+  }
+}

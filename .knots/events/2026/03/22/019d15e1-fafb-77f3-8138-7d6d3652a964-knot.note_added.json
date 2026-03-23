@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15e1-fafb-77f3-8138-7d6d3652a964",
+  "occurred_at": "2026-03-22T14:10:24.635157Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Scope refinement is enabled by default in src/lib/schemas.ts:153-160, and getScopeRefinementAgent() falls back to the first registered agent or literal \"claude\" when no scope-refinement mapping or pool is configured in src/lib/settings.ts:529-533 and src/lib/settings.ts:598-615. That makes existing installs auto-dispatch a real agent on beat creation without explicit user opt-in.",
+    "datetime": "2026-03-22T14:10:24.635157Z",
+    "entry_id": "019d15e1-fafb-77f3-8138-7d58a871a1de",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

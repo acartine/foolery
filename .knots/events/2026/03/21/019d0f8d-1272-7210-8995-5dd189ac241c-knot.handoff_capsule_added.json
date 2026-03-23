@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f8d-1272-7210-8995-5dd189ac241c",
+  "occurred_at": "2026-03-21T08:39:56.786143Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Feature branch was already merged to main (merge commit 6e921ed4a276, feature commit 149a398c1a49) and pushed to origin/main. CI (both CI and Coverage Badge workflows) passed successfully on the merge commit. Implementation adds thinking detail toggle to both agent history and terminal views, defaulting to off.",
+    "datetime": "2026-03-21T09:00:00Z",
+    "entry_id": "019d0f8d-1272-7210-8995-5dca8be86c2b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

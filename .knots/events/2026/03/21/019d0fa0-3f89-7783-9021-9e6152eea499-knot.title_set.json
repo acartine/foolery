@@ -1,0 +1,10 @@
+{
+  "event_id": "019d0fa0-3f89-7783-9021-9e6152eea499",
+  "occurred_at": "2026-03-21T09:00:53.513107Z",
+  "knot_id": "foolery-ee66",
+  "type": "knot.title_set",
+  "data": {
+    "from": "History view: Should show notes, handoff_capsules, and states when toggled.",
+    "to": "History view: Should show description, notes, handoff_capsules, and states when toggled."
+  }
+}

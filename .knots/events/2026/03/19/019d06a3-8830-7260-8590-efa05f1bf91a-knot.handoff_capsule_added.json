@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a3-8830-7260-8590-efa05f1bf91a",
+  "occurred_at": "2026-03-19T15:07:53.776029Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit cd7c6e040d41 is on main. Lint, typecheck, and all 2127 tests pass. The change correctly filters lease-type knots from queue views in applyFilters() and includes two new test cases. No invariants to check. No regressions detected.",
+    "datetime": "2026-03-19T16:08:00+01:00",
+    "entry_id": "019d06a3-8830-7260-8590-ef941fa8d57b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

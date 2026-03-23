@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1611-d547-7232-ad75-cff0358eb26e",
+  "occurred_at": "2026-03-22T15:02:40.711318Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved in implementation review. Verified the real /api/scope-refinement/status GET handler returns the expected envelope, starts the worker, and exposes queueSize plus completion payloads. Verified the notification hook now routes through tested filterNewCompletions coverage for deduplication, timestamp filtering, repoPath propagation, and beat-detail invalidation inputs. Sanity gates passed in work/foolery-d984: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-22T15:02:40.711318Z",
+    "entry_id": "019d1611-d547-7232-ad75-cfe40a04f071",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1478-4006-7f03-9de8-c2c302cf10f9",
+  "occurred_at": "2026-03-22T07:35:18.278931Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Needs changes: Detail-off still fails the acceptance criteria for Codex/GPT-5.4. In the d486 implementation worktree, command_execution item.started is normalized to stream_event text ([executing] ...) instead of assistant/tool_use, so Conversation History hides the action when Detail is off and the terminal filter can still show tool-result content unless it follows a ▶ header. The current tests encode that broken normalization and do not cover the Codex regression path. Sanity gates in /Users/cartine/foolery/work/foolery-d486: lint completed with warnings only; bun x tsc --noEmit passed; bun run test passed; bun run build passed.",
+    "datetime": "2026-03-22T07:35:18.278931Z",
+    "entry_id": "019d1478-4006-7f03-9de8-c2b5f30492e9",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fb0-e5df-7bf2-88e4-9454e4a1c862",
+  "occurred_at": "2026-03-21T09:19:04.671227Z",
+  "knot_id": "foolery-ee66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review. The history detail panel now routes through shared metadata rendering so description is always visible and steps/state history, notes, and handoff capsules are shown behind the disclosure toggle; retakes reuse the same metadata details component. Verified in /Users/cartine/foolery/work/foolery-ee66 with bun run lint (warnings only), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-21T09:18:48Z",
+    "entry_id": "019d0fb0-e5df-7bf2-88e4-944138c66194",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

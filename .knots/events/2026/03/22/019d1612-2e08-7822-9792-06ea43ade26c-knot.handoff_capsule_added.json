@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1612-2e08-7822-9792-06ea43ade26c",
+  "occurred_at": "2026-03-22T15:03:03.43211Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved in implementation review. Verified POST /api/beats now creates the beat before asynchronously calling enqueueBeatScopeRefinement, preserves the 201 response when enqueueing fails, and forwards repoPath into the queue hook. The route-level test coverage exercises the real handler for successful enqueue, repoPath forwarding, creation failure, and enqueue failure resilience. Sanity gates passed in work/foolery-d984: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-22T15:03:03.43211Z",
+    "entry_id": "019d1612-2e08-7822-9792-06d86823fdbd",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

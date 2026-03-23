@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1602-fc76-74f0-9de6-568db1658e69",
+  "occurred_at": "2026-03-22T14:46:27.702637Z",
+  "knot_id": "foolery-d961",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rolled back from shipment: the queue implementation itself looks sound, but the only available feature branch also includes sibling changes that failed review. This child cannot be shipped independently from the shared branch without violating shipment scope.",
+    "datetime": "2026-03-22T14:46:27.702637Z",
+    "entry_id": "019d1602-fc76-74f0-9de6-567e964dd020",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

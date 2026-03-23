@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0b67-26e9-71c1-aac8-efeb2ff6c8d4",
+  "occurred_at": "2026-03-20T13:20:02.793635Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.created",
+  "data": {
+    "body": "In basic mode you can see the save/reset buttons, but in advance mode they are gone.\n\nwe kind of want them to always be there for consistency across the settings screens.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Dispatch: Advanced: Save/Reset buttons missing",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

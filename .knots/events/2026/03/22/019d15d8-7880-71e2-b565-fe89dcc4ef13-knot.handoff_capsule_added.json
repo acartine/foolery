@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15d8-7880-71e2-b565-fe89dcc4ef13",
+  "occurred_at": "2026-03-22T14:00:01.408261Z",
+  "knot_id": "foolery-1901",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified: both commits (9906897f302b, 43d4f06c1200) on origin/main and tagged. 2157 tests pass, lint clean on main branch code. No invariants defined. Changes scoped to knots-backend.ts and its test file — no regressions detected.",
+    "datetime": "2026-03-22T14:00:01.408261Z",
+    "entry_id": "019d15d8-7880-71e2-b565-fe7867032fe2",
+    "knot_state": "shipment_review",
+    "knot_step": "shipment_review",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

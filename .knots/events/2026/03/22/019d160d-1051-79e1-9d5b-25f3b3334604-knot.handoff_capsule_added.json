@@ -1,0 +1,17 @@
+{
+  "event_id": "019d160d-1051-79e1-9d5b-25f3b3334604",
+  "occurred_at": "2026-03-22T14:57:28.145085Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Rewrote status endpoint test to call real GET handler. Tests verify response envelope, worker startup, queueSize, and completion data shape. Extracted filterNewCompletions from notification hook into testable pure function with tests for deduplication, timestamp filtering, repoPath, and beatId collection for query invalidation.",
+    "datetime": "2026-03-22T14:57:28.145085Z",
+    "entry_id": "019d160d-1051-79e1-9d5b-25e458f6a93e",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

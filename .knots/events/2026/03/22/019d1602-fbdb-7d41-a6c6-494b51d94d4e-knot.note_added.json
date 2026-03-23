@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-fbdb-7d41-a6c6-494b51d94d4e",
+  "occurred_at": "2026-03-22T14:46:27.547831Z",
+  "knot_id": "foolery-26e7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment blocked: the available feature branch work/foolery-d984-impl-20260322 also carries sibling child changes that failed review, so shipping this UI slice from that branch would merge out-of-scope unapproved code.",
+    "datetime": "2026-03-22T14:46:27.547831Z",
+    "entry_id": "019d1602-fbdb-7d41-a6c6-49343ba3bd1e",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

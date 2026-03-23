@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06ca-6299-7232-b6a2-d7a35c6b4ec7",
+  "occurred_at": "2026-03-19T15:50:20.057142Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review APPROVED. The branch switches agent-outcome-stats from read-modify-write JSON to atomic JSONL appendFile, fixing concurrent session safety. The baseDir parameter is backward-compatible (optional, defaults to process.cwd()). All 7 unit tests pass including concurrent append safety. TypeScript clean, no lint errors in changed files. Both original requirements (success rate capture + error recovery with agent switching) verified present on main. No security concerns.",
+    "datetime": "2026-03-19T16:50:00-04:00",
+    "entry_id": "019d06ca-6299-7232-b6a2-d7939e79357e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

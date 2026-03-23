@@ -1,0 +1,16 @@
+{
+  "event_id": "019d1602-03ca-7242-b904-d2bc3f642487",
+  "occurred_at": "2026-03-22T14:45:24.042576Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejected in implementation_review: src/lib/__tests__/scope-refinement-status-endpoint.test.ts does not cover src/app/api/scope-refinement/status/route.ts or src/hooks/use-scope-refinement-notifications.ts, so the child requirement for status endpoint plus completion notification and detail invalidation is not proven by tests.",
+    "datetime": "2026-03-22T14:45:24.042576Z",
+    "entry_id": "019d1602-03ca-7242-b904-d2a22c3b987e",
+    "knot_state": "ready_for_implementation",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

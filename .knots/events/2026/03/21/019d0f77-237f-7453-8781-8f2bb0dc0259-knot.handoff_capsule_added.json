@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f77-237f-7453-8781-8f2bb0dc0259",
+  "occurred_at": "2026-03-21T08:15:59.359488Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete for Thinking Detail toggle. Two-part implementation: (1) Agent History View — add thinkingDetailVisible toggle to InteractionPicker state/UI, filter out user/system type entries when OFF, keeping assistant (words+actions) and result entries visible. Straightforward since data is structured JSON. (2) Terminal Panel — create terminal-detail-filter.ts with stateful line-buffer filter that detects numbered file content lines (^\\s+\\d+→), add toggle to terminal toolbar, re-render xterm on toggle change by replaying buffer through filter. Medium complexity due to heuristic text parsing and xterm lifecycle management. Both views default to OFF (detail hidden). Switch UI component used for toggle in both locations.",
+    "datetime": "2026-03-21T00:00:00Z",
+    "entry_id": "019d0f77-237f-7453-8781-8f1f2f235fe1",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

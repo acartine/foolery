@@ -1,0 +1,23 @@
+{
+  "event_id": "019d15dc-d260-7e32-9002-9dccb8c7b2e2",
+  "occurred_at": "2026-03-22T14:04:46.560577Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d961",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Create in-memory scope refinement job queue",
+    "type": "work",
+    "updated_at": "2026-03-22T14:04:46.560577Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d15db-d4ad-7a50-bee5-f0c6095ac9cd"
+  }
+}

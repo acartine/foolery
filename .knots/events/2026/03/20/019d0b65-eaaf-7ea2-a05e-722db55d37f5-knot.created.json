@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0b65-eaaf-7ea2-a05e-722db55d37f5",
+  "occurred_at": "2026-03-20T13:18:41.839463Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.created",
+  "data": {
+    "body": "Since we're still testing the audit data, it's useful tohave a counter reset button in the settings somewhere sane.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Audit Settings: Reset counters button and confirm dialog",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

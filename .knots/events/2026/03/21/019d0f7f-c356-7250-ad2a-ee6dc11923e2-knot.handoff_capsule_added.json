@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f7f-c356-7250-ad2a-ee6dc11923e2",
+  "occurred_at": "2026-03-21T08:25:24.566401Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implemented thinking detail toggle for both Agent History View and Terminal Panel. Agent History: added thinkingDetailVisible state to InteractionPickerState with filterEntry integration that hides user (tool result) and system type response entries when detail is off (messageTypeFilters take precedence when active). Terminal Panel: added stateful line filter (terminal-detail-filter.ts) that strips numbered file content lines matching /\\s+\\d+[→│]/ pattern. Filter is applied during both buffer replay and live SSE events. Toggle change triggers full xterm re-render via useEffect dependency. Both views show a Detail Switch toggle in their toolbars. Tests: 12 unit tests covering numbered line stripping, ANSI handling, chunk boundary splits, and reset behavior. All quality gates pass (lint 0 errors, typecheck clean, 2156 tests pass, build succeeds). Commits merged to main and pushed to origin.",
+    "datetime": "2026-03-21T09:26:00Z",
+    "entry_id": "019d0f7f-c356-7250-ad2a-ee52c0982ef8",
+    "model": "claude-opus-4-6",
+    "username": "claude-code",
+    "version": "0.2"
+  }
+}

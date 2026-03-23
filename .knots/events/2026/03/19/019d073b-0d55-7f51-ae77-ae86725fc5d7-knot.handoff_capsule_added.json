@@ -1,0 +1,15 @@
+{
+  "event_id": "019d073b-0d55-7f51-ae77-ae86725fc5d7",
+  "occurred_at": "2026-03-19T17:53:23.79797Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified: (1) merge commit bc1963b82eca on origin/main, (2) CI green (CI + Coverage Badge workflows), (3) all 7 commit tags present, (4) 18/18 tests passing (agent-outcome-stats + error-retry suites), (5) no invariant violations. Code implements JSONL-based concurrent-safe agent outcome stats and error-exit retry with action-state rollback and agent pool exclusion.",
+    "datetime": "2026-03-19T18:54:00Z",
+    "entry_id": "019d073b-0d55-7f51-ae77-ae7f3f9acdd1",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

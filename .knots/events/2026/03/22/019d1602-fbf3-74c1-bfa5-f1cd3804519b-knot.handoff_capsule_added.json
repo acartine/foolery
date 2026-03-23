@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1602-fbf3-74c1-bfa5-f1cd3804519b",
+  "occurred_at": "2026-03-22T14:46:27.57147Z",
+  "knot_id": "foolery-26e7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rolled back from shipment: the scope refinement UI defaults fix lives on work/foolery-d984-impl-20260322, but that branch also includes sibling child work that failed review. Shipping 26e7 from the shared branch would merge unrelated unapproved changes.",
+    "datetime": "2026-03-22T14:46:27.57147Z",
+    "entry_id": "019d1602-fbf3-74c1-bfa5-f1bc0991edcb",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

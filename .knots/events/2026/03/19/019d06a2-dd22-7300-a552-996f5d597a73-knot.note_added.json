@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a2-dd22-7300-a552-996f5d597a73",
+  "occurred_at": "2026-03-19T15:07:09.986815Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from shipment_review to ready_for_shipment_review — agent \"OpenAI\" left knot in action state",
+    "datetime": "2026-03-19T15:07:09.986815Z",
+    "entry_id": "019d06a2-dd22-7300-a552-99532d21e5ec",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

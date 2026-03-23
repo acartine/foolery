@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-fca4-77e0-8b58-3d5fe7aaca21",
+  "occurred_at": "2026-03-22T14:46:27.748341Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review blocked by child failures: child knots 1061, 47a2, and 681b were sent back for missing or incorrect contract coverage and real worker failure-path bugs. Shipment children 26e7, 3465, and d961 were rolled back because the available branch mixes those rejected sibling changes into the same shipment branch.",
+    "datetime": "2026-03-22T14:46:27.748341Z",
+    "entry_id": "019d1602-fca4-77e0-8b58-3d4bc053ee48",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15e1-9d67-7123-a1fa-59dff2d11869",
+  "occurred_at": "2026-03-22T14:10:00.67976Z",
+  "knot_id": "foolery-3465",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Reviewed on work/foolery-d984-impl-20260322 (1438d84292f4). src/lib/scope-refinement-defaults.ts adds the reusable default prompt and interpolation helper, and src/lib/__tests__/scope-refinement-defaults.test.ts covers placeholder substitution and missing-value fallback. No child-scope issues found in this slice.",
+    "datetime": "2026-03-22T14:10:00.67976Z",
+    "entry_id": "019d15e1-9d67-7123-a1fa-59c18f113578",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

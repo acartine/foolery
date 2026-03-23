@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15e2-71de-75c1-a3b0-47ff0fa3fdcb",
+  "occurred_at": "2026-03-22T14:10:55.070458Z",
+  "knot_id": "foolery-26e7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Reviewed on work/foolery-d984-impl-20260322 (1438d84292f4). The Dispatch tab now exposes scope-refinement action/pool controls and the Defaults tab exposes the enable/prompt controls, wired through settings-sheet state and persistence paths in the existing settings UI flow. No child-scope issues found in this UI slice.",
+    "datetime": "2026-03-22T14:10:55.070458Z",
+    "entry_id": "019d15e2-71de-75c1-a3b0-47e50f725278",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

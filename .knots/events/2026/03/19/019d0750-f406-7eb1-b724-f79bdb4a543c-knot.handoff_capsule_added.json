@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0750-f406-7eb1-b724-f79bdb4a543c",
+  "occurred_at": "2026-03-19T18:17:19.110834Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on main at 199dc33e5e8c. Verified shipped diff covers the requested agent-success JSONL telemetry in the app working directory and the error-exit retry path now rolls back only when the post-exit beat state remained in an action state before forcing a different agent. Confirmed required commit tags are present (15d8d971ec4e, bc1963b82eca, 6ad0326f6245, 199dc33e5e8c), GitHub CI and Coverage Badge runs for 199dc33e5e8c completed successfully, and focused unit tests passed locally (18/18).",
+    "datetime": "2026-03-19T18:17:12Z",
+    "entry_id": "019d0750-f406-7eb1-b724-f78429bb0d5a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

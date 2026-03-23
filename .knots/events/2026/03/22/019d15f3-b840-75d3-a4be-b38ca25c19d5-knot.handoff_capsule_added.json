@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15f3-b840-75d3-a4be-b38ca25c19d5",
+  "occurred_at": "2026-03-22T14:29:47.200005Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Returning parent to implementation because child foolery-26e7 was rejected. Violation: src/components/settings-sheet.tsx:65-67 hard-codes scopeRefinement.enabled=true in the Settings UI defaults, conflicting with the disabled-by-default contract in src/lib/schemas.ts:153-160. This lets the UI re-enable automatic scope refinement on save/reset, so the feature is not safely opt-in yet.",
+    "datetime": "2026-03-22T14:29:47.200005Z",
+    "entry_id": "019d15f3-b840-75d3-a4be-b37762e4558a",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

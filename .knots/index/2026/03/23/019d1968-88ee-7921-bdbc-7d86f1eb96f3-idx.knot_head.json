@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1968-88ee-7921-bdbc-7d86f1eb96f3",
+  "occurred_at": "2026-03-23T06:36:14.440638Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-be1c",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Active Screen:  Maestro repo shows 3b3b.2, which is shipped",
+    "type": "work",
+    "updated_at": "2026-03-23T06:36:14.440638Z",
+    "workflow_id": "compatibility"
+  }
+}

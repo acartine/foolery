@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0743-6ab9-7a53-94cc-a8f03ded7208",
+  "occurred_at": "2026-03-19T18:02:31.993713Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment verified on existing merge commit bc1963b82eca now present on origin/main. Remote CI succeeded for that commit: CI run 23303799900 and Coverage Badge run 23303799969. No new merge commit was required in this shipment step because main already contained the 1f10 changes.",
+    "datetime": "2026-03-19T18:02:27Z",
+    "entry_id": "019d0743-6ab9-7a53-94cc-a8ea2cf324d2",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex-CLI"
+  }
+}

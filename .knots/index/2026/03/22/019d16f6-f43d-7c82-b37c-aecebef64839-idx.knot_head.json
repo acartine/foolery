@@ -1,0 +1,20 @@
+{
+  "event_id": "019d16f6-f43d-7c82-b37c-aecebef64839",
+  "occurred_at": "2026-03-22T19:12:56.381291Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e382",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Extend settings schema with scopeRefinement config and scope_refinement pool entry",
+    "type": "work",
+    "updated_at": "2026-03-22T19:12:56.381291Z",
+    "workflow_id": "compatibility"
+  }
+}

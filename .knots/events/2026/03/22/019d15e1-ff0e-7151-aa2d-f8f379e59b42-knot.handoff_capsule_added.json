@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15e1-ff0e-7151-aa2d-f8f379e59b42",
+  "occurred_at": "2026-03-22T14:10:25.678773Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Needs changes: 1. The schema default enables scope refinement for every install (src/lib/schemas.ts:153-160). 2. Scope-refinement agent resolution falls back to the generic dispatch default instead of requiring explicit configuration (src/lib/settings.ts:529-533 and src/lib/settings.ts:598-615). Together with enqueue-on-create, this creates an unexpected automatic command-execution path.",
+    "datetime": "2026-03-22T14:10:25.678773Z",
+    "entry_id": "019d15e1-ff0e-7151-aa2d-f8ed5db5210a",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

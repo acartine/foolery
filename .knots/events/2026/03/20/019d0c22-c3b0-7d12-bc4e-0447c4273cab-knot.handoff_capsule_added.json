@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c22-c3b0-7d12-bc4e-0447c4273cab",
+  "occurred_at": "2026-03-20T16:44:58.160859Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. Verified root cause against code: SheetContent is flex flex-col with overflow-hidden, and Tabs h-full pushes footer out of clip boundary. Fix (change Tabs to flex-1 min-h-0, add shrink-0 to footer) is correct standard flexbox pattern. Single file change, minimal risk. No invariants to check.",
+    "datetime": "2026-03-20T00:00:00Z",
+    "entry_id": "019d0c22-c3b0-7d12-bc4e-043d493da7ea",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

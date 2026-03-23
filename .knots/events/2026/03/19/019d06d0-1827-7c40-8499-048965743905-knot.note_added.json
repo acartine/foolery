@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06d0-1827-7c40-8499-048965743905",
+  "occurred_at": "2026-03-19T15:56:34.215466Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review blocked by dirty workspace: current checkout is work/foolery-1f10-concurrent-fix instead of main, and git status shows untracked file agent-metadata-normalization.md. Although origin/main is at shipped commit bc1963b82eca, this session cannot complete a clean read-only shipment review from the active workspace.",
+    "datetime": "2026-03-19T15:55:57Z",
+    "entry_id": "019d06d0-1827-7c40-8499-04711ee916d2",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex"
+  }
+}

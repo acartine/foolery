@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a2-9a46-7962-8314-0df04360938e",
+  "occurred_at": "2026-03-19T15:06:52.870982Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Fast-forward merged commit cd7c6e04 (fix: hide lease knots from queue filters) to main. Remote origin/main updated. All tests pass (2127/2127). Typecheck clean. Lint has pre-existing issues unrelated to this change.",
+    "datetime": "2026-03-19T16:05:00Z",
+    "entry_id": "019d06a2-9a46-7962-8314-0de8f16aed94",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1613-662a-73a3-8e6a-11a7f707e166",
+  "occurred_at": "2026-03-22T15:04:23.338193Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation review. Verified the integrated scope-refinement implementation now (1) enqueues background refinement on successful beat creation without blocking the 201 response, (2) provides an in-memory queue plus async worker with configurable prompt and explicit opt-in agent dispatch, (3) wires scope_refinement into advanced pool dispatch and settings defaults/UI, and (4) exposes completion notifications plus status polling coverage through the real route and hook paths. Advanced child reviews 1061, 47a2, and 681b to ready_for_shipment during this session; the other children were already at ready_for_shipment. Sanity gates passed in work/foolery-d984: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-22T15:04:23.338193Z",
+    "entry_id": "019d1613-662a-73a3-8e6a-1198a55ce717",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1478-0f13-7c71-b126-1ceb47a94953",
+  "occurred_at": "2026-03-22T07:35:05.74711Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review APPROVED. Verified: (1) all commits live on main — merge 65c9f4f90a04, impl 78be211ba550, plus 5 prior iteration commits all tagged; (2) 2152 tests pass, contract test history-terminal-theme-contract passes; (3) lint clean on src/; (4) tsc/build errors are pre-existing stale work/ worktree pollution, not from this shipment — main src/ compiles cleanly; (5) changes correctly apply font-mono, subpixel-antialiased, 15px body text, leading-6/7, improved border/bg contrast matching terminal panel styling across agent-history-view.tsx, interaction-picker.tsx, terminal-panel.tsx; (6) no regressions detected.",
+    "datetime": "2026-03-22T08:35:00Z",
+    "entry_id": "019d1478-0f13-7c71-b126-1cd10f3df55a",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

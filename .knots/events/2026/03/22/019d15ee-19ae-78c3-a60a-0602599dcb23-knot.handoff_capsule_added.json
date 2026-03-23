@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ee-19ae-78c3-a60a-0602599dcb23",
+  "occurred_at": "2026-03-22T14:23:38.926929Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Completion notifications now invalidate beat-detail queries (queryKey: ['beat', completion.beatId]) in addition to beat-list queries, so open detail panels show refined content without manual refresh. Added scope-refinement-status-endpoint.test.ts covering the status/completion contract.",
+    "datetime": "2026-03-22T14:23:38.926929Z",
+    "entry_id": "019d15ee-19ae-78c3-a60a-05f9f2150b09",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a2-2b32-7791-8495-8b5b863327db",
+  "occurred_at": "2026-03-19T15:06:24.434176Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Rejecting implementation review because the new success-rate persistence is not safe under Foolery's concurrent session model. createSession explicitly allows multiple simultaneous sessions (src/lib/terminal-manager.ts:544-551), but appendOutcomeRecord performs readFile -> push -> writeFile against the shared stats file (src/lib/agent-outcome-stats.ts:51-69). Two sessions that finish near the same time can both read the same old array and the later write will drop the earlier record, so the requested per-agent success data is incomplete and unreliable. 2. Focused verification: bun run test -- src/lib/__tests__/terminal-manager-error-retry.test.ts passed; bunx tsc --noEmit passed. Missing coverage: no test exercises concurrent appends to the stats store, which is why this regression is currently undetected.",
+    "datetime": "2026-03-19T16:06:02+01:00",
+    "entry_id": "019d06a2-2b32-7791-8495-8b4a0baa2d57",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

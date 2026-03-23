@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fae-0a0d-7f02-8c46-dbee479ee2f5",
+  "occurred_at": "2026-03-21T09:15:57.325691Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved shipment review: main and origin/main are at commit 4793a2f29e5b37be18b8209306d33e0c2c2edd03, and the shipped diff is limited to src/components/agent-history-view.tsx and src/components/interaction-picker.tsx. The knot already includes the required commit tag commit:4793a2f29e5b for the single shipped commit in range. No knot invariants are defined. GitHub Actions CI and Coverage Badge workflows for commit 4793a2f29e5b37be18b8209306d33e0c2c2edd03 both completed successfully on 2026-03-21; the CI job passed dependency install, lint, unit tests with coverage, coverage regression check, and build. No dependent-system regressions are evident from the shipped scope and green pipeline.",
+    "datetime": "2026-03-21T09:15:42Z",
+    "entry_id": "019d0fae-0a0d-7f02-8c46-dbdc802d450e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

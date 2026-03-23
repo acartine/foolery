@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b6a-013c-78f3-8dd3-9ecaefe570ec",
+  "occurred_at": "2026-03-20T13:23:09.756728Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete: Add reset audit counters button to Settings > Defaults tab. 4 files: new alert-dialog UI primitive, DELETE handler on lease-audit route, client API helper, and button+dialog in settings-defaults-section. Truncates both lease-audit.jsonl and agent-success-rates.jsonl. Standard shadcn/ui AlertDialog for destructive confirmation.",
+    "datetime": "2026-03-20T12:00:00Z",
+    "entry_id": "019d0b6a-013c-78f3-8dd3-9ebf20ab6253",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

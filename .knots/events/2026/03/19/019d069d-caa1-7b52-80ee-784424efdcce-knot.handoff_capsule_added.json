@@ -1,0 +1,15 @@
+{
+  "event_id": "019d069d-caa1-7b52-80ee-784424efdcce",
+  "occurred_at": "2026-03-19T15:01:37.569776Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation already complete on main. Both features verified: (1) agent-outcome-stats.ts captures per-iteration success/failure records to .foolery-logs/agent-success-rates.json with success = exitCode 0 AND state moved to next/prior queue state; (2) terminal-manager.ts handleTakeIterationClose on error exit rolls back action states, records failure, retries with selectFromPoolStrict to force a different agent, terminates if no alternative available. All 153 test files pass (2125 tests), typecheck clean. Previous shipment failed due to merge conflicts which have since been resolved by integrating the changes into main.",
+    "datetime": "2026-03-19T16:02:00Z",
+    "entry_id": "019d069d-caa1-7b52-80ee-783435667c28",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

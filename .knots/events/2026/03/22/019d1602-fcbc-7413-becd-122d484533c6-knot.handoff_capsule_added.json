@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1602-fcbc-7413-becd-122d484533c6",
+  "occurred_at": "2026-03-22T14:46:27.77271Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Rolled back from implementation_review: settings opt-in wiring is correct and child e382 advanced, but child 1061 lacks real status route and notification-hook coverage, child 47a2 lacks a real beat-create enqueue contract test, and child 681b still misclassifies agent result failures and drops jobs on backend read failure. The shipment children share the same feature branch as those rejected siblings, so the parent returns to implementation.",
+    "datetime": "2026-03-22T14:46:27.77271Z",
+    "entry_id": "019d1602-fcbc-7413-becd-121b37261e74",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

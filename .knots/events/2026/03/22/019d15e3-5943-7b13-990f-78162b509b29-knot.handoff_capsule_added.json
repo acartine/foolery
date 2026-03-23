@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15e3-5943-7b13-990f-78162b509b29",
+  "occurred_at": "2026-03-22T14:11:54.307244Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review outcome: parent returned to ready_for_implementation because not all child reviews passed. Approved children: foolery-3465, foolery-d961, foolery-26e7. Rejected children: 1. foolery-e382: scope refinement defaults to enabled and falls back to a generic agent command when unconfigured, creating unexpected automatic agent execution. 2. foolery-47a2: POST /api/beats always triggers that unsafe refinement path after create, and the route contract is untested. 3. foolery-681b: the worker test file breaks bunx tsc --noEmit, failed jobs are dropped after dequeue, and agent-level result errors are not handled robustly. 4. foolery-1061: completion notifications do not invalidate the open beat-detail query, so refined beats can remain stale in the detail panel; endpoint/hook coverage is also missing.",
+    "datetime": "2026-03-22T14:11:54.307244Z",
+    "entry_id": "019d15e3-5943-7b13-990f-780cd47a5445",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

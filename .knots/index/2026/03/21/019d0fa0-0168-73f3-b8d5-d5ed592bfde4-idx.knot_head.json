@@ -1,0 +1,20 @@
+{
+  "event_id": "019d0fa0-0168-73f3-b8d5-d5ed592bfde4",
+  "occurred_at": "2026-03-21T09:00:37.602901Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ee66",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "History view: Should show notes, handoff_capsules, and states when toggled.",
+    "type": "work",
+    "updated_at": "2026-03-21T09:00:37.602901Z",
+    "workflow_id": "compatibility"
+  }
+}

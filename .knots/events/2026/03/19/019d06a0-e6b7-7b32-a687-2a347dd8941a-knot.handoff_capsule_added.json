@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a0-e6b7-7b32-a687-2a347dd8941a",
+  "occurred_at": "2026-03-19T15:05:01.367782Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Pushed commit cd7c6e04 (fix: hide lease knots from queue filters) to origin/main. CI green — lint, tests, coverage, and build all passed.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d06a0-e6b7-7b32-a687-2a225c968415",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

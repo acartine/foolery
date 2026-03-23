@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ee-61c5-7d31-b2e7-389d5a171c72",
+  "occurred_at": "2026-03-22T14:23:57.381089Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Re-implemented all 4 rejected children (e382, 681b, 47a2, 1061) addressing review feedback: scope refinement defaults to disabled, no fallback agent execution, failed jobs re-enqueued with retry limit, beat-detail query invalidation on completion. All quality gates pass (lint 0 errors, tsc clean, 2175 tests pass, build succeeds). Branch: work/foolery-d984-impl-20260322, commit: abf2838153e0.",
+    "datetime": "2026-03-22T14:23:57.381089Z",
+    "entry_id": "019d15ee-61c5-7d31-b2e7-3887f083067f",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

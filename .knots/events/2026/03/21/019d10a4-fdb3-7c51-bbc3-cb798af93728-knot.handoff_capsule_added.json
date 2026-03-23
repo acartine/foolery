@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10a4-fdb3-7c51-bbc3-cb798af93728",
+  "occurred_at": "2026-03-21T13:45:41.555392Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review rejected. 1. src/components/interaction-picker.tsx:337-342 only hides response types \"user\" and \"system\" when Detail is off, so \"result\" entries remain visible even though the acceptance criteria says only agent words and actions should remain. 2. src/lib/terminal-detail-filter.ts:14-69 only treats numbered lines as detail, so non-numbered tool response output still leaks after action headers; reproducer: filtering \"▶ Bash ls src\\nsrc\\npackage.json\\nNow I have context.\\n\" returns the directory listing instead of just the action header and prose. 3. src/components/terminal-panel.tsx:550-573 writes stderr directly to the terminal without passing through the filter, so Detail off still shows stderr tool responses. Validation: bun run test -- src/lib/__tests__/terminal-detail-filter.test.ts passed (12/12), which confirms current coverage but not the missing non-numbered/stderr cases.",
+    "datetime": "2026-03-21T13:45:41Z",
+    "entry_id": "019d10a4-fdb3-7c51-bbc3-cb6b0bf46736",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

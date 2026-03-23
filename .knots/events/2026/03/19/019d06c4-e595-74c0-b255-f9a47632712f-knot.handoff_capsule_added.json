@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06c4-e595-74c0-b255-f9a47632712f",
+  "occurred_at": "2026-03-19T15:44:20.373743Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review APPROVED. Both requirements fully satisfied: (1) Agent outcome stats captured in JSONL format with success classification based on exit code + state transition, stored in .foolery-logs/agent-success-rates.jsonl. This branch fixes concurrent safety by switching from read-modify-write JSON to atomic appendFile JSONL. (2) Error recovery flow correctly rolls back action states on non-zero exit, retries with strict agent exclusion via selectFromPoolStrict, and terminates loop when no alternative agent is available. Quality gates: tsc clean, 2134 tests pass, no lint errors in changed files. Test coverage includes concurrent append safety, error retry with agent switching, step failure rollback, and success classification.",
+    "datetime": "2026-03-19T16:45:00Z",
+    "entry_id": "019d06c4-e595-74c0-b255-f9966a1d8466",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4-6"
+  }
+}

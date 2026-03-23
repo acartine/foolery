@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0746-c092-7dd2-b3ec-7ec5306bd799",
+  "occurred_at": "2026-03-19T18:06:10.578764Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation verified: commit 6ad0326f fixes error-exit rollback telemetry so rolledBack is only true when the beat was in an action state requiring rollback. All quality gates pass: 18/18 tests (agent-outcome-stats + error-retry), tsc clean, build OK. Branch work/foolery-1f10-concurrent-fix pushed to origin.",
+    "datetime": "2026-03-19T19:06:00Z",
+    "entry_id": "019d0746-c092-7dd2-b3ec-7eba1c2a3cc5",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

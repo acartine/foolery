@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15e2-e886-73b3-807f-bf31677ab02f",
+  "occurred_at": "2026-03-22T14:11:25.446595Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Needs changes: 1. The branch fails the required typecheck gate because src/lib/__tests__/scope-refinement-worker.test.ts uses invalid EventEmitter casts at lines 42 and 77. 2. drainScopeRefinementQueue() removes a job before processing and processScopeRefinementJob() returns on load/agent/parse/update failures without retry or requeue, so failed refinements are lost (src/lib/scope-refinement-worker.ts:240-299). 3. runScopeRefinementPrompt() treats any exit-code-0 result as success and does not inspect normalized result error metadata, so agent failures can be misclassified as parse failures and then dropped (src/lib/scope-refinement-worker.ts:168-195).",
+    "datetime": "2026-03-22T14:11:25.446595Z",
+    "entry_id": "019d15e2-e886-73b3-807f-bf26afdc4ab2",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

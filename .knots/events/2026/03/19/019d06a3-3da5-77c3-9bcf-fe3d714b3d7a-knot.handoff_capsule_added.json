@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a3-3da5-77c3-9bcf-fe3d714b3d7a",
+  "occurred_at": "2026-03-19T15:07:34.693736Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment verified. Commit cd7c6e04 (fix: hide lease knots from queue filters) is on main and origin/main. CI green (both CI and Coverage Badge workflows passed). Tagged knot with commit hash.",
+    "datetime": "2026-03-19T15:30:00Z",
+    "entry_id": "019d06a3-3da5-77c3-9bcf-fe261eff797b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

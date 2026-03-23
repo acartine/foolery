@@ -1,0 +1,17 @@
+{
+  "event_id": "019d160d-565b-70a1-a10e-e3857b020ecf",
+  "occurred_at": "2026-03-22T14:57:46.075892Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "All three implementation children (681b, 47a2, 1061) fixed and advanced to implementation_review. Changes in commit 1014cbb68978 on branch work/foolery-d984-impl-20260322: (1) Worker now properly rejects is_error=true result events and re-enqueues on backend.get failure. (2) Beat creation test exercises real POST /api/beats route. (3) Status endpoint test calls real GET handler. (4) Notification hook logic extracted to testable filterNewCompletions with full test coverage. All quality gates pass: 163 test files, 2186 tests, zero lint errors, zero type errors, build succeeds.",
+    "datetime": "2026-03-22T14:57:46.075892Z",
+    "entry_id": "019d160d-565b-70a1-a10e-e3777a7b5a74",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

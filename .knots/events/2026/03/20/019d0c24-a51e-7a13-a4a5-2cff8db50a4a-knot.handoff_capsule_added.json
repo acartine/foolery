@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c24-a51e-7a13-a4a5-2cff8db50a4a",
+  "occurred_at": "2026-03-20T16:47:01.406687Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation complete. Changed Tabs className from 'flex flex-col h-full' to 'flex flex-col flex-1 min-h-0' so it takes available space but can shrink. Added shrink-0 to Separator and SheetFooter to prevent them from collapsing below the overflow-hidden clip boundary. Single file change (settings-sheet.tsx), 3 lines changed. All quality gates pass (lint, typecheck, build). Branch: worktree-foolery-3bcc-settings-footer, commit: 4d09452132fc.",
+    "datetime": "2026-03-20T00:00:00Z",
+    "entry_id": "019d0c24-a51e-7a13-a4a5-2ce32fc18509",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

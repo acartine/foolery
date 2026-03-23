@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0741-f6e2-7e52-a28a-272ed8eb8995",
+  "occurred_at": "2026-03-19T18:00:56.802554Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Patched terminal-manager error-exit telemetry so rolledBack is recorded only when the post-exit beat state was actually an action state and invariant enforcement succeeded. Added regression coverage for the queue-state/no-alternate-agent path to assert rolledBack=false and no rollback call. Validation: bun run test src/lib/__tests__/terminal-manager-error-retry.test.ts, bunx tsc --noEmit, bun run test, bun run build. Note: bun run lint fails repo-wide on pre-existing issues because eslint scans nested worktrees and .next artifacts outside this change.",
+    "datetime": "2026-03-19T18:00:27Z",
+    "entry_id": "019d0741-f6e2-7e52-a28a-271ef36c16aa",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex-CLI"
+  }
+}

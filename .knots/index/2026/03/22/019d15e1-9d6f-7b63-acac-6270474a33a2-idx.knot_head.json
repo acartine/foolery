@@ -1,0 +1,20 @@
+{
+  "event_id": "019d15e1-9d6f-7b63-acac-6270474a33a2",
+  "occurred_at": "2026-03-22T14:10:00.67976Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3465",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Create scope refinement default prompt template",
+    "type": "work",
+    "updated_at": "2026-03-22T14:10:00.67976Z",
+    "workflow_id": "compatibility"
+  }
+}

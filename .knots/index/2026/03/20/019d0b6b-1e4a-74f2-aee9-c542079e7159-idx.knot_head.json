@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0b6b-1e4a-74f2-aee9-c542079e7159",
+  "occurred_at": "2026-03-20T13:24:22.730185Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fc8e",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Audit Settings: Reset counters button and confirm dialog",
+    "type": "work",
+    "updated_at": "2026-03-20T13:24:22.730185Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0b6a-ecf5-7923-a369-cf34fd7cc3a8"
+  }
+}

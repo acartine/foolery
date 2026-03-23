@@ -1,0 +1,20 @@
+{
+  "event_id": "019d147f-5793-72c3-a108-9118684ad192",
+  "occurred_at": "2026-03-22T07:43:03.049854Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d486",
+    "profile_id": "autopilot",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "UI Terminal & Conversation History: Content filter toggles",
+    "type": "work",
+    "updated_at": "2026-03-22T07:43:03.049854Z",
+    "workflow_id": "compatibility"
+  }
+}

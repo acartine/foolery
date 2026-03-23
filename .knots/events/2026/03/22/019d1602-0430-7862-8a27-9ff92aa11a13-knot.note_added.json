@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-0430-7862-8a27-9ff92aa11a13",
+  "occurred_at": "2026-03-22T14:45:24.144154Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: scope-refinement-worker still misclassifies normalized result events with is_error=true and still drops jobs when backend get fails after dequeue. Those failure paths are not covered by tests.",
+    "datetime": "2026-03-22T14:45:24.144154Z",
+    "entry_id": "019d1602-0430-7862-8a27-9fe1d75f3a97",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

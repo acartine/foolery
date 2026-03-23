@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c2f-e14c-7a52-92b3-33d5253895c4",
+  "occurred_at": "2026-03-20T16:59:17.708122Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged worktree-foolery-3bcc-settings-footer to main (merge commit a3c4f397e317, feature commit 4d09452132fc). Change: replaced h-full with flex-1 min-h-0 on Tabs container and added shrink-0 to Separator/SheetFooter in settings-sheet.tsx so Save/Reset buttons remain visible in both basic and advanced dispatch modes. All quality gates pass (lint clean, typecheck clean, build succeeds). CI green on remote (run 23353509863).",
+    "datetime": "2026-03-20T16:58:00Z",
+    "entry_id": "019d0c2f-e14c-7a52-92b3-33c69dfcb100",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

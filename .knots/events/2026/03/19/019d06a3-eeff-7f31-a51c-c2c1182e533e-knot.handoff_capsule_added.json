@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a3-eeff-7f31-a51c-c2c1182e533e",
+  "occurred_at": "2026-03-19T15:08:20.095027Z",
+  "knot_id": "foolery-1b9c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Commit cd7c6e040d41 verified on main. CI green (CI + Coverage Badge). Code correctly filters lease-type knots from queue views with 2 test cases covering both meta and exact queue-state filters. No invariants, no regressions.",
+    "datetime": "2026-03-19T16:30:00+01:00",
+    "entry_id": "019d06a3-eeff-7f31-a51c-c2b44fb702f3",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

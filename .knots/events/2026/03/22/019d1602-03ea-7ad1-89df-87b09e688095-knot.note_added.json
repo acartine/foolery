@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-03ea-7ad1-89df-87b09e688095",
+  "occurred_at": "2026-03-22T14:45:24.074Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: beat-creation-scope-refinement.test.ts mocks enqueueBeatScopeRefinement and calls the mock directly, so it does not verify the real POST /api/beats enqueue hook or the disabled and no-agent guards.",
+    "datetime": "2026-03-22T14:45:24.074Z",
+    "entry_id": "019d1602-03ea-7ad1-89df-87ab273d3de8",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

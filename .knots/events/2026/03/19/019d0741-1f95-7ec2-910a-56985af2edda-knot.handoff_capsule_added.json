@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0741-1f95-7ec2-910a-56985af2edda",
+  "occurred_at": "2026-03-19T18:00:01.685386Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review APPROVED. Both requirements fully satisfied:\n\n1) Agent outcome stats: JSONL-based concurrent-safe tracking in .foolery-logs/agent-success-rates.jsonl. AgentOutcomeRecord captures agent identity, claimed/post-exit state, exit code, rollback status, and success classification. Success = exit 0 AND beat moved to next or prior queue state. 7 unit tests for stats module.\n\n2) Error-exit retry with agent exclusion: handleTakeIterationClose rolls back action states via enforceQueueTerminalInvariant, then retries with a different agent from the pool (strict exclusion via selectFromPoolStrict). Terminates if no alternative agent is available. 8 integration tests covering retry, no-alternative stop, success classification, and rollback-before-retry.\n\nQuality gates: 2134 tests passing, typecheck clean, lint clean, build successful. No security issues or regressions.",
+    "datetime": "2026-03-19T19:00:00Z",
+    "entry_id": "019d0741-1f95-7ec2-910a-568f317c7464",
+    "model": "claude-opus-4-6",
+    "username": "foolery",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d2da-7bc1-b30b-93a253ea3641",
+  "occurred_at": "2026-03-22T14:03:41.146322Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented async scope refinement enqueue-on-create on work/foolery-d984-impl-20260322 (1438d84292f4): beat creation now returns immediately and schedules background refinement best-effort.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d2da-7bc1-b30b-93902bf9acaa",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

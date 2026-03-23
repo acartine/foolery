@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a1-03e3-7073-8b11-7f24a168103d",
+  "occurred_at": "2026-03-19T15:05:08.835284Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the remaining 1f10 retry-loop delta on current main. Take-loop iterations now write detailed per-agent outcome records plus aggregated success summaries to .foolery-logs/agent-success-rates.json, classify zero-exit outcomes precisely, and only mark rollbacks when an action-state rollback actually occurred. Added coverage for outcome storage/reporting and terminal-manager retry classifications. Verified with bun run lint . (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-19T15:04:43Z",
+    "entry_id": "019d06a1-03e3-7073-8b11-7f172ee3874f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

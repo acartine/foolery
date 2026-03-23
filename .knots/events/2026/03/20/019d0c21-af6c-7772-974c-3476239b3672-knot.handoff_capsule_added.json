@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c21-af6c-7772-974c-3476239b3672",
+  "occurred_at": "2026-03-20T16:43:47.436096Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan complete for foolery-3bcc. Root cause: Tabs component in settings-sheet.tsx uses h-full which, combined with default min-height:auto and the tall pools section in advanced mode, pushes the Save/Reset footer outside the overflow-hidden boundary. Fix: change Tabs className from \"flex flex-col h-full\" to \"flex flex-col flex-1 min-h-0\" and add shrink-0 to the footer elements. Single file change, low risk.",
+    "datetime": "2026-03-20T12:00:00Z",
+    "entry_id": "019d0c21-af6c-7772-974c-3469781a49f2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

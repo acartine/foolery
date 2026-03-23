@@ -1,0 +1,15 @@
+{
+  "event_id": "019d146c-e8c4-71a2-8d59-48956d53fe4d",
+  "occurred_at": "2026-03-22T07:22:55.044658Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Replaced heuristic text-based terminal detail filter with event-type-based filtering. formatStreamEvent now returns { text, isDetail }, and the terminal manager emits stdout_detail events for tool results/stream_events/metadata. Terminal panel skips stdout_detail when detail toggle is off. Fixed codex normalizer: command_execution item.started now produces assistant-type messages with tool_use blocks so action headers appear for all agents. Removed dead code: terminal-detail-filter.ts and terminal-stream-visibility.ts. All quality gates pass (lint, typecheck, 156 test files / 2150 tests, build). Pushed to origin/main as 0c931afdd46f.",
+    "datetime": "2026-03-22T08:25:00Z",
+    "entry_id": "019d146c-e8c4-71a2-8d59-48820a41888b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fa3-1f75-7b02-8ccc-20f62a8533ef",
+  "occurred_at": "2026-03-21T09:04:01.909125Z",
+  "knot_id": "foolery-ee66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete. The implementation plan extracts shared metadata helpers and UI components from retakes-view.tsx into reusable modules, then extends BeatDetailContent in agent-history-view.tsx to render structured notes, handoff capsules, and state history from beat.metadata — gated behind a ChevronRight disclosure toggle matching the retakes-view pattern. Four files affected: two new shared modules, two updated components.",
+    "datetime": "2026-03-21T12:00:00Z",
+    "entry_id": "019d0fa3-1f75-7b02-8ccc-20eb8902d3d3",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

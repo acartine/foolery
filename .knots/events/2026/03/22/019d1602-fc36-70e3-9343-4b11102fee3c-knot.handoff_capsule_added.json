@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1602-fc36-70e3-9343-4b11102fee3c",
+  "occurred_at": "2026-03-22T14:46:27.638284Z",
+  "knot_id": "foolery-3465",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rolled back from shipment: the prompt-template implementation itself looks sound, but the only available feature branch also includes sibling changes that failed review. This child cannot be shipped independently from the shared branch without violating shipment scope.",
+    "datetime": "2026-03-22T14:46:27.638284Z",
+    "entry_id": "019d1602-fc36-70e3-9343-4b0b17b53243",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

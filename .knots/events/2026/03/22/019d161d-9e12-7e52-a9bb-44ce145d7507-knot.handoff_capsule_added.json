@@ -1,0 +1,17 @@
+{
+  "event_id": "019d161d-9e12-7e52-a9bb-44ce145d7507",
+  "occurred_at": "2026-03-22T15:15:33.01015Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped the integrated scope-refinement feature by merging work/foolery-d984-impl-20260322 into origin/main as merge commit feb1bdb127ca. Remote GitHub Actions for feb1bdb127ca succeeded: CI run 23405982215 and Coverage Badge run 23405982239.",
+    "datetime": "2026-03-22T15:15:33.01015Z",
+    "entry_id": "019d161d-9e12-7e52-a9bb-44b45dd0c7f4",
+    "knot_state": "shipment",
+    "knot_step": "shipment",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d0fac-ae0b-72a2-bdf7-d9bca4e1fa84",
+  "occurred_at": "2026-03-21T09:14:28.235185Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c355",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Conversation History - Conversation Log - make all fonts one size bigger and provide better contrast",
+    "type": "work",
+    "updated_at": "2026-03-21T09:14:28.235185Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d0fac-7598-7691-9289-f1c3fd936f46"
+  }
+}

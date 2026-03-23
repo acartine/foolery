@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1481-e94f-7c30-b9b2-fe01f9b4f8b0",
+  "occurred_at": "2026-03-22T07:45:51.439293Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment issue: latest d486 shipment did not reach main. Tagged commit b2de69b9ceae exists only on origin/work/foolery-d486-impl-20260321; local and origin main are both 65c9f4f90a04, so the current main branch does not contain the latest thinking-detail fix and cannot be approved in shipment_review.",
+    "datetime": "2026-03-22T07:45:51.439293Z",
+    "entry_id": "019d1481-e94f-7c30-b9b2-fdfe56e81a94",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

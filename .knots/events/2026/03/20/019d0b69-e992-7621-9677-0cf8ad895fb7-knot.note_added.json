@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b69-e992-7621-9677-0cf8ad895fb7",
+  "occurred_at": "2026-03-20T13:23:03.698424Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Implementation Plan: Audit Settings Reset Counters\n\n## Summary\nAdd a \"Reset Audit Data\" button to the Settings > Defaults tab with a confirmation dialog. This truncates the two JSONL audit files (`lease-audit.jsonl` and `agent-success-rates.jsonl`) so counters start fresh during testing.\n\n## Architecture\n\n### Backend: New DELETE API route\n**File:** `src/app/api/lease-audit/route.ts` (add DELETE handler)\n\n- Add a `DELETE` handler that:\n  1. Resolves the audit log roots (reuse `resolveAuditLogRoots`)\n  2. Truncates `lease-audit.jsonl` in all roots (write empty string)\n  3. Truncates `agent-success-rates.jsonl` via `resolveStatsPath` (write empty string)\n  4. Returns `{ ok: true }` on success or 500 on error\n- Truncation (overwrite with empty) is safer than delete — avoids race conditions with concurrent appenders that would recreate the file anyway.\n\n### Client API\n**File:** `src/lib/lease-audit-api.ts`\n\n- Add `resetLeaseAudit()` function that calls `DELETE /api/lease-audit`\n\n### UI: Confirmation dialog + button in Defaults section\n**File:** `src/components/settings-defaults-section.tsx`\n\n- Add a \"Reset Audit Data\" section below the existing controls with:\n  - A destructive-styled Button (\"Reset Audit Counters\")\n  - An AlertDialog (from shadcn/ui — needs to be added since `alert-dialog.tsx` doesn't exist yet) with:\n    - Title: \"Reset audit counters?\"\n    - Description: explains this will permanently delete all audit events and aggregates\n    - Cancel + Continue (destructive) buttons\n  - On confirm: call `resetLeaseAudit()`, toast success/error, invalidate `[\"lease-audit\"]` query cache\n\n### New UI primitive\n**File:** `src/components/ui/alert-dialog.tsx`\n\n- Add the shadcn/ui AlertDialog component (standard Radix primitive wrapper). This is the idiomatic way to handle destructive confirmations in this UI kit.\n\n## File Changes\n\n| File | Change |\n|------|--------|\n| `src/components/ui/alert-dialog.tsx` | **New** — shadcn AlertDialog primitive |\n| `src/app/api/lease-audit/route.ts` | Add DELETE handler |\n| `src/lib/lease-audit-api.ts` | Add `resetLeaseAudit()` |\n| `src/components/settings-defaults-section.tsx` | Add reset button + AlertDialog |\n\n## Test Strategy\n- Manual: open settings, click reset, confirm dialog appears, confirm resets, toast shows, audit view shows empty data\n- Verify the DELETE route truncates both files\n- Verify cancel in dialog does nothing\n\n## Risks\n- **Low:** Concurrent appends during truncation — acceptable since this is a dev/testing tool\n- **Low:** Multiple audit roots — the DELETE handler iterates all roots\n\n## Complexity\nSmall — ~4 files touched, straightforward CRUD pattern matching existing conventions.",
+    "datetime": "2026-03-20T13:23:03.698424Z",
+    "entry_id": "019d0b69-e992-7621-9677-0ce299716501",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

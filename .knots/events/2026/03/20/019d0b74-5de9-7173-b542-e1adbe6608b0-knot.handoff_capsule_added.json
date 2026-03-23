@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b74-5de9-7173-b542-e1adbe6608b0",
+  "occurred_at": "2026-03-20T13:34:28.841215Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-fc8e-reset-counters to main (3f343f384634). 4 files changed: DELETE handler in lease-audit route, resetLeaseAudit() client API, AlertDialog UI primitive, reset button in settings-defaults-section. All quality gates pass locally and CI green on remote.",
+    "datetime": "2026-03-20T13:34:00Z",
+    "entry_id": "019d0b74-5de9-7173-b542-e191013d407e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

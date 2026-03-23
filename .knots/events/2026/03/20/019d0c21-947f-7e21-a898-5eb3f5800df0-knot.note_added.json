@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c21-947f-7e21-a898-5eb3f5800df0",
+  "occurred_at": "2026-03-20T16:43:40.54358Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Root Cause\n\nIn `settings-sheet.tsx` (line 146), the `<Tabs>` component has `className=\"flex flex-col h-full\"`. It is a flex child of `SheetContent`, which renders with `flex flex-col h-full overflow-hidden` (from Radix + custom classes).\n\nThe CSS issue:\n1. `h-full` on Tabs means `height: 100%` — it tries to take all parent height\n2. As a flex child, its default `min-height: auto` resolves to the content's intrinsic height\n3. In advanced mode, `SettingsPoolsSection` renders 6 workflow step editors (much more content than basic mode's 3 action rows)\n4. The large intrinsic min-height causes Tabs to overflow the parent\n5. The `<Separator>` and `<SheetFooter>` (containing Save/Reset buttons) are pushed below the `overflow-hidden` clip boundary of SheetContent\n\nIn basic mode, the 3 action rows are short enough that the Tabs' min-height stays within bounds, so the footer remains visible.\n\n### Fix\n\n**File: `src/components/settings-sheet.tsx`**\n\n1. Change the Tabs className from `\"flex flex-col h-full\"` to `\"flex flex-col flex-1 min-h-0\"`:\n   - `flex-1` makes it take available space (replaces `h-full`)\n   - `min-h-0` overrides the content-based minimum height so the Tabs can shrink\n   - The inner `overflow-y-auto` div will handle scrolling the content\n\n2. Add `shrink-0` to the Separator + SheetFooter wrapper (or individually) so they never collapse.\n\n### Test Strategy\n\n- Visual verification: open Settings > Dispatch tab, toggle between Simple and Advanced modes, confirm Save/Reset buttons visible in both\n- Verify all other tabs (Repos, Agents, Defaults) still show the footer correctly\n- Verify scrolling works properly in both modes when content overflows\n\n### Complexity\n\nLow — single file, 1-2 class name changes.\n\n### Risk\n\nMinimal — only affects flex layout of the settings sheet. The change from `h-full` to `flex-1 min-h-0` is a standard flexbox pattern for scroll containers.",
+    "datetime": "2026-03-20T16:43:40.54358Z",
+    "entry_id": "019d0c21-947f-7e21-a898-5ea1f51e4af1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fad-07c7-7742-8a1f-898087cf9366",
+  "occurred_at": "2026-03-21T09:14:51.207154Z",
+  "knot_id": "foolery-ee66",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented shared beat metadata details for history and retakes, added the history detail toggle for steps/notes/handoff capsules, and passed bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-21T09:13:48Z",
+    "entry_id": "019d0fad-07c7-7742-8a1f-897bd38a060b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

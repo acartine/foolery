@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d2bd-76a1-b21e-418194ba4285",
+  "occurred_at": "2026-03-22T14:03:41.117005Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the scope refinement worker on work/foolery-d984-impl-20260322 (1438d84292f4): added background draining, agent dispatch/parsing, beat updates, startup wiring, and worker tests.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d2bd-76a1-b21e-41746d09cfa1",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

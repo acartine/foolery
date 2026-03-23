@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0736-fe48-7691-b0fc-c5e7271cf6ff",
+  "occurred_at": "2026-03-19T17:48:57.800459Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude",
+    "content": "Implementation already complete and merged to main. All features (agent outcome stats with JSONL storage, success classification based on queue state transitions, error-exit rollback + retry with different agent) are implemented and tested (7 tests passing). Key commits: 698d4757 (error retry), b3acd4ba (stats + success classification), 15d8d971 (JSONL concurrent safety), bc1963b8 (merge to main).",
+    "datetime": "2026-03-19T18:49:00Z",
+    "entry_id": "019d0736-fe48-7691-b0fc-c5d2afa3c7a9",
+    "model": "opus",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

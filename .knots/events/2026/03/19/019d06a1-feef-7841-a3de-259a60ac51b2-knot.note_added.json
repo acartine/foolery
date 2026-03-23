@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06a1-feef-7841-a3de-259a60ac51b2",
+  "occurred_at": "2026-03-19T15:06:13.103511Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review rejected: src/lib/agent-outcome-stats.ts updates .foolery-logs/agent-success-rates.json with a read-modify-write cycle, so concurrent Take sessions can overwrite each other and lose per-iteration outcome records.",
+    "datetime": "2026-03-19T15:06:13.103511Z",
+    "entry_id": "019d06a1-feef-7841-a3de-2586cf7b46fc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

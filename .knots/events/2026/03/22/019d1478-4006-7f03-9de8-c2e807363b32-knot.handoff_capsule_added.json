@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1478-4006-7f03-9de8-c2e807363b32",
+  "occurred_at": "2026-03-22T07:35:18.278931Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Acceptance failure: [agent-adapter.ts:209] maps Codex command_execution item.started to stream_event text ([executing] ...), while [history-response-visibility.ts:1] only shows assistant responses when Detail is off. That hides the action entirely in Conversation History instead of preserving agent words and actions. 2. Acceptance failure: [terminal-detail-filter.ts:21] and [terminal-detail-filter.ts:74] only enter detail-suppression mode after a ▶ header or numbered line, and [terminal-detail-filter.ts:96] passes other lines through unchanged. Because Codex emits [executing] ... plus user/tool_result output, terminal Detail-off still leaks command/file output. 3. Coverage gap: [agent-adapter.test.ts:155] asserts the broken stream_event normalization, and [terminal-detail-filter.test.ts:140] only covers ▶-prefixed tool output. There is no regression test for the Codex path that must preserve the action while hiding the result.",
+    "datetime": "2026-03-22T07:35:08Z",
+    "entry_id": "019d1478-4006-7f03-9de8-c2db4eee8e98",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "gpt-5.4"
+  }
+}

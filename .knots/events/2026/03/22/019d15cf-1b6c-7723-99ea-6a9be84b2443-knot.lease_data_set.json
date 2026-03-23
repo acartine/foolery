@@ -1,0 +1,19 @@
+{
+  "event_id": "019d15cf-1b6c-7723-99ea-6a9be84b2443",
+  "occurred_at": "2026-03-22T13:49:47.756928Z",
+  "knot_id": "foolery-77c6",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "OpenAI",
+        "agent_type": "",
+        "model": "gpt",
+        "model_version": "5.4",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1774186595340-8540yo"
+    }
+  }
+}

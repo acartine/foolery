@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15c6-793a-7332-aafa-d043475d2964",
+  "occurred_at": "2026-03-22T13:40:21.946195Z",
+  "knot_id": "foolery-1901",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan ready: fix the regression in the knots backend by parsing `Acceptance Criteria:` notes back into `beat.acceptance`, filtering those tagged entries out of visible notes, centralizing the acceptance marker write path, and adding focused knots backend regression tests for round-trip, latest-value wins, and clean notes behavior. All-repositories mode appears to be exposing an adapter bug rather than routing the edit to the wrong repo.",
+    "datetime": "2026-03-22T13:40:21.946195Z",
+    "entry_id": "019d15c6-793a-7332-aafa-d03c5177a65e",
+    "knot_state": "planning",
+    "knot_step": "planning",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d109c-023e-76f3-a94f-4260158fb813",
+  "occurred_at": "2026-03-21T13:35:52.894954Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged feature branch work/foolery-c355-impl-20260321 (fcba1f7d) to main via merge commit a57ac980. Pushed to origin/main. Lint and typecheck clean (work/ worktree errors are pre-existing, not in src/). Changes: font sizes bumped +1px across conversation log components, text colors shifted lighter for better contrast on dark backgrounds, background opacities increased, icon sizes bumped in agent-history-view.tsx and interaction-picker.tsx.",
+    "datetime": "2026-03-21T09:15:00Z",
+    "entry_id": "019d109c-023e-76f3-a94f-4252d443724e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

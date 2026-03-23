@@ -1,0 +1,16 @@
+{
+  "event_id": "019d1602-040e-7e12-bfbb-7db713ca2c1e",
+  "occurred_at": "2026-03-22T14:45:24.110518Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejected in implementation_review: src/lib/__tests__/beat-creation-scope-refinement.test.ts is a tautological mock test and does not exercise src/app/api/beats/route.ts enqueue wiring or the real enqueueBeatScopeRefinement guard paths.",
+    "datetime": "2026-03-22T14:45:24.110518Z",
+    "entry_id": "019d1602-040e-7e12-bfbb-7da86f6a1287",
+    "knot_state": "ready_for_implementation",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

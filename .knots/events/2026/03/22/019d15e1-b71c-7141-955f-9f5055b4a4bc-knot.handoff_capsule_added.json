@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15e1-b71c-7141-955f-9f5055b4a4bc",
+  "occurred_at": "2026-03-22T14:10:07.260529Z",
+  "knot_id": "foolery-d961",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Reviewed on work/foolery-d984-impl-20260322 (1438d84292f4). src/lib/scope-refinement-queue.ts implements an HMR-safe in-memory FIFO queue, and src/lib/__tests__/scope-refinement-queue.test.ts covers enqueue/dequeue order plus reset behavior. No child-scope issues found in this slice.",
+    "datetime": "2026-03-22T14:10:07.260529Z",
+    "entry_id": "019d15e1-b71c-7141-955f-9f4cf4b36513",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

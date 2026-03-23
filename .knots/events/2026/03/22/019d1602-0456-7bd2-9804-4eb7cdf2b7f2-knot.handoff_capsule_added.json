@@ -1,0 +1,16 @@
+{
+  "event_id": "019d1602-0456-7bd2-9804-4eb7cdf2b7f2",
+  "occurred_at": "2026-03-22T14:45:24.182634Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Rejected in implementation_review: src/lib/scope-refinement-worker.ts treats normalized result events with is_error=true as successful text results, and processScopeRefinementJob returns without re-enqueueing when getBackend().get() fails. Both are real worker regressions and neither path is covered in src/lib/__tests__/scope-refinement-worker.test.ts.",
+    "datetime": "2026-03-22T14:45:24.182634Z",
+    "entry_id": "019d1602-0456-7bd2-9804-4ea89648ccaf",
+    "knot_state": "ready_for_implementation",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

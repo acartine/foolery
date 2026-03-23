@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0fa2-f3e7-73d2-86a2-ba0874be4d39",
+  "occurred_at": "2026-03-21T09:03:50.759084Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Planning complete for conversation log readability improvements. The plan covers two files (agent-history-view.tsx and interaction-picker.tsx) with systematic font size bumps (+1 step across all 4 size tiers), contrast upgrades (lighter text colors for secondary elements, stronger background opacity on entry cards), and minor icon size increases. All changes are Tailwind class replacements — no layout, spacing, or behavioral changes. Low risk, easily verified visually and via lint/typecheck.",
+    "datetime": "2026-03-21T12:00:00Z",
+    "entry_id": "019d0fa2-f3e7-73d2-86a2-b9f4a51aceac",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

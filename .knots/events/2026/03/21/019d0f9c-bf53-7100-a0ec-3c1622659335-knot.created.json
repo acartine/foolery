@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0f9c-bf53-7100-a0ec-3c1622659335",
+  "occurred_at": "2026-03-21T08:57:04.083653Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.created",
+  "data": {
+    "body": "the conversation log and it's title bars, really all of it's components are incredibly different to read because the fonts are too small and have terrible contrast against their backgrounds.  Do something smart to make them not just bigger, but with stronger background contrast.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Conversation History - Conversation Log - make all fonts one size bigger and provide better contrast",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

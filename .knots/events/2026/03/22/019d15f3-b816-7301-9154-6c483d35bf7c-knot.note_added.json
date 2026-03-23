@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15f3-b816-7301-9154-6c483d35bf7c",
+  "occurred_at": "2026-03-22T14:29:47.158021Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Child foolery-26e7 failed shipment review. The Settings UI still hard-codes scopeRefinement.enabled=true in src/components/settings-sheet.tsx, so Reset to Defaults or saving from that local default can re-enable automatic scope refinement despite the intended backend default of false.",
+    "datetime": "2026-03-22T14:29:47.158021Z",
+    "entry_id": "019d15f3-b816-7301-9154-6c367e796bf5",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1473-5364-7bd3-bac6-86b2803575bd",
+  "occurred_at": "2026-03-22T07:29:55.556598Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment complete. Merged work/foolery-c355-impl-20260322 to main (commit 65c9f4f90a04). Pushed to origin/main. CI green: lint, tests (2152 passed), coverage check, and build all pass. Changes: agent-history-view.tsx, interaction-picker.tsx, and contract test — conversation log now matches terminal panel styling for font sizes, colors, and contrast.",
+    "datetime": "2026-03-22T07:30:00Z",
+    "entry_id": "019d1473-5364-7bd3-bac6-86a4aade0937",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

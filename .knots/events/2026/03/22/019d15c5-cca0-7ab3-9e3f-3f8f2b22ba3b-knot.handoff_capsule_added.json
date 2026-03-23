@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15c5-cca0-7ab3-9e3f-3f8f2b22ba3b",
+  "occurred_at": "2026-03-22T13:39:37.760287Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan complete for scope refinement worker. 7 child knots created in dependency order:\n\nWave 1 (parallel): e382 (schema extension), 3465 (default prompt), d961 (job queue)\nWave 2 (parallel): 681b (worker + agent dispatch), 47a2 (beat creation hook), 26e7 (settings UI)\nWave 3: 1061 (notification hook + status endpoint)\n\nKey decisions:\n- In-memory queue (no external deps) — matches existing terminal/orchestration session patterns\n- scope_refinement added as poolable dispatch state in PoolsSettings\n- Prompt configurable per-project via Settings > Defaults tab\n- Agent selection via Basic (single agent) or Advanced (weighted pool) dispatch modes\n- Notification bridged from server to client via polling status endpoint\n- Fire-and-forget enqueue in POST /api/beats — does not block creation",
+    "datetime": "2026-03-22T13:39:37.760287Z",
+    "entry_id": "019d15c5-cca0-7ab3-9e3f-3f737973b4ed",
+    "knot_state": "planning",
+    "knot_step": "planning",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

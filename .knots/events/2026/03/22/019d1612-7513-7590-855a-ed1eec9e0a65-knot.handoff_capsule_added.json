@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1612-7513-7590-855a-ed1eec9e0a65",
+  "occurred_at": "2026-03-22T15:03:21.619009Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved in implementation review. Verified the async scope-refinement worker now treats normalized result events with is_error=true as failures, re-enqueues jobs when backend.get fails after dequeue, and keeps retry handling on other parse/update/agent failures. Worker tests cover successful refinement, disabled/no-agent skips, agent failure, is_error rejection, backend.get failure, unparseable output, and update failure. Sanity gates passed in work/foolery-d984: bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-22T15:03:21.619009Z",
+    "entry_id": "019d1612-7513-7590-855a-ed053f22011d",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

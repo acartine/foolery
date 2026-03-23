@@ -1,0 +1,15 @@
+{
+  "event_id": "019d073a-2b9b-7282-9e55-685dfd6ac795",
+  "occurred_at": "2026-03-19T17:52:26.010967Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review blocked: src/lib/terminal-manager.ts records outcome stats with record.rolledBack = invariantOk after non-zero exits. enforceQueueTerminalInvariant() returns true both when rollback succeeds and when no rollback was needed because the beat already rests in a queue or terminal state, so errored iterations can be logged as rolled back even when nothing was rolled back. That makes the new detailed success-rate log inaccurate for the exact telemetry this beat adds. Existing coverage only asserts the true case and misses the false case.",
+    "datetime": "2026-03-19T17:52:26.010967Z",
+    "entry_id": "019d073a-2b9b-7282-9e55-684258a982b3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

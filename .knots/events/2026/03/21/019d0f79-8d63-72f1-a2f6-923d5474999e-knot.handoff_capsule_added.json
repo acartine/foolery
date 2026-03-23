@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f79-8d63-72f1-a2f6-923d5474999e",
+  "occurred_at": "2026-03-21T08:18:37.53985Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan review approved. Agent History View approach is sound: filtering on response entry type (hiding user/system, keeping assistant/result) leverages existing filterEntry infrastructure correctly. Terminal Panel approach is viable: stateful line-buffer filter with numbered-line pattern matching (\\s+\\d+→), bounded buffer replay on toggle change. Test strategy adequate. Minor note: clarify thinkingDetail vs messageTypeFilters interaction during implementation.",
+    "datetime": "2026-03-21T12:00:00Z",
+    "entry_id": "019d0f79-8d63-72f1-a2f6-922cb2e6a68c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

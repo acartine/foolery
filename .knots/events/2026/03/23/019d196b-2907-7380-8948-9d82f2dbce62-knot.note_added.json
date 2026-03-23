@@ -1,0 +1,15 @@
+{
+  "event_id": "019d196b-2907-7380-8948-9d82f2dbce62",
+  "occurred_at": "2026-03-23T06:39:06.503443Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning summary\n- The Active view bug is coming from backend filtering, not table rendering. Both `src/lib/backends/knots-backend.ts` and `src/lib/backends/beads-backend.ts` treat `state=in_action` the same way as `state=queued`: after filtering, they append every descendant whose ancestor is in a queued state.\n- That behavior allows a shipped child like `3b3b.2` to appear in Active solely because an ancestor is queued, while the queued ancestor itself is not included in the `in_action` result. The UI then renders an orphaned shipped row, which matches the reported confusion.\n- Existing tests already lock in this behavior on the Knots side (`src/lib/__tests__/knots-backend.test.ts` has an `in_action` case that expects a shipped child to be included). Beads has queued coverage but no matching regression for the active leak.\n\nImplementation plan\n1. Split phase-filter expansion by view intent instead of sharing one `isPhaseFilter` path.\n   - Keep descendant expansion for `queued`, because that is the documented/intentional behavior for showing all children of queued parents.\n   - Stop descendant expansion for `in_action`, or route it through a separate helper with active-specific rules, so Active only returns rows that are themselves in an active workflow state.\n2. Apply the same change to both backends for parity.\n   - `src/lib/backends/knots-backend.ts`\n   - `src/lib/backends/beads-backend.ts`\n   This avoids a Knots-only fix drifting from Beads behavior and keeps the shared UI semantics consistent.\n3. Update regression coverage.\n   - Replace the Knots test that currently expects queued-parent descendants in `in_action` with the opposite expectation: terminal/queued descendants of queued parents must not appear in Active unless they themselves match the active phase.\n   - Add a Beads backend regression covering the same Active-view rule so both backends enforce it.\n   - Keep queued-view tests unchanged to prove queued descendants still remain visible there.\n4. Validate with targeted and full repo checks during implementation.\n   - Targeted tests for the touched backend suites first.\n   - Then repo gates before commit: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`.\n\nComplexity and risks\n- Complexity: low to medium. The filter logic is localized, but behavior is duplicated across both backends and one existing test intentionally codifies the bug.\n- Primary risk: accidentally removing the queued-view descendant context that operators rely on. The fix should preserve queued expansion exactly as-is while tightening only the Active view.\n- No child knots needed; the change is small and self-contained.",
+    "datetime": "2026-03-23T06:38:07Z",
+    "entry_id": "019d196b-2907-7380-8948-9d703bdd56fe",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "codex-cli"
+  }
+}

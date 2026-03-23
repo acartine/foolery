@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f97-3f0f-7c83-bfb7-dd86ac5a51c3",
+  "occurred_at": "2026-03-21T08:51:03.567671Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) commits 149a398c1a49 and 6e921ed4a276 live on main, (2) both commit tags present, (3) CI+Coverage Badge green on merge commit, (4) all 2156 tests pass, no type errors, no new lint errors in changed files. Implementation adds Detail toggle (default off) to interaction-picker and terminal-panel, with stateful line filter for terminal output. Code is clean and matches plan.",
+    "datetime": "2026-03-21T09:45:00+01:00",
+    "entry_id": "019d0f97-3f0f-7c83-bfb7-dd77f89305d4",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

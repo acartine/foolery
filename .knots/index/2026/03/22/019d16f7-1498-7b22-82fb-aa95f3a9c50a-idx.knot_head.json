@@ -1,0 +1,20 @@
+{
+  "event_id": "019d16f7-1498-7b22-82fb-aa95f3a9c50a",
+  "occurred_at": "2026-03-22T19:13:04.664603Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-681b",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create scope refinement async worker with agent dispatch",
+    "type": "work",
+    "updated_at": "2026-03-22T19:13:04.664603Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d073a-2b9b-7282-9e55-6878ffb924bd",
+  "occurred_at": "2026-03-19T17:52:26.010967Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review rejected. The shipped retry behavior, strict alternate-agent selection, main-branch merge (bc1963b82eca), commit tags, and CI runs are all in place, but the new outcome telemetry is incorrect: on error exit, terminal-manager stores rolledBack=true whenever enforceQueueTerminalInvariant() returns true, which includes the no-op case where the beat is already in a valid queue/terminal state. This misstates the detailed agent outcome record the feature is meant to persist. Targeted tests passed for agent-outcome stats, strict pool exclusion, and terminal-manager abort behavior, but there is no regression test covering the non-rollback error-exit path.",
+    "datetime": "2026-03-19T17:52:30Z",
+    "entry_id": "019d073a-2b9b-7282-9e55-686c2e15cb88",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "GPT-5"
+  }
+}

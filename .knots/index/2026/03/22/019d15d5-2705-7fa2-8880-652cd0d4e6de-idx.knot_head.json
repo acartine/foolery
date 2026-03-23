@@ -1,0 +1,20 @@
+{
+  "event_id": "019d15d5-2705-7fa2-8880-652cd0d4e6de",
+  "occurred_at": "2026-03-22T13:56:23.941918Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1901",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "All Repositories Mode:  Beat Detail:  Editing Acceptance Criteria is corrupted and pasted into Notes instead",
+    "type": "work",
+    "updated_at": "2026-03-22T13:56:23.941918Z",
+    "workflow_id": "compatibility"
+  }
+}

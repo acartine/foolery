@@ -1,0 +1,15 @@
+{
+  "event_id": "019d196b-5cb4-77c3-92c9-545cf66facc8",
+  "occurred_at": "2026-03-23T06:39:19.732581Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Active-view leak traced to shared backend filtering. Both backends currently expand descendants of queued ancestors for `state=in_action`, which can surface shipped children without their queued parent context. Implementation should restrict descendant expansion to the queued view, update both backend copies for parity, and replace/add regression tests proving Active only shows active-state rows while queued still shows full descendant context.",
+    "datetime": "2026-03-23T06:38:07Z",
+    "entry_id": "019d196b-5cb4-77c3-92c9-54462449f170",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "codex-cli"
+  }
+}

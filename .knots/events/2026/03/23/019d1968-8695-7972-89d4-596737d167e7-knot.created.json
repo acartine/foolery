@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1968-8695-7972-89d4-596737d167e7",
+  "occurred_at": "2026-03-23T06:36:13.845062Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.created",
+  "data": {
+    "body": "As title says, and even though this is a child and parent beat, neither the parent nor it's children are shown, so it doesn't really make sense to show it.  Obviouslly a shipped beat is not active, and if it's listed as active because it has active chilrden or parent, then show them too.  either way it's a confusing bug.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Active Screen:  Maestro repo shows 3b3b.2, which is shipped",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

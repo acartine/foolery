@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ee-0dec-7592-b399-d3647587e775",
+  "occurred_at": "2026-03-22T14:23:35.916436Z",
+  "knot_id": "foolery-681b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed worker: handles null agent from getScopeRefinementAgent(), re-enqueues failed jobs with retry limit (max 2) instead of dropping them, handles agent result errors, wraps drain loop in try/catch per-job, added resetScopeRefinementWorkerState() for clean test isolation. All tests pass tsc --noEmit.",
+    "datetime": "2026-03-22T14:23:35.916436Z",
+    "entry_id": "019d15ee-0dec-7592-b399-d3551f226f04",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

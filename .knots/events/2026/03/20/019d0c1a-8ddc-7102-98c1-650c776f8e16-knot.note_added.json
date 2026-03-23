@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c1a-8ddc-7102-98c1-650c776f8e16",
+  "occurred_at": "2026-03-20T16:36:00.092224Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Acceptance Criteria:\nSettings -> Dispatch -> Basic allows you to define the agent doing scope refinement\nSettings -> Dispatch -> Advanced allows you to define a pool of agents for scope refinement\nSettings allows you to define the prompt for scope refinement per project\nSensible defaults are set during application install/update/launch if settings for these new things are not found.\nNewly created beats generate scope refinement jobs that go into a queue.\nAn asynchronous worker loop collects the jobs, builds the prompt  based on the project setting, sends to an agent based on the dispatch setting along with the beat info as entered.\nUpon completion of scope refinement, a notification is generated with the beat id and a link to the beat detail.",
+    "datetime": "2026-03-20T16:36:00.092224Z",
+    "entry_id": "019d0c1a-8ddc-7102-98c1-64f581abe15f",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

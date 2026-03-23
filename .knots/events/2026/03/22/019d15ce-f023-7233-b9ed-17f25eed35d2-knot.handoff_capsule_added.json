@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ce-f023-7233-b9ed-17f25eed35d2",
+  "occurred_at": "2026-03-22T13:49:36.675294Z",
+  "knot_id": "foolery-1901",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. Fix correctly extracts acceptance from tagged notes into beat.acceptance via extractAcceptanceFromNotes() (latest-note-wins), filters acceptance entries from visible beat.notes, and centralizes the marker constant. Both toBeat() return paths covered. 5 new tests, all 2157 tests pass, lint/typecheck/build clean.",
+    "datetime": "2026-03-22T13:49:36.675294Z",
+    "entry_id": "019d15ce-f023-7233-b9ed-17e7d93f9787",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

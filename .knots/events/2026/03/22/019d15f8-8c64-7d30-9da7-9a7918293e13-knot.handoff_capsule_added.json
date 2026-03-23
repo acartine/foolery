@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15f8-8c64-7d30-9da7-9a7918293e13",
+  "occurred_at": "2026-03-22T14:35:03.65298Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Fixed the rejected settings fallback: scope refinement now stays disabled by default in the Settings UI fallback instead of forcing enabled=true. Added a regression test covering the settings-sheet source contract. Validation in /Users/cartine/foolery/work/foolery-d984: bun install --frozen-lockfile, bun run lint (warnings only, no errors), bunx tsc --noEmit, bun run test, and bun run build all passed. Branch work/foolery-d984-impl-20260322 pushed at commit dd058545a66d.",
+    "datetime": "2026-03-22T14:34:39Z",
+    "entry_id": "019d15f8-8c64-7d30-9da7-9a6dd71e988a",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

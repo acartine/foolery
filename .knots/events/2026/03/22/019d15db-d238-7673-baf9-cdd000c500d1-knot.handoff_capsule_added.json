@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d238-7673-baf9-cdd000c500d1",
+  "occurred_at": "2026-03-22T14:03:40.984449Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented scope refinement settings plumbing on work/foolery-d984-impl-20260322 (1438d84292f4): added actions.scopeRefinement, scopeRefinement config, pools.scope_refinement, resolver support, and settings coverage updates.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d238-7673-baf9-cdc10cb7fee5",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

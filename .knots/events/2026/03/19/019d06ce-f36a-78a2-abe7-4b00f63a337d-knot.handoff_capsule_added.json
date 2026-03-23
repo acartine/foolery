@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06ce-f36a-78a2-abe7-4b00f63a337d",
+  "occurred_at": "2026-03-19T15:55:19.274977Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped merge commit bc1963b82eca from work/foolery-1f10-concurrent-fix to origin/main. Local gates passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Remote workflows succeeded for bc1963b82eca: CI 23303799900 and Coverage Badge 23303799969.",
+    "datetime": "2026-03-19T15:55:02Z",
+    "entry_id": "019d06ce-f36a-78a2-abe7-4af22b92efb8",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "Codex"
+  }
+}

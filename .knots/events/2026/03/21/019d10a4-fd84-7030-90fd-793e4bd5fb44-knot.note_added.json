@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10a4-fd84-7030-90fd-793e4bd5fb44",
+  "occurred_at": "2026-03-21T13:45:41.508599Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review requested changes: detail-off still leaks output in both views. interaction-picker keeps type=\"result\" responses visible, and the terminal filter only strips numbered stdout lines while stderr bypasses filtering entirely. The targeted terminal-detail-filter tests pass, but they do not cover the leaked non-numbered/stderr response cases.",
+    "datetime": "2026-03-21T13:45:41Z",
+    "entry_id": "019d10a4-fd84-7030-90fd-7925b10d2561",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

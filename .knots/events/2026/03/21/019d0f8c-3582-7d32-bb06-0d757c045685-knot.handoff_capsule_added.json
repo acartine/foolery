@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0f8c-3582-7d32-bb06-0d757c045685",
+  "occurred_at": "2026-03-21T08:39:00.226484Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review APPROVED. Verified: (1) Agent history view correctly filters user/system type entries when detail toggle is off, with messageTypeFilters taking precedence; default off. (2) Terminal panel uses stateful line filter with chunk-buffering for numbered-line pattern matching; re-renders xterm on toggle change; stderr passthrough preserved. (3) 12 unit tests pass covering edge cases (ANSI, chunk splits, mixed content). (4) Quality gates: typecheck clean, no new lint errors in changed files, build succeeds. No specification drift, no security issues, no regressions.",
+    "datetime": "2026-03-21T09:30:00Z",
+    "entry_id": "019d0f8c-3582-7d32-bb06-0d6e78dd8b6e",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

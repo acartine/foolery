@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d2f2-7931-826e-d0bdb1902ec0",
+  "occurred_at": "2026-03-22T14:03:41.170531Z",
+  "knot_id": "foolery-26e7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented scope refinement settings UI on work/foolery-d984-impl-20260322 (1438d84292f4): Dispatch now exposes action/pool configuration and Defaults now exposes enable/prompt controls.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d2f2-7931-826e-d0afb802c1d9",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

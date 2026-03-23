@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10ac-512c-71d1-bde6-a821aef51d68",
+  "occurred_at": "2026-03-21T13:53:41.676435Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Thinking Detail defaults to off in both conversation history and terminal panel views. Shared visibility helpers now hide non-assistant history responses and stderr/detail terminal output until the toggle is enabled. Regression coverage includes history response visibility and terminal stream visibility. Validation rerun in /Users/cartine/foolery/work/foolery-d486: bun run lint (warnings only), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-21T13:53:20Z",
+    "entry_id": "019d10ac-512c-71d1-bde6-a818d43fd15d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

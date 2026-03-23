@@ -1,0 +1,15 @@
+{
+  "event_id": "019d073d-c4bb-71d0-aa4d-df5868e5d848",
+  "occurred_at": "2026-03-19T17:56:21.819775Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete and merged to main (bc1963b82eca). Features: (1) JSONL-based concurrent-safe agent outcome stats tracking success/failure by agent type, (2) error-exit retry with action-state rollback and agent pool exclusion, (3) per-queue-type claim limits. All 18 tests passing. 7 commit tags present. Ready for implementation review.",
+    "datetime": "2026-03-19T12:00:00Z",
+    "entry_id": "019d073d-c4bb-71d0-aa4d-df4da6789ff8",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "opus-4.6"
+  }
+}

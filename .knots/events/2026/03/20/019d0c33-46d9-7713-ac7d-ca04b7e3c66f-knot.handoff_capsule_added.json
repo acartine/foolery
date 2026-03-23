@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c33-46d9-7713-ac7d-ca04b7e3c66f",
+  "occurred_at": "2026-03-20T17:03:00.313236Z",
+  "knot_id": "foolery-3bcc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) both commits live on main (feature 4d09452132fc, merge a3c4f397e317), (2) commit tags present, (3) no invariants to check, (4) CI green (runs 23353509863, 23353509898), (5) lint/typecheck/build all pass, (6) code change is minimal and correct — standard flex-1 min-h-0 pattern replaces h-full, shrink-0 added to footer elements. No regressions detected.",
+    "datetime": "2026-03-20T18:10:00+01:00",
+    "entry_id": "019d0c33-46d9-7713-ac7d-c9f5692669a6",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

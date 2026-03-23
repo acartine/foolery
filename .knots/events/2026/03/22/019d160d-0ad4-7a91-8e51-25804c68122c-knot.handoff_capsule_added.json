@@ -1,0 +1,17 @@
+{
+  "event_id": "019d160d-0ad4-7a91-8e51-25804c68122c",
+  "occurred_at": "2026-03-22T14:57:26.740376Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Rewrote beat-creation test to exercise real POST /api/beats route handler. Tests verify enqueue is called with correct args after creation, repoPath forwarding, no enqueue on creation failure, and 201 resilience when enqueue throws.",
+    "datetime": "2026-03-22T14:57:26.740376Z",
+    "entry_id": "019d160d-0ad4-7a91-8e51-2576018664e3",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

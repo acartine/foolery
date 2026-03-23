@@ -1,0 +1,15 @@
+{
+  "event_id": "019d148f-2796-7232-9f3d-9133e8c92400",
+  "occurred_at": "2026-03-22T08:00:19.350588Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved shipment review. Verified 0c931afdd46f is reachable from origin/main (HEAD 65c9f4f90a04), required commit tags are present on the knot, there are no invariants to validate, the shipped code keeps Thinking Detail off by default in the live terminal and conversation-history filter, and GitHub CI plus Coverage Badge succeeded for 0c931afdd46f and current main.",
+    "datetime": "2026-03-22T08:00:14Z",
+    "entry_id": "019d148f-2796-7232-9f3d-912236e126be",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

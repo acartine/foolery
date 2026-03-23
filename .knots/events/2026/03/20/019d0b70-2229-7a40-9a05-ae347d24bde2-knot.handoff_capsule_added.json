@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b70-2229-7a40-9a05-ae347d24bde2",
+  "occurred_at": "2026-03-20T13:29:51.401693Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation review approved. DELETE /api/lease-audit correctly truncates lease-audit.jsonl (all roots) and agent-success-rates.jsonl. UI adds reset button with AlertDialog confirmation in Settings > Defaults, with loading state, toast feedback, and query cache invalidation. New shadcn AlertDialog primitive is standard. All quality gates pass (0 lint errors, typecheck clean, 2134 tests pass, build succeeds). No security issues or regressions.",
+    "datetime": "2026-03-20T14:30:00Z",
+    "entry_id": "019d0b70-2229-7a40-9a05-ae2f12de9c57",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

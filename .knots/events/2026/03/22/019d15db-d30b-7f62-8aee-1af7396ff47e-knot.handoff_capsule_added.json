@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d30b-7f62-8aee-1af7396ff47e",
+  "occurred_at": "2026-03-22T14:03:41.195465Z",
+  "knot_id": "foolery-1061",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented scope refinement completion notifications on work/foolery-d984-impl-20260322 (1438d84292f4): added completion events, status endpoint, client polling hook, and notification wiring.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d30b-7f62-8aee-1aeb573f36fa",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

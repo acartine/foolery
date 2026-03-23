@@ -1,0 +1,15 @@
+{
+  "event_id": "019d15e2-ae92-7e41-b1cd-4ff72db7d55b",
+  "occurred_at": "2026-03-22T14:11:10.610654Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "The beat-create hook now always schedules scope refinement at src/app/api/beats/route.ts:85-91, but the settings defaults and agent resolution make that path execute a real agent even when the user never configured scope refinement. See src/lib/schemas.ts:153-160 and src/lib/settings.ts:529-533 plus src/lib/settings.ts:598-615. There is also no direct route/integration test covering enqueue-on-create behavior.",
+    "datetime": "2026-03-22T14:11:10.610654Z",
+    "entry_id": "019d15e2-ae92-7e41-b1cd-4fec25b3017f",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ed-f688-7441-b863-36cdeee33a99",
+  "occurred_at": "2026-03-22T14:23:29.928739Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed schema defaults: scopeRefinement.enabled now defaults to false instead of true. getScopeRefinementAgent() returns null when no agent is explicitly configured instead of falling back to first registered agent or 'claude'. This prevents unexpected automatic agent execution on new installs.",
+    "datetime": "2026-03-22T14:23:29.928739Z",
+    "entry_id": "019d15ed-f688-7441-b863-36bf66f9149b",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

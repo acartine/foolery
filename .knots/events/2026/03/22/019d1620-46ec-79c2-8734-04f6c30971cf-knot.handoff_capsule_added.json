@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1620-46ec-79c2-8734-04f6c30971cf",
+  "occurred_at": "2026-03-22T15:18:27.308437Z",
+  "knot_id": "foolery-d984",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified merge commit feb1bdb127ca is live on origin/main, CI run 23405982215 and Coverage Badge run 23405982239 both completed successfully for that SHA, and targeted local regression coverage passed for beat creation, scope refinement queue/worker/defaults, settings, status endpoint, and notifications (68 tests). Added missing shipped-history tag commit:d6333eff1200.",
+    "datetime": "2026-03-22T15:18:27.308437Z",
+    "entry_id": "019d1620-46ec-79c2-8734-04ec51ab3902",
+    "knot_state": "shipment_review",
+    "knot_step": "shipment_review",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

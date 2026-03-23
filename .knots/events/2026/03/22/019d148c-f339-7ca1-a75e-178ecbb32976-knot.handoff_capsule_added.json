@@ -1,0 +1,15 @@
+{
+  "event_id": "019d148c-f339-7ca1-a75e-178ecbb32976",
+  "occurred_at": "2026-03-22T07:57:54.873558Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment completed. All implementation commits are on main and pushed to origin. Commit b2de69b9ceae (feature branch) was superseded by commit 0c931afdd46f which is already on main — it replaced the heuristic text-based detail filter with event-type-based filtering (stdout_detail events). No new merge needed; the feature branch's approach was obsoleted by the superior implementation already merged. Tests pass (2152/2152), types clean on main source. Lint has 200k+ pre-existing issues unrelated to this knot.",
+    "datetime": "2026-03-22T08:55:00Z",
+    "entry_id": "019d148c-f339-7ca1-a75e-177e5bc1e499",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

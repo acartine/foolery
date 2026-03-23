@@ -1,0 +1,15 @@
+{
+  "event_id": "019d10a8-6dda-7b11-8a86-60eb25beacaf",
+  "occurred_at": "2026-03-21T13:49:26.873951Z",
+  "knot_id": "foolery-c355",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Shipment review approved. Verified: (1) merge commit a57ac980bc55 and impl commit fcba1f7d06f7 are on main. (2) Only expected files changed: agent-history-view.tsx and interaction-picker.tsx (84 insertions, 84 deletions — pure class replacements). (3) Changes match plan: font sizes bumped +1px, text colors shifted lighter (slate-200→100, sky-100→50, etc.), background opacities increased, border colors lightened. (4) No invariants defined. (5) Typecheck clean in src/ (work/ worktree errors are pre-existing). (6) No behavioral changes — purely visual styling.",
+    "datetime": "2026-03-21T14:00:00Z",
+    "entry_id": "019d10a8-6dda-7b11-8a86-60d9eb1fa01c",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

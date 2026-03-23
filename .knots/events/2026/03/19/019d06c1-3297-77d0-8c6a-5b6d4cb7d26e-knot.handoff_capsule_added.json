@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06c1-3297-77d0-8c6a-5b6d4cb7d26e",
+  "occurred_at": "2026-03-19T15:40:17.943537Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation addresses the concurrent-safety review rejection. Converted agent-outcome-stats.ts from JSON array (readFile->push->writeFile, race-prone) to JSONL format with appendFile (atomic on POSIX for small writes). Added baseDir parameter for testability. New test suite covers JSONL read/write, concurrent appends from 20 parallel sessions, malformed line recovery, and file extension verification. All quality gates pass: tsc clean, 7/7 stats tests + 11/11 error-retry tests pass, build OK, lint clean on changed files. Branch: work/foolery-1f10-concurrent-fix, commit: 15d8d971ec4e.",
+    "datetime": "2026-03-19T16:40:00Z",
+    "entry_id": "019d06c1-3297-77d0-8c6a-5b52d2bf307b",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

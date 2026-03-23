@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1602-fc60-7a01-bdf7-0101ff13d1b4",
+  "occurred_at": "2026-03-22T14:46:27.680485Z",
+  "knot_id": "foolery-d961",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment blocked: the available feature branch work/foolery-d984-impl-20260322 is shared with sibling child work that failed review, so this queue slice cannot be shipped independently without merging out-of-scope unapproved code.",
+    "datetime": "2026-03-22T14:46:27.680485Z",
+    "entry_id": "019d1602-fc60-7a01-bdf7-00f0fca6f145",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

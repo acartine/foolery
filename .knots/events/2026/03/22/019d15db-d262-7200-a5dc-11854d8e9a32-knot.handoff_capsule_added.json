@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15db-d262-7200-a5dc-11854d8e9a32",
+  "occurred_at": "2026-03-22T14:03:41.026814Z",
+  "knot_id": "foolery-3465",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the default scope refinement prompt template on work/foolery-d984-impl-20260322 (1438d84292f4): added the reusable prompt constant, placeholder interpolation helper, and unit coverage.",
+    "datetime": "2026-03-22T14:02:24Z",
+    "entry_id": "019d15db-d262-7200-a5dc-117cfbcdb58a",
+    "knot_state": "implementation",
+    "knot_step": "implementation",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

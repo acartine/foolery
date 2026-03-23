@@ -1,0 +1,20 @@
+{
+  "event_id": "019d06a3-ef14-73d0-ba05-cdaa53c8f8e2",
+  "occurred_at": "2026-03-19T15:08:20.095027Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1b9c",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Queue screen: filter out knots of type \"lease\"",
+    "type": "work",
+    "updated_at": "2026-03-19T15:08:20.095027Z",
+    "workflow_id": "compatibility"
+  }
+}

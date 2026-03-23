@@ -1,0 +1,17 @@
+{
+  "event_id": "019d1602-0479-76e3-a2a6-638c8fecfff3",
+  "occurred_at": "2026-03-22T14:45:24.217358Z",
+  "knot_id": "foolery-e382",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved in implementation_review: scopeRefinement.enabled stays false by default, getScopeRefinementAgent() returns null unless the user explicitly configures the action or pool, the scope_refinement dispatch entries are wired consistently in settings and agent-pool, and the updated settings tests cover the opt-in contract.",
+    "datetime": "2026-03-22T14:45:24.217358Z",
+    "entry_id": "019d1602-0479-76e3-a2a6-637e3445a6e5",
+    "knot_state": "implementation_review",
+    "knot_step": "implementation_review",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

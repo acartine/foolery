@@ -1,0 +1,15 @@
+{
+  "event_id": "019d06ce-e8c0-7f43-af14-8d4bd93c2540",
+  "occurred_at": "2026-03-19T15:55:16.544761Z",
+  "knot_id": "foolery-1f10",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment verified complete on remote main. Merge commit bc1963b82eca brought origin/work/foolery-1f10-concurrent-fix onto origin/main. GitHub Actions CI run 23303799900 passed for that commit; Coverage Badge also succeeded. Tagged the merge commit for shipment traceability. Residual note: CI emitted warnings about deprecated Node.js 20 actions and a coverage regression annotation, but the workflow concluded successfully.",
+    "datetime": "2026-03-19T15:55:01Z",
+    "entry_id": "019d06ce-e8c0-7f43-af14-8d33bcc14fd8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1481-e976-7392-bad0-4509ad38208a",
+  "occurred_at": "2026-03-22T07:45:51.478117Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review rejected as a deployment issue. Verified required commit tags are present and no invariants are defined, but the latest shipped commit b2de69b9ceae is not on local or origin main (both resolve to 65c9f4f90a04). The implementation branch origin/work/foolery-d486-impl-20260321 still holds the fix, so the change is not live on main and CI/CD for the intended shipment cannot be signed off from this state.",
+    "datetime": "2026-03-22T07:45:42Z",
+    "entry_id": "019d1481-e976-7392-bad0-44f36e997081",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-22"
+  }
+}

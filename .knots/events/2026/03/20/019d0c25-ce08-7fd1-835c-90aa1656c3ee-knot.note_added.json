@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0c25-ce08-7fd1-835c-90aa1656c3ee",
+  "occurred_at": "2026-03-20T16:48:17.41604Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Acceptance Criteria:\nUI Terminal and Conversation History views provide a Thinking Detail on/off toggle.  By default it is off.\n\nWhen off, only the agent's \"words\" and \"actions\" are shown, the details (usually in a faded/background text font/color) are not shown at all.\n\nWhen on, behavior is as it is today - everything is shown.",
+    "datetime": "2026-03-20T16:48:17.41604Z",
+    "entry_id": "019d0c25-ce08-7fd1-835c-9097769d3889",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

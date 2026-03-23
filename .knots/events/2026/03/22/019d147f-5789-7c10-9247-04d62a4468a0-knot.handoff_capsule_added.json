@@ -1,0 +1,15 @@
+{
+  "event_id": "019d147f-5789-7c10-9247-04d62a4468a0",
+  "occurred_at": "2026-03-22T07:43:03.049854Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. Verified Thinking Detail defaults to off in both terminal and conversation history views. Codex command_execution item.started now normalizes to assistant tool_use so action rows remain visible when detail is hidden, terminal filtering suppresses raw [executing] blocks and follow-on tool output, and regression tests cover both paths. Sanity gates in /Users/cartine/foolery/work/foolery-d486: bun run lint passed with warnings only, bunx tsc --noEmit passed, bun run test passed, bun run build passed.",
+    "datetime": "2026-03-22T07:42:32Z",
+    "entry_id": "019d147f-5789-7c10-9247-04c9fa6f904d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-gpt-5"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d15ce-3152-7500-b1c6-fcfc5afc53d9",
+  "occurred_at": "2026-03-22T13:48:47.826055Z",
+  "knot_id": "foolery-163f",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, why the fuck would we implement it so stupidly.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "title": "kno skills update claude should NOT update user level claude skills.  only project level.",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

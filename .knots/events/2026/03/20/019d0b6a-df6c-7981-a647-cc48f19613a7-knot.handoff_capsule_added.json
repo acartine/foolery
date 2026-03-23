@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b6a-df6c-7981-a647-cc48f19613a7",
+  "occurred_at": "2026-03-20T13:24:06.636363Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan reviewed and approved. All file references verified: resolveAuditLogRoots (lease-audit.ts:183), resolveStatsPath (agent-outcome-stats.ts:45), both JSONL filenames confirmed, alert-dialog.tsx confirmed missing. Plan is complete, correct, and feasible. No invariants to check. Approved for implementation.",
+    "datetime": "2026-03-20T00:00:00Z",
+    "entry_id": "019d0b6a-df6c-7981-a647-cc3ff7e19709",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d0c25-cdc2-76f3-9717-e82b9b9e3b30",
+  "occurred_at": "2026-03-20T16:48:17.346574Z",
+  "knot_id": "foolery-d486",
+  "type": "knot.created",
+  "data": {
+    "body": "For both terminal view types, let's make it easier to view/navigate.  Take for example, output like this:\n\n```\nLet me check the pools section which renders in advanced mode, and the SheetContent component for layout clues.\n▶ Read /Users/cartine/foolery/src/components/settings-pools-section.tsx\n▶ Read /Users/cartine/foolery/src/components/settings-actions-section.tsx\n     1→\"use client\";\n     2→\n     3→import { toast } from \"sonner\";\n     4→import {\n     5→  Zap,\n     6→  Clapperboard,\n     7→  Layers,\n     8→} from \"lucide-react\";\n     9→import { Label } from \"@/components/ui/label\";\n    10→import {\n    11→  Select,\n```\n\nBy default we want to only show:\n\n```\nLet me check the pools section which renders in advanced mode, and the SheetContent component for layout clues.\n▶ Read /Users/cartine/foolery/src/components/settings-pools-section.tsx\n▶ Read /Users/cartine/foolery/src/components/settings-actions-section.tsx\n```\n\nyou should be able to  toggle Thinking Detail on/off, and by default it should be off.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "UI Terminal & Conversation History: Content filter toggles",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

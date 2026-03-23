@@ -1,0 +1,16 @@
+{
+  "event_id": "019d15e2-b382-7122-8237-594895793bc1",
+  "occurred_at": "2026-03-22T14:11:11.874215Z",
+  "knot_id": "foolery-47a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Needs changes: 1. POST /api/beats unconditionally triggers the new scope-refinement path after create (src/app/api/beats/route.ts:85-91). 2. Because scope refinement is enabled by default and falls back to the generic dispatch default, existing installs auto-dispatch an agent without explicit opt-in (src/lib/schemas.ts:153-160 and src/lib/settings.ts:529-533 plus src/lib/settings.ts:598-615). 3. The create-route contract is not directly covered by a route/integration test.",
+    "datetime": "2026-03-22T14:11:11.874215Z",
+    "entry_id": "019d15e2-b382-7122-8237-593965f70fc6",
+    "knot_state": "ready_for_implementation",
+    "model": "opus/claude",
+    "username": "cartine",
+    "version": "4.6"
+  }
+}

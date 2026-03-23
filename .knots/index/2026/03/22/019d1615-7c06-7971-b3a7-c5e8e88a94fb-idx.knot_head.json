@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1615-7c06-7971-b3a7-c5e8e88a94fb",
+  "occurred_at": "2026-03-22T15:06:40.006005Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d984",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "Create New:  Spawn asynchronous  Scope Refinement job when ticket is created.",
+    "type": "work",
+    "updated_at": "2026-03-22T15:06:40.006005Z",
+    "workflow_id": "compatibility"
+  }
+}

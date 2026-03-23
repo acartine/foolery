@@ -1,0 +1,15 @@
+{
+  "event_id": "019d0b6e-e06f-7082-9db6-91a357fa4463",
+  "occurred_at": "2026-03-20T13:28:29.039212Z",
+  "knot_id": "foolery-fc8e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation complete. Added reset audit counters button to Settings > Defaults with AlertDialog confirmation. DELETE /api/lease-audit truncates lease-audit.jsonl (all roots) and agent-success-rates.jsonl. New shadcn AlertDialog primitive added. All quality gates pass (lint 0 errors, typecheck clean, 154 test files / 2134 tests pass, build succeeds). Branch: work/foolery-fc8e-reset-counters, commit: 73bf083c11da.",
+    "datetime": "2026-03-20T14:30:00Z",
+    "entry_id": "019d0b6e-e06f-7082-9db6-91904ff7f9a2",
+    "model": "claude-opus-4-6",
+    "username": "cartine",
+    "version": "claude-opus-4-6"
+  }
+}
