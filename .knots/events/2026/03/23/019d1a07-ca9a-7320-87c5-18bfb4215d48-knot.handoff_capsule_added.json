@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a07-ca9a-7320-87c5-18bfb4215d48",
+  "occurred_at": "2026-03-23T09:30:11.482877Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved shipment review: merge 846e2863b257 is live on main/origin/main; commit tags cover d3662ecbe32f, 84e47100afc2, and 846e2863b257; GitHub check-runs ci and coverage completed successfully for the shipped merge; focused regression tests for Knots/Beads/bd auto routing passed locally.",
+    "datetime": "2026-03-23T09:30:11.482877Z",
+    "entry_id": "019d1a07-ca9a-7320-87c5-18a24595d567",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

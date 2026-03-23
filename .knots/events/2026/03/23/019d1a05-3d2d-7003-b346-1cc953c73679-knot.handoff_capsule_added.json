@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a05-3d2d-7003-b346-1cc953c73679",
+  "occurred_at": "2026-03-23T09:27:24.205712Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped: merged feat/foolery-e805-active-ancestor to main (846e2863b257). CI green on remote. Both children (2cc9, b4ce) advanced to ready_for_shipment_review. Feature: active view now includes parent chains for child beats in action state across all backends.",
+    "datetime": "2026-03-23T09:27:24.205712Z",
+    "entry_id": "019d1a05-3d2d-7003-b346-1cb29b00ee08",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

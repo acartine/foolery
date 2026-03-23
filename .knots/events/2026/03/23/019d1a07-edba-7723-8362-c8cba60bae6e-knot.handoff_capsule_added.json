@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a07-edba-7723-8362-c8cba60bae6e",
+  "occurred_at": "2026-03-23T09:30:20.47476Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved shipment review after child reviews passed: merge 846e2863b257 is live on main/origin/main; child shipment reviews for 2cc9 and b4ce confirmed the tagged implementation commits and shipped merge; GitHub check-runs ci and coverage completed successfully for the merge commit; focused backend regression suites covering Knots, Beads, bd, and auto routing passed locally.",
+    "datetime": "2026-03-23T09:30:20.47476Z",
+    "entry_id": "019d1a07-edba-7723-8362-c8b79e4875e9",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
