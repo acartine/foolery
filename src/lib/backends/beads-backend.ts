@@ -527,7 +527,7 @@ export class BeadsBackend implements BackendPort {
 function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
   if (!filters) return beats;
 
-  const isPhaseFilter = filters.state === "queued" || filters.state === "in_action";
+  const isQueuedFilter = filters.state === "queued";
 
   const filtered = beats.filter((b) => {
     if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
@@ -555,10 +555,10 @@ function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
     return true;
   });
 
-  // When using a phase filter, also include all descendants of parents that
-  // are in a queue state so the user can see every child regardless of its
-  // own state.
-  if (isPhaseFilter) {
+  // When using the queued filter, also include all descendants of parents
+  // that are in a queue state so the user can see every child regardless of
+  // its own state. The in_action (Active) view should NOT expand descendants.
+  if (isQueuedFilter) {
     return includeDescendantsOfQueueParents(beats, filtered);
   }
 

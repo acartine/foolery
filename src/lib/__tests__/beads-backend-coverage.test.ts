@@ -673,6 +673,50 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(ids).toContain(grandchild.data!.id);
   });
 
+  it("does not include terminal descendants in in_action filter even if parent is queued", async () => {
+    const { backend } = createBackendWithRepo();
+
+    const parent = await backend.create({
+      title: "Queued parent",
+      type: "epic",
+      priority: 2,
+      labels: [],
+    });
+    expect(parent.ok).toBe(true);
+
+    const child = await backend.create({
+      title: "Active child",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: parent.data!.id,
+    });
+    expect(child.ok).toBe(true);
+
+    // Move child to an active state
+    await backend.update(child.data!.id, { state: "planning" });
+
+    const grandchild = await backend.create({
+      title: "Shipped grandchild",
+      type: "task",
+      priority: 2,
+      labels: [],
+      parent: child.data!.id,
+    });
+    expect(grandchild.ok).toBe(true);
+
+    await backend.update(grandchild.data!.id, { state: "shipped" });
+
+    const result = await backend.list({ state: "in_action" });
+    expect(result.ok).toBe(true);
+
+    const ids = result.data!.map((beat) => beat.id);
+    // Active child should appear (matches in_action filter directly)
+    expect(ids).toContain(child.data!.id);
+    // Shipped grandchild should NOT appear in Active view
+    expect(ids).not.toContain(grandchild.data!.id);
+  });
+
   it("filters by state in_action", async () => {
     const { backend } = createBackendWithRepo();
 

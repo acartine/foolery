@@ -932,7 +932,7 @@ describe("KnotsBackend mapping behaviour", () => {
       expect(ids).toContain("leaf");
     });
 
-    it("includes children when using in_action filter and parent is in queue state", async () => {
+    it("does not include terminal children when using in_action filter even if parent is in queue state", async () => {
       seedKnot("parent-q", "ready_for_implementation", { type: "epic" });
       seedKnot("child-impl", "implementation");
       seedKnot("child-done", "shipped");
@@ -947,8 +947,8 @@ describe("KnotsBackend mapping behaviour", () => {
       const ids = result.data!.map((b) => b.id).sort();
       // child-impl passes the in_action filter directly
       expect(ids).toContain("child-impl");
-      // child-done should be included because its parent is in a queue state
-      expect(ids).toContain("child-done");
+      // child-done is shipped and should NOT appear in Active view
+      expect(ids).not.toContain("child-done");
     });
 
     it("does not include children when using a specific state filter", async () => {
