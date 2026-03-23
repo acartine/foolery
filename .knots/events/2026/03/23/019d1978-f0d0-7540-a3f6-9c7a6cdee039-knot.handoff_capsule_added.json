@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1978-f0d0-7540-a3f6-9c7a6cdee039",
+  "occurred_at": "2026-03-23T06:54:09.616821Z",
+  "knot_id": "foolery-be1c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Feature branch fix/be1c-active-view-shipped-beats merged to main via fast-forward (commit daacf005ec98). Pushed to origin/main. CI green (all steps passed). Tagged commit:daacf005ec98.",
+    "datetime": "2026-03-23T06:54:09.616821Z",
+    "entry_id": "019d1978-f0d0-7540-a3f6-9c66b47c36ca",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
