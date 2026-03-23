@@ -10,10 +10,21 @@ export function firstBeatAlias(aliases?: readonly string[]): string | undefined 
   return aliases?.find((alias) => alias.trim().length > 0)?.trim();
 }
 
+export function firstHierarchicalBeatAlias(aliases?: readonly string[]): string | undefined {
+  return aliases?.find((alias) => alias.trim().includes("."))?.trim();
+}
+
 export function displayBeatLabel(
   id: string,
   aliases?: readonly string[],
 ): string {
   const alias = firstBeatAlias(aliases);
   return alias ? stripHierarchicalPrefix(alias) : stripBeatPrefix(id);
+}
+
+export function displayQualifiedBeatLabel(
+  id: string,
+  aliases?: readonly string[],
+): string {
+  return firstHierarchicalBeatAlias(aliases) ?? id;
 }

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   displayBeatLabel,
+  displayQualifiedBeatLabel,
   firstBeatAlias,
+  firstHierarchicalBeatAlias,
   stripHierarchicalPrefix,
   stripBeatPrefix,
 } from "@/lib/beat-display";
@@ -29,5 +31,15 @@ describe("beat-display", () => {
 
   it("trims aliases before using them", () => {
     expect(firstBeatAlias(["  primary-alias  ", "secondary"])).toBe("primary-alias");
+  });
+
+  it("prefers a hierarchy alias for fully qualified displays", () => {
+    expect(firstHierarchicalBeatAlias(["ship-views", "proj-5678.3"])).toBe("proj-5678.3");
+    expect(displayQualifiedBeatLabel("foolery-df3a", ["ship-views", "proj-5678.3"])).toBe("proj-5678.3");
+  });
+
+  it("falls back to the full beat id when no hierarchy alias exists", () => {
+    expect(displayQualifiedBeatLabel("foolery-df3a")).toBe("foolery-df3a");
+    expect(displayQualifiedBeatLabel("foolery-df3a", ["ship-views"])).toBe("foolery-df3a");
   });
 });

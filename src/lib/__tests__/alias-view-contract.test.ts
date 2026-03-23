@@ -22,7 +22,9 @@ describe("alias view contracts", () => {
     expect(beatColumnsSource).toContain("displayBeatLabel(row.original.id, row.original.aliases)");
     expect(lightboxSource).toContain("getDisplayedBeatAliases(beat)");
     expect(depTreeSource).toContain("displayBeatLabel(linkedId, dep.aliases)");
-    expect(retakesSource).toContain("displayBeatLabel(beat.id, beat.aliases)");
+    expect(retakesSource).toContain("displayQualifiedBeatLabel(beat.id, beat.aliases)");
+    expect(retakesSource).not.toContain("BeatPriorityBadge");
+    expect(retakesSource).not.toContain("BeatTypeBadge");
     expect(cascadeSource).toContain("displayBeatLabel(d.id, d.aliases)");
   });
 
