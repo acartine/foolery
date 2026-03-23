@@ -10,6 +10,9 @@ import {
   buildDateRange,
   buildQueueSeries,
   buildAgentRows,
+  buildCombinedSeries,
+  buildLeaderboard,
+  discoverQueueTypes,
 } from "@/components/lease-audit-view";
 import type { LeaseAuditAggregate } from "@/lib/lease-audit";
 
@@ -206,5 +209,138 @@ describe("buildAgentRows", () => {
     const rows = buildAgentRows(aggregates);
     expect(rows[0]!.completed).toBe(3);
     expect(rows[0]!.successRate).toBe("67%");
+  });
+});
+
+// ── buildCombinedSeries ─────────────────────────────────────────────
+
+describe("buildCombinedSeries", () => {
+  it("returns empty for no completed outcomes", () => {
+    const aggregates = [agg({ outcome: "claim", count: 5 })];
+    expect(buildCombinedSeries(aggregates)).toEqual([]);
+  });
+
+  it("combines success/fail across all queue types", () => {
+    const aggregates = [
+      agg({ queueType: "planning", outcome: "success", count: 3 }),
+      agg({ queueType: "implementation", outcome: "success", count: 1 }),
+      agg({ queueType: "implementation", outcome: "fail", count: 1 }),
+    ];
+    const series = buildCombinedSeries(aggregates);
+    expect(series).toHaveLength(1);
+    // 4 successes out of 5 total = 80%
+    expect(series[0]!.points[0]!.value).toBe(80);
+  });
+
+  it("partitions combined series by agent", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 2 }),
+      agg({ provider: "openai", model: "o3", queueType: "implementation", outcome: "fail", count: 1 }),
+    ];
+    const series = buildCombinedSeries(aggregates);
+    expect(series).toHaveLength(2);
+    const agents = series.map((s) => s.agent).sort();
+    expect(agents).toEqual(["claude/opus", "openai/o3"]);
+  });
+
+  it("uses null for dates with no completed claims for an agent", () => {
+    const aggregates = [
+      agg({ date: "2026-03-20", queueType: "planning", outcome: "success", count: 1 }),
+      agg({ date: "2026-03-22", queueType: "implementation", outcome: "fail", count: 1 }),
+    ];
+    const series = buildCombinedSeries(aggregates);
+    expect(series).toHaveLength(1);
+    const points = series[0]!.points;
+    expect(points).toHaveLength(3); // 20, 21, 22
+    expect(points[0]!.value).toBe(100);
+    expect(points[1]!.value).toBeNull();
+    expect(points[2]!.value).toBe(0);
+  });
+});
+
+// ── discoverQueueTypes ──────────────────────────────────────────────
+
+describe("discoverQueueTypes", () => {
+  it("returns empty for no aggregates", () => {
+    expect(discoverQueueTypes([])).toEqual([]);
+  });
+
+  it("discovers all distinct queue types sorted", () => {
+    const aggregates = [
+      agg({ queueType: "implementation" }),
+      agg({ queueType: "planning" }),
+      agg({ queueType: "review" }),
+      agg({ queueType: "planning" }),
+    ];
+    expect(discoverQueueTypes(aggregates)).toEqual([
+      "implementation",
+      "planning",
+      "review",
+    ]);
+  });
+});
+
+// ── buildLeaderboard ────────────────────────────────────────────────
+
+describe("buildLeaderboard", () => {
+  it("returns empty for no aggregates", () => {
+    expect(buildLeaderboard([])).toEqual([]);
+  });
+
+  it("returns empty when only claim outcomes exist", () => {
+    const aggregates = [agg({ outcome: "claim", count: 5 })];
+    expect(buildLeaderboard(aggregates)).toEqual([]);
+  });
+
+  it("shows best agent per step with margin to runner-up", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 1 }),
+      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "success", count: 6 }),
+      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "fail", count: 4 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.step).toBe("planning");
+    expect(entries[0]!.bestAgent).toBe("claude/opus");
+    expect(entries[0]!.bestRate).toBe("90%");
+    expect(entries[0]!.runnerUp).toBe("openai/o3");
+    expect(entries[0]!.runnerUpRate).toBe("60%");
+    expect(entries[0]!.margin).toBe("30pp");
+  });
+
+  it("shows dash for margin when only one agent", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 5 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.bestAgent).toBe("claude/opus");
+    expect(entries[0]!.runnerUp).toBe("-");
+    expect(entries[0]!.runnerUpRate).toBe("-");
+    expect(entries[0]!.margin).toBe("-");
+  });
+
+  it("creates separate entries for each step", () => {
+    const aggregates = [
+      agg({ queueType: "planning", outcome: "success", count: 3 }),
+      agg({ queueType: "implementation", outcome: "success", count: 5 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(2);
+    const steps = entries.map((e) => e.step).sort();
+    expect(steps).toEqual(["implementation", "planning"]);
+  });
+
+  it("breaks ties by total completed count", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 1 }),
+      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "success", count: 10 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    // Both 100% rate, but openai/o3 has more completed
+    expect(entries[0]!.bestAgent).toBe("openai/o3");
+    expect(entries[0]!.runnerUp).toBe("claude/opus");
+    expect(entries[0]!.margin).toBe("0pp");
   });
 });

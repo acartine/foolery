@@ -11,6 +11,7 @@ export interface LeaseAuditParams {
   agent?: string;
   dateFrom?: string;
   dateTo?: string;
+  preset?: "last24h";
 }
 
 export async function fetchLeaseAudit(
@@ -22,6 +23,7 @@ export async function fetchLeaseAudit(
   if (params?.agent) url.searchParams.set("agent", params.agent);
   if (params?.dateFrom) url.searchParams.set("dateFrom", params.dateFrom);
   if (params?.dateTo) url.searchParams.set("dateTo", params.dateTo);
+  if (params?.preset) url.searchParams.set("preset", params.preset);
 
   const res = await fetch(url.toString());
   if (!res.ok) {

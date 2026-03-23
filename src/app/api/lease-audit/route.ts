@@ -15,12 +15,13 @@ export async function GET(request: NextRequest) {
   const agent = request.nextUrl.searchParams.get("agent") ?? undefined;
   const dateFrom = request.nextUrl.searchParams.get("dateFrom") ?? undefined;
   const dateTo = request.nextUrl.searchParams.get("dateTo") ?? undefined;
+  const preset = request.nextUrl.searchParams.get("preset") ?? undefined;
 
   try {
     const roots = await resolveAuditLogRoots(repoPath);
     let events = await readLeaseAuditEvents(roots);
 
-    events = applyFilters(events, { queueType, agent, dateFrom, dateTo });
+    events = applyFilters(events, { queueType, agent, dateFrom, dateTo, preset });
 
     const aggregates = aggregateLeaseAudit(events);
     return NextResponse.json({ events, aggregates });
@@ -65,13 +66,14 @@ export async function DELETE() {
   }
 }
 
-function applyFilters(
+export function applyFilters(
   events: LeaseAuditEvent[],
   filters: {
     queueType?: string;
     agent?: string;
     dateFrom?: string;
     dateTo?: string;
+    preset?: string;
   },
 ): LeaseAuditEvent[] {
   let filtered = events;
@@ -92,14 +94,20 @@ function applyFilters(
     });
   }
 
-  if (filters.dateFrom) {
-    const from = filters.dateFrom;
-    filtered = filtered.filter((e) => e.timestamp.slice(0, 10) >= from);
-  }
+  // Rolling preset takes precedence over manual date range
+  if (filters.preset === "last24h") {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    filtered = filtered.filter((e) => e.timestamp >= cutoff);
+  } else {
+    if (filters.dateFrom) {
+      const from = filters.dateFrom;
+      filtered = filtered.filter((e) => e.timestamp.slice(0, 10) >= from);
+    }
 
-  if (filters.dateTo) {
-    const to = filters.dateTo;
-    filtered = filtered.filter((e) => e.timestamp.slice(0, 10) <= to);
+    if (filters.dateTo) {
+      const to = filters.dateTo;
+      filtered = filtered.filter((e) => e.timestamp.slice(0, 10) <= to);
+    }
   }
 
   return filtered;
