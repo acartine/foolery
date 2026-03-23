@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f6-fbd1-79b0-b5e6-fdbf476c7f83",
+  "occurred_at": "2026-03-23T09:11:49.969582Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review failed: the regression suite still expects in_action results to exclude queued ancestors, and there is no routing-level coverage proving createBackend(\"auto\") preserves ancestor inclusion for .beads CLI repos.",
+    "datetime": "2026-03-23T09:11:49.969582Z",
+    "entry_id": "019d19f6-fbd1-79b0-b5e6-fda08246a7dc",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

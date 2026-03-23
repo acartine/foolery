@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19ed-a564-71e0-9f03-0e439a9f858c",
+  "occurred_at": "2026-03-23T09:01:38.020744Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review APPROVED. Verified commit 0c952b06951f is on main. CI (run 23429192589) and Coverage Badge (run 23429192604) both green. TypeScript compiles clean. All 2205 tests pass (164 files). Implementation matches spec: two inline SVG timeseries charts (planning + implementation) partitioned by agent, agent-only aggregation table without date column, queue filter removed. Test coverage added for all three exported helpers (buildDateRange, buildQueueSeries, buildAgentRows). No invariant violations. Pre-existing lint errors unrelated to this change.",
+    "datetime": "2026-03-23T09:01:38.020744Z",
+    "entry_id": "019d19ed-a564-71e0-9f03-0e35af317e6c",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

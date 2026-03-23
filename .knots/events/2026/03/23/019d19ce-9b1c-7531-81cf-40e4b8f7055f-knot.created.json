@@ -1,0 +1,17 @@
+{
+  "event_id": "019d19ce-9b1c-7531-81cf-40e4b8f7055f",
+  "occurred_at": "2026-03-23T08:27:43.772924Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  see how the knots look for maestro 391d in active mode to understand the problem better",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Active Screen: If beat is child beat and in action state, show the parent too, regardless of whether or not the parent is in action state",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

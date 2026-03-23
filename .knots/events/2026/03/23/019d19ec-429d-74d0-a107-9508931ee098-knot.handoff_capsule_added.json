@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19ec-429d-74d0-a107-9508931ee098",
+  "occurred_at": "2026-03-23T09:00:07.197897Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped by fast-forwarding approved branch foolery-0a75 to main at 0c952b06951f. Remote workflows CI (23429192589) and Coverage Badge (23429192604) completed successfully on the shipped SHA; GitHub reported non-blocking coverage-regression annotations and a Node 20 deprecation warning.",
+    "datetime": "2026-03-23T08:59:55Z",
+    "entry_id": "019d19ec-429d-74d0-a107-94f1f5369df6",
+    "model": "gpt-5",
+    "username": "acartine",
+    "version": "0.111.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d19e2-e89d-7be3-b1a5-e3f2bdfb6d5b",
+  "occurred_at": "2026-03-23T08:49:54.333064Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0a75",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Audit Screen:  Show timeseries above table",
+    "type": "work",
+    "updated_at": "2026-03-23T08:49:54.333064Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d19e2-ca9f-7fc1-af4c-1588b3b5573b"
+  }
+}

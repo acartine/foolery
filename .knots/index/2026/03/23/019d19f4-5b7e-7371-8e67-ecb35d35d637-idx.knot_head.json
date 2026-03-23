@@ -1,0 +1,20 @@
+{
+  "event_id": "019d19f4-5b7e-7371-8e67-ecb35d35d637",
+  "occurred_at": "2026-03-23T09:08:57.845326Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e805",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Active Screen: If beat is child beat and in action state, show the parent too, regardless of whether or not the parent is in action state",
+    "type": "work",
+    "updated_at": "2026-03-23T09:08:57.845326Z",
+    "workflow_id": "compatibility"
+  }
+}

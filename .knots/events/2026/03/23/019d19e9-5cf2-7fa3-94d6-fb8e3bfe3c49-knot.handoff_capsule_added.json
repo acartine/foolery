@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e9-5cf2-7fa3-94d6-fb8e3bfe3c49",
+  "occurred_at": "2026-03-23T08:56:57.33011Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved revised plan. It covers all three active-filter implementations (knots backend, direct beads backend, and bd CLI filtering), keeps queued descendant expansion unchanged, and adds regression coverage for knots, direct beads, bd.ts, and .beads auto-routing so the default path cannot drift.",
+    "datetime": "2026-03-23T08:56:45Z",
+    "entry_id": "019d19e9-5cf2-7fa3-94d6-fb732036616c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

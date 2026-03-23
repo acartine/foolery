@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f6-e3fa-7393-bd2f-4abd7d4bf544",
+  "occurred_at": "2026-03-23T09:11:43.866712Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. src/lib/backends/knots-backend.ts, src/lib/backends/beads-backend.ts, and src/lib/bd.ts do not add queued ancestors for active children in in_action view, so the delivered behavior does not match the knot description. 2. Current targeted tests pass only because they still encode the pre-fix behavior; they do not validate ancestor reinclusion for active beats. 3. Sanity gates checked during review: bunx tsc --noEmit passed, bun run test passed, bun run build passed, bun run lint returned warnings only.",
+    "datetime": "2026-03-23T09:11:43.866712Z",
+    "entry_id": "019d19f6-e3fa-7393-bd2f-4aac331e5494",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

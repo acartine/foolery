@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f1-162f-7a83-925c-70a060d7faa7",
+  "occurred_at": "2026-03-23T09:05:23.503002Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "test",
+    "datetime": "2026-03-23T09:05:23.503002Z",
+    "entry_id": "019d19f1-162f-7a83-925c-7092ffb78933",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

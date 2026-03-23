@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e3-a25f-7ce1-80f5-5862a4b0a0cf",
+  "occurred_at": "2026-03-23T08:50:41.88761Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review requested revisions. The ancestor-inclusion approach is directionally correct for knots-backend.ts and beads-backend.ts, and the proposed tests for parent-chain inclusion vs terminal sibling exclusion are appropriate. However, the plan misses the default CLI code path: getBackend() auto-routes beads repos to BdCliBackend, which delegates list filtering through src/lib/bd.ts. Revise the implementation/test plan to include that path so the Active screen behavior is consistent across supported backends.",
+    "datetime": "2026-03-23T08:50:20Z",
+    "entry_id": "019d19e3-a25f-7ce1-80f5-585fb0753d33",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

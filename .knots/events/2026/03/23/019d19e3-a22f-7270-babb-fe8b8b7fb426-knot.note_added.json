@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e3-a22f-7270-babb-fe8b8b7fb426",
+  "occurred_at": "2026-03-23T08:50:41.83984Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan needs revision: it updates knots-backend.ts and beads-backend.ts, but the app’s active screen uses getBackend() with auto-routing and can resolve beads repos to BdCliBackend, which delegates list filtering through src/lib/bd.ts. Without covering bd.ts, the user-facing active view remains inconsistent/incomplete on the default CLI path. Revise the plan to include the CLI filtering path and its test coverage, while preserving the ancestor-only expansion and terminal sibling exclusion cases.",
+    "datetime": "2026-03-23T08:50:20Z",
+    "entry_id": "019d19e3-a22f-7270-babb-fe7635f2069e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

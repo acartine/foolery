@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19ee-9cc8-70d0-a57f-44b9cda4299f",
+  "occurred_at": "2026-03-23T09:02:41.352212Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented includeAncestorsOfActiveBeats helper in knots-backend.ts, beads-backend.ts, and bd.ts. When in_action filter is used, each active beat's parent chain is walked upward and missing ancestors are appended to results. Descendant expansion is untouched. Updated existing regression tests in knots-backend.test.ts and beads-backend-coverage.test.ts to expect the queued parent in active view. All 2238 tests pass. Branch: feat/active-ancestor-inclusion",
+    "datetime": "2026-03-23T09:02:41.352212Z",
+    "entry_id": "019d19ee-9cc8-70d0-a57f-44a84bd39910",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f7-2a4e-7663-ac64-e3cc8537e249",
+  "occurred_at": "2026-03-23T09:12:01.870754Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Parent implementation review failed because both child reviews failed: active-view ancestor reinclusion is missing in the backend filters, and the regression coverage still asserts the old behavior instead of the required parent-visible active view.",
+    "datetime": "2026-03-23T09:12:01.870754Z",
+    "entry_id": "019d19f7-2a4e-7663-ac64-e3bf5b4952e1",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

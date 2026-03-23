@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f4-8e45-7e30-a2bd-4952698d3665",
+  "occurred_at": "2026-03-23T09:09:10.853203Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Both children completed. b4ce: Added includeAncestorsOfActiveBeats helper to knots-backend.ts, beads-backend.ts, and bd.ts - walks active beat parent chains upward without reintroducing descendant expansion or terminal sibling leakage. 2cc9: Added regression tests for multi-level ancestors in knots-backend, beads-backend, and bd.ts CLI path. All 2208 unit tests pass. Branch: feat/active-ancestor-inclusion (2 commits: d3662ecbe32f, f73403e6).",
+    "datetime": "2026-03-23T09:09:10.853203Z",
+    "entry_id": "019d19f4-8e45-7e30-a2bd-4942c26f9449",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

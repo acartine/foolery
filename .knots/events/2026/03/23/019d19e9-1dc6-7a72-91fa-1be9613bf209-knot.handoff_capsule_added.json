@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e9-1dc6-7a72-91fa-1be9613bf209",
+  "occurred_at": "2026-03-23T08:56:41.158762Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All requirements met: two inline SVG timeseries charts (planning/implementation) partitioned by agent with color-coded series and legends; agent-only table with date column removed and rows sorted by activity; queue type dropdown removed; date filters retained; empty states handled. 14 unit tests cover all three exported helpers. Quality gates pass: 0 lint errors, typecheck clean, 2205/2205 tests pass, build succeeds. No security issues or regressions.",
+    "datetime": "2026-03-23T08:56:41.158762Z",
+    "entry_id": "019d19e9-1dc6-7a72-91fa-1bdff9d09a56",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

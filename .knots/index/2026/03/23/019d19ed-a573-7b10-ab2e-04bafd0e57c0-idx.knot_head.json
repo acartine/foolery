@@ -1,0 +1,20 @@
+{
+  "event_id": "019d19ed-a573-7b10-ab2e-04bafd0e57c0",
+  "occurred_at": "2026-03-23T09:01:38.020744Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0a75",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Audit Screen:  Show timeseries above table",
+    "type": "work",
+    "updated_at": "2026-03-23T09:01:38.020744Z",
+    "workflow_id": "compatibility"
+  }
+}

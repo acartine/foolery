@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e1-7afc-72b0-bb07-bdeab0541386",
+  "occurred_at": "2026-03-23T08:48:20.732598Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "# Implementation Plan\n\n## Problem\nIn the Active view (filter `in_action`), only beats whose state phase is `StepPhase.Active` are shown. When a child beat is in an action state (e.g., \"implementation\") but its parent is in a queue state (e.g., \"ready_for_implementation\"), the parent is NOT shown. This makes child beats appear as orphaned top-level items, losing hierarchical context.\n\n## Solution\nAfter filtering for `in_action`, include the parent chain (ancestors) of any active beat in the result set, even if those ancestors aren't themselves in an action state. This gives context without re-introducing the previous bug (which expanded ALL descendants of queue parents into the active view, surfacing terminal beats).\n\nKey distinction from the previous bug: we include **ancestors** of active beats (walking UP), not **descendants** of queue parents (walking DOWN). This means shipped/abandoned siblings will NOT appear.\n\n## Files to Change\n\n### 1. `src/lib/backends/knots-backend.ts` (lines ~544-555)\n- Add a new helper function `includeAncestorsOfActiveBeats(allBeats, filtered)` that:\n  1. Collects parent IDs from filtered beats\n  2. Walks up the parent chain recursively\n  3. Adds ancestor beats from the full list that aren't already in filtered\n- Call this helper after the `in_action` filter, before returning\n\n### 2. `src/lib/backends/beads-backend.ts` (lines ~557-567)\n- Add the same helper function and call pattern (both backends have parallel implementations)\n\n### 3. `src/lib/__tests__/knots-backend.test.ts` (lines 935-954)\n- Update existing test \"does not include terminal children when using in_action filter even if parent is in queue state\" to now EXPECT the parent to be included (but still not the shipped child)\n- Add new test: multi-level ancestry (grandparent → parent → active child) all ancestors included\n- Add new test: sibling of active beat that is in terminal state is NOT included\n\n### 4. `src/lib/__tests__/beads-backend-coverage.test.ts`\n- Mirror test updates from knots-backend tests\n\n## Test Strategy\n- Unit tests in both backend test files\n- Manual verification: check the active view renders parent context for child beats\n\n## Complexity\nLow-medium. The change is a small, well-scoped addition to the filtering logic. Both backends need the same change. Risk is low since we're adding ancestors (upward traversal) not descendants (downward traversal).\n\n## Risks\n- Performance: ancestor walk is O(depth × active_beats), negligible for typical hierarchies\n- The previous bug (commit daacf005) expanded descendants DOWN — this fix goes UP, so it won't resurface terminal beats",
+    "datetime": "2026-03-23T08:48:20.732598Z",
+    "entry_id": "019d19e1-7afc-72b0-bb07-bdd5833a2c21",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

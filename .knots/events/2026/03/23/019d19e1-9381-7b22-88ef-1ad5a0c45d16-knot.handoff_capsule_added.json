@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e1-9381-7b22-88ef-1ad5a0c45d16",
+  "occurred_at": "2026-03-23T08:48:27.009258Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan: include ancestor chain of active beats in the in_action filter result. Add includeAncestorsOfActiveBeats helper to both knots-backend.ts and beads-backend.ts. Update existing tests that assert parents are excluded, add new tests for multi-level ancestry and terminal sibling exclusion. Low-medium complexity, well-scoped change.",
+    "datetime": "2026-03-23T08:48:27.009258Z",
+    "entry_id": "019d19e1-9381-7b22-88ef-1aceaa0eed6b",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

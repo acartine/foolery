@@ -1,0 +1,17 @@
+{
+  "event_id": "019d19e6-9dab-7091-ab83-39c75e1d3131",
+  "occurred_at": "2026-03-23T08:53:57.291402Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend backend tests so active children keep their queued ancestors visible on Knots, direct Beads, and the default auto/CLI path, while shipped siblings and downward descendant expansion remain excluded.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add active-view regression coverage for direct and auto-routed backends",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f6-fbfc-73c1-b54a-80c69e9dca0a",
+  "occurred_at": "2026-03-23T09:11:50.01295Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. src/lib/__tests__/knots-backend.test.ts and src/lib/__tests__/beads-backend-coverage.test.ts still assert that queued parents are absent from in_action results, which contradicts the required behavior. 2. src/lib/__tests__/bd-coverage.test.ts still covers only direct phase-alias filtering for in_action and lacks ancestor-reinclusion assertions. 3. src/lib/__tests__/backend-factory-auto.test.ts has no active-view routing regression covering the .beads auto/CLI path. 4. Sanity gates checked during review: targeted backend tests passed, bunx tsc --noEmit passed, bun run test passed, bun run build passed, bun run lint returned warnings only.",
+    "datetime": "2026-03-23T09:11:50.01295Z",
+    "entry_id": "019d19f6-fbfc-73c1-b54a-80bba66764e6",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

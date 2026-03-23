@@ -1,0 +1,17 @@
+{
+  "event_id": "019d19cc-d37e-7e41-a5ac-d08967cc1c87",
+  "occurred_at": "2026-03-23T08:25:47.134164Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.created",
+  "data": {
+    "body": "Let's show color coded timeseries for the \"planning\" and \"implementation\" queuetypes (one chart for each), partitioned by Agent Type.\n\nBelow them we should the existing table, but instead of making date a column, just aggregate by Agent only.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Audit Screen:  Show timeseries above table",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

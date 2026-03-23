@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e3-7072-7bd3-be23-42de4f5f81be",
+  "occurred_at": "2026-03-23T08:50:29.106804Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Data model already supports all needed dimensions (agent, queueType, outcome, date). No API changes needed. Chart colors available via --chart-1..5 CSS vars. Queue-type filter removal is correct since fixed charts replace it. Test strategy for data-shaping helpers is appropriate.",
+    "datetime": "2026-03-23T08:50:29.106804Z",
+    "entry_id": "019d19e3-7072-7bd3-be23-42ccd2a86985",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

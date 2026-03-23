@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f3-5e3e-7052-ad05-cfd7903ebf87",
+  "occurred_at": "2026-03-23T09:07:53.022872Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Added regression tests for active-view ancestor inclusion: knots-backend multi-level ancestor test, updated beads-backend regression to expect parent, bd.ts CLI path parent inclusion and multi-level tests. All 2208 unit tests pass. Branch: feat/active-ancestor-inclusion",
+    "datetime": "2026-03-23T09:07:53.022872Z",
+    "entry_id": "019d19f3-5e3e-7052-ad05-cfceaa3ae654",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

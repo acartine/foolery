@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e2-ba20-7672-b9f7-8aa47a50ffd9",
+  "occurred_at": "2026-03-23T08:49:42.432308Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan ready for implementation review.\n- Main surface is `src/components/lease-audit-view.tsx`; API/backend changes are likely unnecessary because existing aggregates already include `agent`, `queueType`, `outcome`, and daily buckets.\n- Implement two fixed charts above the table for `planning` and `implementation`, partitioned by agent type with existing theme colors and no new chart dependency.\n- Collapse the table to agent-only totals across the active date filter, remove the Date column, and address the current queue-type filter because it conflicts with fixed per-queue charts.\n- Add helper-level tests for queue-specific series generation, zero-filled dates, and agent-only row aggregation.\n- Assumption to validate during implementation: chart metric is daily claim count per agent.",
+    "datetime": "2026-03-23T08:48:13Z",
+    "entry_id": "019d19e2-ba20-7672-b9f7-8a93e6434220",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "0.111.0"
+  }
+}

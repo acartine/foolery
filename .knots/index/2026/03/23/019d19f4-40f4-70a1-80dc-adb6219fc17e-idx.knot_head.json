@@ -1,0 +1,20 @@
+{
+  "event_id": "019d19f4-40f4-70a1-80dc-adb6219fc17e",
+  "occurred_at": "2026-03-23T09:08:51.060595Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2cc9",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "Add active-view regression coverage for direct and auto-routed backends",
+    "type": "work",
+    "updated_at": "2026-03-23T09:08:51.060595Z",
+    "workflow_id": "compatibility"
+  }
+}

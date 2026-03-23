@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19f7-2a76-7103-83f1-d18e1b5a3a1e",
+  "occurred_at": "2026-03-23T09:12:01.910635Z",
+  "knot_id": "foolery-e805",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. Child knot foolery-b4ce failed review because the code under review does not implement queued-ancestor inclusion for active beats in src/lib/backends/knots-backend.ts, src/lib/backends/beads-backend.ts, or src/lib/bd.ts. 2. Child knot foolery-2cc9 failed review because the tests still encode the old in_action behavior and there is no auto-routing regression for the .beads CLI path. 3. Review checks run in this session: targeted backend tests passed under the current behavior, bunx tsc --noEmit passed, bun run test passed, bun run build passed, and bun run lint returned warnings only. 4. Per the parent prompt, the parent is rolled back because at least one child review failed.",
+    "datetime": "2026-03-23T09:12:01.910635Z",
+    "entry_id": "019d19f7-2a76-7103-83f1-d174a8f474aa",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

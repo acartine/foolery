@@ -1,0 +1,15 @@
+{
+  "event_id": "019d19e7-b9d0-7341-9c51-1c75e2a9caa8",
+  "occurred_at": "2026-03-23T08:55:10.032603Z",
+  "knot_id": "foolery-0a75",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch foolery-0a75. Changes: (1) Added two inline SVG timeseries charts for planning and implementation queue types, partitioned by agent with color-coded series using --chart-1..5 CSS vars. (2) Replaced agent+date table with agent-only aggregation (removed Date column, sort by highest activity). (3) Removed queue type dropdown filter since both queues are always shown as charts. (4) Date range filters retained. (5) Empty state cards for queues with no data. All exported helpers (buildDateRange, buildQueueSeries, buildAgentRows) have unit test coverage (14 tests). Quality gates: lint 0 errors, typecheck clean, 164/164 test files pass, build succeeds.",
+    "datetime": "2026-03-23T08:55:10.032603Z",
+    "entry_id": "019d19e7-b9d0-7341-9c51-1c675a326940",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
