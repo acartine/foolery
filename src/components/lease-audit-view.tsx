@@ -28,7 +28,7 @@ interface LeaseAuditViewProps {
 
 interface AgentRow {
   agentDisplay: string;
-  claims: number;
+  completed: number;
   successes: number;
   failures: number;
   successRate: string;
@@ -36,7 +36,7 @@ interface AgentRow {
 
 interface TimeseriesPoint {
   date: string;
-  value: number;
+  value: number | null;
 }
 
 interface AgentSeries {
@@ -70,14 +70,16 @@ export function buildDateRange(dates: string[]): string[] {
   return result;
 }
 
-/** Build per-agent timeseries for a given queue type (claim counts per day). */
+/** Build per-agent timeseries for a given queue type (success rate by day). */
 export function buildQueueSeries(
   aggregates: LeaseAuditAggregate[],
   queueType: string,
 ): AgentSeries[] {
-  // Filter to the target queue and only claim outcomes
+  // Filter to the target queue and completed outcomes only.
   const filtered = aggregates.filter(
-    (a) => a.queueType === queueType && a.outcome === "claim",
+    (a) =>
+      a.queueType === queueType &&
+      (a.outcome === "success" || a.outcome === "fail"),
   );
   if (filtered.length === 0) return [];
 
@@ -85,24 +87,36 @@ export function buildQueueSeries(
   const allDates = aggregates.map((a) => a.date);
   const dateRange = buildDateRange(allDates);
 
-  // Group by agent
-  const agentMap = new Map<string, Map<string, number>>();
+  // Group completed outcomes by agent and date so we can derive success rate.
+  const agentMap = new Map<
+    string,
+    Map<string, { successes: number; failures: number }>
+  >();
   for (const agg of filtered) {
     const agent = agentLabel(agg.agent);
     let dateMap = agentMap.get(agent);
     if (!dateMap) {
-      dateMap = new Map<string, number>();
+      dateMap = new Map<string, { successes: number; failures: number }>();
       agentMap.set(agent, dateMap);
     }
-    dateMap.set(agg.date, (dateMap.get(agg.date) ?? 0) + agg.count);
+    const totals = dateMap.get(agg.date) ?? { successes: 0, failures: 0 };
+    if (agg.outcome === "success") totals.successes += agg.count;
+    else totals.failures += agg.count;
+    dateMap.set(agg.date, totals);
   }
 
-  // Build zero-filled series
+  // Build date-aligned series. Days without completed claims have no rate.
   const series: AgentSeries[] = [];
   for (const [agent, dateMap] of agentMap) {
     const points = dateRange.map((date) => ({
       date,
-      value: dateMap.get(date) ?? 0,
+      value: (() => {
+        const totals = dateMap.get(date);
+        if (!totals) return null;
+        const completed = totals.successes + totals.failures;
+        if (completed === 0) return null;
+        return Math.round((totals.successes / completed) * 100);
+      })(),
     }));
     series.push({ agent, points });
   }
@@ -118,26 +132,26 @@ export function buildAgentRows(aggregates: LeaseAuditAggregate[]): AgentRow[] {
     if (!row) {
       row = {
         agentDisplay: display,
-        claims: 0,
+        completed: 0,
         successes: 0,
         failures: 0,
         successRate: "-",
       };
       map.set(display, row);
     }
-    if (agg.outcome === "claim") row.claims += agg.count;
-    else if (agg.outcome === "success") row.successes += agg.count;
+    if (agg.outcome === "success") row.successes += agg.count;
     else if (agg.outcome === "fail") row.failures += agg.count;
   }
 
   for (const row of map.values()) {
     const total = row.successes + row.failures;
+    row.completed = total;
     row.successRate =
       total > 0 ? `${Math.round((row.successes / total) * 100)}%` : "-";
   }
 
-  // Sort by highest total activity
-  return Array.from(map.values()).sort((a, b) => b.claims - a.claims);
+  // Sort by highest completed activity
+  return Array.from(map.values()).sort((a, b) => b.completed - a.completed);
 }
 
 // ── Chart component ─────────────────────────────────────────────────
@@ -170,10 +184,7 @@ function TimeseriesChart({
 
   const dateLabels = seriesList[0]!.points.map((p) => p.date);
   const numPoints = dateLabels.length;
-  const maxValue = Math.max(
-    1,
-    ...seriesList.flatMap((s) => s.points.map((p) => p.value)),
-  );
+  const maxValue = 100;
 
   // Chart dimensions
   const drawWidth = Math.max(200, numPoints * 40);
@@ -186,13 +197,11 @@ function TimeseriesChart({
   }
 
   function yPos(value: number): number {
-    return (
-      CHART_PADDING_TOP + drawHeight - (value / maxValue) * drawHeight
-    );
+    return CHART_PADDING_TOP + drawHeight - (value / maxValue) * drawHeight;
   }
 
   // Y-axis ticks
-  const yTicks = [0, Math.round(maxValue / 2), maxValue];
+  const yTicks = [0, 50, 100];
 
   return (
     <div className="flex-1 rounded-lg border border-border/60 bg-muted/10 p-3">
@@ -225,7 +234,7 @@ function TimeseriesChart({
                 className="fill-muted-foreground"
                 fontSize={9}
               >
-                {tick}
+                {tick}%
               </text>
             </g>
           ))}
@@ -253,31 +262,45 @@ function TimeseriesChart({
           {/* Series lines + dots */}
           {seriesList.map((series, si) => {
             const color = colorForIndex(si);
+            let isDrawing = false;
             const pathD = series.points
-              .map((p, i) => `${i === 0 ? "M" : "L"} ${xPos(i)} ${yPos(p.value)}`)
+              .map((p, i) => {
+                if (p.value === null) {
+                  isDrawing = false;
+                  return "";
+                }
+                const command = isDrawing ? "L" : "M";
+                isDrawing = true;
+                return `${command} ${xPos(i)} ${yPos(p.value)}`;
+              })
+              .filter(Boolean)
               .join(" ");
             return (
               <g key={series.agent}>
-                <path
-                  d={pathD}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={1.5}
-                  strokeLinejoin="round"
-                />
-                {series.points.map((p, i) => (
-                  <circle
-                    key={`${series.agent}-${p.date}`}
-                    cx={xPos(i)}
-                    cy={yPos(p.value)}
-                    r={2.5}
-                    fill={color}
-                  >
-                    <title>
-                      {series.agent}: {p.value} on {p.date}
-                    </title>
-                  </circle>
-                ))}
+                {pathD ? (
+                  <path
+                    d={pathD}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth={1.5}
+                    strokeLinejoin="round"
+                  />
+                ) : null}
+                {series.points.map((p, i) =>
+                  p.value === null ? null : (
+                    <circle
+                      key={`${series.agent}-${p.date}`}
+                      cx={xPos(i)}
+                      cy={yPos(p.value)}
+                      r={2.5}
+                      fill={color}
+                    >
+                      <title>
+                        {series.agent}: {p.value}% on {p.date}
+                      </title>
+                    </circle>
+                  ),
+                )}
               </g>
             );
           })}
@@ -317,7 +340,7 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
       }),
   });
 
-  const aggregates = data?.aggregates ?? [];
+  const aggregates = useMemo(() => data?.aggregates ?? [], [data]);
 
   const planningSeries = useMemo(
     () => buildQueueSeries(aggregates, "planning"),
@@ -330,15 +353,17 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
   const rows = useMemo(() => buildAgentRows(aggregates), [aggregates]);
 
   const totals = useMemo(() => {
-    let claims = 0;
+    let completed = 0;
     let successes = 0;
     let failures = 0;
     for (const row of rows) {
-      claims += row.claims;
+      completed += row.completed;
       successes += row.successes;
       failures += row.failures;
     }
-    return { claims, successes, failures };
+    const successRate =
+      completed > 0 ? `${Math.round((successes / completed) * 100)}%` : "-";
+    return { completed, successes, failures, successRate };
   }, [rows]);
 
   if (isLoading) {
@@ -353,9 +378,10 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
     <div className="space-y-4">
       {/* Summary card */}
       <div className="flex items-center gap-4 rounded-lg border border-border/60 bg-muted/20 px-4 py-3">
-        <SummaryItem label="Total Claims" value={totals.claims} />
+        <SummaryItem label="Completed" value={totals.completed} />
         <SummaryItem label="Successes" value={totals.successes} />
         <SummaryItem label="Failures" value={totals.failures} />
+        <SummaryItem label="Success Rate" value={totals.successRate} />
       </div>
 
       {/* Filters (date only — queue type filter removed since charts show both) */}
@@ -388,9 +414,12 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
 
       {/* Timeseries charts */}
       <div className="flex flex-col gap-4 sm:flex-row">
-        <TimeseriesChart title="Planning Claims" seriesList={planningSeries} />
         <TimeseriesChart
-          title="Implementation Claims"
+          title="Planning Success Rate"
+          seriesList={planningSeries}
+        />
+        <TimeseriesChart
+          title="Implementation Success Rate"
           seriesList={implementationSeries}
         />
       </div>
@@ -406,7 +435,7 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
             <thead>
               <tr className="border-b border-border/60 bg-muted/30">
                 <th className="px-3 py-2 text-left font-medium text-muted-foreground">Agent</th>
-                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Claims</th>
+                <th className="px-3 py-2 text-right font-medium text-muted-foreground">Completed</th>
                 <th className="px-3 py-2 text-right font-medium text-muted-foreground">Successes</th>
                 <th className="px-3 py-2 text-right font-medium text-muted-foreground">Failures</th>
                 <th className="px-3 py-2 text-right font-medium text-muted-foreground">Success Rate</th>
@@ -419,7 +448,7 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
                   className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}
                 >
                   <td className="px-3 py-1.5 text-foreground">{row.agentDisplay}</td>
-                  <td className="px-3 py-1.5 text-right tabular-nums">{row.claims}</td>
+                  <td className="px-3 py-1.5 text-right tabular-nums">{row.completed}</td>
                   <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">
                     {row.successes}
                   </td>
@@ -437,7 +466,7 @@ export function LeaseAuditView({ repoPath }: LeaseAuditViewProps) {
   );
 }
 
-function SummaryItem({ label, value }: { label: string; value: number }) {
+function SummaryItem({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="flex flex-col">
       <span className="text-[11px] text-muted-foreground">{label}</span>

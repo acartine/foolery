@@ -68,20 +68,33 @@ describe("buildQueueSeries", () => {
     expect(buildQueueSeries(aggregates, "implementation")).toEqual([]);
   });
 
-  it("filters to only claim outcomes", () => {
+  it("calculates success rate from completed outcomes", () => {
     const aggregates = [
       agg({ queueType: "planning", outcome: "claim", count: 3 }),
       agg({ queueType: "planning", outcome: "success", count: 2 }),
+      agg({ queueType: "planning", outcome: "fail", count: 2 }),
     ];
     const series = buildQueueSeries(aggregates, "planning");
     expect(series).toHaveLength(1);
-    expect(series[0]!.points[0]!.value).toBe(3);
+    expect(series[0]!.points[0]!.value).toBe(50);
   });
 
   it("partitions by agent", () => {
     const aggregates = [
-      agg({ provider: "claude", model: "opus", queueType: "planning", count: 2 }),
-      agg({ provider: "openai", model: "o3", queueType: "planning", count: 5 }),
+      agg({
+        provider: "claude",
+        model: "opus",
+        queueType: "planning",
+        outcome: "success",
+        count: 2,
+      }),
+      agg({
+        provider: "openai",
+        model: "o3",
+        queueType: "planning",
+        outcome: "fail",
+        count: 5,
+      }),
     ];
     const series = buildQueueSeries(aggregates, "planning");
     expect(series).toHaveLength(2);
@@ -89,23 +102,44 @@ describe("buildQueueSeries", () => {
     expect(agents).toEqual(["claude/opus", "openai/o3"]);
   });
 
-  it("zero-fills missing dates per agent", () => {
+  it("uses null for dates without completed claims", () => {
     const aggregates = [
-      agg({ date: "2026-03-20", queueType: "planning", count: 1 }),
-      agg({ date: "2026-03-22", queueType: "planning", count: 3 }),
+      agg({
+        date: "2026-03-20",
+        queueType: "planning",
+        outcome: "success",
+        count: 1,
+      }),
+      agg({
+        date: "2026-03-22",
+        queueType: "planning",
+        outcome: "success",
+        count: 3,
+      }),
+      agg({
+        date: "2026-03-22",
+        queueType: "planning",
+        outcome: "fail",
+        count: 1,
+      }),
     ];
     const series = buildQueueSeries(aggregates, "planning");
     expect(series).toHaveLength(1);
     const points = series[0]!.points;
     expect(points).toHaveLength(3); // 20, 21, 22
-    expect(points[0]!.value).toBe(1); // 03-20
-    expect(points[1]!.value).toBe(0); // 03-21 zero-filled
-    expect(points[2]!.value).toBe(3); // 03-22
+    expect(points[0]!.value).toBe(100); // 03-20
+    expect(points[1]!.value).toBeNull(); // 03-21 no completed claims
+    expect(points[2]!.value).toBe(75); // 03-22
   });
 
   it("uses full date range from all aggregates", () => {
     const aggregates = [
-      agg({ date: "2026-03-20", queueType: "planning", count: 1 }),
+      agg({
+        date: "2026-03-20",
+        queueType: "planning",
+        outcome: "success",
+        count: 1,
+      }),
       // Implementation aggregate extends the date range
       agg({ date: "2026-03-23", queueType: "implementation", outcome: "claim", count: 1 }),
     ];
@@ -132,26 +166,26 @@ describe("buildAgentRows", () => {
     ];
     const rows = buildAgentRows(aggregates);
     expect(rows).toHaveLength(1);
-    expect(rows[0]!.claims).toBe(5);
+    expect(rows[0]!.completed).toBe(2);
     expect(rows[0]!.successes).toBe(1);
     expect(rows[0]!.failures).toBe(1);
     expect(rows[0]!.successRate).toBe("50%");
   });
 
-  it("aggregates across queue types", () => {
+  it("aggregates completed claims across queue types", () => {
     const aggregates = [
-      agg({ queueType: "planning", outcome: "claim", count: 2 }),
-      agg({ queueType: "implementation", outcome: "claim", count: 4 }),
+      agg({ queueType: "planning", outcome: "success", count: 2 }),
+      agg({ queueType: "implementation", outcome: "fail", count: 4 }),
     ];
     const rows = buildAgentRows(aggregates);
     expect(rows).toHaveLength(1);
-    expect(rows[0]!.claims).toBe(6);
+    expect(rows[0]!.completed).toBe(6);
   });
 
-  it("sorts by highest claims descending", () => {
+  it("sorts by highest completed count descending", () => {
     const aggregates = [
-      agg({ provider: "claude", model: "haiku", outcome: "claim", count: 1 }),
-      agg({ provider: "claude", model: "opus", outcome: "claim", count: 10 }),
+      agg({ provider: "claude", model: "haiku", outcome: "success", count: 1 }),
+      agg({ provider: "claude", model: "opus", outcome: "success", count: 10 }),
     ];
     const rows = buildAgentRows(aggregates);
     expect(rows[0]!.agentDisplay).toBe("claude/opus");
@@ -162,5 +196,15 @@ describe("buildAgentRows", () => {
     const aggregates = [agg({ outcome: "claim", count: 5 })];
     const rows = buildAgentRows(aggregates);
     expect(rows[0]!.successRate).toBe("-");
+  });
+
+  it("rounds mixed completion ratios to whole percentages", () => {
+    const aggregates = [
+      agg({ outcome: "success", count: 2 }),
+      agg({ outcome: "fail", count: 1 }),
+    ];
+    const rows = buildAgentRows(aggregates);
+    expect(rows[0]!.completed).toBe(3);
+    expect(rows[0]!.successRate).toBe("67%");
   });
 });
