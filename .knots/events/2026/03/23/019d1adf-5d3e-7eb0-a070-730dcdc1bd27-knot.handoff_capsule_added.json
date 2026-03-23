@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1adf-5d3e-7eb0-a070-730dcdc1bd27",
+  "occurred_at": "2026-03-23T13:25:39.26205Z",
+  "knot_id": "foolery-5c85",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Replaced all visible 'Human Action' labels with 'Escalations' across app-header.tsx (tab button + shortcut button), final-cut-view.tsx (heading + loading text), and wave-planner.tsx (readiness label). Internal identifiers (humanAction, finalcut, useHumanActionCount) unchanged. All quality gates pass: lint (0 errors), tsc, 2212 tests, build. Branch: feat/foolery-5c85-escalations, commit 1d7bed6c2ef9.",
+    "datetime": "2026-03-23T13:25:39.26205Z",
+    "entry_id": "019d1adf-5d3e-7eb0-a070-72fe0ef1d8f4",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
