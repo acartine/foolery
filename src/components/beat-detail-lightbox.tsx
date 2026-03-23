@@ -34,6 +34,24 @@ interface BeatDetailLightboxProps {
   isParentRollingBeat?: (beat: Beat) => boolean;
 }
 
+type BeatWithRepoPath = Beat & { _repoPath?: string };
+
+function normalizeRepoPath(repo: string | undefined): string | undefined {
+  if (typeof repo !== "string") return undefined;
+  const normalized = repo.trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+export function getShipBeatPayload(beat: Beat, repo?: string): Beat {
+  const normalizedRepo = normalizeRepoPath(repo);
+  if (!normalizedRepo) return beat;
+
+  const beatWithRepo = beat as BeatWithRepoPath;
+  if (beatWithRepo._repoPath === normalizedRepo) return beat;
+
+  return { ...beat, _repoPath: normalizedRepo } as Beat;
+}
+
 export function BeatDetailLightbox({
   open,
   beatId,
@@ -353,7 +371,7 @@ function LightboxHeader({
               size="xs"
               title="Take! -- start a session for this beat"
               disabled={!onShipBeat || !canTakeBeat(beat)}
-              onClick={() => onShipBeat?.(beat)}
+              onClick={() => onShipBeat?.(getShipBeatPayload(beat, repo))}
             >
               <Clapperboard className="size-3" />
               Take!
