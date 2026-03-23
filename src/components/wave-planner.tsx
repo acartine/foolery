@@ -49,7 +49,7 @@ const READINESS_LABELS: Record<WaveReadiness, string> = {
   runnable: "Ready",
   in_progress: "In Progress",
   blocked: "Blocked",
-  humanAction: "Human Action",
+  humanAction: "Escalations",
   gate: "Gate",
   unschedulable: "Cycle",
 };

@@ -285,16 +285,16 @@ export function AppHeader() {
 
   const actionButton = (() => {
     if (beatsView === "finalcut") {
-      // Human-action queue: shortcut emphasis for review handoff.
+      // Escalations queue: shortcut emphasis for review handoff.
       return (
         <Button
           size="lg"
           variant="outline"
           className="gap-1.5 px-2.5"
-          title="Human action queue"
+          title="Escalations queue"
         >
           <UserRoundCheck className="size-4" />
-          Human Queue
+          Escalations
         </Button>
       );
     }
@@ -444,11 +444,11 @@ export function AppHeader() {
                     size="lg"
                     variant={beatsView === "finalcut" ? "default" : "ghost"}
                     className="relative h-8 gap-1.5 px-2.5"
-                    title="Human-action queue"
+                    title="Escalations queue"
                     onClick={() => setBeatsView("finalcut")}
                   >
                     <Scissors className="size-4" />
-                    Human Action
+                    Escalations
                     {humanActionCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
                         {humanActionCount > 9 ? "9+" : humanActionCount}

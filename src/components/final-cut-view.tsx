@@ -73,7 +73,7 @@ export function FinalCutView() {
           <div>
             <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
               <Scissors className="size-4" />
-              Human Action
+              Escalations
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Knots and beats that require a human-owned next step.
@@ -88,7 +88,7 @@ export function FinalCutView() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
-          Loading human action queue...
+          Loading escalations queue...
         </div>
       ) : (
         <BeatTable
