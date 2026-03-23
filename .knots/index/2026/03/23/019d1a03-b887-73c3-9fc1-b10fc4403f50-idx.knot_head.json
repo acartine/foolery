@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a03-b887-73c3-9fc1-b10fc4403f50",
+  "occurred_at": "2026-03-23T09:25:44.70628Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b4ce",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Implement active ancestor inclusion across backend filters",
+    "type": "work",
+    "updated_at": "2026-03-23T09:25:44.70628Z",
+    "workflow_id": "compatibility"
+  }
+}

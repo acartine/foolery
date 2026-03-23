@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a04-f19a-7bd0-b373-5147928cff12",
+  "occurred_at": "2026-03-23T09:27:04.858199Z",
+  "knot_id": "foolery-2cc9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipped: merged feat/foolery-e805-active-ancestor to main (846e2863b257). CI green. Active-view regression tests now assert parent ancestor visibility for Knots, Beads, bd CLI, and auto-routed backends.",
+    "datetime": "2026-03-23T09:27:04.858199Z",
+    "entry_id": "019d1a04-f19a-7bd0-b373-513afe1c6833",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

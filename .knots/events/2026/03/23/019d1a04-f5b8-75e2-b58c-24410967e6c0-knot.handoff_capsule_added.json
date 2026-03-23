@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a04-f5b8-75e2-b58c-24410967e6c0",
+  "occurred_at": "2026-03-23T09:27:05.91221Z",
+  "knot_id": "foolery-b4ce",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipped: merged feat/foolery-e805-active-ancestor to main (846e2863b257). CI green. Active ancestor inclusion wired into Knots, Beads, and bd in_action filters via shared helper.",
+    "datetime": "2026-03-23T09:27:05.91221Z",
+    "entry_id": "019d1a04-f5b8-75e2-b58c-243add641bf2",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
