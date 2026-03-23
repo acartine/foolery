@@ -1,0 +1,20 @@
+{
+  "event_id": "019d1a4d-fc4a-7333-96b1-1f5bc4f5c445",
+  "occurred_at": "2026-03-23T10:46:51.722305Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b72e",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Retakes Screen: Minor cleanups",
+    "type": "work",
+    "updated_at": "2026-03-23T10:46:51.722305Z",
+    "workflow_id": "compatibility"
+  }
+}

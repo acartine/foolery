@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1a4d-e79d-7e40-abc7-fb2bd49bc1b3",
+  "occurred_at": "2026-03-23T10:46:46.429007Z",
+  "knot_id": "foolery-b72e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feat/foolery-b72e-retakes-cleanup to main (commit:cee1868eeea1), pushed to remote. CI green. All quality gates passed: 0 lint errors, tsc clean, 2212 tests pass.",
+    "datetime": "2026-03-23T10:46:46.429007Z",
+    "entry_id": "019d1a4d-e79d-7e40-abc7-fb1075870480",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
