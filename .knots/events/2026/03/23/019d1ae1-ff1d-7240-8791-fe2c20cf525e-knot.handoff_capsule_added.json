@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1ae1-ff1d-7240-8791-fe2c20cf525e",
+  "occurred_at": "2026-03-23T13:28:31.773011Z",
+  "knot_id": "foolery-5c85",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review. Diff is limited to app-header, final-cut-view, and wave-planner visible labels renamed to Escalations with internal identifiers unchanged. Verified no remaining visible Human Action strings under src, docs, or existing tests in the reviewed branch. Sanity gates passed in /Users/cartine/foolery-5c85: lint exited with 0 errors and warnings only, tsc passed, test passed at 2212 tests, and build passed. Existing tests cover app-header and beats wiring; there is no dedicated UI assertion for the new label.",
+    "datetime": "2026-03-23T13:28:17Z",
+    "entry_id": "019d1ae1-ff1d-7240-8791-fe1f4c60894b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-23"
+  }
+}
