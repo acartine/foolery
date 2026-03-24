@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2017-f58f-7bc2-9f70-690856f5b617",
+  "occurred_at": "2026-03-24T13:45:34.35102Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented reload persistence for repo scope by storing an explicit all-repositories sentinel, restoring that state from URL/localStorage on first load, preventing repo bootstrap from overriding intentional all-repos selection, and adding regression coverage for repo restore plus view preservation. Validation: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-24T13:44:55Z",
+    "entry_id": "019d2017-f58f-7bc2-9f70-68f6b5bcb235",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-24"
+  }
+}
