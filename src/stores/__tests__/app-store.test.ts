@@ -12,7 +12,12 @@ const mockLocalStorage = {
 vi.stubGlobal("window", { localStorage: mockLocalStorage });
 vi.stubGlobal("localStorage", mockLocalStorage);
 
-import { useAppStore, getPersistedRepo } from "@/stores/app-store";
+import {
+  useAppStore,
+  getPersistedRepo,
+  getPersistedRepoSelection,
+  LAST_REPO_KEY,
+} from "@/stores/app-store";
 
 describe("app-store", () => {
   beforeEach(() => {
@@ -89,14 +94,15 @@ describe("app-store", () => {
   it("sets active repo and persists to localStorage", () => {
     useAppStore.getState().setActiveRepo("/tmp/my-repo");
     expect(useAppStore.getState().activeRepo).toBe("/tmp/my-repo");
-    expect(localStore.get("foolery:lastRepo")).toBe("/tmp/my-repo");
+    expect(localStore.get(LAST_REPO_KEY)).toBe("/tmp/my-repo");
   });
 
-  it("clears active repo and removes from localStorage", () => {
+  it("clears active repo and persists the all-repositories sentinel", () => {
     useAppStore.getState().setActiveRepo("/tmp/my-repo");
     useAppStore.getState().setActiveRepo(null);
     expect(useAppStore.getState().activeRepo).toBeNull();
-    expect(localStore.has("foolery:lastRepo")).toBe(false);
+    expect(getPersistedRepo()).toBeNull();
+    expect(getPersistedRepoSelection()).toEqual({ kind: "all" });
   });
 
   it("sets registered repos", () => {
@@ -114,11 +120,16 @@ describe("app-store", () => {
   });
 
   it("getPersistedRepo returns value from localStorage", () => {
-    localStore.set("foolery:lastRepo", "/tmp/saved-repo");
+    localStore.set(LAST_REPO_KEY, "/tmp/saved-repo");
     expect(getPersistedRepo()).toBe("/tmp/saved-repo");
   });
 
   it("getPersistedRepo returns null when nothing saved", () => {
     expect(getPersistedRepo()).toBeNull();
+  });
+
+  it("getPersistedRepoSelection returns all-repositories when sentinel is stored", () => {
+    useAppStore.getState().setActiveRepo(null);
+    expect(getPersistedRepoSelection()).toEqual({ kind: "all" });
   });
 });

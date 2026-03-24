@@ -29,21 +29,36 @@ interface AppState {
 const initialFilters: Filters = { state: "queued" };
 
 const LAST_REPO_KEY = "foolery:lastRepo";
+const ALL_REPOS_SENTINEL = "__ALL_REPOSITORIES__";
 
-function getPersistedRepo(): string | null {
+type PersistedRepoSelection =
+  | { kind: "repo"; path: string }
+  | { kind: "all" };
+
+function getPersistedRepoSelection(): PersistedRepoSelection | null {
   if (typeof window === "undefined") return null;
   try {
-    return localStorage.getItem(LAST_REPO_KEY);
+    const persisted = localStorage.getItem(LAST_REPO_KEY);
+    if (!persisted) return null;
+    if (persisted === ALL_REPOS_SENTINEL) {
+      return { kind: "all" };
+    }
+    return { kind: "repo", path: persisted };
   } catch {
     return null;
   }
+}
+
+function getPersistedRepo(): string | null {
+  const persisted = getPersistedRepoSelection();
+  return persisted?.kind === "repo" ? persisted.path : null;
 }
 
 function persistRepo(repo: string | null) {
   if (typeof window === "undefined") return;
   try {
     if (repo) localStorage.setItem(LAST_REPO_KEY, repo);
-    else localStorage.removeItem(LAST_REPO_KEY);
+    else localStorage.setItem(LAST_REPO_KEY, ALL_REPOS_SENTINEL);
   } catch {
     // localStorage unavailable
   }
@@ -75,4 +90,4 @@ export const useAppStore = create<AppState>((set) => ({
   setPageSize: (size) => set({ pageSize: size }),
 }));
 
-export { getPersistedRepo };
+export { getPersistedRepo, getPersistedRepoSelection, LAST_REPO_KEY };
