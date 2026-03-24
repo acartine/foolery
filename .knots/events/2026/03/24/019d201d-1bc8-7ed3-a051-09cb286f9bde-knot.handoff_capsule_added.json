@@ -1,0 +1,15 @@
+{
+  "event_id": "019d201d-1bc8-7ed3-a051-09cb286f9bde",
+  "occurred_at": "2026-03-24T13:51:11.816289Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feat/foolery-1918 to main (commit 58417a2f8a40). Pushed to origin/main. CI green: lint, tests (2239 passed), coverage check, and build all succeeded. Coverage regression warnings are pre-existing (not introduced by this change).",
+    "datetime": "2026-03-24T13:51:11.816289Z",
+    "entry_id": "019d201d-1bc8-7ed3-a051-09ba07c858c2",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
