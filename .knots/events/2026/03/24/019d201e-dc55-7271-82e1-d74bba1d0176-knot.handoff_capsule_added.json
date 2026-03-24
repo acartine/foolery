@@ -1,0 +1,15 @@
+{
+  "event_id": "019d201e-dc55-7271-82e1-d74bba1d0176",
+  "occurred_at": "2026-03-24T13:53:06.645721Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified: merge commit 58417a2f and impl commit 2d6c7016 are on main. All 2239 tests pass, typecheck clean. Diff is correctly scoped to 6 files (app-store, repo-switcher, url-state-sync + their tests). Implementation uses a localStorage sentinel value to distinguish intentional all-repos from unset, and the URL restore path preserves existing search params including view. No regressions detected; lint errors are pre-existing.",
+    "datetime": "2026-03-24T13:53:06.645721Z",
+    "entry_id": "019d201e-dc55-7271-82e1-d730e7940719",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
