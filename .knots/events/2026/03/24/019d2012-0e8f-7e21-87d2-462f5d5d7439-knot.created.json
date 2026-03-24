@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2012-0e8f-7e21-87d2-462f5d5d7439",
+  "occurred_at": "2026-03-24T13:39:07.535248Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.created",
+  "data": {
+    "body": "As title says, no matter what you have selected as current project (or All Repositories), foolery throws it away if the screen is reloaded.  super annoying.\n\nThe selected project and selected screen should be preserved even through reload.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Reload doesn't remember selected project state",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

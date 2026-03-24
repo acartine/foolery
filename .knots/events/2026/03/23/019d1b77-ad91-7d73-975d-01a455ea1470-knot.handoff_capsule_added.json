@@ -1,0 +1,15 @@
+{
+  "event_id": "019d1b77-ad91-7d73-975d-01a455ea1470",
+  "occurred_at": "2026-03-23T16:12:01.297081Z",
+  "knot_id": "foolery-c2ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review approved. All changes on main (merge 9c9340b340d6, impl commits 2d4b8fc379ee, 67259f750b34). CI green — both CI and Coverage Badge passed on head 9c9340b3. All 2237 tests pass. Requirements verified: (1) tally removed, (2) combined all-steps chart present, (3) date selectors show current range + Last 24h preset, (4) per-step leaderboard with margin. Child b2b7 advanced to shipped. No invariants, no regressions.",
+    "datetime": "2026-03-23T16:12:01.297081Z",
+    "entry_id": "019d1b77-ad91-7d73-975d-019df4a246bb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

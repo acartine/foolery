@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2013-e1d3-7d52-b09f-f02f25d08abd",
+  "occurred_at": "2026-03-24T13:41:07.155403Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan: persist an explicit all-repositories sentinel in `src/stores/app-store.ts`, teach `src/components/url-state-sync.tsx` and `src/components/repo-switcher.tsx` to restore that state on reload without auto-selecting the first repo, and add regression tests covering both repo-scope restore and `view` preservation across reload.",
+    "datetime": "2026-03-24T13:40:47Z",
+    "entry_id": "019d2013-e1d3-7d52-b09f-f01a2ac0726f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

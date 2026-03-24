@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2013-e1be-7a63-a8da-4015160daa8b",
+  "occurred_at": "2026-03-24T13:41:07.126758Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1918",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Reload doesn't remember selected project state",
+    "type": "work",
+    "updated_at": "2026-03-24T13:41:07.126758Z",
+    "workflow_id": "compatibility"
+  }
+}
