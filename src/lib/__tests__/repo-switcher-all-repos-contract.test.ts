@@ -17,6 +17,7 @@ describe("repo switcher all-repositories contract", () => {
 
   it("does not override an intentional all-repositories selection", () => {
     expect(source).toContain('if (activeRepo || data.data.length === 0 || searchParams.has("repo")) {');
+    expect(source).toContain('if (persisted?.kind === "all") {');
     expect(source).toContain('<DropdownMenuItem onClick={() => updateUrl({ repo: null })}>');
   });
 });

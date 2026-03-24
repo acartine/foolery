@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Database } from "lucide-react";
 import { fetchRegistry } from "@/lib/registry-api";
-import { useAppStore, getPersistedRepo } from "@/stores/app-store";
+import { useAppStore, getPersistedRepoSelection } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
 import {
   DropdownMenu,
@@ -42,8 +42,14 @@ export function RepoSwitcher() {
         return;
       }
 
-      const persisted = getPersistedRepo();
-      const match = persisted && data.data.find((r) => r.path === persisted);
+      const persisted = getPersistedRepoSelection();
+      if (persisted?.kind === "all") {
+        return;
+      }
+
+      const match = persisted?.kind === "repo"
+        ? data.data.find((r) => r.path === persisted.path)
+        : null;
       updateUrl({ repo: match ? match.path : data.data[0].path });
     }
   }, [data, setRegisteredRepos, activeRepo, updateUrl, searchParams]);

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useAppStore, getPersistedRepo } from "@/stores/app-store";
+import { useAppStore, getPersistedRepoSelection } from "@/stores/app-store";
 
 const VALID_PAGE_SIZES = [25, 50, 100];
 const DEFAULT_PAGE_SIZE = 50;
@@ -22,16 +22,19 @@ export function UrlStateSync() {
     if (!urlRepo && !restoredRef.current) {
       // No repo in URL on initial load — try to restore from localStorage
       restoredRef.current = true;
-      const persisted = getPersistedRepo();
-      if (persisted) {
-        if (persisted !== store.activeRepo) {
-          store.setActiveRepo(persisted);
+      const persisted = getPersistedRepoSelection();
+      if (persisted?.kind === "repo") {
+        if (persisted.path !== store.activeRepo) {
+          store.setActiveRepo(persisted.path);
         }
         // Update URL to include the restored repo
         const params = new URLSearchParams(searchParams.toString());
-        params.set("repo", persisted);
+        params.set("repo", persisted.path);
         router.replace(`${pathname}?${params.toString()}`);
         return; // URL change will re-trigger this effect
+      }
+      if (persisted?.kind === "all" && store.activeRepo !== null) {
+        store.setActiveRepo(null);
       }
     } else if (urlRepo !== store.activeRepo) {
       restoredRef.current = true;
