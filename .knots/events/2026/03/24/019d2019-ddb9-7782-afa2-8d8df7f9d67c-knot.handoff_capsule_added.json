@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2019-ddb9-7782-afa2-8d8df7f9d67c",
+  "occurred_at": "2026-03-24T13:47:39.321787Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: APPROVED. Changes correctly introduce three-state repo persistence (specific repo, intentional all-repos, unset) via a localStorage sentinel value. url-state-sync restores both repo and all-repos selections on reload without clobbering view params. repo-switcher bootstrap respects intentional all-repos. All quality gates pass (0 lint errors, 0 type errors, 2239 tests passing, build succeeds). No security issues or regressions.",
+    "datetime": "2026-03-24T13:47:39.321787Z",
+    "entry_id": "019d2019-ddb9-7782-afa2-8d71cb5911ba",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
