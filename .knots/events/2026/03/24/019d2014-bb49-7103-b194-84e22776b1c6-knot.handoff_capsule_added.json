@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2014-bb49-7103-b194-84e22776b1c6",
+  "occurred_at": "2026-03-24T13:42:02.825449Z",
+  "knot_id": "foolery-1918",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review: APPROVED. Verified all four source files (app-store.ts, url-state-sync.tsx, repo-switcher.tsx, use-update-url.ts). The plan correctly identifies the root cause (persistRepo(null) removes the key, making All Repositories indistinguishable from first-visit) and proposes a sound sentinel-based fix. Test strategy covers specific-repo restore, all-repos restore, and view param preservation. No invariants to check. Ready for implementation.",
+    "datetime": "2026-03-24T13:42:02.825449Z",
+    "entry_id": "019d2014-bb49-7103-b194-84da7e6f6103",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
