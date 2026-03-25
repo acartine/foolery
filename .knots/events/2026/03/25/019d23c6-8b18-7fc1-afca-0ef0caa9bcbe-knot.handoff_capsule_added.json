@@ -1,0 +1,15 @@
+{
+  "event_id": "019d23c6-8b18-7fc1-afca-0ef0caa9bcbe",
+  "occurred_at": "2026-03-25T06:55:07.54449Z",
+  "knot_id": "foolery-62da",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged feat/foolery-62da to main (commit 2e9f4ebefc2d). Pushed to origin/main. CI green (run 23528776512) — lint, tests, and build all passed.",
+    "datetime": "2026-03-25T06:55:07.54449Z",
+    "entry_id": "019d23c6-8b18-7fc1-afca-0ee651692b2c",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
