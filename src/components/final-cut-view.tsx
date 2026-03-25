@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Scissors } from "lucide-react";
+import { Megaphone } from "lucide-react";
 import { fetchBeats } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
@@ -72,7 +72,7 @@ export function FinalCutView() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
-              <Scissors className="size-4" />
+              <Megaphone className="size-4" />
               Escalations
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">

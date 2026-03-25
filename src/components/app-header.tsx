@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Scissors, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox, BarChart3 } from "lucide-react";
+import { Plus, Megaphone, RotateCcw, Settings, UserRoundCheck, X, History, PartyPopper, Zap, Inbox, BarChart3 } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
@@ -447,7 +447,7 @@ export function AppHeader() {
                     title="Escalations queue"
                     onClick={() => setBeatsView("finalcut")}
                   >
-                    <Scissors className="size-4" />
+                    <Megaphone className="size-4" />
                     Escalations
                     {humanActionCount > 0 && (
                       <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
