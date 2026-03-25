@@ -1,0 +1,23 @@
+{
+  "event_id": "019d23c0-8b99-78c3-a458-2fc4663ddce5",
+  "occurred_at": "2026-03-25T06:48:34.457861Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-62da",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Escalations:  Change Icon to something more clever",
+    "type": "work",
+    "updated_at": "2026-03-25T06:48:34.457861Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d23c0-4d67-7dd2-b2e0-246d240fcf78"
+  }
+}

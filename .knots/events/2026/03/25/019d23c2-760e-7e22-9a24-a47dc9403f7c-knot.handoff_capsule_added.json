@@ -1,0 +1,15 @@
+{
+  "event_id": "019d23c2-760e-7e22-9a24-a47dc9403f7c",
+  "occurred_at": "2026-03-25T06:50:40.014269Z",
+  "knot_id": "foolery-62da",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Changed Escalations icon from Scissors to Megaphone in app-header.tsx and final-cut-view.tsx. Megaphone chosen because escalation literally means amplifying/raising attention. Build, lint, and typecheck all pass. Branch: feat/foolery-62da.",
+    "datetime": "2026-03-25T06:50:40.014269Z",
+    "entry_id": "019d23c2-760e-7e22-9a24-a4669344dfef",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

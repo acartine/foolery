@@ -1,0 +1,17 @@
+{
+  "event_id": "019d23c0-4b07-7c60-b4e6-4817018be387",
+  "occurred_at": "2026-03-25T06:48:17.927219Z",
+  "knot_id": "foolery-62da",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says. maybe an exclamation mark.  you decide",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Escalations:  Change Icon to something more clever",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
