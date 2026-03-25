@@ -1,0 +1,15 @@
+{
+  "event_id": "019d23c4-4763-7dc3-a587-a97a0024febb",
+  "occurred_at": "2026-03-25T06:52:39.13962Z",
+  "knot_id": "foolery-62da",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation_review. Reviewed branch feat/foolery-62da against the knot description. Scope is limited to the two Escalations UI render sites in src/components/app-header.tsx and src/components/final-cut-view.tsx, replacing Scissors with Megaphone consistently. No knot invariants were defined. No behavioral, security, or regression concerns found from the code change; lucide-react exports Megaphone, so the import remains valid. There is no dedicated automated test for this static icon choice, but for this purely presentational change the implementation satisfies the described requirement.",
+    "datetime": "2026-03-25T06:52:39.13962Z",
+    "entry_id": "019d23c4-4763-7dc3-a587-a961f5ab0bf1",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
