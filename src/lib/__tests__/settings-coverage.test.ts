@@ -20,7 +20,11 @@ vi.mock("node:fs/promises", () => ({
 
 vi.mock("node:child_process", () => ({
   exec: (...args: unknown[]) => {
-    const cb = args[args.length - 1] as (err: Error | null, result: { stdout: string; stderr: string }) => void;
+    type ExecCb = (
+      err: Error | null,
+      result: { stdout: string; stderr: string },
+    ) => void;
+    const cb = args[args.length - 1] as ExecCb;
     const result = mockExecAsync((args[0] as string));
     if (result instanceof Error) {
       cb(result, { stdout: "", stderr: "" });

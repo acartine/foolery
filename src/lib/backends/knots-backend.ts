@@ -477,10 +477,7 @@ export class KnotsBackend implements BackendPort {
     return { ok: true };
   }
 
-  async delete(
-    _id: string,
-    _repoPath?: string,
-  ): Promise<BackendResult<void>> {
+  async delete(): Promise<BackendResult<void>> {
     return backendError(
       "UNSUPPORTED",
       "Delete is not supported by the Knots backend",

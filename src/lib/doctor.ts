@@ -32,7 +32,6 @@ import type {
   DoctorStreamEvent,
   DoctorCheckStatus,
   FixStrategies,
-  FixStrategyEntry,
 } from "./doctor-types";
 
 // ── Re-export all public types ──────────────────────────

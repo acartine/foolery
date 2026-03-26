@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { saveActions } from "@/lib/settings-api";
 import type { RegisteredAgent, ActionName } from "@/lib/types";
-import { formatAgentDisplayLabel } from "@/lib/agent-identity";
 import { AgentDisplayLabel } from "@/components/agent-display-label";
 import type { ActionAgentMappings } from "@/lib/schemas";
 import type { LucideIcon } from "lucide-react";

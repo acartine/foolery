@@ -80,12 +80,16 @@ describe("forwardTransitionTarget", () => {
   });
 
   it("excludes rollback transitions from implementation_review", () => {
-    // implementation_review has ready_for_shipment (forward) and ready_for_implementation (rollback)
-    expect(forwardTransitionTarget("implementation_review", workflow)).toBe("ready_for_shipment");
+    // implementation_review has ready_for_shipment (forward)
+    // and ready_for_implementation (rollback)
+    expect(
+      forwardTransitionTarget("implementation_review", workflow),
+    ).toBe("ready_for_shipment");
   });
 
   it("excludes rollback transitions from shipment_review", () => {
-    // shipment_review has shipped (forward), ready_for_implementation (rollback), ready_for_shipment (rollback)
+    // shipment_review has shipped (forward),
+    // ready_for_implementation and ready_for_shipment (rollback)
     expect(forwardTransitionTarget("shipment_review", workflow)).toBe("shipped");
   });
 

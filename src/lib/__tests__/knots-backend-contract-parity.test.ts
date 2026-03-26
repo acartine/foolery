@@ -78,7 +78,7 @@ const PROFILE_STATES = [
   "shipped",
 ];
 
-const mockListProfiles = vi.fn(async (_repoPath?: string) => ({
+const mockListProfiles = vi.fn(async () => ({
   ok: true as const,
   data: [
     {
@@ -99,12 +99,12 @@ const mockListProfiles = vi.fn(async (_repoPath?: string) => ({
   ],
 }));
 
-const mockListKnots = vi.fn(async (_repoPath?: string) => ({
+const mockListKnots = vi.fn(async () => ({
   ok: true as const,
   data: Array.from(store.knots.values()),
 }));
 
-const mockShowKnot = vi.fn(async (id: string, _repoPath?: string) => {
+const mockShowKnot = vi.fn(async (id: string) => {
   const knot = store.knots.get(id);
   if (!knot) {
     return { ok: false as const, error: `knot '${id}' not found in local cache` };
@@ -116,7 +116,6 @@ const mockNewKnot = vi.fn(
   async (
     title: string,
     options?: { description?: string; state?: string; profile?: string },
-    _repoPath?: string,
   ) => {
     const id = nextId();
     const now = nowIso();
@@ -143,17 +142,22 @@ const mockNewKnot = vi.fn(
 );
 
 const mockUpdateKnot = vi.fn(
-  async (id: string, input: Record<string, unknown>, _repoPath?: string) => {
+  async (id: string, input: Record<string, unknown>) => {
     const knot = store.knots.get(id);
     if (!knot) {
-      return { ok: false as const, error: `knot '${id}' not found in local cache` };
+      return {
+        ok: false as const,
+        error: `knot '${id}' not found in local cache`,
+      };
     }
     if (typeof input.title === "string") knot.title = input.title;
     if (typeof input.description === "string") {
       knot.description = input.description;
       knot.body = input.description;
     }
-    if (typeof input.priority === "number") knot.priority = input.priority;
+    if (typeof input.priority === "number") {
+      knot.priority = input.priority;
+    }
     if (typeof input.status === "string") knot.state = input.status;
     if (typeof input.type === "string") knot.type = input.type;
     if (typeof input.addNote === "string") {
@@ -165,7 +169,7 @@ const mockUpdateKnot = vi.fn(
 );
 
 const mockListEdges = vi.fn(
-  async (id: string, direction: string = "both", _repoPath?: string) => {
+  async (id: string, direction: string = "both") => {
     const edges = store.edges.filter((edge) => {
       if (direction === "incoming") return edge.dst === id;
       if (direction === "outgoing") return edge.src === id;
@@ -176,14 +180,14 @@ const mockListEdges = vi.fn(
 );
 
 const mockAddEdge = vi.fn(
-  async (src: string, kind: string, dst: string, _repoPath?: string) => {
+  async (src: string, kind: string, dst: string) => {
     store.edges.push({ src, kind, dst });
     return { ok: true as const };
   },
 );
 
 const mockRemoveEdge = vi.fn(
-  async (src: string, kind: string, dst: string, _repoPath?: string) => {
+  async (src: string, kind: string, dst: string) => {
     const idx = store.edges.findIndex(
       (e) => e.src === src && e.kind === kind && e.dst === dst,
     );
@@ -194,7 +198,7 @@ const mockRemoveEdge = vi.fn(
 );
 
 const mockClaimKnot = vi.fn(
-  async (id: string, _repoPath?: string, _options?: Record<string, unknown>) => {
+  async (id: string) => {
     const knot = store.knots.get(id);
     if (!knot) return { ok: false as const, error: `knot '${id}' not found` };
     return { ok: true as const, data: { id, prompt: `# ${knot.title}` } };
@@ -202,7 +206,7 @@ const mockClaimKnot = vi.fn(
 );
 
 const mockPollKnot = vi.fn(
-  async (_repoPath?: string, _options?: Record<string, unknown>) => {
+  async () => {
     return { ok: false as const, error: "no claimable knots found" };
   },
 );
@@ -212,28 +216,30 @@ const mockPollKnot = vi.fn(
 // ---------------------------------------------------------------------------
 
 vi.mock("@/lib/knots", () => ({
-  listProfiles: (repoPath?: string) => mockListProfiles(repoPath),
+  listProfiles: () => mockListProfiles(),
   listWorkflows: () => ({ ok: true, data: [] }),
-  listKnots: (repoPath?: string) => mockListKnots(repoPath),
-  showKnot: (id: string, repoPath?: string) => mockShowKnot(id, repoPath),
+  listKnots: () => mockListKnots(),
+  showKnot: (id: string) => mockShowKnot(id),
   newKnot: (
     title: string,
     options?: Record<string, unknown>,
-    repoPath?: string,
-  ) => mockNewKnot(title, options as never, repoPath),
-  updateKnot: (id: string, input: Record<string, unknown>, repoPath?: string) =>
-    mockUpdateKnot(id, input, repoPath),
-  listEdges: (id: string, direction: string, repoPath?: string) =>
-    mockListEdges(id, direction, repoPath),
-  addEdge: (src: string, kind: string, dst: string, repoPath?: string) =>
-    mockAddEdge(src, kind, dst, repoPath),
-  removeEdge: (src: string, kind: string, dst: string, repoPath?: string) =>
-    mockRemoveEdge(src, kind, dst, repoPath),
-  claimKnot: (id: string, repoPath?: string, options?: Record<string, unknown>) =>
-    mockClaimKnot(id, repoPath, options),
-  pollKnot: (repoPath?: string, options?: Record<string, unknown>) =>
-    mockPollKnot(repoPath, options),
-  skillPrompt: vi.fn(async () => ({ ok: true as const, data: "Skill prompt placeholder" })),
+  ) => mockNewKnot(title, options as never),
+  updateKnot: (
+    id: string,
+    input: Record<string, unknown>,
+  ) => mockUpdateKnot(id, input),
+  listEdges: (id: string, direction: string) =>
+    mockListEdges(id, direction),
+  addEdge: (src: string, kind: string, dst: string) =>
+    mockAddEdge(src, kind, dst),
+  removeEdge: (src: string, kind: string, dst: string) =>
+    mockRemoveEdge(src, kind, dst),
+  claimKnot: (id: string) => mockClaimKnot(id),
+  pollKnot: () => mockPollKnot(),
+  skillPrompt: vi.fn(async () => ({
+    ok: true as const,
+    data: "Skill prompt placeholder",
+  })),
   nextKnot: vi.fn(async () => ({ ok: true as const })),
 }));
 
@@ -302,7 +308,7 @@ describe("Knots capability flags", () => {
 describe("Knots delete() capability gate", () => {
   it("returns error with UNSUPPORTED code when delete is attempted", async () => {
     const backend = new KnotsBackend("/repo");
-    const result = await backend.delete("any-id");
+    const result = await backend.delete();
 
     expect(result.ok).toBe(false);
     expect(result.error).toBeDefined();
@@ -312,7 +318,7 @@ describe("Knots delete() capability gate", () => {
 
   it("error is not retryable", async () => {
     const backend = new KnotsBackend("/repo");
-    const result = await backend.delete("any-id");
+    const result = await backend.delete();
 
     expect(result.ok).toBe(false);
     expect(result.error!.retryable).toBe(false);

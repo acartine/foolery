@@ -180,9 +180,7 @@ function isWorkflowOnlyKey(key: string): boolean {
 
 // ── Public query functions ──────────────────────────────────
 
-export async function listWorkflows(
-  _repoPath?: string,
-): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
+export async function listWorkflows(): Promise<BdResult<MemoryWorkflowDescriptor[]>> {
   return { ok: true, data: builtinWorkflowDescriptors() };
 }
 

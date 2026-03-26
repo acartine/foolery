@@ -95,7 +95,11 @@ describe("BeadsBackend lifecycle", () => {
 
       const depsRes = await backend.listDependencies(blockerId);
       expect(depsRes.ok).toBe(true);
-      const deps = (depsRes as { ok: true; data: Array<{ source?: string; target?: string }> }).data;
+      type DepsOk = {
+        ok: true;
+        data: Array<{ source?: string; target?: string }>;
+      };
+      const deps = (depsRes as DepsOk).data;
       expect(deps).toHaveLength(1);
       expect(deps[0]!.source).toBe(blockerId);
       expect(deps[0]!.target).toBe(blockedId);

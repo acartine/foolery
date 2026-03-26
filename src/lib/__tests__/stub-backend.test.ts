@@ -11,6 +11,7 @@
 import { describe, it, expect } from "vitest";
 import { runBackendContractTests } from "./backend-contract.test";
 import { StubBackend, STUB_CAPABILITIES } from "@/lib/backends/stub-backend";
+import type { BackendPort } from "@/lib/backend-port";
 
 // ── Contract harness ────────────────────────────────────────
 
@@ -26,7 +27,7 @@ runBackendContractTests("StubBackend", () => {
 // ── Core method coverage ────────────────────────────────────
 
 describe("StubBackend direct method tests", () => {
-  const backend = new StubBackend();
+  const backend: BackendPort = new StubBackend();
 
   // -- Read stubs that return empty arrays --
 
@@ -181,6 +182,7 @@ describe("StubBackend direct method tests", () => {
   });
 
   it("backend.capabilities matches STUB_CAPABILITIES", () => {
-    expect(backend.capabilities).toBe(STUB_CAPABILITIES);
+    const stub = new StubBackend();
+    expect(stub.capabilities).toBe(STUB_CAPABILITIES);
   });
 });

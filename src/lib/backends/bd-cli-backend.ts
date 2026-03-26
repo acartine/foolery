@@ -77,9 +77,7 @@ export class BdCliBackend implements BackendPort {
     return this.promptBackend;
   }
 
-  async listWorkflows(
-    _repoPath?: string,
-  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+  async listWorkflows(): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
     return { ok: true, data: builtinWorkflowDescriptors() };
   }
 

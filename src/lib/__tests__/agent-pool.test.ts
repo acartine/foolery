@@ -88,7 +88,8 @@ describe("selectFromPool", () => {
     expect(result?.label).toBe("Claude Sonnet");
     expect(result?.agentId).toBe("sonnet");
 
-    // Roll near 1.0 should select third (roll = 2.99, after -1 = 1.99, after -1 = 0.99, after -1 = -0.01)
+    // Roll near 1.0 should select third
+    // (roll = 2.99, after -1 = 1.99, -1 = 0.99, -1 = -0.01)
     randomSpy.mockReturnValue(0.999);
     result = selectFromPool(pool, AGENTS);
     expect(result?.label).toBe("Codex");

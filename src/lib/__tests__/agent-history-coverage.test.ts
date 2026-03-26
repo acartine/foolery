@@ -319,10 +319,17 @@ describe("readAgentHistory (additional coverage)", () => {
       const history = await readAgentHistory({ repoPath });
       expect(history.beats.map((b) => b.beatId)).toEqual(["repo-local-beat"]);
     } finally {
-      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
-      else (process.env as Record<string, string | undefined>).HOME = originalHome;
-      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
-      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+      type EnvRec = Record<string, string | undefined>;
+      if (originalHome === undefined) {
+        delete (process.env as EnvRec).HOME;
+      } else {
+        (process.env as EnvRec).HOME = originalHome;
+      }
+      if (originalNodeEnv === undefined) {
+        delete (process.env as EnvRec).NODE_ENV;
+      } else {
+        (process.env as EnvRec).NODE_ENV = originalNodeEnv;
+      }
     }
   });
 
@@ -363,10 +370,17 @@ describe("readAgentHistory (additional coverage)", () => {
       expect(history.beats.map((b) => b.beatId)).toEqual(["sibling-worktree-beat"]);
       expect(history.beats[0]?.repoPath).toBe(repoPath);
     } finally {
-      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
-      else (process.env as Record<string, string | undefined>).HOME = originalHome;
-      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
-      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+      type EnvRec = Record<string, string | undefined>;
+      if (originalHome === undefined) {
+        delete (process.env as EnvRec).HOME;
+      } else {
+        (process.env as EnvRec).HOME = originalHome;
+      }
+      if (originalNodeEnv === undefined) {
+        delete (process.env as EnvRec).NODE_ENV;
+      } else {
+        (process.env as EnvRec).NODE_ENV = originalNodeEnv;
+      }
     }
   });
 
@@ -407,10 +421,17 @@ describe("readAgentHistory (additional coverage)", () => {
       expect(history.beats[0]?.repoPath).toBe(repoPath);
       expect(history.beats[0]?.sceneCount).toBe(1);
     } finally {
-      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
-      else (process.env as Record<string, string | undefined>).HOME = originalHome;
-      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
-      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+      type EnvRec = Record<string, string | undefined>;
+      if (originalHome === undefined) {
+        delete (process.env as EnvRec).HOME;
+      } else {
+        (process.env as EnvRec).HOME = originalHome;
+      }
+      if (originalNodeEnv === undefined) {
+        delete (process.env as EnvRec).NODE_ENV;
+      } else {
+        (process.env as EnvRec).NODE_ENV = originalNodeEnv;
+      }
     }
   });
 
@@ -459,10 +480,17 @@ describe("readAgentHistory (additional coverage)", () => {
       expect(sessionHistory.sessions[0]?.sessionId).toBe("knots-canonical-1");
       expect(sessionHistory.sessions[0]?.repoPath).toBe(knotsWorktreePath);
     } finally {
-      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
-      else (process.env as Record<string, string | undefined>).HOME = originalHome;
-      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
-      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+      type EnvRec = Record<string, string | undefined>;
+      if (originalHome === undefined) {
+        delete (process.env as EnvRec).HOME;
+      } else {
+        (process.env as EnvRec).HOME = originalHome;
+      }
+      if (originalNodeEnv === undefined) {
+        delete (process.env as EnvRec).NODE_ENV;
+      } else {
+        (process.env as EnvRec).NODE_ENV = originalNodeEnv;
+      }
     }
   });
 
@@ -505,10 +533,17 @@ describe("readAgentHistory (additional coverage)", () => {
       expect(beat?.sessionCount).toBe(1);
       expect(beat?.sceneCount).toBe(1);
     } finally {
-      if (originalHome === undefined) delete (process.env as Record<string, string | undefined>).HOME;
-      else (process.env as Record<string, string | undefined>).HOME = originalHome;
-      if (originalNodeEnv === undefined) delete (process.env as Record<string, string | undefined>).NODE_ENV;
-      else (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
+      type EnvRec = Record<string, string | undefined>;
+      if (originalHome === undefined) {
+        delete (process.env as EnvRec).HOME;
+      } else {
+        (process.env as EnvRec).HOME = originalHome;
+      }
+      if (originalNodeEnv === undefined) {
+        delete (process.env as EnvRec).NODE_ENV;
+      } else {
+        (process.env as EnvRec).NODE_ENV = originalNodeEnv;
+      }
     }
   });
 });

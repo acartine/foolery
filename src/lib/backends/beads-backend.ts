@@ -132,9 +132,7 @@ export class BeadsBackend implements BackendPort {
     this.cache.clear();
   }
 
-  async listWorkflows(
-    _repoPath?: string,
-  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+  async listWorkflows(): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
     return ok(builtinWorkflowDescriptors());
   }
 

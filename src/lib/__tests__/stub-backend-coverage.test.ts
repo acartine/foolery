@@ -4,12 +4,14 @@
  */
 import { describe, expect, it } from "vitest";
 import { StubBackend, STUB_CAPABILITIES } from "@/lib/backends/stub-backend";
+import type { BackendPort } from "@/lib/backend-port";
 
 describe("StubBackend", () => {
-  const backend = new StubBackend();
+  const backend: BackendPort = new StubBackend();
 
   it("exposes read-only capabilities", () => {
-    expect(backend.capabilities).toBe(STUB_CAPABILITIES);
+    const stub = new StubBackend();
+    expect(stub.capabilities).toBe(STUB_CAPABILITIES);
     expect(STUB_CAPABILITIES.canCreate).toBe(false);
     expect(STUB_CAPABILITIES.canSearch).toBe(true);
   });

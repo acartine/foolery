@@ -78,7 +78,13 @@ describe("GET /api/waves aliases", () => {
     const response = await GET(new NextRequest("http://localhost/api/waves"));
     const json = await response.json();
     const blockedBeat = json.data.waves
-      .flatMap((wave: { beats: Array<{ id: string; readinessReason: string; aliases?: string[] }> }) => wave.beats)
+      .flatMap((wave: {
+        beats: Array<{
+          id: string;
+          readinessReason: string;
+          aliases?: string[];
+        }>;
+      }) => wave.beats)
       .find((beat: { id: string }) => beat.id === "foolery-blocked");
 
     expect(blockedBeat).toMatchObject({

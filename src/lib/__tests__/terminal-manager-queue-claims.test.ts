@@ -52,7 +52,13 @@ vi.mock("node:child_process", () => ({
     spawnedChildren.push(child);
     return child;
   }),
-  exec: vi.fn((_cmd: string, _opts: unknown, cb?: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
+  exec: vi.fn((
+    _cmd: string, _opts: unknown,
+    cb?: (
+      err: Error | null,
+      result: { stdout: string; stderr: string },
+    ) => void,
+  ) => {
     if (cb) cb(null, { stdout: "", stderr: "" });
   }),
 }));
@@ -194,12 +200,14 @@ describe("terminal-manager per-queue-type claim limits", () => {
     const { exec } = await import("node:child_process");
     (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
 
-    const sessions = (globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions;
+    type GS = { __terminalSessions?: Map<string, unknown> };
+    const sessions = (globalThis as GS).__terminalSessions;
     sessions?.clear();
   });
 
   afterEach(() => {
-    const sessions = (globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions;
+    type GS = { __terminalSessions?: Map<string, unknown> };
+    const sessions = (globalThis as GS).__terminalSessions;
     sessions?.clear();
   });
 
@@ -288,7 +296,10 @@ describe("terminal-manager per-queue-type claim limits", () => {
       expect(appendLeaseAuditEvent).toHaveBeenCalledTimes(1);
     });
 
-    const event = (appendLeaseAuditEvent as ReturnType<typeof vi.fn>).mock.calls[0]![0] as Record<string, unknown>;
+    const laCalls = (
+      appendLeaseAuditEvent as ReturnType<typeof vi.fn>
+    ).mock.calls;
+    const event = laCalls[0]![0] as Record<string, unknown>;
     expect(event.beatId).toBe("foolery-q002");
     expect(event.queueType).toBe("implementation");
     expect(event.outcome).toBe("claim");

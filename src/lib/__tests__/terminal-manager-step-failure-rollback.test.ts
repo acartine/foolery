@@ -52,7 +52,13 @@ vi.mock("node:child_process", () => ({
     spawnedChildren.push(child);
     return child;
   }),
-  exec: vi.fn((_cmd: string, _opts: unknown, cb?: (err: Error | null, result: { stdout: string; stderr: string }) => void) => {
+  exec: vi.fn((
+    _cmd: string, _opts: unknown,
+    cb?: (
+      err: Error | null,
+      result: { stdout: string; stderr: string },
+    ) => void,
+  ) => {
     if (cb) cb(null, { stdout: "", stderr: "" });
   }),
 }));
@@ -160,12 +166,14 @@ describe("terminal-manager step-failure rollback", () => {
     (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
     (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
 
-    const sessions = (globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions;
+    type GS = { __terminalSessions?: Map<string, unknown> };
+    const sessions = (globalThis as GS).__terminalSessions;
     sessions?.clear();
   });
 
   afterEach(() => {
-    const sessions = (globalThis as { __terminalSessions?: Map<string, unknown> }).__terminalSessions;
+    type GS = { __terminalSessions?: Map<string, unknown> };
+    const sessions = (globalThis as GS).__terminalSessions;
     sessions?.clear();
   });
 

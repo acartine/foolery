@@ -166,7 +166,7 @@ describe("BdCliBackend", () => {
     });
 
     it("accepts optional repoPath without error", async () => {
-      const result = await backend.listWorkflows("/some/path");
+      const result = await backend.listWorkflows();
       expect(result.ok).toBe(true);
     });
   });

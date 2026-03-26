@@ -104,7 +104,10 @@ describe("startInteractionLog", () => {
    * Helper: create a log whose root lands inside tempDir by temporarily
    * switching NODE_ENV to "development" and chdir-ing to tempDir.
    */
-  async function startLogInTemp(meta?: Partial<ReturnType<typeof baseMeta>> & { agentName?: string; agentModel?: string }) {
+  async function startLogInTemp(
+    meta?: Partial<ReturnType<typeof baseMeta>>
+      & { agentName?: string; agentModel?: string },
+  ) {
     const origCwd = process.cwd();
     const origEnv = process.env.NODE_ENV;
     setNodeEnv("development");
