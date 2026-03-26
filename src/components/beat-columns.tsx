@@ -8,7 +8,6 @@ import {
   titleColumn,
   priorityColumn,
   profileColumn,
-  typeColumn,
   ownerTypeColumn,
   resolveOpts,
 } from "./beat-column-defs";
@@ -50,10 +49,6 @@ export function getBeatColumns(
     priorityColumn(r),
     profileColumn(r),
   ];
-
-  if (!isActive) {
-    columns.splice(4, 0, typeColumn());
-  }
 
   columns.push(ownerTypeColumn());
   columns.push(stateColumn(r));

@@ -57,6 +57,12 @@ describe("getBeatColumns", () => {
     expect(hasType).toBe(false);
   });
 
+  it("does not add the type column in the default queues view", () => {
+    const cols = getBeatColumns({});
+    const hasType = cols.some((c) => c.id === "type");
+    expect(hasType).toBe(false);
+  });
+
   it("always adds ownerType column", () => {
     const cols = getBeatColumns({});
     const hasOwnerType = cols.some((c) => c.id === "ownerType");
