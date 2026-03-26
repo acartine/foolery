@@ -64,7 +64,7 @@ _setup_icon() {
 
   case "$kind" in
     heading) printf '==>' ;;
-    prompt) printf '->' ;;
+    prompt) printf '%s' '->' ;;
     repo) printf '[repo]' ;;
     success) printf '[ok]' ;;
     warn) printf '[!]' ;;

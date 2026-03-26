@@ -48,7 +48,7 @@ _wizard_icon() {
 
   case "$kind" in
     heading) printf '==>' ;;
-    prompt) printf '->' ;;
+    prompt) printf '%s' '->' ;;
     found) printf '[agent]' ;;
     success) printf '[ok]' ;;
     *) printf '[i]' ;;
