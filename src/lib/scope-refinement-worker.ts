@@ -10,6 +10,7 @@ import {
   getScopeRefinementAgent,
   getScopeRefinementSettings,
 } from "@/lib/settings";
+
 import {
   dequeueScopeRefinementJob,
   enqueueScopeRefinementJob,
@@ -271,9 +272,13 @@ function maybeReenqueue(job: ScopeRefinementJob, reason: string): boolean {
   return true;
 }
 
-export async function processScopeRefinementJob(job: ScopeRefinementJob): Promise<void> {
+export async function processScopeRefinementJob(
+  job: ScopeRefinementJob,
+): Promise<void> {
+  console.log(
+    `[scope-refinement] processing ${job.beatId}`,
+  );
   const settings = await getScopeRefinementSettings();
-  if (!settings.enabled) return;
 
   const agent = await getScopeRefinementAgent();
   if (!agent) {
@@ -331,6 +336,9 @@ export async function processScopeRefinementJob(job: ScopeRefinementJob): Promis
   // Clear retry count on success
   getWorkerState().retryCounts.delete(job.beatId);
 
+  console.log(
+    `[scope-refinement] completed ${job.beatId}`,
+  );
   recordScopeRefinementCompletion({
     beatId: job.beatId,
     beatTitle: update.title ?? beat.title,
@@ -389,12 +397,22 @@ export async function enqueueBeatScopeRefinement(
   beatId: string,
   repoPath?: string,
 ): Promise<ScopeRefinementJob | null> {
-  const settings = await getScopeRefinementSettings();
-  if (!settings.enabled) return null;
-
   const agent = await getScopeRefinementAgent();
-  if (!agent) return null;
+  if (!agent) {
+    console.log(
+      `[scope-refinement] skipped ${beatId}:`
+        + " no agent configured",
+    );
+    return null;
+  }
 
   startScopeRefinementWorker();
-  return enqueueScopeRefinementJob({ beatId, repoPath });
+  const job = enqueueScopeRefinementJob({
+    beatId,
+    repoPath,
+  });
+  console.log(
+    `[scope-refinement] enqueued ${beatId}`,
+  );
+  return job;
 }

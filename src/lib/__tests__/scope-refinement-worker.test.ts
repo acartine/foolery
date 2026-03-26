@@ -68,7 +68,6 @@ describe("processScopeRefinementJob", () => {
     });
     mockUpdate.mockResolvedValue({ ok: true });
     mockGetScopeRefinementSettings.mockResolvedValue({
-      enabled: true,
       prompt: "Title={{title}}\nDescription={{description}}\nAcceptance={{acceptance}}",
     });
     mockGetScopeRefinementAgent.mockResolvedValue({
@@ -112,22 +111,6 @@ describe("processScopeRefinementJob", () => {
         repoPath: "/tmp/repo",
       }),
     ]);
-  });
-
-  it("skips work when scope refinement is disabled", async () => {
-    mockGetScopeRefinementSettings.mockResolvedValue({
-      enabled: false,
-      prompt: "ignored",
-    });
-
-    await processScopeRefinementJob({
-      id: "job-1",
-      beatId: "foolery-1",
-      createdAt: Date.now(),
-    });
-
-    expect(mockSpawn).not.toHaveBeenCalled();
-    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("skips work when no agent is configured", async () => {

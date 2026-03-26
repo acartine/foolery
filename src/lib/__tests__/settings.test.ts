@@ -57,7 +57,6 @@ const DEFAULT_SETTINGS = {
   backend: { type: "auto" },
   defaults: { profileId: "" },
   scopeRefinement: {
-    enabled: false,
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   },
   pools: DEFAULT_POOLS,
@@ -199,7 +198,6 @@ describe("backfillMissingSettingsDefaults", () => {
         '[defaults]',
         'profileId = ""',
         '[scopeRefinement]',
-        'enabled = true',
         `prompt = """${DEFAULT_SCOPE_REFINEMENT_PROMPT}"""`,
         '[pools]',
         'planning = []',
@@ -263,7 +261,6 @@ describe("saveSettings", () => {
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       scopeRefinement: {
-        enabled: true,
         prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
       },
       pools: { planning: [], plan_review: [], implementation: [], implementation_review: [], shipment: [], shipment_review: [], scope_refinement: [] },
@@ -286,7 +283,6 @@ describe("saveSettings", () => {
       backend: { type: "auto" as const },
       defaults: { profileId: "" },
       scopeRefinement: {
-        enabled: true,
         prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
       },
       pools: DEFAULT_POOLS,

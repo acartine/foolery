@@ -22,7 +22,8 @@ describe("settings sheet scroll layout", () => {
     );
   });
 
-  it("keeps scope refinement disabled by default in the settings UI fallback", () => {
-    expect(source).toContain("enabled: false");
+  it("does not include an enabled toggle for scope refinement", () => {
+    expect(source).not.toContain("enabled: false");
+    expect(source).not.toContain("enabled: true");
   });
 });

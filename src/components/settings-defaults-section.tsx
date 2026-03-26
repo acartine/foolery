@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { fetchWorkflows } from "@/lib/api";
 import { resetLeaseAudit } from "@/lib/lease-audit-api";
 import {
@@ -235,29 +234,14 @@ function ScopeRefinementSection({
 }) {
   return (
     <div className="space-y-3 rounded-xl border border-accent/20 bg-background/60 p-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="space-y-1">
-          <Label
-            htmlFor="scope-refinement-enabled"
-            className="text-xs"
-          >
-            Scope Refinement
-          </Label>
-          <p className="text-[11px] text-muted-foreground">
-            Queue a background refinement pass for
-            newly created beats.
-          </p>
-        </div>
-        <Switch
-          id="scope-refinement-enabled"
-          checked={scopeRefinement.enabled}
-          onCheckedChange={(enabled) =>
-            onScopeRefinementChange({
-              ...scopeRefinement,
-              enabled,
-            })
-          }
-        />
+      <div className="space-y-1">
+        <Label className="text-xs">
+          Scope Refinement
+        </Label>
+        <p className="text-[11px] text-muted-foreground">
+          Runs automatically when agents are assigned
+          to the Scope Refinement pool in Dispatch.
+        </p>
       </div>
       <ScopeRefinementPrompt
         scopeRefinement={scopeRefinement}
