@@ -180,6 +180,62 @@ export const mockNewKnot = vi.fn(
   },
 );
 
+type InvariantEntry = {
+  kind: "Scope" | "State";
+  condition: string;
+};
+
+function parseInvariantArray(
+  raw: unknown,
+): InvariantEntry[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((v): v is string => typeof v === "string")
+    .map(parseInvariantToken)
+    .filter((inv): inv is InvariantEntry => inv !== null);
+}
+
+function applyInvariantMutations(
+  knot: MockKnot,
+  input: Record<string, unknown>,
+): void {
+  const addInvariants = parseInvariantArray(
+    input.addInvariants,
+  );
+  const removeInvariants = parseInvariantArray(
+    input.removeInvariants,
+  );
+  if (input.clearInvariants === true) {
+    knot.invariants = undefined;
+  }
+  if (removeInvariants.length > 0) {
+    const removeSet = new Set(
+      removeInvariants.map(
+        (inv) => `${inv.kind}:${inv.condition}`,
+      ),
+    );
+    knot.invariants = (knot.invariants ?? []).filter(
+      (inv) =>
+        !removeSet.has(`${inv.kind}:${inv.condition}`),
+    );
+    if (knot.invariants.length === 0) {
+      knot.invariants = undefined;
+    }
+  }
+  if (addInvariants.length > 0) {
+    const existing = new Set(
+      (knot.invariants ?? []).map(
+        (inv) => `${inv.kind}:${inv.condition}`,
+      ),
+    );
+    const toAdd = addInvariants.filter(
+      (inv) =>
+        !existing.has(`${inv.kind}:${inv.condition}`),
+    );
+    knot.invariants = [...(knot.invariants ?? []), ...toAdd];
+  }
+}
+
 export const mockUpdateKnot = vi.fn(
   async (id: string, input: Record<string, unknown>) => {
     const knot = store.knots.get(id);
@@ -232,61 +288,7 @@ export const mockUpdateKnot = vi.fn(
       });
     }
 
-    const addInvariants = Array.isArray(input.addInvariants)
-      ? input.addInvariants
-          .filter((v): v is string => typeof v === "string")
-          .map(parseInvariantToken)
-          .filter(
-            (
-              inv,
-            ): inv is {
-              kind: "Scope" | "State";
-              condition: string;
-            } => inv !== null,
-          )
-      : [];
-    const removeInvariants = Array.isArray(input.removeInvariants)
-      ? input.removeInvariants
-          .filter((v): v is string => typeof v === "string")
-          .map(parseInvariantToken)
-          .filter(
-            (
-              inv,
-            ): inv is {
-              kind: "Scope" | "State";
-              condition: string;
-            } => inv !== null,
-          )
-      : [];
-    if (input.clearInvariants === true) {
-      knot.invariants = undefined;
-    }
-    if (removeInvariants.length > 0) {
-      const removeSet = new Set(
-        removeInvariants.map(
-          (inv) => `${inv.kind}:${inv.condition}`,
-        ),
-      );
-      knot.invariants = (knot.invariants ?? []).filter(
-        (inv) =>
-          !removeSet.has(`${inv.kind}:${inv.condition}`),
-      );
-      if (knot.invariants.length === 0) {
-        knot.invariants = undefined;
-      }
-    }
-    if (addInvariants.length > 0) {
-      const existing = new Set(
-        (knot.invariants ?? []).map(
-          (inv) => `${inv.kind}:${inv.condition}`,
-        ),
-      );
-      const toAdd = addInvariants.filter(
-        (inv) =>
-          !existing.has(`${inv.kind}:${inv.condition}`),
-      );
-      knot.invariants = [...(knot.invariants ?? []), ...toAdd];
-    }
+    applyInvariantMutations(knot, input);
 
     knot.updated_at = nowIso();
     return { ok: true as const };

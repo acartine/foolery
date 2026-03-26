@@ -50,33 +50,35 @@ function createMockChild(output: string, exitCode = 0): MockChild {
   return child;
 }
 
-describe("processScopeRefinementJob", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    clearScopeRefinementCompletions();
-    clearScopeRefinementQueue();
-    resetScopeRefinementWorkerState();
+function setupScopeRefinementDefaults() {
+  vi.clearAllMocks();
+  clearScopeRefinementCompletions();
+  clearScopeRefinementQueue();
+  resetScopeRefinementWorkerState();
 
-    mockGet.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "foolery-1",
-        title: "Loose title",
-        description: "Loose description",
-        acceptance: "",
-      },
-    });
-    mockUpdate.mockResolvedValue({ ok: true });
-    mockGetScopeRefinementSettings.mockResolvedValue({
-      prompt: "Title={{title}}\nDescription={{description}}\nAcceptance={{acceptance}}",
-    });
-    mockGetScopeRefinementAgent.mockResolvedValue({
-      kind: "cli",
-      command: "claude",
-    });
+  mockGet.mockResolvedValue({
+    ok: true,
+    data: {
+      id: "foolery-1",
+      title: "Loose title",
+      description: "Loose description",
+      acceptance: "",
+    },
   });
+  mockUpdate.mockResolvedValue({ ok: true });
+  mockGetScopeRefinementSettings.mockResolvedValue({
+    prompt: "Title={{title}}\nDescription={{description}}\nAcceptance={{acceptance}}",
+  });
+  mockGetScopeRefinementAgent.mockResolvedValue({
+    kind: "cli",
+    command: "claude",
+  });
+}
 
-  it("updates the beat and records a completion event", async () => {
+describe("processScopeRefinementJob: success", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+    it("updates the beat and records a completion event", async () => {
     const payload = '<scope_refinement_json>{"title":"Sharper title","description":"Clear description","acceptance":"Clear acceptance"}</scope_refinement_json>';
     const child = createMockChild(
       `${JSON.stringify({ type: "result", result: payload })}\n`,
@@ -126,7 +128,12 @@ describe("processScopeRefinementJob", () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  it("re-enqueues job on agent failure", async () => {
+});
+
+describe("processScopeRefinementJob: failure", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+    it("re-enqueues job on agent failure", async () => {
     const child = createMockChild("", 1);
     mockSpawn.mockReturnValue(child);
 

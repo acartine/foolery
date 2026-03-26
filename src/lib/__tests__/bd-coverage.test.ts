@@ -76,7 +76,8 @@ describe("bd.ts additional coverage", () => {
     vi.resetModules();
   });
 
-  it("queryBeats with options", async () => {
+  describe("query and close operations", () => {
+    it("queryBeats with options", async () => {
     queueExec({ stdout: JSON.stringify([BEAT_JSON]) });
     const { queryBeats } = await import("@/lib/bd");
     const result = await queryBeats("status:open", {
@@ -130,9 +131,21 @@ describe("bd.ts additional coverage", () => {
     const { closeBeat } = await import("@/lib/bd");
     const result = await closeBeat("proj-abc");
     expect(result.ok).toBe(false);
+    });
   });
 
-  it("deleteBeat succeeds", async () => {
+});
+
+describe("bd.ts delete and dependency operations", () => {
+  beforeEach(() => {
+    execCalls.length = 0;
+    execQueue.length = 0;
+    execFileMock.mockClear();
+    vi.resetModules();
+  });
+
+  describe("delete and dependency operations", () => {
+    it("deleteBeat succeeds", async () => {
     queueExec({ stdout: "" });
     const { deleteBeat } = await import("@/lib/bd");
     const result = await deleteBeat("proj-abc");
@@ -207,9 +220,21 @@ describe("bd.ts additional coverage", () => {
     const { removeDep } = await import("@/lib/bd");
     const result = await removeDep("blocker-1", "blocked-1");
     expect(result.ok).toBe(false);
+    });
   });
 
-  it("listWorkflows returns builtin descriptors", async () => {
+});
+
+describe("bd.ts create, show, and list operations", () => {
+  beforeEach(() => {
+    execCalls.length = 0;
+    execQueue.length = 0;
+    execFileMock.mockClear();
+    vi.resetModules();
+  });
+
+  describe("create, show, and list operations", () => {
+    it("listWorkflows returns builtin descriptors", async () => {
     const { listWorkflows } = await import("@/lib/bd");
     const result = await listWorkflows();
     expect(result.ok).toBe(true);
@@ -291,9 +316,21 @@ describe("bd.ts additional coverage", () => {
     const result = await searchBeats("query");
     expect(result.ok).toBe(false);
     expect(result.error).toContain("Failed to parse");
+    });
   });
 
-  it("searchBeats passes priority filter", async () => {
+});
+
+describe("bd.ts normalizeBeat and listBeats filtering", () => {
+  beforeEach(() => {
+    execCalls.length = 0;
+    execQueue.length = 0;
+    execFileMock.mockClear();
+    vi.resetModules();
+  });
+
+  describe("normalizeBeat and listBeats filtering", () => {
+    it("searchBeats passes priority filter", async () => {
     queueExec({ stdout: "[]" });
     const { searchBeats } = await import("@/lib/bd");
     await searchBeats("query", { priority: "2" });
@@ -379,5 +416,6 @@ describe("bd.ts additional coverage", () => {
     const result = await listBeats({ state: "in_action" });
     expect(result.ok).toBe(true);
     expect(result.data?.map((beat) => beat.id)).toEqual(["parent-1", "active-1"]);
+    });
   });
 });

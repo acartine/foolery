@@ -45,15 +45,19 @@ vi.mock("@/lib/lease-audit", () => ({
 
 import { LocalWorkerService } from "@/lib/local-worker";
 
-describe("LocalWorkerService", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockResolveMemoryManagerType.mockReturnValue("beads");
-    mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    mockTerminateLease.mockResolvedValue({ ok: true });
+function setupLocalWorkerMocks() {
+  vi.clearAllMocks();
+  mockResolveMemoryManagerType.mockReturnValue("beads");
+  mockCreateLease.mockResolvedValue({
+    ok: true, data: { id: "lease-k1" },
   });
+  mockTerminateLease.mockResolvedValue({ ok: true });
+}
 
-  it("blocks memory-manager binaries from shell_exec", async () => {
+describe("LocalWorkerService: tool execution", () => {
+  beforeEach(setupLocalWorkerMocks);
+
+    it("blocks memory-manager binaries from shell_exec", async () => {
     const worker = new LocalWorkerService();
     const result = await worker.runTool(
       { name: "shell_exec", input: { command: "kno claim foo --json" } },
@@ -109,7 +113,12 @@ describe("LocalWorkerService", () => {
     expect(result.data?.lease.prompt).toContain("foolery-1");
   });
 
-  it("wraps scene prompts for parent work", async () => {
+});
+
+describe("LocalWorkerService: take and scene", () => {
+  beforeEach(setupLocalWorkerMocks);
+
+    it("wraps scene prompts for parent work", async () => {
     mockGet.mockResolvedValue({
       ok: true,
       data: {

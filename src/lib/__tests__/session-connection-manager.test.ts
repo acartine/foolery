@@ -100,8 +100,8 @@ afterEach(() => {
   sessionConnections.stopSync();
 });
 
-describe("SessionConnectionManager", () => {
-  it("connect() is idempotent", () => {
+describe("SessionConnectionManager: connection lifecycle", () => {
+    it("connect() is idempotent", () => {
     const mockConnect = vi.mocked(connectToSession);
     sessionConnections.connect("sess-1");
     sessionConnections.connect("sess-1");
@@ -214,7 +214,10 @@ describe("SessionConnectionManager", () => {
     expect(sessionConnections.getConnectedIds()).not.toContain("sess-11");
   });
 
-  it("startSync connects SSE for running terminals", () => {
+});
+
+describe("SessionConnectionManager: sync and notification", () => {
+    it("startSync connects SSE for running terminals", () => {
     const mockConnect = vi.mocked(connectToSession);
     mockConnect.mockClear();
 

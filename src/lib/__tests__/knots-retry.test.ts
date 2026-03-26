@@ -44,21 +44,21 @@ function succeedLatest(): void {
   entry.callback(null, "", "");
 }
 
-describe("nextKnot retry with exponential backoff", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    execFileCallbacks.length = 0;
-  });
+beforeEach(() => {
+  vi.useFakeTimers();
+  execFileCallbacks.length = 0;
+});
 
-  afterEach(() => {
-    // Resolve any remaining callbacks to avoid dangling promises
-    for (const entry of execFileCallbacks) {
-      entry.callback(null, "", "");
-    }
-    execFileCallbacks.length = 0;
-    vi.useRealTimers();
-  });
+afterEach(() => {
+  // Resolve any remaining callbacks to avoid dangling promises
+  for (const entry of execFileCallbacks) {
+    entry.callback(null, "", "");
+  }
+  execFileCallbacks.length = 0;
+  vi.useRealTimers();
+});
 
+describe("nextKnot retry: success and non-transient errors", () => {
   it("succeeds on first attempt without retrying", async () => {
     const promise = nextKnot("K-0001", "/tmp/test", {
       expectedState: "planning",
@@ -123,7 +123,9 @@ describe("nextKnot retry with exponential backoff", () => {
     // No retry -- still only 1 exec call
     expect(execFileCallbacks).toHaveLength(1);
   });
+});
 
+describe("nextKnot retry: exhaustion and recovery", () => {
   it("returns error after exhausting all retries", async () => {
     const promise = nextKnot("K-0001", "/tmp/test");
 
@@ -217,7 +219,9 @@ describe("nextKnot retry with exponential backoff", () => {
     // Should not have retried further
     expect(execFileCallbacks).toHaveLength(2);
   });
+});
 
+describe("nextKnot retry: lease flag handling", () => {
   it("passes --lease flag when leaseId provided", async () => {
     const promise = nextKnot("K-0001", "/tmp/test", {
       expectedState: "impl",

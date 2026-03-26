@@ -133,45 +133,58 @@ vi.mock("@/lib/agent-message-type-index", () => ({
 import { createSession } from "@/lib/terminal-manager";
 import { rollbackBeatState } from "@/lib/memory-manager-commands";
 
+function resetRollbackMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  createLeaseMock.mockResolvedValue({
+    ok: true, data: { id: "lease-k1" },
+  });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+}
+
+async function setupRollbackMocks(): Promise<void> {
+  resetRollbackMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function clearRollbackSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
 describe("terminal-manager nextKnot guard: rollback and prompts", () => {
   beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    createLeaseMock.mockResolvedValue({
-      ok: true, data: { id: "lease-k1" },
-    });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    await setupRollbackMocks();
   });
 
   afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    clearRollbackSessions();
   });
 
-  it("rolls back active knot to queue state instead of advancing", async () => {
+  describe("rollback from active to queue state", () => {
+    it("rolls back active knot to queue state instead of advancing", async () => {
     backend.get
       .mockResolvedValueOnce({
         ok: true,
@@ -229,52 +242,60 @@ describe("terminal-manager nextKnot guard: rollback and prompts", () => {
       "foolery-e6d5", "implementation", "ready_for_implementation",
       "/tmp/repo", "beads", expect.any(String),
     );
+    });
   });
 
+});
+
+function mockRollbackBeat(
+  id: string, title: string, state: string, claimable = true,
+): { ok: true; data: Record<string, unknown> } {
+  return {
+    ok: true,
+    data: { id, title, state, isAgentClaimable: claimable },
+  };
+}
+
+function setupPromptLoggingBackend(
+  id: string, title: string,
+): void {
+  backend.get.mockResolvedValue(mockRollbackBeat(
+    id, title, "ready_for_implementation",
+  ));
+  backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+}
+
+describe("nextKnot guard: prompt logging (one-shot)", () => {
+  beforeEach(async () => { await setupRollbackMocks(); });
+  afterEach(() => { clearRollbackSessions(); });
+
   it("logs initial prompt for one-shot agents", async () => {
-    backend.get.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "foolery-1000", title: "Record prompt history",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    setupPromptLoggingBackend("foolery-1000", "Record prompt history");
     backend.list.mockResolvedValue({ ok: true, data: [] });
 
     await createSession(
       "foolery-1000", "/tmp/repo", "show this prompt in history",
     );
-
     expect(spawnedChildren).toHaveLength(1);
     expect(interactionLog.logPrompt).toHaveBeenCalledWith(
       "show this prompt in history", { source: "initial" },
     );
   });
 
-  it("wraps app-generated initial prompt for one-shot scene sessions", async () => {
+  it("wraps app-generated initial prompt for scene sessions", async () => {
     resolveMemoryManagerTypeMock.mockReturnValue("beads");
-    backend.get.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "foolery-3000", title: "Scene prompt visibility",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    setupPromptLoggingBackend("foolery-3000", "Scene prompt visibility");
     backend.list.mockResolvedValue({
       ok: true,
-      data: [{
-        id: "foolery-3001", title: "Child beat",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      }],
+      data: [mockRollbackBeat(
+        "foolery-3001", "Child beat", "ready_for_implementation",
+      ).data],
     });
     backend.buildTakePrompt.mockResolvedValue({
       ok: true, data: { prompt: "scene app prompt" },
     });
 
     await createSession("foolery-3000", "/tmp/repo");
-
     expect(spawnedChildren).toHaveLength(1);
     expect(interactionLog.logPrompt).toHaveBeenCalledTimes(1);
     const initialPrompt = interactionLog.logPrompt.mock.calls[0]?.[0];
@@ -288,30 +309,26 @@ describe("terminal-manager nextKnot guard: rollback and prompts", () => {
       initialPrompt, { source: "initial" },
     );
   });
+});
+
+describe("nextKnot guard: prompt wrapping (parent and beads)", () => {
+  beforeEach(async () => { await setupRollbackMocks(); });
+  afterEach(() => { clearRollbackSessions(); });
 
   it("wraps knots parent prompt as Scene", async () => {
     resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    backend.get.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "foolery-3050", title: "Knots parent beat",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    setupPromptLoggingBackend("foolery-3050", "Knots parent beat");
     backend.list.mockResolvedValue({
       ok: true,
-      data: [{
-        id: "foolery-3051", title: "Child knot",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      }],
+      data: [mockRollbackBeat(
+        "foolery-3051", "Child knot", "ready_for_implementation",
+      ).data],
     });
     backend.buildTakePrompt.mockResolvedValue({
       ok: true, data: { prompt: "knots parent prompt" },
     });
 
     await createSession("foolery-3050", "/tmp/repo");
-
     expect(spawnedChildren).toHaveLength(1);
     expect(backend.buildTakePrompt).toHaveBeenCalledWith(
       "foolery-3050",
@@ -326,33 +343,25 @@ describe("terminal-manager nextKnot guard: rollback and prompts", () => {
       "Execute only the child beats explicitly listed below.",
     );
     expect(initialPrompt).not.toContain(
-      "Execute only the currently assigned workflow action described below.",
+      "Execute only the currently assigned workflow action",
     );
     expect(initialPrompt).toContain("knots parent prompt");
   });
 
   it("wraps backend prompt for beads-managed beats", async () => {
     resolveMemoryManagerTypeMock.mockReturnValue("beads");
-    backend.get.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "foolery-3100", title: "Beads prompt visibility",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    setupPromptLoggingBackend("foolery-3100", "Beads prompt visibility");
     backend.list.mockResolvedValue({ ok: true, data: [] });
     backend.buildTakePrompt.mockResolvedValue({
       ok: true, data: { prompt: "beads app prompt" },
     });
 
     await createSession("foolery-3100", "/tmp/repo");
-
     const initialPrompt = interactionLog.logPrompt.mock.calls[0]?.[0];
     expect(typeof initialPrompt).toBe("string");
     expect(initialPrompt).toContain("FOOLERY EXECUTION BOUNDARY:");
     expect(initialPrompt).toContain(
-      "Execute only the currently assigned workflow action described below.",
+      "Execute only the currently assigned workflow action",
     );
     expect(initialPrompt).toContain("beads app prompt");
     expect(interactionLog.logPrompt).toHaveBeenCalledWith(

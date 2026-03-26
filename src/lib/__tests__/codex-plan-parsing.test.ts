@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { createLineNormalizer } from "@/lib/agent-adapter";
 
-describe("Codex plan parsing through assistant events", () => {
-  it("normalizer preserves agent_message text containing NDJSON plan events", () => {
+describe("Codex plan parsing: NDJSON plan events", () => {
+    it("normalizer preserves agent_message text containing NDJSON plan events", () => {
     const normalize = createLineNormalizer("codex");
     const planLine = JSON.stringify({
       event: "plan_final",
@@ -104,7 +104,10 @@ describe("Codex plan parsing through assistant events", () => {
     expect(resultText).toContain("</breakdown_plan_json>");
   });
 
-  it("multiple agent_messages accumulate (not replace) in turn result", () => {
+});
+
+describe("Codex plan parsing: accumulation and pass-through", () => {
+    it("multiple agent_messages accumulate (not replace) in turn result", () => {
     const normalize = createLineNormalizer("codex");
 
     normalize({

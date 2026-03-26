@@ -43,7 +43,8 @@ describe("updateBeat label transitions", () => {
     vi.resetModules();
   });
 
-  it("removes stale stage label when adding a new stage label", async () => {
+  describe("stage label reconciliation", () => {
+    it("removes stale stage label when adding a new stage label", async () => {
     const beatJson = JSON.stringify({
       id: "foolery-123",
       issue_type: "task",
@@ -78,7 +79,7 @@ describe("updateBeat label transitions", () => {
     expect(execCalls).toContainEqual(["sync", "--no-daemon"]);
   });
 
-  it("fails when sync fails after label mutation", async () => {
+    it("fails when sync fails after label mutation", async () => {
     const beatJson = JSON.stringify({
       id: "foolery-456",
       issue_type: "task",
@@ -106,9 +107,21 @@ describe("updateBeat label transitions", () => {
     expect(result.error).toContain("sync");
     expect(execCalls).toContainEqual(["label", "remove", "foolery-456", "stage:implementation", "--no-daemon"]);
     expect(execCalls).toContainEqual(["label", "add", "foolery-456", "stage:retry", "--no-daemon"]);
+    });
   });
 
-  it("retries label add without --no-daemon when flag is unsupported", async () => {
+});
+
+describe("updateBeat --no-daemon flag fallback", () => {
+  beforeEach(() => {
+    execCalls.length = 0;
+    execQueue.length = 0;
+    execFileMock.mockClear();
+    vi.resetModules();
+  });
+
+  describe("--no-daemon flag fallback", () => {
+    it("retries label add without --no-daemon when flag is unsupported", async () => {
     queueExec(
       { stderr: "unknown flag: --no-daemon", exitCode: 1 }, // add with --no-daemon
       { stdout: "" } // add fallback without --no-daemon
@@ -159,5 +172,6 @@ describe("updateBeat label transitions", () => {
     ]);
     expect(execCalls).toContainEqual(["sync", "--no-daemon"]);
     expect(execCalls).toContainEqual(["sync"]);
+    });
   });
 });

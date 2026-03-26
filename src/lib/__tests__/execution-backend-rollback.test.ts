@@ -127,19 +127,23 @@ async function seedNoopLease(backend: StructuredExecutionBackend): Promise<strin
 
 // ── Tests ──────────────────────────────────────────────────
 
-describe("rollbackIteration", () => {
-  let seb: StructuredExecutionBackend;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    const mockBackend = createMockBackend();
-    mockGetBackend.mockReturnValue(mockBackend);
-    seb = new StructuredExecutionBackend(mockBackend);
-    mockCreateLease.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    mockTerminateLease.mockResolvedValue({ ok: true });
+function setupRollbackTest() {
+  vi.clearAllMocks();
+  const mockBackend = createMockBackend();
+  mockGetBackend.mockReturnValue(mockBackend);
+  const seb = new StructuredExecutionBackend(mockBackend);
+  mockCreateLease.mockResolvedValue({
+    ok: true, data: { id: "lease-k1" },
   });
+  mockTerminateLease.mockResolvedValue({ ok: true });
+  return seb;
+}
 
-  it("populates knotsLeaseId during prepareTake on knots repos", async () => {
+describe("rollbackIteration: lease creation", () => {
+  let seb: StructuredExecutionBackend;
+  beforeEach(() => { seb = setupRollbackTest(); });
+
+    it("populates knotsLeaseId during prepareTake on knots repos", async () => {
     mockResolveMemoryManagerType.mockReturnValue("knots");
     mockClaimKnot.mockResolvedValue({
       ok: true,
@@ -166,8 +170,13 @@ describe("rollbackIteration", () => {
     expect(mockCreateLease).toHaveBeenCalledOnce();
     expect(result.data?.lease.knotsLeaseId).toBe("lease-k1");
   });
+});
 
-  it("records rollback note and deletes lease for kind=note on knots repo", async () => {
+describe("rollbackIteration: behavior by kind", () => {
+  let seb: StructuredExecutionBackend;
+  beforeEach(() => { seb = setupRollbackTest(); });
+
+    it("records rollback note and deletes lease for kind=note on knots repo", async () => {
     const leaseId = await seedNoteLease(seb);
     mockResolveMemoryManagerType.mockReturnValue("knots");
     mockUpdateKnot.mockResolvedValue({ ok: true });
@@ -256,7 +265,13 @@ describe("rollbackIteration", () => {
     expect(again.error?.code).toBe("NOT_FOUND");
   });
 
-  it("passes agent metadata as fallback on rollback note", async () => {
+});
+
+describe("rollbackIteration: metadata and edge cases", () => {
+  let seb: StructuredExecutionBackend;
+  beforeEach(() => { seb = setupRollbackTest(); });
+
+    it("passes agent metadata as fallback on rollback note", async () => {
     mockResolveMemoryManagerType.mockReturnValue("knots");
     mockClaimKnot.mockResolvedValue({
       ok: true,

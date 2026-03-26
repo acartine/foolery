@@ -25,8 +25,8 @@ const AGENTS: Record<string, RegisteredAgentConfig> = {
   codex: { command: "codex", model: "5.3", label: "Codex" },
 };
 
-describe("selectFromPool", () => {
-  it("returns null for empty pool", () => {
+describe("selectFromPool: basic selection", () => {
+    it("returns null for empty pool", () => {
     expect(selectFromPool([], AGENTS)).toBeNull();
   });
 
@@ -108,7 +108,9 @@ describe("selectFromPool", () => {
     expect(result?.label).toBe("Claude Opus");
   });
 
-  describe("excludeAgentId (cross-agent review)", () => {
+});
+
+describe("selectFromPool: excludeAgentId", () => {
     it("excludes the specified agent and selects from alternatives", () => {
       const pool: PoolEntry[] = [
         { agentId: "claude", weight: 3 },
@@ -164,7 +166,6 @@ describe("selectFromPool", () => {
       expect(result?.agentId).toBe("claude");
       randomSpy.mockRestore();
     });
-  });
 });
 
 describe("resolvePoolAgent", () => {

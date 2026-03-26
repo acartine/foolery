@@ -83,7 +83,7 @@ describe("KnotsBackend coverage: knot with notes and metadata", () => {
   });
 });
 
-describe("KnotsBackend coverage: acceptance read paths", () => {
+describe("KnotsBackend coverage: native and note-based acceptance", () => {
   it("reads acceptance from the native knot field", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
@@ -144,6 +144,9 @@ describe("KnotsBackend coverage: acceptance read paths", () => {
     expect(result.data?.acceptance).toBe("Native criteria");
   });
 
+});
+
+describe("KnotsBackend coverage: acceptance note visibility", () => {
   it("excludes acceptance-marker notes from visible beat.notes", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
@@ -205,7 +208,9 @@ describe("KnotsBackend coverage: acceptance read paths", () => {
       "bob: Some regular note",
     );
   });
+});
 
+describe("KnotsBackend coverage: acceptance edge cases", () => {
   it("returns undefined acceptance when no acceptance notes exist", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({

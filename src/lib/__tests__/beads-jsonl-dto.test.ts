@@ -66,8 +66,8 @@ function fullDomainBeat(): Beat {
 
 // ── normalizeFromJsonl ──────────────────────────────────────────
 
-describe("normalizeFromJsonl", () => {
-  it("maps all RawBead fields to domain Bead", () => {
+describe("normalizeFromJsonl: field mapping and defaults", () => {
+    it("maps all RawBead fields to domain Bead", () => {
     const raw = fullRawBead();
     const beat = normalizeFromJsonl(raw);
 
@@ -160,7 +160,10 @@ describe("normalizeFromJsonl", () => {
     expect(beat.labels).toEqual(["a", "b"]);
   });
 
-  it("keeps explicit workflow labels authoritative for beads records", () => {
+});
+
+describe("normalizeFromJsonl: workflow labels and fallbacks", () => {
+    it("keeps explicit workflow labels authoritative for beads records", () => {
     const raw: RawBead = {
       id: "x",
       title: "T",
@@ -221,8 +224,10 @@ describe("normalizeFromJsonl", () => {
     expect(beat.created).toBe("2026-01-01T00:00:00Z");
     expect(beat.updated).toBe("2026-02-01T00:00:00Z");
   });
+});
 
-  it("parses invariant section from notes and removes it from visible notes", () => {
+describe("normalizeFromJsonl: invariant parsing from notes", () => {
+    it("parses invariant section from notes and removes it from visible notes", () => {
     const raw: RawBead = {
       id: "inv-1",
       title: "Invariant parse",
@@ -279,8 +284,8 @@ describe("normalizeFromJsonl", () => {
 
 // ── denormalizeToJsonl ──────────────────────────────────────────
 
-describe("denormalizeToJsonl", () => {
-  it("maps all domain Bead fields to RawBead", () => {
+describe("denormalizeToJsonl: field mapping", () => {
+    it("maps all domain Bead fields to RawBead", () => {
     const beat = fullDomainBeat();
     const raw = denormalizeToJsonl(beat);
 
@@ -350,7 +355,10 @@ describe("denormalizeToJsonl", () => {
     expect(raw.metadata).toBeUndefined();
   });
 
-  it("embeds invariants into notes when present", () => {
+});
+
+describe("denormalizeToJsonl: invariant embedding", () => {
+    it("embeds invariants into notes when present", () => {
     const beat: Beat = {
       id: "inv-3",
       title: "Invariant write",
@@ -414,8 +422,8 @@ describe("denormalizeToJsonl", () => {
 
 // ── Round-trip fidelity ─────────────────────────────────────────
 
-describe("round-trip: normalize -> denormalize -> normalize", () => {
-  it("preserves all fields through full round-trip", () => {
+describe("round-trip: full and minimal", () => {
+    it("preserves all fields through full round-trip", () => {
     const original = fullRawBead();
     const domain = normalizeFromJsonl(original);
     const serialized = denormalizeToJsonl(domain);
@@ -479,7 +487,10 @@ describe("round-trip: normalize -> denormalize -> normalize", () => {
     expect(restored.parent).toBe("x.y");
   });
 
-  it("round-trips acceptance_criteria mapping", () => {
+});
+
+describe("round-trip: specific field mappings", () => {
+    it("round-trips acceptance_criteria mapping", () => {
     const raw: RawBead = {
       id: "x",
       title: "T",

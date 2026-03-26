@@ -26,7 +26,7 @@ beforeEach(() => {
 
 // ── g3y1.5.4: Mixed All Repositories behavior ──────────────
 
-describe("Mixed All Repositories behavior", () => {
+describe("Mixed: multi-repo annotation and concatenation", () => {
   it("Knots beats include _repoPath when annotated for multi-repo view", async () => {
     const now = nowIso();
     store.knots.set("K-multi", {
@@ -103,7 +103,9 @@ describe("Mixed All Repositories behavior", () => {
     expect(allBeats[0].state).toBeDefined();
     expect(allBeats[1].state).toBeDefined();
   });
+});
 
+describe("Mixed: cross-backend sort and hierarchy", () => {
   it("sort works across mixed backend beats", () => {
     const knotsBeat: Beat = {
       id: "knot-1",

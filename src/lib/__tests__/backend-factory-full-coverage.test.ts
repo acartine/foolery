@@ -95,7 +95,8 @@ describe("AutoRoutingBackend", () => {
     arb = new AutoRoutingBackend("cli");
   });
 
-  it("resolves to fallback when no repoPath given", () => {
+  describe("repo type resolution", () => {
+    it("resolves to fallback when no repoPath given", () => {
     const caps = arb.capabilitiesForRepo();
     expect(caps.canCreate).toBe(true); // cli has full caps
   });
@@ -141,10 +142,29 @@ describe("AutoRoutingBackend", () => {
     arb.clearRepoCache();
     arb.capabilitiesForRepo("/a");
     expect(detectMemoryManagerType).toHaveBeenCalledTimes(3);
+    });
   });
 
-  // --- Delegated methods ---
-  it("listWorkflows delegates", async () => {
+});
+
+describe("AutoRoutingBackend delegated methods", () => {
+  let arb: AutoRoutingBackend;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockBeadsBuildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated take", claimed: false },
+    });
+    mockBeadsBuildPollPrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated poll", claimedId: "beat-1" },
+    });
+    arb = new AutoRoutingBackend("cli");
+  });
+
+  describe("delegated methods", () => {
+    it("listWorkflows delegates", async () => {
     const r = await arb.listWorkflows();
     expect(r.ok).toBe(true);
   });
@@ -219,6 +239,7 @@ describe("AutoRoutingBackend", () => {
     const r = await arb.buildPollPrompt();
     expect(r.ok).toBe(true);
     expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
+    });
   });
 });
 

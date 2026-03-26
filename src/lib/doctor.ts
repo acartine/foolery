@@ -14,6 +14,7 @@ import {
   checkStaleSettingsKeys,
   checkBackendTypeMigration,
   listRepos,
+  type RegisteredRepo,
 } from "./doctor-checks";
 import {
   checkConfigPermissions,
@@ -196,16 +197,16 @@ function buildCategorySummary(
   return { status: "pass", summary: "no issues" };
 }
 
-export async function* streamDoctor(): AsyncGenerator<
-  DoctorStreamEvent
-> {
-  const repos = await listRepos();
+type DoctorCheck = {
+  category: string;
+  label: string;
+  run: () => Promise<Diagnostic[]>;
+};
 
-  const checks: Array<{
-    category: string;
-    label: string;
-    run: () => Promise<Diagnostic[]>;
-  }> = [
+function buildCheckList(
+  repos: RegisteredRepo[],
+): DoctorCheck[] {
+  return [
     {
       category: "agents",
       label: "Agent connectivity",
@@ -269,6 +270,29 @@ export async function* streamDoctor(): AsyncGenerator<
       run: () => checkActiveKnotsLeases(repos),
     },
   ];
+}
+
+function runCheckSafe(
+  check: DoctorCheck,
+): Promise<Diagnostic[]> {
+  return check.run().catch((e) => {
+    const msg = e instanceof Error
+      ? e.message
+      : String(e);
+    return [{
+      check: check.category,
+      severity: "error" as const,
+      message: msg,
+      fixable: false,
+    }];
+  });
+}
+
+export async function* streamDoctor(): AsyncGenerator<
+  DoctorStreamEvent
+> {
+  const repos = await listRepos();
+  const checks = buildCheckList(repos);
 
   let passed = 0;
   let failed = 0;
@@ -276,20 +300,7 @@ export async function* streamDoctor(): AsyncGenerator<
   let fixable = 0;
 
   for (const check of checks) {
-    let diags: Diagnostic[];
-    try {
-      diags = await check.run();
-    } catch (e) {
-      const msg = e instanceof Error
-        ? e.message
-        : String(e);
-      diags = [{
-        check: check.category,
-        severity: "error",
-        message: msg,
-        fixable: false,
-      }];
-    }
+    const diags = await runCheckSafe(check);
 
     const { status, summary } =
       buildCategorySummary(diags);

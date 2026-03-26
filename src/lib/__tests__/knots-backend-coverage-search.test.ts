@@ -145,7 +145,7 @@ describe("KnotsBackend coverage: listReady with blocking edges", () => {
   });
 });
 
-describe("KnotsBackend coverage: update with parent manipulation", () => {
+describe("KnotsBackend coverage: parent edge updates", () => {
   it("replaces existing parent with new parent", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "UP1", title: "Old Parent" });
@@ -194,7 +194,9 @@ describe("KnotsBackend coverage: update with parent manipulation", () => {
     expect(mockRemoveEdge).not.toHaveBeenCalled();
     expect(mockAddEdge).not.toHaveBeenCalled();
   });
+});
 
+describe("KnotsBackend coverage: profile and acceptance updates", () => {
   it("changes profileId via kno profile set", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "PID1", title: "Test" });

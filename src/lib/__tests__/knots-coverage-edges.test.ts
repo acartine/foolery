@@ -135,7 +135,7 @@ describe("removeEdge", () => {
   });
 });
 
-describe("listProfiles", () => {
+describe("listProfiles: parsing and fallback", () => {
   it("parses successful profile list output", async () => {
     const profiles: KnotProfileDefinition[] = [
       {
@@ -228,7 +228,9 @@ describe("listProfiles", () => {
     const result = await listProfiles("/repo");
     expect(result.ok).toBe(false);
   });
+});
 
+describe("listProfiles: error handling", () => {
   it("returns error on invalid JSON in primary", async () => {
     responseQueue.push({ stdout: "bad json" });
     const result = await listProfiles("/repo");

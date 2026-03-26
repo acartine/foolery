@@ -9,38 +9,38 @@ function src(rel: string): string {
   );
 }
 
-describe("beats page layout", () => {
-  const source = src("src/app/beats/page.tsx");
-  const btSummary = src(
-    "src/components/beat-table-summary.tsx",
-  );
-  const btContent = src(
-    "src/components/beat-table-content.tsx",
-  );
-  const btMeta = src(
-    "src/components/beat-table-metadata.tsx",
-  );
-  const appHeaderSource = src(
-    "src/components/app-header.tsx",
-  );
-  const appHeaderHooksSource = src(
-    "src/components/app-header-hooks.ts",
-  );
-  const appHeaderPartsSource = src(
-    "src/components/app-header-parts.tsx",
-  );
-  const searchBarSource = src(
-    "src/components/search-bar.tsx",
-  );
-  const beatsQuerySource = src(
-    "src/app/beats/use-beats-query.ts",
-  );
+const pageSource = src("src/app/beats/page.tsx");
+const btSummary = src(
+  "src/components/beat-table-summary.tsx",
+);
+const btContent = src(
+  "src/components/beat-table-content.tsx",
+);
+const btMeta = src(
+  "src/components/beat-table-metadata.tsx",
+);
+const appHeaderSource = src(
+  "src/components/app-header.tsx",
+);
+const appHeaderHooksSource = src(
+  "src/components/app-header-hooks.ts",
+);
+const appHeaderPartsSource = src(
+  "src/components/app-header-parts.tsx",
+);
+const searchBarSource = src(
+  "src/components/search-bar.tsx",
+);
+const beatsQuerySource = src(
+  "src/app/beats/use-beats-query.ts",
+);
 
+describe("beats page layout: scrolling and hotkeys", () => {
   it("allows vertical scrolling in the main wrapper", () => {
-    expect(source).toContain(
+    expect(pageSource).toContain(
       "overflow-x-hidden",
     );
-    expect(source).not.toContain(
+    expect(pageSource).not.toContain(
       '"mx-auto max-w-[95vw] overflow-hidden px-4 pt-2"',
     );
   });
@@ -116,10 +116,13 @@ describe("beats page layout", () => {
     );
   });
 
+});
+
+describe("beats page layout: search and table content", () => {
   it("treats search as a list/data view on the beats page", () => {
-    expect(source).toContain("isListBeatsView");
-    expect(source).toContain("parseBeatsView");
-    expect(source).toContain(
+    expect(pageSource).toContain("isListBeatsView");
+    expect(pageSource).toContain("parseBeatsView");
+    expect(pageSource).toContain(
       "isListBeatsView(beatsView)",
     );
   });

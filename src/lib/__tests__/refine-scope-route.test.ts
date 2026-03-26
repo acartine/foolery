@@ -38,19 +38,21 @@ function makeRequest(
   );
 }
 
-describe(
-  "POST /api/beats/[id]/refine-scope",
-  () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      mockGet.mockResolvedValue({
-        ok: true,
-        data: { id: "canonical-id" },
-      });
-    });
+function setupRefineScopeMocks() {
+  vi.clearAllMocks();
+  mockGet.mockResolvedValue({
+    ok: true,
+    data: { id: "canonical-id" },
+  });
+}
 
-    it("enqueues refinement with canonical id",
-      async () => {
+describe(
+  "POST refine-scope: enqueue and routing",
+  () => {
+    beforeEach(setupRefineScopeMocks);
+
+      it("enqueues refinement with canonical id",
+        async () => {
         mockEnqueue.mockResolvedValue({
           id: "job-1",
           beatId: "canonical-id",
@@ -105,8 +107,16 @@ describe(
       );
     });
 
-    it("returns 503 when no agent configured",
-      async () => {
+  },
+);
+
+describe(
+  "POST refine-scope: error handling",
+  () => {
+    beforeEach(setupRefineScopeMocks);
+
+      it("returns 503 when no agent configured",
+        async () => {
         mockEnqueue.mockResolvedValue(null);
 
         const res = await POST(

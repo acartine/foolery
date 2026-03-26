@@ -16,8 +16,8 @@ function makeBeat(overrides: Partial<Beat> & { id: string }): Beat {
   };
 }
 
-describe("buildHierarchy", () => {
-  it("returns flat beats at depth 0 when no parents", () => {
+describe("buildHierarchy: basic nesting", () => {
+    it("returns flat beats at depth 0 when no parents", () => {
     const beats = [makeBeat({ id: "a" }), makeBeat({ id: "b" })];
     const result = buildHierarchy(beats);
     expect(result.map((b) => [b.id, b._depth, b._hasChildren])).toEqual([
@@ -66,7 +66,9 @@ describe("buildHierarchy", () => {
     ]);
   });
 
-  describe("sortChildren", () => {
+});
+
+describe("buildHierarchy: sortChildren", () => {
     it("reorders siblings by priority then state", () => {
       const beats = [
         makeBeat({ id: "parent" }),
@@ -131,5 +133,4 @@ describe("buildHierarchy", () => {
       const result = buildHierarchy(beats, compareBeatsByPriorityThenState);
       expect(result.map((b) => b.id)).toEqual(["high", "low"]);
     });
-  });
 });

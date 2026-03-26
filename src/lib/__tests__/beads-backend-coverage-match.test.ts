@@ -41,8 +41,8 @@ function createBackendWithRepo(): {
 
 // ── Tests ───────────────────────────────────────────────────
 
-describe("BeadsBackend coverage: matchExpression fields", () => {
-  it("matches on nextowner/nextownerkind", async () => {
+describe("BeadsBackend coverage: matchExpression owner/parent", () => {
+    it("matches on nextowner/nextownerkind", async () => {
     const { backend } = createBackendWithRepo();
 
     const created = await backend.create({
@@ -130,7 +130,10 @@ describe("BeadsBackend coverage: matchExpression fields", () => {
     expect(result.data!.length).toBe(1);
   });
 
-  it("matches on requireshumanaction / human field", async () => {
+});
+
+describe("BeadsBackend coverage: matchExpression workflow/metadata", () => {
+    it("matches on requireshumanaction / human field", async () => {
     const { backend } = createBackendWithRepo();
 
     await backend.create({
@@ -329,8 +332,8 @@ describe("BeadsBackend coverage: applyFilters edge cases", () => {
   });
 });
 
-describe("BeadsBackend coverage: buildTakePrompt", () => {
-  it("claims queued agent-claimable beat and returns rich prompt", async () => {
+describe("BeadsBackend coverage: buildTakePrompt claimable", () => {
+    it("claims queued agent-claimable beat and returns rich prompt", async () => {
     const { backend } = createBackendWithRepo();
 
     const created = await backend.create({
@@ -437,7 +440,10 @@ describe("BeadsBackend coverage: buildTakePrompt", () => {
     expect(result.data?.claimed).toBe(false);
   });
 
-  it("returns parent prompt with child IDs", async () => {
+});
+
+describe("BeadsBackend coverage: buildTakePrompt parent/error", () => {
+    it("returns parent prompt with child IDs", async () => {
     const { backend } = createBackendWithRepo();
 
     const parent = await backend.create({

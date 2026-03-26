@@ -216,7 +216,7 @@ describe("newKnot", () => {
   });
 });
 
-describe("listProfiles", () => {
+describe("listProfiles: success and fallback paths", () => {
   it("returns parsed profiles on success", async () => {
     const profiles = [
       { id: "autopilot", initial_state: "planning", states: [], terminal_states: [] },
@@ -270,7 +270,9 @@ describe("listProfiles", () => {
     expect(result.data![0].owners).toBeDefined();
     expect(result.data![0].owners.planning.kind).toBe("agent");
   });
+});
 
+describe("listProfiles: error and workflow conversion", () => {
   it("returns error on invalid JSON from primary", async () => {
     const promise = listProfiles("/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));

@@ -44,7 +44,7 @@ runBackendContractTests(
   },
 );
 
-describe("KnotsBackend mapping behaviour", () => {
+describe("KnotsBackend: close and state mapping", () => {
   it("maps close() to shipped state with force", async () => {
     const backend = new KnotsBackend("/repo");
     const created = await backend.create({
@@ -99,7 +99,9 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(beat?.state).toBe("abandoned");
     expect(beat?.metadata?.knotsState).toBe("abandoned");
   });
+});
 
+describe("KnotsBackend: dependency and parent edge mapping", () => {
   it("maps addDependency blocker->blocked to blocked_by edge with reversed src/dst", async () => {
     const backend = new KnotsBackend("/repo");
     const blocker = await backend.create({
@@ -148,7 +150,9 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(fetched.ok).toBe(true);
     expect(fetched.data?.parent).toBe(parent.data!.id);
   });
+});
 
+describe("KnotsBackend: hierarchical parent inference", () => {
   it("infers parent from hierarchical dotted id when parent_of edge is missing", async () => {
     const now = nowIso();
     store.knots.set("foolery-g3y1", {
@@ -216,7 +220,9 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(leaf?.parent).toBe("foolery-g3y1.6");
     expect(intermediate?.parent).toBe("foolery-g3y1");
   });
+});
 
+describe("KnotsBackend: hierarchical alias inference", () => {
   it("infers parent from hierarchical dotted alias when id has no dots", async () => {
     const now = nowIso();
     store.knots.set("8792", {
@@ -265,7 +271,9 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(child?.parent).toBe("8792");
     expect(child?.aliases).toEqual(["brutus-8792.5"]);
   });
+});
 
+describe("KnotsBackend: edge resilience and unsupported ops", () => {
   it("keeps list resilient when per-knot edge lookup fails", async () => {
     const now = nowIso();
     store.knots.set("foolery-g3y1", {
@@ -327,38 +335,38 @@ describe("KnotsBackend mapping behaviour", () => {
     expect(result.ok).toBe(false);
     expect(result.error?.code).toBe("UNSUPPORTED");
   });
+});
 
-  describe("buildTakePrompt", () => {
-    it("shows a knot and returns claim instructions (not pre-claimed)", async () => {
-      const backend = new KnotsBackend("/repo");
-      const created = await backend.create({
-        title: "Claim me",
-        type: "task",
-        priority: 1,
-        labels: [],
-      });
-      expect(created.ok).toBe(true);
-      const id = created.data!.id;
-
-      const result = await backend.buildTakePrompt(id);
-      expect(result.ok).toBe(true);
-      expect(result.data?.prompt).toContain(id);
-      expect(result.data?.prompt).toContain(
-        "KNOTS CLAIM MODE",
-      );
-      expect(result.data?.prompt).toContain("kno claim");
-      expect(result.data?.prompt).toContain(
-        "single-step authorization",
-      );
-      expect(result.data?.prompt).toContain(
-        "Do not inspect, review, or advance later"
-        + " workflow states on your own.",
-      );
-      expect(result.data?.claimed).toBe(false);
-      expect(mockShowKnot).toHaveBeenCalledWith(
-        id, "/repo",
-      );
-      expect(mockClaimKnot).not.toHaveBeenCalled();
+describe("KnotsBackend: buildTakePrompt", () => {
+  it("shows a knot and returns claim instructions (not pre-claimed)", async () => {
+    const backend = new KnotsBackend("/repo");
+    const created = await backend.create({
+      title: "Claim me",
+      type: "task",
+      priority: 1,
+      labels: [],
     });
+    expect(created.ok).toBe(true);
+    const id = created.data!.id;
+
+    const result = await backend.buildTakePrompt(id);
+    expect(result.ok).toBe(true);
+    expect(result.data?.prompt).toContain(id);
+    expect(result.data?.prompt).toContain(
+      "KNOTS CLAIM MODE",
+    );
+    expect(result.data?.prompt).toContain("kno claim");
+    expect(result.data?.prompt).toContain(
+      "single-step authorization",
+    );
+    expect(result.data?.prompt).toContain(
+      "Do not inspect, review, or advance later"
+      + " workflow states on your own.",
+    );
+    expect(result.data?.claimed).toBe(false);
+    expect(mockShowKnot).toHaveBeenCalledWith(
+      id, "/repo",
+    );
+    expect(mockClaimKnot).not.toHaveBeenCalled();
   });
 });

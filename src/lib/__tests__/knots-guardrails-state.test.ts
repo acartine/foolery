@@ -29,7 +29,7 @@ beforeEach(() => {
 
 // ── g3y1.5.1: Raw state preserved in metadata ──────────────
 
-describe("Knots-state compression with raw state metadata", () => {
+describe("Knots-state: raw state preservation", () => {
   it("preserves raw Knots state in Beat.metadata.knotsState", async () => {
     const now = nowIso();
     store.knots.set("K-raw", {
@@ -108,7 +108,9 @@ describe("Knots-state compression with raw state metadata", () => {
       beat.metadata![KNOTS_METADATA_KEYS.notes],
     ).toBeInstanceOf(Array);
   });
+});
 
+describe("Knots-state: etag preservation", () => {
   it("preserves profile etag and workflow etag in metadata", async () => {
     const now = nowIso();
     store.knots.set("K-etag", {

@@ -152,43 +152,59 @@ async function waitFor(
   }
 }
 
-describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
-  beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    createLeaseMock.mockResolvedValue({
-      ok: true, data: { id: "lease-k1" },
-    });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+function resetTakeLoopMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  createLeaseMock.mockResolvedValue({
+    ok: true, data: { id: "lease-k1" },
   });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+}
 
-  afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
-  });
+async function setupTakeLoopMocks(): Promise<void> {
+  resetTakeLoopMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function clearTakeLoopSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function findLoggedPrompt(
+  source: string,
+): string | undefined {
+  return interactionLog.logPrompt.mock.calls.find(
+    (args: unknown[]) =>
+      (args[1] as Record<string, unknown>)?.source === source,
+  )?.[0] as string | undefined;
+}
+
+describe("take-loop: logs prompts for one-shot agents", () => {
+  beforeEach(async () => { await setupTakeLoopMocks(); });
+  afterEach(() => { clearTakeLoopSessions(); });
 
   it("logs take-loop prompts for one-shot agents", async () => {
     backend.get.mockResolvedValue({
@@ -209,20 +225,13 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
       });
 
     await createSession("foolery-2000", "/tmp/repo");
-
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
     await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
-      const initialPrompt = interactionLog.logPrompt.mock.calls.find(
-        (args: unknown[]) =>
-          (args[1] as Record<string, unknown>)?.source === "initial",
-      )?.[0];
-      const loopPrompt = interactionLog.logPrompt.mock.calls.find(
-        (args: unknown[]) =>
-          (args[1] as Record<string, unknown>)?.source === "take_2",
-      )?.[0];
+      const initialPrompt = findLoggedPrompt("initial");
+      const loopPrompt = findLoggedPrompt("take_2");
 
       expect(typeof initialPrompt).toBe("string");
       expect(initialPrompt).toContain("FOOLERY EXECUTION BOUNDARY:");
@@ -233,6 +242,11 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
       expect(loopPrompt).toContain("loop app prompt");
     });
   });
+});
+
+describe("take-loop: beads-managed and iteration wrapping", () => {
+  beforeEach(async () => { await setupTakeLoopMocks(); });
+  afterEach(() => { clearTakeLoopSessions(); });
 
   it("runs the take loop for beads-managed single-beat sessions", async () => {
     resolveMemoryManagerTypeMock.mockReturnValue("beads");
@@ -254,19 +268,17 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
       });
 
     await createSession("foolery-2100", "/tmp/repo");
-
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
-    await waitFor(() => {
-      expect(spawnedChildren.length).toBe(2);
-    });
+    await waitFor(() => { expect(spawnedChildren.length).toBe(2); });
   });
 
   it("wraps backend prompt during take-loop iterations", async () => {
     const reviewBeat = {
       id: "foolery-3000", title: "Review preamble regression",
-      state: "ready_for_implementation_review", isAgentClaimable: true,
+      state: "ready_for_implementation_review",
+      isAgentClaimable: true,
     };
     backend.get.mockResolvedValueOnce({
       ok: true,
@@ -278,8 +290,7 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
     backend.get.mockResolvedValueOnce({ ok: true, data: reviewBeat });
     backend.get.mockResolvedValueOnce({ ok: true, data: reviewBeat });
     backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: { ...reviewBeat, state: "shipped" },
+      ok: true, data: { ...reviewBeat, state: "shipped" },
     });
 
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
@@ -293,24 +304,37 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
       });
 
     await createSession("foolery-3000", "/tmp/repo");
-
     expect(spawnedChildren).toHaveLength(1);
     spawnedChildren[0].emit("close", 0, null);
 
     await waitFor(() => {
       expect(spawnedChildren.length).toBe(2);
-
       const take2Calls = interactionLog.logPrompt.mock.calls.filter(
         (args: unknown[]) =>
           (args[1] as Record<string, unknown>)?.source === "take_2",
       );
       expect(take2Calls).toHaveLength(1);
-      expect(take2Calls[0]?.[0]).toContain("FOOLERY EXECUTION BOUNDARY:");
-      expect(take2Calls[0]?.[0]).toContain("review iteration prompt");
+      expect(take2Calls[0]?.[0]).toContain(
+        "FOOLERY EXECUTION BOUNDARY:",
+      );
+      expect(take2Calls[0]?.[0]).toContain(
+        "review iteration prompt",
+      );
     });
   });
+});
 
-  it("includes selected agent label in Claimed and TAKE log lines", async () => {
+describe("nextKnot guard: agent label and session metadata", () => {
+  beforeEach(async () => {
+    await setupTakeLoopMocks();
+  });
+
+  afterEach(() => {
+    clearTakeLoopSessions();
+  });
+
+  describe("agent label and session metadata", () => {
+    it("includes selected agent label in Claimed and TAKE log lines", async () => {
     backend.get.mockResolvedValue({
       ok: true,
       data: {
@@ -356,6 +380,18 @@ describe("terminal-manager nextKnot guard: take-loop and agent labels", () => {
     );
     expect(takeLine).toBeDefined();
     expect(takeLine).toContain("[agent: Codex]");
+    });
+  });
+
+});
+
+describe("nextKnot guard: pre-dispatch rollback edge cases", () => {
+  beforeEach(async () => {
+    await setupTakeLoopMocks();
+  });
+
+  afterEach(() => {
+    clearTakeLoopSessions();
   });
 
   describe("pre-dispatch rollback edge cases", () => {

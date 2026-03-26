@@ -30,7 +30,7 @@ beforeEach(() => {
 
 // ── Tests ───────────────────────────────────────────────────
 
-describe("KnotsBackend coverage: toBeat edge cases", () => {
+describe("KnotsBackend: invariant and description mapping", () => {
   it("maps knot invariants to beat invariants", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
@@ -103,7 +103,9 @@ describe("KnotsBackend coverage: toBeat edge cases", () => {
       "aa57", "project-aa57",
     ]);
   });
+});
 
+describe("KnotsBackend: priority, tags, timestamps, and metadata", () => {
   it("normalizes invalid priority to 2", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "NP1", title: "Bad prio", priority: 99 });
@@ -204,7 +206,7 @@ describe("KnotsBackend coverage: workflow cache", () => {
   });
 });
 
-describe("KnotsBackend coverage: update with state change", () => {
+describe("KnotsBackend: state normalization and field updates", () => {
   it("normalizes state via workflow when updating", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "US1", title: "State update" });
@@ -284,7 +286,9 @@ describe("KnotsBackend coverage: update with state change", () => {
     );
     expect(noteCall).toBeDefined();
   });
+});
 
+describe("KnotsBackend: invariant and no-op updates", () => {
   it("serializes invariant add/remove/clear updates", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({

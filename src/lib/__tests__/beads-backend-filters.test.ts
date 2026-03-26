@@ -121,7 +121,7 @@ describe("BeadsBackend filter operations", () => {
   });
 });
 
-describe("BeadsBackend query expression operations", () => {
+describe("BeadsBackend query expression: label and owner", () => {
   let tempDir: string;
   let backend: BeadsBackend;
 
@@ -176,6 +176,17 @@ describe("BeadsBackend query expression operations", () => {
       expect(result.ok).toBe(true);
       expect(result.data).toHaveLength(0);
     });
+  });
+
+});
+
+describe("BeadsBackend query expression: parent and combined", () => {
+  let tempDir: string;
+  let backend: BeadsBackend;
+
+  afterEach(() => {
+    backend._reset();
+    rmSync(tempDir, { recursive: true, force: true });
   });
 
   describe("query() with parent expression", () => {

@@ -227,35 +227,47 @@ function resetAllMocks(): void {
   (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
 }
 
-describe("terminal-manager error-exit retry", () => {
-  beforeEach(async () => {
-    resetAllMocks();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+async function setupRetryMocks(): Promise<void> {
+  resetAllMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
 
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
-  });
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
 
-  afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
-  });
+function clearRetrySessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function mockRetryBeat(
+  id: string, title: string, state: string, claimable = true,
+): { ok: true; data: Record<string, unknown> } {
+  return {
+    ok: true,
+    data: { id, title, state, isAgentClaimable: claimable },
+  };
+}
+
+function getOutcomeRecord(): Record<string, unknown> {
+  const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
+  expect(aoFn).toHaveBeenCalledTimes(1);
+  return aoFn.mock.calls[0]![0] as Record<string, unknown>;
+}
+
+describe("error-exit retry: retries with alternative agent", () => {
+  beforeEach(async () => { await setupRetryMocks(); });
+  afterEach(() => { clearRetrySessions(); });
 
   it("non-zero exit retries with different agent when alternative exists", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
-
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e001",
-        title: "Error retry test",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e001", "Error retry test",
+      "ready_for_implementation",
+    ));
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
     backend.buildTakePrompt
@@ -265,64 +277,42 @@ describe("terminal-manager error-exit retry", () => {
     await createSession("foolery-e001", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e001", title: "Error retry test",
-        state: "implementation", isAgentClaimable: false,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e001", title: "Error retry test",
-        state: "implementation", isAgentClaimable: false,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e001", title: "Error retry test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e001", title: "Error retry test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e001", "Error retry test", "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e001", "Error retry test", "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e001", "Error retry test", "ready_for_implementation",
+    ));
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e001", "Error retry test", "ready_for_implementation",
+    ));
 
     spawnedChildren[0].emit("close", 1, null);
 
-    await waitFor(() => {
-      expect(spawnedChildren).toHaveLength(2);
-    });
+    await waitFor(() => { expect(spawnedChildren).toHaveLength(2); });
     expect(createLeaseMock).toHaveBeenCalledTimes(2);
     expect(rollbackBeatState).toHaveBeenCalled();
 
-    const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
-    expect(aoFn).toHaveBeenCalledTimes(1);
-    const aoCalls = (
-      appendOutcomeRecord as ReturnType<typeof vi.fn>
-    ).mock.calls;
-    const record = aoCalls[0]![0] as Record<string, unknown>;
+    const record = getOutcomeRecord();
     expect(record.exitCode).toBe(1);
     expect(record.success).toBe(false);
     expect(record.beatId).toBe("foolery-e001");
   });
+});
+
+describe("error-exit retry: stops when no alternative agent", () => {
+  beforeEach(async () => { await setupRetryMocks(); });
+  afterEach(() => { clearRetrySessions(); });
 
   it("non-zero exit stops when no alternate agent exists", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsOneAgent);
-
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e002", title: "No alternative agent test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e002", "No alternative agent test",
+      "ready_for_implementation",
+    ));
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
     backend.buildTakePrompt.mockResolvedValueOnce({
@@ -332,49 +322,45 @@ describe("terminal-manager error-exit retry", () => {
     await createSession("foolery-e002", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e002", title: "No alternative agent test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e002", title: "No alternative agent test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e002", title: "No alternative agent test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e002", "No alternative agent test",
+      "ready_for_implementation",
+    ));
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e002", "No alternative agent test",
+      "ready_for_implementation",
+    ));
+    backend.get.mockResolvedValueOnce(mockRetryBeat(
+      "foolery-e002", "No alternative agent test",
+      "ready_for_implementation",
+    ));
 
     spawnedChildren[0].emit("close", 1, null);
 
     await waitFor(() => {
       expect(interactionLog.logEnd).toHaveBeenCalledWith(1, "error");
     });
-
     expect(spawnedChildren).toHaveLength(1);
 
-    const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
-    expect(aoFn).toHaveBeenCalledTimes(1);
-    const aoCalls = (
-      appendOutcomeRecord as ReturnType<typeof vi.fn>
-    ).mock.calls;
-    const record = aoCalls[0]![0] as Record<string, unknown>;
+    const record = getOutcomeRecord();
     expect(record.success).toBe(false);
     expect(record.alternativeAgentAvailable).toBe(false);
     expect(record.rolledBack).toBe(false);
     expect(rollbackBeatState).not.toHaveBeenCalled();
   });
+});
 
-  it("active-state rollback happens before retry on error exit", async () => {
+describe("error-exit retry: rollback before retry", () => {
+  beforeEach(async () => {
+    await setupRetryMocks();
+  });
+
+  afterEach(() => {
+    clearRetrySessions();
+  });
+
+  describe("rollback before retry", () => {
+    it("active-state rollback happens before retry on error exit", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
     backend.get.mockResolvedValueOnce({
@@ -442,9 +428,22 @@ describe("terminal-manager error-exit retry", () => {
     ).mock.calls;
     const record = aoCalls[0]![0] as Record<string, unknown>;
     expect(record.rolledBack).toBe(true);
+    });
   });
 
-  it("take-loop child error exit also retries with different agent", async () => {
+});
+
+describe("error-exit retry: take-loop child retry", () => {
+  beforeEach(async () => {
+    await setupRetryMocks();
+  });
+
+  afterEach(() => {
+    clearRetrySessions();
+  });
+
+  describe("take-loop child retry", () => {
+    it("take-loop child error exit also retries with different agent", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
     backend.get.mockResolvedValueOnce({
@@ -523,6 +522,7 @@ describe("terminal-manager error-exit retry", () => {
       expect(
         (appendOutcomeRecord as ReturnType<typeof vi.fn>),
       ).toHaveBeenCalledTimes(2);
+      });
     });
   });
 });

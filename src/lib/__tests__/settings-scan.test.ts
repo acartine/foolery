@@ -42,8 +42,8 @@ beforeEach(() => {
   mockReadFile.mockRejectedValue(new Error("missing"));
 });
 
-describe("scanForAgents", () => {
-  it("returns installed status when an agent is found on PATH", async () => {
+describe("scanForAgents: discovery and status", () => {
+    it("returns installed status when an agent is found on PATH", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v claude") {
         return { stdout: "/usr/local/bin/claude\n", stderr: "" };
@@ -82,7 +82,10 @@ describe("scanForAgents", () => {
     }
   });
 
-  it("captures Codex model metadata from local config", async () => {
+});
+
+describe("scanForAgents: model metadata", () => {
+    it("captures Codex model metadata from local config", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v codex") {
         return { stdout: "/opt/homebrew/bin/codex\n", stderr: "" };

@@ -179,8 +179,8 @@ describe("startInteractionLog", () => {
 // logPrompt / logResponse / logEnd
 // ---------------------------------------------------------------------------
 
-describe("InteractionLog methods", () => {
-  function baseMeta() {
+describe("InteractionLog: prompt and response", () => {
+    function baseMeta() {
     return {
       sessionId: "methods-session",
       interactionType: "scene" as const,
@@ -274,7 +274,43 @@ describe("InteractionLog methods", () => {
     expect(respLine.parsed).toBeUndefined();
   });
 
-  it("logEnd writes a session_end entry", async () => {
+});
+
+describe("InteractionLog: session end and beat state", () => {
+    function baseMeta() {
+      return {
+        sessionId: "methods-session",
+        interactionType: "scene" as const,
+        repoPath: "/tmp/test-repo",
+        beatIds: ["b-1"],
+      };
+    }
+
+    async function startLogInTemp() {
+      const origCwd = process.cwd();
+      const origEnv = process.env.NODE_ENV;
+      setNodeEnv("development");
+      process.chdir(tempDir);
+      try {
+        return await startInteractionLog(baseMeta());
+      } finally {
+        process.chdir(origCwd);
+        setNodeEnv(origEnv!);
+      }
+    }
+
+    /** Read all JSONL lines from a log file. */
+    async function readLogLines(filePath: string) {
+      // Small delay to let fire-and-forget writes settle
+      await new Promise((r) => setTimeout(r, 50));
+      const content = await readFile(filePath, "utf-8");
+      return content
+        .trim()
+        .split("\n")
+        .map((l) => JSON.parse(l));
+    }
+
+    it("logEnd writes a session_end entry", async () => {
     const log = await startLogInTemp();
     log.logEnd(0, "success");
     const lines = await readLogLines(log.filePath);
@@ -320,6 +356,42 @@ describe("InteractionLog methods", () => {
     expect(beatLine.sessionId).toBe("methods-session");
     expect(beatLine.ts).toBeDefined();
   });
+
+});
+
+describe("InteractionLog: lifecycle and phases", () => {
+  function baseMeta() {
+    return {
+      sessionId: "methods-session",
+      interactionType: "scene" as const,
+      repoPath: "/tmp/test-repo",
+      beatIds: ["b-1"],
+    };
+  }
+
+  async function startLogInTemp() {
+    const origCwd = process.cwd();
+    const origEnv = process.env.NODE_ENV;
+    setNodeEnv("development");
+    process.chdir(tempDir);
+    try {
+      return await startInteractionLog(baseMeta());
+    } finally {
+      process.chdir(origCwd);
+      setNodeEnv(origEnv!);
+    }
+  }
+
+  /** Read all JSONL lines from a log file. */
+  async function readLogLines(filePath: string) {
+    // Small delay to let fire-and-forget writes settle
+    await new Promise((r) => setTimeout(r, 50));
+    const content = await readFile(filePath, "utf-8");
+    return content
+      .trim()
+      .split("\n")
+      .map((l) => JSON.parse(l));
+  }
 
   it("logBeatState records after_prompt phase", async () => {
     const log = await startLogInTemp();

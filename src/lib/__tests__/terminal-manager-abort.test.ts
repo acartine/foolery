@@ -135,43 +135,56 @@ async function waitFor(fn: () => void, { timeout = 2000, interval = 10 } = {}): 
   }
 }
 
+function resetAbortMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+}
+
+async function setupAbortMocks(): Promise<void> {
+  resetAbortMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function clearAbortSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
 describe("terminal-manager abort behavior", () => {
   beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    await setupAbortMocks();
   });
 
   afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    clearAbortSessions();
   });
 
-  it("abortSession preserves 'aborted' status after child exit", async () => {
+  describe("abort status preservation", () => {
+    it("abortSession preserves 'aborted' status after child exit", async () => {
     backend.get.mockResolvedValue({
       ok: true,
       data: {
@@ -237,9 +250,22 @@ describe("terminal-manager abort behavior", () => {
     const entry = getSession(session.id);
     expect(entry).toBeDefined();
     expect(entry!.session.status).toBe("aborted");
+    });
   });
 
-  it("repeated abort calls are idempotent", async () => {
+});
+
+describe("abort: idempotency and take-loop interaction", () => {
+  beforeEach(async () => {
+    await setupAbortMocks();
+  });
+
+  afterEach(() => {
+    clearAbortSessions();
+  });
+
+  describe("idempotency and take-loop interaction", () => {
+    it("repeated abort calls are idempotent", async () => {
     backend.get.mockResolvedValue({
       ok: true,
       data: {
@@ -331,10 +357,23 @@ describe("terminal-manager abort behavior", () => {
 
     await waitFor(() => {
       expect(interactionLog.logEnd).toHaveBeenCalledWith(0, "aborted");
+      });
     });
   });
 
-  it("abortSession force-kills the process group even if the leader exits first", async () => {
+});
+
+describe("abort: process group cleanup", () => {
+  beforeEach(async () => {
+    await setupAbortMocks();
+  });
+
+  afterEach(() => {
+    clearAbortSessions();
+  });
+
+  describe("process group cleanup", () => {
+    it("abortSession force-kills the process group even if the leader exits first", async () => {
     vi.useFakeTimers();
     const processKillSpy = vi.spyOn(process, "kill").mockImplementation((target, signal) => {
       if (target === -4321 && signal === "SIGTERM") return true;
@@ -368,5 +407,6 @@ describe("terminal-manager abort behavior", () => {
       processKillSpy.mockRestore();
       vi.useRealTimers();
     }
+    });
   });
 });

@@ -161,8 +161,8 @@ describe("removeRegisteredAgent", () => {
   });
 });
 
-describe("getStepAgent", () => {
-  it("uses pool when dispatchMode is advanced and pool is configured", async () => {
+describe("getStepAgent: dispatch mode resolution", () => {
+    it("uses pool when dispatchMode is advanced and pool is configured", async () => {
     const toml = [
       'dispatchMode = "advanced"',
       '[agents.sonnet]', 'command = "claude"',
@@ -231,7 +231,9 @@ describe("getStepAgent", () => {
     expect(agent.label).toBe("Claude Opus");
   });
 
-  describe("cross-agent review", () => {
+});
+
+describe("getStepAgent: cross-agent review", () => {
     beforeEach(() => {
       _resetStepAgentMap();
     });
@@ -283,5 +285,4 @@ describe("getStepAgent", () => {
       );
       expect(agent.agentId).toBe("opus");
     });
-  });
 });

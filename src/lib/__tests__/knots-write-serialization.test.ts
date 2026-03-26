@@ -93,6 +93,20 @@ describe("knots write serialization", () => {
     expect(r2.ok).toBe(true);
   });
 
+});
+
+describe("knots write serialization: mixed reads and errors", () => {
+  beforeEach(() => {
+    execFileCallbacks.length = 0;
+  });
+
+  afterEach(() => {
+    for (const entry of execFileCallbacks) {
+      entry.callback(null, "{}", "");
+    }
+    execFileCallbacks.length = 0;
+  });
+
   it("reads proceed while a write is in-flight", async () => {
     const repo = "/tmp/test-repo-mixed";
 

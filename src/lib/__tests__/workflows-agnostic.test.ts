@@ -99,6 +99,9 @@ describe("backend-agnostic workflow exports", () => {
     });
   });
 
+});
+
+describe("backend-agnostic workflow derivation", () => {
   describe("deriveProfileId", () => {
     it("returns explicit profile from labels", () => {
       const result = deriveProfileId(["wf:profile:semiauto"]);

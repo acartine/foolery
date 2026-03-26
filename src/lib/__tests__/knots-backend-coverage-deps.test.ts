@@ -133,7 +133,7 @@ describe("KnotsBackend coverage: listDependencies parent_of edges", () => {
   });
 });
 
-describe("KnotsBackend coverage: buildTakePrompt parent/scene mode", () => {
+describe("KnotsBackend coverage: buildTakePrompt parent prompt", () => {
   it("returns parent prompt with child listing when isParent + childBeatIds", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({
@@ -224,7 +224,9 @@ describe("KnotsBackend coverage: buildTakePrompt parent/scene mode", () => {
 
     expect(result.ok).toBe(false);
   });
+});
 
+describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
   it("falls through to single-beat show when isParent but empty childBeatIds", async () => {
     const backend = new KnotsBackend("/repo");
     insertKnot({ id: "SOLO-1", title: "Solo" });

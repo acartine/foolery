@@ -173,45 +173,58 @@ const advancedSettingsWithTwoAgents = {
   },
 };
 
+function resetQueueClaimsMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+  loadSettingsMock.mockReset();
+  (appendLeaseAuditEvent as ReturnType<typeof vi.fn>).mockReset();
+}
+
+async function setupQueueClaimsMocks(): Promise<void> {
+  resetQueueClaimsMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function clearQueueClaimsSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
 describe("terminal-manager per-queue-type claim limits", () => {
   beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    loadSettingsMock.mockReset();
-    (appendLeaseAuditEvent as ReturnType<typeof vi.fn>).mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    await setupQueueClaimsMocks();
   });
 
   afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    clearQueueClaimsSessions();
   });
 
-  it("stops the take loop when per-queue-type claim limit is exceeded", async () => {
+  describe("claim limit enforcement", () => {
+    it("stops the take loop when per-queue-type claim limit is exceeded", async () => {
     // maxClaimsPerQueueType = 2: allow 2 claims per queue type, stop on 3rd.
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
@@ -258,9 +271,22 @@ describe("terminal-manager per-queue-type claim limits", () => {
     expect(spawnedChildren).toHaveLength(3);
 
     // Session may already be cleaned up here; behavior is validated by termination and spawn count.
+    });
   });
 
-  it("emits lease audit events on successful claim", async () => {
+});
+
+describe("queue claims: lease audit and agent rotation", () => {
+  beforeEach(async () => {
+    await setupQueueClaimsMocks();
+  });
+
+  afterEach(() => {
+    clearQueueClaimsSessions();
+  });
+
+  describe("lease audit and agent rotation", () => {
+    it("emits lease audit events on successful claim", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
     const beatData = {
@@ -343,5 +369,6 @@ describe("terminal-manager per-queue-type claim limits", () => {
     // the pool may or may not rotate. But the mechanism is wired correctly.
     // We just verify two children were spawned and the lease audit was called.
     expect(appendLeaseAuditEvent).toHaveBeenCalled();
+    });
   });
 });

@@ -151,8 +151,8 @@ describe("BeadsBackend coverage: matchExpression state and priority", () => {
   });
 });
 
-describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
-  it("filters by state queued", async () => {
+describe("BeadsBackend coverage: applyFilters queued state", () => {
+    it("filters by state queued", async () => {
     const { backend } = createBackendWithRepo();
 
     await backend.create({
@@ -209,7 +209,10 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(ids).toContain(grandchild.data!.id);
   });
 
-  it("filters by state in_action", async () => {
+});
+
+describe("BeadsBackend coverage: applyFilters in_action state", () => {
+    it("filters by state in_action", async () => {
     const { backend } = createBackendWithRepo();
 
     const created = await backend.create({
@@ -289,7 +292,10 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(ids).not.toContain(shippedChild.data!.id);
   });
 
-  it("filters by exact state name", async () => {
+});
+
+describe("BeadsBackend coverage: applyFilters exact and other", () => {
+    it("filters by exact state name", async () => {
     const { backend } = createBackendWithRepo();
 
     const created = await backend.create({
@@ -358,6 +364,9 @@ describe("BeadsBackend coverage: applyFilters queued/in_action/exact", () => {
     expect(result.data!.length).toBe(1);
   });
 
+});
+
+describe("BeadsBackend coverage: applyFilters priority/assignee/label", () => {
   it("filters by priority (non-matching)", async () => {
     const { backend } = createBackendWithRepo();
 

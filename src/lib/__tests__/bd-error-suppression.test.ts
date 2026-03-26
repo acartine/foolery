@@ -35,7 +35,8 @@ describe("bd-error-suppression", () => {
     vi.restoreAllMocks();
   });
 
-  it("passes through successful results and caches them", () => {
+  describe("cache and suppression basics", () => {
+    it("passes through successful results and caches them", () => {
     const result = ok([STUB_BEAT]);
     const out = withErrorSuppression("listBeats", result);
     expect(out).toEqual(result);
@@ -86,9 +87,19 @@ describe("bd-error-suppression", () => {
 
     withErrorSuppression("listBeats", ok([STUB_BEAT]));
     expect(_internals.failureState.size).toBe(0);
+    });
   });
 
-  it("uses separate cache entries for different call signatures", () => {
+});
+
+describe("bd-error-suppression cache key isolation and edge cases", () => {
+  beforeEach(() => {
+    _resetCaches();
+    vi.restoreAllMocks();
+  });
+
+  describe("cache key isolation and edge cases", () => {
+    it("uses separate cache entries for different call signatures", () => {
     const beatA = { ...STUB_BEAT, id: "a" } as Beat;
     const beatB = { ...STUB_BEAT, id: "b" } as Beat;
 
@@ -173,6 +184,7 @@ describe("bd-error-suppression", () => {
     // Should hit the cache from filtersA since keys are the same
     expect(out.ok).toBe(true);
     expect(out.data).toEqual([STUB_BEAT]);
+    });
   });
 });
 

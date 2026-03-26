@@ -133,7 +133,149 @@ function resetAllMocks(): void {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("BdCliBackend", () => {
+function setupBdCliBackend(): BdCliBackend {
+  resetAllMocks();
+  mockBeadsBuildTakePrompt.mockResolvedValue({
+    ok: true,
+    data: { prompt: "delegated take", claimed: false },
+  });
+  mockBeadsBuildPollPrompt.mockResolvedValue({
+    ok: true,
+    data: { prompt: "delegated poll", claimedId: "beat-1" },
+  });
+  return new BdCliBackend();
+}
+
+describe("BdCliBackend capabilities and workflows", () => {
+  let backend: BdCliBackend;
+
+  beforeEach(() => {
+    backend = setupBdCliBackend();
+  });
+
+  it("exposes FULL_CAPABILITIES", () => {
+    expect(backend.capabilities).toBe(FULL_CAPABILITIES);
+  });
+
+  it("returns builtin workflow descriptors", async () => {
+    const result = await backend.listWorkflows();
+    expect(result.ok).toBe(true);
+    expect(Array.isArray(result.data)).toBe(true);
+    expect((result.data ?? []).length).toBeGreaterThan(0);
+  });
+
+  it("accepts optional repoPath without error", async () => {
+    const result = await backend.listWorkflows();
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("BdCliBackend toBR (result conversion)", () => {
+  let backend: BdCliBackend;
+
+  beforeEach(() => {
+    backend = setupBdCliBackend();
+  });
+
+  it("converts ok BdResult to ok BackendResult", async () => {
+    mockListBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
+    const result = await backend.list();
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual([SAMPLE_BEAT]);
+    expect(result.error).toBeUndefined();
+  });
+
+  it("converts 'not found' to NOT_FOUND", async () => {
+    mockShowBeat.mockResolvedValue({
+      ok: false,
+      error: "Resource not found: test-1",
+    });
+    const result = await backend.get("test-1");
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("NOT_FOUND");
+    expect(result.error?.retryable).toBe(false);
+  });
+
+  it("converts 'locked' to LOCKED", async () => {
+    mockDeleteBeat.mockResolvedValue({
+      ok: false,
+      error: "database is locked",
+    });
+    const result = await backend.delete("test-1");
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("LOCKED");
+    expect(result.error?.retryable).toBe(true);
+  });
+
+  it("converts 'timed out' to TIMEOUT", async () => {
+    mockUpdateBeat.mockResolvedValue({
+      ok: false,
+      error: "Operation timed out",
+    });
+    const result = await backend.update("test-1", { title: "x" });
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("TIMEOUT");
+    expect(result.error?.retryable).toBe(true);
+  });
+
+  it("converts 'permission denied' to PERMISSION_DENIED", async () => {
+    mockCreateBeat.mockResolvedValue({
+      ok: false,
+      error: "permission denied",
+    });
+    const result = await backend.create({
+      title: "x", type: "task", priority: 2, labels: [],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("PERMISSION_DENIED");
+    expect(result.error?.retryable).toBe(false);
+  });
+
+  it("classifies unrecognized error as INTERNAL", async () => {
+    mockCloseBeat.mockResolvedValue({
+      ok: false,
+      error: "something unexpected happened",
+    });
+    const result = await backend.close("test-1");
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("INTERNAL");
+    expect(result.error?.retryable).toBe(false);
+  });
+
+  it("uses 'Unknown error' when error string is undefined", async () => {
+    mockListBeats.mockResolvedValue({ ok: false });
+    const result = await backend.list();
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toBe("Unknown error");
+    expect(result.error?.code).toBe("INTERNAL");
+  });
+
+  it("converts 'already exists' to ALREADY_EXISTS", async () => {
+    mockCreateBeat.mockResolvedValue({
+      ok: false,
+      error: "Resource already exists: dup-1",
+    });
+    const result = await backend.create({
+      title: "dup", type: "task", priority: 2, labels: [],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("ALREADY_EXISTS");
+    expect(result.error?.retryable).toBe(false);
+  });
+
+  it("converts 'unavailable' to UNAVAILABLE", async () => {
+    mockListBeats.mockResolvedValue({
+      ok: false,
+      error: "backend unavailable",
+    });
+    const result = await backend.list();
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("UNAVAILABLE");
+    expect(result.error?.retryable).toBe(true);
+  });
+});
+
+describe("BdCliBackend filtersToRecord", () => {
   let backend: BdCliBackend;
 
   beforeEach(() => {
@@ -148,127 +290,6 @@ describe("BdCliBackend", () => {
     });
     backend = new BdCliBackend();
   });
-
-  // ── Capabilities ──────────────────────────────────────────
-
-  it("exposes FULL_CAPABILITIES", () => {
-    expect(backend.capabilities).toBe(FULL_CAPABILITIES);
-  });
-
-  // ── listWorkflows ─────────────────────────────────────────
-
-  describe("listWorkflows", () => {
-    it("returns builtin workflow descriptors", async () => {
-      const result = await backend.listWorkflows();
-      expect(result.ok).toBe(true);
-      expect(Array.isArray(result.data)).toBe(true);
-      expect((result.data ?? []).length).toBeGreaterThan(0);
-    });
-
-    it("accepts optional repoPath without error", async () => {
-      const result = await backend.listWorkflows();
-      expect(result.ok).toBe(true);
-    });
-  });
-
-  // ── toBR success/error conversion ─────────────────────────
-
-  describe("toBR (result conversion)", () => {
-    it("converts ok BdResult to ok BackendResult", async () => {
-      mockListBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
-      const result = await backend.list();
-      expect(result.ok).toBe(true);
-      expect(result.data).toEqual([SAMPLE_BEAT]);
-      expect(result.error).toBeUndefined();
-    });
-
-    it("converts error BdResult with 'not found' to NOT_FOUND", async () => {
-      mockShowBeat.mockResolvedValue({
-        ok: false,
-        error: "Resource not found: test-1",
-      });
-      const result = await backend.get("test-1");
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("NOT_FOUND");
-      expect(result.error?.retryable).toBe(false);
-    });
-
-    it("converts error BdResult with 'locked' to LOCKED", async () => {
-      mockDeleteBeat.mockResolvedValue({
-        ok: false,
-        error: "database is locked",
-      });
-      const result = await backend.delete("test-1");
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("LOCKED");
-      expect(result.error?.retryable).toBe(true);
-    });
-
-    it("converts error BdResult with 'timed out' to TIMEOUT", async () => {
-      mockUpdateBeat.mockResolvedValue({
-        ok: false,
-        error: "Operation timed out",
-      });
-      const result = await backend.update("test-1", { title: "x" });
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("TIMEOUT");
-      expect(result.error?.retryable).toBe(true);
-    });
-
-    it("converts error BdResult with 'permission denied' to PERMISSION_DENIED", async () => {
-      mockCreateBeat.mockResolvedValue({
-        ok: false,
-        error: "permission denied",
-      });
-      const result = await backend.create({ title: "x", type: "task", priority: 2, labels: [] });
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("PERMISSION_DENIED");
-      expect(result.error?.retryable).toBe(false);
-    });
-
-    it("classifies unrecognized error as INTERNAL", async () => {
-      mockCloseBeat.mockResolvedValue({
-        ok: false,
-        error: "something unexpected happened",
-      });
-      const result = await backend.close("test-1");
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("INTERNAL");
-      expect(result.error?.retryable).toBe(false);
-    });
-
-    it("uses 'Unknown error' when error string is undefined", async () => {
-      mockListBeats.mockResolvedValue({ ok: false });
-      const result = await backend.list();
-      expect(result.ok).toBe(false);
-      expect(result.error?.message).toBe("Unknown error");
-      expect(result.error?.code).toBe("INTERNAL");
-    });
-
-    it("converts 'already exists' to ALREADY_EXISTS", async () => {
-      mockCreateBeat.mockResolvedValue({
-        ok: false,
-        error: "Resource already exists: dup-1",
-      });
-      const result = await backend.create({ title: "dup", type: "task", priority: 2, labels: [] });
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("ALREADY_EXISTS");
-      expect(result.error?.retryable).toBe(false);
-    });
-
-    it("converts 'unavailable' to UNAVAILABLE", async () => {
-      mockListBeats.mockResolvedValue({
-        ok: false,
-        error: "backend unavailable",
-      });
-      const result = await backend.list();
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("UNAVAILABLE");
-      expect(result.error?.retryable).toBe(true);
-    });
-  });
-
-  // ── filtersToRecord ───────────────────────────────────────
 
   describe("filtersToRecord (via list/listReady/search)", () => {
     it("passes undefined when no filters given", async () => {
@@ -298,144 +319,150 @@ describe("BdCliBackend", () => {
       expect(call[0]).toBeUndefined();
     });
   });
+});
 
-  // ── list ──────────────────────────────────────────────────
+describe("BdCliBackend list and listReady delegation", () => {
+  let backend: BdCliBackend;
 
-  describe("list", () => {
-    it("delegates to bd.listBeats with converted filters", async () => {
-      mockListBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
-      const result = await backend.list({ type: "task" }, "/repo");
-      expect(mockListBeats).toHaveBeenCalledWith({ type: "task" }, "/repo");
-      expect(result.ok).toBe(true);
-      expect(result.data).toEqual([SAMPLE_BEAT]);
-    });
+  beforeEach(() => {
+    resetAllMocks();
+    backend = new BdCliBackend();
   });
 
-  // ── listReady ─────────────────────────────────────────────
-
-  describe("listReady", () => {
-    it("delegates to bd.readyBeats", async () => {
-      mockReadyBeats.mockResolvedValue({ ok: true, data: [] });
-      const result = await backend.listReady({ label: "urgent" }, "/repo");
-      expect(mockReadyBeats).toHaveBeenCalledWith(
-        { label: "urgent" },
-        "/repo",
-      );
-      expect(result.ok).toBe(true);
-    });
+  it("delegates to bd.listBeats with converted filters", async () => {
+    mockListBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
+    const result = await backend.list({ type: "task" }, "/repo");
+    expect(mockListBeats).toHaveBeenCalledWith({ type: "task" }, "/repo");
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual([SAMPLE_BEAT]);
   });
 
-  // ── search ────────────────────────────────────────────────
+  it("delegates to bd.readyBeats", async () => {
+    mockReadyBeats.mockResolvedValue({ ok: true, data: [] });
+    const result = await backend.listReady({ label: "urgent" }, "/repo");
+    expect(mockReadyBeats).toHaveBeenCalledWith(
+      { label: "urgent" }, "/repo",
+    );
+    expect(result.ok).toBe(true);
+  });
+});
 
-  describe("search", () => {
-    it("delegates to bd.searchBeats with query and filters", async () => {
-      mockSearchBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
-      const result = await backend.search("login bug", { type: "bug" }, "/repo");
-      expect(mockSearchBeats).toHaveBeenCalledWith(
-        "login bug",
-        { type: "bug" },
-        "/repo",
-      );
-      expect(result.ok).toBe(true);
-    });
+describe("BdCliBackend search and query delegation", () => {
+  let backend: BdCliBackend;
 
-    it("handles search error", async () => {
-      mockSearchBeats.mockResolvedValue({
-        ok: false,
-        error: "bd search failed",
-      });
-      const result = await backend.search("query");
-      expect(result.ok).toBe(false);
-      expect(result.error?.code).toBe("INTERNAL");
-    });
+  beforeEach(() => {
+    resetAllMocks();
+    backend = new BdCliBackend();
   });
 
-  // ── query ─────────────────────────────────────────────────
-
-  describe("query", () => {
-    it("delegates to bd.queryBeats with expression and options", async () => {
-      mockQueryBeats.mockResolvedValue({ ok: true, data: [] });
-      const opts = { limit: 10, sort: "priority" };
-      const result = await backend.query("priority < 3", opts, "/repo");
-      expect(mockQueryBeats).toHaveBeenCalledWith(
-        "priority < 3",
-        opts,
-        "/repo",
-      );
-      expect(result.ok).toBe(true);
-    });
+  it("delegates to bd.searchBeats with query and filters", async () => {
+    mockSearchBeats.mockResolvedValue({ ok: true, data: [SAMPLE_BEAT] });
+    const result = await backend.search(
+      "login bug", { type: "bug" }, "/repo",
+    );
+    expect(mockSearchBeats).toHaveBeenCalledWith(
+      "login bug", { type: "bug" }, "/repo",
+    );
+    expect(result.ok).toBe(true);
   });
 
-  // ── get ───────────────────────────────────────────────────
-
-  describe("get", () => {
-    it("delegates to bd.showBeat", async () => {
-      mockShowBeat.mockResolvedValue({ ok: true, data: SAMPLE_BEAT });
-      const result = await backend.get("test-1", "/repo");
-      expect(mockShowBeat).toHaveBeenCalledWith("test-1", "/repo");
-      expect(result.ok).toBe(true);
-      expect(result.data).toEqual(SAMPLE_BEAT);
+  it("handles search error", async () => {
+    mockSearchBeats.mockResolvedValue({
+      ok: false, error: "bd search failed",
     });
+    const result = await backend.search("query");
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe("INTERNAL");
   });
 
-  // ── create ────────────────────────────────────────────────
+  it("delegates to bd.queryBeats with expression and options", async () => {
+    mockQueryBeats.mockResolvedValue({ ok: true, data: [] });
+    const opts = { limit: 10, sort: "priority" };
+    const result = await backend.query("priority < 3", opts, "/repo");
+    expect(mockQueryBeats).toHaveBeenCalledWith(
+      "priority < 3", opts, "/repo",
+    );
+    expect(result.ok).toBe(true);
+  });
+});
 
-  describe("create", () => {
-    it("delegates to bd.createBeat", async () => {
-      mockCreateBeat.mockResolvedValue({ ok: true, data: { id: "new-1" } });
-      const input = { title: "New beat", type: "task", priority: 2 as const, labels: [] };
-      const result = await backend.create(input, "/repo");
-      expect(mockCreateBeat).toHaveBeenCalledWith(input, "/repo");
-      expect(result.ok).toBe(true);
-      expect(result.data).toEqual({ id: "new-1" });
-    });
+describe("BdCliBackend get, create, update, delete, close", () => {
+  let backend: BdCliBackend;
+
+  beforeEach(() => {
+    resetAllMocks();
+    backend = new BdCliBackend();
   });
 
-  // ── update ────────────────────────────────────────────────
-
-  describe("update", () => {
-    it("delegates to bd.updateBeat", async () => {
-      mockUpdateBeat.mockResolvedValue({ ok: true });
-      const input = { title: "Updated" };
-      const result = await backend.update("test-1", input, "/repo");
-      expect(mockUpdateBeat).toHaveBeenCalledWith("test-1", input, "/repo");
-      expect(result.ok).toBe(true);
-    });
+  it("delegates get to bd.showBeat", async () => {
+    mockShowBeat.mockResolvedValue({ ok: true, data: SAMPLE_BEAT });
+    const result = await backend.get("test-1", "/repo");
+    expect(mockShowBeat).toHaveBeenCalledWith("test-1", "/repo");
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual(SAMPLE_BEAT);
   });
 
-  // ── delete ────────────────────────────────────────────────
-
-  describe("delete", () => {
-    it("delegates to bd.deleteBeat", async () => {
-      mockDeleteBeat.mockResolvedValue({ ok: true });
-      const result = await backend.delete("test-1", "/repo");
-      expect(mockDeleteBeat).toHaveBeenCalledWith("test-1", "/repo");
-      expect(result.ok).toBe(true);
+  it("delegates create to bd.createBeat", async () => {
+    mockCreateBeat.mockResolvedValue({
+      ok: true, data: { id: "new-1" },
     });
+    const input = {
+      title: "New beat", type: "task",
+      priority: 2 as const, labels: [],
+    };
+    const result = await backend.create(input, "/repo");
+    expect(mockCreateBeat).toHaveBeenCalledWith(input, "/repo");
+    expect(result.ok).toBe(true);
+    expect(result.data).toEqual({ id: "new-1" });
   });
 
-  // ── close ─────────────────────────────────────────────────
-
-  describe("close", () => {
-    it("delegates to bd.closeBeat with reason", async () => {
-      mockCloseBeat.mockResolvedValue({ ok: true });
-      const result = await backend.close("test-1", "done", "/repo");
-      expect(mockCloseBeat).toHaveBeenCalledWith("test-1", "done", "/repo");
-      expect(result.ok).toBe(true);
-    });
-
-    it("delegates without reason", async () => {
-      mockCloseBeat.mockResolvedValue({ ok: true });
-      const result = await backend.close("test-1");
-      expect(mockCloseBeat).toHaveBeenCalledWith("test-1", undefined, undefined);
-      expect(result.ok).toBe(true);
-    });
+  it("delegates update to bd.updateBeat", async () => {
+    mockUpdateBeat.mockResolvedValue({ ok: true });
+    const result = await backend.update(
+      "test-1", { title: "Updated" }, "/repo",
+    );
+    expect(mockUpdateBeat).toHaveBeenCalledWith(
+      "test-1", { title: "Updated" }, "/repo",
+    );
+    expect(result.ok).toBe(true);
   });
 
-  // ── listDependencies ──────────────────────────────────────
+  it("delegates delete to bd.deleteBeat", async () => {
+    mockDeleteBeat.mockResolvedValue({ ok: true });
+    const result = await backend.delete("test-1", "/repo");
+    expect(mockDeleteBeat).toHaveBeenCalledWith("test-1", "/repo");
+    expect(result.ok).toBe(true);
+  });
 
-  describe("listDependencies", () => {
-    it("delegates to bd.listDeps", async () => {
+  it("delegates close with reason", async () => {
+    mockCloseBeat.mockResolvedValue({ ok: true });
+    const result = await backend.close("test-1", "done", "/repo");
+    expect(mockCloseBeat).toHaveBeenCalledWith(
+      "test-1", "done", "/repo",
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it("delegates close without reason", async () => {
+    mockCloseBeat.mockResolvedValue({ ok: true });
+    const result = await backend.close("test-1");
+    expect(mockCloseBeat).toHaveBeenCalledWith(
+      "test-1", undefined, undefined,
+    );
+    expect(result.ok).toBe(true);
+  });
+});
+
+describe("BdCliBackend dependency delegation", () => {
+  let backend: BdCliBackend;
+
+  beforeEach(() => {
+    resetAllMocks();
+    backend = new BdCliBackend();
+  });
+
+  describe("dependencies", () => {
+    it("delegates listDependencies to bd.listDeps", async () => {
       mockListDeps.mockResolvedValue({ ok: true, data: [SAMPLE_DEP] });
       const result = await backend.listDependencies("test-1", "/repo", {
         type: "blocks",
@@ -446,28 +473,37 @@ describe("BdCliBackend", () => {
       expect(result.ok).toBe(true);
       expect(result.data).toEqual([SAMPLE_DEP]);
     });
-  });
 
-  // ── addDependency ─────────────────────────────────────────
-
-  describe("addDependency", () => {
-    it("delegates to bd.addDep", async () => {
+    it("delegates addDependency to bd.addDep", async () => {
       mockAddDep.mockResolvedValue({ ok: true });
       const result = await backend.addDependency("a", "b", "/repo");
       expect(mockAddDep).toHaveBeenCalledWith("a", "b", "/repo");
       expect(result.ok).toBe(true);
     });
-  });
 
-  // ── removeDependency ──────────────────────────────────────
-
-  describe("removeDependency", () => {
-    it("delegates to bd.removeDep", async () => {
+    it("delegates removeDependency to bd.removeDep", async () => {
       mockRemoveDep.mockResolvedValue({ ok: true });
       const result = await backend.removeDependency("a", "b", "/repo");
       expect(mockRemoveDep).toHaveBeenCalledWith("a", "b", "/repo");
       expect(result.ok).toBe(true);
     });
+  });
+});
+
+describe("BdCliBackend prompt delegation", () => {
+  let backend: BdCliBackend;
+
+  beforeEach(() => {
+    resetAllMocks();
+    mockBeadsBuildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated take", claimed: false },
+    });
+    mockBeadsBuildPollPrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "delegated poll", claimedId: "beat-1" },
+    });
+    backend = new BdCliBackend();
   });
 
   it("does not instantiate BeadsBackend for non-prompt operations", async () => {
@@ -478,8 +514,6 @@ describe("BdCliBackend", () => {
     expect(result.ok).toBe(true);
     expect(mockBeadsBackendCtor).not.toHaveBeenCalled();
   });
-
-  // ── buildTakePrompt ───────────────────────────────────────
 
   describe("buildTakePrompt", () => {
     it("delegates to BeadsBackend with options and repoPath", async () => {
@@ -512,8 +546,6 @@ describe("BdCliBackend", () => {
       expect(mockBeadsBackendCtor).toHaveBeenCalledTimes(1);
     });
   });
-
-  // ── buildPollPrompt ───────────────────────────────────────
 
   describe("buildPollPrompt", () => {
     it("delegates and returns BeadsBackend poll prompt result", async () => {

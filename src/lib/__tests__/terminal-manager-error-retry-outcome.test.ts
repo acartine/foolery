@@ -153,46 +153,59 @@ async function waitFor(
   }
 }
 
+function resetOutcomeMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+  loadSettingsMock.mockReset();
+  (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockReset();
+  (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
+}
+
+async function setupOutcomeMocks(): Promise<void> {
+  resetOutcomeMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function clearOutcomeSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
 describe("agent-outcome-stats classification via terminal-manager", () => {
   beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    loadSettingsMock.mockReset();
-    (appendOutcomeRecord as ReturnType<typeof vi.fn>).mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-    (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
-
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    await setupOutcomeMocks();
   });
 
   afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
+    clearOutcomeSessions();
   });
 
-  it("records success=true when beat advances to next queue state", async () => {
+  describe("success classification", () => {
+    it("records success=true when beat advances to next queue state", async () => {
     loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
 
     backend.get.mockResolvedValueOnce({
@@ -293,150 +306,124 @@ describe("agent-outcome-stats classification via terminal-manager", () => {
     expect(record.success).toBe(true);
     expect(record.claimedState).toBe("ready_for_implementation_review");
     expect(record.postExitState).toBe("ready_for_implementation");
+    });
   });
 
+});
+
+function mockBeat(
+  id: string, title: string, state: string, claimable = true,
+): { ok: true; data: Record<string, unknown> } {
+  return {
+    ok: true,
+    data: { id, title, state, isAgentClaimable: claimable },
+  };
+}
+
+async function setupFailureSession(
+  id: string, title: string, state: string,
+): Promise<void> {
+  loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+  backend.get.mockResolvedValueOnce(mockBeat(id, title, state));
+  backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+  backend.list.mockResolvedValue({ ok: true, data: [] });
+  backend.buildTakePrompt.mockResolvedValueOnce({
+    ok: true, data: { prompt: "initial prompt" },
+  });
+  await createSession(id, "/tmp/repo");
+  expect(spawnedChildren).toHaveLength(1);
+}
+
+async function waitForOutcomeRecord(): Promise<Record<string, unknown>> {
+  await waitFor(() => {
+    const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
+    expect(aoFn).toHaveBeenCalledTimes(1);
+  });
+  const aoCalls = (
+    appendOutcomeRecord as ReturnType<typeof vi.fn>
+  ).mock.calls;
+  return aoCalls[0]![0] as Record<string, unknown>;
+}
+
+describe("failure: same queue state", () => {
+  beforeEach(async () => { await setupOutcomeMocks(); });
+  afterEach(() => { clearOutcomeSessions(); });
+
   it("records success=false when beat stays at same queue state", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    await setupFailureSession(
+      "foolery-e004b", "Same queue state failure test",
+      "ready_for_implementation",
+    );
 
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e004b", title: "Same queue state failure test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
-    backend.list.mockResolvedValue({ ok: true, data: [] });
-    backend.buildTakePrompt.mockResolvedValueOnce({
-      ok: true, data: { prompt: "initial prompt" },
-    });
-
-    await createSession("foolery-e004b", "/tmp/repo");
-    expect(spawnedChildren).toHaveLength(1);
-
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e004b", title: "Same queue state failure test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e004b", title: "Same queue state failure test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e004b", "Same queue state failure test",
+      "ready_for_implementation",
+    ));
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e004b", "Same queue state failure test",
+      "ready_for_implementation",
+    ));
     backend.buildTakePrompt.mockResolvedValueOnce({
       ok: true, data: { prompt: "next prompt" },
     });
 
     spawnedChildren[0].emit("close", 0, null);
-
-    await waitFor(() => {
-      const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
-    expect(aoFn).toHaveBeenCalledTimes(1);
-    });
-
-    const aoCalls = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls;
-    const record = aoCalls[0]![0] as Record<string, unknown>;
+    const record = await waitForOutcomeRecord();
     expect(record.success).toBe(false);
     expect(record.postExitState).toBe("ready_for_implementation");
   });
+});
+
+describe("failure: terminal state", () => {
+  beforeEach(async () => { await setupOutcomeMocks(); });
+  afterEach(() => { clearOutcomeSessions(); });
 
   it("records success=false when beat reaches terminal state", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    await setupFailureSession(
+      "foolery-e004c", "Terminal state not success test",
+      "ready_for_shipment_review",
+    );
 
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e004c", title: "Terminal state not success test",
-        state: "ready_for_shipment_review", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
-    backend.list.mockResolvedValue({ ok: true, data: [] });
-    backend.buildTakePrompt.mockResolvedValueOnce({
-      ok: true, data: { prompt: "initial prompt" },
-    });
-
-    await createSession("foolery-e004c", "/tmp/repo");
-    expect(spawnedChildren).toHaveLength(1);
-
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e004c", title: "Terminal state not success test",
-        state: "shipped", isAgentClaimable: false,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e004c", "Terminal state not success test",
+      "shipped", false,
+    ));
 
     spawnedChildren[0].emit("close", 0, null);
-
-    await waitFor(() => {
-      const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
-    expect(aoFn).toHaveBeenCalledTimes(1);
-    });
-
-    const aoCalls = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls;
-    const record = aoCalls[0]![0] as Record<string, unknown>;
+    const record = await waitForOutcomeRecord();
     expect(record.success).toBe(false);
     expect(record.postExitState).toBe("shipped");
   });
+});
+
+describe("failure: stuck in active state", () => {
+  beforeEach(async () => { await setupOutcomeMocks(); });
+  afterEach(() => { clearOutcomeSessions(); });
 
   it("records success=false when beat is stuck in active state", async () => {
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single" });
+    await setupFailureSession(
+      "foolery-e005", "Active state failure test",
+      "ready_for_implementation",
+    );
 
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e005", title: "Active state failure test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
-    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
-    backend.list.mockResolvedValue({ ok: true, data: [] });
-    backend.buildTakePrompt.mockResolvedValueOnce({
-      ok: true, data: { prompt: "initial prompt" },
-    });
-
-    await createSession("foolery-e005", "/tmp/repo");
-
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e005", title: "Active state failure test",
-        state: "implementation", isAgentClaimable: false,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e005", title: "Active state failure test",
-        state: "implementation", isAgentClaimable: false,
-      },
-    });
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-e005", title: "Active state failure test",
-        state: "ready_for_implementation", isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e005", "Active state failure test",
+      "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e005", "Active state failure test",
+      "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockBeat(
+      "foolery-e005", "Active state failure test",
+      "ready_for_implementation",
+    ));
     backend.buildTakePrompt.mockResolvedValueOnce({
       ok: true, data: { prompt: "retry prompt" },
     });
 
     spawnedChildren[0].emit("close", 0, null);
-
-    await waitFor(() => {
-      const aoFn = appendOutcomeRecord as ReturnType<typeof vi.fn>;
-    expect(aoFn).toHaveBeenCalledTimes(1);
-    });
-
-    const aoCalls = (appendOutcomeRecord as ReturnType<typeof vi.fn>).mock.calls;
-    const record = aoCalls[0]![0] as Record<string, unknown>;
+    const record = await waitForOutcomeRecord();
     expect(record.success).toBe(false);
     expect(record.postExitState).toBe("implementation");
   });

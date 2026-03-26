@@ -24,7 +24,7 @@ beforeEach(() => {
   resetStore();
 });
 
-describe("update() stuck active state handling", () => {
+describe("update() no-op when state matches", () => {
   it("skips status change when target state matches raw kno state", async () => {
     const backend = new KnotsBackend("/repo");
     const now = nowIso();
@@ -108,7 +108,9 @@ describe("update() stuck active state handling", () => {
     );
     expect(updateCalls.length).toBe(0);
   });
+});
 
+describe("update() force flag and rollback behavior", () => {
   it("sets force=true when jumping to a non-adjacent state", async () => {
     const backend = new KnotsBackend("/repo");
     const now = nowIso();
@@ -197,7 +199,9 @@ describe("update() stuck active state handling", () => {
       force: true,
     });
   });
+});
 
+describe("update() abandoned transitions", () => {
   it("keeps explicit abandoned transitions instead of remapping to initial state", async () => {
     const backend = new KnotsBackend("/repo");
     const now = nowIso();
@@ -265,7 +269,7 @@ describe("buildPollPrompt", () => {
   });
 });
 
-describe("queue children inclusion", () => {
+describe("queue children: queued parent descendants", () => {
   it("includes shipped/abandoned children when parent is in a queue state (queued filter)", async () => {
     seedKnot("parent-1", "ready_for_implementation", {
       type: "epic",
@@ -332,6 +336,9 @@ describe("queue children inclusion", () => {
     expect(ids).toContain("leaf");
   });
 
+});
+
+describe("queue children: specific state filter and ancestor chains", () => {
   it("includes each active beat's queued ancestors without surfacing terminal siblings", async () => {
     seedKnot("grandparent-q", "ready_for_planning", {
       type: "initiative",

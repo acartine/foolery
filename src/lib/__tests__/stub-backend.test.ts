@@ -26,12 +26,12 @@ runBackendContractTests("StubBackend", () => {
 
 // ── Core method coverage ────────────────────────────────────
 
-describe("StubBackend direct method tests", () => {
-  const backend: BackendPort = new StubBackend();
+const stubBackendInstance: BackendPort = new StubBackend();
 
-  // -- Read stubs that return empty arrays --
+describe("StubBackend: read stubs", () => {
+  const backend = stubBackendInstance;
 
-  it("listReady() returns ok:true with empty array", async () => {
+    it("listReady() returns ok:true with empty array", async () => {
     const result = await backend.listReady();
     expect(result.ok).toBe(true);
     expect(result.data).toEqual([]);
@@ -81,9 +81,12 @@ describe("StubBackend direct method tests", () => {
     expect(result.data).toEqual([]);
   });
 
-  // -- Write stubs that return UNAVAILABLE --
+});
 
-  it("create() returns UNAVAILABLE error", async () => {
+describe("StubBackend: write stubs", () => {
+  const backend = stubBackendInstance;
+
+    it("create() returns UNAVAILABLE error", async () => {
     const result = await backend.create({
       title: "t",
       type: "task",
@@ -164,9 +167,10 @@ describe("StubBackend direct method tests", () => {
     expect(result.error?.code).toBe("UNAVAILABLE");
   });
 
-  // -- Capabilities object --
+});
 
-  it("STUB_CAPABILITIES is frozen and read-only", () => {
+describe("StubBackend: capabilities", () => {
+    it("STUB_CAPABILITIES is frozen and read-only", () => {
     expect(Object.isFrozen(STUB_CAPABILITIES)).toBe(true);
     expect(STUB_CAPABILITIES.canCreate).toBe(false);
     expect(STUB_CAPABILITIES.canUpdate).toBe(false);

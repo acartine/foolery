@@ -25,87 +25,86 @@ beforeEach(() => {
 
 // ── g3y1.5.3: Table/filter/sort/hierarchy ───────────────────
 
-describe("Table/filter/sort/hierarchy views on Knots repos", () => {
-  async function seedKnots() {
-    const now = nowIso();
-    const knots: MockKnot[] = [
-      {
-        id: "g3y1",
-        title: "Epic parent",
-        state: "implementation",
-        profile_id: "autopilot",
-        workflow_id: "autopilot",
-        updated_at: now,
-        body: null,
-        description: "Parent epic",
-        priority: 0,
-        type: "epic",
-        tags: ["source:test"],
-        notes: [],
-        handoff_capsules: [],
-        workflow_etag: "etag-1",
-        created_at: now,
-      },
-      {
-        id: "g3y1.1",
-        title: "Child task 1",
-        state: "ready_for_implementation",
-        profile_id: "autopilot",
-        workflow_id: "autopilot",
-        updated_at: now,
-        body: null,
-        description: "First child",
-        priority: 1,
-        type: "task",
-        tags: [],
-        notes: [],
-        handoff_capsules: [],
-        workflow_etag: "etag-2",
-        created_at: now,
-      },
-      {
-        id: "g3y1.2",
-        title: "Child task 2",
-        state: "shipped",
-        profile_id: "autopilot",
-        workflow_id: "autopilot",
-        updated_at: now,
-        body: null,
-        description: "Second child (done)",
-        priority: 2,
-        type: "task",
-        tags: ["bug"],
-        notes: [],
-        handoff_capsules: [],
-        workflow_etag: "etag-3",
-        created_at: now,
-      },
-      {
-        id: "g3y1.1.1",
-        title: "Grandchild",
-        state: "ready_for_planning",
-        profile_id: "autopilot",
-        workflow_id: "autopilot",
-        updated_at: now,
-        body: null,
-        description: "Grandchild task",
-        priority: 3,
-        type: "task",
-        tags: [],
-        notes: [],
-        handoff_capsules: [],
-        workflow_etag: "etag-4",
-        created_at: now,
-      },
-    ];
-    for (const knot of knots) {
-      store.knots.set(knot.id, knot);
-    }
+function seedViewKnots() {
+  const now = nowIso();
+  const knots: MockKnot[] = [
+    {
+      id: "g3y1",
+      title: "Epic parent",
+      state: "implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: "Parent epic",
+      priority: 0,
+      type: "epic",
+      tags: ["source:test"],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-1",
+      created_at: now,
+    },
+    {
+      id: "g3y1.1",
+      title: "Child task 1",
+      state: "ready_for_implementation",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: "First child",
+      priority: 1,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-2",
+      created_at: now,
+    },
+    {
+      id: "g3y1.2",
+      title: "Child task 2",
+      state: "shipped",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: "Second child (done)",
+      priority: 2,
+      type: "task",
+      tags: ["bug"],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-3",
+      created_at: now,
+    },
+    {
+      id: "g3y1.1.1",
+      title: "Grandchild",
+      state: "ready_for_planning",
+      profile_id: "autopilot",
+      workflow_id: "autopilot",
+      updated_at: now,
+      body: null,
+      description: "Grandchild task",
+      priority: 3,
+      type: "task",
+      tags: [],
+      notes: [],
+      handoff_capsules: [],
+      workflow_etag: "etag-4",
+      created_at: now,
+    },
+  ];
+  for (const knot of knots) {
+    store.knots.set(knot.id, knot);
   }
+}
 
-  describe("filter by state", () => {
-    it("filters by 'queued' (ready_for_* states)", async () => {
-      await seedKnots();
+describe("filter by state: queued and lease filtering", () => {
+  it("filters by 'queued' (ready_for_* states)", async () => {
+      seedViewKnots();
       const backend = new KnotsBackend("/repo");
       const result = await backend.list({ state: "queued" });
       expect(result.ok).toBe(true);
@@ -117,7 +116,7 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
     });
 
     it("hides lease knots from the queued view", async () => {
-      await seedKnots();
+      seedViewKnots();
       store.knots.set("lease-1", {
         id: "lease-1",
         title: "Runtime lease",
@@ -145,7 +144,7 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
     });
 
     it("hides lease knots from exact queue-state filters", async () => {
-      await seedKnots();
+      seedViewKnots();
       store.knots.set("lease-2", {
         id: "lease-2",
         title: "Exact-state lease",
@@ -173,9 +172,11 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       const ids = result.data!.map((beat) => beat.id);
       expect(ids).not.toContain("lease-2");
     });
+});
 
-    it("keeps all descendants of queued parents in the queues view", async () => {
-      await seedKnots();
+describe("filter by state: queued descendants", () => {
+  it("keeps all descendants of queued parents in the queues view", async () => {
+      seedViewKnots();
       store.knots.set("g3y1.3", {
         id: "g3y1.3",
         title: "Queued child with terminal descendants",
@@ -237,9 +238,11 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
       expect(ids).toContain("g3y1.3.1");
       expect(ids).toContain("g3y1.3.2");
     });
+});
 
-    it("filters by 'in_action' (action states)", async () => {
-      await seedKnots();
+describe("filter by state: in_action and exact", () => {
+  it("filters by 'in_action' (action states)", async () => {
+      seedViewKnots();
       const backend = new KnotsBackend("/repo");
       const result = await backend.list({
         state: "in_action",
@@ -251,145 +254,140 @@ describe("Table/filter/sort/hierarchy views on Knots repos", () => {
     });
 
     it("filters by exact state name", async () => {
-      await seedKnots();
+      seedViewKnots();
       const backend = new KnotsBackend("/repo");
       const result = await backend.list({ state: "shipped" });
       expect(result.ok).toBe(true);
       expect(result.data!.length).toBe(1);
       expect(result.data![0].id).toBe("g3y1.2");
     });
+});
+
+describe("filter by type", () => {
+  it("filters by type='epic'", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list({ type: "epic" });
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(1);
+    expect(result.data![0].id).toBe("g3y1");
   });
 
-  describe("filter by type", () => {
-    it("filters by type='epic'", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list({ type: "epic" });
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(1);
-      expect(result.data![0].id).toBe("g3y1");
-    });
+  it("filters by type='task'", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list({ type: "task" });
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(3);
+  });
+});
 
-    it("filters by type='task'", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list({ type: "task" });
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(3);
-    });
+describe("filter by priority and label", () => {
+  it("filters by priority=0", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list({ priority: 0 });
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(1);
+    expect(result.data![0].id).toBe("g3y1");
   });
 
-  describe("filter by priority", () => {
-    it("filters by priority=0", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list({ priority: 0 });
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(1);
-      expect(result.data![0].id).toBe("g3y1");
-    });
+  it("filters by label", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list({ label: "bug" });
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(1);
+    expect(result.data![0].id).toBe("g3y1.2");
+  });
+});
+
+describe("hierarchy", () => {
+  it("infers parent from hierarchical dotted IDs", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list();
+    expect(result.ok).toBe(true);
+
+    const beats = result.data!;
+    const child1 = beats.find((b) => b.id === "g3y1.1");
+    const child2 = beats.find((b) => b.id === "g3y1.2");
+    const grandchild = beats.find(
+      (b) => b.id === "g3y1.1.1",
+    );
+
+    expect(child1?.parent).toBe("g3y1");
+    expect(child2?.parent).toBe("g3y1");
+    expect(grandchild?.parent).toBe("g3y1.1");
   });
 
-  describe("filter by label", () => {
-    it("filters by label", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list({ label: "bug" });
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(1);
-      expect(result.data![0].id).toBe("g3y1.2");
-    });
+  it("builds hierarchical tree from flat beats", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list();
+    expect(result.ok).toBe(true);
+
+    const hierarchical = buildHierarchy(result.data!);
+    expect(hierarchical.length).toBeGreaterThan(0);
+
+    const root = hierarchical.find(
+      (h) => h.id === "g3y1",
+    );
+    expect(root).toBeDefined();
+    expect(root!._depth).toBe(0);
+    expect(root!._hasChildren).toBe(true);
+  });
+});
+
+describe("sort and search", () => {
+  it("sorts by priority then state", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.list();
+    expect(result.ok).toBe(true);
+
+    const sorted = [...result.data!].sort(
+      compareBeatsByPriorityThenState,
+    );
+    expect(sorted[0].priority).toBe(0);
+    expect(sorted[sorted.length - 1].priority).toBe(3);
   });
 
-  describe("hierarchy", () => {
-    it("infers parent from hierarchical dotted IDs", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list();
-      expect(result.ok).toBe(true);
-
-      const beats = result.data!;
-      const child1 = beats.find((b) => b.id === "g3y1.1");
-      const child2 = beats.find((b) => b.id === "g3y1.2");
-      const grandchild = beats.find(
-        (b) => b.id === "g3y1.1.1",
-      );
-
-      expect(child1?.parent).toBe("g3y1");
-      expect(child2?.parent).toBe("g3y1");
-      expect(grandchild?.parent).toBe("g3y1.1");
-    });
-
-    it("builds hierarchical tree from flat beats", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list();
-      expect(result.ok).toBe(true);
-
-      const hierarchical = buildHierarchy(result.data!);
-      expect(hierarchical.length).toBeGreaterThan(0);
-
-      const root = hierarchical.find(
-        (h) => h.id === "g3y1",
-      );
-      expect(root).toBeDefined();
-      expect(root!._depth).toBe(0);
-      expect(root!._hasChildren).toBe(true);
-    });
+  it("searches across title and description", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.search("Grandchild");
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(1);
+    expect(result.data![0].id).toBe("g3y1.1.1");
   });
 
-  describe("sort", () => {
-    it("sorts by priority then state", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.list();
-      expect(result.ok).toBe(true);
+  it("searches by partial ID match", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.search("g3y1.1");
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(2);
+  });
+});
 
-      const sorted = [...result.data!].sort(
-        compareBeatsByPriorityThenState,
-      );
-      expect(sorted[0].priority).toBe(0);
-      expect(sorted[sorted.length - 1].priority).toBe(3);
-    });
+describe("query expressions", () => {
+  it("query by type:task", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.query("type:task");
+    expect(result.ok).toBe(true);
+    for (const beat of result.data!) {
+      expect(beat.type).toBe("task");
+    }
   });
 
-  describe("search", () => {
-    it("searches across title and description", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.search("Grandchild");
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(1);
-      expect(result.data![0].id).toBe("g3y1.1.1");
-    });
-
-    it("searches by partial ID match", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.search("g3y1.1");
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(2);
-    });
-  });
-
-  describe("query expressions", () => {
-    it("query by type:task", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.query("type:task");
-      expect(result.ok).toBe(true);
-      for (const beat of result.data!) {
-        expect(beat.type).toBe("task");
-      }
-    });
-
-    it("query by state:shipped", async () => {
-      await seedKnots();
-      const backend = new KnotsBackend("/repo");
-      const result = await backend.query("state:shipped");
-      expect(result.ok).toBe(true);
-      expect(result.data!.length).toBe(1);
-      expect(result.data![0].id).toBe("g3y1.2");
-    });
+  it("query by state:shipped", async () => {
+    seedViewKnots();
+    const backend = new KnotsBackend("/repo");
+    const result = await backend.query("state:shipped");
+    expect(result.ok).toBe(true);
+    expect(result.data!.length).toBe(1);
+    expect(result.data![0].id).toBe("g3y1.2");
   });
 });

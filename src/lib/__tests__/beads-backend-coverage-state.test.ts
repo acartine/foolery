@@ -227,8 +227,8 @@ describe("BeadsBackend coverage: update with state change", () => {
   });
 });
 
-describe("BeadsBackend coverage: invariant emulation in notes", () => {
-  it("persists create invariants into notes while keeping visible notes clean", async () => {
+describe("BeadsBackend coverage: invariant create/update", () => {
+    it("persists create invariants into notes while keeping visible notes clean", async () => {
     const { backend, repo } = createBackendWithRepo();
 
     const created = await backend.create({
@@ -327,7 +327,10 @@ describe("BeadsBackend coverage: invariant emulation in notes", () => {
     expect(raw.notes).toBe("Persistent note");
   });
 
-  it("normalizes invariant conditions and deduplicates before persisting notes", async () => {
+});
+
+describe("BeadsBackend coverage: invariant normalization", () => {
+    it("normalizes invariant conditions and deduplicates before persisting notes", async () => {
     const { backend, repo } = createBackendWithRepo();
 
     const created = await backend.create({

@@ -4,7 +4,9 @@
  * newerTimestamp/olderTimestamp edge cases, extractTypesFromContent
  * merging with existing entry, agent dedup, missing raw field.
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterEach, beforeEach, describe, expect, it,
+} from "vitest";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { gzip as gzipCallback } from "node:zlib";
 import { promisify } from "node:util";
@@ -52,31 +54,39 @@ async function writeGzLog(
   return fullPath;
 }
 
-describe("agent-message-type-index (additional coverage)", () => {
+function setupTempDir(): void {
   beforeEach(async () => {
     tempDir = await mkdtemp(join(tmpdir(), "msg-type-cov-"));
   });
-
   afterEach(async () => {
     await rm(tempDir, { recursive: true, force: true });
   });
+}
+
+describe("msg-type-index coverage: read and merge", () => {
+  setupTempDir();
 
   it("reads .jsonl.gz compressed log files", async () => {
-    await writeGzLog(tempDir, "repo/2026-01-01/session.jsonl.gz", [
-      {
-        kind: "session_start",
-        ts: "2026-01-01T10:00:00Z",
-        sessionId: "s1",
-        agentName: "claude",
-        agentModel: "opus",
-      },
-      {
-        kind: "response",
-        ts: "2026-01-01T10:01:00Z",
-        sessionId: "s1",
-        raw: JSON.stringify({ type: "text", content: "hello" }),
-      },
-    ]);
+    await writeGzLog(
+      tempDir, "repo/2026-01-01/session.jsonl.gz",
+      [
+        {
+          kind: "session_start",
+          ts: "2026-01-01T10:00:00Z",
+          sessionId: "s1",
+          agentName: "claude",
+          agentModel: "opus",
+        },
+        {
+          kind: "response",
+          ts: "2026-01-01T10:01:00Z",
+          sessionId: "s1",
+          raw: JSON.stringify({
+            type: "text", content: "hello",
+          }),
+        },
+      ],
+    );
 
     const index = await buildMessageTypeIndex(tempDir, 10);
     expect(index.entries.length).toBe(1);
@@ -92,8 +102,7 @@ describe("agent-message-type-index (additional coverage)", () => {
         agentName: "claude",
       },
       {
-        kind: "response",
-        ts: "2026-01-01T10:01:00Z",
+        kind: "response", ts: "2026-01-01T10:01:00Z",
         raw: JSON.stringify({ type: "text" }),
       },
     ]);
@@ -104,13 +113,11 @@ describe("agent-message-type-index (additional coverage)", () => {
         agentName: "codex",
       },
       {
-        kind: "response",
-        ts: "2026-01-02T10:01:00Z",
+        kind: "response", ts: "2026-01-02T10:01:00Z",
         raw: JSON.stringify({ type: "text" }),
       },
       {
-        kind: "response",
-        ts: "2026-01-02T10:02:00Z",
+        kind: "response", ts: "2026-01-02T10:02:00Z",
         raw: JSON.stringify({ type: "tool_use" }),
       },
     ]);
@@ -121,7 +128,9 @@ describe("agent-message-type-index (additional coverage)", () => {
     expect(text!.count).toBe(2);
     expect(text!.agents.length).toBe(2);
 
-    const toolUse = index.entries.find((e) => e.type === "tool_use");
+    const toolUse = index.entries.find(
+      (e) => e.type === "tool_use",
+    );
     expect(toolUse).toBeDefined();
     expect(toolUse!.count).toBe(1);
   });
@@ -130,8 +139,7 @@ describe("agent-message-type-index (additional coverage)", () => {
     await writeLog(tempDir, "repo/2026-01-01/s1.jsonl", [
       { kind: "session_start", ts: "2026-01-01T10:00:00Z" },
       {
-        kind: "response",
-        ts: "2026-01-01T10:01:00Z",
+        kind: "response", ts: "2026-01-01T10:01:00Z",
         parsed: { type: "text" },
       },
     ]);
@@ -141,12 +149,15 @@ describe("agent-message-type-index (additional coverage)", () => {
   });
 
   it("skips malformed JSON lines", async () => {
-    const fullPath = join(tempDir, "repo/2026-01-01/bad.jsonl");
-    await mkdir(join(tempDir, "repo/2026-01-01"), { recursive: true });
+    const fullPath = join(
+      tempDir, "repo/2026-01-01/bad.jsonl",
+    );
+    await mkdir(
+      join(tempDir, "repo/2026-01-01"), { recursive: true },
+    );
     const content = [
       JSON.stringify({
-        kind: "response",
-        ts: "2026-01-01T10:00:00Z",
+        kind: "response", ts: "2026-01-01T10:00:00Z",
         raw: JSON.stringify({ type: "text" }),
       }),
       "not valid json{{{",
@@ -156,29 +167,32 @@ describe("agent-message-type-index (additional coverage)", () => {
     const index = await buildMessageTypeIndex(tempDir, 10);
     expect(index.entries.length).toBe(1);
   });
+});
+
+describe("msg-type-index coverage: edge cases", () => {
+  setupTempDir();
 
   it("updateMessageTypeIndexFromSession with overrideAgent", async () => {
-    const filePath = await writeLog(tempDir, "repo/s1.jsonl", [
-      {
-        kind: "response",
-        ts: "2026-01-01T10:01:00Z",
-        raw: JSON.stringify({ type: "text" }),
-      },
-    ]);
+    const filePath = await writeLog(
+      tempDir, "repo/s1.jsonl",
+      [
+        {
+          kind: "response", ts: "2026-01-01T10:01:00Z",
+          raw: JSON.stringify({ type: "text" }),
+        },
+      ],
+    );
 
-    // We cannot easily redirect the index path in production code, so
-    // instead let's test the pure extractTypesFromContent + merge logic
-    // by calling updateMessageTypeIndexFromSession (which reads/writes
-    // the real index path). We'll just verify no error is thrown.
     await expect(
-      updateMessageTypeIndexFromSession(filePath, "test-agent", "test-model"),
+      updateMessageTypeIndexFromSession(
+        filePath, "test-agent", "test-model",
+      ),
     ).resolves.toBeUndefined();
   });
 
   it("returns empty index for nonexistent log root", async () => {
     const index = await buildMessageTypeIndex(
-      join(tempDir, "nonexistent"),
-      10,
+      join(tempDir, "nonexistent"), 10,
     );
     expect(index.entries).toEqual([]);
   });
@@ -186,8 +200,7 @@ describe("agent-message-type-index (additional coverage)", () => {
   it("handles raw field with invalid JSON gracefully", async () => {
     await writeLog(tempDir, "repo/2026-01-01/s1.jsonl", [
       {
-        kind: "response",
-        ts: "2026-01-01T10:00:00Z",
+        kind: "response", ts: "2026-01-01T10:00:00Z",
         raw: "not-json",
       },
     ]);
@@ -199,8 +212,7 @@ describe("agent-message-type-index (additional coverage)", () => {
   it("handles raw object without type field", async () => {
     await writeLog(tempDir, "repo/2026-01-01/s1.jsonl", [
       {
-        kind: "response",
-        ts: "2026-01-01T10:00:00Z",
+        kind: "response", ts: "2026-01-01T10:00:00Z",
         raw: JSON.stringify({ content: "hello" }),
       },
     ]);
@@ -212,19 +224,15 @@ describe("agent-message-type-index (additional coverage)", () => {
   it("deduplicates agents in entry", async () => {
     await writeLog(tempDir, "repo/2026-01-01/s1.jsonl", [
       {
-        kind: "session_start",
-        ts: "2026-01-01T10:00:00Z",
-        agentName: "claude",
-        agentModel: "opus",
+        kind: "session_start", ts: "2026-01-01T10:00:00Z",
+        agentName: "claude", agentModel: "opus",
       },
       {
-        kind: "response",
-        ts: "2026-01-01T10:01:00Z",
+        kind: "response", ts: "2026-01-01T10:01:00Z",
         raw: JSON.stringify({ type: "text" }),
       },
       {
-        kind: "response",
-        ts: "2026-01-01T10:02:00Z",
+        kind: "response", ts: "2026-01-01T10:02:00Z",
         raw: JSON.stringify({ type: "text" }),
       },
     ]);
@@ -235,7 +243,9 @@ describe("agent-message-type-index (additional coverage)", () => {
     expect(text!.count).toBe(2);
   });
 
-  it("removeMessageTypeIndex does not throw for nonexistent file", async () => {
-    await expect(removeMessageTypeIndex()).resolves.toBeUndefined();
+  it("removeMessageTypeIndex does not throw", async () => {
+    await expect(
+      removeMessageTypeIndex(),
+    ).resolves.toBeUndefined();
   });
 });

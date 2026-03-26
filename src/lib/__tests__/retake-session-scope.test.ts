@@ -10,8 +10,8 @@ import {
 } from "@/lib/retake-session-scope";
 import { hasRollingAncestor } from "@/lib/rolling-ancestor";
 
-describe("retake session repo scoping", () => {
-  it("reuses only the running session from the same repo when beat ids collide", () => {
+describe("retake session: index scoping", () => {
+    it("reuses only the running session from the same repo when beat ids collide", () => {
     const terminals: ActiveTerminal[] = [
       {
         sessionId: "session-a",
@@ -59,7 +59,10 @@ describe("retake session repo scoping", () => {
     expect(shippingByBeatId[repoScopedBeatKey("same-id", "/repos/b")]).toBe("session-b");
   });
 
-  it("keeps rolling-ancestor lookups inside the same repo when beat ids collide", () => {
+});
+
+describe("retake session: rolling-ancestor isolation", () => {
+    it("keeps rolling-ancestor lookups inside the same repo when beat ids collide", () => {
     const beats: BeatWithRepo[] = [
       {
         id: "parent",

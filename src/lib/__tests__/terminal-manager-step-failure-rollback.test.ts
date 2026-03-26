@@ -138,300 +138,246 @@ async function waitFor(fn: () => void, { timeout = 2000, interval = 10 } = {}): 
   }
 }
 
-describe("terminal-manager step-failure rollback", () => {
-  beforeEach(async () => {
-    nextKnotMock.mockReset();
-    nextBeatMock.mockReset();
-    createLeaseMock.mockReset();
-    terminateLeaseMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReset();
-    resolveMemoryManagerTypeMock.mockReturnValue("knots");
-    loadSettingsMock.mockReset();
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single", maxClaimsPerQueueType: 10 });
-    createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
-    terminateLeaseMock.mockResolvedValue({ ok: true });
-    spawnedChildren.length = 0;
-    backend.get.mockReset();
-    backend.list.mockReset();
-    backend.listWorkflows.mockReset();
-    backend.buildTakePrompt.mockReset();
-    backend.update.mockReset();
-    interactionLog.logPrompt.mockReset();
-    interactionLog.logStdout.mockReset();
-    interactionLog.logStderr.mockReset();
-    interactionLog.logResponse.mockReset();
-    interactionLog.logBeatState.mockReset();
-    interactionLog.logEnd.mockReset();
-    const { exec } = await import("node:child_process");
-    (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
-    (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
+function resetStepFailureMocks(): void {
+  nextKnotMock.mockReset();
+  nextBeatMock.mockReset();
+  createLeaseMock.mockReset();
+  terminateLeaseMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReset();
+  resolveMemoryManagerTypeMock.mockReturnValue("knots");
+  loadSettingsMock.mockReset();
+  loadSettingsMock.mockResolvedValue({ dispatchMode: "single", maxClaimsPerQueueType: 10 });
+  createLeaseMock.mockResolvedValue({ ok: true, data: { id: "lease-k1" } });
+  terminateLeaseMock.mockResolvedValue({ ok: true });
+  spawnedChildren.length = 0;
+  backend.get.mockReset();
+  backend.list.mockReset();
+  backend.listWorkflows.mockReset();
+  backend.buildTakePrompt.mockReset();
+  backend.update.mockReset();
+  interactionLog.logPrompt.mockReset();
+  interactionLog.logStdout.mockReset();
+  interactionLog.logStderr.mockReset();
+  interactionLog.logResponse.mockReset();
+  interactionLog.logBeatState.mockReset();
+  interactionLog.logEnd.mockReset();
+}
 
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
-  });
+async function setupStepFailureMocks(): Promise<void> {
+  resetStepFailureMocks();
+  const { exec } = await import("node:child_process");
+  (exec as unknown as ReturnType<typeof vi.fn>).mockClear();
+  (rollbackBeatState as ReturnType<typeof vi.fn>).mockClear();
 
-  afterEach(() => {
-    type GS = { __terminalSessions?: Map<string, unknown> };
-    const sessions = (globalThis as GS).__terminalSessions;
-    sessions?.clear();
-  });
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
 
-  it("non-zero exit code triggers enforceQueueTerminalInvariant rollback", async () => {
-    // Using custom prompt avoids buildTakePrompt during createSession
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r001",
-        title: "Step failure rollback test",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+function clearStepFailureSessions(): void {
+  type GS = { __terminalSessions?: Map<string, unknown> };
+  const sessions = (globalThis as GS).__terminalSessions;
+  sessions?.clear();
+}
+
+function mockStepBeat(
+  id: string, title: string, state: string, claimable = true,
+): { ok: true; data: Record<string, unknown> } {
+  return {
+    ok: true,
+    data: { id, title, state, isAgentClaimable: claimable },
+  };
+}
+
+describe("step-failure: non-zero exit rollback", () => {
+  beforeEach(async () => { await setupStepFailureMocks(); });
+  afterEach(() => { clearStepFailureSessions(); });
+
+  it("non-zero exit triggers enforceQueueTerminalInvariant rollback", async () => {
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r001", "Step failure rollback test",
+      "ready_for_implementation",
+    ));
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
 
-    // After the child exits with non-zero code, enforceQueueTerminalInvariant
-    // fetches the beat. The agent left it in an active (action) state.
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r001",
-        title: "Step failure rollback test",
-        state: "implementation",
-        isAgentClaimable: false,
-      },
-    });
-    // After rollback, re-fetch confirms the beat is back in queue state.
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r001",
-        title: "Step failure rollback test",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+    // Post-exit: agent left beat in active state
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r001", "Step failure rollback test",
+      "implementation", false,
+    ));
+    // After rollback, confirms queue state
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r001", "Step failure rollback test",
+      "ready_for_implementation",
+    ));
 
     await createSession("foolery-r001", "/tmp/repo", "custom prompt");
     expect(spawnedChildren).toHaveLength(1);
-
-    // Child exits with non-zero code (step failure)
     spawnedChildren[0].emit("close", 1, null);
 
     await waitFor(() => {
       expect(rollbackBeatState).toHaveBeenCalledWith(
-        "foolery-r001",
-        "implementation",
-        "ready_for_implementation",
-        "/tmp/repo",
-        "knots",
+        "foolery-r001", "implementation",
+        "ready_for_implementation", "/tmp/repo", "knots",
       );
     });
   });
+});
 
-  it("take-loop step failure triggers rollback when agent leaves beat in active state", async () => {
-    // No custom prompt -> take-loop mode. Need buildTakePrompt for initial + retry.
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r002",
-        title: "Take-loop step failure",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+describe("step-failure: take-loop rollback", () => {
+  beforeEach(async () => { await setupStepFailureMocks(); });
+  afterEach(() => { clearStepFailureSessions(); });
+
+  it("take-loop step failure triggers rollback on active state", async () => {
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r002", "Take-loop step failure",
+      "ready_for_implementation",
+    ));
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
     backend.buildTakePrompt
-      .mockResolvedValueOnce({ ok: true, data: { prompt: "initial prompt" } })
-      .mockResolvedValueOnce({ ok: true, data: { prompt: "retry prompt" } });
+      .mockResolvedValueOnce({
+        ok: true, data: { prompt: "initial prompt" },
+      })
+      .mockResolvedValueOnce({
+        ok: true, data: { prompt: "retry prompt" },
+      });
 
     await createSession("foolery-r002", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // First child exits successfully (code 0).
-    // Post-close state fetch (non-blocking, parallel)
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r002",
-        title: "Take-loop step failure",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
-    // buildNextTakePrompt fetches current state: agent left it in active state
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r002",
-        title: "Take-loop step failure",
-        state: "implementation",
-        isAgentClaimable: false,
-      },
-    });
-    // After rollback in buildNextTakePrompt, refresh shows queue state
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r002",
-        title: "Take-loop step failure",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+    // Post-close: queue state, then active, then queue again
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r002", "Take-loop step failure",
+      "ready_for_implementation",
+    ));
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r002", "Take-loop step failure",
+      "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r002", "Take-loop step failure",
+      "ready_for_implementation",
+    ));
 
     spawnedChildren[0].emit("close", 0, null);
 
     await waitFor(() => {
       expect(rollbackBeatState).toHaveBeenCalledWith(
-        "foolery-r002",
-        "implementation",
-        "ready_for_implementation",
-        "/tmp/repo",
-        "knots",
-        expect.stringContaining("rolled back from implementation to ready_for_implementation"),
+        "foolery-r002", "implementation",
+        "ready_for_implementation", "/tmp/repo", "knots",
+        expect.stringContaining(
+          "rolled back from implementation",
+        ),
       );
     });
   });
+});
 
-  it("per-queue-type claim limit triggers enforceQueueTerminalInvariant with rollback", async () => {
-    // Use maxClaimsPerQueueType=3, so after 3 claims buildNextTakePrompt returns null.
-    // Each iteration: child exits 0 → buildNextTakePrompt succeeds → new child spawned.
-    // On the 4th buildNextTakePrompt call, the per-queue-type limit is exceeded and loop stops.
-    loadSettingsMock.mockResolvedValue({ dispatchMode: "single", maxClaimsPerQueueType: 3 });
+describe("step-failure: per-queue-type claim limit rollback", () => {
+  beforeEach(async () => { await setupStepFailureMocks(); });
+  afterEach(() => { clearStepFailureSessions(); });
 
-    const beatData = {
-      id: "foolery-r003",
-      title: "Max claims rollback",
-      state: "ready_for_implementation",
-      isAgentClaimable: true,
-    };
-    const activeBeatData = {
-      id: "foolery-r003",
-      title: "Max claims rollback",
-      state: "implementation",
-      isAgentClaimable: false,
-    };
+  it("claim limit triggers enforceQueueTerminalInvariant with rollback", async () => {
+    loadSettingsMock.mockResolvedValue({
+      dispatchMode: "single", maxClaimsPerQueueType: 3,
+    });
+    const beat = mockStepBeat(
+      "foolery-r003", "Max claims rollback",
+      "ready_for_implementation",
+    );
+    const activeBeat = mockStepBeat(
+      "foolery-r003", "Max claims rollback",
+      "implementation", false,
+    );
 
-    // Initial createSession: get beat, listWorkflows, list, buildTakePrompt
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...beatData } });
+    backend.get.mockResolvedValueOnce(beat);
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
     backend.buildTakePrompt.mockResolvedValue({
-      ok: true,
-      data: { prompt: "iteration prompt" },
+      ok: true, data: { prompt: "iteration prompt" },
     });
 
-    // Create take-loop session (no custom prompt).
     await createSession("foolery-r003", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
-
-    // For intermediate iterations, backend.get always returns claimable queue state.
-    backend.get.mockResolvedValue({ ok: true, data: { ...beatData } });
+    backend.get.mockResolvedValue(beat);
 
     // Drive through 3 claims (children 2, 3, 4)
     for (let i = 0; i < 3; i++) {
-      const childIndex = spawnedChildren.length - 1;
-      spawnedChildren[childIndex].emit("close", 0, null);
-
-      // Wait for the next child to be spawned before continuing
+      const idx = spawnedChildren.length - 1;
+      spawnedChildren[idx].emit("close", 0, null);
       await waitFor(() => {
-        expect(spawnedChildren).toHaveLength(childIndex + 2);
+        expect(spawnedChildren).toHaveLength(idx + 2);
       });
     }
 
-    // Now the 4th child exits with code 0. buildNextTakePrompt will see
-    // claimsPerQueueType("implementation") = 4 > 3 and stop.
-    // enforceQueueTerminalInvariant runs — return active state to trigger rollback.
+    // 4th child exits: limit exceeded, rollback triggers
     backend.get.mockReset();
-    // Post-close state fetch
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...activeBeatData } });
-    // buildNextTakePrompt fetch
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...beatData } });
-    // enforceQueueTerminalInvariant (called from within buildNextTakePrompt when limit exceeded)
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...activeBeatData } });
-    // After rollback, re-fetch confirms queue state
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...beatData } });
-    // enforceQueueTerminalInvariant after buildNextTakePrompt returns null
-    backend.get.mockResolvedValueOnce({ ok: true, data: { ...beatData } });
+    backend.get.mockResolvedValueOnce(activeBeat);
+    backend.get.mockResolvedValueOnce(beat);
+    backend.get.mockResolvedValueOnce(activeBeat);
+    backend.get.mockResolvedValueOnce(beat);
+    backend.get.mockResolvedValueOnce(beat);
 
-    const lastChild = spawnedChildren[spawnedChildren.length - 1];
-    lastChild.emit("close", 0, null);
+    spawnedChildren[spawnedChildren.length - 1].emit("close", 0, null);
 
     await waitFor(() => {
       expect(rollbackBeatState).toHaveBeenCalledWith(
-        "foolery-r003",
-        "implementation",
-        "ready_for_implementation",
-        "/tmp/repo",
-        "knots",
+        "foolery-r003", "implementation",
+        "ready_for_implementation", "/tmp/repo", "knots",
       );
     });
-
-    // No additional children spawned after claim limit
-    // 1 initial + 3 take-loop = 4 total
     expect(spawnedChildren).toHaveLength(4);
   });
+});
 
-  it("after rollback the beat is in a queue (claimable) state, not stuck active", async () => {
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r004",
-        title: "Invariant after rollback",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+describe("step-failure: invariant after rollback", () => {
+  beforeEach(async () => { await setupStepFailureMocks(); });
+  afterEach(() => { clearStepFailureSessions(); });
+
+  it("after rollback the beat is in queue state, not stuck active", async () => {
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r004", "Invariant after rollback",
+      "ready_for_implementation",
+    ));
     backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
     backend.list.mockResolvedValue({ ok: true, data: [] });
 
     await createSession("foolery-r004", "/tmp/repo", "custom prompt");
     expect(spawnedChildren).toHaveLength(1);
 
-    // After non-zero exit, enforceQueueTerminalInvariant fetches: active state
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r004",
-        title: "Invariant after rollback",
-        state: "implementation",
-        isAgentClaimable: false,
-      },
-    });
-    // After rollback, re-fetch: queue state
-    backend.get.mockResolvedValueOnce({
-      ok: true,
-      data: {
-        id: "foolery-r004",
-        title: "Invariant after rollback",
-        state: "ready_for_implementation",
-        isAgentClaimable: true,
-      },
-    });
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r004", "Invariant after rollback",
+      "implementation", false,
+    ));
+    backend.get.mockResolvedValueOnce(mockStepBeat(
+      "foolery-r004", "Invariant after rollback",
+      "ready_for_implementation",
+    ));
 
     spawnedChildren[0].emit("close", 1, null);
 
-    // Verify rollback was called to move from active to queue state
     await waitFor(() => {
       expect(rollbackBeatState).toHaveBeenCalledWith(
-        "foolery-r004",
-        "implementation",
-        "ready_for_implementation",
-        "/tmp/repo",
-        "knots",
+        "foolery-r004", "implementation",
+        "ready_for_implementation", "/tmp/repo", "knots",
       );
     });
-
-    // Session finishes with error status (not stuck in running)
     await waitFor(() => {
       expect(interactionLog.logEnd).toHaveBeenCalledWith(1, "error");
     });
-
-    // No second child should be spawned -- the session ends cleanly
     expect(spawnedChildren).toHaveLength(1);
+  });
+});
+
+describe("step-failure: concurrent abort during rollback", () => {
+  beforeEach(async () => {
+    await setupStepFailureMocks();
+  });
+
+  afterEach(() => {
+    clearStepFailureSessions();
   });
 
   it("concurrent abort during rollback is handled gracefully", async () => {

@@ -116,8 +116,8 @@ describe("createLineNormalizer — claude dialect", () => {
   });
 });
 
-describe("createLineNormalizer — codex dialect", () => {
-  it("skips thread.started and turn.started", () => {
+describe("createLineNormalizer codex: events and messages", () => {
+    it("skips thread.started and turn.started", () => {
     const normalize = createLineNormalizer("codex");
     expect(normalize({ type: "thread.started", thread_id: "t1" })).toBeNull();
     expect(normalize({ type: "turn.started" })).toBeNull();
@@ -192,7 +192,10 @@ describe("createLineNormalizer — codex dialect", () => {
     });
   });
 
-  it("normalizes turn.completed to result event with accumulated text", () => {
+});
+
+describe("createLineNormalizer codex: completion/errors", () => {
+    it("normalizes turn.completed to result event with accumulated text", () => {
     const normalize = createLineNormalizer("codex");
     // First, send an agent_message to accumulate text
     normalize({
