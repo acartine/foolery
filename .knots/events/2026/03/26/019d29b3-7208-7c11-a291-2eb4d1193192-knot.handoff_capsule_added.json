@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29b3-7208-7c11-a291-2eb4d1193192",
+  "occurred_at": "2026-03-26T10:31:59.240337Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review APPROVED. All 3 commits (b19cf45ce120 merge, 684aa6cd7822 + b13e400716de implementation) confirmed on main. Zero ESLint max-lines/max-lines-per-function/max-len warnings in all 22 target files. TypeScript clean, 2239 tests pass, 0 failures. No regressions. Remaining lint warnings are in test files outside beat scope.",
+    "datetime": "2026-03-26T10:31:59.240337Z",
+    "entry_id": "019d29b3-7208-7c11-a291-2eaaf4447dd1",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
