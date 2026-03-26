@@ -13,7 +13,10 @@ function formatQuotedList(values: string[]): string {
   return `${values.slice(0, -1).map(quote).join(", ")}, or ${quote(values[values.length - 1]!)}`;
 }
 
-export function buildSingleStepAuthorityLines(scopeLabel: string, allowedExitStates: string[]): string[] {
+export function buildSingleStepAuthorityLines(
+  scopeLabel: string,
+  allowedExitStates: string[],
+): string[] {
   const states = uniqueNonEmpty(allowedExitStates);
   const exitLine = states.length === 1
     ? `- Allowed exit state for this session: ${formatQuotedList(states)}.`

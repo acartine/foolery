@@ -42,13 +42,13 @@ export function resolveDialect(command: string): AgentDialect {
 /**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
- * | Concern            | Claude                                    | Codex                                         | OpenCode                  |
- * |--------------------|-------------------------------------------|-----------------------------------------------|---------------------------|
- * | Subcommand         | (none)                                    | exec                                          | run                       |
- * | Prompt             | -p <prompt>                               | positional arg after exec                     | positional arg after run  |
- * | JSONL output       | --output-format stream-json               | --json                                        | --format json             |
- * | Skip approvals     | --dangerously-skip-permissions            | --dangerously-bypass-approvals-and-sandbox    | (not needed)              |
- * | Model              | --model <m>                               | -m <m>                                        | -m <m>                    |
+ * | Concern        | Claude               | Codex                  | OpenCode    |
+ * |----------------|----------------------|------------------------|-------------|
+ * | Subcommand     | (none)               | exec                   | run         |
+ * | Prompt         | -p <prompt>          | positional after exec  | pos. arg    |
+ * | JSONL output   | --output-format json | --json                 | --format j  |
+ * | Skip approvals | --dangerously-skip…  | --dangerously-bypass…  | (not needed)|
+ * | Model          | --model <m>          | -m <m>                 | -m <m>      |
  */
 export function buildPromptModeArgs(
   agent: RegisteredAgent | AgentTarget,
@@ -116,42 +116,16 @@ export function createLineNormalizer(
   }
 
   if (dialect === "opencode") {
-    let accumulatedText = "";
-
-    return (parsed) => {
-      if (!parsed || typeof parsed !== "object") return null;
-      const obj = parsed as Record<string, unknown>;
-      const type = obj.type;
-
-      if (type === "step_start") return null;
-
-      if (type === "text") {
-        const part = obj.part as Record<string, unknown> | undefined;
-        const text = typeof part?.text === "string" ? part.text : "";
-        accumulatedText += (accumulatedText ? "\n" : "") + text;
-        return {
-          type: "assistant",
-          message: {
-            content: [{ type: "text", text }],
-          },
-        };
-      }
-
-      if (type === "step_finish") {
-        const part = obj.part as Record<string, unknown> | undefined;
-        const reason = typeof part?.reason === "string" ? part.reason : "";
-        return {
-          type: "result",
-          result: accumulatedText,
-          is_error: reason === "error",
-        };
-      }
-
-      return null;
-    };
+    return createOpenCodeNormalizer();
   }
 
-  // codex normalizer — accumulates text across item.completed events
+  return createCodexNormalizer();
+}
+
+// ── OpenCode normalizer ─────────────────────────────────────
+
+function createOpenCodeNormalizer(
+): (parsed: unknown) => Record<string, unknown> | null {
   let accumulatedText = "";
 
   return (parsed) => {
@@ -159,7 +133,85 @@ export function createLineNormalizer(
     const obj = parsed as Record<string, unknown>;
     const type = obj.type;
 
-    // Skip structural events
+    if (type === "step_start") return null;
+
+    if (type === "text") {
+      const part = obj.part as Record<string, unknown> | undefined;
+      const text = typeof part?.text === "string" ? part.text : "";
+      accumulatedText += (accumulatedText ? "\n" : "") + text;
+      return {
+        type: "assistant",
+        message: { content: [{ type: "text", text }] },
+      };
+    }
+
+    if (type === "step_finish") {
+      const part = obj.part as Record<string, unknown> | undefined;
+      const reason =
+        typeof part?.reason === "string" ? part.reason : "";
+      return {
+        type: "result",
+        result: accumulatedText,
+        is_error: reason === "error",
+      };
+    }
+
+    return null;
+  };
+}
+
+// ── Codex normalizer ────────────────────────────────────────
+
+function normalizeCodexItemCompleted(
+  item: Record<string, unknown>,
+  accumulatedText: { value: string },
+): Record<string, unknown> | null {
+  if (item.type === "agent_message") {
+    const text = typeof item.text === "string" ? item.text : "";
+    accumulatedText.value +=
+      (accumulatedText.value ? "\n" : "") + text;
+    return {
+      type: "assistant",
+      message: { content: [{ type: "text", text }] },
+    };
+  }
+
+  if (item.type === "reasoning") {
+    const text = typeof item.text === "string" ? item.text : "";
+    return {
+      type: "stream_event",
+      event: {
+        type: "content_block_delta",
+        delta: { type: "text_delta", text },
+      },
+    };
+  }
+
+  if (item.type === "command_execution") {
+    const output =
+      typeof item.aggregated_output === "string"
+        ? item.aggregated_output
+        : "";
+    return {
+      type: "user",
+      message: {
+        content: [{ type: "tool_result", content: output }],
+      },
+    };
+  }
+
+  return null;
+}
+
+function createCodexNormalizer(
+): (parsed: unknown) => Record<string, unknown> | null {
+  const accumulatedText = { value: "" };
+
+  return (parsed) => {
+    if (!parsed || typeof parsed !== "object") return null;
+    const obj = parsed as Record<string, unknown>;
+    const type = obj.type;
+
     if (type === "thread.started" || type === "turn.started") {
       return null;
     }
@@ -167,89 +219,58 @@ export function createLineNormalizer(
     if (type === "item.completed") {
       const item = obj.item as Record<string, unknown> | undefined;
       if (!item) return null;
-
-      if (item.type === "agent_message") {
-        const text = typeof item.text === "string" ? item.text : "";
-        accumulatedText += (accumulatedText ? "\n" : "") + text;
-        return {
-          type: "assistant",
-          message: {
-            content: [{ type: "text", text }],
-          },
-        };
-      }
-
-      if (item.type === "reasoning") {
-        const text = typeof item.text === "string" ? item.text : "";
-        return {
-          type: "stream_event",
-          event: {
-            type: "content_block_delta",
-            delta: { type: "text_delta", text },
-          },
-        };
-      }
-
-      if (item.type === "command_execution") {
-        const output =
-          typeof item.aggregated_output === "string"
-            ? item.aggregated_output
-            : "";
-        return {
-          type: "user",
-          message: {
-            content: [{ type: "tool_result", content: output }],
-          },
-        };
-      }
-
-      return null;
+      return normalizeCodexItemCompleted(item, accumulatedText);
     }
 
     if (type === "item.started") {
       const item = obj.item as Record<string, unknown> | undefined;
       if (item?.type === "command_execution") {
-        const cmd = typeof item.command === "string" ? item.command : "";
+        const cmd =
+          typeof item.command === "string" ? item.command : "";
         return {
           type: "assistant",
           message: {
-            content: [{ type: "tool_use", name: "Bash", input: { command: cmd } }],
+            content: [{
+              type: "tool_use",
+              name: "Bash",
+              input: { command: cmd },
+            }],
           },
         };
       }
       return null;
     }
 
-    if (type === "turn.completed") {
-      return {
-        type: "result",
-        result: accumulatedText,
-        is_error: false,
-      };
-    }
-
-    if (type === "turn.failed") {
-      const error = obj.error as Record<string, unknown> | undefined;
-      const msg =
-        typeof error?.message === "string" ? error.message : "Turn failed";
-      return {
-        type: "result",
-        result: msg,
-        is_error: true,
-      };
-    }
-
-    if (type === "error") {
-      const msg =
-        typeof obj.message === "string" ? obj.message : "Unknown error";
-      return {
-        type: "result",
-        result: msg,
-        is_error: true,
-      };
-    }
-
-    // Unknown event type — skip
-    return null;
+    return normalizeCodexTerminalEvent(obj, accumulatedText.value);
   };
+}
+
+function normalizeCodexTerminalEvent(
+  obj: Record<string, unknown>,
+  accumulatedText: string,
+): Record<string, unknown> | null {
+  const type = obj.type;
+
+  if (type === "turn.completed") {
+    return { type: "result", result: accumulatedText, is_error: false };
+  }
+
+  if (type === "turn.failed") {
+    const error = obj.error as Record<string, unknown> | undefined;
+    const msg =
+      typeof error?.message === "string"
+        ? error.message
+        : "Turn failed";
+    return { type: "result", result: msg, is_error: true };
+  }
+
+  if (type === "error") {
+    const msg =
+      typeof obj.message === "string"
+        ? obj.message
+        : "Unknown error";
+    return { type: "result", result: msg, is_error: true };
+  }
+
+  return null;
 }

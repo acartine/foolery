@@ -4,7 +4,12 @@ import { applyPatch } from "diff";
 import { join, resolve } from "node:path";
 import { readdir, writeFile } from "node:fs/promises";
 import { StructuredExecutionBackend } from "@/lib/execution-backend";
-import type { ExecutionAgentInfo, ExecutionLease, ExecutionSnapshot, PollLeaseResult } from "@/lib/execution-port";
+import type {
+  ExecutionAgentInfo,
+  ExecutionLease,
+  ExecutionSnapshot,
+  PollLeaseResult,
+} from "@/lib/execution-port";
 import type { BackendResult } from "@/lib/backend-port";
 
 const BLOCKED_SHELL_COMMANDS = new Set(["kno", "bd", "claude", "codex", "opencode"]);
@@ -75,7 +80,10 @@ export class LocalWorkerService {
     });
   }
 
-  async preparePoll(repoPath?: string, agentInfo?: ExecutionAgentInfo): Promise<BackendResult<PollLeaseResult>> {
+  async preparePoll(
+    repoPath?: string,
+    agentInfo?: ExecutionAgentInfo,
+  ): Promise<BackendResult<PollLeaseResult>> {
     return this.executionBackend.preparePoll({ repoPath, agentInfo });
   }
 
@@ -87,11 +95,18 @@ export class LocalWorkerService {
     return this.executionBackend.rollbackIteration({ leaseId, reason });
   }
 
-  async getExecutionSnapshot(beatId: string, repoPath?: string): Promise<BackendResult<ExecutionSnapshot>> {
+  async getExecutionSnapshot(
+    beatId: string,
+    repoPath?: string,
+  ): Promise<BackendResult<ExecutionSnapshot>> {
     return this.executionBackend.getExecutionSnapshot({ beatId, repoPath });
   }
 
-  async runTool(call: WorkerToolCall, beatId: string, repoPath?: string): Promise<WorkerToolResult> {
+  async runTool(
+    call: WorkerToolCall,
+    beatId: string,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     try {
       switch (call.name) {
         case "fs_read":
@@ -118,13 +133,19 @@ export class LocalWorkerService {
     }
   }
 
-  private async fsRead(input: Record<string, unknown>, repoPath?: string): Promise<WorkerToolResult> {
+  private async fsRead(
+    input: Record<string, unknown>,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     const filePath = this.resolvePath(input.path, repoPath);
     const content = await readFile(filePath, "utf-8");
     return { ok: true, content };
   }
 
-  private async fsSearch(input: Record<string, unknown>, repoPath?: string): Promise<WorkerToolResult> {
+  private async fsSearch(
+    input: Record<string, unknown>,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     const root = this.resolvePath(input.path ?? ".", repoPath);
     const pattern = typeof input.pattern === "string" ? input.pattern : "";
     if (!pattern) return { ok: false, content: "pattern is required" };
@@ -138,7 +159,10 @@ export class LocalWorkerService {
     return { ok: true, content: matches.join("\n") || "(no matches)" };
   }
 
-  private async fsWritePatch(input: Record<string, unknown>, repoPath?: string): Promise<WorkerToolResult> {
+  private async fsWritePatch(
+    input: Record<string, unknown>,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     const filePath = this.resolvePath(input.path, repoPath);
     const patch = typeof input.patch === "string" ? input.patch : "";
     if (!patch) return { ok: false, content: "patch is required" };
@@ -151,7 +175,10 @@ export class LocalWorkerService {
     return { ok: true, content: `patched ${filePath}` };
   }
 
-  private async shellExec(input: Record<string, unknown>, repoPath?: string): Promise<WorkerToolResult> {
+  private async shellExec(
+    input: Record<string, unknown>,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     const { execFile } = await import("node:child_process");
     const { promisify } = await import("node:util");
     const execFileAsync = promisify(execFile);
@@ -161,34 +188,69 @@ export class LocalWorkerService {
     if (parts.length === 0) return { ok: false, content: "command is required" };
     const [bin, ...args] = parts;
     if (BLOCKED_SHELL_COMMANDS.has(bin)) {
-      return { ok: false, content: `shell_exec blocks ${bin}; use structured memory tools instead` };
+      return {
+        ok: false,
+        content: `shell_exec blocks ${bin}; use structured memory tools instead`,
+      };
     }
     const { stdout, stderr } = await execFileAsync(bin, args, {
       cwd: repoPath ? resolve(repoPath) : process.cwd(),
       env: { ...process.env },
     });
-    return { ok: true, content: [stdout, stderr].filter(Boolean).join("\n").trim() || "(no output)" };
+    const output = [stdout, stderr].filter(Boolean).join("\n").trim();
+    return { ok: true, content: output || "(no output)" };
   }
 
-  private async memoryShow(beatId: string, repoPath?: string): Promise<WorkerToolResult> {
-    const result = await this.executionBackend.getExecutionSnapshot({ beatId, repoPath });
-    if (!result.ok || !result.data) return { ok: false, content: result.error?.message ?? "not found" };
+  private async memoryShow(
+    beatId: string,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
+    const result = await this.executionBackend.getExecutionSnapshot(
+      { beatId, repoPath },
+    );
+    if (!result.ok || !result.data) {
+      return { ok: false, content: result.error?.message ?? "not found" };
+    }
     return { ok: true, content: JSON.stringify(result.data.beat, null, 2) };
   }
 
-  private async memoryListChildren(beatId: string, repoPath?: string): Promise<WorkerToolResult> {
-    const result = await this.executionBackend.getExecutionSnapshot({ beatId, repoPath });
-    if (!result.ok || !result.data) return { ok: false, content: result.error?.message ?? "not found" };
-    return { ok: true, content: JSON.stringify(result.data.children, null, 2) };
+  private async memoryListChildren(
+    beatId: string,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
+    const result = await this.executionBackend.getExecutionSnapshot(
+      { beatId, repoPath },
+    );
+    if (!result.ok || !result.data) {
+      return { ok: false, content: result.error?.message ?? "not found" };
+    }
+    return {
+      ok: true,
+      content: JSON.stringify(result.data.children, null, 2),
+    };
   }
 
-  private async memoryListDependencies(beatId: string, repoPath?: string): Promise<WorkerToolResult> {
-    const result = await this.executionBackend.getExecutionSnapshot({ beatId, repoPath });
-    if (!result.ok || !result.data) return { ok: false, content: result.error?.message ?? "not found" };
-    return { ok: true, content: JSON.stringify(result.data.dependencies, null, 2) };
+  private async memoryListDependencies(
+    beatId: string,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
+    const result = await this.executionBackend.getExecutionSnapshot(
+      { beatId, repoPath },
+    );
+    if (!result.ok || !result.data) {
+      return { ok: false, content: result.error?.message ?? "not found" };
+    }
+    return {
+      ok: true,
+      content: JSON.stringify(result.data.dependencies, null, 2),
+    };
   }
 
-  private async memoryAddNote(beatId: string, input: Record<string, unknown>, repoPath?: string): Promise<WorkerToolResult> {
+  private async memoryAddNote(
+    beatId: string,
+    input: Record<string, unknown>,
+    repoPath?: string,
+  ): Promise<WorkerToolResult> {
     const note = typeof input.note === "string" ? input.note.trim() : "";
     if (!note) return { ok: false, content: "note is required" };
     const backend = new StructuredExecutionBackend();
@@ -196,10 +258,16 @@ export class LocalWorkerService {
     if (!snapshot.ok || !snapshot.data) {
       return { ok: false, content: snapshot.error?.message ?? "not found" };
     }
-    if (resolve(repoPath ?? process.cwd()).includes(".knots") || snapshot.data.beat.type === "work") {
+    const isKnotsBacked =
+      resolve(repoPath ?? process.cwd()).includes(".knots") ||
+      snapshot.data.beat.type === "work";
+    if (isKnotsBacked) {
       const { updateKnot } = await import("@/lib/knots");
       const updated = await updateKnot(beatId, { addNote: note }, repoPath);
-      return { ok: updated.ok, content: updated.ok ? "note added" : updated.error ?? "failed" };
+      return {
+        ok: updated.ok,
+        content: updated.ok ? "note added" : updated.error ?? "failed",
+      };
     }
     return { ok: false, content: "memory_add_note is only implemented for knots-backed beats" };
   }

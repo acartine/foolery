@@ -3,6 +3,13 @@
  *
  * Uses Knots as the source of truth and maps profile/state ownership into
  * Foolery's backend contract.
+ *
+ * Implementation is split across sibling modules to stay within the
+ * 500-line file limit:
+ *   - knots-backend-helpers.ts   (result wrappers, data normalisation)
+ *   - knots-backend-mappers.ts   (toBeat, applyFilters, matchExpression)
+ *   - knots-backend-update.ts    (update-method helpers)
+ *   - knots-skill-prompts.ts     (BUILTIN_SKILL_PROMPTS)
  */
 
 import type {
@@ -16,50 +23,69 @@ import type {
   TakePromptResult,
 } from "@/lib/backend-port";
 import type { BackendCapabilities } from "@/lib/backend-capabilities";
-import type { BackendErrorCode } from "@/lib/backend-errors";
-import { isRetryableByDefault } from "@/lib/backend-errors";
-import { includeActiveAncestors } from "@/lib/active-ancestor-filter";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type {
   Beat,
   BeatDependency,
-  Invariant,
   MemoryWorkflowDescriptor,
-  MemoryWorkflowOwners,
-  WorkflowMode,
 } from "@/lib/types";
-import type {
-  KnotEdge,
-  KnotProfileDefinition,
-  KnotRecord,
-  KnotUpdateInput,
-} from "@/lib/knots";
+import type { KnotEdge } from "@/lib/knots";
 import * as knots from "@/lib/knots";
+
 import {
-  deriveWorkflowRuntimeState,
-  inferWorkflowMode,
-  normalizeStateForWorkflow,
-  profileDisplayName,
-  resolveStep,
-  StepPhase,
-} from "@/lib/workflows";
+  ok,
+  backendError,
+  propagateError,
+  fromKnots,
+  mapForProfiles,
+  isBlockedByEdges,
+  collectAliases,
+} from "@/lib/backends/knots-backend-helpers";
+
+import {
+  toBeat,
+  applyFilters,
+  matchExpression,
+  memoryManagerKey,
+} from "@/lib/backends/knots-backend-mappers";
+
+import {
+  applyProfileChange,
+  buildUpdatePatch,
+  hasPatchFields,
+  updateParentEdges,
+  createKnotImpl,
+} from "@/lib/backends/knots-backend-update";
+
+import {
+  listDependenciesImpl,
+  addDependencyImpl,
+  removeDependencyImpl,
+  buildParentTakePrompt,
+  buildSingleTakePrompt,
+  buildPollPromptImpl,
+} from "@/lib/backends/knots-backend-prompts";
+
+// Re-export public constants so existing imports keep working.
+export { BUILTIN_SKILL_PROMPTS } from "@/lib/backends/knots-skill-prompts";
+
+export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> =
+  Object.freeze({
+    canCreate: true,
+    canUpdate: true,
+    canDelete: false,
+    canClose: true,
+    canSearch: true,
+    canQuery: true,
+    canListReady: true,
+    canManageDependencies: true,
+    canManageLabels: true,
+    canSync: true,
+    maxConcurrency: 1,
+  });
 
 const EDGE_CACHE_TTL_MS = 2_000;
 const WORKFLOW_CACHE_TTL_MS = 10_000;
-
-export const KNOTS_CAPABILITIES: Readonly<BackendCapabilities> = Object.freeze({
-  canCreate: true,
-  canUpdate: true,
-  canDelete: false,
-  canClose: true,
-  canSearch: true,
-  canQuery: true,
-  canListReady: true,
-  canManageDependencies: true,
-  canManageLabels: true,
-  canSync: true,
-  maxConcurrency: 1,
-});
 
 interface CachedEdges {
   edges: KnotEdge[];
@@ -70,643 +96,6 @@ interface CachedWorkflows {
   workflows: MemoryWorkflowDescriptor[];
   expiresAt: number;
 }
-
-function ok<T>(data: T): BackendResult<T> {
-  return { ok: true, data };
-}
-
-function backendError(code: BackendErrorCode, message: string): BackendResult<never> {
-  return {
-    ok: false,
-    error: {
-      code,
-      message,
-      retryable: isRetryableByDefault(code),
-    },
-  };
-}
-
-function propagateError<T>(result: BackendResult<unknown>): BackendResult<T> {
-  return { ok: false, error: result.error };
-}
-
-function classifyKnotsError(message: string): BackendErrorCode {
-  const lower = message.toLowerCase();
-
-  if (
-    lower.includes("not found") ||
-    lower.includes("no such") ||
-    lower.includes("local cache")
-  ) {
-    return "NOT_FOUND";
-  }
-  if (lower.includes("already exists") || lower.includes("duplicate")) {
-    return "ALREADY_EXISTS";
-  }
-  if (
-    lower.includes("invalid") ||
-    lower.includes("unsupported") ||
-    lower.includes("requires at least one field change") ||
-    lower.includes("priority must be")
-  ) {
-    return "INVALID_INPUT";
-  }
-  if (lower.includes("timed out") || lower.includes("timeout")) {
-    return "TIMEOUT";
-  }
-  if (lower.includes("locked") || lower.includes("lock") || lower.includes("busy")) {
-    return "LOCKED";
-  }
-  if (lower.includes("permission denied") || lower.includes("unauthorized")) {
-    return "PERMISSION_DENIED";
-  }
-  if (lower.includes("unavailable")) {
-    return "UNAVAILABLE";
-  }
-  if (lower.includes("rate limit")) {
-    return "RATE_LIMITED";
-  }
-  return "INTERNAL";
-}
-
-function fromKnots<T>(result: { ok: boolean; data?: T; error?: string }): BackendResult<T> {
-  if (result.ok) return { ok: true, data: result.data };
-  const message = result.error ?? "Unknown knots error";
-  const code = classifyKnotsError(message);
-  return {
-    ok: false,
-    error: { code, message, retryable: isRetryableByDefault(code) },
-  };
-}
-
-function normalizePriority(raw: number | null | undefined): 0 | 1 | 2 | 3 | 4 {
-  if (raw === 0 || raw === 1 || raw === 2 || raw === 3 || raw === 4) return raw;
-  return 2;
-}
-
-function parseInvariant(input: unknown): Invariant | null {
-  if (!input) return null;
-
-  if (typeof input === "string") {
-    const match = /^(Scope|State)\s*:\s*(.+)$/.exec(input.trim());
-    if (!match) return null;
-    const condition = match[2]?.trim();
-    if (!condition) return null;
-    return { kind: match[1] as Invariant["kind"], condition };
-  }
-
-  if (typeof input === "object") {
-    const record = input as Record<string, unknown>;
-    const kind = record.kind;
-    const rawCondition = record.condition;
-    if ((kind === "Scope" || kind === "State") && typeof rawCondition === "string") {
-      const condition = rawCondition.trim();
-      if (!condition) return null;
-      return { kind, condition };
-    }
-  }
-
-  return null;
-}
-
-function normalizeInvariants(invariants: readonly unknown[] | undefined): Invariant[] {
-  if (!invariants?.length) return [];
-  const seen = new Set<string>();
-  const normalized: Invariant[] = [];
-  for (const inv of invariants) {
-    const parsed = parseInvariant(inv);
-    if (!parsed) continue;
-    const key = `${parsed.kind}:${parsed.condition}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    normalized.push(parsed);
-  }
-  return normalized;
-}
-
-function serializeInvariants(invariants: readonly Invariant[] | undefined): string[] | undefined {
-  const normalized = normalizeInvariants(invariants);
-  if (normalized.length === 0) return undefined;
-  return normalized.map((inv) => `${inv.kind}:${inv.condition}`);
-}
-
-/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
-const ACCEPTANCE_MARKER = "Acceptance Criteria:\n";
-
-/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
-function isAcceptanceNote(entry: unknown): boolean {
-  if (!entry || typeof entry !== "object") return false;
-  const content = (entry as Record<string, unknown>).content;
-  return typeof content === "string" && content.trimStart().startsWith(ACCEPTANCE_MARKER);
-}
-
-/** @deprecated Legacy fallback for note-shimmed acceptance criteria. */
-function extractAcceptanceFromNotes(raw: unknown): string | undefined {
-  if (!Array.isArray(raw) || raw.length === 0) return undefined;
-  // Walk in reverse to find the latest acceptance note
-  for (let i = raw.length - 1; i >= 0; i--) {
-    const entry = raw[i];
-    if (isAcceptanceNote(entry)) {
-      const content = ((entry as Record<string, unknown>).content as string).trimStart();
-      const body = content.slice(ACCEPTANCE_MARKER.length).trim();
-      return body.length > 0 ? body : undefined;
-    }
-  }
-  return undefined;
-}
-
-function stringifyNotes(raw: unknown): string | undefined {
-  if (!Array.isArray(raw) || raw.length === 0) return undefined;
-  const parts = raw
-    .flatMap((entry) => {
-      if (!entry || typeof entry !== "object") return [] as string[];
-      if (isAcceptanceNote(entry)) return [] as string[];
-      const record = entry as Record<string, unknown>;
-      const content = typeof record.content === "string" ? record.content.trim() : "";
-      if (!content) return [] as string[];
-
-      const username = typeof record.username === "string" ? record.username : "unknown";
-      const datetime = typeof record.datetime === "string" ? record.datetime : "";
-      const prefix = datetime ? `[${datetime}] ${username}` : username;
-      return [`${prefix}: ${content}`];
-    })
-    .filter((value) => value.length > 0);
-
-  if (parts.length === 0) return undefined;
-  return parts.join("\n\n");
-}
-
-function normalizeMetadataEntries(raw: unknown): Array<Record<string, unknown>> {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((entry): entry is Record<string, unknown> => Boolean(entry && typeof entry === "object"));
-}
-
-function knotStepEntries(knot: KnotRecord): Array<Record<string, unknown>> {
-  const knotRecord = knot as unknown as Record<string, unknown>;
-  const fields: unknown[] = [
-    knot.steps,
-    knot.step_history,
-    knot.stepHistory,
-    knot.timeline,
-    knot.transitions,
-    knotRecord.knotsSteps,
-    knotRecord.step_history,
-    knotRecord.stepHistory,
-    knotRecord.timeline,
-    knotRecord.transitions,
-  ];
-
-  for (const field of fields) {
-    const entries = normalizeMetadataEntries(field);
-    if (entries.length > 0) return entries;
-  }
-
-  return [];
-}
-
-function parentFromEdges(id: string, edges: KnotEdge[]): string | undefined {
-  const parentEdge = edges.find((edge) => edge.kind === "parent_of" && edge.dst === id);
-  return parentEdge?.src;
-}
-
-function parentFromHierarchicalId(
-  id: string,
-  knownIds: ReadonlySet<string>,
-): string | undefined {
-  let cursor = id;
-  while (cursor.includes(".")) {
-    cursor = cursor.slice(0, cursor.lastIndexOf("."));
-    if (knownIds.has(cursor)) return cursor;
-  }
-  return undefined;
-}
-
-/**
- * Try dot-based parent derivation on the knot's alias, resolving through
- * an alias→ID lookup. Handles cases where hierarchy is encoded in aliases
- * (e.g. alias "brutus-8792.5" → parent "8792").
- */
-function parentFromHierarchicalAlias(
-  alias: string | null | undefined,
-  aliasToId: ReadonlyMap<string, string>,
-  knownIds: ReadonlySet<string>,
-): string | undefined {
-  if (!alias) return undefined;
-  let cursor = alias;
-  while (cursor.includes(".")) {
-    cursor = cursor.slice(0, cursor.lastIndexOf("."));
-    const resolvedId = aliasToId.get(cursor);
-    if (resolvedId !== undefined) return resolvedId;
-    if (knownIds.has(cursor)) return cursor;
-    // Strip repo prefix (e.g. "brutus-8792" → "8792") and check again
-    const stripped = cursor.replace(/^[^-]+-/, "");
-    if (stripped !== cursor) {
-      const strippedResolved = aliasToId.get(stripped);
-      if (strippedResolved !== undefined) return strippedResolved;
-      if (knownIds.has(stripped)) return stripped;
-    }
-  }
-  return undefined;
-}
-
-function deriveParentId(
-  id: string,
-  alias: string | null | undefined,
-  edges: KnotEdge[],
-  knownIds: ReadonlySet<string>,
-  aliasToId: ReadonlyMap<string, string>,
-): string | undefined {
-  return (
-    parentFromEdges(id, edges) ??
-    parentFromHierarchicalId(id, knownIds) ??
-    parentFromHierarchicalAlias(alias, aliasToId, knownIds)
-  );
-}
-
-function isBlockedByEdges(id: string, edges: KnotEdge[]): boolean {
-  return edges.some((edge) => edge.kind === "blocked_by" && edge.src === id);
-}
-
-function normalizeOwners(profile: KnotProfileDefinition): MemoryWorkflowOwners {
-  return {
-    planning: profile.owners.planning.kind,
-    plan_review: profile.owners.plan_review.kind,
-    implementation: profile.owners.implementation.kind,
-    implementation_review: profile.owners.implementation_review.kind,
-    shipment: profile.owners.shipment.kind,
-    shipment_review: profile.owners.shipment_review.kind,
-  };
-}
-
-function modeFromOwners(owners: MemoryWorkflowOwners, profile: KnotProfileDefinition): WorkflowMode {
-  const hasHuman = Object.values(owners).some((kind) => kind === "human");
-  if (hasHuman) return "coarse_human_gated";
-  return inferWorkflowMode(profile.id, profile.description, profile.states);
-}
-
-function toDescriptor(profile: KnotProfileDefinition): MemoryWorkflowDescriptor {
-  const states = profile.states.map((state) => state.trim().toLowerCase());
-  const owners = normalizeOwners(profile);
-  const queueStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Queued);
-  const actionStates = states.filter((s) => resolveStep(s)?.phase === StepPhase.Active);
-  const reviewQueueStates = queueStates.filter((state) => {
-    const resolved = resolveStep(state);
-    return resolved ? resolved.step.endsWith("_review") : false;
-  });
-  const humanQueueStates = queueStates.filter((queueState) => {
-    const resolved = resolveStep(queueState);
-    if (!resolved) return false;
-    return owners[resolved.step] === "human";
-  });
-  const mode = modeFromOwners(owners, profile);
-
-  return {
-    id: profile.id,
-    profileId: profile.id,
-    backingWorkflowId: profile.id,
-    label: profileDisplayName(profile.id),
-    mode,
-    initialState: profile.initial_state.trim().toLowerCase(),
-    states,
-    terminalStates: profile.terminal_states.map((state) => state.trim().toLowerCase()),
-    transitions: profile.transitions?.map((transition) => ({
-      from: transition.from.trim().toLowerCase(),
-      to: transition.to.trim().toLowerCase(),
-    })),
-    finalCutState: humanQueueStates[0] ?? null,
-    retakeState: states.includes("ready_for_implementation") ? "ready_for_implementation" : profile.initial_state,
-    promptProfileId: profile.id,
-    owners,
-    queueStates,
-    actionStates,
-    reviewQueueStates,
-    humanQueueStates,
-  };
-}
-
-function mapForProfiles(profiles: KnotProfileDefinition[]): MemoryWorkflowDescriptor[] {
-  const descriptors = profiles.map(toDescriptor);
-  const deduped = new Map<string, MemoryWorkflowDescriptor>();
-  for (const descriptor of descriptors) {
-    deduped.set(descriptor.id, descriptor);
-  }
-  return Array.from(deduped.values());
-}
-
-function normalizeProfileId(value: string | null | undefined): string | null {
-  const normalized = value?.trim().toLowerCase();
-  return normalized || null;
-}
-
-/**
- * Collect aliases from a KnotRecord.  The kno CLI returns `alias` (singular
- * string|null); the codebase historically used `aliases` (string[]).
- * This helper merges both into a deduplicated array.
- */
-function collectAliases(knot: KnotRecord): string[] {
-  const result = new Set<string>();
-  // singular field from CLI
-  if (typeof knot.alias === "string" && knot.alias.trim()) {
-    result.add(knot.alias.trim());
-  }
-  // plural array (may be populated by future CLI versions or tests)
-  if (Array.isArray(knot.aliases)) {
-    for (const item of knot.aliases) {
-      if (typeof item === "string" && item.trim()) result.add(item.trim());
-    }
-  }
-  return Array.from(result);
-}
-
-function toBeat(
-  knot: KnotRecord,
-  edges: KnotEdge[],
-  knownIds: ReadonlySet<string>,
-  aliasToId: ReadonlyMap<string, string>,
-  workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): Beat {
-  const fallback = workflowsById.values().next().value as MemoryWorkflowDescriptor | undefined;
-  const profileId = normalizeProfileId(knot.profile_id ?? knot.workflow_id) ?? fallback?.id ?? "autopilot";
-  const workflow = workflowsById.get(profileId) ?? fallback;
-  const stepEntries = knotStepEntries(knot);
-  const invariants = normalizeInvariants(knot.invariants);
-  const aliases = collectAliases(knot);
-
-  const nativeAcceptance = typeof knot.acceptance === "string"
-    ? knot.acceptance.trim() || undefined
-    : undefined;
-  const acceptance = nativeAcceptance ?? extractAcceptanceFromNotes(knot.notes);
-
-  if (!workflow) {
-    return {
-      id: knot.id,
-      title: knot.title,
-      description: typeof knot.description === "string" ? knot.description : knot.body ?? undefined,
-      type: knot.type ?? "work",
-      state: knot.state,
-      workflowId: profileId,
-      workflowMode: "granular_autonomous",
-      profileId,
-      nextActionOwnerKind: "none",
-      requiresHumanAction: false,
-      isAgentClaimable: false,
-      priority: normalizePriority(knot.priority),
-      labels: (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0),
-      aliases: aliases.length > 0 ? aliases : undefined,
-      notes: stringifyNotes(knot.notes),
-      acceptance,
-      parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
-      created: knot.created_at ?? knot.updated_at,
-      updated: knot.updated_at,
-      invariants: invariants.length > 0 ? invariants : undefined,
-      metadata: {
-        knotsProfileId: profileId,
-        knotsSteps: stepEntries,
-      },
-    };
-  }
-
-  const tags = (knot.tags ?? []).filter((tag) => typeof tag === "string" && tag.trim().length > 0);
-  const rawWorkflowState = normalizeStateForWorkflow(knot.state, workflow);
-  const workflowState = rawWorkflowState;
-  const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
-  const notes = stringifyNotes(knot.notes);
-  return {
-    id: knot.id,
-    title: knot.title,
-    description:
-      typeof knot.description === "string"
-        ? knot.description
-        : typeof knot.body === "string"
-          ? knot.body
-          : undefined,
-    type: knot.type ?? "work",
-    state: runtime.state,
-    workflowId: workflow.id,
-    workflowMode: workflow.mode,
-    profileId: workflow.id,
-    nextActionState: runtime.nextActionState,
-    nextActionOwnerKind: runtime.nextActionOwnerKind,
-    requiresHumanAction: runtime.requiresHumanAction,
-    isAgentClaimable: runtime.isAgentClaimable,
-    priority: normalizePriority(knot.priority),
-    labels: tags,
-    aliases: aliases.length > 0 ? aliases : undefined,
-    notes,
-    acceptance,
-    parent: deriveParentId(knot.id, aliases[0] ?? null, edges, knownIds, aliasToId),
-    created: knot.created_at ?? knot.updated_at,
-    updated: knot.updated_at,
-    closed: workflow.terminalStates.includes(runtime.state) ? knot.updated_at : undefined,
-    invariants: invariants.length > 0 ? invariants : undefined,
-    metadata: {
-      knotsProfileId: profileId,
-      knotsState: knot.state,
-      knotsProfileEtag: knot.profile_etag,
-      knotsWorkflowEtag: knot.workflow_etag,
-      knotsHandoffCapsules: knot.handoff_capsules ?? [],
-      knotsNotes: knot.notes ?? [],
-      knotsSteps: stepEntries,
-    },
-  };
-}
-
-function applyFilters(beats: Beat[], filters?: BeatListFilters): Beat[] {
-  if (!filters) return beats;
-
-  const isQueuedPhaseFilter = filters.state === "queued";
-  const isActivePhaseFilter = filters.state === "in_action";
-  const hidesLeaseType = filters.state === "queued"
-    || (typeof filters.state === "string" && resolveStep(filters.state)?.phase === StepPhase.Queued);
-  const visibleBeats = hidesLeaseType ? beats.filter((beat) => beat.type !== "lease") : beats;
-
-  const filtered = visibleBeats.filter((b) => {
-    if (filters.workflowId && b.workflowId !== filters.workflowId) return false;
-    if (filters.state) {
-      if (filters.state === "queued") {
-        if (resolveStep(b.state)?.phase !== StepPhase.Queued) return false;
-      } else if (filters.state === "in_action") {
-        if (resolveStep(b.state)?.phase !== StepPhase.Active) return false;
-      } else {
-        if (b.state !== filters.state) return false;
-      }
-    }
-    if (filters.profileId && b.profileId !== filters.profileId) return false;
-    if (filters.requiresHumanAction !== undefined && (b.requiresHumanAction ?? false) !== filters.requiresHumanAction) {
-      return false;
-    }
-    if (filters.nextOwnerKind && b.nextActionOwnerKind !== filters.nextOwnerKind) return false;
-    if (filters.type && b.type !== filters.type) return false;
-    if (filters.priority !== undefined && b.priority !== filters.priority) return false;
-    if (filters.assignee && b.assignee !== filters.assignee) return false;
-    if (filters.label && !b.labels.includes(filters.label)) return false;
-    if (filters.owner && b.owner !== filters.owner) return false;
-    if (filters.parent && b.parent !== filters.parent) return false;
-    return true;
-  });
-
-  // When using the queued filter, expand in both directions: include all
-  // descendants of queued parents (so the user sees every child) AND include
-  // ancestor chains of queued children (so orphaned children get their
-  // parent context).  The active (in_action) view must NOT expand descendants
-  // because that surfaces terminal beats (shipped/abandoned) whose only
-  // connection to the active view is an ancestor in a queue state.
-  if (isQueuedPhaseFilter) {
-    const withDescendants = includeDescendantsOfQueueParents(visibleBeats, filtered);
-    return includeActiveAncestors(visibleBeats, withDescendants);
-  }
-  if (isActivePhaseFilter) {
-    return includeActiveAncestors(visibleBeats, filtered);
-  }
-
-  return filtered;
-}
-
-/**
- * Given the full beat list and an already-filtered subset, include any beat
- * from the full list whose ancestor (recursively) is in a queue state.
- * This ensures the queues view always shows every child of a queued parent.
- */
-function includeDescendantsOfQueueParents(
-  allBeats: Beat[],
-  filtered: Beat[],
-): Beat[] {
-  const filteredIds = new Set(filtered.map((b) => b.id));
-  const byId = new Map(allBeats.map((b) => [b.id, b]));
-
-  // Collect IDs of all beats in a queue state from the full list.
-  const queueParentIds = new Set<string>();
-  for (const b of allBeats) {
-    if (resolveStep(b.state)?.phase === StepPhase.Queued) {
-      queueParentIds.add(b.id);
-    }
-  }
-  if (queueParentIds.size === 0) return filtered;
-
-  // Check whether a beat has an ancestor in a queue state.
-  const ancestorCache = new Map<string, boolean>();
-  function hasQueueAncestor(id: string): boolean {
-    if (ancestorCache.has(id)) return ancestorCache.get(id)!;
-    const beat = byId.get(id);
-    if (!beat?.parent) {
-      ancestorCache.set(id, false);
-      return false;
-    }
-    if (queueParentIds.has(beat.parent)) {
-      ancestorCache.set(id, true);
-      return true;
-    }
-    const result = hasQueueAncestor(beat.parent);
-    ancestorCache.set(id, result);
-    return result;
-  }
-
-  const extras: Beat[] = [];
-  for (const b of allBeats) {
-    if (filteredIds.has(b.id)) continue;
-    if (hasQueueAncestor(b.id)) extras.push(b);
-  }
-
-  return extras.length > 0 ? [...filtered, ...extras] : filtered;
-}
-
-function matchExpression(beat: Beat, expression: string): boolean {
-  const terms = expression.split(/\s+/).filter(Boolean);
-  return terms.every((term) => {
-    const [field, value] = term.split(":");
-    if (!field || !value) return true;
-    switch (field) {
-      case "status":
-      case "workflowstate":
-      case "state":
-        return beat.state === value;
-      case "workflow":
-      case "workflowid":
-        return beat.workflowId === value;
-      case "profile":
-      case "profileid":
-        return beat.profileId === value;
-      case "nextowner":
-      case "nextownerkind":
-        return beat.nextActionOwnerKind === value;
-      case "human":
-      case "requireshumanaction":
-        return String(Boolean(beat.requiresHumanAction)) === value;
-      case "type":
-        return beat.type === value;
-      case "priority":
-        return String(beat.priority) === value;
-      case "assignee":
-        return beat.assignee === value;
-      case "label":
-        return beat.labels.includes(value);
-      case "owner":
-        return beat.owner === value;
-      case "parent":
-        return beat.parent === value;
-      case "id":
-        return beat.id === value;
-      default:
-        return true;
-    }
-  });
-}
-
-function memoryManagerKey(repoPath?: string): string {
-  return repoPath ?? process.cwd();
-}
-
-/**
- * Local skill prompt overrides keyed by action-state name.
- *
- * When `kno skill <state>` fails (e.g. the binary lacks a built-in skill for
- * that state), the fallback path checks this map before propagating the error.
- * Only states that need a local override should appear here.
- */
-export const BUILTIN_SKILL_PROMPTS: Readonly<Record<string, string>> = Object.freeze({
-  shipment: `# Shipment
-
-## Input
-- Knot in \`ready_for_shipment\` state
-- Implementation work from a prior phase
-
-## Actions
-1. Check if implementation code is already committed to \`main\`. If so, skip to Completion.
-2. Check if implementation code is committed to a feature branch. If so, merge the branch into \`main\`, push, then skip to Completion.
-3. Search the repository for committed code that references this knot ID or the problem description. If matching commits are found, go back to step 1.
-4. If no committed code is found anywhere, roll back:
-   \`kno update <id> --status ready_for_implementation --add-note "No committed implementation found; rolling back to implementation."\`
-
-## Output
-- Implementation code merged and pushed to \`main\`
-- Transition: \`kno next <id> --expected-state <currentState> --actor-kind agent\`
-
-## Failure Modes
-- Merge conflicts: \`kno update <id> --status ready_for_implementation --add-note "<blocker details>"\`
-- CI failure after merge: \`kno update <id> --status ready_for_implementation --add-note "<blocker details>"\`
-- No implementation found: \`kno update <id> --status ready_for_implementation --add-note "No committed implementation found; rolling back."\``,
-
-  shipment_review: `# Shipment Review
-
-## Input
-- Knot in \`ready_for_shipment_review\` state
-- Code merged to main, CI green
-
-## Actions
-1. Check if implementation code is committed to \`main\`. If so, skip to Completion.
-2. Check if implementation code is committed to a feature branch. If so, merge the branch into \`main\`, push, then skip to Completion.
-3. Search the repository for committed code that references this knot ID or the problem description. If matching commits are found, go back to step 1.
-4. If no committed code is found anywhere, roll back:
-   \`kno update <id> --status ready_for_implementation --add-note "No committed implementation found; rolling back to implementation."\`
-
-## Output
-- Approved: \`kno next <id> --expected-state <currentState> --actor-kind agent\`
-- Needs revision: \`kno update <id> --status ready_for_implementation --add-note "<blocker details>"\`
-
-## Failure Modes
-- Deployment issue: \`kno update <id> --status ready_for_shipment --add-note "<blocker details>"\`
-- Regression detected: \`kno update <id> --status ready_for_implementation --add-note "<blocker details>"\``,
-});
 
 export class KnotsBackend implements BackendPort {
   readonly capabilities: BackendCapabilities = KNOTS_CAPABILITIES;
@@ -736,12 +125,21 @@ export class KnotsBackend implements BackendPort {
       return ok(cached.workflows);
     }
 
-    const rawProfiles = fromKnots(await knots.listProfiles(repoPath));
-    if (!rawProfiles.ok) return propagateError<MemoryWorkflowDescriptor[]>(rawProfiles);
+    const rawProfiles = fromKnots(
+      await knots.listProfiles(repoPath),
+    );
+    if (!rawProfiles.ok) {
+      return propagateError<MemoryWorkflowDescriptor[]>(
+        rawProfiles,
+      );
+    }
 
     const normalized = mapForProfiles(rawProfiles.data ?? []);
     if (normalized.length === 0) {
-      return backendError("INVALID_INPUT", "No profiles available in knots backend");
+      return backendError(
+        "INVALID_INPUT",
+        "No profiles available in knots backend",
+      );
     }
 
     this.workflowCache.set(key, {
@@ -753,9 +151,16 @@ export class KnotsBackend implements BackendPort {
 
   private async workflowMapByProfileId(
     repoPath: string,
-  ): Promise<BackendResult<Map<string, MemoryWorkflowDescriptor>>> {
-    const workflowsResult = await this.getWorkflowDescriptorsForRepo(repoPath);
-    if (!workflowsResult.ok) return propagateError<Map<string, MemoryWorkflowDescriptor>>(workflowsResult);
+  ): Promise<
+    BackendResult<Map<string, MemoryWorkflowDescriptor>>
+  > {
+    const workflowsResult =
+      await this.getWorkflowDescriptorsForRepo(repoPath);
+    if (!workflowsResult.ok) {
+      return propagateError<
+        Map<string, MemoryWorkflowDescriptor>
+      >(workflowsResult);
+    }
 
     const map = new Map<string, MemoryWorkflowDescriptor>();
     for (const workflow of workflowsResult.data ?? []) {
@@ -769,7 +174,7 @@ export class KnotsBackend implements BackendPort {
     return `${memoryManagerKey(repoPath)}::${id}`;
   }
 
-  private invalidateEdgeCache(repoPath: string, id?: string): void {
+  invalidateEdgeCache(repoPath: string, id?: string): void {
     if (!id) {
       const prefix = `${memoryManagerKey(repoPath)}::`;
       for (const key of this.edgeCache.keys()) {
@@ -780,15 +185,22 @@ export class KnotsBackend implements BackendPort {
     this.edgeCache.delete(this.edgeCacheKey(id, repoPath));
   }
 
-  private async getEdgesForId(id: string, repoPath: string): Promise<BackendResult<KnotEdge[]>> {
+  private async getEdgesForId(
+    id: string,
+    repoPath: string,
+  ): Promise<BackendResult<KnotEdge[]>> {
     const key = this.edgeCacheKey(id, repoPath);
     const cached = this.edgeCache.get(key);
     if (cached && cached.expiresAt > Date.now()) {
       return ok(cached.edges);
     }
 
-    const edgesResult = fromKnots(await knots.listEdges(id, "both", repoPath));
-    if (!edgesResult.ok) return propagateError<KnotEdge[]>(edgesResult);
+    const edgesResult = fromKnots(
+      await knots.listEdges(id, "both", repoPath),
+    );
+    if (!edgesResult.ok) {
+      return propagateError<KnotEdge[]>(edgesResult);
+    }
 
     const edges = edgesResult.data ?? [];
     this.edgeCache.set(key, {
@@ -798,18 +210,28 @@ export class KnotsBackend implements BackendPort {
     return ok(edges);
   }
 
-  private async buildBeatsForRepo(repoPath: string): Promise<BackendResult<Beat[]>> {
-    const workflowMapResult = await this.workflowMapByProfileId(repoPath);
-    if (!workflowMapResult.ok) return propagateError<Beat[]>(workflowMapResult);
-    const workflowMap = workflowMapResult.data ?? new Map<string, MemoryWorkflowDescriptor>();
+  private async buildBeatsForRepo(
+    repoPath: string,
+  ): Promise<BackendResult<Beat[]>> {
+    const workflowMapResult =
+      await this.workflowMapByProfileId(repoPath);
+    if (!workflowMapResult.ok) {
+      return propagateError<Beat[]>(workflowMapResult);
+    }
+    const workflowMap =
+      workflowMapResult.data ??
+      new Map<string, MemoryWorkflowDescriptor>();
 
-    const listResult = fromKnots(await knots.listKnots(repoPath));
-    if (!listResult.ok) return propagateError<Beat[]>(listResult);
+    const listResult = fromKnots(
+      await knots.listKnots(repoPath),
+    );
+    if (!listResult.ok) {
+      return propagateError<Beat[]>(listResult);
+    }
 
     const records = listResult.data ?? [];
     const knownIds = new Set(records.map((record) => record.id));
 
-    // Build alias→ID map so dot-based hierarchy works on aliases too.
     const aliasToId = new Map<string, string>();
     for (const record of records) {
       for (const a of collectAliases(record)) {
@@ -817,15 +239,13 @@ export class KnotsBackend implements BackendPort {
       }
     }
 
-    // Fetch edges sequentially to avoid CLI lock contention.
-    // Cached entries are returned instantly; only uncached IDs hit the CLI.
     const edgesById = new Map<string, KnotEdge[]>();
     for (const record of records) {
-      const edgeResult = await this.getEdgesForId(record.id, repoPath);
+      const edgeResult = await this.getEdgesForId(
+        record.id,
+        repoPath,
+      );
       if (!edgeResult.ok) {
-        // Keep list/search resilient when edge lookups are transiently unavailable.
-        // Hierarchy can still be inferred from dotted IDs, and detail/dependency paths
-        // continue to fetch precise edges on demand.
         edgesById.set(record.id, []);
         continue;
       }
@@ -833,7 +253,13 @@ export class KnotsBackend implements BackendPort {
     }
 
     const beats = records.map((record) =>
-      toBeat(record, edgesById.get(record.id) ?? [], knownIds, aliasToId, workflowMap),
+      toBeat(
+        record,
+        edgesById.get(record.id) ?? [],
+        knownIds,
+        aliasToId,
+        workflowMap,
+      ),
     );
     return ok(beats);
   }
@@ -865,7 +291,9 @@ export class KnotsBackend implements BackendPort {
 
     const beats = (builtResult.data ?? []).filter((beat) => {
       if (!beat.isAgentClaimable) return false;
-      const cached = this.edgeCache.get(this.edgeCacheKey(beat.id, rp));
+      const cached = this.edgeCache.get(
+        this.edgeCacheKey(beat.id, rp),
+      );
       const edges = cached?.edges ?? [];
       return !isBlockedByEdges(beat.id, edges);
     });
@@ -883,12 +311,15 @@ export class KnotsBackend implements BackendPort {
     if (!result.ok) return result;
 
     const lower = query.toLowerCase();
-    const matches = (result.data ?? []).filter((beat) =>
-      beat.id.toLowerCase().includes(lower) ||
-      (beat.aliases ?? []).some((alias) => alias.toLowerCase().includes(lower)) ||
-      beat.title.toLowerCase().includes(lower) ||
-      (beat.description ?? "").toLowerCase().includes(lower) ||
-      (beat.notes ?? "").toLowerCase().includes(lower),
+    const matches = (result.data ?? []).filter(
+      (beat) =>
+        beat.id.toLowerCase().includes(lower) ||
+        (beat.aliases ?? []).some((alias) =>
+          alias.toLowerCase().includes(lower),
+        ) ||
+        beat.title.toLowerCase().includes(lower) ||
+        (beat.description ?? "").toLowerCase().includes(lower) ||
+        (beat.notes ?? "").toLowerCase().includes(lower),
     );
 
     return ok(applyFilters(matches, filters));
@@ -903,7 +334,9 @@ export class KnotsBackend implements BackendPort {
     const result = await this.buildBeatsForRepo(rp);
     if (!result.ok) return result;
 
-    const matches = (result.data ?? []).filter((beat) => matchExpression(beat, expression));
+    const matches = (result.data ?? []).filter((beat) =>
+      matchExpression(beat, expression),
+    );
     return ok(matches);
   }
 
@@ -912,16 +345,33 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<Beat>> {
     const rp = this.resolvePath(repoPath);
-    const knotResult = fromKnots(await knots.showKnot(id, rp));
-    if (!knotResult.ok) return propagateError<Beat>(knotResult);
+    const knotResult = fromKnots(
+      await knots.showKnot(id, rp),
+    );
+    if (!knotResult.ok) {
+      return propagateError<Beat>(knotResult);
+    }
 
     const edgesResult = await this.getEdgesForId(id, rp);
-    if (!edgesResult.ok) return propagateError<Beat>(edgesResult);
+    if (!edgesResult.ok) {
+      return propagateError<Beat>(edgesResult);
+    }
 
-    const workflowMapResult = await this.workflowMapByProfileId(rp);
-    if (!workflowMapResult.ok) return propagateError<Beat>(workflowMapResult);
+    const workflowMapResult =
+      await this.workflowMapByProfileId(rp);
+    if (!workflowMapResult.ok) {
+      return propagateError<Beat>(workflowMapResult);
+    }
 
-    return ok(toBeat(knotResult.data!, edgesResult.data ?? [], new Set([id]), new Map(), workflowMapResult.data ?? new Map()));
+    return ok(
+      toBeat(
+        knotResult.data!,
+        edgesResult.data ?? [],
+        new Set([id]),
+        new Map(),
+        workflowMapResult.data ?? new Map(),
+      ),
+    );
   }
 
   async create(
@@ -930,63 +380,40 @@ export class KnotsBackend implements BackendPort {
   ): Promise<BackendResult<{ id: string }>> {
     const rp = this.resolvePath(repoPath);
 
-    const workflowsResult = await this.getWorkflowDescriptorsForRepo(rp);
-    if (!workflowsResult.ok) return propagateError<{ id: string }>(workflowsResult);
+    const workflowsResult =
+      await this.getWorkflowDescriptorsForRepo(rp);
+    if (!workflowsResult.ok) {
+      return propagateError<{ id: string }>(workflowsResult);
+    }
     const workflows = workflowsResult.data ?? [];
     if (workflows.length === 0) {
-      return backendError("INVALID_INPUT", "No profiles available for knot creation");
+      return backendError(
+        "INVALID_INPUT",
+        "No profiles available for knot creation",
+      );
     }
 
-    const workflowsById = new Map(workflows.map((workflow) => [workflow.id, workflow]));
-    const selectedWorkflowId = input.profileId ?? input.workflowId ?? "autopilot";
-    const selectedWorkflow = workflowsById.get(selectedWorkflowId) ?? workflows[0];
-    if (!selectedWorkflow) {
-      return backendError("INVALID_INPUT", `Unknown profile "${selectedWorkflowId}" for knots backend`);
-    }
-
-    const createResult = fromKnots(
-      await knots.newKnot(
-        input.title,
-        {
-          description: input.description,
-          acceptance: input.acceptance,
-          state: selectedWorkflow.initialState,
-          profile: selectedWorkflow.id,
-        },
-        rp,
-      ),
+    const workflowsById = new Map(
+      workflows.map((wf) => [wf.id, wf]),
     );
-    if (!createResult.ok) return propagateError<{ id: string }>(createResult);
-
-    const id = createResult.data!.id;
-
-    const patch: KnotUpdateInput = {};
-    if (input.priority !== undefined) patch.priority = input.priority;
-    if (input.type) patch.type = input.type;
-    if (input.labels?.length) patch.addTags = input.labels;
-    if (input.notes) patch.addNote = input.notes;
-    patch.addInvariants = serializeInvariants(input.invariants);
-
-    const hasPatch =
-      patch.priority !== undefined ||
-      patch.type !== undefined ||
-      (patch.addTags?.length ?? 0) > 0 ||
-      patch.addNote !== undefined ||
-      (patch.addInvariants?.length ?? 0) > 0;
-
-    if (hasPatch) {
-      const updateResult = fromKnots(await knots.updateKnot(id, patch, rp));
-      if (!updateResult.ok) return propagateError<{ id: string }>(updateResult);
+    const selectedWorkflowId =
+      input.profileId ?? input.workflowId ?? "autopilot";
+    const selectedWorkflow =
+      workflowsById.get(selectedWorkflowId) ?? workflows[0];
+    if (!selectedWorkflow) {
+      return backendError(
+        "INVALID_INPUT",
+        `Unknown profile "${selectedWorkflowId}" ` +
+          `for knots backend`,
+      );
     }
 
-    if (input.parent) {
-      const parentResult = fromKnots(await knots.addEdge(input.parent, "parent_of", id, rp));
-      if (!parentResult.ok) return propagateError<{ id: string }>(parentResult);
-      this.invalidateEdgeCache(rp, input.parent);
-      this.invalidateEdgeCache(rp, id);
-    }
-
-    return ok({ id });
+    return createKnotImpl(
+      input,
+      rp,
+      selectedWorkflow,
+      this.invalidateEdgeCache.bind(this),
+    );
   }
 
   async update(
@@ -1001,134 +428,50 @@ export class KnotsBackend implements BackendPort {
       return propagateError<void>(currentResult);
     }
     const current = currentResult.data;
-    const workflowsResult = await this.getWorkflowDescriptorsForRepo(rp);
-    if (!workflowsResult.ok) return propagateError<void>(workflowsResult);
+    const workflowsResult =
+      await this.getWorkflowDescriptorsForRepo(rp);
+    if (!workflowsResult.ok) {
+      return propagateError<void>(workflowsResult);
+    }
     const workflows = workflowsResult.data ?? [];
-    const currentProfileId = current.profileId ?? current.workflowId;
-    let workflow =
-      workflows.find((item) => item.id === currentProfileId) ?? workflows[0];
-    const rawKnoState = typeof current.metadata?.knotsState === "string"
-      ? current.metadata.knotsState.trim().toLowerCase()
-      : undefined;
-    const currentWorkflowState = rawKnoState ?? current.state;
-    const knotsProfileEtag = typeof current.metadata?.knotsProfileEtag === "string"
-      ? current.metadata.knotsProfileEtag.trim()
-      : undefined;
-    const requestedProfileId = input.profileId?.trim();
-    let stateHandledByProfileSet = false;
 
-    if (requestedProfileId) {
-      const targetWorkflow = workflows.find((item) => item.id === requestedProfileId);
-      if (!targetWorkflow) {
-        return backendError("INVALID_INPUT", `Unknown profile "${requestedProfileId}" for knots backend`);
-      }
-
-      if (requestedProfileId !== currentProfileId) {
-        const requestedState = input.state !== undefined
-          ? normalizeStateForWorkflow(input.state, targetWorkflow)
-          : normalizeStateForWorkflow(currentWorkflowState, targetWorkflow);
-        const ifMatch = knotsProfileEtag && knotsProfileEtag.length > 0
-          ? knotsProfileEtag
-          : undefined;
-        const profileResult = fromKnots(
-          await knots.setKnotProfile(
-            id,
-            targetWorkflow.id,
-            rp,
-            { state: requestedState, ifMatch },
-          ),
-        );
-        if (!profileResult.ok) return propagateError<void>(profileResult);
-        stateHandledByProfileSet = true;
-      }
-
-      workflow = targetWorkflow;
+    const profileChangeResult = await applyProfileChange(
+      id,
+      rp,
+      current,
+      input,
+      workflows,
+    );
+    if (!("workflow" in profileChangeResult)) {
+      return profileChangeResult;
     }
+    const { workflow, stateHandledByProfileSet } =
+      profileChangeResult;
 
-    const patch: KnotUpdateInput = {};
+    const patch = buildUpdatePatch(
+      current,
+      input,
+      workflow,
+      stateHandledByProfileSet,
+    );
 
-    if (input.title !== undefined) patch.title = input.title;
-    if (input.description !== undefined) patch.description = input.description;
-    if (input.acceptance !== undefined) patch.acceptance = input.acceptance;
-    if (input.priority !== undefined) patch.priority = input.priority;
-
-    if (input.state !== undefined && !stateHandledByProfileSet) {
-      const normalizedState = workflow
-        ? normalizeStateForWorkflow(input.state, workflow)
-        : input.state.trim().toLowerCase();
-      const normalizedDisplayState = workflow
-        ? normalizeStateForWorkflow(current.state, workflow)
-        : current.state.trim().toLowerCase();
-      const transitionSourceState = rawKnoState ?? normalizedDisplayState;
-
-      if (normalizedState === transitionSourceState) {
-        // Already in this state — skip to avoid "no field change" error.
-      } else {
-        patch.status = normalizedState;
-        // Force if jumping to a non-adjacent state (e.g., correcting a stuck knot).
-        // Fall back to the current display state when raw metadata is unavailable.
-        if (transitionSourceState) {
-          const isAdjacentTransition = (workflow?.transitions ?? []).some(
-            (t) => (t.from === transitionSourceState || t.from === "*") && t.to === normalizedState,
-          );
-          if (!isAdjacentTransition) {
-            patch.force = true;
-          }
-        }
+    if (hasPatchFields(patch)) {
+      const patchResult = fromKnots(
+        await knots.updateKnot(id, patch, rp),
+      );
+      if (!patchResult.ok) {
+        return propagateError<void>(patchResult);
       }
-    }
-
-    if (input.type !== undefined) patch.type = input.type;
-    if (input.labels?.length) patch.addTags = input.labels;
-    if (input.removeLabels?.length) patch.removeTags = input.removeLabels;
-    if (input.notes !== undefined) patch.addNote = input.notes;
-    patch.addInvariants = serializeInvariants(input.addInvariants);
-    patch.removeInvariants = serializeInvariants(input.removeInvariants);
-    if (input.clearInvariants) patch.clearInvariants = true;
-
-    const hasPatch =
-      patch.title !== undefined ||
-      patch.description !== undefined ||
-      patch.acceptance !== undefined ||
-      patch.priority !== undefined ||
-      patch.status !== undefined ||
-      patch.type !== undefined ||
-      (patch.addTags?.length ?? 0) > 0 ||
-      (patch.removeTags?.length ?? 0) > 0 ||
-      patch.addNote !== undefined ||
-      (patch.addInvariants?.length ?? 0) > 0 ||
-      (patch.removeInvariants?.length ?? 0) > 0 ||
-      patch.clearInvariants === true;
-
-    if (hasPatch) {
-      const patchResult = fromKnots(await knots.updateKnot(id, patch, rp));
-      if (!patchResult.ok) return propagateError<void>(patchResult);
     }
 
     if (input.parent !== undefined) {
-      const incoming = fromKnots(await knots.listEdges(id, "incoming", rp));
-      if (!incoming.ok) return propagateError<void>(incoming);
-
-      const existingParents = (incoming.data ?? [])
-        .filter((edge) => edge.kind === "parent_of" && edge.dst === id)
-        .map((edge) => edge.src);
-
-      const nextParent = input.parent.trim();
-
-      for (const parentId of existingParents) {
-        if (nextParent && parentId === nextParent) continue;
-        const removeResult = fromKnots(await knots.removeEdge(parentId, "parent_of", id, rp));
-        if (!removeResult.ok) return propagateError<void>(removeResult);
-        this.invalidateEdgeCache(rp, parentId);
-      }
-
-      if (nextParent && !existingParents.includes(nextParent)) {
-        const addResult = fromKnots(await knots.addEdge(nextParent, "parent_of", id, rp));
-        if (!addResult.ok) return propagateError<void>(addResult);
-        this.invalidateEdgeCache(rp, nextParent);
-      }
-
-      this.invalidateEdgeCache(rp, id);
+      const edgeResult = await updateParentEdges(
+        id,
+        input.parent,
+        rp,
+        this.invalidateEdgeCache.bind(this),
+      );
+      if (edgeResult) return edgeResult;
     }
 
     return { ok: true };
@@ -1156,12 +499,16 @@ export class KnotsBackend implements BackendPort {
         {
           status: "shipped",
           force: true,
-          addNote: reason ? `Close reason: ${reason}` : undefined,
+          addNote: reason
+            ? `Close reason: ${reason}`
+            : undefined,
         },
         rp,
       ),
     );
-    if (!closeResult.ok) return propagateError<void>(closeResult);
+    if (!closeResult.ok) {
+      return propagateError<void>(closeResult);
+    }
     return { ok: true };
   }
 
@@ -1171,81 +518,12 @@ export class KnotsBackend implements BackendPort {
     options?: { type?: string },
   ): Promise<BackendResult<BeatDependency[]>> {
     const rp = this.resolvePath(repoPath);
-
-    const showResult = fromKnots(await knots.showKnot(id, rp));
-    if (!showResult.ok) return propagateError<BeatDependency[]>(showResult);
-
-    const edgesResult = await this.getEdgesForId(id, rp);
-    if (!edgesResult.ok) return propagateError<BeatDependency[]>(edgesResult);
-
-    const aliasCache = new Map<string, string[] | undefined>();
-    const loadAliases = async (beatId: string): Promise<string[] | undefined> => {
-      if (aliasCache.has(beatId)) return aliasCache.get(beatId);
-      const knotResult = beatId === id
-        ? showResult
-        : fromKnots(await knots.showKnot(beatId, rp));
-      const collected = knotResult.ok && knotResult.data
-        ? collectAliases(knotResult.data)
-        : [];
-      const aliases = collected.length > 0 ? collected : undefined;
-      aliasCache.set(beatId, aliases);
-      return aliases;
-    };
-
-    const deps: BeatDependency[] = [];
-    for (const edge of edgesResult.data ?? []) {
-      if (edge.kind === "blocked_by") {
-        if (options?.type && options.type !== "blocks") continue;
-        const blockerId = edge.dst;
-        const blockedId = edge.src;
-        if (id !== blockerId && id !== blockedId) continue;
-        const linkedId = id === blockerId ? blockedId : blockerId;
-
-        deps.push({
-          id: linkedId,
-          aliases: await loadAliases(linkedId),
-          type: "blocks",
-          source: blockerId,
-          target: blockedId,
-          dependency_type: "blocked_by",
-        });
-      }
-
-      if (edge.kind === "parent_of") {
-        const parentId = edge.src;
-        const childId = edge.dst;
-        if (id !== parentId && id !== childId) continue;
-        const linkedId = id === parentId ? childId : parentId;
-
-        deps.push({
-          id: linkedId,
-          aliases: await loadAliases(linkedId),
-          type: "parent-child",
-          source: parentId,
-          target: childId,
-          dependency_type: "parent_of",
-        });
-      }
-    }
-
-    // Enrich deps with linked knot aliases
-    const uniqueLinkedIds = [...new Set(deps.map((d) => d.id))];
-    const aliasMap = new Map<string, string[]>();
-    await Promise.allSettled(
-      uniqueLinkedIds.map(async (linkedId) => {
-        const linkedKnot = fromKnots(await knots.showKnot(linkedId, rp));
-        if (linkedKnot.ok && linkedKnot.data) {
-          const a = collectAliases(linkedKnot.data);
-          if (a.length) aliasMap.set(linkedId, a);
-        }
-      }),
+    return listDependenciesImpl(
+      id,
+      rp,
+      this.getEdgesForId.bind(this),
+      options,
     );
-    for (const dep of deps) {
-      const linkedAliases = aliasMap.get(dep.id);
-      if (linkedAliases?.length) dep.aliases = linkedAliases;
-    }
-
-    return ok(deps);
   }
 
   async addDependency(
@@ -1254,19 +532,12 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
-
-    const blockerExists = fromKnots(await knots.showKnot(blockerId, rp));
-    if (!blockerExists.ok) return propagateError<void>(blockerExists);
-
-    const blockedExists = fromKnots(await knots.showKnot(blockedId, rp));
-    if (!blockedExists.ok) return propagateError<void>(blockedExists);
-
-    const addResult = fromKnots(await knots.addEdge(blockedId, "blocked_by", blockerId, rp));
-    if (!addResult.ok) return propagateError<void>(addResult);
-
-    this.invalidateEdgeCache(rp, blockerId);
-    this.invalidateEdgeCache(rp, blockedId);
-    return { ok: true };
+    return addDependencyImpl(
+      blockerId,
+      blockedId,
+      rp,
+      this.invalidateEdgeCache.bind(this),
+    );
   }
 
   async removeDependency(
@@ -1275,13 +546,12 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<void>> {
     const rp = this.resolvePath(repoPath);
-
-    const removeResult = fromKnots(await knots.removeEdge(blockedId, "blocked_by", blockerId, rp));
-    if (!removeResult.ok) return propagateError<void>(removeResult);
-
-    this.invalidateEdgeCache(rp, blockerId);
-    this.invalidateEdgeCache(rp, blockedId);
-    return { ok: true };
+    return removeDependencyImpl(
+      blockerId,
+      blockedId,
+      rp,
+      this.invalidateEdgeCache.bind(this),
+    );
   }
 
   async buildTakePrompt(
@@ -1290,66 +560,10 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<TakePromptResult>> {
     const rp = this.resolvePath(repoPath);
-
     if (options?.isParent && options.childBeatIds?.length) {
-      // Parent/Scene mode: don't claim upfront — subagents claim children.
-      // Return parent metadata with child listing and claim instructions.
-      const parentResult = fromKnots(await knots.showKnot(beatId, rp));
-      if (!parentResult.ok) return propagateError<TakePromptResult>(parentResult);
-      const parent = parentResult.data!;
-
-      const childLines = options.childBeatIds.map(
-        (id) =>
-          `- Child ${id}: run \`kno claim ${JSON.stringify(id)} --json\`, use the returned \`prompt\` only for that claimed step, run only the completion command from that claim output, then check \`kno show ${JSON.stringify(id)} --json\`.`,
-      );
-      const prompt = [
-        `Parent beat ID: ${beatId}`,
-        parent.title ? `Title: ${parent.title}` : null,
-        parent.description ? `Description: ${parent.description}` : parent.body ? `Description: ${parent.body}` : null,
-        ``,
-        `Open child beat IDs:`,
-        ...options.childBeatIds.map((id) => `- ${id}`),
-        ``,
-        `KNOTS CLAIM MODE (required):`,
-        `Always claim a knot before implementation and treat each claim result as a single-step authorization.`,
-        `If \`kno claim\` exits with a non-zero code, stop immediately — do not proceed without claim constraints.`,
-        ...childLines,
-        `- Each child claim authorizes exactly one workflow action. After its completion command succeeds, stop work on that child for this session.`,
-        `- Do not immediately re-claim the same child after a successful completion unless a later Foolery prompt explicitly tells you to do so.`,
-        `- Do not try to drive a child all the way to \`shipped\` unless the claim output for the current step explicitly makes that the allowed exit state.`,
-        `- If a child is left in an active state (for example \`implementation_review\`), run \`kno next <id> --expected-state <currentState> --actor-kind agent\` once to return it to queue, then stop work on that child.`,
-        `- Do not guess or brute-force workflow transitions outside the claim output.`,
-        `- If \`kno claim\` exits with a non-zero exit code for a child, stop work on that child immediately. Do not attempt further work without a valid claim.`,
-        `- Ignore generic instructions about finishing the whole knot, shipping, or pushing unless the active child claim explicitly requires them.`,
-      ].filter((line): line is string => line !== null).join("\n");
-
-      return ok({ prompt, claimed: false });
+      return buildParentTakePrompt(beatId, options, rp);
     }
-
-    // Single-beat Take! mode: show the knot and instruct the agent to claim.
-    const showResult = fromKnots(await knots.showKnot(beatId, rp));
-    if (!showResult.ok) return propagateError<TakePromptResult>(showResult);
-    const knot = showResult.data!;
-
-    const claimCmd = options?.knotsLeaseId
-      ? `kno claim "${beatId}" --json --lease "${options.knotsLeaseId}"`
-      : `kno claim "${beatId}" --json`;
-
-    const prompt = [
-      `Beat ID: ${beatId}`,
-      knot.title ? `Title: ${knot.title}` : null,
-      knot.description ? `Description: ${knot.description}` : knot.body ? `Description: ${knot.body}` : null,
-      ``,
-      `KNOTS CLAIM MODE (required):`,
-      `Run \`${claimCmd}\` and use the returned \`prompt\` only for the currently claimed step.`,
-      `Treat that claim result as a single-step authorization: run only the completion command from the claim output, then stop immediately.`,
-      `Do not run \`kno claim\` again in this session after the completion command succeeds.`,
-      `Do not inspect, review, or advance later workflow states on your own.`,
-      `Ignore generic instructions about finishing the whole knot, shipping, or pushing unless the active claim explicitly requires them.`,
-      `If \`kno claim\` exits with a non-zero exit code, you MUST stop immediately — do not attempt to work without a valid claim. Simply exit.`,
-    ].filter((line): line is string => line !== null).join("\n");
-
-    return ok({ prompt, claimed: false });
+    return buildSingleTakePrompt(beatId, options, rp);
   }
 
   async buildPollPrompt(
@@ -1357,19 +571,6 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<PollPromptResult>> {
     const rp = this.resolvePath(repoPath);
-
-    const pollResult = fromKnots(
-      await knots.pollKnot(rp, {
-        agentName: options?.agentName,
-        agentModel: options?.agentModel,
-        agentVersion: options?.agentVersion,
-      }),
-    );
-    if (!pollResult.ok) return propagateError<PollPromptResult>(pollResult);
-
-    return ok({
-      prompt: pollResult.data!.prompt,
-      claimedId: pollResult.data!.id,
-    });
+    return buildPollPromptImpl(rp, options);
   }
 }

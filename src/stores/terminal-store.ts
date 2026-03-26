@@ -50,6 +50,150 @@ interface TerminalState {
   rehydrateFromBackend: (backendSessions: TerminalSession[]) => void;
 }
 
+function computeTogglePanel(
+  s: Pick<TerminalState, "panelMinimized" | "panelOpen" | "terminals">,
+): Partial<TerminalState> {
+  if (s.panelMinimized) return { panelOpen: true, panelMinimized: false };
+  if (s.panelOpen) {
+    const hasRunning = s.terminals.some((t) => t.status === "running");
+    if (hasRunning) return { panelOpen: false, panelMinimized: true };
+    return { panelOpen: false, panelMinimized: false };
+  }
+  return { panelOpen: true, panelMinimized: false };
+}
+
+function computeUpsertTerminal(
+  state: TerminalState,
+  terminal: ActiveTerminal,
+): Partial<TerminalState> {
+  const existingIndex = state.terminals.findIndex(
+    (item) => item.sessionId === terminal.sessionId,
+  );
+  const terminals =
+    existingIndex === -1
+      ? [...state.terminals, terminal]
+      : state.terminals.map((item) =>
+          item.sessionId === terminal.sessionId ? terminal : item,
+        );
+  return {
+    terminals,
+    activeSessionId: terminal.sessionId,
+    panelOpen: true,
+    panelMinimized: false,
+  };
+}
+
+function computeRemoveTerminal(
+  state: TerminalState,
+  sessionId: string,
+): Partial<TerminalState> {
+  const terminals = state.terminals.filter(
+    (item) => item.sessionId !== sessionId,
+  );
+  const isRemovingActive = state.activeSessionId === sessionId;
+  const nextActiveSessionId = isRemovingActive
+    ? (terminals.at(-1)?.sessionId ?? null)
+    : state.activeSessionId;
+  const pendingClose = new Set(state.pendingClose);
+  pendingClose.delete(sessionId);
+  return {
+    terminals,
+    activeSessionId: nextActiveSessionId,
+    panelOpen: terminals.length > 0 && state.panelOpen,
+    panelMinimized: terminals.length > 0 && state.panelMinimized,
+    pendingClose,
+  };
+}
+
+function computeSetActiveSession(
+  state: TerminalState,
+  sessionId: string,
+): Partial<TerminalState> {
+  const exists = state.terminals.some(
+    (item) => item.sessionId === sessionId,
+  );
+  if (!exists) return {};
+  const pendingClose = new Set(state.pendingClose);
+  pendingClose.delete(sessionId);
+  return {
+    activeSessionId: sessionId,
+    panelOpen: true,
+    panelMinimized: false,
+    pendingClose,
+  };
+}
+
+function computeUpdateStatus(
+  state: TerminalState,
+  sessionId: string,
+  status: TerminalSessionStatus,
+): Partial<TerminalState> | TerminalState {
+  let changed = false;
+  const terminals = state.terminals.map((item) => {
+    if (item.sessionId !== sessionId) return item;
+    if (item.status === status) return item;
+    changed = true;
+    return { ...item, status };
+  });
+  return changed ? { terminals } : state;
+}
+
+function computeRehydrate(
+  state: TerminalState,
+  backendSessions: TerminalSession[],
+): Partial<TerminalState> {
+  const backendMap = new Map(
+    backendSessions.map((s) => [s.id, s]),
+  );
+  const synced = state.terminals.map((t) => {
+    const backend = backendMap.get(t.sessionId);
+    if (!backend) {
+      return t.status === "running"
+        ? { ...t, status: "disconnected" as const }
+        : t;
+    }
+    if (
+      backend.status !== t.status ||
+      backend.startedAt !== t.startedAt
+    ) {
+      return {
+        ...t,
+        status: backend.status,
+        startedAt: backend.startedAt,
+      };
+    }
+    return t;
+  });
+  const knownIds = new Set(
+    state.terminals.map((t) => t.sessionId),
+  );
+  const orphans: ActiveTerminal[] = backendSessions
+    .filter((s) => !knownIds.has(s.id) && s.status === "running")
+    .map((s) => ({
+      sessionId: s.id,
+      beatId: s.beatId,
+      beatTitle: s.beatTitle,
+      beatIds: s.beatIds,
+      repoPath: s.repoPath,
+      agentName: s.agentName,
+      agentModel: s.agentModel,
+      ...(s.agentVersion ? { agentVersion: s.agentVersion } : {}),
+      agentCommand: s.agentCommand,
+      status: s.status,
+      startedAt: s.startedAt,
+    }));
+  const terminals = [...synced, ...orphans];
+  const activeValid = terminals.some(
+    (t) => t.sessionId === state.activeSessionId,
+  );
+  return {
+    terminals,
+    activeSessionId: activeValid
+      ? state.activeSessionId
+      : (terminals.at(-1)?.sessionId ?? null),
+  };
+}
+
 export const useTerminalStore = create<TerminalState>()(
   persist(
     (set, get) => ({
@@ -64,92 +208,29 @@ export const useTerminalStore = create<TerminalState>()(
   closePanel: () =>
     set((s) => {
       const hasRunning = s.terminals.some((t) => t.status === "running");
-      if (hasRunning) {
-        return { panelOpen: false, panelMinimized: true };
-      }
+      if (hasRunning) return { panelOpen: false, panelMinimized: true };
       return { panelOpen: false, panelMinimized: false };
     }),
   clearTerminals: () =>
-    set({ terminals: [], activeSessionId: null, panelMinimized: false, pendingClose: new Set() }),
-  togglePanel: () =>
-    set((s) => {
-      if (s.panelMinimized) {
-        return { panelOpen: true, panelMinimized: false };
-      }
-      if (s.panelOpen) {
-        const hasRunning = s.terminals.some((t) => t.status === "running");
-        if (hasRunning) {
-          return { panelOpen: false, panelMinimized: true };
-        }
-        return { panelOpen: false, panelMinimized: false };
-      }
-      return { panelOpen: true, panelMinimized: false };
+    set({
+      terminals: [],
+      activeSessionId: null,
+      panelMinimized: false,
+      pendingClose: new Set(),
     }),
+  togglePanel: () => set((s) => computeTogglePanel(s)),
   minimizePanel: () => set({ panelOpen: false, panelMinimized: true }),
   restorePanel: () => set({ panelOpen: true, panelMinimized: false }),
-  setPanelHeight: (height) => set({ panelHeight: Math.max(15, Math.min(80, height)) }),
+  setPanelHeight: (height) =>
+    set({ panelHeight: Math.max(15, Math.min(80, height)) }),
   upsertTerminal: (terminal) =>
-    set((state) => {
-      const existingIndex = state.terminals.findIndex(
-        (item) => item.sessionId === terminal.sessionId
-      );
-      const terminals =
-        existingIndex === -1
-          ? [...state.terminals, terminal]
-          : state.terminals.map((item) =>
-              item.sessionId === terminal.sessionId ? terminal : item
-            );
-      return {
-        terminals,
-        activeSessionId: terminal.sessionId,
-        panelOpen: true,
-        panelMinimized: false,
-      };
-    }),
+    set((state) => computeUpsertTerminal(state, terminal)),
   removeTerminal: (sessionId) =>
-    set((state) => {
-      const terminals = state.terminals.filter(
-        (item) => item.sessionId !== sessionId
-      );
-      const isRemovingActive = state.activeSessionId === sessionId;
-      const nextActiveSessionId = isRemovingActive
-        ? (terminals.at(-1)?.sessionId ?? null)
-        : state.activeSessionId;
-      const pendingClose = new Set(state.pendingClose);
-      pendingClose.delete(sessionId);
-
-      return {
-        terminals,
-        activeSessionId: nextActiveSessionId,
-        panelOpen: terminals.length > 0 && state.panelOpen,
-        panelMinimized: terminals.length > 0 && state.panelMinimized,
-        pendingClose,
-      };
-    }),
+    set((state) => computeRemoveTerminal(state, sessionId)),
   setActiveSession: (sessionId) =>
-    set((state) => {
-      const exists = state.terminals.some((item) => item.sessionId === sessionId);
-      if (!exists) return {};
-      const pendingClose = new Set(state.pendingClose);
-      pendingClose.delete(sessionId);
-      return {
-        activeSessionId: sessionId,
-        panelOpen: true,
-        panelMinimized: false,
-        pendingClose,
-      };
-    }),
+    set((state) => computeSetActiveSession(state, sessionId)),
   updateStatus: (sessionId, status) =>
-    set((state) => {
-      let changed = false;
-      const terminals = state.terminals.map((item) => {
-        if (item.sessionId !== sessionId) return item;
-        if (item.status === status) return item;
-        changed = true;
-        return { ...item, status };
-      });
-      return changed ? { terminals } : state;
-    }),
+    set((state) => computeUpdateStatus(state, sessionId, status)),
   updateAgent: (sessionId, agent) =>
     set((state) => ({
       terminals: state.terminals.map((item) =>
@@ -172,7 +253,9 @@ export const useTerminalStore = create<TerminalState>()(
       return { pendingClose };
     }),
   enqueueSceneBeats: (items) =>
-    set((state) => ({ sceneQueue: [...state.sceneQueue, ...items] })),
+    set((state) => ({
+      sceneQueue: [...state.sceneQueue, ...items],
+    })),
   dequeueSceneBeats: (count) => {
     const current = get().sceneQueue;
     const taken = current.slice(0, count);
@@ -181,48 +264,7 @@ export const useTerminalStore = create<TerminalState>()(
   },
   clearSceneQueue: () => set({ sceneQueue: [] }),
   rehydrateFromBackend: (backendSessions) =>
-    set((state) => {
-      const backendMap = new Map(backendSessions.map((s) => [s.id, s]));
-      // Sync persisted terminals with backend state
-      const synced = state.terminals.map((t) => {
-        const backend = backendMap.get(t.sessionId);
-        if (!backend) {
-          // Terminal gone from backend — server likely restarted; mark disconnected, not completed
-          return t.status === "running" ? { ...t, status: "disconnected" as const } : t;
-        }
-        // Sync backend-authoritative fields for known sessions.
-        if (backend.status !== t.status || backend.startedAt !== t.startedAt) {
-          return { ...t, status: backend.status, startedAt: backend.startedAt };
-        }
-        return t;
-      });
-      // Add orphaned backend sessions not in frontend state
-      const knownIds = new Set(state.terminals.map((t) => t.sessionId));
-      const orphans: ActiveTerminal[] = backendSessions
-        .filter((s) => !knownIds.has(s.id) && s.status === "running")
-        .map((s) => ({
-          sessionId: s.id,
-          beatId: s.beatId,
-          beatTitle: s.beatTitle,
-          beatIds: s.beatIds,
-          repoPath: s.repoPath,
-          agentName: s.agentName,
-          agentModel: s.agentModel,
-          ...(s.agentVersion ? { agentVersion: s.agentVersion } : {}),
-          agentCommand: s.agentCommand,
-          status: s.status,
-          startedAt: s.startedAt,
-        }));
-      const terminals = [...synced, ...orphans];
-      // Fix activeSessionId if it points to a removed terminal
-      const activeValid = terminals.some((t) => t.sessionId === state.activeSessionId);
-      return {
-        terminals,
-        activeSessionId: activeValid
-          ? state.activeSessionId
-          : (terminals.at(-1)?.sessionId ?? null),
-      };
-    }),
+    set((state) => computeRehydrate(state, backendSessions)),
     }),
     {
       name: "foolery:terminal-store",

@@ -1,7 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { getBackend } from "@/lib/backend-instance";
-import type { CreateBeatInput } from "@/lib/backend-port";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -16,22 +14,21 @@ import {
 } from "@/lib/agent-adapter";
 import type {
   ApplyBreakdownResult,
-  BeatPriority,
-  BeatType,
-  BreakdownBeatSpec,
   BreakdownEvent,
   BreakdownPlan,
   BreakdownSession,
   BreakdownWave,
 } from "@/lib/types";
 import {
-  ORCHESTRATION_WAVE_LABEL,
-  allocateWaveSlug,
-  buildWaveSlugLabel,
-  buildWaveTitle,
-  extractWaveSlug,
-  isLegacyNumericWaveSlug,
-} from "@/lib/wave-slugs";
+  applyBreakdownPlan as applyBreakdownPlanImpl,
+} from "@/lib/breakdown-apply";
+import {
+  BREAKDOWN_JSON_TAG,
+  toObject,
+  normalizeBreakdownWave,
+  normalizeBreakdownPlan,
+  extractPlanFromTaggedJson,
+} from "@/lib/breakdown-normalize";
 import { agentDisplayName } from "@/lib/agent-identity";
 
 interface BreakdownSessionEntry {
@@ -50,7 +47,6 @@ type JsonObject = Record<string, unknown>;
 
 const MAX_BUFFER = 5000;
 const CLEANUP_DELAY_MS = 10 * 60 * 1000;
-const BREAKDOWN_JSON_TAG = "breakdown_plan_json";
 
 const g = globalThis as unknown as {
   __breakdownSessions?: Map<string, BreakdownSessionEntry>;
@@ -60,17 +56,6 @@ const sessions = g.__breakdownSessions;
 
 function generateId(): string {
   return `bkdn-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function toObject(value: unknown): JsonObject | null {
-  if (!value || typeof value !== "object") return null;
-  return value as JsonObject;
-}
-
-function toInt(value: unknown, fallback: number): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return fallback;
-  return Math.max(1, Math.floor(parsed));
 }
 
 function buildBreakdownPrompt(
@@ -112,80 +97,6 @@ function buildBreakdownPrompt(
     .join("\n");
 }
 
-function normalizeBeatSpec(raw: unknown): BreakdownBeatSpec | null {
-  const obj = toObject(raw);
-  if (!obj) return null;
-
-  const title = typeof obj.title === "string" ? obj.title.trim() : "";
-  if (!title) return null;
-
-  const validTypes: BeatType[] = ["bug", "feature", "task", "epic", "chore", "merge-request", "gate"];
-  const rawType = typeof obj.type === "string" ? obj.type.trim().toLowerCase() : "task";
-  const type = (validTypes.includes(rawType as BeatType) ? rawType : "task") as BeatType;
-
-  const priority = Math.min(4, Math.max(0, toInt(obj.priority, 2))) as BeatPriority;
-
-  const description =
-    typeof obj.description === "string" && obj.description.trim()
-      ? obj.description.trim()
-      : undefined;
-
-  return { title, type, priority, description };
-}
-
-function normalizeBreakdownWave(
-  raw: unknown,
-  fallbackIndex: number
-): BreakdownWave | null {
-  const obj = toObject(raw);
-  if (!obj) return null;
-
-  const waveIndex = toInt(obj.wave_index ?? obj.waveIndex ?? obj.index, fallbackIndex);
-  const name =
-    typeof obj.name === "string" && obj.name.trim()
-      ? obj.name.trim()
-      : `Scene ${waveIndex}`;
-  const objective =
-    typeof obj.objective === "string" && obj.objective.trim()
-      ? obj.objective.trim()
-      : "Execute assigned tasks for this scene.";
-  const notes =
-    typeof obj.notes === "string" && obj.notes.trim() ? obj.notes.trim() : undefined;
-
-  const rawBeats = Array.isArray(obj.beats) ? obj.beats : [];
-  const beats = rawBeats
-    .map((b) => normalizeBeatSpec(b))
-    .filter((b): b is BreakdownBeatSpec => b !== null);
-
-  if (beats.length === 0) return null;
-
-  return { waveIndex, name, objective, beats, notes };
-}
-
-function normalizeBreakdownPlan(raw: unknown): BreakdownPlan | null {
-  const obj = toObject(raw);
-  if (!obj) return null;
-
-  const rawWaves = Array.isArray(obj.waves) ? obj.waves : [];
-  const waves = rawWaves
-    .map((wave, index) => normalizeBreakdownWave(wave, index + 1))
-    .filter((wave): wave is BreakdownWave => wave !== null)
-    .sort((a, b) => a.waveIndex - b.waveIndex);
-
-  if (waves.length === 0) return null;
-
-  const summary =
-    typeof obj.summary === "string" && obj.summary.trim()
-      ? obj.summary.trim()
-      : `Generated ${waves.length} scene${waves.length === 1 ? "" : "s"}.`;
-
-  const assumptions = Array.isArray(obj.assumptions)
-    ? obj.assumptions.filter((v): v is string => typeof v === "string")
-    : [];
-
-  return { summary, waves, assumptions };
-}
-
 function buildDraftPlan(entry: BreakdownSessionEntry): BreakdownPlan {
   const waves = Array.from(entry.draftWaves.values()).sort(
     (a, b) => a.waveIndex - b.waveIndex
@@ -196,22 +107,6 @@ function buildDraftPlan(entry: BreakdownSessionEntry): BreakdownPlan {
     waves,
     assumptions: [],
   };
-}
-
-function extractPlanFromTaggedJson(text: string): BreakdownPlan | null {
-  const pattern = new RegExp(
-    `<${BREAKDOWN_JSON_TAG}>\\s*([\\s\\S]*?)\\s*</${BREAKDOWN_JSON_TAG}>`,
-    "i"
-  );
-  const match = text.match(pattern);
-  if (!match?.[1]) return null;
-
-  try {
-    const parsed = JSON.parse(match[1]);
-    return normalizeBreakdownPlan(parsed);
-  } catch {
-    return null;
-  }
 }
 
 function pushEvent(
@@ -365,6 +260,130 @@ function finalizeSession(
   }, CLEANUP_DELAY_MS);
 }
 
+function processNormalizedEvent(
+  entry: BreakdownSessionEntry,
+  obj: JsonObject,
+): void {
+  if (obj.type === "stream_event") {
+    const event = toObject(obj.event);
+    const delta = toObject(event?.delta);
+    if (
+      event?.type === "content_block_delta" &&
+      delta?.type === "text_delta" &&
+      typeof delta.text === "string"
+    ) {
+      const completedLines = consumeAssistantText(entry, delta.text);
+      for (const completedLine of completedLines) {
+        pushEvent(entry, "log", formatStructuredLogLine(completedLine));
+      }
+    }
+    return;
+  }
+
+  if (obj.type === "assistant") {
+    const message = toObject(obj.message);
+    const content = Array.isArray(message?.content) ? message?.content : [];
+    const text = content
+      .map((block) => {
+        const blockObj = toObject(block);
+        return blockObj?.type === "text" && typeof blockObj.text === "string"
+          ? blockObj.text
+          : "";
+      })
+      .join("");
+
+    if (text) {
+      entry.assistantText += (entry.assistantText ? "\n" : "") + text;
+      entry.lineBuffer = "";
+      for (const textLine of text.split("\n")) {
+        applyLineEvent(entry, textLine);
+      }
+    }
+    return;
+  }
+
+  if (obj.type === "result") {
+    const isError = Boolean(obj.is_error);
+    const resultText = isError ? "Breakdown failed" : "Breakdown complete";
+    if (!entry.session.plan && typeof obj.result === "string") {
+      const fromTags = extractPlanFromTaggedJson(obj.result);
+      if (fromTags) {
+        entry.session.plan = fromTags;
+        pushEvent(entry, "plan", fromTags);
+      }
+    }
+    finalizeSession(entry, isError ? "error" : "completed", resultText);
+  }
+}
+
+function wireChildProcess(
+  child: ChildProcess,
+  entry: BreakdownSessionEntry,
+  normalizeEvent: (parsed: unknown) => Record<string, unknown> | null,
+  interactionLog: InteractionLog,
+  agentLabel: string,
+): void {
+  let ndjsonBuffer = "";
+
+  child.stdout?.on("data", (chunk: Buffer) => {
+    ndjsonBuffer += chunk.toString();
+    const lines = ndjsonBuffer.split("\n");
+    ndjsonBuffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      interactionLog.logResponse(line);
+      let raw: unknown;
+      try { raw = JSON.parse(line); } catch { continue; }
+      const obj = toObject(normalizeEvent(raw));
+      if (!obj || typeof obj.type !== "string") continue;
+      processNormalizedEvent(entry, obj);
+    }
+  });
+
+  child.stderr?.on("data", (chunk: Buffer) => {
+    const text = chunk.toString();
+    if (text) pushEvent(entry, "log", text);
+  });
+
+  const releaseChildStreams = () => {
+    child.stdout?.removeAllListeners();
+    child.stderr?.removeAllListeners();
+  };
+
+  child.on("error", (err) => {
+    releaseChildStreams();
+    finalizeSession(
+      entry, "error", `Failed to start ${agentLabel}: ${err.message}`,
+    );
+  });
+
+  child.on("close", (code, signal) => {
+    releaseChildStreams();
+    if (ndjsonBuffer.trim()) {
+      try {
+        const raw = JSON.parse(ndjsonBuffer);
+        const obj = toObject(normalizeEvent(raw));
+        if (obj?.type === "result") {
+          const isError = Boolean(obj.is_error);
+          finalizeSession(
+            entry,
+            isError ? "error" : "completed",
+            isError ? "Breakdown failed" : "Breakdown complete",
+          );
+          return;
+        }
+      } catch { /* ignored */ }
+    }
+
+    const isSuccess = code === 0 && signal == null;
+    const message = isSuccess
+      ? "Breakdown complete"
+      : `${agentLabel} exited (code=${code ?? "null"}, signal=${signal ?? "null"})`;
+    finalizeSession(entry, isSuccess ? "completed" : "error", message);
+  });
+}
+
 export async function createBreakdownSession(
   repoPath: string,
   parentBeatId: string,
@@ -421,135 +440,10 @@ export async function createBreakdownSession(
   });
   entry.process = child;
 
-  let ndjsonBuffer = "";
-
-  child.stdout?.on("data", (chunk: Buffer) => {
-    ndjsonBuffer += chunk.toString();
-    const lines = ndjsonBuffer.split("\n");
-    ndjsonBuffer = lines.pop() ?? "";
-
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      bkdnInteractionLog.logResponse(line);
-
-      let raw: unknown;
-      try {
-        raw = JSON.parse(line);
-      } catch {
-        continue;
-      }
-
-      const obj = toObject(normalizeEvent(raw));
-      if (!obj || typeof obj.type !== "string") continue;
-
-      if (obj.type === "stream_event") {
-        const event = toObject(obj.event);
-        const delta = toObject(event?.delta);
-        if (
-          event?.type === "content_block_delta" &&
-          delta?.type === "text_delta" &&
-          typeof delta.text === "string"
-        ) {
-          const completedLines = consumeAssistantText(entry, delta.text);
-          for (const completedLine of completedLines) {
-            pushEvent(entry, "log", formatStructuredLogLine(completedLine));
-          }
-        }
-        continue;
-      }
-
-      if (obj.type === "assistant") {
-        const message = toObject(obj.message);
-        const content = Array.isArray(message?.content) ? message?.content : [];
-        const text = content
-          .map((block) => {
-            const blockObj = toObject(block);
-            return blockObj?.type === "text" && typeof blockObj.text === "string"
-              ? blockObj.text
-              : "";
-          })
-          .join("");
-
-        if (text) {
-          // Accumulate rather than replace — crucial for Codex where multiple
-          // agent_message events deliver distinct content. For Claude the
-          // assistant event repeats streamed content; appending is harmless
-          // since extractPlanFromTaggedJson matches the first occurrence.
-          entry.assistantText += (entry.assistantText ? "\n" : "") + text;
-
-          // Stale partial line from prior stream_event deltas is superseded.
-          entry.lineBuffer = "";
-
-          // Parse the full text line-by-line for NDJSON plan events.
-          // For Claude this re-parses already-processed lines (idempotent).
-          // For Codex this is the first — and only — parse of agent_message
-          // content that may contain wave_draft / plan_final events.
-          for (const line of text.split("\n")) {
-            applyLineEvent(entry, line);
-          }
-        }
-        continue;
-      }
-
-      if (obj.type === "result") {
-        const isError = Boolean(obj.is_error);
-        const resultText = isError
-          ? "Breakdown failed"
-          : "Breakdown complete";
-
-        if (!entry.session.plan && typeof obj.result === "string") {
-          const fromTags = extractPlanFromTaggedJson(obj.result);
-          if (fromTags) {
-            entry.session.plan = fromTags;
-            pushEvent(entry, "plan", fromTags);
-          }
-        }
-
-        finalizeSession(entry, isError ? "error" : "completed", resultText);
-      }
-    }
-  });
-
-  child.stderr?.on("data", (chunk: Buffer) => {
-    const text = chunk.toString();
-    if (text) pushEvent(entry, "log", text);
-  });
-
-  const releaseChildStreams = () => {
-    child.stdout?.removeAllListeners();
-    child.stderr?.removeAllListeners();
-  };
-
   const agentLabel = agentDisplayName(agent);
-
-  child.on("error", (err) => {
-    releaseChildStreams();
-    finalizeSession(entry, "error", `Failed to start ${agentLabel}: ${err.message}`);
-  });
-
-  child.on("close", (code, signal) => {
-    releaseChildStreams();
-    if (ndjsonBuffer.trim()) {
-      try {
-        const raw = JSON.parse(ndjsonBuffer);
-        const obj = toObject(normalizeEvent(raw));
-        if (obj?.type === "result") {
-          const isError = Boolean(obj.is_error);
-          finalizeSession(entry, isError ? "error" : "completed",
-            isError ? "Breakdown failed" : "Breakdown complete");
-          return;
-        }
-      } catch {
-        // ignored
-      }
-    }
-
-    const isSuccess = code === 0 && signal == null;
-    const message = isSuccess
-      ? "Breakdown complete"
-      : `${agentLabel} exited (code=${code ?? "null"}, signal=${signal ?? "null"})`;
-    finalizeSession(entry, isSuccess ? "completed" : "error", message);
-  });
+  wireChildProcess(
+    child, entry, normalizeEvent, bkdnInteractionLog, agentLabel,
+  );
 
   pushEvent(entry, "status", `Starting ${agentLabel} breakdown...`);
   return session;
@@ -580,95 +474,16 @@ export function abortBreakdownSession(id: string): boolean {
 
 export async function applyBreakdownPlan(
   sessionId: string,
-  repoPath: string
+  repoPath: string,
 ): Promise<ApplyBreakdownResult> {
   const entry = sessions.get(sessionId);
   if (!entry) throw new Error("Breakdown session not found");
-  if (!entry.session.plan) throw new Error("No breakdown plan available to apply");
-
-  const plan = entry.session.plan;
-  const parentBeatId = entry.session.parentBeatId;
-  const createdBeatIds: string[] = [];
-
-  const existing = await getBackend().list(undefined, repoPath);
-  if (!existing.ok || !existing.data) {
-    throw new Error(existing.error?.message ?? "Failed to load existing beats");
+  if (!entry.session.plan) {
+    throw new Error("No breakdown plan available to apply");
   }
-  const usedWaveSlugs = new Set<string>();
-  for (const beat of existing.data) {
-    if (!beat.labels?.includes(ORCHESTRATION_WAVE_LABEL)) continue;
-    const slug = extractWaveSlug(beat.labels);
-    if (slug && !isLegacyNumericWaveSlug(slug)) usedWaveSlugs.add(slug);
-  }
-
-  let previousWaveId: string | null = null;
-
-  for (const wave of plan.waves.slice().sort((a, b) => a.waveIndex - b.waveIndex)) {
-    if (wave.beats.length === 0) continue;
-
-    const minPriority = Math.min(...wave.beats.map((b) => b.priority)) as BeatPriority;
-
-    const waveSlug = allocateWaveSlug(usedWaveSlugs);
-    const waveTitle = buildWaveTitle(waveSlug, wave.name);
-
-    const description = [
-      `Objective: ${wave.objective}`,
-      wave.notes ? `\nNotes: ${wave.notes}` : null,
-      `\nAssigned tasks:`,
-      ...wave.beats.map((b) => `- ${b.title}`),
-    ]
-      .filter((line): line is string => line !== null)
-      .join("\n");
-
-    const waveResult = await getBackend().create(
-      {
-        title: waveTitle,
-        type: "epic",
-        priority: minPriority,
-        labels: [ORCHESTRATION_WAVE_LABEL, buildWaveSlugLabel(waveSlug)],
-        description,
-        parent: parentBeatId,
-      } as CreateBeatInput,
-      repoPath,
-    );
-
-    if (!waveResult.ok || !waveResult.data?.id) {
-      throw new Error(waveResult.error?.message ?? `Failed to create scene ${wave.waveIndex}`);
-    }
-
-    const waveId = waveResult.data.id;
-    createdBeatIds.push(waveId);
-
-    if (previousWaveId) {
-      const depResult = await getBackend().addDependency(previousWaveId, waveId, repoPath);
-      if (!depResult.ok) {
-        throw new Error(depResult.error?.message ?? `Failed to link scenes ${previousWaveId} -> ${waveId}`);
-      }
-    }
-    previousWaveId = waveId;
-
-    for (const spec of wave.beats) {
-      const beatResult = await getBackend().create(
-        {
-          title: spec.title,
-          type: spec.type,
-          priority: spec.priority,
-          description: spec.description,
-          parent: waveId,
-        } as CreateBeatInput,
-        repoPath,
-      );
-
-      if (!beatResult.ok || !beatResult.data?.id) {
-        throw new Error(beatResult.error?.message ?? `Failed to create beat: ${spec.title}`);
-      }
-
-      createdBeatIds.push(beatResult.data.id);
-    }
-  }
-
-  return {
-    createdBeatIds,
-    waveCount: plan.waves.length,
-  };
+  return applyBreakdownPlanImpl(
+    entry.session.plan,
+    entry.session.parentBeatId,
+    repoPath,
+  );
 }

@@ -1,0 +1,381 @@
+/**
+ * Beat mapping and filtering logic for KnotsBackend.  Extracted from
+ * knots-backend.ts to stay within the 500-line file limit.
+ */
+
+import type { BeatListFilters } from "@/lib/backend-port";
+import { includeActiveAncestors } from "@/lib/active-ancestor-filter";
+import type {
+  Beat,
+  Invariant,
+  MemoryWorkflowDescriptor,
+} from "@/lib/types";
+import type { KnotEdge, KnotRecord } from "@/lib/knots";
+import {
+  deriveWorkflowRuntimeState,
+  normalizeStateForWorkflow,
+  resolveStep,
+  StepPhase,
+} from "@/lib/workflows";
+
+import {
+  normalizePriority,
+  normalizeInvariants,
+  extractAcceptanceFromNotes,
+  stringifyNotes,
+  knotStepEntries,
+  deriveParentId,
+  normalizeProfileId,
+  collectAliases,
+} from "@/lib/backends/knots-backend-helpers";
+
+// ── toBeat ──────────────────────────────────────────────────────────
+
+export function toBeat(
+  knot: KnotRecord,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
+  workflowsById: Map<string, MemoryWorkflowDescriptor>,
+): Beat {
+  const fallback = workflowsById.values().next()
+    .value as MemoryWorkflowDescriptor | undefined;
+  const profileId =
+    normalizeProfileId(knot.profile_id ?? knot.workflow_id) ??
+    fallback?.id ??
+    "autopilot";
+  const workflow = workflowsById.get(profileId) ?? fallback;
+  const stepEntries = knotStepEntries(knot);
+  const invariants = normalizeInvariants(knot.invariants);
+  const aliases = collectAliases(knot);
+
+  const nativeAcceptance =
+    typeof knot.acceptance === "string"
+      ? knot.acceptance.trim() || undefined
+      : undefined;
+  const acceptance =
+    nativeAcceptance ?? extractAcceptanceFromNotes(knot.notes);
+
+  if (!workflow) {
+    return toBeatWithoutWorkflow(
+      knot,
+      edges,
+      knownIds,
+      aliasToId,
+      profileId,
+      stepEntries,
+      invariants,
+      aliases,
+      acceptance,
+    );
+  }
+
+  return toBeatWithWorkflow(
+    knot,
+    edges,
+    knownIds,
+    aliasToId,
+    workflow,
+    stepEntries,
+    invariants,
+    aliases,
+    acceptance,
+  );
+}
+
+function toBeatWithoutWorkflow(
+  knot: KnotRecord,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
+  profileId: string,
+  stepEntries: Array<Record<string, unknown>>,
+  invariants: Invariant[],
+  aliases: string[],
+  acceptance: string | undefined,
+): Beat {
+  const tags = (knot.tags ?? []).filter(
+    (tag) => typeof tag === "string" && tag.trim().length > 0
+  );
+  return {
+    id: knot.id,
+    title: knot.title,
+    description:
+      typeof knot.description === "string"
+        ? knot.description
+        : knot.body ?? undefined,
+    type: knot.type ?? "work",
+    state: knot.state,
+    workflowId: profileId,
+    workflowMode: "granular_autonomous",
+    profileId,
+    nextActionOwnerKind: "none",
+    requiresHumanAction: false,
+    isAgentClaimable: false,
+    priority: normalizePriority(knot.priority),
+    labels: tags,
+    aliases: aliases.length > 0 ? aliases : undefined,
+    notes: stringifyNotes(knot.notes),
+    acceptance,
+    parent: deriveParentId(
+      knot.id,
+      aliases[0] ?? null,
+      edges,
+      knownIds,
+      aliasToId,
+    ),
+    created: knot.created_at ?? knot.updated_at,
+    updated: knot.updated_at,
+    invariants: invariants.length > 0 ? invariants : undefined,
+    metadata: {
+      knotsProfileId: profileId,
+      knotsSteps: stepEntries,
+    },
+  };
+}
+
+function toBeatWithWorkflow(
+  knot: KnotRecord,
+  edges: KnotEdge[],
+  knownIds: ReadonlySet<string>,
+  aliasToId: ReadonlyMap<string, string>,
+  workflow: MemoryWorkflowDescriptor,
+  stepEntries: Array<Record<string, unknown>>,
+  invariants: Invariant[],
+  aliases: string[],
+  acceptance: string | undefined,
+): Beat {
+  const tags = (knot.tags ?? []).filter(
+    (tag) => typeof tag === "string" && tag.trim().length > 0
+  );
+  const rawWorkflowState = normalizeStateForWorkflow(
+    knot.state,
+    workflow,
+  );
+  const runtime = deriveWorkflowRuntimeState(
+    workflow,
+    rawWorkflowState,
+  );
+  const notes = stringifyNotes(knot.notes);
+  return {
+    id: knot.id,
+    title: knot.title,
+    description:
+      typeof knot.description === "string"
+        ? knot.description
+        : typeof knot.body === "string"
+          ? knot.body
+          : undefined,
+    type: knot.type ?? "work",
+    state: runtime.state,
+    workflowId: workflow.id,
+    workflowMode: workflow.mode,
+    profileId: workflow.id,
+    nextActionState: runtime.nextActionState,
+    nextActionOwnerKind: runtime.nextActionOwnerKind,
+    requiresHumanAction: runtime.requiresHumanAction,
+    isAgentClaimable: runtime.isAgentClaimable,
+    priority: normalizePriority(knot.priority),
+    labels: tags,
+    aliases: aliases.length > 0 ? aliases : undefined,
+    notes,
+    acceptance,
+    parent: deriveParentId(
+      knot.id,
+      aliases[0] ?? null,
+      edges,
+      knownIds,
+      aliasToId,
+    ),
+    created: knot.created_at ?? knot.updated_at,
+    updated: knot.updated_at,
+    closed: workflow.terminalStates.includes(runtime.state)
+      ? knot.updated_at
+      : undefined,
+    invariants: invariants.length > 0 ? invariants : undefined,
+    metadata: {
+      knotsProfileId: workflow.id,
+      knotsState: knot.state,
+      knotsProfileEtag: knot.profile_etag,
+      knotsWorkflowEtag: knot.workflow_etag,
+      knotsHandoffCapsules: knot.handoff_capsules ?? [],
+      knotsNotes: knot.notes ?? [],
+      knotsSteps: stepEntries,
+    },
+  };
+}
+
+// ── Filtering ───────────────────────────────────────────────────────
+
+export function applyFilters(
+  beats: Beat[],
+  filters?: BeatListFilters,
+): Beat[] {
+  if (!filters) return beats;
+
+  const isQueuedPhaseFilter = filters.state === "queued";
+  const isActivePhaseFilter = filters.state === "in_action";
+  const hidesLeaseType =
+    filters.state === "queued" ||
+    (typeof filters.state === "string" &&
+      resolveStep(filters.state)?.phase === StepPhase.Queued);
+  const visibleBeats = hidesLeaseType
+    ? beats.filter((beat) => beat.type !== "lease")
+    : beats;
+
+  const filtered = visibleBeats.filter((b) => {
+    if (
+      filters.workflowId &&
+      b.workflowId !== filters.workflowId
+    )
+      return false;
+    if (filters.state) {
+      if (filters.state === "queued") {
+        if (
+          resolveStep(b.state)?.phase !== StepPhase.Queued
+        )
+          return false;
+      } else if (filters.state === "in_action") {
+        if (
+          resolveStep(b.state)?.phase !== StepPhase.Active
+        )
+          return false;
+      } else {
+        if (b.state !== filters.state) return false;
+      }
+    }
+    if (
+      filters.profileId &&
+      b.profileId !== filters.profileId
+    )
+      return false;
+    if (
+      filters.requiresHumanAction !== undefined &&
+      (b.requiresHumanAction ?? false) !==
+        filters.requiresHumanAction
+    ) {
+      return false;
+    }
+    if (
+      filters.nextOwnerKind &&
+      b.nextActionOwnerKind !== filters.nextOwnerKind
+    )
+      return false;
+    if (filters.type && b.type !== filters.type) return false;
+    if (
+      filters.priority !== undefined &&
+      b.priority !== filters.priority
+    )
+      return false;
+    if (filters.assignee && b.assignee !== filters.assignee)
+      return false;
+    if (filters.label && !b.labels.includes(filters.label))
+      return false;
+    if (filters.owner && b.owner !== filters.owner) return false;
+    if (filters.parent && b.parent !== filters.parent) return false;
+    return true;
+  });
+
+  if (isQueuedPhaseFilter) {
+    const withDescendants = includeDescendantsOfQueueParents(
+      visibleBeats,
+      filtered,
+    );
+    return includeActiveAncestors(visibleBeats, withDescendants);
+  }
+  if (isActivePhaseFilter) {
+    return includeActiveAncestors(visibleBeats, filtered);
+  }
+
+  return filtered;
+}
+
+function includeDescendantsOfQueueParents(
+  allBeats: Beat[],
+  filtered: Beat[],
+): Beat[] {
+  const filteredIds = new Set(filtered.map((b) => b.id));
+  const byId = new Map(allBeats.map((b) => [b.id, b]));
+
+  const queueParentIds = new Set<string>();
+  for (const b of allBeats) {
+    if (resolveStep(b.state)?.phase === StepPhase.Queued) {
+      queueParentIds.add(b.id);
+    }
+  }
+  if (queueParentIds.size === 0) return filtered;
+
+  const ancestorCache = new Map<string, boolean>();
+  function hasQueueAncestor(id: string): boolean {
+    if (ancestorCache.has(id)) return ancestorCache.get(id)!;
+    const beat = byId.get(id);
+    if (!beat?.parent) {
+      ancestorCache.set(id, false);
+      return false;
+    }
+    if (queueParentIds.has(beat.parent)) {
+      ancestorCache.set(id, true);
+      return true;
+    }
+    const result = hasQueueAncestor(beat.parent);
+    ancestorCache.set(id, result);
+    return result;
+  }
+
+  const extras: Beat[] = [];
+  for (const b of allBeats) {
+    if (filteredIds.has(b.id)) continue;
+    if (hasQueueAncestor(b.id)) extras.push(b);
+  }
+
+  return extras.length > 0 ? [...filtered, ...extras] : filtered;
+}
+
+export function matchExpression(
+  beat: Beat,
+  expression: string,
+): boolean {
+  const terms = expression.split(/\s+/).filter(Boolean);
+  return terms.every((term) => {
+    const [field, value] = term.split(":");
+    if (!field || !value) return true;
+    switch (field) {
+      case "status":
+      case "workflowstate":
+      case "state":
+        return beat.state === value;
+      case "workflow":
+      case "workflowid":
+        return beat.workflowId === value;
+      case "profile":
+      case "profileid":
+        return beat.profileId === value;
+      case "nextowner":
+      case "nextownerkind":
+        return beat.nextActionOwnerKind === value;
+      case "human":
+      case "requireshumanaction":
+        return String(Boolean(beat.requiresHumanAction)) === value;
+      case "type":
+        return beat.type === value;
+      case "priority":
+        return String(beat.priority) === value;
+      case "assignee":
+        return beat.assignee === value;
+      case "label":
+        return beat.labels.includes(value);
+      case "owner":
+        return beat.owner === value;
+      case "parent":
+        return beat.parent === value;
+      case "id":
+        return beat.id === value;
+      default:
+        return true;
+    }
+  });
+}
+
+export function memoryManagerKey(repoPath?: string): string {
+  return repoPath ?? process.cwd();
+}
