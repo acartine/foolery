@@ -42,18 +42,43 @@ interface CreateBeatDialogProps {
   repo?: string | null;
 }
 
-export function CreateBeatDialog({
-  open,
-  onOpenChange,
-  onCreated,
-  repo,
-}: CreateBeatDialogProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [formKey, setFormKey] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const submittingRef = useRef(false);
-  const queryClient = useQueryClient();
+function resolveDefaultProfileId(
+  workflows: MemoryWorkflowDescriptor[],
+  settingsProfileId: string | undefined,
+): string | undefined {
+  const normalized = settingsProfileId
+    ? profileDisplayName(settingsProfileId).trim().toLowerCase()
+    : undefined;
+  return (
+    (normalized
+      ? workflows.find(
+          (w) =>
+            profileDisplayName(w.profileId ?? w.id)
+              .trim()
+              .toLowerCase() === normalized,
+        )?.id
+      : undefined) ??
+    workflows.find((w) => w.id === "autopilot")?.id ??
+    workflows[0]?.id
+  );
+}
+
+function buildToastAction(
+  beatId: string | undefined,
+  navigateToBeat: (id: string) => void,
+) {
+  if (!beatId) return undefined;
+  const shortId = stripBeatPrefix(beatId);
+  return {
+    label: shortId || beatId,
+    onClick: () => navigateToBeat(beatId),
+  };
+}
+
+function useCreateBeatQueries(
+  open: boolean,
+  repo: string | null | undefined,
+) {
   const { data: workflowResult } = useQuery({
     queryKey: ["workflows", repo ?? "__default__"],
     queryFn: () => fetchWorkflows(repo ?? undefined),
@@ -65,69 +90,56 @@ export function CreateBeatDialog({
     enabled: open,
   });
   const workflows: MemoryWorkflowDescriptor[] =
-    workflowResult?.ok && workflowResult.data ? workflowResult.data : [];
+    workflowResult?.ok && workflowResult.data
+      ? workflowResult.data
+      : [];
   const settingsProfileId = settingsResult?.ok
     ? settingsResult.data?.defaults?.profileId
     : undefined;
-  const normalizedSettingsProfileName = settingsProfileId
-    ? profileDisplayName(settingsProfileId).trim().toLowerCase()
-    : undefined;
-  const defaultProfileId =
-    (normalizedSettingsProfileName
-      ? workflows.find(
-          (w) =>
-            profileDisplayName(w.profileId ?? w.id).trim().toLowerCase() ===
-            normalizedSettingsProfileName,
-        )?.id
-      : undefined) ??
-    workflows.find((workflow) => workflow.id === "autopilot")?.id ??
-    workflows[0]?.id;
+  const defaultProfileId = resolveDefaultProfileId(
+    workflows,
+    settingsProfileId,
+  );
   const isKnotsBackend = workflows.some(
     (w) => w.id === "autopilot" || w.id === "semiauto",
   );
+  return { workflows, defaultProfileId, isKnotsBackend };
+}
 
-  function withSelectedProfile(input: CreateBeatInput): CreateBeatInput {
-    const selected = input.profileId ?? input.workflowId ?? defaultProfileId;
-    if (!selected) return input;
-    return {
-      ...input,
-      profileId: selected,
-      workflowId: undefined,
-    };
-  }
+function useSubmitBeat(
+  repo: string | null | undefined,
+  defaultProfileId: string | undefined,
+) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
-  async function handleSubmit(
+  async function submitBeat(
     data: CreateBeatInput,
-    deps?: RelationshipDeps,
+    deps: RelationshipDeps | undefined,
+    onSuccess: (beatId: string | undefined) => void,
   ) {
     if (submittingRef.current) return;
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const payload = withSelectedProfile(data);
-
-      const result = await createBeat(payload, repo ?? undefined);
+      const selected =
+        data.profileId ?? data.workflowId ?? defaultProfileId;
+      const payload: CreateBeatInput = selected
+        ? { ...data, profileId: selected, workflowId: undefined }
+        : data;
+      const result = await createBeat(
+        payload,
+        repo ?? undefined,
+      );
       if (result.ok) {
         if (deps && result.data?.id) {
-          await addDepsForBeat(result.data.id, deps, repo ?? undefined);
+          await addDepsForBeat(
+            result.data.id,
+            deps,
+            repo ?? undefined,
+          );
         }
-        const createdId = result.data?.id;
-        const shortId = createdId ? stripBeatPrefix(createdId) : "";
-        toast.success(createdId ? `Created beat ${createdId}` : `Created ${shortId}`, {
-          action: createdId
-            ? {
-                label: shortId || createdId,
-                onClick: () => {
-                  router.push(
-                    buildBeatFocusHref(createdId, searchParams.toString(), {
-                      detailRepo: repo,
-                    }),
-                  );
-                },
-              }
-            : undefined,
-        });
-        onCreated();
+        onSuccess(result.data?.id);
       } else {
         toast.error(result.error ?? "Failed to create");
       }
@@ -137,56 +149,70 @@ export function CreateBeatDialog({
     }
   }
 
-  async function handleCreateMore(
+  return { isSubmitting, submitBeat };
+}
+
+export function CreateBeatDialog({
+  open,
+  onOpenChange,
+  onCreated,
+  repo,
+}: CreateBeatDialogProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [formKey, setFormKey] = useState(0);
+  const queryClient = useQueryClient();
+  const { workflows, defaultProfileId, isKnotsBackend } =
+    useCreateBeatQueries(open, repo);
+  const { isSubmitting, submitBeat } =
+    useSubmitBeat(repo, defaultProfileId);
+
+  function navigateToBeat(beatId: string) {
+    router.push(
+      buildBeatFocusHref(beatId, searchParams.toString(), {
+        detailRepo: repo,
+      }),
+    );
+  }
+
+  function handleSubmit(
     data: CreateBeatInput,
     deps?: RelationshipDeps,
   ) {
-    if (submittingRef.current) return;
-    submittingRef.current = true;
-    setIsSubmitting(true);
-    try {
-      const payload = withSelectedProfile(data);
+    return submitBeat(data, deps, (beatId) => {
+      const short = beatId ? stripBeatPrefix(beatId) : "";
+      const msg = beatId
+        ? `Created beat ${beatId}`
+        : `Created ${short}`;
+      toast.success(msg, {
+        action: buildToastAction(beatId, navigateToBeat),
+      });
+      onCreated();
+    });
+  }
 
-      const result = await createBeat(payload, repo ?? undefined);
-      if (result.ok) {
-        if (deps && result.data?.id) {
-          await addDepsForBeat(result.data.id, deps, repo ?? undefined);
-        }
-        const createdId2 = result.data?.id;
-        const shortId2 = createdId2 ? stripBeatPrefix(createdId2) : "";
-        toast.success(
-          createdId2
-            ? `Created beat ${createdId2} — ready for another`
-            : `Created ${shortId2} — ready for another`,
-          {
-          action: createdId2
-            ? {
-                label: shortId2 || createdId2,
-                onClick: () => {
-                  router.push(
-                    buildBeatFocusHref(createdId2, searchParams.toString(), {
-                      detailRepo: repo,
-                    }),
-                  );
-                },
-              }
-            : undefined,
-          },
-        );
-        setFormKey((k) => k + 1);
-        queryClient.invalidateQueries({ queryKey: ["beats"] });
-      } else {
-        toast.error(result.error ?? "Failed to create");
-      }
-    } finally {
-      submittingRef.current = false;
-      setIsSubmitting(false);
-    }
+  function handleCreateMore(
+    data: CreateBeatInput,
+    deps?: RelationshipDeps,
+  ) {
+    return submitBeat(data, deps, (beatId) => {
+      const short = beatId ? stripBeatPrefix(beatId) : "";
+      const msg = beatId
+        ? `Created beat ${beatId} — ready for another`
+        : `Created ${short} — ready for another`;
+      toast.success(msg, {
+        action: buildToastAction(beatId, navigateToBeat),
+      });
+      setFormKey((k) => k + 1);
+      queryClient.invalidateQueries({ queryKey: ["beats"] });
+    });
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-lg max-h-[90vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle>Create New</DialogTitle>
           <DialogDescription>
