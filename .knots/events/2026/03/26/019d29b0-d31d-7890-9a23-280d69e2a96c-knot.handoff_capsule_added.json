@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29b0-d31d-7890-9a23-280d69e2a96c",
+  "occurred_at": "2026-03-26T10:29:07.485396Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review APPROVED. All 22 target lib files have zero max-lines, max-lines-per-function, and max-len ESLint warnings. Quality gates verified: lint clean on all target files, tsc clean, 2239 tests pass, build succeeds. No behavior changes detected.",
+    "datetime": "2026-03-26T10:29:07.485396Z",
+    "entry_id": "019d29b0-d31d-7890-9a23-27fb7e2049e8",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
