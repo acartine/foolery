@@ -141,7 +141,7 @@ export function ActionButton(props: {
       <Button
         size="lg"
         variant="outline"
-        className="gap-1.5 px-2.5"
+        className="h-8 gap-1.5 px-2.5"
         title="Escalations queue"
       >
         <UserRoundCheck className="size-4" />
@@ -159,7 +159,7 @@ export function ActionButton(props: {
           <Button
             size="lg"
             variant="success"
-            className="gap-1.5 px-2.5"
+            className="h-8 gap-1.5 px-2.5"
             title="Choose repository to create beat (Shift+N)"
           >
             <Plus className="size-4" />
@@ -183,7 +183,7 @@ export function ActionButton(props: {
     <Button
       size="lg"
       variant="success"
-      className="gap-1.5 px-2.5"
+      className="h-8 gap-1.5 px-2.5"
       title="Create new beat (Shift+N)"
       onClick={openFlow}
     >
@@ -355,7 +355,7 @@ export function ViewSwitcher(props: {
             <Button
               size="lg"
               variant="success"
-              className="gap-1.5 px-2.5"
+              className="h-8 gap-1.5 px-2.5"
               tabIndex={-1}
             >
               <PartyPopper className="size-4" />
