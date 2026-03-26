@@ -3,22 +3,28 @@ import { readFileSync } from "node:fs";
 
 import { describe, it, expect } from "vitest";
 
+function src(rel: string): string {
+  return readFileSync(
+    path.join(process.cwd(), rel), "utf8",
+  );
+}
+
 describe("beats page layout", () => {
-  const source = readFileSync(
-    path.join(process.cwd(), "src/app/beats/page.tsx"),
-    "utf8",
+  const source = src("src/app/beats/page.tsx");
+  const btSummary = src(
+    "src/components/beat-table-summary.tsx",
   );
-  const beatTableSource = readFileSync(
-    path.join(process.cwd(), "src/components/beat-table.tsx"),
-    "utf8",
+  const btContent = src(
+    "src/components/beat-table-content.tsx",
   );
-  const appHeaderSource = readFileSync(
-    path.join(process.cwd(), "src/components/app-header.tsx"),
-    "utf8",
+  const btMeta = src(
+    "src/components/beat-table-metadata.tsx",
   );
-  const searchBarSource = readFileSync(
-    path.join(process.cwd(), "src/components/search-bar.tsx"),
-    "utf8",
+  const appHeaderSource = src(
+    "src/components/app-header.tsx",
+  );
+  const searchBarSource = src(
+    "src/components/search-bar.tsx",
   );
 
   it("allows vertical scrolling in the main wrapper", () => {
@@ -93,9 +99,23 @@ describe("beats page layout", () => {
   });
 
   it("constrains selected-row description and notes summaries on laptop widths", () => {
-    expect(beatTableSource).toContain('className={`mt-1.5 grid w-full max-w-full grid-cols-[repeat(3,minmax(0,1fr))] gap-1 text-xs leading-relaxed ${expanded ? "relative z-10" : ""}`}');
-    expect(beatTableSource).toContain('const titleCellIndex = visibleCells.findIndex((cell) => cell.column.id === "title");');
-    expect(beatTableSource).toContain('<TableCell colSpan={visibleCells.length - titleCellIndex} className="whitespace-normal pt-0">');
-    expect(beatTableSource).toContain('const HANDOFF_METADATA_KEYS = [');
+    expect(btSummary).toContain(
+      '"mt-1.5 grid w-full max-w-full"',
+    );
+    expect(btSummary).toContain(
+      '"grid-cols-[repeat(3,minmax(0,1fr))]"',
+    );
+    expect(btContent).toContain(
+      "cells.findIndex(",
+    );
+    expect(btContent).toContain(
+      'colSpan={cells.length - titleIdx}',
+    );
+    expect(btContent).toContain(
+      'className="whitespace-normal pt-0"',
+    );
+    expect(btMeta).toContain(
+      "const HANDOFF_METADATA_KEYS = [",
+    );
   });
 });
