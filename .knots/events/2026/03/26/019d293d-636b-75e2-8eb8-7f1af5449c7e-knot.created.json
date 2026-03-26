@@ -1,0 +1,17 @@
+{
+  "event_id": "019d293d-636b-75e2-8eb8-7f1af5449c7e",
+  "occurred_at": "2026-03-26T08:23:02.251268Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix max-lines, max-lines-per-function, and max-len ESLint warnings in dialog and settings components. Extract sub-components or helpers. Files: beat-form.tsx, beat-detail.tsx, beat-metadata-details.tsx, create-beat-dialog.tsx, merge-beats-dialog.tsx, move-to-project-dialog.tsx, notes-dialog.tsx, retake-dialog.tsx, settings-agents-section.tsx, settings-defaults-section.tsx, settings-dispatch-section.tsx, settings-dispatch-global-swap.tsx, settings-pools-section.tsx, settings-sheet.tsx",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Fix code style: components/dialogs-and-settings",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

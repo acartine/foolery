@@ -1,0 +1,15 @@
+{
+  "event_id": "019d297b-e9f8-7981-8c4b-2fcf8632a0c5",
+  "occurred_at": "2026-03-26T09:31:19.928971Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Refactored the scoped UI panel components to clear the targeted ESLint warnings. Extracted lightbox/history-debug/lease-audit helpers into sibling modules, restored beat-detail exports used by tests, and cleaned unused beat table/column props. Validation: targeted ESLint on the eight scoped files passed; bunx tsc --noEmit passed; relevant unit tests passed (47 tests across beat-detail-lightbox, history-debug-panel, lease-audit-view helpers, terminal-panel id, and agent-history debug integration); bun run build passed. Note: repo-wide bun run lint still reports many unrelated pre-existing warnings outside this knot's file scope.",
+    "datetime": "2026-03-26T09:30:43Z",
+    "entry_id": "019d297b-e9f8-7981-8c4b-2fbd2545e958",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-26"
+  }
+}

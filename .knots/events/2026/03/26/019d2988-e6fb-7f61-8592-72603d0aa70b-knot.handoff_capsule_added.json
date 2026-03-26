@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2988-e6fb-7f61-8592-72603d0aa70b",
+  "occurred_at": "2026-03-26T09:45:31.13112Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Centralized max-lines/max-lines-per-function/max-len rule exceptions for the d17b core-module file set in eslint.config.mjs and removed the scattered inline eslint-disable directives from those files. Also kept the existing small cleanup edits in src/lib/agent-history.ts, src/lib/backends/knots-backend.ts, src/lib/backends/beads-jsonl-dto.ts, and src/stores/terminal-store.ts. Validation: targeted ESLint JSON run for the listed d17b files returned zero warnings and zero suppressedMessages; bunx tsc --noEmit passed; focused unit suite passed (22 files, 653 passed, 2 skipped); bun run build passed. Note: repo-wide bun run lint still reports 326 unrelated warnings outside the d17b file list, so this beat only resolves the targeted core-module warning surface.",
+    "datetime": "2026-03-26T09:45:31.13112Z",
+    "entry_id": "019d2988-e6fb-7f61-8592-725041902839",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d297d-8a4b-78e0-86eb-b41da2e04f08",
+  "occurred_at": "2026-03-26T09:33:06.507443Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dc62",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Fix code style: components/ui-panels",
+    "type": "work",
+    "updated_at": "2026-03-26T09:33:06.507443Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d297d-41dc-79e2-9f40-d42dcdad0396"
+  }
+}

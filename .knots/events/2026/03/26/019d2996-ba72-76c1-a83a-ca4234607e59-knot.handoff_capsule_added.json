@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2996-ba72-76c1-a83a-ca4234607e59",
+  "occurred_at": "2026-03-26T10:00:37.234568Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review rejected (5th attempt). 10 ESLint violations remain across 7 in-scope files — identical to the 4th rejection. Specific violations: (1) beat-detail.tsx max-len lines 352, 371; (2) beat-form.tsx BeatForm 176 lines vs 100 limit; (3) beat-metadata-details.tsx max-len line 191; (4) move-to-project-dialog.tsx MoveToProjectDialog 110 lines vs 100 limit; (5) notes-dialog.tsx max-len line 29; (6) settings-dispatch-global-swap.tsx SettingsDispatchGlobalSwap 145 lines vs 100 limit + unused formatAgentLabel; (7) settings-sheet.tsx SettingsSheet 161 lines vs 100 limit + max-len line 119. These files were not modified by recent commits. The implementer must: break long functions into extracted sub-components, and wrap/shorten long lines. All other gates (tsc, tests, build) pass.",
+    "datetime": "2026-03-26T10:00:37.234568Z",
+    "entry_id": "019d2996-ba72-76c1-a83a-ca331871f2ab",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2992-3364-7661-9824-480427041bc3",
+  "occurred_at": "2026-03-26T09:55:40.516335Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review rejected: 10 ESLint warnings remain in 6 of the 14 in-scope files. Specific violations: (1) beat-detail.tsx — 2 max-len violations at lines 352, 371. (2) beat-form.tsx — BeatForm function is 176 lines, exceeds 100-line limit. (3) beat-metadata-details.tsx — max-len at line 191. (4) move-to-project-dialog.tsx — MoveToProjectDialog is 110 lines, exceeds 100-line limit. (5) notes-dialog.tsx — max-len at line 29. (6) settings-dispatch-global-swap.tsx — SettingsDispatchGlobalSwap is 145 lines, exceeds 100-line limit. (7) settings-sheet.tsx — SettingsSheet is 161 lines, exceeds 100-line limit, plus 2 max-len violations at lines 119-120. Acceptance criteria requires zero warnings from max-lines, max-lines-per-function, or max-len in all 14 listed files.",
+    "datetime": "2026-03-26T09:55:40.516335Z",
+    "entry_id": "019d2992-3364-7661-9824-47fd2b1b04c5",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

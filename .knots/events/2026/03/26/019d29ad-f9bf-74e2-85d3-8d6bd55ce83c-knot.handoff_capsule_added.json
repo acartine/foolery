@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29ad-f9bf-74e2-85d3-8d6bd55ce83c",
+  "occurred_at": "2026-03-26T10:26:00.767894Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete. All 22 target lib files refactored: zero max-lines, max-lines-per-function, and max-len ESLint warnings. Files split into ~50 smaller modules with re-exports preserving API compatibility. terminal-manager.ts (1717 lines) split into 12 files, doctor.ts (1129 lines) into 4, orchestration-manager.ts (1042 lines) into 6, knots-backend.ts (1157 lines) into 6, settings.ts (953 lines) into 5, bd.ts (853 lines) into 4, workflows.ts (761 lines) into 3. All quality gates pass: lint clean, tsc clean, 2239 tests pass, build succeeds. Merged to main and pushed.",
+    "datetime": "2026-03-26T10:26:00.767894Z",
+    "entry_id": "019d29ad-f9bf-74e2-85d3-8d50649deb52",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

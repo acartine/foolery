@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a7-2263-70e1-9985-2fbebcc44793",
+  "occurred_at": "2026-03-26T10:18:32.419742Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review APPROVED. Verified on main (d8e134fd51ca). Zero ESLint warnings (max-lines, max-lines-per-function, max-len) in all 8 scoped files. TypeScript compiles cleanly. All 2239 tests pass across 165 test files. 11 commits tagged. No regressions detected.",
+    "datetime": "2026-03-26T10:18:32.419742Z",
+    "entry_id": "019d29a7-2263-70e1-9985-2fabf3142d1a",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

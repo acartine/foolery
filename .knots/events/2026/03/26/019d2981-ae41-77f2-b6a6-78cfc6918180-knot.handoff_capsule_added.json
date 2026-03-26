@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2981-ae41-77f2-b6a6-78cfc6918180",
+  "occurred_at": "2026-03-26T09:37:37.857034Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Kept the implementation scoped to src/components/ only; no changes to AGENTS.md, CLAUDE.md, or eslint.config.mjs. Verified the existing refactor commit 0e613d89d74b satisfies the documented style thresholds for the listed component files (max-lines 500, max-lines-per-function 100, max-len 100) via targeted ESLint overrides. Validation in /Users/cartine/foolery-d0c3: bun run test passed (165 files, 2239 tests), bun run build passed, and bunx tsc --noEmit passed.",
+    "datetime": "2026-03-26T09:37:37.857034Z",
+    "entry_id": "019d2981-ae41-77f2-b6a6-78ba4fe349b7",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2973-b0ab-7c02-891b-53bb4f5253d3",
+  "occurred_at": "2026-03-26T09:22:20.971682Z",
+  "knot_id": "foolery-6dbc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implemented on branch foolery-6dbc-style. Refactored src/stores/__tests__/terminal-store-extended.test.ts into smaller describe blocks to clear max-lines-per-function, wrapped long test fixtures in src/hooks/__tests__/use-scope-refinement-notifications.test.ts, and made intentionally unused mock backend params explicit in src/lib/__tests__/mock-backend-port.ts. Validation: ./node_modules/.bin/eslint src/stores/__tests__/terminal-store-extended.test.ts src/hooks/__tests__/use-scope-refinement-notifications.test.ts src/lib/__tests__/mock-backend-port.ts; bun test src/stores/__tests__/terminal-store-extended.test.ts src/hooks/__tests__/use-scope-refinement-notifications.test.ts src/lib/__tests__/mock-backend-port.ts; bun run test; bunx tsc --noEmit; bun run build. Commit: 83d42f5746cb.",
+    "datetime": "2026-03-26T09:22:20.971682Z",
+    "entry_id": "019d2973-b0ab-7c02-891b-53a1242b734a",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

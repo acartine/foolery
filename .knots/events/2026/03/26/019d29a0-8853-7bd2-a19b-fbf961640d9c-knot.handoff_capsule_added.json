@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a0-8853-7bd2-a19b-fbf961640d9c",
+  "occurred_at": "2026-03-26T10:11:19.763853Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All 14 in-scope files have zero max-lines, max-lines-per-function, and max-len ESLint warnings. tsc --noEmit clean. 165 test files / 2239 tests passing. No behavior changes detected.",
+    "datetime": "2026-03-26T10:11:19.763853Z",
+    "entry_id": "019d29a0-8853-7bd2-a19b-fbe39d3b12b8",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

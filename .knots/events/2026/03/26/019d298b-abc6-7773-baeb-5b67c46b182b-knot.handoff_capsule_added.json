@@ -1,0 +1,15 @@
+{
+  "event_id": "019d298b-abc6-7773-baeb-5b67c46b182b",
+  "occurred_at": "2026-03-26T09:48:32.581989Z",
+  "knot_id": "foolery-3246",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved on main at 3439f0cde0f1. Verified HEAD matches origin/main, commit tags resolve for d061ab0190f2, bf1b81bf0ebb, and 3439f0cdaef3, no invariants are defined, scoped lint on the listed files passes with zero max-lines/max-lines-per-function/max-len warnings, and GitHub Actions CI for 3439f0cde0f1 completed successfully on 2026-03-26T09:48:09Z.",
+    "datetime": "2026-03-26T09:48:32.581989Z",
+    "entry_id": "019d298b-abc5-71c1-88a1-d2ad8d558198",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

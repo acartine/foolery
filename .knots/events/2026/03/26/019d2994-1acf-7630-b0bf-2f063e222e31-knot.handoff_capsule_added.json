@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2994-1acf-7630-b0bf-2f063e222e31",
+  "occurred_at": "2026-03-26T09:57:45.295293Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Refactor branch already contained the dialog/settings component extractions for the 14 scoped files. Verified zero max-lines, max-lines-per-function, and max-len warnings in scope with eslint; bunx tsc --noEmit passed; bun run test passed (165 files, 2239 tests); bun run build passed. No behavior changes observed. Repo-wide lint still reports unrelated no-unused-vars warnings outside this beat's scope.",
+    "datetime": "2026-03-26T09:57:38Z",
+    "entry_id": "019d2994-1acf-7630-b0bf-2efec8171649",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

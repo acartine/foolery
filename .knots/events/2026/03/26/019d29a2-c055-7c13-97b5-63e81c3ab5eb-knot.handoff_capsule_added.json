@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a2-c055-7c13-97b5-63e81c3ab5eb",
+  "occurred_at": "2026-03-26T10:13:45.173863Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit f4e5f3c283b2 is on main. Zero max-lines/max-lines-per-function/max-len ESLint violations in all 14 target files. All quality gates pass: tsc clean, 2239 tests passed (165 files), build succeeds. No regressions detected.",
+    "datetime": "2026-03-26T10:13:45.173863Z",
+    "entry_id": "019d29a2-c055-7c13-97b5-63dc427fd03e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d2989-d4d1-71f1-b29c-852bbcac8477",
+  "occurred_at": "2026-03-26T09:46:32.017948Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d17b",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Fix code style: lib/core-modules",
+    "type": "work",
+    "updated_at": "2026-03-26T09:46:32.017948Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d2989-2bfa-7d62-b5a9-96cd6fa40b8f"
+  }
+}

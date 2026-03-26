@@ -1,0 +1,15 @@
+{
+  "event_id": "019d298b-46cb-7971-bd07-b0c3891339d8",
+  "occurred_at": "2026-03-26T09:48:06.731926Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review REJECTED: 99 ESLint warnings remain on main across all 22 target files (57 max-len, 12 max-lines, 16 max-lines-per-function). Branch feat/foolery-d17b-style exists but was never merged to main. That branch also used config-level suppression (turning rules off) rather than actual refactoring (splitting files, extracting functions) as described in the beat. Worst offenders: terminal-manager.ts (13 warnings), bd.ts (11), local-worker.ts (9), agent-adapter.ts (8), settings.ts (8).",
+    "datetime": "2026-03-26T09:48:06.731926Z",
+    "entry_id": "019d298b-46cb-7971-bd07-b0bdde9d34eb",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

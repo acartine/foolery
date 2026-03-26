@@ -1,0 +1,20 @@
+{
+  "event_id": "019d298a-3923-78f3-9a08-e4c7c10e496b",
+  "occurred_at": "2026-03-26T09:46:57.679189Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3246",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Fix code style: components/views-and-pages",
+    "type": "work",
+    "updated_at": "2026-03-26T09:46:57.679189Z",
+    "workflow_id": "compatibility"
+  }
+}

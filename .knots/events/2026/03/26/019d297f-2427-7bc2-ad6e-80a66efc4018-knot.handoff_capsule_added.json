@@ -1,0 +1,15 @@
+{
+  "event_id": "019d297f-2427-7bc2-ad6e-80a66efc4018",
+  "occurred_at": "2026-03-26T09:34:51.431238Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: 3 violations found. (1) Dead code — src/lib/agent-adapter-normalizers.ts is a new file with no importers; must be deleted. (2) Unused import — StateCreator imported but unused in src/stores/terminal-store.ts. (3) Interface drift — BeadsBackend.listWorkflows() dropped its optional _repoPath parameter instead of keeping it for interface conformance. All quality gates pass; no behavior regressions. Sending back for these three fixes.",
+    "datetime": "2026-03-26T09:34:51.431238Z",
+    "entry_id": "019d297f-2427-7bc2-ad6e-8096802f47d2",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

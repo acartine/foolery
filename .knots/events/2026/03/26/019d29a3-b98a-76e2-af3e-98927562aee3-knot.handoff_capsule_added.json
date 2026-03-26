@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a3-b98a-76e2-af3e-98927562aee3",
+  "occurred_at": "2026-03-26T10:14:48.970015Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review APPROVED: All 8 scoped files (agent-history-view 92L, terminal-panel 118L, beat-table 202L, lease-audit-view 317L, interaction-picker 465L, beat-columns 78L, beat-detail-lightbox 411L, history-debug-panel 370L) are under 500-line limit with zero ESLint warnings for max-lines, max-lines-per-function, or max-len. TypeScript compiles with zero errors. All 2239 tests pass across 165 test files. Extracted ~46 sub-component/hook files. Contract tests updated. No behavior changes detected.",
+    "datetime": "2026-03-26T10:14:48.970015Z",
+    "entry_id": "019d29a3-b98a-76e2-af3e-9881eb1b4e5d",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a5-fc5f-7251-b0ee-2759c4b3270a",
+  "occurred_at": "2026-03-26T10:17:17.151518Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged fix/dc62-ui-panel-style into main (d8e134fd51ca). Resolved one merge conflict in beats-page-layout.test.ts (combined feature branch sub-component references with main's added test variables using src() helper). All 2239 tests pass across 165 files. Zero ESLint warnings in all 8 scoped files. TypeScript compiles cleanly. Pushed to origin/main.",
+    "datetime": "2026-03-26T10:17:17.151518Z",
+    "entry_id": "019d29a5-fc5f-7251-b0ee-274a74366165",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

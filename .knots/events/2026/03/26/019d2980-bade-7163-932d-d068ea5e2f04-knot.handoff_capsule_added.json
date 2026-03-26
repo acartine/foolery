@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2980-bade-7163-932d-d068ea5e2f04",
+  "occurred_at": "2026-03-26T09:36:35.550117Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "All 3 review items already resolved on main: (1) agent-adapter-normalizers.ts deleted, (2) StateCreator import removed from terminal-store.ts, (3) listWorkflows has _repoPath param. Zero ESLint max-lines/max-lines-per-function/max-len warnings in listed files. All quality gates pass: lint clean, typecheck clean, 165 test files / 2239 tests passing, build OK.",
+    "datetime": "2026-03-26T09:36:35.550117Z",
+    "entry_id": "019d2980-bade-7163-932d-d05f7ce52509",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

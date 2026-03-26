@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a1-b430-7f82-96d9-3703032b639b",
+  "occurred_at": "2026-03-26T10:12:36.528353Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Resolved all 45 ESLint warnings (max-lines, max-lines-per-function, max-len, no-unused-vars) across 8 UI panel components by extracting sub-components and hooks into ~46 new focused files. All 165 test files pass (2239 tests), zero type errors, zero ESLint warnings in scoped files. Branch: fix/dc62-ui-panel-style, commit: cebce5d52bc7. Contract tests updated to reference new file locations.",
+    "datetime": "2026-03-26T10:12:36.528353Z",
+    "entry_id": "019d29a1-b430-7f82-96d9-36f2a4437c4a",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

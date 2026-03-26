@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2976-87be-7c60-9b82-36c9b014a9d2",
+  "occurred_at": "2026-03-26T09:25:27.102502Z",
+  "knot_id": "foolery-6dbc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Fast-forward merged foolery-6dbc-style branch (commit 83d42f57) to main and pushed to origin. All 2239 tests pass, zero lint errors, zero type errors. The three target files have zero max-lines/max-lines-per-function/max-len warnings.",
+    "datetime": "2026-03-26T09:25:27.102502Z",
+    "entry_id": "019d2976-87be-7c60-9b82-36b9ea490998",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

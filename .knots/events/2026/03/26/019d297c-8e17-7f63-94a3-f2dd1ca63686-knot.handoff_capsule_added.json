@@ -1,0 +1,15 @@
+{
+  "event_id": "019d297c-8e17-7f63-94a3-f2dd1ca63686",
+  "occurred_at": "2026-03-26T09:32:01.943979Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented style-only refactors across the assigned dialog and settings components. Extracted helper components/hooks to clear max-lines, max-lines-per-function, and max-len in the target files, and added settings-agents-section-controls.tsx for the split agents UI. Validation: targeted explicit-rule ESLint on all assigned files passed; bunx tsc --noEmit passed; bun run test passed; bun run build passed. Full bun run lint exits 0 but still reports unrelated repo-wide no-unused-vars warnings outside this beat's scope.",
+    "datetime": "2026-03-26T09:31:39Z",
+    "entry_id": "019d297c-8e17-7f63-94a3-f2c0611b1d23",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "unknown"
+  }
+}

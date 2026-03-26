@@ -1,0 +1,15 @@
+{
+  "event_id": "019d297b-12af-7a23-bf39-a35421bffc16",
+  "occurred_at": "2026-03-26T09:30:24.815743Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the core-module style cleanup on branch feat/foolery-d17b-style. Targeted ESLint for the listed lib modules and src/stores/terminal-store.ts is clean for max-lines, max-lines-per-function, and max-len. Validation run in the worktree: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Commit: 0f0fdf649df0.",
+    "datetime": "2026-03-26T09:29:37Z",
+    "entry_id": "019d297b-12af-7a23-bf39-a34bf5ea676f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

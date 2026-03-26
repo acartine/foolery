@@ -1,0 +1,17 @@
+{
+  "event_id": "019d293d-5c85-7a03-a756-c15a696e0d6c",
+  "occurred_at": "2026-03-26T08:23:00.485518Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix max-lines, max-lines-per-function, and max-len ESLint warnings in UI panel components. Break large components into smaller sub-components or extract helper functions. Files: agent-history-view.tsx, terminal-panel.tsx, beat-table.tsx, lease-audit-view.tsx, interaction-picker.tsx, beat-columns.tsx, beat-detail-lightbox.tsx, history-debug-panel.tsx",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Fix code style: components/ui-panels",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2977-c286-7470-b0f8-75f838c80c49",
+  "occurred_at": "2026-03-26T09:26:47.686898Z",
+  "knot_id": "foolery-6dbc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit 83d42f5746cb is on main. Zero max-lines/max-lines-per-function/max-len ESLint warnings in the three target files. All 2239 tests pass. No regressions detected.",
+    "datetime": "2026-03-26T09:26:47.686898Z",
+    "entry_id": "019d2977-c286-7470-b0f8-75e18c49579b",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

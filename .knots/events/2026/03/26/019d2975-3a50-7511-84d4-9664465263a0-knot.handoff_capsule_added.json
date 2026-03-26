@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2975-3a50-7511-84d4-9664465263a0",
+  "occurred_at": "2026-03-26T09:24:01.744928Z",
+  "knot_id": "foolery-6dbc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All 3 files pass ESLint with zero max-lines/max-lines-per-function/max-len warnings. All 43 tests pass. Changes are formatting-only and well-scoped: long lines wrapped, large describe block split into 4 smaller blocks with shared resetTerminalStore(), _-prefixed params replaced with ignoreUnused() helper. No logic or behavioral changes.",
+    "datetime": "2026-03-26T09:24:01.744928Z",
+    "entry_id": "019d2975-3a50-7511-84d4-9650676d0d4d",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

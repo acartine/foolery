@@ -1,0 +1,23 @@
+{
+  "event_id": "019d2987-034d-72b2-9468-347bb329e41c",
+  "occurred_at": "2026-03-26T09:43:27.309139Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3246",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Fix code style: components/views-and-pages",
+    "type": "work",
+    "updated_at": "2026-03-26T09:43:27.309139Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d2986-cfae-71a1-819f-ca1a969fc72c"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d297c-b791-7800-a852-85980d5c3084",
+  "occurred_at": "2026-03-26T09:32:12.561418Z",
+  "knot_id": "foolery-743b",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "lease_ready",
+    "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+    "type": "lease",
+    "workflow_id": "compatibility"
+  }
+}

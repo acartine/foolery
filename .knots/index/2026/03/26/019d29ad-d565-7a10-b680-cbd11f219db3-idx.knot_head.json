@@ -1,0 +1,20 @@
+{
+  "event_id": "019d29ad-d565-7a10-b680-cbd11f219db3",
+  "occurred_at": "2026-03-26T10:25:51.449921Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d17b",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Fix code style: lib/core-modules",
+    "type": "work",
+    "updated_at": "2026-03-26T10:25:51.449921Z",
+    "workflow_id": "compatibility"
+  }
+}

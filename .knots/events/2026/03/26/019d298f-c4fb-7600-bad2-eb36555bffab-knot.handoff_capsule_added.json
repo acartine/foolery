@@ -1,0 +1,15 @@
+{
+  "event_id": "019d298f-c4fb-7600-bad2-eb36555bffab",
+  "occurred_at": "2026-03-26T09:53:01.179351Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete. Fixed all max-lines, max-lines-per-function, and max-len ESLint warnings across 14 dialog/settings component files. Extracted sub-components: StateDropdown (beat-detail), prepareMetadata helper (beat-metadata-details), BeatOption (merge-beats), useMoveBeat/MoveDialogBody (move-to-project), DispatchModeSelector/MaxClaimsInput (dispatch-section), SwapControlsPanel/AgentSelectItems (dispatch-global-swap), StepPoolEditor sub-components (pools-section), SettingsTabPanels/SettingsTabBar/SettingsFooter (settings-sheet), DefaultProfileSection/ScopeRefinementSection/ResetAuditSection (defaults-section), settings-agents split into 4 files (section/scanned/forms/hooks), useBeatForm/ProfileSelectField/BeatFormActions (beat-form), useCreateBeatQueries/useSubmitBeat (create-beat-dialog). All quality gates pass: lint clean, typecheck clean, 2239 tests passing, build succeeds. 9 commits pushed to origin/main.",
+    "datetime": "2026-03-26T09:53:01.179351Z",
+    "entry_id": "019d298f-c4fb-7600-bad2-eb2520378c54",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

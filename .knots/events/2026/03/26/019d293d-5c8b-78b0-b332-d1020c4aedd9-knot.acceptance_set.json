@@ -1,0 +1,9 @@
+{
+  "event_id": "019d293d-5c8b-78b0-b332-d1020c4aedd9",
+  "occurred_at": "2026-03-26T08:23:00.485518Z",
+  "knot_id": "foolery-dc62",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Zero ESLint warnings from max-lines, max-lines-per-function, or max-len in the listed files. All tests pass. No behavior changes."
+  }
+}

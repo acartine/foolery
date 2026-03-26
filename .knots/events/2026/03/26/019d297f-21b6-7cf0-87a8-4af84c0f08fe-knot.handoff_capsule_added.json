@@ -1,0 +1,15 @@
+{
+  "event_id": "019d297f-21b6-7cf0-87a8-4af84c0f08fe",
+  "occurred_at": "2026-03-26T09:34:50.805998Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review REJECTED. Violations: (1) ESLint rules for max-lines, max-lines-per-function, and max-len were deleted from eslint.config.mjs — the beat requires fixing warnings, not removing the rules that produce them. (2) Code Style Constraints documentation removed from CLAUDE.md and AGENTS.md — out of scope. (3) Unrelated removal of .claude/worktrees/** ignore pattern in eslint.config.mjs. The component refactoring in src/components/ appears correct and well-done. Only the config/doc changes need to be reverted.",
+    "datetime": "2026-03-26T09:34:50.805998Z",
+    "entry_id": "019d297f-21b6-7cf0-87a8-4aeb4bbfacbb",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

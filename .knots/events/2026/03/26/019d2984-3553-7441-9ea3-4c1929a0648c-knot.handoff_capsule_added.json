@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2984-3553-7441-9ea3-4c1929a0648c",
+  "occurred_at": "2026-03-26T09:40:23.507504Z",
+  "knot_id": "foolery-3246",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Added max-lines (500), max-lines-per-function (100), max-len (100) ESLint rules to eslint.config.mjs. Refactored 9 view/page components to comply by extracting sub-components and hooks. 30 files changed (13 new extraction files, 9 modified source files, 8 updated tests). All quality gates pass: zero ESLint warnings on target files, typecheck clean, 2239 tests passing, build successful. Branch: worktree-fix+code-style-views-pages, commit: d061ab0190f2.",
+    "datetime": "2026-03-26T09:40:23.507504Z",
+    "entry_id": "019d2984-3553-7441-9ea3-4c09be8f1ec6",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

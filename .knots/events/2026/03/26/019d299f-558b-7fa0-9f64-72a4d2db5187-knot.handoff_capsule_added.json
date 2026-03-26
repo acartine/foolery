@@ -1,0 +1,15 @@
+{
+  "event_id": "019d299f-558b-7fa0-9f64-72a4d2db5187",
+  "occurred_at": "2026-03-26T10:10:01.227609Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on main. All 7 in-scope files now have zero max-lines, max-lines-per-function, and max-len ESLint warnings. Extracted sub-components: StateDropdown, PriorityDropdown (beat-detail), ProfileSelectField, TypePriorityRow, RelationshipSection, BeatFormActions, LabelsField, AcceptanceField (beat-form), prepareMetadata, DescriptionBlock, MetadataSection (beat-metadata-details), useMoveBeat, MoveDialogBody, isTerminalBeat (move-to-project-dialog), buildScopeParts, performGlobalSwap, AgentSelectItems, SwapControlsPanel (settings-dispatch-global-swap), hydrateSettings, SettingsTabPanels, SettingsTabBar, SettingsFooter (settings-sheet). Removed unused formatAgentLabel. All quality gates pass: lint clean for in-scope files, tsc --noEmit clean, 165 test files / 2239 tests passing, build succeeds. Commit f4e5f3c283b2 on main.",
+    "datetime": "2026-03-26T10:10:01.227609Z",
+    "entry_id": "019d299f-558b-7fa0-9f64-729606c5aa6e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

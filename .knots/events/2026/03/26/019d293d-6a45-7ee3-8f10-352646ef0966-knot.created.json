@@ -1,0 +1,17 @@
+{
+  "event_id": "019d293d-6a45-7ee3-8f10-352646ef0966",
+  "occurred_at": "2026-03-26T08:23:04.005Z",
+  "knot_id": "foolery-3246",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix max-lines, max-lines-per-function, and max-len ESLint warnings in views and page components. Files: waves/route.ts, beats/page.tsx, app-header.tsx, breakdown-view.tsx, directory-browser.tsx, filter-bar.tsx, repo-registry.tsx, retakes-view.tsx, wave-planner.tsx",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Fix code style: components/views-and-pages",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

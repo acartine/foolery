@@ -1,0 +1,15 @@
+{
+  "event_id": "019d296f-66f1-7bc1-86a0-199143bdf592",
+  "occurred_at": "2026-03-26T09:17:39.953198Z",
+  "knot_id": "foolery-20e9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation stopped because the knot has no approved plan notes and the measured style-fix scope is 110 test files under rules that are not currently configured in eslint.config.mjs. The next step should produce a concrete file batch plan and decide whether these rules will be enabled in repo config or verified with a dedicated lint command.",
+    "datetime": "2026-03-26T09:17:24Z",
+    "entry_id": "019d296f-66f1-7bc1-86a0-198ad8cf70af",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

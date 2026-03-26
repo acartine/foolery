@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29a1-cadf-71d0-a692-57364cf1ac63",
+  "occurred_at": "2026-03-26T10:12:42.335435Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment completed on origin/main at commit f4e5f3c283b2. No merge was required in this step because main already contained the approved replacement commit for this beat. Remote CI and Coverage Badge runs for f4e5f3c283b2 both completed successfully.",
+    "datetime": "2026-03-26T10:12:32Z",
+    "entry_id": "019d29a1-cadf-71d0-a692-572f331b4c59",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

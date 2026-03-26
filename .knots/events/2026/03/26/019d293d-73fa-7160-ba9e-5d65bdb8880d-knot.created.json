@@ -1,0 +1,17 @@
+{
+  "event_id": "019d293d-73fa-7160-ba9e-5d65bdb8880d",
+  "occurred_at": "2026-03-26T08:23:06.490382Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix max-lines, max-lines-per-function, and max-len ESLint warnings in core library modules. Split large files, extract functions. Files: agent-adapter.ts, agent-history.ts, agent-prompt-guardrails.ts, backends/beads-backend.ts, backends/beads-jsonl-dto.ts, backends/knots-backend.ts, bd.ts, breakdown-manager.ts, console-log-tap.ts, doctor.ts, execution-backend.ts, knots.ts, local-worker.ts, memory-manager-commands.ts, openapi/schemas.ts, orchestration-manager.ts, registry.ts, settings.ts, terminal-manager.ts, terminal-time-anchor.ts, workflows.ts, stores/terminal-store.ts",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Fix code style: lib/core-modules",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

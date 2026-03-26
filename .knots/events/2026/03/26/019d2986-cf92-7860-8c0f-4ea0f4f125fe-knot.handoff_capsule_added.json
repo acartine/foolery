@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2986-cf92-7860-8c0f-4ea0f4f125fe",
+  "occurred_at": "2026-03-26T09:43:14.066832Z",
+  "knot_id": "foolery-3246",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review. Verified the refactor preserves behavior by extracting supporting hooks/components without changing the user-visible flows in waves, beats, app header, retakes, and planner views. Confirmed zero ESLint max-lines/max-lines-per-function/max-len warnings in the nine scoped files, clean typecheck, 2239 passing tests in bun run test, successful bun run build, and no diff-check issues.",
+    "datetime": "2026-03-26T09:42:52Z",
+    "entry_id": "019d2986-cf92-7860-8c0f-4e9e6b195b3c",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

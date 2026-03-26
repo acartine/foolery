@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2982-84da-7e00-8ac7-4b1b59b15e41",
+  "occurred_at": "2026-03-26T09:38:32.794859Z",
+  "knot_id": "foolery-d0c3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review rejected: (1) CLAUDE.md and AGENTS.md have Code Style Constraints section removed — must remain. (2) eslint.config.mjs has max-lines/max-lines-per-function/max-len rules removed — must remain. (3) .claude/worktrees/** ignore pattern removed from eslint.config.mjs — unrelated change. (4) 17 files outside src/components/ modified (api routes, hooks, lib, stores, tests) — only the 14 listed component files should change. Scope: revert AGENTS.md, CLAUDE.md, eslint.config.mjs, and all non-src/components/ files. Only touch the listed dialog/settings component files.",
+    "datetime": "2026-03-26T09:38:32.794859Z",
+    "entry_id": "019d2982-84da-7e00-8ac7-4b07d954b240",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

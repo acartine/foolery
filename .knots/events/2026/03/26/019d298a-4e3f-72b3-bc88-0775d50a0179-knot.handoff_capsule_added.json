@@ -1,0 +1,15 @@
+{
+  "event_id": "019d298a-4e3f-72b3-bc88-0775d50a0179",
+  "occurred_at": "2026-03-26T09:47:03.103595Z",
+  "knot_id": "foolery-3246",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Rebased feature branch worktree-fix+code-style-views-pages onto main, resolved eslint.config.mjs conflict (cosmetic formatting difference). Fixed pre-existing test failure in settings-dispatch-global-swap-layout.test.ts where multi-line source text didn't match single-line assertion. All 2239 tests pass, typecheck clean. Pushed to origin/main.",
+    "datetime": "2026-03-26T09:47:03.103595Z",
+    "entry_id": "019d298a-4e3f-72b3-bc88-076b3e899e2b",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

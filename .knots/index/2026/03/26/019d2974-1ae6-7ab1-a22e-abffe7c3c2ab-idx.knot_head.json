@@ -1,0 +1,23 @@
+{
+  "event_id": "019d2974-1ae6-7ab1-a22e-abffe7c3c2ab",
+  "occurred_at": "2026-03-26T09:22:48.166697Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6dbc",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Fix code style: tests/stores-and-hooks",
+    "type": "work",
+    "updated_at": "2026-03-26T09:22:48.166697Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d2973-d503-7613-963f-e4d70ead3949"
+  }
+}

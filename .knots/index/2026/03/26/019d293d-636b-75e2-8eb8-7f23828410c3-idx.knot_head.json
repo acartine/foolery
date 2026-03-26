@@ -1,0 +1,20 @@
+{
+  "event_id": "019d293d-636b-75e2-8eb8-7f23828410c3",
+  "occurred_at": "2026-03-26T08:23:02.251268Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d0c3",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Fix code style: components/dialogs-and-settings",
+    "type": "work",
+    "updated_at": "2026-03-26T08:23:02.251268Z",
+    "workflow_id": "compatibility"
+  }
+}

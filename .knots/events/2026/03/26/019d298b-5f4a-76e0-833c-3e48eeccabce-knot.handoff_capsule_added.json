@@ -1,0 +1,15 @@
+{
+  "event_id": "019d298b-5f4a-76e0-833c-3e48eeccabce",
+  "occurred_at": "2026-03-26T09:48:13.002613Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review REJECTED. Violations of acceptance criteria: (1) 99 ESLint warnings from max-lines, max-lines-per-function, and max-len remain in the 22 listed files on main — acceptance requires zero. (2) The work branch feat/foolery-d17b-style was never merged to main. (3) That branch's approach used centralized ESLint config suppressions (turning rules off for target files) rather than actually refactoring: splitting large files, extracting functions, and shortening lines as the description requires. Next implementer must: merge or rebase the branch, replace config suppressions with real refactoring, and verify zero targeted warnings before handoff.",
+    "datetime": "2026-03-26T09:48:13.002613Z",
+    "entry_id": "019d298b-5f4a-76e0-833c-3e3620ec3294",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "event_id": "019d296d-6548-7f32-b4e3-ce11cdb78404",
+  "occurred_at": "2026-03-26T09:15:28.45691Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-20e9",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Fix code style: tests/backend-and-core",
+    "type": "work",
+    "updated_at": "2026-03-26T09:15:28.45691Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d293d-7a0b-76b3-922d-9c5901404233"
+  }
+}
