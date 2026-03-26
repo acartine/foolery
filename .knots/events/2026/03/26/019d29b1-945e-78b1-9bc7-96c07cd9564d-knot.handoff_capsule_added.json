@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29b1-945e-78b1-9bc7-96c07cd9564d",
+  "occurred_at": "2026-03-26T10:29:56.958703Z",
+  "knot_id": "foolery-d17b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Feature branch feat/foolery-d17b-style-v2 was already merged to main (merge commit b19cf45c). Remote main is up to date. CI green: both CI and Coverage Badge workflows passed on push. Tagged 3 commits (merge + 2 implementation commits).",
+    "datetime": "2026-03-26T10:29:56.958703Z",
+    "entry_id": "019d29b1-945e-78b1-9bc7-96b1ce610993",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}
