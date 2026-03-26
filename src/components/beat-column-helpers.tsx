@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  ChevronRight,
+  ChevronDown,
   Clapperboard,
   X,
 } from "lucide-react";
@@ -271,6 +273,95 @@ function LabelBadge({
         </button>
       )}
     </span>
+  );
+}
+
+export type TitleRenderOpts = {
+  collapsedIds: Set<string>;
+  onToggleCollapse?: (id: string) => void;
+  childCountMap: Map<string, number>;
+  onTitleClick?: (beat: Beat) => void;
+  onUpdateBeat?: UpdateBeatFn;
+  allLabels?: string[];
+};
+
+export function InlineTitleContent({
+  beat,
+  opts,
+}: {
+  beat: Beat;
+  opts: TitleRenderOpts;
+}) {
+  const hb = beat as unknown as {
+    _depth?: number;
+    _hasChildren?: boolean;
+  };
+  const depth = hb._depth ?? 0;
+  const hasChildren = hb._hasChildren ?? false;
+  const isCollapsed = opts.collapsedIds.has(beat.id);
+  const Chevron = isCollapsed
+    ? ChevronRight
+    : ChevronDown;
+  return (
+    <div
+      className="flex items-start gap-0.5 truncate"
+      style={{ paddingLeft: `${depth * 16}px` }}
+    >
+      {hasChildren ? (
+        <div
+          className={
+            "relative shrink-0"
+            + " flex items-start w-3.5"
+          }
+        >
+          {isCollapsed
+            && opts.childCountMap.get(beat.id)
+              != null && (
+            <span
+              className={
+                "absolute right-full mr-0.5"
+                + " text-[10px] font-medium"
+                + " text-muted-foreground"
+                + " bg-muted rounded-full"
+                + " px-1.5 leading-none"
+                + " py-0.5 mt-0.5 whitespace-nowrap"
+              }
+            >
+              {opts.childCountMap.get(beat.id)}
+            </span>
+          )}
+          <button
+            type="button"
+            title={
+              isCollapsed
+                ? "Expand children"
+                : "Collapse children"
+            }
+            className={
+              "p-0 mt-0.5"
+              + " text-muted-foreground"
+              + " hover:text-foreground shrink-0"
+            }
+            onClick={(e) => {
+              e.stopPropagation();
+              opts.onToggleCollapse?.(beat.id);
+            }}
+          >
+            <Chevron className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : (
+        <span
+          className="inline-block w-3.5 shrink-0"
+        />
+      )}
+      <TitleCell
+        beat={beat}
+        onTitleClick={opts.onTitleClick}
+        onUpdateBeat={opts.onUpdateBeat}
+        allLabels={opts.allLabels}
+      />
+    </div>
   );
 }
 

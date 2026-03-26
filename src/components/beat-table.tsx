@@ -128,6 +128,7 @@ export function BeatTable({
         searchQuery={searchQuery}
         searchParams={s.searchParams}
         router={s.router}
+        titleRenderOpts={s.titleRenderOpts}
       />
       {s.manualPageCount > 1 && (
         <BeatTablePagination

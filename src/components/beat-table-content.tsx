@@ -23,6 +23,12 @@ import {
   renderedHandoffCapsules,
 } from "@/components/beat-table-metadata";
 import { InlineSummary } from "@/components/beat-table-summary";
+import type {
+  TitleRenderOpts,
+} from "@/components/beat-column-helpers";
+import {
+  InlineTitleContent,
+} from "@/components/beat-column-helpers";
 
 export type ColumnMetaSizing = {
   widthPercent?: string;
@@ -37,6 +43,7 @@ export function BeatTableContent({
   searchQuery,
   searchParams,
   router,
+  titleRenderOpts,
 }: {
   table: ReturnType<typeof useReactTable<Beat>>;
   columns: ReturnType<typeof getBeatColumns>;
@@ -45,6 +52,7 @@ export function BeatTableContent({
   searchQuery?: string;
   searchParams: ReturnType<typeof useSearchParams>;
   router: ReturnType<typeof useRouter>;
+  titleRenderOpts: TitleRenderOpts;
 }) {
   return (
     <Table className="table-auto">
@@ -57,6 +65,7 @@ export function BeatTableContent({
         searchQuery={searchQuery}
         searchParams={searchParams}
         router={router}
+        titleRenderOpts={titleRenderOpts}
       />
     </Table>
   );
@@ -130,6 +139,7 @@ function BeatTableBody({
   searchQuery,
   searchParams,
   router,
+  titleRenderOpts,
 }: {
   table: ReturnType<typeof useReactTable<Beat>>;
   columns: ReturnType<typeof getBeatColumns>;
@@ -138,6 +148,7 @@ function BeatTableBody({
   searchQuery?: string;
   searchParams: ReturnType<typeof useSearchParams>;
   router: ReturnType<typeof useRouter>;
+  titleRenderOpts: TitleRenderOpts;
 }) {
   const rows = table.getRowModel().rows;
 
@@ -150,6 +161,7 @@ function BeatTableBody({
             row={row}
             focusedRowId={focusedRowId}
             handleRowFocus={handleRowFocus}
+            titleRenderOpts={titleRenderOpts}
           />
         ))
       ) : (
@@ -168,6 +180,7 @@ function BeatTableRow({
   row,
   focusedRowId,
   handleRowFocus,
+  titleRenderOpts,
 }: {
   row: ReturnType<
     ReturnType<
@@ -176,13 +189,11 @@ function BeatTableRow({
   >["rows"][number];
   focusedRowId: string | null;
   handleRowFocus: (beat: Beat) => void;
+  titleRenderOpts: TitleRenderOpts;
 }) {
   const cells = row.getVisibleCells();
-  const titleIdx = cells.findIndex(
-    (c) => c.column.id === "title",
-  );
-  const colSpan =
-    titleIdx === -1 ? 0 : cells.length - titleIdx;
+  const totalCols = cells.length;
+  const isFocused = focusedRowId === row.original.id;
   const depth = (
     row.original as unknown as { _depth?: number }
   )._depth ?? 0;
@@ -191,8 +202,7 @@ function BeatTableRow({
     row.original,
   );
   const showSummary =
-    focusedRowId === row.original.id &&
-    colSpan > 0 &&
+    isFocused &&
     Boolean(
       row.original.description ||
         row.original.notes ||
@@ -202,10 +212,7 @@ function BeatTableRow({
   return (
     <Fragment>
       <TableRow
-        className={cn(
-          focusedRowId === row.original.id &&
-            "bg-muted/50",
-        )}
+        className={cn(isFocused && "bg-muted/50")}
         onClick={() => handleRowFocus(row.original)}
       >
         {cells.map((cell) => {
@@ -217,7 +224,7 @@ function BeatTableRow({
             <TableCell
               key={cell.id}
               className={cellClassName(
-                meta, maxSize, cell.column.id,
+                meta, maxSize,
               )}
             >
               {flexRender(
@@ -228,17 +235,27 @@ function BeatTableRow({
           );
         })}
       </TableRow>
+      <TableRow
+        className={cn(
+          "border-b-0",
+          isFocused && "bg-muted/50",
+        )}
+        onClick={() => handleRowFocus(row.original)}
+      >
+        <TableCell
+          colSpan={totalCols}
+          className="pt-0 pb-1 truncate"
+        >
+          <InlineTitleContent
+            beat={row.original}
+            opts={titleRenderOpts}
+          />
+        </TableCell>
+      </TableRow>
       {showSummary && (
         <TableRow className="bg-muted/30">
-          {cells
-            .slice(0, titleIdx)
-            .map((cell) => (
-              <TableCell
-                key={`${cell.id}-summary-pad`}
-              />
-            ))}
           <TableCell
-            colSpan={cells.length - titleIdx}
+            colSpan={totalCols}
             className="whitespace-normal pt-0"
           >
             <div
@@ -260,7 +277,6 @@ function BeatTableRow({
 function cellClassName(
   meta: ColumnMetaSizing | undefined,
   maxSize: number,
-  columnId: string,
 ): string | undefined {
   if (meta?.widthPercent || meta?.minWidthPx) {
     return "whitespace-nowrap";
@@ -268,12 +284,7 @@ function cellClassName(
   if (maxSize < Number.MAX_SAFE_INTEGER) {
     return undefined;
   }
-  return cn(
-    "whitespace-normal",
-    columnId === "title"
-      ? "overflow-visible"
-      : "overflow-hidden",
-  );
+  return cn("whitespace-normal", "overflow-hidden");
 }
 
 function EmptyRow({

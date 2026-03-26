@@ -141,13 +141,13 @@ describe("beats page layout", () => {
       '"grid-cols-[repeat(3,minmax(0,1fr))]"',
     );
     expect(btContent).toContain(
-      "cells.findIndex(",
-    );
-    expect(btContent).toContain(
-      'colSpan={cells.length - titleIdx}',
+      "colSpan={totalCols}",
     );
     expect(btContent).toContain(
       'className="whitespace-normal pt-0"',
+    );
+    expect(btContent).toContain(
+      "InlineTitleContent",
     );
     expect(btMeta).toContain(
       "const HANDOFF_METADATA_KEYS = [",

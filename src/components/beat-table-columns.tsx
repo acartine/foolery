@@ -31,7 +31,7 @@ type ColumnsParams = {
   parentRollingBeatIds: Set<string>;
 };
 
-function buildTitleClick(
+export function buildTitleClick(
   onOpenBeat: ((beat: Beat) => void) | undefined,
   searchParams: ReturnType<typeof useSearchParams>,
   router: ReturnType<typeof useRouter>,

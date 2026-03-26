@@ -36,7 +36,11 @@ import {
 } from "@/components/beat-table-data";
 import {
   useBeatTableColumns,
+  buildTitleClick,
 } from "@/components/beat-table-columns";
+import type {
+  TitleRenderOpts,
+} from "@/components/beat-column-helpers";
 
 type BeatTableInput = {
   data: Beat[];
@@ -161,6 +165,18 @@ export function useBeatTableState(
     (beat: Beat) => setFocusedRowId(beat.id), [],
   );
 
+  const titleRenderOpts: TitleRenderOpts = {
+    collapsedIds,
+    onToggleCollapse: toggleCollapse,
+    childCountMap,
+    onTitleClick: buildTitleClick(
+      onOpenBeat, searchParams, router,
+    ),
+    onUpdateBeat: (id, fields, repoPath) =>
+      doUpdate({ id, fields, repoPath }),
+    allLabels,
+  };
+
   return {
     router, searchParams, containerRef,
     columns, paginatedData,
@@ -178,6 +194,6 @@ export function useBeatTableState(
     cascadeDesc, setCascadeDesc,
     cascadeLoading, doCascade,
     filtersKey, activeRepo, selectionVersion,
-    sortedLen,
+    sortedLen, titleRenderOpts,
   };
 }

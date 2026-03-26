@@ -5,7 +5,6 @@ import type { Beat } from "@/lib/types";
 import {
   selectColumn,
   idColumn,
-  titleColumn,
   priorityColumn,
   profileColumn,
   ownerTypeColumn,
@@ -45,7 +44,6 @@ export function getBeatColumns(
   const columns: ColumnDef<Beat>[] = [
     selectColumn(),
     idColumn(),
-    titleColumn(r),
     priorityColumn(r),
     profileColumn(r),
   ];
