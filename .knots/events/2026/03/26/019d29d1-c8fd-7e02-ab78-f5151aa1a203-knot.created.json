@@ -1,0 +1,17 @@
+{
+  "event_id": "019d29d1-c8fd-7e02-ab78-f5151aa1a203",
+  "occurred_at": "2026-03-26T11:05:07.581856Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.created",
+  "data": {
+    "body": "if check shows updates, offer “update now to xyz”, if check dosen’t, say “Latest version installed\"",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Version pill should be clickable, offer “check for new updates”",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

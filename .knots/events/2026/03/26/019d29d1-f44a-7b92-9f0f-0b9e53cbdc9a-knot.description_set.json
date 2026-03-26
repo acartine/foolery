@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29d1-f44a-7b92-9f0f-0b9e53cbdc9a",
+  "occurred_at": "2026-03-26T11:05:18.666879Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The version pill should be clickable and provide an option to check for new updates. If an update is available, show a message offering “Update now to {version}”. If no update is available, show “Latest version installed”."
+  }
+}

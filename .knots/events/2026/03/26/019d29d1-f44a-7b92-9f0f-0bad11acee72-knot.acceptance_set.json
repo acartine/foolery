@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29d1-f44a-7b92-9f0f-0bad11acee72",
+  "occurred_at": "2026-03-26T11:05:18.666879Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Clicking the version pill triggers an update check. If a newer version is available, the UI displays an action to update now and includes the target version number. If no newer version is available, the UI displays the message “Latest version installed”. The existing scope remains limited to making the version pill clickable and surfacing these update-check outcomes."
+  }
+}

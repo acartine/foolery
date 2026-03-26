@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29d0-c0f1-7683-9a12-27c2356ec357",
+  "occurred_at": "2026-03-26T11:03:59.985724Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "When a new version is available, the update banner displays a visible link or equivalent actionable control for starting the update. Activating that link from the banner triggers the same update behavior the product already uses for updating to the new version. If no new version is available, the banner does not show this update action."
+  }
+}

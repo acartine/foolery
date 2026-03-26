@@ -1,0 +1,17 @@
+{
+  "event_id": "019d29ca-fdd2-7b32-aa53-45a684f5cbf0",
+  "occurred_at": "2026-03-26T10:57:42.354391Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.created",
+  "data": {
+    "body": "\"Add\" is bigger than the selected size of \"Queues/Active/etc.\" (when the link is purple in selected state).\n\nWe want the add button to match the purple selected link/button size - right now it looks big and goofy.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Make the + Add button size match the selected action bar item size",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

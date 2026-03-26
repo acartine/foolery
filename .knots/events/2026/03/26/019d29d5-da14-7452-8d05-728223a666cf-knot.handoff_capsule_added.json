@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29d5-da14-7452-8d05-728223a666cf",
+  "occurred_at": "2026-03-26T11:09:34.100108Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Added h-8 class to all ActionButton variants (Escalations outline, dropdown-trigger Add, simple Add) and the invisible placeholder button in ViewSwitcher. All buttons now match ViewTab h-8 height. Branch: feat/foolery-7f40-add-button-height. Quality gates pass (lint 0 errors, tsc clean, build clean).",
+    "datetime": "2026-03-26T11:09:34.100108Z",
+    "entry_id": "019d29d5-da14-7452-8d05-7273e4d7d1af",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

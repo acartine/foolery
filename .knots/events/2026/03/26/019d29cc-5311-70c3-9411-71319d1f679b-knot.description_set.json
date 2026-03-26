@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29cc-5311-70c3-9411-71319d1f679b",
+  "occurred_at": "2026-03-26T10:59:09.713383Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The \"+ Add\" button in the app header uses the default `size=\"lg\"` height (`h-10`), while the ViewSwitcher tabs (Queues, Active, etc.) explicitly override their height to `h-8`. This makes the Add button visually larger than a selected tab, looking out of proportion.\n\nFix: apply the same `h-8` class to the Add button so it matches the action-bar tabs."
+  }
+}

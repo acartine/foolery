@@ -1,0 +1,20 @@
+{
+  "event_id": "019d29d0-95fe-7491-bf03-7068511e851e",
+  "occurred_at": "2026-03-26T11:03:48.990726Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8ab7",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "new version update banner should provide a link that triggers the update",
+    "type": "work",
+    "updated_at": "2026-03-26T11:03:48.990726Z",
+    "workflow_id": "compatibility"
+  }
+}

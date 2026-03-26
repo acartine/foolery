@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29cc-5311-70c3-9411-7144dcb0f23b",
+  "occurred_at": "2026-03-26T10:59:09.713383Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The + Add button rendered by `ActionButton` in `app-header-parts.tsx` has an explicit `h-8` class (or equivalent) matching the `ViewTab` buttons.\n2. Both the simple button and the dropdown-trigger button variants of the Add button are updated.\n3. The icon size (`size-4`), padding (`px-2.5`), and gap (`gap-1.5`) on the Add button remain unchanged.\n4. Visual inspection confirms the Add button and a selected (purple) ViewTab appear the same height when placed side-by-side in the header.\n5. All quality gates pass (`bun run lint`, `bunx tsc --noEmit`, `bun run build`)."
+  }
+}

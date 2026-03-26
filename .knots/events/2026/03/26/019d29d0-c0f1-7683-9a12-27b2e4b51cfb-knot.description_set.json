@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29d0-c0f1-7683-9a12-27b2e4b51cfb",
+  "occurred_at": "2026-03-26T11:03:59.985724Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a new version is available, the update banner should include a link the user can select to trigger the update flow directly from the banner."
+  }
+}

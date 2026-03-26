@@ -1,0 +1,10 @@
+{
+  "event_id": "019d29cc-5311-70c3-9411-71266965faaf",
+  "occurred_at": "2026-03-26T10:59:09.713383Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Make the + Add button size match the selected action bar item size",
+    "to": "Resize + Add button to match action-bar tab height"
+  }
+}

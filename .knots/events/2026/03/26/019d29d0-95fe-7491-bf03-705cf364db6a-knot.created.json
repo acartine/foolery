@@ -1,0 +1,17 @@
+{
+  "event_id": "019d29d0-95fe-7491-bf03-705cf364db6a",
+  "occurred_at": "2026-03-26T11:03:48.990726Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "new version update banner should provide a link that triggers the update",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

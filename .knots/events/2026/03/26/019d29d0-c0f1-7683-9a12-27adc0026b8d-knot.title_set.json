@@ -1,0 +1,10 @@
+{
+  "event_id": "019d29d0-c0f1-7683-9a12-27adc0026b8d",
+  "occurred_at": "2026-03-26T11:03:59.985724Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.title_set",
+  "data": {
+    "from": "new version update banner should provide a link that triggers the update",
+    "to": "Update banner includes a link that starts the version update"
+  }
+}
