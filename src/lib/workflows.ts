@@ -1,11 +1,9 @@
 import type {
   ActionOwnerKind,
-  Beat,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
   WorkflowMode,
 } from "@/lib/types";
-import { recordCompatStatusSerialized } from "@/lib/compat-status-usage";
 
 export const WF_STATE_LABEL_PREFIX = "wf:state:";
 export const WF_PROFILE_LABEL_PREFIX = "wf:profile:";
@@ -19,22 +17,6 @@ export const KNOTS_GRANULAR_DESCRIPTOR_ID = "autopilot";
 export const KNOTS_COARSE_DESCRIPTOR_ID = "semiauto";
 export const KNOTS_GRANULAR_PROMPT_PROFILE_ID = "autopilot";
 export const KNOTS_COARSE_PROMPT_PROFILE_ID = "semiauto";
-
-const TERMINAL_STATUS_STATES = new Set<string>(["shipped", "abandoned", "closed"]);
-const LEGACY_TERMINAL_STATES = new Set<string>(["closed", "done", "approved"]);
-const LEGACY_RETAKE_STATES = new Set<string>([
-  "retake",
-  "retry",
-  "rejected",
-  "refining",
-  "rework",
-]);
-const LEGACY_IN_PROGRESS_STATES = new Set<string>([
-  "in_progress",
-  "implementing",
-  "implemented",
-  "reviewing",
-]);
 
 // ── Step abstraction ────────────────────────────────────────────
 
@@ -134,7 +116,10 @@ const REVIEW_TO_ACTION_STEP: ReadonlyMap<WorkflowStep, WorkflowStep> = new Map([
   [WorkflowStep.ShipmentReview, WorkflowStep.Shipment],
 ]);
 
-/** Returns true if the given step is a review step (plan_review, implementation_review, shipment_review). */
+/**
+ * Returns true if the given step is a review step
+ * (plan_review, implementation_review, shipment_review).
+ */
 export function isReviewStep(step: WorkflowStep): boolean {
   return REVIEW_TO_ACTION_STEP.has(step);
 }
@@ -152,34 +137,6 @@ interface BuiltinProfileConfig {
   implementationReviewMode: "required" | "skipped";
   output: "remote_main" | "pr";
   owners: MemoryWorkflowOwners;
-}
-
-/** Human-friendly display names for built-in profile IDs. */
-const PROFILE_DISPLAY_NAMES: Readonly<Record<string, string>> = {
-  autopilot: "Autopilot",
-  autopilot_with_pr: "Autopilot (PR)",
-  semiauto: "Semiauto",
-  autopilot_no_planning: "Autopilot (no planning)",
-  autopilot_with_pr_no_planning: "Autopilot (PR, no planning)",
-  semiauto_no_planning: "Semiauto (no planning)",
-  automatic: "Autopilot",
-  workflow: "Semiauto",
-};
-
-/** Human-friendly short descriptions for built-in profile IDs. */
-export const PROFILE_DESCRIPTIONS: Readonly<Record<string, string>> = {
-  autopilot: "Fully autonomous agent flow: planning, implementation, and shipment are all agent-owned. Output goes to remote main.",
-  autopilot_with_pr: "Fully autonomous agent flow with pull request output instead of direct push to main.",
-  semiauto: "Agent does the work, but a human reviews the plan and implementation before it proceeds.",
-  autopilot_no_planning: "Autonomous agent flow that skips planning and jumps straight to implementation.",
-  autopilot_with_pr_no_planning: "Autonomous agent flow with PR output and no planning phase.",
-  semiauto_no_planning: "Human-gated implementation review with no planning phase.",
-};
-
-/** Returns a human-friendly display name for a profile ID. */
-export function profileDisplayName(profileId: string): string {
-  const normalized = normalizeProfileId(profileId) ?? profileId;
-  return PROFILE_DISPLAY_NAMES[normalized] ?? normalized;
 }
 
 const AGENT_OWNERS: MemoryWorkflowOwners = {
@@ -257,11 +214,6 @@ const BUILTIN_PROFILE_CATALOG: ReadonlyArray<BuiltinProfileConfig> = [
   },
 ];
 
-function normalizeState(value: string | null | undefined): string | null {
-  const normalized = value?.trim().toLowerCase();
-  return normalized ? normalized : null;
-}
-
 export function normalizeProfileId(value: string | null | undefined): string | null {
   const normalized = value?.trim().toLowerCase();
   if (!normalized) return null;
@@ -337,7 +289,10 @@ function buildStates(config: BuiltinProfileConfig): string[] {
   return states;
 }
 
-function filterTransitionsForStates(states: string[], config: BuiltinProfileConfig): Array<{ from: string; to: string }> {
+function filterTransitionsForStates(
+  states: string[],
+  config: BuiltinProfileConfig,
+): Array<{ from: string; to: string }> {
   const stateSet = new Set(states);
   const transitions = canonicalTransitions().filter((transition) =>
     (transition.from === "*" || stateSet.has(transition.from)) && stateSet.has(transition.to),
@@ -360,7 +315,10 @@ function filterTransitionsForStates(states: string[], config: BuiltinProfileConf
     });
 }
 
-function stepOwnerKind(workflow: MemoryWorkflowDescriptor, step: WorkflowStep): ActionOwnerKind {
+function stepOwnerKind(
+  workflow: MemoryWorkflowDescriptor,
+  step: WorkflowStep,
+): ActionOwnerKind {
   return workflow.owners?.[step] ?? "agent";
 }
 
@@ -421,12 +379,16 @@ const BUILTIN_WORKFLOWS_BY_ID = new Map<string, MemoryWorkflowDescriptor>(
   BUILTIN_WORKFLOWS.map((workflow) => [workflow.id, workflow]),
 );
 
-function cloneWorkflowDescriptor(workflow: MemoryWorkflowDescriptor): MemoryWorkflowDescriptor {
+function cloneWorkflowDescriptor(
+  workflow: MemoryWorkflowDescriptor,
+): MemoryWorkflowDescriptor {
   return {
     ...workflow,
     states: [...workflow.states],
     terminalStates: [...workflow.terminalStates],
-    transitions: workflow.transitions ? workflow.transitions.map((transition) => ({ ...transition })) : undefined,
+    transitions: workflow.transitions
+      ? workflow.transitions.map((t) => ({ ...t }))
+      : undefined,
     owners: workflow.owners ? { ...workflow.owners } : undefined,
     queueStates: workflow.queueStates ? [...workflow.queueStates] : undefined,
     actionStates: workflow.actionStates ? [...workflow.actionStates] : undefined,
@@ -461,7 +423,8 @@ export function isWorkflowProfileLabel(label: string): boolean {
 export function extractWorkflowStateLabel(labels: string[]): string | null {
   for (const label of labels) {
     if (!isWorkflowStateLabel(label)) continue;
-    const state = normalizeState(label.slice(WF_STATE_LABEL_PREFIX.length));
+    const raw = label.slice(WF_STATE_LABEL_PREFIX.length);
+    const state = raw.trim().toLowerCase() || null;
     if (state) return state;
   }
   return null;
@@ -478,7 +441,8 @@ export function extractWorkflowProfileLabel(labels: string[]): string | null {
 
 export function withWorkflowStateLabel(labels: string[], workflowState: string): string[] {
   const next = labels.filter((label) => !isWorkflowStateLabel(label));
-  const normalizedState = normalizeState(workflowState) ?? "open";
+  const trimmed = workflowState?.trim().toLowerCase();
+  const normalizedState = trimmed || "open";
   next.push(`${WF_STATE_LABEL_PREFIX}${normalizedState}`);
   return Array.from(new Set(next));
 }
@@ -490,443 +454,47 @@ export function withWorkflowProfileLabel(labels: string[], profileId: string): s
   return Array.from(new Set(next));
 }
 
-function firstActionState(workflow?: MemoryWorkflowDescriptor): string {
-  if (workflow?.actionStates && workflow.actionStates.length > 0) {
-    return workflow.actionStates[0]!;
-  }
-  if (workflow?.states?.includes("implementation")) return "implementation";
-  return "in_progress";
-}
+// ── Re-exports from workflows-runtime.ts ─────────────────────
 
-/** @internal Used by beats backend for compat-status translation. */
-function terminalStateForStatus(status: string, workflow?: MemoryWorkflowDescriptor): string {
-  if (status === "deferred") {
-    if (workflow?.states.includes("deferred")) return "deferred";
-    return "deferred";
-  }
+export type { WorkflowRuntimeState } from "@/lib/workflows-runtime";
 
-  if (workflow?.states.includes("shipped")) return "shipped";
-  if (workflow?.terminalStates.includes("closed")) return "closed";
-  if (workflow?.terminalStates.length) return workflow.terminalStates[0]!;
-  return "closed";
-}
+export {
+  PROFILE_DESCRIPTIONS,
+  profileDisplayName,
+  mapWorkflowStateToCompatStatus,
+  mapStatusToDefaultWorkflowState,
+  normalizeStateForWorkflow,
+  deriveProfileId,
+  deriveWorkflowState,
+  deriveBeadsProfileId,
+  deriveBeadsWorkflowState,
+  deriveWorkflowRuntimeState,
+  inferWorkflowMode,
+  inferFinalCutState,
+  inferRetakeState,
+  workflowDescriptorById,
+  beatRequiresHumanAction,
+  beatInFinalCut,
+  beatInRetake,
+  isQueueOrTerminal,
+  compareWorkflowStatePriority,
+  isRollbackTransition,
+  forwardTransitionTarget,
+} from "@/lib/workflows-runtime";
 
-/** @internal Beats-backend compat: maps workflow state to simple status. */
-export function mapWorkflowStateToCompatStatus(
-  workflowState: string,
-  context = "workflow-state",
-): string {
-  recordCompatStatusSerialized(context);
-  const normalized = normalizeState(workflowState);
-  if (!normalized) return "open";
-
-  if (normalized === "deferred") return "deferred";
-  if (normalized === "blocked" || normalized === "rejected") return "blocked";
-  if (TERMINAL_STATUS_STATES.has(normalized) || LEGACY_TERMINAL_STATES.has(normalized)) {
-    return "closed";
-  }
-  const resolved = resolveStep(normalized);
-  if (resolved?.phase === StepPhase.Queued) return "open";
-  if (resolved?.phase === StepPhase.Active || LEGACY_IN_PROGRESS_STATES.has(normalized)) {
-    return "in_progress";
-  }
-  if (normalized === "open") return "open";
-  return "open";
-}
-
-/** @internal Beats-backend compat: maps simple status to workflow state. */
-export function mapStatusToDefaultWorkflowState(
-  status: string,
-  workflow?: MemoryWorkflowDescriptor,
-): string {
-  switch (status) {
-    case "closed":
-      return terminalStateForStatus("closed", workflow);
-    case "deferred":
-      return terminalStateForStatus("deferred", workflow);
-    case "blocked":
-      return workflow?.retakeState ?? "blocked";
-    case "in_progress":
-      return firstActionState(workflow);
-    case "open":
-    default:
-      return workflow?.initialState ?? "open";
-  }
-}
-
-function remapLegacyStateForProfile(
-  rawState: string,
-  workflow: MemoryWorkflowDescriptor,
-): string {
-  const normalized = normalizeState(rawState);
-  if (!normalized) return workflow.initialState;
-  if (workflow.states.includes(normalized)) return normalized;
-
-  // Knots may emit shorthand claim/action states (e.g. "impl").
-  // Normalize these aliases so active beats render and transition correctly.
-  if (normalized === "impl") {
-    if (workflow.states.includes("implementation")) return "implementation";
-    return firstActionState(workflow);
-  }
-
-  // Preserve explicit terminal states even when older profile definitions
-  // omit them from `states`.
-  if (normalized === "shipped" || normalized === "abandoned") {
-    return normalized;
-  }
-
-  if (normalized === "open" || normalized === "idea" || normalized === "work_item") {
-    return workflow.initialState;
-  }
-
-  if (LEGACY_IN_PROGRESS_STATES.has(normalized)) {
-    return firstActionState(workflow);
-  }
-
-  if (normalized === "ready_for_review" || normalized === "reviewing") {
-    if (workflow.states.includes("ready_for_implementation_review")) {
-      return "ready_for_implementation_review";
-    }
-    return firstActionState(workflow);
-  }
-
-  if (LEGACY_RETAKE_STATES.has(normalized)) {
-    if (workflow.states.includes(workflow.retakeState)) return workflow.retakeState;
-    return workflow.initialState;
-  }
-
-  if (normalized === "closed" || normalized === "done" || normalized === "approved") {
-    return terminalStateForStatus("closed", workflow);
-  }
-
-  if (normalized === "deferred") {
-    return terminalStateForStatus("deferred", workflow);
-  }
-
-  return workflow.initialState;
-}
-
-export function normalizeStateForWorkflow(
-  workflowState: string | undefined,
-  workflow: MemoryWorkflowDescriptor,
-): string {
-  const normalized = normalizeState(workflowState);
-  if (!normalized) return workflow.initialState;
-  return remapLegacyStateForProfile(normalized, workflow);
-}
-
-export function deriveProfileId(
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): string {
-  const fromMetadata = metadata
-    ? [
-      metadata.profileId,
-      metadata.fooleryProfileId,
-      metadata.workflowProfileId,
-      metadata.knotsProfileId,
-    ]
-      .find((value) => typeof value === "string" && value.trim().length > 0)
-    : undefined;
-
-  const normalizedFromMetadata = typeof fromMetadata === "string"
-    ? normalizeProfileId(fromMetadata)
-    : null;
-  if (normalizedFromMetadata) return normalizedFromMetadata;
-
-  const explicit = extractWorkflowProfileLabel(labels ?? []);
-  return explicit ?? DEFAULT_PROFILE_ID;
-}
-
-function hasExplicitProfileSelection(
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): boolean {
-  if (extractWorkflowProfileLabel(labels ?? [])) return true;
-  if (!metadata) return false;
-  return [
-    metadata.profileId,
-    metadata.fooleryProfileId,
-    metadata.workflowProfileId,
-    metadata.knotsProfileId,
-  ].some((value) => typeof value === "string" && value.trim().length > 0);
-}
-
-export function deriveWorkflowState(
-  status: string | undefined,
-  labels: string[] | undefined,
-  workflow?: MemoryWorkflowDescriptor,
-): string {
-  const nextLabels = labels ?? [];
-  const descriptor = workflow ?? builtinProfileDescriptor(DEFAULT_PROFILE_ID);
-
-  const explicit = extractWorkflowStateLabel(nextLabels);
-  if (explicit) return normalizeStateForWorkflow(explicit, descriptor);
-
-  if (status) return mapStatusToDefaultWorkflowState(status, descriptor);
-  return descriptor.initialState;
-}
-
-export function deriveBeadsProfileId(
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): string {
-  const explicit = deriveProfileId(labels, metadata);
-  if (hasExplicitProfileSelection(labels, metadata)) return explicit;
-  return "autopilot_no_planning";
-}
-
-export function deriveBeadsWorkflowState(
-  status: string | undefined,
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): string {
-  const profileId = deriveBeadsProfileId(labels, metadata);
-  const workflow = builtinProfileDescriptor(profileId);
-  return deriveWorkflowState(status, labels, workflow);
-}
-
-function ownerForCurrentState(
-  state: string,
-  workflow: MemoryWorkflowDescriptor,
-): { nextActionState?: string; ownerKind: ActionOwnerKind } {
-  const resolved = resolveStep(state);
-  if (!resolved) return { ownerKind: "none" };
-
-  return {
-    nextActionState: resolved.step,
-    ownerKind: stepOwnerKind(workflow, resolved.step),
-  };
-}
-
-export interface WorkflowRuntimeState {
-  state: string;
-  /** @internal Beats-backend compat: simple status derived from state. */
-  compatStatus: string;
-  nextActionState?: string;
-  nextActionOwnerKind: ActionOwnerKind;
-  requiresHumanAction: boolean;
-  isAgentClaimable: boolean;
-}
-
-export function deriveWorkflowRuntimeState(
-  workflow: MemoryWorkflowDescriptor,
-  workflowState: string | undefined,
-): WorkflowRuntimeState {
-  const normalizedState = normalizeStateForWorkflow(workflowState, workflow);
-  const owner = ownerForCurrentState(normalizedState, workflow);
-  const resolved = resolveStep(normalizedState);
-
-  return {
-    state: normalizedState,
-    compatStatus: mapWorkflowStateToCompatStatus(normalizedState),
-    nextActionState: owner.nextActionState,
-    nextActionOwnerKind: owner.ownerKind,
-    requiresHumanAction: owner.ownerKind === "human",
-    isAgentClaimable: resolved?.phase === StepPhase.Queued && owner.ownerKind === "agent",
-  };
-}
-
-export function inferWorkflowMode(
-  workflowId: string,
-  description?: string | null,
-  states?: string[],
-): WorkflowMode {
-  const hint = [workflowId, description ?? "", (states ?? []).join(" ")]
-    .join(" ")
-    .toLowerCase();
-  if (/(semiauto|coarse|human|gated|pull request|pr\b)/.test(hint)) {
-    return "coarse_human_gated";
-  }
-  return "granular_autonomous";
-}
-
-export function inferFinalCutState(states: string[]): string | null {
-  const preferred = [
-    "ready_for_plan_review",
-    "ready_for_implementation_review",
-    "ready_for_shipment_review",
-    "reviewing",
-  ];
-  for (const candidate of preferred) {
-    if (states.includes(candidate)) return candidate;
-  }
-  return null;
-}
-
-export function inferRetakeState(states: string[], initialState: string): string {
-  const preferred = ["ready_for_implementation", "retake", "retry", "rejected", "refining"];
-  for (const candidate of preferred) {
-    if (states.includes(candidate)) return candidate;
-  }
-  return initialState;
-}
-
-export function workflowDescriptorById(
-  workflows: MemoryWorkflowDescriptor[],
-): Map<string, MemoryWorkflowDescriptor> {
-  const map = new Map<string, MemoryWorkflowDescriptor>();
-  for (const workflow of workflows) {
-    map.set(workflow.id, workflow);
-    map.set(workflow.backingWorkflowId, workflow);
-    if (workflow.profileId) map.set(workflow.profileId, workflow);
-  }
-
-  const autopilot = workflows.find((workflow) => workflow.id === "autopilot");
-  if (autopilot) {
-    map.set(LEGACY_BEADS_COARSE_WORKFLOW_ID, autopilot);
-    map.set("knots-granular", autopilot);
-    map.set("knots-granular-autonomous", autopilot);
-  }
-
-  const semiauto = workflows.find((workflow) => workflow.id === "semiauto");
-  if (semiauto) {
-    map.set("knots-coarse", semiauto);
-    map.set("knots-coarse-human-gated", semiauto);
-    map.set("beads-coarse-human-gated", semiauto);
-  }
-
-  return map;
-}
-
-function resolveWorkflowForBeat(
-  beat: Beat,
-  workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): MemoryWorkflowDescriptor | null {
-  const profileId = normalizeProfileId(beat.profileId);
-  if (profileId && workflowsById.has(profileId)) return workflowsById.get(profileId)!;
-  if (beat.workflowId && workflowsById.has(beat.workflowId)) return workflowsById.get(beat.workflowId)!;
-  return null;
-}
-
-export function beatRequiresHumanAction(
-  beat: Beat,
-  workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): boolean {
-  if (typeof beat.requiresHumanAction === "boolean") return beat.requiresHumanAction;
-  const workflow = resolveWorkflowForBeat(beat, workflowsById);
-  if (!workflow) return false;
-  return deriveWorkflowRuntimeState(workflow, beat.state).requiresHumanAction;
-}
-
-export function beatInFinalCut(
-  beat: Beat,
-  workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): boolean {
-  return beatRequiresHumanAction(beat, workflowsById);
-}
-
-export function beatInRetake(
-  beat: Beat,
-  workflowsById: Map<string, MemoryWorkflowDescriptor>,
-): boolean {
-  const normalized = normalizeState(beat.state) ?? "";
-  if (LEGACY_RETAKE_STATES.has(normalized)) return true;
-
-  const workflow = resolveWorkflowForBeat(beat, workflowsById);
-  if (!workflow) return false;
-  return normalizeState(workflow.retakeState) === normalized;
-}
-
-/**
- * Returns true when the state is a queue state (queued phase) or a terminal state.
- * An agent must never end a work iteration in an active (action) state;
- * this helper expresses the invariant check.
- */
-export function isQueueOrTerminal(state: string, workflow?: MemoryWorkflowDescriptor): boolean {
-  const terminalStates = workflow?.terminalStates ?? ["shipped", "abandoned", "closed"];
-  if (terminalStates.includes(state)) return true;
-  if (state === "deferred") return true;
-  const resolved = resolveStep(state);
-  if (!resolved) return true; // unknown states are treated as non-action
-  return resolved.phase === StepPhase.Queued;
-}
-
-/**
- * Ordered pipeline index for each workflow state.
- * A transition is a "rollback" when the target has a lower index than the source.
- */
-const STATE_PIPELINE_ORDER: ReadonlyMap<string, number> = new Map([
-  ["ready_for_planning", 0],
-  ["planning", 1],
-  ["ready_for_plan_review", 2],
-  ["plan_review", 3],
-  ["ready_for_implementation", 4],
-  ["implementation", 5],
-  ["ready_for_implementation_review", 6],
-  ["implementation_review", 7],
-  ["ready_for_shipment", 8],
-  ["shipment", 9],
-  ["ready_for_shipment_review", 10],
-  ["shipment_review", 11],
-  ["shipped", 12],
-]);
-
-/**
- * Compare two workflow states by pipeline priority.
- * Known workflow states sort ahead of unknown states.
- */
-export function compareWorkflowStatePriority(left: string, right: string): number {
-  const leftIndex = STATE_PIPELINE_ORDER.get(left);
-  const rightIndex = STATE_PIPELINE_ORDER.get(right);
-
-  if (leftIndex !== undefined && rightIndex !== undefined) {
-    if (leftIndex !== rightIndex) return leftIndex - rightIndex;
-    return left.localeCompare(right);
-  }
-
-  if (leftIndex !== undefined) return -1;
-  if (rightIndex !== undefined) return 1;
-  return left.localeCompare(right);
-}
-
-/** Returns true when the transition moves backward through the workflow pipeline. */
-export function isRollbackTransition(from: string, to: string): boolean {
-  const fromIndex = STATE_PIPELINE_ORDER.get(from);
-  const toIndex = STATE_PIPELINE_ORDER.get(to);
-  if (fromIndex === undefined || toIndex === undefined) return false;
-  return toIndex < fromIndex;
-}
-
-// ── Transition helpers ─────────────────────────────────────────
-
-/**
- * Return the single forward (non-rollback) transition target for a given state.
- *
- * Searches `workflow.transitions` for edges originating at `currentState`,
- * filters out rollback transitions (where the target is earlier in the
- * pipeline than the source) using {@link isRollbackTransition}, and returns
- * the first remaining target.  Returns `null` when no forward transition
- * exists (e.g. terminal states or missing transition data).
- */
-export function forwardTransitionTarget(
-  currentState: string,
-  workflow: MemoryWorkflowDescriptor,
-): string | null {
-  const transitions = workflow.transitions;
-  if (!transitions) return null;
-
-  for (const { from, to } of transitions) {
-    if (from !== currentState) continue;
-    if (isRollbackTransition(from, to)) continue;
-    return to;
-  }
-
-  return null;
-}
-
-// ── Deprecated aliases (use backend-agnostic names above) ──────
-
+// ── Deprecated aliases (use backend-agnostic names above) ──
 /** @deprecated Use DEFAULT_PROFILE_ID */
 export const DEFAULT_BEADS_PROFILE_ID = DEFAULT_PROFILE_ID;
 /** @deprecated Use DEFAULT_WORKFLOW_ID */
 export const BEADS_COARSE_WORKFLOW_ID = DEFAULT_WORKFLOW_ID;
 /** @deprecated Use DEFAULT_PROMPT_PROFILE_ID */
-export const BEADS_COARSE_PROMPT_PROFILE_ID = DEFAULT_PROMPT_PROFILE_ID;
-
+export const BEADS_COARSE_PROMPT_PROFILE_ID =
+  DEFAULT_PROMPT_PROFILE_ID;
 /** @deprecated Use builtinWorkflowDescriptors */
-export const beadsProfileWorkflowDescriptors = builtinWorkflowDescriptors;
+export const beadsProfileWorkflowDescriptors =
+  builtinWorkflowDescriptors;
 /** @deprecated Use builtinProfileDescriptor */
 export const beadsProfileDescriptor = builtinProfileDescriptor;
 /** @deprecated Use defaultWorkflowDescriptor */
-export const beadsCoarseWorkflowDescriptor = defaultWorkflowDescriptor;
+export const beadsCoarseWorkflowDescriptor =
+  defaultWorkflowDescriptor;
