@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("retake action contract", () => {
-  const retakesViewSource = readFileSync(
-    path.join(process.cwd(), "src/components/retakes-view.tsx"),
+  const helpersSource = readFileSync(
+    path.join(process.cwd(), "src/lib/retake-view-helpers.ts"),
     "utf8",
   );
   const retakeScopeSource = readFileSync(
@@ -14,52 +14,90 @@ describe("retake action contract", () => {
   );
 
   it("performs updateBeatOrThrow before startSession in retake-now path", () => {
-    // The mutation must call updateBeatOrThrow first, then startSession.
-    // Verify ordering: updateBeatOrThrow appears before startSession in the mutation body.
-    const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
-    const startIdx = retakesViewSource.indexOf("startSession(beat.id");
+    // The mutation calls updateBeatOrThrow first, then delegates to
+    // executeRetakeNow which calls startSession.
+    // Verify ordering: updateBeatOrThrow appears before executeRetakeNow
+    // in the mutation body.
+    const updateIdx = helpersSource.indexOf("updateBeatOrThrow(");
+    const delegateIdx = helpersSource.indexOf(
+      "executeRetakeNow(",
+      updateIdx,
+    );
     expect(updateIdx).toBeGreaterThan(-1);
+    expect(delegateIdx).toBeGreaterThan(updateIdx);
+    // And executeRetakeNow itself calls startSession.
+    const startIdx = helpersSource.indexOf("startSession(");
     expect(startIdx).toBeGreaterThan(-1);
-    expect(updateIdx).toBeLessThan(startIdx);
   });
 
   it("stages successfully even if startSession fails (preserves staged mutation)", () => {
-    // The mutation returns staged: true for all retake-now outcomes including start-failed.
-    expect(retakesViewSource).toContain('"start-failed" as const');
+    // The mutation returns staged: true for all retake-now outcomes
+    // including start-failed.
+    expect(helpersSource).toContain('sessionResult: "start-failed"');
     // Verify staged: true appears in the same return block
-    const startFailedIdx = retakesViewSource.indexOf('"start-failed" as const');
-    const returnBlock = retakesViewSource.lastIndexOf("return {", startFailedIdx);
-    const blockSlice = retakesViewSource.slice(returnBlock, startFailedIdx);
+    const startFailedIdx = helpersSource.indexOf(
+      'sessionResult: "start-failed"',
+    );
+    const returnBlock = helpersSource.lastIndexOf(
+      "return {", startFailedIdx,
+    );
+    const blockSlice = helpersSource.slice(
+      returnBlock, startFailedIdx,
+    );
     expect(blockSlice).toContain("staged: true");
   });
 
   it("checks for rolling ancestor before starting session", () => {
-    // hasRollingAncestor must be called between updateBeatOrThrow and startSession
-    const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
-    const ancestorIdx = retakesViewSource.indexOf("hasRollingAncestor(");
-    const startIdx = retakesViewSource.indexOf("startSession(beat.id");
-    expect(ancestorIdx).toBeGreaterThan(updateIdx);
+    // In executeRetakeNow, hasRollingAncestor must be called
+    // between findRunningTerminalForBeat and startSession.
+    const existingIdx = helpersSource.indexOf(
+      "findRunningTerminalForBeat(",
+    );
+    const ancestorIdx = helpersSource.indexOf(
+      "hasRollingAncestor(",
+    );
+    const startIdx = helpersSource.indexOf(
+      "startSession(",
+      ancestorIdx,
+    );
+    expect(ancestorIdx).toBeGreaterThan(existingIdx);
     expect(ancestorIdx).toBeLessThan(startIdx);
   });
 
   it("checks for existing running session before starting a new one", () => {
-    const updateIdx = retakesViewSource.indexOf("updateBeatOrThrow(beats");
-    const existingIdx = retakesViewSource.indexOf("findRunningTerminalForBeat(");
-    expect(existingIdx).toBeGreaterThan(updateIdx);
+    // In executeRetakeNow, findRunningTerminalForBeat is called
+    // before startSession.
+    const existingIdx = helpersSource.indexOf(
+      "findRunningTerminalForBeat(",
+    );
+    const startIdx = helpersSource.indexOf(
+      "startSession(",
+      existingIdx,
+    );
+    expect(existingIdx).toBeGreaterThan(-1);
+    expect(startIdx).toBeGreaterThan(existingIdx);
   });
 
   it("scopes running-session and ancestry lookups by repo path", () => {
-    expect(retakesViewSource).toContain("repoScopedBeatKey");
-    expect(retakesViewSource).toContain("repoScopedBeatKey(beat.parent, repo)");
-    expect(retakeScopeSource).toContain("repoScopedBeatKey(terminal.beatId, terminal.repoPath)");
-    expect(retakeScopeSource).toContain("repoScopedBeatKey(beatId, repoPath)");
+    expect(helpersSource).toContain("repoScopedBeatKey");
+    expect(helpersSource).toContain(
+      "repoScopedBeatKey(beat.parent, repo)",
+    );
+    expect(retakeScopeSource).toContain(
+      "repoScopedBeatKey(terminal.beatId, terminal.repoPath)",
+    );
+    expect(retakeScopeSource).toContain(
+      "repoScopedBeatKey(beatId, repoPath)",
+    );
   });
 
   it("builds parentByBeatId from allBeats not just retake candidates", () => {
-    // The parent map must be built from allBeats to avoid the ancestry bug
-    expect(retakesViewSource).toContain("allBeats");
-    // Verify allBeats feeds the helper that builds the parent map from beat.parent.
-    const allBeatsIdx = retakesViewSource.indexOf("allBeats");
+    // The parent map must be built from allBeats to avoid the
+    // ancestry bug.
+    expect(helpersSource).toContain("allBeats");
+    // Verify allBeats feeds the helper that builds the parent map
+    // from beat.parent.
+    const allBeatsIdx = helpersSource.indexOf("allBeats");
     const parentIdx = retakeScopeSource.indexOf("beat.parent");
     expect(allBeatsIdx).toBeGreaterThan(-1);
     expect(parentIdx).toBeGreaterThan(-1);

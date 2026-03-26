@@ -1,550 +1,318 @@
 "use client";
 
-import { Suspense, useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchBeats } from "@/lib/api";
-import { startSession, abortSession } from "@/lib/terminal-api";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import type { Beat } from "@/lib/types";
+import type { AgentInfo } from "@/components/beat-columns";
 import { BeatTable } from "@/components/beat-table";
-import { BeatDetailLightbox } from "@/components/beat-detail-lightbox";
-import { FilterBar, type ViewPhase } from "@/components/filter-bar";
-import { MergeBeatsDialog } from "@/components/merge-beats-dialog";
+import {
+  BeatDetailLightbox,
+} from "@/components/beat-detail-lightbox";
+import {
+  FilterBar, type ViewPhase,
+} from "@/components/filter-bar";
+import {
+  MergeBeatsDialog,
+} from "@/components/merge-beats-dialog";
 import { FinalCutView } from "@/components/final-cut-view";
 import { RetakesView } from "@/components/retakes-view";
-import { AgentHistoryView } from "@/components/agent-history-view";
-import { LeaseAuditView } from "@/components/lease-audit-view";
-import { useAppStore } from "@/stores/app-store";
-import { useTerminalStore, type QueuedBeat } from "@/stores/terminal-store";
-import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
-import type { Beat } from "@/lib/types";
-import type { UpdateBeatInput } from "@/lib/schemas";
-import type { AgentInfo } from "@/components/beat-columns";
 import {
-  displayCommandLabel,
-  formatAgentFamily,
-  normalizeAgentIdentity,
-} from "@/lib/agent-identity";
-import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
-import { isListBeatsView, parseBeatsView } from "@/lib/beats-view";
-import { hasRollingAncestor as hasRollingAncestorLib } from "@/lib/rolling-ancestor";
-import { fetchSettings } from "@/lib/settings-api";
+  AgentHistoryView,
+} from "@/components/agent-history-view";
+import {
+  LeaseAuditView,
+} from "@/components/lease-audit-view";
+import { useAppStore } from "@/stores/app-store";
+import { useTerminalStore } from "@/stores/terminal-store";
+import { AlertTriangle } from "lucide-react";
+import {
+  isListBeatsView, parseBeatsView,
+} from "@/lib/beats-view";
+import { useBeatsQuery } from "./use-beats-query";
+import { useAgentInfoMap } from "./use-agent-info-map";
+import { useBulkActions } from "./use-bulk-actions";
+import { useBeatActions } from "./use-beat-actions";
+import { useBeatDetail } from "./use-beat-detail";
 
-const DEGRADED_ERROR_PREFIX = "Unable to interact with beats store";
-const DEFAULT_MAX_SESSIONS = 5;
-
-/** Thrown when the backend reports a degraded beats store.
- *  React Query keeps previous data when the queryFn throws. */
-class DegradedStoreError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "DegradedStoreError";
-  }
-}
-
-function throwIfDegraded(result: { ok: boolean; error?: string }): void {
-  if (!result.ok && result.error?.startsWith(DEGRADED_ERROR_PREFIX)) {
-    throw new DegradedStoreError(result.error);
-  }
-}
-
-export function toActiveAgentInfo(input: {
-  agentCommand?: string;
-  agentName?: string;
-  model?: string;
-  version?: string;
-}): AgentInfo {
-  const command = input.agentCommand ?? input.agentName;
-  const normalized = normalizeAgentIdentity({
-    command,
-    model: input.model,
-    version: input.version,
-  });
-  const agentName = displayCommandLabel(command) ?? input.agentName;
-  const family = formatAgentFamily({
-    provider: normalized.provider,
-    model: normalized.model,
-    flavor: normalized.flavor,
-  });
-  const modelDisplay = family && agentName && family.startsWith(`${agentName} `)
-    ? family.slice(agentName.length + 1)
-    : family;
-  return {
-    agentName,
-    model: modelDisplay || input.model,
-    version: normalized.version,
-  };
-}
+export {
+  toActiveAgentInfo,
+} from "./to-active-agent-info";
 
 export default function BeatsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-6 text-muted-foreground">Loading beats...</div>}>
+    <Suspense fallback={
+      <div className={
+        "flex items-center justify-center"
+        + " py-6 text-muted-foreground"
+      }>
+        Loading beats...
+      </div>
+    }>
       <BeatsPageInner />
     </Suspense>
   );
 }
 
-function BeatsPageInner() {
+function useBeatsPageState() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const searchQuery = searchParams.get("q") ?? "";
   const detailBeatId = searchParams.get("beat");
-  const detailRepo = searchParams.get("detailRepo") ?? undefined;
-  const beatsView = parseBeatsView(searchParams.get("view"));
+  const detailRepo =
+    searchParams.get("detailRepo") ?? undefined;
+  const beatsView =
+    parseBeatsView(searchParams.get("view"));
   const isListView = isListBeatsView(beatsView);
-  const viewPhase: ViewPhase = beatsView === "active" ? "active" : "queues";
-  const isFinalCutView = beatsView === "finalcut";
-  const isRetakesView = beatsView === "retakes";
-  const isHistoryView = beatsView === "history";
-  const isAuditView = beatsView === "audit";
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectionVersion, setSelectionVersion] = useState(0);
-  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
-  const [mergeBeatIds, setMergeBeatIds] = useState<string[]>([]);
-  const queryClient = useQueryClient();
-  const { data: settingsData } = useQuery({
-    queryKey: ["settings"],
-    queryFn: () => fetchSettings(),
-    staleTime: 30_000,
-  });
-  const maxSessions = settingsData?.ok && settingsData.data
-    ? settingsData.data.maxConcurrentSessions ?? DEFAULT_MAX_SESSIONS
-    : DEFAULT_MAX_SESSIONS;
-  const { filters, activeRepo, registeredRepos } = useAppStore();
-  const {
-    terminals,
-    setActiveSession,
-    upsertTerminal,
-    updateStatus,
-    sceneQueue,
-    enqueueSceneBeats,
-    dequeueSceneBeats,
-  } = useTerminalStore();
-  const shippingByBeatId = terminals.reduce<Record<string, string>>(
-    (acc, terminal) => {
-      if (terminal.status === "running") {
-        acc[terminal.beatId] = terminal.sessionId;
-      }
-      return acc;
-    },
-    {}
-  );
-
-  const params: Record<string, string> = {};
-  if (!searchQuery && filters.state) params.state = filters.state;
-  if (filters.type) params.type = filters.type;
-  if (filters.priority !== undefined) params.priority = String(filters.priority);
-  if (searchQuery) params.q = searchQuery;
-
-  const { data, isLoading, error: queryError } = useQuery({
-    queryKey: ["beats", params, activeRepo, registeredRepos.length],
-    queryFn: async () => {
-      const fetcher = fetchBeats;
-      if (activeRepo) {
-        const result = await fetcher(params, activeRepo);
-        throwIfDegraded(result);
-        if (result.ok && result.data) {
-          const repo = registeredRepos.find((r) => r.path === activeRepo);
-          result.data = result.data.map((beat) => ({
-            ...beat,
-            _repoPath: activeRepo,
-            _repoName: repo?.name ?? activeRepo,
-          })) as typeof result.data;
-        }
-        return result;
-      }
-      if (registeredRepos.length > 0) {
-        let hasDegraded = false;
-        let degradedMsg = "";
-        const results = await Promise.all(
-          registeredRepos.map(async (repo) => {
-            const result = await fetcher(params, repo.path);
-            if (!result.ok && result.error?.startsWith(DEGRADED_ERROR_PREFIX)) {
-              hasDegraded = true;
-              degradedMsg = result.error;
-              return [];
-            }
-            if (!result.ok || !result.data) return [];
-            return result.data.map((beat) => ({
-              ...beat,
-              _repoPath: repo.path,
-              _repoName: repo.name,
-            }));
-          })
-        );
-        const merged = results.flat();
-        if (merged.length === 0 && hasDegraded) {
-          throw new DegradedStoreError(degradedMsg);
-        }
-        return { ok: true as const, data: merged, _degraded: hasDegraded ? degradedMsg : undefined };
-      }
-      const result = await fetcher(params);
-      throwIfDegraded(result);
-      return result;
-    },
-    enabled: isListView && (Boolean(activeRepo) || registeredRepos.length > 0),
-    refetchInterval: 10_000,
-    retry: (count, error) => !(error instanceof DegradedStoreError) && count < 3,
-  });
-
-  const beats = useMemo<Beat[]>(() => (data?.ok ? (data.data ?? []) : []), [data]);
-  const parentByBeatId = useMemo(() => {
-    const map = new Map<string, string | undefined>();
-    for (const beat of beats) map.set(beat.id, beat.parent);
-    return map;
-  }, [beats]);
-
-  const hasRollingAncestor = useCallback(
-    (beat: Pick<Beat, "id" | "parent">): boolean =>
-      hasRollingAncestorLib(beat, parentByBeatId, shippingByBeatId),
-    [parentByBeatId, shippingByBeatId],
-  );
-
-  const partialDegradedMsg = data?.ok ? (data as { _degraded?: string })._degraded : undefined;
-  const isDegradedError = queryError instanceof DegradedStoreError || Boolean(partialDegradedMsg);
-  const loadError = queryError instanceof DegradedStoreError
-    ? queryError.message
-    : partialDegradedMsg
-      ? partialDegradedMsg
-      : data && !data.ok
-        ? data.error ?? "Failed to load beats."
-        : null;
-  const showRepoColumn = !activeRepo && registeredRepos.length > 1;
+  const viewPhase: ViewPhase =
+    beatsView === "active" ? "active" : "queues";
   const isActiveView = beatsView === "active";
+  const { activeRepo, registeredRepos } = useAppStore();
+  const { terminals } = useTerminalStore();
 
-  const agentInfoByBeatId = useMemo<Record<string, AgentInfo>>(() => {
-    if (!isActiveView) return {};
-    const map: Record<string, AgentInfo> = {};
-
-    // Populate from handoff capsules in beat metadata (last capsule wins).
-    for (const beat of beats) {
-      const capsules = beat.metadata?.knotsHandoffCapsules;
-      if (Array.isArray(capsules) && capsules.length > 0) {
-        const last = capsules[capsules.length - 1] as Record<string, unknown>;
-        map[beat.id] = toActiveAgentInfo({
-          agentCommand: typeof last.agentname === "string" ? last.agentname : undefined,
-          agentName: typeof last.agentname === "string" ? last.agentname : undefined,
-          model: typeof last.model === "string" ? last.model : undefined,
-          version: typeof last.version === "string" ? last.version : undefined,
-        });
-      }
+  const shippingByBeatId = terminals.reduce<
+    Record<string, string>
+  >((acc, t) => {
+    if (t.status === "running") {
+      acc[t.beatId] = t.sessionId;
     }
+    return acc;
+  }, {});
 
-    // Override with live terminal data for currently running sessions.
-    for (const terminal of terminals) {
-      if (terminal.status === "running") {
-        map[terminal.beatId] = {
-          agentName: terminal.agentName ?? map[terminal.beatId]?.agentName,
-          ...toActiveAgentInfo({
-            agentCommand: terminal.agentCommand,
-            agentName: terminal.agentName,
-            model: terminal.agentModel,
-            version: terminal.agentVersion,
-          }),
-        };
-      }
-    }
-
-    return map;
-  }, [isActiveView, beats, terminals]);
-
-  const { mutate: bulkUpdate } = useMutation({
-    mutationFn: async ({ ids, fields }: { ids: string[]; fields: UpdateBeatInput }) => {
-      await Promise.all(ids.map((id) => updateBeatOrThrow(beats, id, fields)));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["beats"] });
-      setSelectionVersion((v) => v + 1);
-      toast.success("Beats updated");
-    },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : "Failed to update beats";
-      toast.error(message);
-    },
+  const {
+    beats, isLoading, loadError,
+    isDegradedError, hasRollingAncestor,
+  } = useBeatsQuery({
+    searchQuery, isListView, activeRepo,
+    registeredRepos, shippingByBeatId,
   });
 
-  const handleSelectionChange = useCallback((ids: string[]) => {
-    setSelectedIds(ids);
-  }, []);
-
-  const handleBulkUpdate = useCallback(
-    (fields: UpdateBeatInput) => {
-      if (selectedIds.length > 0) {
-        bulkUpdate({ ids: selectedIds, fields });
-      }
-    },
-    [selectedIds, bulkUpdate]
+  const showRepoColumn =
+    !activeRepo && registeredRepos.length > 1;
+  const agentInfoByBeatId = useAgentInfoMap(
+    isActiveView, beats, terminals,
   );
-
-  const handleClearSelection = useCallback(() => {
-    setSelectionVersion((v) => v + 1);
-  }, []);
-
-  const handleShipBeat = useCallback(
-    async (beat: Beat) => {
-      const existingRunning = terminals.find(
-        (terminal) => terminal.beatId === beat.id && terminal.status === "running"
-      );
-      if (existingRunning) {
-        setActiveSession(existingRunning.sessionId);
-        toast.info("Opened active session");
-        return;
-      }
-
-      if (hasRollingAncestor(beat)) {
-        toast.info("Parent beat is already rolling");
-        return;
-      }
-
-      const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      const result = await startSession(beat.id, repo ?? activeRepo ?? undefined);
-      if (!result.ok || !result.data) {
-        toast.error(result.error ?? "Failed to start terminal session");
-        return;
-      }
-      upsertTerminal({
-        sessionId: result.data.id,
-        beatId: beat.id,
-        beatTitle: beat.title,
-        repoPath: result.data.repoPath ?? repo ?? activeRepo ?? undefined,
-        agentName: result.data.agentName,
-        agentModel: result.data.agentModel,
-        agentVersion: result.data.agentVersion,
-        agentCommand: result.data.agentCommand,
-        status: "running",
-        startedAt: result.data.startedAt,
-      });
-    },
-    [activeRepo, hasRollingAncestor, setActiveSession, terminals, upsertTerminal]
+  const bulk = useBulkActions(beats);
+  const actions = useBeatActions(
+    beats, terminals,
+    shippingByBeatId, hasRollingAncestor,
   );
+  const detail = useBeatDetail({
+    beats, detailBeatId, detailRepo, isListView,
+  });
 
-  const handleAbortShipping = useCallback(async (beatId: string) => {
-    const running = terminals.find(
-      (terminal) =>
-        terminal.status === "running" && terminal.beatId === beatId
-    );
-    if (!running) return;
+  return {
+    beatsView, isListView, viewPhase,
+    isActiveView, activeRepo,
+    searchQuery, detailBeatId, detailRepo,
+    beats, isLoading, loadError, isDegradedError,
+    hasRollingAncestor, showRepoColumn,
+    agentInfoByBeatId, shippingByBeatId,
+    ...bulk, ...actions, ...detail,
+  };
+}
 
-    const result = await abortSession(running.sessionId);
-    if (!result.ok) {
-      toast.error(result.error ?? "Failed to terminate session");
-      return;
-    }
-    updateStatus(running.sessionId, "aborted");
-    toast.success("Take terminated");
-  }, [terminals, updateStatus]);
-
-  const launchTakeForQueuedBeat = useCallback(
-    async (item: QueuedBeat) => {
-      const result = await startSession(item.beatId, item.repoPath ?? activeRepo ?? undefined);
-      if (!result.ok || !result.data) {
-        toast.error(result.error ?? `Failed to start session for ${item.beatId}`);
-        return;
-      }
-      upsertTerminal({
-        sessionId: result.data.id,
-        beatId: item.beatId,
-        beatTitle: item.beatTitle,
-        repoPath: result.data.repoPath ?? item.repoPath ?? activeRepo ?? undefined,
-        agentName: result.data.agentName,
-        agentModel: result.data.agentModel,
-        agentVersion: result.data.agentVersion,
-        agentCommand: result.data.agentCommand,
-        status: "running",
-        startedAt: result.data.startedAt,
-      });
-    },
-    [activeRepo, upsertTerminal]
-  );
-
-  const drainingRef = useRef(false);
-
-  const handleSceneBeats = useCallback(
-    async (ids: string[]) => {
-      const selectedBeats = beats.filter((b) => ids.includes(b.id));
-      if (selectedBeats.length === 0) return;
-
-      const runningCount = terminals.filter((t) => t.status === "running").length;
-      const availableSlots = Math.max(0, maxSessions - runningCount);
-
-      const toLaunch = selectedBeats.slice(0, availableSlots);
-      const toQueue = selectedBeats.slice(availableSlots);
-
-      for (const beat of toLaunch) {
-        await handleShipBeat(beat);
-      }
-
-      if (toQueue.length > 0) {
-        const queued: QueuedBeat[] = toQueue.map((beat) => ({
-          beatId: beat.id,
-          beatTitle: beat.title,
-          repoPath: (beat as unknown as Record<string, unknown>)._repoPath as string | undefined,
-        }));
-        enqueueSceneBeats(queued);
-        toast.info(`${toQueue.length} beat${toQueue.length > 1 ? "s" : ""} queued (waiting for available slots)`);
-      }
-    },
-    [beats, terminals, maxSessions, handleShipBeat, enqueueSceneBeats]
-  );
-
-  // Drain the scene queue as sessions complete and slots open up
-  useEffect(() => {
-    if (sceneQueue.length === 0 || drainingRef.current) return;
-
-    const runningCount = terminals.filter((t) => t.status === "running").length;
-    if (runningCount >= maxSessions) return;
-
-    const slotsAvailable = maxSessions - runningCount;
-    const batch = dequeueSceneBeats(slotsAvailable);
-    if (batch.length === 0) return;
-
-    drainingRef.current = true;
-    const launch = async () => {
-      for (const item of batch) {
-        await launchTakeForQueuedBeat(item);
-      }
-      drainingRef.current = false;
-    };
-    launch();
-  }, [sceneQueue, terminals, maxSessions, dequeueSceneBeats, launchTakeForQueuedBeat]);
-
-  const handleMergeBeats = useCallback(
-    (ids: string[]) => {
-      setMergeBeatIds(ids);
-      setMergeDialogOpen(true);
-    },
-    []
-  );
-
-  const handleMergeComplete = useCallback(() => {
-    setSelectionVersion((v) => v + 1);
-  }, []);
-
-  const setBeatDetailParams = useCallback((id: string | null, repo: string | undefined, mode: "push" | "replace") => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (id) params.set("beat", id);
-    else params.delete("beat");
-
-    if (repo) params.set("detailRepo", repo);
-    else params.delete("detailRepo");
-
-    const qs = params.toString();
-    const nextUrl = `${pathname}${qs ? `?${qs}` : ""}`;
-    if (mode === "replace") router.replace(nextUrl);
-    else router.push(nextUrl);
-  }, [searchParams, pathname, router]);
-
-  useEffect(() => {
-    if (!isListView && detailBeatId) {
-      setBeatDetailParams(null, undefined, "replace");
-    }
-  }, [isListView, detailBeatId, setBeatDetailParams]);
-
-  const handleOpenBeat = useCallback((beat: Beat) => {
-    const repo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
-    setBeatDetailParams(beat.id, repo, "push");
-  }, [setBeatDetailParams]);
-
-  const handleBeatLightboxOpenChange = useCallback((open: boolean) => {
-    if (!open) setBeatDetailParams(null, undefined, "replace");
-  }, [setBeatDetailParams]);
-
-  const handleMovedBeat = useCallback((newId: string, targetRepo: string) => {
-    setBeatDetailParams(newId, targetRepo, "replace");
-    queryClient.invalidateQueries({ queryKey: ["beats"] });
-  }, [queryClient, setBeatDetailParams]);
-
-  const initialDetailBeat = useMemo(() => {
-    if (!detailBeatId) return null;
-    return beats.find((beat) => {
-      if (beat.id !== detailBeatId) return false;
-      const beatRepo = (beat as unknown as Record<string, unknown>)._repoPath as string | undefined;
-      return !detailRepo || beatRepo === detailRepo;
-    }) ?? null;
-  }, [beats, detailBeatId, detailRepo]);
+function BeatsPageInner() {
+  const s = useBeatsPageState();
+  const isFinalCutView = s.beatsView === "finalcut";
+  const isRetakesView = s.beatsView === "retakes";
+  const isHistoryView = s.beatsView === "history";
+  const isAuditView = s.beatsView === "audit";
 
   return (
-    <div className="mx-auto max-w-[95vw] overflow-x-hidden px-4 pt-2">
-      {isListView && (
-        <div className="mb-2 flex h-10 items-center border-b border-border/60 pb-2">
+    <div className={
+      "mx-auto max-w-[95vw]"
+      + " overflow-x-hidden px-4 pt-2"
+    }>
+      {s.isListView && (
+        <div className={
+          "mb-2 flex h-10 items-center"
+          + " border-b border-border/60 pb-2"
+        }>
           <FilterBar
-            viewPhase={viewPhase}
-            selectedIds={selectedIds}
-            onBulkUpdate={handleBulkUpdate}
-            onClearSelection={handleClearSelection}
-            onSceneBeats={handleSceneBeats}
-            onMergeBeats={handleMergeBeats}
+            viewPhase={s.viewPhase}
+            selectedIds={s.selectedIds}
+            onBulkUpdate={s.handleBulkUpdate}
+            onClearSelection={s.handleClearSelection}
+            onSceneBeats={s.handleSceneBeats}
+            onMergeBeats={s.handleMergeBeats}
           />
         </div>
       )}
-
-      <div className="mt-0.5">
-        {isFinalCutView ? (
-          <FinalCutView />
-        ) : isRetakesView ? (
-          <RetakesView />
-        ) : isHistoryView ? (
-          <AgentHistoryView />
-        ) : isAuditView ? (
-          <LeaseAuditView repoPath={activeRepo ?? undefined} />
-        ) : (
-          <div className="overflow-x-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-6 text-muted-foreground">
-              Loading beats...
-            </div>
-          ) : loadError && !isDegradedError ? (
-            <div className="flex items-center justify-center py-6 text-sm text-destructive">
-              Failed to load beats: {loadError}
-            </div>
-          ) : (
-            <>
-              {isDegradedError && (
-                <div className="mb-2 flex items-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
-                  <AlertTriangle className="size-4 shrink-0" />
-                  <span>{loadError}</span>
-                </div>
-              )}
-              <BeatTable
-                data={beats}
-                showRepoColumn={showRepoColumn}
-                showAgentColumns={isActiveView}
-                agentInfoByBeatId={agentInfoByBeatId}
-                onSelectionChange={handleSelectionChange}
-                selectionVersion={selectionVersion}
-                searchQuery={searchQuery}
-                onOpenBeat={handleOpenBeat}
-                onShipBeat={handleShipBeat}
-                shippingByBeatId={shippingByBeatId}
-                onAbortShipping={handleAbortShipping}
-              />
-            </>
-          )}
-          </div>
-        )}
-      </div>
-      {isListView && (
+      <BeatsViewBody
+        isFinalCutView={isFinalCutView}
+        isRetakesView={isRetakesView}
+        isHistoryView={isHistoryView}
+        isAuditView={isAuditView}
+        state={s}
+      />
+      {s.isListView && (
         <BeatDetailLightbox
-          key={`${detailBeatId ?? "none"}:${detailRepo ?? "none"}`}
-          open={Boolean(detailBeatId)}
-          beatId={detailBeatId}
-          repo={detailRepo}
-          initialBeat={initialDetailBeat}
-          onOpenChange={handleBeatLightboxOpenChange}
-          onMoved={handleMovedBeat}
-          onShipBeat={handleShipBeat}
-          isParentRollingBeat={hasRollingAncestor}
+          key={`${s.detailBeatId ?? "none"}:${
+            s.detailRepo ?? "none"
+          }`}
+          open={Boolean(s.detailBeatId)}
+          beatId={s.detailBeatId}
+          repo={s.detailRepo}
+          initialBeat={s.initialDetailBeat}
+          onOpenChange={
+            s.handleBeatLightboxOpenChange
+          }
+          onMoved={s.handleMovedBeat}
+          onShipBeat={s.handleShipBeat}
+          isParentRollingBeat={
+            s.hasRollingAncestor
+          }
         />
       )}
-      {isListView && (
+      {s.isListView && (
         <MergeBeatsDialog
-          open={mergeDialogOpen}
-          onOpenChange={setMergeDialogOpen}
-          beats={beats.filter((b) => mergeBeatIds.includes(b.id))}
-          onMerged={handleMergeComplete}
+          open={s.mergeDialogOpen}
+          onOpenChange={s.setMergeDialogOpen}
+          beats={s.beats.filter(
+            (b) => s.mergeBeatIds.includes(b.id),
+          )}
+          onMerged={s.handleClearSelection}
         />
       )}
+    </div>
+  );
+}
+
+type PageState = ReturnType<typeof useBeatsPageState>;
+
+function BeatsViewBody({
+  isFinalCutView, isRetakesView,
+  isHistoryView, isAuditView, state: s,
+}: {
+  isFinalCutView: boolean;
+  isRetakesView: boolean;
+  isHistoryView: boolean;
+  isAuditView: boolean;
+  state: PageState;
+}) {
+  return (
+    <div className="mt-0.5">
+      {isFinalCutView ? (
+        <FinalCutView />
+      ) : isRetakesView ? (
+        <RetakesView />
+      ) : isHistoryView ? (
+        <AgentHistoryView />
+      ) : isAuditView ? (
+        <LeaseAuditView
+          repoPath={s.activeRepo ?? undefined}
+        />
+      ) : (
+        <BeatsListContent
+          isLoading={s.isLoading}
+          loadError={s.loadError}
+          isDegradedError={s.isDegradedError}
+          beats={s.beats}
+          showRepoColumn={s.showRepoColumn}
+          isActiveView={s.isActiveView}
+          agentInfoByBeatId={s.agentInfoByBeatId}
+          onSelectionChange={
+            s.handleSelectionChange
+          }
+          selectionVersion={s.selectionVersion}
+          searchQuery={s.searchQuery}
+          onOpenBeat={s.handleOpenBeat}
+          onShipBeat={s.handleShipBeat}
+          shippingByBeatId={s.shippingByBeatId}
+          onAbortShipping={s.handleAbortShipping}
+        />
+      )}
+    </div>
+  );
+}
+
+interface BeatsListContentProps {
+  isLoading: boolean;
+  loadError: string | null;
+  isDegradedError: boolean;
+  beats: Beat[];
+  showRepoColumn: boolean;
+  isActiveView: boolean;
+  agentInfoByBeatId: Record<string, AgentInfo>;
+  onSelectionChange: (ids: string[]) => void;
+  selectionVersion: number;
+  searchQuery: string;
+  onOpenBeat: (beat: Beat) => void;
+  onShipBeat: (beat: Beat) => Promise<void>;
+  shippingByBeatId: Record<string, string>;
+  onAbortShipping: (
+    beatId: string,
+  ) => Promise<void>;
+}
+
+function BeatsListContent(
+  props: BeatsListContentProps,
+) {
+  const {
+    isLoading, loadError, isDegradedError,
+    beats, showRepoColumn, isActiveView,
+    agentInfoByBeatId, onSelectionChange,
+    selectionVersion, searchQuery,
+    onOpenBeat, onShipBeat,
+    shippingByBeatId, onAbortShipping,
+  } = props;
+
+  if (isLoading) {
+    return (
+      <div className={
+        "flex items-center justify-center"
+        + " py-6 text-muted-foreground"
+      }>
+        Loading beats...
+      </div>
+    );
+  }
+  if (loadError && !isDegradedError) {
+    return (
+      <div className={
+        "flex items-center justify-center"
+        + " py-6 text-sm text-destructive"
+      }>
+        Failed to load beats: {loadError}
+      </div>
+    );
+  }
+  return (
+    <div className="overflow-x-auto">
+      {isDegradedError && (
+        <DegradedBanner message={loadError} />
+      )}
+      <BeatTable
+        data={beats}
+        showRepoColumn={showRepoColumn}
+        showAgentColumns={isActiveView}
+        agentInfoByBeatId={agentInfoByBeatId}
+        onSelectionChange={onSelectionChange}
+        selectionVersion={selectionVersion}
+        searchQuery={searchQuery}
+        onOpenBeat={onOpenBeat}
+        onShipBeat={onShipBeat}
+        shippingByBeatId={shippingByBeatId}
+        onAbortShipping={onAbortShipping}
+      />
+    </div>
+  );
+}
+
+function DegradedBanner(
+  { message }: { message: string | null },
+) {
+  return (
+    <div className={
+      "mb-2 flex items-center gap-2 rounded-md"
+      + " border border-amber-300 bg-amber-50"
+      + " px-3 py-2 text-sm text-amber-900"
+      + " dark:border-amber-700"
+      + " dark:bg-amber-950 dark:text-amber-200"
+    }>
+      <AlertTriangle
+        className="size-4 shrink-0"
+      />
+      <span>{message}</span>
     </div>
   );
 }

@@ -94,14 +94,117 @@ interface PendingBulkFields {
   state?: string;
 }
 
+type PendingSetter = React.Dispatch<
+  React.SetStateAction<PendingBulkFields>
+>;
+
+function BulkTypeSelect(
+  { resetKey, setPending }: { resetKey: number; setPending: PendingSetter },
+) {
+  return (
+    <Select
+      key={`type-${resetKey}`}
+      onValueChange={(v) => setPending((p) => ({ ...p, type: v }))}
+    >
+      <SelectTrigger className="w-[130px] h-7">
+        <SelectValue placeholder="Set type..." />
+      </SelectTrigger>
+      <SelectContent>
+        {commonTypes.map((t) => (
+          <SelectItem key={t} value={t}>
+            {formatLabel(t)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function BulkPrioritySelect(
+  { resetKey, setPending }: { resetKey: number; setPending: PendingSetter },
+) {
+  return (
+    <Select
+      key={`priority-${resetKey}`}
+      onValueChange={(v) =>
+        setPending((p) => ({
+          ...p,
+          priority: Number(v) as BeatPriority,
+        }))
+      }
+    >
+      <SelectTrigger className="w-[130px] h-7">
+        <SelectValue placeholder="Set priority..." />
+      </SelectTrigger>
+      <SelectContent>
+        {([0, 1, 2, 3, 4] as const).map((p) => (
+          <SelectItem key={p} value={String(p)}>
+            P{p}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function BulkProfileSelect(
+  { resetKey, setPending }: { resetKey: number; setPending: PendingSetter },
+) {
+  return (
+    <Select
+      key={`profile-${resetKey}`}
+      onValueChange={(v) =>
+        setPending((p) => ({ ...p, profileId: v }))
+      }
+    >
+      <SelectTrigger className="w-[130px] h-7">
+        <SelectValue placeholder="Set profile..." />
+      </SelectTrigger>
+      <SelectContent>
+        {builtinWorkflowDescriptors().map((p) => (
+          <SelectItem key={p.id} value={p.id}>
+            {formatLabel(p.id)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function BulkStateSelect(
+  { resetKey, setPending }: { resetKey: number; setPending: PendingSetter },
+) {
+  return (
+    <Select
+      key={`state-${resetKey}`}
+      onValueChange={(v) =>
+        setPending((p) => ({ ...p, state: v }))
+      }
+    >
+      <SelectTrigger className="w-[130px] h-7">
+        <SelectValue placeholder="Set state..." />
+      </SelectTrigger>
+      <SelectContent>
+        {bulkTerminalStates.map((s) => (
+          <SelectItem key={s.value} value={s.value}>
+            {s.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function BulkEditControls({
   selectedIds,
   onBulkUpdate,
   onClearSelection,
   onSceneBeats,
   onMergeBeats,
-}: Required<Pick<FilterBarProps, "selectedIds" | "onBulkUpdate" | "onClearSelection">> &
-  Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
+}: Required<
+  Pick<FilterBarProps,
+    "selectedIds" | "onBulkUpdate" | "onClearSelection">
+> & Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
   const [pending, setPending] = useState<PendingBulkFields>({});
   const [resetKey, setResetKey] = useState(0);
 
@@ -114,8 +217,10 @@ export function BulkEditControls({
     if (!hasPending) return;
     const fields: UpdateBeatInput = {};
     if (pending.type !== undefined) fields.type = pending.type;
-    if (pending.priority !== undefined) fields.priority = pending.priority;
-    if (pending.profileId !== undefined) fields.profileId = pending.profileId;
+    if (pending.priority !== undefined)
+      fields.priority = pending.priority;
+    if (pending.profileId !== undefined)
+      fields.profileId = pending.profileId;
     if (pending.state !== undefined) fields.state = pending.state;
     onBulkUpdate(fields);
     setPending({});
@@ -151,75 +256,36 @@ export function BulkEditControls({
           Merge
         </Button>
       )}
-      <Select
-        key={`type-${resetKey}`}
-        onValueChange={(v) => setPending((p) => ({ ...p, type: v }))}
-      >
-        <SelectTrigger className="w-[130px] h-7">
-          <SelectValue placeholder="Set type..." />
-        </SelectTrigger>
-        <SelectContent>
-          {commonTypes.map((t) => (
-            <SelectItem key={t} value={t}>
-              {formatLabel(t)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        key={`priority-${resetKey}`}
-        onValueChange={(v) =>
-          setPending((p) => ({ ...p, priority: Number(v) as BeatPriority }))
-        }
-      >
-        <SelectTrigger className="w-[130px] h-7">
-          <SelectValue placeholder="Set priority..." />
-        </SelectTrigger>
-        <SelectContent>
-          {([0, 1, 2, 3, 4] as const).map((p) => (
-            <SelectItem key={p} value={String(p)}>
-              P{p}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        key={`profile-${resetKey}`}
-        onValueChange={(v) => setPending((p) => ({ ...p, profileId: v }))}
-      >
-        <SelectTrigger className="w-[130px] h-7">
-          <SelectValue placeholder="Set profile..." />
-        </SelectTrigger>
-        <SelectContent>
-          {builtinWorkflowDescriptors().map((p) => (
-            <SelectItem key={p.id} value={p.id}>
-              {formatLabel(p.id)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        key={`state-${resetKey}`}
-        onValueChange={(v) => setPending((p) => ({ ...p, state: v }))}
-      >
-        <SelectTrigger className="w-[130px] h-7">
-          <SelectValue placeholder="Set state..." />
-        </SelectTrigger>
-        <SelectContent>
-          {bulkTerminalStates.map((s) => (
-            <SelectItem key={s.value} value={s.value}>
-              {s.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <BulkTypeSelect
+        resetKey={resetKey} setPending={setPending}
+      />
+      <BulkPrioritySelect
+        resetKey={resetKey} setPending={setPending}
+      />
+      <BulkProfileSelect
+        resetKey={resetKey} setPending={setPending}
+      />
+      <BulkStateSelect
+        resetKey={resetKey} setPending={setPending}
+      />
       {hasPending && (
-        <Button variant="default" size="sm" className="gap-1" title="Apply changes to selected beats" onClick={handleApply}>
+        <Button
+          variant="default"
+          size="sm"
+          className="gap-1"
+          title="Apply changes to selected beats"
+          onClick={handleApply}
+        >
           <Check className="h-3.5 w-3.5" />
           Apply
         </Button>
       )}
-      <Button variant="ghost" size="sm" title="Clear selection" onClick={onClearSelection}>
+      <Button
+        variant="ghost"
+        size="sm"
+        title="Clear selection"
+        onClick={onClearSelection}
+      >
         <X className="h-4 w-4 mr-1" />
         Clear
       </Button>
@@ -243,7 +309,9 @@ function FilterControls({ viewPhase }: { viewPhase?: ViewPhase }) {
       : phaseDefault;
 
   const hasNonDefaultFilters =
-    filters.state !== phaseDefault || (isBeadsProject && filters.type) || filters.priority !== undefined;
+    filters.state !== phaseDefault
+    || (isBeadsProject && filters.type)
+    || filters.priority !== undefined;
 
   return (
     <div className="flex items-center gap-1 overflow-x-auto">

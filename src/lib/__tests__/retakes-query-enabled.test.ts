@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("retakes query enablement", () => {
   const source = readFileSync(
-    path.join(process.cwd(), "src/components/retakes-view.tsx"),
+    path.join(process.cwd(), "src/lib/retake-view-helpers.ts"),
     "utf8",
   );
 

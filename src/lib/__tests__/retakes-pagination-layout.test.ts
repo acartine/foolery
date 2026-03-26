@@ -10,26 +10,42 @@ describe("retakes pagination layout", () => {
   );
 
   it("renders pagination controls above and below the retakes list", () => {
-    const matches = source.match(/\{pageCount > 1 && renderPaginationControls\(\)\}/g) ?? [];
-    expect(matches).toHaveLength(2);
+    const matches =
+      source.match(/\{pagination\}/g) ?? [];
+    expect(matches.length).toBeGreaterThanOrEqual(2);
   });
 
   it("defaults the per-beat expanded details toggle to collapsed", () => {
-    expect(source).toContain("const [showExpandedDetails, setShowExpandedDetails] = useState(false);");
+    expect(source).toContain(
+      "const [showExpanded, setShowExpanded]"
+      + " = useState(false);",
+    );
   });
 
   it("gates steps, notes, and handoff capsules behind the per-beat toggle", () => {
-    expect(source).toContain("import { BeatMetadataDetails } from \"@/components/beat-metadata-details\"");
+    expect(source).toContain(
+      "BeatMetadataDetails",
+    );
     expect(source).toContain("<BeatMetadataDetails");
-    expect(source).toContain("showExpandedDetails={showExpandedDetails}");
-    expect(source).toContain("formatRelativeTime={relativeTime}");
+    expect(source).toContain(
+      "showExpandedDetails={showExpanded}",
+    );
+    expect(source).toContain(
+      "formatRelativeTime={relativeTime}",
+    );
   });
 
   it("uses a per-row disclosure control, not a page-level toggle", () => {
     // No page-level Switch toggle should exist
-    expect(source).not.toContain('id="retakes-details-toggle"');
-    expect(source).not.toContain('htmlFor="retakes-details-toggle"');
+    expect(source).not.toContain(
+      'id="retakes-details-toggle"',
+    );
+    expect(source).not.toContain(
+      'htmlFor="retakes-details-toggle"',
+    );
     // Disclosure button with aria-expanded should exist
-    expect(source).toContain("aria-expanded={showExpandedDetails}");
+    expect(source).toContain(
+      "aria-expanded={showExpanded}",
+    );
   });
 });

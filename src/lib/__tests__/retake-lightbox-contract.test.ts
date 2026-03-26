@@ -6,7 +6,10 @@ import { RETAKE_TARGET_STATE } from "@/lib/retake";
 
 describe("retake lightbox contract", () => {
   const retakesViewSource = readFileSync(
-    path.join(process.cwd(), "src/components/retakes-view.tsx"),
+    path.join(
+      process.cwd(),
+      "src/lib/retake-view-helpers.ts",
+    ),
     "utf8",
   );
   const retakeDialogSource = readFileSync(
