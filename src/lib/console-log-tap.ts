@@ -99,47 +99,46 @@ function shouldPreserveDefaultUnhandledRejectionBehavior(): boolean {
   return process.listeners("unhandledRejection").length === 1;
 }
 
+function ensureStream(): WriteStream | null {
+  const date = _dateNow().toISOString().slice(0, 10);
+  if (date !== currentDate || !stream) {
+    closeStream();
+    const dir = resolveServerLogDir(date);
+    try {
+      mkdirSync(dir, { recursive: true });
+    } catch {
+      return null;
+    }
+    try {
+      currentDate = date;
+      stream = createWriteStream(join(dir, "console.log"), { flags: "a" });
+      streamErrorHandler = () => {
+        const activeStream = stream;
+        const activeHandler = streamErrorHandler;
+        if (activeStream && activeHandler) {
+          activeStream.removeListener("error", activeHandler);
+          activeStream.destroy();
+        }
+        streamErrorHandler = null;
+        if (stream) {
+          stream = null;
+        }
+        currentDate = "";
+      };
+      stream.on("error", streamErrorHandler);
+    } catch {
+      stream = null;
+      streamErrorHandler = null;
+      currentDate = "";
+      return null;
+    }
+  }
+  return stream;
+}
+
 export function installConsoleTap(): void {
   if (installed) return;
   installed = true;
-
-  function ensureStream(): WriteStream | null {
-    const date = _dateNow().toISOString().slice(0, 10);
-    if (date !== currentDate || !stream) {
-      closeStream();
-      const dir = resolveServerLogDir(date);
-      try {
-        mkdirSync(dir, { recursive: true });
-      } catch {
-        return null;
-      }
-      try {
-        currentDate = date;
-        stream = createWriteStream(join(dir, "console.log"), { flags: "a" });
-        streamErrorHandler = () => {
-          // Swallow and reset write errors — never crash the server due to logging.
-          const activeStream = stream;
-          const activeHandler = streamErrorHandler;
-          if (activeStream && activeHandler) {
-            activeStream.removeListener("error", activeHandler);
-            activeStream.destroy();
-          }
-          streamErrorHandler = null;
-          if (stream) {
-            stream = null;
-          }
-          currentDate = "";
-        };
-        stream.on("error", streamErrorHandler);
-      } catch {
-        stream = null;
-        streamErrorHandler = null;
-        currentDate = "";
-        return null;
-      }
-    }
-    return stream;
-  }
 
   const origLog = console.log.bind(console);
   const origWarn = console.warn.bind(console);

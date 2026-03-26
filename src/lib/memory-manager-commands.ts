@@ -31,7 +31,11 @@ export function buildShowIssueCommand(id: string, memoryManagerType: MemoryManag
   return `bd show ${quoteId(id)}`;
 }
 
-export function buildClaimCommand(id: string, memoryManagerType: MemoryManagerType, leaseId?: string): string {
+export function buildClaimCommand(
+  id: string,
+  memoryManagerType: MemoryManagerType,
+  leaseId?: string,
+): string {
   if (memoryManagerType === "knots") {
     const base = `kno claim ${quoteId(id)} --json`;
     return leaseId ? `${base} --lease ${quoteArg(leaseId)}` : base;

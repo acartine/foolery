@@ -78,7 +78,9 @@ function inferParent(id: string, explicit?: unknown): string | undefined {
 const INVARIANTS_HEADER = "[Invariants]";
 const INVARIANT_LINE_RE = /^(Scope|State):\s*(.+)$/;
 
-function parseInvariantsFromNotes(notes: string | undefined): { invariants: Invariant[]; cleanNotes: string | undefined } {
+function parseInvariantsFromNotes(
+  notes: string | undefined,
+): { invariants: Invariant[]; cleanNotes: string | undefined } {
   if (!notes) return { invariants: [], cleanNotes: notes };
   const headerIdx = notes.indexOf(INVARIANTS_HEADER);
   if (headerIdx === -1) return { invariants: [], cleanNotes: notes };
@@ -113,7 +115,10 @@ function parseInvariantsFromNotes(notes: string | undefined): { invariants: Inva
   return { invariants, cleanNotes };
 }
 
-function embedInvariantsInNotes(notes: string | undefined, invariants: Invariant[] | undefined): string | undefined {
+function embedInvariantsInNotes(
+  notes: string | undefined,
+  invariants: Invariant[] | undefined,
+): string | undefined {
   if (!invariants?.length) return notes;
   const normalized = invariants
     .map((inv) => ({ kind: inv.kind, condition: inv.condition.trim() }))
@@ -162,7 +167,8 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
     title: raw.title,
     description: raw.description,
     notes: cleanNotes,
-    acceptance: raw.acceptance_criteria ?? (raw as Record<string, unknown>).acceptance as string | undefined,
+    acceptance: raw.acceptance_criteria
+      ?? (raw as Record<string, unknown>).acceptance as string | undefined,
     type,
     state: runtime.state,
     workflowId: workflow.id,
@@ -178,9 +184,18 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
     owner: raw.owner,
     parent: inferParent(id, raw.parent),
     due: raw.due,
-    estimate: raw.estimated_minutes ?? (raw as Record<string, unknown>).estimate as number | undefined,
-    created: (raw.created_at ?? (raw as Record<string, unknown>).created ?? new Date().toISOString()) as string,
-    updated: (raw.updated_at ?? (raw as Record<string, unknown>).updated ?? new Date().toISOString()) as string,
+    estimate: raw.estimated_minutes
+      ?? (raw as Record<string, unknown>).estimate as number | undefined,
+    created: (
+      raw.created_at
+      ?? (raw as Record<string, unknown>).created
+      ?? new Date().toISOString()
+    ) as string,
+    updated: (
+      raw.updated_at
+      ?? (raw as Record<string, unknown>).updated
+      ?? new Date().toISOString()
+    ) as string,
     closed: raw.closed_at ?? (raw as Record<string, unknown>).closed as string | undefined,
     invariants: invariants.length > 0 ? invariants : undefined,
     metadata,

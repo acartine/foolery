@@ -190,7 +190,8 @@ export async function listRepos(): Promise<RegisteredRepo[]> {
   return registry.repos;
 }
 
-export async function inspectMissingRepoMemoryManagerTypes(): Promise<RepoMemoryManagerAuditResult> {
+export async function inspectMissingRepoMemoryManagerTypes(
+): Promise<RepoMemoryManagerAuditResult> {
   const raw = await readRawRegistry();
   return {
     missingRepoPaths: raw.error ? [] : collectMissingMemoryManagerRepoPaths(raw.parsed),
@@ -199,7 +200,8 @@ export async function inspectMissingRepoMemoryManagerTypes(): Promise<RepoMemory
   };
 }
 
-export async function backfillMissingRepoMemoryManagerTypes(): Promise<RepoMemoryManagerBackfillResult> {
+export async function backfillMissingRepoMemoryManagerTypes(
+): Promise<RepoMemoryManagerBackfillResult> {
   const raw = await readRawRegistry();
   if (raw.error) {
     return {
