@@ -30,12 +30,17 @@ function extractCommitSha(beat: Beat): string | undefined {
   return label ? label.slice("commit:".length) : undefined;
 }
 
-export function RetakeDialog({ beat, open, onOpenChange, onConfirm, isPending }: RetakeDialogProps) {
+export function RetakeDialog(
+  { beat, open, onOpenChange, onConfirm, isPending }:
+  RetakeDialogProps,
+) {
   const [notes, setNotes] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- Resetting controlled textarea value when dialog opens; mirrors notes-dialog pattern.
+    // Resetting controlled textarea value when dialog opens;
+    // mirrors notes-dialog pattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (open) setNotes("");
   }, [open]);
 

@@ -148,6 +148,129 @@ export function SettingsPoolsSection({
   );
 }
 
+/* ── Pool distribution bar ─────────────────────────────────── */
+
+function PoolDistributionBar({
+  entries,
+  totalWeight,
+  agents,
+}: {
+  entries: PoolEntry[];
+  totalWeight: number;
+  agents: Record<string, RegisteredAgent>;
+}) {
+  if (entries.length === 0 || totalWeight <= 0) return null;
+  return (
+    <div className={
+      "flex h-3 w-full overflow-hidden rounded-full"
+      + " bg-muted/80 ring-1 ring-primary/10"
+    }>
+      {entries.map((entry, idx) => {
+        const ratio = entry.weight / totalWeight;
+        const color = POOL_COLORS[idx % POOL_COLORS.length];
+        const agentRef = agents[entry.agentId];
+        const label = formatPoolAgentLabel(
+          entry.agentId, agentRef,
+        );
+        const pct = formatPoolPercent(ratio);
+        return (
+          <div
+            key={entry.agentId}
+            className={`h-full ${color} transition-all`}
+            style={{ width: `${ratio * 100}%` }}
+            title={`${label} — w${entry.weight} · ${pct}%`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Single agent row ─────────────────────────────────────── */
+
+function PoolAgentRow({
+  entry,
+  idx,
+  ratio,
+  agents,
+  onWeightChange,
+  onRemove,
+}: {
+  entry: PoolEntry;
+  idx: number;
+  ratio: number;
+  agents: Record<string, RegisteredAgent>;
+  onWeightChange: (weight: number) => void;
+  onRemove: () => void;
+}) {
+  const pct = formatPoolPercent(ratio);
+  const agent = agents[entry.agentId];
+  const label = formatPoolAgentLabel(entry.agentId, agent);
+  const color = POOL_COLORS[idx % POOL_COLORS.length];
+  return (
+    <div
+      key={entry.agentId}
+      className={
+        "flex items-center gap-2 rounded-lg"
+        + " px-2 py-1.5 hover:bg-muted/35"
+      }
+    >
+      <div className={
+        "w-[140px] sm:w-[220px] min-w-0"
+        + " shrink-0 flex items-start gap-2"
+      }>
+        <span className={
+          `mt-1 size-2.5 rounded-full shrink-0 ${color}`
+        } />
+        <div className="min-w-0 text-xs">
+          {agent
+            ? <AgentDisplayLabel agent={agent} />
+            : (
+              <span className="block truncate" title={label}>
+                {label}
+              </span>
+            )}
+        </div>
+      </div>
+      <Input
+        type="number"
+        min={0}
+        step={1}
+        className="h-7 w-[64px] px-2 text-xs shrink-0"
+        value={entry.weight}
+        onChange={(e) => {
+          onWeightChange(
+            Math.max(0, Number(e.target.value) || 0),
+          );
+        }}
+      />
+      <div className={
+        "h-2.5 flex-1 min-w-0 rounded-full"
+        + " overflow-hidden bg-muted"
+      }>
+        <div
+          className={`h-full ${color} transition-all`}
+          style={{ width: `${ratio * 100}%` }}
+        />
+      </div>
+      <span className={
+        "text-xs text-muted-foreground w-[88px]"
+        + " text-right tabular-nums shrink-0"
+      }>
+        w{entry.weight} · {pct}%
+      </span>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 w-7 p-0 hover:bg-destructive/10"
+        onClick={onRemove}
+      >
+        <Trash2 className="size-3.5 text-destructive" />
+      </Button>
+    </div>
+  );
+}
+
 /* ── Per-step pool editor ──────────────────────────────────── */
 
 function StepPoolEditor({
@@ -165,18 +288,23 @@ function StepPoolEditor({
 }) {
   const [addingAgent, setAddingAgent] = useState(false);
 
-  // Agents not yet in this pool
   const availableIds = agentIds.filter(
     (id) => !entries.some((e) => e.agentId === id),
   );
 
-  const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
+  const totalWeight = entries.reduce(
+    (sum, e) => sum + e.weight, 0);
 
   return (
-    <div className="rounded-xl border border-primary/18 bg-background/60 p-3 space-y-2">
+    <div className={
+      "rounded-xl border border-primary/18"
+      + " bg-background/60 p-3 space-y-2"
+    }>
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-xs font-medium">{meta.label}</Label>
+          <Label className="text-xs font-medium">
+            {meta.label}
+          </Label>
           <p className="text-[10px] text-muted-foreground">
             {meta.description}
           </p>
@@ -185,7 +313,10 @@ function StepPoolEditor({
           <Button
             variant="outline"
             size="sm"
-            className="border-primary/20 bg-background/70 hover:bg-primary/10"
+            className={
+              "border-primary/20 bg-background/70"
+              + " hover:bg-primary/10"
+            }
             onClick={() => setAddingAgent(true)}
           >
             <Plus className="size-3.5 mr-1" />
@@ -200,84 +331,36 @@ function StepPoolEditor({
         </p>
       ) : (
         <div className="space-y-2">
-          {/* Stacked horizontal bar */}
-          {entries.length > 0 && totalWeight > 0 && (
-            <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/80 ring-1 ring-primary/10">
-              {entries.map((entry, idx) => {
-                const ratio = entry.weight / totalWeight;
-                const color = POOL_COLORS[idx % POOL_COLORS.length];
-                return (
-                  <div
-                    key={entry.agentId}
-                    className={`h-full ${color} transition-all`}
-                    style={{ width: `${ratio * 100}%` }}
-                    title={`${formatPoolAgentLabel(entry.agentId, agents[entry.agentId])} — w${entry.weight} · ${formatPoolPercent(ratio)}%`}
-                  />
-                );
-              })}
-            </div>
-          )}
-
-          {/* Agent rows */}
+          <PoolDistributionBar
+            entries={entries}
+            totalWeight={totalWeight}
+            agents={agents}
+          />
           <div className="space-y-1">
             {entries.map((entry, idx) => {
-              const ratio = totalWeight > 0 ? entry.weight / totalWeight : 0;
-              const pct = formatPoolPercent(ratio);
-              const agent = agents[entry.agentId];
-              const label = formatPoolAgentLabel(entry.agentId, agent);
-              const color = POOL_COLORS[idx % POOL_COLORS.length];
+              const ratio = totalWeight > 0
+                ? entry.weight / totalWeight : 0;
               return (
-                <div
+                <PoolAgentRow
                   key={entry.agentId}
-                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted/35"
-                >
-                  <div className="w-[140px] sm:w-[220px] min-w-0 shrink-0 flex items-start gap-2">
-                    <span className={`mt-1 size-2.5 rounded-full shrink-0 ${color}`} />
-                    <div className="min-w-0 text-xs">
-                      {agent ? <AgentDisplayLabel agent={agent} /> : (
-                        <span className="block truncate" title={label}>{label}</span>
-                      )}
-                    </div>
-                  </div>
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    className="h-7 w-[64px] px-2 text-xs shrink-0"
-                    value={entry.weight}
-                    onChange={(e) => {
-                      const next = [...entries];
-                      next[idx] = {
-                        ...entry,
-                        weight: Math.max(0, Number(e.target.value) || 0),
-                      };
-                      onChange(next);
-                    }}
-                  />
-                  <div className="h-2.5 flex-1 min-w-0 rounded-full overflow-hidden bg-muted">
-                    <div
-                      className={`h-full ${color} transition-all`}
-                      style={{ width: `${ratio * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-muted-foreground w-[88px] text-right tabular-nums shrink-0">
-                    w{entry.weight} · {pct}%
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0 hover:bg-destructive/10"
-                    onClick={() => {
-                      onChange(entries.filter((_, i) => i !== idx));
-                    }}
-                  >
-                    <Trash2 className="size-3.5 text-destructive" />
-                  </Button>
-                </div>
+                  entry={entry}
+                  idx={idx}
+                  ratio={ratio}
+                  agents={agents}
+                  onWeightChange={(w) => {
+                    const next = [...entries];
+                    next[idx] = { ...entry, weight: w };
+                    onChange(next);
+                  }}
+                  onRemove={() => {
+                    onChange(
+                      entries.filter((_, i) => i !== idx),
+                    );
+                  }}
+                />
               );
             })}
           </div>
-
         </div>
       )}
 
