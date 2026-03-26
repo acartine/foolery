@@ -1,0 +1,20 @@
+{
+  "event_id": "019d29dc-3f55-7d03-809b-935ca41ee850",
+  "occurred_at": "2026-03-26T11:16:33.218239Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7f40",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Resize + Add button to match action-bar tab height",
+    "type": "work",
+    "updated_at": "2026-03-26T11:16:33.218239Z",
+    "workflow_id": "compatibility"
+  }
+}

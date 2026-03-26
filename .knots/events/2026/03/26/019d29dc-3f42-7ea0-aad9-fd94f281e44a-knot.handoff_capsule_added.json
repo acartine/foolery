@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29dc-3f42-7ea0-aad9-fd94f281e44a",
+  "occurred_at": "2026-03-26T11:16:33.218239Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved on 2026-03-26. Verified main is at commit 09fff3a1bfc3 and the knot is tagged commit:09fff3a1bfc3. Confirmed src/components/app-header-parts.tsx uses className=\"h-8 gap-1.5 px-2.5\" for both Add button variants while preserving the size-4 icon. Lint, typecheck, and build all exited successfully locally; GitHub Actions CI run 23591314281 and Coverage Badge run 23591314293 both completed successfully for SHA 09fff3a1bfc31183ee8bccd89ee735733837b343. No invariants were defined for this knot, and no shipped regression was identified in review.",
+    "datetime": "2026-03-26T11:16:33.218239Z",
+    "entry_id": "019d29dc-3f42-7ea0-aad9-fd8d4b2784a2",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}
