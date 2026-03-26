@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29da-933e-7da1-87c8-31fabe9ee103",
+  "occurred_at": "2026-03-26T11:14:43.64674Z",
+  "knot_id": "foolery-0b97",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a \"Refine Scope\" button to the HeaderActions bar in the beat detail lightbox. Clicking the button enqueues a scope-refinement job for that beat via the existing `enqueueBeatScopeRefinement` worker, allowing users to re-trigger refinement after editing a beat's title, description, or acceptance criteria."
+  }
+}

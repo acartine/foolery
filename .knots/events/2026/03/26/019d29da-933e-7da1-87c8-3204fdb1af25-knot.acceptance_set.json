@@ -1,0 +1,9 @@
+{
+  "event_id": "019d29da-933e-7da1-87c8-3204fdb1af25",
+  "occurred_at": "2026-03-26T11:14:43.64674Z",
+  "knot_id": "foolery-0b97",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- A \"Refine Scope\" button appears in the HeaderActions area of `beat-detail-lightbox.tsx`, following the existing button pattern (outline variant, xs size, appropriate icon).\n- Clicking the button calls `enqueueBeatScopeRefinement(beat.id, repoPath)` to queue a scope-refinement job for the current beat.\n- The button is disabled while the beat is in a terminal state (matches existing guard patterns on other action buttons).\n- After clicking, user receives feedback that refinement was enqueued (e.g., toast or button text change to \"Refining...\").\n- When the background worker completes refinement, the existing `useScopeRefinementNotifications` hook fires a toast and the beat detail view refreshes with updated title/description/acceptance criteria.\n- No new API endpoints are introduced; the feature reuses the existing scope-refinement queue and worker infrastructure."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "event_id": "019d29da-934f-7472-9cd5-131091e652e4",
+  "occurred_at": "2026-03-26T11:14:43.64674Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0b97",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Add Refine Scope action button to beat detail lightbox",
+    "type": "work",
+    "updated_at": "2026-03-26T11:14:43.64674Z",
+    "workflow_id": "compatibility"
+  }
+}

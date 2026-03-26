@@ -1,0 +1,17 @@
+{
+  "event_id": "019d29d9-69ef-73e0-9579-ccb20eaef0ba",
+  "occurred_at": "2026-03-26T11:13:27.53527Z",
+  "knot_id": "foolery-0b97",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - this can be useful if the beat has been updated and we want better acceptance criteria.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add “Refine Scope” button to beat detail, to trigger scope refinement on that beat",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
