@@ -13,7 +13,7 @@ function readSource(relativePath: string): string {
 
 describe("alias view contracts", () => {
   it("keeps alias-aware labels wired into the knot id views", () => {
-    const beatColumnsSource = readSource("src/components/beat-columns.tsx");
+    const beatColumnsSource = readSource("src/components/beat-column-defs.tsx");
     const lightboxSource = readSource("src/components/beat-detail-lightbox.tsx");
     const depTreeSource = readSource("src/components/dep-tree.tsx");
     const retakesSource = readSource("src/components/retakes-view.tsx");

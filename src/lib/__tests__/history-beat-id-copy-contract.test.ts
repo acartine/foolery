@@ -3,11 +3,24 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+function readSource(relativePath: string): string {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function readHistorySource(): string {
+  return [
+    "src/hooks/use-agent-history-state.ts",
+    "src/components/agent-history-view.tsx",
+    "src/components/agent-history-top-panel.tsx",
+    "src/components/agent-history-detail-panel.tsx",
+    "src/components/agent-history-conversation-log.tsx",
+    "src/components/agent-history-beat-detail.tsx",
+    "src/components/agent-history-beat-row.tsx",
+  ].map(readSource).join("\n");
+}
+
 describe("history beat-id copy affordance contract", () => {
-  const historyViewSource = readFileSync(
-    path.join(process.cwd(), "src/components/agent-history-view.tsx"),
-    "utf8",
-  );
+  const historyViewSource = readHistorySource();
 
   it("copies the stripped beat id to clipboard with success and failure feedback", () => {
     expect(historyViewSource).toContain("const shortId = stripIdPrefix(beatId)");

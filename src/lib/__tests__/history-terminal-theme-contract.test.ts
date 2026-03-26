@@ -3,15 +3,33 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+function readSource(relativePath: string): string {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function readHistorySource(): string {
+  return [
+    "src/components/agent-history-view.tsx",
+    "src/components/agent-history-conversation-log.tsx",
+    "src/components/agent-history-session-card.tsx",
+    "src/components/agent-history-response-row.tsx",
+    "src/components/agent-history-beat-detail.tsx",
+    "src/components/agent-history-beat-row.tsx",
+    "src/components/agent-history-detail-panel.tsx",
+  ].map(readSource).join("\n");
+}
+
+function readPickerSource(): string {
+  return [
+    "src/components/interaction-picker.tsx",
+    "src/components/interaction-picker-ui.tsx",
+    "src/components/interaction-filter-dropdown.tsx",
+  ].map(readSource).join("\n");
+}
+
 describe("history terminal theme contract", () => {
-  const historyViewSource = readFileSync(
-    path.join(process.cwd(), "src/components/agent-history-view.tsx"),
-    "utf8",
-  );
-  const pickerSource = readFileSync(
-    path.join(process.cwd(), "src/components/interaction-picker.tsx"),
-    "utf8",
-  );
+  const historyViewSource = readHistorySource();
+  const pickerSource = readPickerSource();
 
   it("keeps the conversation log on the terminal palette and mono typography", () => {
     expect(historyViewSource).toContain('bg-[#1a1a2e]');

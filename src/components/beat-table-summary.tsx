@@ -1,0 +1,175 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import type { Beat } from "@/lib/types";
+import {
+  capsuleMeta,
+  type RenderedCapsule,
+} from "@/components/beat-table-metadata";
+
+function SummaryColumn({
+  label,
+  text,
+  bg,
+  rounded,
+  expanded,
+  onExpand,
+}: {
+  label: string;
+  text: string;
+  bg: string;
+  rounded: string;
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setOverflows(el.scrollHeight > el.clientHeight + 1);
+  }, [text]);
+
+  return (
+    <div className={`min-w-0 ${rounded} px-2 py-1 ${bg}`}>
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div
+        ref={ref}
+        className={`whitespace-pre-wrap break-words ${
+          expanded ? "" : "line-clamp-[7]"
+        }`}
+      >
+        {text}
+      </div>
+      {!expanded && overflows && (
+        <button
+          type="button"
+          title="Expand full text"
+          className="text-green-700 font-bold cursor-pointer mt-0.5"
+          onMouseEnter={onExpand}
+        >
+          ...show more...
+        </button>
+      )}
+    </div>
+  );
+}
+
+function HandoffCapsulesColumn({
+  capsules,
+  expanded,
+  onExpand,
+}: {
+  capsules: RenderedCapsule[];
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const canExpand =
+    capsules.length > 2 ||
+    capsules.some((c) => c.content.length > 280);
+  const visible = expanded
+    ? capsules
+    : capsules.slice(0, 2);
+
+  return (
+    <div className="min-w-0 rounded-r bg-blue-50 px-2 py-1">
+      <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-800">
+        Handoff Capsules
+      </div>
+      {visible.length > 0 ? (
+        <div className="space-y-1">
+          {visible.map((capsule) => {
+            const meta = capsuleMeta(capsule.entry);
+            return (
+              <div
+                key={capsule.key}
+                className="rounded bg-white/70 px-1.5 py-1"
+              >
+                {meta && (
+                  <div className="mb-0.5 text-[10px] text-muted-foreground">
+                    {meta}
+                  </div>
+                )}
+                <div
+                  className={`whitespace-pre-wrap break-words ${
+                    expanded ? "" : "line-clamp-[4]"
+                  }`}
+                >
+                  {capsule.content}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-muted-foreground">-</div>
+      )}
+      {!expanded && canExpand && (
+        <button
+          type="button"
+          title="Expand handoff capsules"
+          className="mt-0.5 cursor-pointer font-bold text-green-700"
+          onMouseEnter={onExpand}
+        >
+          ...show more...
+        </button>
+      )}
+    </div>
+  );
+}
+
+export function InlineSummary({
+  beat,
+  capsules,
+}: {
+  beat: Beat;
+  capsules: RenderedCapsule[];
+}) {
+  const [expanded, setExpanded] = useState(false);
+  if (
+    !beat.description &&
+    !beat.notes &&
+    capsules.length === 0
+  ) {
+    return null;
+  }
+
+  const gridCls = [
+    "mt-1.5 grid w-full max-w-full",
+    "grid-cols-[repeat(3,minmax(0,1fr))]",
+    "gap-1 text-xs leading-relaxed",
+    expanded ? "relative z-10" : "",
+  ].join(" ");
+
+  return (
+    <div
+      className={gridCls}
+      onMouseLeave={() => setExpanded(false)}
+    >
+      <SummaryColumn
+        label="Description"
+        text={beat.description || ""}
+        bg="bg-green-50"
+        rounded="rounded-l"
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
+      <SummaryColumn
+        label="Notes"
+        text={beat.notes || ""}
+        bg={beat.notes ? "bg-yellow-50" : ""}
+        rounded="rounded-none"
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
+      <HandoffCapsulesColumn
+        capsules={capsules}
+        expanded={expanded}
+        onExpand={() => setExpanded(true)}
+      />
+    </div>
+  );
+}

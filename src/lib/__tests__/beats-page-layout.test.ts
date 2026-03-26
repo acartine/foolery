@@ -3,52 +3,37 @@ import { readFileSync } from "node:fs";
 
 import { describe, it, expect } from "vitest";
 
+function src(rel: string): string {
+  return readFileSync(
+    path.join(process.cwd(), rel), "utf8",
+  );
+}
+
 describe("beats page layout", () => {
-  const source = readFileSync(
-    path.join(process.cwd(), "src/app/beats/page.tsx"),
-    "utf8",
+  const source = src("src/app/beats/page.tsx");
+  const btSummary = src(
+    "src/components/beat-table-summary.tsx",
   );
-  const beatTableSource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/beat-table.tsx",
-    ),
-    "utf8",
+  const btContent = src(
+    "src/components/beat-table-content.tsx",
   );
-  const appHeaderSource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/app-header.tsx",
-    ),
-    "utf8",
+  const btMeta = src(
+    "src/components/beat-table-metadata.tsx",
   );
-  const appHeaderHooksSource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/app-header-hooks.ts",
-    ),
-    "utf8",
+  const appHeaderSource = src(
+    "src/components/app-header.tsx",
   );
-  const appHeaderPartsSource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/app-header-parts.tsx",
-    ),
-    "utf8",
+  const appHeaderHooksSource = src(
+    "src/components/app-header-hooks.ts",
   );
-  const searchBarSource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/components/search-bar.tsx",
-    ),
-    "utf8",
+  const appHeaderPartsSource = src(
+    "src/components/app-header-parts.tsx",
   );
-  const beatsQuerySource = readFileSync(
-    path.join(
-      process.cwd(),
-      "src/app/beats/use-beats-query.ts",
-    ),
-    "utf8",
+  const searchBarSource = src(
+    "src/components/search-bar.tsx",
+  );
+  const beatsQuerySource = src(
+    "src/app/beats/use-beats-query.ts",
   );
 
   it("allows vertical scrolling in the main wrapper", () => {
@@ -149,16 +134,22 @@ describe("beats page layout", () => {
   });
 
   it("constrains selected-row description and notes summaries on laptop widths", () => {
-    expect(beatTableSource).toContain(
-      "grid-cols-[repeat(3,minmax(0,1fr))]",
+    expect(btSummary).toContain(
+      '"mt-1.5 grid w-full max-w-full"',
     );
-    expect(beatTableSource).toContain(
-      'cell.column.id === "title"',
+    expect(btSummary).toContain(
+      '"grid-cols-[repeat(3,minmax(0,1fr))]"',
     );
-    expect(beatTableSource).toContain(
-      "whitespace-normal pt-0",
+    expect(btContent).toContain(
+      "cells.findIndex(",
     );
-    expect(beatTableSource).toContain(
+    expect(btContent).toContain(
+      'colSpan={cells.length - titleIdx}',
+    );
+    expect(btContent).toContain(
+      'className="whitespace-normal pt-0"',
+    );
+    expect(btMeta).toContain(
       "const HANDOFF_METADATA_KEYS = [",
     );
   });

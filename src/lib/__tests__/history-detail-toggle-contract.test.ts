@@ -3,11 +3,21 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+function readSource(relativePath: string): string {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function readHistorySource(): string {
+  return [
+    "src/hooks/use-agent-history-state.ts",
+    "src/components/agent-history-view.tsx",
+    "src/components/agent-history-detail-panel.tsx",
+    "src/components/agent-history-beat-detail.tsx",
+  ].map(readSource).join("\n");
+}
+
 describe("history detail toggle contract", () => {
-  const historyViewSource = readFileSync(
-    path.join(process.cwd(), "src/components/agent-history-view.tsx"),
-    "utf8",
-  );
+  const historyViewSource = readHistorySource();
 
   it("tracks expanded metadata visibility in view state", () => {
     expect(historyViewSource).toContain("const [showExpandedDetails, setShowExpandedDetails] = useState(false)");
