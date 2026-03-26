@@ -36,6 +36,14 @@ Each Git worktree is a separate checkout and does not share `node_modules`.
 3. Prefer `bun run <script>` over `bunx <tool>` so plugins resolve from local project dependencies.
 4. If `node_modules` is missing in the worktree, treat lint/typecheck results as invalid until install completes.
 
+## Code Style Constraints
+
+- **File length:** max 500 lines per source file
+- **Function length:** max 100 lines per function
+- **Line length:** max 100 columns per line
+
+These are enforced by ESLint (`max-lines`, `max-lines-per-function`, `max-len`).
+
 ## Quality Gates
 
 Before committing changes, ensure that the codebase passes all quality checks. Run the following commands:

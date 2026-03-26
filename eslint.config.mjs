@@ -17,8 +17,33 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Nested project build artifacts
     "codex-release-wrapper/**",
+    // Agent worktree build artifacts
+    ".claude/worktrees/**",
   ]),
   ...storybook.configs["flat/recommended"],
+  // Code style constraints: file, function, and line length limits.
+  {
+    files: ["src/**/*.ts", "src/**/*.tsx"],
+    rules: {
+      "max-lines": ["warn", {
+        max: 500,
+        skipBlankLines: true,
+        skipComments: true,
+      }],
+      "max-lines-per-function": ["warn", {
+        max: 100,
+        skipBlankLines: true,
+        skipComments: true,
+      }],
+      "max-len": ["warn", {
+        code: 100,
+        ignoreUrls: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+        ignoreRegExpLiterals: true,
+      }],
+    },
+  },
   // Enforce adapter boundary: only the bd-cli-backend adapter (and its
   // direct tests) may import the low-level @/lib/bd wrapper.  All other
   // code should use getBackend() from @/lib/backend-instance.
