@@ -26,7 +26,9 @@ export function NotesDialog({ beat, open, onOpenChange, onUpdate }: NotesDialogP
 
   useEffect(() => {
     if (beat && open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- Initializing controlled textarea value when dialog opens; mirrors prior pattern.
+      // Initializing controlled textarea value when dialog
+      // opens; mirrors prior pattern.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotes(beat.notes ?? "");
     }
   }, [beat, open]);

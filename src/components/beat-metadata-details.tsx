@@ -142,24 +142,23 @@ function AgentBadge({
   );
 }
 
-export function BeatMetadataDetails({
-  beat,
-  showExpandedDetails,
-  formatRelativeTime,
-}: {
-  beat: Beat;
-  showExpandedDetails: boolean;
-  formatRelativeTime?: (value: string) => string;
-}) {
-  const description = beat.description ?? readMetadataString(beat, [
-    "knotsDescription",
-    "description",
-    "body",
-    "knotsBody",
-  ]);
-  const rawSteps = readMetadataEntries(beat, STEP_METADATA_KEYS);
-  const rawNotes = readMetadataEntries(beat, NOTE_METADATA_KEYS);
-  const rawCapsules = readMetadataEntries(beat, HANDOFF_METADATA_KEYS);
+function prepareMetadata(beat: Beat) {
+  const description = beat.description
+    ?? readMetadataString(beat, [
+      "knotsDescription",
+      "description",
+      "body",
+      "knotsBody",
+    ]);
+  const rawSteps = readMetadataEntries(
+    beat, STEP_METADATA_KEYS,
+  );
+  const rawNotes = readMetadataEntries(
+    beat, NOTE_METADATA_KEYS,
+  );
+  const rawCapsules = readMetadataEntries(
+    beat, HANDOFF_METADATA_KEYS,
+  );
   const noteEntries = rawNotes.length > 0
     ? rawNotes
     : beat.notes
@@ -170,25 +169,77 @@ export function BeatMetadataDetails({
         }]
       : [];
 
-  const renderedSteps = rawSteps.flatMap((step, index) => {
-    const content = stepSummary(step);
-    if (!content) return [];
-    return [{ entry: step, key: metadataEntryKey(step, index), content }];
-  });
+  const renderedSteps = rawSteps.flatMap(
+    (step, index) => {
+      const content = stepSummary(step);
+      if (!content) return [];
+      return [{
+        entry: step,
+        key: metadataEntryKey(step, index),
+        content,
+      }];
+    },
+  );
 
-  const renderedNotes = noteEntries.flatMap((note, index) => {
-    const content = pickString(note, ["content", "note", "message", "summary", "description"]);
-    if (!content) return [];
-    return [{ entry: note, key: metadataEntryKey(note, index), content }];
-  });
+  const renderedNotes = noteEntries.flatMap(
+    (note, index) => {
+      const content = pickString(note, [
+        "content", "note", "message",
+        "summary", "description",
+      ]);
+      if (!content) return [];
+      return [{
+        entry: note,
+        key: metadataEntryKey(note, index),
+        content,
+      }];
+    },
+  );
 
-  const renderedCapsules = rawCapsules.flatMap((capsule, index) => {
-    const content = pickString(capsule, ["content", "summary", "message", "description", "note"]);
-    if (!content) return [];
-    return [{ entry: capsule, key: metadataEntryKey(capsule, index), content }];
-  });
+  const renderedCapsules = rawCapsules.flatMap(
+    (capsule, index) => {
+      const content = pickString(capsule, [
+        "content", "summary", "message",
+        "description", "note",
+      ]);
+      if (!content) return [];
+      return [{
+        entry: capsule,
+        key: metadataEntryKey(capsule, index),
+        content,
+      }];
+    },
+  );
 
-  if (!description && renderedSteps.length === 0 && renderedNotes.length === 0 && renderedCapsules.length === 0) {
+  return {
+    description,
+    renderedSteps,
+    renderedNotes,
+    renderedCapsules,
+  };
+}
+
+export function BeatMetadataDetails({
+  beat,
+  showExpandedDetails,
+  formatRelativeTime,
+}: {
+  beat: Beat;
+  showExpandedDetails: boolean;
+  formatRelativeTime?: (value: string) => string;
+}) {
+  const {
+    description,
+    renderedSteps,
+    renderedNotes,
+    renderedCapsules,
+  } = prepareMetadata(beat);
+
+  const hasNoContent = !description
+    && renderedSteps.length === 0
+    && renderedNotes.length === 0
+    && renderedCapsules.length === 0;
+  if (hasNoContent) {
     return null;
   }
 

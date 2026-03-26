@@ -35,14 +35,216 @@ export interface RelationshipDeps {
   blockedBy: string[];
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyForm = ReturnType<typeof useForm<any>>;
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+function ProfileSelectField({
+  form,
+  workflows,
+  error,
+  onInfoClick,
+}: {
+  form: AnyForm;
+  workflows: MemoryWorkflowDescriptor[];
+  error?: string;
+  onInfoClick: () => void;
+}) {
+  return (
+    <FormField
+      label="Profile"
+      error={error}
+      infoAction={onInfoClick}
+    >
+      <Select
+        value={form.watch("profileId") ?? form.watch("workflowId")}
+        onValueChange={(v) => {
+          form.setValue("profileId", v as never);
+          form.setValue("workflowId", undefined as never);
+        }}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select profile" />
+        </SelectTrigger>
+        <SelectContent>
+          {workflows.map((workflow) => (
+            <SelectItem key={workflow.id} value={workflow.id}>
+              {profileDisplayName(
+                workflow.profileId ?? workflow.id,
+              )}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </FormField>
+  );
+}
+
+function TypePriorityRow({
+  form,
+  hideTypeSelector,
+}: {
+  form: AnyForm;
+  hideTypeSelector: boolean;
+}) {
+  const cls = hideTypeSelector
+    ? ""
+    : "grid grid-cols-2 gap-2";
+  return (
+    <div className={cls}>
+      {!hideTypeSelector && (
+        <FormField label="Type">
+          <Input
+            placeholder="e.g. task, bug, feature"
+            {...form.register("type")}
+          />
+        </FormField>
+      )}
+      <FormField label="Priority">
+        <Select
+          value={String(form.watch("priority"))}
+          onValueChange={(v) =>
+            form.setValue("priority", Number(v) as never)
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PRIORITIES.map((p) => (
+              <SelectItem key={p} value={String(p)}>
+                P{p}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormField>
+    </div>
+  );
+}
+
+function RelationshipSection({
+  blocks,
+  blockedBy,
+  setBlocks,
+  setBlockedBy,
+}: {
+  blocks: string[];
+  blockedBy: string[];
+  setBlocks: React.Dispatch<React.SetStateAction<string[]>>;
+  setBlockedBy: React.Dispatch<React.SetStateAction<string[]>>;
+}) {
+  return (
+    <>
+      <RelationshipPicker
+        label="Blocks"
+        selectedIds={blocks}
+        onAdd={(id) => setBlocks((prev) => [...prev, id])}
+        onRemove={(id) =>
+          setBlocks((prev) => prev.filter((x) => x !== id))
+        }
+      />
+      <RelationshipPicker
+        label="Blocked By"
+        selectedIds={blockedBy}
+        onAdd={(id) =>
+          setBlockedBy((prev) => [...prev, id])
+        }
+        onRemove={(id) =>
+          setBlockedBy((prev) =>
+            prev.filter((x) => x !== id),
+          )
+        }
+      />
+    </>
+  );
+}
+
+function BeatFormActions({
+  isSubmitting,
+  mode,
+  onCreateMore,
+}: {
+  isSubmitting: boolean;
+  mode: "create" | "edit";
+  onCreateMore?: () => void;
+}) {
+  const label = isSubmitting
+    ? "Creating..."
+    : mode === "create"
+      ? "Done"
+      : "Update";
+  return (
+    <div className="flex gap-2">
+      <Button
+        type="submit"
+        title="Submit"
+        variant="success"
+        className="flex-1"
+        disabled={isSubmitting}
+      >
+        {label}
+      </Button>
+      {onCreateMore && (
+        <Button
+          title="Create this beat and start another"
+          type="button"
+          variant="success-light"
+          className="flex-1"
+          onClick={onCreateMore}
+          disabled={isSubmitting}
+        >
+          Create More
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function LabelsField({ form }: { form: AnyForm }) {
+  return (
+    <FormField label="Labels (comma-separated)">
+      <Input
+        placeholder="bug, frontend, urgent"
+        {...form.register("labels", {
+          setValueAs: (v: string | string[]) =>
+            typeof v === "string"
+              ? v
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : v,
+        })}
+      />
+    </FormField>
+  );
+}
+
+function AcceptanceField({ form }: { form: AnyForm }) {
+  return (
+    <FormField label="Acceptance criteria">
+      <Textarea
+        placeholder="Acceptance criteria"
+        {...form.register("acceptance")}
+      />
+    </FormField>
+  );
+}
+
 type BeatFormProps =
   | {
       mode: "create";
       defaultValues?: Partial<CreateBeatInput>;
       workflows?: MemoryWorkflowDescriptor[];
       hideTypeSelector?: boolean;
-      onSubmit: (data: CreateBeatInput, deps?: RelationshipDeps) => void;
-      onCreateMore?: (data: CreateBeatInput, deps?: RelationshipDeps) => void;
+      onSubmit: (
+        data: CreateBeatInput,
+        deps?: RelationshipDeps,
+      ) => void;
+      onCreateMore?: (
+        data: CreateBeatInput,
+        deps?: RelationshipDeps,
+      ) => void;
       isSubmitting?: boolean;
     }
   | {
@@ -51,16 +253,55 @@ type BeatFormProps =
       onSubmit: (data: UpdateBeatInput) => void;
     };
 
-export function BeatForm(props: BeatFormProps) {
+function getWorkflowError(
+  mode: string,
+  errors: unknown,
+): string | undefined {
+  if (mode !== "create") return undefined;
+  type ErrMap = Partial<
+    Record<keyof CreateBeatInput, { message?: string }>
+  >;
+  const map = formErrorMap(errors) as ErrMap;
+  return map.profileId?.message ?? map.workflowId?.message;
+}
+
+interface CreateModeProps {
+  onCreateMore?: (
+    data: CreateBeatInput,
+    deps?: RelationshipDeps,
+  ) => void;
+  isSubmitting: boolean;
+  workflows: MemoryWorkflowDescriptor[];
+  hideTypeSelector: boolean;
+}
+
+function extractCreateProps(
+  props: BeatFormProps,
+): CreateModeProps {
+  if (props.mode === "create") {
+    return {
+      onCreateMore: props.onCreateMore,
+      isSubmitting: props.isSubmitting ?? false,
+      workflows: props.workflows ?? [],
+      hideTypeSelector: props.hideTypeSelector ?? false,
+    };
+  }
+  return {
+    isSubmitting: false,
+    workflows: [],
+    hideTypeSelector: false,
+  };
+}
+
+function useBeatForm(props: BeatFormProps) {
   const { mode, defaultValues, onSubmit } = props;
-  const onCreateMore = props.mode === "create" ? props.onCreateMore : undefined;
-  const isSubmitting = props.mode === "create" ? props.isSubmitting : false;
-  const workflows = props.mode === "create" ? (props.workflows ?? []) : [];
-  const hideTypeSelector = props.mode === "create" ? (props.hideTypeSelector ?? false) : false;
-  const schema = mode === "create" ? createBeatSchema : updateBeatSchema;
+  const create = extractCreateProps(props);
+  const schema =
+    mode === "create" ? createBeatSchema : updateBeatSchema;
   const [blocks, setBlocks] = useState<string[]>([]);
   const [blockedBy, setBlockedBy] = useState<string[]>([]);
-  const [profileInfoOpen, setProfileInfoOpen] = useState(false);
+  const [profileInfoOpen, setProfileInfoOpen] =
+    useState(false);
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -73,169 +314,110 @@ export function BeatForm(props: BeatFormProps) {
       ...defaultValues,
     },
   });
-  const workflowError =
-    mode === "create"
-      ? (
-          formErrorMap(form.formState.errors) as Partial<
-            Record<keyof CreateBeatInput, { message?: string }>
-          >
-        ).profileId?.message ??
-        (
-          formErrorMap(form.formState.errors) as Partial<
-            Record<keyof CreateBeatInput, { message?: string }>
-          >
-        ).workflowId?.message
-      : undefined;
 
+  const deps = { blocks, blockedBy };
   const handleFormSubmit = form.handleSubmit((data) => {
     if (mode === "create") {
-      (onSubmit as (d: CreateBeatInput, deps?: RelationshipDeps) => void)(
-        data as CreateBeatInput,
-        { blocks, blockedBy },
-      );
+      (onSubmit as (
+        d: CreateBeatInput,
+        r?: RelationshipDeps,
+      ) => void)(data as CreateBeatInput, deps);
     } else {
-      (onSubmit as (d: UpdateBeatInput) => void)(data as UpdateBeatInput);
+      (onSubmit as (d: UpdateBeatInput) => void)(
+        data as UpdateBeatInput,
+      );
     }
   });
 
-  const handleCreateMoreClick = form.handleSubmit((data) => {
-    if (onCreateMore) {
-      onCreateMore(data as CreateBeatInput, { blocks, blockedBy });
-      setBlocks([]);
-      setBlockedBy([]);
-    }
-  });
+  const handleCreateMoreClick = form.handleSubmit(
+    (data) => {
+      if (create.onCreateMore) {
+        create.onCreateMore(
+          data as CreateBeatInput, deps,
+        );
+        setBlocks([]);
+        setBlockedBy([]);
+      }
+    },
+  );
+
+  return {
+    mode, form, create, handleFormSubmit,
+    handleCreateMoreClick, blocks, blockedBy,
+    setBlocks, setBlockedBy,
+    profileInfoOpen, setProfileInfoOpen,
+  };
+}
+
+export function BeatForm(props: BeatFormProps) {
+  const {
+    mode, form, create, handleFormSubmit,
+    handleCreateMoreClick, blocks, blockedBy,
+    setBlocks, setBlockedBy,
+    profileInfoOpen, setProfileInfoOpen,
+  } = useBeatForm(props);
+
+  const workflowError = getWorkflowError(
+    mode, form.formState.errors,
+  );
 
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-2">
-      <FormField label="Title" error={form.formState.errors.title?.message}>
-        <Input placeholder="Beat title" autoFocus {...form.register("title")} />
+    <form
+      onSubmit={handleFormSubmit}
+      className="space-y-2"
+    >
+      <FormField
+        label="Title"
+        error={form.formState.errors.title?.message}
+      >
+        <Input
+          placeholder="Beat title"
+          autoFocus
+          {...form.register("title")}
+        />
       </FormField>
-
       <FormField label="Description">
         <Textarea
           placeholder="Description"
           {...form.register("description")}
         />
       </FormField>
-
-      {mode === "create" && workflows.length > 0 && (
-        <FormField
-          label="Profile"
-          error={workflowError}
-          infoAction={() => setProfileInfoOpen(true)}
-        >
-          <Select
-            value={form.watch("profileId") ?? form.watch("workflowId")}
-            onValueChange={(v) => {
-              form.setValue("profileId", v as never);
-              form.setValue("workflowId", undefined as never);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select profile" />
-            </SelectTrigger>
-            <SelectContent>
-              {workflows.map((workflow) => (
-                <SelectItem key={workflow.id} value={workflow.id}>
-                  {profileDisplayName(workflow.profileId ?? workflow.id)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FormField>
-      )}
-
-      <div className={hideTypeSelector ? "" : "grid grid-cols-2 gap-2"}>
-        {!hideTypeSelector && (
-          <FormField label="Type">
-            <Input
-              placeholder="e.g. task, bug, feature"
-              {...form.register("type")}
-            />
-          </FormField>
+      {mode === "create" &&
+        create.workflows.length > 0 && (
+          <ProfileSelectField
+            form={form}
+            workflows={create.workflows}
+            error={workflowError}
+            onInfoClick={() => setProfileInfoOpen(true)}
+          />
         )}
-
-        <FormField label="Priority">
-          <Select
-            value={String(form.watch("priority"))}
-            onValueChange={(v) => form.setValue("priority", Number(v) as never)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {PRIORITIES.map((p) => (
-                <SelectItem key={p} value={String(p)}>
-                  P{p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </FormField>
-      </div>
-
-      <FormField label="Labels (comma-separated)">
-        <Input
-          placeholder="bug, frontend, urgent"
-          {...form.register("labels", {
-            setValueAs: (v: string | string[]) =>
-              typeof v === "string"
-                ? v
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter(Boolean)
-                : v,
-          })}
-        />
-      </FormField>
-
-      <FormField label="Acceptance criteria">
-        <Textarea
-          placeholder="Acceptance criteria"
-          {...form.register("acceptance")}
-        />
-      </FormField>
-
+      <TypePriorityRow
+        form={form}
+        hideTypeSelector={create.hideTypeSelector}
+      />
+      <LabelsField form={form} />
+      <AcceptanceField form={form} />
       {mode === "create" && (
-        <>
-          <RelationshipPicker
-            label="Blocks"
-            selectedIds={blocks}
-            onAdd={(id) => setBlocks((prev) => [...prev, id])}
-            onRemove={(id) =>
-              setBlocks((prev) => prev.filter((x) => x !== id))
-            }
-          />
-          <RelationshipPicker
-            label="Blocked By"
-            selectedIds={blockedBy}
-            onAdd={(id) => setBlockedBy((prev) => [...prev, id])}
-            onRemove={(id) =>
-              setBlockedBy((prev) => prev.filter((x) => x !== id))
-            }
-          />
-        </>
+        <RelationshipSection
+          blocks={blocks}
+          blockedBy={blockedBy}
+          setBlocks={setBlocks}
+          setBlockedBy={setBlockedBy}
+        />
       )}
-
-      <div className="flex gap-2">
-        <Button type="submit" title="Submit" variant="success" className="flex-1" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : mode === "create" ? "Done" : "Update"}
-        </Button>
-        {onCreateMore && (
-          <Button title="Create this beat and start another"
-            type="button"
-            variant="success-light"
-            className="flex-1"
-            onClick={handleCreateMoreClick}
-            disabled={isSubmitting}
-          >
-            Create More
-          </Button>
-        )}
-      </div>
-
-      <ProfileInfoDialog open={profileInfoOpen} onOpenChange={setProfileInfoOpen} />
+      <BeatFormActions
+        isSubmitting={create.isSubmitting}
+        mode={mode}
+        onCreateMore={
+          create.onCreateMore
+            ? handleCreateMoreClick
+            : undefined
+        }
+      />
+      <ProfileInfoDialog
+        open={profileInfoOpen}
+        onOpenChange={setProfileInfoOpen}
+      />
     </form>
   );
 }

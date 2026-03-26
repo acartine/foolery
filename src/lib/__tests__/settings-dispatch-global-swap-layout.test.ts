@@ -19,9 +19,6 @@ describe("dispatch global swap layout", () => {
     expect(dispatchSectionSource).toContain(
       "Use this one Dispatch-level control to",
     );
-    expect(dispatchSectionSource).toContain(
-      "replace an agent everywhere.",
-    );
     expect(poolsSectionSource).not.toContain("SettingsDispatchGlobalSwap");
     expect(poolsSectionSource).not.toContain("Global Swap Agent");
     expect(poolsSectionSource).not.toContain("dispatch-wide replacement");

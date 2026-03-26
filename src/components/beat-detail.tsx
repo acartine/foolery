@@ -6,20 +6,17 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { X, Clapperboard, Undo2 } from "lucide-react";
+import { X, Clapperboard } from "lucide-react";
 import type { Beat, BeatPriority, MemoryWorkflowDescriptor } from "@/lib/types";
 import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
-import { isRollbackTransition } from "@/lib/workflows";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import { BeatStateBadge } from "@/components/beat-state-badge";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
 import { BeatTypeBadge } from "@/components/beat-type-badge";
+import { StateDropdown } from "./beat-detail-state-dropdown";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
 
@@ -94,7 +91,8 @@ export function validNextStates(
   return Array.from(next).filter((s) => !s.startsWith("ready_for_"));
 }
 
-function formatStateName(state: string): string {
+/** @internal Exported for sub-component use. */
+export function formatStateName(state: string): string {
   return state.replace(/_/g, " ");
 }
 
@@ -298,67 +296,12 @@ function BeatDetailHeader({
       <div className="flex flex-wrap gap-1.5">
         <BeatTypeBadge type={beat.type} />
 
-        {onUpdate && workflow && beat.state ? (() => {
-          const rawKnoState = typeof beat.metadata?.knotsState === "string"
-            ? beat.metadata.knotsState
-            : undefined;
-          const nextStates = validNextStates(beat.state, workflow, rawKnoState);
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button type="button" title="Change workflow state" className="cursor-pointer">
-                  <BeatStateBadge state={beat.state} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuRadioGroup
-                  value={beat.state}
-                  onValueChange={(v) => fireUpdate({ state: v })}
-                >
-                  <DropdownMenuRadioItem value={beat.state}>
-                    {formatStateName(beat.state)} (current)
-                  </DropdownMenuRadioItem>
-                  {nextStates.filter((s) => !isRollbackTransition(beat.state, s)).map((s) => (
-                    <DropdownMenuRadioItem key={s} value={s}>
-                      {formatStateName(s)}
-                    </DropdownMenuRadioItem>
-                  ))}
-                  {nextStates.some((s) => isRollbackTransition(beat.state, s)) && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Undo2 className="size-3" />
-                        Rollback
-                      </DropdownMenuLabel>
-                    </>
-                  )}
-                  {nextStates.filter((s) => isRollbackTransition(beat.state, s)).map((s) => (
-                    <DropdownMenuRadioItem key={s} value={s}>
-                      {formatStateName(s)}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        })() : onUpdate ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" title="Change beat state" className="cursor-pointer">
-                <BeatStateBadge state={beat.state} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuRadioGroup value={beat.state} onValueChange={(v) => fireUpdate({ state: v })}>
-                {["open", "in_progress", "blocked", "deferred", "closed"].map((s) => (
-                  <DropdownMenuRadioItem key={s} value={s}>{s.replace("_", " ")}</DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <BeatStateBadge state={beat.state} />
-        )}
+        <StateDropdown
+          beat={beat}
+          onUpdate={onUpdate}
+          workflow={workflow}
+          fireUpdate={fireUpdate}
+        />
 
         {onUpdate ? (
           <DropdownMenu>
@@ -368,7 +311,14 @@ function BeatDetailHeader({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuRadioGroup value={String(beat.priority)} onValueChange={(v) => fireUpdate({ priority: Number(v) as BeatPriority })}>
+              <DropdownMenuRadioGroup
+                value={String(beat.priority)}
+                onValueChange={(v) =>
+                  fireUpdate({
+                    priority: Number(v) as BeatPriority,
+                  })
+                }
+              >
                 {PRIORITIES.map((p) => (
                   <DropdownMenuRadioItem key={p} value={String(p)}>P{p}</DropdownMenuRadioItem>
                 ))}

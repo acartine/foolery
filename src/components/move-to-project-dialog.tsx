@@ -26,11 +26,145 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Beat } from "@/lib/types";
+import type { RegisteredRepo } from "@/lib/types";
 
 interface MoveToProjectDialogProps {
   beat: Beat;
   currentRepo?: string;
-  onMoved: (newBeatId: string, targetRepo: string) => void;
+  onMoved: (
+    newBeatId: string, targetRepo: string
+  ) => void;
+}
+
+const TERMINAL_STATES = [
+  "shipped", "abandoned", "closed",
+] as const;
+
+function isTerminalBeat(beat: Beat): boolean {
+  return TERMINAL_STATES.some((s) => beat.state === s);
+}
+
+function useMoveBeat(
+  beat: Beat,
+  targetRepo: string,
+  availableRepos: RegisteredRepo[],
+  currentRepo: string | undefined,
+  onSuccess: (newId: string, repo: string) => void,
+) {
+  return useMutation({
+    mutationFn: async () => {
+      const createResult = await createBeat(
+        beatToCreateInput(beat),
+        targetRepo,
+      );
+      if (!createResult.ok || !createResult.data) {
+        throw new Error(
+          createResult.error
+            ?? "Failed to create beat in target project",
+        );
+      }
+      const newId = createResult.data.id;
+      const targetName =
+        availableRepos.find(
+          (r) => r.path === targetRepo,
+        )?.name ?? targetRepo;
+
+      const closeResult = await closeBeat(
+        beat.id,
+        { reason: `Moved to ${targetName} as ${newId}` },
+        currentRepo,
+      );
+      if (!closeResult.ok) {
+        const msg =
+          `Beat created in ${targetName} (${newId}),`
+          + " but failed to close the original."
+          + " Please close it manually.";
+        toast.warning(msg);
+      }
+
+      return { newId, targetRepo };
+    },
+    onSuccess: ({ newId, targetRepo: repo }) => {
+      toast.success("Beat moved successfully");
+      onSuccess(newId, repo);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+function MoveDialogBody({
+  availableRepos,
+  targetRepo,
+  setTargetRepo,
+  isPending,
+  onCancel,
+  onMove,
+}: {
+  availableRepos: RegisteredRepo[];
+  targetRepo: string;
+  setTargetRepo: (v: string) => void;
+  isPending: boolean;
+  onCancel: () => void;
+  onMove: () => void;
+}) {
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>
+          Move Beat to Another Project
+        </DialogTitle>
+        <DialogDescription>
+          This will create a copy in the target project
+          and close the original with a reason
+          indicating it was moved.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="py-4">
+        <label className="text-sm font-medium mb-2 block">
+          Target Project
+        </label>
+        <Select
+          value={targetRepo}
+          onValueChange={setTargetRepo}
+        >
+          <SelectTrigger>
+            <SelectValue
+              placeholder="Select a project..."
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {availableRepos.map((repo) => (
+              <SelectItem
+                key={repo.path}
+                value={repo.path}
+              >
+                {repo.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <DialogFooter>
+        <Button
+          title="Cancel move"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isPending}
+        >
+          Cancel
+        </Button>
+        <Button
+          title="Move beat to selected project"
+          onClick={onMove}
+          disabled={!targetRepo || isPending}
+        >
+          {isPending ? "Moving..." : "Move"}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  );
 }
 
 export function MoveToProjectDialog({
@@ -39,10 +173,11 @@ export function MoveToProjectDialog({
   onMoved,
 }: MoveToProjectDialogProps) {
   const [open, setOpen] = useState(false);
-  const [targetRepo, setTargetRepo] = useState<string>("");
-  const { registeredRepos, setRegisteredRepos } = useAppStore();
+  const [targetRepo, setTargetRepo] = useState("");
+  const {
+    registeredRepos, setRegisteredRepos,
+  } = useAppStore();
 
-  // Ensure registry is loaded (deduped with RepoSwitcher via query key)
   const { data: registryData } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
@@ -57,103 +192,50 @@ export function MoveToProjectDialog({
   }, [registryData, setRegisteredRepos]);
 
   const availableRepos = registeredRepos.filter(
-    (r) => r.path !== currentRepo
+    (r) => r.path !== currentRepo,
   );
 
-  const { mutate: handleMove, isPending } = useMutation({
-    mutationFn: async () => {
-      // Step 1: Create in target repo
-      const createResult = await createBeat(
-        beatToCreateInput(beat),
-        targetRepo
-      );
-      if (!createResult.ok || !createResult.data) {
-        throw new Error(
-          createResult.error ?? "Failed to create beat in target project"
-        );
-      }
-      const newId = createResult.data.id;
-      const targetName =
-        availableRepos.find((r) => r.path === targetRepo)?.name ?? targetRepo;
+  const handleSuccess = (
+    newId: string, repo: string,
+  ) => {
+    setOpen(false);
+    onMoved(newId, repo);
+  };
 
-      // Step 2: Close original
-      const closeResult = await closeBeat(
-        beat.id,
-        { reason: `Moved to ${targetName} as ${newId}` },
-        currentRepo
-      );
-      if (!closeResult.ok) {
-        toast.warning(
-          `Beat created in ${targetName} (${newId}), but failed to close the original. Please close it manually.`
-        );
-      }
+  const { mutate: handleMove, isPending } = useMoveBeat(
+    beat, targetRepo, availableRepos,
+    currentRepo, handleSuccess,
+  );
 
-      return { newId, targetRepo };
-    },
-    onSuccess: ({ newId, targetRepo: repo }) => {
-      toast.success("Beat moved successfully");
-      setOpen(false);
-      onMoved(newId, repo);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
-  });
+  if (isTerminalBeat(beat) || !availableRepos.length) {
+    return null;
+  }
 
-  // Hide when beat is already terminal or no other projects available
-  if (beat.state === "shipped" || beat.state === "abandoned" || beat.state === "closed" || availableRepos.length === 0) return null;
+  const onOpenChange = (v: boolean) => {
+    setOpen(v);
+    if (!v) setTargetRepo("");
+  };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setTargetRepo(""); }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" title="Move this beat to another project" size="xs">
+        <Button
+          variant="outline"
+          title="Move this beat to another project"
+          size="xs"
+        >
           <ArrowRightLeft />
           Move
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Move Beat to Another Project</DialogTitle>
-          <DialogDescription>
-            This will create a copy in the target project and close the original
-            with a reason indicating it was moved.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="py-4">
-          <label className="text-sm font-medium mb-2 block">
-            Target Project
-          </label>
-          <Select value={targetRepo} onValueChange={setTargetRepo}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a project..." />
-            </SelectTrigger>
-            <SelectContent>
-              {availableRepos.map((repo) => (
-                <SelectItem key={repo.path} value={repo.path}>
-                  {repo.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <DialogFooter>
-          <Button title="Cancel move"
-            variant="outline"
-            onClick={() => setOpen(false)}
-            disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <Button title="Move beat to selected project"
-            onClick={() => handleMove()}
-            disabled={!targetRepo || isPending}
-          >
-            {isPending ? "Moving..." : "Move"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      <MoveDialogBody
+        availableRepos={availableRepos}
+        targetRepo={targetRepo}
+        setTargetRepo={setTargetRepo}
+        isPending={isPending}
+        onCancel={() => setOpen(false)}
+        onMove={() => handleMove()}
+      />
     </Dialog>
   );
 }
