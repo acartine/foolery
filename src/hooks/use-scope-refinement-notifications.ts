@@ -4,8 +4,12 @@ import { useEffect, useEffectEvent, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchScopeRefinementStatus } from "@/lib/api";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
+import { toast } from "sonner";
 import { useNotificationStore } from "@/stores/notification-store";
-import type { ScopeRefinementCompletion } from "@/lib/types";
+import type {
+  ScopeRefinementCompletion,
+  ScopeRefinementFailure,
+} from "@/lib/types";
 
 const SCOPE_REFINEMENT_POLL_MS = 10_000;
 
@@ -43,33 +47,69 @@ export function filterNewCompletions(
   return { notifications, beatIds };
 }
 
+/**
+ * Pure logic for filtering new failures from a batch.
+ * Exported for unit testing without React.
+ */
+export function filterNewFailures(
+  failures: ScopeRefinementFailure[],
+  seenIds: Set<string>,
+  mountedAt: number,
+): ScopeRefinementFailure[] {
+  const result: ScopeRefinementFailure[] = [];
+  for (const failure of failures) {
+    if (seenIds.has(failure.id)) continue;
+    seenIds.add(failure.id);
+    if (failure.timestamp < mountedAt) continue;
+    result.push(failure);
+  }
+  return result;
+}
+
 export function useScopeRefinementNotifications(enabled = true): void {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.addNotification);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const mountedAtRef = useRef<number | null>(null);
 
-  const handleCompletions = useEffectEvent((completions: ScopeRefinementCompletion[]) => {
-    const { notifications, beatIds } = filterNewCompletions(
-      completions,
-      seenIdsRef.current,
-      mountedAtRef.current ?? 0,
-    );
+  const handleCompletions = useEffectEvent(
+    (completions: ScopeRefinementCompletion[]) => {
+      const { notifications, beatIds } = filterNewCompletions(
+        completions,
+        seenIdsRef.current,
+        mountedAtRef.current ?? 0,
+      );
 
-    for (const notification of notifications) {
-      addNotification(notification);
-    }
-
-    if (notifications.length > 0) {
-      void invalidateBeatListQueries(queryClient);
-      for (const beatId of beatIds) {
-        void queryClient.invalidateQueries({
-          queryKey: ["beat", beatId],
-          refetchType: "all",
-        });
+      for (const notification of notifications) {
+        addNotification(notification);
       }
-    }
-  });
+
+      if (notifications.length > 0) {
+        void invalidateBeatListQueries(queryClient);
+        for (const beatId of beatIds) {
+          void queryClient.invalidateQueries({
+            queryKey: ["beat", beatId],
+            refetchType: "all",
+          });
+        }
+      }
+    },
+  );
+
+  const handleFailures = useEffectEvent(
+    (failures: ScopeRefinementFailure[]) => {
+      const newFailures = filterNewFailures(
+        failures,
+        seenIdsRef.current,
+        mountedAtRef.current ?? 0,
+      );
+      for (const failure of newFailures) {
+        toast.error(
+          `Scope refinement failed for beat ${failure.beatId}: ${failure.reason}`,
+        );
+      }
+    },
+  );
 
   useEffect(() => {
     if (!enabled) return;
@@ -81,6 +121,9 @@ export function useScopeRefinementNotifications(enabled = true): void {
       const result = await fetchScopeRefinementStatus();
       if (!result.ok || !result.data || cancelled) return;
       handleCompletions(result.data.completions);
+      if (result.data.failures) {
+        handleFailures(result.data.failures);
+      }
     };
 
     void poll();

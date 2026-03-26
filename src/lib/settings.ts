@@ -612,7 +612,7 @@ export async function getScopeRefinementAgent(): Promise<AgentTarget | null> {
     return toCliTarget(settings.agents[agentId], agentId);
   }
 
-  return null;
+  return toCliTarget({ command: getFallbackCommand(settings) });
 }
 
 /**

@@ -32,6 +32,7 @@ describe("GET /api/scope-refinement/status", () => {
       data: {
         queueSize: 0,
         completions: [],
+        failures: [],
       },
     });
   });

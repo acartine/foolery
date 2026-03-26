@@ -381,9 +381,18 @@ export interface ScopeRefinementCompletion {
   timestamp: number;
 }
 
+export interface ScopeRefinementFailure {
+  id: string;
+  beatId: string;
+  reason: string;
+  repoPath?: string;
+  timestamp: number;
+}
+
 export interface ScopeRefinementStatus {
   queueSize: number;
   completions: ScopeRefinementCompletion[];
+  failures: ScopeRefinementFailure[];
 }
 
 export interface ScannedAgent {

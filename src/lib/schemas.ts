@@ -152,11 +152,11 @@ export const defaultsSettingsSchema = z
 
 export const scopeRefinementSettingsSchema = z
   .object({
-    enabled: z.boolean().default(false),
+    enabled: z.boolean().default(true),
     prompt: z.string().default(DEFAULT_SCOPE_REFINEMENT_PROMPT),
   })
   .default({
-    enabled: false,
+    enabled: true,
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   });
 

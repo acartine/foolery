@@ -83,11 +83,22 @@ export async function POST(request: NextRequest) {
     );
   }
   const createdBeatId = result.data!.id;
-  void enqueueBeatScopeRefinement(createdBeatId, repoPath).catch((error) => {
-    const message = error instanceof Error ? error.message : String(error);
-    console.warn(
-      `[scope-refinement] failed to enqueue beat ${createdBeatId}: ${message}`,
+  let srResult: { enqueued: boolean; reason?: string };
+  try {
+    srResult = await enqueueBeatScopeRefinement(
+      createdBeatId,
+      repoPath,
     );
-  });
-  return NextResponse.json({ data: result.data }, { status: 201 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : String(error);
+    console.warn(
+      `[scope-refinement] enqueue error for ${createdBeatId}: ${message}`,
+    );
+    srResult = { enqueued: false, reason: "error" };
+  }
+  return NextResponse.json(
+    { data: result.data, scopeRefinement: srResult },
+    { status: 201 },
+  );
 }
