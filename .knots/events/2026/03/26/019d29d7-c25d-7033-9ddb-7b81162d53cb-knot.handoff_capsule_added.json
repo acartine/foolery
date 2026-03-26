@@ -1,0 +1,15 @@
+{
+  "event_id": "019d29d7-c25d-7033-9ddb-7b81162d53cb",
+  "occurred_at": "2026-03-26T11:11:39.101745Z",
+  "knot_id": "foolery-7f40",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved. All 5 acceptance criteria verified: h-8 applied to all ActionButton variants (Escalations outline, dropdown-trigger Add, simple Add) and placeholder button; icon size, padding, gap unchanged; quality gates pass (0 lint errors, tsc clean, build clean). Change is minimal and correctly scoped (1 file, 4 lines).",
+    "datetime": "2026-03-26T11:11:39.101745Z",
+    "entry_id": "019d29d7-c25d-7033-9ddb-7b7458cb52fc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

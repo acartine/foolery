@@ -1,0 +1,17 @@
+{
+  "event_id": "019d29d6-37e1-7df0-a13d-e98e5aca9b01",
+  "occurred_at": "2026-03-26T11:09:58.113075Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.created",
+  "data": {
+    "body": "➜ foolery git:(feat/foolery-7f40-add-button-height) ✗ foolery stop\n/Users/cartine/.local/bin/foolery: line 110: printf: ->: invalid option\nprintf: usage: printf [-v var] format [arguments]\n[foolery]  New Foolery version available: v0.5.1 (installed v0.5.0)\n/Users/cartine/.local/bin/foolery: line 110: printf: ->: invalid option\nprintf: usage: printf [-v var] format [arguments]\n[foolery]  Upgrade: curl -fsSL https://raw.githubusercontent.com/acartine/foolery/main/scripts/install.sh | bash\n[foolery] ==> Stopping Foolery (pid 1162)\n[foolery] [ok] Stopped.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "title": "bash errors in foolery stop",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
