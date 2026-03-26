@@ -59,6 +59,10 @@ function ok<T>(data: T): BackendResult<T> {
   return { ok: true, data };
 }
 
+function ignoreUnused(...values: unknown[]): void {
+  void values;
+}
+
 // ---------------------------------------------------------------------------
 // Dependency record
 // ---------------------------------------------------------------------------
@@ -76,18 +80,15 @@ export class MockBackendPort implements BackendPort {
   private beats = new Map<string, Beat>();
   private deps: DepRecord[] = [];
 
-  async listWorkflows(
-    _repoPath?: string,
-  ): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+  async listWorkflows(repoPath?: string): Promise<BackendResult<MemoryWorkflowDescriptor[]>> {
+    ignoreUnused(repoPath);
     return ok(builtinWorkflowDescriptors());
   }
 
   // -- Read operations ------------------------------------------------------
 
-  async list(
-    filters?: BeatListFilters,
-    _repoPath?: string,
-  ): Promise<BackendResult<Beat[]>> {
+  async list(filters?: BeatListFilters, repoPath?: string): Promise<BackendResult<Beat[]>> {
+    ignoreUnused(repoPath);
     let items = Array.from(this.beats.values());
     items = applyFilters(items, filters);
     return ok(items);
@@ -95,8 +96,9 @@ export class MockBackendPort implements BackendPort {
 
   async listReady(
     filters?: BeatListFilters,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<Beat[]>> {
+    ignoreUnused(repoPath);
     let items = Array.from(this.beats.values()).filter(
       (b) => b.state === "open",
     );
@@ -107,8 +109,9 @@ export class MockBackendPort implements BackendPort {
   async search(
     query: string,
     filters?: BeatListFilters,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<Beat[]>> {
+    ignoreUnused(repoPath);
     const lower = query.toLowerCase();
     let items = Array.from(this.beats.values()).filter(
       (b) =>
@@ -123,9 +126,10 @@ export class MockBackendPort implements BackendPort {
 
   async query(
     expression: string,
-    _options?: { limit?: number; sort?: string },
-    _repoPath?: string,
+    options?: { limit?: number; sort?: string },
+    repoPath?: string,
   ): Promise<BackendResult<Beat[]>> {
+    ignoreUnused(options, repoPath);
     // Minimal expression support: "state:VALUE" or "type:VALUE"
     const items = Array.from(this.beats.values()).filter((b) =>
       matchExpression(b, expression),
@@ -133,10 +137,8 @@ export class MockBackendPort implements BackendPort {
     return ok(items);
   }
 
-  async get(
-    id: string,
-    _repoPath?: string,
-  ): Promise<BackendResult<Beat>> {
+  async get(id: string, repoPath?: string): Promise<BackendResult<Beat>> {
+    ignoreUnused(repoPath);
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
     return ok(beat);
@@ -146,8 +148,9 @@ export class MockBackendPort implements BackendPort {
 
   async create(
     input: CreateBeatInput,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<{ id: string }>> {
+    ignoreUnused(repoPath);
     const id = nextId();
     const now = isoNow();
     const workflow = builtinProfileDescriptor(input.profileId ?? input.workflowId);
@@ -187,8 +190,9 @@ export class MockBackendPort implements BackendPort {
   async update(
     id: string,
     input: UpdateBeatInput,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<void>> {
+    ignoreUnused(repoPath);
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
     applyUpdate(beat, input);
@@ -196,10 +200,8 @@ export class MockBackendPort implements BackendPort {
     return { ok: true };
   }
 
-  async delete(
-    id: string,
-    _repoPath?: string,
-  ): Promise<BackendResult<void>> {
+  async delete(id: string, repoPath?: string): Promise<BackendResult<void>> {
+    ignoreUnused(repoPath);
     if (!this.beats.has(id)) {
       return backendError("NOT_FOUND", `Beat ${id} not found`);
     }
@@ -212,9 +214,10 @@ export class MockBackendPort implements BackendPort {
 
   async close(
     id: string,
-    _reason?: string,
-    _repoPath?: string,
+    reason?: string,
+    repoPath?: string,
   ): Promise<BackendResult<void>> {
+    ignoreUnused(reason, repoPath);
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
     const closedWorkflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
@@ -228,9 +231,10 @@ export class MockBackendPort implements BackendPort {
 
   async listDependencies(
     id: string,
-    _repoPath?: string,
+    repoPath?: string,
     options?: { type?: string },
   ): Promise<BackendResult<BeatDependency[]>> {
+    ignoreUnused(repoPath);
     if (!this.beats.has(id)) {
       return backendError("NOT_FOUND", `Beat ${id} not found`);
     }
@@ -253,8 +257,9 @@ export class MockBackendPort implements BackendPort {
   async addDependency(
     blockerId: string,
     blockedId: string,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<void>> {
+    ignoreUnused(repoPath);
     if (!this.beats.has(blockerId)) {
       return backendError("NOT_FOUND", `Beat ${blockerId} not found`);
     }
@@ -277,8 +282,9 @@ export class MockBackendPort implements BackendPort {
   async removeDependency(
     blockerId: string,
     blockedId: string,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<void>> {
+    ignoreUnused(repoPath);
     const idx = this.deps.findIndex(
       (d) => d.blockerId === blockerId && d.blockedId === blockedId,
     );
@@ -295,8 +301,9 @@ export class MockBackendPort implements BackendPort {
   async buildTakePrompt(
     beatId: string,
     options?: TakePromptOptions,
-    _repoPath?: string,
+    repoPath?: string,
   ): Promise<BackendResult<TakePromptResult>> {
+    ignoreUnused(repoPath);
     const beat = this.beats.get(beatId);
     if (!beat) return backendError("NOT_FOUND", `Beat ${beatId} not found`);
 
@@ -321,9 +328,10 @@ export class MockBackendPort implements BackendPort {
   }
 
   async buildPollPrompt(
-    _options?: PollPromptOptions,
-    _repoPath?: string,
+    options?: PollPromptOptions,
+    repoPath?: string,
   ): Promise<BackendResult<PollPromptResult>> {
+    ignoreUnused(options, repoPath);
     return backendError("UNAVAILABLE", "This backend does not support poll-based prompt building");
   }
 

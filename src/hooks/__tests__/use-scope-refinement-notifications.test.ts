@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { filterNewCompletions } from "@/hooks/use-scope-refinement-notifications";
 import type { ScopeRefinementCompletion } from "@/lib/types";
 
-function makeCompletion(overrides: Partial<ScopeRefinementCompletion> = {}): ScopeRefinementCompletion {
+function makeCompletion(
+  overrides: Partial<ScopeRefinementCompletion> = {},
+): ScopeRefinementCompletion {
   return {
     id: "comp-1",
     beatId: "foolery-abc",
@@ -63,7 +65,13 @@ describe("filterNewCompletions", () => {
     const seenIds = new Set<string>();
     const mountedAt = 1000;
     const completions = [
-      makeCompletion({ id: "c1", beatId: "b1", beatTitle: "Beat", timestamp: 2000, repoPath: "/repo" }),
+      makeCompletion({
+        id: "c1",
+        beatId: "b1",
+        beatTitle: "Beat",
+        timestamp: 2000,
+        repoPath: "/repo",
+      }),
     ];
 
     const result = filterNewCompletions(completions, seenIds, mountedAt);
