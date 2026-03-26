@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Clapperboard } from "lucide-react";
+import {
+  Clapperboard,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { canTakeBeat } from "@/lib/beat-take-eligibility";
+import { refineBeatScope } from "@/lib/api";
 import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -361,6 +365,16 @@ function TitleEditor({
   );
 }
 
+export function isTerminalBeat(
+  beat: Pick<Beat, "state">,
+): boolean {
+  return (
+    beat.state === "shipped" ||
+    beat.state === "abandoned" ||
+    beat.state === "closed"
+  );
+}
+
 function HeaderActions({
   beat,
   isInheritedRolling,
@@ -377,6 +391,26 @@ function HeaderActions({
     targetRepo: string,
   ) => void;
 }) {
+  const [isRefining, setIsRefining] =
+    useState(false);
+  const terminal = isTerminalBeat(beat);
+
+  async function handleRefineScope() {
+    setIsRefining(true);
+    const result = await refineBeatScope(
+      beat.id,
+      repo,
+    );
+    setIsRefining(false);
+    if (result.ok) {
+      toast.success("Scope refinement enqueued");
+    } else {
+      toast.error(
+        result.error ?? "Failed to enqueue",
+      );
+    }
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {isInheritedRolling ? (
@@ -401,6 +435,21 @@ function HeaderActions({
           Take!
         </Button>
       )}
+      <Button
+        variant="outline"
+        size="xs"
+        title="Re-run scope refinement for this beat"
+        disabled={terminal || isRefining}
+        onClick={() => void handleRefineScope()}
+      >
+        <RefreshCw
+          className={
+            "size-3"
+            + (isRefining ? " animate-spin" : "")
+          }
+        />
+        {isRefining ? "Refining\u2026" : "Refine Scope"}
+      </Button>
       <MoveToProjectDialog
         beat={beat}
         currentRepo={repo}

@@ -3,6 +3,7 @@ import {
   getDisplayedBeatAliases,
   getDisplayedBeatId,
   getShipBeatPayload,
+  isTerminalBeat,
 } from "@/components/beat-detail-lightbox";
 import type { Beat } from "@/lib/types";
 
@@ -66,4 +67,25 @@ describe("beat detail lightbox identity helpers", () => {
     expect(getShipBeatPayload(beat)).toBe(beat);
     expect(getShipBeatPayload(beat, "   ")).toBe(beat);
   });
+});
+
+describe("isTerminalBeat", () => {
+  it.each(["shipped", "abandoned", "closed"] as const)(
+    "returns true for terminal state: %s",
+    (state) => {
+      expect(isTerminalBeat({ state })).toBe(true);
+    },
+  );
+
+  it.each([
+    "implementation",
+    "planning",
+    "ready_for_planning",
+    "open",
+  ] as const)(
+    "returns false for non-terminal state: %s",
+    (state) => {
+      expect(isTerminalBeat({ state })).toBe(false);
+    },
+  );
 });

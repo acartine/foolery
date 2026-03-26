@@ -209,6 +209,18 @@ export function addDep(
   });
 }
 
+export function refineBeatScope(
+  id: string,
+  repo?: string
+): Promise<BdResult<{ jobId: string; beatId: string }>> {
+  const body: Record<string, string> = {};
+  if (repo) body._repo = repo;
+  return request<{ jobId: string; beatId: string }>(
+    `${BASE}/${id}/refine-scope`,
+    { method: "POST", body: JSON.stringify(body) },
+  );
+}
+
 export function mergeBeats(
   survivorId: string,
   consumedId: string,
