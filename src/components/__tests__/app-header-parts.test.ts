@@ -33,6 +33,22 @@ function findElement(
   return null;
 }
 
+function flattenText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+  if (!node || typeof node === "boolean") {
+    return "";
+  }
+  if (Array.isArray(node)) {
+    return node.map(flattenText).join("");
+  }
+
+  if (!isValidElement(node)) return "";
+  const element = node as ElementWithProps;
+  return flattenText(element.props.children);
+}
+
 describe("VersionBannerBar", () => {
   it("renders a visible update action in the banner", () => {
     const tree = VersionBannerBar({
@@ -83,5 +99,22 @@ describe("VersionBannerBar", () => {
     );
     updateButton!.props.onClick!();
     expect(onUpdateNow).toHaveBeenCalledTimes(1);
+  });
+
+  it("formats installed and latest versions with a single v", () => {
+    const tree = VersionBannerBar({
+      banner: {
+        installedVersion: "0.5.1",
+        latestVersion: "v0.6.0",
+      },
+      copied: false,
+      onUpdateNow: vi.fn(),
+      onDismiss: vi.fn(),
+    });
+
+    const text = flattenText(tree);
+    expect(text).toContain("v0.6.0");
+    expect(text).toContain("v0.5.1");
+    expect(text).not.toContain("vv0.6.0");
   });
 });

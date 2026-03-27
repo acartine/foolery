@@ -1,10 +1,13 @@
 import {
   afterEach, beforeEach, describe, expect, it, vi,
 } from "vitest";
+import type { ReactElement, ReactNode } from "react";
 import {
   checkForUpdates,
   type VersionCheckState,
+  VersionPopoverBody,
 } from "@/components/version-badge";
+import { Button } from "@/components/ui/button";
 
 /* --------------------------------------------------------
  * Mock global fetch so we can simulate API responses
@@ -38,6 +41,43 @@ function jsonResponse(
     status,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function flattenText(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+  if (!node || typeof node === "boolean") {
+    return "";
+  }
+  if (Array.isArray(node)) {
+    return node.map(flattenText).join("");
+  }
+  const element = node as ReactElement<{
+    children?: ReactNode;
+  }>;
+  return flattenText(element.props.children);
+}
+
+function findButton(node: ReactNode): ReactElement<{
+  children?: ReactNode;
+}> | null {
+  if (!node || typeof node === "string") return null;
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const match = findButton(child);
+      if (match) return match;
+    }
+    return null;
+  }
+
+  const element = node as ReactElement<{
+    children?: ReactNode;
+  }>;
+  if (element.type === Button) {
+    return element;
+  }
+  return findButton(element.props.children);
 }
 
 /* --------------------------------------------------------
@@ -180,4 +220,44 @@ describe("checkForUpdates — fetch options", () => {
       ).rejects.toThrow("Failed to fetch");
     },
   );
+});
+
+describe("VersionPopoverBody", () => {
+  it("formats prefixed latest versions without duplicating v", () => {
+    const tree = VersionPopoverBody({
+      state: {
+        status: "update-available",
+        latestVersion: "v0.6.2",
+      },
+      copied: false,
+      onCheck: vi.fn(),
+      onUpdateNow: vi.fn(),
+    });
+
+    expect(flattenText(tree)).toContain("v0.6.2 available");
+    expect(flattenText(tree)).not.toContain("vv0.6.2");
+
+    const updateButton = findButton(tree);
+    expect(flattenText(updateButton)).toContain(
+      "Update now to v0.6.2",
+    );
+  });
+
+  it("formats unprefixed latest versions with a single v", () => {
+    const tree = VersionPopoverBody({
+      state: {
+        status: "update-available",
+        latestVersion: "0.6.2",
+      },
+      copied: false,
+      onCheck: vi.fn(),
+      onUpdateNow: vi.fn(),
+    });
+
+    expect(flattenText(tree)).toContain("v0.6.2 available");
+    const updateButton = findButton(tree);
+    expect(flattenText(updateButton)).toContain(
+      "Update now to v0.6.2",
+    );
+  });
 });
