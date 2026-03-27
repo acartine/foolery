@@ -11,6 +11,9 @@ import { VersionBadge } from "@/components/version-badge";
 import { RepoSwitcher } from "@/components/repo-switcher";
 import { SearchBar } from "@/components/search-bar";
 import {
+  VERSION_UPDATE_COMMAND,
+} from "@/components/version-update-action";
+import {
   NotificationBell,
 } from "@/components/notification-bell";
 import { Button } from "@/components/ui/button";
@@ -29,9 +32,13 @@ import type { BeatsViewId, VersionBannerData } from "./app-header-hooks";
 
 export function VersionBannerBar(props: {
   banner: VersionBannerData;
+  copied: boolean;
+  onUpdateNow: () => void;
   onDismiss: () => void;
 }) {
-  const { banner, onDismiss } = props;
+  const {
+    banner, copied, onUpdateNow, onDismiss,
+  } = props;
   return (
     <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
       <p className="leading-6">
@@ -40,9 +47,19 @@ export function VersionBannerBar(props: {
           {banner.latestVersion}
         </span>{" "}
         available (installed{" "}
-        {banner.installedVersion}). Run{" "}
+        {banner.installedVersion}).{" "}
+        <Button
+          type="button"
+          variant="link"
+          size="xs"
+          className="h-auto px-0 font-semibold text-amber-950"
+          onClick={onUpdateNow}
+        >
+          {copied ? "Copied update command" : "Update now"}
+        </Button>{" "}
+        and run{" "}
         <code className="rounded bg-amber-100 px-1 py-0.5 font-mono text-xs">
-          foolery update
+          {VERSION_UPDATE_COMMAND}
         </code>
         .
       </p>

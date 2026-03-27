@@ -34,6 +34,9 @@ import {
   ActionButton,
   ViewSwitcher,
 } from "./app-header-parts";
+import {
+  useVersionUpdateAction,
+} from "./version-update-action";
 
 function useAppHeaderState() {
   const pathname = usePathname();
@@ -81,6 +84,8 @@ function useAppHeaderState() {
 
 export function AppHeader() {
   const s = useAppHeaderState();
+  const updateAction =
+    useVersionUpdateAction();
   const showAction =
     s.beatsView === "queues" ||
     s.beatsView === "active" ||
@@ -121,6 +126,8 @@ export function AppHeader() {
           {s.vb.banner && !s.vb.dismissed ? (
             <VersionBannerBar
               banner={s.vb.banner}
+              copied={updateAction.copied}
+              onUpdateNow={updateAction.triggerUpdate}
               onDismiss={s.vb.dismiss}
             />
           ) : null}

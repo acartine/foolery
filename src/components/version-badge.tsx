@@ -6,6 +6,10 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import {
+  VERSION_UPDATE_COMMAND,
+  useVersionUpdateAction,
+} from "@/components/version-update-action";
 
 const APP_VERSION =
   process.env.NEXT_PUBLIC_APP_VERSION ?? "0.0.0";
@@ -79,32 +83,17 @@ export function useVersionCheck() {
 }
 
 /**
- * Copy text to clipboard. Returns true on success.
- */
-async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Cinematic version badge beside the app logo.
  * Clicking opens a popover to check for updates.
  */
 export function VersionBadge() {
   const { state, check } = useVersionCheck();
-  const [copied, setCopied] = useState(false);
+  const { copied, triggerUpdate } =
+    useVersionUpdateAction();
 
   const handleUpdateNow = useCallback(async () => {
-    const ok = await copyToClipboard("foolery update");
-    if (ok) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  }, []);
+    await triggerUpdate();
+  }, [triggerUpdate]);
 
   return (
     <Popover>
@@ -216,7 +205,7 @@ export function VersionPopoverBody(props: {
         <p className="text-xs text-muted-foreground">
           Copies{" "}
           <code className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
-            foolery update
+            {VERSION_UPDATE_COMMAND}
           </code>{" "}
           to clipboard
         </p>
