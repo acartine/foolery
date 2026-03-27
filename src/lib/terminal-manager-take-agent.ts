@@ -301,14 +301,14 @@ export function logClaimFailure(
 
 // ─── finalizeClaim ───────────────────────────────────
 
-export function finalizeClaim(
+export async function finalizeClaim(
   ctx: TakeLoopContext,
   current: Beat,
   queueType: string,
   stepAgentOverride: CliAgentTarget | undefined,
   rawPrompt: string,
-): { prompt: string; beatState: string;
-  agentOverride?: CliAgentTarget } {
+): Promise<{ prompt: string; beatState: string;
+  agentOverride?: CliAgentTarget }> {
   const tag =
     `[terminal-manager] [${ctx.id}] [take-loop]`;
   const claimAgent = stepAgentOverride ?? ctx.agent;
@@ -338,13 +338,13 @@ export function finalizeClaim(
 
   const normalized =
     normalizeAgentIdentity(claimAgent);
-  Promise.resolve(appendLeaseAuditEvent({
+  await appendLeaseAuditEvent({
     timestamp: new Date().toISOString(),
     beatId: ctx.beatId,
     sessionId: ctx.id,
     agent: normalized,
     queueType, outcome: "claim",
-  })).catch((err) => {
+  }).catch((err) => {
     console.error(
       `${tag} failed to write audit event:`, err,
     );
