@@ -8,6 +8,7 @@ import {
   VersionPopoverBody,
 } from "@/components/version-badge";
 import { Button } from "@/components/ui/button";
+import type { AppUpdateStatus } from "@/lib/app-update-types";
 
 /* --------------------------------------------------------
  * Mock global fetch so we can simulate API responses
@@ -78,6 +79,21 @@ function findButton(node: ReactNode): ReactElement<{
     return element;
   }
   return findButton(element.props.children);
+}
+
+function makeUpdateStatus(
+  phase: AppUpdateStatus["phase"],
+): AppUpdateStatus {
+  return {
+    phase,
+    message: null,
+    error: null,
+    startedAt: null,
+    endedAt: null,
+    workerPid: null,
+    launcherPath: null,
+    fallbackCommand: "foolery update && foolery restart",
+  };
 }
 
 /* --------------------------------------------------------
@@ -229,7 +245,7 @@ describe("VersionPopoverBody", () => {
         status: "update-available",
         latestVersion: "v0.6.2",
       },
-      copied: false,
+      updateStatus: makeUpdateStatus("idle"),
       onCheck: vi.fn(),
       onUpdateNow: vi.fn(),
     });
@@ -249,7 +265,7 @@ describe("VersionPopoverBody", () => {
         status: "update-available",
         latestVersion: "0.6.2",
       },
-      copied: false,
+      updateStatus: makeUpdateStatus("idle"),
       onCheck: vi.fn(),
       onUpdateNow: vi.fn(),
     });
@@ -258,6 +274,26 @@ describe("VersionPopoverBody", () => {
     const updateButton = findButton(tree);
     expect(flattenText(updateButton)).toContain(
       "Update now to v0.6.2",
+    );
+  });
+
+  it("renders restart progress while automatic update is running", () => {
+    const tree = VersionPopoverBody({
+      state: {
+        status: "update-available",
+        latestVersion: "0.6.2",
+      },
+      updateStatus: makeUpdateStatus("restarting"),
+      onCheck: vi.fn(),
+      onUpdateNow: vi.fn(),
+    });
+
+    const updateButton = findButton(tree);
+    expect(flattenText(updateButton)).toContain(
+      "Restarting…",
+    );
+    expect(flattenText(tree)).toContain(
+      "Restarting Foolery. Manual fallback:",
     );
   });
 });

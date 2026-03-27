@@ -7,6 +7,7 @@ import {
   VersionBannerBar,
 } from "@/components/app-header-parts";
 import { Button } from "@/components/ui/button";
+import type { AppUpdateStatus } from "@/lib/app-update-types";
 
 type ElementWithProps = ReactElement<{
   children?: ReactNode;
@@ -50,13 +51,28 @@ function flattenText(node: ReactNode): string {
 }
 
 describe("VersionBannerBar", () => {
+  function makeStatus(
+    phase: AppUpdateStatus["phase"],
+  ): AppUpdateStatus {
+    return {
+      phase,
+      message: null,
+      error: null,
+      startedAt: null,
+      endedAt: null,
+      workerPid: null,
+      launcherPath: null,
+      fallbackCommand: "foolery update && foolery restart",
+    };
+  }
+
   it("renders a visible update action in the banner", () => {
     const tree = VersionBannerBar({
       banner: {
         installedVersion: "0.5.1",
         latestVersion: "0.6.0",
       },
-      copied: false,
+      updateStatus: makeStatus("idle"),
       onUpdateNow: vi.fn(),
       onDismiss: vi.fn(),
     });
@@ -81,7 +97,7 @@ describe("VersionBannerBar", () => {
         installedVersion: "0.5.1",
         latestVersion: "0.6.0",
       },
-      copied: false,
+      updateStatus: makeStatus("idle"),
       onUpdateNow,
       onDismiss: vi.fn(),
     });
@@ -107,7 +123,7 @@ describe("VersionBannerBar", () => {
         installedVersion: "0.5.1",
         latestVersion: "v0.6.0",
       },
-      copied: false,
+      updateStatus: makeStatus("idle"),
       onUpdateNow: vi.fn(),
       onDismiss: vi.fn(),
     });
@@ -116,5 +132,28 @@ describe("VersionBannerBar", () => {
     expect(text).toContain("v0.6.0");
     expect(text).toContain("v0.5.1");
     expect(text).not.toContain("vv0.6.0");
+  });
+
+  it("surfaces automatic-update progress in the banner button", () => {
+    const tree = VersionBannerBar({
+      banner: {
+        installedVersion: "0.5.1",
+        latestVersion: "0.6.0",
+      },
+      updateStatus: makeStatus("restarting"),
+      onUpdateNow: vi.fn(),
+      onDismiss: vi.fn(),
+    });
+
+    const updateButton = findElement(
+      tree,
+      (element) =>
+        element.type === Button &&
+        element.props.variant === "link",
+    );
+
+    expect(updateButton?.props.children).toBe(
+      "Restarting…",
+    );
   });
 });

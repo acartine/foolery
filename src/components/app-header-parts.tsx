@@ -13,6 +13,7 @@ import { SearchBar } from "@/components/search-bar";
 import {
   VERSION_UPDATE_COMMAND,
 } from "@/components/version-update-action";
+import type { AppUpdateStatus } from "@/lib/app-update-types";
 import {
   NotificationBell,
 } from "@/components/notification-bell";
@@ -33,12 +34,12 @@ import type { BeatsViewId, VersionBannerData } from "./app-header-hooks";
 
 export function VersionBannerBar(props: {
   banner: VersionBannerData;
-  copied: boolean;
+  updateStatus: AppUpdateStatus;
   onUpdateNow: () => void;
   onDismiss: () => void;
 }) {
   const {
-    banner, copied, onUpdateNow, onDismiss,
+    banner, updateStatus, onUpdateNow, onDismiss,
   } = props;
   return (
     <div className="mb-2 flex items-start justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
@@ -54,11 +55,16 @@ export function VersionBannerBar(props: {
           variant="link"
           size="xs"
           className="h-auto px-0 font-semibold text-amber-950"
+          disabled={
+            updateStatus.phase === "starting" ||
+            updateStatus.phase === "updating" ||
+            updateStatus.phase === "restarting"
+          }
           onClick={onUpdateNow}
         >
-          {copied ? "Copied update command" : "Update now"}
+          {renderBannerUpdateLabel(updateStatus)}
         </Button>{" "}
-        and run{" "}
+        if automation fails, run{" "}
         <code className="rounded bg-amber-100 px-1 py-0.5 font-mono text-xs">
           {VERSION_UPDATE_COMMAND}
         </code>
@@ -75,6 +81,24 @@ export function VersionBannerBar(props: {
       </Button>
     </div>
   );
+}
+
+function renderBannerUpdateLabel(
+  status: AppUpdateStatus,
+): string {
+  if (status.phase === "starting" || status.phase === "updating") {
+    return "Updating…";
+  }
+  if (status.phase === "restarting") {
+    return "Restarting…";
+  }
+  if (status.phase === "completed") {
+    return "Update complete";
+  }
+  if (status.phase === "failed") {
+    return "Retry automatic update";
+  }
+  return "Update now";
 }
 
 // -----------------------------------------------------------
