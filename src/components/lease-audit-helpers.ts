@@ -32,7 +32,7 @@ export interface AgentStepRow {
   offset: string;
 }
 
-function agentLabel(agent: LeaseAuditAggregate["agent"]): string {
+export function agentLabel(agent: LeaseAuditAggregate["agent"]): string {
   const label = formatAgentOptionLabel({
     provider: agent.provider,
     model: agent.model,

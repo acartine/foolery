@@ -13,11 +13,18 @@ import {
   discoverAgents,
   bestOverallAgent,
   buildAgentBreakdown,
+  aggregateDurations,
 } from "@/components/lease-audit-helpers";
 import type {
   LeaderboardEntry,
   AgentStepRow,
+  DurationStats,
 } from "@/components/lease-audit-helpers";
+import { buildSpeedTable } from "@/components/lease-audit-speed";
+import type { SpeedRow } from "@/components/lease-audit-speed";
+import { SpeedTable } from "@/components/speed-table";
+import { AgentBreakdownBody } from "@/components/agent-breakdown-body";
+import type { LeaseAuditEvent } from "@/lib/lease-audit";
 
 // Re-export for backward compatibility
 export type { LeaderboardEntry };
@@ -70,13 +77,16 @@ export function LeaseAuditView({
   });
 
   const aggregates = useMemo(() => data?.aggregates ?? [], [data]);
+  const events = useMemo(() => data?.events ?? [], [data]);
   const topAgent = useMemo(
     () => bestOverallAgent(aggregates),
     [aggregates],
   );
   const effectiveAgent = selectedAgent || topAgent;
 
-  const derived = useAuditDerived(aggregates, effectiveAgent);
+  const derived = useAuditDerived(
+    aggregates, events, effectiveAgent,
+  );
 
   if (isLoading) {
     return (
@@ -106,7 +116,10 @@ export function LeaseAuditView({
         selectedAgent={effectiveAgent}
         setSelectedAgent={setSelectedAgent}
         rows={derived.agentBreakdown}
+        durationMap={derived.durationMap}
+        speedRows={derived.speedRows}
       />
+      <SpeedTable speedRows={derived.speedRows} />
     </div>
   );
 }
@@ -117,9 +130,12 @@ type Aggregates = Parameters<typeof buildLeaderboard>[0];
 
 function useAuditDerived(
   aggregates: Aggregates,
+  events: LeaseAuditEvent[],
   selectedAgent: string,
 ) {
-  const queueTypes = useMemo(() => discoverQueueTypes(aggregates), [aggregates]);
+  const queueTypes = useMemo(
+    () => discoverQueueTypes(aggregates), [aggregates],
+  );
   const queueSeriesMap = useMemo(() => {
     const map = new Map<string, AgentSeries[]>();
     for (const qt of queueTypes) {
@@ -131,13 +147,34 @@ function useAuditDerived(
     () => buildCombinedSeries(aggregates),
     [aggregates],
   );
-  const leaderboard = useMemo(() => buildLeaderboard(aggregates), [aggregates]);
-  const agents = useMemo(() => discoverAgents(aggregates), [aggregates]);
+  const leaderboard = useMemo(
+    () => buildLeaderboard(aggregates), [aggregates],
+  );
+  const agents = useMemo(
+    () => discoverAgents(aggregates), [aggregates],
+  );
   const agentBreakdown = useMemo(
-    () => (selectedAgent ? buildAgentBreakdown(aggregates, selectedAgent) : []),
+    () => (selectedAgent
+      ? buildAgentBreakdown(aggregates, selectedAgent)
+      : []),
     [aggregates, selectedAgent],
   );
-  return { queueSeriesMap, combinedSeries, leaderboard, agents, agentBreakdown };
+  const speedRows = useMemo(
+    () => buildSpeedTable(events, aggregates),
+    [events, aggregates],
+  );
+  const durationMap = useMemo(() => {
+    const durations = aggregateDurations(events);
+    const map = new Map<string, DurationStats>();
+    for (const d of durations) {
+      map.set(`${d.agent}::${d.step}`, d);
+    }
+    return map;
+  }, [events]);
+  return {
+    queueSeriesMap, combinedSeries, leaderboard,
+    agents, agentBreakdown, speedRows, durationMap,
+  };
 }
 
 // ── Sub-components ──
@@ -342,11 +379,15 @@ function AgentBreakdownTable({
   selectedAgent,
   setSelectedAgent,
   rows,
+  durationMap,
+  speedRows,
 }: {
   agents: string[];
   selectedAgent: string;
   setSelectedAgent: (v: string) => void;
   rows: AgentStepRow[];
+  durationMap: Map<string, DurationStats>;
+  speedRows: SpeedRow[];
 }) {
   if (agents.length === 0) return null;
 
@@ -371,55 +412,15 @@ function AgentBreakdownTable({
           ))}
         </select>
       </div>
-      {rows.length > 0 && <AgentBreakdownBody rows={rows} />}
+      {rows.length > 0 && (
+        <AgentBreakdownBody
+          rows={rows}
+          agent={selectedAgent}
+          durationMap={durationMap}
+          speedRows={speedRows}
+        />
+      )}
     </div>
   );
 }
 
-function AgentBreakdownBody({ rows }: { rows: AgentStepRow[] }) {
-  return (
-    <div className="overflow-x-auto rounded-lg border border-border/60">
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="border-b border-border/60 bg-muted/30">
-            <TH align="left">Step</TH>
-            <TH align="right">Rate</TH>
-            <TH align="right">n</TH>
-            <TH align="right">Mean</TH>
-            <TH align="right">vs Mean</TH>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr
-              key={row.step}
-              className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}
-            >
-              <td className="px-3 py-1.5 font-medium text-foreground">
-                {capitalize(row.step)}
-              </td>
-              <td className="px-3 py-1.5 text-right tabular-nums text-foreground">
-                {row.rate}%
-              </td>
-              <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
-                {row.n}
-              </td>
-              <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
-                {row.meanRate}%
-              </td>
-              <td
-                className={`px-3 py-1.5 text-right tabular-nums ${
-                  row.rate >= row.meanRate
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {row.offset}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
