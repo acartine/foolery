@@ -34,6 +34,12 @@ const searchBarSource = src(
 const beatsQuerySource = src(
   "src/app/beats/use-beats-query.ts",
 );
+const tableUiSource = src(
+  "src/components/ui/table.tsx",
+);
+const colDefsSource = src(
+  "src/components/beat-column-defs.tsx",
+);
 
 describe("beats page layout: scrolling and hotkeys", () => {
   it("allows vertical scrolling in the main wrapper", () => {
@@ -116,6 +122,32 @@ describe("beats page layout: scrolling and hotkeys", () => {
     );
   });
 
+});
+
+describe("beats page layout: row vertical alignment", () => {
+  it("uses align-middle on TableCell for consistent row alignment", () => {
+    expect(tableUiSource).toContain("align-middle");
+    expect(tableUiSource).not.toContain("align-top");
+  });
+
+  it("uses h-5 on queue-row pills to match Badge height", () => {
+    // Profile pill
+    expect(colDefsSource).toContain(
+      '"inline-flex h-5 items-center rounded"',
+    );
+    // Owner type pills should not use py-0.5 leading-none
+    const ownerSection = colDefsSource.slice(
+      colDefsSource.indexOf("ownerTypeColumn"),
+    );
+    expect(ownerSection).toContain("h-5");
+    expect(ownerSection).not.toContain("leading-none");
+  });
+
+  it("centers title column contents vertically", () => {
+    expect(colDefsSource).toContain(
+      'className="flex items-center gap-0.5"',
+    );
+  });
 });
 
 describe("beats page layout: search and table content", () => {

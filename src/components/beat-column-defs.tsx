@@ -199,7 +199,7 @@ export function titleColumn(
         : ChevronDown;
       return (
         <div
-          className="flex items-start gap-0.5"
+          className="flex items-center gap-0.5"
           style={{
             paddingLeft: `${depth * 16}px`,
           }}
@@ -208,7 +208,7 @@ export function titleColumn(
             <div
               className={
                 "relative shrink-0"
-                + " flex items-start w-3.5"
+                + " flex items-center w-3.5"
               }
             >
               {isCollapsed
@@ -238,7 +238,7 @@ export function titleColumn(
                     : "Collapse children"
                 }
                 className={
-                  "p-0 mt-0.5"
+                  "p-0"
                   + " text-muted-foreground"
                   + " hover:text-foreground shrink-0"
                 }
@@ -350,9 +350,9 @@ export function profileColumn(
       const badge = profileId ? (
         <span
           className={
-            "inline-flex items-center rounded"
-            + " px-1.5 py-0.5 text-[10px]"
-            + " font-medium leading-none"
+            "inline-flex h-5 items-center rounded"
+            + " px-1.5 text-[10px]"
+            + " font-medium"
             + " bg-emerald-100 text-emerald-700"
           }
         >
@@ -448,9 +448,9 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
         return (
           <span
             className={
-              "inline-flex items-center rounded"
-              + " px-1.5 py-0.5 text-[10px]"
-              + " font-semibold leading-none"
+              "inline-flex h-5 items-center rounded"
+              + " px-1.5 text-[10px]"
+              + " font-semibold"
               + " bg-amber-100 text-amber-700"
             }
           >
@@ -461,9 +461,9 @@ export function ownerTypeColumn(): ColumnDef<Beat> {
       return (
         <span
           className={
-            "inline-flex items-center rounded"
-            + " px-1.5 py-0.5 text-[10px]"
-            + " font-semibold leading-none"
+            "inline-flex h-5 items-center rounded"
+            + " px-1.5 text-[10px]"
+            + " font-semibold"
             + " bg-blue-100 text-blue-700"
           }
         >
