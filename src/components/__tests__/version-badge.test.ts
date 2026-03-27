@@ -44,7 +44,7 @@ function jsonResponse(
  * checkForUpdates — the core fetch-then-classify logic
  * ------------------------------------------------------ */
 
-describe("checkForUpdates", () => {
+describe("checkForUpdates — status", () => {
   it(
     "returns 'update-available' when the API " +
     "reports a newer version",
@@ -138,39 +138,46 @@ describe("checkForUpdates", () => {
       });
     },
   );
+});
 
-  it("passes the abort signal to fetch", async () => {
-    const ctrl = new AbortController();
+describe("checkForUpdates — fetch options", () => {
+  it(
+    "passes the abort signal to fetch",
+    async () => {
+      const ctrl = new AbortController();
 
-    fetchMock.mockResolvedValueOnce(
-      jsonResponse({
-        ok: true,
-        data: {
-          installedVersion: "0.5.0",
-          latestVersion: "0.5.0",
-          updateAvailable: false,
-        },
-      }),
-    );
+      fetchMock.mockResolvedValueOnce(
+        jsonResponse({
+          ok: true,
+          data: {
+            installedVersion: "0.5.0",
+            latestVersion: "0.5.0",
+            updateAvailable: false,
+          },
+        }),
+      );
 
-    await checkForUpdates(ctrl.signal);
+      await checkForUpdates(ctrl.signal);
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/version?force=1",
-      expect.objectContaining({ signal: ctrl.signal }),
-    );
-  });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/version?force=1",
+        expect.objectContaining({
+          signal: ctrl.signal,
+        }),
+      );
+    },
+  );
 
   it(
-    "propagates fetch network errors to the caller",
+    "propagates fetch network errors to caller",
     async () => {
       fetchMock.mockRejectedValueOnce(
         new TypeError("Failed to fetch"),
       );
 
-      await expect(checkForUpdates()).rejects.toThrow(
-        "Failed to fetch",
-      );
+      await expect(
+        checkForUpdates(),
+      ).rejects.toThrow("Failed to fetch");
     },
   );
 });
