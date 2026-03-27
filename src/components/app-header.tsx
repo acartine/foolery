@@ -126,7 +126,7 @@ export function AppHeader() {
           {s.vb.banner && !s.vb.dismissed ? (
             <VersionBannerBar
               banner={s.vb.banner}
-              copied={updateAction.copied}
+              updateStatus={updateAction.status}
               onUpdateNow={updateAction.triggerUpdate}
               onDismiss={s.vb.dismiss}
             />

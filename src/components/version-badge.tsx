@@ -10,6 +10,7 @@ import {
   VERSION_UPDATE_COMMAND,
   useVersionUpdateAction,
 } from "@/components/version-update-action";
+import type { AppUpdateStatus } from "@/lib/app-update-types";
 import { formatDisplayVersion } from "@/lib/version-display";
 
 const APP_VERSION =
@@ -91,7 +92,7 @@ export function useVersionCheck() {
  */
 export function VersionBadge() {
   const { state, check } = useVersionCheck();
-  const { copied, triggerUpdate } =
+  const { status, triggerUpdate } =
     useVersionUpdateAction();
 
   const handleUpdateNow = useCallback(async () => {
@@ -130,7 +131,7 @@ export function VersionBadge() {
       >
         <VersionPopoverBody
           state={state}
-          copied={copied}
+          updateStatus={status}
           onCheck={check}
           onUpdateNow={handleUpdateNow}
         />
@@ -145,11 +146,13 @@ export function VersionBadge() {
 
 export function VersionPopoverBody(props: {
   state: VersionCheckState;
-  copied: boolean;
+  updateStatus: AppUpdateStatus;
   onCheck: () => void;
   onUpdateNow: () => void;
 }) {
-  const { state, copied, onCheck, onUpdateNow } = props;
+  const {
+    state, updateStatus, onCheck, onUpdateNow,
+  } = props;
 
   if (state.status === "idle") {
     return (
@@ -198,19 +201,25 @@ export function VersionPopoverBody(props: {
           size="sm"
           variant="default"
           className="gap-1.5"
+          disabled={
+            updateStatus.phase === "starting" ||
+            updateStatus.phase === "updating" ||
+            updateStatus.phase === "restarting"
+          }
           onClick={onUpdateNow}
         >
           <ArrowUpCircle className="size-3.5" />
-          {copied
-            ? "Copied! Run in terminal"
-            : `Update now to ${formatDisplayVersion(state.latestVersion)}`}
+          {renderUpdateButtonLabel(
+            updateStatus,
+            state.latestVersion,
+          )}
         </Button>
         <p className="text-xs text-muted-foreground">
-          Copies{" "}
+          {renderUpdateHelperText(updateStatus)}{" "}
           <code className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
             {VERSION_UPDATE_COMMAND}
           </code>{" "}
-          to clipboard
+          .
         </p>
       </div>
     );
@@ -233,4 +242,38 @@ export function VersionPopoverBody(props: {
       </Button>
     </div>
   );
+}
+
+function renderUpdateButtonLabel(
+  status: AppUpdateStatus,
+  latestVersion: string,
+): string {
+  if (status.phase === "starting" || status.phase === "updating") {
+    return "Updating…";
+  }
+  if (status.phase === "restarting") {
+    return "Restarting…";
+  }
+  if (status.phase === "completed") {
+    return "Update complete";
+  }
+  if (status.phase === "failed") {
+    return "Retry automatic update";
+  }
+  return `Update now to ${formatDisplayVersion(latestVersion)}`;
+}
+
+function renderUpdateHelperText(
+  status: AppUpdateStatus,
+): string {
+  if (status.phase === "completed") {
+    return "Automatic update finished. Manual fallback:";
+  }
+  if (status.phase === "failed") {
+    return "Automatic update failed. Manual fallback:";
+  }
+  if (status.phase === "restarting") {
+    return "Restarting Foolery. Manual fallback:";
+  }
+  return "Automatic local update. Manual fallback:";
 }

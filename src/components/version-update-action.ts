@@ -3,55 +3,153 @@
 import {
   useCallback, useEffect, useRef, useState,
 } from "react";
+import type { AppUpdateStatus } from "@/lib/app-update-types";
 
-type ClipboardWriter = Pick<Clipboard, "writeText">;
+export const VERSION_UPDATE_COMMAND =
+  "foolery update && foolery restart";
 
-export const VERSION_UPDATE_COMMAND = "foolery update";
+const POLL_INTERVAL_MS = 1500;
 
-function getClipboard(
-): ClipboardWriter | null {
-  return globalThis.navigator?.clipboard ?? null;
+export function idleUpdateStatus(): AppUpdateStatus {
+  return {
+    phase: "idle",
+    message: null,
+    error: null,
+    startedAt: null,
+    endedAt: null,
+    workerPid: null,
+    launcherPath: null,
+    fallbackCommand: VERSION_UPDATE_COMMAND,
+  };
 }
 
-export async function triggerVersionUpdate(
-  clipboard: ClipboardWriter | null = getClipboard(),
-): Promise<boolean> {
-  if (!clipboard) return false;
-
+async function requestStatus(
+  url: string,
+  init: RequestInit | undefined,
+  fetchImpl: typeof fetch,
+): Promise<AppUpdateStatus | null> {
   try {
-    await clipboard.writeText(VERSION_UPDATE_COMMAND);
-    return true;
+    const res = await fetchImpl(url, init);
+    const json = (await res.json()) as {
+      data?: AppUpdateStatus;
+    };
+    if (!res.ok || !json.data) {
+      return null;
+    }
+    return json.data;
   } catch {
-    return false;
+    return null;
   }
 }
 
+export function readVersionUpdateStatus(
+  fetchImpl: typeof fetch = fetch,
+): Promise<AppUpdateStatus | null> {
+  return requestStatus(
+    "/api/app-update",
+    { method: "GET" },
+    fetchImpl,
+  );
+}
+
+export function triggerVersionUpdate(
+  fetchImpl: typeof fetch = fetch,
+): Promise<AppUpdateStatus | null> {
+  return requestStatus(
+    "/api/app-update",
+    { method: "POST" },
+    fetchImpl,
+  );
+}
+
+function isBusy(status: AppUpdateStatus): boolean {
+  return (
+    status.phase === "starting" ||
+    status.phase === "updating" ||
+    status.phase === "restarting"
+  );
+}
+
 export function useVersionUpdateAction() {
-  const [copied, setCopied] = useState(false);
-  const resetTimeoutRef =
-    useRef<ReturnType<typeof setTimeout> | null>(
-      null,
-    );
+  const [status, setStatus] = useState<AppUpdateStatus>(
+    idleUpdateStatus(),
+  );
+  const pollTimerRef =
+    useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => () => {
-    if (resetTimeoutRef.current) {
-      clearTimeout(resetTimeoutRef.current);
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
     }
   }, []);
 
-  const triggerUpdate = useCallback(async () => {
-    const ok = await triggerVersionUpdate();
-    if (!ok) return false;
-
-    setCopied(true);
-    if (resetTimeoutRef.current) {
-      clearTimeout(resetTimeoutRef.current);
+  const refresh = useCallback(async () => {
+    const next = await readVersionUpdateStatus();
+    if (next) {
+      setStatus(next);
     }
-    resetTimeoutRef.current = setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-    return true;
+    return next;
   }, []);
 
-  return { copied, triggerUpdate } as const;
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      const next = await readVersionUpdateStatus();
+      if (!cancelled && next) {
+        setStatus(next);
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isBusy(status)) {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+      return;
+    }
+
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+    }
+    pollTimerRef.current = setInterval(() => {
+      void refresh();
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
+  }, [refresh, status]);
+
+  const startUpdate = useCallback(async () => {
+    const next = await triggerVersionUpdate();
+    if (!next) {
+      setStatus({
+        ...idleUpdateStatus(),
+        phase: "failed",
+        message: "Automatic update failed",
+        error: "Failed to reach update API.",
+        endedAt: Date.now(),
+      });
+      return false;
+    }
+
+    setStatus(next);
+    return next.phase !== "failed";
+  }, []);
+
+  return {
+    status,
+    triggerUpdate: startUpdate,
+  } as const;
 }
