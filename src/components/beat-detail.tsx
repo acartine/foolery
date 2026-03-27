@@ -15,7 +15,6 @@ import type { Beat, BeatPriority, MemoryWorkflowDescriptor } from "@/lib/types";
 import { isWaveLabel, isReadOnlyLabel } from "@/lib/wave-slugs";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { BeatPriorityBadge } from "@/components/beat-priority-badge";
-import { BeatTypeBadge } from "@/components/beat-type-badge";
 import { StateDropdown } from "./beat-detail-state-dropdown";
 
 const PRIORITIES: BeatPriority[] = [0, 1, 2, 3, 4];
@@ -294,8 +293,6 @@ function BeatDetailHeader({
   return (
     <section className="space-y-1.5 border-b border-border/70 pb-2">
       <div className="flex flex-wrap gap-1.5">
-        <BeatTypeBadge type={beat.type} />
-
         <StateDropdown
           beat={beat}
           onUpdate={onUpdate}
