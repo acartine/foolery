@@ -1,5 +1,6 @@
 export function stripBeatPrefix(beatId: string): string {
-  return beatId.replace(/^[^-]+-/, "");
+  const pivot = beatId.lastIndexOf("-");
+  return pivot > 0 ? beatId.slice(pivot + 1) : beatId;
 }
 
 export function stripHierarchicalPrefix(alias: string): string {

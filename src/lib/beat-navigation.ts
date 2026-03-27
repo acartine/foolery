@@ -1,8 +1,7 @@
-const BEAT_PREFIX_PATTERN = /^[^-]+-/;
-
 /** Render beat IDs without repo prefix (e.g. "foolery-xmvb" -> "xmvb"). */
 export function stripBeatPrefix(beatId: string): string {
-  return beatId.replace(BEAT_PREFIX_PATTERN, "");
+  const pivot = beatId.lastIndexOf("-");
+  return pivot > 0 ? beatId.slice(pivot + 1) : beatId;
 }
 
 /** Extract the repo-name prefix from a beat ID (e.g. "my-project-xmvb" -> "my-project"). */

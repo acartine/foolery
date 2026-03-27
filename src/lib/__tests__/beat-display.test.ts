@@ -15,11 +15,14 @@ describe("beat-display", () => {
     expect(displayBeatLabel("foolery-df3a")).toBe("df3a");
     expect(displayBeatLabel("foolery-df3a", [])).toBe("df3a");
     expect(stripBeatPrefix("foolery-df3a")).toBe("df3a");
+    expect(displayBeatLabel("feature-builder-df3a")).toBe("df3a");
+    expect(stripBeatPrefix("feature-builder-df3a")).toBe("df3a");
   });
 
   it("strips project prefixes from hierarchical aliases", () => {
     expect(displayBeatLabel("knots-562b.1", ["knots-562b.1"])).toBe("562b.1");
     expect(stripHierarchicalPrefix("proj-a.b.c")).toBe("a.b.c");
+    expect(stripHierarchicalPrefix("feature-builder-a.b.c")).toBe("a.b.c");
   });
 
   it("keeps human-friendly aliases unchanged", () => {
