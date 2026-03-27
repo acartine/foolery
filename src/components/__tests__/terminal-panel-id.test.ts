@@ -7,6 +7,10 @@ describe("splitTerminalTabBeatId", () => {
       prefix: "foolery",
       localId: "da96",
     });
+    expect(splitTerminalTabBeatId("feature-builder-da96")).toEqual({
+      prefix: "feature-builder",
+      localId: "da96",
+    });
   });
 
   it("returns the raw id as localId when no valid prefix is present", () => {

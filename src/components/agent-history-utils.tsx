@@ -129,7 +129,7 @@ export function workflowStateBadgeLabel(
 export function stripIdPrefix(
   id: string,
 ): string {
-  const idx = id.indexOf("-");
+  const idx = id.lastIndexOf("-");
   return idx > 0 ? id.slice(idx + 1) : id;
 }
 

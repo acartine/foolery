@@ -4,7 +4,7 @@ export interface TerminalTabBeatIdParts {
 }
 
 export function splitTerminalTabBeatId(id: string): TerminalTabBeatIdParts {
-  const separatorIndex = id.indexOf("-");
+  const separatorIndex = id.lastIndexOf("-");
   if (separatorIndex <= 0 || separatorIndex >= id.length - 1) {
     return { prefix: null, localId: id };
   }

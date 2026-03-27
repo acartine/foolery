@@ -12,6 +12,10 @@ describe("stripBeatPrefix", () => {
     expect(stripBeatPrefix("foolery-xmvb")).toBe("xmvb");
   });
 
+  it("uses the last hyphen for multi-hyphen project names", () => {
+    expect(stripBeatPrefix("feature-builder-abc")).toBe("abc");
+  });
+
   it("returns original value when no hyphen exists", () => {
     expect(stripBeatPrefix("xmvb")).toBe("xmvb");
   });
