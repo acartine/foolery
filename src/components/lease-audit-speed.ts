@@ -142,3 +142,74 @@ export function buildSpeedTable(
       a.step.localeCompare(b.step),
   );
 }
+
+// ── Effective-speed leaderboard ──
+
+export interface EffSpeedLeader {
+  step: string;
+  bestAgent: string;
+  effSpeed: string;
+  rawSpeed: string;
+  rate: string;
+  attemptsPerShip: string;
+  n: number;
+}
+
+export function buildEffSpeedLeaderboard(
+  events: LeaseAuditEvent[],
+  aggregates: LeaseAuditAggregate[],
+): EffSpeedLeader[] {
+  const rows = buildSpeedTable(events, aggregates);
+  const byStep = new Map<string, SpeedRow>();
+  for (const r of rows) {
+    if (r.effectiveSpeed == null) continue;
+    const best = byStep.get(r.step);
+    if (!best || r.effectiveSpeed < best.effectiveSpeed!) {
+      byStep.set(r.step, r);
+    }
+  }
+  return Array.from(byStep.values())
+    .sort((a, b) => a.step.localeCompare(b.step))
+    .map((r) => ({
+      step: r.step,
+      bestAgent: r.agent,
+      effSpeed: formatDuration(r.effectiveSpeed!),
+      rawSpeed: formatDuration(r.rawMedian),
+      rate: `${r.successRate}%`,
+      attemptsPerShip: r.attemptsPerShip,
+      n: r.n,
+    }));
+}
+
+// ── Raw-speed leaderboard ──
+
+export interface RawSpeedLeader {
+  step: string;
+  bestAgent: string;
+  rawSpeed: string;
+  rate: string;
+  n: number;
+}
+
+export function buildRawSpeedLeaderboard(
+  events: LeaseAuditEvent[],
+  aggregates: LeaseAuditAggregate[],
+): RawSpeedLeader[] {
+  const rows = buildSpeedTable(events, aggregates);
+  const byStep = new Map<string, SpeedRow>();
+  for (const r of rows) {
+    const best = byStep.get(r.step);
+    if (!best || r.rawMedian < best.rawMedian) {
+      byStep.set(r.step, r);
+    }
+  }
+  return Array.from(byStep.values())
+    .sort((a, b) => a.step.localeCompare(b.step))
+    .map((r) => ({
+      step: r.step,
+      bestAgent: r.agent,
+      rawSpeed: formatDuration(r.rawMedian),
+      rate: `${r.successRate}%`,
+      n: r.n,
+    }));
+}

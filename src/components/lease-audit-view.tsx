@@ -20,10 +20,17 @@ import type {
   AgentStepRow,
   DurationStats,
 } from "@/components/lease-audit-helpers";
-import { buildSpeedTable } from "@/components/lease-audit-speed";
+import {
+  buildSpeedTable,
+  buildEffSpeedLeaderboard,
+  buildRawSpeedLeaderboard,
+} from "@/components/lease-audit-speed";
 import type { SpeedRow } from "@/components/lease-audit-speed";
-import { SpeedTable } from "@/components/speed-table";
 import { AgentBreakdownBody } from "@/components/agent-breakdown-body";
+import {
+  EffSpeedLeaderboardTable,
+  RawSpeedLeaderboardTable,
+} from "@/components/speed-leaderboard-tables";
 import type { LeaseAuditEvent } from "@/lib/lease-audit";
 
 // Re-export for backward compatibility
@@ -110,7 +117,15 @@ export function LeaseAuditView({
         queueSeriesMap={derived.queueSeriesMap}
         combinedSeries={derived.combinedSeries}
       />
-      <LeaderboardTable leaderboard={derived.leaderboard} />
+      <EffSpeedLeaderboardTable
+        rows={derived.effSpeedLeaderboard}
+      />
+      <RateLeaderboardTable
+        leaderboard={derived.leaderboard}
+      />
+      <RawSpeedLeaderboardTable
+        rows={derived.rawSpeedLeaderboard}
+      />
       <AgentBreakdownTable
         agents={derived.agents}
         selectedAgent={effectiveAgent}
@@ -119,7 +134,6 @@ export function LeaseAuditView({
         durationMap={derived.durationMap}
         speedRows={derived.speedRows}
       />
-      <SpeedTable speedRows={derived.speedRows} />
     </div>
   );
 }
@@ -171,9 +185,18 @@ function useAuditDerived(
     }
     return map;
   }, [events]);
+  const effSpeedLeaderboard = useMemo(
+    () => buildEffSpeedLeaderboard(events, aggregates),
+    [events, aggregates],
+  );
+  const rawSpeedLeaderboard = useMemo(
+    () => buildRawSpeedLeaderboard(events, aggregates),
+    [events, aggregates],
+  );
   return {
     queueSeriesMap, combinedSeries, leaderboard,
     agents, agentBreakdown, speedRows, durationMap,
+    effSpeedLeaderboard, rawSpeedLeaderboard,
   };
 }
 
@@ -313,33 +336,37 @@ function DateInput({
   );
 }
 
-function LeaderboardTable({ leaderboard }: { leaderboard: LeaderboardEntry[] }) {
-  if (leaderboard.length === 0) {
-    return (
-      <p className="py-6 text-center text-sm text-muted-foreground">
-        No audit data available.
-      </p>
-    );
-  }
-
+function RateLeaderboardTable(
+  { leaderboard }: { leaderboard: LeaderboardEntry[] },
+) {
+  if (leaderboard.length === 0) return null;
   return (
-    <div className="overflow-x-auto rounded-lg border border-border/60">
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="border-b border-border/60 bg-muted/30">
-            <TH align="left">Step</TH>
-            <TH align="left">Best Agent</TH>
-            <TH align="right">Rate</TH>
-            <TH align="right">Margin</TH>
-            <TH align="right">n</TH>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboard.map((entry, i) => (
-            <LeaderboardRow key={entry.step} entry={entry} even={i % 2 === 0} />
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-2">
+      <h3 className="text-xs font-medium text-muted-foreground">
+        By Success Rate
+      </h3>
+      <div className="overflow-x-auto rounded-lg border border-border/60">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-border/60 bg-muted/30">
+              <TH align="left">Step</TH>
+              <TH align="left">Best Agent</TH>
+              <TH align="right">Rate</TH>
+              <TH align="right">Margin</TH>
+              <TH align="right">n</TH>
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboard.map((entry, i) => (
+              <LeaderboardRow
+                key={entry.step}
+                entry={entry}
+                even={i % 2 === 0}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
