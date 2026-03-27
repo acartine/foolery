@@ -19,6 +19,7 @@ const eslintConfig = defineConfig([
     "codex-release-wrapper/**",
     // Agent worktree build artifacts
     ".claude/worktrees/**",
+    ".knots/_worktree/**",
   ]),
   ...storybook.configs["flat/recommended"],
   // Code style constraints: file, function, and line length limits.

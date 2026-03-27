@@ -16,6 +16,9 @@ const btSummary = src(
 const btContent = src(
   "src/components/beat-table-content.tsx",
 );
+const btHelpersSource = src(
+  "src/components/beat-column-helpers.tsx",
+);
 const btMeta = src(
   "src/components/beat-table-metadata.tsx",
 );
@@ -187,5 +190,42 @@ describe("beats page layout: search and table content", () => {
     expect(btMeta).toContain(
       "const HANDOFF_METADATA_KEYS = [",
     );
+  });
+
+  it("keeps the divider below the inline title metadata row", () => {
+    const beatRowSource = btContent.match(
+      /function BeatTableRow[\s\S]*?function cellClassName/m,
+    )?.[0] ?? "";
+    const titleCellStart = btHelpersSource.indexOf(
+      "export function TitleCell",
+    );
+    const titleCellSource =
+      titleCellStart >= 0
+        ? btHelpersSource.slice(titleCellStart)
+        : "";
+
+    const borderlessRowIndex = beatRowSource.indexOf(
+      '"border-b-0"',
+    );
+    const inlineTitleRowIndex = beatRowSource.indexOf(
+      "InlineTitleContent",
+    );
+    const titleIndex = titleCellSource.indexOf(
+      "{beat.title}",
+    );
+    const metadataIndex = titleCellSource.indexOf(
+      "TitleMetaBadges",
+    );
+
+    expect(borderlessRowIndex).toBeGreaterThan(-1);
+    expect(inlineTitleRowIndex).toBeGreaterThan(
+      borderlessRowIndex,
+    );
+    expect(beatRowSource).toContain(
+      'className="pt-0 pb-1 truncate"',
+    );
+    expect(beatRowSource).toContain("colSpan={totalCols}");
+    expect(titleIndex).toBeGreaterThan(-1);
+    expect(metadataIndex).toBeGreaterThan(titleIndex);
   });
 });
