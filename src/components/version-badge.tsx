@@ -10,9 +10,12 @@ import {
   VERSION_UPDATE_COMMAND,
   useVersionUpdateAction,
 } from "@/components/version-update-action";
+import { formatDisplayVersion } from "@/lib/version-display";
 
 const APP_VERSION =
   process.env.NEXT_PUBLIC_APP_VERSION ?? "0.0.0";
+const DISPLAY_APP_VERSION =
+  formatDisplayVersion(APP_VERSION);
 
 export type VersionCheckState =
   | { status: "idle" }
@@ -101,7 +104,7 @@ export function VersionBadge() {
         <button
           type="button"
           className="version-badge group relative inline-flex cursor-pointer select-none items-center"
-          title={`Foolery v${APP_VERSION} — click to check for updates`}
+          title={`Foolery ${DISPLAY_APP_VERSION} — click to check for updates`}
           onClick={check}
         >
           {/* Animated gradient border layer */}
@@ -115,7 +118,7 @@ export function VersionBadge() {
               className="inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_oklch(0.7_0.2_160)] transition-shadow duration-300 group-hover:shadow-[0_0_8px_oklch(0.7_0.2_160)]"
             />
             <span className="font-mono text-[10px] font-medium leading-none tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
-              v{APP_VERSION}
+              {DISPLAY_APP_VERSION}
             </span>
           </span>
         </button>
@@ -152,7 +155,7 @@ export function VersionPopoverBody(props: {
     return (
       <div className="flex flex-col items-center gap-2 text-sm">
         <p className="text-muted-foreground">
-          v{APP_VERSION}
+          {DISPLAY_APP_VERSION}
         </p>
         <Button
           size="sm"
@@ -189,7 +192,7 @@ export function VersionPopoverBody(props: {
     return (
       <div className="flex flex-col items-center gap-2 text-sm">
         <p className="text-muted-foreground">
-          v{state.latestVersion} available
+          {formatDisplayVersion(state.latestVersion)} available
         </p>
         <Button
           size="sm"
@@ -200,7 +203,7 @@ export function VersionPopoverBody(props: {
           <ArrowUpCircle className="size-3.5" />
           {copied
             ? "Copied! Run in terminal"
-            : `Update now to v${state.latestVersion}`}
+            : `Update now to ${formatDisplayVersion(state.latestVersion)}`}
         </Button>
         <p className="text-xs text-muted-foreground">
           Copies{" "}

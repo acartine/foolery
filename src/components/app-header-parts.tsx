@@ -23,6 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatDisplayVersion } from "@/lib/version-display";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 import type { BeatsViewId, VersionBannerData } from "./app-header-hooks";
 
@@ -44,10 +45,10 @@ export function VersionBannerBar(props: {
       <p className="leading-6">
         New Foolery version{" "}
         <span className="font-semibold">
-          {banner.latestVersion}
+          {formatDisplayVersion(banner.latestVersion)}
         </span>{" "}
         available (installed{" "}
-        {banner.installedVersion}).{" "}
+        {formatDisplayVersion(banner.installedVersion)}).{" "}
         <Button
           type="button"
           variant="link"
