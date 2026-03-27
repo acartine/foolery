@@ -317,19 +317,40 @@ describe("queue claims: lease audit and agent rotation", () => {
       expect(spawnedChildren).toHaveLength(2);
     });
 
-    // Lease audit event should have been emitted
+    // Lease audit events: claim + outcome + next claim
     await waitFor(() => {
-      expect(appendLeaseAuditEvent).toHaveBeenCalledTimes(1);
+      expect(
+        (appendLeaseAuditEvent as ReturnType<typeof vi.fn>)
+          .mock.calls.length,
+      ).toBeGreaterThanOrEqual(2);
     });
 
     const laCalls = (
       appendLeaseAuditEvent as ReturnType<typeof vi.fn>
     ).mock.calls;
-    const event = laCalls[0]![0] as Record<string, unknown>;
-    expect(event.beatId).toBe("foolery-q002");
-    expect(event.queueType).toBe("implementation");
-    expect(event.outcome).toBe("claim");
-    expect(event.agent).toBeDefined();
+    const events = laCalls.map(
+      (c: unknown[]) => c[0] as Record<string, unknown>,
+    );
+    const claimEvents = events.filter(
+      (e) => e.outcome === "claim",
+    );
+    const outcomeEvents = events.filter(
+      (e) => e.outcome === "success" ||
+        e.outcome === "fail",
+    );
+    expect(claimEvents.length).toBeGreaterThanOrEqual(1);
+    expect(claimEvents[0]!.beatId).toBe("foolery-q002");
+    expect(claimEvents[0]!.queueType)
+      .toBe("implementation");
+    expect(claimEvents[0]!.agent).toBeDefined();
+
+    expect(outcomeEvents.length)
+      .toBeGreaterThanOrEqual(1);
+    expect(outcomeEvents[0]!.beatId)
+      .toBe("foolery-q002");
+    expect(
+      typeof outcomeEvents[0]!.durationMs,
+    ).toBe("number");
   });
 
   it("uses lastAgentPerQueueType as soft exclusion for agent rotation", async () => {

@@ -59,6 +59,7 @@ export interface TakeLoopContext {
   takeIteration: { value: number };
   claimsPerQueueType: Map<string, number>;
   lastAgentPerQueueType: Map<string, string>;
+  claimedAt?: number;
 }
 
 // ─── enforceQueueTerminalInvariant ───────────────────

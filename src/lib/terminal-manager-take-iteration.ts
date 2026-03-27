@@ -15,6 +15,12 @@ import {
   type AgentOutcomeRecord,
 } from "@/lib/agent-outcome-stats";
 import {
+  appendLeaseAuditEvent,
+} from "@/lib/lease-audit";
+import {
+  normalizeAgentIdentity,
+} from "@/lib/agent-identity";
+import {
   resolveWorkflowForBeat,
 } from "@/lib/terminal-manager-workflow";
 import type {
@@ -146,6 +152,8 @@ function buildOutcomeRecord(
   altAvailable: boolean,
   success: boolean,
 ): AgentOutcomeRecord {
+  const durationMs = ctx.claimedAt
+    ? Date.now() - ctx.claimedAt : undefined;
   return {
     timestamp: new Date().toISOString(),
     beatId: ctx.beatId,
@@ -165,6 +173,7 @@ function buildOutcomeRecord(
     rolledBack: false,
     alternativeAgentAvailable: altAvailable,
     success,
+    durationMs,
   };
 }
 
@@ -203,6 +212,7 @@ async function handleErrorExit(
       );
     },
   );
+  await emitOutcomeAuditEvent(ctx, record);
 
   const iterAgentId = iterationAgent.agentId;
   if (iterAgentId) {
@@ -237,6 +247,37 @@ async function handleErrorExit(
   }
 
   ctx.finishSession(code);
+}
+
+async function emitOutcomeAuditEvent(
+  ctx: TakeLoopContext,
+  record: AgentOutcomeRecord,
+): Promise<void> {
+  const tag =
+    `[terminal-manager] [${ctx.id}] [take-loop]`;
+  const outcome = record.success
+    ? "success" as const : "fail" as const;
+  const normalized = normalizeAgentIdentity({
+    label: record.agent.label,
+    model: record.agent.model,
+    version: record.agent.version,
+    command: record.agent.command,
+  });
+  await appendLeaseAuditEvent({
+    timestamp: new Date().toISOString(),
+    beatId: record.beatId,
+    sessionId: record.sessionId,
+    agent: normalized,
+    queueType: record.claimedStep ?? "unknown",
+    outcome,
+    durationMs: record.durationMs,
+  }).catch((err) => {
+    console.error(
+      `${tag} failed to write outcome ` +
+      `audit event:`, err,
+    );
+  });
+  ctx.claimedAt = undefined;
 }
 
 function emitRetryEvents(
@@ -294,6 +335,7 @@ async function handleSuccessExit(
       );
     },
   );
+  await emitOutcomeAuditEvent(ctx, record);
 
   console.log(
     `${tag} evaluating next iteration ` +

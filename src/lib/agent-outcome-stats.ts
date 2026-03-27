@@ -34,6 +34,8 @@ export interface AgentOutcomeRecord {
   alternativeAgentAvailable: boolean;
   /** Computed success classification. */
   success: boolean;
+  /** Duration in milliseconds from claim to outcome. */
+  durationMs?: number;
 }
 
 // ── Stats file resolution ──────────────────────────────────────

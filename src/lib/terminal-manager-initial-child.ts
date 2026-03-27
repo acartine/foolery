@@ -187,6 +187,7 @@ function buildTakeLoopCtx(
     takeIteration: { value: 1 },
     claimsPerQueueType: new Map(),
     lastAgentPerQueueType: new Map(),
+    claimedAt: Date.now(),
   };
 }
 

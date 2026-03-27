@@ -18,6 +18,7 @@ export interface LeaseAuditEvent {
   agent: LeaseAuditAgent;
   queueType: string;
   outcome: "claim" | "success" | "fail";
+  durationMs?: number;
 }
 
 export interface LeaseAuditAggregate {

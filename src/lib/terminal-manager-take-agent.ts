@@ -336,6 +336,7 @@ export async function finalizeClaim(
     timestamp: Date.now(),
   });
 
+  ctx.claimedAt = Date.now();
   const normalized =
     normalizeAgentIdentity(claimAgent);
   await appendLeaseAuditEvent({

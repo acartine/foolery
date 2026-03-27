@@ -1,5 +1,8 @@
 import { formatAgentOptionLabel } from "@/lib/agent-identity";
-import type { LeaseAuditAggregate } from "@/lib/lease-audit";
+import type {
+  LeaseAuditAggregate,
+  LeaseAuditEvent,
+} from "@/lib/lease-audit";
 import type { AgentSeries } from "@/components/timeseries-chart";
 
 export interface AgentRow {
@@ -339,4 +342,79 @@ export function buildAgentBreakdown(
   }
 
   return rows;
+}
+
+// ─── Duration aggregation ─────────────────────────────
+
+export interface DurationStats {
+  agent: string;
+  step: string;
+  median: number;
+  p90: number;
+  mean: number;
+  timedCount: number;
+  totalCount: number;
+}
+
+function computePercentile(
+  sorted: number[],
+  p: number,
+): number {
+  if (sorted.length === 0) return 0;
+  const idx = (p / 100) * (sorted.length - 1);
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo]!;
+  const frac = idx - lo;
+  return sorted[lo]! * (1 - frac) + sorted[hi]! * frac;
+}
+
+export function aggregateDurations(
+  events: LeaseAuditEvent[],
+): DurationStats[] {
+  const timedMap = new Map<
+    string,
+    { agent: string; step: string; durations: number[] }
+  >();
+  const totalMap = new Map<string, number>();
+
+  for (const e of events) {
+    if (e.outcome !== "success" && e.outcome !== "fail")
+      continue;
+    const agent = agentLabel(e.agent);
+    const key = `${agent}::${e.queueType}`;
+    totalMap.set(key, (totalMap.get(key) ?? 0) + 1);
+
+    if (e.durationMs == null) continue;
+    let entry = timedMap.get(key);
+    if (!entry) {
+      entry = {
+        agent, step: e.queueType, durations: [],
+      };
+      timedMap.set(key, entry);
+    }
+    entry.durations.push(e.durationMs);
+  }
+
+  const results: DurationStats[] = [];
+  for (const [key, entry] of timedMap) {
+    const sorted = [...entry.durations].sort(
+      (a, b) => a - b,
+    );
+    const sum = sorted.reduce((a, b) => a + b, 0);
+    results.push({
+      agent: entry.agent,
+      step: entry.step,
+      median: computePercentile(sorted, 50),
+      p90: computePercentile(sorted, 90),
+      mean: sum / sorted.length,
+      timedCount: sorted.length,
+      totalCount: totalMap.get(key) ?? sorted.length,
+    });
+  }
+
+  return results.sort((a, b) =>
+    a.agent.localeCompare(b.agent) ||
+    a.step.localeCompare(b.step),
+  );
 }
