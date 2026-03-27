@@ -11,7 +11,7 @@ export interface LeaseAuditParams {
   agent?: string;
   dateFrom?: string;
   dateTo?: string;
-  preset?: "last24h";
+  preset?: "last24h" | "last7d";
 }
 
 export async function fetchLeaseAudit(

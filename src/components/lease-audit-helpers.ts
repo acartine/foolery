@@ -14,9 +14,19 @@ export interface LeaderboardEntry {
   step: string;
   bestAgent: string;
   bestRate: string;
+  bestN: number;
   runnerUp: string;
   runnerUpRate: string;
   margin: string;
+  totalN: number;
+}
+
+export interface AgentStepRow {
+  step: string;
+  rate: number;
+  n: number;
+  meanRate: number;
+  offset: string;
 }
 
 function agentLabel(agent: LeaseAuditAggregate["agent"]): string {
@@ -69,6 +79,7 @@ function agentMapToSeries(
 ): AgentSeries[] {
   const series: AgentSeries[] = [];
   for (const [agent, dateMap] of agentMap) {
+    let n = 0;
     const points = dateRange.map((date) => ({
       date,
       value: (() => {
@@ -76,10 +87,11 @@ function agentMapToSeries(
         if (!totals) return null;
         const completed = totals.successes + totals.failures;
         if (completed === 0) return null;
+        n += completed;
         return Math.round((totals.successes / completed) * 100);
       })(),
     }));
-    series.push({ agent, points });
+    series.push({ agent, points, n });
   }
   return series.sort((a, b) => a.agent.localeCompare(b.agent));
 }
@@ -146,6 +158,55 @@ export function discoverQueueTypes(aggregates: LeaseAuditAggregate[]): string[] 
   return [...new Set(aggregates.map((a) => a.queueType))].sort();
 }
 
+function stepAgentStats(
+  aggregates: LeaseAuditAggregate[],
+  step: string,
+): Map<string, { successes: number; failures: number }> {
+  const map = new Map<
+    string,
+    { successes: number; failures: number }
+  >();
+  for (const agg of aggregates) {
+    if (agg.queueType !== step) continue;
+    if (
+      agg.outcome !== "success" &&
+      agg.outcome !== "fail"
+    )
+      continue;
+    const agent = agentLabel(agg.agent);
+    const s = map.get(agent) ?? {
+      successes: 0,
+      failures: 0,
+    };
+    if (agg.outcome === "success")
+      s.successes += agg.count;
+    else s.failures += agg.count;
+    map.set(agent, s);
+  }
+  return map;
+}
+
+function meanRate(
+  stats: Map<
+    string,
+    { successes: number; failures: number }
+  >,
+): number {
+  const rates: number[] = [];
+  for (const s of stats.values()) {
+    const total = s.successes + s.failures;
+    if (total > 0)
+      rates.push((s.successes / total) * 100);
+  }
+  if (rates.length === 0) return 0;
+  return rates.reduce((a, b) => a + b, 0) / rates.length;
+}
+
+function formatOffset(diff: number): string {
+  const sign = diff >= 0 ? "+" : "";
+  return `${sign}${Math.round(diff)}%`;
+}
+
 export function buildLeaderboard(
   aggregates: LeaseAuditAggregate[],
 ): LeaderboardEntry[] {
@@ -153,42 +214,129 @@ export function buildLeaderboard(
   const entries: LeaderboardEntry[] = [];
 
   for (const step of steps) {
-    const agentStats = new Map<string, { successes: number; failures: number }>();
-    for (const agg of aggregates) {
-      if (agg.queueType !== step) continue;
-      if (agg.outcome !== "success" && agg.outcome !== "fail") continue;
-      const agent = agentLabel(agg.agent);
-      const stats = agentStats.get(agent) ?? { successes: 0, failures: 0 };
-      if (agg.outcome === "success") stats.successes += agg.count;
-      else stats.failures += agg.count;
-      agentStats.set(agent, stats);
-    }
+    const stats = stepAgentStats(aggregates, step);
+    const mean = meanRate(stats);
 
-    const ranked = [...agentStats.entries()]
-      .map(([agent, stats]) => {
-        const total = stats.successes + stats.failures;
-        const rate = total > 0 ? (stats.successes / total) * 100 : 0;
+    const ranked = [...stats.entries()]
+      .map(([agent, s]) => {
+        const total = s.successes + s.failures;
+        const rate =
+          total > 0
+            ? (s.successes / total) * 100
+            : 0;
         return { agent, rate, total };
       })
       .filter((r) => r.total > 0)
-      .sort((a, b) => b.rate - a.rate || b.total - a.total);
+      .sort(
+        (a, b) =>
+          b.rate - a.rate || b.total - a.total,
+      );
 
     if (ranked.length === 0) continue;
 
     const best = ranked[0]!;
-    const runnerUp = ranked.length > 1 ? ranked[1]! : null;
+    const runnerUp =
+      ranked.length > 1 ? ranked[1]! : null;
 
+    const totalN = ranked.reduce(
+      (sum, r) => sum + r.total,
+      0,
+    );
     entries.push({
       step,
       bestAgent: best.agent,
       bestRate: `${Math.round(best.rate)}%`,
+      bestN: best.total,
       runnerUp: runnerUp ? runnerUp.agent : "-",
-      runnerUpRate: runnerUp ? `${Math.round(runnerUp.rate)}%` : "-",
-      margin: runnerUp
-        ? `${Math.round(best.rate - runnerUp.rate)}pp`
+      runnerUpRate: runnerUp
+        ? `${Math.round(runnerUp.rate)}%`
         : "-",
+      margin: formatOffset(best.rate - mean),
+      totalN,
     });
   }
 
   return entries;
+}
+
+export function discoverAgents(
+  aggregates: LeaseAuditAggregate[],
+): string[] {
+  const agents = new Set<string>();
+  for (const agg of aggregates) {
+    agents.add(agentLabel(agg.agent));
+  }
+  return [...agents].sort();
+}
+
+export function bestOverallAgent(
+  aggregates: LeaseAuditAggregate[],
+): string {
+  const map = new Map<
+    string,
+    { successes: number; failures: number }
+  >();
+  for (const agg of aggregates) {
+    if (
+      agg.outcome !== "success" &&
+      agg.outcome !== "fail"
+    )
+      continue;
+    const agent = agentLabel(agg.agent);
+    const s = map.get(agent) ?? {
+      successes: 0,
+      failures: 0,
+    };
+    if (agg.outcome === "success")
+      s.successes += agg.count;
+    else s.failures += agg.count;
+    map.set(agent, s);
+  }
+  let best = "";
+  let bestRate = -1;
+  let bestN = 0;
+  for (const [agent, s] of map) {
+    const total = s.successes + s.failures;
+    if (total === 0) continue;
+    const rate = s.successes / total;
+    if (
+      rate > bestRate ||
+      (rate === bestRate && total > bestN)
+    ) {
+      best = agent;
+      bestRate = rate;
+      bestN = total;
+    }
+  }
+  return best;
+}
+
+export function buildAgentBreakdown(
+  aggregates: LeaseAuditAggregate[],
+  agentName: string,
+): AgentStepRow[] {
+  const steps = discoverQueueTypes(aggregates);
+  const rows: AgentStepRow[] = [];
+
+  for (const step of steps) {
+    const allStats = stepAgentStats(
+      aggregates,
+      step,
+    );
+    const mean = meanRate(allStats);
+    const s = allStats.get(agentName);
+    if (!s) continue;
+    const total = s.successes + s.failures;
+    if (total === 0) continue;
+    const rate = (s.successes / total) * 100;
+    rows.push({
+      step,
+      rate: Math.round(rate),
+      n: total,
+      meanRate: Math.round(mean),
+      offset: formatOffset(rate - mean),
+    });
+  }
+
+  return rows;
 }

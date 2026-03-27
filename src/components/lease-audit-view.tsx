@@ -10,8 +10,14 @@ import {
   buildCombinedSeries,
   buildLeaderboard,
   discoverQueueTypes,
+  discoverAgents,
+  bestOverallAgent,
+  buildAgentBreakdown,
 } from "@/components/lease-audit-helpers";
-import type { LeaderboardEntry } from "@/components/lease-audit-helpers";
+import type {
+  LeaderboardEntry,
+  AgentStepRow,
+} from "@/components/lease-audit-helpers";
 
 // Re-export for backward compatibility
 export type { LeaderboardEntry };
@@ -28,66 +34,49 @@ interface LeaseAuditViewProps {
   repoPath?: string;
 }
 
-type RangePreset = "last24h" | "custom";
+type RangePreset = "last7d" | "last24h" | "custom";
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function defaultFrom(): string {
+  return isoDate(new Date(Date.now() - 7 * MS_PER_DAY));
+}
 
 // ── Main view ──
 
 export function LeaseAuditView({
   repoPath,
 }: LeaseAuditViewProps) {
-  const [dateFrom, setDateFrom] =
-    useState<string>("");
-  const [dateTo, setDateTo] =
-    useState<string>("");
-  const [preset, setPreset] =
-    useState<RangePreset>("custom");
+  const [dateFrom, setDateFrom] = useState(defaultFrom);
+  const [dateTo, setDateTo] = useState(() => isoDate(new Date()));
+  const [preset, setPreset] = useState<RangePreset>("last7d");
+  const [selectedAgent, setSelectedAgent] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: [
-      "lease-audit",
-      repoPath,
-      preset,
-      dateFrom,
-      dateTo,
-    ],
+    queryKey: ["lease-audit", repoPath, preset, dateFrom, dateTo],
     queryFn: () =>
       fetchLeaseAudit({
         repoPath,
         ...(preset === "last24h"
           ? { preset: "last24h" }
-          : {
-              dateFrom: dateFrom || undefined,
-              dateTo: dateTo || undefined,
-            }),
+          : preset === "last7d"
+            ? { preset: "last7d" }
+            : { dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
       }),
   });
 
-  const aggregates = useMemo(
-    () => data?.aggregates ?? [],
-    [data],
-  );
-  const queueTypes = useMemo(
-    () => discoverQueueTypes(aggregates),
+  const aggregates = useMemo(() => data?.aggregates ?? [], [data]);
+  const topAgent = useMemo(
+    () => bestOverallAgent(aggregates),
     [aggregates],
   );
-  const queueSeriesMap = useMemo(() => {
-    const map = new Map<string, AgentSeries[]>();
-    for (const qt of queueTypes) {
-      map.set(
-        qt,
-        buildQueueSeries(aggregates, qt),
-      );
-    }
-    return map;
-  }, [aggregates, queueTypes]);
-  const combinedSeries = useMemo(
-    () => buildCombinedSeries(aggregates),
-    [aggregates],
-  );
-  const leaderboard = useMemo(
-    () => buildLeaderboard(aggregates),
-    [aggregates],
-  );
+  const effectiveAgent = selectedAgent || topAgent;
+
+  const derived = useAuditDerived(aggregates, effectiveAgent);
 
   if (isLoading) {
     return (
@@ -107,31 +96,80 @@ export function LeaseAuditView({
         setDateFrom={setDateFrom}
         setDateTo={setDateTo}
       />
-
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {queueTypes.map((qt) => (
-          <TimeseriesChart
-            key={qt}
-            title={`${qt.charAt(0).toUpperCase() + qt.slice(1)} Success Rate`}
-            seriesList={
-              queueSeriesMap.get(qt) ?? []
-            }
-          />
-        ))}
-        <TimeseriesChart
-          title="All Steps Success Rate"
-          seriesList={combinedSeries}
-        />
-      </div>
-
-      <LeaderboardTable
-        leaderboard={leaderboard}
+      <AuditCharts
+        queueSeriesMap={derived.queueSeriesMap}
+        combinedSeries={derived.combinedSeries}
+      />
+      <LeaderboardTable leaderboard={derived.leaderboard} />
+      <AgentBreakdownTable
+        agents={derived.agents}
+        selectedAgent={effectiveAgent}
+        setSelectedAgent={setSelectedAgent}
+        rows={derived.agentBreakdown}
       />
     </div>
   );
 }
 
+// ── Hooks ──
+
+type Aggregates = Parameters<typeof buildLeaderboard>[0];
+
+function useAuditDerived(
+  aggregates: Aggregates,
+  selectedAgent: string,
+) {
+  const queueTypes = useMemo(() => discoverQueueTypes(aggregates), [aggregates]);
+  const queueSeriesMap = useMemo(() => {
+    const map = new Map<string, AgentSeries[]>();
+    for (const qt of queueTypes) {
+      map.set(qt, buildQueueSeries(aggregates, qt));
+    }
+    return map;
+  }, [aggregates, queueTypes]);
+  const combinedSeries = useMemo(
+    () => buildCombinedSeries(aggregates),
+    [aggregates],
+  );
+  const leaderboard = useMemo(() => buildLeaderboard(aggregates), [aggregates]);
+  const agents = useMemo(() => discoverAgents(aggregates), [aggregates]);
+  const agentBreakdown = useMemo(
+    () => (selectedAgent ? buildAgentBreakdown(aggregates, selectedAgent) : []),
+    [aggregates, selectedAgent],
+  );
+  return { queueSeriesMap, combinedSeries, leaderboard, agents, agentBreakdown };
+}
+
 // ── Sub-components ──
+
+function AuditCharts({
+  queueSeriesMap,
+  combinedSeries,
+}: {
+  queueSeriesMap: Map<string, AgentSeries[]>;
+  combinedSeries: AgentSeries[];
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <TimeseriesChart
+        title="Implementation"
+        seriesList={queueSeriesMap.get("implementation") ?? []}
+      />
+      <TimeseriesChart
+        title="Planning"
+        seriesList={queueSeriesMap.get("planning") ?? []}
+      />
+      <TimeseriesChart title="Total" seriesList={combinedSeries} />
+    </div>
+  );
+}
+
+function presetDates(p: RangePreset) {
+  const now = new Date();
+  const to = isoDate(now);
+  const ms = p === "last24h" ? MS_PER_DAY : 7 * MS_PER_DAY;
+  return { from: isoDate(new Date(now.getTime() - ms)), to };
+}
 
 function RangeControls({
   preset,
@@ -148,83 +186,97 @@ function RangeControls({
   setDateFrom: (v: string) => void;
   setDateTo: (v: string) => void;
 }) {
-  function rangeLabel(): string {
-    if (preset === "last24h")
-      return "Last 24 hours";
-    if (dateFrom && dateTo)
-      return `${dateFrom} to ${dateTo}`;
-    if (dateFrom) return `From ${dateFrom}`;
-    if (dateTo) return `Through ${dateTo}`;
-    return "All time";
+  function togglePreset(p: RangePreset) {
+    if (preset === p) {
+      setPreset("custom");
+    } else {
+      setPreset(p);
+      const d = presetDates(p);
+      setDateFrom(d.from);
+      setDateTo(d.to);
+    }
   }
 
   return (
     <div className="flex flex-wrap items-end gap-3">
-      <button
-        type="button"
-        onClick={() => {
-          setPreset("last24h");
-          setDateFrom("");
-          setDateTo("");
-        }}
-        className={`h-8 rounded-md border px-3 text-xs transition-colors ${
-          preset === "last24h"
-            ? "border-foreground/30 bg-foreground/10 text-foreground"
-            : "border-border/70 bg-background text-muted-foreground hover:bg-muted/30"
-        }`}
-      >
-        Last 24h
-      </button>
-
-      <div className="space-y-1">
-        <label
-          htmlFor="audit-date-from"
-          className="text-[11px] text-muted-foreground"
-        >
-          From
-        </label>
-        <input
-          id="audit-date-from"
-          type="date"
-          value={dateFrom}
-          onChange={(e) => {
-            setDateFrom(e.target.value);
-            setPreset("custom");
-          }}
-          className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
-        />
-      </div>
-      <div className="space-y-1">
-        <label
-          htmlFor="audit-date-to"
-          className="text-[11px] text-muted-foreground"
-        >
-          To
-        </label>
-        <input
-          id="audit-date-to"
-          type="date"
-          value={dateTo}
-          onChange={(e) => {
-            setDateTo(e.target.value);
-            setPreset("custom");
-          }}
-          className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
-        />
-      </div>
-
-      <span className="pb-1 text-[11px] text-muted-foreground">
-        {rangeLabel()}
-      </span>
+      <PresetButton
+        label="24h"
+        active={preset === "last24h"}
+        onClick={() => togglePreset("last24h")}
+      />
+      <PresetButton
+        label="7d"
+        active={preset === "last7d"}
+        onClick={() => togglePreset("last7d")}
+      />
+      <DateInput
+        id="audit-date-from"
+        label="From"
+        value={dateFrom}
+        onChange={(v) => { setDateFrom(v); setPreset("custom"); }}
+      />
+      <DateInput
+        id="audit-date-to"
+        label="To"
+        value={dateTo}
+        onChange={(v) => { setDateTo(v); setPreset("custom"); }}
+      />
     </div>
   );
 }
 
-function LeaderboardTable({
-  leaderboard,
+function PresetButton({
+  label,
+  active,
+  onClick,
 }: {
-  leaderboard: LeaderboardEntry[];
+  label: string;
+  active: boolean;
+  onClick: () => void;
 }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`h-8 rounded-md border px-3 text-xs transition-colors ${
+        active
+          ? "border-foreground/30 bg-foreground/10 text-foreground"
+          : "border-border/70 bg-background text-muted-foreground hover:bg-muted/30"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function DateInput({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <label htmlFor={id} className="text-[11px] text-muted-foreground">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
+      />
+    </div>
+  );
+}
+
+function LeaderboardTable({ leaderboard }: { leaderboard: LeaderboardEntry[] }) {
   if (leaderboard.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
@@ -237,15 +289,17 @@ function LeaderboardTable({
     <div className="overflow-x-auto rounded-lg border border-border/60">
       <table className="w-full text-xs">
         <thead>
-          <LeaderboardHeaderRow />
+          <tr className="border-b border-border/60 bg-muted/30">
+            <TH align="left">Step</TH>
+            <TH align="left">Best Agent</TH>
+            <TH align="right">Rate</TH>
+            <TH align="right">Margin</TH>
+            <TH align="right">n</TH>
+          </tr>
         </thead>
         <tbody>
           {leaderboard.map((entry, i) => (
-            <LeaderboardRow
-              key={entry.step}
-              entry={entry}
-              even={i % 2 === 0}
-            />
+            <LeaderboardRow key={entry.step} entry={entry} even={i % 2 === 0} />
           ))}
         </tbody>
       </table>
@@ -253,65 +307,119 @@ function LeaderboardTable({
   );
 }
 
-function LeaderboardHeaderRow() {
-  const thClass =
-    "px-3 py-2 font-medium text-muted-foreground";
+function TH({ align, children }: { align: "left" | "right"; children: React.ReactNode }) {
   return (
-    <tr className="border-b border-border/60 bg-muted/30">
-      <th className={`${thClass} text-left`}>
-        Step
-      </th>
-      <th className={`${thClass} text-left`}>
-        Best Agent
-      </th>
-      <th className={`${thClass} text-right`}>
-        Rate
-      </th>
-      <th className={`${thClass} text-left`}>
-        Runner-up
-      </th>
-      <th className={`${thClass} text-right`}>
-        Rate
-      </th>
-      <th className={`${thClass} text-right`}>
-        Margin
-      </th>
+    <th className={`px-3 py-2 font-medium text-muted-foreground text-${align}`}>
+      {children}
+    </th>
+  );
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function LeaderboardRow({ entry, even }: { entry: LeaderboardEntry; even: boolean }) {
+  return (
+    <tr className={even ? "bg-background" : "bg-muted/10"}>
+      <td className="px-3 py-1.5 font-medium text-foreground">
+        {capitalize(entry.step)}
+      </td>
+      <td className="px-3 py-1.5 text-foreground">{entry.bestAgent}</td>
+      <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">
+        {entry.bestRate}
+      </td>
+      <td className="px-3 py-1.5 text-right tabular-nums">{entry.margin}</td>
+      <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
+        {entry.totalN}
+      </td>
     </tr>
   );
 }
 
-function LeaderboardRow({
-  entry,
-  even,
+function AgentBreakdownTable({
+  agents,
+  selectedAgent,
+  setSelectedAgent,
+  rows,
 }: {
-  entry: LeaderboardEntry;
-  even: boolean;
+  agents: string[];
+  selectedAgent: string;
+  setSelectedAgent: (v: string) => void;
+  rows: AgentStepRow[];
 }) {
+  if (agents.length === 0) return null;
+
   return (
-    <tr
-      className={
-        even ? "bg-background" : "bg-muted/10"
-      }
-    >
-      <td className="px-3 py-1.5 font-medium text-foreground">
-        {entry.step.charAt(0).toUpperCase() +
-          entry.step.slice(1)}
-      </td>
-      <td className="px-3 py-1.5 text-foreground">
-        {entry.bestAgent}
-      </td>
-      <td className="px-3 py-1.5 text-right tabular-nums text-green-600 dark:text-green-400">
-        {entry.bestRate}
-      </td>
-      <td className="px-3 py-1.5 text-muted-foreground">
-        {entry.runnerUp}
-      </td>
-      <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
-        {entry.runnerUpRate}
-      </td>
-      <td className="px-3 py-1.5 text-right tabular-nums">
-        {entry.margin}
-      </td>
-    </tr>
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <label
+          htmlFor="agent-select"
+          className="text-xs font-medium text-muted-foreground"
+        >
+          Agent Breakdown
+        </label>
+        <select
+          id="agent-select"
+          value={selectedAgent}
+          onChange={(e) => setSelectedAgent(e.target.value)}
+          className="h-8 rounded-md border border-border/70 bg-background px-2 text-xs"
+        >
+          <option value="">Select agent...</option>
+          {agents.map((a) => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+      </div>
+      {rows.length > 0 && <AgentBreakdownBody rows={rows} />}
+    </div>
+  );
+}
+
+function AgentBreakdownBody({ rows }: { rows: AgentStepRow[] }) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border/60">
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="border-b border-border/60 bg-muted/30">
+            <TH align="left">Step</TH>
+            <TH align="right">Rate</TH>
+            <TH align="right">n</TH>
+            <TH align="right">Mean</TH>
+            <TH align="right">vs Mean</TH>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr
+              key={row.step}
+              className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}
+            >
+              <td className="px-3 py-1.5 font-medium text-foreground">
+                {capitalize(row.step)}
+              </td>
+              <td className="px-3 py-1.5 text-right tabular-nums text-foreground">
+                {row.rate}%
+              </td>
+              <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
+                {row.n}
+              </td>
+              <td className="px-3 py-1.5 text-right tabular-nums text-muted-foreground">
+                {row.meanRate}%
+              </td>
+              <td
+                className={`px-3 py-1.5 text-right tabular-nums ${
+                  row.rate >= row.meanRate
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {row.offset}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -292,7 +292,7 @@ describe("buildLeaderboard", () => {
     expect(buildLeaderboard(aggregates)).toEqual([]);
   });
 
-  it("shows best agent per step with margin to runner-up", () => {
+  it("shows best agent per step with margin over mean", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 1 }),
@@ -304,21 +304,19 @@ describe("buildLeaderboard", () => {
     expect(entries[0]!.step).toBe("planning");
     expect(entries[0]!.bestAgent).toBe("claude/opus");
     expect(entries[0]!.bestRate).toBe("90%");
-    expect(entries[0]!.runnerUp).toBe("openai/o3");
-    expect(entries[0]!.runnerUpRate).toBe("60%");
-    expect(entries[0]!.margin).toBe("30pp");
+    // mean = (90 + 60) / 2 = 75, margin = 90 - 75 = +15%
+    expect(entries[0]!.margin).toBe("+15%");
   });
 
-  it("shows dash for margin when only one agent", () => {
+  it("shows +0% margin when only one agent", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 5 }),
     ];
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(1);
     expect(entries[0]!.bestAgent).toBe("claude/opus");
-    expect(entries[0]!.runnerUp).toBe("-");
-    expect(entries[0]!.runnerUpRate).toBe("-");
-    expect(entries[0]!.margin).toBe("-");
+    // single agent: mean equals rate, margin = +0%
+    expect(entries[0]!.margin).toBe("+0%");
   });
 
   it("creates separate entries for each step", () => {
@@ -340,7 +338,7 @@ describe("buildLeaderboard", () => {
     const entries = buildLeaderboard(aggregates);
     // Both 100% rate, but openai/o3 has more completed
     expect(entries[0]!.bestAgent).toBe("openai/o3");
-    expect(entries[0]!.runnerUp).toBe("claude/opus");
-    expect(entries[0]!.margin).toBe("0pp");
+    // mean = 100%, margin = +0%
+    expect(entries[0]!.margin).toBe("+0%");
   });
 });

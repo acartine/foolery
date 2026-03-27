@@ -96,8 +96,19 @@ export function applyFilters(
 
   // Rolling preset takes precedence over manual date range
   if (filters.preset === "last24h") {
-    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    filtered = filtered.filter((e) => e.timestamp >= cutoff);
+    const cutoff = new Date(
+      Date.now() - 24 * 60 * 60 * 1000,
+    ).toISOString();
+    filtered = filtered.filter(
+      (e) => e.timestamp >= cutoff,
+    );
+  } else if (filters.preset === "last7d") {
+    const cutoff = new Date(
+      Date.now() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    filtered = filtered.filter(
+      (e) => e.timestamp >= cutoff,
+    );
   } else {
     if (filters.dateFrom) {
       const from = filters.dateFrom;

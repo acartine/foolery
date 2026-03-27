@@ -24,6 +24,7 @@ export interface TimeseriesPoint {
 export interface AgentSeries {
   agent: string;
   points: TimeseriesPoint[];
+  n?: number;
 }
 
 // ── Chart constants ──
@@ -53,14 +54,12 @@ export function TimeseriesChart({
     seriesList[0]!.points.map((p) => p.date);
   const numPoints = dateLabels.length;
   const maxValue = 100;
-  const drawWidth = Math.max(
-    200,
-    numPoints * 40,
-  );
+  const drawWidth = Math.max(200, numPoints * 40);
   const totalWidth =
     CHART_PADDING_LEFT +
     drawWidth +
     CHART_PADDING_RIGHT;
+  const needsScroll = numPoints > 14;
   const drawHeight =
     CHART_HEIGHT -
     CHART_PADDING_TOP -
@@ -86,15 +85,20 @@ export function TimeseriesChart({
   const yTicks = [0, 50, 100];
 
   return (
-    <div className="flex-1 rounded-lg border border-border/60 bg-muted/10 p-3">
+    <div className="min-w-0 rounded-lg border border-border/60 bg-muted/10 p-3">
       <h3 className="mb-2 text-xs font-medium text-muted-foreground">
         {title}
       </h3>
       <div className="overflow-x-auto">
         <svg
-          width={totalWidth}
+          {...(needsScroll
+            ? { width: totalWidth }
+            : {
+                viewBox: `0 0 ${totalWidth} ${CHART_HEIGHT}`,
+                className: "block w-full",
+                preserveAspectRatio: "xMidYMid meet",
+              })}
           height={CHART_HEIGHT}
-          className="block"
           role="img"
           aria-label={`${title} chart`}
         >
@@ -126,7 +130,7 @@ function EmptyChart({
   title: string;
 }) {
   return (
-    <div className="flex-1 rounded-lg border border-border/60 bg-muted/10 p-3">
+    <div className="min-w-0 rounded-lg border border-border/60 bg-muted/10 p-3">
       <h3 className="mb-2 text-xs font-medium text-muted-foreground">
         {title}
       </h3>
@@ -289,6 +293,11 @@ function ChartLegend({
             }}
           />
           {series.agent}
+          {series.n != null && (
+            <span className="text-muted-foreground/60">
+              {" "}n={series.n}
+            </span>
+          )}
         </div>
       ))}
     </div>
