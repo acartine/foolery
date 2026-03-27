@@ -93,7 +93,7 @@ export function SpeedTable({
           </thead>
           <tbody>
             {speedRows.map((row, i) => (
-              <SpeedRow
+              <SpeedRowTr
                 key={`${row.agent}::${row.step}`}
                 row={row}
                 even={i % 2 === 0}
@@ -107,7 +107,7 @@ export function SpeedTable({
   );
 }
 
-function SpeedRow({
+function SpeedRowTr({
   row,
   even,
   stepMean,
