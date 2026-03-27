@@ -212,7 +212,10 @@ function BeatTableRow({
   return (
     <Fragment>
       <TableRow
-        className={cn(isFocused && "bg-muted/50")}
+        className={cn(
+          "border-b-0",
+          isFocused && "bg-muted/50",
+        )}
         onClick={() => handleRowFocus(row.original)}
       >
         {cells.map((cell) => {
@@ -237,7 +240,6 @@ function BeatTableRow({
       </TableRow>
       <TableRow
         className={cn(
-          "border-b-0",
           isFocused && "bg-muted/50",
         )}
         onClick={() => handleRowFocus(row.original)}
