@@ -2,6 +2,7 @@ import type { ExecutionAgentInfo } from "@/lib/execution-port";
 
 export type AgentProviderId =
   | "claude"
+  | "copilot"
   | "openai"
   | "gemini"
   | "opencode"
@@ -27,6 +28,7 @@ export interface AgentOptionSeed {
 
 const PROVIDER_LABELS: Record<Exclude<AgentProviderId, "unknown">, string> = {
   claude: "Claude",
+  copilot: "Copilot",
   openai: "OpenAI",
   gemini: "Gemini",
   opencode: "OpenCode",
@@ -62,6 +64,7 @@ export function detectAgentProviderId(command?: string): AgentProviderId {
   const lower = command?.trim().toLowerCase() ?? "";
   if (!lower) return "unknown";
   if (lower.includes("opencode")) return "opencode";
+  if (lower.includes("copilot")) return "copilot";
   if (lower.includes("claude")) return "claude";
   if (
     lower.includes("codex") ||
@@ -148,6 +151,64 @@ function normalizeGeminiModel(
   };
 }
 
+function normalizeCopilotModel(
+  rawModel?: string,
+): {
+  provider: string;
+  model?: string;
+  flavor?: string;
+  version?: string;
+} {
+  const cleaned = cleanValue(rawModel)?.toLowerCase();
+  if (!cleaned) {
+    return { provider: "Copilot" };
+  }
+
+  if (
+    cleaned.includes("gpt") ||
+    cleaned.includes("chatgpt") ||
+    cleaned.includes("codex")
+  ) {
+    const normalized = normalizeCodexModel(rawModel);
+    return {
+      provider: "OpenAI",
+      ...(normalized.model ? { model: normalized.model } : {}),
+      ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
+      ...(normalized.version ? { version: normalized.version } : {}),
+    };
+  }
+
+  if (cleaned.includes("gemini")) {
+    const normalized = normalizeGeminiModel(rawModel);
+    return {
+      provider: "Gemini",
+      ...(normalized.model ? { model: normalized.model } : {}),
+      ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
+      ...(normalized.version ? { version: normalized.version } : {}),
+    };
+  }
+
+  if (
+    cleaned.includes("claude") ||
+    cleaned.includes("opus") ||
+    cleaned.includes("sonnet") ||
+    cleaned.includes("haiku")
+  ) {
+    const normalized = normalizeClaudeModel(rawModel);
+    return {
+      provider: "Claude",
+      ...(normalized.model ? { model: normalized.model } : {}),
+      ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
+      ...(normalized.version ? { version: normalized.version } : {}),
+    };
+  }
+
+  return {
+    provider: "Copilot",
+    ...(rawModel?.trim() ? { model: rawModel.trim() } : {}),
+  };
+}
+
 export function normalizeAgentIdentity(agent: AgentIdentityLike): {
   provider?: string;
   model?: string;
@@ -164,6 +225,19 @@ export function normalizeAgentIdentity(agent: AgentIdentityLike): {
       ...(rawModel ? { model: rawModel } : {}),
       ...(flavor ? { flavor } : {}),
       ...(version ? { version } : {}),
+    };
+  }
+  if (provider === "Copilot") {
+    const normalized = normalizeCopilotModel(rawModel);
+    return {
+      provider: normalized.provider,
+      ...(normalized.model ? { model: normalized.model } : {}),
+      ...(flavor ?? normalized.flavor
+        ? { flavor: flavor ?? normalized.flavor }
+        : {}),
+      ...(version ?? normalized.version
+        ? { version: version ?? normalized.version }
+        : {}),
     };
   }
   if (provider === "OpenAI") {
@@ -203,6 +277,7 @@ export function normalizeAgentIdentity(agent: AgentIdentityLike): {
 
 const COMMAND_DISPLAY_LABELS: Record<string, string> = {
   claude: "Claude",
+  copilot: "Copilot",
   codex: "Codex",
   "codex-cli": "Codex",
   gemini: "Gemini",
@@ -335,6 +410,15 @@ export function parseAgentDisplayParts(
     }
     pills.push("cli");
     return { label: "OpenCode", pills };
+  }
+
+  if (providerId === "copilot") {
+    pills.push("copilot");
+    pills.push("cli");
+    return {
+      label: formatAgentDisplayLabel(agent),
+      pills,
+    };
   }
 
   // Claude, Codex (OpenAI), Gemini — use existing label, add cli pill

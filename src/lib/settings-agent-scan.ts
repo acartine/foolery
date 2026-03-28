@@ -18,6 +18,7 @@ const AGENT_MODEL_CATALOG_FILE = join(
 
 export interface AgentCatalogOption {
   modelId: string;
+  provider?: string;
   model?: string;
   flavor?: string;
   version?: string;
@@ -71,6 +72,9 @@ function parseCatalogFile(
           typeof option.model_id === "string"
             ? option.model_id
             : "",
+        ...(typeof option.provider === "string"
+          ? { provider: option.provider }
+          : {}),
         ...(typeof option.model === "string"
           ? { model: option.model }
           : {}),
@@ -116,8 +120,8 @@ export function resolveCatalogBackedAgent(
 
   return {
     ...agent,
-    ...(normalized.provider
-      ? { provider: normalized.provider }
+    ...(normalized.provider ?? matched?.provider
+      ? { provider: normalized.provider ?? matched?.provider }
       : {}),
     ...(normalized.flavor ?? matched?.flavor
       ? { flavor: normalized.flavor ?? matched?.flavor }

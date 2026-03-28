@@ -26,6 +26,14 @@ describe("resolveDialect", () => {
     expect(resolveDialect("/usr/local/bin/chatgpt")).toBe("codex");
   });
 
+  it("returns 'copilot' for bare command 'copilot'", () => {
+    expect(resolveDialect("copilot")).toBe("copilot");
+  });
+
+  it("returns 'copilot' for full path to copilot binary", () => {
+    expect(resolveDialect("/usr/local/bin/copilot")).toBe("copilot");
+  });
+
   it("returns 'claude' for bare command 'claude'", () => {
     expect(resolveDialect("claude")).toBe("claude");
   });
@@ -99,6 +107,36 @@ describe("buildPromptModeArgs", () => {
     );
     expect(result.args[0]).toBe("exec");
   });
+
+  it("builds correct copilot args without model", () => {
+    const result = buildPromptModeArgs(
+      { command: "copilot" },
+      prompt,
+    );
+    expect(result.command).toBe("copilot");
+    expect(result.args).toEqual([
+      "-p",
+      prompt,
+      "--output-format",
+      "json",
+      "--stream",
+      "on",
+      "--allow-all",
+      "--no-ask-user",
+    ]);
+  });
+
+  it("builds correct copilot args with model", () => {
+    const result = buildPromptModeArgs(
+      {
+        command: "copilot",
+        model: "claude-sonnet-4.5",
+      },
+      prompt,
+    );
+    expect(result.args).toContain("--model");
+    expect(result.args).toContain("claude-sonnet-4.5");
+  });
 });
 
 describe("createLineNormalizer — claude dialect", () => {
@@ -117,7 +155,7 @@ describe("createLineNormalizer — claude dialect", () => {
 });
 
 describe("createLineNormalizer codex: events and messages", () => {
-    it("skips thread.started and turn.started", () => {
+  it("skips thread.started and turn.started", () => {
     const normalize = createLineNormalizer("codex");
     expect(normalize({ type: "thread.started", thread_id: "t1" })).toBeNull();
     expect(normalize({ type: "turn.started" })).toBeNull();
@@ -195,7 +233,7 @@ describe("createLineNormalizer codex: events and messages", () => {
 });
 
 describe("createLineNormalizer codex: completion/errors", () => {
-    it("normalizes turn.completed to result event with accumulated text", () => {
+  it("normalizes turn.completed to result event with accumulated text", () => {
     const normalize = createLineNormalizer("codex");
     // First, send an agent_message to accumulate text
     normalize({
@@ -259,6 +297,125 @@ describe("createLineNormalizer codex: completion/errors", () => {
       type: "result",
       result: "First\nSecond",
       is_error: false,
+    });
+  });
+});
+
+describe("createLineNormalizer copilot: streaming and tools", () => {
+  it("normalizes assistant.message_delta to a stream event", () => {
+    const normalize = createLineNormalizer("copilot");
+    const result = normalize({
+      type: "assistant.message_delta",
+      data: {
+        messageId: "msg-1",
+        deltaContent: "Hello",
+      },
+    });
+    expect(result).toEqual({
+      type: "stream_event",
+      event: {
+        type: "content_block_delta",
+        delta: { type: "text_delta", text: "Hello" },
+      },
+    });
+  });
+
+  it("normalizes assistant.message tool requests and suppresses duplicate text", () => {
+    const normalize = createLineNormalizer("copilot");
+    normalize({
+      type: "assistant.message_delta",
+      data: {
+        messageId: "msg-1",
+        deltaContent: "Hello",
+      },
+    });
+    const result = normalize({
+      type: "assistant.message",
+      data: {
+        messageId: "msg-1",
+        content: "Hello",
+        toolRequests: [
+          {
+            toolCallId: "tool-1",
+            name: "Bash",
+            arguments: { command: "pwd" },
+          },
+        ],
+      },
+    });
+    expect(result).toEqual({
+      type: "assistant",
+      message: {
+        content: [{
+          type: "tool_use",
+          id: "tool-1",
+          name: "Bash",
+          input: { command: "pwd" },
+        }],
+      },
+    });
+  });
+
+  it("normalizes user_input.requested to AskUserQuestion tool use", () => {
+    const normalize = createLineNormalizer("copilot");
+    const result = normalize({
+      type: "user_input.requested",
+      data: {
+        requestId: "req-1",
+        question: "Pick one",
+        choices: ["Yes", "No"],
+      },
+    });
+    expect(result).toEqual({
+      type: "assistant",
+      message: {
+        content: [{
+          type: "tool_use",
+          id: "req-1",
+          name: "AskUserQuestion",
+          input: {
+            questions: [{
+              question: "Pick one",
+              options: [{ label: "Yes" }, { label: "No" }],
+            }],
+          },
+        }],
+      },
+    });
+  });
+});
+
+describe("createLineNormalizer copilot: terminal events", () => {
+  it("normalizes task completion using accumulated streamed text", () => {
+    const normalize = createLineNormalizer("copilot");
+    normalize({
+      type: "assistant.message_delta",
+      data: {
+        messageId: "msg-1",
+        deltaContent: "Done",
+      },
+    });
+    const result = normalize({
+      type: "session.task_complete",
+      data: { success: true, summary: "Ignored summary" },
+    });
+    expect(result).toEqual({
+      type: "result",
+      result: "Done",
+      is_error: false,
+    });
+  });
+
+  it("normalizes session.error to an error result", () => {
+    const normalize = createLineNormalizer("copilot");
+    const result = normalize({
+      type: "session.error",
+      data: { message: "Copilot failed" },
+    });
+    expect(result).toEqual({
+      type: "result",
+      result: "Copilot failed",
+      is_error: true,
     });
   });
 });

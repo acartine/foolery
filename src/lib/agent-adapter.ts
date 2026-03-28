@@ -13,7 +13,11 @@ import type { AgentTarget } from "@/lib/types-agent-target";
 
 // ── Types ───────────────────────────────────────────────────
 
-export type AgentDialect = "claude" | "codex" | "opencode";
+export type AgentDialect =
+  | "claude"
+  | "codex"
+  | "copilot"
+  | "opencode";
 
 export interface PromptModeArgs {
   command: string;
@@ -32,6 +36,7 @@ export function resolveDialect(command: string): AgentDialect {
     ? command.slice(command.lastIndexOf("/") + 1)
     : command;
   const lower = base.toLowerCase();
+  if (lower.includes("copilot")) return "copilot";
   if (lower.includes("opencode")) return "opencode";
   if (lower.includes("codex") || lower.includes("chatgpt")) return "codex";
   return "claude";
@@ -42,13 +47,10 @@ export function resolveDialect(command: string): AgentDialect {
 /**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
- * | Concern        | Claude               | Codex                  | OpenCode    |
- * |----------------|----------------------|------------------------|-------------|
- * | Subcommand     | (none)               | exec                   | run         |
- * | Prompt         | -p <prompt>          | positional after exec  | pos. arg    |
- * | JSONL output   | --output-format json | --json                 | --format j  |
- * | Skip approvals | --dangerously-skip…  | --dangerously-bypass…  | (not needed)|
- * | Model          | --model <m>          | -m <m>                 | -m <m>      |
+ * Claude: `claude -p ... --output-format stream-json`
+ * Codex: `codex exec ... --json`
+ * Copilot: `copilot -p ... --output-format json --stream on`
+ * OpenCode: `opencode run ... --format json`
  */
 export function buildPromptModeArgs(
   agent: RegisteredAgent | AgentTarget,
@@ -63,6 +65,21 @@ export function buildPromptModeArgs(
     const args = ["run", "--format", "json"];
     if (agent.model) args.push("-m", agent.model);
     args.push(prompt);
+    return { command, args };
+  }
+
+  if (dialect === "copilot") {
+    const args = [
+      "-p",
+      prompt,
+      "--output-format",
+      "json",
+      "--stream",
+      "on",
+      "--allow-all",
+      "--no-ask-user",
+    ];
+    if (agent.model) args.push("--model", agent.model);
     return { command, args };
   }
 
@@ -101,6 +118,7 @@ export function buildPromptModeArgs(
  *
  * For "claude" dialect the normalizer is identity (passthrough).
  * For "codex" dialect the normalizer maps Codex events → Claude shapes.
+ * For "copilot" dialect the normalizer maps Copilot session events → Claude shapes.
  * For "opencode" dialect the normalizer maps OpenCode JSON events → Claude shapes.
  *
  * Returns `null` for events that should be skipped.
@@ -119,7 +137,16 @@ export function createLineNormalizer(
     return createOpenCodeNormalizer();
   }
 
+  if (dialect === "copilot") {
+    return createCopilotNormalizer();
+  }
+
   return createCodexNormalizer();
+}
+
+function toObject(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") return null;
+  return value as Record<string, unknown>;
 }
 
 // ── OpenCode normalizer ─────────────────────────────────────
@@ -157,6 +184,186 @@ function createOpenCodeNormalizer(
     }
 
     return null;
+  };
+}
+
+// ── Copilot normalizer ──────────────────────────────────────
+
+type CopilotState = {
+  accumulatedText: string;
+  streamedMessageIds: Set<string>;
+};
+
+function normalizeCopilotMessageDelta(
+  data: Record<string, unknown> | null,
+  state: CopilotState,
+): Record<string, unknown> | null {
+  const messageId =
+    typeof data?.messageId === "string"
+      ? data.messageId
+      : undefined;
+  const delta =
+    typeof data?.deltaContent === "string"
+      ? data.deltaContent
+      : "";
+  if (!delta) return null;
+  if (messageId) state.streamedMessageIds.add(messageId);
+  state.accumulatedText += delta;
+  return {
+    type: "stream_event",
+    event: {
+      type: "content_block_delta",
+      delta: { type: "text_delta", text: delta },
+    },
+  };
+}
+
+function collectCopilotToolBlocks(
+  toolRequests: unknown,
+): Array<Record<string, unknown>> {
+  if (!Array.isArray(toolRequests)) return [];
+  return toolRequests.flatMap((rawRequest) => {
+    const request = toObject(rawRequest);
+    if (!request || typeof request.name !== "string") return [];
+    return [{
+      type: "tool_use",
+      ...(typeof request.toolCallId === "string"
+        ? { id: request.toolCallId }
+        : {}),
+      name: request.name,
+      input: toObject(request.arguments) ?? {},
+    }];
+  });
+}
+
+function normalizeCopilotAssistantMessage(
+  data: Record<string, unknown> | null,
+  state: CopilotState,
+): Record<string, unknown> | null {
+  if (!data) return null;
+
+  const messageId =
+    typeof data.messageId === "string"
+      ? data.messageId
+      : undefined;
+  const content =
+    typeof data.content === "string"
+      ? data.content
+      : "";
+  const blocks = collectCopilotToolBlocks(data.toolRequests);
+
+  if (content && (!messageId || !state.streamedMessageIds.has(messageId))) {
+    state.accumulatedText +=
+      (state.accumulatedText ? "\n" : "") + content;
+    blocks.unshift({ type: "text", text: content });
+  }
+
+  return blocks.length > 0
+    ? { type: "assistant", message: { content: blocks } }
+    : null;
+}
+
+function normalizeCopilotUserInput(
+  data: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  const question =
+    typeof data?.question === "string"
+      ? data.question
+      : "";
+  if (!question) return null;
+
+  const rawChoices = Array.isArray(data?.choices)
+    ? data.choices
+    : [];
+  const options = rawChoices
+    .filter(
+      (choice): choice is string =>
+        typeof choice === "string" && choice.trim().length > 0,
+    )
+    .map((label) => ({ label }));
+  const toolUseId =
+    typeof data?.toolCallId === "string"
+      ? data.toolCallId
+      : typeof data?.requestId === "string"
+        ? data.requestId
+        : undefined;
+
+  return {
+    type: "assistant",
+    message: {
+      content: [{
+        type: "tool_use",
+        ...(toolUseId ? { id: toolUseId } : {}),
+        name: "AskUserQuestion",
+        input: { questions: [{ question, options }] },
+      }],
+    },
+  };
+}
+
+function normalizeCopilotSessionEvent(
+  obj: Record<string, unknown>,
+  accumulatedText: string,
+): Record<string, unknown> | null {
+  if (obj.type === "session.task_complete") {
+    const data = toObject(obj.data);
+    const summary =
+      typeof data?.summary === "string"
+        ? data.summary
+        : "";
+    const success = data?.success !== false;
+    return {
+      type: "result",
+      result:
+        accumulatedText
+        || summary
+        || (success ? "" : "Task failed"),
+      is_error: !success,
+    };
+  }
+
+  if (obj.type === "session.error") {
+    const data = toObject(obj.data);
+    const message =
+      typeof data?.message === "string"
+        ? data.message
+        : "Session error";
+    return {
+      type: "result",
+      result: message,
+      is_error: true,
+    };
+  }
+
+  return null;
+}
+
+function createCopilotNormalizer(): (
+  parsed: unknown,
+) => Record<string, unknown> | null {
+  const state: CopilotState = {
+    accumulatedText: "",
+    streamedMessageIds: new Set<string>(),
+  };
+
+  return (parsed) => {
+    const obj = toObject(parsed);
+    if (!obj || typeof obj.type !== "string") return null;
+    const data = toObject(obj.data);
+
+    if (obj.type === "assistant.message_delta") {
+      return normalizeCopilotMessageDelta(data, state);
+    }
+    if (obj.type === "assistant.message") {
+      return normalizeCopilotAssistantMessage(data, state);
+    }
+    if (obj.type === "user_input.requested") {
+      return normalizeCopilotUserInput(data);
+    }
+    return normalizeCopilotSessionEvent(
+      obj,
+      state.accumulatedText,
+    );
   };
 }
 

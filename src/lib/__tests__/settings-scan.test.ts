@@ -43,7 +43,7 @@ beforeEach(() => {
 });
 
 describe("scanForAgents: discovery and status", () => {
-    it("returns installed status when an agent is found on PATH", async () => {
+  it("returns installed status when an agent is found on PATH", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v claude") {
         return { stdout: "/usr/local/bin/claude\n", stderr: "" };
@@ -52,8 +52,14 @@ describe("scanForAgents: discovery and status", () => {
     });
 
     const agents = await scanForAgents();
-    expect(agents).toHaveLength(4);
-    expect(agents.map((agent) => agent.id)).toEqual(["claude", "codex", "gemini", "opencode"]);
+    expect(agents).toHaveLength(5);
+    expect(agents.map((agent) => agent.id)).toEqual([
+      "claude",
+      "copilot",
+      "codex",
+      "gemini",
+      "opencode",
+    ]);
 
     const claude = agents.find((agent) => agent.id === "claude");
     expect(claude).toEqual({
@@ -73,7 +79,7 @@ describe("scanForAgents: discovery and status", () => {
     mockExecCb.mockRejectedValue(new Error("not found"));
 
     const agents = await scanForAgents();
-    expect(agents).toHaveLength(4);
+    expect(agents).toHaveLength(5);
     for (const agent of agents) {
       expect(agent.installed).toBe(false);
       expect(agent.path).toBe("");
@@ -85,7 +91,50 @@ describe("scanForAgents: discovery and status", () => {
 });
 
 describe("scanForAgents: model metadata", () => {
-    it("captures Codex model metadata from local config", async () => {
+  it("captures Copilot model metadata from local config", async () => {
+    mockExecCb.mockImplementation(async (cmd: string) => {
+      if (cmd === "command -v copilot") {
+        return {
+          stdout: "/opt/homebrew/bin/copilot\n",
+          stderr: "",
+        };
+      }
+      throw new Error("not found");
+    });
+    mockReadFile.mockImplementation(async (path: string) => {
+      if (path.endsWith(".copilot/config.json")) {
+        return JSON.stringify({
+          defaultModel: "claude-sonnet-4.5",
+        });
+      }
+      throw new Error("missing");
+    });
+
+    const agents = await scanForAgents();
+    const copilot = agents.find((agent) => agent.id === "copilot");
+    expect(copilot).toMatchObject({
+      id: "copilot",
+      command: "copilot",
+      path: "/opt/homebrew/bin/copilot",
+      installed: true,
+      provider: "Claude",
+      model: "claude",
+      flavor: "sonnet",
+      modelId: "claude-sonnet-4.5",
+      version: "4.5",
+    });
+    expect(copilot?.options?.[0]).toMatchObject({
+      id: "copilot-claude-sonnet-4-5",
+      label: "Claude Sonnet 4.5",
+      provider: "Claude",
+      model: "claude",
+      flavor: "sonnet",
+      version: "4.5",
+      modelId: "claude-sonnet-4.5",
+    });
+  });
+
+  it("captures Codex model metadata from local config", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v codex") {
         return { stdout: "/opt/homebrew/bin/codex\n", stderr: "" };
@@ -111,10 +160,12 @@ describe("scanForAgents: model metadata", () => {
       modelId: "gpt-5.4",
       version: "5.4",
     });
-    expect(codex!.options!.length).toBeGreaterThan(0);
-    expect(codex!.selectedOptionId).toBeTruthy();
+    expect(codex?.options?.length).toBeGreaterThan(0);
+    expect(codex?.selectedOptionId).toBeTruthy();
   });
+});
 
+describe("scanForAgents: model metadata for existing CLIs", () => {
   it("captures Claude model metadata from settings when available", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v claude") {
@@ -142,8 +193,8 @@ describe("scanForAgents: model metadata", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude!.options!.length).toBeGreaterThan(0);
-    expect(claude!.options![0].label).toBe("Claude Sonnet 4.5");
+    expect(claude?.options?.length).toBeGreaterThan(0);
+    expect(claude?.options?.[0]?.label).toBe("Claude Sonnet 4.5");
   });
 
   it("captures Gemini model metadata from recent history when available", async () => {
@@ -179,7 +230,7 @@ describe("scanForAgents: model metadata", () => {
       modelId: "gemini-2.5-pro",
       version: "2.5",
     });
-    expect(gemini!.options!.length).toBeGreaterThan(0);
-    expect(gemini!.options![0].label).toBe("Gemini Pro 2.5");
+    expect(gemini?.options?.length).toBeGreaterThan(0);
+    expect(gemini?.options?.[0]?.label).toBe("Gemini Pro 2.5");
   });
 });

@@ -66,5 +66,6 @@ describe("install launcher path overrides", () => {
     const launcher = await readFile(launcherPath, "utf8");
     expect(launcher).toContain("tip) printf '%s' '->' ;;");
     expect(launcher).not.toContain("tip) printf '->' ;;");
+    expect(launcher).toContain("FOOLERY_SETUP_URL");
   });
 });

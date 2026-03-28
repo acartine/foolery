@@ -75,3 +75,38 @@ version = "5.1"
 model_id = "gemini-3"
 model = "gemini"
 version = "3"
+
+[copilot]
+[[copilot.options]]
+model_id = "claude-sonnet-4.5"
+provider = "Claude"
+model = "claude"
+flavor = "sonnet"
+version = "4.5"
+
+[[copilot.options]]
+model_id = "claude-haiku-4.5"
+provider = "Claude"
+model = "claude"
+flavor = "haiku"
+version = "4.5"
+
+[[copilot.options]]
+model_id = "gpt-5.3-codex"
+provider = "OpenAI"
+model = "gpt"
+flavor = "codex"
+version = "5.3"
+
+[[copilot.options]]
+model_id = "gpt-5.2"
+provider = "OpenAI"
+model = "gpt"
+version = "5.2"
+
+[[copilot.options]]
+model_id = "gemini-2.5-pro"
+provider = "Gemini"
+model = "gemini"
+flavor = "pro"
+version = "2.5"

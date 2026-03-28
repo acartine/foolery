@@ -72,4 +72,22 @@ describe("parseAgentDisplayParts", () => {
     expect(result.pills).toEqual(["cli"]);
     expect(result.label).toContain("Gemini");
   });
+
+  it("adds copilot and cli pills for copilot claude model", () => {
+    const result = parseAgentDisplayParts({
+      command: "copilot",
+      model: "claude-sonnet-4.5",
+    });
+    expect(result.pills).toEqual(["copilot", "cli"]);
+    expect(result.label).toBe("Claude Sonnet 4.5");
+  });
+
+  it("keeps provider-specific label for copilot gpt codex model", () => {
+    const result = parseAgentDisplayParts({
+      command: "copilot",
+      model: "gpt-5.3-codex",
+    });
+    expect(result.pills).toEqual(["copilot", "cli"]);
+    expect(result.label).toBe("GPT Codex 5.3");
+  });
 });

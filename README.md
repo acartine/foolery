@@ -109,6 +109,7 @@ Foolery launches and monitors agent sessions through their CLIs. It auto-detects
 | Agent | CLI Command | Notes |
 |-------|-------------|-------|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `claude` | Default dialect. Streams JSONL via `--output-format stream-json`. |
+| [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-the-github-copilot-coding-agent-in-the-cli) | `copilot` | Uses prompt mode with JSON streaming and supports Claude, GPT, and Gemini model selections. |
 | [Codex](https://github.com/openai/codex) | `codex` | Uses `exec` subcommand with `--json` output. ChatGPT CLI variants also supported. |
 | [OpenCode](https://github.com/opencode-ai/opencode) | `opencode` | Uses `run` subcommand with `--format json` output. |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `gemini` | Auto-detected and displayed in agent identity. |

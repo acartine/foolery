@@ -21,6 +21,7 @@ const addAgentBody = z.object({
   command: z.string().min(1),
   provider: z.string().optional(),
   model: z.string().optional(),
+  flavor: z.string().optional(),
   version: z.string().optional(),
   label: z.string().optional(),
 });
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
       command: body.command,
       provider: body.provider,
       model: body.model,
+      flavor: body.flavor,
       version: body.version,
       label: body.label,
     });

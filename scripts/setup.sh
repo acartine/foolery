@@ -142,9 +142,37 @@ _setup_confirm() {
 _kv_set() { eval "_KV_${1}__${2}=\$3"; }
 _kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
 
+_configured_model() {
+  local aid="$1"
+  case "$aid" in
+    copilot)
+      local config="$HOME/.copilot/config.json"
+      if [[ -f "$config" ]]; then
+        if command -v jq >/dev/null 2>&1; then
+          jq -r '.model // .defaultModel // .selectedModel // empty' \
+            "$config" 2>/dev/null
+        else
+          sed -nE \
+            's/.*"(model|defaultModel|selectedModel)"[[:space:]]*:[[:space:]]*"([^"]*)".*/\2/p' \
+            "$config" | head -n 1
+        fi
+      fi
+      ;;
+  esac
+}
+
 _discover_models() {
   local aid="$1"
   case "$aid" in
+    copilot)
+      _configured_model "$aid"
+      printf '%s\n' \
+        claude-sonnet-4.5 \
+        claude-haiku-4.5 \
+        gpt-5.3-codex \
+        gpt-5.2 \
+        gemini-2.5-pro
+      ;;
     codex)
       local cache="$HOME/.codex/models_cache.json"
       if [[ -f "$cache" ]]; then
@@ -516,11 +544,12 @@ _repo_wizard() {
 
 _AGENT_CONFIG_DIR="${HOME}/.config/foolery"
 _AGENT_SETTINGS_FILE="${_AGENT_CONFIG_DIR}/settings.toml"
-KNOWN_AGENTS=(claude codex gemini opencode)
+KNOWN_AGENTS=(claude copilot codex gemini opencode)
 
 _agent_label() {
   case "$1" in
     claude) printf 'Claude Code' ;;
+    copilot) printf 'GitHub Copilot' ;;
     codex)  printf 'OpenAI Codex' ;;
     gemini) printf 'Google Gemini' ;;
     opencode) printf 'OpenCode' ;;
@@ -697,6 +726,11 @@ _agent_wizard() {
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
+    local detected_model
+    detected_model="$(_configured_model "$sole")"
+    if [[ -n "$detected_model" ]]; then
+      _kv_set AGENT_MODELS "$sole" "$detected_model"
+    fi
     local action
     for action in take scene breakdown; do
       _kv_set ACTION_MAP "$action" "$sole"

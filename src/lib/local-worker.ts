@@ -12,7 +12,14 @@ import type {
 } from "@/lib/execution-port";
 import type { BackendResult } from "@/lib/backend-port";
 
-const BLOCKED_SHELL_COMMANDS = new Set(["kno", "bd", "claude", "codex", "opencode"]);
+const BLOCKED_SHELL_COMMANDS = new Set([
+  "kno",
+  "bd",
+  "claude",
+  "codex",
+  "copilot",
+  "opencode",
+]);
 
 export type LocalWorkerToolName =
   | "fs_read"

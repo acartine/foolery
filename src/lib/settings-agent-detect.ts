@@ -33,6 +33,11 @@ const GEMINI_SETTINGS_FILE = join(
   ".gemini",
   "settings.json",
 );
+const COPILOT_CONFIG_FILE = join(
+  homedir(),
+  ".copilot",
+  "config.json",
+);
 const GEMINI_TMP_ROOT = join(homedir(), ".gemini", "tmp");
 
 // ── Config readers ───────────────────────────────────────────
@@ -44,6 +49,7 @@ interface ScannableAgent {
 
 const SCANNABLE_AGENTS: readonly ScannableAgent[] = [
   { id: "claude", command: "claude" },
+  { id: "copilot", command: "copilot" },
   { id: "codex", command: "codex" },
   { id: "gemini", command: "gemini" },
   { id: "opencode", command: "opencode" },
@@ -126,6 +132,21 @@ async function readGeminiConfiguredModel(): Promise<
   }
   try {
     return await scanGeminiTmpForModel();
+  } catch {
+    return undefined;
+  }
+}
+
+async function readCopilotConfiguredModel(): Promise<
+  string | undefined
+> {
+  try {
+    const raw = await readFile(COPILOT_CONFIG_FILE, "utf-8");
+    const parsed = JSON.parse(raw) as unknown;
+    return findStringField(
+      parsed,
+      new Set(["model", "defaultModel", "selectedModel"]),
+    );
   } catch {
     return undefined;
   }
@@ -224,6 +245,7 @@ async function inspectInstalledAgentMetadata(
   const provider = providerLabel(undefined, resolvedCommand);
 
   if (
+    agent.id === "copilot" ||
     agent.id === "codex" ||
     agent.id === "claude" ||
     agent.id === "gemini"
@@ -254,7 +276,9 @@ async function inspectStandardAgent(
   provider: string | undefined,
 ): Promise<AgentMetadata> {
   let modelId: string | undefined;
-  if (agentId === "codex") {
+  if (agentId === "copilot") {
+    modelId = await readCopilotConfiguredModel();
+  } else if (agentId === "codex") {
     modelId = await readCodexConfiguredModel();
   } else if (agentId === "claude") {
     modelId = await readClaudeConfiguredModel();

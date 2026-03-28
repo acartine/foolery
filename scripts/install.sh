@@ -12,6 +12,7 @@ RELEASE_REPO="${FOOLERY_RELEASE_REPO:-foolery}"
 RELEASE_TAG="${FOOLERY_RELEASE_TAG:-latest}"
 ASSET_BASENAME="${FOOLERY_ASSET_BASENAME:-foolery-runtime}"
 ARTIFACT_URL="${FOOLERY_ARTIFACT_URL:-}"
+SETUP_URL="${FOOLERY_SETUP_URL:-}"
 
 _supports_color() {
   local fd="${1:-1}"
@@ -207,6 +208,7 @@ URL="\${FOOLERY_URL:-http://\$HOST:\$PORT}"
 RELEASE_OWNER="\${FOOLERY_RELEASE_OWNER:-$RELEASE_OWNER}"
 RELEASE_REPO="\${FOOLERY_RELEASE_REPO:-$RELEASE_REPO}"
 RELEASE_TAG="\${FOOLERY_RELEASE_TAG:-latest}"
+SETUP_URL="\${FOOLERY_SETUP_URL:-$SETUP_URL}"
 UPDATE_CHECK_ENABLED="\${FOOLERY_UPDATE_CHECK:-1}"
 UPDATE_CHECK_INTERVAL_SECONDS="\${FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS:-21600}"
 UPDATE_CHECK_FILE="\${FOOLERY_UPDATE_CHECK_FILE:-\$STATE_DIR/update-check.cache}"
@@ -935,7 +937,10 @@ setup_cmd() {
   require_cmd curl
 
   local setup_url
-  setup_url="https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/setup.sh"
+  setup_url="\$SETUP_URL"
+  if [[ -z "\$setup_url" ]]; then
+    setup_url="https://raw.githubusercontent.com/\$RELEASE_OWNER/\$RELEASE_REPO/main/scripts/setup.sh"
+  fi
 
   local tmp_setup
   tmp_setup="\$(mktemp "\${TMPDIR:-/tmp}/foolery-setup.XXXXXX")"
