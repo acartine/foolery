@@ -39,7 +39,10 @@ export function stateColumn(
   return {
     accessorKey: "state",
     header: "State",
-    meta: { minWidthPx: 128 },
+    size: 120,
+    minSize: 100,
+    maxSize: 150,
+    meta: { minWidthPx: 100 },
     cell: ({ row }) => {
       const beatId = row.original.id;
       const isRolling = Boolean(
