@@ -1,152 +1,207 @@
-import { parse } from "smol-toml";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import type {
-  FoolerySettings,
-  RegisteredAgentConfig,
-} from "@/lib/schemas";
-import { normalizeAgentIdentity } from "@/lib/agent-identity";
+/**
+ * Dynamic model discovery and import-options builder.
+ *
+ * CLIs that support model listing (copilot, opencode) are
+ * queried at scan time. Others fall back to config-file
+ * detection only.
+ */
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import type { ScannedAgent, ScannedAgentOption } from "@/lib/types";
+import {
+  normalizeAgentIdentity,
+  providerLabel,
+  buildAgentOptionId,
+  formatAgentOptionLabel,
+} from "@/lib/agent-identity";
 
-const AGENT_MODEL_CATALOG_FILE = join(
-  process.cwd(),
-  "src",
-  "lib",
-  "agent-model-catalog.toml",
-);
+const execAsync = promisify(exec);
 
-// ── Catalog types & cache ────────────────────────────────────
+// ── Dynamic model readers ───────────────────────────────────
 
-export interface AgentCatalogOption {
-  modelId: string;
-  provider?: string;
-  model?: string;
-  flavor?: string;
-  version?: string;
-}
-
-let catalogCache: Promise<
-  Record<string, AgentCatalogOption[]>
-> | null = null;
-
-export async function loadAgentModelCatalog(): Promise<
-  Record<string, AgentCatalogOption[]>
+export async function readOpenCodeModels(): Promise<
+  ScannedAgentOption[]
 > {
-  if (!catalogCache) {
-    catalogCache = readFile(AGENT_MODEL_CATALOG_FILE, "utf-8")
-      .then((raw) => parseCatalogFile(raw))
-      .catch(() => ({}));
-  }
-  return catalogCache;
-}
-
-function isValidCatalogEntry(
-  option: unknown,
-): option is Record<string, unknown> {
-  return (
-    Boolean(option) &&
-    typeof option === "object" &&
-    !Array.isArray(option)
-  );
-}
-
-function parseCatalogFile(
-  raw: string,
-): Record<string, AgentCatalogOption[]> {
-  const parsed = parse(raw) as Record<string, unknown>;
-  const result: Record<string, AgentCatalogOption[]> = {};
-  for (const [agentId, entry] of Object.entries(parsed)) {
-    if (
-      !entry ||
-      typeof entry !== "object" ||
-      Array.isArray(entry)
-    ) {
-      continue;
-    }
-    const options =
-      "options" in entry ? (entry.options as unknown) : undefined;
-    if (!Array.isArray(options)) continue;
-    result[agentId] = options
-      .filter(isValidCatalogEntry)
-      .map((option) => ({
-        modelId:
-          typeof option.model_id === "string"
-            ? option.model_id
-            : "",
-        ...(typeof option.provider === "string"
-          ? { provider: option.provider }
-          : {}),
-        ...(typeof option.model === "string"
-          ? { model: option.model }
-          : {}),
-        ...(typeof option.flavor === "string"
-          ? { flavor: option.flavor }
-          : {}),
-        ...(typeof option.version === "string"
-          ? { version: option.version }
-          : {}),
-      }))
-      .filter((option) => option.modelId);
-  }
-  return result;
-}
-
-// ── Catalog-backed agent resolution ──────────────────────────
-
-export function resolveCatalogBackedAgent(
-  agentId: string,
-  agent: RegisteredAgentConfig,
-  catalog: Record<string, AgentCatalogOption[]>,
-): RegisteredAgentConfig {
-  const normalized = normalizeAgentIdentity(agent);
-  const rawModel = agent.model?.trim().toLowerCase();
-  const normalizedModel = normalized.model?.trim().toLowerCase();
-  const normalizedFlavor = normalized.flavor
-    ?.trim()
-    .toLowerCase();
-
-  const matched = (catalog[agentId] ?? []).find((option) => {
-    const optionModelId = option.modelId.trim().toLowerCase();
-    const optionModel = option.model?.trim().toLowerCase();
-    const optionFlavor = option.flavor?.trim().toLowerCase();
-    return (
-      optionModelId === rawModel ||
-      (optionModel &&
-        optionModel === normalizedModel &&
-        optionFlavor === normalizedFlavor) ||
-      (optionFlavor && optionFlavor === rawModel) ||
-      (optionFlavor && optionFlavor === normalizedFlavor)
+  try {
+    const { stdout } = await execAsync(
+      "opencode models", { timeout: 10_000 },
     );
-  });
-
-  return {
-    ...agent,
-    ...(normalized.provider ?? matched?.provider
-      ? { provider: normalized.provider ?? matched?.provider }
-      : {}),
-    ...(normalized.flavor ?? matched?.flavor
-      ? { flavor: normalized.flavor ?? matched?.flavor }
-      : {}),
-    ...(normalized.version ?? matched?.version
-      ? { version: normalized.version ?? matched?.version }
-      : {}),
-  };
+    return stdout.trim().split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        const modelId = line.trim();
+        const slug = modelId.toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-");
+        return {
+          id: `opencode-${slug}`,
+          label: modelId,
+          provider: "OpenCode",
+          model: modelId,
+          modelId,
+        };
+      });
+  } catch {
+    return [];
+  }
 }
 
-export async function resolveCatalogBackedAgents(
-  settings: FoolerySettings,
-): Promise<FoolerySettings> {
-  const catalog = await loadAgentModelCatalog();
-  return {
-    ...settings,
-    agents: Object.fromEntries(
-      Object.entries(settings.agents).map(([agentId, agent]) => [
-        agentId,
-        resolveCatalogBackedAgent(agentId, agent, catalog),
-      ]),
-    ),
-  };
+// Display-only credit multipliers for Copilot models.
+// Models discovered dynamically; this only annotates
+// known ones with their cost. Source:
+// docs.github.com/en/copilot/concepts/billing/copilot-requests
+const COPILOT_CREDITS: Record<string, number> = {
+  "claude-sonnet-4.6": 1,
+  "claude-sonnet-4.5": 1,
+  "claude-haiku-4.5": 0.33,
+  "claude-opus-4.6": 3,
+  "claude-opus-4.6-fast": 30,
+  "claude-opus-4.5": 3,
+  "claude-sonnet-4": 1,
+  "gemini-3-pro-preview": 1,
+  "gpt-5.4": 1,
+  "gpt-5.3-codex": 1,
+  "gpt-5.2-codex": 1,
+  "gpt-5.2": 1,
+  "gpt-5.1-codex-max": 1,
+  "gpt-5.1-codex": 1,
+  "gpt-5.1": 1,
+  "gpt-5.4-mini": 0.33,
+  "gpt-5.1-codex-mini": 0.33,
+  "gpt-5-mini": 0,
+  "gpt-4.1": 0,
+};
+
+/**
+ * Parse `copilot help config` output for available
+ * models. The `model` config key lists them as:
+ *   `model`: description...
+ *     - "model-id-1"
+ *     - "model-id-2"
+ */
+export async function readCopilotModels(): Promise<
+  ScannedAgentOption[]
+> {
+  try {
+    const { stdout } = await execAsync(
+      "copilot help config", { timeout: 10_000 },
+    );
+    const lines = stdout.split("\n");
+    let inModelSection = false;
+    const modelIds: string[] = [];
+    for (const line of lines) {
+      if (!inModelSection) {
+        if (/^\s*`model`:/.test(line)) {
+          inModelSection = true;
+        }
+        continue;
+      }
+      const m = line.match(/^\s+-\s+"(.+)"$/);
+      if (m) { modelIds.push(m[1]!); continue; }
+      if (/^\s*`\w/.test(line) || line.trim() === "") {
+        break;
+      }
+    }
+    return modelIds.map((modelId) => {
+      const n = normalizeAgentIdentity({
+        command: "copilot", model: modelId,
+      });
+      const credits = COPILOT_CREDITS[modelId];
+      return {
+        id: buildAgentOptionId("copilot", {
+          ...n, modelId,
+        }),
+        label: formatAgentOptionLabel({
+          ...n, modelId,
+        }),
+        provider: n.provider,
+        model: n.model,
+        flavor: n.flavor,
+        version: n.version,
+        modelId,
+        ...(credits !== undefined
+          ? { credits } : {}),
+      };
+    });
+  } catch {
+    return [];
+  }
 }
 
-// ── Re-export scanForAgents from detect module ───────────────
+export async function readDynamicModels(
+  agentId: string,
+): Promise<ScannedAgentOption[]> {
+  if (agentId === "opencode") return readOpenCodeModels();
+  if (agentId === "copilot") return readCopilotModels();
+  return [];
+}
 
-export { scanForAgents } from "@/lib/settings-agent-detect";
+// ── Import options builder ──────────────────────────────────
+
+export function dedupeScannedOptions(
+  agentId: string,
+  options: Array<{
+    provider?: string;
+    model?: string;
+    flavor?: string;
+    version?: string;
+    modelId?: string;
+  }>,
+): ScannedAgent["options"] {
+  const seen = new Set<string>();
+  const deduped: NonNullable<
+    ScannedAgent["options"]
+  > = [];
+  for (const option of options) {
+    const id = buildAgentOptionId(agentId, option);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    deduped.push({
+      ...option, id,
+      label: formatAgentOptionLabel(option),
+    });
+  }
+  return deduped;
+}
+
+export function buildAgentImportOptions(
+  agentId: string,
+  detected: Pick<
+    ScannedAgent,
+    | "provider" | "model" | "flavor"
+    | "version" | "modelId"
+  >,
+  dynamicModels?: ScannedAgentOption[],
+): ScannedAgent["options"] {
+  const provider = providerLabel(
+    detected.provider, agentId,
+  );
+  const detectedOption = detected.modelId
+    ? [{
+        provider,
+        ...(detected.model
+          ? { model: detected.model } : {}),
+        ...(detected.flavor
+          ? { flavor: detected.flavor } : {}),
+        ...(detected.version
+          ? { version: detected.version } : {}),
+        modelId: detected.modelId,
+      }]
+    : [];
+
+  if (dynamicModels && dynamicModels.length > 0) {
+    return dedupeScannedOptions(agentId, [
+      ...detectedOption, ...dynamicModels,
+    ]);
+  }
+  if (detectedOption.length > 0) {
+    return dedupeScannedOptions(
+      agentId, detectedOption,
+    );
+  }
+  if (provider) {
+    return dedupeScannedOptions(
+      agentId, [{ provider }],
+    );
+  }
+  return [];
+}

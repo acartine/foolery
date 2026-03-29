@@ -408,6 +408,8 @@ export interface ScannedAgentOption {
   flavor?: string;
   version?: string;
   modelId?: string;
+  /** Display-only credit multiplier (e.g. 1, 3, 0.33). */
+  credits?: number;
 }
 
 export interface PoolEntry {

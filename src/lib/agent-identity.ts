@@ -40,6 +40,7 @@ const MODEL_LABELS: Record<string, string> = {
   "codex-spark": "Codex Spark",
   "codex-max": "Codex Max",
   "codex-mini": "Codex Mini",
+  mini: "Mini",
   gpt: "GPT",
   chatgpt: "ChatGPT",
   opus: "Opus",
@@ -51,6 +52,9 @@ const MODEL_LABELS: Record<string, string> = {
   "flash-lite": "Flash Lite",
   "opus-1m": "Opus (1M context)",
   "sonnet-1m": "Sonnet (1M context)",
+  "opus-fast": "Opus (Fast)",
+  "sonnet-fast": "Sonnet (Fast)",
+  "haiku-fast": "Haiku (Fast)",
   preview: "Preview",
   devstral: "Devstral",
 };
@@ -104,7 +108,9 @@ function normalizeCodexModel(
         ? "codex-spark"
         : cleaned.includes("codex")
           ? "codex"
-          : undefined;
+          : /\bmini\b/.test(cleaned)
+            ? "mini"
+            : undefined;
 
   return {
     model,
@@ -123,8 +129,10 @@ function normalizeClaudeModel(
   const versionMatch = cleaned.match(/(?:opus|sonnet|haiku)[- ](\d+(?:[-.]\d+)*)/i);
   const normalizedVersion = versionMatch?.[1]?.replace(/-/g, ".");
   const hasOneMillionContext = cleaned.includes("1m");
+  const hasFast = /\bfast\b/.test(cleaned);
+  const suffix = hasOneMillionContext ? "-1m" : hasFast ? "-fast" : "";
   const flavor = familyMatch?.[1]
-    ? `${familyMatch[1].toLowerCase()}${hasOneMillionContext ? "-1m" : ""}`
+    ? `${familyMatch[1].toLowerCase()}${suffix}`
     : undefined;
 
   return {

@@ -36,7 +36,6 @@ import {
   mergeMissingDefaults,
   readRawSettings,
 } from "@/lib/settings-core";
-import { resolveCatalogBackedAgents } from "@/lib/settings-agent-scan";
 
 // ── Re-exports for API compatibility ─────────────────────────
 
@@ -58,7 +57,7 @@ export {
   cleanStaleSettingsKeys,
 } from "@/lib/settings-maintenance";
 
-export { scanForAgents } from "@/lib/settings-agent-scan";
+export { scanForAgents } from "@/lib/settings-agent-detect";
 
 // ── Load / Save / Update ─────────────────────────────────────
 
@@ -83,9 +82,8 @@ export async function loadSettings(): Promise<FoolerySettings> {
   } catch {
     settings = DEFAULT_SETTINGS;
   }
-  const resolved = await resolveCatalogBackedAgents(settings);
-  setCache(resolved);
-  return resolved;
+  setCache(settings);
+  return settings;
 }
 
 /**

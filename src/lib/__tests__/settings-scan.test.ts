@@ -19,8 +19,17 @@ const mockExecCb = vi.fn();
 vi.mock("node:child_process", () => ({
   exec: (
     cmd: string,
-    cb: (err: Error | null, result?: { stdout: string; stderr: string }) => void,
+    ...rest: unknown[]
   ) => {
+    const cb = typeof rest[0] === "function"
+      ? rest[0] as (
+          err: Error | null,
+          result?: { stdout: string; stderr: string },
+        ) => void
+      : rest[1] as (
+          err: Error | null,
+          result?: { stdout: string; stderr: string },
+        ) => void;
     const p = mockExecCb(cmd);
     p.then(
       (r: { stdout: string; stderr: string }) => cb(null, r),
@@ -38,7 +47,6 @@ beforeEach(() => {
   mockWriteFile.mockResolvedValue(undefined);
   mockReaddir.mockResolvedValue([]);
   mockStat.mockResolvedValue({ mtimeMs: 0 });
-  // Default: reject for any unhandled file reads (e.g. agent-model-catalog.toml)
   mockReadFile.mockRejectedValue(new Error("missing"));
 });
 
@@ -99,6 +107,18 @@ describe("scanForAgents: model metadata", () => {
           stderr: "",
         };
       }
+      if (cmd === "copilot help config") {
+        return {
+          stdout: [
+            "  `model`: AI model to use",
+            '    - "claude-sonnet-4.5"',
+            '    - "gpt-5.2"',
+            "",
+            "  `mouse`: enable mouse",
+          ].join("\n"),
+          stderr: "",
+        };
+      }
       throw new Error("not found");
     });
     mockReadFile.mockImplementation(async (path: string) => {
@@ -123,14 +143,17 @@ describe("scanForAgents: model metadata", () => {
       modelId: "claude-sonnet-4.5",
       version: "4.5",
     });
+    expect(copilot?.options?.length).toBe(2);
     expect(copilot?.options?.[0]).toMatchObject({
       id: "copilot-claude-sonnet-4-5",
-      label: "Claude Sonnet 4.5",
       provider: "Claude",
       model: "claude",
       flavor: "sonnet",
       version: "4.5",
       modelId: "claude-sonnet-4.5",
+    });
+    expect(copilot?.options?.[1]).toMatchObject({
+      modelId: "gpt-5.2",
     });
   });
 
@@ -166,7 +189,7 @@ describe("scanForAgents: model metadata", () => {
 });
 
 describe("scanForAgents: model metadata for existing CLIs", () => {
-  it("captures Claude model metadata from settings when available", async () => {
+  it("captures Claude model metadata from settings", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v claude") {
         return { stdout: "/usr/local/bin/claude\n", stderr: "" };
@@ -175,7 +198,9 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
     });
     mockReadFile.mockImplementation(async (path: string) => {
       if (path.endsWith(".claude/settings.json")) {
-        return JSON.stringify({ defaultModel: "claude-sonnet-4-5" });
+        return JSON.stringify({
+          defaultModel: "claude-sonnet-4-5",
+        });
       }
       throw new Error("missing");
     });
@@ -197,16 +222,21 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
     expect(claude?.options?.[0]?.label).toBe("Claude Sonnet 4.5");
   });
 
-  it("captures Gemini model metadata from recent history when available", async () => {
+  it("captures Gemini model metadata from recent history", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v gemini") {
-        return { stdout: "/opt/homebrew/bin/gemini\n", stderr: "" };
+        return {
+          stdout: "/opt/homebrew/bin/gemini\n",
+          stderr: "",
+        };
       }
       throw new Error("not found");
     });
     mockReaddir.mockImplementation(async (path: string) => {
       if (path.endsWith(".gemini/tmp")) return ["workspace-a"];
-      if (path.endsWith(".gemini/tmp/workspace-a/chats")) return ["session.json"];
+      if (path.endsWith("workspace-a/chats")) {
+        return ["session.json"];
+      }
       return [];
     });
     mockStat.mockResolvedValue({ mtimeMs: 10 });
@@ -232,5 +262,69 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
     });
     expect(gemini?.options?.length).toBeGreaterThan(0);
     expect(gemini?.options?.[0]?.label).toBe("Gemini Pro 2.5");
+  });
+});
+
+describe("scanForAgents: copilot dynamic model discovery", () => {
+  it("returns all models from copilot help config", async () => {
+    mockExecCb.mockImplementation(async (cmd: string) => {
+      if (cmd === "command -v copilot") {
+        return {
+          stdout: "/opt/homebrew/bin/copilot\n",
+          stderr: "",
+        };
+      }
+      if (cmd === "copilot help config") {
+        return {
+          stdout: [
+            "  `model`: AI model to use",
+            '    - "claude-sonnet-4.6"',
+            '    - "claude-opus-4.6"',
+            '    - "gpt-5.4"',
+            '    - "gemini-3-pro-preview"',
+            "",
+            "  `mouse`: enable mouse",
+          ].join("\n"),
+          stderr: "",
+        };
+      }
+      throw new Error("not found");
+    });
+
+    const agents = await scanForAgents();
+    const copilot = agents.find((a) => a.id === "copilot");
+    expect(copilot?.installed).toBe(true);
+    expect(copilot?.options?.length).toBe(4);
+    const ids = copilot?.options?.map((o) => o.modelId);
+    expect(ids).toEqual([
+      "claude-sonnet-4.6",
+      "claude-opus-4.6",
+      "gpt-5.4",
+      "gemini-3-pro-preview",
+    ]);
+  });
+
+  it("falls back to config model when help config fails", async () => {
+    mockExecCb.mockImplementation(async (cmd: string) => {
+      if (cmd === "command -v copilot") {
+        return {
+          stdout: "/opt/homebrew/bin/copilot\n",
+          stderr: "",
+        };
+      }
+      throw new Error("not found");
+    });
+    mockReadFile.mockImplementation(async (path: string) => {
+      if (path.endsWith(".copilot/config.json")) {
+        return JSON.stringify({ model: "gpt-5.2" });
+      }
+      throw new Error("missing");
+    });
+
+    const agents = await scanForAgents();
+    const copilot = agents.find((a) => a.id === "copilot");
+    expect(copilot?.installed).toBe(true);
+    expect(copilot?.options?.length).toBe(1);
+    expect(copilot?.options?.[0]?.modelId).toBe("gpt-5.2");
   });
 });

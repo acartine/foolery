@@ -33,6 +33,27 @@ import type {
 } from "@/lib/types";
 import { buildModelLabelDisplayMap } from "@/lib/model-labels";
 
+function formatCredits(credits?: number): string | null {
+  if (credits === undefined) return null;
+  if (credits === 0) return "free";
+  if (credits < 1) return `.${String(credits).split(".")[1]}x`;
+  return `${credits}x`;
+}
+
+function CreditsBadge({
+  credits,
+}: {
+  credits?: number;
+}) {
+  const label = formatCredits(credits);
+  if (!label) return null;
+  return (
+    <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+      {label}
+    </span>
+  );
+}
+
 export function resolveSelectedOption(
   scanned: ScannedAgent,
   selectedOptions: Record<string, string>,
@@ -217,7 +238,12 @@ function SearchableOptionCombobox({
                     <Check
                       className={`mr-1 size-3 ${option.id === value ? "opacity-100" : "opacity-0"}`}
                     />
-                    {display}
+                    <span className="flex-1 truncate">
+                      {display}
+                    </span>
+                    <CreditsBadge
+                      credits={option.credits}
+                    />
                   </CommandItem>
                 );
               })}
@@ -339,8 +365,13 @@ function renderOptionSelector(
                   key={option.id}
                   value={option.id}
                 >
-                  {displayMap.get(option.id)
-                    ?? option.label}
+                  <span className="flex items-center gap-1.5">
+                    {displayMap.get(option.id)
+                      ?? option.label}
+                    <CreditsBadge
+                      credits={option.credits}
+                    />
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
