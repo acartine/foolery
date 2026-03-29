@@ -260,8 +260,17 @@ main() {
   git push
   git push --tags
 
+  local prev_tag notes
+  prev_tag="v${current_version}"
+  notes="$(git log "${prev_tag}..${tag}~1" --pretty=format:'- %s' | grep -v '^- release:' || true)"
+  if [[ -z "$notes" ]]; then
+    notes="Maintenance release."
+  fi
+
   log "Creating GitHub release $tag from target $target"
-  gh release create "$tag" --target "$target" --generate-notes --latest
+  gh release create "$tag" --target "$target" --latest \
+    --notes "$(printf '%s\n\n**Full Changelog**: https://github.com/%s/compare/%s...%s' \
+      "$notes" "$(gh repo view --json nameWithOwner -q .nameWithOwner)" "$prev_tag" "$tag")"
 
   if [[ "$wait_artifacts" == "1" ]]; then
     wait_for_artifacts "$tag"
