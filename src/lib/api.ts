@@ -14,6 +14,7 @@ import type {
   AddDepInput,
 } from "./schemas";
 import type { CascadeDescendant } from "./cascade-close";
+import { withClientPerfSpan } from "@/lib/client-perf";
 
 const BASE = "/api/beats";
 const ALL_SCOPE = "all";
@@ -28,22 +29,28 @@ async function request<T>(
   url: string,
   options?: RequestInit,
 ): Promise<BdResult<T>> {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-  const json = await res.json() as Record<string, unknown>;
-  if (!res.ok) {
-    return {
-      ok: false,
-      error: typeof json.error === "string"
-        ? json.error
-        : "Request failed",
-    };
-  }
-  const { data, ...rest } = json;
-  delete rest.error;
-  return { ok: true, data: (data ?? json) as T, ...rest };
+  return withClientPerfSpan("api", url, async () => {
+    const res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+    const json = await res.json() as Record<string, unknown>;
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: typeof json.error === "string"
+          ? json.error
+          : "Request failed",
+      };
+    }
+    const { data, ...rest } = json;
+    delete rest.error;
+    return { ok: true, data: (data ?? json) as T, ...rest };
+  }, (_result, error) => ({
+    method: options?.method ?? "GET",
+    meta: { url },
+    ...(error ? { ok: false } : {}),
+  }));
 }
 
 function buildQs(

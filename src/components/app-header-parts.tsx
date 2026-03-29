@@ -379,10 +379,10 @@ export function ViewSwitcher(props: {
           setView={setView}
         />
         <ViewTab
-          view="audit" current={beatsView}
+          view="diagnostics" current={beatsView}
           icon={<BarChart3 className="size-4" />}
-          label="Audit"
-          title="Lease audit statistics"
+          label="Diagnostics"
+          title="Runtime diagnostics and lease analytics"
           setView={setView}
         />
       </div>

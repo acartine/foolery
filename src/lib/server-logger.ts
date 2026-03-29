@@ -1,6 +1,7 @@
 import { mkdir, appendFile } from "node:fs/promises";
 import { join } from "node:path";
 import { resolveInteractionLogRoot } from "@/lib/interaction-logger";
+import type { ClientPerfEvent } from "@/lib/perf-events";
 
 /**
  * Server-side disk logger for API errors and CLI failures.
@@ -121,5 +122,11 @@ export function logCliFailure({ command, args, exitCode, stderr }: CliFailureInp
     args,
     exitCode,
     stderr,
+  });
+}
+
+export function logClientPerfEvent(event: ClientPerfEvent): void {
+  serverLog("info", "client-perf", event.kind, {
+    event,
   });
 }

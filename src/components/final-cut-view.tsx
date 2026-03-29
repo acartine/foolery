@@ -10,6 +10,8 @@ import {
 } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
+import { PerfProfiler } from "@/components/perf-profiler";
+import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
 import type { Beat } from "@/lib/types";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
@@ -29,10 +31,14 @@ export function FinalCutView() {
       HUMAN_ACTION_PARAMS,
       scope,
     ),
-    queryFn: () => fetchBeatsForScope(
-      HUMAN_ACTION_PARAMS,
-      scope,
-      registeredRepos,
+    queryFn: () => withClientPerfSpan(
+      "query",
+      "beats:finalcut",
+      () => fetchBeatsForScope(
+        HUMAN_ACTION_PARAMS,
+        scope,
+        registeredRepos,
+      ),
     ),
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     staleTime: 10_000,
@@ -83,12 +89,14 @@ export function FinalCutView() {
           Loading escalations queue...
         </div>
       ) : (
-        <BeatTable
-          data={beats}
-          showRepoColumn={showRepoColumn}
-          onSelectionChange={handleSelectionChange}
-          selectionVersion={selectionVersion}
-        />
+        <PerfProfiler id="final-cut-view" interactionLabel="escalations" beatCount={beats.length}>
+          <BeatTable
+            data={beats}
+            showRepoColumn={showRepoColumn}
+            onSelectionChange={handleSelectionChange}
+            selectionVersion={selectionVersion}
+          />
+        </PerfProfiler>
       )}
     </div>
   );

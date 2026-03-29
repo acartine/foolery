@@ -158,6 +158,12 @@ A focused history feed for agent sessions. Browse recent beat activity, inspect 
 
 ![History view](docs/screenshots/history-20260314.png)
 
+### Diagnostics
+
+The Diagnostics view splits into two tabs: Runtime for local perf telemetry
+such as heap churn, long tasks, render commits, and fetch timings, and Leases
+for lease analytics and agent throughput history.
+
 ### Hot Keys
 
 Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick map of navigation, actions, editing, and panel controls across views.

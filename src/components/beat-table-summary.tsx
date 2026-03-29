@@ -6,6 +6,7 @@ import {
   capsuleMeta,
   type RenderedCapsule,
 } from "@/components/beat-table-metadata";
+import { PerfProfiler } from "@/components/perf-profiler";
 
 function SummaryColumn({
   label,
@@ -28,7 +29,20 @@ function SummaryColumn({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    setOverflows(el.scrollHeight > el.clientHeight + 1);
+    let frameId = 0;
+    const updateOverflow = () => {
+      setOverflows(el.scrollHeight > el.clientHeight + 1);
+    };
+    frameId = requestAnimationFrame(updateOverflow);
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(updateOverflow);
+    });
+    observer.observe(el);
+    return () => {
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+    };
   }, [text]);
 
   return (
@@ -145,31 +159,42 @@ export function InlineSummary({
   ].join(" ");
 
   return (
-    <div
-      className={gridCls}
-      onMouseLeave={() => setExpanded(false)}
-    >
-      <SummaryColumn
-        label="Description"
-        text={beat.description || ""}
-        bg="bg-green-50"
-        rounded="rounded-l"
-        expanded={expanded}
-        onExpand={() => setExpanded(true)}
-      />
-      <SummaryColumn
-        label="Notes"
-        text={beat.notes || ""}
-        bg={beat.notes ? "bg-yellow-50" : ""}
-        rounded="rounded-none"
-        expanded={expanded}
-        onExpand={() => setExpanded(true)}
-      />
-      <HandoffCapsulesColumn
-        capsules={capsules}
-        expanded={expanded}
-        onExpand={() => setExpanded(true)}
-      />
-    </div>
+    <PerfProfiler id="inline-summary" interactionLabel="summary">
+      <div
+        className={gridCls}
+        onMouseLeave={() => setExpanded(false)}
+      >
+        <SummaryColumn
+          label="Description"
+          text={beat.description || ""}
+          bg="bg-green-50"
+          rounded="rounded-l"
+          expanded={expanded}
+          onExpand={() => {
+            performance.mark("inline-summary:expand");
+            setExpanded(true);
+          }}
+        />
+        <SummaryColumn
+          label="Notes"
+          text={beat.notes || ""}
+          bg={beat.notes ? "bg-yellow-50" : ""}
+          rounded="rounded-none"
+          expanded={expanded}
+          onExpand={() => {
+            performance.mark("inline-summary:expand");
+            setExpanded(true);
+          }}
+        />
+        <HandoffCapsulesColumn
+          capsules={capsules}
+          expanded={expanded}
+          onExpand={() => {
+            performance.mark("inline-summary:expand");
+            setExpanded(true);
+          }}
+        />
+      </div>
+    </PerfProfiler>
   );
 }

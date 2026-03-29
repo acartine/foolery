@@ -21,6 +21,7 @@ import type {
   BeatInfoForBar,
 } from "@/components/agent-info-bar";
 import { fetchBeat } from "@/lib/api";
+import { withClientPerfSpan } from "@/lib/client-perf";
 import {
   useAutoCloseRefs,
   useTerminalAutoClose,
@@ -309,8 +310,12 @@ function useBeatInfo(
     queryKey: [
       "beat", activeBeatId, activeRepoPath,
     ],
-    queryFn: () => fetchBeat(
-      activeBeatId!, activeRepoPath,
+    queryFn: () => withClientPerfSpan(
+      "query",
+      "terminal-panel:beat",
+      () => fetchBeat(
+        activeBeatId!, activeRepoPath,
+      ),
     ),
     enabled: !!activeBeatId,
     refetchInterval: 15_000,

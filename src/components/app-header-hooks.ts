@@ -23,11 +23,11 @@ export type VersionBannerData = {
 
 export type BeatsViewId =
   | "queues" | "active" | "finalcut"
-  | "retakes" | "history" | "audit";
+  | "retakes" | "history" | "diagnostics";
 
 export const VIEWS: readonly BeatsViewId[] = [
   "queues", "active", "finalcut",
-  "retakes", "history", "audit",
+  "retakes", "history", "diagnostics",
 ];
 
 // -----------------------------------------------------------
