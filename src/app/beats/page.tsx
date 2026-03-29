@@ -20,7 +20,7 @@ import {
   AgentHistoryView,
 } from "@/components/agent-history-view";
 import {
-  LeaseAuditView,
+  DiagnosticsView,
 } from "@/components/lease-audit-view";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
@@ -116,7 +116,8 @@ function BeatsPageInner() {
   const isFinalCutView = s.beatsView === "finalcut";
   const isRetakesView = s.beatsView === "retakes";
   const isHistoryView = s.beatsView === "history";
-  const isAuditView = s.beatsView === "audit";
+  const isDiagnosticsView =
+    s.beatsView === "diagnostics";
   const warmupView = s.isListView
     && (s.beatsView === "queues" || s.beatsView === "active")
     ? s.beatsView
@@ -150,7 +151,7 @@ function BeatsPageInner() {
         isFinalCutView={isFinalCutView}
         isRetakesView={isRetakesView}
         isHistoryView={isHistoryView}
-        isAuditView={isAuditView}
+        isDiagnosticsView={isDiagnosticsView}
         state={s}
       />
       {s.isListView && (
@@ -190,12 +191,14 @@ type PageState = ReturnType<typeof useBeatsPageState>;
 
 function BeatsViewBody({
   isFinalCutView, isRetakesView,
-  isHistoryView, isAuditView, state: s,
+  isHistoryView,
+  isDiagnosticsView,
+  state: s,
 }: {
   isFinalCutView: boolean;
   isRetakesView: boolean;
   isHistoryView: boolean;
-  isAuditView: boolean;
+  isDiagnosticsView: boolean;
   state: PageState;
 }) {
   return (
@@ -206,8 +209,8 @@ function BeatsViewBody({
         <RetakesView />
       ) : isHistoryView ? (
         <AgentHistoryView />
-      ) : isAuditView ? (
-        <LeaseAuditView
+      ) : isDiagnosticsView ? (
+        <DiagnosticsView
           repoPath={s.activeRepo ?? undefined}
         />
       ) : (

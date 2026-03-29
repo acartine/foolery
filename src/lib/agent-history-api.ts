@@ -1,5 +1,6 @@
 import type { BdResult } from "@/lib/types";
 import type { AgentHistoryPayload } from "@/lib/agent-history-types";
+import { withClientPerfSpan } from "@/lib/client-perf";
 
 const BASE = "/api/agent-history";
 
@@ -26,20 +27,27 @@ export async function fetchAgentHistory(
   options: FetchAgentHistoryOptions,
 ): Promise<BdResult<AgentHistoryPayload>> {
   try {
-    const response = await fetch(`${BASE}${buildQuery(options)}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const json = (await response.json()) as {
-      data?: AgentHistoryPayload;
-      error?: string;
-    };
+    return await withClientPerfSpan(
+      "api",
+      `${BASE}${buildQuery(options)}`,
+      async () => {
+        const response = await fetch(`${BASE}${buildQuery(options)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const json = (await response.json()) as {
+          data?: AgentHistoryPayload;
+          error?: string;
+        };
 
-    if (!response.ok) {
-      return { ok: false, error: json.error ?? "Failed to load agent history" };
-    }
+        if (!response.ok) {
+          return { ok: false, error: json.error ?? "Failed to load agent history" };
+        }
 
-    return { ok: true, data: json.data ?? { beats: [], sessions: [] } };
+        return { ok: true, data: json.data ?? { beats: [], sessions: [] } };
+      },
+      () => ({ method: "GET", meta: options }),
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to load agent history";
     return { ok: false, error: message };

@@ -11,6 +11,7 @@ import type {
 import {
   fetchAgentHistory,
 } from "@/lib/agent-history-api";
+import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
 import {
   useInteractionPicker,
@@ -107,9 +108,13 @@ function useBeatsQuery(
       activeRepo,
     ],
     queryFn: () =>
-      fetchAgentHistory({
-        repoPath: activeRepo ?? undefined,
-      }),
+      withClientPerfSpan(
+        "query",
+        "agent-history:beats",
+        () => fetchAgentHistory({
+          repoPath: activeRepo ?? undefined,
+        }),
+      ),
     enabled:
       Boolean(activeRepo) || repoCount > 0,
     refetchInterval: 10_000,
@@ -140,11 +145,15 @@ function useSessionState(
       loadedBeat?.beatId ?? null,
     ],
     queryFn: () =>
-      fetchAgentHistory({
-        repoPath: activeRepo ?? undefined,
-        beatId: loadedBeat!.beatId,
-        beatRepoPath: loadedBeat!.repoPath,
-      }),
+      withClientPerfSpan(
+        "query",
+        "agent-history:sessions",
+        () => fetchAgentHistory({
+          repoPath: activeRepo ?? undefined,
+          beatId: loadedBeat!.beatId,
+          beatRepoPath: loadedBeat!.repoPath,
+        }),
+      ),
     enabled: Boolean(loadedBeat),
     refetchOnWindowFocus: false,
     retry: 1,

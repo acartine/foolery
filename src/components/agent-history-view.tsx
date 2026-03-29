@@ -3,6 +3,7 @@
 import {
   useAgentHistoryState,
 } from "@/hooks/use-agent-history-state";
+import { PerfProfiler } from "@/components/perf-profiler";
 import {
   AgentHistoryTopPanel,
 } from "./agent-history-top-panel";
@@ -29,64 +30,66 @@ export function AgentHistoryView() {
   }
 
   return (
-    <div className="space-y-2">
-      <AgentHistoryTopPanel
-        beats={state.beats}
-        visibleBeats={state.visibleBeats}
-        windowStart={state.windowStart}
-        focusedBeatKey={state.focusedBeatKey}
-        loadedBeatKey={state.loadedBeatKey}
-        setFocusedBeatKey={
-          state.setFocusedBeatKey
-        }
-        setLoadedBeatKey={state.setLoadedBeatKey}
-        moveFocusedBeat={state.moveFocusedBeat}
-        focusBeatList={state.focusBeatList}
-        focusConsolePanel={
-          state.focusConsolePanel
-        }
-        copyBeatId={state.copyBeatId}
-        getBeatTitle={state.getBeatTitle}
-        beatButtonRefs={state.beatButtonRefs}
-        beatListRef={state.beatListRef}
-        beatsQuery={state.beatsQuery}
-        beatDetailMap={state.beatDetailMap}
-        focusedSummary={state.focusedSummary}
-        focusedDetail={state.focusedDetail}
-        focusedTitle={state.focusedTitle}
-        showExpandedDetails={
-          state.showExpandedDetails
-        }
-        setShowExpandedDetails={
-          state.setShowExpandedDetails
-        }
-        showRepoName={state.showRepoName}
-        repoNames={state.repoNames}
-      />
-      <AgentHistoryConversationLog
-        loadedSummary={state.loadedSummary}
-        loadedTitle={state.loadedTitle}
-        loadedDetail={state.loadedDetail}
-        sessions={state.sessions}
-        sessionsQuery={state.sessionsQuery}
-        picker={state.picker}
-        selectedDebugSession={
-          state.selectedDebugSession
-        }
-        selectedSessionId={
-          state.selectedSessionId
-        }
-        setSelectedSessionId={
-          state.setSelectedSessionId
-        }
-        debugPanelOpen={state.debugPanelOpen}
-        setDebugPanelOpen={
-          state.setDebugPanelOpen
-        }
-        copyBeatId={state.copyBeatId}
-        consolePanelRef={state.consolePanelRef}
-        beatListRef={state.beatListRef}
-      />
-    </div>
+    <PerfProfiler id="agent-history-view" interactionLabel="history">
+      <div className="space-y-2">
+        <AgentHistoryTopPanel
+          beats={state.beats}
+          visibleBeats={state.visibleBeats}
+          windowStart={state.windowStart}
+          focusedBeatKey={state.focusedBeatKey}
+          loadedBeatKey={state.loadedBeatKey}
+          setFocusedBeatKey={
+            state.setFocusedBeatKey
+          }
+          setLoadedBeatKey={state.setLoadedBeatKey}
+          moveFocusedBeat={state.moveFocusedBeat}
+          focusBeatList={state.focusBeatList}
+          focusConsolePanel={
+            state.focusConsolePanel
+          }
+          copyBeatId={state.copyBeatId}
+          getBeatTitle={state.getBeatTitle}
+          beatButtonRefs={state.beatButtonRefs}
+          beatListRef={state.beatListRef}
+          beatsQuery={state.beatsQuery}
+          beatDetailMap={state.beatDetailMap}
+          focusedSummary={state.focusedSummary}
+          focusedDetail={state.focusedDetail}
+          focusedTitle={state.focusedTitle}
+          showExpandedDetails={
+            state.showExpandedDetails
+          }
+          setShowExpandedDetails={
+            state.setShowExpandedDetails
+          }
+          showRepoName={state.showRepoName}
+          repoNames={state.repoNames}
+        />
+        <AgentHistoryConversationLog
+          loadedSummary={state.loadedSummary}
+          loadedTitle={state.loadedTitle}
+          loadedDetail={state.loadedDetail}
+          sessions={state.sessions}
+          sessionsQuery={state.sessionsQuery}
+          picker={state.picker}
+          selectedDebugSession={
+            state.selectedDebugSession
+          }
+          selectedSessionId={
+            state.selectedSessionId
+          }
+          setSelectedSessionId={
+            state.setSelectedSessionId
+          }
+          debugPanelOpen={state.debugPanelOpen}
+          setDebugPanelOpen={
+            state.setDebugPanelOpen
+          }
+          copyBeatId={state.copyBeatId}
+          consolePanelRef={state.consolePanelRef}
+          beatListRef={state.beatListRef}
+        />
+      </div>
+    </PerfProfiler>
   );
 }

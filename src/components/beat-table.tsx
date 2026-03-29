@@ -13,6 +13,7 @@ import type { Beat } from "@/lib/types";
 import {
   BeatTableContent,
 } from "@/components/beat-table-content";
+import { PerfProfiler } from "@/components/perf-profiler";
 import {
   BeatTablePagination,
 } from "@/components/beat-table-pagination";
@@ -79,6 +80,9 @@ export function BeatTable({
   useEffect(() => {
     setPageIdx(() => 0);
   }, [sortedLen, filtersKey, setPageIdx]);
+  useEffect(() => {
+    performance.mark("beat-table:render-ready");
+  }, [data.length, sortedLen]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -115,45 +119,47 @@ export function BeatTable({
   });
 
   return (
-    <div
-      ref={s.containerRef}
-      tabIndex={-1}
-      className="space-y-1 outline-none"
-    >
-      <BeatTableContent
-        table={table}
-        columns={s.columns}
-        focusedRowId={s.focusedRowId}
-        handleRowFocus={s.onRowFocus}
-        searchQuery={searchQuery}
-        searchParams={s.searchParams}
-        router={s.router}
-        titleRenderOpts={s.titleRenderOpts}
-      />
-      {s.manualPageCount > 1 && (
-        <BeatTablePagination
-          manualPageIndex={s.pageIdx}
-          manualPageCount={s.manualPageCount}
-          pageSize={s.pageSize}
-          setManualPageIndex={s.setPageIdx}
-          updateUrl={s.updateUrl}
+    <PerfProfiler id="beat-table" interactionLabel="beats:list" beatCount={data.length}>
+      <div
+        ref={s.containerRef}
+        tabIndex={-1}
+        className="space-y-1 outline-none"
+      >
+        <BeatTableContent
+          table={table}
+          columns={s.columns}
+          focusedRowId={s.focusedRowId}
+          handleRowFocus={s.onRowFocus}
+          searchQuery={searchQuery}
+          searchParams={s.searchParams}
+          router={s.router}
+          titleRenderOpts={s.titleRenderOpts}
         />
-      )}
-      <BeatTableDialogs
-        notesBeat={s.notesBeat}
-        notesOpen={s.notesOpen}
-        setNotesOpen={s.setNotesOpen}
-        handleUpdateBeat={s.doUpdate}
-        cascadeOpen={s.cascadeOpen}
-        setCascadeOpen={s.setCascadeOpen}
-        cascadeBeat={s.cascadeBeat}
-        setCascadeBeat={s.setCascadeBeat}
-        cascadeDesc={s.cascadeDesc}
-        setCascadeDesc={s.setCascadeDesc}
-        cascadeLoading={s.cascadeLoading}
-        handleCascadeClose={s.doCascade}
-      />
-    </div>
+        {s.manualPageCount > 1 && (
+          <BeatTablePagination
+            manualPageIndex={s.pageIdx}
+            manualPageCount={s.manualPageCount}
+            pageSize={s.pageSize}
+            setManualPageIndex={s.setPageIdx}
+            updateUrl={s.updateUrl}
+          />
+        )}
+        <BeatTableDialogs
+          notesBeat={s.notesBeat}
+          notesOpen={s.notesOpen}
+          setNotesOpen={s.setNotesOpen}
+          handleUpdateBeat={s.doUpdate}
+          cascadeOpen={s.cascadeOpen}
+          setCascadeOpen={s.setCascadeOpen}
+          cascadeBeat={s.cascadeBeat}
+          setCascadeBeat={s.setCascadeBeat}
+          cascadeDesc={s.cascadeDesc}
+          setCascadeDesc={s.setCascadeDesc}
+          cascadeLoading={s.cascadeLoading}
+          handleCascadeClose={s.doCascade}
+        />
+      </div>
+    </PerfProfiler>
   );
 }
 

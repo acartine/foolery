@@ -16,6 +16,7 @@
 # next.js
 /.next/
 /out/
+/work/perf-baselines/
 
 # test-doctor-stream.sh artifacts
 /.test-doctor/

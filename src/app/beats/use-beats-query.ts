@@ -5,6 +5,7 @@ import {
   fetchBeatsForScope,
   resolveBeatsScope,
 } from "@/lib/api";
+import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
 import {
   hasRollingAncestor as hasRollingAncestorLib,
@@ -76,8 +77,11 @@ export function useBeatsQuery(
   } = useQuery({
     queryKey: buildBeatsQueryKey(beatsView, params, scope),
     queryFn: async () => {
-      const result = await fetchBeatsForScope(
-        params, scope, registeredRepos,
+      const result = await withClientPerfSpan(
+        "query",
+        "beats:list",
+        () => fetchBeatsForScope(params, scope, registeredRepos),
+        () => ({ meta: { beatsView, params, scope: scope.key } }),
       );
       throwIfDegraded(result);
       return result;

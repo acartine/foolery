@@ -3,6 +3,7 @@ import { Manrope, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { Providers } from "@/components/providers";
 import { AppHeader } from "@/components/app-header";
+import { ClientPerfRouteObserver } from "@/components/client-perf-route-observer";
 import { TerminalPanel } from "@/components/terminal-panel";
 import { TerminalConnectionSync } from "@/components/terminal-connection-sync";
 import { UrlStateSync } from "@/components/url-state-sync";
@@ -42,6 +43,7 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={null}>
             <AppHeader />
+            <ClientPerfRouteObserver />
             <UrlStateSync />
           </Suspense>
           {children}

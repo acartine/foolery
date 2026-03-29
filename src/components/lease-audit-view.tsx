@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { PerfProfiler } from "@/components/perf-profiler";
+import { RuntimeDiagnosticsPanel } from "@/components/runtime-diagnostics-panel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getDiagnosticsSnapshot, withClientPerfSpan } from "@/lib/client-perf";
 import { fetchLeaseAudit } from "@/lib/lease-audit-api";
 import { TimeseriesChart } from "@/components/timeseries-chart";
 import type { AgentSeries } from "@/components/timeseries-chart";
@@ -62,9 +66,12 @@ function defaultFrom(): string {
 
 // ── Main view ──
 
-export function LeaseAuditView({
+export function DiagnosticsView({
   repoPath,
 }: LeaseAuditViewProps) {
+  const [activeTab, setActiveTab] = useState<"runtime" | "leases">(
+    () => getDiagnosticsSnapshot().enabled ? "runtime" : "leases",
+  );
   const [dateFrom, setDateFrom] = useState(defaultFrom);
   const [dateTo, setDateTo] = useState(() => isoDate(new Date()));
   const [preset, setPreset] = useState<RangePreset>("last7d");
@@ -73,14 +80,14 @@ export function LeaseAuditView({
   const { data, isLoading } = useQuery({
     queryKey: ["lease-audit", repoPath, preset, dateFrom, dateTo],
     queryFn: () =>
-      fetchLeaseAudit({
+      withClientPerfSpan("query", "lease-audit", () => fetchLeaseAudit({
         repoPath,
         ...(preset === "last24h"
           ? { preset: "last24h" }
           : preset === "last7d"
             ? { preset: "last7d" }
             : { dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
-      }),
+      })),
   });
 
   const aggregates = useMemo(() => data?.aggregates ?? [], [data]);
@@ -98,45 +105,54 @@ export function LeaseAuditView({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-6 text-muted-foreground">
-        Loading audit data...
+        Loading diagnostics data...
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <RangeControls
-        preset={preset}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-        setPreset={setPreset}
-        setDateFrom={setDateFrom}
-        setDateTo={setDateTo}
-      />
-      <AuditCharts
-        queueSeriesMap={derived.queueSeriesMap}
-        combinedSeries={derived.combinedSeries}
-      />
-      <EffSpeedLeaderboardTable
-        rows={derived.effSpeedLeaderboard}
-      />
-      <RateLeaderboardTable
-        leaderboard={derived.leaderboard}
-      />
-      <RawSpeedLeaderboardTable
-        rows={derived.rawSpeedLeaderboard}
-      />
-      <AgentBreakdownTable
-        agents={derived.agents}
-        selectedAgent={effectiveAgent}
-        setSelectedAgent={setSelectedAgent}
-        rows={derived.agentBreakdown}
-        durationMap={derived.durationMap}
-        speedRows={derived.speedRows}
-      />
-    </div>
+    <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "runtime" | "leases")}>
+      <TabsList className="w-full justify-start">
+        <TabsTrigger value="runtime">Runtime</TabsTrigger>
+        <TabsTrigger value="leases">Leases</TabsTrigger>
+      </TabsList>
+      <TabsContent value="runtime">
+        <RuntimeDiagnosticsPanel />
+      </TabsContent>
+      <TabsContent value="leases">
+        <PerfProfiler id="lease-audit-view" interactionLabel="diagnostics:leases">
+          <div className="space-y-4">
+            <RangeControls
+              preset={preset}
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              setPreset={setPreset}
+              setDateFrom={setDateFrom}
+              setDateTo={setDateTo}
+            />
+            <AuditCharts
+              queueSeriesMap={derived.queueSeriesMap}
+              combinedSeries={derived.combinedSeries}
+            />
+            <EffSpeedLeaderboardTable rows={derived.effSpeedLeaderboard} />
+            <RateLeaderboardTable leaderboard={derived.leaderboard} />
+            <RawSpeedLeaderboardTable rows={derived.rawSpeedLeaderboard} />
+            <AgentBreakdownTable
+              agents={derived.agents}
+              selectedAgent={effectiveAgent}
+              setSelectedAgent={setSelectedAgent}
+              rows={derived.agentBreakdown}
+              durationMap={derived.durationMap}
+              speedRows={derived.speedRows}
+            />
+          </div>
+        </PerfProfiler>
+      </TabsContent>
+    </Tabs>
   );
 }
+
+export const LeaseAuditView = DiagnosticsView;
 
 // ── Hooks ──
 
@@ -450,4 +466,3 @@ function AgentBreakdownTable({
     </div>
   );
 }
-

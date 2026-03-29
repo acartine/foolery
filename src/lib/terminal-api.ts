@@ -1,13 +1,16 @@
 import type { TerminalSession, TerminalEvent, BdResult } from "./types";
+import { withClientPerfSpan } from "@/lib/client-perf";
 
 const BASE = "/api/terminal";
 
 export async function listSessions(): Promise<TerminalSession[]> {
   try {
-    const res = await fetch(BASE);
-    if (!res.ok) return [];
-    const json = await res.json();
-    return json.data ?? [];
+    return await withClientPerfSpan("api", BASE, async () => {
+      const res = await fetch(BASE);
+      if (!res.ok) return [];
+      const json = await res.json();
+      return json.data ?? [];
+    }, () => ({ method: "GET" }));
   } catch {
     return [];
   }
@@ -22,25 +25,29 @@ export async function startSession(
   if (repo) body._repo = repo;
   if (prompt) body.prompt = prompt;
 
-  const res = await fetch(BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const json = await res.json();
-  if (!res.ok) return { ok: false, error: json.error ?? "Failed to start session" };
-  return { ok: true, data: json.data };
+  return withClientPerfSpan("api", `${BASE}/start`, async () => {
+    const res = await fetch(BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
+    if (!res.ok) return { ok: false, error: json.error ?? "Failed to start session" };
+    return { ok: true, data: json.data };
+  }, () => ({ method: "POST", meta: { beatId, repo } }));
 }
 
 export async function abortSession(sessionId: string): Promise<BdResult<void>> {
-  const res = await fetch(BASE, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId }),
-  });
-  const json = await res.json();
-  if (!res.ok) return { ok: false, error: json.error ?? "Failed to abort session" };
-  return { ok: true };
+  return withClientPerfSpan("api", `${BASE}/abort`, async () => {
+    const res = await fetch(BASE, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+    });
+    const json = await res.json();
+    if (!res.ok) return { ok: false, error: json.error ?? "Failed to abort session" };
+    return { ok: true };
+  }, () => ({ method: "DELETE", meta: { sessionId } }));
 }
 
 async function fetchSessionStatus(

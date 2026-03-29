@@ -8,6 +8,7 @@ import {
 } from "@/lib/lease-audit";
 import type { LeaseAuditEvent } from "@/lib/lease-audit";
 import { resolveStatsPath } from "@/lib/agent-outcome-stats";
+import { withServerTiming } from "@/lib/server-timing";
 
 export async function GET(request: NextRequest) {
   const repoPath = request.nextUrl.searchParams.get("repoPath") ?? undefined;
@@ -17,53 +18,64 @@ export async function GET(request: NextRequest) {
   const dateTo = request.nextUrl.searchParams.get("dateTo") ?? undefined;
   const preset = request.nextUrl.searchParams.get("preset") ?? undefined;
 
-  try {
-    const roots = await resolveAuditLogRoots(repoPath);
-    let events = await readLeaseAuditEvents(roots);
+  return withServerTiming(
+    {
+      route: "GET /api/lease-audit",
+      context: { repoPath, queueType, agent, preset },
+    },
+    async ({ measure }) => {
+      try {
+        const roots = await measure("resolve_roots", () => resolveAuditLogRoots(repoPath));
+        let events = await measure("read_events", () => readLeaseAuditEvents(roots));
 
-    events = applyFilters(events, { queueType, agent, dateFrom, dateTo, preset });
+        events = applyFilters(events, { queueType, agent, dateFrom, dateTo, preset });
 
-    const aggregates = aggregateLeaseAudit(events);
-    return NextResponse.json({ events, aggregates });
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to load lease audit data";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+        const aggregates = aggregateLeaseAudit(events);
+        return NextResponse.json({ events, aggregates });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to load lease audit data";
+        return NextResponse.json({ error: message }, { status: 500 });
+      }
+    },
+  );
 }
 
 const AUDIT_FILENAME = "lease-audit.jsonl";
 
 export async function DELETE() {
-  try {
-    const roots = await resolveAuditLogRoots();
-    const truncated: string[] = [];
-
-    // Truncate lease-audit.jsonl in all roots
-    for (const root of roots) {
-      const filePath = join(root, AUDIT_FILENAME);
+  return withServerTiming(
+    { route: "DELETE /api/lease-audit" },
+    async ({ measure }) => {
       try {
-        await writeFile(filePath, "", "utf-8");
-        truncated.push(filePath);
-      } catch {
-        // File may not exist yet — that's fine
+        const roots = await measure("resolve_roots", () => resolveAuditLogRoots());
+        const truncated: string[] = [];
+
+        for (const root of roots) {
+          const filePath = join(root, AUDIT_FILENAME);
+          try {
+            await writeFile(filePath, "", "utf-8");
+            truncated.push(filePath);
+          } catch {
+            // File may not exist yet — that's fine
+          }
+        }
+
+        try {
+          await writeFile(resolveStatsPath(), "", "utf-8");
+          truncated.push(resolveStatsPath());
+        } catch {
+          // File may not exist yet — that's fine
+        }
+
+        return NextResponse.json({ ok: true, truncated });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to reset audit data";
+        return NextResponse.json({ error: message }, { status: 500 });
       }
-    }
-
-    // Truncate agent-success-rates.jsonl
-    try {
-      await writeFile(resolveStatsPath(), "", "utf-8");
-      truncated.push(resolveStatsPath());
-    } catch {
-      // File may not exist yet — that's fine
-    }
-
-    return NextResponse.json({ ok: true, truncated });
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to reset audit data";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+    },
+  );
 }
 
 export function applyFilters(
