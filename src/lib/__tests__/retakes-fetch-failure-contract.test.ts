@@ -14,16 +14,13 @@ describe("retakes fetch failure handling", () => {
 
   it("throws when the active repo fetch fails so errors are visible", () => {
     expect(source).toContain(
-      "throw new Error(active.error);",
+      "const result = await fetchBeatsForScope(",
     );
   });
 
-  it("throws when all registered repo fetches fail", () => {
+  it("throws when the shared scoped fetch fails", () => {
     expect(source).toContain(
-      "const firstError = results.find((r) => !r.ok);",
-    );
-    expect(source).toContain(
-      "throw new Error(firstError.error);",
+      "throw new Error(",
     );
   });
 

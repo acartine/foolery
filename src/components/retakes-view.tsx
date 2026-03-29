@@ -38,6 +38,7 @@ import {
   useRetakeMutation,
   extractCommitSha,
 } from "@/lib/retake-view-helpers";
+import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 import type {
   RetakesQueryResult,
 } from "@/lib/retake-view-helpers";
@@ -326,6 +327,10 @@ export function RetakesView() {
   );
   const { data, isLoading, error } = useRetakesQuery(
     activeRepo, registeredRepos,
+  );
+  useBeatsScreenWarmup(
+    "retakes",
+    !isLoading && !error && data?.ok === true,
   );
   const parentByBeatId = useMemo(
     () => buildRetakeParentIndex(

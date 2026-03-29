@@ -1,7 +1,6 @@
 import type {
   Beat,
   BeatDependency,
-  BeatWithRepo,
   BdResult,
   MemoryWorkflowDescriptor,
   RegisteredRepo,
@@ -17,20 +16,34 @@ import type {
 import type { CascadeDescendant } from "./cascade-close";
 
 const BASE = "/api/beats";
+const ALL_SCOPE = "all";
+
+export interface BeatsScope {
+  kind: "repo" | "all" | "default";
+  key: string;
+  repo?: string;
+}
 
 async function request<T>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<BdResult<T>> {
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-  const json = await res.json();
+  const json = await res.json() as Record<string, unknown>;
   if (!res.ok) {
-    return { ok: false, error: json.error ?? "Request failed" };
+    return {
+      ok: false,
+      error: typeof json.error === "string"
+        ? json.error
+        : "Request failed",
+    };
   }
-  return { ok: true, data: json.data ?? json };
+  const { data, ...rest } = json;
+  delete rest.error;
+  return { ok: true, data: (data ?? json) as T, ...rest };
 }
 
 function buildQs(
@@ -56,6 +69,80 @@ export function fetchBeats(
 ): Promise<BdResult<Beat[]>> {
   const qs = buildQs(params, repo);
   return request<Beat[]>(`${BASE}${qs}`);
+}
+
+export function resolveBeatsScope(
+  activeRepo: string | null | undefined,
+  registeredRepos: RegisteredRepo[],
+): BeatsScope {
+  if (activeRepo) {
+    return { kind: "repo", key: `repo:${activeRepo}`, repo: activeRepo };
+  }
+  if (registeredRepos.length > 0) {
+    return {
+      kind: "all",
+      key: `all:${registeredRepos
+        .map((repo) => repo.path)
+        .sort()
+        .join("|")}`,
+    };
+  }
+  return { kind: "default", key: "default" };
+}
+
+export function serializeQueryParams(
+  params?: Record<string, string>,
+): string {
+  if (!params) return "";
+  return JSON.stringify(params, Object.keys(params).sort());
+}
+
+export function buildBeatsQueryKey(
+  view: string,
+  params: Record<string, string>,
+  scope: BeatsScope,
+): readonly unknown[] {
+  return ["beats", view, scope.key, serializeQueryParams(params)] as const;
+}
+
+function annotateRepoBeats(
+  beats: Beat[],
+  repoPath: string,
+  registeredRepos: RegisteredRepo[],
+): Beat[] {
+  const repo = registeredRepos.find((candidate) => candidate.path === repoPath);
+  return beats.map((beat) => ({
+    ...beat,
+    _repoPath: repoPath,
+    _repoName: repo?.name ?? repoPath,
+    _memoryManagerType: repo?.memoryManagerType,
+  })) as Beat[];
+}
+
+export async function fetchBeatsForScope(
+  params: Record<string, string>,
+  scope: BeatsScope,
+  registeredRepos: RegisteredRepo[],
+): Promise<BdResult<Beat[]>> {
+  if (scope.kind === "repo" && scope.repo) {
+    const result = await fetchBeats(params, scope.repo);
+    if (result.ok && result.data) {
+      result.data = annotateRepoBeats(
+        result.data,
+        scope.repo,
+        registeredRepos,
+      );
+    }
+    return result;
+  }
+
+  if (scope.kind === "all") {
+    return request<Beat[]>(
+      `${BASE}${buildQs({ ...params, scope: ALL_SCOPE })}`,
+    );
+  }
+
+  return fetchBeats(params);
 }
 
 
@@ -238,18 +325,7 @@ export function mergeBeats(
 export async function fetchBeatsFromAllRepos(
   repos: RegisteredRepo[],
   params?: Record<string, string>
-): Promise<BdResult<BeatWithRepo[]>> {
-  const results = await Promise.all(
-    repos.map(async (repo) => {
-      const result = await fetchBeats(params, repo.path);
-      if (!result.ok || !result.data) return [];
-      return result.data.map((beat) => ({
-        ...beat,
-        _repoPath: repo.path,
-        _repoName: repo.name,
-        _memoryManagerType: repo.memoryManagerType,
-      }));
-    })
-  );
-  return { ok: true, data: results.flat() };
+): Promise<BdResult<Beat[]>> {
+  const scope = resolveBeatsScope(null, repos);
+  return fetchBeatsForScope(params ?? {}, scope, repos);
 }

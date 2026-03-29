@@ -1,92 +1,57 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchBeats } from "@/lib/api";
+import {
+  buildBeatsQueryKey,
+  fetchBeatsForScope,
+  resolveBeatsScope,
+} from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
 import type { Beat, BdResult } from "@/lib/types";
+
+const HUMAN_ACTION_PARAMS: Record<string, string> = {
+  requiresHumanAction: "true",
+};
 
 /**
  * Returns the count of beats requiring human action.
  *
- * Shares the same React Query cache entry as FinalCutView
- * (queryKey: ["beats", "human-action", ...]) so:
- *  - Only one network request is made when both are mounted.
- *  - Invalidating ["beats"] also refreshes this count.
- *
- * @param enabled - pass false to suspend polling (e.g. when not on /beats).
- * @param isFinalCutActive - true when FinalCutView is the active view.
- *   When false the hook still polls but at a slower cadence (30s vs 10s),
- *   reducing background traffic on other /beats views.
+ * Shares the same React Query cache entry as FinalCutView so the header badge
+ * does not trigger a second request when the Final Cut screen is active.
  */
 export function useHumanActionCount(
   enabled: boolean,
   isFinalCutActive: boolean,
 ): number {
   const { activeRepo, registeredRepos } = useAppStore();
-
+  const scope = resolveBeatsScope(activeRepo, registeredRepos);
   const hasRepos = Boolean(activeRepo) || registeredRepos.length > 0;
+  const refreshMs = isFinalCutActive ? 10_000 : 30_000;
 
   const { data } = useQuery<BdResult<Beat[]>, Error, number>({
-    queryKey: ["beats", "human-action", activeRepo, registeredRepos.length],
-    queryFn: () => fetchHumanActionBeats(activeRepo, registeredRepos),
+    queryKey: buildBeatsQueryKey(
+      "finalcut",
+      HUMAN_ACTION_PARAMS,
+      scope,
+    ),
+    queryFn: () => fetchBeatsForScope(
+      HUMAN_ACTION_PARAMS,
+      scope,
+      registeredRepos,
+    ),
     select: (result) => {
       if (!result.ok || !result.data) return 0;
-      const beats = result.data;
-      // Exclude leaf children: only count top-level (no parent) or parent beats.
-      const parentIds = new Set(beats.map((b) => b.parent).filter(Boolean));
-      return beats.filter((b) => !b.parent || parentIds.has(b.id)).length;
+      const parentIds = new Set(
+        result.data.map((beat) => beat.parent).filter(Boolean),
+      );
+      return result.data.filter(
+        (beat) => !beat.parent || parentIds.has(beat.id),
+      ).length;
     },
     enabled: enabled && hasRepos,
-    // When FinalCutView is active it drives the same cache at 10s;
-    // on other views, poll at a relaxed 30s for the header badge.
-    refetchInterval: isFinalCutActive ? 10_000 : 30_000,
+    staleTime: refreshMs,
+    refetchInterval: refreshMs,
   });
 
   return data ?? 0;
-}
-
-/**
- * Fetch beats requiring human action across repos.
- *
- * NOTE: The multi-repo fan-out silences per-repo failures and returns
- * partial results. This matches FinalCutView's existing behaviour
- * and avoids hiding all results when a single repo is temporarily unreachable.
- */
-async function fetchHumanActionBeats(
-  activeRepo: string | null,
-  registeredRepos: { path: string; name: string }[],
-): Promise<BdResult<Beat[]>> {
-  const params: Record<string, string> = { requiresHumanAction: "true" };
-
-  if (activeRepo) {
-    const result = await fetchBeats(params, activeRepo);
-    if (result.ok && result.data) {
-      const repo = registeredRepos.find((r) => r.path === activeRepo);
-      result.data = result.data
-        .map((beat) => ({
-          ...beat,
-          _repoPath: activeRepo,
-          _repoName: repo?.name ?? activeRepo,
-        })) as typeof result.data;
-    }
-    return result;
-  }
-
-  if (registeredRepos.length > 0) {
-    const results = await Promise.all(
-      registeredRepos.map(async (repo) => {
-        const result = await fetchBeats(params, repo.path);
-        if (!result.ok || !result.data) return [];
-        return result.data
-          .map((beat) => ({
-            ...beat,
-            _repoPath: repo.path,
-            _repoName: repo.name,
-          }));
-      }),
-    );
-    return { ok: true, data: results.flat() };
-  }
-
-  return fetchBeats(params);
 }

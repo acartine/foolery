@@ -5,7 +5,11 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { fetchBeats } from "@/lib/api";
+import {
+  buildBeatsQueryKey,
+  fetchBeatsForScope,
+  resolveBeatsScope,
+} from "@/lib/api";
 import {
   RETAKE_TARGET_STATE, isRetakeSourceState,
 } from "@/lib/retake";
@@ -18,13 +22,9 @@ import {
 } from "@/lib/retake-session-scope";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import type { UpdateBeatInput } from "@/lib/schemas";
-import type { Beat } from "@/lib/types";
+import type { Beat, RegisteredRepo } from "@/lib/types";
 import type { ActiveTerminal } from "@/stores/terminal-store";
 import type { RetakeAction } from "@/components/retake-dialog";
-
-type RepoResult =
-  | { ok: true; allBeats: Beat[]; retakeCandidates: Beat[] }
-  | { ok: false; error: string };
 
 export type RetakesQueryResult = {
   ok: true;
@@ -44,101 +44,15 @@ export type RetakeMutationResult = {
 };
 
 async function loadRepo(
-  params: Record<string, string>,
-  repoPath: string,
-  repoName?: string,
-): Promise<RepoResult> {
-  const result = await fetchBeats(params, repoPath);
-  if (!result.ok) {
-    return {
-      ok: false,
-      error: result.error
-        ?? `Failed to load retake beats for ${repoPath}`,
-    };
-  }
-  const all = (result.data ?? []).map((beat) => ({
-    ...beat,
-    _repoPath: repoPath,
-    _repoName: repoName ?? repoPath,
-  })) as Beat[];
-  const candidates = all.filter(
-    (beat) => isRetakeSourceState(beat.state),
-  );
-  return {
-    ok: true,
-    allBeats: all,
-    retakeCandidates: candidates,
-  };
-}
-
-function mergeRepoResults(
-  results: RepoResult[],
-): RetakesQueryResult | null {
-  const merged = results.flatMap(
-    (r) => (r.ok ? r.retakeCandidates : []),
-  );
-  const mergedAll = results.flatMap(
-    (r) => (r.ok ? r.allBeats : []),
-  );
-  if (merged.length > 0) {
-    return {
-      ok: true, data: merged, allBeats: mergedAll,
-    };
-  }
-  return null;
-}
-
-async function fetchRetakesForActiveRepo(
-  activeRepo: string,
-  registeredRepos: { path: string; name?: string }[],
+  activeRepo: string | null | undefined,
+  registeredRepos: RegisteredRepo[],
 ): Promise<RetakesQueryResult> {
-  const params: Record<string, string> = {};
-  const repoName = registeredRepos.find(
-    (repo) => repo.path === activeRepo,
-  )?.name;
-  const active = await loadRepo(
-    params, activeRepo, repoName,
+  const scope = resolveBeatsScope(activeRepo, registeredRepos);
+  const result = await fetchBeatsForScope(
+    {},
+    scope,
+    registeredRepos,
   );
-  if (active.ok) {
-    return {
-      ok: true,
-      data: active.retakeCandidates,
-      allBeats: active.allBeats,
-    };
-  }
-  if (registeredRepos.length > 0) {
-    const fallback = await Promise.all(
-      registeredRepos.map(
-        (r) => loadRepo(params, r.path, r.name),
-      ),
-    );
-    const merged = mergeRepoResults(fallback);
-    if (merged) return merged;
-  }
-  throw new Error(active.error);
-}
-
-async function fetchRetakesForRegisteredRepos(
-  registeredRepos: { path: string; name?: string }[],
-): Promise<RetakesQueryResult> {
-  const params: Record<string, string> = {};
-  const results = await Promise.all(
-    registeredRepos.map(
-      (r) => loadRepo(params, r.path, r.name),
-    ),
-  );
-  const merged = mergeRepoResults(results);
-  if (merged) return merged;
-  const firstError = results.find((r) => !r.ok);
-  if (firstError && !firstError.ok) {
-    throw new Error(firstError.error);
-  }
-  return { ok: true, data: [], allBeats: [] };
-}
-
-async function fetchRetakesFallback(
-): Promise<RetakesQueryResult> {
-  const result = await fetchBeats({});
   if (!result.ok) {
     throw new Error(
       result.error ?? "Failed to load retake beats.",
@@ -156,27 +70,18 @@ async function fetchRetakesFallback(
 
 export function useRetakesQuery(
   activeRepo: string | null | undefined,
-  registeredRepos: { path: string; name?: string }[],
+  registeredRepos: RegisteredRepo[],
 ) {
+  const scope = resolveBeatsScope(activeRepo, registeredRepos);
   return useQuery({
-    queryKey: [
-      "beats", "retakes",
-      activeRepo, registeredRepos.length,
-    ],
-    queryFn: async (): Promise<RetakesQueryResult> => {
-      if (activeRepo) {
-        return fetchRetakesForActiveRepo(
-          activeRepo, registeredRepos,
-        );
-      }
-      if (registeredRepos.length > 0) {
-        return fetchRetakesForRegisteredRepos(
-          registeredRepos,
-        );
-      }
-      return fetchRetakesFallback();
-    },
+    queryKey: buildBeatsQueryKey(
+      "retakes",
+      {},
+      scope,
+    ),
+    queryFn: () => loadRepo(activeRepo, registeredRepos),
     enabled: true,
+    staleTime: 30_000,
     refetchInterval: 30_000,
     placeholderData: keepPreviousData,
   });

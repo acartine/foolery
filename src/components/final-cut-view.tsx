@@ -3,54 +3,46 @@
 import { useCallback, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Megaphone } from "lucide-react";
-import { fetchBeats } from "@/lib/api";
+import {
+  buildBeatsQueryKey,
+  fetchBeatsForScope,
+  resolveBeatsScope,
+} from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { BeatTable } from "@/components/beat-table";
 import { useAppStore } from "@/stores/app-store";
 import type { Beat } from "@/lib/types";
+import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
+
+const HUMAN_ACTION_PARAMS: Record<string, string> = {
+  requiresHumanAction: "true",
+};
 
 export function FinalCutView() {
   const { activeRepo, registeredRepos } = useAppStore();
   const [selectionVersion] = useState(0);
+  const scope = resolveBeatsScope(activeRepo, registeredRepos);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["beats", "human-action", activeRepo, registeredRepos.length],
-    queryFn: async () => {
-      const params: Record<string, string> = { requiresHumanAction: "true" };
-      if (activeRepo) {
-        const result = await fetchBeats(params, activeRepo);
-        if (result.ok && result.data) {
-          const repo = registeredRepos.find((r) => r.path === activeRepo);
-          result.data = result.data
-            .map((beat) => ({
-              ...beat,
-              _repoPath: activeRepo,
-              _repoName: repo?.name ?? activeRepo,
-            })) as typeof result.data;
-        }
-        return result;
-      }
-      if (registeredRepos.length > 0) {
-        const results = await Promise.all(
-          registeredRepos.map(async (repo) => {
-            const result = await fetchBeats(params, repo.path);
-            if (!result.ok || !result.data) return [];
-            return result.data
-              .map((beat) => ({
-                ...beat,
-                _repoPath: repo.path,
-                _repoName: repo.name,
-              }));
-          })
-        );
-        return { ok: true, data: results.flat() };
-      }
-      return fetchBeats(params);
-    },
+    queryKey: buildBeatsQueryKey(
+      "finalcut",
+      HUMAN_ACTION_PARAMS,
+      scope,
+    ),
+    queryFn: () => fetchBeatsForScope(
+      HUMAN_ACTION_PARAMS,
+      scope,
+      registeredRepos,
+    ),
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
+    staleTime: 10_000,
     refetchInterval: 10_000,
     placeholderData: keepPreviousData,
   });
+  useBeatsScreenWarmup(
+    "finalcut",
+    !isLoading && data?.ok === true,
+  );
 
   const allBeats: Beat[] = data?.ok ? (data.data ?? []) : [];
 

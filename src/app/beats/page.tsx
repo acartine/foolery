@@ -33,6 +33,7 @@ import { useAgentInfoMap } from "./use-agent-info-map";
 import { useBulkActions } from "./use-bulk-actions";
 import { useBeatActions } from "./use-beat-actions";
 import { useBeatDetail } from "./use-beat-detail";
+import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 
 export {
   toActiveAgentInfo,
@@ -81,7 +82,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError,
     isDegradedError, hasRollingAncestor,
   } = useBeatsQuery({
-    searchQuery, isListView, activeRepo,
+    beatsView, searchQuery, isListView, activeRepo,
     registeredRepos, shippingByBeatId,
   });
 
@@ -116,6 +117,14 @@ function BeatsPageInner() {
   const isRetakesView = s.beatsView === "retakes";
   const isHistoryView = s.beatsView === "history";
   const isAuditView = s.beatsView === "audit";
+  const warmupView = s.isListView
+    && (s.beatsView === "queues" || s.beatsView === "active")
+    ? s.beatsView
+    : null;
+  useBeatsScreenWarmup(
+    warmupView,
+    !s.isLoading && !s.loadError,
+  );
 
   return (
     <div className={

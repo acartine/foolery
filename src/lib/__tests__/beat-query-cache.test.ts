@@ -17,7 +17,7 @@ describe("beat-query-cache", () => {
 
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: ["beats"],
-      refetchType: "all",
+      refetchType: "active",
     });
   });
 });

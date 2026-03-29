@@ -6,18 +6,49 @@ import { backendErrorStatus } from "@/lib/backend-http";
 import { createBeatSchema } from "@/lib/schemas";
 import { logApiError } from "@/lib/server-logger";
 import { enqueueBeatScopeRefinement } from "@/lib/scope-refinement-worker";
+import {
+  aggregateBeatsErrorStatus,
+  listBeatsAcrossRegisteredRepos,
+} from "@/lib/beats-multi-repo";
 
 export async function GET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const repoPath = params._repo;
   delete params._repo;
+  const scope = params.scope;
+  delete params.scope;
   const query = params.q;
   delete params.q;
+
+  if (scope === "all" && !repoPath) {
+    const result = await listBeatsAcrossRegisteredRepos(
+      params as BeatListFilters,
+      query,
+    );
+    if (!result.ok) {
+      const error = result.error ?? "Request failed";
+      return NextResponse.json(
+        { error },
+        { status: aggregateBeatsErrorStatus(error) },
+      );
+    }
+    return NextResponse.json({
+      data: result.data,
+      _degraded: result._degraded,
+    });
+  }
+
   const raw = query
     ? await getBackend().search(query, params as BeatListFilters, repoPath)
     : await getBackend().list(params as BeatListFilters, repoPath);
   const fn = query ? "searchBeats" : "listBeats";
-  const result = withErrorSuppression(fn, raw, params, repoPath, query);
+  const result = withErrorSuppression(
+    fn,
+    raw,
+    params,
+    repoPath,
+    query,
+  );
   if (!result.ok) {
     const status = result.error?.message === DEGRADED_ERROR_MESSAGE
       ? 503

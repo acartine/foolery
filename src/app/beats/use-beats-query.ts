@@ -1,6 +1,10 @@
 import { useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchBeats } from "@/lib/api";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+  buildBeatsQueryKey,
+  fetchBeatsForScope,
+  resolveBeatsScope,
+} from "@/lib/api";
 import { useAppStore } from "@/stores/app-store";
 import {
   hasRollingAncestor as hasRollingAncestorLib,
@@ -29,6 +33,7 @@ function throwIfDegraded(
 }
 
 interface UseBeatsQueryArgs {
+  beatsView: string;
   searchQuery: string;
   isListView: boolean;
   activeRepo: string | null;
@@ -50,10 +55,11 @@ export function useBeatsQuery(
   args: UseBeatsQueryArgs,
 ): UseBeatsQueryResult {
   const {
-    searchQuery, isListView, activeRepo,
+    beatsView, searchQuery, isListView, activeRepo,
     registeredRepos, shippingByBeatId,
   } = args;
   const { filters } = useAppStore();
+  const scope = resolveBeatsScope(activeRepo, registeredRepos);
 
   const params: Record<string, string> = {};
   if (!searchQuery && filters.state) {
@@ -68,17 +74,20 @@ export function useBeatsQuery(
   const {
     data, isLoading, error: queryError,
   } = useQuery({
-    queryKey: [
-      "beats", params, activeRepo,
-      registeredRepos.length,
-    ],
-    queryFn: () => fetchBeatsForAllRepos(
-      params, activeRepo, registeredRepos,
-    ),
+    queryKey: buildBeatsQueryKey(beatsView, params, scope),
+    queryFn: async () => {
+      const result = await fetchBeatsForScope(
+        params, scope, registeredRepos,
+      );
+      throwIfDegraded(result);
+      return result;
+    },
     enabled: isListView && (
       Boolean(activeRepo) || registeredRepos.length > 0
     ),
+    staleTime: 10_000,
     refetchInterval: 10_000,
+    placeholderData: keepPreviousData,
     retry: (count, error) =>
       !(error instanceof DegradedStoreError)
       && count < 3,
@@ -136,84 +145,4 @@ function deriveLoadError(
     return data.error ?? "Failed to load beats.";
   }
   return null;
-}
-
-async function fetchBeatsForActiveRepo(
-  params: Record<string, string>,
-  activeRepo: string,
-  registeredRepos: RegisteredRepo[],
-) {
-  const result = await fetchBeats(params, activeRepo);
-  throwIfDegraded(result);
-  if (result.ok && result.data) {
-    const repo = registeredRepos.find(
-      (r) => r.path === activeRepo,
-    );
-    result.data = result.data.map((beat) => ({
-      ...beat,
-      _repoPath: activeRepo,
-      _repoName: repo?.name ?? activeRepo,
-    })) as typeof result.data;
-  }
-  return result;
-}
-
-async function fetchBeatsForMultipleRepos(
-  params: Record<string, string>,
-  registeredRepos: RegisteredRepo[],
-) {
-  let hasDegraded = false;
-  let degradedMsg = "";
-  const results = await Promise.all(
-    registeredRepos.map(async (repo) => {
-      const result = await fetchBeats(
-        params, repo.path,
-      );
-      if (
-        !result.ok
-        && result.error?.startsWith(
-          DEGRADED_ERROR_PREFIX,
-        )
-      ) {
-        hasDegraded = true;
-        degradedMsg = result.error;
-        return [];
-      }
-      if (!result.ok || !result.data) return [];
-      return result.data.map((beat) => ({
-        ...beat,
-        _repoPath: repo.path,
-        _repoName: repo.name,
-      }));
-    }),
-  );
-  const merged = results.flat();
-  if (merged.length === 0 && hasDegraded) {
-    throw new DegradedStoreError(degradedMsg);
-  }
-  return {
-    ok: true as const,
-    data: merged,
-    _degraded: hasDegraded ? degradedMsg : undefined,
-  };
-}
-
-async function fetchBeatsForAllRepos(
-  params: Record<string, string>,
-  activeRepo: string | null,
-  registeredRepos: RegisteredRepo[],
-) {
-  if (activeRepo) {
-    return fetchBeatsForActiveRepo(
-      params, activeRepo, registeredRepos,
-    );
-  }
-  if (registeredRepos.length > 0) {
-    return fetchBeatsForMultipleRepos(
-      params, registeredRepos,
-    );
-  }
-  const result = await fetchBeats(params);
-  throwIfDegraded(result);
-  return result;
 }
