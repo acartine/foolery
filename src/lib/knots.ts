@@ -7,6 +7,7 @@ import { logCliFailure } from "./server-logger";
 const KNOTS_BIN = process.env.KNOTS_BIN ?? "kno";
 const KNOTS_DB_PATH = process.env.KNOTS_DB_PATH;
 const COMMAND_TIMEOUT_MS = envInt("FOOLERY_KNOTS_COMMAND_TIMEOUT_MS", 20000);
+const MAX_BUFFER_BYTES = envInt("FOOLERY_KNOTS_MAX_BUFFER_BYTES", 10 * 1024 * 1024);
 
 const RETRY_DELAYS_MS = [1000, 2000, 4000];
 
@@ -174,6 +175,7 @@ async function exec(args: string[], options?: ExecOptions): Promise<ExecResult> 
       {
         cwd: repoPath,
         timeout: COMMAND_TIMEOUT_MS,
+        maxBuffer: MAX_BUFFER_BYTES,
         killSignal: "SIGKILL",
         env: { ...process.env },
       },
