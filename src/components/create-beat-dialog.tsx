@@ -19,6 +19,7 @@ import type { CreateBeatInput } from "@/lib/schemas";
 import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
 import { profileDisplayName } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
+import { clearDraft } from "@/lib/create-draft-persistence";
 
 async function addDepsForBeat(
   beatId: string,
@@ -208,6 +209,11 @@ export function CreateBeatDialog({
     });
   }
 
+  function handleClear() {
+    clearDraft();
+    setFormKey((k) => k + 1);
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -230,6 +236,7 @@ export function CreateBeatDialog({
           }}
           onSubmit={handleSubmit}
           onCreateMore={handleCreateMore}
+          onClear={handleClear}
           isSubmitting={isSubmitting}
         />
       </DialogContent>
