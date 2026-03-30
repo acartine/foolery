@@ -12,8 +12,8 @@ export function AgentDisplayLabel({ agent }: AgentDisplayLabelProps) {
   const { label, pills } = parseAgentDisplayParts(agent);
 
   return (
-    <span className="inline-flex items-center gap-1.5">
-      <span className="truncate">{label}</span>
+    <span className="flex max-w-full flex-wrap items-center gap-1.5">
+      <span className="min-w-0 shrink truncate">{label}</span>
       {pills.map((pill) => (
         <Badge
           key={pill}
