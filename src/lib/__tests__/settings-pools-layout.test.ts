@@ -13,18 +13,19 @@ describe("settings pools layout", () => {
     "utf8",
   );
 
-  it("sizes the pool agent row from rendered content instead of fixed widths", () => {
-    expect(source).toContain("grid-cols-[auto_minmax(0,1fr)_auto_auto]");
-    expect(source).toContain(
-      "sm:grid-cols-[max-content_auto_minmax(0,1fr)_auto_auto]",
-    );
-    expect(source).toContain("col-span-4 min-w-0 flex items-start gap-2");
-    expect(source).not.toContain("w-[140px] sm:w-[220px] min-w-0");
+  it("keeps the pool row on the original fixed-width flex layout", () => {
+    expect(source).toContain("flex items-center gap-2 rounded-lg");
+    expect(source).toContain("w-[140px] sm:w-[220px] min-w-0");
+    expect(source).not.toContain("grid-cols-[auto_minmax(0,1fr)_auto_auto]");
   });
 
-  it("allows multi-pill agent labels to wrap within the content-sized column", () => {
-    expect(labelSource).toContain("flex max-w-full flex-wrap items-center gap-1.5");
-    expect(labelSource).toContain('className="min-w-0 shrink truncate"');
-    expect(labelSource).not.toContain("inline-flex items-center gap-1.5");
+  it("stacks pool-row pills beneath the label without changing the shared default layout", () => {
+    expect(source).toContain('<AgentDisplayLabel agent={agent} layout="stacked" />');
+    expect(labelSource).toContain('layout?: "inline" | "stacked";');
+    expect(labelSource).toContain('layout = "inline"');
+    expect(labelSource).toContain(
+      'isStacked ? "inline-flex flex-col items-start gap-1" : "inline-flex items-center gap-1.5"',
+    );
+    expect(labelSource).toContain('className="flex max-w-full flex-wrap items-center gap-1.5"');
   });
 });
