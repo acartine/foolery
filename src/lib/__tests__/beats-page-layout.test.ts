@@ -43,6 +43,9 @@ const tableUiSource = src(
 const colDefsSource = src(
   "src/components/beat-column-defs.tsx",
 );
+const globalStylesSource = src(
+  "src/app/globals.css",
+);
 
 describe("beats page layout: scrolling and hotkeys", () => {
   it("allows vertical scrolling in the main wrapper", () => {
@@ -51,6 +54,12 @@ describe("beats page layout: scrolling and hotkeys", () => {
     );
     expect(pageSource).not.toContain(
       '"mx-auto max-w-[95vw] overflow-hidden px-4 pt-2"',
+    );
+  });
+
+  it("reserves scrollbar gutter space to prevent header jitter between views", () => {
+    expect(globalStylesSource).toContain(
+      "scrollbar-gutter: stable;",
     );
   });
 
