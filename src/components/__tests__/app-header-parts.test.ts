@@ -4,6 +4,7 @@ import {
 } from "react";
 import { describe, expect, it, vi } from "vitest";
 import {
+  ActionButton,
   VersionBannerBar,
 } from "@/components/app-header-parts";
 import { Button } from "@/components/ui/button";
@@ -155,5 +156,21 @@ describe("VersionBannerBar", () => {
     expect(updateButton?.props.children).toBe(
       "Restarting…",
     );
+  });
+});
+
+describe("ActionButton", () => {
+  it("renders no action for the finalcut view", () => {
+    const tree = ActionButton({
+      beatsView: "finalcut",
+      shouldChooseRepo: false,
+      menuOpen: false,
+      setMenuOpen: vi.fn(),
+      registeredRepos: [],
+      openDialog: vi.fn(),
+      openFlow: vi.fn(),
+    });
+
+    expect(tree).toBeNull();
   });
 });

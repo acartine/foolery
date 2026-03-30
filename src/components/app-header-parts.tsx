@@ -3,7 +3,7 @@
 import type { useRouter, useSearchParams } from "next/navigation";
 import {
   Plus, Megaphone, RotateCcw, Settings,
-  UserRoundCheck, X, History, PartyPopper,
+  X, History, PartyPopper,
   Zap, Inbox, BarChart3,
 } from "lucide-react";
 import Image from "next/image";
@@ -179,17 +179,7 @@ export function ActionButton(props: {
   } = props;
 
   if (beatsView === "finalcut") {
-    return (
-      <Button
-        size="lg"
-        variant="outline"
-        className="h-8 gap-1.5 px-2.5"
-        title="Escalations queue"
-      >
-        <UserRoundCheck className="size-4" />
-        Escalations
-      </Button>
-    );
+    return null;
   }
   if (shouldChooseRepo) {
     return (
