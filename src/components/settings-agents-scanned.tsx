@@ -163,6 +163,26 @@ export function ScannedAgentsList({
 
 const SEARCHABLE_THRESHOLD = 10;
 
+export function filterSearchableOption(
+  value: string,
+  search: string,
+  keywords?: string[],
+): number {
+  const normalizedSearch = search.trim().toLowerCase();
+  if (normalizedSearch.length === 0) return 1;
+
+  const matchesValue = value
+    .toLowerCase()
+    .includes(normalizedSearch);
+  if (matchesValue) return 1;
+
+  return keywords?.some((keyword) =>
+    keyword.toLowerCase().includes(normalizedSearch),
+  )
+    ? 1
+    : 0;
+}
+
 function SearchableOptionCombobox({
   options,
   displayMap,
@@ -199,7 +219,7 @@ function SearchableOptionCombobox({
         className="w-[320px] p-0"
         align="start"
       >
-        <Command>
+        <Command filter={filterSearchableOption}>
           <CommandInput
             placeholder="Search models..."
             className="h-8 text-xs"
