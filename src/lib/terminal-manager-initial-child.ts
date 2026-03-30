@@ -107,6 +107,9 @@ export function spawnInitialChild(
   const autoShipPrompt = buildAutoShipPrompt(
     isInteractive, customPrompt, prepared,
   );
+  const sessionBeatIds = prepared.effectiveParent
+    ? prepared.waveBeatIds
+    : [beatId];
   const state = createInitialChildState(
     isInteractive, autoShipPrompt,
   );
@@ -123,7 +126,11 @@ export function spawnInitialChild(
   logAgentSpawn(id, agent, child);
 
   wireStdout(
-    child, id, interactionLog,
+    child,
+    id,
+    sessionBeatIds,
+    dialect,
+    interactionLog,
     normalizeEvent, pushEvent, state,
   );
   wireStderr(child, id, interactionLog, pushEvent);

@@ -2,6 +2,7 @@
 
 import type {
   AgentHistoryBeatSummary,
+  AgentHistoryBeatTokenUsage,
 } from "@/lib/agent-history-types";
 import type { Beat } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +58,10 @@ function renderLongText(
   );
 }
 
+function formatTokenCount(value: number): string {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
 export function BeatDetailContent({
   beat,
   summary,
@@ -87,6 +92,9 @@ export function BeatDetailContent({
         summary={summary}
         onCopyBeatId={onCopyBeatId}
       />
+      <BeatTokenUsageList
+        usage={summary.tokenUsageByAgent}
+      />
       <BeatLabels labels={beat.labels} />
       <BeatMetadataDetails
         beat={beat}
@@ -98,6 +106,56 @@ export function BeatDetailContent({
         beat.acceptance,
       )}
     </div>
+  );
+}
+
+function BeatTokenUsageList(
+  { usage }: { usage: AgentHistoryBeatTokenUsage[] },
+) {
+  if (usage.length === 0) return null;
+  return (
+    <section className="px-0.5 py-0.5">
+      <p className={
+        "text-[10px] uppercase tracking-wide"
+        + " text-muted-foreground"
+      }>
+        Token usage by agent
+      </p>
+      <div className="mt-1 space-y-1">
+        {usage.map((entry) => (
+          <div
+            key={[
+              entry.agentLabel,
+              entry.agentModel ?? "",
+              entry.agentVersion ?? "",
+            ].join("|")}
+            className={
+              "rounded border border-border/60"
+              + " bg-background/70 px-2 py-1.5"
+            }
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-[12px] font-medium">
+                {entry.agentLabel}
+              </p>
+              <p className="font-mono text-[11px] text-muted-foreground">
+                total {formatTokenCount(entry.totalTokens)}
+              </p>
+            </div>
+            <p className="mt-0.5 break-words font-mono text-[11px] text-muted-foreground">
+              {[entry.agentModel, entry.agentVersion]
+                .filter(Boolean)
+                .join(" · ") || "model/version unavailable"}
+            </p>
+            <p className="mt-1 font-mono text-[11px] text-foreground">
+              in {formatTokenCount(entry.inputTokens)}
+              {" · "}
+              out {formatTokenCount(entry.outputTokens)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

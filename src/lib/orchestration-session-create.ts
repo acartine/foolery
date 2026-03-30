@@ -1,8 +1,3 @@
-/**
- * Orchestration session creation logic.  Extracted from
- * orchestration-manager.ts to stay within the 500-line file limit.
- */
-
 import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { getStepAgent } from "@/lib/settings";
@@ -11,7 +6,9 @@ import {
   buildPromptModeArgs,
   resolveDialect,
   createLineNormalizer,
+  type AgentDialect,
 } from "@/lib/agent-adapter";
+import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import {
   startInteractionLog,
   noopInteractionLog,
@@ -21,7 +18,6 @@ import type {
   OrchestrationPlan,
   OrchestrationSession,
 } from "@/lib/types";
-
 import {
   type OrchestrationSessionEntry,
   sessions,
@@ -29,8 +25,6 @@ import {
   toObject,
   collectContext,
   collectEligibleBeats,
-  derivePromptScope,
-  buildPrompt,
   pushEvent,
   consumeAssistantText,
   formatStructuredLogLine,
@@ -39,13 +33,14 @@ import {
   summarizeResult,
   finalizeSession,
 } from "@/lib/orchestration-internals";
-
-// ── stdout processing ───────────────────────────────────────────────
+import { emitPromptLog } from "@/lib/orchestration-session-prompt";
 
 function handleStdoutChunk(
   entry: OrchestrationSessionEntry,
   chunk: Buffer,
   state: { ndjsonBuffer: string },
+  beatIds: string[],
+  dialect: AgentDialect,
   normalizeEvent: (raw: unknown) => unknown,
 ) {
   entry.interactionLog.logStdout(chunk.toString());
@@ -63,6 +58,13 @@ function handleStdoutChunk(
     } catch {
       continue;
     }
+
+    logTokenUsageForEvent(
+      entry.interactionLog,
+      dialect,
+      raw,
+      beatIds,
+    );
 
     const obj = toObject(normalizeEvent(raw));
     if (!obj || typeof obj.type !== "string") continue;
@@ -172,8 +174,6 @@ function handleResultEvent(
   );
 }
 
-// ── Session + entry setup ───────────────────────────────────────────
-
 async function initSessionEntry(
   repoPath: string,
   beats: import("@/lib/types").Beat[],
@@ -232,41 +232,6 @@ async function initSessionEntry(
   return { session, entry, agent };
 }
 
-function emitPromptLog(
-  entry: OrchestrationSessionEntry,
-  beats: import("@/lib/types").Beat[],
-  repoPath: string,
-  objective: string | undefined,
-): string {
-  const scope = derivePromptScope(beats, objective);
-  const prompt = buildPrompt(
-    repoPath,
-    scope.scopedBeats,
-    scope.unresolvedScopeIds,
-    objective,
-  );
-  entry.interactionLog.logPrompt(prompt);
-  const scopeSummary =
-    scope.scopedBeats.length > 0
-      ? scope.scopedBeats.map((beat) => beat.id).join(", ")
-      : "inferred from objective";
-  const promptLog = [
-    "prompt_initial | Orchestration prompt sent",
-    `scope | ${scopeSummary}`,
-    scope.unresolvedScopeIds.length > 0
-      ? `scope_unresolved | ${scope.unresolvedScopeIds.join(", ")}`
-      : "",
-    objective?.trim()
-      ? `objective | ${objective.trim()}`
-      : "",
-    "",
-  ]
-    .filter(Boolean)
-    .join("\n");
-  pushEvent(entry, "log", promptLog);
-  return prompt;
-}
-
 function wireChildProcess(
   entry: OrchestrationSessionEntry,
   agent: Awaited<ReturnType<typeof getStepAgent>>,
@@ -293,6 +258,8 @@ function wireChildProcess(
       entry,
       chunk,
       ndjsonState,
+      Array.from(entry.allBeats.keys()),
+      dialect,
       normalizeEvent,
     );
   });
@@ -324,6 +291,7 @@ function wireChildProcess(
     handleCloseEvent(
       entry,
       ndjsonState,
+      dialect,
       normalizeEvent,
       agent,
       code,
@@ -331,8 +299,6 @@ function wireChildProcess(
     );
   });
 }
-
-// ── createOrchestrationSession ──────────────────────────────────────
 
 export async function createOrchestrationSession(
   repoPath: string,
@@ -371,6 +337,7 @@ export async function createOrchestrationSession(
 function handleCloseEvent(
   entry: OrchestrationSessionEntry,
   ndjsonState: { ndjsonBuffer: string },
+  dialect: AgentDialect,
   normalizeEvent: (raw: unknown) => unknown,
   agent: { command?: string },
   code: number | null,
@@ -379,6 +346,12 @@ function handleCloseEvent(
   if (ndjsonState.ndjsonBuffer.trim()) {
     try {
       const raw = JSON.parse(ndjsonState.ndjsonBuffer);
+      logTokenUsageForEvent(
+        entry.interactionLog,
+        dialect,
+        raw,
+        Array.from(entry.allBeats.keys()),
+      );
       const obj = toObject(normalizeEvent(raw));
       if (obj?.type === "result") {
         const isError = Boolean(obj.is_error);
@@ -407,8 +380,6 @@ function handleCloseEvent(
     message
   );
 }
-
-// ── Restage plan normalisation ───────────────────────────────────────
 
 function normalizeRestagePlan(
   plan: OrchestrationPlan,

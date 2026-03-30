@@ -30,6 +30,15 @@ export interface AgentHistorySession {
   workflowStates?: string[];
 }
 
+export interface AgentHistoryBeatTokenUsage {
+  agentLabel: string;
+  agentModel?: string;
+  agentVersion?: string;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
 export interface AgentHistoryBeatSummary {
   beatId: string;
   repoPath: string;
@@ -40,6 +49,7 @@ export interface AgentHistoryBeatSummary {
   sceneCount: number;
   directCount: number;
   breakdownCount: number;
+  tokenUsageByAgent: AgentHistoryBeatTokenUsage[];
 }
 
 export interface AgentHistoryPayload {

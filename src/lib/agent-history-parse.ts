@@ -6,6 +6,7 @@
  */
 import { naturalCompare } from "@/lib/beat-sort";
 import type {
+  AgentHistoryBeatTokenUsage,
   AgentHistoryEntry,
   AgentHistoryInteractionType,
 } from "@/lib/agent-history-types";
@@ -31,6 +32,10 @@ export interface SessionParseResult {
   status?: string;
   exitCode?: number | null;
   entries: AgentHistoryEntry[];
+  tokenUsage: Array<{
+    beatId: string;
+    usage: AgentHistoryBeatTokenUsage;
+  }>;
   titleHints: Map<string, string>;
   workflowStates: string[];
 }
@@ -135,6 +140,10 @@ interface ParseContext {
   start: SessionStartLine;
   capturesEntries: boolean;
   entries: AgentHistoryEntry[];
+  tokenUsage: Array<{
+    beatId: string;
+    usage: AgentHistoryBeatTokenUsage;
+  }>;
   titleHints: Map<string, string>;
   workflowStates: Set<string>;
   promptCounter: number;
@@ -144,6 +153,56 @@ interface ParseContext {
   endedAt?: string;
   status?: string;
   exitCode?: number | null;
+}
+
+function parseTokenUsageLine(
+  parsed: Record<string, unknown>,
+): { beatId: string; usage: AgentHistoryBeatTokenUsage } | null {
+  const beatId =
+    typeof parsed.beatId === "string"
+      ? parsed.beatId.trim()
+      : "";
+  const agentLabel =
+    typeof parsed.agentName === "string"
+      ? parsed.agentName.trim()
+      : "";
+  const counts = [
+    parsed.inputTokens,
+    parsed.outputTokens,
+    parsed.totalTokens,
+  ].map((value) => (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= 0
+      ? Math.trunc(value)
+      : null
+  ));
+  if (
+    !beatId ||
+    !agentLabel ||
+    counts[0] === null ||
+    counts[1] === null ||
+    counts[2] === null
+  ) {
+    return null;
+  }
+  return {
+    beatId,
+    usage: {
+      agentLabel,
+      agentModel:
+        typeof parsed.agentModel === "string"
+          ? parsed.agentModel
+          : undefined,
+      agentVersion:
+        typeof parsed.agentVersion === "string"
+          ? parsed.agentVersion
+          : undefined,
+      inputTokens: counts[0],
+      outputTokens: counts[1],
+      totalTokens: counts[2],
+    },
+  };
 }
 
 function handlePromptLine(
@@ -275,6 +334,7 @@ export function parseSession(
   const lines = content.split("\n");
   const ctx: Partial<ParseContext> = {
     entries: [],
+    tokenUsage: [],
     titleHints: new Map(),
     workflowStates: new Set(),
     promptCounter: 0,
@@ -332,7 +392,12 @@ export function parseSession(
     }
 
     const fullCtx = ctx as ParseContext;
-    if (kind === "prompt") {
+    if (kind === "token_usage") {
+      const tokenUsage = parseTokenUsageLine(parsed);
+      if (tokenUsage) {
+        fullCtx.tokenUsage.push(tokenUsage);
+      }
+    } else if (kind === "prompt") {
       handlePromptLine(fullCtx, parsed, ts, i);
     } else if (kind === "response") {
       handleResponseLine(fullCtx, parsed, ts, i);
@@ -352,6 +417,7 @@ export function parseSession(
     status: ctx.status,
     exitCode: ctx.exitCode,
     entries: ctx.entries!,
+    tokenUsage: ctx.tokenUsage!,
     titleHints: ctx.titleHints!,
     workflowStates: Array.from(
       ctx.workflowStates!.values(),
