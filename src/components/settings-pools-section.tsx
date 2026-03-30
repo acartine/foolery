@@ -211,13 +211,15 @@ function PoolAgentRow({
     <div
       key={entry.agentId}
       className={
-        "flex items-center gap-2 rounded-lg"
+        "grid items-center gap-2 rounded-lg"
+        + " grid-cols-[auto_minmax(0,1fr)_auto_auto]"
+        + " sm:grid-cols-[max-content_auto_minmax(0,1fr)_auto_auto]"
         + " px-2 py-1.5 hover:bg-muted/35"
       }
     >
       <div className={
-        "w-[140px] sm:w-[220px] min-w-0"
-        + " shrink-0 flex items-start gap-2"
+        "col-span-4 min-w-0 flex items-start gap-2"
+        + " sm:col-span-1"
       }>
         <span className={
           `mt-1 size-2.5 rounded-full shrink-0 ${color}`
