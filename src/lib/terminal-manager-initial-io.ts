@@ -7,7 +7,9 @@ import type { ChildProcess } from "node:child_process";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import type {
   createLineNormalizer,
+  AgentDialect,
 } from "@/lib/agent-adapter";
+import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import type {
   TerminalEvent,
 } from "@/lib/types";
@@ -216,6 +218,8 @@ function autoAnswerAskUser(
 export function wireStdout(
   child: ChildProcess,
   id: string,
+  beatIds: string[],
+  dialect: AgentDialect,
   interactionLog: InteractionLog,
   normalizeEvent: ReturnType<
     typeof createLineNormalizer
@@ -232,7 +236,12 @@ export function wireStdout(
       if (!line.trim()) continue;
       interactionLog.logResponse(line);
       processStdoutLine(
-        child, id, state, interactionLog,
+        child,
+        id,
+        beatIds,
+        dialect,
+        state,
+        interactionLog,
         normalizeEvent, pushEvent, line,
       );
     }
@@ -242,6 +251,8 @@ export function wireStdout(
 function processStdoutLine(
   child: ChildProcess,
   id: string,
+  beatIds: string[],
+  dialect: AgentDialect,
   state: InitialChildState,
   interactionLog: InteractionLog,
   normalizeEvent: ReturnType<
@@ -252,6 +263,12 @@ function processStdoutLine(
 ): void {
   try {
     const raw = JSON.parse(line) as JsonObject;
+    logTokenUsageForEvent(
+      interactionLog,
+      dialect,
+      raw,
+      beatIds,
+    );
     const obj = (normalizeEvent(raw) ?? raw) as
       Record<string, unknown>;
     autoAnswerAskUser(
@@ -492,4 +509,3 @@ export function wireError(
     }
   });
 }
-

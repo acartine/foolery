@@ -357,6 +357,25 @@ describe("InteractionLog: session end and beat state", () => {
     expect(beatLine.ts).toBeDefined();
   });
 
+  it("logTokenUsage writes a token_usage entry scoped to a beat", async () => {
+    const log = await startLogInTemp();
+    log.logTokenUsage({
+      beatId: "beat-42",
+      inputTokens: 120,
+      outputTokens: 45,
+    });
+    const lines = await readLogLines(log.filePath);
+
+    const tokenLine = lines.find(
+      (l: Record<string, unknown>) => l.kind === "token_usage",
+    );
+    expect(tokenLine).toBeDefined();
+    expect(tokenLine.beatId).toBe("beat-42");
+    expect(tokenLine.inputTokens).toBe(120);
+    expect(tokenLine.outputTokens).toBe(45);
+    expect(tokenLine.totalTokens).toBe(165);
+  });
+
 });
 
 describe("InteractionLog: lifecycle and phases", () => {

@@ -1,6 +1,7 @@
 import { naturalCompare } from "@/lib/beat-sort";
 import type {
   AgentHistoryBeatSummary,
+  AgentHistoryBeatTokenUsage,
   AgentHistoryEntry,
   AgentHistoryPayload,
   AgentHistorySession,
@@ -63,6 +64,53 @@ function beatKey(repoPath: string, beatId: string): string {
   return `${repoPath}::${beatId}`;
 }
 
+function tokenUsageKey(
+  usage: AgentHistoryBeatTokenUsage,
+): string {
+  return [
+    usage.agentLabel,
+    usage.agentModel ?? "",
+    usage.agentVersion ?? "",
+  ].join("\u0000");
+}
+
+function mergeTokenUsage(
+  beat: AgentHistoryBeatSummary,
+  usage: AgentHistoryBeatTokenUsage,
+): void {
+  const existing = beat.tokenUsageByAgent.find(
+    (candidate) => tokenUsageKey(candidate) === tokenUsageKey(usage),
+  );
+  if (!existing) {
+    beat.tokenUsageByAgent.push({ ...usage });
+    return;
+  }
+  existing.inputTokens += usage.inputTokens;
+  existing.outputTokens += usage.outputTokens;
+  existing.totalTokens += usage.totalTokens;
+}
+
+function sortTokenUsage(
+  usage: AgentHistoryBeatTokenUsage[],
+): AgentHistoryBeatTokenUsage[] {
+  return [...usage].sort((a, b) => {
+    const label = naturalCompare(
+      a.agentLabel,
+      b.agentLabel,
+    );
+    if (label !== 0) return label;
+    const model = naturalCompare(
+      a.agentModel ?? "",
+      b.agentModel ?? "",
+    );
+    if (model !== 0) return model;
+    return naturalCompare(
+      a.agentVersion ?? "",
+      b.agentVersion ?? "",
+    );
+  });
+}
+
 // ── readAgentHistory ─────────────────────────────────────────
 
 export async function readAgentHistory(
@@ -94,6 +142,11 @@ export async function readAgentHistory(
   }
 
   const beats = Array.from(beatMap.values());
+  for (const beat of beats) {
+    beat.tokenUsageByAgent = sortTokenUsage(
+      beat.tokenUsageByAgent,
+    );
+  }
   const filteredBeats =
     recencyThresholdMs !== undefined
       ? beats.filter(
@@ -150,7 +203,12 @@ async function processSession(
 ): Promise<void> {
   const { start, updatedAt, endedAt, status, exitCode } =
     parsed;
-  const { entries, titleHints, workflowStates } = parsed;
+  const {
+    entries,
+    tokenUsage,
+    titleHints,
+    workflowStates,
+  } = parsed;
 
   let effectiveRepoPath = start.repoPath;
   if (query.repoPath) {
@@ -172,6 +230,7 @@ async function processSession(
     start,
     effectiveRepoPath,
     updatedAt,
+    tokenUsage,
     titleHints,
     beatMap,
   );
@@ -214,6 +273,7 @@ function updateBeatMap(
   start: SessionStartLine,
   effectiveRepoPath: string,
   updatedAt: string,
+  tokenUsage: SessionParseResult["tokenUsage"],
   titleHints: Map<string, string>,
   beatMap: Map<string, AgentHistoryBeatSummary>,
 ): void {
@@ -245,8 +305,17 @@ function updateBeatMap(
           start.interactionType === "direct" ? 1 : 0,
         breakdownCount:
           start.interactionType === "breakdown" ? 1 : 0,
+        tokenUsageByAgent: [],
       });
     }
+  }
+
+  for (const tokenEntry of tokenUsage) {
+    const beat = beatMap.get(
+      beatKey(effectiveRepoPath, tokenEntry.beatId),
+    );
+    if (!beat) continue;
+    mergeTokenUsage(beat, tokenEntry.usage);
   }
 }
 

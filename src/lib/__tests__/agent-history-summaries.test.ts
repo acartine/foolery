@@ -274,3 +274,56 @@ describe("summaries: interaction types and status", () => {
     );
   });
 });
+
+describe("summaries: token usage", () => {
+  setupTempDir();
+
+  it("aggregates persisted token usage by beat and agent", async () => {
+    await writeLog(tempDir, "repo-a/2026-02-20/tokens.jsonl", [
+      {
+        kind: "session_start", ts: "2026-02-20T18:00:00.000Z",
+        sessionId: "tokens-1", interactionType: "scene",
+        repoPath: "/tmp/repo-a", beatIds: ["foo-1", "foo-2"],
+      },
+      {
+        kind: "token_usage", ts: "2026-02-20T18:00:10.000Z",
+        sessionId: "tokens-1", beatId: "foo-1",
+        agentName: "Codex", agentModel: "o3", agentVersion: "1.0.0",
+        inputTokens: 100, outputTokens: 50, totalTokens: 150,
+      },
+      {
+        kind: "token_usage", ts: "2026-02-20T18:00:11.000Z",
+        sessionId: "tokens-1", beatId: "foo-1",
+        agentName: "Codex", agentModel: "o3", agentVersion: "1.0.0",
+        inputTokens: 30, outputTokens: 20, totalTokens: 50,
+      },
+      {
+        kind: "token_usage", ts: "2026-02-20T18:00:12.000Z",
+        sessionId: "tokens-1", beatId: "foo-2",
+        agentName: "Claude", agentModel: "sonnet", agentVersion: "4.0",
+        inputTokens: 200, outputTokens: 80, totalTokens: 280,
+      },
+    ]);
+
+    const history = await readAgentHistory({ logRoot: tempDir });
+    const firstBeat = history.beats.find((beat) => beat.beatId === "foo-1");
+    const secondBeat = history.beats.find((beat) => beat.beatId === "foo-2");
+
+    expect(firstBeat?.tokenUsageByAgent).toEqual([{
+      agentLabel: "Codex",
+      agentModel: "o3",
+      agentVersion: "1.0.0",
+      inputTokens: 130,
+      outputTokens: 70,
+      totalTokens: 200,
+    }]);
+    expect(secondBeat?.tokenUsageByAgent).toEqual([{
+      agentLabel: "Claude",
+      agentModel: "sonnet",
+      agentVersion: "4.0",
+      inputTokens: 200,
+      outputTokens: 80,
+      totalTokens: 280,
+    }]);
+  });
+});

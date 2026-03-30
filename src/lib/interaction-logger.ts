@@ -49,6 +49,13 @@ export interface BeatStateLogEntry {
   label?: string;
 }
 
+export interface TokenUsageLogEntry {
+  beatId: string;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens?: number;
+}
+
 interface LogLine {
   kind: string;
   ts: string;
@@ -102,6 +109,31 @@ async function writeLine(path: string, line: LogLine): Promise<void> {
   await appendFile(path, serialized, "utf-8");
 }
 
+function normalizeTokenUsageEntry(
+  entry: TokenUsageLogEntry,
+): TokenUsageLogEntry | null {
+  const beatId = entry.beatId.trim();
+  if (!beatId) return null;
+  const inputTokens = Math.trunc(entry.inputTokens);
+  const outputTokens = Math.trunc(entry.outputTokens);
+  const totalTokens = Math.trunc(
+    entry.totalTokens ?? inputTokens + outputTokens,
+  );
+  if (
+    [inputTokens, outputTokens, totalTokens].some(
+      (value) => !Number.isFinite(value) || value < 0,
+    )
+  ) {
+    return null;
+  }
+  return {
+    beatId,
+    inputTokens,
+    outputTokens,
+    totalTokens,
+  };
+}
+
 /**
  * A sequential write queue that ensures appends to a single file
  * are serialized, preventing interleaved output from concurrent
@@ -135,12 +167,105 @@ export interface InteractionLog {
   logResponse(rawLine: string): void;
   /** Log beat state snapshot before or after a prompt. */
   logBeatState(entry: BeatStateLogEntry): void;
+  /** Log beat-scoped token usage for the session agent. */
+  logTokenUsage(entry: TokenUsageLogEntry): void;
   /** Log a raw stdout chunk from the agent child process. */
   logStdout(chunk: string): void;
   /** Log a raw stderr chunk from the agent child process. */
   logStderr(chunk: string): void;
   /** Log session completion. */
   logEnd(exitCode: number | null, status: string): void;
+}
+
+function createJsonLogWriter(filePath: string) {
+  return (line: LogLine) => {
+    writeLine(filePath, line).catch((err) => {
+      console.error(`[interaction-logger] Write failed:`, err);
+    });
+  };
+}
+
+function createInteractionLogHandle(
+  meta: SessionMeta,
+  file: string,
+  stdoutFile: string,
+  stderrFile: string,
+): InteractionLog {
+  const write = createJsonLogWriter(file);
+  return {
+    filePath: file,
+    stdoutPath: stdoutFile,
+    stderrPath: stderrFile,
+    logPrompt(prompt: string, metadata?: PromptLogMetadata) {
+      write({
+        kind: "prompt",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        prompt,
+        ...(metadata?.source ? { source: metadata.source } : {}),
+      });
+    },
+
+    logResponse(rawLine: string) {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(rawLine);
+      } catch {
+        parsed = undefined;
+      }
+
+      write({
+        kind: "response",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        raw: rawLine,
+        ...(parsed !== undefined ? { parsed } : {}),
+      });
+    },
+
+    logBeatState(entry: BeatStateLogEntry) {
+      write({
+        kind: "beat_state",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        beatId: entry.beatId,
+        state: entry.state,
+        phase: entry.phase,
+        ...(entry.iteration !== undefined ? { iteration: entry.iteration } : {}),
+        ...(entry.label ? { label: entry.label } : {}),
+      });
+    },
+
+    logTokenUsage(entry: TokenUsageLogEntry) {
+      const normalized = normalizeTokenUsageEntry(entry);
+      if (!normalized) return;
+      write({
+        kind: "token_usage",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        beatId: normalized.beatId,
+        inputTokens: normalized.inputTokens,
+        outputTokens: normalized.outputTokens,
+        totalTokens: normalized.totalTokens,
+        ...(meta.agentName ? { agentName: meta.agentName } : {}),
+        ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
+        ...(meta.agentVersion ? { agentVersion: meta.agentVersion } : {}),
+      });
+    },
+
+    logStdout: createWriteQueue(stdoutFile),
+    logStderr: createWriteQueue(stderrFile),
+
+    logEnd(exitCode: number | null, status: string) {
+      write({
+        kind: "session_end",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        exitCode,
+        status,
+      });
+    },
+  };
 }
 
 /**
@@ -198,85 +323,18 @@ export async function startInteractionLog(
     ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
     ...(meta.agentVersion ? { agentVersion: meta.agentVersion } : {}),
   };
-
-  // Write session_start synchronously so the file exists before cleanup
-  // can prune the directory. Errors are swallowed to avoid impacting
-  // the main session flow.
   try {
     await writeLine(file, startLine);
   } catch (err) {
     console.error(`[interaction-logger] Failed to write session_start:`, err);
   }
-
-  // Schedule cleanup AFTER session file is established on disk, so
-  // pruneEmptyDateDirs will not remove this session's directory.
   maybeScheduleCleanup();
-
-  const write = (line: LogLine) => {
-    writeLine(file, line).catch((err) => {
-      console.error(`[interaction-logger] Write failed:`, err);
-    });
-  };
-
-  return {
-    filePath: file,
-    stdoutPath: stdoutFile,
-    stderrPath: stderrFile,
-    logPrompt(prompt: string, metadata?: PromptLogMetadata) {
-      write({
-        kind: "prompt",
-        ts: new Date().toISOString(),
-        sessionId: meta.sessionId,
-        prompt,
-        ...(metadata?.source ? { source: metadata.source } : {}),
-      });
-    },
-
-    logResponse(rawLine: string) {
-      // Store the raw NDJSON line as-is so the full agent response is preserved.
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(rawLine);
-      } catch {
-        parsed = undefined;
-      }
-
-      write({
-        kind: "response",
-        ts: new Date().toISOString(),
-        sessionId: meta.sessionId,
-        raw: rawLine,
-        ...(parsed !== undefined ? { parsed } : {}),
-      });
-    },
-
-    logBeatState(entry: BeatStateLogEntry) {
-      write({
-        kind: "beat_state",
-        ts: new Date().toISOString(),
-        sessionId: meta.sessionId,
-        beatId: entry.beatId,
-        state: entry.state,
-        phase: entry.phase,
-        ...(entry.iteration !== undefined ? { iteration: entry.iteration } : {}),
-        ...(entry.label ? { label: entry.label } : {}),
-      });
-    },
-
-    logStdout: createWriteQueue(stdoutFile),
-
-    logStderr: createWriteQueue(stderrFile),
-
-    logEnd(exitCode: number | null, status: string) {
-      write({
-        kind: "session_end",
-        ts: new Date().toISOString(),
-        sessionId: meta.sessionId,
-        exitCode,
-        status,
-      });
-    },
-  };
+  return createInteractionLogHandle(
+    meta,
+    file,
+    stdoutFile,
+    stderrFile,
+  );
 }
 
 /** A no-op logger for cases where logging setup fails. */
@@ -288,6 +346,7 @@ export function noopInteractionLog(): InteractionLog {
     logPrompt() {},
     logResponse() {},
     logBeatState() {},
+    logTokenUsage() {},
     logStdout() {},
     logStderr() {},
     logEnd() {},

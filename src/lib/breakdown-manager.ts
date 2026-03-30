@@ -11,7 +11,9 @@ import {
   buildPromptModeArgs,
   resolveDialect,
   createLineNormalizer,
+  type AgentDialect,
 } from "@/lib/agent-adapter";
+import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import type {
   ApplyBreakdownResult,
   BreakdownEvent,
@@ -319,9 +321,11 @@ function processNormalizedEvent(
 function wireChildProcess(
   child: ChildProcess,
   entry: BreakdownSessionEntry,
+  dialect: AgentDialect,
   normalizeEvent: (parsed: unknown) => Record<string, unknown> | null,
   interactionLog: InteractionLog,
   agentLabel: string,
+  parentBeatId: string,
 ): void {
   let ndjsonBuffer = "";
 
@@ -335,6 +339,12 @@ function wireChildProcess(
       interactionLog.logResponse(line);
       let raw: unknown;
       try { raw = JSON.parse(line); } catch { continue; }
+      logTokenUsageForEvent(
+        interactionLog,
+        dialect,
+        raw,
+        [parentBeatId],
+      );
       const obj = toObject(normalizeEvent(raw));
       if (!obj || typeof obj.type !== "string") continue;
       processNormalizedEvent(entry, obj);
@@ -363,6 +373,12 @@ function wireChildProcess(
     if (ndjsonBuffer.trim()) {
       try {
         const raw = JSON.parse(ndjsonBuffer);
+        logTokenUsageForEvent(
+          interactionLog,
+          dialect,
+          raw,
+          [parentBeatId],
+        );
         const obj = toObject(normalizeEvent(raw));
         if (obj?.type === "result") {
           const isError = Boolean(obj.is_error);
@@ -442,7 +458,13 @@ export async function createBreakdownSession(
 
   const agentLabel = agentDisplayName(agent);
   wireChildProcess(
-    child, entry, normalizeEvent, bkdnInteractionLog, agentLabel,
+    child,
+    entry,
+    dialect,
+    normalizeEvent,
+    bkdnInteractionLog,
+    agentLabel,
+    parentBeatId,
   );
 
   pushEvent(entry, "status", `Starting ${agentLabel} breakdown...`);

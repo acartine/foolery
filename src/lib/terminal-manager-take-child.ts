@@ -9,7 +9,9 @@ import {
   buildPromptModeArgs,
   resolveDialect,
   createLineNormalizer,
+  type AgentDialect,
 } from "@/lib/agent-adapter";
+import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   type JsonObject,
@@ -81,10 +83,21 @@ export function spawnTakeChild(
     autoAnsweredIds: new Set(),
   };
 
-  wireStdout(ctx, takeChild, state, normalizeEvent);
+  wireStdout(
+    ctx,
+    takeChild,
+    state,
+    effectiveDialect,
+    normalizeEvent,
+  );
   wireStderr(ctx, takeChild);
   wireClose(
-    ctx, takeChild, state, effectiveAgent, beatState,
+    ctx,
+    takeChild,
+    state,
+    effectiveAgent,
+    effectiveDialect,
+    beatState,
   );
   wireError(
     ctx, takeChild, state,
@@ -229,6 +242,7 @@ function wireStdout(
   ctx: TakeLoopContext,
   takeChild: ChildProcess,
   state: ChildIoState,
+  dialect: AgentDialect,
   normalizeEvent: ReturnType<
     typeof createLineNormalizer
   >,
@@ -243,6 +257,12 @@ function wireStdout(
       ctx.interactionLog.logResponse(line);
       try {
         const raw = JSON.parse(line) as JsonObject;
+        logTokenUsageForEvent(
+          ctx.interactionLog,
+          dialect,
+          raw,
+          [ctx.beatId],
+        );
         const obj = (normalizeEvent(raw) ?? raw) as
           Record<string, unknown>;
         autoAnswerAskUser(
@@ -289,10 +309,16 @@ function wireClose(
   takeChild: ChildProcess,
   state: ChildIoState,
   effectiveAgent: CliAgentTarget,
+  effectiveDialect: AgentDialect,
   beatState: string | undefined,
 ): void {
   takeChild.on("close", (takeCode) => {
-    flushLineBuffer(ctx, takeChild, state);
+    flushLineBuffer(
+      ctx,
+      takeChild,
+      state,
+      effectiveDialect,
+    );
     if (state.closeInputTimer) {
       clearTimeout(state.closeInputTimer);
       state.closeInputTimer = null;
@@ -327,6 +353,7 @@ function flushLineBuffer(
   ctx: TakeLoopContext,
   takeChild: ChildProcess,
   state: ChildIoState,
+  dialect: AgentDialect,
 ): void {
   if (!state.lineBuffer.trim()) return;
   ctx.interactionLog.logResponse(state.lineBuffer);
@@ -334,6 +361,12 @@ function flushLineBuffer(
     const obj = JSON.parse(
       state.lineBuffer,
     ) as JsonObject;
+    logTokenUsageForEvent(
+      ctx.interactionLog,
+      dialect,
+      obj,
+      [ctx.beatId],
+    );
     autoAnswerAskUser(ctx, takeChild, state, obj);
     if (obj.type === "result") {
       scheduleInputClose(takeChild, state);
