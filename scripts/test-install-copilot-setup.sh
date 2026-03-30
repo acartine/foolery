@@ -61,15 +61,28 @@ artifact_path() {
 
 prepare_env() {
   rm -rf "$TEST_DIR"
-  mkdir -p "$TEST_BIN" "$TEST_HOME/.copilot" "$TEST_STATE_DIR"
+  mkdir -p "$TEST_BIN" "$TEST_HOME/.copilot" "$TEST_HOME/.codex" "$TEST_STATE_DIR"
 
   ln -sf "$(command -v node)" "$TEST_BIN/node"
   ln -sf "$ROOT_DIR/scripts/test-fixtures/fake-copilot.sh" \
     "$TEST_BIN/copilot"
+  cat >"$TEST_BIN/codex" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+  chmod +x "$TEST_BIN/codex"
 
   cat >"$TEST_HOME/.copilot/config.json" <<'JSON'
 {
   "defaultModel": "claude-sonnet-4.5"
+}
+JSON
+
+  cat >"$TEST_HOME/.codex/models_cache.json" <<'JSON'
+{
+  "models": [
+    { "slug": "gpt-5.4", "visibility": "list" }
+  ]
 }
 JSON
 }
@@ -119,14 +132,17 @@ PATH="$TEST_BIN:/usr/bin:/bin" \
 FOOLERY_SETUP_URL="file://$ROOT_DIR/scripts/setup.sh" \
 run_setup_with_tty \
   "$TEST_LAUNCHER setup" \
-  $'n\ny\n'
+  $'n\ny\n1\n3\n4\n2\n1\n2\n3\n'
 
 [[ -f "$SETTINGS_FILE" ]] || fail "Missing settings file: $SETTINGS_FILE"
-assert_contains "[agents.copilot]" "$SETTINGS_FILE"
+assert_contains "[agents.copilot-claude-sonnet-4-5]" "$SETTINGS_FILE"
 assert_contains 'command = "copilot"' "$SETTINGS_FILE"
 assert_contains 'model = "claude-sonnet-4.5"' "$SETTINGS_FILE"
-assert_contains 'take = "copilot"' "$SETTINGS_FILE"
-assert_contains 'scene = "copilot"' "$SETTINGS_FILE"
-assert_contains 'breakdown = "copilot"' "$SETTINGS_FILE"
+assert_contains "[agents.copilot-gpt-5-2]" "$SETTINGS_FILE"
+assert_contains 'model = "gpt-5.2"' "$SETTINGS_FILE"
+assert_contains "[agents.codex]" "$SETTINGS_FILE"
+assert_contains 'take = "copilot-claude-sonnet-4-5"' "$SETTINGS_FILE"
+assert_contains 'scene = "copilot-gpt-5-2"' "$SETTINGS_FILE"
+assert_contains 'breakdown = "codex"' "$SETTINGS_FILE"
 
 log "PASS: installed launcher configured Copilot from isolated setup."

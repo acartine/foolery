@@ -89,8 +89,33 @@ _wizard_prompt() {
 }
 
 # Bash 3.2-safe key-value helpers (replaces associative arrays).
-_kv_set() { eval "_KV_${1}__${2}=\$3"; }
-_kv_get() { eval "printf '%s' \"\${_KV_${1}__${2}:-\$3}\""; }
+_kv_key() {
+  printf '%s' "$2" | sed 's/[^A-Za-z0-9_]/_/g'
+}
+_kv_set() {
+  local key
+  key="$(_kv_key "$1" "$2")"
+  eval "_KV_${1}__${key}=\$3"
+}
+_kv_get() {
+  local key
+  key="$(_kv_key "$1" "$2")"
+  eval "printf '%s' \"\${_KV_${1}__${key}:-\$3}\""
+}
+
+_slugify() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9][^a-z0-9]*/-/g; s/^-//; s/-$//'
+}
+
+_append_unique() {
+  local value="$1"
+  shift
+  local existing
+  for existing in "$@"; do
+    [[ "$existing" == "$value" ]] && return 1
+  done
+  return 0
+}
 
 _configured_model() {
   local aid="$1"
@@ -157,19 +182,27 @@ _agent_label() {
 # ── TOML writer ───────────────────────────────────────────────
 
 # Write a complete settings file from the collected state.
-# Reads from globals: FOUND_AGENTS; uses _kv_get for AGENT_MODELS/ACTION_MAP.
+# Reads from globals: REGISTERED_AGENTS; uses _kv_get for AGENT_* / ACTION_MAP.
 _write_settings_toml() {
   mkdir -p "$CONFIG_DIR"
 
   {
     printf 'dispatchMode = "basic"\n\n'
 
+    local registered_agents=()
+    if [[ "${REGISTERED_AGENTS+set}" == "set" && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
+      registered_agents=("${REGISTERED_AGENTS[@]}")
+    else
+      registered_agents=("${FOUND_AGENTS[@]}")
+    fi
+
     local aid
-    for aid in "${FOUND_AGENTS[@]}"; do
-      local lbl
-      lbl="$(_agent_label "$aid")"
+    for aid in "${registered_agents[@]}"; do
+      local lbl cmd
+      lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
+      cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
       printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
-        "$aid" "$aid" "$lbl"
+        "$aid" "$cmd" "$lbl"
       local _model
       _model="$(_kv_get AGENT_MODELS "$aid" "")"
       if [[ -n "$_model" ]]; then
@@ -240,57 +273,123 @@ _prompt_action_choice() {
   fi
 }
 
-# Ask for an optional model string for a given agent.
-_prompt_model() {
+_agent_option_id() {
+  local aid="$1" model="$2"
+  local slug
+  slug="$(_slugify "$model")"
+  if [[ -n "$slug" ]]; then
+    printf '%s-%s' "$aid" "$slug"
+  else
+    printf '%s' "$aid"
+  fi
+}
+
+_register_agent_entry() {
+  local id="$1" command="$2" label="$3" model="${4:-}"
+  REGISTERED_AGENTS+=("$id")
+  _kv_set AGENT_COMMANDS "$id" "$command"
+  _kv_set AGENT_LABELS "$id" "$label"
+  _kv_set AGENT_MODELS "$id" "$model"
+}
+
+_register_default_agent() {
+  local aid="$1"
+  _register_agent_entry "$aid" "$aid" "$(_agent_label "$aid")" "${2:-}"
+}
+
+_register_model_agents() {
+  local aid="$1"
+  shift
+  if [[ $# -eq 0 ]]; then
+    _register_default_agent "$aid"
+    return
+  fi
+
+  local model
+  for model in "$@"; do
+    _register_agent_entry \
+      "$(_agent_option_id "$aid" "$model")" \
+      "$aid" \
+      "$(_agent_label "$aid")" \
+      "$model"
+  done
+}
+
+_prompt_model_manual() {
+  local aid="$1" prompt="${2:-}"
+  local model
+  if [[ -n "$prompt" ]]; then
+    _wizard_prompt "$prompt"
+  else
+    _wizard_prompt "Model for $aid (optional, press Enter to skip): "
+  fi
+  read -r model </dev/tty || true
+  printf '%s' "$model"
+}
+
+_collect_discovered_models() {
   local aid="$1"
   local models_list
   models_list="$(_discover_models "$aid")"
 
   if [[ -z "$models_list" ]]; then
-    # No discovery available — free-text fallback
-    local model
-    _wizard_prompt "Model for $aid (optional, press Enter to skip): "
-    read -r model </dev/tty || true
-    printf '%s' "$model"
+    _prompt_model_manual "$aid"
     return
   fi
 
-  # Build numbered menu
   local -a models=()
   while IFS= read -r m; do
-    [[ -n "$m" ]] && models+=("$m")
+    if [[ -n "$m" ]] && \
+      ([[ ${#models[@]} -eq 0 ]] || _append_unique "$m" "${models[@]}"); then
+      models+=("$m")
+    fi
   done <<EOF
 $models_list
 EOF
 
-  local count=${#models[@]}
-  _wizard_heading "Available models for $aid"
-  local i
-  for ((i = 0; i < count; i++)); do
-    printf '  %d) %s\n' "$((i + 1))" "${models[$i]}" >/dev/tty
-  done
-  printf '  %d) Skip\n' "$((count + 1))" >/dev/tty
-  printf '  %d) Other (type manually)\n' "$((count + 2))" >/dev/tty
+  local -a selected=()
+  while true; do
+    local -a remaining=()
+    local model
+    for model in "${models[@]}"; do
+      if [[ ${#selected[@]} -eq 0 ]] || _append_unique "$model" "${selected[@]}"; then
+        remaining+=("$model")
+      fi
+    done
 
-  local choice
-  _wizard_prompt "Choice [$((count + 1))]: "
-  read -r choice </dev/tty || true
-  choice="${choice:-$((count + 1))}"
+    local count=${#remaining[@]}
+    _wizard_heading "Available models for $aid"
+    local i
+    for ((i = 0; i < count; i++)); do
+      printf '  %d) %s\n' "$((i + 1))" "${remaining[$i]}" >/dev/tty
+    done
+    printf '  %d) Done\n' "$((count + 1))" >/dev/tty
+    printf '  %d) Other (type manually)\n' "$((count + 2))" >/dev/tty
 
-  if [[ "$choice" =~ ^[0-9]+$ ]]; then
-    if ((choice >= 1 && choice <= count)); then
-      printf '%s' "${models[$((choice - 1))]}"
-      return
-    elif ((choice == count + 2)); then
-      local model
-      _wizard_prompt 'Enter model name: '
-      read -r model </dev/tty || true
-      printf '%s' "$model"
-      return
+    local choice
+    _wizard_prompt "Choice [$((count + 1))]: "
+    read -r choice </dev/tty || true
+    choice="${choice:-$((count + 1))}"
+
+    if [[ "$choice" =~ ^[0-9]+$ ]]; then
+      if ((choice >= 1 && choice <= count)); then
+        selected+=("${remaining[$((choice - 1))]}")
+        continue
+      fi
+      if ((choice == count + 2)); then
+        model="$(_prompt_model_manual "$aid" 'Enter model name (optional): ')"
+        if [[ -n "$model" ]] && \
+          ([[ ${#selected[@]} -eq 0 ]] || _append_unique "$model" "${selected[@]}"); then
+          selected+=("$model")
+        fi
+      fi
     fi
+    break
+  done
+
+  if [[ ${#selected[@]} -gt 0 ]]; then
+    printf '%s\n' "${selected[@]}"
   fi
-  # Skip (default) — return empty
-  printf ''
 }
 
 # Prompt for per-action agent mappings (multiple agents).
@@ -305,19 +404,30 @@ _prompt_action_mappings() {
   local i
   for ((i = 0; i < ${#action_names[@]}; i++)); do
     local chosen
-    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${FOUND_AGENTS[@]}")"
+    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${REGISTERED_AGENTS[@]}")"
     _kv_set ACTION_MAP "${action_names[$i]}" "$chosen"
   done
 }
 
 # Prompt for model preferences for each found agent.
-_prompt_all_models() {
+_register_scanned_agents() {
   local aid
   printf '\n' >/dev/tty
   for aid in "${FOUND_AGENTS[@]}"; do
+    local models_list
+    models_list="$(_collect_discovered_models "$aid")"
+    local -a selected=()
     local model
-    model="$(_prompt_model "$aid")"
-    _kv_set AGENT_MODELS "$aid" "$model"
+    while IFS= read -r model; do
+      [[ -n "$model" ]] && selected+=("$model")
+    done <<EOF
+$models_list
+EOF
+    if [[ ${#selected[@]} -gt 0 ]]; then
+      _register_model_agents "$aid" "${selected[@]}"
+    else
+      _register_model_agents "$aid"
+    fi
   done
 }
 
@@ -342,23 +452,20 @@ maybe_agent_wizard() {
     return 0
   fi
 
-  # AGENT_MODELS and ACTION_MAP use _kv_set/_kv_get (bash 3.2-safe).
-  :
+  REGISTERED_AGENTS=()
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local detected_model
     detected_model="$(_configured_model "$sole")"
-    if [[ -n "$detected_model" ]]; then
-      _kv_set AGENT_MODELS "$sole" "$detected_model"
-    fi
+    _register_default_agent "$sole" "$detected_model"
     local action
     for action in take scene breakdown; do
       _kv_set ACTION_MAP "$action" "$sole"
     done
     _wizard_success "Registered $sole for all actions."
   else
-    _prompt_all_models
+    _register_scanned_agents
     _prompt_action_mappings
   fi
 

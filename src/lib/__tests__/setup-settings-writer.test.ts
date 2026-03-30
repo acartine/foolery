@@ -20,11 +20,56 @@ async function runWriter(scriptName: "setup.sh" | "agent-wizard.sh") {
       "-lc",
       `
         source "$1"
-        FOUND_AGENTS=(codex claude)
-        _kv_set AGENT_MODELS codex gpt-5
-        _kv_set ACTION_MAP take codex
+        REGISTERED_AGENTS=(
+          codex-gpt-5
+          codex-gpt-5-2
+          claude
+        )
+        _kv_set AGENT_COMMANDS codex-gpt-5 codex
+        _kv_set AGENT_LABELS codex-gpt-5 "OpenAI Codex"
+        _kv_set AGENT_MODELS codex-gpt-5 gpt-5
+        _kv_set AGENT_COMMANDS codex-gpt-5-2 codex
+        _kv_set AGENT_LABELS codex-gpt-5-2 "OpenAI Codex"
+        _kv_set AGENT_MODELS codex-gpt-5-2 gpt-5.2
+        _kv_set AGENT_COMMANDS claude claude
+        _kv_set AGENT_LABELS claude "Claude Code"
+        _kv_set ACTION_MAP take codex-gpt-5
         _kv_set ACTION_MAP scene claude
-        _kv_set ACTION_MAP breakdown codex
+        _kv_set ACTION_MAP breakdown codex-gpt-5-2
+        _write_settings_toml
+      `,
+      "bash",
+      scriptPath,
+    ],
+    {
+      env: { ...process.env, HOME: homeDir },
+    },
+  );
+
+  const settingsPath = join(homeDir, ".config", "foolery", "settings.toml");
+  const raw = await readFile(settingsPath, "utf8");
+  const parsed = parse(raw) as Record<string, unknown>;
+  return { raw, parsed };
+}
+
+async function runZeroSelectionWriter(
+  scriptName: "setup.sh" | "agent-wizard.sh",
+) {
+  const homeDir = await mkdtemp(join(tmpdir(), "foolery-settings-writer-"));
+  createdHomes.push(homeDir);
+
+  const scriptPath = join(process.cwd(), "scripts", scriptName);
+  await execFileAsync(
+    "bash",
+    [
+      "-lc",
+      `
+        source "$1"
+        REGISTERED_AGENTS=()
+        _register_model_agents copilot
+        _kv_set ACTION_MAP take copilot
+        _kv_set ACTION_MAP scene copilot
+        _kv_set ACTION_MAP breakdown copilot
         _write_settings_toml
       `,
       "bash",
@@ -63,9 +108,9 @@ describe("settings writers", () => {
       expect(parsed).toMatchObject({
         dispatchMode: "basic",
         actions: {
-          take: "codex",
+          take: "codex-gpt-5",
           scene: "claude",
-          breakdown: "codex",
+          breakdown: "codex-gpt-5-2",
         },
         backend: { type: "auto" },
         defaults: { profileId: "" },
@@ -80,9 +125,40 @@ describe("settings writers", () => {
       });
 
       expect(parsed.agents).toMatchObject({
-        codex: { command: "codex", label: "OpenAI Codex", model: "gpt-5" },
+        "codex-gpt-5": {
+          command: "codex",
+          label: "OpenAI Codex",
+          model: "gpt-5",
+        },
+        "codex-gpt-5-2": {
+          command: "codex",
+          label: "OpenAI Codex",
+          model: "gpt-5.2",
+        },
         claude: { command: "claude", label: "Claude Code" },
       });
+    },
+  );
+
+  it.each(["setup.sh", "agent-wizard.sh"] as const)(
+    "keeps the base cli entry when no model is selected in %s",
+    async (scriptName) => {
+      const { parsed } = await runZeroSelectionWriter(scriptName);
+
+      expect(parsed.agents).toMatchObject({
+        copilot: {
+          command: "copilot",
+          label: "GitHub Copilot",
+        },
+      });
+      expect(parsed.actions).toMatchObject({
+        take: "copilot",
+        scene: "copilot",
+        breakdown: "copilot",
+      });
+      expect((parsed.agents as Record<string, unknown>).copilot).not.toHaveProperty(
+        "model",
+      );
     },
   );
 });
