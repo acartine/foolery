@@ -10,6 +10,10 @@ import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { canTakeBeat } from "@/lib/beat-take-eligibility";
 import { refineBeatScope } from "@/lib/api";
+import {
+  useScopeRefinementPendingStore,
+  selectIsPending,
+} from "@/stores/scope-refinement-pending-store";
 import { MoveToProjectDialog } from "@/components/move-to-project-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -391,18 +395,29 @@ function HeaderActions({
     targetRepo: string,
   ) => void;
 }) {
-  const [isRefining, setIsRefining] =
+  const [isEnqueuing, setIsEnqueuing] =
     useState(false);
+  const isPending =
+    useScopeRefinementPendingStore(
+      selectIsPending(beat.id),
+    );
+  const markPending =
+    useScopeRefinementPendingStore(
+      (s) => s.markPending,
+    );
   const terminal = isTerminalBeat(beat);
+  const refineDisabled =
+    terminal || isEnqueuing || isPending;
 
   async function handleRefineScope() {
-    setIsRefining(true);
+    setIsEnqueuing(true);
     const result = await refineBeatScope(
       beat.id,
       repo,
     );
-    setIsRefining(false);
+    setIsEnqueuing(false);
     if (result.ok) {
+      markPending(beat.id);
       toast.success("Scope refinement enqueued");
     } else {
       toast.error(
@@ -439,16 +454,22 @@ function HeaderActions({
         variant="outline"
         size="xs"
         title="Re-run scope refinement for this beat"
-        disabled={terminal || isRefining}
+        disabled={refineDisabled}
         onClick={() => void handleRefineScope()}
       >
         <RefreshCw
           className={
             "size-3"
-            + (isRefining ? " animate-spin" : "")
+            + (isEnqueuing || isPending
+              ? " animate-spin"
+              : "")
           }
         />
-        {isRefining ? "Refining\u2026" : "Refine Scope"}
+        {isEnqueuing
+          ? "Enqueuing\u2026"
+          : isPending
+            ? "Refinement pending"
+            : "Refine Scope"}
       </Button>
       <MoveToProjectDialog
         beat={beat}
