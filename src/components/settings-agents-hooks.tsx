@@ -51,10 +51,6 @@ export function useAgentScanner() {
   const [scanning, setScanning] = useState(false);
   const [scannedAgents, setScannedAgents] =
     useState<ScannedAgent[] | null>(null);
-  const [
-    selectedMultiOptions,
-    setSelectedMultiOptions,
-  ] = useState<Record<string, string[]>>({});
 
   const handleScan = useCallback(async () => {
     setScanning(true);
@@ -62,7 +58,6 @@ export function useAgentScanner() {
       const res = await scanAgents();
       if (res.ok && res.data) {
         setScannedAgents(res.data);
-        setSelectedMultiOptions({});
         const installed = res.data.filter(
           (a) => a.installed,
         );
@@ -92,8 +87,6 @@ export function useAgentScanner() {
   return {
     scanning,
     scannedAgents,
-    selectedMultiOptions,
-    setSelectedMultiOptions,
     handleScan,
     dismissScan,
   };

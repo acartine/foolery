@@ -40,8 +40,6 @@ export function SettingsAgentsSection({
   const {
     scanning,
     scannedAgents,
-    selectedMultiOptions,
-    setSelectedMultiOptions,
     handleScan,
     dismissScan,
   } = useAgentScanner();
@@ -57,31 +55,10 @@ export function SettingsAgentsSection({
       const option = options.find(
         (o) => o.id === optionId,
       );
-      if (!option) return;
-
-      setSelectedMultiOptions((prev) => {
-        const current = prev[agent.id] ?? [];
-        const isSelected = current.includes(optionId);
-        return {
-          ...prev,
-          [agent.id]: isSelected
-            ? current.filter((id) => id !== optionId)
-            : [...current, optionId],
-        };
-      });
-
-      const current =
-        selectedMultiOptions[agent.id] ?? [];
-      const isSelected = current.includes(optionId);
-      if (!isSelected) {
-        await handleAddScannedOption(agent, option);
-      }
+      if (!option || agents[option.id]) return;
+      await handleAddScannedOption(agent, option);
     },
-    [
-      selectedMultiOptions,
-      setSelectedMultiOptions,
-      handleAddScannedOption,
-    ],
+    [agents, handleAddScannedOption],
   );
 
   const agentEntries = Object.entries(agents);
@@ -98,7 +75,6 @@ export function SettingsAgentsSection({
         <ScannedAgentsList
           scanned={scannedAgents}
           registered={agents}
-          selectedMultiOptions={selectedMultiOptions}
           onToggleOption={handleToggleOption}
           onDismiss={dismissScan}
         />

@@ -74,18 +74,26 @@ export function resolveMultiSelectedOptions(
   return options.filter((opt) => selectedIds.includes(opt.id));
 }
 
+export function resolveRegisteredOptionIds(
+  scanned: ScannedAgent,
+  registered: Record<string, RegisteredAgent>,
+): string[] {
+  const options = scanned.options ?? [];
+  return options
+    .filter((option) => Boolean(registered[option.id]))
+    .map((option) => option.id);
+}
+
 /* ── Scanned agents list ─────────────────────────────── */
 
 export function ScannedAgentsList({
   scanned,
   registered,
-  selectedMultiOptions,
   onToggleOption,
   onDismiss,
 }: {
   scanned: ScannedAgent[];
   registered: Record<string, RegisteredAgent>;
-  selectedMultiOptions: Record<string, string[]>;
   onToggleOption: (
     agent: ScannedAgent,
     optionId: string,
@@ -115,7 +123,10 @@ export function ScannedAgentsList({
           key={a.id}
           agent={a}
           registered={registered}
-          selectedIds={selectedMultiOptions[a.id] ?? []}
+          selectedIds={resolveRegisteredOptionIds(
+            a,
+            registered,
+          )}
           onToggleOption={(optionId) =>
             onToggleOption(a, optionId)
           }
