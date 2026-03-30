@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { fetchScopeRefinementStatus } from "@/lib/api";
 import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { useNotificationStore } from "@/stores/notification-store";
+import { useScopeRefinementPendingStore } from "@/stores/scope-refinement-pending-store";
 import type { ScopeRefinementCompletion } from "@/lib/types";
 
 const SCOPE_REFINEMENT_POLL_MS = 10_000;
@@ -46,6 +47,7 @@ export function filterNewCompletions(
 export function useScopeRefinementNotifications(enabled = true): void {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.addNotification);
+  const markComplete = useScopeRefinementPendingStore((state) => state.markComplete);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const mountedAtRef = useRef<number | null>(null);
 
@@ -58,6 +60,10 @@ export function useScopeRefinementNotifications(enabled = true): void {
 
     for (const notification of notifications) {
       addNotification(notification);
+    }
+
+    for (const beatId of beatIds) {
+      markComplete(beatId);
     }
 
     if (notifications.length > 0) {
