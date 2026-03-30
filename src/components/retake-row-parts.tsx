@@ -61,7 +61,7 @@ export function RetakeRowTitle({
     </span>
   );
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <span className={
         "shrink-0 font-mono text-[11px]"
         + " text-muted-foreground"
@@ -73,7 +73,7 @@ export function RetakeRowTitle({
           type="button"
           title="Open beat details"
           className={
-            "truncate text-sm font-medium"
+            "min-w-0 flex-1 truncate text-sm font-medium"
             + " text-left hover:underline"
           }
           onClick={() => onTitleClick(beat)}
@@ -82,7 +82,7 @@ export function RetakeRowTitle({
           {beat.title}
         </button>
       ) : (
-        <span className="truncate text-sm font-medium">
+        <span className="min-w-0 flex-1 truncate text-sm font-medium">
           {slug}
           {beat.title}
         </span>
