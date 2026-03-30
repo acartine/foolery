@@ -1,17 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Info } from "lucide-react";
+import {
+  saveDraft,
+  loadDraft,
+  clearDraft,
+  mergeDraftDefaults,
+} from "@/lib/create-draft-persistence";
+import type { CreateDraftData } from "@/lib/create-draft-persistence";
 import { createBeatSchema, updateBeatSchema } from "@/lib/schemas";
 import type { CreateBeatInput, UpdateBeatInput } from "@/lib/schemas";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
-import { profileDisplayName, PROFILE_DESCRIPTIONS } from "@/lib/workflows";
+import { profileDisplayName } from "@/lib/workflows";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,14 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { RelationshipPicker } from "@/components/relationship-picker";
+import { ProfileInfoDialog } from "@/components/profile-info-dialog";
+import { FormField } from "@/components/form-field";
 
 const PRIORITIES = [0, 1, 2, 3, 4] as const;
 
@@ -164,10 +164,12 @@ function BeatFormActions({
   isSubmitting,
   mode,
   onCreateMore,
+  onClear,
 }: {
   isSubmitting: boolean;
   mode: "create" | "edit";
   onCreateMore?: () => void;
+  onClear?: () => void;
 }) {
   const label = isSubmitting
     ? "Creating..."
@@ -176,6 +178,16 @@ function BeatFormActions({
       : "Update";
   return (
     <div className="flex gap-2">
+      {onClear && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClear}
+          disabled={isSubmitting}
+        >
+          Clear
+        </Button>
+      )}
       <Button
         type="submit"
         title="Submit"
@@ -245,6 +257,7 @@ type BeatFormProps =
         data: CreateBeatInput,
         deps?: RelationshipDeps,
       ) => void;
+      onClear?: () => void;
       isSubmitting?: boolean;
     }
   | {
@@ -270,6 +283,7 @@ interface CreateModeProps {
     data: CreateBeatInput,
     deps?: RelationshipDeps,
   ) => void;
+  onClear?: () => void;
   isSubmitting: boolean;
   workflows: MemoryWorkflowDescriptor[];
   hideTypeSelector: boolean;
@@ -281,6 +295,7 @@ function extractCreateProps(
   if (props.mode === "create") {
     return {
       onCreateMore: props.onCreateMore,
+      onClear: props.onClear,
       isSubmitting: props.isSubmitting ?? false,
       workflows: props.workflows ?? [],
       hideTypeSelector: props.hideTypeSelector ?? false,
@@ -298,26 +313,71 @@ function useBeatForm(props: BeatFormProps) {
   const create = extractCreateProps(props);
   const schema =
     mode === "create" ? createBeatSchema : updateBeatSchema;
-  const [blocks, setBlocks] = useState<string[]>([]);
-  const [blockedBy, setBlockedBy] = useState<string[]>([]);
+
+  const draftRef = useRef(mode === "create" ? loadDraft() : null);
+  const draft = draftRef.current;
+
+  const [blocks, setBlocks] = useState<string[]>(
+    draft?.blocks ?? [],
+  );
+  const [blockedBy, setBlockedBy] = useState<string[]>(
+    draft?.blockedBy ?? [],
+  );
   const [profileInfoOpen, setProfileInfoOpen] =
     useState(false);
+
+  const baseDefaults = {
+    title: "",
+    description: "",
+    type: "work" as const,
+    priority: 2 as const,
+    labels: [] as string[],
+    acceptance: "",
+    ...defaultValues,
+  };
+
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: {
-      title: "",
-      description: "",
-      type: "work" as const,
-      priority: 2 as const,
-      labels: [] as string[],
-      acceptance: "",
-      ...defaultValues,
-    },
+    defaultValues:
+      mode === "create"
+        ? mergeDraftDefaults(baseDefaults, draft)
+        : baseDefaults,
   });
+
+  const persistDraft = useCallback(
+    (vals: Record<string, unknown>) => {
+      const data: CreateDraftData = {
+        title: (vals.title as string) || undefined,
+        description:
+          (vals.description as string) || undefined,
+        type: (vals.type as string) || undefined,
+        priority: vals.priority as number,
+        labels: vals.labels as string[],
+        acceptance:
+          (vals.acceptance as string) || undefined,
+        blocks,
+        blockedBy,
+      };
+      saveDraft(data);
+    },
+    [blocks, blockedBy],
+  );
+
+  useEffect(() => {
+    if (mode !== "create") return;
+    const sub = form.watch((vals) => persistDraft(vals));
+    return () => sub.unsubscribe();
+  }, [mode, form, persistDraft]);
+
+  useEffect(() => {
+    if (mode !== "create") return;
+    persistDraft(form.getValues());
+  }, [mode, blocks, blockedBy, form, persistDraft]);
 
   const deps = { blocks, blockedBy };
   const handleFormSubmit = form.handleSubmit((data) => {
     if (mode === "create") {
+      clearDraft();
       (onSubmit as (
         d: CreateBeatInput,
         r?: RelationshipDeps,
@@ -332,6 +392,7 @@ function useBeatForm(props: BeatFormProps) {
   const handleCreateMoreClick = form.handleSubmit(
     (data) => {
       if (create.onCreateMore) {
+        clearDraft();
         create.onCreateMore(
           data as CreateBeatInput, deps,
         );
@@ -413,6 +474,7 @@ export function BeatForm(props: BeatFormProps) {
             ? handleCreateMoreClick
             : undefined
         }
+        onClear={create.onClear}
       />
       <ProfileInfoDialog
         open={profileInfoOpen}
@@ -426,68 +488,9 @@ function formErrorMap(
   errors: unknown,
 ): Record<string, { message?: string } | undefined> {
   if (!errors || typeof errors !== "object") return {};
-  return errors as Record<string, { message?: string } | undefined>;
+  return errors as Record<
+    string,
+    { message?: string } | undefined
+  >;
 }
 
-function FormField({
-  label,
-  error,
-  infoAction,
-  children,
-}: {
-  label: string;
-  error?: string;
-  infoAction?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <Label>{label}</Label>
-        {infoAction && (
-          <button
-            type="button"
-            onClick={infoAction}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            aria-label={`Learn about ${label.toLowerCase()}`}
-          >
-            <Info className="size-3.5" />
-          </button>
-        )}
-      </div>
-      {children}
-      {error && <p className="text-destructive text-xs">{error}</p>}
-    </div>
-  );
-}
-
-function ProfileInfoDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const entries = Object.entries(PROFILE_DESCRIPTIONS);
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Workflow Profiles</DialogTitle>
-          <DialogDescription>
-            Profiles control how work flows through planning, implementation,
-            and shipment stages.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-3 pt-2">
-          {entries.map(([id, description]) => (
-            <div key={id} className="space-y-0.5">
-              <p className="text-sm font-medium">{profileDisplayName(id)}</p>
-              <p className="text-xs text-muted-foreground">{description}</p>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
