@@ -92,7 +92,7 @@ describe("buildQueueSeries", () => {
         count: 2,
       }),
       agg({
-        provider: "openai",
+        provider: "codex",
         model: "o3",
         queueType: "planning",
         outcome: "fail",
@@ -102,7 +102,7 @@ describe("buildQueueSeries", () => {
     const series = buildQueueSeries(aggregates, "planning");
     expect(series).toHaveLength(2);
     const agents = series.map((s) => s.agent).sort();
-    expect(agents).toEqual(["claude/opus", "openai/o3"]);
+    expect(agents).toEqual(["claude/opus", "codex/o3"]);
   });
 
   it("uses null for dates without completed claims", () => {
@@ -235,12 +235,12 @@ describe("buildCombinedSeries", () => {
   it("partitions combined series by agent", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 2 }),
-      agg({ provider: "openai", model: "o3", queueType: "implementation", outcome: "fail", count: 1 }),
+      agg({ provider: "codex", model: "o3", queueType: "implementation", outcome: "fail", count: 1 }),
     ];
     const series = buildCombinedSeries(aggregates);
     expect(series).toHaveLength(2);
     const agents = series.map((s) => s.agent).sort();
-    expect(agents).toEqual(["claude/opus", "openai/o3"]);
+    expect(agents).toEqual(["claude/opus", "codex/o3"]);
   });
 
   it("uses null for dates with no completed claims for an agent", () => {
@@ -296,8 +296,8 @@ describe("buildLeaderboard", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 1 }),
-      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "success", count: 6 }),
-      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "fail", count: 4 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 6 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 4 }),
     ];
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(1);
@@ -333,11 +333,11 @@ describe("buildLeaderboard", () => {
   it("breaks ties by total completed count", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 1 }),
-      agg({ provider: "openai", model: "o3", queueType: "planning", outcome: "success", count: 10 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 10 }),
     ];
     const entries = buildLeaderboard(aggregates);
-    // Both 100% rate, but openai/o3 has more completed
-    expect(entries[0]!.bestAgent).toBe("openai/o3");
+    // Both 100% rate, but codex/o3 has more completed
+    expect(entries[0]!.bestAgent).toBe("codex/o3");
     // mean = 100%, margin = +0%
     expect(entries[0]!.margin).toBe("+0%");
   });

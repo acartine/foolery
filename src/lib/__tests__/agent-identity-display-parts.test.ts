@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { parseAgentDisplayParts } from "../agent-identity";
+import {
+  detectAgentProviderId,
+  parseAgentDisplayParts,
+  providerLabel,
+} from "../agent-identity";
 
 describe("parseAgentDisplayParts", () => {
   it("adds cli pill for claude agent", () => {
@@ -89,5 +93,17 @@ describe("parseAgentDisplayParts", () => {
     });
     expect(result.pills).toEqual(["copilot", "cli"]);
     expect(result.label).toBe("GPT Codex 5.3");
+  });
+
+  it("detects openai commands as Codex", () => {
+    expect(
+      detectAgentProviderId("/usr/local/bin/openai"),
+    ).toBe("codex");
+    expect(
+      providerLabel(
+        undefined,
+        "/usr/local/bin/openai",
+      ),
+    ).toBe("Codex");
   });
 });

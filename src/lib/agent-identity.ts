@@ -3,7 +3,7 @@ import type { ExecutionAgentInfo } from "@/lib/execution-port";
 export type AgentProviderId =
   | "claude"
   | "copilot"
-  | "openai"
+  | "codex"
   | "gemini"
   | "opencode"
   | "unknown";
@@ -29,7 +29,7 @@ export interface AgentOptionSeed {
 const PROVIDER_LABELS: Record<Exclude<AgentProviderId, "unknown">, string> = {
   claude: "Claude",
   copilot: "Copilot",
-  openai: "OpenAI",
+  codex: "Codex",
   gemini: "Gemini",
   opencode: "OpenCode",
 };
@@ -75,7 +75,7 @@ export function detectAgentProviderId(command?: string): AgentProviderId {
     lower.includes("chatgpt") ||
     lower.includes("openai")
   ) {
-    return "openai";
+    return "codex";
   }
   if (lower.includes("gemini")) return "gemini";
   return "unknown";
@@ -179,7 +179,7 @@ function normalizeCopilotModel(
   ) {
     const normalized = normalizeCodexModel(rawModel);
     return {
-      provider: "OpenAI",
+      provider: "Codex",
       ...(normalized.model ? { model: normalized.model } : {}),
       ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
       ...(normalized.version ? { version: normalized.version } : {}),
@@ -248,7 +248,7 @@ export function normalizeAgentIdentity(agent: AgentIdentityLike): {
         : {}),
     };
   }
-  if (provider === "OpenAI") {
+  if (provider === "Codex") {
     const normalized = normalizeCodexModel(rawModel);
     return {
       provider,
@@ -327,7 +327,7 @@ export function formatAgentFamily(option: AgentOptionSeed): string {
   const model = formatModelDisplay(option.model);
   const flavor = formatFlavorDisplay(option.flavor);
 
-  if (provider === "OpenAI" && model === "GPT") {
+  if (provider === "Codex" && model === "GPT") {
     return [model, flavor].filter(Boolean).join(" ");
   }
   if (provider === "Claude") {
@@ -429,7 +429,7 @@ export function parseAgentDisplayParts(
     };
   }
 
-  // Claude, Codex (OpenAI), Gemini — use existing label, add cli pill
+  // Claude, Codex, Gemini — use existing label, add cli pill
   pills.push("cli");
   return { label: formatAgentDisplayLabel(agent), pills };
 }

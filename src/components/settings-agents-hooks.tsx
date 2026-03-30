@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type {
   RegisteredAgent,
   ScannedAgent,
+  ScannedAgentOption,
 } from "@/lib/types";
 import {
   formatAgentOptionLabel,
@@ -34,9 +35,7 @@ async function setDefaultAgentForActions(
 
 function buildAgentPayload(
   scanned: ScannedAgent,
-  selected: NonNullable<
-    ReturnType<typeof resolveSelectedOption>
-  >,
+  selected: ScannedAgentOption,
 ) {
   return {
     command: scanned.path,
@@ -52,10 +51,6 @@ export function useAgentScanner() {
   const [scanning, setScanning] = useState(false);
   const [scannedAgents, setScannedAgents] =
     useState<ScannedAgent[] | null>(null);
-  const [
-    selectedScannedOptions,
-    setSelectedScannedOptions,
-  ] = useState<Record<string, string>>({});
 
   const handleScan = useCallback(async () => {
     setScanning(true);
@@ -63,16 +58,6 @@ export function useAgentScanner() {
       const res = await scanAgents();
       if (res.ok && res.data) {
         setScannedAgents(res.data);
-        setSelectedScannedOptions(
-          Object.fromEntries(
-            res.data.map((agent) => [
-              agent.id,
-              agent.selectedOptionId
-                ?? agent.options?.[0]?.id
-                ?? "",
-            ]),
-          ),
-        );
         const installed = res.data.filter(
           (a) => a.installed,
         );
@@ -102,92 +87,34 @@ export function useAgentScanner() {
   return {
     scanning,
     scannedAgents,
-    selectedScannedOptions,
-    setSelectedScannedOptions,
     handleScan,
     dismissScan,
   };
-}
-
-async function addAllAgents(
-  unregistered: ScannedAgent[],
-  opts: Record<string, string>,
-  onChange: (
-    agents: Record<string, RegisteredAgent>,
-  ) => void,
-) {
-  const sorted = [...unregistered].sort(
-    (a, b) => a.id.localeCompare(b.id),
-  );
-  let latestAgents:
-    | Record<string, RegisteredAgent>
-    | undefined;
-  let firstAddedId: string | null = null;
-  for (const agent of sorted) {
-    const selected = resolveSelectedOption(
-      agent,
-      opts,
-    );
-    if (!selected) continue;
-    const res = await addAgent(
-      selected.id,
-      buildAgentPayload(agent, selected),
-    );
-    if (res.ok && res.data) {
-      latestAgents = res.data;
-      firstAddedId ??= selected.id;
-    } else {
-      toast.error(
-        res.error
-          ?? `Failed to add ${agent.id}`,
-      );
-      return;
-    }
-  }
-  if (latestAgents) {
-    onChange(latestAgents);
-    if (firstAddedId) {
-      await setDefaultAgentForActions(
-        firstAddedId,
-      );
-    }
-    toast.success(
-      `Added ${sorted.length} agent(s)`,
-    );
-  }
 }
 
 export function useAgentMutations(
   onAgentsChange: (
     agents: Record<string, RegisteredAgent>,
   ) => void,
-  selectedScannedOptions: Record<string, string>,
 ) {
-  const handleAddScanned = useCallback(
-    async (scanned: ScannedAgent) => {
-      const selected = resolveSelectedOption(
-        scanned,
-        selectedScannedOptions,
-      );
-      if (!selected) {
-        toast.error(
-          "No import option for " + scanned.id,
-        );
-        return;
-      }
+  const handleAddScannedOption = useCallback(
+    async (
+      scanned: ScannedAgent,
+      option: ScannedAgentOption,
+    ) => {
       const res = await addAgent(
-        selected.id,
-        buildAgentPayload(scanned, selected),
+        option.id,
+        buildAgentPayload(scanned, option),
       );
       if (res.ok && res.data) {
         onAgentsChange(res.data);
         if (Object.keys(res.data).length === 1) {
           await setDefaultAgentForActions(
-            selected.id,
+            option.id,
           );
         }
         toast.success(
-          `Added ${selected.label}`,
+          `Added ${option.label}`,
         );
       } else {
         toast.error(
@@ -195,17 +122,7 @@ export function useAgentMutations(
         );
       }
     },
-    [onAgentsChange, selectedScannedOptions],
-  );
-
-  const handleAddAll = useCallback(
-    (unregistered: ScannedAgent[]) =>
-      addAllAgents(
-        unregistered,
-        selectedScannedOptions,
-        onAgentsChange,
-      ),
-    [onAgentsChange, selectedScannedOptions],
+    [onAgentsChange],
   );
 
   const handleRemove = useCallback(
@@ -225,8 +142,14 @@ export function useAgentMutations(
   );
 
   return {
-    handleAddScanned,
-    handleAddAll,
+    handleAddScannedOption,
     handleRemove,
   };
 }
+
+/**
+ * Legacy helper kept for backward compatibility.
+ * Used by callers that still reference the old
+ * single-select flow.
+ */
+export { resolveSelectedOption };

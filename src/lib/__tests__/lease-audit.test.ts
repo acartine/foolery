@@ -171,7 +171,7 @@ describe("aggregateLeaseAudit", () => {
         outcome: "claim",
       }),
       makeEvent({
-        agent: { provider: "OpenAI", model: "gpt", flavor: "codex" },
+        agent: { provider: "Codex", model: "gpt", flavor: "codex" },
         outcome: "claim",
       }),
     ];
@@ -200,7 +200,7 @@ describe("aggregateLeaseAudit", () => {
 describe("markBeatShipped", () => {
   it("attributes success to last claimant and fail to others", async () => {
     const agentA = { provider: "Claude", model: "claude", flavor: "opus" };
-    const agentB = { provider: "OpenAI", model: "gpt", flavor: "codex" };
+    const agentB = { provider: "Codex", model: "gpt", flavor: "codex" };
 
     await appendLeaseAuditEvent(
       makeEvent({
@@ -233,7 +233,7 @@ describe("markBeatShipped", () => {
     const failEvents = outcomes.filter((e) => e.outcome === "fail");
 
     expect(successEvents).toHaveLength(1);
-    expect(successEvents[0]!.agent.provider).toBe("OpenAI");
+    expect(successEvents[0]!.agent.provider).toBe("Codex");
 
     expect(failEvents).toHaveLength(1);
     expect(failEvents[0]!.agent.provider).toBe("Claude");
@@ -241,7 +241,7 @@ describe("markBeatShipped", () => {
 
   it("handles multiple queue types independently", async () => {
     const agentA = { provider: "Claude", model: "claude" };
-    const agentB = { provider: "OpenAI", model: "gpt" };
+    const agentB = { provider: "Codex", model: "gpt" };
 
     await appendLeaseAuditEvent(
       makeEvent({

@@ -97,7 +97,7 @@ describe("scanForAgents", () => {
 
     const codex = results.find((r) => r.id === "codex");
     expect(codex?.installed).toBe(false);
-    expect(codex?.provider).toBe("OpenAI");
+    expect(codex?.provider).toBe("Codex");
 
     const opencode = results.find((r) => r.id === "opencode");
     expect(opencode?.installed).toBe(false);

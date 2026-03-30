@@ -10,7 +10,7 @@ import {
 } from "@/lib/agent-identity";
 
 export interface ResolvedAgentInfo {
-  /** Display name, e.g. "Claude", "OpenAI", "Gemini" */
+  /** Display name, e.g. "Claude", "Codex", "Gemini" */
   name: string;
   /** Model identifier if configured, e.g. "sonnet" */
   model?: string;

@@ -178,7 +178,7 @@ describe("scanForAgents: model metadata", () => {
       command: "codex",
       path: "/opt/homebrew/bin/codex",
       installed: true,
-      provider: "OpenAI",
+      provider: "Codex",
       model: "gpt",
       modelId: "gpt-5.4",
       version: "5.4",

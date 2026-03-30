@@ -186,7 +186,7 @@ describe("LocalWorkerService: take and scene", () => {
       agentName: "Codex",
       agentModel: "codex/gpt",
       agentVersion: "5.4",
-      agentProvider: "OpenAI",
+      agentProvider: "Codex",
       agentType: "cli",
     });
 

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { Scan, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { RegisteredAgent } from "@/lib/types";
+import type {
+  RegisteredAgent,
+  ScannedAgent,
+} from "@/lib/types";
 import { addAgent } from "@/lib/settings-api";
 import {
   ScannedAgentsList,
@@ -37,19 +40,25 @@ export function SettingsAgentsSection({
   const {
     scanning,
     scannedAgents,
-    selectedScannedOptions,
-    setSelectedScannedOptions,
     handleScan,
     dismissScan,
   } = useAgentScanner();
 
   const {
-    handleAddScanned,
-    handleAddAll,
+    handleAddScannedOption,
     handleRemove,
-  } = useAgentMutations(
-    onAgentsChange,
-    selectedScannedOptions,
+  } = useAgentMutations(onAgentsChange);
+
+  const handleToggleOption = useCallback(
+    async (agent: ScannedAgent, optionId: string) => {
+      const options = agent.options ?? [];
+      const option = options.find(
+        (o) => o.id === optionId,
+      );
+      if (!option || agents[option.id]) return;
+      await handleAddScannedOption(agent, option);
+    },
+    [agents, handleAddScannedOption],
   );
 
   const agentEntries = Object.entries(agents);
@@ -66,17 +75,7 @@ export function SettingsAgentsSection({
         <ScannedAgentsList
           scanned={scannedAgents}
           registered={agents}
-          selectedOptions={
-            selectedScannedOptions
-          }
-          onSelectOption={(agentId, optId) =>
-            setSelectedScannedOptions((p) => ({
-              ...p,
-              [agentId]: optId,
-            }))
-          }
-          onAdd={handleAddScanned}
-          onAddAll={handleAddAll}
+          onToggleOption={handleToggleOption}
           onDismiss={dismissScan}
         />
       )}
@@ -187,9 +186,8 @@ function SectionToolbar({
     <div className="flex items-center justify-end">
       <div className="flex items-center gap-1.5">
         <Button
-          variant="outline"
+          variant="success-light"
           size="sm"
-          className="border-primary/20 bg-background/70 hover:bg-primary/10"
           onClick={onScan}
           disabled={scanning}
         >
@@ -197,9 +195,8 @@ function SectionToolbar({
           {scanning ? "Scanning..." : "Scan"}
         </Button>
         <Button
-          variant="outline"
+          variant="success"
           size="sm"
-          className="border-primary/20 bg-background/70 hover:bg-primary/10"
           onClick={onAdd}
         >
           <Plus className="size-3.5 mr-1" />
