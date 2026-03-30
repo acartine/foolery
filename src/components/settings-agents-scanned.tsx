@@ -2,17 +2,10 @@
 
 import { useState } from "react";
 import {
-  Plus, Check, X, ChevronsUpDown,
+  Check, X, ChevronsUpDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
@@ -71,97 +64,68 @@ export function resolveSelectedOption(
   );
 }
 
+export function resolveMultiSelectedOptions(
+  scanned: ScannedAgent,
+  selectedMulti: Record<string, string[]>,
+): ScannedAgentOption[] {
+  const options = scanned.options ?? [];
+  if (options.length === 0) return [];
+  const selectedIds = selectedMulti[scanned.id] ?? [];
+  return options.filter((opt) => selectedIds.includes(opt.id));
+}
+
 /* ── Scanned agents list ─────────────────────────────── */
 
 export function ScannedAgentsList({
   scanned,
   registered,
-  selectedOptions,
-  onSelectOption,
-  onAdd,
-  onAddAll,
+  selectedMultiOptions,
+  onToggleOption,
   onDismiss,
 }: {
   scanned: ScannedAgent[];
   registered: Record<string, RegisteredAgent>;
-  selectedOptions: Record<string, string>;
-  onSelectOption: (
-    agentId: string,
+  selectedMultiOptions: Record<string, string[]>;
+  onToggleOption: (
+    agent: ScannedAgent,
     optionId: string,
   ) => void;
-  onAdd: (a: ScannedAgent) => void;
-  onAddAll: (agents: ScannedAgent[]) => void;
   onDismiss: () => void;
 }) {
-  const unregisteredInstalled = scanned.filter(
-    (agent) => {
-      if (!agent.installed) return false;
-      const selected = resolveSelectedOption(
-        agent,
-        selectedOptions,
-      );
-      return selected ? !registered[selected.id] : false;
-    },
-  );
-
   return (
-    <div className="rounded-xl border border-accent/25 bg-background/65 p-3 space-y-2">
+    <div className={
+      "rounded-xl border border-accent/25 "
+      + "bg-background/65 p-3 space-y-2"
+    }>
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           Scan Results
         </span>
-        <div className="flex items-center gap-1">
-          {unregisteredInstalled.length > 1 && (
-            <Button
-              variant="outline"
-              className="border-primary/20 bg-background/70 hover:bg-primary/10"
-              size="sm"
-              onClick={() => onAddAll(unregisteredInstalled)}
-            >
-              <Plus className="size-3.5 mr-1" />
-              Add All
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hover:bg-primary/10"
-            onClick={onDismiss}
-          >
-            <X className="size-3.5" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hover:bg-primary/10"
+          onClick={onDismiss}
+        >
+          <X className="size-3.5" />
+        </Button>
       </div>
       {scanned.map((a) => (
         <ScannedAgentRow
           key={a.id}
           agent={a}
-          selectedOption={resolveSelectedOption(
-            a,
-            selectedOptions,
-          )}
-          isRegistered={Boolean(
-            resolveSelectedOption(a, selectedOptions)
-            && registered[
-              resolveSelectedOption(
-                a,
-                selectedOptions,
-              )!.id
-            ],
-          )}
-          onSelectOption={(optionId) =>
-            onSelectOption(a.id, optionId)
+          registered={registered}
+          selectedIds={selectedMultiOptions[a.id] ?? []}
+          onToggleOption={(optionId) =>
+            onToggleOption(a, optionId)
           }
-          onAdd={() => onAdd(a)}
         />
       ))}
     </div>
   );
 }
 
-/* ── Searchable option combobox ──────────────────────── */
-
-const SEARCHABLE_THRESHOLD = 10;
+/* ── Multi-select model combobox ─────────────────────── */
 
 export function filterSearchableOption(
   value: string,
@@ -183,22 +147,22 @@ export function filterSearchableOption(
     : 0;
 }
 
-function SearchableOptionCombobox({
+function MultiSelectModelCombobox({
   options,
   displayMap,
-  value,
-  onValueChange,
+  selectedIds,
+  onToggle,
 }: {
   options: ScannedAgentOption[];
   displayMap: Map<string, string>;
-  value: string;
-  onValueChange: (id: string) => void;
+  selectedIds: string[];
+  onToggle: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-
-  const selectedDisplay = value
-    ? (displayMap.get(value) ?? value)
-    : "select model/version";
+  const count = selectedIds.length;
+  const summary = count === 0
+    ? "select models"
+    : `${count} model${count > 1 ? "s" : ""} selected`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -207,12 +171,16 @@ function SearchableOptionCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="h-7 min-w-[220px] justify-between border-primary/20 bg-background/80 text-xs font-normal"
+          className={
+            "h-7 min-w-[180px] justify-between "
+            + "border-primary/20 bg-background/80 "
+            + "text-xs font-normal"
+          }
         >
-          <span className="truncate">
-            {selectedDisplay}
-          </span>
-          <ChevronsUpDown className="ml-1 size-3 shrink-0 opacity-50" />
+          <span className="truncate">{summary}</span>
+          <ChevronsUpDown className={
+            "ml-1 size-3 shrink-0 opacity-50"
+          } />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -231,6 +199,8 @@ function SearchableOptionCombobox({
                 const display =
                   displayMap.get(option.id)
                   ?? option.label;
+                const isSelected =
+                  selectedIds.includes(option.id);
                 return (
                   <CommandItem
                     key={option.id}
@@ -249,14 +219,11 @@ function SearchableOptionCombobox({
                       (term): term is string =>
                         Boolean(term),
                     )}
-                    onSelect={() => {
-                      onValueChange(option.id);
-                      setOpen(false);
-                    }}
+                    onSelect={() => onToggle(option.id)}
                     className="text-xs"
                   >
                     <Check
-                      className={`mr-1 size-3 ${option.id === value ? "opacity-100" : "opacity-0"}`}
+                      className={`mr-1 size-3 ${isSelected ? "opacity-100" : "opacity-0"}`}
                     />
                     <span className="flex-1 truncate">
                       {display}
@@ -275,136 +242,100 @@ function SearchableOptionCombobox({
   );
 }
 
+/* ── Selected model pills ────────────────────────────── */
+
+function SelectedModelPills({
+  options,
+  selectedIds,
+  displayMap,
+}: {
+  options: ScannedAgentOption[];
+  selectedIds: string[];
+  displayMap: Map<string, string>;
+}) {
+  if (selectedIds.length === 0) return null;
+  const selected = options.filter(
+    (o) => selectedIds.includes(o.id),
+  );
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      {selected.map((opt) => (
+        <Badge
+          key={opt.id}
+          variant="secondary"
+          className={
+            "text-[10px] px-1.5 py-0 h-4 "
+            + "font-normal shrink-0"
+          }
+        >
+          {displayMap.get(opt.id) ?? opt.label}
+        </Badge>
+      ))}
+    </div>
+  );
+}
+
 /* ── Scanned agent row ───────────────────────────────── */
 
 function ScannedAgentRow({
   agent,
-  selectedOption,
-  isRegistered,
-  onSelectOption,
-  onAdd,
+  registered,
+  selectedIds,
+  onToggleOption,
 }: {
   agent: ScannedAgent;
-  selectedOption: ScannedAgentOption | null;
-  isRegistered: boolean;
-  onSelectOption: (optionId: string) => void;
-  onAdd: () => void;
+  registered: Record<string, RegisteredAgent>;
+  selectedIds: string[];
+  onToggleOption: (optionId: string) => void;
 }) {
   const options = agent.options ?? [];
-  const useSearchable =
-    options.length >= SEARCHABLE_THRESHOLD;
   const displayMap = buildModelLabelDisplayMap(options);
+  void registered;
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-primary/10 bg-background/40 px-2.5 py-2 text-xs">
+    <div className={
+      "flex flex-col gap-2 rounded-lg border "
+      + "border-primary/10 bg-background/40 "
+      + "px-2.5 py-2 text-xs"
+    }>
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-col gap-0.5 min-w-0">
           <span className="shrink-0 font-medium">
             {agent.provider ?? agent.id}
           </span>
           {agent.installed ? (
-            <Badge
-              variant="secondary"
-              className="text-[10px] max-w-[220px] truncate [direction:rtl] [text-align:left]"
+            <span
+              className={
+                "text-[10px] text-muted-foreground "
+                + "truncate max-w-[300px]"
+              }
               title={agent.path}
             >
               {agent.path}
-            </Badge>
+            </span>
           ) : (
             <Badge
               variant="outline"
-              className="text-[10px]"
+              className="text-[10px] w-fit"
             >
               not found
             </Badge>
           )}
         </div>
-        {agent.installed && !isRegistered && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onAdd}
-          >
-            <Plus className="size-3.5 mr-1" />
-            Add
-          </Button>
-        )}
-        {agent.installed && isRegistered && (
-          <Badge
-            variant="outline"
-            className="text-[10px]"
-          >
-            registered
-          </Badge>
-        )}
+        <SelectedModelPills
+          options={options}
+          selectedIds={selectedIds}
+          displayMap={displayMap}
+        />
       </div>
-      {renderOptionSelector(
-        agent,
-        options,
-        useSearchable,
-        displayMap,
-        selectedOption,
-        onSelectOption,
+      {agent.installed && options.length > 0 && (
+        <MultiSelectModelCombobox
+          options={options}
+          displayMap={displayMap}
+          selectedIds={selectedIds}
+          onToggle={onToggleOption}
+        />
       )}
-    </div>
-  );
-}
-
-function renderOptionSelector(
-  agent: ScannedAgent,
-  options: ScannedAgentOption[],
-  useSearchable: boolean,
-  displayMap: Map<string, string>,
-  selectedOption: ScannedAgentOption | null,
-  onSelectOption: (optionId: string) => void,
-) {
-  return (
-    <div className="flex items-center gap-2 min-w-0">
-      <span className="shrink-0">{agent.id}</span>
-      {agent.installed && options.length > 0 ? (
-        useSearchable ? (
-          <SearchableOptionCombobox
-            options={options}
-            displayMap={displayMap}
-            value={selectedOption?.id ?? ""}
-            onValueChange={onSelectOption}
-          />
-        ) : (
-          <Select
-            value={selectedOption?.id ?? ""}
-            onValueChange={onSelectOption}
-          >
-            <SelectTrigger className="h-7 min-w-[220px] border-primary/20 bg-background/80">
-              <SelectValue
-                placeholder="select model/version"
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((option) => (
-                <SelectItem
-                  key={option.id}
-                  value={option.id}
-                >
-                  <span className="flex items-center gap-1.5">
-                    {displayMap.get(option.id)
-                      ?? option.label}
-                    <CreditsBadge
-                      credits={option.credits}
-                    />
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )
-      ) : selectedOption ? (
-        <Badge
-          variant="outline"
-          className="text-[10px]"
-        >
-          {selectedOption.label}
-        </Badge>
-      ) : null}
     </div>
   );
 }
