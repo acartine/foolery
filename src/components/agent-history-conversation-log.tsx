@@ -33,6 +33,12 @@ import {
   HistoryDebugPanel,
 } from "@/components/history-debug-panel";
 import {
+  getConversationLogTheme,
+} from "@/components/agent-history-conversation-log-theme";
+import {
+  useTerminalThemePreference,
+} from "@/hooks/use-terminal-theme-preference";
+import {
   relativeTime,
   Spinner,
 } from "./agent-history-utils";
@@ -69,15 +75,18 @@ interface ConversationLogProps {
 export function AgentHistoryConversationLog(
   props: ConversationLogProps,
 ) {
+  const { lightTheme } = useTerminalThemePreference();
+  const theme = getConversationLogTheme(lightTheme);
+
   return (
-    <section className={
-      "rounded-lg border border-white/10"
-      + " bg-[#1a1a2e] font-mono text-[#e0e0e0]"
-      + " subpixel-antialiased"
-      + " shadow-[0_12px_32px_"
-      + "rgba(8,12,24,0.32)]"
-    }>
-      <ConversationLogHeader {...props} />
+    <section className={cn(
+      "rounded-lg border font-mono subpixel-antialiased",
+      theme.container,
+    )}>
+      <ConversationLogHeader
+        {...props}
+        lightTheme={lightTheme}
+      />
       {props.loadedSummary
         && props.sessions.length > 0 ? (
         <InteractionPicker
@@ -86,9 +95,15 @@ export function AgentHistoryConversationLog(
       ) : null}
       {props.loadedSummary
         && props.sessions.length > 0 ? (
-        <SessionPicker {...props} />
+        <SessionPicker
+          {...props}
+          lightTheme={lightTheme}
+        />
       ) : null}
-      <ConversationLogBody {...props} />
+      <ConversationLogBody
+        {...props}
+        lightTheme={lightTheme}
+      />
     </section>
   );
 }
@@ -101,38 +116,39 @@ function ConversationLogHeader({
   debugPanelOpen,
   setDebugPanelOpen,
   copyBeatId,
-}: ConversationLogProps) {
+  lightTheme,
+}: ConversationLogProps & {
+  lightTheme: boolean;
+}) {
+  const theme = getConversationLogTheme(lightTheme);
+
   return (
-    <div className={
-      "flex flex-wrap items-center gap-2"
-      + " border-b border-white/10"
-      + " bg-[#16162a] px-3 py-2"
-    }>
-      <TerminalSquare className={
-        "size-5 text-cyan-200"
-      } />
-      <p className={
-        "text-[17px] font-semibold"
-        + " tracking-[0.08em] text-white"
-      }>
+    <div className={cn(
+      "flex flex-wrap items-center gap-2 px-3 py-2",
+      theme.sectionHeader,
+    )}>
+      <TerminalSquare className={cn("size-5", theme.icon)} />
+      <p className={cn(
+        "text-[17px] font-semibold tracking-[0.08em]",
+        theme.heading,
+      )}>
         Conversation Log
       </p>
       {loadedSummary ? (
-        <span className={
-          "max-w-[40ch] truncate"
-          + " text-[15px] text-white/80"
-        }>
+        <span className={cn(
+          "max-w-[40ch] truncate text-[15px]",
+          theme.muted,
+        )}>
           {loadedTitle}
         </span>
       ) : null}
       {loadedSummary ? (
         <button
           type="button"
-          className={
-            "font-mono text-[14px]"
-            + " text-white/65 underline-offset-2"
-            + " hover:text-white hover:underline"
-          }
+          className={cn(
+            "font-mono text-[14px]",
+            theme.link,
+          )}
           onClick={() => {
             copyBeatId(loadedSummary.beatId);
           }}
@@ -145,13 +161,7 @@ function ConversationLogHeader({
         <Button
           variant="ghost"
           size="sm"
-          className={
-            "h-7 gap-1.5 border"
-            + " border-white/10 bg-white/5"
-            + " px-2.5 font-mono text-[13px]"
-            + " text-white/80 hover:bg-white/10"
-            + " hover:text-white"
-          }
+          className={theme.debugButton}
           onClick={() => {
             setDebugPanelOpen((prev) => !prev);
           }}
@@ -163,10 +173,10 @@ function ConversationLogHeader({
         </Button>
       ) : null}
       {loadedSummary ? (
-        <span className={
-          "ml-auto inline-flex items-center"
-          + " gap-1.5 text-[13px] text-white/60"
-        }>
+        <span className={cn(
+          "ml-auto inline-flex items-center gap-1.5 text-[13px]",
+          theme.muted,
+        )}>
           <Clock3 className="size-4" />
           Last updated{" "}
           {relativeTime(loadedSummary.lastWorkedAt)}
@@ -180,17 +190,23 @@ function SessionPicker({
   sessions,
   selectedDebugSession,
   setSelectedSessionId,
-}: ConversationLogProps) {
+  lightTheme,
+}: Pick<
+  ConversationLogProps,
+  "sessions"
+  | "selectedDebugSession"
+  | "setSelectedSessionId"
+> & {
+  lightTheme: boolean;
+}) {
+  const theme = getConversationLogTheme(lightTheme);
+
   return (
-    <div className={
-      "flex flex-wrap items-center gap-2"
-      + " border-b border-white/10"
-      + " bg-[#16162a] px-3 py-2 text-[14px]"
-    }>
-      <span className={
-        "font-semibold uppercase"
-        + " tracking-[0.18em] text-white/75"
-      }>
+    <div className={cn(
+      "flex flex-wrap items-center gap-2 px-3 py-2 text-[14px]",
+      theme.sectionHeader,
+    )}>
+      <span className={theme.sessionLabel}>
         Conversation
       </span>
       {sessions.map((session, index) => {
@@ -212,16 +228,8 @@ function SessionPicker({
                 + " leading-none"
                 + " transition-colors",
               selected
-                ? "border-cyan-300/40"
-                  + " bg-cyan-400/12"
-                  + " text-cyan-50"
-                  + " shadow-[0_0_0_1px_"
-                  + "rgba(34,211,238,0.18)]"
-                : "border-white/10 bg-white/5"
-                  + " text-white/70"
-                  + " hover:border-white/20"
-                  + " hover:bg-white/10"
-                  + " hover:text-white",
+                ? theme.sessionTabActive
+                : theme.sessionTabInactive,
             )}
             title={
               "Select conversation "
@@ -234,9 +242,10 @@ function SessionPicker({
         );
       })}
       {selectedDebugSession ? (
-        <span className={
-          "ml-auto text-[13px] text-white/60"
-        }>
+        <span className={cn(
+          "ml-auto text-[13px]",
+          theme.muted,
+        )}>
           Debug target:{" "}
           {selectedDebugSession.sessionId}
         </span>
@@ -256,7 +265,11 @@ function ConversationLogBody({
   debugPanelOpen,
   consolePanelRef,
   beatListRef,
-}: ConversationLogProps) {
+  lightTheme,
+}: ConversationLogProps & {
+  lightTheme: boolean;
+}) {
+  const theme = getConversationLogTheme(lightTheme);
   const showDebug =
     debugPanelOpen && sessions.length > 0;
   return (
@@ -278,12 +291,10 @@ function ConversationLogBody({
           }
         }}
         className={cn(
-          "max-h-[calc(100vh-500px)]"
-            + " overflow-y-auto bg-[#1a1a2e] p-3"
-            + " outline-none focus-visible:ring-1"
-            + " focus-visible:ring-cyan-500/60",
+          "max-h-[calc(100vh-500px)]",
+          theme.panel,
           showDebug
-            ? "border-r border-white/10"
+            ? theme.panelDivider
             : "",
         )}
       >
@@ -293,6 +304,7 @@ function ConversationLogBody({
           sessions={sessions}
           sessionsQuery={sessionsQuery}
           picker={picker}
+          lightTheme={lightTheme}
         />
       </div>
       {showDebug
@@ -322,6 +334,7 @@ function ConsolePanelContent({
   sessions,
   sessionsQuery,
   picker,
+  lightTheme,
 }: {
   loadedSummary: AgentHistoryBeatSummary | null;
   loadedDetail: Beat | null;
@@ -331,10 +344,18 @@ function ConsolePanelContent({
     Error
   >;
   picker: InteractionPickerState;
+  lightTheme: boolean;
 }) {
   if (!loadedSummary) {
     return (
-      <DashedMessage tone="text-white/75">
+      <DashedMessage
+        tone={
+          lightTheme
+            ? "text-slate-700"
+            : "text-white/75"
+        }
+        lightTheme={lightTheme}
+      >
         Use click or Enter on a focused beat
         to load app and agent logs.
       </DashedMessage>
@@ -349,13 +370,21 @@ function ConsolePanelContent({
       <LoadingLogsMessage
         loadedSummary={loadedSummary}
         loadedDetail={loadedDetail}
+        lightTheme={lightTheme}
       />
     );
   }
 
   if (sessions.length === 0) {
     return (
-      <DashedMessage tone="text-white/70">
+      <DashedMessage
+        tone={
+          lightTheme
+            ? "text-slate-600"
+            : "text-white/70"
+        }
+        lightTheme={lightTheme}
+      >
         No captured log sessions for
         this beat yet.
       </DashedMessage>
@@ -367,6 +396,7 @@ function ConsolePanelContent({
       sessions={sessions}
       sessionsQuery={sessionsQuery}
       picker={picker}
+      lightTheme={lightTheme}
     />
   );
 }
@@ -374,16 +404,20 @@ function ConsolePanelContent({
 function DashedMessage({
   children,
   tone,
+  lightTheme,
 }: {
   children: React.ReactNode;
   tone: string;
+  lightTheme: boolean;
 }) {
   return (
     <div className={
-      "rounded border border-dashed"
-      + " border-white/15 bg-[#16162a]"
-      + " px-4 py-7 text-center font-mono"
-      + ` text-[15px] leading-6 ${tone}`
+      "rounded border border-dashed px-4 py-7"
+      + " text-center font-mono text-[15px] leading-6"
+      + ` ${lightTheme
+        ? "border-slate-300 bg-white"
+        : "border-white/15 bg-[#16162a]"}`
+      + ` ${tone}`
     }>
       {children}
     </div>
@@ -393,9 +427,11 @@ function DashedMessage({
 function LoadingLogsMessage({
   loadedSummary,
   loadedDetail,
+  lightTheme,
 }: {
   loadedSummary: AgentHistoryBeatSummary;
   loadedDetail: Beat | null;
+  lightTheme: boolean;
 }) {
   const label = displayBeatLabel(
     loadedSummary.beatId,
@@ -403,16 +439,20 @@ function LoadingLogsMessage({
   );
   return (
     <div className={
-      "flex flex-col items-center gap-2"
-      + " rounded border border-dashed"
-      + " border-white/15 bg-[#16162a]"
-      + " px-4 py-7 font-mono text-[15px]"
-      + " text-[#e0e0e0]"
+      "flex flex-col items-center gap-2 rounded"
+      + " border border-dashed px-4 py-7"
+      + " font-mono text-[15px]"
+      + ` ${lightTheme
+        ? "border-slate-300 bg-white text-slate-900"
+        : "border-white/15 bg-[#16162a]"
+          + " text-[#e0e0e0]"}`
     }>
       <Spinner className="size-5" />
       <span>Loading logs for {label}…</span>
       <span className={
-        "text-[14px] text-white/60"
+        `text-[14px] ${lightTheme
+          ? "text-slate-600"
+          : "text-white/60"}`
       }>
         prompt histories are BIG,
         please be patient :-)
@@ -425,6 +465,7 @@ function SessionsList({
   sessions,
   sessionsQuery,
   picker,
+  lightTheme,
 }: {
   sessions: AgentHistorySession[];
   sessionsQuery: UseQueryResult<
@@ -432,29 +473,28 @@ function SessionsList({
     Error
   >;
   picker: InteractionPickerState;
+  lightTheme: boolean;
 }) {
+  const theme = getConversationLogTheme(lightTheme);
+
   return (
     <div className="space-y-2">
       {sessionsQuery.isFetching
         && !sessionsQuery.isLoading ? (
-        <div className={
-          "flex items-center gap-1.5"
-          + " text-[14px] text-white/70"
-        }>
+        <div className={cn(
+          "flex items-center gap-1.5 text-[14px]",
+          theme.refreshingText,
+        )}>
           <Spinner className="size-4" />
           <span>Refreshing…</span>
         </div>
       ) : null}
-      <div className={
-        "flex items-center gap-2"
-        + " text-[15px] text-[#e0e0e0]"
-      }>
-        <Workflow className={
-          "size-5 text-cyan-200"
-        } />
-        <Sparkles className={
-          "size-5 text-cyan-200"
-        } />
+      <div className={cn(
+        "flex items-center gap-2 text-[15px]",
+        theme.countText,
+      )}>
+        <Workflow className={cn("size-5", theme.icon)} />
+        <Sparkles className={cn("size-5", theme.icon)} />
         {sessions.length} session
         {sessions.length === 1 ? "" : "s"}
       </div>
