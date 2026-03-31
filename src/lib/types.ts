@@ -381,9 +381,25 @@ export interface ScopeRefinementCompletion {
   timestamp: number;
 }
 
+export interface ScopeRefinementFailure {
+  beatId: string;
+  reason: string;
+  timestamp: number;
+}
+
+export interface ScopeRefinementWorkerHealth {
+  workerCount: number;
+  activeJobs: Array<{ beatId: string; startedAt: number }>;
+  totalCompleted: number;
+  totalFailed: number;
+  recentFailures: ScopeRefinementFailure[];
+  uptimeMs: number | null;
+}
+
 export interface ScopeRefinementStatus {
   queueSize: number;
   completions: ScopeRefinementCompletion[];
+  worker: ScopeRefinementWorkerHealth;
 }
 
 export interface ScannedAgent {

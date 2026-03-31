@@ -5,6 +5,8 @@ export interface ScopeRefinementJob {
   createdAt: number;
 }
 
+type EnqueueListener = () => void;
+
 interface ScopeRefinementQueueState {
   jobs: ScopeRefinementJob[];
   nextId: number;
@@ -12,6 +14,7 @@ interface ScopeRefinementQueueState {
 
 const g = globalThis as typeof globalThis & {
   __scopeRefinementQueueState?: ScopeRefinementQueueState;
+  __scopeRefinementEnqueueListeners?: EnqueueListener[];
 };
 
 function getQueueState(): ScopeRefinementQueueState {
@@ -22,6 +25,26 @@ function getQueueState(): ScopeRefinementQueueState {
     };
   }
   return g.__scopeRefinementQueueState;
+}
+
+function getListeners(): EnqueueListener[] {
+  if (!g.__scopeRefinementEnqueueListeners) {
+    g.__scopeRefinementEnqueueListeners = [];
+  }
+  return g.__scopeRefinementEnqueueListeners;
+}
+
+/**
+ * Register a callback invoked each time a job is enqueued.
+ * Returns an unsubscribe function.
+ */
+export function onEnqueue(listener: EnqueueListener): () => void {
+  getListeners().push(listener);
+  return () => {
+    const list = getListeners();
+    const idx = list.indexOf(listener);
+    if (idx >= 0) list.splice(idx, 1);
+  };
 }
 
 export function enqueueScopeRefinementJob(
@@ -35,14 +58,17 @@ export function enqueueScopeRefinementJob(
     createdAt: Date.now(),
   };
   state.jobs.push(job);
+  for (const listener of getListeners()) listener();
   return job;
 }
 
-export function dequeueScopeRefinementJob(): ScopeRefinementJob | undefined {
+export function dequeueScopeRefinementJob(
+): ScopeRefinementJob | undefined {
   return getQueueState().jobs.shift();
 }
 
-export function peekScopeRefinementJob(): ScopeRefinementJob | undefined {
+export function peekScopeRefinementJob(
+): ScopeRefinementJob | undefined {
   return getQueueState().jobs[0];
 }
 
@@ -54,4 +80,5 @@ export function clearScopeRefinementQueue(): void {
   const state = getQueueState();
   state.jobs = [];
   state.nextId = 1;
+  g.__scopeRefinementEnqueueListeners = [];
 }

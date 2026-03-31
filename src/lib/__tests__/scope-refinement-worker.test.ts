@@ -36,13 +36,18 @@ import {
 interface MockChild extends EventEmitter {
   stdout: EventEmitter;
   stderr: EventEmitter;
+  kill: ReturnType<typeof vi.fn>;
   emitOutput: () => void;
 }
 
-function createMockChild(output: string, exitCode = 0): MockChild {
+function createMockChild(
+  output: string,
+  exitCode = 0,
+): MockChild {
   const child = new EventEmitter() as MockChild;
   child.stdout = new EventEmitter();
   child.stderr = new EventEmitter();
+  child.kill = vi.fn();
   child.emitOutput = () => {
     child.stdout.emit("data", Buffer.from(output));
     child.emit("close", exitCode);
@@ -222,7 +227,9 @@ describe("processScopeRefinementJob: failure", () => {
       `${JSON.stringify({ type: "result", result: payload })}\n`,
     );
     mockSpawn.mockReturnValue(child);
-    mockUpdate.mockResolvedValue({ ok: false, error: "backend error" });
+    mockUpdate.mockResolvedValue({
+      ok: false, error: "backend error",
+    });
 
     const promise = processScopeRefinementJob({
       id: "job-1",
@@ -236,6 +243,42 @@ describe("processScopeRefinementJob: failure", () => {
     await promise;
 
     expect(getScopeRefinementQueueSize()).toBe(1);
-    expect(listScopeRefinementCompletions()).toHaveLength(0);
+    expect(
+      listScopeRefinementCompletions(),
+    ).toHaveLength(0);
+  });
+});
+
+describe("processScopeRefinementJob: timeout", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+  it("kills child and re-enqueues after 180s", async () => {
+    vi.useFakeTimers();
+    const child = new EventEmitter() as MockChild;
+    child.stdout = new EventEmitter();
+    child.stderr = new EventEmitter();
+    child.kill = vi.fn();
+    child.emitOutput = () => {};
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      createdAt: Date.now(),
+    });
+
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+
+    vi.advanceTimersByTime(180_001);
+
+    await promise;
+
+    vi.useRealTimers();
+
+    expect(child.kill).toHaveBeenCalledWith("SIGKILL");
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(getScopeRefinementQueueSize()).toBe(1);
   });
 });

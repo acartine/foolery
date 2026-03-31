@@ -1,9 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockStartScopeRefinementWorker = vi.fn();
+const mockGetHealth = vi.fn().mockReturnValue({
+  workerCount: 0,
+  activeJobs: [],
+  totalCompleted: 0,
+  totalFailed: 0,
+  recentFailures: [],
+  uptimeMs: null,
+});
 
 vi.mock("@/lib/scope-refinement-worker", () => ({
-  startScopeRefinementWorker: () => mockStartScopeRefinementWorker(),
+  startScopeRefinementWorker: () =>
+    mockStartScopeRefinementWorker(),
+  getScopeRefinementWorkerHealth: () => mockGetHealth(),
 }));
 
 import {
@@ -32,6 +42,14 @@ describe("GET /api/scope-refinement/status", () => {
       data: {
         queueSize: 0,
         completions: [],
+        worker: {
+          workerCount: 0,
+          activeJobs: [],
+          totalCompleted: 0,
+          totalFailed: 0,
+          recentFailures: [],
+          uptimeMs: null,
+        },
       },
     });
   });
