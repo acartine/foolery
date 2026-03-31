@@ -31,6 +31,9 @@ import type {
 import {
   spawnInitialChild,
 } from "@/lib/terminal-manager-initial-child";
+import {
+  getTerminalSessions,
+} from "@/lib/terminal-session-registry";
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
@@ -60,13 +63,7 @@ const MAX_BUFFER = 5000;
 const DEFAULT_MAX_SESSIONS = 5;
 const CLEANUP_DELAY_MS = 5 * 60 * 1000;
 
-const g = globalThis as unknown as {
-  __terminalSessions?: Map<string, SessionEntry>;
-};
-if (!g.__terminalSessions) {
-  g.__terminalSessions = new Map();
-}
-const sessions = g.__terminalSessions;
+const sessions = getTerminalSessions();
 
 function generateId(): string {
   return (
