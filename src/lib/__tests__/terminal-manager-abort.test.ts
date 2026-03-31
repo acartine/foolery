@@ -77,6 +77,7 @@ vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
   createLease: (...args: unknown[]) => createLeaseMock(...args),
   terminateLease: (...args: unknown[]) => terminateLeaseMock(...args),
+  showKnot: vi.fn(async () => ({ ok: true, data: { lease_id: null } })),
 }));
 
 vi.mock("@/lib/lease-audit", () => ({

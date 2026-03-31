@@ -414,7 +414,7 @@ function logLeaseBindingState(
   const isBrandNewLease =
     Boolean(leaseId) && leaseId !== previousLeaseId;
 
-  void logLeaseAudit({
+  void Promise.resolve(logLeaseAudit({
     event: "lease_claim_binding_check",
     repoPath: ctx.resolvedRepoPath,
     sessionId: ctx.id,
@@ -442,7 +442,7 @@ function logLeaseBindingState(
       isBrandNewLease,
       previousLeaseId,
     },
-  }).catch((err) => {
+  })).catch((err) => {
     console.error(
       `[terminal-manager] [${ctx.id}] [take-loop] ` +
       `failed to write lease binding check:`,
