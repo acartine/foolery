@@ -35,7 +35,7 @@ function vendorTheme(
     return {
       icon: Sparkles,
       color: light
-        ? "text-purple-700"
+        ? "text-purple-800"
         : "text-purple-300",
       bg: light
         ? "bg-purple-50"
@@ -46,7 +46,7 @@ function vendorTheme(
     return {
       icon: Code2,
       color: light
-        ? "text-green-700"
+        ? "text-green-800"
         : "text-green-300",
       bg: light
         ? "bg-green-50"
@@ -57,7 +57,7 @@ function vendorTheme(
     return {
       icon: Diamond,
       color: light
-        ? "text-blue-700"
+        ? "text-blue-800"
         : "text-blue-300",
       bg: light
         ? "bg-blue-50"
@@ -67,7 +67,7 @@ function vendorTheme(
   return {
     icon: Bot,
     color: light
-      ? "text-slate-600"
+      ? "text-slate-700"
       : "text-slate-300",
     bg: light
       ? "bg-slate-50"
@@ -82,7 +82,7 @@ function stateBarColor(
   const s = state.trim().toLowerCase();
   if (s === "shipped") {
     return light
-      ? "bg-green-100 text-green-800"
+      ? "bg-green-100 text-green-900"
       : "bg-green-500/20 text-green-300";
   }
   if (
@@ -91,26 +91,26 @@ function stateBarColor(
     || s === "deferred"
   ) {
     return light
-      ? "bg-gray-100 text-gray-700"
+      ? "bg-gray-100 text-gray-800"
       : "bg-gray-500/20 text-gray-400";
   }
   if (s === "blocked") {
     return light
-      ? "bg-red-100 text-red-800"
+      ? "bg-red-100 text-red-900"
       : "bg-red-500/20 text-red-300";
   }
   if (s.endsWith("_review")) {
     return light
-      ? "bg-purple-100 text-purple-800"
+      ? "bg-purple-100 text-purple-900"
       : "bg-purple-500/20 text-purple-300";
   }
   if (s.startsWith("ready_for_")) {
     return light
-      ? "bg-blue-100 text-blue-800"
+      ? "bg-blue-100 text-blue-900"
       : "bg-blue-500/20 text-blue-300";
   }
   return light
-    ? "bg-yellow-100 text-yellow-800"
+    ? "bg-yellow-100 text-yellow-900"
     : "bg-yellow-500/20 text-yellow-300";
 }
 
@@ -166,19 +166,19 @@ export function AgentInfoBar({
     ? "border-b border-slate-200"
     : "border-b border-white/5";
   const timerPrimary = lightTheme
-    ? "text-sky-700"
+    ? "text-sky-800"
     : "text-cyan-300/80";
   const timerIcon = lightTheme
-    ? "text-sky-500"
+    ? "text-sky-700"
     : "text-cyan-400/60";
   const timerSecondary = lightTheme
-    ? "text-slate-500"
+    ? "text-slate-600"
     : "text-white/50";
   const timerSecondaryIcon = lightTheme
-    ? "text-slate-400"
+    ? "text-slate-500"
     : "text-white/30";
   const separator = lightTheme
-    ? "text-slate-300"
+    ? "text-slate-400"
     : "text-white/20";
 
   return (

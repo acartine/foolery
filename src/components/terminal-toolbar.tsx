@@ -14,7 +14,7 @@ const BTN =
   + " hover:bg-white/10 hover:text-white";
 
 const BTN_DARK =
-  "rounded p-1 text-slate-600"
+  "rounded p-1 text-slate-700"
   + " hover:bg-slate-200 hover:text-slate-900";
 
 interface TerminalToolbarProps {
@@ -44,7 +44,7 @@ export function TerminalToolbar(
   } = props;
   const btnClass = lightTheme ? BTN_DARK : BTN;
   const textClass = lightTheme
-    ? "text-[11px] text-slate-500"
+    ? "text-[11px] text-slate-700"
     : "text-[11px] text-white/50";
   const switchClass = lightTheme
     ? "data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-slate-300"

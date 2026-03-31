@@ -312,10 +312,10 @@ function TabLabel(props: {
   lightTheme: boolean;
 }) {
   const prefixCls = props.lightTheme
-    ? "min-w-0 truncate text-slate-400"
+    ? "min-w-0 truncate text-slate-500"
     : "min-w-0 truncate text-white/45";
   const titleCls = props.lightTheme
-    ? "max-w-[160px] truncate text-slate-500"
+    ? "max-w-[160px] truncate text-slate-600"
     : "max-w-[160px] truncate text-white/50";
   return (
     <>
