@@ -120,7 +120,7 @@
 @layer base {
   html {
     font-size: calc(100% + 1px);
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
   }
 
   * {
