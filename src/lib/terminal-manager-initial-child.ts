@@ -107,9 +107,7 @@ export function spawnInitialChild(
   const autoShipPrompt = buildAutoShipPrompt(
     isInteractive, customPrompt, prepared,
   );
-  const sessionBeatIds = prepared.effectiveParent
-    ? prepared.waveBeatIds
-    : [beatId];
+  const sessionBeatIds = [beatId];
   const state = createInitialChildState(
     isInteractive, autoShipPrompt,
   );

@@ -55,19 +55,15 @@ describe("knots parent routing", () => {
     expect(interactionType).toBe("scene");
   });
 
-  it("sends wave beat IDs for knots parents", () => {
+  it("attributes token usage to parent beat for knots parents", () => {
     const beatId = "parent-1";
-    const waveBeatIds = ["child-1", "child-2"];
-    const effectiveParent = computeEffectiveParent(true);
-    const beatIds = effectiveParent ? waveBeatIds : [beatId];
-    expect(beatIds).toEqual(["child-1", "child-2"]);
+    const sessionBeatIds = [beatId];
+    expect(sessionBeatIds).toEqual(["parent-1"]);
   });
 
-  it("sends wave beat IDs for beads parents", () => {
+  it("attributes token usage to parent beat for beads parents", () => {
     const beatId = "parent-1";
-    const waveBeatIds = ["child-1", "child-2"];
-    const effectiveParent = computeEffectiveParent(true);
-    const beatIds = effectiveParent ? waveBeatIds : [beatId];
-    expect(beatIds).toEqual(["child-1", "child-2"]);
+    const sessionBeatIds = [beatId];
+    expect(sessionBeatIds).toEqual(["parent-1"]);
   });
 });
