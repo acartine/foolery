@@ -210,6 +210,16 @@ function formatOffset(diff: number): string {
   return `${sign}${Math.round(diff)}%`;
 }
 
+function meetsLeaderboardThresholds(
+  successes: number,
+  failures: number,
+): boolean {
+  const total = successes + failures;
+  if (total < 10) return false;
+  const rate = total > 0 ? (successes / total) * 100 : 0;
+  return rate > 25;
+}
+
 export function buildLeaderboard(
   aggregates: LeaseAuditAggregate[],
 ): LeaderboardEntry[] {
@@ -218,9 +228,24 @@ export function buildLeaderboard(
 
   for (const step of steps) {
     const stats = stepAgentStats(aggregates, step);
-    const mean = meanRate(stats);
 
-    const ranked = [...stats.entries()]
+    // Filter to qualified entries only (meets both thresholds)
+    const qualifiedStats = new Map<
+      string,
+      { successes: number; failures: number }
+    >();
+    for (const [agent, s] of stats) {
+      if (meetsLeaderboardThresholds(s.successes, s.failures)) {
+        qualifiedStats.set(agent, s);
+      }
+    }
+
+    // Skip step if no qualified agents
+    if (qualifiedStats.size === 0) continue;
+
+    const mean = meanRate(qualifiedStats);
+
+    const ranked = [...qualifiedStats.entries()]
       .map(([agent, s]) => {
         const total = s.successes + s.failures;
         const rate =
@@ -229,7 +254,6 @@ export function buildLeaderboard(
             : 0;
         return { agent, rate, total };
       })
-      .filter((r) => r.total > 0)
       .sort(
         (a, b) =>
           b.rate - a.rate || b.total - a.total,

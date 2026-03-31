@@ -294,10 +294,10 @@ describe("buildLeaderboard", () => {
 
   it("shows best agent per step with margin over mean", () => {
     const aggregates = [
-      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
-      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 1 }),
-      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 6 }),
-      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 4 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 90 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 10 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 60 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 40 }),
     ];
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(1);
@@ -310,7 +310,7 @@ describe("buildLeaderboard", () => {
 
   it("shows +0% margin when only one agent", () => {
     const aggregates = [
-      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 5 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 50 }),
     ];
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(1);
@@ -321,8 +321,10 @@ describe("buildLeaderboard", () => {
 
   it("creates separate entries for each step", () => {
     const aggregates = [
-      agg({ queueType: "planning", outcome: "success", count: 3 }),
-      agg({ queueType: "implementation", outcome: "success", count: 5 }),
+      agg({ queueType: "planning", outcome: "success", count: 30 }),
+      agg({ queueType: "planning", outcome: "fail", count: 10 }),
+      agg({ queueType: "implementation", outcome: "success", count: 50 }),
+      agg({ queueType: "implementation", outcome: "fail", count: 10 }),
     ];
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(2);
@@ -332,13 +334,103 @@ describe("buildLeaderboard", () => {
 
   it("breaks ties by total completed count", () => {
     const aggregates = [
-      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 1 }),
-      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 10 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 10 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 100 }),
     ];
     const entries = buildLeaderboard(aggregates);
     // Both 100% rate, but codex/o3 has more completed
     expect(entries[0]!.bestAgent).toBe("codex/o3");
     // mean = 100%, margin = +0%
     expect(entries[0]!.margin).toBe("+0%");
+  });
+
+  it("excludes entries with fewer than 10 attempts", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 0 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 15 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 5 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.bestAgent).toBe("codex/o3");
+  });
+
+  it("excludes entries with exactly 10 attempts and 25% success rate", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 10 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 30 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 20 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 5 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    // claude/opus has 25% success rate, should be excluded
+    expect(entries[0]!.bestAgent).toBe("codex/o3");
+    expect(entries[0]!.bestRate).toBe("80%");
+  });
+
+  it("includes entries with success rate greater than 25%", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 3 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 7 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 26 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 74 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    // claude/opus has 30% success rate, exactly 10 attempts, should be included
+    expect(entries[0]!.bestAgent).toBe("claude/opus");
+    expect(entries[0]!.bestRate).toBe("30%");
+  });
+
+  it("omits step when no qualified agents remain after filtering", () => {
+    const aggregates = [
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 1 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 5 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(0);
+  });
+
+  it("computes mean/margin/totalN from qualified entries only", () => {
+    const aggregates = [
+      // Low-signal agent that would skew stats if included
+      agg({ provider: "claude", model: "haiku", queueType: "planning", outcome: "success", count: 1 }),
+      agg({ provider: "claude", model: "haiku", queueType: "planning", outcome: "fail", count: 1 }),
+      // Qualified agents
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 80 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 20 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 70 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 30 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    // haiku excluded (only 2 attempts)
+    // mean = (80 + 70) / 2 = 75, best (opus 80%) margin = +5%
+    expect(entries[0]!.margin).toBe("+5%");
+    // totalN should be from qualified entries only: 100 + 100 = 200
+    expect(entries[0]!.totalN).toBe(200);
+  });
+
+  it("excludes low-signal agents from runner-up consideration", () => {
+    const aggregates = [
+      // Low-signal agents
+      agg({ provider: "claude", model: "haiku", queueType: "planning", outcome: "success", count: 2 }),
+      agg({ provider: "claude", model: "haiku", queueType: "planning", outcome: "fail", count: 0 }),
+      agg({ provider: "openai", model: "gpt-4", queueType: "planning", outcome: "success", count: 5 }),
+      agg({ provider: "openai", model: "gpt-4", queueType: "planning", outcome: "fail", count: 5 }),
+      // Qualified agents
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 90 }),
+      agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "fail", count: 10 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "success", count: 80 }),
+      agg({ provider: "codex", model: "o3", queueType: "planning", outcome: "fail", count: 20 }),
+    ];
+    const entries = buildLeaderboard(aggregates);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]!.bestAgent).toBe("claude/opus");
+    // runner-up should be codex/o3, not haiku or gpt-4
+    expect(entries[0]!.runnerUp).toBe("codex/o3");
+    expect(entries[0]!.runnerUpRate).toBe("80%");
   });
 });
