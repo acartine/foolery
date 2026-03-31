@@ -43,6 +43,7 @@ export interface LeaseLifecycleEvent {
   claimedId?: string;
   interactionType?: string;
   agentName?: string;
+  agentProvider?: string;
   agentModel?: string;
   agentVersion?: string;
   outcome: LeaseLifecycleOutcome;
@@ -60,6 +61,7 @@ export interface LogLeaseAuditInput {
   claimedId?: string;
   interactionType?: string;
   agentName?: string;
+  agentProvider?: string;
   agentModel?: string;
   agentVersion?: string;
   outcome: LeaseLifecycleOutcome;
@@ -220,6 +222,7 @@ export async function logLeaseAudit(input: LogLeaseAuditInput): Promise<void> {
     claimedId: input.claimedId,
     interactionType: input.interactionType,
     agentName: input.agentName,
+    agentProvider: input.agentProvider,
     agentModel: input.agentModel,
     agentVersion: input.agentVersion,
     outcome: input.outcome,

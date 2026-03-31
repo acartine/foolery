@@ -114,7 +114,11 @@ export async function buildNextTakePrompt(
     );
   }
 
-  await rotateKnotsLease(ctx);
+  await rotateKnotsLease(
+    ctx,
+    stepAgentOverride ?? ctx.agent,
+  );
+  ctx.entry.knotsLeaseStep = queueType;
 
   console.log(
     `${tag} claiming ${beatId} ` +

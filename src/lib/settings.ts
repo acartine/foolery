@@ -195,6 +195,9 @@ function toCliTarget(
   return {
     kind: "cli",
     command: agent.command,
+    ...(normalized.provider
+      ? { provider: normalized.provider }
+      : {}),
     ...(agent.model ? { model: agent.model } : {}),
     ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
     ...(normalized.version

@@ -5,6 +5,7 @@ import { EventEmitter } from "node:events";
 import type { ChildProcess } from "node:child_process";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
+import type { ExecutionAgentInfo } from "@/lib/execution-port";
 
 export interface SessionEntry {
   session: TerminalSession;
@@ -19,6 +20,10 @@ export interface SessionEntry {
   buffer: TerminalEvent[];
   interactionLog: InteractionLog;
   knotsLeaseId?: string;
+  knotsLeaseSeq?: number;
+  knotsLeaseStep?: string;
+  knotsLeaseAgentInfo?: ExecutionAgentInfo;
+  lastReleasedKnotsLeaseId?: string;
 }
 
 export const INPUT_CLOSE_GRACE_MS = 2000;

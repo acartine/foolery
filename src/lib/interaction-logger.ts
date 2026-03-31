@@ -31,6 +31,7 @@ interface SessionMeta {
   repoPath: string;
   beatIds: string[];
   agentName?: string;
+  agentProvider?: string;
   agentModel?: string;
   agentVersion?: string;
 }
@@ -248,6 +249,9 @@ function createInteractionLogHandle(
         outputTokens: normalized.outputTokens,
         totalTokens: normalized.totalTokens,
         ...(meta.agentName ? { agentName: meta.agentName } : {}),
+        ...(meta.agentProvider
+          ? { agentProvider: meta.agentProvider }
+          : {}),
         ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
         ...(meta.agentVersion ? { agentVersion: meta.agentVersion } : {}),
       });
@@ -320,6 +324,9 @@ export async function startInteractionLog(
     repoPath: meta.repoPath,
     beatIds: meta.beatIds,
     ...(meta.agentName ? { agentName: meta.agentName } : {}),
+    ...(meta.agentProvider
+      ? { agentProvider: meta.agentProvider }
+      : {}),
     ...(meta.agentModel ? { agentModel: meta.agentModel } : {}),
     ...(meta.agentVersion ? { agentVersion: meta.agentVersion } : {}),
   };

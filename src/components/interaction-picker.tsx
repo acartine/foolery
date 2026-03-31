@@ -30,6 +30,8 @@ export interface InteractionItem {
   entryId: string;
   sessionIndex: number;
   promptNumber: number;
+  conversationNumber: number;
+  sessionId: string;
   workflowState?: string;
   workflowStepLabel?: string;
 }
@@ -221,6 +223,8 @@ function useBuildInteractions(
           entryId: entry.id,
           sessionIndex: sessionIdx,
           promptNumber,
+          conversationNumber: sessionIdx + 1,
+          sessionId: session.sessionId,
           ...(workflowState
             ? { workflowState }
             : {}),

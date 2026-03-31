@@ -9,7 +9,7 @@ import type {
   InteractionPickerState,
 } from "@/components/interaction-picker";
 
-function formatCompactTime(ts: string): string {
+export function formatCompactTime(ts: string): string {
   const date = new Date(ts);
   if (Number.isNaN(date.getTime())) return ts;
   return date.toLocaleTimeString([], {
@@ -17,6 +17,24 @@ function formatCompactTime(ts: string): string {
     minute: "2-digit",
     second: "2-digit",
   });
+}
+
+export function formatCompactDate(ts: string): string {
+  const date = new Date(ts);
+  if (Number.isNaN(date.getTime())) return ts;
+  return date.toLocaleDateString([], {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function formatConversationLabel(
+  conversationNumber: number,
+  sessionId: string,
+  promptNumber: number,
+): string {
+  return `#${conversationNumber} ${sessionId} · Prompt #${promptNumber}`;
 }
 
 function promptStateMeta(
@@ -201,13 +219,19 @@ function InteractionOption({
       }`}
     >
       <span className="block text-[15px] font-medium leading-6">
-        {item.label}
+        {formatConversationLabel(
+          item.conversationNumber,
+          item.sessionId,
+          item.promptNumber,
+        )}
       </span>
       <span className="block text-[13px] text-white/60">
         {promptStateMeta(
           item.workflowState,
           item.workflowStepLabel,
         )}
+        {" · "}
+        {formatCompactDate(item.timestamp)}
         {" · "}
         {formatCompactTime(item.timestamp)}
       </span>

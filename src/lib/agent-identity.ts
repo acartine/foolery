@@ -454,6 +454,7 @@ export function toExecutionAgentInfo(agent: AgentIdentityLike): ExecutionAgentIn
   const n = normalizeAgentIdentity(agent);
   return {
     agentName: agentDisplayName(agent),
+    agentProvider: n.provider,
     agentModel: [n.flavor, n.model].filter(Boolean).join("/") || agent.model,
     agentVersion: n.version,
   };

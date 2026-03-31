@@ -13,6 +13,7 @@ import {
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   agentDisplayName,
+  normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import { wrapExecutionPrompt } from "@/lib/agent-prompt-guardrails";
@@ -225,6 +226,7 @@ async function startSessionLog(
       ? prepared.waveBeatIds
       : [prepared.beat.id],
     agentName: agentDisplayName(agent),
+    agentProvider: normalizeAgentIdentity(agent).provider,
     agentModel: agent.model,
     agentVersion: agent.version,
   }).catch((err) => {
@@ -252,7 +254,10 @@ function setupKnotsLease(
     if (started) return;
     started = true;
     const knotsLeaseId = entry.knotsLeaseId;
+    entry.lastReleasedKnotsLeaseId = knotsLeaseId;
     entry.knotsLeaseId = undefined;
+    entry.knotsLeaseStep = undefined;
+    entry.knotsLeaseAgentInfo = undefined;
     void terminateKnotsRuntimeLease({
       repoPath: prepared.resolvedRepoPath,
       source: "terminal_manager_take",
@@ -290,6 +295,11 @@ async function acquireKnotsLease(
     agentInfo,
   });
   entry.knotsLeaseId = knotsLeaseId;
+  if (knotsLeaseId) {
+    entry.knotsLeaseSeq = (entry.knotsLeaseSeq ?? 0) + 1;
+    entry.knotsLeaseStep = prepared.resolved?.step;
+    entry.knotsLeaseAgentInfo = agentInfo;
+  }
   logAttachedKnotsLease({
     repoPath: prepared.resolvedRepoPath,
     source: "terminal_manager_take",

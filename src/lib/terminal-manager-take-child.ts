@@ -14,6 +14,10 @@ import {
 import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
+  agentDisplayName,
+  toExecutionAgentInfo,
+} from "@/lib/agent-identity";
+import {
   type JsonObject,
   toObject,
   buildAutoAskUserResponse,
@@ -46,6 +50,12 @@ export function spawnTakeChild(
   agentOverride?: CliAgentTarget,
 ): void {
   const effectiveAgent = agentOverride ?? ctx.agent;
+  ctx.agent = effectiveAgent;
+  ctx.agentInfo = toExecutionAgentInfo(effectiveAgent);
+  ctx.session.agentName = agentDisplayName(effectiveAgent);
+  ctx.session.agentModel = effectiveAgent.model;
+  ctx.session.agentVersion = effectiveAgent.version;
+  ctx.session.agentCommand = effectiveAgent.command;
   const effectiveDialect = resolveDialect(
     effectiveAgent.command,
   );

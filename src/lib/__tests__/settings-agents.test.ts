@@ -87,6 +87,21 @@ describe("getActionAgent", () => {
     expect(agent.label).toBe("OpenAI Codex");
   });
 
+  it("preserves provider metadata for mapped agents", async () => {
+    const toml = [
+      '[agents.glm]', 'command = "/opt/homebrew/bin/opencode"',
+      'provider = "OpenCode"',
+      'model = "openrouter/z-ai/glm-5"',
+      'label = "OpenCode openrouter/z-ai/glm-5"',
+      '[actions]', 'take = "glm"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+    const agent = await getActionAgent("take");
+    expect(agent.command).toBe("/opt/homebrew/bin/opencode");
+    expect(agent.provider).toBe("OpenCode");
+    expect(agent.model).toBe("openrouter/z-ai/glm-5");
+  });
+
   it("falls back when mapped agent id is not registered", async () => {
     const toml = ['[actions]', 'take = "missing"'].join("\n");
     mockReadFile.mockResolvedValue(toml);
@@ -162,7 +177,7 @@ describe("removeRegisteredAgent", () => {
 });
 
 describe("getStepAgent: dispatch mode resolution", () => {
-    it("uses pool when dispatchMode is advanced and pool is configured", async () => {
+  it("uses pool when dispatchMode is advanced and pool is configured", async () => {
     const toml = [
       'dispatchMode = "advanced"',
       '[agents.sonnet]', 'command = "claude"',
@@ -174,6 +189,22 @@ describe("getStepAgent: dispatch mode resolution", () => {
     const agent = await getStepAgent(WorkflowStep.Implementation, "take");
     expect(agent.model).toBe("sonnet-4");
     expect(agent.label).toBe("Claude Sonnet");
+  });
+
+  it("preserves provider metadata for pool-selected agents", async () => {
+    const toml = [
+      'dispatchMode = "advanced"',
+      '[agents.glm]', 'command = "/opt/homebrew/bin/opencode"',
+      'provider = "OpenCode"',
+      'model = "openrouter/z-ai/glm-5"',
+      'label = "OpenCode openrouter/z-ai/glm-5"',
+      '[[pools.implementation]]', 'agentId = "glm"', 'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+    const agent = await getStepAgent(WorkflowStep.Implementation, "take");
+    expect(agent.command).toBe("/opt/homebrew/bin/opencode");
+    expect(agent.provider).toBe("OpenCode");
+    expect(agent.model).toBe("openrouter/z-ai/glm-5");
   });
 
   it("ignores pool when dispatchMode is basic", async () => {

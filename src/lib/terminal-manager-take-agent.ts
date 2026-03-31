@@ -6,10 +6,13 @@
 import { loadSettings } from "@/lib/settings";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
+  agentDisplayName,
   normalizeAgentIdentity,
+  toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
   appendLeaseAuditEvent,
+  logLeaseAudit,
 } from "@/lib/lease-audit";
 import {
   wrapExecutionPrompt,
@@ -252,11 +255,16 @@ export async function handleMaxClaims(
 
 export async function rotateKnotsLease(
   ctx: TakeLoopContext,
+  nextAgent: CliAgentTarget = ctx.agent,
 ): Promise<void> {
   if (ctx.memoryManagerType !== "knots") return;
+  const nextAgentInfo = toExecutionAgentInfo(nextAgent);
   ctx.entry.releaseKnotsLease?.(
     "lease_rotation", "success",
-    { reason: "next_iteration" },
+    {
+      reason: "next_iteration",
+      nextAgent: agentDisplayName(nextAgent),
+    },
   );
   const newLeaseId = await ensureKnotsLease({
     repoPath: ctx.resolvedRepoPath,
@@ -264,9 +272,15 @@ export async function rotateKnotsLease(
     sessionId: ctx.id,
     beatId: ctx.beatId,
     interactionType: "take",
-    agentInfo: ctx.agentInfo,
+    agentInfo: nextAgentInfo,
   });
   ctx.entry.knotsLeaseId = newLeaseId;
+  if (newLeaseId) {
+    ctx.entry.knotsLeaseSeq =
+      (ctx.entry.knotsLeaseSeq ?? 0) + 1;
+  }
+  ctx.entry.knotsLeaseAgentInfo = nextAgentInfo;
+  ctx.agentInfo = nextAgentInfo;
 
   ctx.knotsLeaseTerminationStarted.value = false;
   const { terminateKnotsRuntimeLease } =
@@ -280,7 +294,10 @@ export async function rotateKnotsLease(
     if (ctx.knotsLeaseTerminationStarted.value) return;
     ctx.knotsLeaseTerminationStarted.value = true;
     const leaseId = ctx.entry.knotsLeaseId;
+    ctx.entry.lastReleasedKnotsLeaseId = leaseId;
     ctx.entry.knotsLeaseId = undefined;
+    ctx.entry.knotsLeaseStep = undefined;
+    ctx.entry.knotsLeaseAgentInfo = undefined;
     void terminateKnotsRuntimeLease({
       repoPath: ctx.resolvedRepoPath,
       source: "terminal_manager_take",
@@ -370,11 +387,68 @@ export async function finalizeClaim(
     );
   });
 
+  logLeaseBindingState(ctx, queueType, claimAgent);
+
   return {
     prompt: wrapExecutionPrompt(rawPrompt, "take"),
     beatState: current.state,
     agentOverride: stepAgentOverride,
   };
+}
+
+function logLeaseBindingState(
+  ctx: TakeLoopContext,
+  queueType: string,
+  claimAgent: CliAgentTarget,
+): void {
+  const claimAgentInfo = toExecutionAgentInfo(claimAgent);
+  const leaseAgentInfo = ctx.entry.knotsLeaseAgentInfo;
+  const leaseId = ctx.entry.knotsLeaseId;
+  const previousLeaseId = ctx.entry.lastReleasedKnotsLeaseId;
+  const leaseStep = ctx.entry.knotsLeaseStep;
+  const agentMatchesLease =
+    leaseAgentInfo?.agentProvider === claimAgentInfo.agentProvider &&
+    leaseAgentInfo?.agentModel === claimAgentInfo.agentModel &&
+    leaseAgentInfo?.agentVersion === claimAgentInfo.agentVersion;
+  const stepMatchesLease = leaseStep === queueType;
+  const isBrandNewLease =
+    Boolean(leaseId) && leaseId !== previousLeaseId;
+
+  void logLeaseAudit({
+    event: "lease_claim_binding_check",
+    repoPath: ctx.resolvedRepoPath,
+    sessionId: ctx.id,
+    knotsLeaseId: leaseId,
+    beatId: ctx.beatId,
+    claimedId: ctx.beatId,
+    interactionType: "take",
+    agentName: claimAgentInfo.agentName,
+    agentProvider: claimAgentInfo.agentProvider,
+    agentModel: claimAgentInfo.agentModel,
+    agentVersion: claimAgentInfo.agentVersion,
+    outcome:
+      leaseId && agentMatchesLease && stepMatchesLease && isBrandNewLease
+        ? "success"
+        : "error",
+    message: `Lease binding check for ${queueType}.`,
+    data: {
+      queueType,
+      leaseSequence: ctx.entry.knotsLeaseSeq,
+      leaseStep,
+      leaseAgentInfo,
+      claimAgentInfo,
+      agentMatchesLease,
+      stepMatchesLease,
+      isBrandNewLease,
+      previousLeaseId,
+    },
+  }).catch((err) => {
+    console.error(
+      `[terminal-manager] [${ctx.id}] [take-loop] ` +
+      `failed to write lease binding check:`,
+      err,
+    );
+  });
 }
 
 function getFailedAgentIds(

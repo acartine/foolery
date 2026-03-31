@@ -347,7 +347,7 @@ describe("buildLeaderboard: qualification thresholds", () => {
   });
 });
 
-describe("buildLeaderboard filtering", () => {
+describe("buildLeaderboard threshold filtering", () => {
   it("excludes entries with fewer than 10 attempts", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 9 }),
