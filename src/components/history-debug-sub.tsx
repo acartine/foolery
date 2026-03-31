@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { TerminalSquare } from "lucide-react";
+import { TerminalSquare, Sun, Moon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import type { FitAddon as XtermFitAddon } from "@xterm/addon-fit";
 import type { Terminal as XtermTerminal } from "@xterm/xterm";
 import { connectToSession } from "@/lib/terminal-api";
@@ -10,6 +11,7 @@ import type {
   TerminalSession,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { getTerminalTheme } from "@/lib/terminal-theme";
 
 type DebugSessionStatus =
   | "idle"
@@ -119,6 +121,7 @@ export function useTerminalEffect(
   setDebugStatus: (
     status: DebugSessionStatus,
   ) => void,
+  lightTheme: boolean,
 ) {
   useEffect(() => {
     const container = containerRef.current;
@@ -129,7 +132,7 @@ export function useTerminalEffect(
     let term: XtermTerminal | null = null;
 
     const init = async () => {
-      term = await createTerminal(container);
+      term = await createTerminal(container, lightTheme);
       if (disposed) {
         term?.dispose();
         return;
@@ -195,11 +198,13 @@ export function useTerminalEffect(
     setDebugStatus,
     setExitCode,
     termRef,
+    lightTheme,
   ]);
 }
 
 async function createTerminal(
   container: HTMLDivElement,
+  lightTheme: boolean,
 ): Promise<XtermTerminal> {
   const { Terminal } = await import(
     "@xterm/xterm"
@@ -223,15 +228,7 @@ async function createTerminal(
     fontSize: 12,
     fontFamily:
       "var(--font-ibm-plex-mono), monospace",
-    theme: {
-      background: "#101522",
-      foreground: "#d5def0",
-      cursor: "#d5def0",
-      red: "#ff7b72",
-      green: "#7ee787",
-      yellow: "#f2cc60",
-      blue: "#79c0ff",
-    },
+    theme: getTerminalTheme(lightTheme),
     scrollback: 4_000,
   });
 
@@ -304,39 +301,81 @@ export function DebugPanelHeader({
   beatTitle,
   debugStatus,
   statusText,
+  lightTheme,
+  onLightThemeChange,
 }: {
   beatId: string;
   beatTitle?: string;
   debugStatus: DebugSessionStatus;
   statusText: string;
+  lightTheme: boolean;
+  onLightThemeChange: (value: boolean) => void;
 }) {
   const subtitle =
     "Launch an isolated debugging session" +
     " from this conversation and" +
     " inspect the result inline.";
 
+  const headerBg = lightTheme
+    ? "bg-[linear-gradient(135deg,rgba(245,245,250,0.95),rgba(235,235,240,0.98))]"
+    : "bg-[linear-gradient(135deg,rgba(36,52,89,0.95),rgba(13,20,35,0.98))]";
+  const borderClass = lightTheme
+    ? "border-b border-slate-200"
+    : "border-b border-white/10";
+  const titleClass = lightTheme
+    ? "text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500"
+    : "text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-200/80";
+  const headingClass = lightTheme
+    ? "mt-2 truncate text-lg font-semibold text-slate-900"
+    : "mt-2 truncate text-lg font-semibold text-white";
+  const subtitleClass = lightTheme
+    ? "mt-1 text-sm text-slate-600"
+    : "mt-1 text-sm text-slate-300";
+  const toggleTextClass = lightTheme
+    ? "text-[11px] text-slate-500"
+    : "text-[11px] text-slate-300";
+  const switchClass = lightTheme
+    ? "data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-slate-300"
+    : "data-[state=checked]:bg-cyan-600 data-[state=unchecked]:bg-white/20";
+
   return (
-    <header className="border-b border-white/10 bg-[linear-gradient(135deg,rgba(36,52,89,0.95),rgba(13,20,35,0.98))] px-5 py-4">
+    <header className={cn(headerBg, borderClass, "px-5 py-4")}>
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
+          <div className={cn("flex items-center gap-2", titleClass)}>
             <TerminalSquare className="size-4" />
             History Debugger
           </div>
-          <h2 className="mt-2 truncate text-lg font-semibold text-white">
+          <h2 className={headingClass}>
             {beatTitle ?? beatId}
           </h2>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className={subtitleClass}>
             {subtitle}
           </p>
         </div>
-        <div
-          className={cn(
-            "rounded-full border px-3 py-1 text-xs font-medium",
-            statusTone(debugStatus),
-          )}
-        >
-          {statusText}
+        <div className="flex items-center gap-2">
+          <label className="inline-flex items-center gap-1.5 rounded px-1 py-0.5">
+            {lightTheme
+              ? <Sun className="size-3.5 text-amber-500" />
+              : <Moon className="size-3.5 text-slate-400" />}
+            <span className={toggleTextClass}>
+              Light Theme
+            </span>
+            <Switch
+              checked={lightTheme}
+              onCheckedChange={onLightThemeChange}
+              aria-label="Light Theme"
+              className={switchClass}
+            />
+          </label>
+          <div
+            className={cn(
+              "rounded-full border px-3 py-1 text-xs font-medium",
+              statusTone(debugStatus),
+            )}
+          >
+            {statusText}
+          </div>
         </div>
       </div>
     </header>
@@ -346,20 +385,35 @@ export function DebugPanelHeader({
 export function DebugTerminalPanel({
   debugSession,
   terminalContainerRef,
+  lightTheme,
 }: {
   debugSession: TerminalSession | null;
   terminalContainerRef: React.RefObject<
     HTMLDivElement | null
   >;
+  lightTheme: boolean;
 }) {
+  const bgClass = lightTheme
+    ? "bg-[#fafafa]"
+    : "bg-[#0b1020]";
+  const borderClass = lightTheme
+    ? "border-b border-slate-200"
+    : "border-b border-white/10";
+  const textClass = lightTheme
+    ? "text-slate-600"
+    : "text-slate-400";
+  const placeholderClass = lightTheme
+    ? "text-slate-500"
+    : "text-slate-400";
+
   return (
-    <div className="flex min-h-[20rem] flex-col bg-[#0b1020]">
-      <div className="border-b border-white/10 px-4 py-3 text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+    <div className={cn("flex min-h-[20rem] flex-col", bgClass)}>
+      <div className={cn(borderClass, "px-4 py-3 text-xs font-medium uppercase tracking-[0.2em]", textClass)}>
         Embedded Terminal
       </div>
       <div className="relative min-h-0 flex-1">
         {!debugSession ? (
-          <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-sm text-slate-400">
+          <div className={cn("absolute inset-0 flex items-center justify-center px-6 text-center text-sm", placeholderClass)}>
             Submit the form to open a dedicated
             debug terminal for this conversation.
           </div>

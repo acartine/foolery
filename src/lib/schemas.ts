@@ -203,6 +203,7 @@ export const foolerySettingsSchema = z.object({
   dispatchMode: dispatchModeSchema,
   maxConcurrentSessions: z.number().int().min(1).max(20).default(5),
   maxClaimsPerQueueType: z.number().int().min(1).max(50).default(10),
+  terminalLightTheme: z.boolean().default(false),
 });
 
 export type FoolerySettings = z.infer<typeof foolerySettingsSchema>;

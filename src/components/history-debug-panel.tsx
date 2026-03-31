@@ -22,6 +22,7 @@ import {
   useTerminalEffect,
 } from "@/components/history-debug-sub";
 import { DebugFormPanel } from "@/components/history-debug-form";
+import { useTerminalThemePreference } from "@/hooks/use-terminal-theme-preference";
 
 type DebugSessionStatus =
   | "idle"
@@ -149,6 +150,7 @@ export function HistoryDebugPanel({
     defaultActualOutcome,
   );
   const sessionState = useDebugSessionState();
+  const themePref = useTerminalThemePreference();
 
   const termRefs = useTerminalRefs();
   const buildPrompt = promptBuilder ?? buildFallbackHistoryDebugPrompt;
@@ -180,49 +182,109 @@ export function HistoryDebugPanel({
     beatTitle,
     sessionState.setExitCode,
     sessionState.setDebugStatus,
+    themePref.lightTheme,
   );
 
+  const sectionBg = themePref.lightTheme
+    ? "bg-[#f8f9fa] text-slate-900"
+    : "bg-[#101522] text-white";
+  const sectionBorder = themePref.lightTheme
+    ? "border-slate-200"
+    : "border-white/10";
+  const sectionShadow = themePref.lightTheme
+    ? "shadow-[0_20px_80px_rgba(100,100,120,0.15)]"
+    : "shadow-[0_20px_80px_rgba(4,10,24,0.45)]";
+
+  return (
+    <HistoryDebugPanelContent
+      beatId={beatId}
+      beatTitle={beatTitle}
+      className={className}
+      debugStatus={sessionState.debugStatus}
+      statusText={statusText}
+      lightTheme={themePref.lightTheme}
+      setLightTheme={themePref.setLightTheme}
+      expectedOutcome={formState.expectedOutcome}
+      setExpectedOutcome={formState.setExpectedOutcome}
+      actualOutcome={formState.actualOutcome}
+      setActualOutcome={formState.setActualOutcome}
+      error={formState.error}
+      isSubmitting={formState.isSubmitting}
+      handleSubmit={handleSubmit}
+      session={session}
+      debugSession={sessionState.debugSession}
+      exitCode={sessionState.exitCode}
+      terminalContainerRef={termRefs.containerRef}
+      sectionBg={sectionBg}
+      sectionBorder={sectionBorder}
+      sectionShadow={sectionShadow}
+    />
+  );
+}
+
+function HistoryDebugPanelContent(props: {
+  beatId: string;
+  beatTitle?: string;
+  className?: string;
+  debugStatus: DebugSessionStatus;
+  statusText: string;
+  lightTheme: boolean;
+  setLightTheme: (value: boolean) => void;
+  expectedOutcome: string;
+  setExpectedOutcome: (value: string) => void;
+  actualOutcome: string;
+  setActualOutcome: (value: string) => void;
+  error: string | null;
+  isSubmitting: boolean;
+  handleSubmit: () => Promise<void>;
+  session: AgentHistorySession;
+  debugSession: TerminalSession | null;
+  exitCode: number | null;
+  terminalContainerRef: React.RefObject<
+    HTMLDivElement | null
+  >;
+  sectionBg: string;
+  sectionBorder: string;
+  sectionShadow: string;
+}) {
   return (
     <section
       className={cn(
-        "flex h-full min-h-[32rem] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#101522] text-white shadow-[0_20px_80px_rgba(4,10,24,0.45)]",
-        className,
+        "flex h-full min-h-[32rem] flex-col overflow-hidden rounded-2xl border",
+        props.sectionBorder,
+        props.sectionBg,
+        props.sectionShadow,
+        props.className,
       )}
     >
       <DebugPanelHeader
-        beatId={beatId}
-        beatTitle={beatTitle}
-        debugStatus={sessionState.debugStatus}
-        statusText={statusText}
+        beatId={props.beatId}
+        beatTitle={props.beatTitle}
+        debugStatus={props.debugStatus}
+        statusText={props.statusText}
+        lightTheme={props.lightTheme}
+        onLightThemeChange={props.setLightTheme}
       />
 
       <div className="grid min-h-0 flex-1 gap-0 lg:grid-cols-[minmax(18rem,24rem)_1fr]">
         <DebugFormPanel
-          expectedOutcome={
-            formState.expectedOutcome
-          }
-          setExpectedOutcome={
-            formState.setExpectedOutcome
-          }
-          actualOutcome={
-            formState.actualOutcome
-          }
-          setActualOutcome={
-            formState.setActualOutcome
-          }
-          error={formState.error}
-          isSubmitting={formState.isSubmitting}
-          handleSubmit={handleSubmit}
-          session={session}
-          debugSession={
-            sessionState.debugSession
-          }
-          exitCode={sessionState.exitCode}
+          expectedOutcome={props.expectedOutcome}
+          setExpectedOutcome={props.setExpectedOutcome}
+          actualOutcome={props.actualOutcome}
+          setActualOutcome={props.setActualOutcome}
+          error={props.error}
+          isSubmitting={props.isSubmitting}
+          handleSubmit={props.handleSubmit}
+          session={props.session}
+          debugSession={props.debugSession}
+          exitCode={props.exitCode}
+          lightTheme={props.lightTheme}
         />
 
         <DebugTerminalPanel
-          debugSession={sessionState.debugSession}
-          terminalContainerRef={termRefs.containerRef}
+          debugSession={props.debugSession}
+          terminalContainerRef={props.terminalContainerRef}
+          lightTheme={props.lightTheme}
         />
       </div>
     </section>

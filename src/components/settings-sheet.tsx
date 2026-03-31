@@ -17,6 +17,7 @@ import { SettingsReposSection } from "@/components/settings-repos-section";
 import { SettingsDefaultsSection } from "@/components/settings-defaults-section";
 import { SettingsDispatchSection } from "@/components/settings-dispatch-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
+import { useTerminalThemePreference } from "@/hooks/use-terminal-theme-preference";
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
@@ -46,6 +47,7 @@ interface SettingsData {
   dispatchMode: DispatchMode;
   maxConcurrentSessions: number;
   maxClaimsPerQueueType: number;
+  terminalLightTheme: boolean;
 }
 
 const DEFAULTS: SettingsData = {
@@ -77,6 +79,7 @@ const DEFAULTS: SettingsData = {
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
   maxClaimsPerQueueType: 10,
+  terminalLightTheme: false,
 };
 
 type SettingsTab = "repos" | "agents" | "dispatch" | "defaults";
@@ -113,11 +116,15 @@ function hydrateSettings(
     maxClaimsPerQueueType:
       data.maxClaimsPerQueueType
         ?? DEFAULTS.maxClaimsPerQueueType,
+    terminalLightTheme:
+      data.terminalLightTheme
+        ?? DEFAULTS.terminalLightTheme,
   };
 }
 
 interface SettingsTabPanelsProps {
   settings: SettingsData;
+  onTerminalLightThemeChange: (value: boolean) => void;
   onSettingsChange: React.Dispatch<
     React.SetStateAction<SettingsData>
   >;
@@ -125,6 +132,7 @@ interface SettingsTabPanelsProps {
 
 function SettingsTabPanels({
   settings,
+  onTerminalLightThemeChange,
   onSettingsChange,
 }: SettingsTabPanelsProps) {
   return (
@@ -196,6 +204,8 @@ function SettingsTabPanels({
               ...p, maxConcurrentSessions: v,
             }))
           }
+          terminalLightTheme={settings.terminalLightTheme}
+          onTerminalLightThemeChange={onTerminalLightThemeChange}
         />
       </TabsContent>
     </>
@@ -285,6 +295,7 @@ export function SettingsSheet({
   initialSection,
 }: SettingsSheetProps) {
   const queryClient = useQueryClient();
+  const themePref = useTerminalThemePreference();
   const [settings, setSettings] =
     useState<SettingsData>(DEFAULTS);
   const [loading, setLoading] = useState(false);
@@ -309,6 +320,22 @@ export function SettingsSheet({
       .finally(() => setLoading(false));
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    setSettings((current) => {
+      if (
+        current.terminalLightTheme
+        === themePref.lightTheme
+      ) {
+        return current;
+      }
+      return {
+        ...current,
+        terminalLightTheme: themePref.lightTheme,
+      };
+    });
+  }, [open, themePref.lightTheme]);
+
   async function handleSave() {
     setSaving(true);
     try {
@@ -332,6 +359,63 @@ export function SettingsSheet({
   }
 
   return (
+    <SettingsSheetContent
+      open={open}
+      onOpenChange={onOpenChange}
+      activeTab={activeTab}
+      loading={loading}
+      saving={saving}
+      settings={settings}
+      setSettings={setSettings}
+      onActiveTabChange={setActiveTab}
+      onTerminalLightThemeChange={(value) => {
+        setSettings((p) => ({
+          ...p,
+          terminalLightTheme: value,
+        }));
+        themePref.setLightTheme(value);
+      }}
+      onReset={() =>
+        setSettings({
+          ...DEFAULTS,
+          terminalLightTheme:
+            themePref.lightTheme,
+        })}
+      onSave={handleSave}
+    />
+  );
+}
+
+function SettingsSheetContent({
+  open,
+  onOpenChange,
+  activeTab,
+  loading,
+  saving,
+  settings,
+  setSettings,
+  onActiveTabChange,
+  onTerminalLightThemeChange,
+  onReset,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  activeTab: SettingsTab;
+  loading: boolean;
+  saving: boolean;
+  settings: SettingsData;
+  setSettings: React.Dispatch<
+    React.SetStateAction<SettingsData>
+  >;
+  onActiveTabChange: (tab: SettingsTab) => void;
+  onTerminalLightThemeChange: (
+    value: boolean,
+  ) => void;
+  onReset: () => void;
+  onSave: () => void;
+}) {
+  return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         className={
@@ -342,7 +426,7 @@ export function SettingsSheet({
         <Tabs
           value={activeTab}
           onValueChange={(v) =>
-            setActiveTab(v as SettingsTab)
+            onActiveTabChange(v as SettingsTab)
           }
           className="flex flex-col flex-1 min-h-0"
         >
@@ -357,6 +441,9 @@ export function SettingsSheet({
               ) : (
                 <SettingsTabPanels
                   settings={settings}
+                  onTerminalLightThemeChange={
+                    onTerminalLightThemeChange
+                  }
                   onSettingsChange={setSettings}
                 />
               )}
@@ -367,8 +454,8 @@ export function SettingsSheet({
         <SettingsFooter
           saving={saving}
           loading={loading}
-          onReset={() => setSettings(DEFAULTS)}
-          onSave={handleSave}
+          onReset={onReset}
+          onSave={onSave}
         />
       </SheetContent>
     </Sheet>
