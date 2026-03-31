@@ -18,12 +18,6 @@ export function useRehydrateTerminals(
     const enable = () => {
       if (!cancelled) setEnabled(true);
     };
-    const { terminals } =
-      useTerminalStore.getState();
-    if (terminals.length === 0) {
-      enable();
-      return () => { cancelled = true; };
-    }
     listSessions()
       .then((sessions) => {
         useTerminalStore

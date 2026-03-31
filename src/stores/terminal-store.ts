@@ -186,11 +186,15 @@ function computeRehydrate(
   const activeValid = terminals.some(
     (t) => t.sessionId === state.activeSessionId,
   );
+  const hasRunningOrphans = orphans.length > 0;
   return {
     terminals,
     activeSessionId: activeValid
       ? state.activeSessionId
       : (terminals.at(-1)?.sessionId ?? null),
+    ...(hasRunningOrphans
+      ? { panelOpen: true, panelMinimized: false }
+      : {}),
   };
 }
 

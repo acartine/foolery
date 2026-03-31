@@ -357,4 +357,69 @@ describe("rehydrateFromBackend", () => {
     const state = useTerminalStore.getState();
     expect(state.activeSessionId).toBe("alive");
   });
+
+});
+
+describe("rehydrateFromBackend panel behavior", () => {
+  beforeEach(resetTerminalStore);
+
+  it("opens panel when orphan running sessions are discovered", () => {
+    useTerminalStore.setState({
+      terminals: [],
+      panelOpen: false,
+      panelMinimized: false,
+    });
+    useTerminalStore.getState().rehydrateFromBackend([
+      makeBackendSession({
+        id: "orphan-1",
+        beatId: "b-orphan",
+        status: "running",
+      }),
+    ]);
+    const state = useTerminalStore.getState();
+    expect(state.terminals).toHaveLength(1);
+    expect(state.panelOpen).toBe(true);
+    expect(state.panelMinimized).toBe(false);
+  });
+
+  it("does not open panel when no orphans are discovered", () => {
+    useTerminalStore.setState({
+      terminals: [],
+      panelOpen: false,
+      panelMinimized: false,
+    });
+    useTerminalStore.getState().rehydrateFromBackend([]);
+    const state = useTerminalStore.getState();
+    expect(state.panelOpen).toBe(false);
+  });
+
+  it("does not open panel when only completed orphans exist", () => {
+    useTerminalStore.setState({
+      terminals: [],
+      panelOpen: false,
+      panelMinimized: false,
+    });
+    useTerminalStore.getState().rehydrateFromBackend([
+      makeBackendSession({ id: "orphan-1", status: "completed" }),
+    ]);
+    const state = useTerminalStore.getState();
+    expect(state.panelOpen).toBe(false);
+  });
+
+  it("unminimizes panel when orphan running sessions are discovered", () => {
+    useTerminalStore.setState({
+      terminals: [],
+      panelOpen: false,
+      panelMinimized: true,
+    });
+    useTerminalStore.getState().rehydrateFromBackend([
+      makeBackendSession({
+        id: "orphan-1",
+        status: "running",
+      }),
+    ]);
+    const state = useTerminalStore.getState();
+    expect(state.panelOpen).toBe(true);
+    expect(state.panelMinimized).toBe(false);
+  });
 });
