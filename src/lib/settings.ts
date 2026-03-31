@@ -119,6 +119,7 @@ export type SettingsPartial = Partial<{
   dispatchMode: FoolerySettings["dispatchMode"];
   maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];
   maxClaimsPerQueueType: FoolerySettings["maxClaimsPerQueueType"];
+  terminalLightTheme: FoolerySettings["terminalLightTheme"];
 }>;
 
 /**
@@ -171,6 +172,10 @@ function mergeSettingsPartial(
       partial.maxClaimsPerQueueType !== undefined
         ? partial.maxClaimsPerQueueType
         : current.maxClaimsPerQueueType,
+    terminalLightTheme:
+      partial.terminalLightTheme !== undefined
+        ? partial.terminalLightTheme
+        : current.terminalLightTheme,
   };
 }
 

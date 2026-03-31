@@ -9,6 +9,15 @@ import {
   validateHistoryDebugForm,
 } from "@/components/history-debug-panel";
 
+vi.mock("@/hooks/use-terminal-theme-preference", () => ({
+  useTerminalThemePreference: () => ({
+    lightTheme: false,
+    isLoading: false,
+    isSaving: false,
+    setLightTheme: vi.fn(),
+  }),
+}));
+
 function makeSession(
   overrides: Partial<AgentHistorySession> = {},
 ): AgentHistorySession {

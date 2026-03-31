@@ -49,6 +49,7 @@ const DEFAULT_SETTINGS = {
   dispatchMode: "basic",
   maxConcurrentSessions: 5,
   maxClaimsPerQueueType: 10,
+  terminalLightTheme: false,
 };
 
 beforeEach(() => {
@@ -190,6 +191,7 @@ describe("backfillMissingSettingsDefaults", () => {
         'dispatchMode = "basic"',
         'maxConcurrentSessions = 5',
         'maxClaimsPerQueueType = 10',
+        'terminalLightTheme = false',
         '[actions]', 'take = ""', 'scene = ""',
         'breakdown = ""', 'scopeRefinement = ""',
         '[backend]', 'type = "cli"',
@@ -253,6 +255,7 @@ describe("saveSettings", () => {
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
       maxClaimsPerQueueType: 10,
+      terminalLightTheme: false,
     };
     await saveSettings(settings);
     expect(mockMkdir).toHaveBeenCalled();
@@ -272,6 +275,7 @@ describe("saveSettings", () => {
       dispatchMode: "basic" as const,
       maxConcurrentSessions: 5,
       maxClaimsPerQueueType: 10,
+      terminalLightTheme: false,
     };
     await saveSettings(settings);
     expect(mockChmod).toHaveBeenCalledWith(
@@ -345,5 +349,24 @@ describe("updateSettings", () => {
       flavor: "opus",
       version: "4.6",
     });
+  });
+
+  it("merges terminal light theme updates without clobbering other settings", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        'maxConcurrentSessions = 7',
+        'terminalLightTheme = false',
+        '[actions]',
+        'take = "claude"',
+      ].join("\n"),
+    );
+
+    const updated = await updateSettings({
+      terminalLightTheme: true,
+    });
+
+    expect(updated.terminalLightTheme).toBe(true);
+    expect(updated.maxConcurrentSessions).toBe(7);
+    expect(updated.actions.take).toBe("claude");
   });
 });

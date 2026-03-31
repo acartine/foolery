@@ -38,6 +38,9 @@ import {
 import {
   useTabStripHelpers,
 } from "@/hooks/use-terminal-tab-strip-state";
+import {
+  useTerminalThemePreference,
+} from "@/hooks/use-terminal-theme-preference";
 import type { Terminal as XtermTerminal }
   from "@xterm/xterm";
 
@@ -56,6 +59,8 @@ export interface TerminalPanelState {
   beatInfoForBar: BeatInfoForBar | null;
   thinkingDetailVisible: boolean;
   setThinkingDetailVisible: (v: boolean) => void;
+  lightTheme: boolean;
+  setLightTheme: (value: boolean) => void;
   tabStripRef: React.RefObject<
     HTMLDivElement | null
   >;
@@ -113,6 +118,7 @@ export function useTerminalPanelState(
   const ts = useTabStripHelpers(
     terminals.length,
   );
+  const themePref = useTerminalThemePreference();
   const toggleMaximize = useCallback(
     () => setPanelHeight(
       panelHeight > 70 ? 35 : 80,
@@ -139,6 +145,7 @@ export function useTerminalPanelState(
     removeTerminal, upsertTerminal,
     agentCommand: agentInfo?.command,
     thinkingDetailVisible: td,
+    lightTheme: themePref.lightTheme,
     recentOutputBySession:
       ac.recentOutputBySession,
     failureHintBySession:
@@ -162,7 +169,7 @@ export function useTerminalPanelState(
     panelOpen, panelHeight, terminals,
     activeTerminal, pendingClose, closePanel,
     agentInfo, beatInfoForBar, td, setTd,
-    ts, handleTabClick, removeTerminal,
+    themePref, ts, handleTabClick, removeTerminal,
     xterm, toggleMaximize,
   );
 }
@@ -178,6 +185,7 @@ function buildResult(
   beatInfoForBar: TerminalPanelState["beatInfoForBar"],
   td: boolean,
   setTd: (v: boolean) => void,
+  themePref: ReturnType<typeof useTerminalThemePreference>,
   ts: ReturnType<typeof useTabStripHelpers>,
   handleTabClick: (sid: string) => void,
   removeTerminal: (sid: string) => void,
@@ -191,6 +199,8 @@ function buildResult(
     agentInfo, beatInfoForBar,
     thinkingDetailVisible: td,
     setThinkingDetailVisible: setTd,
+    lightTheme: themePref.lightTheme,
+    setLightTheme: themePref.setLightTheme,
     tabStripRef: ts.tabStripRef,
     tabStripState: ts.tabStripState,
     compactTabLabels: ts.compactTabLabels,

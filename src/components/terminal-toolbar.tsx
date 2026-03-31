@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Copy, Square, Maximize2, Minimize2, X,
+  Copy, Square, Maximize2, Minimize2, X, Sun, Moon,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
@@ -13,6 +13,10 @@ const BTN =
   "rounded p-1 text-white/60"
   + " hover:bg-white/10 hover:text-white";
 
+const BTN_DARK =
+  "rounded p-1 text-slate-600"
+  + " hover:bg-slate-200 hover:text-slate-900";
+
 interface TerminalToolbarProps {
   termRef: React.RefObject<
     XtermTerminal | null
@@ -21,6 +25,8 @@ interface TerminalToolbarProps {
   isMaximized: boolean;
   thinkingDetailVisible: boolean;
   setThinkingDetailVisible: (v: boolean) => void;
+  lightTheme: boolean;
+  onLightThemeChange: (value: boolean) => void;
   onAbort: () => void;
   onToggleMaximize: () => void;
   onClose: () => void;
@@ -33,28 +39,48 @@ export function TerminalToolbar(
     termRef, isRunning, isMaximized,
     thinkingDetailVisible,
     setThinkingDetailVisible,
+    lightTheme, onLightThemeChange,
     onAbort, onToggleMaximize, onClose,
   } = props;
+  const btnClass = lightTheme ? BTN_DARK : BTN;
+  const textClass = lightTheme
+    ? "text-[11px] text-slate-500"
+    : "text-[11px] text-white/50";
+  const switchClass = lightTheme
+    ? "data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-slate-300"
+    : "data-[state=checked]:bg-cyan-600 data-[state=unchecked]:bg-white/20";
+
   return (
     <div className="flex items-center gap-1">
       <label className={
         "inline-flex items-center gap-1.5 px-1"
       }>
-        <span className="text-[11px] text-white/50">
+        <span className={textClass}>
           Detail
         </span>
         <Switch
           checked={thinkingDetailVisible}
           onCheckedChange={setThinkingDetailVisible}
-          className={
-            "data-[state=checked]:bg-cyan-600"
-            + " data-[state=unchecked]:bg-white/20"
-          }
+          className={switchClass}
+        />
+      </label>
+      <label className="inline-flex items-center gap-1.5 px-1">
+        {lightTheme
+          ? <Sun className="size-3.5 text-amber-500" />
+          : <Moon className="size-3.5 text-slate-500" />}
+        <span className={textClass}>
+          Light Theme
+        </span>
+        <Switch
+          checked={lightTheme}
+          onCheckedChange={onLightThemeChange}
+          aria-label="Light Theme"
+          className={switchClass}
         />
       </label>
       <button
         type="button"
-        className={BTN}
+        className={btnClass}
         title="Copy output"
         onClick={() => copyTerminal(termRef)}
       >
@@ -74,7 +100,7 @@ export function TerminalToolbar(
         </button>
       )}
       <button
-        type="button" className={BTN}
+        type="button" className={btnClass}
         title={isMaximized ? "Restore" : "Maximize"}
         onClick={onToggleMaximize}
       >
@@ -83,7 +109,7 @@ export function TerminalToolbar(
           : <Maximize2 className="size-3.5" />}
       </button>
       <button
-        type="button" className={BTN}
+        type="button" className={btnClass}
         title="Close" onClick={onClose}
       >
         <X className="size-3.5" />

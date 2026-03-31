@@ -15,6 +15,7 @@ interface TerminalTabStripProps {
   terminals: ActiveTerminal[];
   activeSessionId: string | undefined;
   pendingClose: Set<string>;
+  lightTheme: boolean;
   compactTabLabels: boolean;
   tabStripState: {
     hasOverflow: boolean;
@@ -38,6 +39,7 @@ export function TerminalTabStrip(
     terminals,
     activeSessionId,
     pendingClose,
+    lightTheme,
     compactTabLabels,
     tabStripState,
     tabStripRef,
@@ -59,6 +61,7 @@ export function TerminalTabStrip(
       {tabStripState.hasOverflow && (
         <ScrollButton
           direction="left"
+          lightTheme={lightTheme}
           disabled={!tabStripState.canScrollLeft}
           onClick={() => scrollTabStrip(-1)}
         />
@@ -69,6 +72,7 @@ export function TerminalTabStrip(
           visible={tabStripState.hasOverflow}
           canScroll={tabStripState.canScrollLeft}
           side="left"
+          lightTheme={lightTheme}
         />
         <div
           ref={tabStripRef}
@@ -90,6 +94,7 @@ export function TerminalTabStrip(
               isPending={
                 pendingClose.has(terminal.sessionId)
               }
+              lightTheme={lightTheme}
               compact={compactTabLabels}
               tabButtonRefs={tabButtonRefs}
               onClick={handleTabClick}
@@ -101,12 +106,14 @@ export function TerminalTabStrip(
           visible={tabStripState.hasOverflow}
           canScroll={tabStripState.canScrollRight}
           side="right"
+          lightTheme={lightTheme}
         />
       </div>
 
       {tabStripState.hasOverflow && (
         <ScrollButton
           direction="right"
+          lightTheme={lightTheme}
           disabled={!tabStripState.canScrollRight}
           onClick={() => scrollTabStrip(1)}
         />
@@ -119,6 +126,7 @@ export function TerminalTabStrip(
 
 function ScrollButton(props: {
   direction: "left" | "right";
+  lightTheme: boolean;
   disabled: boolean;
   onClick: () => void;
 }) {
@@ -139,11 +147,16 @@ function ScrollButton(props: {
     <button
       type="button"
       className={
-        "shrink-0 rounded border border-white/10"
-        + " p-1 text-white/55 transition-colors"
-        + " enabled:hover:border-white/30"
-        + " enabled:hover:bg-white/10"
-        + " enabled:hover:text-white"
+        "shrink-0 rounded border p-1 transition-colors"
+        + (props.lightTheme
+          ? " border-slate-300 text-slate-500"
+            + " enabled:hover:border-slate-400"
+            + " enabled:hover:bg-slate-100"
+            + " enabled:hover:text-slate-900"
+          : " border-white/10 text-white/55"
+            + " enabled:hover:border-white/30"
+            + " enabled:hover:bg-white/10"
+            + " enabled:hover:text-white")
         + " disabled:opacity-30"
       }
       aria-label={label}
@@ -160,6 +173,7 @@ function FadeEdge(props: {
   visible: boolean;
   canScroll: boolean;
   side: "left" | "right";
+  lightTheme: boolean;
 }) {
   if (!props.visible) return null;
   const dirClass =
@@ -171,7 +185,9 @@ function FadeEdge(props: {
       className={
         "pointer-events-none absolute inset-y-0"
         + ` w-6 ${dirClass}`
-        + " from-[#16162a] to-transparent"
+        + (props.lightTheme
+          ? " from-[#f0f0f0] to-transparent"
+          : " from-[#16162a] to-transparent")
         + " transition-opacity"
         + ` ${props.canScroll
           ? "opacity-100"
@@ -185,6 +201,7 @@ function TerminalTab(props: {
   terminal: ActiveTerminal;
   isActive: boolean;
   isPending: boolean;
+  lightTheme: boolean;
   compact: boolean;
   tabButtonRefs: React.RefObject<
     Map<string, HTMLButtonElement>
@@ -196,6 +213,7 @@ function TerminalTab(props: {
     terminal,
     isActive,
     isPending,
+    lightTheme,
     compact,
     tabButtonRefs,
     onClick,
@@ -216,11 +234,17 @@ function TerminalTab(props: {
   const stateClass = isPending
     ? "animate-pulse border-amber-400/40"
       + " bg-amber-500/30 text-amber-200"
-    : isActive
-      ? "border-white/25 bg-white/15 text-white"
-      : "border-transparent bg-white/5"
-        + " text-white/70 hover:border-white/20"
-        + " hover:bg-white/10";
+    : lightTheme
+      ? isActive
+        ? "border-slate-300 bg-white text-slate-900"
+        : "border-transparent bg-slate-100"
+          + " text-slate-600 hover:border-slate-300"
+          + " hover:bg-slate-200 hover:text-slate-900"
+      : isActive
+        ? "border-white/25 bg-white/15 text-white"
+        : "border-transparent bg-white/5"
+          + " text-white/70 hover:border-white/20"
+          + " hover:bg-white/10";
 
   const title = isPending
     ? "Click to keep open"

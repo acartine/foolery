@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Info } from "lucide-react";
+import { Info, Sun, Moon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -56,6 +57,8 @@ interface SettingsDefaultsSectionProps {
   ) => void;
   maxConcurrentSessions: number;
   onMaxConcurrentSessionsChange: (value: number) => void;
+  terminalLightTheme: boolean;
+  onTerminalLightThemeChange: (value: boolean) => void;
 }
 
 export function SettingsDefaultsSection({
@@ -65,6 +68,8 @@ export function SettingsDefaultsSection({
   onScopeRefinementChange,
   maxConcurrentSessions,
   onMaxConcurrentSessionsChange,
+  terminalLightTheme,
+  onTerminalLightThemeChange,
 }: SettingsDefaultsSectionProps) {
   const [infoOpen, setInfoOpen] = useState(false);
   const { data: workflowResult } = useQuery({
@@ -104,6 +109,10 @@ export function SettingsDefaultsSection({
       <MaxConcurrentSessionsSection
         value={maxConcurrentSessions}
         onChange={onMaxConcurrentSessionsChange}
+      />
+      <TerminalThemeSection
+        lightTheme={terminalLightTheme}
+        onChange={onTerminalLightThemeChange}
       />
       <ScopeRefinementSection
         scopeRefinement={scopeRefinement}
@@ -219,6 +228,44 @@ function MaxConcurrentSessionsSection({
         Maximum number of agent sessions that can run
         at the same time (1-20).
       </p>
+    </div>
+  );
+}
+
+function TerminalThemeSection({
+  lightTheme,
+  onChange,
+}: {
+  lightTheme: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="space-y-2 rounded-xl border border-accent/20 bg-background/60 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="space-y-1">
+          <Label
+            htmlFor="terminal-light-theme"
+            className="text-xs"
+          >
+            Light Theme
+          </Label>
+          <p className="text-[11px] text-muted-foreground">
+            Choose light or dark theme for the live
+            and history terminals.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {lightTheme
+            ? <Sun className="size-4 text-amber-500" />
+            : <Moon className="size-4 text-slate-500" />}
+          <Switch
+            id="terminal-light-theme"
+            checked={lightTheme}
+            onCheckedChange={onChange}
+            aria-label="Light Theme"
+          />
+        </div>
+      </div>
     </div>
   );
 }

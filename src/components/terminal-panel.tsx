@@ -20,6 +20,26 @@ import { PerfProfiler } from "@/components/perf-profiler";
 import {
   useTerminalPanelState,
 } from "@/hooks/use-terminal-panel-state";
+import { cn } from "@/lib/utils";
+
+const DARK_BG = "bg-[#1a1a2e]";
+const LIGHT_BG = "bg-[#fafafa]";
+const DARK_HEADER = "bg-[#16162a]";
+const LIGHT_HEADER = "bg-[#f0f0f0]";
+
+function getTerminalPanelThemeClasses(lightTheme: boolean) {
+  return {
+    panel: lightTheme ? LIGHT_BG : DARK_BG,
+    panelBorder: lightTheme
+      ? "border-t border-slate-300"
+      : "border-t border-border",
+    header: lightTheme ? LIGHT_HEADER : DARK_HEADER,
+    headerBorder: lightTheme
+      ? "border-b border-slate-200"
+      : "border-b border-white/10",
+    text: lightTheme ? "text-slate-900" : "text-white",
+  };
+}
 
 export function TerminalPanel() {
   const {
@@ -34,6 +54,8 @@ export function TerminalPanel() {
     beatInfoForBar,
     thinkingDetailVisible,
     setThinkingDetailVisible,
+    lightTheme,
+    setLightTheme,
     tabStripRef,
     tabStripState,
     compactTabLabels,
@@ -47,81 +69,79 @@ export function TerminalPanel() {
     handleAbort,
     toggleMaximize,
   } = useTerminalPanelState();
+  const theme = getTerminalPanelThemeClasses(lightTheme);
 
   useEffect(() => {
-    if (terminals.length > 0) {
-      performance.mark("terminal-panel:mount");
-    }
+    if (terminals.length > 0) performance.mark("terminal-panel:mount");
   }, [terminals.length]);
 
   if (terminals.length === 0) return null;
-  if (!panelOpen) {
-    return <MinimizedTerminalBar />;
-  }
+  if (!panelOpen) return <MinimizedTerminalBar />;
 
   return (
     <PerfProfiler id="terminal-panel" interactionLabel="terminal">
       <div
-        className={
-          "fixed bottom-0 left-0 right-0 z-40"
-          + " flex flex-col border-t border-border"
-          + " bg-[#1a1a2e]"
-        }
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-40 flex flex-col",
+          theme.panelBorder,
+          theme.panel,
+        )}
         style={{ height: `${panelHeight}vh` }}
       >
-        <div className={
-          "flex items-center justify-between"
-          + " gap-2 border-b border-white/10"
-          + " bg-[#16162a] px-3 py-1.5"
-        }>
-          <div className={
-            "flex min-w-0 flex-1"
-            + " items-center gap-2"
-          }>
-            <TerminalTabStrip
-              terminals={terminals}
-              activeSessionId={activeTerminal?.sessionId}
-              pendingClose={pendingClose}
-              compactTabLabels={compactTabLabels}
-              tabStripState={tabStripState}
-              tabStripRef={tabStripRef}
-              syncTabStripState={syncTabStripState}
-              scrollTabStrip={scrollTabStrip}
-              handleTabStripWheel={handleTabStripWheel}
-              handleTabClick={handleTabClick}
-              removeTerminal={removeTerminal}
+      <div className={cn(
+        "flex items-center justify-between gap-2 px-3 py-1.5",
+        theme.headerBorder,
+        theme.header,
+      )}>
+        <div className={cn(
+          "flex min-w-0 flex-1 items-center gap-2",
+          theme.text,
+        )}>
+          <TerminalTabStrip
+            terminals={terminals}
+            activeSessionId={activeTerminal?.sessionId}
+            pendingClose={pendingClose}
+            lightTheme={lightTheme}
+            compactTabLabels={compactTabLabels}
+            tabStripState={tabStripState}
+            tabStripRef={tabStripRef}
+            syncTabStripState={syncTabStripState}
+            scrollTabStrip={scrollTabStrip}
+            handleTabStripWheel={handleTabStripWheel}
+            handleTabClick={handleTabClick}
+            removeTerminal={removeTerminal}
+          />
+          {activeTerminal && (
+            <TerminalStatusIndicator
+              status={activeTerminal.status}
             />
-            {activeTerminal && (
-              <TerminalStatusIndicator
-                status={activeTerminal.status}
-              />
-            )}
-          </div>
-          <TerminalToolbar
-            termRef={termRef}
-            isRunning={activeTerminal?.status === "running"}
-            isMaximized={isMaximized}
-            thinkingDetailVisible={thinkingDetailVisible}
-            setThinkingDetailVisible={setThinkingDetailVisible}
-            onAbort={handleAbort}
-            onToggleMaximize={toggleMaximize}
-            onClose={closePanel}
-          />
+          )}
         </div>
-
-        {agentInfo && (
-          <AgentInfoBar
-            agent={agentInfo}
-            beat={beatInfoForBar}
-          />
-        )}
-
-        <div
-          ref={termContainerRef}
-          className={
-            "flex-1 overflow-hidden px-1 py-1"
-          }
+        <TerminalToolbar
+          termRef={termRef}
+          isRunning={activeTerminal?.status === "running"}
+          isMaximized={isMaximized}
+          thinkingDetailVisible={thinkingDetailVisible}
+          setThinkingDetailVisible={setThinkingDetailVisible}
+          lightTheme={lightTheme}
+          onLightThemeChange={setLightTheme}
+          onAbort={handleAbort}
+          onToggleMaximize={toggleMaximize}
+          onClose={closePanel}
         />
+      </div>
+
+      {agentInfo && (
+        <AgentInfoBar
+          agent={agentInfo}
+          beat={beatInfoForBar}
+        />
+      )}
+
+      <div
+        ref={termContainerRef}
+        className="flex-1 overflow-hidden px-1 py-1"
+      />
       </div>
     </PerfProfiler>
   );

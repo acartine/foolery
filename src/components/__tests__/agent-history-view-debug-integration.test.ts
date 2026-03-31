@@ -1,8 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { AgentHistorySession } from "@/lib/agent-history-types";
 import { HistoryDebugPanel } from "@/components/history-debug-panel";
+
+vi.mock("@/hooks/use-terminal-theme-preference", () => ({
+  useTerminalThemePreference: () => ({
+    lightTheme: false,
+    isLoading: false,
+    isSaving: false,
+    setLightTheme: vi.fn(),
+  }),
+}));
 
 function makeSession(
   overrides: Partial<AgentHistorySession> = {},

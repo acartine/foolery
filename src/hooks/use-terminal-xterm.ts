@@ -23,6 +23,7 @@ import type {
   XtermFitAddon,
 } from "@/components/terminal-exit-message";
 import { toast } from "sonner";
+import { getTerminalTheme } from "@/lib/terminal-theme";
 
 interface XtermHookParams {
   panelOpen: boolean;
@@ -34,6 +35,7 @@ interface XtermHookParams {
   upsertTerminal: (t: ActiveTerminal) => void;
   agentCommand: string | undefined;
   thinkingDetailVisible: boolean;
+  lightTheme: boolean;
   recentOutputBySession: React.RefObject<
     Map<string, string>
   >;
@@ -134,7 +136,7 @@ function useXtermEffect(
 
     const init = async () => {
       term = await createAndMount(
-        containerRef, disposed,
+        containerRef, disposed, p.lightTheme,
       );
       if (!term) return;
       termRef.current = term;
@@ -172,6 +174,7 @@ async function createAndMount(
     HTMLDivElement | null
   >,
   disposed: { value: boolean },
+  lightTheme: boolean,
 ): Promise<XtermTerminal | null> {
   const { Terminal } =
     await import("@xterm/xterm");
@@ -180,7 +183,7 @@ async function createAndMount(
   ensureXtermCss();
   if (disposed.value) return null;
 
-  const term = createXtermInstance(Terminal);
+  const term = createXtermInstance(Terminal, lightTheme);
   const fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
   term.open(containerRef.current!);
@@ -323,22 +326,14 @@ function writeTerminalEvent(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createXtermInstance(Terminal: any) {
+function createXtermInstance(Terminal: any, lightTheme: boolean) {
   return new Terminal({
     cursorBlink: false,
     disableStdin: true,
     fontSize: 13,
     fontFamily:
       "var(--font-ibm-plex-mono), monospace",
-    theme: {
-      background: "#1a1a2e",
-      foreground: "#e0e0e0",
-      cursor: "#e0e0e0",
-      red: "#ff6b6b",
-      green: "#51cf66",
-      yellow: "#ffd43b",
-      blue: "#74c0fc",
-    },
+    theme: getTerminalTheme(lightTheme),
     convertEol: true,
     scrollback: 5000,
   });
