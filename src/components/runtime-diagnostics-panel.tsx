@@ -23,6 +23,7 @@ import {
   setDiagnosticsEnabled,
 } from "@/lib/client-perf";
 import type { ClientPerfEvent } from "@/lib/perf-events";
+import { ScopeRefinementDiagnosticsCard } from "@/components/scope-refinement-diagnostics-card";
 
 export function RuntimeDiagnosticsPanel() {
   const [snapshot, setSnapshot] = useState(() => getDiagnosticsSnapshot());
@@ -38,20 +39,23 @@ export function RuntimeDiagnosticsPanel() {
 
   if (!snapshot.enabled) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Runtime Diagnostics</CardTitle>
-          <CardDescription>
-            Enable local runtime sampling to collect heap churn, long tasks,
-            render commits, and query or API timings in this session.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={() => setDiagnosticsEnabled(true)}>
-            Enable runtime diagnostics
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Runtime Diagnostics</CardTitle>
+            <CardDescription>
+              Enable local runtime sampling to collect heap churn, long tasks,
+              render commits, and query or API timings in this session.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => setDiagnosticsEnabled(true)}>
+              Enable runtime diagnostics
+            </Button>
+          </CardContent>
+        </Card>
+        <ScopeRefinementDiagnosticsCard />
+      </div>
     );
   }
 
@@ -112,6 +116,8 @@ export function RuntimeDiagnosticsPanel() {
           <RecentEventsTable events={snapshot.recentEvents} />
         </CardContent>
       </Card>
+
+      <ScopeRefinementDiagnosticsCard />
     </div>
   );
 }
