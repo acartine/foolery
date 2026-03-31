@@ -59,7 +59,7 @@ describe("beats page layout: scrolling and hotkeys", () => {
 
   it("reserves scrollbar gutter space to prevent header jitter between views", () => {
     expect(globalStylesSource).toContain(
-      "scrollbar-gutter: stable;",
+      "scrollbar-gutter: stable both-edges;",
     );
   });
 
