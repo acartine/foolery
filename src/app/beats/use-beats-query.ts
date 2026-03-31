@@ -7,6 +7,7 @@ import {
 } from "@/lib/api";
 import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
+import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
 import {
   hasRollingAncestor as hasRollingAncestorLib,
 } from "@/lib/rolling-ancestor";
@@ -73,7 +74,8 @@ export function useBeatsQuery(
   if (searchQuery) params.q = searchQuery;
 
   const {
-    data, isLoading, error: queryError,
+    data, isLoading, isFetched,
+    fetchStatus, error: queryError,
   } = useQuery({
     queryKey: buildBeatsQueryKey(beatsView, params, scope),
     queryFn: async () => {
@@ -95,10 +97,19 @@ export function useBeatsQuery(
       !(error instanceof DegradedStoreError)
       && count < 3,
   });
+  const display = useRepoSwitchQueryState(scope.key, {
+    data,
+    error: queryError,
+    fetchStatus,
+    isFetched,
+    isLoading,
+  });
 
   const beats = useMemo<Beat[]>(
-    () => (data?.ok ? (data.data ?? []) : []),
-    [data],
+    () => (display.data?.ok
+      ? (display.data.data ?? [])
+      : []),
+    [display.data],
   );
 
   const parentByBeatId = useMemo(() => {
@@ -117,8 +128,8 @@ export function useBeatsQuery(
     [parentByBeatId, shippingByBeatId],
   );
 
-  const partialDegradedMsg = data?.ok
-    ? (data as { _degraded?: string })._degraded
+  const partialDegradedMsg = display.data?.ok
+    ? (display.data as { _degraded?: string })._degraded
     : undefined;
 
   const isDegradedError =
@@ -126,11 +137,11 @@ export function useBeatsQuery(
     || Boolean(partialDegradedMsg);
 
   const loadError = deriveLoadError(
-    queryError, partialDegradedMsg, data,
+    queryError, partialDegradedMsg, display.data,
   );
 
   return {
-    beats, isLoading, loadError,
+    beats, isLoading: display.isLoading, loadError,
     isDegradedError, hasRollingAncestor,
   };
 }

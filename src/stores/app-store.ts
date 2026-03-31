@@ -13,6 +13,7 @@ interface AppState {
   commandPaletteOpen: boolean;
   viewMode: "table" | "board";
   activeRepo: string | null;
+  pendingRepoScopeKey: string | null;
   registeredRepos: RegisteredRepo[];
   pageSize: number;
   setFilter: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
@@ -22,6 +23,9 @@ interface AppState {
   toggleCommandPalette: () => void;
   setViewMode: (mode: "table" | "board") => void;
   setActiveRepo: (repo: string | null) => void;
+  setPendingRepoScopeKey: (
+    scopeKey: string | null,
+  ) => void;
   setRegisteredRepos: (repos: RegisteredRepo[]) => void;
   setPageSize: (size: number) => void;
 }
@@ -69,6 +73,7 @@ export const useAppStore = create<AppState>((set) => ({
   commandPaletteOpen: false,
   viewMode: "table",
   activeRepo: null,
+  pendingRepoScopeKey: null,
   registeredRepos: [],
   pageSize: 50,
   setFilter: (key, value) =>
@@ -86,6 +91,8 @@ export const useAppStore = create<AppState>((set) => ({
     persistRepo(repo);
     set({ activeRepo: repo });
   },
+  setPendingRepoScopeKey: (scopeKey) =>
+    set({ pendingRepoScopeKey: scopeKey }),
   setRegisteredRepos: (repos) => set({ registeredRepos: repos }),
   setPageSize: (size) => set({ pageSize: size }),
 }));

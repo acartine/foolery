@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { resolveBeatsScope } from "@/lib/api";
 import { useAppStore, type Filters } from "@/stores/app-store";
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -57,7 +58,16 @@ export function useUpdateUrl() {
       else params.delete("pageSize");
 
       // Update Zustand immediately for instant reactivity
-      if ("repo" in overrides) store.setActiveRepo(overrides.repo ?? null);
+      if ("repo" in overrides) {
+        const nextRepo = overrides.repo ?? null;
+        store.setPendingRepoScopeKey(
+          resolveBeatsScope(
+            nextRepo,
+            store.registeredRepos,
+          ).key,
+        );
+        store.setActiveRepo(nextRepo);
+      }
 
       if ("state" in overrides || "type" in overrides || "priority" in overrides || "assignee" in overrides) {
         const newFilters: Filters = {

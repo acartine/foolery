@@ -16,6 +16,7 @@ import { useAppStore } from "@/stores/app-store";
 import type { Beat } from "@/lib/types";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
+import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
 
 const HUMAN_ACTION_PARAMS: Record<string, string> = {
   requiresHumanAction: "true",
@@ -26,7 +27,7 @@ export function FinalCutView() {
   const [selectionVersion] = useState(0);
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
 
-  const { data, isLoading } = useQuery({
+  const query = useQuery({
     queryKey: buildBeatsQueryKey(
       "finalcut",
       HUMAN_ACTION_PARAMS,
@@ -44,6 +45,16 @@ export function FinalCutView() {
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     staleTime: 10_000,
     refetchInterval: 10_000,
+  });
+  const {
+    data,
+    isLoading,
+  } = useRepoSwitchQueryState(scope.key, {
+    data: query.data,
+    error: query.error,
+    fetchStatus: query.fetchStatus,
+    isFetched: query.isFetched,
+    isLoading: query.isLoading,
   });
   useBeatsScreenWarmup(
     "finalcut",

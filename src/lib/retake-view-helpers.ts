@@ -9,6 +9,7 @@ import {
   fetchBeatsForScope,
   resolveBeatsScope,
 } from "@/lib/api";
+import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
 import {
   RETAKE_TARGET_STATE, isRetakeSourceState,
 } from "@/lib/retake";
@@ -72,7 +73,7 @@ export function useRetakesQuery(
   registeredRepos: RegisteredRepo[],
 ) {
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
-  return useQuery({
+  const query = useQuery({
     queryKey: buildBeatsQueryKey(
       "retakes",
       {},
@@ -83,6 +84,19 @@ export function useRetakesQuery(
     staleTime: 30_000,
     refetchInterval: 30_000,
   });
+  const display = useRepoSwitchQueryState(scope.key, {
+    data: query.data,
+    error: query.error,
+    fetchStatus: query.fetchStatus,
+    isFetched: query.isFetched,
+    isLoading: query.isLoading,
+  });
+
+  return {
+    ...query,
+    data: display.data,
+    isLoading: display.isLoading,
+  };
 }
 
 export function handleRetakeSuccess(
