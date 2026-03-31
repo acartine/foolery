@@ -4,9 +4,9 @@ import type { MutableRefObject } from "react";
 import {
   Bug,
   Clock3,
-  Sparkles,
+  Moon,
+  Sun,
   TerminalSquare,
-  Workflow,
 } from "lucide-react";
 import type {
   AgentHistoryBeatSummary,
@@ -14,7 +14,10 @@ import type {
 } from "@/lib/agent-history-types";
 import type { Beat } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { displayBeatLabel } from "@/lib/beat-display";
+import { Switch } from "@/components/ui/switch";
+import {
+  displayBeatLabel,
+} from "@/lib/beat-display";
 import { cn } from "@/lib/utils";
 import type {
   UseQueryResult,
@@ -40,14 +43,21 @@ import {
 } from "@/hooks/use-terminal-theme-preference";
 import {
   relativeTime,
-  Spinner,
 } from "./agent-history-utils";
 import {
-  SessionCard,
-} from "./agent-history-session-card";
+  TabBar,
+  SessionPicker,
+  ConsolePanelContent,
+} from "./conversation-log-panels";
+
+export type ConversationTab =
+  | "console"
+  | "debug";
 
 interface ConversationLogProps {
-  loadedSummary: AgentHistoryBeatSummary | null;
+  loadedSummary:
+    | AgentHistoryBeatSummary
+    | null;
   loadedTitle: string | null;
   loadedDetail: Beat | null;
   sessions: AgentHistorySession[];
@@ -56,13 +66,15 @@ interface ConversationLogProps {
     Error
   >;
   picker: InteractionPickerState;
-  selectedDebugSession: AgentHistorySession | null;
+  selectedDebugSession:
+    | AgentHistorySession
+    | null;
   selectedSessionId: string | null;
-  setSelectedSessionId: (id: string | null) => void;
-  debugPanelOpen: boolean;
-  setDebugPanelOpen: (
-    fn: (prev: boolean) => boolean,
+  setSelectedSessionId: (
+    id: string | null,
   ) => void;
+  activeTab: ConversationTab;
+  setActiveTab: (tab: ConversationTab) => void;
   copyBeatId: (id: string) => void;
   consolePanelRef: MutableRefObject<
     HTMLDivElement | null
@@ -75,184 +87,279 @@ interface ConversationLogProps {
 export function AgentHistoryConversationLog(
   props: ConversationLogProps,
 ) {
-  const { lightTheme } = useTerminalThemePreference();
-  const theme = getConversationLogTheme(lightTheme);
+  const themePref =
+    useTerminalThemePreference();
+  const theme = getConversationLogTheme(
+    themePref.lightTheme,
+  );
+  const hasSessions =
+    !!props.loadedSummary
+    && props.sessions.length > 0;
 
   return (
     <section className={cn(
-      "rounded-lg border font-mono subpixel-antialiased",
+      "rounded-lg border font-mono"
+      + " subpixel-antialiased",
       theme.container,
     )}>
       <ConversationLogHeader
         {...props}
-        lightTheme={lightTheme}
+        lightTheme={themePref.lightTheme}
+        setLightTheme={themePref.setLightTheme}
       />
-      {props.loadedSummary
-        && props.sessions.length > 0 ? (
+      {hasSessions ? (
         <InteractionPicker
           picker={props.picker}
+          theme={theme}
         />
       ) : null}
-      {props.loadedSummary
-        && props.sessions.length > 0 ? (
+      {hasSessions ? (
         <SessionPicker
-          {...props}
-          lightTheme={lightTheme}
+          sessions={props.sessions}
+          selectedDebugSession={
+            props.selectedDebugSession
+          }
+          setSelectedSessionId={
+            props.setSelectedSessionId
+          }
+          lightTheme={themePref.lightTheme}
+        />
+      ) : null}
+      {hasSessions ? (
+        <TabBar
+          activeTab={props.activeTab}
+          setActiveTab={props.setActiveTab}
+          lightTheme={themePref.lightTheme}
         />
       ) : null}
       <ConversationLogBody
         {...props}
-        lightTheme={lightTheme}
+        lightTheme={themePref.lightTheme}
       />
     </section>
   );
 }
 
+/* ── Header ── */
+
 function ConversationLogHeader({
   loadedSummary,
-  loadedTitle,
   loadedDetail,
+  loadedTitle,
   sessions,
-  debugPanelOpen,
-  setDebugPanelOpen,
+  activeTab,
+  setActiveTab,
   copyBeatId,
   lightTheme,
+  setLightTheme,
 }: ConversationLogProps & {
   lightTheme: boolean;
+  setLightTheme: (v: boolean) => void;
 }) {
-  const theme = getConversationLogTheme(lightTheme);
-
+  const theme = getConversationLogTheme(
+    lightTheme,
+  );
   return (
     <div className={cn(
-      "flex flex-wrap items-center gap-2 px-3 py-2",
+      "flex flex-wrap items-center"
+      + " gap-2 px-3 py-2",
       theme.sectionHeader,
     )}>
-      <TerminalSquare className={cn("size-5", theme.icon)} />
+      <TerminalSquare className={cn(
+        "size-5", theme.icon,
+      )} />
+      <HeaderTitle
+        title={loadedTitle}
+        hasLoaded={!!loadedSummary}
+        theme={theme}
+      />
+      <HeaderBeatId
+        loadedSummary={loadedSummary}
+        loadedDetail={loadedDetail}
+        copyBeatId={copyBeatId}
+        theme={theme}
+      />
+      <HeaderActions
+        summary={loadedSummary}
+        sessions={sessions}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        lightTheme={lightTheme}
+        setLightTheme={setLightTheme}
+        theme={theme}
+      />
+    </div>
+  );
+}
+
+function HeaderTitle({
+  title,
+  hasLoaded,
+  theme,
+}: {
+  title: string | null;
+  hasLoaded: boolean;
+  theme: ReturnType<
+    typeof getConversationLogTheme
+  >;
+}) {
+  return (
+    <>
       <p className={cn(
-        "text-[17px] font-semibold tracking-[0.08em]",
+        "text-[17px] font-semibold"
+        + " tracking-[0.08em]",
         theme.heading,
       )}>
         Conversation Log
       </p>
-      {loadedSummary ? (
+      {hasLoaded && title ? (
         <span className={cn(
           "max-w-[40ch] truncate text-[15px]",
           theme.muted,
         )}>
-          {loadedTitle}
+          {title}
         </span>
       ) : null}
-      {loadedSummary ? (
-        <button
-          type="button"
-          className={cn(
-            "font-mono text-[14px]",
-            theme.link,
-          )}
-          onClick={() => {
-            copyBeatId(loadedSummary.beatId);
-          }}
-          title="Click to copy ID"
-        >
-          {displayBeatLabel(loadedSummary.beatId, loadedDetail?.aliases)}
-        </button>
-      ) : null}
-      {loadedSummary && sessions.length > 0 ? (
+    </>
+  );
+}
+
+function HeaderBeatId({
+  loadedSummary,
+  loadedDetail,
+  copyBeatId,
+  theme,
+}: {
+  loadedSummary: AgentHistoryBeatSummary | null;
+  loadedDetail: Beat | null;
+  copyBeatId: (id: string) => void;
+  theme: ReturnType<
+    typeof getConversationLogTheme
+  >;
+}) {
+  if (!loadedSummary) return null;
+  return (
+    <button
+      type="button"
+      className={cn(
+        "font-mono text-[14px]",
+        theme.link,
+      )}
+      onClick={() => {
+        copyBeatId(loadedSummary.beatId);
+      }}
+      title="Click to copy ID"
+    >
+      {displayBeatLabel(loadedSummary.beatId, loadedDetail?.aliases)}
+    </button>
+  );
+}
+
+function HeaderActions({
+  summary,
+  sessions,
+  activeTab,
+  setActiveTab,
+  lightTheme,
+  setLightTheme,
+  theme,
+}: {
+  summary: AgentHistoryBeatSummary | null;
+  sessions: AgentHistorySession[];
+  activeTab: ConversationTab;
+  setActiveTab: (t: ConversationTab) => void;
+  lightTheme: boolean;
+  setLightTheme: (v: boolean) => void;
+  theme: ReturnType<
+    typeof getConversationLogTheme
+  >;
+}) {
+  return (
+    <>
+      {summary && sessions.length > 0 ? (
         <Button
           variant="ghost"
           size="sm"
           className={theme.debugButton}
-          onClick={() => {
-            setDebugPanelOpen((prev) => !prev);
-          }}
+          onClick={() => setActiveTab(
+            activeTab === "debug"
+              ? "console"
+              : "debug",
+          )}
         >
           <Bug className="size-4" />
-          {debugPanelOpen
+          {activeTab === "debug"
             ? "Close Debug"
             : "Debug"}
         </Button>
       ) : null}
-      {loadedSummary ? (
+      <ThemeToggle
+        lightTheme={lightTheme}
+        setLightTheme={setLightTheme}
+        theme={theme}
+      />
+      {summary ? (
         <span className={cn(
-          "ml-auto inline-flex items-center gap-1.5 text-[13px]",
+          "ml-auto inline-flex items-center"
+          + " gap-1.5 text-[13px]",
           theme.muted,
         )}>
           <Clock3 className="size-4" />
           Last updated{" "}
-          {relativeTime(loadedSummary.lastWorkedAt)}
+          {relativeTime(summary.lastWorkedAt)}
         </span>
       ) : null}
-    </div>
+    </>
   );
 }
 
-function SessionPicker({
-  sessions,
-  selectedDebugSession,
-  setSelectedSessionId,
+function ThemeToggle({
   lightTheme,
-}: Pick<
-  ConversationLogProps,
-  "sessions"
-  | "selectedDebugSession"
-  | "setSelectedSessionId"
-> & {
+  setLightTheme,
+  theme,
+}: {
   lightTheme: boolean;
+  setLightTheme: (v: boolean) => void;
+  theme: ReturnType<
+    typeof getConversationLogTheme
+  >;
 }) {
-  const theme = getConversationLogTheme(lightTheme);
-
   return (
-    <div className={cn(
-      "flex flex-wrap items-center gap-2 px-3 py-2 text-[14px]",
-      theme.sectionHeader,
-    )}>
-      <span className={theme.sessionLabel}>
-        Conversation
+    <label className={
+      "inline-flex items-center"
+      + " gap-1.5 rounded px-1 py-0.5"
+    }>
+      {lightTheme
+        ? <Sun className={
+            "size-3.5 text-amber-500"
+          } />
+        : <Moon className={
+            "size-3.5 text-slate-400"
+          } />}
+      <span className={cn(
+        "text-[11px]", theme.muted,
+      )}>
+        Light Theme
       </span>
-      {sessions.map((session, index) => {
-        const selected =
-          session.sessionId
-          === selectedDebugSession?.sessionId;
-        return (
-          <button
-            key={session.sessionId}
-            type="button"
-            onClick={() => {
-              setSelectedSessionId(
-                session.sessionId,
-              );
-            }}
-            className={cn(
-              "rounded-full border px-3 py-1.5"
-                + " text-[14px] font-mono"
-                + " leading-none"
-                + " transition-colors",
-              selected
-                ? theme.sessionTabActive
-                : theme.sessionTabInactive,
-            )}
-            title={
-              "Select conversation "
-              + `${session.sessionId} for debugging`
-            }
-          >
-            {`#${index + 1}`
-              + ` ${session.sessionId}`}
-          </button>
-        );
-      })}
-      {selectedDebugSession ? (
-        <span className={cn(
-          "ml-auto text-[13px]",
-          theme.muted,
-        )}>
-          Debug target:{" "}
-          {selectedDebugSession.sessionId}
-        </span>
-      ) : null}
-    </div>
+      <Switch
+        checked={lightTheme}
+        onCheckedChange={setLightTheme}
+        aria-label="Light Theme"
+        className={
+          lightTheme
+            ? "data-[state=checked]:bg-amber-500"
+              + " data-[state=unchecked]:"
+              + "bg-slate-300"
+            : "data-[state=checked]:bg-cyan-600"
+              + " data-[state=unchecked]:"
+              + "bg-white/20"
+        }
+      />
+    </label>
   );
 }
+
+/* ── Body ── */
 
 function ConversationLogBody({
   loadedSummary,
@@ -262,255 +369,63 @@ function ConversationLogBody({
   sessionsQuery,
   picker,
   selectedDebugSession,
-  debugPanelOpen,
+  activeTab,
   consolePanelRef,
   beatListRef,
   lightTheme,
 }: ConversationLogProps & {
   lightTheme: boolean;
 }) {
-  const theme = getConversationLogTheme(lightTheme);
-  const showDebug =
-    debugPanelOpen && sessions.length > 0;
-  return (
-    <div className={
-      showDebug
-        ? "grid grid-cols-2 gap-0"
-        : ""
-    }>
-      <div
-        ref={consolePanelRef}
-        tabIndex={0}
-        onKeyDown={(event) => {
-          if (
-            event.key === "Tab"
-            && event.shiftKey
-          ) {
-            event.preventDefault();
-            beatListRef.current?.focus();
-          }
-        }}
-        className={cn(
-          "max-h-[calc(100vh-500px)]",
-          theme.panel,
-          showDebug
-            ? theme.panelDivider
-            : "",
-        )}
-      >
-        <ConsolePanelContent
-          loadedSummary={loadedSummary}
-          loadedDetail={loadedDetail}
-          sessions={sessions}
-          sessionsQuery={sessionsQuery}
-          picker={picker}
-          lightTheme={lightTheme}
-        />
-      </div>
-      {showDebug
-        && selectedDebugSession
-        && loadedSummary ? (
-        <div className={
-          "max-h-[calc(100vh-500px)]"
-          + " overflow-y-auto"
-        }>
-          <HistoryDebugPanel
-            beatId={loadedSummary.beatId}
-            session={selectedDebugSession}
-            repoPath={loadedSummary.repoPath}
-            beatTitle={
-              loadedTitle ?? undefined
-            }
-          />
-        </div>
-      ) : null}
-    </div>
+  const theme = getConversationLogTheme(
+    lightTheme,
   );
-}
-
-function ConsolePanelContent({
-  loadedSummary,
-  loadedDetail,
-  sessions,
-  sessionsQuery,
-  picker,
-  lightTheme,
-}: {
-  loadedSummary: AgentHistoryBeatSummary | null;
-  loadedDetail: Beat | null;
-  sessions: AgentHistorySession[];
-  sessionsQuery: UseQueryResult<
-    BdResult<AgentHistoryPayload>,
-    Error
-  >;
-  picker: InteractionPickerState;
-  lightTheme: boolean;
-}) {
-  if (!loadedSummary) {
-    return (
-      <DashedMessage
-        tone={
-          lightTheme
-            ? "text-slate-700"
-            : "text-white/75"
-        }
-        lightTheme={lightTheme}
-      >
-        Use click or Enter on a focused beat
-        to load app and agent logs.
-      </DashedMessage>
-    );
-  }
 
   if (
-    sessionsQuery.isLoading
-    && sessions.length === 0
+    activeTab === "debug"
+    && sessions.length > 0
+    && selectedDebugSession
+    && loadedSummary
   ) {
     return (
-      <LoadingLogsMessage
+      <div className="overflow-y-auto">
+        <HistoryDebugPanel
+          beatId={loadedSummary.beatId}
+          session={selectedDebugSession}
+          repoPath={loadedSummary.repoPath}
+          beatTitle={
+            loadedTitle ?? undefined
+          }
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={consolePanelRef}
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (
+          event.key === "Tab"
+          && event.shiftKey
+        ) {
+          event.preventDefault();
+          beatListRef.current?.focus();
+        }
+      }}
+      className={cn(
+        "max-h-[calc(100vh-500px)]",
+        theme.panel,
+      )}
+    >
+      <ConsolePanelContent
         loadedSummary={loadedSummary}
         loadedDetail={loadedDetail}
+        sessions={sessions}
+        sessionsQuery={sessionsQuery}
+        picker={picker}
         lightTheme={lightTheme}
       />
-    );
-  }
-
-  if (sessions.length === 0) {
-    return (
-      <DashedMessage
-        tone={
-          lightTheme
-            ? "text-slate-600"
-            : "text-white/70"
-        }
-        lightTheme={lightTheme}
-      >
-        No captured log sessions for
-        this beat yet.
-      </DashedMessage>
-    );
-  }
-
-  return (
-    <SessionsList
-      sessions={sessions}
-      sessionsQuery={sessionsQuery}
-      picker={picker}
-      lightTheme={lightTheme}
-    />
-  );
-}
-
-function DashedMessage({
-  children,
-  tone,
-  lightTheme,
-}: {
-  children: React.ReactNode;
-  tone: string;
-  lightTheme: boolean;
-}) {
-  return (
-    <div className={
-      "rounded border border-dashed px-4 py-7"
-      + " text-center font-mono text-[15px] leading-6"
-      + ` ${lightTheme
-        ? "border-slate-300 bg-white"
-        : "border-white/15 bg-[#16162a]"}`
-      + ` ${tone}`
-    }>
-      {children}
-    </div>
-  );
-}
-
-function LoadingLogsMessage({
-  loadedSummary,
-  loadedDetail,
-  lightTheme,
-}: {
-  loadedSummary: AgentHistoryBeatSummary;
-  loadedDetail: Beat | null;
-  lightTheme: boolean;
-}) {
-  const label = displayBeatLabel(
-    loadedSummary.beatId,
-    loadedDetail?.aliases,
-  );
-  return (
-    <div className={
-      "flex flex-col items-center gap-2 rounded"
-      + " border border-dashed px-4 py-7"
-      + " font-mono text-[15px]"
-      + ` ${lightTheme
-        ? "border-slate-300 bg-white text-slate-900"
-        : "border-white/15 bg-[#16162a]"
-          + " text-[#e0e0e0]"}`
-    }>
-      <Spinner className="size-5" />
-      <span>Loading logs for {label}…</span>
-      <span className={
-        `text-[14px] ${lightTheme
-          ? "text-slate-600"
-          : "text-white/60"}`
-      }>
-        prompt histories are BIG,
-        please be patient :-)
-      </span>
-    </div>
-  );
-}
-
-function SessionsList({
-  sessions,
-  sessionsQuery,
-  picker,
-  lightTheme,
-}: {
-  sessions: AgentHistorySession[];
-  sessionsQuery: UseQueryResult<
-    BdResult<AgentHistoryPayload>,
-    Error
-  >;
-  picker: InteractionPickerState;
-  lightTheme: boolean;
-}) {
-  const theme = getConversationLogTheme(lightTheme);
-
-  return (
-    <div className="space-y-2">
-      {sessionsQuery.isFetching
-        && !sessionsQuery.isLoading ? (
-        <div className={cn(
-          "flex items-center gap-1.5 text-[14px]",
-          theme.refreshingText,
-        )}>
-          <Spinner className="size-4" />
-          <span>Refreshing…</span>
-        </div>
-      ) : null}
-      <div className={cn(
-        "flex items-center gap-2 text-[15px]",
-        theme.countText,
-      )}>
-        <Workflow className={cn("size-5", theme.icon)} />
-        <Sparkles className={cn("size-5", theme.icon)} />
-        {sessions.length} session
-        {sessions.length === 1 ? "" : "s"}
-      </div>
-      {sessions.map((session) => (
-        <SessionCard
-          key={session.sessionId}
-          session={session}
-          entryRefCallback={
-            picker.entryRefCallback
-          }
-          highlightedEntryId={
-            picker.highlightedEntryId
-          }
-          filterEntry={picker.filterEntry}
-        />
-      ))}
     </div>
   );
 }

@@ -81,10 +81,8 @@ export function AgentHistoryView() {
           setSelectedSessionId={
             state.setSelectedSessionId
           }
-          debugPanelOpen={state.debugPanelOpen}
-          setDebugPanelOpen={
-            state.setDebugPanelOpen
-          }
+          activeTab={state.activeTab}
+          setActiveTab={state.setActiveTab}
           copyBeatId={state.copyBeatId}
           consolePanelRef={state.consolePanelRef}
           beatListRef={state.beatListRef}

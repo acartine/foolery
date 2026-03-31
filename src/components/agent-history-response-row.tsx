@@ -6,11 +6,12 @@ import type {
   AgentHistoryInteractionType,
 } from "@/lib/agent-history-types";
 import { Badge } from "@/components/ui/badge";
+import type {
+  ConversationLogTheme,
+} from "@/components/agent-history-conversation-log-theme";
 import {
   clipDisplay,
   formatTime,
-  interactionTypeLabel,
-  interactionTypeTone,
   promptSourceLabel,
   summarizeResponse,
   workflowStateBadgeLabel,
@@ -24,11 +25,13 @@ export function ResponseEntryRow({
   agentLabel,
   interactionType,
   precedingPrompt,
+  theme,
 }: {
   entry: AgentHistoryEntry;
   agentLabel?: string;
   interactionType?: AgentHistoryInteractionType;
   precedingPrompt?: PromptContext;
+  theme: ConversationLogTheme;
 }) {
   const raw = entry.raw ?? "";
   const summary = summarizeResponse(raw);
@@ -37,28 +40,22 @@ export function ResponseEntryRow({
     && summary.trim() !== raw.trim();
 
   return (
-    <div className={
-      "rounded border border-white/10"
-      + " bg-[#16162a] px-3 py-2"
-      + " shadow-[inset_0_1px_0_"
-      + "rgba(255,255,255,0.03)]"
-    }>
+    <div className={theme.responseContainer}>
       <ResponseEntryHeader
         agentLabel={agentLabel}
         interactionType={interactionType}
         precedingPrompt={precedingPrompt}
         ts={entry.ts}
+        theme={theme}
       />
-      <pre className={
-        "whitespace-pre-wrap break-words"
-        + " font-mono text-[15px] leading-7"
-        + " text-[#e0e0e0]"
-        + " subpixel-antialiased"
-      }>
+      <pre className={theme.responseBody}>
         {summary || "(empty response)"}
       </pre>
       {showRaw ? (
-        <RawEventDetails raw={raw} />
+        <RawEventDetails
+          raw={raw}
+          theme={theme}
+        />
       ) : null}
     </div>
   );
@@ -69,27 +66,30 @@ function ResponseEntryHeader({
   interactionType,
   precedingPrompt,
   ts,
+  theme,
 }: {
   agentLabel?: string;
   interactionType?: AgentHistoryInteractionType;
   precedingPrompt?: PromptContext;
   ts?: string;
+  theme: ConversationLogTheme;
 }) {
-  const metaBadgeCls =
-    "border-white/10 bg-white/5"
-    + " text-[13px] font-normal"
-    + " text-[#e0e0e0]";
+  const iLabel = interactionType
+    ? interactionLabel(interactionType)
+    : null;
+  const iTypeTone = interactionType
+    ? interactionBadgeTone(
+        interactionType,
+        theme,
+      )
+    : null;
   return (
-    <div className={
-      "mb-1.5 flex flex-wrap items-center"
-      + " gap-2 font-mono text-[14px]"
-      + " leading-6 text-[#e0e0e0]"
-      + " subpixel-antialiased"
-    }>
-      <Bot className="size-5 text-white/80" />
+    <div className={theme.responseHeader}>
+      <Bot className={
+        "size-5 " + theme.responseIcon
+      } />
       <span className={
-        "font-semibold uppercase"
-        + " tracking-[0.18em] text-[#e0e0e0]"
+        theme.responseDirectionLabel
       }>
         Agent
         {agentLabel
@@ -97,26 +97,22 @@ function ResponseEntryHeader({
           : ""}
         {" "}-&gt; App
       </span>
-      {interactionType ? (
+      {iLabel && iTypeTone ? (
         <Badge
           variant="outline"
           className={
             "text-[13px] font-normal "
-            + interactionTypeTone(
-              interactionType,
-            )
+            + iTypeTone
           }
         >
-          {interactionTypeLabel(
-            interactionType,
-          )}
+          {iLabel}
         </Badge>
       ) : null}
       {typeof precedingPrompt?.promptNumber
         === "number" ? (
         <Badge
           variant="outline"
-          className={metaBadgeCls}
+          className={theme.responseMetaBadge}
         >
           {`Prompt #${
             precedingPrompt.promptNumber
@@ -126,7 +122,7 @@ function ResponseEntryHeader({
       {precedingPrompt?.source ? (
         <Badge
           variant="outline"
-          className={metaBadgeCls}
+          className={theme.responseMetaBadge}
         >
           {promptSourceLabel(
             precedingPrompt.source,
@@ -136,42 +132,59 @@ function ResponseEntryHeader({
       {precedingPrompt?.workflowState ? (
         <Badge
           variant="outline"
-          className={metaBadgeCls}
+          className={theme.responseMetaBadge}
         >
           {workflowStateBadgeLabel(
             precedingPrompt.workflowState,
           )}
         </Badge>
       ) : null}
-      <span className="text-white/65">
+      <span className={theme.cardMuted}>
         {formatTime(ts)}
       </span>
     </div>
   );
 }
 
-function RawEventDetails(
-  { raw }: { raw: string },
-) {
+function RawEventDetails({
+  raw,
+  theme,
+}: {
+  raw: string;
+  theme: ConversationLogTheme;
+}) {
   return (
-    <details className={
-      "mt-2 rounded border border-white/10"
-      + " bg-[#101522] px-2.5 py-2"
-      + " text-[14px] font-mono"
-      + " text-[#e0e0e0] subpixel-antialiased"
-    }>
-      <summary className={
-        "cursor-pointer text-white/75"
-      }>
+    <details className={theme.rawContainer}>
+      <summary className={theme.rawSummary}>
         Raw event
       </summary>
-      <pre className={
-        "mt-1.5 whitespace-pre-wrap break-words"
-        + " font-mono text-[14px] leading-6"
-        + " text-[#e0e0e0]"
-      }>
+      <pre className={theme.rawBody}>
         {clipDisplay(raw, 16_000)}
       </pre>
     </details>
   );
+}
+
+/* local helpers */
+
+function interactionLabel(
+  iType: string,
+): string {
+  if (iType === "scene") return "scene";
+  if (iType === "direct") return "direct";
+  if (iType === "breakdown") return "breakdown";
+  return iType;
+}
+
+function interactionBadgeTone(
+  iType: string,
+  theme: ConversationLogTheme,
+): string {
+  if (iType === "scene")
+    return theme.badgeInteractionScene;
+  if (iType === "direct")
+    return theme.badgeInteractionDirect;
+  if (iType === "breakdown")
+    return theme.badgeInteractionBreakdown;
+  return theme.badgeInteractionDefault;
 }

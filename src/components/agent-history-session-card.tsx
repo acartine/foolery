@@ -8,13 +8,13 @@ import type {
   AgentHistorySession,
 } from "@/lib/agent-history-types";
 import { Badge } from "@/components/ui/badge";
+import type {
+  ConversationLogTheme,
+} from "@/components/agent-history-conversation-log-theme";
 import {
   buildAgentLabel,
   formatTime,
-  interactionTypeLabel,
-  interactionTypeTone,
   promptSourceLabel,
-  statusTone,
   workflowStateBadgeLabel,
 } from "./agent-history-utils";
 import {
@@ -32,6 +32,7 @@ export function SessionCard({
   entryRefCallback,
   highlightedEntryId,
   filterEntry,
+  theme,
 }: {
   session: AgentHistorySession;
   entryRefCallback?: (
@@ -43,6 +44,7 @@ export function SessionCard({
     entry: AgentHistoryEntry,
     session: AgentHistorySession,
   ) => boolean;
+  theme: ConversationLogTheme;
 }) {
   const agentLabel = useMemo(
     () => buildAgentLabel(
@@ -109,6 +111,7 @@ export function SessionCard({
       hasEnriched={enrichedEntries.length > 0}
       entryRefCallback={entryRefCallback}
       highlightedEntryId={highlightedEntryId}
+      theme={theme}
     />
   );
 }
@@ -120,6 +123,7 @@ function SessionCardShell({
   hasEnriched,
   entryRefCallback,
   highlightedEntryId,
+  theme,
 }: {
   session: AgentHistorySession;
   agentLabel?: string;
@@ -133,22 +137,20 @@ function SessionCardShell({
     node: HTMLDivElement | null,
   ) => void;
   highlightedEntryId?: string | null;
+  theme: ConversationLogTheme;
 }) {
   return (
-    <section className={
-      "rounded border border-white/10"
-      + " bg-[#1a1a2e]"
-      + " shadow-[inset_0_1px_0_"
-      + "rgba(255,255,255,0.02)]"
-    }>
+    <section className={theme.cardShell}>
       <SessionCardHeader
         session={session}
         agentLabel={agentLabel}
+        theme={theme}
       />
       <div className="space-y-2 p-3">
         {filteredEntries.length === 0 ? (
           <EmptySessionMessage
             hasEnriched={hasEnriched}
+            theme={theme}
           />
         ) : (
           filteredEntries.map(
@@ -167,6 +169,7 @@ function SessionCardShell({
                 highlighted={
                   highlightedEntryId === entry.id
                 }
+                theme={theme}
               />
             ),
           )
@@ -179,71 +182,75 @@ function SessionCardShell({
 function SessionCardHeader({
   session,
   agentLabel,
+  theme,
 }: {
   session: AgentHistorySession;
   agentLabel?: string;
+  theme: ConversationLogTheme;
 }) {
+  const iTypeTone = interactionBadgeTone(
+    session.interactionType,
+    theme,
+  );
+  const sTone = statusBadgeTone(
+    session.status,
+    theme,
+  );
   return (
-    <header className={
-      "flex flex-wrap items-center gap-2"
-      + " border-b border-white/10"
-      + " bg-[#16162a] px-3 py-2"
-      + " font-mono text-[14px] leading-6"
-      + " text-[#e0e0e0] subpixel-antialiased"
-    }>
-      <Badge
-        variant="outline"
-        className={
-          "text-[13px] uppercase "
-          + interactionTypeTone(
+    <header className={theme.cardHeader}>
+      <div className={
+        "flex flex-wrap items-center gap-2"
+      }>
+        <Badge
+          variant="outline"
+          className={
+            "text-[13px] uppercase " + iTypeTone
+          }
+        >
+          {interactionTypeLabel(
             session.interactionType,
-          )
-        }
-      >
-        {interactionTypeLabel(
-          session.interactionType,
-        )}
-      </Badge>
-      <Badge
-        variant="outline"
-        className={
-          "text-[13px] "
-          + statusTone(session.status)
-        }
-      >
-        {session.status ?? "unknown"}
-      </Badge>
-      {agentLabel ? (
+          )}
+        </Badge>
+        <Badge
+          variant="outline"
+          className={"text-[13px] " + sTone}
+        >
+          {session.status ?? "unknown"}
+        </Badge>
+        {agentLabel ? (
+          <span className={
+            "font-mono text-[15px] "
+            + theme.cardText
+          }>
+            {agentLabel}
+          </span>
+        ) : null}
         <span className={
-          "font-mono text-[15px] text-[#e0e0e0]"
+          "font-mono text-[14px] "
+          + theme.cardMuted
         }>
-          {agentLabel}
+          {session.sessionId}
         </span>
-      ) : null}
-      <span className={
-        "font-mono text-[14px] text-white/65"
-      }>
-        {session.sessionId}
-      </span>
-      <span className={
-        "ml-auto text-[14px] text-white/65"
-      }>
-        {formatTime(session.updatedAt)}
-      </span>
+        <span className={
+          "ml-auto text-[14px] "
+          + theme.cardMuted
+        }>
+          {formatTime(session.updatedAt)}
+        </span>
+      </div>
     </header>
   );
 }
 
-function EmptySessionMessage(
-  { hasEnriched }: { hasEnriched: boolean },
-) {
+function EmptySessionMessage({
+  hasEnriched,
+  theme,
+}: {
+  hasEnriched: boolean;
+  theme: ConversationLogTheme;
+}) {
   return (
-    <div className={
-      "rounded border border-white/10"
-      + " bg-[#16162a] px-3 py-2"
-      + " font-mono text-[15px] leading-6"
-      + " text-[#e0e0e0] subpixel-antialiased"
-    }>
+    <div className={theme.emptySession}>
       {hasEnriched
         ? "No entries match the active filters."
         : "No log entries captured"
@@ -259,6 +266,7 @@ function SessionEntryWrapper({
   precedingPrompt,
   entryRefCallback,
   highlighted,
+  theme,
 }: {
   entry: AgentHistoryEntry;
   agentLabel?: string;
@@ -269,6 +277,7 @@ function SessionEntryWrapper({
     node: HTMLDivElement | null,
   ) => void;
   highlighted: boolean;
+  theme: ConversationLogTheme;
 }) {
   return (
     <div
@@ -277,10 +286,7 @@ function SessionEntryWrapper({
       }}
       className={
         highlighted
-          ? "rounded ring-2 ring-cyan-400/70"
-            + " shadow-[0_0_0_1px_"
-            + "rgba(34,211,238,0.15)]"
-            + " transition-all duration-300"
+          ? theme.highlightRing
           : "transition-all duration-300"
       }
     >
@@ -289,6 +295,7 @@ function SessionEntryWrapper({
         agentLabel={agentLabel}
         interactionType={interactionType}
         precedingPrompt={precedingPrompt}
+        theme={theme}
       />
     </div>
   );
@@ -299,22 +306,24 @@ function SessionEntryRow({
   agentLabel,
   interactionType,
   precedingPrompt,
+  theme,
 }: {
   entry: AgentHistoryEntry;
   agentLabel?: string;
   interactionType?: AgentHistoryInteractionType;
   precedingPrompt?: PromptContext;
+  theme: ConversationLogTheme;
 }) {
   if (entry.kind === "session_start") {
     return (
-      <SessionBoundaryRow>
+      <SessionBoundaryRow theme={theme}>
         Session started at {formatTime(entry.ts)}
       </SessionBoundaryRow>
     );
   }
   if (entry.kind === "session_end") {
     return (
-      <SessionBoundaryRow>
+      <SessionBoundaryRow theme={theme}>
         Session ended at {formatTime(entry.ts)}
         {entry.status
           ? ` · ${entry.status}`
@@ -330,6 +339,7 @@ function SessionEntryRow({
       <PromptEntryRow
         entry={entry}
         agentLabel={agentLabel}
+        theme={theme}
       />
     );
   }
@@ -339,20 +349,20 @@ function SessionEntryRow({
       agentLabel={agentLabel}
       interactionType={interactionType}
       precedingPrompt={precedingPrompt}
+      theme={theme}
     />
   );
 }
 
-function SessionBoundaryRow(
-  { children }: { children: React.ReactNode },
-) {
+function SessionBoundaryRow({
+  children,
+  theme,
+}: {
+  children: React.ReactNode;
+  theme: ConversationLogTheme;
+}) {
   return (
-    <div className={
-      "rounded border border-white/10"
-      + " bg-[#16162a] px-3 py-2"
-      + " font-mono text-[15px] leading-6"
-      + " text-[#e0e0e0] subpixel-antialiased"
-    }>
+    <div className={theme.boundaryRow}>
       {children}
     </div>
   );
@@ -361,35 +371,25 @@ function SessionBoundaryRow(
 function PromptEntryRow({
   entry,
   agentLabel,
+  theme,
 }: {
   entry: AgentHistoryEntry;
   agentLabel?: string;
+  theme: ConversationLogTheme;
 }) {
   const stateLabel = workflowStateBadgeLabel(
     entry.workflowState,
   );
-  const badgeCls =
-    "border-cyan-300/40 bg-cyan-400/10"
-    + " text-[13px] font-normal text-sky-100";
   return (
-    <div className={
-      "rounded border border-cyan-400/25"
-      + " bg-[#101522] px-3 py-2"
-      + " shadow-[inset_0_1px_0_"
-      + "rgba(255,255,255,0.03)]"
-    }>
-      <div className={
-        "mb-1.5 flex flex-wrap items-center"
-        + " gap-2 font-mono text-[14px]"
-        + " leading-6 text-[#e0e0e0]"
-        + " subpixel-antialiased"
-      }>
+    <div className={theme.promptContainer}>
+      <div className={theme.promptHeader}>
         <MessageSquareText
-          className="size-5 text-sky-100"
+          className={
+            "size-5 " + theme.promptIcon
+          }
         />
         <span className={
-          "font-semibold uppercase"
-          + " tracking-[0.18em] text-sky-100"
+          theme.promptDirectionLabel
         }>
           App -&gt; Agent
           {agentLabel
@@ -400,38 +400,73 @@ function PromptEntryRow({
           === "number" ? (
           <Badge
             variant="outline"
-            className={badgeCls}
+            className={theme.promptBadge}
           >
             {`Prompt #${entry.promptNumber}`}
           </Badge>
         ) : null}
         <Badge
           variant="outline"
-          className={badgeCls}
+          className={theme.promptBadge}
         >
           {promptSourceLabel(entry.promptSource)}
         </Badge>
         {stateLabel ? (
           <Badge
             variant="outline"
-            className={badgeCls}
+            className={theme.promptBadge}
           >
             {stateLabel}
           </Badge>
         ) : null}
-        <span className="text-white/65">
+        <span className={theme.cardMuted}>
           {formatTime(entry.ts)}
         </span>
       </div>
-      <pre className={
-        "whitespace-pre-wrap break-words"
-        + " font-mono text-[15px] leading-7"
-        + " text-[#e0e0e0] subpixel-antialiased"
-      }>
+      <pre className={theme.promptBody}>
         {entry.prompt ?? "(empty prompt)"}
       </pre>
     </div>
   );
+}
+
+/* badge helpers */
+
+function interactionTypeLabel(
+  iType: string,
+): string {
+  if (iType === "scene") return "scene";
+  if (iType === "direct") return "direct";
+  if (iType === "breakdown") return "breakdown";
+  return iType;
+}
+
+function interactionBadgeTone(
+  iType: string,
+  theme: ConversationLogTheme,
+): string {
+  if (iType === "scene")
+    return theme.badgeInteractionScene;
+  if (iType === "direct")
+    return theme.badgeInteractionDirect;
+  if (iType === "breakdown")
+    return theme.badgeInteractionBreakdown;
+  return theme.badgeInteractionDefault;
+}
+
+function statusBadgeTone(
+  status: string | undefined,
+  theme: ConversationLogTheme,
+): string {
+  if (status === "completed")
+    return theme.badgeStatusCompleted;
+  if (status === "error")
+    return theme.badgeStatusError;
+  if (status === "aborted")
+    return theme.badgeStatusAborted;
+  if (status === "running")
+    return theme.badgeStatusRunning;
+  return theme.badgeStatusDefault;
 }
 
 /* ResponseEntryRow is in response-row */

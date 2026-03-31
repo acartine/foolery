@@ -130,8 +130,8 @@ function useSessionState(
   } | null,
   loadedBeatKey: string | null,
 ) {
-  const [debugPanelOpen, setDebugPanelOpen] =
-    useState(false);
+  const [activeTab, setActiveTab] =
+    useState<"console" | "debug">("console");
   const [showExpandedDetails, setShowExpandedDetails] = useState(false);
   const [selectedSessionId, setSelectedSessionId] =
     useState<string | null>(null);
@@ -183,7 +183,7 @@ function useSessionState(
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync
-    setDebugPanelOpen(false);
+    setActiveTab("console");
   }, [loadedBeatKey]);
 
   useEffect(() => {
@@ -206,8 +206,8 @@ function useSessionState(
   }, [selectedSessionId, sessions]);
 
   return {
-    debugPanelOpen,
-    setDebugPanelOpen,
+    activeTab,
+    setActiveTab,
     showExpandedDetails,
     setShowExpandedDetails,
     selectedSessionId,
