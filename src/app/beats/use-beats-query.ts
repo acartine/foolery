@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   buildBeatsQueryKey,
   fetchBeatsForScope,
@@ -91,7 +91,6 @@ export function useBeatsQuery(
     ),
     staleTime: 10_000,
     refetchInterval: 10_000,
-    placeholderData: keepPreviousData,
     retry: (count, error) =>
       !(error instanceof DegradedStoreError)
       && count < 3,

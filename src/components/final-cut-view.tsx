@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Megaphone } from "lucide-react";
 import {
   buildBeatsQueryKey,
@@ -15,6 +15,7 @@ import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
 import type { Beat } from "@/lib/types";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
+import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 
 const HUMAN_ACTION_PARAMS: Record<string, string> = {
   requiresHumanAction: "true",
@@ -43,7 +44,6 @@ export function FinalCutView() {
     enabled: Boolean(activeRepo) || registeredRepos.length > 0,
     staleTime: 10_000,
     refetchInterval: 10_000,
-    placeholderData: keepPreviousData,
   });
   useBeatsScreenWarmup(
     "finalcut",
@@ -85,9 +85,10 @@ export function FinalCutView() {
       </section>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-6 text-muted-foreground">
-          Loading escalations queue...
-        </div>
+        <RepoSwitchLoadingState
+          data-testid="repo-switch-loading-finalcut"
+          label="Loading escalations queue..."
+        />
       ) : (
         <PerfProfiler id="final-cut-view" interactionLabel="escalations" beatCount={beats.length}>
           <BeatTable

@@ -1,6 +1,7 @@
 import {
-  useCallback, useEffect, useMemo,
+  useCallback, useEffect, useMemo, useRef,
 } from "react";
+import type { RefObject } from "react";
 import {
   useSearchParams, useRouter, usePathname,
 } from "next/navigation";
@@ -12,6 +13,7 @@ interface UseBeatDetailArgs {
   detailBeatId: string | null;
   detailRepo: string | undefined;
   isListView: boolean;
+  activeRepo: string | null;
 }
 
 export interface UseBeatDetailResult {
@@ -31,11 +33,13 @@ export function useBeatDetail(
 ): UseBeatDetailResult {
   const {
     beats, detailBeatId, detailRepo, isListView,
+    activeRepo,
   } = args;
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const previousActiveRepoRef = useRef(activeRepo);
 
   const setBeatDetailParams = useCallback(
     (
@@ -65,6 +69,13 @@ export function useBeatDetail(
       setBeatDetailParams(null, undefined, "replace");
     }
   }, [isListView, detailBeatId, setBeatDetailParams]);
+  useCloseDetailOnRepoChange({
+    activeRepo,
+    detailBeatId,
+    isListView,
+    previousActiveRepoRef,
+    setBeatDetailParams,
+  });
 
   const handleOpenBeat = useCallback(
     (beat: Beat) => {
@@ -116,4 +127,41 @@ export function useBeatDetail(
     handleBeatLightboxOpenChange,
     handleMovedBeat,
   };
+}
+
+function useCloseDetailOnRepoChange(args: {
+  activeRepo: string | null;
+  detailBeatId: string | null;
+  isListView: boolean;
+  previousActiveRepoRef: RefObject<string | null>;
+  setBeatDetailParams: (
+    id: string | null,
+    repo: string | undefined,
+    mode: "push" | "replace",
+  ) => void;
+}) {
+  const {
+    activeRepo,
+    detailBeatId,
+    isListView,
+    previousActiveRepoRef,
+    setBeatDetailParams,
+  } = args;
+
+  useEffect(() => {
+    if (previousActiveRepoRef.current === activeRepo) {
+      return;
+    }
+    previousActiveRepoRef.current = activeRepo;
+    if (!detailBeatId || !isListView) {
+      return;
+    }
+    setBeatDetailParams(null, undefined, "replace");
+  }, [
+    activeRepo,
+    detailBeatId,
+    isListView,
+    previousActiveRepoRef,
+    setBeatDetailParams,
+  ]);
 }

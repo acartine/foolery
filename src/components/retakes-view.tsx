@@ -39,6 +39,7 @@ import {
   extractCommitSha,
 } from "@/lib/retake-view-helpers";
 import { useBeatsScreenWarmup } from "@/hooks/use-beats-screen-warmup";
+import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import type {
   RetakesQueryResult,
 } from "@/lib/retake-view-helpers";
@@ -212,12 +213,10 @@ function RetakesPagination({
 
 function RetakesLoading() {
   return (
-    <div className={
-      "flex items-center justify-center"
-      + " py-6 text-muted-foreground"
-    }>
-      Loading ReTakes...
-    </div>
+    <RepoSwitchLoadingState
+      data-testid="repo-switch-loading-retakes"
+      label="Loading ReTakes..."
+    />
   );
 }
 

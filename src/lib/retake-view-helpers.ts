@@ -2,7 +2,6 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  keepPreviousData,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -83,7 +82,6 @@ export function useRetakesQuery(
     enabled: true,
     staleTime: 30_000,
     refetchInterval: 30_000,
-    placeholderData: keepPreviousData,
   });
 }
 

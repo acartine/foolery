@@ -22,6 +22,7 @@ import {
 import {
   DiagnosticsView,
 } from "@/components/lease-audit-view";
+import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { AlertTriangle } from "lucide-react";
@@ -98,6 +99,7 @@ function useBeatsPageState() {
   );
   const detail = useBeatDetail({
     beats, detailBeatId, detailRepo, isListView,
+    activeRepo,
   });
 
   return {
@@ -270,12 +272,10 @@ function BeatsListContent(
 
   if (isLoading) {
     return (
-      <div className={
-        "flex items-center justify-center"
-        + " py-6 text-muted-foreground"
-      }>
-        Loading beats...
-      </div>
+      <RepoSwitchLoadingState
+        data-testid="repo-switch-loading-beats"
+        label="Loading beats..."
+      />
     );
   }
   if (loadError && !isDegradedError) {
