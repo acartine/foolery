@@ -1,117 +1,242 @@
 "use client";
 
-import { Bot, Code2, Diamond, Sparkles, Clock, Timer } from "lucide-react";
-import type { ResolvedAgentInfo } from "@/hooks/use-agent-info";
-import { useElapsedTime } from "@/hooks/use-elapsed-time";
-import { formatAgentDisplayLabel } from "@/lib/agent-identity";
-import { resolveTerminalElapsedAnchor } from "@/lib/terminal-time-anchor";
+import {
+  Bot,
+  Code2,
+  Diamond,
+  Sparkles,
+  Clock,
+  Timer,
+} from "lucide-react";
+import type {
+  ResolvedAgentInfo,
+} from "@/hooks/use-agent-info";
+import {
+  useElapsedTime,
+} from "@/hooks/use-elapsed-time";
+import {
+  formatAgentDisplayLabel,
+} from "@/lib/agent-identity";
+import {
+  resolveTerminalElapsedAnchor,
+} from "@/lib/terminal-time-anchor";
 
-const VENDOR_CONFIG: Record<
-  string,
-  { icon: typeof Bot; color: string; bg: string }
-> = {
-  claude: {
-    icon: Sparkles,
-    color: "text-purple-300",
-    bg: "bg-purple-500/10",
-  },
-  codex: {
-    icon: Code2,
-    color: "text-green-300",
-    bg: "bg-green-500/10",
-  },
-  gemini: {
-    icon: Diamond,
-    color: "text-blue-300",
-    bg: "bg-blue-500/10",
-  },
-};
+interface VendorTheme {
+  icon: typeof Bot;
+  color: string;
+  bg: string;
+}
 
-const DEFAULT_VENDOR = {
-  icon: Bot,
-  color: "text-slate-300",
-  bg: "bg-slate-500/10",
-} as const;
+function vendorTheme(
+  vendor: string,
+  light: boolean,
+): VendorTheme {
+  if (vendor === "claude") {
+    return {
+      icon: Sparkles,
+      color: light
+        ? "text-purple-700"
+        : "text-purple-300",
+      bg: light
+        ? "bg-purple-50"
+        : "bg-purple-500/10",
+    };
+  }
+  if (vendor === "codex") {
+    return {
+      icon: Code2,
+      color: light
+        ? "text-green-700"
+        : "text-green-300",
+      bg: light
+        ? "bg-green-50"
+        : "bg-green-500/10",
+    };
+  }
+  if (vendor === "gemini") {
+    return {
+      icon: Diamond,
+      color: light
+        ? "text-blue-700"
+        : "text-blue-300",
+      bg: light
+        ? "bg-blue-50"
+        : "bg-blue-500/10",
+    };
+  }
+  return {
+    icon: Bot,
+    color: light
+      ? "text-slate-600"
+      : "text-slate-300",
+    bg: light
+      ? "bg-slate-50"
+      : "bg-slate-500/10",
+  };
+}
 
-/** Color for the beat state pill in the info bar. */
-function stateBarColor(state: string): string {
+function stateBarColor(
+  state: string,
+  light: boolean,
+): string {
   const s = state.trim().toLowerCase();
-  if (s === "shipped") return "bg-green-500/20 text-green-300";
-  if (s === "abandoned" || s === "closed") return "bg-gray-500/20 text-gray-400";
-  if (s === "deferred") return "bg-gray-500/20 text-gray-400";
-  if (s === "blocked") return "bg-red-500/20 text-red-300";
-  if (s.endsWith("_review")) return "bg-purple-500/20 text-purple-300";
-  if (s.startsWith("ready_for_")) return "bg-blue-500/20 text-blue-300";
-  return "bg-yellow-500/20 text-yellow-300";
+  if (s === "shipped") {
+    return light
+      ? "bg-green-100 text-green-800"
+      : "bg-green-500/20 text-green-300";
+  }
+  if (
+    s === "abandoned"
+    || s === "closed"
+    || s === "deferred"
+  ) {
+    return light
+      ? "bg-gray-100 text-gray-700"
+      : "bg-gray-500/20 text-gray-400";
+  }
+  if (s === "blocked") {
+    return light
+      ? "bg-red-100 text-red-800"
+      : "bg-red-500/20 text-red-300";
+  }
+  if (s.endsWith("_review")) {
+    return light
+      ? "bg-purple-100 text-purple-800"
+      : "bg-purple-500/20 text-purple-300";
+  }
+  if (s.startsWith("ready_for_")) {
+    return light
+      ? "bg-blue-100 text-blue-800"
+      : "bg-blue-500/20 text-blue-300";
+  }
+  return light
+    ? "bg-yellow-100 text-yellow-800"
+    : "bg-yellow-500/20 text-yellow-300";
 }
 
 function formatState(state: string): string {
-  const abbreviations: Record<string, string> = {
+  const abbr: Record<string, string> = {
     Implementation: "Impl",
   };
   return (state ?? "open")
     .split("_")
     .map((w) => {
-      const capped = w.charAt(0).toUpperCase() + w.slice(1);
-      return abbreviations[capped] ?? capped;
+      const c =
+        w.charAt(0).toUpperCase() + w.slice(1);
+      return abbr[c] ?? c;
     })
     .join(" ");
 }
 
 export interface BeatInfoForBar {
   state: string;
-  /** ISO timestamp of when the beat entered the current state (beat.updated). */
   stateChangedAt: string;
-  /** ISO timestamp of when the beat was created (beat.created). */
   createdAt: string;
-  /** ISO timestamp of the latest Take! execution for the beat. */
   latestTakeStartedAt?: string;
 }
 
 interface AgentInfoBarProps {
   agent: ResolvedAgentInfo;
   beat?: BeatInfoForBar | null;
+  lightTheme: boolean;
 }
 
-/**
- * Thin horizontal bar showing beat state, elapsed timers, and agent info.
- * Placed between the terminal tab bar and the xterm container.
- */
-export function AgentInfoBar({ agent, beat }: AgentInfoBarProps) {
-  const cfg = VENDOR_CONFIG[agent.vendor] ?? DEFAULT_VENDOR;
+export function AgentInfoBar({
+  agent,
+  beat,
+  lightTheme,
+}: AgentInfoBarProps) {
+  const cfg = vendorTheme(
+    agent.vendor,
+    lightTheme,
+  );
   const Icon = cfg.icon;
-  const agentLabel = formatAgentDisplayLabel(agent) || agent.name;
+  const agentLabel =
+    formatAgentDisplayLabel(agent)
+    || agent.name;
 
-  const stateElapsed = useElapsedTime(beat?.stateChangedAt);
-  const totalElapsed = useElapsedTime(resolveTerminalElapsedAnchor(beat));
+  const stateElapsed = useElapsedTime(
+    beat?.stateChangedAt,
+  );
+  const totalElapsed = useElapsedTime(
+    resolveTerminalElapsedAnchor(beat),
+  );
+
+  const borderCls = lightTheme
+    ? "border-b border-slate-200"
+    : "border-b border-white/5";
+  const timerPrimary = lightTheme
+    ? "text-sky-700"
+    : "text-cyan-300/80";
+  const timerIcon = lightTheme
+    ? "text-sky-500"
+    : "text-cyan-400/60";
+  const timerSecondary = lightTheme
+    ? "text-slate-500"
+    : "text-white/50";
+  const timerSecondaryIcon = lightTheme
+    ? "text-slate-400"
+    : "text-white/30";
+  const separator = lightTheme
+    ? "text-slate-300"
+    : "text-white/20";
 
   return (
-    <div
-      className={`flex items-center gap-2 border-b border-white/5 px-3 py-1 text-[11px] ${cfg.bg}`}
-    >
-      {/* Beat state section */}
+    <div className={
+      "flex items-center gap-2 px-3"
+      + ` py-1 text-[11px] ${borderCls}`
+      + ` ${cfg.bg}`
+    }>
       {beat && (
         <>
-          <span
-            className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${stateBarColor(beat.state)}`}
-          >
+          <span className={
+            "inline-flex items-center"
+            + " rounded px-1.5 py-0.5"
+            + " text-[10px] font-semibold"
+            + " uppercase tracking-wide "
+            + stateBarColor(
+              beat.state,
+              lightTheme,
+            )
+          }>
             {formatState(beat.state)}
           </span>
-          <span className="inline-flex items-center gap-1 font-mono text-cyan-300/80" title="Time in current state">
-            <Clock className="size-3 text-cyan-400/60" />
+          <span
+            className={
+              "inline-flex items-center"
+              + ` gap-1 font-mono ${timerPrimary}`
+            }
+            title="Time in current state"
+          >
+            <Clock className={
+              "size-3 " + timerIcon
+            } />
             {stateElapsed}
           </span>
-          <span className="inline-flex items-center gap-1 font-mono text-white/50" title="Total elapsed time">
-            <Timer className="size-3 text-white/30" />
+          <span
+            className={
+              "inline-flex items-center"
+              + " gap-1 font-mono "
+              + timerSecondary
+            }
+            title="Total elapsed time"
+          >
+            <Timer className={
+              "size-3 " + timerSecondaryIcon
+            } />
             {totalElapsed}
           </span>
-          <span className="text-white/20">|</span>
+          <span className={separator}>|</span>
         </>
       )}
-
-      {/* Agent info section */}
-      <Icon className={`size-3.5 ${cfg.color}`} />
-      <span className={`font-medium ${cfg.color}`}>{agentLabel}</span>
+      <Icon className={
+        "size-3.5 " + cfg.color
+      } />
+      <span className={
+        "font-medium " + cfg.color
+      }>
+        {agentLabel}
+      </span>
     </div>
   );
 }

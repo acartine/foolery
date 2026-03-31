@@ -71,10 +71,7 @@ export function TerminalPanel() {
   } = useTerminalPanelState();
   const theme = getTerminalPanelThemeClasses(lightTheme);
 
-  useEffect(() => {
-    if (terminals.length > 0) performance.mark("terminal-panel:mount");
-  }, [terminals.length]);
-
+  useEffect(() => { if (terminals.length > 0) performance.mark("terminal-panel:mount"); }, [terminals.length]);
   if (terminals.length === 0) return null;
   if (!panelOpen) return <MinimizedTerminalBar />;
 
@@ -130,14 +127,13 @@ export function TerminalPanel() {
           onClose={closePanel}
         />
       </div>
-
       {agentInfo && (
         <AgentInfoBar
           agent={agentInfo}
           beat={beatInfoForBar}
+          lightTheme={lightTheme}
         />
       )}
-
       <div
         ref={termContainerRef}
         className="flex-1 overflow-hidden px-1 py-1"

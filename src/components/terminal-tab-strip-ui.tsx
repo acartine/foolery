@@ -283,6 +283,7 @@ function TerminalTab(props: {
         displayLabel={displayLabel}
         compact={compact}
         beatTitle={terminal.beatTitle}
+        lightTheme={lightTheme}
       />
       {isRunning ? (
         <span className={
@@ -308,7 +309,14 @@ function TabLabel(props: {
   };
   compact: boolean;
   beatTitle: string;
+  lightTheme: boolean;
 }) {
+  const prefixCls = props.lightTheme
+    ? "min-w-0 truncate text-slate-400"
+    : "min-w-0 truncate text-white/45";
+  const titleCls = props.lightTheme
+    ? "max-w-[160px] truncate text-slate-500"
+    : "max-w-[160px] truncate text-white/50";
   return (
     <>
       <span className={
@@ -317,9 +325,7 @@ function TabLabel(props: {
       }>
         {props.displayLabel.prefix ? (
           <>
-            <span className={
-              "min-w-0 truncate text-white/45"
-            }>
+            <span className={prefixCls}>
               {props.displayLabel.prefix}
             </span>
             <span className="shrink-0">
@@ -333,9 +339,7 @@ function TabLabel(props: {
         )}
       </span>
       {!props.compact && props.beatTitle && (
-        <span className={
-          "max-w-[160px] truncate text-white/50"
-        }>
+        <span className={titleCls}>
           {props.beatTitle}
         </span>
       )}
