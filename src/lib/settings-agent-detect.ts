@@ -17,6 +17,7 @@ import {
   normalizeAgentIdentity,
   providerLabel,
 } from "@/lib/agent-identity";
+import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
 import {
   readDynamicModels,
   buildAgentImportOptions,
@@ -270,16 +271,20 @@ async function inspectStandardAgent(
   resolvedCommand: string,
   provider: string | undefined,
 ): Promise<AgentMetadata> {
-  let modelId: string | undefined;
+  let configuredModelId: string | undefined;
   if (agentId === "copilot") {
-    modelId = await readCopilotConfiguredModel();
+    configuredModelId = await readCopilotConfiguredModel();
   } else if (agentId === "codex") {
-    modelId = await readCodexConfiguredModel();
+    configuredModelId = await readCodexConfiguredModel();
   } else if (agentId === "claude") {
-    modelId = await readClaudeConfiguredModel();
+    configuredModelId = await readClaudeConfiguredModel();
   } else if (agentId === "gemini") {
-    modelId = await readGeminiConfiguredModel();
+    configuredModelId = await readGeminiConfiguredModel();
   }
+  const modelId = canonicalizeRuntimeModel(
+    resolvedCommand,
+    configuredModelId,
+  );
   const normalized = normalizeAgentIdentity({
     command: resolvedCommand,
     provider,

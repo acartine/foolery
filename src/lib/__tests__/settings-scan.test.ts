@@ -85,6 +85,15 @@ describe("scanForAgents: discovery and status", () => {
       "Claude Haiku 4.5",
       "Claude Opus 4.5",
     ]);
+    expect(claude?.options?.[0]).toMatchObject({
+      id: "claude-claude-sonnet-4-6",
+      modelId: "claude-sonnet-4-6",
+      provider: "Claude",
+      model: "claude",
+      flavor: "sonnet",
+      version: "4.6",
+      label: "Claude Sonnet 4.6",
+    });
   });
 
   it("marks agents missing when command lookup fails", async () => {
@@ -102,7 +111,7 @@ describe("scanForAgents: discovery and status", () => {
 
 });
 
-describe("scanForAgents: model metadata", () => {
+describe("scanForAgents: copilot model metadata", () => {
   it("captures Copilot model metadata from local config", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v copilot") {
@@ -150,6 +159,7 @@ describe("scanForAgents: model metadata", () => {
     expect(copilot?.options?.length).toBe(2);
     expect(copilot?.options?.[0]).toMatchObject({
       id: "copilot-claude-sonnet-4-5",
+      label: "Claude Sonnet 4.5",
       provider: "Claude",
       model: "claude",
       flavor: "sonnet",
@@ -160,7 +170,9 @@ describe("scanForAgents: model metadata", () => {
       modelId: "gpt-5.2",
     });
   });
+});
 
+describe("scanForAgents: codex model metadata", () => {
   it("captures Codex model metadata from local config", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v codex") {
@@ -199,10 +211,18 @@ describe("scanForAgents: model metadata", () => {
       "gpt-5.1-codex-mini",
     ]);
     expect(codex?.selectedOptionId).toBe("codex-gpt-5-4");
+    expect(codex?.options?.[0]).toMatchObject({
+      id: "codex-gpt-5-4",
+      label: "GPT 5.4",
+      provider: "Codex",
+      model: "gpt",
+      version: "5.4",
+      modelId: "gpt-5.4",
+    });
   });
 });
 
-describe("scanForAgents: model metadata for existing CLIs", () => {
+describe("scanForAgents: claude model metadata", () => {
   it("captures Claude model metadata from settings", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v claude") {
@@ -213,7 +233,7 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
     mockReadFile.mockImplementation(async (path: string) => {
       if (path.endsWith(".claude/settings.json")) {
         return JSON.stringify({
-          defaultModel: "claude-sonnet-4-5",
+          defaultModel: "claude-sonnet-4.5",
         });
       }
       throw new Error("missing");
@@ -233,10 +253,20 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
       version: "4.5",
     });
     expect(claude?.options?.length).toBe(5);
-    expect(claude?.options?.[0]?.label).toBe("Claude Sonnet 4.5");
+    expect(claude?.options?.[0]).toMatchObject({
+      id: "claude-claude-sonnet-4-5",
+      modelId: "claude-sonnet-4-5",
+      label: "Claude Sonnet 4.5",
+      provider: "Claude",
+      model: "claude",
+      flavor: "sonnet",
+      version: "4.5",
+    });
     expect(claude?.options?.[1]?.label).toBe("Claude Sonnet 4.6");
   });
+});
 
+describe("scanForAgents: gemini model metadata", () => {
   it("captures Gemini model metadata from recent history", async () => {
     mockExecCb.mockImplementation(async (cmd: string) => {
       if (cmd === "command -v gemini") {
@@ -276,9 +306,63 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
       version: "2.5",
     });
     expect(gemini?.options?.length).toBe(3);
-    expect(gemini?.options?.[0]?.label).toBe("Gemini Pro 2.5");
+    expect(gemini?.options?.[0]).toMatchObject({
+      id: "gemini-gemini-2-5-pro",
+      modelId: "gemini-2.5-pro",
+      label: "Gemini Pro 2.5",
+      provider: "Gemini",
+      model: "gemini",
+      flavor: "pro",
+      version: "2.5",
+    });
     expect(gemini?.options?.[1]?.label).toBe("Gemini Flash 2.5");
     expect(gemini?.options?.[2]?.label).toBe("Gemini Flash Lite 2.5");
+  });
+});
+
+describe("scanForAgents: opencode model metadata", () => {
+  it("captures OpenCode model metadata with ids separate from display labels", async () => {
+    mockExecCb.mockImplementation(async (cmd: string) => {
+      if (cmd === "command -v opencode") {
+        return {
+          stdout: "/opt/homebrew/bin/opencode\n",
+          stderr: "",
+        };
+      }
+      if (cmd === "opencode models") {
+        return {
+          stdout: [
+            "openrouter/anthropic/claude-sonnet-4-5",
+            "openrouter/openai/gpt-5-mini",
+          ].join("\n"),
+          stderr: "",
+        };
+      }
+      throw new Error("not found");
+    });
+
+    const agents = await scanForAgents();
+    const opencode = agents.find((agent) => agent.id === "opencode");
+    expect(opencode).toMatchObject({
+      id: "opencode",
+      command: "opencode",
+      path: "/opt/homebrew/bin/opencode",
+      installed: true,
+      provider: "OpenCode",
+    });
+    expect(opencode?.options?.[0]).toMatchObject({
+      id: "opencode-openrouter-anthropic-claude-sonnet-4-5",
+      modelId: "openrouter/anthropic/claude-sonnet-4-5",
+      label: "OpenCode openrouter/anthropic/claude-sonnet-4-5",
+      provider: "OpenCode",
+      model: "openrouter/anthropic/claude-sonnet-4-5",
+    });
+    expect(opencode?.options?.[1]).toMatchObject({
+      id: "opencode-openrouter-openai-gpt-5-mini",
+      modelId: "openrouter/openai/gpt-5-mini",
+      label: "OpenCode openrouter/openai/gpt-5-mini",
+      provider: "OpenCode",
+    });
   });
 });
 

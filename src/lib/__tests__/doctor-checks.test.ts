@@ -103,6 +103,7 @@ describe("checkSettingsDefaults", () => {
     mockInspectSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
       missingPaths: [],
+      normalizationPaths: [],
       fileMissing: false,
     });
     const diags = await checkSettingsDefaults();
@@ -116,6 +117,7 @@ describe("checkSettingsDefaults", () => {
     mockInspectSettingsDefaults.mockResolvedValue({
       settings: DEFAULT_SETTINGS,
       missingPaths: ["defaults.profileId", "backend.type"],
+      normalizationPaths: [],
       fileMissing: false,
     });
     const diags = await checkSettingsDefaults();
@@ -129,6 +131,21 @@ describe("checkSettingsDefaults", () => {
         label: "Backfill missing settings defaults",
       },
     ]);
+  });
+
+  it("reports warning when settings values need normalization", async () => {
+    mockInspectSettingsDefaults.mockResolvedValue({
+      settings: DEFAULT_SETTINGS,
+      missingPaths: [],
+      normalizationPaths: ["agents.claude-opus.model"],
+      fileMissing: false,
+    });
+    const diags = await checkSettingsDefaults();
+    expect(diags).toHaveLength(1);
+    expect(diags[0].severity).toBe("warning");
+    expect(diags[0].message).toContain("non-canonical values");
+    expect(diags[0].message).toContain("agents.claude-opus.model");
+    expect(diags[0].fixable).toBe(true);
   });
 });
 

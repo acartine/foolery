@@ -56,7 +56,7 @@ function makeClaudeScannedAgent(): ScannedAgent {
         model: "claude",
         flavor: "opus",
         version: "4.6",
-        modelId: "claude-opus-4.6",
+        modelId: "claude-opus-4-6",
       },
       {
         id: "claude-claude-sonnet-4-6",
@@ -65,7 +65,7 @@ function makeClaudeScannedAgent(): ScannedAgent {
         model: "claude",
         flavor: "sonnet",
         version: "4.6",
-        modelId: "claude-sonnet-4.6",
+        modelId: "claude-sonnet-4-6",
       },
     ],
   };
@@ -177,7 +177,7 @@ describe("ScannedAgentsList", () => {
       "claude-claude-opus-4-6": {
         command: scanned.path,
         provider: "Claude",
-        model: "claude-opus-4.6",
+        model: "claude-opus-4-6",
       },
     };
 

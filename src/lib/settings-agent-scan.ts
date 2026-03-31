@@ -14,6 +14,7 @@ import {
   buildAgentOptionId,
   formatAgentOptionLabel,
 } from "@/lib/agent-identity";
+import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
 
 const execAsync = promisify(exec);
 
@@ -21,11 +22,11 @@ const STATIC_PROVIDER_MODEL_IDS: Partial<
   Record<string, readonly string[]>
 > = {
   claude: [
-    "claude-sonnet-4.6",
-    "claude-opus-4.6",
-    "claude-sonnet-4.5",
-    "claude-haiku-4.5",
-    "claude-opus-4.5",
+    "claude-sonnet-4-6",
+    "claude-opus-4-6",
+    "claude-sonnet-4-5",
+    "claude-haiku-4-5",
+    "claude-opus-4-5",
   ],
   codex: [
     "gpt-5.4",
@@ -129,22 +130,28 @@ export async function readCopilotModels(): Promise<
       }
     }
     return modelIds.map((modelId) => {
+      const runtimeModelId = canonicalizeRuntimeModel(
+        "copilot",
+        modelId,
+      ) ?? modelId;
       const n = normalizeAgentIdentity({
-        command: "copilot", model: modelId,
+        command: "copilot", model: runtimeModelId,
       });
       const credits = COPILOT_CREDITS[modelId];
       return {
         id: buildAgentOptionId("copilot", {
-          ...n, modelId,
+          ...n,
+          modelId: runtimeModelId,
         }),
         label: formatAgentOptionLabel({
-          ...n, modelId,
+          ...n,
+          modelId: runtimeModelId,
         }),
         provider: n.provider,
         model: n.model,
         flavor: n.flavor,
         version: n.version,
-        modelId,
+        modelId: runtimeModelId,
         ...(credits !== undefined
           ? { credits } : {}),
       };
@@ -200,25 +207,29 @@ function buildStaticProviderCatalog(
   }
 
   return modelIds.map((modelId) => {
+    const runtimeModelId = canonicalizeRuntimeModel(
+      agentId,
+      modelId,
+    ) ?? modelId;
     const normalized = normalizeAgentIdentity({
       command: agentId,
       provider,
-      model: modelId,
+      model: runtimeModelId,
     });
     return {
       id: buildAgentOptionId(agentId, {
         ...normalized,
-        modelId,
+        modelId: runtimeModelId,
       }),
       label: formatAgentOptionLabel({
         ...normalized,
-        modelId,
+        modelId: runtimeModelId,
       }),
       provider: normalized.provider,
       model: normalized.model,
       flavor: normalized.flavor,
       version: normalized.version,
-      modelId,
+      modelId: runtimeModelId,
     };
   });
 }
@@ -235,12 +246,16 @@ export function buildAgentImportOptions(
   const provider = providerLabel(
     detected.provider, agentId,
   );
+  const detectedModelId = canonicalizeRuntimeModel(
+    agentId,
+    detected.modelId,
+  );
   const staticCatalog =
     buildStaticProviderCatalog(
       agentId,
       provider,
     );
-  const detectedOption = detected.modelId
+  const detectedOption = detectedModelId
     ? [{
         provider,
         ...(detected.model
@@ -249,7 +264,7 @@ export function buildAgentImportOptions(
           ? { flavor: detected.flavor } : {}),
         ...(detected.version
           ? { version: detected.version } : {}),
-        modelId: detected.modelId,
+        modelId: detectedModelId,
       }]
     : [];
 

@@ -10,6 +10,7 @@ import type {
 import {
   formatAgentOptionLabel,
 } from "@/lib/agent-identity";
+import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
 import {
   addAgent,
   removeAgent,
@@ -37,10 +38,14 @@ function buildAgentPayload(
   scanned: ScannedAgent,
   selected: ScannedAgentOption,
 ) {
+  const runtimeModel = canonicalizeRuntimeModel(
+    scanned.command,
+    selected.modelId ?? selected.model,
+  );
   return {
     command: scanned.path,
     provider: selected.provider,
-    model: selected.modelId ?? selected.model,
+    ...(runtimeModel ? { model: runtimeModel } : {}),
     flavor: selected.flavor,
     version: selected.version,
     label: formatAgentOptionLabel(selected),

@@ -69,7 +69,11 @@ async function fixSettingsDefaults(
         context: ctx,
       };
     }
-    const count = result.missingPaths.length;
+    const missingCount = result.missingPaths.length;
+    const normalizationPaths =
+      result.normalizationPaths ?? [];
+    const normalizationCount =
+      normalizationPaths.length;
     if (!result.changed) {
       return {
         check,
@@ -84,12 +88,22 @@ async function fixSettingsDefaults(
       check,
       success: true,
       message:
-        `Backfilled ${count} missing setting` +
-        `${count === 1 ? "" : "s"} in ` +
-        `~/.config/foolery/settings.toml.`,
+        [
+          missingCount > 0
+            ? `Backfilled ${missingCount} missing setting` +
+              `${missingCount === 1 ? "" : "s"}`
+            : null,
+          normalizationCount > 0
+            ? `normalized ${normalizationCount} persisted value` +
+              `${normalizationCount === 1 ? "" : "s"}`
+            : null,
+        ].filter((part): part is string => part !== null).join(" and ") +
+        " in ~/.config/foolery/settings.toml.",
       context: {
         ...ctx,
         missingPaths: result.missingPaths.join(","),
+        normalizationPaths:
+          normalizationPaths.join(","),
       },
     };
   } catch (e) {

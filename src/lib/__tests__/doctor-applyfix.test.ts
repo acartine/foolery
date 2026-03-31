@@ -111,6 +111,7 @@ beforeEach(() => {
   mockInspectSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    normalizationPaths: [],
     fileMissing: false,
   });
   mockInspectStaleSettingsKeys.mockResolvedValue({
@@ -120,6 +121,7 @@ beforeEach(() => {
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    normalizationPaths: [],
     fileMissing: false,
     changed: false,
   });

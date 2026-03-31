@@ -79,13 +79,13 @@ beforeEach(() => {
   mockListRepos.mockResolvedValue([]);
   mockListWorkflows.mockResolvedValue({ ok: true, data: [] });
   mockInspectSettingsDefaults.mockResolvedValue({
-    missingPaths: [], fileMissing: false,
+    missingPaths: [], normalizationPaths: [], fileMissing: false,
   });
   mockInspectStaleSettingsKeys.mockResolvedValue({
     stalePaths: [], fileMissing: false,
   });
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
-    missingPaths: [], changed: false,
+    missingPaths: [], normalizationPaths: [], changed: false,
   });
   mockInspectSettingsPermissions.mockResolvedValue({
     fileMissing: false, needsFix: false, actualMode: 0o600,

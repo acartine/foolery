@@ -12,6 +12,7 @@ import {
 } from "@/lib/settings-core";
 import { foolerySettingsSchema, type FoolerySettings } from "@/lib/schemas";
 import { isDeepStrictEqual } from "node:util";
+import { normalizeSettingsAgents } from "@/lib/agent-config-normalization";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -19,6 +20,7 @@ interface SettingsDefaultsComputation {
   settings: FoolerySettings;
   merged: Record<string, unknown>;
   missingPaths: string[];
+  normalizationPaths: string[];
   normalizationChanged: boolean;
   fileMissing: boolean;
   error?: string;
@@ -27,6 +29,7 @@ interface SettingsDefaultsComputation {
 export interface SettingsDefaultsAudit {
   settings: FoolerySettings;
   missingPaths: string[];
+  normalizationPaths: string[];
   fileMissing: boolean;
   error?: string;
 }
@@ -118,6 +121,7 @@ async function computeSettingsDefaultsStatus(): Promise<
       settings: DEFAULT_SETTINGS,
       merged: DEFAULT_SETTINGS as unknown as Record<string, unknown>,
       missingPaths: [],
+      normalizationPaths: [],
       normalizationChanged: false,
       fileMissing: raw.fileMissing,
       error: raw.error,
@@ -128,15 +132,24 @@ async function computeSettingsDefaultsStatus(): Promise<
     raw.parsed,
     DEFAULT_SETTINGS as unknown as Record<string, unknown>,
   );
+  const normalizedResult = normalizeSettingsAgents(merged);
 
   try {
-    const settings = foolerySettingsSchema.parse(merged);
+    const settings = foolerySettingsSchema.parse(
+      normalizedResult.normalized,
+    );
     const normalized = settings as unknown as Record<string, unknown>;
     return {
       settings,
       merged: normalized,
       missingPaths,
-      normalizationChanged: !isDeepStrictEqual(normalized, merged),
+      normalizationPaths: normalizedResult.changedPaths,
+      normalizationChanged:
+        normalizedResult.changedPaths.length > 0 ||
+        !isDeepStrictEqual(
+          normalized,
+          normalizedResult.normalized,
+        ),
       fileMissing: raw.fileMissing,
     };
   } catch (error) {
@@ -144,6 +157,7 @@ async function computeSettingsDefaultsStatus(): Promise<
       settings: DEFAULT_SETTINGS,
       merged: DEFAULT_SETTINGS as unknown as Record<string, unknown>,
       missingPaths: [],
+      normalizationPaths: [],
       normalizationChanged: false,
       fileMissing: raw.fileMissing,
       error: formatError(error),
@@ -178,6 +192,7 @@ export async function inspectSettingsDefaults(): Promise<
   return {
     settings: result.settings,
     missingPaths: result.missingPaths,
+    normalizationPaths: result.normalizationPaths,
     fileMissing: result.fileMissing,
     error: result.error,
   };
@@ -221,6 +236,7 @@ export async function backfillMissingSettingsDefaults(): Promise<
   return {
     settings: result.settings,
     missingPaths: result.missingPaths,
+    normalizationPaths: result.normalizationPaths,
     fileMissing: result.fileMissing,
     error: result.error,
     changed,

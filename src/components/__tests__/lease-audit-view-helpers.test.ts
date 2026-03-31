@@ -282,7 +282,7 @@ describe("discoverQueueTypes", () => {
 
 // ── buildLeaderboard ────────────────────────────────────────────────
 
-describe("buildLeaderboard", () => {
+describe("buildLeaderboard: baseline behavior", () => {
   it("returns empty for no aggregates", () => {
     expect(buildLeaderboard([])).toEqual([]);
   });
@@ -331,7 +331,9 @@ describe("buildLeaderboard", () => {
     const steps = entries.map((e) => e.step).sort();
     expect(steps).toEqual(["implementation", "planning"]);
   });
+});
 
+describe("buildLeaderboard: qualification thresholds", () => {
   it("breaks ties by total completed count", () => {
     const aggregates = [
       agg({ provider: "claude", model: "opus", queueType: "planning", outcome: "success", count: 10 }),
@@ -392,7 +394,9 @@ describe("buildLeaderboard", () => {
     const entries = buildLeaderboard(aggregates);
     expect(entries).toHaveLength(0);
   });
+});
 
+describe("buildLeaderboard: qualified leaderboard stats", () => {
   it("computes mean/margin/totalN from qualified entries only", () => {
     const aggregates = [
       // Low-signal agent that would skew stats if included

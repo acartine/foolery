@@ -75,6 +75,7 @@ export function setupDefaultMocks(): void {
   mockInspectSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    normalizationPaths: [],
     fileMissing: false,
   });
   mockInspectStaleSettingsKeys.mockResolvedValue({
@@ -84,6 +85,7 @@ export function setupDefaultMocks(): void {
   mockBackfillMissingSettingsDefaults.mockResolvedValue({
     settings: DEFAULT_SETTINGS,
     missingPaths: [],
+    normalizationPaths: [],
     fileMissing: false,
     changed: false,
   });

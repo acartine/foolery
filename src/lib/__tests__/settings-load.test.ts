@@ -163,6 +163,27 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(written).not.toContain('dispatchMode = "pools"');
   });
 
+  it("normalizes persisted Claude model identifiers when backfilling", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[agents.claude-opus]',
+        'command = "claude"',
+        'model = "claude-opus-4.6"',
+        'label = "Claude Opus 4.6"',
+      ].join("\n"),
+    );
+    const result = await backfillMissingSettingsDefaults();
+    expect(result.changed).toBe(true);
+    expect(result.normalizationPaths).toContain(
+      "agents.claude-opus.model",
+    );
+    const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain('model = "claude-opus-4-6"');
+    expect(written).toContain('provider = "Claude"');
+    expect(written).toContain('flavor = "opus"');
+    expect(written).toContain('version = "4.6"');
+  });
+
   it("does not write when defaults are already present", async () => {
     mockReadFile.mockResolvedValue(
       [
@@ -305,5 +326,24 @@ describe("updateSettings", () => {
     mockReadFile.mockResolvedValue(toml);
     const updated = await updateSettings({});
     expect(updated.agents.codex.command).toBe("codex");
+  });
+
+  it("normalizes corrupted Claude model identifiers during load", async () => {
+    const toml = [
+      '[agents.claude-opus]',
+      'command = "claude"',
+      'model = "claude-opus-4.6"',
+      '[actions]',
+      'take = "claude-opus"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+    const updated = await updateSettings({});
+    expect(updated.agents["claude-opus"]).toMatchObject({
+      command: "claude",
+      model: "claude-opus-4-6",
+      provider: "Claude",
+      flavor: "opus",
+      version: "4.6",
+    });
   });
 });

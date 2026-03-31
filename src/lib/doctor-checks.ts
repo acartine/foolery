@@ -129,6 +129,12 @@ export function summarizePaths(paths: string[]): string {
   return `${preview} (+${paths.length - 3} more)`;
 }
 
+function summarizeSettingsNormalization(
+  paths: string[],
+): string {
+  return summarizeMissingSettings(paths);
+}
+
 export function formatMode(mode: number): string {
   return `0${mode.toString(8).padStart(3, "0")}`;
 }
@@ -261,15 +267,36 @@ export async function checkSettingsDefaults(): Promise<
   const missingPaths = Array.from(
     new Set(result.missingPaths),
   );
-  if (result.fileMissing || missingPaths.length > 0) {
+  const normalizationPaths = Array.from(
+    new Set(result.normalizationPaths ?? []),
+  );
+  if (
+    result.fileMissing ||
+    missingPaths.length > 0 ||
+    normalizationPaths.length > 0
+  ) {
     const message = result.fileMissing
       ? "Settings file " +
         "~/.config/foolery/settings.toml " +
         "is missing and should be created with defaults."
+      : normalizationPaths.length > 0 &&
+          missingPaths.length === 0
+        ? "Settings file " +
+          "~/.config/foolery/settings.toml " +
+          "contains non-canonical values that should be normalized: " +
+          `${summarizeSettingsNormalization(normalizationPaths)}.`
       : "Settings file " +
         "~/.config/foolery/settings.toml " +
-        "is missing default values: " +
-        `${summarizeMissingSettings(missingPaths)}.`;
+        "needs normalization: " +
+        [
+          missingPaths.length > 0
+            ? `missing defaults ${summarizeMissingSettings(missingPaths)}`
+            : null,
+          normalizationPaths.length > 0
+            ? `normalize ${summarizeSettingsNormalization(normalizationPaths)}`
+            : null,
+        ].filter((part): part is string => part !== null).join("; ") +
+        ".";
     diagnostics.push({
       check: "settings-defaults",
       severity: "warning",
@@ -279,6 +306,7 @@ export async function checkSettingsDefaults(): Promise<
       context: {
         fileMissing: String(result.fileMissing),
         missingPaths: missingPaths.join(","),
+        normalizationPaths: normalizationPaths.join(","),
       },
     });
     return diagnostics;

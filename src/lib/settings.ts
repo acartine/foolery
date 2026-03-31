@@ -27,6 +27,10 @@ import {
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 import {
+  normalizeRegisteredAgentConfig,
+  normalizeSettingsAgents,
+} from "@/lib/agent-config-normalization";
+import {
   CONFIG_DIR,
   SETTINGS_FILE,
   CACHE_TTL_MS,
@@ -76,9 +80,10 @@ export async function loadSettings(): Promise<FoolerySettings> {
     raw.parsed,
     DEFAULT_SETTINGS as unknown as Record<string, unknown>,
   );
+  const { normalized } = normalizeSettingsAgents(merged);
   let settings: FoolerySettings;
   try {
-    settings = foolerySettingsSchema.parse(merged);
+    settings = foolerySettingsSchema.parse(normalized);
   } catch {
     settings = DEFAULT_SETTINGS;
   }
@@ -94,10 +99,13 @@ export async function saveSettings(
   settings: FoolerySettings,
 ): Promise<void> {
   await mkdir(CONFIG_DIR, { recursive: true });
-  const toml = stringify(settings);
+  const normalized = foolerySettingsSchema.parse(
+    normalizeSettingsAgents(settings).normalized,
+  );
+  const toml = stringify(normalized);
   await writeFile(SETTINGS_FILE, toml, "utf-8");
   await chmod(SETTINGS_FILE, 0o600);
-  setCache(settings);
+  setCache(normalized);
 }
 
 /** Partial shape accepted by updateSettings for deep merging. */
@@ -298,25 +306,9 @@ export async function addRegisteredAgent(
   agent: RegisteredAgent,
 ): Promise<FoolerySettings> {
   const current = await loadSettings();
-  const normalized = normalizeAgentIdentity(agent);
   const agents = {
     ...current.agents,
-    [id]: {
-      command: agent.command,
-      ...(agent.model ? { model: agent.model } : {}),
-      ...(normalized.provider
-        ? { provider: normalized.provider }
-        : {}),
-      ...(normalized.flavor
-        ? { flavor: normalized.flavor }
-        : {}),
-      ...(normalized.version
-        ? { version: normalized.version }
-        : {}),
-      ...(agent.label || normalized.provider
-        ? { label: agent.label ?? normalized.provider }
-        : {}),
-    },
+    [id]: normalizeRegisteredAgentConfig(agent),
   };
   return updateSettings({ agents });
 }
