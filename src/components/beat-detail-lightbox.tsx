@@ -349,7 +349,7 @@ function TitleEditor({
             setIsEditing(false);
           }
         }}
-        className="min-w-0 flex-1 truncate rounded border border-border bg-background px-1.5 py-0.5 text-base font-semibold leading-tight outline-none focus:ring-1 focus:ring-ring"
+        className="block w-full min-w-0 appearance-none border-0 bg-transparent px-0 py-0 text-base font-semibold leading-tight text-foreground outline-none shadow-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
       />
     );
   }
