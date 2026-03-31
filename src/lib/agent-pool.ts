@@ -19,7 +19,7 @@ import { WorkflowStep } from "@/lib/workflows";
 export function selectFromPool(
   pool: PoolEntry[],
   agents: Record<string, RegisteredAgentConfig>,
-  excludeAgentId?: string,
+  excludeAgentId?: string | ReadonlySet<string>,
 ): AgentTarget | null {
   // Filter to entries that reference existing agents and have positive weight
   const valid = pool.filter(
@@ -28,17 +28,22 @@ export function selectFromPool(
   if (valid.length === 0) return null;
 
   // Cross-agent review: prefer agents other than the excluded one
-  if (excludeAgentId) {
+  const excludedAgentIds = toExcludedAgentIds(
+    excludeAgentId,
+  );
+  if (excludedAgentIds.size > 0) {
     const alternatives = valid.filter(
-      (entry) => entry.agentId !== excludeAgentId,
+      (entry) =>
+        !excludedAgentIds.has(entry.agentId),
     );
     if (alternatives.length > 0) {
       return selectWeighted(alternatives, agents);
     }
-    // No alternative agents available; fall through to use the full pool
     console.log(
-      `[agent-pool] Cross-agent review: no eligible alternative to "${excludeAgentId}" in pool, using it anyway`,
+      `[agent-pool] No eligible alternative ` +
+      `after exclusions [${[...excludedAgentIds].join(", ")}]`,
     );
+    return null;
   }
 
   return selectWeighted(valid, agents);
@@ -52,23 +57,11 @@ export function selectFromPool(
 export function selectFromPoolStrict(
   pool: PoolEntry[],
   agents: Record<string, RegisteredAgentConfig>,
-  excludeAgentId: string,
+  excludeAgentId: string | ReadonlySet<string>,
 ): AgentTarget | null {
-  const valid = pool.filter(
-    (entry) => entry.weight > 0 && agents[entry.agentId],
+  return selectFromPool(
+    pool, agents, excludeAgentId,
   );
-  if (valid.length === 0) return null;
-
-  const alternatives = valid.filter(
-    (entry) => entry.agentId !== excludeAgentId,
-  );
-  if (alternatives.length === 0) {
-    console.log(
-      `[agent-pool] Strict exclusion: no alternative to "${excludeAgentId}" — returning null`,
-    );
-    return null;
-  }
-  return selectWeighted(alternatives, agents);
 }
 
 /**
@@ -124,11 +117,21 @@ export function resolvePoolAgent(
   step: keyof PoolsSettings,
   pools: PoolsSettings,
   agents: Record<string, RegisteredAgentConfig>,
-  excludeAgentId?: string,
+  excludeAgentId?: string | ReadonlySet<string>,
 ): AgentTarget | null {
   const pool = pools[step];
   if (!pool || pool.length === 0) return null;
   return selectFromPool(pool, agents, excludeAgentId);
+}
+
+function toExcludedAgentIds(
+  excludeAgentId?: string | ReadonlySet<string>,
+): ReadonlySet<string> {
+  if (!excludeAgentId) return new Set();
+  if (typeof excludeAgentId === "string") {
+    return new Set([excludeAgentId]);
+  }
+  return excludeAgentId;
 }
 
 /**

@@ -64,7 +64,12 @@ export async function selectStepAgent(
   try {
     const settings = await loadSettings();
     maxClaims = settings.maxClaimsPerQueueType ?? 10;
-    if (settings.dispatchMode === "advanced") {
+    const hasStepPool =
+      (settings.pools[resolved.step]?.length ?? 0) > 0;
+    if (
+      settings.dispatchMode === "advanced" ||
+      (!!failedAgentId && hasStepPool)
+    ) {
       const r = selectAdvancedAgent(
         ctx, settings, resolved, queueType,
         failedAgentId, isErrorRetry,
@@ -117,6 +122,13 @@ function selectAdvancedAgent(
     ? priorActionStep(resolved.step) : null;
   const lastQueueAgent =
     ctx.lastAgentPerQueueType.get(queueType);
+  const failedQueueAgents = getFailedAgentIds(
+    ctx, queueType, failedAgentId,
+  );
+  const pooledExclusions =
+    failedQueueAgents.size > 0
+      ? failedQueueAgents
+      : undefined;
   const excludeId = failedAgentId
     ?? (isReview
       ? (ctx.agent.agentId ?? (actionStep
@@ -126,7 +138,9 @@ function selectAdvancedAgent(
 
   const poolAgent = resolvePoolAgent(
     resolved.step, settings.pools,
-    settings.agents, excludeId,
+    settings.agents,
+    pooledExclusions ??
+      excludeId,
   );
 
   if (poolAgent?.kind === "cli") {
@@ -171,14 +185,19 @@ function selectErrorRetryAgent(
     );
     return "stop";
   }
+  const excludedAgentIds =
+    getFailedAgentIds(
+      ctx, resolved.step, failedAgentId,
+    );
   const strictAgent = selectFromPoolStrict(
-    pool, settings.agents, failedAgentId,
+    pool, settings.agents, excludedAgentIds,
   );
   if (!strictAgent) {
     console.log(
       `${tag} STOP: no alternative agent ` +
       `for error retry ` +
-      `(excluded: ${failedAgentId})`,
+      `(excluded: ` +
+      `${[...excludedAgentIds].join(", ")})`,
     );
     return "stop";
   }
@@ -356,4 +375,18 @@ export async function finalizeClaim(
     beatState: current.state,
     agentOverride: stepAgentOverride,
   };
+}
+
+function getFailedAgentIds(
+  ctx: TakeLoopContext,
+  queueType: string,
+  failedAgentId?: string,
+): Set<string> {
+  const excluded = new Set(
+    ctx.failedAgentsPerQueueType.get(queueType) ?? [],
+  );
+  if (failedAgentId) {
+    excluded.add(failedAgentId);
+  }
+  return excluded;
 }

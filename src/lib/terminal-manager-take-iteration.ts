@@ -124,17 +124,21 @@ async function checkAlternativeAgent(
   if (!iterAgentId || !resolved) return false;
   try {
     const settings = await loadSettings();
-    if (settings.dispatchMode === "advanced") {
-      const pool = settings.pools[resolved.step];
-      if (pool && pool.length > 0) {
-        const valid = pool.filter(
-          (e) =>
-            e.weight > 0 &&
-            settings.agents[e.agentId] &&
-            e.agentId !== iterAgentId,
-        );
-        return valid.length > 0;
-      }
+    const pool = settings.pools[resolved.step];
+    if (pool && pool.length > 0) {
+      const excludedAgentIds = new Set(
+        ctx.failedAgentsPerQueueType.get(
+          resolved.step,
+        ) ?? [],
+      );
+      excludedAgentIds.add(iterAgentId);
+      const valid = pool.filter(
+        (e) =>
+          e.weight > 0 &&
+          settings.agents[e.agentId] &&
+          !excludedAgentIds.has(e.agentId),
+      );
+      return valid.length > 0;
     }
   } catch {
     // Settings load failure
@@ -189,6 +193,9 @@ async function handleErrorExit(
   console.log(
     `${tag} non-zero exit code=${code} — ` +
     `attempting rollback and retry`,
+  );
+  recordFailedAgent(
+    ctx, claimedQueueType(record), iterationAgent,
   );
 
   let rollbackNeeded = false;
@@ -247,6 +254,29 @@ async function handleErrorExit(
   }
 
   ctx.finishSession(code);
+}
+
+function claimedQueueType(
+  record: AgentOutcomeRecord,
+): string | undefined {
+  return record.claimedStep;
+}
+
+function recordFailedAgent(
+  ctx: TakeLoopContext,
+  queueType: string | undefined,
+  iterationAgent: CliAgentTarget,
+): void {
+  const agentId = iterationAgent.agentId;
+  if (!queueType || !agentId) return;
+  const failedAgents = new Set(
+    ctx.failedAgentsPerQueueType.get(queueType)
+      ?? [],
+  );
+  failedAgents.add(agentId);
+  ctx.failedAgentsPerQueueType.set(
+    queueType, failedAgents,
+  );
 }
 
 async function emitOutcomeAuditEvent(

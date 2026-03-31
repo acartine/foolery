@@ -76,6 +76,7 @@ vi.mock("@/lib/knots", () => ({
   nextKnot: (...args: unknown[]) => nextKnotMock(...args),
   createLease: (...args: unknown[]) => createLeaseMock(...args),
   terminateLease: (...args: unknown[]) => terminateLeaseMock(...args),
+  showKnot: vi.fn(async () => ({ ok: true, data: { lease_id: null } })),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({
@@ -173,6 +174,105 @@ const advancedSettingsWithTwoAgents = {
   },
 };
 
+const advancedSettingsWithThreeAgents = {
+  ...advancedSettingsWithTwoAgents,
+  maxClaimsPerQueueType: 10,
+  pools: {
+    planning: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+    plan_review: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+    implementation: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+    implementation_review: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+    shipment: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+    shipment_review: [
+      { agentId: "agent-a", weight: 1 },
+      { agentId: "agent-b", weight: 1 },
+      { agentId: "agent-c", weight: 1 },
+    ],
+  },
+  agents: {
+    ...advancedSettingsWithTwoAgents.agents,
+    "agent-c": {
+      command: "gemini",
+      label: "Gemini",
+      model: "2.5-pro",
+      version: "1.0",
+    },
+  },
+};
+
+const basicSettingsWithTwoAgents = {
+  ...advancedSettingsWithTwoAgents,
+  dispatchMode: "basic",
+  maxClaimsPerQueueType: 10,
+};
+
+function mockClaimableBeat(
+  beatData: {
+    id: string;
+    title: string;
+    state: string;
+    isAgentClaimable: boolean;
+  },
+): void {
+  backend.get.mockResolvedValueOnce({
+    ok: true,
+    data: { ...beatData },
+  });
+  backend.listWorkflows.mockResolvedValue({
+    ok: true, data: [],
+  });
+  backend.list.mockResolvedValue({
+    ok: true, data: [],
+  });
+  backend.buildTakePrompt.mockResolvedValue({
+    ok: true,
+    data: { prompt: "prompt" },
+  });
+}
+
+function keepBeatClaimable(
+  beatData: {
+    id: string;
+    title: string;
+    state: string;
+    isAgentClaimable: boolean;
+  },
+): void {
+  backend.get.mockResolvedValue({
+    ok: true,
+    data: { ...beatData },
+  });
+}
+
+function expectConsoleLog(
+  consoleSpy: ReturnType<typeof vi.spyOn>,
+  expectedFragment: string,
+): void {
+  expect(consoleSpy).toHaveBeenCalledWith(
+    expect.stringContaining(expectedFragment),
+  );
+}
+
 function resetQueueClaimsMocks(): void {
   nextKnotMock.mockReset();
   nextBeatMock.mockReset();
@@ -225,7 +325,6 @@ describe("terminal-manager per-queue-type claim limits", () => {
 
   describe("claim limit enforcement", () => {
     it("stops the take loop when per-queue-type claim limit is exceeded", async () => {
-    // maxClaimsPerQueueType = 2: allow 2 claims per queue type, stop on 3rd.
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
     const beatData = {
@@ -246,10 +345,8 @@ describe("terminal-manager per-queue-type claim limits", () => {
     await createSession("foolery-q001", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // backend.get returns claimable queue state for all intermediate calls
     backend.get.mockResolvedValue({ ok: true, data: { ...beatData } });
 
-    // Drive 2 claims (children 2 and 3)
     for (let i = 0; i < 2; i++) {
       const childIndex = spawnedChildren.length - 1;
       spawnedChildren[childIndex].emit("close", 0, null);
@@ -258,25 +355,20 @@ describe("terminal-manager per-queue-type claim limits", () => {
       });
     }
 
-    // 3rd child exits — buildNextTakePrompt should detect count=3 > maxClaims=2 and stop
     const lastChildIndex = spawnedChildren.length - 1;
     spawnedChildren[lastChildIndex].emit("close", 0, null);
 
-    // Session should finish — no more children spawned
     await waitFor(() => {
       expect(interactionLog.logEnd).toHaveBeenCalled();
     });
 
-    // 1 initial + 2 take-loop = 3 total
     expect(spawnedChildren).toHaveLength(3);
-
-    // Session may already be cleaned up here; behavior is validated by termination and spawn count.
     });
   });
 
 });
 
-describe("queue claims: lease audit and agent rotation", () => {
+describe("queue claims: lease audit", () => {
   beforeEach(async () => {
     await setupQueueClaimsMocks();
   });
@@ -285,7 +377,6 @@ describe("queue claims: lease audit and agent rotation", () => {
     clearQueueClaimsSessions();
   });
 
-  describe("lease audit and agent rotation", () => {
     it("emits lease audit events on successful claim", async () => {
     loadSettingsMock.mockResolvedValue(advancedSettingsWithTwoAgents);
 
@@ -307,17 +398,14 @@ describe("queue claims: lease audit and agent rotation", () => {
     await createSession("foolery-q002", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // Post-exit: queue state → buildNextTakePrompt succeeds
     backend.get.mockResolvedValue({ ok: true, data: { ...beatData } });
 
     spawnedChildren[0].emit("close", 0, null);
 
-    // Wait for next child to spawn (claim succeeded)
     await waitFor(() => {
       expect(spawnedChildren).toHaveLength(2);
     });
 
-    // Lease audit events: claim + outcome + next claim
     await waitFor(() => {
       expect(
         (appendLeaseAuditEvent as ReturnType<typeof vi.fn>)
@@ -374,22 +462,108 @@ describe("queue claims: lease audit and agent rotation", () => {
     await createSession("foolery-q003", "/tmp/repo");
     expect(spawnedChildren).toHaveLength(1);
 
-    // Post-exit: queue state
     backend.get.mockResolvedValue({ ok: true, data: { ...beatData } });
 
-    // First child exits — triggers take-loop continuation
     spawnedChildren[0].emit("close", 0, null);
 
-    // Second child should be spawned
     await waitFor(() => {
       expect(spawnedChildren).toHaveLength(2);
     });
 
-    // Verify agent_switch event was emitted (agent-b selected instead of agent-a)
-    // Because lastAgentPerQueueType is not yet set on the first buildNextTakePrompt call,
-    // the pool may or may not rotate. But the mechanism is wired correctly.
-    // We just verify two children were spawned and the lease audit was called.
     expect(appendLeaseAuditEvent).toHaveBeenCalled();
     });
+});
+
+describe("queue claims: repeated failure rotation", () => {
+  beforeEach(async () => {
+    await setupQueueClaimsMocks();
   });
+
+  afterEach(() => {
+    clearQueueClaimsSessions();
+  });
+
+  it(
+    "rotates to a different pooled agent on error retry in basic mode",
+    async () => {
+      loadSettingsMock.mockResolvedValue(
+        basicSettingsWithTwoAgents,
+      );
+      const consoleSpy = vi
+        .spyOn(console, "log")
+        .mockImplementation(() => undefined);
+      const beatData = {
+        id: "foolery-q004",
+        title: "Basic mode error retry rotation",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      };
+
+      mockClaimableBeat(beatData);
+      await createSession("foolery-q004", "/tmp/repo");
+      keepBeatClaimable(beatData);
+
+      expect(spawnedChildren).toHaveLength(1);
+
+      spawnedChildren[0].emit("close", 1, null);
+      await waitFor(() => {
+        expect(spawnedChildren).toHaveLength(2);
+      });
+      expectConsoleLog(consoleSpy, `selected="agent-b"`);
+
+      spawnedChildren[1].emit("close", 1, null);
+      await waitFor(() => {
+        expect(interactionLog.logEnd).toHaveBeenCalled();
+      });
+      expect(spawnedChildren).toHaveLength(2);
+      consoleSpy.mockRestore();
+    },
+  );
+
+  it(
+    "cycles through the full pool before stopping after repeated failures",
+    async () => {
+      loadSettingsMock.mockResolvedValue(
+        advancedSettingsWithThreeAgents,
+      );
+      const randomSpy = vi
+        .spyOn(Math, "random")
+        .mockReturnValue(0);
+      const consoleSpy = vi
+        .spyOn(console, "log")
+        .mockImplementation(() => undefined);
+      const beatData = {
+        id: "foolery-q005",
+        title: "Full pool rotation on repeated failures",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      };
+
+      mockClaimableBeat(beatData);
+      await createSession("foolery-q005", "/tmp/repo");
+      keepBeatClaimable(beatData);
+
+      expect(spawnedChildren).toHaveLength(1);
+
+      spawnedChildren[0].emit("close", 1, null);
+      await waitFor(() => {
+        expect(spawnedChildren).toHaveLength(2);
+      });
+      expectConsoleLog(consoleSpy, `selected="agent-b"`);
+
+      spawnedChildren[1].emit("close", 1, null);
+      await waitFor(() => {
+        expect(spawnedChildren).toHaveLength(3);
+      });
+      expectConsoleLog(consoleSpy, `selected="agent-c"`);
+
+      spawnedChildren[2].emit("close", 1, null);
+      await waitFor(() => {
+        expect(interactionLog.logEnd).toHaveBeenCalled();
+      });
+      expect(spawnedChildren).toHaveLength(3);
+      randomSpy.mockRestore();
+      consoleSpy.mockRestore();
+    },
+  );
 });

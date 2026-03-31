@@ -122,15 +122,28 @@ describe("selectFromPool: excludeAgentId", () => {
       expect(result?.label).toBe("Claude Sonnet");
     });
 
-    it("falls back to excluded agent when no alternatives exist", () => {
+    it("returns null when no alternatives exist", () => {
       const pool: PoolEntry[] = [{ agentId: "claude", weight: 1 }];
       const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
       const result = selectFromPool(pool, AGENTS, "claude");
-      expect(result?.agentId).toBe("claude");
+      expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining("no eligible alternative"),
+        expect.stringContaining("No eligible alternative"),
       );
       consoleSpy.mockRestore();
+    });
+
+    it("returns null when every agent is excluded by failure history", () => {
+      const pool: PoolEntry[] = [
+        { agentId: "claude", weight: 1 },
+        { agentId: "sonnet", weight: 1 },
+      ];
+      const result = selectFromPool(
+        pool,
+        AGENTS,
+        new Set(["claude", "sonnet"]),
+      );
+      expect(result).toBeNull();
     });
 
     it("respects weights among remaining alternatives", () => {
