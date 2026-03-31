@@ -17,6 +17,33 @@ import {
 
 const execAsync = promisify(exec);
 
+const STATIC_PROVIDER_MODEL_IDS: Partial<
+  Record<string, readonly string[]>
+> = {
+  claude: [
+    "claude-sonnet-4.6",
+    "claude-opus-4.6",
+    "claude-sonnet-4.5",
+    "claude-haiku-4.5",
+    "claude-opus-4.5",
+  ],
+  codex: [
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.3-codex",
+    "gpt-5.3-codex-spark",
+    "gpt-5.2-codex",
+    "gpt-5.2",
+    "gpt-5.1-codex-max",
+    "gpt-5.1-codex-mini",
+  ],
+  gemini: [
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+  ],
+};
+
 // ── Dynamic model readers ───────────────────────────────────
 
 export async function readOpenCodeModels(): Promise<
@@ -163,6 +190,39 @@ export function dedupeScannedOptions(
   return deduped;
 }
 
+function buildStaticProviderCatalog(
+  agentId: string,
+  provider?: string,
+): ScannedAgentOption[] {
+  const modelIds = STATIC_PROVIDER_MODEL_IDS[agentId];
+  if (!modelIds || modelIds.length === 0) {
+    return [];
+  }
+
+  return modelIds.map((modelId) => {
+    const normalized = normalizeAgentIdentity({
+      command: agentId,
+      provider,
+      model: modelId,
+    });
+    return {
+      id: buildAgentOptionId(agentId, {
+        ...normalized,
+        modelId,
+      }),
+      label: formatAgentOptionLabel({
+        ...normalized,
+        modelId,
+      }),
+      provider: normalized.provider,
+      model: normalized.model,
+      flavor: normalized.flavor,
+      version: normalized.version,
+      modelId,
+    };
+  });
+}
+
 export function buildAgentImportOptions(
   agentId: string,
   detected: Pick<
@@ -175,6 +235,11 @@ export function buildAgentImportOptions(
   const provider = providerLabel(
     detected.provider, agentId,
   );
+  const staticCatalog =
+    buildStaticProviderCatalog(
+      agentId,
+      provider,
+    );
   const detectedOption = detected.modelId
     ? [{
         provider,
@@ -188,15 +253,16 @@ export function buildAgentImportOptions(
       }]
     : [];
 
-  if (dynamicModels && dynamicModels.length > 0) {
+  if (
+    detectedOption.length > 0 ||
+    (dynamicModels && dynamicModels.length > 0) ||
+    staticCatalog.length > 0
+  ) {
     return dedupeScannedOptions(agentId, [
-      ...detectedOption, ...dynamicModels,
+      ...detectedOption,
+      ...(dynamicModels ?? []),
+      ...staticCatalog,
     ]);
-  }
-  if (detectedOption.length > 0) {
-    return dedupeScannedOptions(
-      agentId, detectedOption,
-    );
   }
   if (provider) {
     return dedupeScannedOptions(

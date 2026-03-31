@@ -141,8 +141,32 @@ export function useAgentMutations(
     [onAgentsChange],
   );
 
+  const handleRemoveScannedOption = useCallback(
+    async (
+      id: string,
+      optionLabel?: string,
+    ) => {
+      const res = await removeAgent(id);
+      if (res.ok && res.data) {
+        onAgentsChange(res.data);
+        toast.success(
+          optionLabel
+            ? `Cleared ${optionLabel}`
+            : `Removed ${id}`,
+        );
+      } else {
+        toast.error(
+          res.error
+            ?? "Failed to remove agent",
+        );
+      }
+    },
+    [onAgentsChange],
+  );
+
   return {
     handleAddScannedOption,
+    handleRemoveScannedOption,
     handleRemove,
   };
 }

@@ -70,17 +70,21 @@ describe("scanForAgents: discovery and status", () => {
     ]);
 
     const claude = agents.find((agent) => agent.id === "claude");
-    expect(claude).toEqual({
+    expect(claude).toMatchObject({
       id: "claude",
       command: "claude",
       path: "/usr/local/bin/claude",
       installed: true,
       provider: "Claude",
-      options: [
-        { id: "claude", label: "Claude", provider: "Claude" },
-      ],
-      selectedOptionId: "claude",
+      selectedOptionId: "claude-claude-sonnet-4-6",
     });
+    expect(claude?.options?.map((option) => option.label)).toEqual([
+      "Claude Sonnet 4.6",
+      "Claude Opus 4.6",
+      "Claude Sonnet 4.5",
+      "Claude Haiku 4.5",
+      "Claude Opus 4.5",
+    ]);
   });
 
   it("marks agents missing when command lookup fails", async () => {
@@ -184,7 +188,17 @@ describe("scanForAgents: model metadata", () => {
       version: "5.4",
     });
     expect(codex?.options?.length).toBeGreaterThan(0);
-    expect(codex?.selectedOptionId).toBeTruthy();
+    expect(codex?.options?.map((option) => option.modelId)).toEqual([
+      "gpt-5.4",
+      "gpt-5.4-mini",
+      "gpt-5.3-codex",
+      "gpt-5.3-codex-spark",
+      "gpt-5.2-codex",
+      "gpt-5.2",
+      "gpt-5.1-codex-max",
+      "gpt-5.1-codex-mini",
+    ]);
+    expect(codex?.selectedOptionId).toBe("codex-gpt-5-4");
   });
 });
 
@@ -218,8 +232,9 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
       modelId: "claude-sonnet-4-5",
       version: "4.5",
     });
-    expect(claude?.options?.length).toBeGreaterThan(0);
+    expect(claude?.options?.length).toBe(5);
     expect(claude?.options?.[0]?.label).toBe("Claude Sonnet 4.5");
+    expect(claude?.options?.[1]?.label).toBe("Claude Sonnet 4.6");
   });
 
   it("captures Gemini model metadata from recent history", async () => {
@@ -260,8 +275,10 @@ describe("scanForAgents: model metadata for existing CLIs", () => {
       modelId: "gemini-2.5-pro",
       version: "2.5",
     });
-    expect(gemini?.options?.length).toBeGreaterThan(0);
+    expect(gemini?.options?.length).toBe(3);
     expect(gemini?.options?.[0]?.label).toBe("Gemini Pro 2.5");
+    expect(gemini?.options?.[1]?.label).toBe("Gemini Flash 2.5");
+    expect(gemini?.options?.[2]?.label).toBe("Gemini Flash Lite 2.5");
   });
 });
 

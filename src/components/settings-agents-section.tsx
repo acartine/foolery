@@ -46,6 +46,7 @@ export function SettingsAgentsSection({
 
   const {
     handleAddScannedOption,
+    handleRemoveScannedOption,
     handleRemove,
   } = useAgentMutations(onAgentsChange);
 
@@ -55,10 +56,21 @@ export function SettingsAgentsSection({
       const option = options.find(
         (o) => o.id === optionId,
       );
-      if (!option || agents[option.id]) return;
+      if (!option) return;
+      if (agents[option.id]) {
+        await handleRemoveScannedOption(
+          option.id,
+          option.label,
+        );
+        return;
+      }
       await handleAddScannedOption(agent, option);
     },
-    [agents, handleAddScannedOption],
+    [
+      agents,
+      handleAddScannedOption,
+      handleRemoveScannedOption,
+    ],
   );
 
   const agentEntries = Object.entries(agents);
@@ -76,6 +88,7 @@ export function SettingsAgentsSection({
           scanned={scannedAgents}
           registered={agents}
           onToggleOption={handleToggleOption}
+          onClearOption={handleToggleOption}
           onDismiss={dismissScan}
         />
       )}

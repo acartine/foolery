@@ -41,6 +41,36 @@ function makeScannedAgent(): ScannedAgent {
   };
 }
 
+function makeClaudeScannedAgent(): ScannedAgent {
+  return {
+    id: "claude",
+    command: "claude",
+    path: "/usr/local/bin/claude",
+    installed: true,
+    provider: "Claude",
+    options: [
+      {
+        id: "claude-claude-opus-4-6",
+        label: "Claude Opus 4.6",
+        provider: "Claude",
+        model: "claude",
+        flavor: "opus",
+        version: "4.6",
+        modelId: "claude-opus-4.6",
+      },
+      {
+        id: "claude-claude-sonnet-4-6",
+        label: "Claude Sonnet 4.6",
+        provider: "Claude",
+        model: "claude",
+        flavor: "sonnet",
+        version: "4.6",
+        modelId: "claude-sonnet-4.6",
+      },
+    ],
+  };
+}
+
 describe("filterSearchableOption", () => {
   it("matches case-insensitive substrings in the item value", () => {
     expect(
@@ -128,6 +158,7 @@ describe("ScannedAgentsList", () => {
         scanned: [scanned],
         registered,
         onToggleOption: () => undefined,
+        onClearOption: () => undefined,
         onDismiss: () => undefined,
       }),
     );
@@ -138,6 +169,31 @@ describe("ScannedAgentsList", () => {
     expect(markup).not.toContain("Add All");
     expect(markup).not.toContain("registered");
     expect(markup).not.toContain("internal-agent-id");
+  });
+
+  it("shows stripped selected-model pills and clear controls", () => {
+    const scanned = makeClaudeScannedAgent();
+    const registered: Record<string, RegisteredAgent> = {
+      "claude-claude-opus-4-6": {
+        command: scanned.path,
+        provider: "Claude",
+        model: "claude-opus-4.6",
+      },
+    };
+
+    const markup = renderToStaticMarkup(
+      createElement(ScannedAgentsList, {
+        scanned: [scanned],
+        registered,
+        onToggleOption: () => undefined,
+        onClearOption: () => undefined,
+        onDismiss: () => undefined,
+      }),
+    );
+
+    expect(markup).toContain("Opus 4.6");
+    expect(markup).not.toContain(">Claude Opus 4.6<");
+    expect(markup).toContain('aria-label="Clear Opus 4.6"');
   });
 });
 

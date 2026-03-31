@@ -90,11 +90,16 @@ export function ScannedAgentsList({
   scanned,
   registered,
   onToggleOption,
+  onClearOption,
   onDismiss,
 }: {
   scanned: ScannedAgent[];
   registered: Record<string, RegisteredAgent>;
   onToggleOption: (
+    agent: ScannedAgent,
+    optionId: string,
+  ) => void;
+  onClearOption: (
     agent: ScannedAgent,
     optionId: string,
   ) => void;
@@ -129,6 +134,9 @@ export function ScannedAgentsList({
           )}
           onToggleOption={(optionId) =>
             onToggleOption(a, optionId)
+          }
+          onClearOption={(optionId) =>
+            onClearOption(a, optionId)
           }
         />
       ))}
@@ -259,10 +267,12 @@ function SelectedModelPills({
   options,
   selectedIds,
   displayMap,
+  onClear,
 }: {
   options: ScannedAgentOption[];
   selectedIds: string[];
   displayMap: Map<string, string>;
+  onClear: (id: string) => void;
 }) {
   if (selectedIds.length === 0) return null;
   const selected = options.filter(
@@ -275,11 +285,21 @@ function SelectedModelPills({
           key={opt.id}
           variant="secondary"
           className={
-            "text-[10px] px-1.5 py-0 h-4 "
-            + "font-normal shrink-0"
+            "flex items-center gap-1 text-[10px] "
+            + "px-1.5 py-0 h-4 font-normal shrink-0"
           }
         >
-          {displayMap.get(opt.id) ?? opt.label}
+          <span>
+            {displayMap.get(opt.id) ?? opt.label}
+          </span>
+          <button
+            type="button"
+            aria-label={`Clear ${displayMap.get(opt.id) ?? opt.label}`}
+            className="rounded-sm opacity-70 transition hover:opacity-100"
+            onClick={() => onClear(opt.id)}
+          >
+            <X className="size-2.5" />
+          </button>
         </Badge>
       ))}
     </div>
@@ -293,11 +313,13 @@ function ScannedAgentRow({
   registered,
   selectedIds,
   onToggleOption,
+  onClearOption,
 }: {
   agent: ScannedAgent;
   registered: Record<string, RegisteredAgent>;
   selectedIds: string[];
   onToggleOption: (optionId: string) => void;
+  onClearOption: (optionId: string) => void;
 }) {
   const options = agent.options ?? [];
   const displayMap = buildModelLabelDisplayMap(options);
@@ -337,6 +359,7 @@ function ScannedAgentRow({
           options={options}
           selectedIds={selectedIds}
           displayMap={displayMap}
+          onClear={onClearOption}
         />
       </div>
       {agent.installed && options.length > 0 && (

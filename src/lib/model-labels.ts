@@ -8,9 +8,17 @@ export interface ModelLabelOption {
   label: string;
 }
 
+const STRIPPABLE_SPACE_PREFIXES = new Set([
+  "Claude",
+  "Codex",
+  "Copilot",
+  "Gemini",
+  "OpenCode",
+]);
+
 /**
  * Strip a shared provider prefix from model labels only when the common
- * boundary ends at "/" or ":".
+ * boundary ends at "/", ":", or a separating space.
  */
 export function stripCommonModelLabelPrefix(labels: string[]): StrippedLabelPrefix {
   if (labels.length <= 1) {
@@ -39,7 +47,11 @@ export function stripCommonModelLabelPrefix(labels: string[]): StrippedLabelPref
   let snapIdx = -1;
   for (let idx = prefixLen - 1; idx >= 0; idx--) {
     const char = first[idx];
-    if (char === "/" || char === ":") {
+    const prefix = first.slice(0, idx).trim();
+    const isStrippableSpacePrefix =
+      char === " " &&
+      STRIPPABLE_SPACE_PREFIXES.has(prefix);
+    if (char === "/" || char === ":" || isStrippableSpacePrefix) {
       snapIdx = idx;
       break;
     }

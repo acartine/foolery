@@ -29,6 +29,19 @@ describe("stripCommonModelLabelPrefix", () => {
     expect(result.stripped).toEqual(["model-a", "model-b"]);
   });
 
+  it("strips a shared space-delimited provider prefix", () => {
+    const result = stripCommonModelLabelPrefix([
+      "Claude Sonnet 4.6",
+      "Claude Opus 4.6",
+    ]);
+
+    expect(result.prefix).toBe("Claude ");
+    expect(result.stripped).toEqual([
+      "Sonnet 4.6",
+      "Opus 4.6",
+    ]);
+  });
+
   it("does not strip when common prefix only ends at decimal dots", () => {
     const result = stripCommonModelLabelPrefix([
       "claude-3.5-sonnet",
