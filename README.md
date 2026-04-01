@@ -181,6 +181,8 @@ Need to stay in flow? Open the keyboard shortcut overlay (Shift+H) for a quick m
 
 ## How to Contribute
 
+[![Join thecartine Discord](https://img.shields.io/badge/Discord-Join%20thecartine-5865F2?logo=discord&logoColor=white)](https://discord.gg/KPgNPMAzrP)
+
 See the **[Developer Guide](docs/DEVELOPING.md)** for architecture, conventions, testing, and contribution guidelines.
 For backend authors, see **[Foolery Agent Memory Contract](docs/FOOLERY_AGENT_MEMORY_CONTRACT.md)**.
 For Knots compatibility decisions, see **[Knots Compatibility ADR](docs/adr-knots-compatibility.md)**.
