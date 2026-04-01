@@ -392,12 +392,9 @@ function useBeatForm(props: BeatFormProps) {
   const handleCreateMoreClick = form.handleSubmit(
     (data) => {
       if (create.onCreateMore) {
-        clearDraft();
         create.onCreateMore(
           data as CreateBeatInput, deps,
         );
-        setBlocks([]);
-        setBlockedBy([]);
       }
     },
   );
@@ -493,4 +490,3 @@ function formErrorMap(
     { message?: string } | undefined
   >;
 }
-
