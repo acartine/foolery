@@ -204,6 +204,7 @@ export function CreateBeatDialog({
       toast.success(msg, {
         action: buildToastAction(beatId, navigateToBeat),
       });
+      clearDraft();
       setFormKey((k) => k + 1);
       queryClient.invalidateQueries({ queryKey: ["beats"] });
     });
