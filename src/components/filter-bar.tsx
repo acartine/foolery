@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
 import { useUpdateUrl } from "@/hooks/use-update-url";
-import { X, Clapperboard, Merge, Check } from "lucide-react";
+import { X, Clapperboard, Merge, Check, RefreshCw } from "lucide-react";
 import type { BeatPriority } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { builtinWorkflowDescriptors, compareWorkflowStatePriority } from "@/lib/workflows";
@@ -85,6 +85,7 @@ interface FilterBarProps {
   onClearSelection?: () => void;
   onSceneBeats?: (ids: string[]) => void;
   onMergeBeats?: (ids: string[]) => void;
+  onRefineScope?: (ids: string[]) => void;
 }
 
 interface PendingBulkFields {
@@ -201,10 +202,14 @@ export function BulkEditControls({
   onClearSelection,
   onSceneBeats,
   onMergeBeats,
+  onRefineScope,
 }: Required<
   Pick<FilterBarProps,
     "selectedIds" | "onBulkUpdate" | "onClearSelection">
-> & Pick<FilterBarProps, "onSceneBeats" | "onMergeBeats">) {
+> & Pick<
+  FilterBarProps,
+  "onSceneBeats" | "onMergeBeats" | "onRefineScope"
+>) {
   const [pending, setPending] = useState<PendingBulkFields>({});
   const [resetKey, setResetKey] = useState(0);
 
@@ -217,10 +222,8 @@ export function BulkEditControls({
     if (!hasPending) return;
     const fields: UpdateBeatInput = {};
     if (pending.type !== undefined) fields.type = pending.type;
-    if (pending.priority !== undefined)
-      fields.priority = pending.priority;
-    if (pending.profileId !== undefined)
-      fields.profileId = pending.profileId;
+    if (pending.priority !== undefined) fields.priority = pending.priority;
+    if (pending.profileId !== undefined) fields.profileId = pending.profileId;
     if (pending.state !== undefined) fields.state = pending.state;
     onBulkUpdate(fields);
     setPending({});
@@ -232,64 +235,72 @@ export function BulkEditControls({
       <span className="text-sm font-medium whitespace-nowrap">
         {selectedIds.length} selected
       </span>
+      <BulkActionButtons
+        selectedIds={selectedIds}
+        onSceneBeats={onSceneBeats}
+        onMergeBeats={onMergeBeats}
+        onRefineScope={onRefineScope}
+      />
+      <BulkTypeSelect resetKey={resetKey} setPending={setPending} />
+      <BulkPrioritySelect resetKey={resetKey} setPending={setPending} />
+      <BulkProfileSelect resetKey={resetKey} setPending={setPending} />
+      <BulkStateSelect resetKey={resetKey} setPending={setPending} />
+      {hasPending && (
+        <Button
+          variant="default" size="sm" className="gap-1"
+          title="Apply changes to selected beats"
+          onClick={handleApply}
+        >
+          <Check className="h-3.5 w-3.5" />Apply
+        </Button>
+      )}
+      <Button variant="ghost" size="sm" title="Clear selection" onClick={onClearSelection}>
+        <X className="h-4 w-4 mr-1" />Clear
+      </Button>
+    </div>
+  );
+}
+
+interface BulkActionButtonsProps {
+  selectedIds: string[];
+  onSceneBeats?: (ids: string[]) => void;
+  onMergeBeats?: (ids: string[]) => void;
+  onRefineScope?: (ids: string[]) => void;
+}
+
+function BulkActionButtons(
+  { selectedIds, onSceneBeats, onMergeBeats, onRefineScope }: BulkActionButtonsProps,
+) {
+  return (
+    <>
       {onSceneBeats && selectedIds.length >= 2 && (
         <Button
-          variant="default"
-          size="sm"
-          className="gap-1"
+          variant="default" size="sm" className="gap-1"
           title="Group selected beats into a scene"
           onClick={() => onSceneBeats(selectedIds)}
         >
-          <Clapperboard className="h-3.5 w-3.5" />
-          Scene!
+          <Clapperboard className="h-3.5 w-3.5" />Scene!
         </Button>
       )}
       {onMergeBeats && selectedIds.length === 2 && (
         <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
+          variant="outline" size="sm" className="gap-1"
           title="Merge two beats into one"
           onClick={() => onMergeBeats(selectedIds)}
         >
-          <Merge className="h-3.5 w-3.5" />
-          Merge
+          <Merge className="h-3.5 w-3.5" />Merge
         </Button>
       )}
-      <BulkTypeSelect
-        resetKey={resetKey} setPending={setPending}
-      />
-      <BulkPrioritySelect
-        resetKey={resetKey} setPending={setPending}
-      />
-      <BulkProfileSelect
-        resetKey={resetKey} setPending={setPending}
-      />
-      <BulkStateSelect
-        resetKey={resetKey} setPending={setPending}
-      />
-      {hasPending && (
+      {onRefineScope && (
         <Button
-          variant="default"
-          size="sm"
-          className="gap-1"
-          title="Apply changes to selected beats"
-          onClick={handleApply}
+          variant="outline" size="sm" className="gap-1"
+          title="Re-run scope refinement for selected beats"
+          onClick={() => onRefineScope(selectedIds)}
         >
-          <Check className="h-3.5 w-3.5" />
-          Apply
+          <RefreshCw className="h-3.5 w-3.5" />Refine Scope
         </Button>
       )}
-      <Button
-        variant="ghost"
-        size="sm"
-        title="Clear selection"
-        onClick={onClearSelection}
-      >
-        <X className="h-4 w-4 mr-1" />
-        Clear
-      </Button>
-    </div>
+    </>
   );
 }
 
@@ -401,6 +412,7 @@ export function FilterBar({
   onClearSelection,
   onSceneBeats,
   onMergeBeats,
+  onRefineScope,
 }: FilterBarProps) {
   if (selectedIds && selectedIds.length > 0 && onBulkUpdate && onClearSelection) {
     return (
@@ -410,6 +422,7 @@ export function FilterBar({
         onClearSelection={onClearSelection}
         onSceneBeats={onSceneBeats}
         onMergeBeats={onMergeBeats}
+        onRefineScope={onRefineScope}
       />
     );
   }

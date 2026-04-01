@@ -96,6 +96,7 @@ function useBeatsPageState() {
   const actions = useBeatActions(
     beats, terminals,
     shippingByBeatId, hasRollingAncestor,
+    activeRepo ?? undefined,
   );
   const detail = useBeatDetail({
     beats, detailBeatId, detailRepo, isListView,
@@ -146,6 +147,7 @@ function BeatsPageInner() {
             onClearSelection={s.handleClearSelection}
             onSceneBeats={s.handleSceneBeats}
             onMergeBeats={s.handleMergeBeats}
+            onRefineScope={s.handleRefineScope}
           />
         </div>
       )}

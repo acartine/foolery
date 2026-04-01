@@ -6,6 +6,7 @@ import {
 import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
+import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import {
   closeBeat,
   previewCascadeClose,
@@ -91,9 +92,7 @@ export function useUpdateBeatMutation(data: Beat[]) {
       }
     },
     onSettled: (_data, _err, { id }) => {
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
       queryClient.invalidateQueries({
         queryKey: ["beat", id],
       });
@@ -111,9 +110,7 @@ export function useCloseBeatMutation(data: Beat[]) {
       return closeBeat(id, {}, repo);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
       toast.success("Beat closed");
     },
     onError: () => {
@@ -137,9 +134,7 @@ export function useCascadeCloseMutation(
       return cascadeCloseBeat(id, {}, repo);
     },
     onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
       const beat = data.find((b) => b.id === id);
       toast.success(
         `Closed ${beat?.title ?? id} and all children`,
