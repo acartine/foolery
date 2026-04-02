@@ -15,11 +15,15 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  abortBreakdown, applyBreakdown,
+  abortBreakdown,
   connectToBreakdown, startBreakdown,
 } from "@/lib/breakdown-api";
 import { useWaitSpinner } from "@/hooks/use-wait-spinner";
 import { useAppStore } from "@/stores/app-store";
+import {
+  useApplyBreakdown,
+  useBreakdownBack,
+} from "@/components/breakdown-view-actions";
 import type {
   BreakdownEvent, BreakdownPlan,
   BreakdownSession,
@@ -343,11 +347,11 @@ export function BreakdownView() {
         logRef.current.scrollHeight;
   }, [logLines]);
   const handleAbort = useAbort(session, setSession);
-  const handleApply = useApply(
+  const handleApply = useApplyBreakdown(
     session, plan, activeRepo, qc,
     sp, router, parentBeatId, setIsApplying,
   );
-  const handleBack = useBack(sp, router);
+  const handleBack = useBreakdownBack(sp, router);
   const status: Status = session?.status ?? "idle";
   const isRunning = status === "running";
   const isWaiting = isRunning && !logLines.length;
@@ -465,57 +469,4 @@ function useAbort(
       toast.error(r.error ?? "Failed to abort");
     }
   }, [session, setSession]);
-}
-
-function useApply(
-  session: BreakdownSession | null,
-  plan: BreakdownPlan | null,
-  activeRepo: string | null,
-  qc: ReturnType<typeof useQueryClient>,
-  sp: ReturnType<typeof useSearchParams>,
-  router: ReturnType<typeof useRouter>,
-  parentBeatId: string,
-  setIsApplying: React.Dispatch<
-    React.SetStateAction<boolean>>,
-) {
-  return useCallback(async () => {
-    if (!session || !plan || !activeRepo) return;
-    setIsApplying(true);
-    const r = await applyBreakdown(
-      session.id, activeRepo,
-    );
-    setIsApplying(false);
-    if (!r.ok || !r.data) {
-      toast.error(
-        r.error ?? "Failed to apply breakdown plan",
-      );
-      return;
-    }
-    const n = r.data.createdBeatIds.length;
-    toast.success(
-      `Created ${n} beats`
-      + ` across ${r.data.waveCount} scenes`,
-    );
-    qc.invalidateQueries({ queryKey: ["beats"] });
-    const params = new URLSearchParams(sp.toString());
-    params.delete("view");
-    params.delete("parent");
-    params.set("beat", parentBeatId);
-    router.push(`/beats?${params.toString()}`);
-  }, [
-    session, plan, activeRepo, qc,
-    sp, router, parentBeatId, setIsApplying,
-  ]);
-}
-
-function useBack(
-  sp: ReturnType<typeof useSearchParams>,
-  router: ReturnType<typeof useRouter>,
-) {
-  return useCallback(() => {
-    const params = new URLSearchParams(sp.toString());
-    params.delete("view");
-    params.delete("parent");
-    router.push(`/beats?${params.toString()}`);
-  }, [sp, router]);
 }

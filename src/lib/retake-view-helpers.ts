@@ -20,6 +20,9 @@ import {
   getBeatRepoPath,
   repoScopedBeatKey,
 } from "@/lib/retake-session-scope";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import type { Beat, RegisteredRepo } from "@/lib/types";
@@ -105,7 +108,7 @@ export function handleRetakeSuccess(
   setDialogOpen: (v: boolean) => void,
   setRetakeBeat: (v: Beat | null) => void,
 ) {
-  queryClient.invalidateQueries({ queryKey: ["beats"] });
+  void invalidateBeatListQueries(queryClient);
   setDialogOpen(false);
   setRetakeBeat(null);
 

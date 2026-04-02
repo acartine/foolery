@@ -19,6 +19,7 @@
     "test:coverage": "vitest run --project unit --coverage",
     "test:smoke:copilot:ui": "bash scripts/test-copilot-settings-ui.sh",
     "test:smoke:copilot:install": "bash scripts/test-install-copilot-setup.sh",
+    "test:smoke:beats:latency": "bash scripts/test-beat-refresh-latency.sh",
     "perf:baseline": "node scripts/collect-perf-baseline.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

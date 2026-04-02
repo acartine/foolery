@@ -5,6 +5,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Merge } from "lucide-react";
 import { toast } from "sonner";
 import { mergeBeats } from "@/lib/api";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -102,9 +105,7 @@ export function MergeBeatsDialog({
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
       toast.success("Beats merged");
       onOpenChange(false);
       setSurvivorId(null);

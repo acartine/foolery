@@ -6,6 +6,9 @@ import { toast } from "sonner";
 import type { Beat } from "@/lib/types";
 import type { UpdateBeatInput } from "@/lib/schemas";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 
 export interface UseBulkActionsResult {
   selectedIds: string[];
@@ -37,9 +40,7 @@ export function useBulkActions(
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
       setSelectionVersion((v) => v + 1);
       toast.success("Beats updated");
     },

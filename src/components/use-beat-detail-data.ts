@@ -18,6 +18,9 @@ import {
   addDep,
 } from "@/lib/api";
 import { updateBeatOrThrow } from "@/lib/update-beat-mutation";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 
 export interface BeatDetailData {
   beat: Beat | null;
@@ -344,9 +347,7 @@ function invalidateBeatQueries(
   detailId: string,
   repo: string | undefined,
 ) {
-  queryClient.invalidateQueries({
-    queryKey: ["beats"],
-  });
+  void invalidateBeatListQueries(queryClient);
   queryClient.invalidateQueries({
     queryKey: ["beat", detailId, repo],
   });

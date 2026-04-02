@@ -3,7 +3,6 @@
 import { useEffect, useEffectEvent, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchScopeRefinementStatus } from "@/lib/api";
-import { invalidateBeatListQueries } from "@/lib/beat-query-cache";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useScopeRefinementPendingStore } from "@/stores/scope-refinement-pending-store";
 import type { ScopeRefinementCompletion } from "@/lib/types";
@@ -67,7 +66,6 @@ export function useScopeRefinementNotifications(enabled = true): void {
     }
 
     if (notifications.length > 0) {
-      void invalidateBeatListQueries(queryClient);
       for (const beatId of beatIds) {
         void queryClient.invalidateQueries({
           queryKey: ["beat", beatId],

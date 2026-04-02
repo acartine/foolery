@@ -18,6 +18,9 @@ import {
 } from "@/hooks/use-scope-refinement-notifications";
 import { parseBeatsView } from "@/lib/beats-view";
 import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
+import {
   useVersionBanner,
   useCreateBeatFlow,
   useSettingsSheet,
@@ -151,9 +154,9 @@ export function AppHeader() {
           onCreated={() => {
             s.create.setCreateOpen(false);
             s.create.setSelectedRepo(null);
-            s.queryClient.invalidateQueries({
-              queryKey: ["beats"],
-            });
+            void invalidateBeatListQueries(
+              s.queryClient,
+            );
           }}
           repo={
             s.create.selectedRepo ??

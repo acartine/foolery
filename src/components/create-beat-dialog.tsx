@@ -20,6 +20,9 @@ import { buildBeatFocusHref, stripBeatPrefix } from "@/lib/beat-navigation";
 import { profileDisplayName } from "@/lib/workflows";
 import type { MemoryWorkflowDescriptor } from "@/lib/types";
 import { clearDraft } from "@/lib/create-draft-persistence";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 
 async function addDepsForBeat(
   beatId: string,
@@ -206,7 +209,7 @@ export function CreateBeatDialog({
       });
       clearDraft();
       setFormKey((k) => k + 1);
-      queryClient.invalidateQueries({ queryKey: ["beats"] });
+      void invalidateBeatListQueries(queryClient);
     });
   }
 
