@@ -78,6 +78,13 @@ function collectPhaseStates(phase: ViewPhase, fallbackStates: readonly string[])
 const QUEUE_STATES = collectPhaseStates("queues", FALLBACK_QUEUE_STATES);
 const ACTIVE_STATES = collectPhaseStates("active", FALLBACK_ACTIVE_STATES);
 
+const MULTISELECT_BUTTON_CLASS =
+  "h-8 gap-1.5 px-2.5";
+const MULTISELECT_PRIMARY_CLASS =
+  `${MULTISELECT_BUTTON_CLASS} border-primary/25`;
+const MULTISELECT_SUCCESS_CLASS =
+  `${MULTISELECT_BUTTON_CLASS} border-accent/35`;
+
 interface FilterBarProps {
   viewPhase?: ViewPhase;
   selectedIds?: string[];
@@ -247,15 +254,23 @@ export function BulkEditControls({
       <BulkStateSelect resetKey={resetKey} setPending={setPending} />
       {hasPending && (
         <Button
-          variant="default" size="sm" className="gap-1"
+          variant="secondary"
+          size="lg"
+          className={MULTISELECT_PRIMARY_CLASS}
           title="Apply changes to selected beats"
           onClick={handleApply}
         >
-          <Check className="h-3.5 w-3.5" />Apply
+          <Check className="size-4" />Apply
         </Button>
       )}
-      <Button variant="ghost" size="sm" title="Clear selection" onClick={onClearSelection}>
-        <X className="h-4 w-4 mr-1" />Clear
+      <Button
+        variant="ghost"
+        size="lg"
+        className={MULTISELECT_BUTTON_CLASS}
+        title="Clear selection"
+        onClick={onClearSelection}
+      >
+        <X className="size-4" />Clear
       </Button>
     </div>
   );
@@ -275,29 +290,35 @@ function BulkActionButtons(
     <>
       {onSceneBeats && selectedIds.length >= 2 && (
         <Button
-          variant="default" size="sm" className="gap-1"
+          variant="success-light"
+          size="lg"
+          className={MULTISELECT_SUCCESS_CLASS}
           title="Group selected beats into a scene"
           onClick={() => onSceneBeats(selectedIds)}
         >
-          <Clapperboard className="h-3.5 w-3.5" />Scene!
+          <Clapperboard className="size-4" />Scene!
         </Button>
       )}
       {onMergeBeats && selectedIds.length === 2 && (
         <Button
-          variant="outline" size="sm" className="gap-1"
+          variant="secondary"
+          size="lg"
+          className={MULTISELECT_PRIMARY_CLASS}
           title="Merge two beats into one"
           onClick={() => onMergeBeats(selectedIds)}
         >
-          <Merge className="h-3.5 w-3.5" />Merge
+          <Merge className="size-4" />Merge
         </Button>
       )}
       {onRefineScope && (
         <Button
-          variant="outline" size="sm" className="gap-1"
+          variant="success-light"
+          size="lg"
+          className={MULTISELECT_SUCCESS_CLASS}
           title="Re-run scope refinement for selected beats"
           onClick={() => onRefineScope(selectedIds)}
         >
-          <RefreshCw className="h-3.5 w-3.5" />Refine Scope
+          <RefreshCw className="size-4" />Refine Scope
         </Button>
       )}
     </>

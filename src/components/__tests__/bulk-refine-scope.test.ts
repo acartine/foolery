@@ -34,12 +34,14 @@ describe("BulkEditControls – Refine Scope button", () => {
     expect(src).toContain("onRefineScope={onRefineScope}");
   });
 
-  it("renders Refine Scope action using outline button style", () => {
+  it("renders Refine Scope action using title-bar-aligned button styling", () => {
     const section = bulkSection(src);
     expect(section).toContain('title="Re-run scope refinement for selected beats"');
     expect(section).toContain(
-      '<RefreshCw className="h-3.5 w-3.5" />',
+      '<RefreshCw className="size-4" />',
     );
+    expect(section).toContain('variant="success-light"');
+    expect(section).toContain('size="lg"');
     expect(section).toContain("Refine Scope");
   });
 
