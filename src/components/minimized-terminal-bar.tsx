@@ -1,5 +1,8 @@
 "use client";
 
+import {
+  MINIMIZED_TERMINAL_BAR_HEIGHT_PX,
+} from "@/lib/terminal-viewport";
 import { useTerminalStore } from "@/stores/terminal-store";
 
 export function MinimizedTerminalBar() {
@@ -10,7 +13,15 @@ export function MinimizedTerminalBar() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 flex cursor-pointer items-center gap-2 border-t border-border bg-[#16162a] px-3 py-1.5 hover:bg-[#1e1e38]"
+      className={
+        "fixed bottom-0 left-0 right-0 z-40 flex"
+        + " cursor-pointer items-center gap-2 border-t"
+        + " border-border bg-[#16162a] px-3 py-1.5"
+        + " hover:bg-[#1e1e38]"
+      }
+      style={{
+        height: `${MINIMIZED_TERMINAL_BAR_HEIGHT_PX}px`,
+      }}
       onClick={restorePanel}
       title="Click to restore terminal panel (Shift+T)"
     >
