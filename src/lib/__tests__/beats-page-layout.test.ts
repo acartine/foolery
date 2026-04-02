@@ -46,6 +46,12 @@ const colDefsSource = src(
 const globalStylesSource = src(
   "src/app/globals.css",
 );
+const minimizedTerminalBarSource = src(
+  "src/components/minimized-terminal-bar.tsx",
+);
+const terminalViewportSource = src(
+  "src/lib/terminal-viewport.ts",
+);
 
 describe("beats page layout: scrolling and hotkeys", () => {
   it("allows vertical scrolling in the main wrapper", () => {
@@ -60,6 +66,24 @@ describe("beats page layout: scrolling and hotkeys", () => {
   it("reserves scrollbar gutter space to prevent header jitter between views", () => {
     expect(globalStylesSource).toContain(
       "scrollbar-gutter: stable both-edges;",
+    );
+  });
+
+  it("derives Queue/Active list bottom inset from terminal visibility state", () => {
+    expect(pageSource).toContain(
+      'beatsView === "queues" || beatsView === "active"',
+    );
+    expect(pageSource).toContain(
+      "getTerminalViewportInset",
+    );
+    expect(pageSource).toContain(
+      "style={{ paddingBottom: listViewportInset }}",
+    );
+    expect(terminalViewportSource).toContain(
+      "MINIMIZED_TERMINAL_BAR_HEIGHT_PX = 32",
+    );
+    expect(minimizedTerminalBarSource).toContain(
+      "MINIMIZED_TERMINAL_BAR_HEIGHT_PX",
     );
   });
 

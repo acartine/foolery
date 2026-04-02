@@ -29,6 +29,9 @@ import { AlertTriangle } from "lucide-react";
 import {
   isListBeatsView, parseBeatsView,
 } from "@/lib/beats-view";
+import {
+  getTerminalViewportInset,
+} from "@/lib/terminal-viewport";
 import { useBeatsQuery } from "./use-beats-query";
 import { useAgentInfoMap } from "./use-agent-info-map";
 import { useBulkActions } from "./use-bulk-actions";
@@ -68,7 +71,12 @@ function useBeatsPageState() {
     beatsView === "active" ? "active" : "queues";
   const isActiveView = beatsView === "active";
   const { activeRepo, registeredRepos } = useAppStore();
-  const { terminals } = useTerminalStore();
+  const {
+    terminals,
+    panelOpen,
+    panelMinimized,
+    panelHeight,
+  } = useTerminalStore();
 
   const shippingByBeatId = terminals.reduce<
     Record<string, string>
@@ -102,6 +110,15 @@ function useBeatsPageState() {
     beats, detailBeatId, detailRepo, isListView,
     activeRepo,
   });
+  const listViewportInset =
+    beatsView === "queues" || beatsView === "active"
+      ? getTerminalViewportInset({
+        panelOpen,
+        panelMinimized,
+        panelHeight,
+        terminalCount: terminals.length,
+      })
+      : "0px";
 
   return {
     beatsView, isListView, viewPhase,
@@ -110,6 +127,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
+    listViewportInset,
     ...bulk, ...actions, ...detail,
   };
 }
@@ -235,6 +253,7 @@ function BeatsViewBody({
           onShipBeat={s.handleShipBeat}
           shippingByBeatId={s.shippingByBeatId}
           onAbortShipping={s.handleAbortShipping}
+          listViewportInset={s.listViewportInset}
         />
       )}
     </div>
@@ -258,6 +277,7 @@ interface BeatsListContentProps {
   onAbortShipping: (
     beatId: string,
   ) => Promise<void>;
+  listViewportInset: string;
 }
 
 function BeatsListContent(
@@ -270,6 +290,7 @@ function BeatsListContent(
     selectionVersion, searchQuery,
     onOpenBeat, onShipBeat,
     shippingByBeatId, onAbortShipping,
+    listViewportInset,
   } = props;
 
   if (isLoading) {
@@ -291,7 +312,10 @@ function BeatsListContent(
     );
   }
   return (
-    <div className="overflow-x-auto">
+    <div
+      className="overflow-x-auto"
+      style={{ paddingBottom: listViewportInset }}
+    >
       {isDegradedError && (
         <DegradedBanner message={loadError} />
       )}
