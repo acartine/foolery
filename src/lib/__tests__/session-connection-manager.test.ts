@@ -55,12 +55,6 @@ vi.mock("@/stores/terminal-store", () => ({
   ),
 }));
 
-// Mock beat query cache
-const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-vi.mock("../beat-query-cache", () => ({
-  invalidateBeatListQueries: (...args: unknown[]) => mockInvalidate(...args),
-}));
-
 // Mock notification store
 const mockAddNotification = vi.fn();
 vi.mock("@/stores/notification-store", () => ({
@@ -87,7 +81,6 @@ beforeEach(() => {
   mockTerminals.length = 0;
   storeSubscribers = [];
   mockUpdateStatus.mockClear();
-  mockInvalidate.mockClear();
   mockAddNotification.mockClear();
   // Disconnect any leftover connections
   for (const id of sessionConnections.getConnectedIds()) {
@@ -127,14 +120,14 @@ describe("SessionConnectionManager: connection lifecycle", () => {
     expect(mockUpdateStatus).toHaveBeenCalledWith("sess-3", "error");
   });
 
-  it("exit event triggers beat query invalidation on success", () => {
+  it("exit event does not invalidate beat queries for background completions", () => {
     const mockQueryClient = { invalidateQueries: vi.fn().mockResolvedValue(undefined) } as unknown as import("@tanstack/react-query").QueryClient;
     sessionConnections.startSync(mockQueryClient);
 
     sessionConnections.connect("sess-4");
     capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
 
-    expect(mockInvalidate).toHaveBeenCalledWith(mockQueryClient);
+    expect(mockQueryClient.invalidateQueries).not.toHaveBeenCalled();
   });
 
   it("subscribe() receives forwarded events", () => {

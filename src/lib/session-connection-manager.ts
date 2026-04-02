@@ -1,5 +1,4 @@
 import { connectToSession } from "./terminal-api";
-import { invalidateBeatListQueries } from "./beat-query-cache";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import type { TerminalEvent } from "./types";
@@ -25,7 +24,6 @@ const MAX_BUFFER = 5_000;
 class SessionConnectionManager {
   private connections = new Map<string, Connection>();
   private storeUnsubscribe: (() => void) | null = null;
-  private queryClientRef: QueryClient | null = null;
 
   /** Idempotent — creates SSE connection if not already connected. */
   connect(sessionId: string): void {
@@ -132,11 +130,6 @@ class SessionConnectionManager {
               repoPath: terminal.repoPath,
             });
           }
-
-          // Invalidate beat queries on success (not on disconnect)
-          if (conn.exitCode === 0 && !isDisconnect && this.queryClientRef) {
-            void invalidateBeatListQueries(this.queryClientRef);
-          }
         }
       },
       // onError — remove the connection entry so sync can reconnect,
@@ -196,8 +189,7 @@ class SessionConnectionManager {
    * of which component is mounted or which tab is active.
    */
   startSync(queryClient: QueryClient): void {
-    this.queryClientRef = queryClient;
-
+    void queryClient;
     // Don't double-subscribe
     if (this.storeUnsubscribe) return;
 

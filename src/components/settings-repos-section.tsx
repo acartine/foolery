@@ -13,6 +13,9 @@ import {
 import { DirectoryBrowser } from "@/components/directory-browser";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/stores/app-store";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 import { listKnownMemoryManagers } from "@/lib/memory-managers";
 import { MemoryManagerBadge } from "@/components/memory-manager-badge";
 
@@ -35,7 +38,7 @@ export function SettingsReposSection() {
 
   function invalidateRegistryAndBeats() {
     queryClient.invalidateQueries({ queryKey: ["registry"] });
-    queryClient.invalidateQueries({ queryKey: ["beats"] });
+    void invalidateBeatListQueries(queryClient);
   }
 
   async function handleAdd(path: string) {

@@ -7,6 +7,9 @@ import {
 } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Beat } from "@/lib/types";
+import {
+  invalidateBeatListQueries,
+} from "@/lib/beat-query-cache";
 
 interface UseBeatDetailArgs {
   beats: Beat[];
@@ -103,9 +106,7 @@ export function useBeatDetail(
       setBeatDetailParams(
         newId, targetRepo, "replace",
       );
-      queryClient.invalidateQueries({
-        queryKey: ["beats"],
-      });
+      void invalidateBeatListQueries(queryClient);
     },
     [queryClient, setBeatDetailParams],
   );
