@@ -152,12 +152,14 @@ function BeatsPageInner() {
     <div className={
       "mx-auto max-w-[95vw]"
       + " overflow-x-hidden px-4 pt-2"
-    }>
+    }
+    data-testid="beats-page">
       {s.isListView && (
         <div className={
           "mb-2 flex h-10 items-center"
           + " border-b border-border/60 pb-2"
-        }>
+        }
+        data-testid="beats-filter-shell">
           <FilterBar
             viewPhase={s.viewPhase}
             selectedIds={s.selectedIds}

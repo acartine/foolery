@@ -123,6 +123,7 @@ export function BeatTable({
       <div
         ref={s.containerRef}
         tabIndex={-1}
+        data-testid="beat-table-shell"
         className="space-y-1 outline-none"
       >
         <BeatTableContent
