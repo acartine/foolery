@@ -157,12 +157,18 @@ function doSendUserTurn(
   }
   doCancelInputClose(state);
 
+  const resetForNewTurn = () => {
+    state.resultObserved = false;
+    state.exitReason = null;
+    doResetWatchdog(child, state, config);
+  };
+
   // JSON-RPC transport: use startTurn()
   if (config.jsonrpcSession) {
     const sent =
       config.jsonrpcSession.startTurn(child, text);
     if (sent) {
-      state.resultObserved = false;
+      resetForNewTurn();
       config.interactionLog.logPrompt(
         text, { source },
       );
@@ -175,6 +181,7 @@ function doSendUserTurn(
     : makeUserMessageLine(text);
   try {
     child.stdin.write(line);
+    resetForNewTurn();
     config.interactionLog.logPrompt(
       text, { source },
     );

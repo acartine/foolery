@@ -247,13 +247,49 @@ describe("copilot interactive: follow-up", () => {
     expect(rt.state.resultObserved).toBe(true);
 
     rt.cancelInputClose();
-    rt.sendUserTurn(child, "next turn", "take_2");
+    const sent = rt.sendUserTurn(
+      child, "next turn", "take_2",
+    );
+    expect(sent).toBe(true);
+    expect(rt.state.resultObserved).toBe(false);
+    expect(rt.state.exitReason).toBeNull();
 
     emitLine(child, {
       type: "session.task_complete",
       data: { success: true },
     });
     expect(rt.state.resultObserved).toBe(true);
+  });
+
+  it("times out when a follow-up turn hangs", () => {
+    const caps = {
+      ...resolveCapabilities("copilot", true),
+      watchdogTimeoutMs: 5_000,
+    };
+    const rt = createSessionRuntime(
+      makeConfig({ capabilities: caps }),
+    );
+    const child = makeChild();
+    rt.wireStdout(child);
+
+    emitLine(child, {
+      type: "session.task_complete",
+      data: { success: true },
+    });
+    expect(rt.state.exitReason).toBe(
+      "result_observed",
+    );
+
+    rt.cancelInputClose();
+    const sent = rt.sendUserTurn(
+      child, "next turn", "take_2",
+    );
+    expect(sent).toBe(true);
+    expect(rt.state.resultObserved).toBe(false);
+    expect(rt.state.exitReason).toBeNull();
+
+    vi.advanceTimersByTime(5_000);
+    expect(rt.state.exitReason).toBe("timeout");
   });
 });
 
