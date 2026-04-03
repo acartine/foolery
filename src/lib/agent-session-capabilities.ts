@@ -116,20 +116,50 @@ const CODEX_INTERACTIVE: AgentSessionCapabilities = {
   watchdogTimeoutMs: 30_000,
 };
 
+/** Interactive Copilot capabilities (session mode). */
+const COPILOT_INTERACTIVE: AgentSessionCapabilities = {
+  interactive: true,
+  promptTransport: "stdin-stream-json",
+  supportsFollowUp: true,
+  supportsAskUserAutoResponse: true,
+  resultDetection: "type-result",
+  stdinDrainPolicy: "close-after-result",
+  watchdogTimeoutMs: 30_000,
+};
+
+/** Interactive presets keyed by dialect. */
+const INTERACTIVE_PRESETS: Partial<
+  Record<AgentDialect, AgentSessionCapabilities>
+> = {
+  codex: CODEX_INTERACTIVE,
+  copilot: COPILOT_INTERACTIVE,
+};
+
 /**
  * Resolve capabilities for a given dialect.
  * Falls back to claude defaults for unknown dialects.
  *
- * When `interactive` is true and the dialect supports
- * it, returns the interactive capability preset
- * (e.g. Codex app-server mode).
+ * When `interactive` is true and the dialect has an
+ * interactive preset, returns that preset instead of
+ * the one-shot default.
  */
 export function resolveCapabilities(
   dialect: AgentDialect,
   interactive?: boolean,
 ): AgentSessionCapabilities {
-  if (interactive && dialect === "codex") {
-    return CODEX_INTERACTIVE;
+  if (interactive) {
+    const preset = INTERACTIVE_PRESETS[dialect];
+    if (preset) return preset;
   }
   return CAPABILITIES[dialect] ?? CAPABILITIES.claude;
+}
+
+/**
+ * Returns true if the dialect supports interactive
+ * sessions (has an interactive preset).
+ */
+export function supportsInteractive(
+  dialect: AgentDialect,
+): boolean {
+  return dialect in INTERACTIVE_PRESETS;
 }

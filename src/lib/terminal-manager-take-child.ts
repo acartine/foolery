@@ -9,11 +9,13 @@ import type { ChildProcess } from "node:child_process";
 import {
   buildPromptModeArgs,
   buildCodexInteractiveArgs,
+  buildCopilotInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
   resolveCapabilities,
+  supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
   createCodexJsonRpcSession,
@@ -61,7 +63,7 @@ export function spawnTakeChild(
     effectiveAgent.command,
   );
   const preferInteractive =
-    effectiveDialect === "codex";
+    supportsInteractive(effectiveDialect);
   const capabilities = resolveCapabilities(
     effectiveDialect, preferInteractive,
   );
@@ -70,8 +72,8 @@ export function spawnTakeChild(
     capabilities.promptTransport === "jsonrpc-stdio";
 
   const { cmd, args } = buildSpawnArgs(
-    effectiveAgent, isInteractive, isJsonRpc,
-    takePrompt,
+    effectiveAgent, effectiveDialect,
+    isInteractive, isJsonRpc, takePrompt,
   );
   const normalizeEvent = createLineNormalizer(
     effectiveDialect,
@@ -134,6 +136,7 @@ export function spawnTakeChild(
 
 function buildSpawnArgs(
   agent: CliAgentTarget,
+  dialect: import("@/lib/agent-adapter").AgentDialect,
   isInteractive: boolean,
   isJsonRpc: boolean,
   takePrompt: string,
@@ -142,6 +145,11 @@ function buildSpawnArgs(
   let args: string[];
   if (isJsonRpc) {
     const built = buildCodexInteractiveArgs(agent);
+    cmd = built.command;
+    args = built.args;
+  } else if (isInteractive && dialect === "copilot") {
+    const built =
+      buildCopilotInteractiveArgs(agent);
     cmd = built.command;
     args = built.args;
   } else if (isInteractive) {

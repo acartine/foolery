@@ -68,6 +68,30 @@ export function buildCodexInteractiveArgs(
 }
 
 /**
+ * Build CLI args for an interactive Copilot session.
+ * Uses `--session` mode with NDJSON stdin/stdout.
+ */
+export function buildCopilotInteractiveArgs(
+  agent: RegisteredAgent | AgentTarget,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command
+      : "copilot";
+  const args = [
+    "--session",
+    "--output-format", "json",
+    "--stream", "on",
+    "--allow-all",
+  ];
+  if (agent.model) {
+    args.push("--model", agent.model);
+  }
+  return { command, args };
+}
+
+/**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
  * Claude: `claude -p ... --output-format stream-json`

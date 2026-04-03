@@ -64,6 +64,15 @@ export function makeUserMessageLine(text: string): string {
   }) + "\n";
 }
 
+export function makeCopilotUserMessageLine(
+  text: string,
+): string {
+  return JSON.stringify({
+    type: "user_message",
+    data: { content: text },
+  }) + "\n";
+}
+
 function compactValue(value: unknown, max = 220): string {
   const rendered =
     typeof value === "string"

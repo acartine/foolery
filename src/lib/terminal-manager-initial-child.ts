@@ -10,11 +10,13 @@ import { regroomAncestors } from "@/lib/regroom";
 import {
   buildPromptModeArgs,
   buildCodexInteractiveArgs,
+  buildCopilotInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
   resolveCapabilities,
+  supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
   createCodexJsonRpcSession,
@@ -97,7 +99,7 @@ export function spawnInitialChild(
   const isTakeLoop =
     !prepared.effectiveParent && !customPrompt;
   const preferInteractive =
-    isTakeLoop && dialect === "codex";
+    isTakeLoop && supportsInteractive(dialect);
   const capabilities = resolveCapabilities(
     dialect, preferInteractive,
   );
@@ -105,7 +107,7 @@ export function spawnInitialChild(
   const isJsonRpc =
     capabilities.promptTransport === "jsonrpc-stdio";
   const { agentCmd, args } = buildAgentArgs(
-    agent, isInteractive, isJsonRpc, prompt,
+    agent, dialect, isInteractive, isJsonRpc, prompt,
   );
   const normalizeEvent =
     createLineNormalizer(dialect);
@@ -317,6 +319,7 @@ function buildAutoShipPrompt(
 
 function buildAgentArgs(
   agent: CliAgentTarget,
+  dialect: import("@/lib/agent-adapter").AgentDialect,
   isInteractive: boolean,
   isJsonRpc: boolean,
   prompt: string,
@@ -325,6 +328,11 @@ function buildAgentArgs(
   let args: string[];
   if (isJsonRpc) {
     const built = buildCodexInteractiveArgs(agent);
+    agentCmd = built.command;
+    args = built.args;
+  } else if (isInteractive && dialect === "copilot") {
+    const built =
+      buildCopilotInteractiveArgs(agent);
     agentCmd = built.command;
     args = built.args;
   } else if (isInteractive) {

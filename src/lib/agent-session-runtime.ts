@@ -22,6 +22,7 @@ import {
   toObject,
   buildAutoAskUserResponse,
   makeUserMessageLine,
+  makeCopilotUserMessageLine,
   formatStreamEvent,
   pushFormattedEvent,
 } from "@/lib/terminal-manager-format";
@@ -169,7 +170,9 @@ function doSendUserTurn(
     return sent;
   }
 
-  const line = makeUserMessageLine(text);
+  const line = config.dialect === "copilot"
+    ? makeCopilotUserMessageLine(text)
+    : makeUserMessageLine(text);
   try {
     child.stdin.write(line);
     config.interactionLog.logPrompt(

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   resolveCapabilities,
+  supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import type {
   AgentDialect,
@@ -90,5 +91,61 @@ describe("resolveCapabilities", () => {
         resolveCapabilities(d).watchdogTimeoutMs,
       ).toBeNull();
     }
+  });
+
+});
+
+describe("resolveCapabilities: interactive", () => {
+  it("codex interactive uses jsonrpc-stdio", () => {
+    const caps = resolveCapabilities("codex", true);
+    expect(caps.interactive).toBe(true);
+    expect(caps.promptTransport).toBe(
+      "jsonrpc-stdio",
+    );
+    expect(caps.supportsFollowUp).toBe(true);
+    expect(caps.watchdogTimeoutMs).toBe(30_000);
+  });
+
+  it("copilot interactive uses stdin-stream-json", () => {
+    const caps = resolveCapabilities("copilot", true);
+    expect(caps.interactive).toBe(true);
+    expect(caps.promptTransport).toBe(
+      "stdin-stream-json",
+    );
+    expect(caps.supportsFollowUp).toBe(true);
+    expect(caps.supportsAskUserAutoResponse).toBe(
+      true,
+    );
+    expect(caps.watchdogTimeoutMs).toBe(30_000);
+    expect(caps.stdinDrainPolicy).toBe(
+      "close-after-result",
+    );
+  });
+
+  it("copilot without interactive returns one-shot", () => {
+    const caps = resolveCapabilities("copilot");
+    expect(caps.interactive).toBe(false);
+    expect(caps.promptTransport).toBe("cli-arg");
+  });
+
+  it("interactive flag ignored for unsupported dialects", () => {
+    const caps = resolveCapabilities("gemini", true);
+    expect(caps.interactive).toBe(false);
+    expect(caps.promptTransport).toBe("cli-arg");
+  });
+});
+
+describe("supportsInteractive", () => {
+  it("returns true for codex and copilot", () => {
+    expect(supportsInteractive("codex")).toBe(true);
+    expect(supportsInteractive("copilot")).toBe(true);
+  });
+
+  it("returns false for other dialects", () => {
+    expect(supportsInteractive("claude")).toBe(false);
+    expect(supportsInteractive("opencode")).toBe(
+      false,
+    );
+    expect(supportsInteractive("gemini")).toBe(false);
   });
 });

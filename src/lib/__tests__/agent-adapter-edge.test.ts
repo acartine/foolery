@@ -1,5 +1,47 @@
 import { describe, it, expect } from "vitest";
-import { createLineNormalizer } from "@/lib/agent-adapter";
+import {
+  createLineNormalizer,
+  buildCopilotInteractiveArgs,
+} from "@/lib/agent-adapter";
+
+describe("buildCopilotInteractiveArgs", () => {
+  it("builds session args without model", () => {
+    const result = buildCopilotInteractiveArgs(
+      { command: "copilot" },
+    );
+    expect(result.command).toBe("copilot");
+    expect(result.args).toEqual([
+      "--session",
+      "--output-format", "json",
+      "--stream", "on",
+      "--allow-all",
+    ]);
+  });
+
+  it("builds session args with model", () => {
+    const result = buildCopilotInteractiveArgs(
+      { command: "copilot", model: "gpt-4o" },
+    );
+    expect(result.args).toContain("--model");
+    expect(result.args).toContain("gpt-4o");
+  });
+
+  it("uses agent command from target", () => {
+    const result = buildCopilotInteractiveArgs(
+      { command: "/usr/local/bin/copilot" },
+    );
+    expect(result.command).toBe(
+      "/usr/local/bin/copilot",
+    );
+  });
+
+  it("defaults command to copilot", () => {
+    const result = buildCopilotInteractiveArgs(
+      { model: "gpt-4o" } as never,
+    );
+    expect(result.command).toBe("copilot");
+  });
+});
 
 describe("createLineNormalizer — codex edge cases", () => {
   it("returns null for item.completed with unknown item type", () => {
