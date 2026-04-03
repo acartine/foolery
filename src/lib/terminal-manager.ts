@@ -442,9 +442,19 @@ export function abortSession(id: string): boolean {
     return entry.abort != null;
   }
 
-  const proc = entry.process;
-  const pid = proc.pid;
+  terminateProcessGroup(entry.process);
+  return true;
+}
 
+/**
+ * Terminate a child process group with
+ * graceful SIGTERM then forced SIGKILL.
+ */
+function terminateProcessGroup(
+  proc: import("node:child_process").ChildProcess,
+  delayMs = 5000,
+): void {
+  const pid = proc.pid;
   try {
     if (pid) process.kill(-pid, "SIGTERM");
   } catch {
@@ -452,7 +462,6 @@ export function abortSession(id: string): boolean {
       proc.kill("SIGTERM");
     } catch { /* already dead */ }
   }
-
   setTimeout(() => {
     try {
       if (pid) process.kill(-pid, "SIGKILL");
@@ -461,7 +470,5 @@ export function abortSession(id: string): boolean {
         proc.kill("SIGKILL");
       } catch { /* already dead */ }
     }
-  }, 5000);
-
-  return true;
+  }, delayMs);
 }

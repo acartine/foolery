@@ -17,7 +17,8 @@ export type AgentDialect =
   | "claude"
   | "codex"
   | "copilot"
-  | "opencode";
+  | "opencode"
+  | "gemini";
 
 export interface PromptModeArgs {
   command: string;
@@ -36,6 +37,7 @@ export function resolveDialect(command: string): AgentDialect {
     ? command.slice(command.lastIndexOf("/") + 1)
     : command;
   const lower = base.toLowerCase();
+  if (lower.includes("gemini")) return "gemini";
   if (lower.includes("copilot")) return "copilot";
   if (lower.includes("opencode")) return "opencode";
   if (lower.includes("codex") || lower.includes("chatgpt")) return "codex";
@@ -60,6 +62,18 @@ export function buildPromptModeArgs(
     ? agent.command
     : "claude";
   const dialect = resolveDialect(command);
+
+  if (dialect === "gemini") {
+    const args = [
+      "-p",
+      prompt,
+      "-o",
+      "stream-json",
+      "-y",
+    ];
+    if (agent.model) args.push("-m", agent.model);
+    return { command, args };
+  }
 
   if (dialect === "opencode") {
     const args = ["run", "--format", "json"];
@@ -133,6 +147,10 @@ export function createLineNormalizer(
     };
   }
 
+  if (dialect === "gemini") {
+    return createGeminiNormalizer();
+  }
+
   if (dialect === "opencode") {
     return createOpenCodeNormalizer();
   }
@@ -147,6 +165,57 @@ export function createLineNormalizer(
 function toObject(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object") return null;
   return value as Record<string, unknown>;
+}
+
+// ── Gemini normalizer ──────────────────────────────────────
+
+/**
+ * Gemini stream-json events:
+ *   init      → skip
+ *   message (role:user) → skip
+ *   message (role:assistant, delta:true) → assistant text
+ *   result (status:success|error) → result
+ */
+function createGeminiNormalizer(
+): (parsed: unknown) => Record<string, unknown> | null {
+  let accumulatedText = "";
+
+  return (parsed) => {
+    const obj = toObject(parsed);
+    if (!obj || typeof obj.type !== "string") return null;
+
+    if (obj.type === "init") return null;
+
+    if (obj.type === "message") {
+      if (obj.role === "user") return null;
+      const text =
+        typeof obj.content === "string"
+          ? obj.content : "";
+      if (text) {
+        accumulatedText +=
+          (accumulatedText ? "\n" : "") + text;
+      }
+      return {
+        type: "assistant",
+        message: {
+          content: [{ type: "text", text }],
+        },
+      };
+    }
+
+    if (obj.type === "result") {
+      const status = obj.status;
+      const isError = status !== "success";
+      return {
+        type: "result",
+        result: accumulatedText
+          || (isError ? "Gemini error" : ""),
+        is_error: isError,
+      };
+    }
+
+    return null;
+  };
 }
 
 // ── OpenCode normalizer ─────────────────────────────────────

@@ -45,6 +45,16 @@ describe("resolveDialect", () => {
   it("returns 'claude' for unknown commands (default)", () => {
     expect(resolveDialect("my-custom-agent")).toBe("claude");
   });
+
+  it("returns 'gemini' for bare command 'gemini'", () => {
+    expect(resolveDialect("gemini")).toBe("gemini");
+  });
+
+  it("returns 'gemini' for full path to gemini binary", () => {
+    expect(
+      resolveDialect("/opt/homebrew/bin/gemini"),
+    ).toBe("gemini");
+  });
 });
 
 describe("buildPromptModeArgs", () => {
@@ -136,6 +146,25 @@ describe("buildPromptModeArgs", () => {
     );
     expect(result.args).toContain("--model");
     expect(result.args).toContain("claude-sonnet-4.5");
+  });
+
+  it("builds correct gemini args without model", () => {
+    const result = buildPromptModeArgs(
+      { command: "gemini" }, prompt,
+    );
+    expect(result.command).toBe("gemini");
+    expect(result.args).toEqual([
+      "-p", prompt, "-o", "stream-json", "-y",
+    ]);
+  });
+
+  it("builds correct gemini args with model", () => {
+    const result = buildPromptModeArgs(
+      { command: "gemini", model: "gemini-3-pro" },
+      prompt,
+    );
+    expect(result.args).toContain("-m");
+    expect(result.args).toContain("gemini-3-pro");
   });
 });
 
@@ -416,6 +445,102 @@ describe("createLineNormalizer copilot: terminal events", () => {
       type: "result",
       result: "Copilot failed",
       is_error: true,
+    });
+  });
+});
+
+describe("createLineNormalizer gemini: events", () => {
+  it("skips init event", () => {
+    const normalize = createLineNormalizer("gemini");
+    expect(normalize({
+      type: "init",
+      session_id: "s1",
+      model: "gemini-3",
+    })).toBeNull();
+  });
+
+  it("skips user message", () => {
+    const normalize = createLineNormalizer("gemini");
+    expect(normalize({
+      type: "message",
+      role: "user",
+      content: "test prompt",
+    })).toBeNull();
+  });
+
+  it("normalizes assistant message", () => {
+    const normalize = createLineNormalizer("gemini");
+    const result = normalize({
+      type: "message",
+      role: "assistant",
+      content: "Hello",
+      delta: true,
+    });
+    expect(result).toEqual({
+      type: "assistant",
+      message: {
+        content: [{ type: "text", text: "Hello" }],
+      },
+    });
+  });
+
+  it("normalizes success result with accumulated text", () => {
+    const normalize = createLineNormalizer("gemini");
+    normalize({
+      type: "message",
+      role: "assistant",
+      content: "Hello world",
+      delta: true,
+    });
+    const result = normalize({
+      type: "result",
+      status: "success",
+      stats: { total_tokens: 100 },
+    });
+    expect(result).toEqual({
+      type: "result",
+      result: "Hello world",
+      is_error: false,
+    });
+  });
+
+  it("normalizes error result", () => {
+    const normalize = createLineNormalizer("gemini");
+    const result = normalize({
+      type: "result",
+      status: "error",
+      stats: {},
+    });
+    expect(result).toEqual({
+      type: "result",
+      result: "Gemini error",
+      is_error: true,
+    });
+  });
+
+  it("accumulates text across messages", () => {
+    const normalize = createLineNormalizer("gemini");
+    normalize({
+      type: "message",
+      role: "assistant",
+      content: "First",
+      delta: true,
+    });
+    normalize({
+      type: "message",
+      role: "assistant",
+      content: "Second",
+      delta: true,
+    });
+    const result = normalize({
+      type: "result",
+      status: "success",
+      stats: {},
+    });
+    expect(result).toEqual({
+      type: "result",
+      result: "First\nSecond",
+      is_error: false,
     });
   });
 });

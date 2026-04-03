@@ -13,6 +13,9 @@ import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
+  resolveCapabilities,
+} from "@/lib/agent-session-capabilities";
+import {
   supportsAutoFollowUp,
 } from "@/lib/memory-manager-commands";
 import type {
@@ -87,7 +90,8 @@ export function spawnInitialChild(
   };
 
   const dialect = resolveDialect(agent.command);
-  const isInteractive = dialect === "claude";
+  const capabilities = resolveCapabilities(dialect);
+  const isInteractive = capabilities.interactive;
   const { agentCmd, args } = buildAgentArgs(
     agent, isInteractive, prompt,
   );
@@ -108,8 +112,10 @@ export function spawnInitialChild(
     isInteractive, customPrompt, prepared,
   );
   const sessionBeatIds = [beatId];
-  const state = createInitialChildState(
-    isInteractive, autoShipPrompt,
+  const state = buildInitialState(
+    id, dialect, capabilities, normalizeEvent,
+    pushEvent, interactionLog, sessionBeatIds,
+    autoShipPrompt,
   );
 
   const child = spawn(agentCmd, args, {
@@ -131,7 +137,9 @@ export function spawnInitialChild(
     interactionLog,
     normalizeEvent, pushEvent, state,
   );
-  wireStderr(child, id, interactionLog, pushEvent);
+  wireStderr(
+    child, id, interactionLog, pushEvent, state,
+  );
   wireClose(
     child, id, beatId, isTakeLoop, state, entry,
     interactionLog, pushEvent, finishSession,
@@ -161,6 +169,36 @@ export function spawnInitialChild(
 }
 
 // ─── Small helpers ───────────────────────────────────
+
+function buildInitialState(
+  id: string,
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+  capabilities: import(
+    "@/lib/agent-session-capabilities"
+  ).AgentSessionCapabilities,
+  normalizeEvent: ReturnType<
+    typeof createLineNormalizer
+  >,
+  pushEvent: (evt: TerminalEvent) => void,
+  interactionLog: InteractionLog,
+  beatIds: string[],
+  autoShipPrompt: string | null,
+): import(
+  "@/lib/terminal-manager-initial-io"
+).InitialChildState {
+  return createInitialChildState(
+    autoShipPrompt,
+    {
+      id,
+      dialect,
+      capabilities,
+      normalizeEvent,
+      pushEvent,
+      interactionLog,
+      beatIds,
+    },
+  );
+}
 
 function buildTakeLoopCtx(
   id: string,
