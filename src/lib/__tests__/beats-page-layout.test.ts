@@ -209,7 +209,10 @@ describe("beats page layout: search and table content", () => {
       '"mt-1.5 grid w-full max-w-full"',
     );
     expect(btSummary).toContain(
-      '"grid-cols-[repeat(3,minmax(0,1fr))]"',
+      '"grid-cols-1 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))]"',
+    );
+    expect(btSummary).toContain(
+      'label="Acceptance criteria"',
     );
     expect(btContent).toContain(
       "colSpan={totalCols}",

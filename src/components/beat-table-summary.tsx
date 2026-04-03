@@ -89,7 +89,7 @@ function HandoffCapsulesColumn({
     : capsules.slice(0, 2);
 
   return (
-    <div className="min-w-0 rounded-r bg-blue-50 px-2 py-1">
+    <div className="min-w-0 rounded-b bg-blue-50 px-2 py-1 md:rounded-b-none xl:rounded-r">
       <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-800">
         Handoff Capsules
       </div>
@@ -145,6 +145,7 @@ export function InlineSummary({
   const [expanded, setExpanded] = useState(false);
   if (
     !beat.description &&
+    !beat.acceptance &&
     !beat.notes &&
     capsules.length === 0
   ) {
@@ -153,7 +154,7 @@ export function InlineSummary({
 
   const gridCls = [
     "mt-1.5 grid w-full max-w-full",
-    "grid-cols-[repeat(3,minmax(0,1fr))]",
+    "grid-cols-1 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))]",
     "gap-1 text-xs leading-relaxed",
     expanded ? "relative z-10" : "",
   ].join(" ");
@@ -168,7 +169,18 @@ export function InlineSummary({
           label="Description"
           text={beat.description || ""}
           bg="bg-green-50"
-          rounded="rounded-l"
+          rounded="rounded-t md:rounded-t-none xl:rounded-l"
+          expanded={expanded}
+          onExpand={() => {
+            performance.mark("inline-summary:expand");
+            setExpanded(true);
+          }}
+        />
+        <SummaryColumn
+          label="Acceptance criteria"
+          text={beat.acceptance || ""}
+          bg={beat.acceptance ? "bg-emerald-50" : ""}
+          rounded="rounded-none"
           expanded={expanded}
           onExpand={() => {
             performance.mark("inline-summary:expand");
