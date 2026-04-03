@@ -14,6 +14,7 @@ import type { AgentDialect } from "@/lib/agent-adapter";
 export type PromptTransport =
   | "stdin-stream-json"
   | "jsonrpc-stdio"
+  | "http-server"
   | "cli-arg";
 
 /** How a completed turn/result is detected. */
@@ -127,12 +128,24 @@ const COPILOT_INTERACTIVE: AgentSessionCapabilities = {
   watchdogTimeoutMs: 30_000,
 };
 
+/** Interactive OpenCode capabilities (serve mode). */
+const OPENCODE_INTERACTIVE: AgentSessionCapabilities = {
+  interactive: true,
+  promptTransport: "http-server",
+  supportsFollowUp: true,
+  supportsAskUserAutoResponse: false,
+  resultDetection: "type-result",
+  stdinDrainPolicy: "close-after-result",
+  watchdogTimeoutMs: 30_000,
+};
+
 /** Interactive presets keyed by dialect. */
 const INTERACTIVE_PRESETS: Partial<
   Record<AgentDialect, AgentSessionCapabilities>
 > = {
   codex: CODEX_INTERACTIVE,
   copilot: COPILOT_INTERACTIVE,
+  opencode: OPENCODE_INTERACTIVE,
 };
 
 /**

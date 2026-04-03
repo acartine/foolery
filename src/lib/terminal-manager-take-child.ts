@@ -10,6 +10,7 @@ import {
   buildPromptModeArgs,
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
+  buildOpenCodeInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -20,6 +21,9 @@ import {
 import {
   createCodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
+import {
+  createOpenCodeHttpSession,
+} from "@/lib/opencode-http-session";
 import {
   createSessionRuntime,
   type AgentSessionRuntime,
@@ -38,6 +42,39 @@ import type {
 import {
   handleTakeIterationClose,
 } from "@/lib/terminal-manager-take-loop";
+
+// ─── HTTP session helper ────────────────────────────
+
+interface DeferredHttpRefs {
+  childRef: ChildProcess | null;
+  runtimeRef: AgentSessionRuntime | null;
+}
+
+function createDeferredHttpSession(
+  isHttpServer: boolean,
+  refs: DeferredHttpRefs,
+  pushEvent: TakeLoopContext["pushEvent"],
+): import(
+  "@/lib/opencode-http-session"
+).OpenCodeHttpSession | undefined {
+  if (!isHttpServer) return undefined;
+  return createOpenCodeHttpSession(
+    (jsonLine) => {
+      if (refs.runtimeRef && refs.childRef) {
+        refs.runtimeRef.injectLine(
+          refs.childRef, jsonLine,
+        );
+      }
+    },
+    (errMsg) => {
+      pushEvent({
+        type: "stderr",
+        data: errMsg + "\n",
+        timestamp: Date.now(),
+      });
+    },
+  );
+}
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
@@ -70,10 +107,13 @@ export function spawnTakeChild(
   const isInteractive = capabilities.interactive;
   const isJsonRpc =
     capabilities.promptTransport === "jsonrpc-stdio";
+  const isHttpServer =
+    capabilities.promptTransport === "http-server";
 
   const { cmd, args } = buildSpawnArgs(
     effectiveAgent, effectiveDialect,
-    isInteractive, isJsonRpc, takePrompt,
+    isInteractive, isJsonRpc, isHttpServer,
+    takePrompt,
   );
   const normalizeEvent = createLineNormalizer(
     effectiveDialect,
@@ -81,6 +121,12 @@ export function spawnTakeChild(
 
   const jsonrpcSession = isJsonRpc
     ? createCodexJsonRpcSession() : undefined;
+  const httpRefs: DeferredHttpRefs = {
+    childRef: null, runtimeRef: null,
+  };
+  const httpSession = createDeferredHttpSession(
+    isHttpServer, httpRefs, ctx.pushEvent,
+  );
 
   const runtime = createSessionRuntime({
     id: ctx.id,
@@ -91,7 +137,9 @@ export function spawnTakeChild(
     interactionLog: ctx.interactionLog,
     beatIds: [ctx.beatId],
     jsonrpcSession,
+    httpSession,
   });
+  httpRefs.runtimeRef = runtime;
 
   const takeChild = spawn(cmd, args, {
     cwd: ctx.cwd,
@@ -102,6 +150,7 @@ export function spawnTakeChild(
     detached: true,
   });
   ctx.entry.process = takeChild;
+  httpRefs.childRef = takeChild;
 
   console.log(
     `[terminal-manager] [${ctx.id}] [take-loop] ` +
@@ -139,12 +188,18 @@ function buildSpawnArgs(
   dialect: import("@/lib/agent-adapter").AgentDialect,
   isInteractive: boolean,
   isJsonRpc: boolean,
+  isHttpServer: boolean,
   takePrompt: string,
 ): { cmd: string; args: string[] } {
   let cmd: string;
   let args: string[];
   if (isJsonRpc) {
     const built = buildCodexInteractiveArgs(agent);
+    cmd = built.command;
+    args = built.args;
+  } else if (isHttpServer) {
+    const built =
+      buildOpenCodeInteractiveArgs(agent);
     cmd = built.command;
     args = built.args;
   } else if (isInteractive && dialect === "copilot") {

@@ -128,6 +128,22 @@ describe("resolveCapabilities: interactive", () => {
     expect(caps.promptTransport).toBe("cli-arg");
   });
 
+  it("opencode interactive uses http-server", () => {
+    const caps = resolveCapabilities(
+      "opencode", true,
+    );
+    expect(caps.interactive).toBe(true);
+    expect(caps.promptTransport).toBe("http-server");
+    expect(caps.supportsFollowUp).toBe(true);
+    expect(caps.supportsAskUserAutoResponse).toBe(
+      false,
+    );
+    expect(caps.watchdogTimeoutMs).toBe(30_000);
+    expect(caps.stdinDrainPolicy).toBe(
+      "close-after-result",
+    );
+  });
+
   it("interactive flag ignored for unsupported dialects", () => {
     const caps = resolveCapabilities("gemini", true);
     expect(caps.interactive).toBe(false);
@@ -136,16 +152,14 @@ describe("resolveCapabilities: interactive", () => {
 });
 
 describe("supportsInteractive", () => {
-  it("returns true for codex and copilot", () => {
+  it("returns true for codex, copilot, opencode", () => {
     expect(supportsInteractive("codex")).toBe(true);
     expect(supportsInteractive("copilot")).toBe(true);
+    expect(supportsInteractive("opencode")).toBe(true);
   });
 
   it("returns false for other dialects", () => {
     expect(supportsInteractive("claude")).toBe(false);
-    expect(supportsInteractive("opencode")).toBe(
-      false,
-    );
     expect(supportsInteractive("gemini")).toBe(false);
   });
 });

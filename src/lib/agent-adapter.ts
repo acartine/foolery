@@ -92,6 +92,27 @@ export function buildCopilotInteractiveArgs(
 }
 
 /**
+ * Build CLI args for an interactive OpenCode session.
+ * Uses `opencode serve` headless mode with HTTP API.
+ */
+export function buildOpenCodeInteractiveArgs(
+  agent: RegisteredAgent | AgentTarget,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command
+      : "opencode";
+  const args = [
+    "serve", "--port", "0", "--print-logs",
+  ];
+  if (agent.model) {
+    args.push("-m", agent.model);
+  }
+  return { command, args };
+}
+
+/**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
  * Claude: `claude -p ... --output-format stream-json`

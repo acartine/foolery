@@ -11,6 +11,7 @@ import {
   buildPromptModeArgs,
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
+  buildOpenCodeInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -21,6 +22,9 @@ import {
 import {
   createCodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
+import {
+  createOpenCodeHttpSession,
+} from "@/lib/opencode-http-session";
 import {
   supportsAutoFollowUp,
 } from "@/lib/memory-manager-commands";
@@ -106,8 +110,11 @@ export function spawnInitialChild(
   const isInteractive = capabilities.interactive;
   const isJsonRpc =
     capabilities.promptTransport === "jsonrpc-stdio";
+  const isHttpServer =
+    capabilities.promptTransport === "http-server";
   const { agentCmd, args } = buildAgentArgs(
-    agent, dialect, isInteractive, isJsonRpc, prompt,
+    agent, dialect, isInteractive,
+    isJsonRpc, isHttpServer, prompt,
   );
   const normalizeEvent =
     createLineNormalizer(dialect);
@@ -126,10 +133,32 @@ export function spawnInitialChild(
     isInteractive, customPrompt, prepared,
   );
   const sessionBeatIds = [beatId];
+
+  // HTTP session: deferred wiring via closures
+  // over InitialChildState (child/runtime set later)
+  const httpSession = isHttpServer
+    ? createOpenCodeHttpSession(
+        (jsonLine) => {
+          if (state.child) {
+            state.runtime.injectLine(
+              state.child, jsonLine,
+            );
+          }
+        },
+        (errMsg) => {
+          pushEvent({
+            type: "stderr",
+            data: errMsg + "\n",
+            timestamp: Date.now(),
+          });
+        },
+      )
+    : undefined;
+
   const state = buildInitialState(
     id, dialect, capabilities, normalizeEvent,
     pushEvent, interactionLog, sessionBeatIds,
-    autoShipPrompt, jsonrpcSession,
+    autoShipPrompt, jsonrpcSession, httpSession,
   );
 
   const child = spawnAndWire(
@@ -141,7 +170,8 @@ export function spawnInitialChild(
   );
 
   sendInitialPrompt(
-    child, isInteractive, isJsonRpc, state,
+    child, isInteractive,
+    isJsonRpc || isHttpServer, state,
     interactionLog, session, entry, id, agent,
     prompt, sessions,
   );
@@ -241,6 +271,9 @@ function buildInitialState(
   jsonrpcSession?: import(
     "@/lib/codex-jsonrpc-session"
   ).CodexJsonRpcSession,
+  httpSession?: import(
+    "@/lib/opencode-http-session"
+  ).OpenCodeHttpSession,
 ): import(
   "@/lib/terminal-manager-initial-io"
 ).InitialChildState {
@@ -255,6 +288,7 @@ function buildInitialState(
       interactionLog,
       beatIds,
       jsonrpcSession,
+      httpSession,
     },
   );
 }
@@ -322,12 +356,18 @@ function buildAgentArgs(
   dialect: import("@/lib/agent-adapter").AgentDialect,
   isInteractive: boolean,
   isJsonRpc: boolean,
+  isHttpServer: boolean,
   prompt: string,
 ): { agentCmd: string; args: string[] } {
   let agentCmd: string;
   let args: string[];
   if (isJsonRpc) {
     const built = buildCodexInteractiveArgs(agent);
+    agentCmd = built.command;
+    args = built.args;
+  } else if (isHttpServer) {
+    const built =
+      buildOpenCodeInteractiveArgs(agent);
     agentCmd = built.command;
     args = built.args;
   } else if (isInteractive && dialect === "copilot") {

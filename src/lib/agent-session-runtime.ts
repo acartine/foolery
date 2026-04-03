@@ -32,6 +32,9 @@ import {
 import type {
   CodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
+import type {
+  OpenCodeHttpSession,
+} from "@/lib/opencode-http-session";
 
 // ── Exit reason ────────────────────────────────────────
 
@@ -65,6 +68,11 @@ export interface SessionRuntimeConfig {
    * jsonrpc-stdio transport.
    */
   jsonrpcSession?: CodexJsonRpcSession;
+  /**
+   * Optional OpenCode HTTP session for
+   * http-server transport.
+   */
+  httpSession?: OpenCodeHttpSession;
 }
 
 // ── Runtime state ──────────────────────────────────────
@@ -96,6 +104,14 @@ export interface AgentSessionRuntime {
   scheduleInputClose(child: ChildProcess): void;
   cancelInputClose(): void;
   flushLineBuffer(child: ChildProcess): void;
+  /**
+   * Inject a JSON line into the event processing
+   * pipeline. Used by HTTP-based transports that
+   * receive events outside of stdout.
+   */
+  injectLine(
+    child: ChildProcess, line: string,
+  ): void;
   dispose(): void;
 }
 
@@ -106,11 +122,15 @@ function doCloseInput(
   state: SessionRuntimeState,
   cancelFn: () => void,
   jsonrpcSession?: CodexJsonRpcSession,
+  httpSession?: OpenCodeHttpSession,
 ): void {
   if (state.stdinClosed) return;
   cancelFn();
   if (jsonrpcSession) {
     jsonrpcSession.interruptTurn(child);
+  }
+  if (httpSession) {
+    httpSession.interruptTurn(child);
   }
   state.stdinClosed = true;
   child.stdin?.end();
@@ -128,6 +148,7 @@ function doScheduleInputClose(
   child: ChildProcess,
   state: SessionRuntimeState,
   jsonrpcSession?: CodexJsonRpcSession,
+  httpSession?: OpenCodeHttpSession,
 ): void {
   doCancelInputClose(state);
   state.closeInputTimer = setTimeout(
@@ -135,6 +156,7 @@ function doScheduleInputClose(
       child, state,
       () => doCancelInputClose(state),
       jsonrpcSession,
+      httpSession,
     ),
     INPUT_CLOSE_GRACE_MS,
   );
@@ -147,6 +169,23 @@ function doSendUserTurn(
   text: string,
   source: string,
 ): boolean {
+  // HTTP transport: no stdin guard needed
+  if (config.httpSession) {
+    if (state.stdinClosed) return false;
+    doCancelInputClose(state);
+    const sent =
+      config.httpSession.startTurn(child, text);
+    if (sent) {
+      state.resultObserved = false;
+      state.exitReason = null;
+      doResetWatchdog(child, state, config);
+      config.interactionLog.logPrompt(
+        text, { source },
+      );
+    }
+    return sent;
+  }
+
   if (
     !child.stdin ||
     child.stdin.destroyed ||
@@ -282,7 +321,9 @@ function handleResultEvent(
     config.onResult?.() ?? false;
   if (!followUpSent) {
     doScheduleInputClose(
-      child, state, config.jsonrpcSession,
+      child, state,
+      config.jsonrpcSession,
+      config.httpSession,
     );
   }
 }
@@ -399,6 +440,27 @@ function doWireStdout(
   child.stdout?.on("data", (chunk: Buffer) => {
     const text = chunk.toString();
     config.interactionLog.logStdout(text);
+
+    // HTTP transport: stdout carries server logs,
+    // not agent events. Pass lines to httpSession
+    // for URL discovery; log the rest as stdout.
+    if (config.httpSession) {
+      const lines = text.split("\n");
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        if (
+          !config.httpSession.processStdoutLine(line)
+        ) {
+          config.pushEvent({
+            type: "stdout",
+            data: line + "\n",
+            timestamp: Date.now(),
+          });
+        }
+      }
+      return;
+    }
+
     state.lineBuffer += text;
     const lines = state.lineBuffer.split("\n");
     state.lineBuffer = lines.pop() ?? "";
@@ -489,15 +551,20 @@ export function createSessionRuntime(
         child, state,
         () => doCancelInputClose(state),
         config.jsonrpcSession,
+        config.httpSession,
       ),
     scheduleInputClose: (child) =>
       doScheduleInputClose(
-        child, state, config.jsonrpcSession,
+        child, state,
+        config.jsonrpcSession,
+        config.httpSession,
       ),
     cancelInputClose: () =>
       doCancelInputClose(state),
     flushLineBuffer: (child) =>
       doFlushLineBuffer(child, state, config),
+    injectLine: (child, line) =>
+      processLine(child, line, state, config),
     dispose: () => {
       doCancelInputClose(state);
       if (state.watchdogTimer) {
