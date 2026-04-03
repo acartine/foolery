@@ -8,12 +8,16 @@ import { spawn } from "node:child_process";
 import type { ChildProcess } from "node:child_process";
 import {
   buildPromptModeArgs,
+  buildCodexInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
   resolveCapabilities,
 } from "@/lib/agent-session-capabilities";
+import {
+  createCodexJsonRpcSession,
+} from "@/lib/codex-jsonrpc-session";
 import {
   createSessionRuntime,
   type AgentSessionRuntime,
@@ -56,16 +60,25 @@ export function spawnTakeChild(
   const effectiveDialect = resolveDialect(
     effectiveAgent.command,
   );
-  const capabilities =
-    resolveCapabilities(effectiveDialect);
+  const preferInteractive =
+    effectiveDialect === "codex";
+  const capabilities = resolveCapabilities(
+    effectiveDialect, preferInteractive,
+  );
   const isInteractive = capabilities.interactive;
+  const isJsonRpc =
+    capabilities.promptTransport === "jsonrpc-stdio";
 
   const { cmd, args } = buildSpawnArgs(
-    effectiveAgent, isInteractive, takePrompt,
+    effectiveAgent, isInteractive, isJsonRpc,
+    takePrompt,
   );
   const normalizeEvent = createLineNormalizer(
     effectiveDialect,
   );
+
+  const jsonrpcSession = isJsonRpc
+    ? createCodexJsonRpcSession() : undefined;
 
   const runtime = createSessionRuntime({
     id: ctx.id,
@@ -75,6 +88,7 @@ export function spawnTakeChild(
     pushEvent: ctx.pushEvent,
     interactionLog: ctx.interactionLog,
     beatIds: [ctx.beatId],
+    jsonrpcSession,
   });
 
   const takeChild = spawn(cmd, args, {
@@ -106,6 +120,9 @@ export function spawnTakeChild(
     ctx, takeChild, runtime,
     effectiveAgent, effectiveDialect, beatState,
   );
+  if (jsonrpcSession) {
+    jsonrpcSession.sendHandshake(takeChild);
+  }
   logAndSendPrompt(
     ctx, takeChild, runtime,
     isInteractive, effectiveDialect,
@@ -118,11 +135,16 @@ export function spawnTakeChild(
 function buildSpawnArgs(
   agent: CliAgentTarget,
   isInteractive: boolean,
+  isJsonRpc: boolean,
   takePrompt: string,
 ): { cmd: string; args: string[] } {
   let cmd: string;
   let args: string[];
-  if (isInteractive) {
+  if (isJsonRpc) {
+    const built = buildCodexInteractiveArgs(agent);
+    cmd = built.command;
+    args = built.args;
+  } else if (isInteractive) {
     cmd = agent.command;
     args = [
       "-p", "--input-format", "stream-json",

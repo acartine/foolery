@@ -9,12 +9,16 @@ import type { InteractionLog } from "@/lib/interaction-logger";
 import { regroomAncestors } from "@/lib/regroom";
 import {
   buildPromptModeArgs,
+  buildCodexInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
   resolveCapabilities,
 } from "@/lib/agent-session-capabilities";
+import {
+  createCodexJsonRpcSession,
+} from "@/lib/codex-jsonrpc-session";
 import {
   supportsAutoFollowUp,
 } from "@/lib/memory-manager-commands";
@@ -90,16 +94,24 @@ export function spawnInitialChild(
   };
 
   const dialect = resolveDialect(agent.command);
-  const capabilities = resolveCapabilities(dialect);
+  const isTakeLoop =
+    !prepared.effectiveParent && !customPrompt;
+  const preferInteractive =
+    isTakeLoop && dialect === "codex";
+  const capabilities = resolveCapabilities(
+    dialect, preferInteractive,
+  );
   const isInteractive = capabilities.interactive;
+  const isJsonRpc =
+    capabilities.promptTransport === "jsonrpc-stdio";
   const { agentCmd, args } = buildAgentArgs(
-    agent, isInteractive, prompt,
+    agent, isInteractive, isJsonRpc, prompt,
   );
   const normalizeEvent =
     createLineNormalizer(dialect);
 
-  const isTakeLoop =
-    !prepared.effectiveParent && !customPrompt;
+  const jsonrpcSession = isJsonRpc
+    ? createCodexJsonRpcSession() : undefined;
 
   const takeLoopCtx = buildTakeLoopCtx(
     id, beatId, prepared, agent, agentInfo,
@@ -115,9 +127,54 @@ export function spawnInitialChild(
   const state = buildInitialState(
     id, dialect, capabilities, normalizeEvent,
     pushEvent, interactionLog, sessionBeatIds,
-    autoShipPrompt,
+    autoShipPrompt, jsonrpcSession,
   );
 
+  const child = spawnAndWire(
+    agentCmd, args, prepared, isInteractive,
+    id, beatId, isTakeLoop, sessionBeatIds,
+    dialect, interactionLog, normalizeEvent,
+    pushEvent, state, entry, finishSession,
+    agent, takeLoopCtx, jsonrpcSession,
+  );
+
+  sendInitialPrompt(
+    child, isInteractive, isJsonRpc, state,
+    interactionLog, session, entry, id, agent,
+    prompt, sessions,
+  );
+
+  return session;
+}
+
+// ─── Spawn + wire ───────────────────────────────────
+
+function spawnAndWire(
+  agentCmd: string,
+  args: string[],
+  prepared: PreparedTargets,
+  isInteractive: boolean,
+  id: string,
+  beatId: string,
+  isTakeLoop: boolean,
+  sessionBeatIds: string[],
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+  interactionLog: InteractionLog,
+  normalizeEvent: ReturnType<
+    typeof createLineNormalizer
+  >,
+  pushEvent: (evt: TerminalEvent) => void,
+  state: import(
+    "@/lib/terminal-manager-initial-io"
+  ).InitialChildState,
+  entry: SessionEntry,
+  finishSession: (code: number) => void,
+  agent: CliAgentTarget,
+  takeLoopCtx: TakeLoopContext,
+  jsonrpcSession?: import(
+    "@/lib/codex-jsonrpc-session"
+  ).CodexJsonRpcSession,
+): import("node:child_process").ChildProcess {
   const child = spawn(agentCmd, args, {
     cwd: prepared.resolvedRepoPath,
     stdio: [
@@ -130,12 +187,9 @@ export function spawnInitialChild(
   logAgentSpawn(id, agent, child);
 
   wireStdout(
-    child,
-    id,
-    sessionBeatIds,
-    dialect,
-    interactionLog,
-    normalizeEvent, pushEvent, state,
+    child, id, sessionBeatIds, dialect,
+    interactionLog, normalizeEvent,
+    pushEvent, state,
   );
   wireStderr(
     child, id, interactionLog, pushEvent, state,
@@ -160,12 +214,11 @@ export function spawnInitialChild(
     });
   }
 
-  sendInitialPrompt(
-    child, isInteractive, state, interactionLog,
-    session, entry, id, agent, prompt, sessions,
-  );
+  if (jsonrpcSession) {
+    jsonrpcSession.sendHandshake(child);
+  }
 
-  return session;
+  return child;
 }
 
 // ─── Small helpers ───────────────────────────────────
@@ -183,6 +236,9 @@ function buildInitialState(
   interactionLog: InteractionLog,
   beatIds: string[],
   autoShipPrompt: string | null,
+  jsonrpcSession?: import(
+    "@/lib/codex-jsonrpc-session"
+  ).CodexJsonRpcSession,
 ): import(
   "@/lib/terminal-manager-initial-io"
 ).InitialChildState {
@@ -196,6 +252,7 @@ function buildInitialState(
       pushEvent,
       interactionLog,
       beatIds,
+      jsonrpcSession,
     },
   );
 }
@@ -261,11 +318,16 @@ function buildAutoShipPrompt(
 function buildAgentArgs(
   agent: CliAgentTarget,
   isInteractive: boolean,
+  isJsonRpc: boolean,
   prompt: string,
 ): { agentCmd: string; args: string[] } {
   let agentCmd: string;
   let args: string[];
-  if (isInteractive) {
+  if (isJsonRpc) {
+    const built = buildCodexInteractiveArgs(agent);
+    agentCmd = built.command;
+    args = built.args;
+  } else if (isInteractive) {
     agentCmd = agent.command;
     args = [
       "-p", "--input-format", "stream-json",
@@ -390,6 +452,7 @@ function handleSuccessCleanup(
 function sendInitialPrompt(
   child: import("node:child_process").ChildProcess,
   isInteractive: boolean,
+  isJsonRpc: boolean,
   state: import(
     "@/lib/terminal-manager-initial-io"
   ).InitialChildState,
@@ -402,6 +465,10 @@ function sendInitialPrompt(
   sessions: Map<string, SessionEntry>,
 ): void {
   if (isInteractive) {
+    // For JSON-RPC, sendUserTurn delegates to
+    // startTurn() which queues until handshake
+    // completes. For stream-json, it writes
+    // directly to stdin.
     const sent = sendUserTurn(
       child, state, interactionLog,
       prompt, "initial",

@@ -13,6 +13,7 @@ import type { AgentDialect } from "@/lib/agent-adapter";
 /** How the agent accepts prompts. */
 export type PromptTransport =
   | "stdin-stream-json"
+  | "jsonrpc-stdio"
   | "cli-arg";
 
 /** How a completed turn/result is detected. */
@@ -104,12 +105,31 @@ const CAPABILITIES: Record<
   },
 };
 
+/** Interactive Codex capabilities (app-server). */
+const CODEX_INTERACTIVE: AgentSessionCapabilities = {
+  interactive: true,
+  promptTransport: "jsonrpc-stdio",
+  supportsFollowUp: true,
+  supportsAskUserAutoResponse: false,
+  resultDetection: "type-result",
+  stdinDrainPolicy: "close-after-result",
+  watchdogTimeoutMs: 30_000,
+};
+
 /**
  * Resolve capabilities for a given dialect.
  * Falls back to claude defaults for unknown dialects.
+ *
+ * When `interactive` is true and the dialect supports
+ * it, returns the interactive capability preset
+ * (e.g. Codex app-server mode).
  */
 export function resolveCapabilities(
   dialect: AgentDialect,
+  interactive?: boolean,
 ): AgentSessionCapabilities {
+  if (interactive && dialect === "codex") {
+    return CODEX_INTERACTIVE;
+  }
   return CAPABILITIES[dialect] ?? CAPABILITIES.claude;
 }

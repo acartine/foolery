@@ -49,7 +49,8 @@ Every agent dialect declares a capability record before the session starts.
 | Dialect | Interactive | Prompt transport | Follow-up | Ask-user auto-response | Turn result detection | Stdin drain policy | Watchdog |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `claude` | yes | `stdin-stream-json` | yes | yes | `type-result` | `close-after-result` | none by default |
-| `codex` | no | `cli-arg` | no | no | `type-result` via normalized `turn.completed`/`turn.failed`/`error` | `never-opened` | none by default |
+| `codex` (one-shot) | no | `cli-arg` | no | no | `type-result` via normalized `turn.completed`/`turn.failed`/`error` | `never-opened` | none by default |
+| `codex` (interactive) | yes | `jsonrpc-stdio` via `codex app-server` | yes | no | `type-result` via translated `turn/completed` JSON-RPC notification | `close-after-result` | 30 s |
 | `copilot` | no | `cli-arg` | no | yes | `type-result` | `never-opened` | none by default |
 | `opencode` | no | `cli-arg` | no | no | `type-result` via normalized `step_finish` | `never-opened` | none by default |
 | `gemini` | no | `cli-arg` | no | no | `status-result` | `never-opened` | none by default |

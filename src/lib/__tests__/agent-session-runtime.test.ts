@@ -14,6 +14,9 @@ import {
 import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import {
+  createCodexJsonRpcSession,
+} from "@/lib/codex-jsonrpc-session";
 
 // ── Helpers ────────────────────────────────────────────
 
@@ -62,6 +65,27 @@ function makeConfig(
     pushEvent: vi.fn(),
     interactionLog: makeInteractionLog(),
     beatIds: ["beat-1"],
+    ...overrides,
+  };
+}
+
+function makeInteractiveCodexConfig(
+  overrides?: Partial<SessionRuntimeConfig>,
+): SessionRuntimeConfig {
+  const jsonrpcSession =
+    createCodexJsonRpcSession();
+  const capabilities = resolveCapabilities(
+    "codex", true,
+  );
+  return {
+    id: "test-session",
+    dialect: "codex",
+    capabilities,
+    normalizeEvent: createLineNormalizer("codex"),
+    pushEvent: vi.fn(),
+    interactionLog: makeInteractionLog(),
+    beatIds: ["beat-1"],
+    jsonrpcSession,
     ...overrides,
   };
 }
@@ -304,6 +328,123 @@ describe("runtime: codex stdout", () => {
       }) + "\n"),
     );
     expect(rt.state.resultObserved).toBe(true);
+  });
+});
+
+// ── Interactive Codex (JSON-RPC) ─────────────────────
+
+describe("runtime: interactive codex state", () => {
+  it("has open stdin for interactive codex", () => {
+    const rt = createSessionRuntime(
+      makeInteractiveCodexConfig(),
+    );
+    expect(rt.state.stdinClosed).toBe(false);
+  });
+
+  it(
+    "sendUserTurn delegates to jsonrpc startTurn",
+    () => {
+      const config = makeInteractiveCodexConfig();
+      const rt = createSessionRuntime(config);
+      const child = makeChild(true);
+      const writeSpy = vi.spyOn(
+        child.stdin!, "write",
+      );
+      const jrpc = config.jsonrpcSession!;
+      jrpc.sendHandshake(child);
+      writeSpy.mockClear();
+      jrpc.processLine({
+        id: 1, result: { userAgent: "test" },
+      });
+      jrpc.processLine({
+        id: 2,
+        result: { thread: { id: "t-1" } },
+      });
+      const sent = rt.sendUserTurn(
+        child, "do work", "test",
+      );
+      expect(sent).toBe(true);
+      expect(writeSpy).toHaveBeenCalled();
+      const lastWrite = writeSpy.mock.calls[
+        writeSpy.mock.calls.length - 1
+      ][0] as string;
+      const parsed = JSON.parse(lastWrite);
+      expect(parsed.method).toBe("turn/start");
+    },
+  );
+});
+
+describe("runtime: interactive codex stdout", () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it("translates turn/completed to result", () => {
+    const config = makeInteractiveCodexConfig();
+    const rt = createSessionRuntime(config);
+    const child = makeChild(true);
+    rt.wireStdout(child);
+    const handshake = [
+      JSON.stringify({
+        id: 1, result: { userAgent: "t" },
+      }),
+      JSON.stringify({
+        id: 2,
+        result: { thread: { id: "t-1" } },
+      }),
+    ].join("\n") + "\n";
+    child.stdout!.emit(
+      "data", Buffer.from(handshake),
+    );
+    expect(rt.state.resultObserved).toBe(false);
+    const events = [
+      JSON.stringify({
+        method: "item/completed",
+        params: {
+          threadId: "t-1", turnId: "turn-1",
+          item: {
+            id: "i-1", type: "agentMessage",
+            fragments: [{ text: "All done" }],
+          },
+        },
+      }),
+      JSON.stringify({
+        method: "turn/completed",
+        params: {
+          threadId: "t-1",
+          turn: {
+            id: "turn-1", items: [],
+            status: "completed",
+          },
+        },
+      }),
+    ].join("\n") + "\n";
+    child.stdout!.emit(
+      "data", Buffer.from(events),
+    );
+    expect(rt.state.resultObserved).toBe(true);
+    expect(rt.state.exitReason).toBe(
+      "result_observed",
+    );
+  });
+
+  it("filters MCP noise in JSON-RPC mode", () => {
+    const config = makeInteractiveCodexConfig();
+    const rt = createSessionRuntime(config);
+    const child = makeChild(true);
+    rt.wireStdout(child);
+    const noise = JSON.stringify({
+      method: "mcpServer/startupStatus/updated",
+      params: {
+        name: "playwright", status: "starting",
+      },
+    }) + "\n";
+    child.stdout!.emit(
+      "data", Buffer.from(noise),
+    );
+    expect(rt.state.resultObserved).toBe(false);
+    expect(
+      rt.state.lastNormalizedEvent,
+    ).toBeNull();
   });
 });
 

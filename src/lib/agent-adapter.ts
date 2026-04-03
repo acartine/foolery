@@ -47,6 +47,27 @@ export function resolveDialect(command: string): AgentDialect {
 // ── 2) Arg building ────────────────────────────────────────
 
 /**
+ * Build CLI args for an interactive Codex session
+ * using the app-server JSON-RPC stdio protocol.
+ */
+export function buildCodexInteractiveArgs(
+  agent: RegisteredAgent | AgentTarget,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command
+      : "codex";
+  const args = [
+    "app-server", "--listen", "stdio://",
+  ];
+  if (agent.model) {
+    args.push("-c", `model="${agent.model}"`);
+  }
+  return { command, args };
+}
+
+/**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *
  * Claude: `claude -p ... --output-format stream-json`

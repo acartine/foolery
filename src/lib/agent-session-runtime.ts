@@ -28,6 +28,9 @@ import {
 import {
   INPUT_CLOSE_GRACE_MS,
 } from "@/lib/terminal-manager-types";
+import type {
+  CodexJsonRpcSession,
+} from "@/lib/codex-jsonrpc-session";
 
 // ── Exit reason ────────────────────────────────────────
 
@@ -56,6 +59,11 @@ export interface SessionRuntimeConfig {
    * which prevents stdin close scheduling.
    */
   onResult?: () => boolean;
+  /**
+   * Optional Codex JSON-RPC session for
+   * jsonrpc-stdio transport.
+   */
+  jsonrpcSession?: CodexJsonRpcSession;
 }
 
 // ── Runtime state ──────────────────────────────────────
@@ -96,9 +104,13 @@ function doCloseInput(
   child: ChildProcess,
   state: SessionRuntimeState,
   cancelFn: () => void,
+  jsonrpcSession?: CodexJsonRpcSession,
 ): void {
   if (state.stdinClosed) return;
   cancelFn();
+  if (jsonrpcSession) {
+    jsonrpcSession.interruptTurn(child);
+  }
   state.stdinClosed = true;
   child.stdin?.end();
 }
@@ -114,11 +126,14 @@ function doCancelInputClose(
 function doScheduleInputClose(
   child: ChildProcess,
   state: SessionRuntimeState,
+  jsonrpcSession?: CodexJsonRpcSession,
 ): void {
   doCancelInputClose(state);
   state.closeInputTimer = setTimeout(
     () => doCloseInput(
-      child, state, () => doCancelInputClose(state),
+      child, state,
+      () => doCancelInputClose(state),
+      jsonrpcSession,
     ),
     INPUT_CLOSE_GRACE_MS,
   );
@@ -140,6 +155,20 @@ function doSendUserTurn(
     return false;
   }
   doCancelInputClose(state);
+
+  // JSON-RPC transport: use startTurn()
+  if (config.jsonrpcSession) {
+    const sent =
+      config.jsonrpcSession.startTurn(child, text);
+    if (sent) {
+      state.resultObserved = false;
+      config.interactionLog.logPrompt(
+        text, { source },
+      );
+    }
+    return sent;
+  }
+
   const line = makeUserMessageLine(text);
   try {
     child.stdin.write(line);
@@ -242,7 +271,9 @@ function handleResultEvent(
   const followUpSent =
     config.onResult?.() ?? false;
   if (!followUpSent) {
-    doScheduleInputClose(child, state);
+    doScheduleInputClose(
+      child, state, config.jsonrpcSession,
+    );
   }
 }
 
@@ -274,6 +305,29 @@ function processLine(
 ): void {
   try {
     const raw = JSON.parse(line) as JsonObject;
+
+    // JSON-RPC transport: translate first, then
+    // normalize with the standard Codex normalizer
+    if (config.jsonrpcSession) {
+      const translated =
+        config.jsonrpcSession.processLine(raw);
+      if (!translated) return; // skip noise
+      logTokenUsageForEvent(
+        config.interactionLog,
+        config.dialect,
+        translated as JsonObject,
+        config.beatIds,
+      );
+      const obj = (
+        config.normalizeEvent(translated) ??
+        translated
+      ) as Record<string, unknown>;
+      processNormalizedEvent(
+        child, obj, state, config,
+      );
+      return;
+    }
+
     logTokenUsageForEvent(
       config.interactionLog,
       config.dialect,
@@ -324,6 +378,60 @@ export function terminateProcessGroup(
   }, delayMs);
 }
 
+// ── Wire helpers ──────────────────────────────────────
+
+function doWireStdout(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+): void {
+  doResetWatchdog(child, state, config);
+  child.stdout?.on("data", (chunk: Buffer) => {
+    const text = chunk.toString();
+    config.interactionLog.logStdout(text);
+    state.lineBuffer += text;
+    const lines = state.lineBuffer.split("\n");
+    state.lineBuffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      config.interactionLog.logResponse(line);
+      processLine(child, line, state, config);
+    }
+  });
+}
+
+function doFlushLineBuffer(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+): void {
+  if (!state.lineBuffer.trim()) return;
+  config.interactionLog.logResponse(
+    state.lineBuffer,
+  );
+  try {
+    const obj = JSON.parse(
+      state.lineBuffer,
+    ) as JsonObject;
+    logTokenUsageForEvent(
+      config.interactionLog,
+      config.dialect,
+      obj,
+      config.beatIds,
+    );
+    processNormalizedEvent(
+      child, obj, state, config,
+    );
+  } catch {
+    config.pushEvent({
+      type: "stdout",
+      data: state.lineBuffer + "\n",
+      timestamp: Date.now(),
+    });
+  }
+  state.lineBuffer = "";
+}
+
 // ── Factory ────────────────────────────────────────────
 
 export function createSessionRuntime(
@@ -343,37 +451,23 @@ export function createSessionRuntime(
   return {
     state,
     config,
-    wireStdout: (child) => {
-      doResetWatchdog(child, state, config);
-      child.stdout?.on("data", (chunk: Buffer) => {
-        const text = chunk.toString();
-        config.interactionLog.logStdout(text);
-        state.lineBuffer += text;
-        const lines =
-          state.lineBuffer.split("\n");
-        state.lineBuffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          config.interactionLog.logResponse(line);
-          processLine(
-            child, line, state, config,
-          );
-        }
-      });
-    },
+    wireStdout: (child) =>
+      doWireStdout(child, state, config),
     wireStderr: (child) => {
-      child.stderr?.on("data", (chunk: Buffer) => {
-        const text = chunk.toString();
-        config.interactionLog.logStderr(text);
-        console.log(
-          `[terminal-manager] [${config.id}] ` +
-          `stderr: ${text.slice(0, 200)}`,
-        );
-        config.pushEvent({
-          type: "stderr", data: text,
-          timestamp: Date.now(),
-        });
-      });
+      child.stderr?.on(
+        "data", (chunk: Buffer) => {
+          const text = chunk.toString();
+          config.interactionLog.logStderr(text);
+          console.log(
+            `[terminal-manager] [${config.id}] ` +
+            `stderr: ${text.slice(0, 200)}`,
+          );
+          config.pushEvent({
+            type: "stderr", data: text,
+            timestamp: Date.now(),
+          });
+        },
+      );
     },
     sendUserTurn: (child, text, source) =>
       doSendUserTurn(
@@ -384,38 +478,16 @@ export function createSessionRuntime(
       doCloseInput(
         child, state,
         () => doCancelInputClose(state),
+        config.jsonrpcSession,
       ),
     scheduleInputClose: (child) =>
-      doScheduleInputClose(child, state),
+      doScheduleInputClose(
+        child, state, config.jsonrpcSession,
+      ),
     cancelInputClose: () =>
       doCancelInputClose(state),
-    flushLineBuffer: (child) => {
-      if (!state.lineBuffer.trim()) return;
-      config.interactionLog.logResponse(
-        state.lineBuffer,
-      );
-      try {
-        const obj = JSON.parse(
-          state.lineBuffer,
-        ) as JsonObject;
-        logTokenUsageForEvent(
-          config.interactionLog,
-          config.dialect,
-          obj,
-          config.beatIds,
-        );
-        processNormalizedEvent(
-          child, obj, state, config,
-        );
-      } catch {
-        config.pushEvent({
-          type: "stdout",
-          data: state.lineBuffer + "\n",
-          timestamp: Date.now(),
-        });
-      }
-      state.lineBuffer = "";
-    },
+    flushLineBuffer: (child) =>
+      doFlushLineBuffer(child, state, config),
     dispose: () => {
       doCancelInputClose(state);
       if (state.watchdogTimer) {
