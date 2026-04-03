@@ -139,14 +139,12 @@ export function wireStdout(
 
 export function wireStderr(
   child: ChildProcess,
-  id: string,
+  _id: string,
   _interactionLog: InteractionLog,
   _pushEvent: (evt: TerminalEvent) => void,
-  state?: InitialChildState,
+  state: InitialChildState,
 ): void {
-  if (state) {
-    state.runtime.wireStderr(child);
-  }
+  state.runtime.wireStderr(child);
 }
 
 // ─── Close / Error handlers ─────────────────────────

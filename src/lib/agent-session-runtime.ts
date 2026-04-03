@@ -64,6 +64,7 @@ export interface SessionRuntimeState {
   lineBuffer: string;
   stdinClosed: boolean;
   closeInputTimer: NodeJS.Timeout | null;
+  watchdogTimer: NodeJS.Timeout | null;
   autoAnsweredToolUseIds: Set<string>;
   resultObserved: boolean;
   exitReason: SessionExitReason | null;
@@ -87,10 +88,6 @@ export interface AgentSessionRuntime {
   cancelInputClose(): void;
   flushLineBuffer(child: ChildProcess): void;
   dispose(): void;
-  terminateProcessGroup(
-    child: ChildProcess,
-    delayMs?: number,
-  ): void;
 }
 
 // ── Stdin operations ───────────────────────────────────
@@ -213,6 +210,26 @@ function autoAnswerAskUser(
   }
 }
 
+// ── Watchdog ───────────────────────────────────────────
+
+function doResetWatchdog(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+): void {
+  const ms = config.capabilities.watchdogTimeoutMs;
+  if (ms == null) return;
+  if (state.watchdogTimer) {
+    clearTimeout(state.watchdogTimer);
+  }
+  state.watchdogTimer = setTimeout(() => {
+    state.watchdogTimer = null;
+    if (state.resultObserved) return;
+    state.exitReason = "timeout";
+    terminateProcessGroup(child);
+  }, ms);
+}
+
 // ── Event processing ───────────────────────────────────
 
 function handleResultEvent(
@@ -236,6 +253,7 @@ function processNormalizedEvent(
   config: SessionRuntimeConfig,
 ): void {
   state.lastNormalizedEvent = obj;
+  doResetWatchdog(child, state, config);
   autoAnswerAskUser(child, obj, state, config);
   if (obj.type === "result") {
     handleResultEvent(child, state, config);
@@ -283,9 +301,9 @@ function processLine(
 
 // ── Process termination ────────────────────────────────
 
-function doTerminateProcessGroup(
+export function terminateProcessGroup(
   child: ChildProcess,
-  delayMs: number,
+  delayMs = 5000,
 ): void {
   const pid = child.pid;
   try {
@@ -315,6 +333,7 @@ export function createSessionRuntime(
     lineBuffer: "",
     stdinClosed: !config.capabilities.interactive,
     closeInputTimer: null,
+    watchdogTimer: null,
     autoAnsweredToolUseIds: new Set(),
     resultObserved: false,
     exitReason: null,
@@ -325,6 +344,7 @@ export function createSessionRuntime(
     state,
     config,
     wireStdout: (child) => {
+      doResetWatchdog(child, state, config);
       child.stdout?.on("data", (chunk: Buffer) => {
         const text = chunk.toString();
         config.interactionLog.logStdout(text);
@@ -398,11 +418,11 @@ export function createSessionRuntime(
     },
     dispose: () => {
       doCancelInputClose(state);
+      if (state.watchdogTimer) {
+        clearTimeout(state.watchdogTimer);
+        state.watchdogTimer = null;
+      }
       state.stdinClosed = true;
     },
-    terminateProcessGroup: (child, delayMs) =>
-      doTerminateProcessGroup(
-        child, delayMs ?? 5000,
-      ),
   };
 }

@@ -32,6 +32,9 @@ import {
   spawnInitialChild,
 } from "@/lib/terminal-manager-initial-child";
 import {
+  terminateProcessGroup,
+} from "@/lib/agent-session-runtime";
+import {
   getTerminalSessions,
 } from "@/lib/terminal-session-registry";
 import type {
@@ -446,29 +449,3 @@ export function abortSession(id: string): boolean {
   return true;
 }
 
-/**
- * Terminate a child process group with
- * graceful SIGTERM then forced SIGKILL.
- */
-function terminateProcessGroup(
-  proc: import("node:child_process").ChildProcess,
-  delayMs = 5000,
-): void {
-  const pid = proc.pid;
-  try {
-    if (pid) process.kill(-pid, "SIGTERM");
-  } catch {
-    try {
-      proc.kill("SIGTERM");
-    } catch { /* already dead */ }
-  }
-  setTimeout(() => {
-    try {
-      if (pid) process.kill(-pid, "SIGKILL");
-    } catch {
-      try {
-        proc.kill("SIGKILL");
-      } catch { /* already dead */ }
-    }
-  }, delayMs);
-}
