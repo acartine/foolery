@@ -9,6 +9,8 @@ Project documentation for Foolery.
 - **`API.md`** — REST API reference for agent clients (beats, waves, terminals, orchestration)
 - **`SETTINGS.md`** — Settings schema and configuration reference
 - **`backend-extension-guide.md`** — How to add a new `BackendPort` implementation
+- **`interactive-agent-session-protocol.md`** — Canonical contract for interactive
+  agent session integrations
 - **`BEATS_DOLT_HOOKS.md`** — Dolt-native git hook setup for Beads sync
 - **`adr-knots-compatibility.md`** — Architecture decision record for Knots compatibility layer
 - **`FOOLERY_AGENT_MEMORY_CONTRACT.md`** — Contract for agent memory manager integration

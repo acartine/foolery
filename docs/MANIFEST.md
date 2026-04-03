@@ -497,7 +497,9 @@ foolery/
 │   └── stories/              # Storybook stories
 ├── .storybook/               # Storybook configuration
 ├── docs/                     # Documentation
-│   └── MANIFEST.md          # This file
+│   ├── MANIFEST.md           # This file
+│   └── interactive-agent-session-protocol.md
+│                             # Interactive agent session contract
 ├── public/                   # Static assets
 ├── package.json
 ├── tsconfig.json
