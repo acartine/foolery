@@ -112,6 +112,19 @@ export function buildOpenCodeInteractiveArgs(
   return { command, args };
 }
 
+/** Build CLI args for interactive Gemini (ACP). */
+export function buildGeminiInteractiveArgs(
+  agent: RegisteredAgent | AgentTarget,
+): PromptModeArgs {
+  const command =
+    "command" in agent &&
+    typeof agent.command === "string"
+      ? agent.command : "gemini";
+  const args = ["--acp", "--yolo"];
+  if (agent.model) args.push("-m", agent.model);
+  return { command, args };
+}
+
 /**
  * Build CLI args for a one-shot prompt invocation (orchestration / breakdown).
  *

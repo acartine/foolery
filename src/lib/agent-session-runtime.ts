@@ -35,6 +35,9 @@ import type {
 import type {
   OpenCodeHttpSession,
 } from "@/lib/opencode-http-session";
+import type {
+  GeminiAcpSession,
+} from "@/lib/gemini-acp-session";
 
 // ── Exit reason ────────────────────────────────────────
 
@@ -73,6 +76,11 @@ export interface SessionRuntimeConfig {
    * http-server transport.
    */
   httpSession?: OpenCodeHttpSession;
+  /**
+   * Optional Gemini ACP session for
+   * acp-stdio transport.
+   */
+  acpSession?: GeminiAcpSession;
 }
 
 // ── Runtime state ──────────────────────────────────────
@@ -120,18 +128,13 @@ export interface AgentSessionRuntime {
 function doCloseInput(
   child: ChildProcess,
   state: SessionRuntimeState,
-  cancelFn: () => void,
-  jsonrpcSession?: CodexJsonRpcSession,
-  httpSession?: OpenCodeHttpSession,
+  config: SessionRuntimeConfig,
 ): void {
   if (state.stdinClosed) return;
-  cancelFn();
-  if (jsonrpcSession) {
-    jsonrpcSession.interruptTurn(child);
-  }
-  if (httpSession) {
-    httpSession.interruptTurn(child);
-  }
+  doCancelInputClose(state);
+  config.jsonrpcSession?.interruptTurn(child);
+  config.httpSession?.interruptTurn(child);
+  config.acpSession?.interruptTurn(child);
   state.stdinClosed = true;
   child.stdin?.end();
 }
@@ -147,17 +150,11 @@ function doCancelInputClose(
 function doScheduleInputClose(
   child: ChildProcess,
   state: SessionRuntimeState,
-  jsonrpcSession?: CodexJsonRpcSession,
-  httpSession?: OpenCodeHttpSession,
+  config: SessionRuntimeConfig,
 ): void {
   doCancelInputClose(state);
   state.closeInputTimer = setTimeout(
-    () => doCloseInput(
-      child, state,
-      () => doCancelInputClose(state),
-      jsonrpcSession,
-      httpSession,
-    ),
+    () => doCloseInput(child, state, config),
     INPUT_CLOSE_GRACE_MS,
   );
 }
@@ -206,6 +203,19 @@ function doSendUserTurn(
   if (config.jsonrpcSession) {
     const sent =
       config.jsonrpcSession.startTurn(child, text);
+    if (sent) {
+      resetForNewTurn();
+      config.interactionLog.logPrompt(
+        text, { source },
+      );
+    }
+    return sent;
+  }
+
+  // ACP transport: use startTurn()
+  if (config.acpSession) {
+    const sent =
+      config.acpSession.startTurn(child, text);
     if (sent) {
       resetForNewTurn();
       config.interactionLog.logPrompt(
@@ -320,11 +330,7 @@ function handleResultEvent(
   const followUpSent =
     config.onResult?.() ?? false;
   if (!followUpSent) {
-    doScheduleInputClose(
-      child, state,
-      config.jsonrpcSession,
-      config.httpSession,
-    );
+    doScheduleInputClose(child, state, config);
   }
 }
 
@@ -357,12 +363,12 @@ function processLine(
   try {
     const raw = JSON.parse(line) as JsonObject;
 
-    // JSON-RPC transport: translate first, then
-    // normalize with the standard Codex normalizer
-    if (config.jsonrpcSession) {
-      const translated =
-        config.jsonrpcSession.processLine(raw);
-      if (!translated) return; // skip noise
+    // Session transports: translate, then normalize
+    const session =
+      config.jsonrpcSession ?? config.acpSession;
+    if (session) {
+      const translated = session.processLine(raw);
+      if (!translated) return;
       logTokenUsageForEvent(
         config.interactionLog,
         config.dialect,
@@ -547,18 +553,9 @@ export function createSessionRuntime(
         text, source ?? "manual",
       ),
     closeInput: (child) =>
-      doCloseInput(
-        child, state,
-        () => doCancelInputClose(state),
-        config.jsonrpcSession,
-        config.httpSession,
-      ),
+      doCloseInput(child, state, config),
     scheduleInputClose: (child) =>
-      doScheduleInputClose(
-        child, state,
-        config.jsonrpcSession,
-        config.httpSession,
-      ),
+      doScheduleInputClose(child, state, config),
     cancelInputClose: () =>
       doCancelInputClose(state),
     flushLineBuffer: (child) =>

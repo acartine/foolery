@@ -144,22 +144,40 @@ describe("resolveCapabilities: interactive", () => {
     );
   });
 
-  it("interactive flag ignored for unsupported dialects", () => {
+  it("gemini interactive uses acp-stdio", () => {
     const caps = resolveCapabilities("gemini", true);
-    expect(caps.interactive).toBe(false);
-    expect(caps.promptTransport).toBe("cli-arg");
+    expect(caps.interactive).toBe(true);
+    expect(caps.promptTransport).toBe("acp-stdio");
+    expect(caps.supportsFollowUp).toBe(true);
+    expect(caps.supportsAskUserAutoResponse).toBe(
+      false,
+    );
+    expect(caps.watchdogTimeoutMs).toBe(30_000);
+    expect(caps.stdinDrainPolicy).toBe(
+      "close-after-result",
+    );
+  });
+
+  it("interactive flag for claude returns base caps", () => {
+    // claude has no INTERACTIVE_PRESET entry; its
+    // base capabilities are already interactive.
+    const caps = resolveCapabilities("claude", true);
+    expect(caps.interactive).toBe(true);
+    expect(caps.promptTransport).toBe(
+      "stdin-stream-json",
+    );
   });
 });
 
 describe("supportsInteractive", () => {
-  it("returns true for codex, copilot, opencode", () => {
+  it("returns true for codex, copilot, opencode, gemini", () => {
     expect(supportsInteractive("codex")).toBe(true);
     expect(supportsInteractive("copilot")).toBe(true);
     expect(supportsInteractive("opencode")).toBe(true);
+    expect(supportsInteractive("gemini")).toBe(true);
   });
 
   it("returns false for other dialects", () => {
     expect(supportsInteractive("claude")).toBe(false);
-    expect(supportsInteractive("gemini")).toBe(false);
   });
 });

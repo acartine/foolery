@@ -14,6 +14,7 @@ import type { AgentDialect } from "@/lib/agent-adapter";
 export type PromptTransport =
   | "stdin-stream-json"
   | "jsonrpc-stdio"
+  | "acp-stdio"
   | "http-server"
   | "cli-arg";
 
@@ -139,6 +140,17 @@ const OPENCODE_INTERACTIVE: AgentSessionCapabilities = {
   watchdogTimeoutMs: 30_000,
 };
 
+/** Interactive Gemini capabilities (ACP mode). */
+const GEMINI_INTERACTIVE: AgentSessionCapabilities = {
+  interactive: true,
+  promptTransport: "acp-stdio",
+  supportsFollowUp: true,
+  supportsAskUserAutoResponse: false,
+  resultDetection: "status-result",
+  stdinDrainPolicy: "close-after-result",
+  watchdogTimeoutMs: 30_000,
+};
+
 /** Interactive presets keyed by dialect. */
 const INTERACTIVE_PRESETS: Partial<
   Record<AgentDialect, AgentSessionCapabilities>
@@ -146,6 +158,7 @@ const INTERACTIVE_PRESETS: Partial<
   codex: CODEX_INTERACTIVE,
   copilot: COPILOT_INTERACTIVE,
   opencode: OPENCODE_INTERACTIVE,
+  gemini: GEMINI_INTERACTIVE,
 };
 
 /**

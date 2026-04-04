@@ -12,6 +12,7 @@ import {
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
   buildOpenCodeInteractiveArgs,
+  buildGeminiInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -25,6 +26,9 @@ import {
 import {
   createOpenCodeHttpSession,
 } from "@/lib/opencode-http-session";
+import {
+  createGeminiAcpSession,
+} from "@/lib/gemini-acp-session";
 import {
   supportsAutoFollowUp,
 } from "@/lib/memory-manager-commands";
@@ -87,7 +91,6 @@ export function spawnInitialChild(
   let sessionFinished = false;
   let sessionAborted = false;
   entry.abort = () => { sessionAborted = true; };
-
   const finishSession = (exitCode: number) => {
     if (sessionFinished) return;
     sessionFinished = true;
@@ -98,7 +101,6 @@ export function spawnInitialChild(
       sessions,
     );
   };
-
   const dialect = resolveDialect(agent.command);
   const isTakeLoop =
     !prepared.effectiveParent && !customPrompt;
@@ -108,34 +110,29 @@ export function spawnInitialChild(
     dialect, preferInteractive,
   );
   const isInteractive = capabilities.interactive;
-  const isJsonRpc =
-    capabilities.promptTransport === "jsonrpc-stdio";
-  const isHttpServer =
-    capabilities.promptTransport === "http-server";
+  const pt = capabilities.promptTransport;
+  const isJsonRpc = pt === "jsonrpc-stdio";
+  const isHttpServer = pt === "http-server";
+  const isAcp = pt === "acp-stdio";
   const { agentCmd, args } = buildAgentArgs(
     agent, dialect, isInteractive,
-    isJsonRpc, isHttpServer, prompt,
+    isJsonRpc, isHttpServer, isAcp, prompt,
   );
-  const normalizeEvent =
-    createLineNormalizer(dialect);
-
+  const normalizeEvent = createLineNormalizer(dialect);
   const jsonrpcSession = isJsonRpc
     ? createCodexJsonRpcSession() : undefined;
-
+  const acpSession = isAcp
+    ? createGeminiAcpSession() : undefined;
   const takeLoopCtx = buildTakeLoopCtx(
     id, beatId, prepared, agent, agentInfo,
     entry, session, interactionLog, emitter,
     pushEvent, finishSession,
     () => sessionAborted,
   );
-
   const autoShipPrompt = buildAutoShipPrompt(
     isInteractive, customPrompt, prepared,
   );
   const sessionBeatIds = [beatId];
-
-  // HTTP session: deferred wiring via closures
-  // over InitialChildState (child/runtime set later)
   const httpSession = isHttpServer
     ? createOpenCodeHttpSession(
         (jsonLine) => {
@@ -154,28 +151,25 @@ export function spawnInitialChild(
         },
       )
     : undefined;
-
-  const state = buildInitialState(
+  const state = buildInitialState(autoShipPrompt, {
     id, dialect, capabilities, normalizeEvent,
-    pushEvent, interactionLog, sessionBeatIds,
-    autoShipPrompt, jsonrpcSession, httpSession,
-  );
-
+    pushEvent, interactionLog,
+    beatIds: sessionBeatIds,
+    jsonrpcSession, httpSession, acpSession,
+  });
   const child = spawnAndWire(
     agentCmd, args, prepared, isInteractive,
     id, beatId, isTakeLoop, sessionBeatIds,
     dialect, interactionLog, normalizeEvent,
     pushEvent, state, entry, finishSession,
-    agent, takeLoopCtx, jsonrpcSession,
+    agent, takeLoopCtx, jsonrpcSession, acpSession,
   );
-
   sendInitialPrompt(
     child, isInteractive,
-    isJsonRpc || isHttpServer, state,
+    isJsonRpc || isHttpServer || isAcp, state,
     interactionLog, session, entry, id, agent,
     prompt, sessions,
   );
-
   return session;
 }
 
@@ -206,6 +200,9 @@ function spawnAndWire(
   jsonrpcSession?: import(
     "@/lib/codex-jsonrpc-session"
   ).CodexJsonRpcSession,
+  acpSession?: import(
+    "@/lib/gemini-acp-session"
+  ).GeminiAcpSession,
 ): import("node:child_process").ChildProcess {
   const child = spawn(agentCmd, args, {
     cwd: prepared.resolvedRepoPath,
@@ -249,6 +246,9 @@ function spawnAndWire(
   if (jsonrpcSession) {
     jsonrpcSession.sendHandshake(child);
   }
+  if (acpSession) {
+    acpSession.sendHandshake(child);
+  }
 
   return child;
 }
@@ -256,40 +256,15 @@ function spawnAndWire(
 // ─── Small helpers ───────────────────────────────────
 
 function buildInitialState(
-  id: string,
-  dialect: import("@/lib/agent-adapter").AgentDialect,
-  capabilities: import(
-    "@/lib/agent-session-capabilities"
-  ).AgentSessionCapabilities,
-  normalizeEvent: ReturnType<
-    typeof createLineNormalizer
-  >,
-  pushEvent: (evt: TerminalEvent) => void,
-  interactionLog: InteractionLog,
-  beatIds: string[],
   autoShipPrompt: string | null,
-  jsonrpcSession?: import(
-    "@/lib/codex-jsonrpc-session"
-  ).CodexJsonRpcSession,
-  httpSession?: import(
-    "@/lib/opencode-http-session"
-  ).OpenCodeHttpSession,
+  runtimeConfig: import(
+    "@/lib/agent-session-runtime"
+  ).SessionRuntimeConfig,
 ): import(
   "@/lib/terminal-manager-initial-io"
 ).InitialChildState {
   return createInitialChildState(
-    autoShipPrompt,
-    {
-      id,
-      dialect,
-      capabilities,
-      normalizeEvent,
-      pushEvent,
-      interactionLog,
-      beatIds,
-      jsonrpcSession,
-      httpSession,
-    },
+    autoShipPrompt, runtimeConfig,
   );
 }
 
@@ -357,6 +332,7 @@ function buildAgentArgs(
   isInteractive: boolean,
   isJsonRpc: boolean,
   isHttpServer: boolean,
+  isAcp: boolean,
   prompt: string,
 ): { agentCmd: string; args: string[] } {
   let agentCmd: string;
@@ -368,6 +344,11 @@ function buildAgentArgs(
   } else if (isHttpServer) {
     const built =
       buildOpenCodeInteractiveArgs(agent);
+    agentCmd = built.command;
+    args = built.args;
+  } else if (isAcp) {
+    const built =
+      buildGeminiInteractiveArgs(agent);
     agentCmd = built.command;
     args = built.args;
   } else if (isInteractive && dialect === "copilot") {

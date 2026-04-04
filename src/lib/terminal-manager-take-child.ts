@@ -11,6 +11,7 @@ import {
   buildCodexInteractiveArgs,
   buildCopilotInteractiveArgs,
   buildOpenCodeInteractiveArgs,
+  buildGeminiInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -24,6 +25,9 @@ import {
 import {
   createOpenCodeHttpSession,
 } from "@/lib/opencode-http-session";
+import {
+  createGeminiAcpSession,
+} from "@/lib/gemini-acp-session";
 import {
   createSessionRuntime,
   type AgentSessionRuntime,
@@ -105,14 +109,13 @@ export function spawnTakeChild(
     effectiveDialect, preferInteractive,
   );
   const isInteractive = capabilities.interactive;
-  const isJsonRpc =
-    capabilities.promptTransport === "jsonrpc-stdio";
-  const isHttpServer =
-    capabilities.promptTransport === "http-server";
-
+  const pt = capabilities.promptTransport;
+  const isJsonRpc = pt === "jsonrpc-stdio";
+  const isHttpServer = pt === "http-server";
+  const isAcp = pt === "acp-stdio";
   const { cmd, args } = buildSpawnArgs(
     effectiveAgent, effectiveDialect,
-    isInteractive, isJsonRpc, isHttpServer,
+    isInteractive, isJsonRpc, isHttpServer, isAcp,
     takePrompt,
   );
   const normalizeEvent = createLineNormalizer(
@@ -121,13 +124,14 @@ export function spawnTakeChild(
 
   const jsonrpcSession = isJsonRpc
     ? createCodexJsonRpcSession() : undefined;
+  const acpSession = isAcp
+    ? createGeminiAcpSession() : undefined;
   const httpRefs: DeferredHttpRefs = {
     childRef: null, runtimeRef: null,
   };
   const httpSession = createDeferredHttpSession(
     isHttpServer, httpRefs, ctx.pushEvent,
   );
-
   const runtime = createSessionRuntime({
     id: ctx.id,
     dialect: effectiveDialect,
@@ -138,6 +142,7 @@ export function spawnTakeChild(
     beatIds: [ctx.beatId],
     jsonrpcSession,
     httpSession,
+    acpSession,
   });
   httpRefs.runtimeRef = runtime;
 
@@ -171,9 +176,8 @@ export function spawnTakeChild(
     ctx, takeChild, runtime,
     effectiveAgent, effectiveDialect, beatState,
   );
-  if (jsonrpcSession) {
-    jsonrpcSession.sendHandshake(takeChild);
-  }
+  jsonrpcSession?.sendHandshake(takeChild);
+  acpSession?.sendHandshake(takeChild);
   logAndSendPrompt(
     ctx, takeChild, runtime,
     isInteractive, effectiveDialect,
@@ -189,6 +193,7 @@ function buildSpawnArgs(
   isInteractive: boolean,
   isJsonRpc: boolean,
   isHttpServer: boolean,
+  isAcp: boolean,
   takePrompt: string,
 ): { cmd: string; args: string[] } {
   let cmd: string;
@@ -200,6 +205,11 @@ function buildSpawnArgs(
   } else if (isHttpServer) {
     const built =
       buildOpenCodeInteractiveArgs(agent);
+    cmd = built.command;
+    args = built.args;
+  } else if (isAcp) {
+    const built =
+      buildGeminiInteractiveArgs(agent);
     cmd = built.command;
     args = built.args;
   } else if (isInteractive && dialect === "copilot") {
