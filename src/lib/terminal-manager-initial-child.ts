@@ -6,7 +6,6 @@
 import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import type { InteractionLog } from "@/lib/interaction-logger";
-import { regroomAncestors } from "@/lib/regroom";
 import {
   buildPromptModeArgs,
   buildCodexInteractiveArgs,
@@ -36,14 +35,14 @@ import type {
   TerminalSession,
   TerminalEvent,
 } from "@/lib/types";
-import {
-  updateMessageTypeIndexFromSession,
-} from "@/lib/agent-message-type-index";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   agentDisplayName,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
+import {
+  finishSessionImpl,
+} from "@/lib/terminal-manager-initial-finish";
 import {
   buildSingleBeatCompletionFollowUp,
   buildWaveCompletionFollowUp,
@@ -66,9 +65,41 @@ import {
   wireError,
 } from "@/lib/terminal-manager-initial-io";
 
-// ─── Constants ───────────────────────────────────────
+// ─── Session lifecycle factory ──────────────────────
 
-const CLEANUP_DELAY_MS = 5 * 60 * 1000;
+function createSessionLifecycle(
+  entry: SessionEntry,
+  session: TerminalSession,
+  interactionLog: InteractionLog,
+  pushEvent: (evt: TerminalEvent) => void,
+  emitter: EventEmitter,
+  buffer: TerminalEvent[],
+  id: string,
+  beatId: string,
+  prepared: PreparedTargets,
+  agent: CliAgentTarget,
+  sessions: Map<string, SessionEntry>,
+): {
+  finishSession: (exitCode: number) => void;
+  sessionAborted: () => boolean;
+} {
+  let finished = false;
+  let aborted = false;
+  entry.abort = () => { aborted = true; };
+  return {
+    finishSession: (exitCode: number) => {
+      if (finished) return;
+      finished = true;
+      finishSessionImpl(
+        exitCode, session, aborted,
+        interactionLog, pushEvent, entry,
+        emitter, buffer, id, beatId,
+        prepared, agent, sessions,
+      );
+    },
+    sessionAborted: () => aborted,
+  };
+}
 
 // ─── spawnInitialChild (entry point) ─────────────────
 
@@ -88,19 +119,12 @@ export function spawnInitialChild(
   customPrompt: string | undefined,
   sessions: Map<string, SessionEntry>,
 ): TerminalSession {
-  let sessionFinished = false;
-  let sessionAborted = false;
-  entry.abort = () => { sessionAborted = true; };
-  const finishSession = (exitCode: number) => {
-    if (sessionFinished) return;
-    sessionFinished = true;
-    finishSessionImpl(
-      exitCode, session, sessionAborted,
-      interactionLog, pushEvent, entry, emitter,
-      buffer, id, beatId, prepared, agent,
-      sessions,
+  const { finishSession, sessionAborted } =
+    createSessionLifecycle(
+      entry, session, interactionLog, pushEvent,
+      emitter, buffer, id, beatId, prepared,
+      agent, sessions,
     );
-  };
   const dialect = resolveDialect(agent.command);
   const isTakeLoop =
     !prepared.effectiveParent && !customPrompt;
@@ -122,12 +146,14 @@ export function spawnInitialChild(
   const jsonrpcSession = isJsonRpc
     ? createCodexJsonRpcSession() : undefined;
   const acpSession = isAcp
-    ? createGeminiAcpSession() : undefined;
+    ? createGeminiAcpSession(
+        prepared.resolvedRepoPath,
+      )
+    : undefined;
   const takeLoopCtx = buildTakeLoopCtx(
     id, beatId, prepared, agent, agentInfo,
     entry, session, interactionLog, emitter,
-    pushEvent, finishSession,
-    () => sessionAborted,
+    pushEvent, finishSession, sessionAborted,
   );
   const autoShipPrompt = buildAutoShipPrompt(
     isInteractive, customPrompt, prepared,
@@ -390,90 +416,6 @@ function logAgentSpawn(
     `[terminal-manager]   pid: ` +
     `${child.pid ?? "failed to spawn"}`,
   );
-}
-
-// ─── finishSession implementation ────────────────────
-
-function finishSessionImpl(
-  exitCode: number,
-  session: TerminalSession,
-  sessionAborted: boolean,
-  interactionLog: InteractionLog,
-  pushEvent: (evt: TerminalEvent) => void,
-  entry: SessionEntry,
-  emitter: EventEmitter,
-  buffer: TerminalEvent[],
-  id: string,
-  beatId: string,
-  prepared: PreparedTargets,
-  agent: CliAgentTarget,
-  sessions: Map<string, SessionEntry>,
-): void {
-  session.exitCode = exitCode;
-  session.status = sessionAborted
-    ? "aborted"
-    : exitCode === 0 ? "completed" : "error";
-  interactionLog.logEnd(exitCode, session.status);
-  pushEvent({
-    type: "exit",
-    data: String(exitCode),
-    timestamp: Date.now(),
-  });
-  entry.process = null;
-  entry.abort = undefined;
-
-  if (exitCode === 0) {
-    handleSuccessCleanup(
-      beatId, prepared, interactionLog, agent,
-    );
-  }
-
-  entry.releaseKnotsLease?.(
-    sessionAborted
-      ? "session_aborted"
-      : exitCode === 0
-        ? "session_completed"
-        : "session_error",
-    exitCode === 0 ? "success" : "warning",
-    { exitCode, finalStatus: session.status },
-  );
-
-  setTimeout(
-    () => { emitter.removeAllListeners(); }, 2000,
-  );
-  setTimeout(() => {
-    buffer.length = 0;
-    sessions.delete(id);
-  }, CLEANUP_DELAY_MS);
-}
-
-function handleSuccessCleanup(
-  beatId: string,
-  prepared: PreparedTargets,
-  interactionLog: InteractionLog,
-  agent: CliAgentTarget,
-): void {
-  regroomAncestors(
-    beatId, prepared.resolvedRepoPath,
-  ).catch((err) => {
-    console.error(
-      `[terminal-manager] regroom failed ` +
-      `for ${beatId}:`, err,
-    );
-  });
-  const logFile = interactionLog.filePath;
-  if (logFile) {
-    updateMessageTypeIndexFromSession(
-      logFile,
-      agentDisplayName(agent),
-      agent.model,
-    ).catch((err) => {
-      console.error(
-        `[terminal-manager] message type index ` +
-        `update failed:`, err,
-      );
-    });
-  }
 }
 
 // ─── sendInitialPrompt ──────────────────────────────

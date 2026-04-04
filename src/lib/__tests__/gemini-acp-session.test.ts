@@ -2,7 +2,8 @@
  * Unit tests for the Gemini ACP session adapter.
  *
  * Covers: handshake protocol, session readiness,
- * prompt queuing, session/cancel, and error handling.
+ * prompt queuing, session/cancel, and event
+ * translation.
  */
 import {
   describe, it, expect, vi,
@@ -20,86 +21,81 @@ function makeChild(): ChildProcess {
   const stderr = new PassThrough();
   const stdin = new PassThrough();
   return {
-    stdout,
-    stderr,
-    stdin,
+    stdout, stderr, stdin,
     pid: 99999,
     kill: vi.fn(),
     on: vi.fn(),
   } as unknown as ChildProcess;
 }
 
+const CWD = "/tmp";
+
 // ── Handshake ────────────────────────────────────────
 
 describe("gemini ACP: handshake", () => {
   it("sends initialize and session/new", () => {
-    const acpSession = createGeminiAcpSession();
+    const session = createGeminiAcpSession(CWD);
     const child = makeChild();
-    const writeSpy = vi.spyOn(child.stdin!, "write");
+    const spy = vi.spyOn(child.stdin!, "write");
 
-    acpSession.sendHandshake(child);
+    session.sendHandshake(child);
 
-    expect(writeSpy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
     const init = JSON.parse(
-      writeSpy.mock.calls[0][0] as string,
+      spy.mock.calls[0][0] as string,
     );
     expect(init.method).toBe("initialize");
-    expect(init.jsonrpc).toBe("2.0");
     expect(init.params.protocolVersion).toBe(1);
 
-    const newSession = JSON.parse(
-      writeSpy.mock.calls[1][0] as string,
+    const newSess = JSON.parse(
+      spy.mock.calls[1][0] as string,
     );
-    expect(newSession.method).toBe("session/new");
+    expect(newSess.method).toBe("session/new");
+    expect(newSess.params.cwd).toBe(CWD);
   });
 
   it("becomes ready after session/new response", () => {
-    const acpSession = createGeminiAcpSession();
-    expect(acpSession.ready).toBe(false);
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    expect(session.ready).toBe(false);
 
-    acpSession.processLine({
-      id: 1,
-      result: { protocolVersion: 1 },
+    session.processLine(child, {
+      id: 1, result: { protocolVersion: 1 },
     });
-    expect(acpSession.ready).toBe(false);
+    expect(session.ready).toBe(false);
 
-    acpSession.processLine({
-      id: 2,
-      result: { sessionId: "sess-123" },
+    session.processLine(child, {
+      id: 2, result: { sessionId: "s-123" },
     });
-    expect(acpSession.ready).toBe(true);
-    expect(acpSession.sessionId).toBe("sess-123");
+    expect(session.ready).toBe(true);
+    expect(session.sessionId).toBe("s-123");
   });
 
   it("queues prompt until session is ready", () => {
-    const acpSession = createGeminiAcpSession();
+    const session = createGeminiAcpSession(CWD);
     const child = makeChild();
-    const writeSpy = vi.spyOn(child.stdin!, "write");
+    const spy = vi.spyOn(child.stdin!, "write");
 
-    acpSession.sendHandshake(child);
-    writeSpy.mockClear();
+    session.sendHandshake(child);
+    spy.mockClear();
 
-    const sent = acpSession.startTurn(
-      child, "hello",
-    );
+    const sent = session.startTurn(child, "hello");
     expect(sent).toBe(true);
-    expect(writeSpy).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
 
-    acpSession.processLine({
-      id: 1,
-      result: { protocolVersion: 1 },
+    session.processLine(child, {
+      id: 1, result: { protocolVersion: 1 },
     });
-    acpSession.processLine({
-      id: 2,
-      result: { sessionId: "sess-abc" },
+    session.processLine(child, {
+      id: 2, result: { sessionId: "s-abc" },
     });
 
-    expect(writeSpy).toHaveBeenCalledOnce();
+    expect(spy).toHaveBeenCalledOnce();
     const prompt = JSON.parse(
-      writeSpy.mock.calls[0][0] as string,
+      spy.mock.calls[0][0] as string,
     );
     expect(prompt.method).toBe("session/prompt");
-    expect(prompt.params.sessionId).toBe("sess-abc");
+    expect(prompt.params.sessionId).toBe("s-abc");
     expect(prompt.params.prompt).toEqual([
       { type: "text", text: "hello" },
     ]);
@@ -109,42 +105,40 @@ describe("gemini ACP: handshake", () => {
 // ── Interrupt ────────────────────────────────────────
 
 describe("gemini ACP: interrupt", () => {
-  it("sends session/cancel", () => {
-    const acpSession = createGeminiAcpSession();
+  it("sends session/cancel notification", () => {
+    const session = createGeminiAcpSession(CWD);
     const child = makeChild();
-    const writeSpy = vi.spyOn(child.stdin!, "write");
+    const spy = vi.spyOn(child.stdin!, "write");
 
-    acpSession.sendHandshake(child);
-    acpSession.processLine({
+    session.sendHandshake(child);
+    session.processLine(child, {
       id: 1, result: { protocolVersion: 1 },
     });
-    acpSession.processLine({
+    session.processLine(child, {
       id: 2, result: { sessionId: "s1" },
     });
 
-    const interrupted =
-      acpSession.interruptTurn(child);
-    expect(interrupted).toBe(true);
+    expect(session.interruptTurn(child)).toBe(true);
 
-    const cancelCall = writeSpy.mock.calls
+    const cancel = spy.mock.calls
       .map(([arg]) => {
         try {
           return JSON.parse(arg as string);
         } catch { return null; }
       })
       .find(
-        (msg) => msg?.method === "session/cancel",
+        (m) => m?.method === "session/cancel",
       );
-    expect(cancelCall).toBeTruthy();
-    expect(cancelCall.params.sessionId).toBe("s1");
+    expect(cancel).toBeTruthy();
+    expect(cancel.params.sessionId).toBe("s1");
+    // cancel is a notification — no id
+    expect(cancel.id).toBeUndefined();
   });
 
   it("returns false without session", () => {
-    const acpSession = createGeminiAcpSession();
+    const session = createGeminiAcpSession(CWD);
     const child = makeChild();
-    expect(
-      acpSession.interruptTurn(child),
-    ).toBe(false);
+    expect(session.interruptTurn(child)).toBe(false);
   });
 });
 
@@ -152,8 +146,9 @@ describe("gemini ACP: interrupt", () => {
 
 describe("gemini ACP: event translation", () => {
   it("translates agent_message_chunk", () => {
-    const acpSession = createGeminiAcpSession();
-    const result = acpSession.processLine({
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    const result = session.processLine(child, {
       method: "session/update",
       params: {
         sessionId: "s1",
@@ -164,16 +159,15 @@ describe("gemini ACP: event translation", () => {
       },
     });
     expect(result).toEqual({
-      type: "message",
-      role: "assistant",
-      content: "hi",
-      delta: true,
+      type: "message", role: "assistant",
+      content: "hi", delta: true,
     });
   });
 
   it("translates tool_call", () => {
-    const acpSession = createGeminiAcpSession();
-    const result = acpSession.processLine({
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    const result = session.processLine(child, {
       method: "session/update",
       params: {
         sessionId: "s1",
@@ -189,51 +183,49 @@ describe("gemini ACP: event translation", () => {
   });
 
   it("translates prompt response to result", () => {
-    const acpSession = createGeminiAcpSession();
-    acpSession.processLine({
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    session.processLine(child, {
       id: 1, result: { protocolVersion: 1 },
     });
-    acpSession.processLine({
+    session.processLine(child, {
       id: 2, result: { sessionId: "s1" },
     });
-    const child = makeChild();
-    acpSession.startTurn(child, "go");
+    session.startTurn(child, "go");
 
-    const result = acpSession.processLine({
+    const result = session.processLine(child, {
       id: 3,
       result: { stopReason: "end_turn" },
     });
     expect(result).toEqual({
-      type: "result",
-      status: "success",
+      type: "result", status: "success",
     });
   });
 
-  it("translates error response to error result", () => {
-    const acpSession = createGeminiAcpSession();
-    acpSession.processLine({
+  it("translates error to error result", () => {
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    session.processLine(child, {
       id: 1, result: { protocolVersion: 1 },
     });
-    acpSession.processLine({
+    session.processLine(child, {
       id: 2, result: { sessionId: "s1" },
     });
-    const child = makeChild();
-    acpSession.startTurn(child, "fail");
+    session.startTurn(child, "fail");
 
-    const result = acpSession.processLine({
+    const result = session.processLine(child, {
       id: 3,
       error: { code: 429, message: "Rate limit" },
     });
     expect(result).toEqual({
-      type: "result",
-      status: "error",
-      error: "Rate limit",
+      type: "result", status: "error",
     });
   });
 
   it("skips unknown notifications", () => {
-    const acpSession = createGeminiAcpSession();
-    const result = acpSession.processLine({
+    const session = createGeminiAcpSession(CWD);
+    const child = makeChild();
+    const result = session.processLine(child, {
       method: "unknown/method",
       params: {},
     });

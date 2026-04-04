@@ -1,45 +1,37 @@
 /**
- * Gemini ACP (Agent Client Protocol) session client.
+ * Gemini ACP (Agent Client Protocol) session over
+ * JSON-RPC stdio.
  *
- * Wraps `gemini --acp` stdio NDJSON protocol to provide
- * multi-turn interactive sessions. Handles:
- *   1. Initialize handshake (protocol version 1)
- *   2. Session creation via session/new
- *   3. Prompt delivery via session/prompt
- *   4. Turn cancellation via session/cancel
- *   5. Translation of ACP session/update notifications
- *      → flat JSONL events for the Gemini normalizer
+ * Protocol flow:
+ *   1. initialize → agent capabilities
+ *   2. session/new → sessionId
+ *   3. session/prompt → updates + stopReason
+ *   4. session/cancel → abort current turn
+ *
+ * ACP delegates file I/O and terminal ops to the
+ * client. This session handles those requests:
+ *   - fs/read_text_file, fs/write_text_file
+ *   - terminal/* (via gemini-acp-terminals)
+ *   - session/request_permission (auto-approve)
  */
 import type { ChildProcess } from "node:child_process";
+import { readFile, writeFile } from "node:fs/promises";
+import type { TerminalStore } from "@/lib/gemini-acp-terminals";
+import {
+  handleTermCreate,
+  handleTermOutput,
+  handleTermWait,
+  handleTermKill,
+  handleTermRelease,
+} from "@/lib/gemini-acp-terminals";
 
-// ── Types ─────────────────────────────────────────────
-
-interface AcpRequest {
-  jsonrpc: "2.0";
-  id: number;
-  method: string;
-  params: Record<string, unknown>;
-}
-
-interface AcpResponse {
-  id: number;
-  result: Record<string, unknown>;
-}
-
-interface AcpNotification {
-  method: string;
-  params: Record<string, unknown>;
-}
-
-interface AcpError {
-  id: number;
-  error: { code: number; message: string };
-}
+// ── Types ─────────────────────────────────────────
 
 export interface GeminiAcpSession {
   readonly sessionId: string | null;
   readonly ready: boolean;
   processLine(
+    host: ChildProcess,
     parsed: Record<string, unknown>,
   ): Record<string, unknown> | null;
   sendHandshake(child: ChildProcess): void;
@@ -49,28 +41,27 @@ export interface GeminiAcpSession {
   interruptTurn(child: ChildProcess): boolean;
 }
 
-// ── Internal state ────────────────────────────────────
-
-interface SessionState {
+interface AcpState {
   nextId: number;
   sessionId: string | null;
   ready: boolean;
-  activePromptRequestId: number | null;
+  activePromptId: number | null;
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
+  termStore: TerminalStore;
 }
 
-// ── Constants ─────────────────────────────────────────
+// ── Constants ─────────────────────────────────────
 
-const INITIALIZE_ID = 1;
-const SESSION_NEW_ID = 2;
+const INIT_ID = 1;
+const NEW_SESSION_ID = 2;
 
-// ── Low-level I/O ─────────────────────────────────────
+// ── Low-level I/O ─────────────────────────────────
 
-function writeRequest(
+function writeJson(
   child: ChildProcess,
-  req: AcpRequest,
+  obj: Record<string, unknown>,
 ): boolean {
   if (
     !child.stdin ||
@@ -80,45 +71,60 @@ function writeRequest(
     return false;
   }
   try {
-    child.stdin.write(JSON.stringify(req) + "\n");
+    child.stdin.write(JSON.stringify(obj) + "\n");
     return true;
   } catch {
     return false;
   }
 }
 
-// ── Response handling ─────────────────────────────────
-
-function handleResponse(
-  msg: AcpResponse,
-  s: SessionState,
+function respond(
+  host: ChildProcess,
+  id: unknown,
+  result: Record<string, unknown>,
 ): void {
-  if (msg.id === INITIALIZE_ID) return;
-  if (msg.id === SESSION_NEW_ID) {
-    const sid =
-      typeof msg.result.sessionId === "string"
-        ? msg.result.sessionId
-        : null;
-    if (sid) {
-      s.sessionId = sid;
+  writeJson(host, { jsonrpc: "2.0", id, result });
+}
+
+function respondError(
+  host: ChildProcess,
+  id: unknown,
+  code: number,
+  message: string,
+): void {
+  writeJson(host, {
+    jsonrpc: "2.0", id,
+    error: { code, message },
+  });
+}
+
+// ── Handshake response handling ───────────────────
+
+function handleHandshake(
+  parsed: Record<string, unknown>,
+  s: AcpState,
+): void {
+  const id = parsed.id;
+  const result =
+    parsed.result as
+      Record<string, unknown> | undefined;
+  if (id === INIT_ID) return;
+  if (id === NEW_SESSION_ID && result) {
+    if (typeof result.sessionId === "string") {
+      s.sessionId = result.sessionId;
       s.ready = true;
-      flushPendingTurn(s);
+      flushPending(s);
     }
-    return;
-  }
-  // prompt response: turn completed
-  if (msg.id === s.activePromptRequestId) {
-    s.activePromptRequestId = null;
   }
 }
 
-function flushPendingTurn(s: SessionState): void {
+function flushPending(s: AcpState): void {
   if (!s.pendingTurn || !s.sessionId) return;
   const { child, prompt } = s.pendingTurn;
   s.pendingTurn = null;
   const id = s.nextId++;
-  s.activePromptRequestId = id;
-  writeRequest(child, {
+  s.activePromptId = id;
+  writeJson(child, {
     jsonrpc: "2.0",
     id,
     method: "session/prompt",
@@ -129,40 +135,55 @@ function flushPendingTurn(s: SessionState): void {
   });
 }
 
-// ── Notification translation ──────────────────────────
+// ── Notification translation ──────────────────────
 
-function translateNotification(
-  msg: AcpNotification,
+function translateNotif(
+  method: string,
+  params: Record<string, unknown>,
 ): Record<string, unknown> | null {
-  if (msg.method !== "session/update") return null;
-  const params = msg.params;
+  if (method !== "session/update") return null;
   const update =
     params.update as
       Record<string, unknown> | undefined;
   if (!update) return null;
-  const kind =
-    typeof update.sessionUpdate === "string"
-      ? update.sessionUpdate
-      : null;
-  if (!kind) return null;
+  const kind = update.sessionUpdate;
 
   if (
     kind === "agent_message_chunk" ||
     kind === "agent_thought_chunk"
   ) {
-    return translateMessageChunk(update);
+    return translateChunk(update);
   }
   if (kind === "tool_call") {
-    return translateToolCall(update);
+    const name =
+      typeof update.name === "string"
+        ? update.name
+        : typeof update.title === "string"
+          ? update.title : "tool";
+    return {
+      type: "message", role: "assistant",
+      content: `[tool] ${name}`, delta: true,
+    };
   }
   if (kind === "tool_call_update") {
-    return translateToolCallUpdate(update);
+    const status =
+      typeof update.status === "string"
+        ? update.status : null;
+    if (status === "completed" || status === "failed") {
+      const title =
+        typeof update.title === "string"
+          ? update.title : "";
+      return {
+        type: "message", role: "assistant",
+        content: `[tool:${status}] ${title}`,
+        delta: true,
+      };
+    }
   }
-
   return null;
 }
 
-function translateMessageChunk(
+function translateChunk(
   update: Record<string, unknown>,
 ): Record<string, unknown> | null {
   const content =
@@ -171,155 +192,182 @@ function translateMessageChunk(
   if (!content) return null;
   const text =
     typeof content.text === "string"
-      ? content.text
-      : "";
+      ? content.text : "";
   if (!text) return null;
   return {
-    type: "message",
-    role: "assistant",
-    content: text,
-    delta: true,
+    type: "message", role: "assistant",
+    content: text, delta: true,
   };
 }
 
-function translateToolCall(
-  update: Record<string, unknown>,
-): Record<string, unknown> | null {
-  const title =
-    typeof update.title === "string"
-      ? update.title
-      : "";
-  return {
-    type: "message",
-    role: "assistant",
-    content: `[tool] ${title}`,
-    delta: true,
-  };
+// ── Client-side request dispatch ──────────────────
+
+function dispatch(
+  host: ChildProcess,
+  method: string,
+  id: unknown,
+  params: Record<string, unknown>,
+  s: AcpState,
+): void {
+  switch (method) {
+    case "session/request_permission":
+      handlePermission(host, id, params);
+      break;
+    case "fs/read_text_file":
+      handleFsRead(host, id, params);
+      break;
+    case "fs/write_text_file":
+      handleFsWrite(host, id, params);
+      break;
+    case "terminal/create":
+      handleTermCreate(
+        host, id, params,
+        s.termStore, respond,
+      );
+      break;
+    case "terminal/output":
+      handleTermOutput(
+        host, id, params,
+        s.termStore, respond, respondError,
+      );
+      break;
+    case "terminal/wait_for_exit":
+      handleTermWait(
+        host, id, params,
+        s.termStore, respond, respondError,
+      );
+      break;
+    case "terminal/kill":
+      handleTermKill(
+        host, id, params,
+        s.termStore, respond, respondError,
+      );
+      break;
+    case "terminal/release":
+      handleTermRelease(
+        host, id, params,
+        s.termStore, respond,
+      );
+      break;
+    default:
+      respondError(
+        host, id, -32601,
+        `Not implemented: ${method}`,
+      );
+  }
 }
 
-function translateToolCallUpdate(
-  update: Record<string, unknown>,
-): Record<string, unknown> | null {
-  const status =
-    typeof update.status === "string"
-      ? update.status
-      : null;
-  if (status === "completed" || status === "failed") {
-    const title =
-      typeof update.title === "string"
-        ? update.title
-        : "";
-    return {
-      type: "message",
-      role: "assistant",
-      content: `[tool:${status}] ${title}`,
-      delta: true,
-    };
-  }
-  return null;
+function handlePermission(
+  host: ChildProcess,
+  id: unknown,
+  params: Record<string, unknown>,
+): void {
+  const options = params.options as
+    Array<Record<string, unknown>> | undefined;
+  const allowOpt = options?.find(
+    (o) => o.kind === "allow_once",
+  );
+  const optionId =
+    typeof allowOpt?.id === "string"
+      ? allowOpt.id : "allow_once";
+  respond(host, id, {
+    permissionOptionId: optionId,
+  });
 }
 
-// ── Prompt response → result event ────────────────────
+function handleFsRead(
+  host: ChildProcess,
+  id: unknown,
+  params: Record<string, unknown>,
+): void {
+  const path =
+    typeof params.path === "string"
+      ? params.path : "";
+  const limit =
+    typeof params.limit === "number"
+      ? params.limit : undefined;
+  const line =
+    typeof params.line === "number"
+      ? params.line : undefined;
 
-function translatePromptResponse(
-  msg: AcpResponse,
-): Record<string, unknown> {
-  const stopReason =
-    typeof msg.result.stopReason === "string"
-      ? msg.result.stopReason
-      : "end_turn";
-  const isError =
-    stopReason !== "end_turn" &&
-    stopReason !== "cancelled";
-  return {
-    type: "result",
-    status: isError ? "error" : "success",
-  };
-}
-
-// ── Line processing ───────────────────────────────────
-
-function doProcessLine(
-  parsed: Record<string, unknown>,
-  s: SessionState,
-): Record<string, unknown> | null {
-  if ("id" in parsed && "result" in parsed) {
-    const msg = parsed as unknown as AcpResponse;
-    if (msg.id === s.activePromptRequestId) {
-      handleResponse(msg, s);
-      return translatePromptResponse(msg);
-    }
-    handleResponse(msg, s);
-    return null;
-  }
-  if ("id" in parsed && "error" in parsed) {
-    const msg = parsed as unknown as AcpError;
-    if (msg.id === s.activePromptRequestId) {
-      s.activePromptRequestId = null;
-      return {
-        type: "result",
-        status: "error",
-        error: msg.error.message,
-      };
-    }
-    console.error(
-      `[gemini-acp] error id=${msg.id}` +
-      `: ${msg.error.message}`,
-    );
-    return null;
-  }
-  if (
-    "method" in parsed &&
-    typeof parsed.method === "string"
-  ) {
-    return translateNotification({
-      method: parsed.method,
-      params: (
-        parsed.params as
-          Record<string, unknown>
-      ) ?? {},
+  readFile(path, "utf-8")
+    .then((raw) => {
+      let text = raw;
+      if (line !== undefined) {
+        const lines = text.split("\n");
+        const start = Math.max(0, line);
+        const end = limit
+          ? start + limit : lines.length;
+        text = lines.slice(start, end).join("\n");
+      } else if (limit !== undefined) {
+        text = text.slice(0, limit);
+      }
+      respond(host, id, { text });
+    })
+    .catch((err: Error) => {
+      respondError(host, id, -1, err.message);
     });
-  }
-  return null;
 }
 
-// ── Factory ───────────────────────────────────────────
+function handleFsWrite(
+  host: ChildProcess,
+  id: unknown,
+  params: Record<string, unknown>,
+): void {
+  const path =
+    typeof params.path === "string"
+      ? params.path : "";
+  const content =
+    typeof params.content === "string"
+      ? params.content : "";
+  writeFile(path, content, "utf-8")
+    .then(() => respond(host, id, {}))
+    .catch((err: Error) => {
+      respondError(host, id, -1, err.message);
+    });
+}
+
+// ── Factory ───────────────────────────────────────
 
 export function createGeminiAcpSession(
+  cwd: string,
 ): GeminiAcpSession {
-  const s: SessionState = {
+  const s: AcpState = {
     nextId: 3,
     sessionId: null,
     ready: false,
-    activePromptRequestId: null,
+    activePromptId: null,
     pendingTurn: null,
+    termStore: {
+      terminals: new Map(),
+      nextId: 1,
+      cwd,
+    },
   };
 
   return {
     get sessionId() { return s.sessionId; },
     get ready() { return s.ready; },
-    processLine: (parsed) =>
-      doProcessLine(parsed, s),
+
+    processLine(host, parsed) {
+      return doProcessLine(host, parsed, s);
+    },
 
     sendHandshake(child) {
-      writeRequest(child, {
-        jsonrpc: "2.0",
-        id: INITIALIZE_ID,
+      writeJson(child, {
+        jsonrpc: "2.0", id: INIT_ID,
         method: "initialize",
         params: {
           protocolVersion: 1,
-          clientCapabilities: {},
           clientInfo: {
-            name: "foolery",
-            version: "1.0.0",
+            name: "foolery", version: "1.0.0",
           },
         },
       });
-      writeRequest(child, {
-        jsonrpc: "2.0",
-        id: SESSION_NEW_ID,
+      writeJson(child, {
+        jsonrpc: "2.0", id: NEW_SESSION_ID,
         method: "session/new",
-        params: {},
+        params: { cwd, mcpServers: [] },
       });
     },
 
@@ -329,10 +377,9 @@ export function createGeminiAcpSession(
         return true;
       }
       const id = s.nextId++;
-      s.activePromptRequestId = id;
-      return writeRequest(child, {
-        jsonrpc: "2.0",
-        id,
+      s.activePromptId = id;
+      return writeJson(child, {
+        jsonrpc: "2.0", id,
         method: "session/prompt",
         params: {
           sessionId: s.sessionId,
@@ -345,13 +392,85 @@ export function createGeminiAcpSession(
 
     interruptTurn(child) {
       if (!s.sessionId) return false;
-      const id = s.nextId++;
-      return writeRequest(child, {
+      // session/cancel is a notification (no id)
+      return writeJson(child, {
         jsonrpc: "2.0",
-        id,
         method: "session/cancel",
         params: { sessionId: s.sessionId },
       });
     },
   };
+}
+
+function doProcessLine(
+  host: ChildProcess,
+  parsed: Record<string, unknown>,
+  s: AcpState,
+): Record<string, unknown> | null {
+  // Response to our request
+  if ("id" in parsed && "result" in parsed) {
+    if (parsed.id === s.activePromptId) {
+      s.activePromptId = null;
+      handleHandshake(parsed, s);
+      const stop =
+        (parsed.result as
+          Record<string, unknown>
+        )?.stopReason;
+      const isErr =
+        stop !== "end_turn" && stop !== undefined;
+      return {
+        type: "result",
+        status: isErr ? "error" : "success",
+      };
+    }
+    handleHandshake(parsed, s);
+    return null;
+  }
+
+  // Error response
+  if ("id" in parsed && "error" in parsed) {
+    const err =
+      parsed.error as
+        Record<string, unknown> | undefined;
+    const msg =
+      typeof err?.message === "string"
+        ? err.message : "ACP error";
+    console.error(
+      `[gemini-acp] error id=${parsed.id}: ${msg}`,
+    );
+    if (parsed.id === s.activePromptId) {
+      s.activePromptId = null;
+      return { type: "result", status: "error" };
+    }
+    return null;
+  }
+
+  // Client-side request (has id + method)
+  if (
+    "id" in parsed &&
+    "method" in parsed &&
+    typeof parsed.method === "string"
+  ) {
+    dispatch(
+      host, parsed.method, parsed.id,
+      (parsed.params as
+        Record<string, unknown>) ?? {},
+      s,
+    );
+    return null;
+  }
+
+  // Notification (method, no id)
+  if (
+    "method" in parsed &&
+    typeof parsed.method === "string"
+  ) {
+    return translateNotif(
+      parsed.method,
+      (parsed.params as
+        Record<string, unknown>) ?? {},
+    );
+  }
+
+  return null;
 }

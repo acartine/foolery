@@ -56,7 +56,7 @@ function makeChild(): ChildProcess {
 function makeConfig(
   overrides?: Partial<SessionRuntimeConfig>,
 ): SessionRuntimeConfig {
-  const acpSession = createGeminiAcpSession();
+  const acpSession = createGeminiAcpSession("/tmp");
   const caps = resolveCapabilities("gemini", true);
   return {
     id: "gemini-test",
@@ -101,7 +101,7 @@ describe("gemini interactive: completion", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("detects result from prompt response", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -133,7 +133,7 @@ describe("gemini interactive: completion", () => {
   });
 
   it("detects error from ACP error response", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -153,7 +153,7 @@ describe("gemini interactive: completion", () => {
   });
 
   it("schedules stdin close after result", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -181,7 +181,7 @@ describe("gemini interactive: watchdog", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("terminates after 30s inactivity", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -195,7 +195,7 @@ describe("gemini interactive: watchdog", () => {
   });
 
   it("resets watchdog on ACP events", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -224,7 +224,7 @@ describe("gemini interactive: watchdog", () => {
   });
 
   it("does not fire after result observed", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -254,7 +254,7 @@ describe("gemini interactive: follow-up", () => {
 
   it("sends follow-up via onResult callback", () => {
     const onResult = vi.fn(() => true);
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession, onResult }),
     );
@@ -274,7 +274,7 @@ describe("gemini interactive: follow-up", () => {
   });
 
   it("resets resultObserved after new turn", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -305,7 +305,7 @@ describe("gemini interactive: follow-up", () => {
       ...resolveCapabilities("gemini", true),
       watchdogTimeoutMs: 5_000,
     };
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession, capabilities: caps }),
     );
@@ -335,7 +335,7 @@ describe("gemini interactive: abort", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("dispose clears watchdog and closes stdin", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -353,7 +353,7 @@ describe("gemini interactive: abort", () => {
   });
 
   it("sendUserTurn returns false after dispose", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
     );
@@ -372,7 +372,7 @@ describe("gemini interactive: abort", () => {
 
 describe("gemini interactive: normalization", () => {
   it("normalizes agent_message_chunk", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const pushEvent = vi.fn();
     const rt = createSessionRuntime(
       makeConfig({ acpSession, pushEvent }),
@@ -401,7 +401,7 @@ describe("gemini interactive: normalization", () => {
   });
 
   it("normalizes tool_call", () => {
-    const acpSession = createGeminiAcpSession();
+    const acpSession = createGeminiAcpSession("/tmp");
     const pushEvent = vi.fn();
     const rt = createSessionRuntime(
       makeConfig({ acpSession, pushEvent }),

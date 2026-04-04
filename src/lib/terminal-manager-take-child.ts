@@ -125,7 +125,7 @@ export function spawnTakeChild(
   const jsonrpcSession = isJsonRpc
     ? createCodexJsonRpcSession() : undefined;
   const acpSession = isAcp
-    ? createGeminiAcpSession() : undefined;
+    ? createGeminiAcpSession(ctx.cwd) : undefined;
   const httpRefs: DeferredHttpRefs = {
     childRef: null, runtimeRef: null,
   };

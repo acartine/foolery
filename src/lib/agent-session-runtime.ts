@@ -19,16 +19,9 @@ import { logTokenUsageForEvent } from "@/lib/agent-token-usage";
 import type { TerminalEvent } from "@/lib/types";
 import {
   type JsonObject,
-  toObject,
-  buildAutoAskUserResponse,
-  makeUserMessageLine,
-  makeCopilotUserMessageLine,
   formatStreamEvent,
   pushFormattedEvent,
 } from "@/lib/terminal-manager-format";
-import {
-  INPUT_CLOSE_GRACE_MS,
-} from "@/lib/terminal-manager-types";
 import type {
   CodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
@@ -38,6 +31,14 @@ import type {
 import type {
   GeminiAcpSession,
 } from "@/lib/gemini-acp-session";
+import {
+  doCloseInput,
+  doCancelInputClose,
+  doScheduleInputClose,
+  doSendUserTurn,
+  autoAnswerAskUser,
+  doResetWatchdog,
+} from "@/lib/agent-session-runtime-helpers";
 
 // ── Exit reason ────────────────────────────────────────
 
@@ -123,201 +124,6 @@ export interface AgentSessionRuntime {
   dispose(): void;
 }
 
-// ── Stdin operations ───────────────────────────────────
-
-function doCloseInput(
-  child: ChildProcess,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  if (state.stdinClosed) return;
-  doCancelInputClose(state);
-  config.jsonrpcSession?.interruptTurn(child);
-  config.httpSession?.interruptTurn(child);
-  config.acpSession?.interruptTurn(child);
-  state.stdinClosed = true;
-  child.stdin?.end();
-}
-
-function doCancelInputClose(
-  state: SessionRuntimeState,
-): void {
-  if (!state.closeInputTimer) return;
-  clearTimeout(state.closeInputTimer);
-  state.closeInputTimer = null;
-}
-
-function doScheduleInputClose(
-  child: ChildProcess,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  doCancelInputClose(state);
-  state.closeInputTimer = setTimeout(
-    () => doCloseInput(child, state, config),
-    INPUT_CLOSE_GRACE_MS,
-  );
-}
-
-function doSendUserTurn(
-  child: ChildProcess,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-  text: string,
-  source: string,
-): boolean {
-  // HTTP transport: no stdin guard needed
-  if (config.httpSession) {
-    if (state.stdinClosed) return false;
-    doCancelInputClose(state);
-    const sent =
-      config.httpSession.startTurn(child, text);
-    if (sent) {
-      state.resultObserved = false;
-      state.exitReason = null;
-      doResetWatchdog(child, state, config);
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
-  }
-
-  if (
-    !child.stdin ||
-    child.stdin.destroyed ||
-    child.stdin.writableEnded ||
-    state.stdinClosed
-  ) {
-    return false;
-  }
-  doCancelInputClose(state);
-
-  const resetForNewTurn = () => {
-    state.resultObserved = false;
-    state.exitReason = null;
-    doResetWatchdog(child, state, config);
-  };
-
-  // JSON-RPC transport: use startTurn()
-  if (config.jsonrpcSession) {
-    const sent =
-      config.jsonrpcSession.startTurn(child, text);
-    if (sent) {
-      resetForNewTurn();
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
-  }
-
-  // ACP transport: use startTurn()
-  if (config.acpSession) {
-    const sent =
-      config.acpSession.startTurn(child, text);
-    if (sent) {
-      resetForNewTurn();
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
-  }
-
-  const line = config.dialect === "copilot"
-    ? makeCopilotUserMessageLine(text)
-    : makeUserMessageLine(text);
-  try {
-    child.stdin.write(line);
-    resetForNewTurn();
-    config.interactionLog.logPrompt(
-      text, { source },
-    );
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// ── AskUser auto-response ──────────────────────────────
-
-function autoAnswerAskUser(
-  child: ChildProcess,
-  obj: JsonObject,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  if (
-    !config.capabilities.supportsAskUserAutoResponse
-  ) {
-    return;
-  }
-  if (obj.type !== "assistant") return;
-  const msg = toObject(obj.message);
-  const content = msg?.content;
-  if (!Array.isArray(content)) return;
-  for (const rawBlock of content) {
-    const block = toObject(rawBlock);
-    if (!block) continue;
-    if (
-      block.type !== "tool_use" ||
-      block.name !== "AskUserQuestion"
-    ) continue;
-    const toolUseId =
-      typeof block.id === "string"
-        ? block.id : null;
-    if (
-      !toolUseId ||
-      state.autoAnsweredToolUseIds.has(toolUseId)
-    ) continue;
-    state.autoAnsweredToolUseIds.add(toolUseId);
-    const resp =
-      buildAutoAskUserResponse(block.input);
-    const sent = doSendUserTurn(
-      child, state, config,
-      resp, "auto_ask_user_response",
-    );
-    if (sent) {
-      config.pushEvent({
-        type: "stdout",
-        data: `\x1b[33m-> Auto-answered ` +
-          `AskUserQuestion ` +
-          `(${toolUseId.slice(0, 12)}...)` +
-          `\x1b[0m\n`,
-        timestamp: Date.now(),
-      });
-    } else {
-      config.pushEvent({
-        type: "stderr",
-        data: "Failed to send auto-response " +
-          "for AskUserQuestion.\n",
-        timestamp: Date.now(),
-      });
-    }
-  }
-}
-
-// ── Watchdog ───────────────────────────────────────────
-
-function doResetWatchdog(
-  child: ChildProcess,
-  state: SessionRuntimeState,
-  config: SessionRuntimeConfig,
-): void {
-  const ms = config.capabilities.watchdogTimeoutMs;
-  if (ms == null) return;
-  if (state.watchdogTimer) {
-    clearTimeout(state.watchdogTimer);
-  }
-  state.watchdogTimer = setTimeout(() => {
-    state.watchdogTimer = null;
-    if (state.resultObserved) return;
-    state.exitReason = "timeout";
-    terminateProcessGroup(child);
-  }, ms);
-}
-
 // ── Event processing ───────────────────────────────────
 
 function handleResultEvent(
@@ -363,11 +169,33 @@ function processLine(
   try {
     const raw = JSON.parse(line) as JsonObject;
 
-    // Session transports: translate, then normalize
-    const session =
-      config.jsonrpcSession ?? config.acpSession;
-    if (session) {
-      const translated = session.processLine(raw);
+    // JSON-RPC transport: translate first, then
+    // normalize with the standard Codex normalizer
+    if (config.jsonrpcSession) {
+      const translated =
+        config.jsonrpcSession.processLine(raw);
+      if (!translated) return; // skip noise
+      logTokenUsageForEvent(
+        config.interactionLog,
+        config.dialect,
+        translated as JsonObject,
+        config.beatIds,
+      );
+      const obj = (
+        config.normalizeEvent(translated) ??
+        translated
+      ) as Record<string, unknown>;
+      processNormalizedEvent(
+        child, obj, state, config,
+      );
+      return;
+    }
+
+    // ACP transport: translate (needs child for
+    // responding to client-side requests)
+    if (config.acpSession) {
+      const translated =
+        config.acpSession.processLine(child, raw);
       if (!translated) return;
       logTokenUsageForEvent(
         config.interactionLog,
