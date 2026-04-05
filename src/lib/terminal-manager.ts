@@ -139,7 +139,7 @@ export async function createSession(
     emitter, buffer, interactionLog,
   };
   sessions.set(id, entry);
-  setupKnotsLease(entry, id, prepared, agentInfo);
+  await setupKnotsLease(entry, id, prepared, agentInfo);
 
   const prompt = await resolveSessionPrompt(
     customPrompt, prepared, entry,
@@ -238,12 +238,12 @@ async function startSessionLog(
   });
 }
 
-function setupKnotsLease(
+async function setupKnotsLease(
   entry: SessionEntry,
   id: string,
   prepared: PreparedTargets,
   agentInfo: ReturnType<typeof toExecutionAgentInfo>,
-): void {
+): Promise<void> {
   let started = false;
   entry.releaseKnotsLease = (
     reason: string,
@@ -254,6 +254,7 @@ function setupKnotsLease(
     if (started) return;
     started = true;
     const knotsLeaseId = entry.knotsLeaseId;
+    if (!knotsLeaseId) return;
     entry.lastReleasedKnotsLeaseId = knotsLeaseId;
     entry.knotsLeaseId = undefined;
     entry.knotsLeaseStep = undefined;
@@ -274,7 +275,7 @@ function setupKnotsLease(
     prepared.memoryManagerType === "knots" &&
     !prepared.effectiveParent
   ) {
-    void acquireKnotsLease(
+    await acquireKnotsLease(
       entry, id, prepared, agentInfo,
     );
   }
@@ -295,11 +296,9 @@ async function acquireKnotsLease(
     agentInfo,
   });
   entry.knotsLeaseId = knotsLeaseId;
-  if (knotsLeaseId) {
-    entry.knotsLeaseSeq = (entry.knotsLeaseSeq ?? 0) + 1;
-    entry.knotsLeaseStep = prepared.resolved?.step;
-    entry.knotsLeaseAgentInfo = agentInfo;
-  }
+  entry.knotsLeaseSeq = (entry.knotsLeaseSeq ?? 0) + 1;
+  entry.knotsLeaseStep = prepared.resolved?.step;
+  entry.knotsLeaseAgentInfo = agentInfo;
   logAttachedKnotsLease({
     repoPath: prepared.resolvedRepoPath,
     source: "terminal_manager_take",
@@ -308,12 +307,6 @@ async function acquireKnotsLease(
     interactionType: "take",
     agentInfo, knotsLeaseId,
   });
-  if (!knotsLeaseId) {
-    console.warn(
-      `[terminal-manager] Failed to create Knots ` +
-      `lease for session ${id}`,
-    );
-  }
 }
 
 async function resolveSessionPrompt(
