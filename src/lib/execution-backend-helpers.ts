@@ -23,6 +23,7 @@ import {
   logAttachedKnotsLease,
   terminateKnotsRuntimeLease,
 } from "@/lib/knots-lease-runtime";
+import { logLeaseAudit } from "@/lib/lease-audit";
 import {
   forwardTransitionTarget,
   resolveStep,
@@ -69,14 +70,23 @@ export async function prepareTakeKnots(
   leaseId: string,
   loadSnapshot: LoadSnapshotFn,
 ): Promise<BackendResult<ExecutionLease>> {
-  const knotsLeaseId = await ensureKnotsLease({
-    repoPath: input.repoPath,
-    source: "structured_prepare_take",
-    executionLeaseId: leaseId,
-    beatId: input.beatId,
-    interactionType: input.mode,
-    agentInfo: input.agentInfo,
-  });
+  let knotsLeaseId: string;
+  try {
+    knotsLeaseId = await ensureKnotsLease({
+      repoPath: input.repoPath,
+      source: "structured_prepare_take",
+      executionLeaseId: leaseId,
+      beatId: input.beatId,
+      interactionType: input.mode,
+      agentInfo: input.agentInfo,
+    });
+  } catch (err) {
+    return fail(
+      err instanceof Error
+        ? err.message
+        : "Failed to create Knots lease",
+    );
+  }
   const claimResult = await claimKnot(
     input.beatId, input.repoPath, {
       agentName: input.agentInfo?.agentName,
@@ -115,7 +125,7 @@ async function finalizeTakeKnots(
   backend: BackendPort,
   input: PrepareTakeInput,
   leaseId: string,
-  knotsLeaseId: string | undefined,
+  knotsLeaseId: string,
   claimData: { prompt: string; state: string },
   loadSnapshot: LoadSnapshotFn,
 ): Promise<BackendResult<ExecutionLease>> {
@@ -171,6 +181,27 @@ async function finalizeTakeKnots(
     interactionType: input.mode,
     agentInfo: input.agentInfo,
     knotsLeaseId,
+  });
+  void logLeaseAudit({
+    event: "prompt_delivered",
+    repoPath: input.repoPath,
+    executionLeaseId: leaseId,
+    knotsLeaseId,
+    beatId: input.beatId,
+    interactionType: input.mode,
+    agentName: input.agentInfo?.agentName,
+    agentModel: input.agentInfo?.agentModel,
+    agentVersion: input.agentInfo?.agentVersion,
+    outcome: "success",
+    message:
+      `Execution prompt includes lease ` +
+      `${knotsLeaseId} for ${input.beatId}.`,
+    data: {
+      source: "structured_prepare_take",
+      promptLength: claimData.prompt.length,
+      hasLeaseInPrompt:
+        claimData.prompt.includes("--lease"),
+    },
   });
   return ok(lease);
 }
@@ -297,15 +328,27 @@ export async function preparePollKnots(
   loadSnapshot: LoadSnapshotFn,
 ): Promise<BackendResult<PollLeaseResult>> {
   const executionLeaseId = generateLeaseId();
-  const knotsLeaseId = await ensureKnotsLease({
-    repoPath: input.repoPath,
-    source: "structured_prepare_poll",
-    executionLeaseId,
-    interactionType: "poll",
-    agentInfo: input.agentInfo,
-  });
+  let knotsLeaseId: string;
+  try {
+    knotsLeaseId = await ensureKnotsLease({
+      repoPath: input.repoPath,
+      source: "structured_prepare_poll",
+      executionLeaseId,
+      interactionType: "poll",
+      agentInfo: input.agentInfo,
+    });
+  } catch (err) {
+    return fail(
+      err instanceof Error
+        ? err.message
+        : "Failed to create Knots lease",
+    );
+  }
   const pollResult = await pollKnot(
-    input.repoPath, input.agentInfo,
+    input.repoPath, {
+      ...input.agentInfo,
+      leaseId: knotsLeaseId,
+    },
   );
   if (!pollResult.ok || !pollResult.data) {
     await terminateKnotsRuntimeLease({
@@ -333,7 +376,7 @@ async function finalizePollKnots(
   backend: BackendPort,
   input: PreparePollInput,
   executionLeaseId: string,
-  knotsLeaseId: string | undefined,
+  knotsLeaseId: string,
   pollData: { id: string; prompt: string; state: string },
   loadSnapshot: LoadSnapshotFn,
 ): Promise<BackendResult<PollLeaseResult>> {
@@ -390,6 +433,28 @@ async function finalizePollKnots(
     interactionType: "poll",
     agentInfo: input.agentInfo,
     knotsLeaseId,
+  });
+  void logLeaseAudit({
+    event: "prompt_delivered",
+    repoPath: input.repoPath,
+    executionLeaseId,
+    knotsLeaseId,
+    beatId: pollData.id,
+    claimedId: pollData.id,
+    interactionType: "poll",
+    agentName: input.agentInfo?.agentName,
+    agentModel: input.agentInfo?.agentModel,
+    agentVersion: input.agentInfo?.agentVersion,
+    outcome: "success",
+    message:
+      `Poll prompt includes lease ` +
+      `${knotsLeaseId} for ${pollData.id}.`,
+    data: {
+      source: "structured_prepare_poll",
+      promptLength: pollData.prompt.length,
+      hasLeaseInPrompt:
+        pollData.prompt.includes("--lease"),
+    },
   });
   return ok({ lease, claimedId: pollData.id });
 }

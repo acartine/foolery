@@ -172,6 +172,7 @@ export interface PollKnotOptions {
   agentName?: string;
   agentModel?: string;
   agentVersion?: string;
+  leaseId?: string;
 }
 
 export async function pollKnot(
@@ -187,6 +188,7 @@ export async function pollKnot(
     args.push("--agent-model", options.agentModel);
   }
   if (options?.agentVersion) args.push("--agent-version", options.agentVersion);
+  if (options?.leaseId) args.push("--lease", options.leaseId);
   const { stdout, stderr, exitCode } = await execWrite(args, { repoPath });
   if (exitCode !== 0) return fail(stderr, "poll --claim");
   return parseOrFail<KnotClaimPrompt>(stdout, "poll");

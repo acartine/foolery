@@ -349,13 +349,18 @@ describe("KnotsBackend: buildTakePrompt", () => {
     expect(created.ok).toBe(true);
     const id = created.data!.id;
 
-    const result = await backend.buildTakePrompt(id);
+    const result = await backend.buildTakePrompt(id, {
+      knotsLeaseId: "test-lease",
+    });
     expect(result.ok).toBe(true);
     expect(result.data?.prompt).toContain(id);
     expect(result.data?.prompt).toContain(
       "KNOTS CLAIM MODE",
     );
     expect(result.data?.prompt).toContain("kno claim");
+    expect(result.data?.prompt).toContain(
+      '--lease "test-lease"',
+    );
     expect(result.data?.prompt).toContain(
       "single-step authorization",
     );

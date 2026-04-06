@@ -311,18 +311,14 @@ describe("rollbackIteration: metadata and edge cases", () => {
     expect(mockTerminateLease).toHaveBeenCalledWith("lease-k1", "/repo");
   });
 
-  it("warn-and-continues when createLease fails during prepareTake", async () => {
+  it("returns failure when createLease fails during prepareTake", async () => {
     mockResolveMemoryManagerType.mockReturnValue("knots");
     mockCreateLease.mockResolvedValue({ ok: false, error: "lease create failed" });
-    mockClaimKnot.mockResolvedValue({
-      ok: true,
-      data: { id: "beat-1", title: "Test", state: "in_progress", profile_id: "default", prompt: "do work" },
-    });
 
     const result = await seb.prepareTake({ beatId: "beat-1", repoPath: "/repo", mode: "take" });
 
-    expect(result.ok).toBe(true);
-    expect(result.data?.knotsLeaseId).toBeUndefined();
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toContain("lease create failed");
   });
 
   it("releases the knots lease when preparePoll fails after lease creation", async () => {

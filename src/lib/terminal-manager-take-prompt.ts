@@ -114,10 +114,25 @@ export async function buildNextTakePrompt(
     );
   }
 
-  await rotateKnotsLease(
-    ctx,
-    stepAgentOverride ?? ctx.agent,
-  );
+  try {
+    await rotateKnotsLease(
+      ctx,
+      stepAgentOverride ?? ctx.agent,
+    );
+  } catch (err) {
+    const tag =
+      `[terminal-manager] [${ctx.id}] [take-loop]`;
+    console.error(
+      `${tag} lease rotation failed:`, err,
+    );
+    ctx.pushEvent({
+      type: "stderr",
+      data: `Take loop: lease rotation failed ` +
+        `for ${ctx.beatId}\n`,
+      timestamp: Date.now(),
+    });
+    return null;
+  }
   ctx.entry.knotsLeaseStep = queueType;
 
   console.log(

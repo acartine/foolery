@@ -275,10 +275,8 @@ export async function rotateKnotsLease(
     agentInfo: nextAgentInfo,
   });
   ctx.entry.knotsLeaseId = newLeaseId;
-  if (newLeaseId) {
-    ctx.entry.knotsLeaseSeq =
-      (ctx.entry.knotsLeaseSeq ?? 0) + 1;
-  }
+  ctx.entry.knotsLeaseSeq =
+    (ctx.entry.knotsLeaseSeq ?? 0) + 1;
   ctx.entry.knotsLeaseAgentInfo = nextAgentInfo;
   ctx.agentInfo = nextAgentInfo;
 
@@ -294,6 +292,7 @@ export async function rotateKnotsLease(
     if (ctx.knotsLeaseTerminationStarted.value) return;
     ctx.knotsLeaseTerminationStarted.value = true;
     const leaseId = ctx.entry.knotsLeaseId;
+    if (!leaseId) return;
     ctx.entry.lastReleasedKnotsLeaseId = leaseId;
     ctx.entry.knotsLeaseId = undefined;
     ctx.entry.knotsLeaseStep = undefined;
@@ -388,6 +387,32 @@ export async function finalizeClaim(
   });
 
   logLeaseBindingState(ctx, queueType, claimAgent);
+
+  const claimAgentInfo = toExecutionAgentInfo(claimAgent);
+  void logLeaseAudit({
+    event: "prompt_delivered",
+    repoPath: ctx.resolvedRepoPath,
+    sessionId: ctx.id,
+    knotsLeaseId: ctx.entry.knotsLeaseId,
+    beatId: ctx.beatId,
+    claimedId: ctx.beatId,
+    interactionType: "take",
+    agentName: claimAgentInfo.agentName,
+    agentProvider: claimAgentInfo.agentProvider,
+    agentModel: claimAgentInfo.agentModel,
+    agentVersion: claimAgentInfo.agentVersion,
+    outcome: "success",
+    message:
+      `Prompt delivered to agent for ` +
+      `${queueType}.`,
+    data: {
+      queueType,
+      leaseSequence: ctx.entry.knotsLeaseSeq,
+      promptLength: rawPrompt.length,
+      hasLeaseInPrompt:
+        rawPrompt.includes("--lease"),
+    },
+  }).catch(() => {});
 
   return {
     prompt: wrapExecutionPrompt(rawPrompt, "take"),

@@ -68,6 +68,7 @@ vi.mock("@/lib/backend-instance", () => ({
 }));
 
 vi.mock("@/lib/interaction-logger", () => ({
+  resolveInteractionLogRoot: vi.fn(() => "/tmp/foolery-logs"),
   startInteractionLog: vi.fn(async () => interactionLog),
   noopInteractionLog: vi.fn(() => interactionLog),
 }));
@@ -81,7 +82,7 @@ vi.mock("@/lib/knots", () => ({
 
 vi.mock("@/lib/lease-audit", () => ({
   appendLeaseAuditEvent: vi.fn(async () => undefined),
-  logLeaseAudit: vi.fn(),
+  logLeaseAudit: vi.fn(async () => undefined),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({

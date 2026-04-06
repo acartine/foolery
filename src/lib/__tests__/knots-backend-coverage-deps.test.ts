@@ -234,6 +234,7 @@ describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
     const result = await backend.buildTakePrompt("SOLO-1", {
       isParent: true,
       childBeatIds: [],
+      knotsLeaseId: "test-lease",
     });
 
     expect(result.ok).toBe(true);
@@ -253,6 +254,7 @@ describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
     const result = await backend.buildTakePrompt("SOLO-2", {
       isParent: false,
       childBeatIds: ["unused"],
+      knotsLeaseId: "test-lease",
     });
 
     expect(result.ok).toBe(true);
@@ -263,7 +265,9 @@ describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
 
   it("returns error when showKnot fails for single-beat mode", async () => {
     const backend = new KnotsBackend("/repo");
-    const result = await backend.buildTakePrompt("MISSING-SINGLE");
+    const result = await backend.buildTakePrompt("MISSING-SINGLE", {
+      knotsLeaseId: "test-lease",
+    });
 
     expect(result.ok).toBe(false);
     expect(mockClaimKnot).not.toHaveBeenCalled();
@@ -277,7 +281,9 @@ describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
       description: "Do the thing",
     });
 
-    const result = await backend.buildTakePrompt("DETAIL-1");
+    const result = await backend.buildTakePrompt("DETAIL-1", {
+      knotsLeaseId: "test-lease",
+    });
 
     expect(result.ok).toBe(true);
     expect(result.data?.prompt).toContain("Beat ID: DETAIL-1");
@@ -303,7 +309,9 @@ describe("KnotsBackend coverage: buildTakePrompt single-beat mode", () => {
       body: "Body text here",
     });
 
-    const result = await backend.buildTakePrompt("BODY-1");
+    const result = await backend.buildTakePrompt("BODY-1", {
+      knotsLeaseId: "test-lease",
+    });
 
     expect(result.ok).toBe(true);
     expect(result.data?.prompt).toContain(

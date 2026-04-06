@@ -22,7 +22,7 @@ export interface EnsureKnotsLeaseInput {
 }
 
 export interface TerminateKnotsLeaseInput extends EnsureKnotsLeaseInput {
-  knotsLeaseId?: string;
+  knotsLeaseId: string;
   reason: string;
   outcome?: "success" | "warning" | "error";
   data?: Record<string, unknown>;
@@ -56,7 +56,7 @@ function baseAuditData(input: EnsureKnotsLeaseInput | TerminateKnotsLeaseInput):
 
 export async function ensureKnotsLease(
   input: EnsureKnotsLeaseInput,
-): Promise<string | undefined> {
+): Promise<string> {
   const auditBase = baseAuditData(input);
   void logLeaseAudit({
     event: "lease_create_requested",
@@ -89,6 +89,9 @@ export async function ensureKnotsLease(
   );
 
   if (!result.ok || !result.data?.id) {
+    const errorMsg =
+      `Failed to create Knots lease for ${input.source}: ` +
+      `${result.error ?? "unknown"}`;
     void logLeaseAudit({
       event: "lease_create_failed",
       repoPath: input.repoPath,
@@ -101,15 +104,15 @@ export async function ensureKnotsLease(
       agentProvider: input.agentInfo?.agentProvider,
       agentModel: input.agentInfo?.agentModel,
       agentVersion: input.agentInfo?.agentVersion,
-      outcome: "warning",
-      message: `Failed to create Knots lease for ${input.source}.`,
+      outcome: "error",
+      message: errorMsg,
       data: {
         ...auditBase,
         source: input.source,
         error: result.error ?? "unknown",
       },
     });
-    return undefined;
+    throw new Error(errorMsg);
   }
 
   void logLeaseAudit({
@@ -140,30 +143,6 @@ export async function ensureKnotsLease(
 export async function terminateKnotsRuntimeLease(
   input: TerminateKnotsLeaseInput,
 ): Promise<void> {
-  if (!input.knotsLeaseId) {
-    void logLeaseAudit({
-      event: "lease_terminate_skipped",
-      repoPath: input.repoPath,
-      sessionId: input.sessionId,
-      executionLeaseId: input.executionLeaseId,
-      beatId: input.beatId,
-      claimedId: input.claimedId,
-      interactionType: input.interactionType ?? input.source,
-      agentName: input.agentInfo?.agentName,
-      agentProvider: input.agentInfo?.agentProvider,
-      agentModel: input.agentInfo?.agentModel,
-      agentVersion: input.agentInfo?.agentVersion,
-      outcome: input.outcome ?? "warning",
-      message: `Skipped Knots lease termination for ${input.source}.`,
-      data: {
-        reason: input.reason,
-        source: input.source,
-        ...(input.data ?? {}),
-      },
-    });
-    return;
-  }
-
   void logLeaseAudit({
     event: "lease_terminate_requested",
     repoPath: input.repoPath,
@@ -237,10 +216,10 @@ export async function terminateKnotsRuntimeLease(
 }
 
 export function logAttachedKnotsLease(
-  input: EnsureKnotsLeaseInput & { knotsLeaseId?: string },
+  input: EnsureKnotsLeaseInput & { knotsLeaseId: string },
 ): void {
   void logLeaseAudit({
-    event: input.knotsLeaseId ? "lease_attached" : "lease_attach_skipped",
+    event: "lease_attached",
     repoPath: input.repoPath,
     sessionId: input.sessionId,
     executionLeaseId: input.executionLeaseId,
@@ -251,10 +230,8 @@ export function logAttachedKnotsLease(
     agentName: input.agentInfo?.agentName,
     agentModel: input.agentInfo?.agentModel,
     agentVersion: input.agentInfo?.agentVersion,
-    outcome: input.knotsLeaseId ? "success" : "warning",
-    message: input.knotsLeaseId
-      ? `Attached Knots lease ${input.knotsLeaseId} to ${input.source}.`
-      : `No Knots lease attached to ${input.source}.`,
+    outcome: "success",
+    message: `Attached Knots lease ${input.knotsLeaseId} to ${input.source}.`,
     data: {
       source: input.source,
     },

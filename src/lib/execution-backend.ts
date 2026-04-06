@@ -224,6 +224,11 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
       }
     }
     if (resolveMemoryManagerType(lease.repoPath) === "knots") {
+      if (!lease.knotsLeaseId) {
+        return fail(
+          `Knots lease missing on ${lease.beatId}`,
+        );
+      }
       await terminateKnotsRuntimeLease({
         repoPath: lease.repoPath,
         source: "structured_complete_iteration",
@@ -260,6 +265,11 @@ export class StructuredExecutionBackend implements ExecutionBackendPort {
       }
     }
     if (resolveMemoryManagerType(lease.repoPath) === "knots") {
+      if (!lease.knotsLeaseId) {
+        return fail(
+          `Knots lease missing on ${lease.beatId}`,
+        );
+      }
       await terminateKnotsRuntimeLease({
         repoPath: lease.repoPath,
         source: "structured_rollback_iteration",

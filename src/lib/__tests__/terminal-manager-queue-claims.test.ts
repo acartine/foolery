@@ -134,7 +134,7 @@ vi.mock("@/lib/agent-outcome-stats", () => ({
 
 vi.mock("@/lib/lease-audit", () => ({
   appendLeaseAuditEvent: vi.fn(async () => undefined),
-  logLeaseAudit: vi.fn(),
+  logLeaseAudit: vi.fn(async () => undefined),
 }));
 
 import { createSession } from "@/lib/terminal-manager";

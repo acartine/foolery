@@ -89,7 +89,7 @@ vi.mock("@/lib/knots", () => ({
 
 vi.mock("@/lib/lease-audit", () => ({
   appendLeaseAuditEvent: vi.fn(async () => undefined),
-  logLeaseAudit: vi.fn(),
+  logLeaseAudit: vi.fn(async () => undefined),
 }));
 
 vi.mock("@/lib/beads-state-machine", () => ({

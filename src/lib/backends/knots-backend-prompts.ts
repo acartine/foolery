@@ -300,10 +300,26 @@ export async function buildSingleTakePrompt(
   }
   const knot = showResult.data!;
 
-  const claimCmd = options?.knotsLeaseId
-    ? `kno claim "${beatId}" --json ` +
-      `--lease "${options.knotsLeaseId}"`
-    : `kno claim "${beatId}" --json`;
+  if (!options?.knotsLeaseId) {
+    return {
+      ok: false,
+      error: {
+        code: "INTERNAL",
+        message: `knotsLeaseId is required to build ` +
+          `a take prompt for ${beatId}`,
+        retryable: false,
+      },
+    };
+  }
+  const claimCmd =
+    `kno claim "${beatId}" --json ` +
+    `--lease "${options.knotsLeaseId}"`;
+  console.log(
+    `[knots-backend-prompts] buildSingleTakePrompt: ` +
+    `beatId=${beatId} ` +
+    `leaseId=${options.knotsLeaseId} ` +
+    `claimCmd=${claimCmd}`,
+  );
 
   const prompt = [
     `Beat ID: ${beatId}`,
