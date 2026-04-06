@@ -37,7 +37,7 @@ export function SettingsReposSection() {
   const repos = data?.ok ? (data.data ?? []) : [];
 
   function invalidateRegistryAndBeats() {
-    queryClient.invalidateQueries({ queryKey: ["registry"] });
+    void queryClient.invalidateQueries({ queryKey: ["registry"] });
     void invalidateBeatListQueries(queryClient);
   }
 

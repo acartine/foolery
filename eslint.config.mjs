@@ -1,5 +1,6 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
+import tseslint from "typescript-eslint";
 
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
@@ -43,6 +44,22 @@ const eslintConfig = defineConfig([
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true,
       }],
+    },
+  },
+  // Require explicit handling of promises — prevents fire-and-forget bugs.
+  {
+    files: ["src/**/*.ts", "src/**/*.tsx"],
+    ignores: ["src/stories/**"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint.plugin,
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
     },
   },
   // Enforce adapter boundary: only the bd-cli-backend adapter (and its

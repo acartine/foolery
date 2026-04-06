@@ -93,7 +93,7 @@ export function useUpdateBeatMutation(data: Beat[]) {
     },
     onSettled: (_data, _err, { id }) => {
       void invalidateBeatListQueries(queryClient);
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ["beat", id],
       });
     },

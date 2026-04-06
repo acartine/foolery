@@ -191,7 +191,7 @@ export function wireClose(
       return;
     }
 
-    (async () => {
+    void (async () => {
       await enforceQueueTerminalInvariant(
         takeLoopCtx,
       );
@@ -263,7 +263,7 @@ export function wireError(
         finishSession(1);
       });
     } else {
-      enforceQueueTerminalInvariant(
+      void enforceQueueTerminalInvariant(
         takeLoopCtx,
       ).finally(() => { finishSession(1); });
     }

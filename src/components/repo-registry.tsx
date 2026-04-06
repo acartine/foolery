@@ -114,7 +114,7 @@ export function RepoRegistry() {
     const result = await addRepoToRegistry(path);
     if (result.ok) {
       toast.success(`Added ${path}`);
-      queryClient.invalidateQueries({ queryKey: ["registry"] });
+      void queryClient.invalidateQueries({ queryKey: ["registry"] });
     } else {
       toast.error(result.error ?? "Failed to add repository");
     }
@@ -125,7 +125,7 @@ export function RepoRegistry() {
     const result = await removeRepoFromRegistry(path);
     if (result.ok) {
       toast.success("Repository removed");
-      queryClient.invalidateQueries({ queryKey: ["registry"] });
+      void queryClient.invalidateQueries({ queryKey: ["registry"] });
     } else {
       toast.error(result.error ?? "Failed to remove repository");
     }

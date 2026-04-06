@@ -35,7 +35,7 @@ export function useAgentInfo(action: ActionName): ResolvedAgentInfo | null {
   useEffect(() => {
     let cancelled = false;
 
-    fetchSettings().then((result) => {
+    void fetchSettings().then((result) => {
       if (cancelled || !result.ok || !result.data) return;
       const settings = result.data;
       const agentId = settings.actions[action] ?? "";

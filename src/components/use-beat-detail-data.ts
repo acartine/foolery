@@ -185,7 +185,7 @@ function useAddDepMutation(
       target: string;
     }) => addDep(source, { blocks: target }, repo),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [
           "beat-deps",
           detailId,
@@ -348,7 +348,7 @@ function invalidateBeatQueries(
   repo: string | undefined,
 ) {
   void invalidateBeatListQueries(queryClient);
-  queryClient.invalidateQueries({
+  void queryClient.invalidateQueries({
     queryKey: ["beat", detailId, repo],
   });
 }

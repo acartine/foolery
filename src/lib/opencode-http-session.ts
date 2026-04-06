@@ -251,7 +251,7 @@ function flushPendingTurn(
   if (!s.pendingTurn || !s.ready) return;
   const { prompt } = s.pendingTurn;
   s.pendingTurn = null;
-  doTurn(s, cb, prompt);
+  void doTurn(s, cb, prompt);
 }
 
 // ── Factory ───────────────────────────────────────────
@@ -290,7 +290,7 @@ export function createOpenCodeHttpSession(
         s.pendingTurn = { child: _, prompt };
         return true;
       }
-      doTurn(s, cb, prompt);
+      void doTurn(s, cb, prompt);
       return true;
     },
 

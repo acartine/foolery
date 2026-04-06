@@ -18,7 +18,7 @@ export function useRehydrateTerminals(
     const enable = () => {
       if (!cancelled) setEnabled(true);
     };
-    listSessions()
+    void listSessions()
       .then((sessions) => {
         useTerminalStore
           .getState()

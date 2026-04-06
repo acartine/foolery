@@ -234,7 +234,7 @@ export function DirectoryBrowser({
   useEffect(() => {
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetch on dialog open
-      loadDirectory();
+      void loadDirectory();
     }
   }, [open, loadDirectory]);
 
@@ -247,7 +247,7 @@ export function DirectoryBrowser({
 
   const handlePathSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pathInput) loadDirectory(pathInput);
+    if (pathInput) void loadDirectory(pathInput);
   };
 
   const handleSelect = () => {

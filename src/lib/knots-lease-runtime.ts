@@ -58,7 +58,7 @@ export async function ensureKnotsLease(
   input: EnsureKnotsLeaseInput,
 ): Promise<string | undefined> {
   const auditBase = baseAuditData(input);
-  logLeaseAudit({
+  void logLeaseAudit({
     event: "lease_create_requested",
     repoPath: input.repoPath,
     sessionId: input.sessionId,
@@ -89,7 +89,7 @@ export async function ensureKnotsLease(
   );
 
   if (!result.ok || !result.data?.id) {
-    logLeaseAudit({
+    void logLeaseAudit({
       event: "lease_create_failed",
       repoPath: input.repoPath,
       sessionId: input.sessionId,
@@ -112,7 +112,7 @@ export async function ensureKnotsLease(
     return undefined;
   }
 
-  logLeaseAudit({
+  void logLeaseAudit({
     event: "lease_create_succeeded",
     repoPath: input.repoPath,
     sessionId: input.sessionId,
@@ -141,7 +141,7 @@ export async function terminateKnotsRuntimeLease(
   input: TerminateKnotsLeaseInput,
 ): Promise<void> {
   if (!input.knotsLeaseId) {
-    logLeaseAudit({
+    void logLeaseAudit({
       event: "lease_terminate_skipped",
       repoPath: input.repoPath,
       sessionId: input.sessionId,
@@ -164,7 +164,7 @@ export async function terminateKnotsRuntimeLease(
     return;
   }
 
-  logLeaseAudit({
+  void logLeaseAudit({
     event: "lease_terminate_requested",
     repoPath: input.repoPath,
     sessionId: input.sessionId,
@@ -188,7 +188,7 @@ export async function terminateKnotsRuntimeLease(
 
   const result = await terminateLease(input.knotsLeaseId, input.repoPath);
   if (!result.ok) {
-    logLeaseAudit({
+    void logLeaseAudit({
       event: "lease_terminate_failed",
       repoPath: input.repoPath,
       sessionId: input.sessionId,
@@ -213,7 +213,7 @@ export async function terminateKnotsRuntimeLease(
     return;
   }
 
-  logLeaseAudit({
+  void logLeaseAudit({
     event: "lease_terminate_succeeded",
     repoPath: input.repoPath,
     sessionId: input.sessionId,
@@ -239,7 +239,7 @@ export async function terminateKnotsRuntimeLease(
 export function logAttachedKnotsLease(
   input: EnsureKnotsLeaseInput & { knotsLeaseId?: string },
 ): void {
-  logLeaseAudit({
+  void logLeaseAudit({
     event: input.knotsLeaseId ? "lease_attached" : "lease_attach_skipped",
     repoPath: input.repoPath,
     sessionId: input.sessionId,

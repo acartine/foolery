@@ -80,7 +80,7 @@ export function useTerminalThemePreference(): TerminalThemePreference {
         );
       }
 
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
     onSuccess: (settings) => {
       if (!settings) return;
@@ -94,7 +94,7 @@ export function useTerminalThemePreference(): TerminalThemePreference {
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: SETTINGS_QUERY_KEY,
       });
     },

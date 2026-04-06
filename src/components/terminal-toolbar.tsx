@@ -137,6 +137,6 @@ function copyTerminal(
   ) {
     lines.pop();
   }
-  navigator.clipboard.writeText(lines.join("\n"));
+  void navigator.clipboard.writeText(lines.join("\n"));
   toast.success("Copied terminal output");
 }

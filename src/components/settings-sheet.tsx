@@ -343,7 +343,7 @@ export function SettingsSheet({
       if (res.ok) {
         toast.success("Settings saved");
         if (res.data) setSettings(res.data);
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: ["settings"],
         });
       } else {

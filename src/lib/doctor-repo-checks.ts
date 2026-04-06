@@ -523,7 +523,7 @@ export async function checkActiveKnotsLeases(
       continue;
     }
 
-    logLeaseAudit({
+    void logLeaseAudit({
       event: "orphan_leases_detected",
       repoPath: repo.path,
       interactionType: "doctor_active_leases",

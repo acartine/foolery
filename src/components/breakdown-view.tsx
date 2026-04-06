@@ -262,7 +262,7 @@ function ConsolePanel({ logLines, logRef, isRunning,
             "rounded p-0.5 text-zinc-400 "
             + "hover:bg-zinc-800 hover:text-zinc-200"
           } title="Copy console output" onClick={() => {
-            navigator.clipboard.writeText(
+            void navigator.clipboard.writeText(
               logLines.join("\n"),
             );
             toast.success("Copied console output");
@@ -431,7 +431,7 @@ function useLifecycle(
     if (!activeRepo || !parentBeatId
       || startedRef.current) return;
     startedRef.current = true;
-    (async () => {
+    void (async () => {
       const r = await startBreakdown(
         activeRepo, parentBeatId,
       );

@@ -128,7 +128,7 @@ function useSceneQueueDrain(
     );
     if (batch.length === 0) return;
     drainingRef.current = true;
-    (async () => {
+    void (async () => {
       for (const item of batch) {
         await launchQueued(item);
       }

@@ -150,7 +150,7 @@ function useXtermEffect(
       );
       cleanupRef.current = unsub;
     };
-    init();
+    void init();
 
     return () => {
       disposed.value = true;
