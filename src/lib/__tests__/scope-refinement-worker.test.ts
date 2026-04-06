@@ -33,12 +33,15 @@ import {
 import {
   clearScopeRefinementQueue,
   dequeueScopeRefinementJob,
+  enqueueScopeRefinementJob,
   getScopeRefinementQueueSize,
 } from "@/lib/scope-refinement-queue";
 import {
   getScopeRefinementWorkerHealth,
   processScopeRefinementJob,
   resetScopeRefinementWorkerState,
+  startScopeRefinementWorker,
+  stopScopeRefinementWorker,
 } from "@/lib/scope-refinement-worker";
 
 interface MockChild extends EventEmitter {
@@ -442,5 +445,84 @@ describe("processScopeRefinementJob: agent fallback resolution", () => {
     expect(
       health.recentFailures[0]!.reason,
     ).toContain("no alternative refinement agent");
+  });
+});
+
+describe("scope refinement worker: retry success path", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+  it("retries on a different agent and completes successfully", async () => {
+    const failedChild = createMockChild("", 1);
+    const successPayload = [
+      "<scope_refinement_json>",
+      '{"title":"Recovered title","description":"Recovered description"}',
+      "</scope_refinement_json>",
+    ].join("");
+    const successChild = createMockChild(
+      `${JSON.stringify({ type: "result", result: successPayload })}\n`,
+    );
+
+    mockGetScopeRefinementAgent
+      .mockResolvedValueOnce({
+        kind: "cli",
+        command: "claude",
+        agentId: "agent-a",
+      })
+      .mockResolvedValueOnce({
+        kind: "cli",
+        command: "claude",
+        agentId: "agent-b",
+      });
+    mockSpawn
+      .mockReturnValueOnce(failedChild)
+      .mockReturnValueOnce(successChild);
+
+    startScopeRefinementWorker();
+    enqueueScopeRefinementJob({
+      beatId: "foolery-1",
+      repoPath: "/tmp/repo",
+    });
+
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+    failedChild.stderr.emit("data", Buffer.from("agent crashed"));
+    failedChild.emit("close", 1);
+
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(2);
+    });
+    successChild.emitOutput();
+
+    await vi.waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledWith(
+        "foolery-1",
+        {
+          title: "Recovered title",
+          description: "Recovered description",
+        },
+        "/tmp/repo",
+      );
+    });
+
+    expect(mockGetScopeRefinementAgent).toHaveBeenCalledTimes(2);
+    expect(mockGetScopeRefinementAgent.mock.calls[0]?.[0]).toBeUndefined();
+    expect(mockGetScopeRefinementAgent.mock.calls[1]?.[0]).toEqual(
+      new Set(["agent-a"]),
+    );
+    expect(getScopeRefinementQueueSize()).toBe(0);
+    expect(listScopeRefinementCompletions()).toEqual([
+      expect.objectContaining({
+        beatId: "foolery-1",
+        beatTitle: "Recovered title",
+        repoPath: "/tmp/repo",
+      }),
+    ]);
+
+    const health = getScopeRefinementWorkerHealth();
+    expect(health.totalCompleted).toBe(1);
+    expect(health.totalFailed).toBe(0);
+
+    stopScopeRefinementWorker();
   });
 });
