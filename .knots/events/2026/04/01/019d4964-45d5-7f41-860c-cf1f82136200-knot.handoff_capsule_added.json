@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4964-45d5-7f41-860c-cf1f82136200",
+  "occurred_at": "2026-04-01T14:13:21.493569Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. 6 files to change (5 existing + 1 new test). Core approach: centralize beat query invalidation using the existing but unused `invalidateBeatListQueries` utility in `beat-query-cache.ts`, replace all ad-hoc invalidation calls across 4 component files, fix missing invalidation on add-dependency mutation, and add a Playwright e2e test verifying <1s refresh latency. No changes to polling intervals needed — `invalidateQueries` with `refetchType: \"active\"` already provides immediate refetch for mounted queries. Low complexity, low risk.",
+    "datetime": "2026-04-01T14:13:21.493569Z",
+    "entry_id": "019d4964-45d5-7f41-860c-cf0d28f2169d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

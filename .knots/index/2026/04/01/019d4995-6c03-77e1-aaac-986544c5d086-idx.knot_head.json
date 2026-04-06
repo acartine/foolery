@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4995-6c03-77e1-aaac-986544c5d086",
+  "occurred_at": "2026-04-01T15:07:02.531958Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-de99",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Multi-select mode in Queues View:  Clicking any pulldown, including the repositories pulldown, jitters the entire screen to the lift",
+    "type": "work",
+    "updated_at": "2026-04-01T15:07:02.531958Z",
+    "workflow_id": "compatibility"
+  }
+}

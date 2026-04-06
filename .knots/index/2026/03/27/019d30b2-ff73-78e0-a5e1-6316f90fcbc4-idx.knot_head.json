@@ -1,0 +1,24 @@
+{
+  "event_id": "019d30b2-ff73-78e0-a5e1-6316f90fcbc4",
+  "occurred_at": "2026-03-27T19:08:50.419048Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9b5c",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Handle hyphenated project names when stripping prefixes",
+    "type": "work",
+    "updated_at": "2026-03-27T19:08:50.419048Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d30b2-a43f-7f71-bc46-9069d8924f2e"
+  }
+}

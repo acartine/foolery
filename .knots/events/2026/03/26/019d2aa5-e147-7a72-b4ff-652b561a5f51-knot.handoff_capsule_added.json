@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa5-e147-7a72-b4ff-652b561a5f51",
+  "occurred_at": "2026-03-26T14:56:47.431586Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified: (1) merge commit 71084203f5e3 is on main with all printf dash-arg fixes applied to setup.sh, agent-wizard.sh, and install.sh — all instances now use printf '%s' '->' format. (2) Launcher path override via FOOLERY_LAUNCHER_PATH env var added to install.sh with test coverage. (3) All branch commits tagged: 491c740c0829, 44fad41c04c0, 64ac7f3d4cb7, 71084203f5e3. (4) No invariants to check. (5) No bare printf '->' remaining in any shell scripts. (6) CI green per shipment note.",
+    "datetime": "2026-03-26T14:56:47.431586Z",
+    "entry_id": "019d2aa5-e147-7a72-b4ff-6511d96d86ed",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

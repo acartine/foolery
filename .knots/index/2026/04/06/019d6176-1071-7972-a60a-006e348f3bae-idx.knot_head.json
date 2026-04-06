@@ -1,0 +1,21 @@
+{
+  "event_id": "019d6176-1071-7972-a60a-006e348f3bae",
+  "occurred_at": "2026-04-06T06:23:40.657478Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3e75",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enable @typescript-eslint/no-floating-promises ESLint rule",
+    "type": "work",
+    "updated_at": "2026-04-06T06:23:40.657478Z",
+    "workflow_id": "compatibility"
+  }
+}

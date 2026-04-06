@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3ea8-f502-7ba3-a508-4c1653d80038",
+  "occurred_at": "2026-03-30T12:12:33.410762Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Navigating from any view to ReTakes produces no visible horizontal shift or jitter in the top navigation row.\n2. Navigating from any view to Diagnostics produces no visible horizontal shift or jitter in the top navigation row.\n3. The Foolery icon remains at the exact same screen position during and after every view transition.\n4. The rightmost nav element (Diagnostics or Add button) remains at the exact same screen position during and after every view transition.\n5. No regressions: navigating between all other views still produces no jitter."
+  }
+}

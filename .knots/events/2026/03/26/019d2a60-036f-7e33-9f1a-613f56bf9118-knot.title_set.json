@@ -1,0 +1,10 @@
+{
+  "event_id": "019d2a60-036f-7e33-9f1a-613f56bf9118",
+  "occurred_at": "2026-03-26T13:40:28.65519Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Remove beat “type” column from Queues screen",
+    "to": "Remove the Type column from the Queues screen"
+  }
+}

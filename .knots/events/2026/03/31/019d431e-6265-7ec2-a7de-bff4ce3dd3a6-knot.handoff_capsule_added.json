@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431e-6265-7ec2-a7de-bff4ce3dd3a6",
+  "occurred_at": "2026-03-31T08:59:17.989141Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the Settings > Agents OpenCode dropdown label fix on branch foolery-5cc7. OpenCode scanned options now derive their visible label from the last non-empty '/'-delimited model-id token while preserving the original modelId/value. The dropdown option label span now wraps instead of truncating so long final tokens remain visible. Added regression tests for OpenCode scan labels and visible selected-label rendering. Validation: bunx tsc --noEmit; bun run lint; bun run test; bun run build.",
+    "datetime": "2026-03-31T08:59:17.989141Z",
+    "entry_id": "019d431e-6265-7ec2-a7de-bfee1798d140",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

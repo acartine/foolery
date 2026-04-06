@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4303-ea9d-7dd2-a544-31f0bcefd4b4",
+  "occurred_at": "2026-03-31T08:30:23.389619Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented a tighter scrollbar gutter reservation for beats screens by changing `src/app/globals.css` to `scrollbar-gutter: stable both-edges;` and updated `src/lib/__tests__/beats-page-layout.test.ts` to lock that contract. Validation: `bun run lint` (passes with one pre-existing React Compiler warning in `src/components/beat-form.tsx:368`), `bunx tsc --noEmit`, `bun run test` (207 files, 2365 tests passed), and `bun run build` all passed. Browser verification on `http://localhost:3010/beats?repo=%2FUsers%2Fcartine%2Ffoolery` using Playwright showed identical header coordinates across Queues, ReTakes, and Diagnostics: Home left=54.474px/right=206.463px; rightmost nav left=1186.633px/right=1317.500px in every measured transition state. Branch: `foolery-44f1-fix-jitter`, commit: `440b0eeb`.",
+    "datetime": "2026-03-31T08:30:23.389619Z",
+    "entry_id": "019d4303-ea9d-7dd2-a544-31e3827ce080",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

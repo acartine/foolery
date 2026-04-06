@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b7-f9ba-7d41-90f4-b0d2eee63e88",
+  "occurred_at": "2026-04-01T15:44:47.034757Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment blocked (session 3): git push origin main is denied by shell policy. Commits 808a1235 and d661bd7e are on local main and ready. User must run `git push origin main` manually to unblock, then re-trigger shipment.",
+    "datetime": "2026-04-01T15:44:47.034757Z",
+    "entry_id": "019d49b7-f9ba-7d41-90f4-b0c4e596c2e7",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a60-036f-7e33-9f1a-61480952841e",
+  "occurred_at": "2026-03-26T13:40:28.65519Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Remove the “Type” column from the Queues screen because it does not provide useful information in the current view; the value shown is always “work.”"
+  }
+}

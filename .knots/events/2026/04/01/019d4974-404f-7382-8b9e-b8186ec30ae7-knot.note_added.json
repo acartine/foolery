@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4974-404f-7382-8b9e-b8186ec30ae7",
+  "occurred_at": "2026-04-01T14:30:48.653892Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Review found implementation gaps vs acceptance criteria: (1) dependency edits from beat detail do not trigger beat list invalidation, so queue/active list may not refresh within 1 second after this user action. In src/components/use-beat-detail-data.ts, useAddDepMutation onSuccess only invalidates ['beat-deps', detailId, repo] and never invalidates beat list. (2) No Playwright/e2e test exists for create/update latency (no Playwright files/config in repo), so acceptance criterion requiring Playwright network-timing assertions for <1s refresh is not satisfied.,",
+    "datetime": "2026-04-01T14:30:48.653892Z",
+    "entry_id": "019d4974-404f-7382-8b9e-b80fad7cb18a",
+    "model": "codex-spark/gpt",
+    "username": "Codex",
+    "version": "5.3"
+  }
+}

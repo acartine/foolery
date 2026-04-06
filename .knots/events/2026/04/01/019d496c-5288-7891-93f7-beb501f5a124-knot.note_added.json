@@ -1,0 +1,15 @@
+{
+  "event_id": "019d496c-5288-7891-93f7-beb501f5a124",
+  "occurred_at": "2026-04-01T14:22:09.031565Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment issue: implementation changes are uncommitted in the working directory. git diff shows 4 modified files (src/app/beats/page.tsx, src/app/beats/use-beat-actions.ts, src/components/filter-bar.tsx, src/components/beat-table-mutations.tsx) and 2 untracked test files (use-beat-actions-refine-scope.test.ts, bulk-refine-scope.test.ts). No commit was made to main. Shipment step must commit and push these changes before shipment review can proceed.",
+    "datetime": "2026-04-01T14:22:09.031565Z",
+    "entry_id": "019d496c-5288-7891-93f7-beade0879930",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

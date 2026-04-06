@@ -1,0 +1,10 @@
+{
+  "event_id": "019d42e6-45ce-7650-bd7f-5a2994bb87e3",
+  "occurred_at": "2026-03-31T07:58:00.654352Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Beat Detail: Clicking on title makes text box hilariously small",
+    "to": "Title Editor Expands to Lightbox Width Without Overlapping Close Button"
+  }
+}

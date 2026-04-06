@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eed-fac5-74e2-90f9-9fa723dd67fc",
+  "occurred_at": "2026-03-30T13:27:56.869463Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on branch feat/foolery-23f3 (commit c264551c9e0e). Changes: (1) Renamed OpenAI provider to Codex in AgentProviderId type, PROVIDER_LABELS, detectAgentProviderId, normalizeAgentIdentity, formatAgentFamily, normalizeCopilotModel, and VENDOR_CONFIG in agent-info-bar. (2) Rewrote settings-agents-scanned.tsx: removed per-row Add button, registered pill, and Add All button; added full CLI path display below agent name; removed agent.id text before dropdown; converted single-select to multi-select combobox with pill badges for selected models. (3) Updated settings-agents-hooks.tsx: state changed from Record<string, string> to Record<string, string[]> for multi-select; added toggleOption; removed addAllAgents and handleAddAll; handleAddScanned now adds all selected options. (4) Updated settings-agents-section.tsx: removed handleAddAll usage; Scan button uses success-light variant, Add button uses success variant. (5) Updated settings-scan.test.ts and settings-coverage.test.ts for Codex provider assertion. All quality gates pass: lint (0 errors), tsc --noEmit (clean), 206 test files / 2355 tests pass, build succeeds.",
+    "datetime": "2026-03-30T13:27:56.869463Z",
+    "entry_id": "019d3eed-fac5-74e2-90f9-9f9bdeb7526e",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

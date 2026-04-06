@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3eb2-916a-7450-8a84-d89cbec4be06",
+  "occurred_at": "2026-03-30T12:23:03.274549Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Collect and save token counts per agent per beat",
+    "to": "Collect and display token counts per agent for each beat"
+  }
+}

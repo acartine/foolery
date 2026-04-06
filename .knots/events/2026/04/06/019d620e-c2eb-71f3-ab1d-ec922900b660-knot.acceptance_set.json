@@ -1,0 +1,9 @@
+{
+  "event_id": "019d620e-c2eb-71f3-ab1d-ec922900b660",
+  "occurred_at": "2026-04-06T09:10:27.814511Z",
+  "knot_id": "foolery-b784",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. When switching to All Repositories Mode, the UI immediately shows a loading state that communicates progress (not just a spinner).\n2. As each repo's data arrives, rows appear smoothly without jarring table reflow.\n3. User's scroll position is preserved when new data is inserted.\n4. A clear completion signal indicates when all repos have finished loading.\n5. The empty state correctly distinguishes 'still loading' from 'no results found across all repos'.\n6. Animations respect prefers-reduced-motion.\n7. No regressions in single-repo mode UX."
+  }
+}

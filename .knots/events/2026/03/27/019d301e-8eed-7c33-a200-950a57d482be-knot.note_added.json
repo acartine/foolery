@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301e-8eed-7c33-a200-950a57d482be",
+  "occurred_at": "2026-03-27T16:26:42.285103Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Overview\n\nAdd a Speed & Throughput section to the audit screen that shows cost-adjusted agent performance using duration data from a43f.\n\n### New helper functions (lease-audit-helpers.ts)\n\n**1. `buildSpeedTable(events, aggregates)`** → `SpeedRow[]`\nPer agent per step:\n- `rawMedian`: median duration per attempt (from `aggregateDurations`)\n- `successRate`: from existing aggregate data\n- `attemptsPerShip`: `1 / successRate`\n- `effectiveSpeed`: `(avgStepDuration + rejectionRate * avgReviewDuration) / successRate`\n- `n`: timed event count\n\nThe effective speed formula accounts for wasted review time. For each produce step (planning, implementation, shipment), the corresponding review step duration is factored in.\n\nStep → Review mapping:\n- planning → plan_review\n- implementation → implementation_review\n- shipment → shipment_review\n\n**2. `formatDuration(ms)`** → human-readable string (e.g., '4m 30s', '12m')\n\n### New UI components (lease-audit-view.tsx)\n\n**1. SpeedTable** — new section after agent breakdown\n- Shows per-agent per-step: Raw Speed, Rate, Attempts/Ship, Effective Speed, n\n- Color-code effective speed (green = faster than mean, red = slower)\n- If no timed events exist, show 'Duration data collecting...' message\n- If partial coverage, show n/total\n\n**2. Update AgentBreakdownTable**\n- Add Median and Effective Speed columns to existing per-agent breakdown\n- Show '-' when no timed data for a step\n\n### Data flow\n\n1. API already returns `events` alongside `aggregates`\n2. Pass `events` to `aggregateDurations()` (from a43f) to get `DurationStats[]`\n3. Pass `DurationStats[]` + `aggregates` to `buildSpeedTable()` to compute effective speeds\n4. Render in SpeedTable component\n\n### Edge cases\n\n- 0% success rate → effective speed = Infinity → show 'N/A'\n- No timed events → show collecting message\n- Mixed timed/untimed → show n/total coverage indicator\n- Review step has no timing data → use 0 for review overhead (conservative)\n\n### Files changed\n\n1. `src/components/lease-audit-helpers.ts` — add SpeedRow type, buildSpeedTable, formatDuration\n2. `src/components/lease-audit-view.tsx` — add SpeedTable component, update AgentBreakdownTable with speed columns\n\n### Test strategy\n\n- Unit test: buildSpeedTable computes correct effective speed with known inputs\n- Unit test: formatDuration produces correct output for various ms values\n- Unit test: handles 0% success rate gracefully\n- Unit test: handles no timed events gracefully\n- Existing tests pass unchanged",
+    "datetime": "2026-03-27T16:26:42.285103Z",
+    "entry_id": "019d301e-8eed-7c33-a200-94fdca02a92e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

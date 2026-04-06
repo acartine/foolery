@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3ee2-139b-7331-9792-e243a376680f",
+  "occurred_at": "2026-03-30T13:14:56.795311Z",
+  "knot_id": "foolery-2e06",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Define diagnostics health model",
+    "to": "Design diagnostics health model separating client and server health from raw perf traces"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d77-7065-7dd1-b291-677b794b6ff9",
+  "occurred_at": "2026-04-02T09:12:46.437739Z",
+  "knot_id": "foolery-5de9",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In Queue/Active screens, the scroll pane stops before reaching the top of the list when the terminal is running, and this also happens when the terminal is minimized. The scrolling range is being computed without accounting for the visible viewport changes caused by terminal state. Update the scroll logic so the container always allows scrolling to the true start of content based on current visibility."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d3f-4486-7593-a8fb-ee332c2b42f5",
+  "occurred_at": "2026-04-02T08:11:25.184263Z",
+  "knot_id": "foolery-39c1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Child knots exist for protocol design, shared runtime/interface work, and each of Codex, OpenCode, Gemini, and Copilot interactive-session implementations.\n2. The decomposition preserves a concrete protocol for turn completion, session completion, watchdog timeout, retry, and abort semantics.\n3. The resulting plan removes hard-coded Claude-only interactivity assumptions in favor of declared agent capabilities.\n4. Child knots define enough scope to implement and verify the protocol without inventing a second tracker."
+  }
+}

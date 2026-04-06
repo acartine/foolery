@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-4970-7710-b217-8a090102cbe3",
+  "occurred_at": "2026-03-31T08:47:10.704014Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update the Scan model selector in Settings → Agents so its Gemini model options are exactly the required set. Replace the current list with only: 3.1-pro-preview, 3-flash-preview, 2.5-pro, 2.5-flash, and 2.5-flash-lite. Do not change any other Settings behavior."
+  }
+}

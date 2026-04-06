@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb8-6ca2-7393-8e82-6d6934db362c",
+  "occurred_at": "2026-03-30T12:29:27.074095Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit 3b4ca4f1d2f8 is live on main. CI (Coverage Badge run 23744660324) passed green. The fix replaces the fixed-width flex layout in PoolAgentRow with a CSS grid that sizes the agent-identity column from rendered content, preventing multi-pill agents from overlapping the number input. A layout contract test guards against regression. No invariants to check; no regressions detected.",
+    "datetime": "2026-03-30T12:29:27.074095Z",
+    "entry_id": "019d3eb8-6ca2-7393-8e82-6d5122b98629",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

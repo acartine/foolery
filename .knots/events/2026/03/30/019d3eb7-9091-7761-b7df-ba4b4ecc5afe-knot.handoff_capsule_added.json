@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb7-9091-7761-b7df-ba4b4ecc5afe",
+  "occurred_at": "2026-03-30T12:28:30.737928Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Fast-forward merged foolery-7a57 branch (commit 3b4ca4f1d2f8) to main. All quality gates passed locally (lint, tsc, 200/200 test files, 2314 tests). Pushed to origin/main. CI (Coverage Badge run 23744660324) passed green.",
+    "datetime": "2026-03-30T12:28:30.737928Z",
+    "entry_id": "019d3eb7-9091-7761-b7df-ba38bb7b0d56",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

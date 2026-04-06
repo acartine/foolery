@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb3-4210-7bc2-82d2-f83aeefcd24f",
+  "occurred_at": "2026-03-30T12:23:48.496326Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented stable scrollbar gutter reservation in src/app/globals.css so the shared top nav stays anchored when ReTakes or Diagnostics do not need a body scrollbar. Added a regression assertion in src/lib/__tests__/beats-page-layout.test.ts. Validation passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Branch: foolery-44f1. Commit: ddbde9dda1cb.",
+    "datetime": "2026-03-30T12:21:51Z",
+    "entry_id": "019d3eb3-4210-7bc2-82d2-f82c519e6cb8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

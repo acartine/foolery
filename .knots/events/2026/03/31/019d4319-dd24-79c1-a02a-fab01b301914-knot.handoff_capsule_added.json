@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4319-dd24-79c1-a02a-fab01b301914",
+  "occurred_at": "2026-03-31T08:54:21.732376Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented on branch foolery-6a0d at commit c98c9c455d12. Updated the lightbox header so the title editor uses the full remaining header width while the Close button stays shrink-0, and restyled the editing input to be borderless and chrome-free so it reads like inline text editing. Added a regression test covering the reserved close-button space and full-width chrome-less editor classes. Validation in /Users/cartine/foolery-6a0d: bun run lint (passes with one existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-31T08:54:21.732376Z",
+    "entry_id": "019d4319-dd24-79c1-a02a-faa2111f98d0",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

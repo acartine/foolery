@@ -1,0 +1,9 @@
+{
+  "event_id": "019d446b-bdbd-70c3-9d2a-cafda4dcbd10",
+  "occurred_at": "2026-03-31T15:03:24.861929Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Start agents working in terminal sessions in the UI (Browser A)\n2. Open the web UI in a different browser instance or new window (Browser B)\n3. Verify Browser B displays all active terminals visible in Browser A\n4. Verify Browser B shows real-time updates to terminal state (rolling indicators, status changes)\n5. Verify control buttons (stop, etc.) function correctly in the new instance\n6. Verify terminal state remains consistent across instances after multiple interactions\n\nTo validate: Use Playwright with multiple browser contexts (or separate windows), start agents in one context, then verify the other context reflects the same active terminals and receives live updates."
+  }
+}

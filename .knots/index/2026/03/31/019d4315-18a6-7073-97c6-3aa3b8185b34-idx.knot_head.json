@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4315-18a6-7073-97c6-3aa3b8185b34",
+  "occurred_at": "2026-03-31T08:49:09.266423Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5cc7",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Settings > Agents: Fix truncated OpenCode model names in dropdown",
+    "type": "work",
+    "updated_at": "2026-03-31T08:49:09.266423Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4472-111c-71c3-adea-cfae56c84523",
+  "occurred_at": "2026-03-31T15:10:19.42022Z",
+  "knot_id": "foolery-2d86",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review: --add-step CLI flag does not exist. The actual kno CLI supports --actor-kind, --agent-name, --agent-model, --agent-version natively on both 'kno update' and 'kno next'. The fix is simpler than proposed: (1) Add agentName/agentModel/agentVersion to NextKnotOptions and serialize them in nextKnot(), (2) Pass lease.agentInfo through the existing nextKnot() call in completeIteration(), (3) Add step metadata fields to KnotUpdateInput and serialize in updateKnot(), (4) Pass step metadata in the existing rollbackIteration() updateKnot() call. No separate --add-step mechanism or pre-transition step recording is needed — the CLI creates step records implicitly when metadata flags are provided. The plan's proposed 'record step then transition' pattern would also risk duplicate step entries.",
+    "datetime": "2026-03-31T15:10:19.42022Z",
+    "entry_id": "019d4472-111c-71c3-adea-cf99df070713",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

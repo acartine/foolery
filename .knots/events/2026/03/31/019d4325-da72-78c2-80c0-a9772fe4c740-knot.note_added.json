@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4325-da72-78c2-80c0-a9772fe4c740",
+  "occurred_at": "2026-03-31T09:07:27.474778Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected. The new response identity extractor is too broad: it treats unrelated nested ids as agentModel values, so responses without provider/model metadata can be mislabeled (confirmed with message.id -> msg_d42af031b001E9LrZkGS9Wy7jp). The added UI regression test also does not run because the unit Vitest config includes src/**/__tests__/**/*.test.ts, while the new file is src/components/__tests__/agent-history-session-card.test.tsx.",
+    "datetime": "2026-03-31T09:07:27.474778Z",
+    "entry_id": "019d4325-da72-78c2-80c0-a96740baa037",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f4d-9d23-78f1-933e-833eb1f84bbc",
+  "occurred_at": "2026-03-30T15:12:24.355211Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Implementation review rejected. 1. Acceptance criteria 1 and 3 are not validated by the current browser check: scripts/test-copilot-settings-ui.mjs still performs a single add at lines 53-55 and waits for a 'registered' marker, but src/components/settings-agents-scanned.tsx lines 336-349 now render selected-model pills instead of that legacy state, and src/components/__tests__/settings-agents-scanned.test.ts lines 138-140 explicitly assert that 'registered' is absent. 2. Acceptance criterion 1 cannot be exercised end-to-end because scripts/test-fixtures/fake-copilot.sh lines 17-33 do not implement 'copilot help config', so the scan fixture does not expose multiple models from one scan session. 3. Acceptance criterion 4 also lacks direct coverage: the added unit tests in src/components/__tests__/settings-agents-scanned.test.ts are static-markup checks and do not exercise canceling with zero selections or persisting multiple selections from a single scan.",
+    "datetime": "2026-03-30T15:12:24.355211Z",
+    "entry_id": "019d3f4d-9d23-78f1-933e-832595b51765",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

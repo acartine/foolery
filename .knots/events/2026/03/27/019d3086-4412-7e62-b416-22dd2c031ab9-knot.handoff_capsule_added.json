@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3086-4412-7e62-b416-22dd2c031ab9",
+  "occurred_at": "2026-03-27T18:19:58.866983Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan is to normalize display-only version rendering in update surfaces without mutating release metadata. Implementation should stay small, reuse a single formatter, and add regression coverage for both `v0.6.2` and `0.6.2` inputs so the UI can never render `vv...` again.",
+    "datetime": "2026-03-27T18:19:58.866983Z",
+    "entry_id": "019d3086-4412-7e62-b416-22ccf49cb54c",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

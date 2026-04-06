@@ -1,0 +1,17 @@
+{
+  "event_id": "019d43e2-f07d-79f3-b2e4-ea5786761e80",
+  "occurred_at": "2026-03-31T12:33:59.421575Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.created",
+  "data": {
+    "body": "the screen provides no feedback when the repository selection has changed, then a few seconds later it updates.\n\nwe should probably clear the view (skeleton ui maybe?) and show some kind of spinner to let users know that we are fetching the related data.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Screen loading when changing repository selection",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

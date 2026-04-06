@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4488-c62a-7e40-873d-642b094c37e4",
+  "occurred_at": "2026-03-31T15:35:07.551196Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7e6d",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Active terminals don't appear in new browser instances",
+    "type": "work",
+    "updated_at": "2026-03-31T15:35:07.551196Z",
+    "workflow_id": "compatibility"
+  }
+}

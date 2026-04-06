@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb0-08ea-7770-97a6-a204b5ba68ab",
+  "occurred_at": "2026-03-30T12:20:17.258729Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Root cause confirmed: PoolAgentRow uses fixed w-[140px]/w-[220px] shrink-0 on the agent label container, which cannot accommodate multi-pill AgentDisplayLabel output. Proposed CSS grid or content-aware flex fix is sound and correctly scoped to settings-pools-section.tsx. AgentDisplayLabel itself needs no changes. Test strategy (layout contract + manual) is adequate. No invariant violations.",
+    "datetime": "2026-03-30T12:20:17.258729Z",
+    "entry_id": "019d3eb0-08ea-7770-97a6-a1f1af8fa61e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

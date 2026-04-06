@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ec1-7196-7f02-ab89-5464f65297b9",
+  "occurred_at": "2026-03-30T12:39:18.166613Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped merge commit f46e477d6945 to origin/main from current origin/main baseline. Verified local gates in /private/tmp/foolery-aae0-ship.ZHZTBa with bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test (2335 passed), and bun run build. Verified remote GitHub Actions succeeded for commit f46e477d6945: CI https://github.com/acartine/foolery/actions/runs/23745056114 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23745056079.",
+    "datetime": "2026-03-30T12:39:18Z",
+    "entry_id": "019d3ec1-7196-7f02-ab89-545153923256",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

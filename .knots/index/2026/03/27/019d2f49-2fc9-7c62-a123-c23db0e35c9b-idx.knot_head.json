@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2f49-2fc9-7c62-a123-c23db0e35c9b",
+  "occurred_at": "2026-03-27T12:33:38.756203Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9b5c",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Project names with hyphens - handle prefix strip correctly",
+    "type": "work",
+    "updated_at": "2026-03-27T12:33:38.756203Z",
+    "workflow_id": "compatibility"
+  }
+}

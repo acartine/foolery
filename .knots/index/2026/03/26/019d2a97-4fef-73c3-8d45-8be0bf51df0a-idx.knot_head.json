@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2a97-4fef-73c3-8d45-8be0bf51df0a",
+  "occurred_at": "2026-03-26T14:40:52.713541Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9345",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Inline title below metadata row instead of dedicated column in Queues and Active tables",
+    "type": "work",
+    "updated_at": "2026-03-26T14:40:52.713541Z",
+    "workflow_id": "compatibility"
+  }
+}

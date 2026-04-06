@@ -1,0 +1,10 @@
+{
+  "event_id": "019d2ed6-9915-7333-9ce5-897740023d14",
+  "occurred_at": "2026-03-27T10:28:29.077036Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queues/Active views:  move divider line to under last updated and tags",
+    "to": "Queues/Active views: move divider below last updated and tags"
+  }
+}

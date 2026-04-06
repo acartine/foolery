@@ -1,0 +1,10 @@
+{
+  "event_id": "019d42ec-2cc9-7b03-8d16-8c046ca44072",
+  "occurred_at": "2026-03-31T08:04:27.465457Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.title_set",
+  "data": {
+    "from": "settings: agents: scan: pulldowns for claude, codex, gemini are utterly broken",
+    "to": "Settings: Agent model pulldowns for Claude, Codex, and Gemini show incorrect options and selections"
+  }
+}

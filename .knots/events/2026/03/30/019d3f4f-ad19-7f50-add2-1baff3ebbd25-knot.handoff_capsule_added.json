@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f4f-ad19-7f50-add2-1baff3ebbd25",
+  "occurred_at": "2026-03-30T15:14:39.513546Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Approved in implementation review. Commit 835f1b37 removes the redundant static Escalations action from ActionButton by returning null for beatsView=finalcut, leaving the ViewSwitcher Escalations tab unchanged. Added unit coverage in src/components/__tests__/app-header-parts.test.ts asserting ActionButton returns null for finalcut. Validation re-run passed: bun run test -- src/components/__tests__/app-header-parts.test.ts, bun run lint (existing warning only in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run build.",
+    "datetime": "2026-03-30T15:14:39.513546Z",
+    "entry_id": "019d3f4f-ad19-7f50-add2-1b98e87d59df",
+    "model": "openrouter/z-ai/glm-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

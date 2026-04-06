@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f54-9f37-7bb3-89be-ae8b71637a09",
+  "occurred_at": "2026-03-30T15:20:03.639661Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment review approved: origin/main is at 835f1b3705f3 (live HEAD 835f1b37). Knot tag commit:835f1b3705f3 is present. Verified src/components/app-header-parts.tsx returns null for beatsView=\"finalcut\", while the ViewSwitcher still defines the Escalations tab. Confirmed GitHub Actions CI run 23752342026 and Coverage Badge run 23752342031 both completed successfully for SHA 835f1b3705f339730b71d58ef2c3e61ba95e293a. Unrelated untracked directory .test-copilot-settings-ui/ was present locally but did not affect the read-only review of shipped main.",
+    "datetime": "2026-03-30T15:20:03.639661Z",
+    "entry_id": "019d3f54-9f37-7bb3-89be-ae7239f44263",
+    "model": "openrouter/z-ai/glm-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d51ce-f7a3-7fa2-866b-b475173349ab",
+  "occurred_at": "2026-04-03T05:26:51.555594Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a new 'Acceptance criteria' column to the active item overview in the queues/active screen. This column should be inserted as the 2nd column (immediately after the description column). This provides users with a clear, at-a-glance view of what defines done for each active item."
+  }
+}

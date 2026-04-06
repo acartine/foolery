@@ -1,0 +1,24 @@
+{
+  "event_id": "019d4473-5b55-7821-bc00-610049e314fc",
+  "occurred_at": "2026-03-31T15:11:43.957621Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f3eb",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Show loading feedback when repository selection changes",
+    "type": "work",
+    "updated_at": "2026-03-31T15:11:43.957621Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d4473-0e7d-77a2-95b1-ede2cbb34dfa"
+  }
+}

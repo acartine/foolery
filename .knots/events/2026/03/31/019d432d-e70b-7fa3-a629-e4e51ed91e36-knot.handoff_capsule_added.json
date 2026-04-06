@@ -1,0 +1,15 @@
+{
+  "event_id": "019d432d-e70b-7fa3-a629-e4e51ed91e36",
+  "occurred_at": "2026-03-31T09:16:14.987458Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation_review. Verified the history label now derives from explicit response metadata/provider-model fields instead of unrelated nested ids, so OpenRouter-backed responses keep their provider/model identity and sessions without response metadata still fall back to the session-start agent label. Confirmed the new SessionCard regression test is discovered via the widened Vitest include for .test.tsx files, and the parser tests cover both metadata override and no-metadata fallback. Sanity gates passed in /Users/cartine/foolery/.worktrees/foolery-b45e: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-31T09:16:14.987458Z",
+    "entry_id": "019d432d-e70b-7fa3-a629-e4d4dc51f68b",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

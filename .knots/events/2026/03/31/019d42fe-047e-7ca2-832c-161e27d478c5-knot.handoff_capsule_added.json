@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42fe-047e-7ca2-832c-161e27d478c5",
+  "occurred_at": "2026-03-31T08:23:56.798695Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment completed from existing main state: commit 32fd3e5f9ece was already present on local main and origin/main, so no merge commit or push was required in this session. Verified remote GitHub Actions for this commit on main are green: CI run 23786548209 succeeded and Coverage Badge run 23786548248 succeeded. No new shipment commits were created.",
+    "datetime": "2026-03-31T08:23:22Z",
+    "entry_id": "019d42fe-047e-7ca2-832c-16071c8e14cf",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-31"
+  }
+}

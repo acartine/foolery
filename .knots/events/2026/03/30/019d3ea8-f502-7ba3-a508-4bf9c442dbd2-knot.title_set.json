@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3ea8-f502-7ba3-a508-4bf9c442dbd2",
+  "occurred_at": "2026-03-30T12:12:33.410762Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Clicking on ReTakes or Diagnostics from any other view causes the page to jitter outward to both left and right",
+    "to": "Fix page jitter when navigating to ReTakes or Diagnostics views"
+  }
+}

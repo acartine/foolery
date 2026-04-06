@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eda-aabb-7892-b482-b613edca13e5",
+  "occurred_at": "2026-03-30T13:06:51.195028Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review REJECTED. Violations: (1) Grid layout from 3b4ca4f1 not reverted — settings-pools-section.tsx unchanged from main, contradicting explicit revert instruction. (2) Approach uses flex-wrap on shared AgentDisplayLabel instead of stacking pills beneath the agent name as specified. (3) AgentDisplayLabel changed from inline-flex to block-level flex, risking regressions in 7+ consumers with no analysis. Required: revert 3b4ca4f1 changes to settings-pools-section.tsx, solve overlap by stacking pills below agent name within the pool row only, leave AgentDisplayLabel default display model unchanged.",
+    "datetime": "2026-03-30T13:06:51.195028Z",
+    "entry_id": "019d3eda-aabb-7892-b482-b60e4bf0bab4",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

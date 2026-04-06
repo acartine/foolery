@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d3f-94df-7a71-acb0-0a52254c6031",
+  "occurred_at": "2026-04-02T08:11:45.759806Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2b52",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Document the interactive agent session protocol",
+    "type": "work",
+    "updated_at": "2026-04-02T08:11:45.759806Z",
+    "workflow_id": "compatibility"
+  }
+}

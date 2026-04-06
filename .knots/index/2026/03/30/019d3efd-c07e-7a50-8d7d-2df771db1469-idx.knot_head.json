@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3efd-c07e-7a50-8d7d-2df771db1469",
+  "occurred_at": "2026-03-30T13:45:10.526591Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-177c",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "ReTakes:  Handoff capsules have bad agent metadata, steps are missing",
+    "type": "work",
+    "updated_at": "2026-03-30T13:45:10.526591Z",
+    "workflow_id": "compatibility"
+  }
+}

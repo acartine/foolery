@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d40-7a5d-7b41-a5b5-8e5509c725dd",
+  "occurred_at": "2026-04-02T08:12:44.509567Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement Copilot on top of the shared interactive session protocol instead of leaving it on a separate prompt-mode path. Choose a stable Copilot interactive/session entrypoint, keep follow-up turn transport open within the same session, normalize Copilot events into the shared event model, and enforce the same turn-result, session-end, close-input, watchdog, retry, and abort semantics used for the other interactive agents. Preserve existing model-selection support while removing Claude-specific interactive assumptions from the runtime.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add interactive Copilot session support",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

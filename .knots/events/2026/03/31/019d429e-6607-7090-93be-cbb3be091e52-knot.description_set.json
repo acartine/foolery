@@ -1,0 +1,9 @@
+{
+  "event_id": "019d429e-6607-7090-93be-cbb3be091e52",
+  "occurred_at": "2026-03-31T06:39:30.311803Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "- show a nonsense name row that means nothing - you don't even know what model is select\n- only shows one row despite many models being offered\n- the Claude section shows \"Claude\" as the selected model, instead of Opus 4.6\n- you need to be able to \"unselect\" models in case you select the wrong one.\n\ndefiition of done is claude, codex, gemini should show all available models.\nthe selected models pills should actually show the name of the selected model.  not nonsense like \"Gemini\" and \"Claude\""
+  }
+}

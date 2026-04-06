@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aad-4b3b-70a2-a891-7dc30dbcbec3",
+  "occurred_at": "2026-03-26T15:04:53.307042Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on feat/foolery-6aaf (27cf50d62f60). VersionBadge is now a clickable button wrapped in a Popover. Clicking triggers checkForUpdates() which fetches /api/version?force=1. Popover shows: (1) 'Checking for updates…' spinner during fetch, (2) 'Latest version installed' with green check when up-to-date, (3) 'Update now to v{version}' actionable Button when update available — clicking copies 'foolery update' to clipboard, (4) error state with Retry button. The checkForUpdates function is exported and tested with 6 unit tests covering all branches: update-available, up-to-date, HTTP error, null latestVersion edge case, abort signal passthrough, and network failure propagation. All quality gates pass: 0 lint errors, clean typecheck, 2257 tests passing, build succeeds.",
+    "datetime": "2026-03-26T15:04:53.307042Z",
+    "entry_id": "019d2aad-4b3b-70a2-a891-7db2ba3c3c94",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

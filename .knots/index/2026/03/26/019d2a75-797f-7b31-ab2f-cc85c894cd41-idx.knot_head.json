@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2a75-797f-7b31-ab2f-cc85c894cd41",
+  "occurred_at": "2026-03-26T14:03:55.12654Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9df0",
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_implementation_review",
+    "terminal": false,
+    "title": "bash errors in foolery stop",
+    "type": "work",
+    "updated_at": "2026-03-26T14:03:55.12654Z",
+    "workflow_id": "compatibility"
+  }
+}

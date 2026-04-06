@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d40-4c59-7841-8a91-49a532b15cdc",
+  "occurred_at": "2026-04-02T08:12:32.729218Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement Gemini on top of the shared interactive session protocol instead of routing it through fallback Claude assumptions. Choose a stable Gemini interactive/session entrypoint, define how prompts and follow-up turns are delivered, normalize Gemini session events into the shared event model, and enforce shared completion, close-input, process-exit, inactivity-timeout, retry, and abort semantics. If Gemini requires a thin launcher or adapter to expose machine-readable session events, scope that work here.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add interactive Gemini session support",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

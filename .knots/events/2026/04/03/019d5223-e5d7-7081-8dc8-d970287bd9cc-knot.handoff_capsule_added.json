@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5223-e5d7-7081-8dc8-d970287bd9cc",
+  "occurred_at": "2026-04-03T06:59:37.559736Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan completed for shared interactive agent session runtime. Key decisions:\n\n1. **AgentSessionCapabilities interface** in agent-adapter.ts replaces all `dialect === \"claude\"` checks with structured capability lookups (interactive, promptTransport, followUpSupport, stdinDrain, watchdog).\n\n2. **agent-session-io.ts** (new ~250 lines) centralizes duplicated I/O wiring from terminal-manager-initial-io.ts and terminal-manager-take-child.ts — stdin helpers, auto-answer, stdout parsing, close/error handlers.\n\n3. **agent-session-watchdog.ts** (new ~60 lines) adds configurable inactivity watchdog per dialect capability.\n\n4. **9-step implementation** with clear dependency graph. Steps 1-4 create new abstractions, Steps 5-7 refactor consumers, Steps 8-9 add conformance tests.\n\n5. **Net impact:** ~600 new lines, ~580 removed (dedup), ~530 test lines. 5 files modified, 5 new.\n\nNo child knots created — single-knot implementation scope.",
+    "datetime": "2026-04-03T06:59:37.559736Z",
+    "entry_id": "019d5223-e5d7-7081-8dc8-d96440e50937",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4319-0876-7d72-a6cc-30f30fe78889",
+  "occurred_at": "2026-03-31T08:53:27.286925Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved for implementation. The scope is correctly limited to display-label rendering in Settings > Agents, preserving option ids and selected values. Updating buildModelLabelDisplayMap() to prefer the last slash-delimited token with collision-safe fallback addresses the OpenCode label issue without widening behavior changes. Removing truncation in the scanned-agent combobox is appropriate for meeting the full-label visibility requirement. The proposed tests for model-labels and settings-agents-scanned cover the acceptance criteria and the main ambiguity risk.",
+    "datetime": "2026-03-31T08:53:27.286925Z",
+    "entry_id": "019d4319-0876-7d72-a6cc-30e3dbf03226",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

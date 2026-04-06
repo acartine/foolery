@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d8-05d4-7561-8a5f-e9ebe495f6a3",
+  "occurred_at": "2026-04-03T05:36:45.012821Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review rejected. The proposed changes target table header columns in src/components/beat-columns.tsx, but the requirement language matches the focused-row overview grid in src/components/beat-table-summary.tsx, which currently renders Description, Notes, and Handoff Capsules. Revise the plan to add an Acceptance criteria summary column there as the second overview column, update the render guard so acceptance-only rows still show the overview, adjust the grid layout from 3 to 4 columns, and validate label/order/content/responsive behavior in the overview rather than table headers.",
+    "datetime": "2026-04-03T05:36:20Z",
+    "entry_id": "019d51d8-05d4-7561-8a5f-e9d7ce6fc3a3",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d448e-de8a-7aa1-bded-a5d8f9dbc8b5",
+  "occurred_at": "2026-03-31T15:41:47.018169Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Fixed input width by replacing flex-1 (useless, parent not flex) + missing w-full with block w-full. Root cause: input rendered at default inline-block intrinsic width (~209px) instead of filling the 1443px container. Also stripped visible border/bg/ring for seamless appearance. Verified via Playwright on port 3000 (main branch): input width 1443px, border 0px, background transparent, 8px gap before Close button. Committed to main and pushed (32bf30fb). Previous agents had the correct CSS fix but applied it only to worktree branches — user was always testing against main which remained broken.",
+    "datetime": "2026-03-31T15:41:47.018169Z",
+    "entry_id": "019d448e-de8a-7aa1-bded-a5cedfa10903",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3f59-aeb8-7b32-a103-556e08025cd5",
+  "occurred_at": "2026-03-30T15:25:35.288254Z",
+  "knot_id": "foolery-fafa",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "lease_ready",
+    "title": "Lease: foolery:terminal_manager_take:term-1774881851760-m9b1x7",
+    "type": "lease",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d42e6-0347-7a70-bbe8-d800757191e0",
+  "occurred_at": "2026-03-31T07:57:43.617259Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6a0d",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Beat Detail: Clicking on title makes text box hilariously small",
+    "type": "work",
+    "updated_at": "2026-03-31T07:57:43.617259Z",
+    "workflow_id": "compatibility"
+  }
+}

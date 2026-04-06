@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2edb-d580-7632-8413-ebf95ac11207",
+  "occurred_at": "2026-03-27T10:34:12.224957Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All quality gates pass (lint, typecheck, 2261 tests, build). Shared version-update-action.ts correctly extracts clipboard update logic into reusable hook consumed by both version badge and banner. Banner shows 'Update now' link button only when update available, triggers same clipboard-copy behavior as existing popover flow, and shows 'Copied update command' feedback. Tests cover the shared trigger (success + failure) and banner rendering/click wiring. No security issues, no invariant violations.",
+    "datetime": "2026-03-27T10:34:12.224957Z",
+    "entry_id": "019d2edb-d580-7632-8413-ebe1306e5b04",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

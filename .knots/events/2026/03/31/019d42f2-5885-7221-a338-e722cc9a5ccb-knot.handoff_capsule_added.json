@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f2-5885-7221-a338-e722cc9a5ccb",
+  "occurred_at": "2026-03-31T08:11:11.877796Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. Root cause: readDynamicModels() returns [] for Claude/Codex/Gemini, leaving only a single provider-only fallback option. Fix: add static model catalogs for each provider in settings-agent-scan.ts, and add a clear button to SelectedModelPills in settings-agents-scanned.tsx. 5 steps: (1) static catalogs, (2) verify merge with configured model, (3) verify fallback path, (4) clear button UI, (5) tests. Medium complexity, ~100-150 lines across 2-3 files.",
+    "datetime": "2026-03-31T08:11:11.877796Z",
+    "entry_id": "019d42f2-5885-7221-a338-e71d3863df36",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

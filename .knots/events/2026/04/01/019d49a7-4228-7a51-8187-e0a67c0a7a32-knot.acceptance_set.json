@@ -1,0 +1,9 @@
+{
+  "event_id": "019d49a7-4228-7a51-8187-e0a67c0a7a32",
+  "occurred_at": "2026-04-01T15:26:31.457285Z",
+  "knot_id": "foolery-c85c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Fields clear after successful create-more."
+  }
+}

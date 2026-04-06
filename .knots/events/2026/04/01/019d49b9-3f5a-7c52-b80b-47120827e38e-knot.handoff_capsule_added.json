@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b9-3f5a-7c52-b80b-47120827e38e",
+  "occurred_at": "2026-04-01T15:46:10.394525Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment blocked again: local main has commits 808a123557cd and d661bd7e6a7b but origin/main is 2 behind. Shell policy blocks `git push origin main`. User must push manually (`git push origin main`), then re-trigger the shipment step. Once push is confirmed, shipment step can tag commit hashes and advance to shipment_review.",
+    "datetime": "2026-04-01T15:46:10.394525Z",
+    "entry_id": "019d49b9-3f5a-7c52-b80b-470950a61f46",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

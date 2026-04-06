@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43c0-c614-7e92-82bb-42e242927dfd",
+  "occurred_at": "2026-03-31T11:56:40.340235Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the conversation-log pulldown formatting update on branch feat/foolery-284e-clean.\n\nChanges:\n- Added conversationNumber to interaction picker items so pulldown entries have a single explicit conversation identifier.\n- Updated pulldown entry rendering to show `Conversation #n · <prompt source>` and a date+time timestamp.\n- Added focused formatter tests for the pulldown surface.\n- Split the lease-audit leaderboard test describe block so lint passes under max-lines-per-function.\n\nValidation:\n- `bun run lint` (passes with one existing warning in src/components/beat-form.tsx from react-hooks/incompatible-library)\n- `bunx tsc --noEmit`\n- `bun run test`\n- `bun run build`",
+    "datetime": "2026-03-31T11:56:40.340235Z",
+    "entry_id": "019d43c0-c614-7e92-82bb-42deccce3fd3",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

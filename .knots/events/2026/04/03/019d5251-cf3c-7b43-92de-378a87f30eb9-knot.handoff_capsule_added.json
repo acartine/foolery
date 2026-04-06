@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5251-cf3c-7b43-92de-378a87f30eb9",
+  "occurred_at": "2026-04-03T07:49:46.428598Z",
+  "knot_id": "foolery-fd27",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Branch: foolery-fd27-fix2. Commit: bc59a64c1e50. Shared DropdownMenu now defaults modal=false to prevent Radix scroll-lock jitter, with a regression test covering the wrapper default. Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build; Playwright repo-switcher 10-cycle stability check at 1440x600 showed 0px x-delta for the repo trigger, adjacent controls, and filter comboboxes, with scrollLocked=false throughout open/close.",
+    "datetime": "2026-04-03T07:43:59Z",
+    "entry_id": "019d5251-cf3c-7b43-92de-3775eafbb908",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

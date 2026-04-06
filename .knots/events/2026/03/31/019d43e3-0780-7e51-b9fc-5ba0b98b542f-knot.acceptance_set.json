@@ -1,0 +1,9 @@
+{
+  "event_id": "019d43e3-0780-7e51-b9fc-5ba0b98b542f",
+  "occurred_at": "2026-03-31T12:34:05.312875Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) On repository change, the UI must clear stale content and show a loading indicator within 1 second.\n2) During loading, previously selected repository data must not remain visible.\n3) The loading indicator must remain visible until the new repository data is ready, then be removed only after the new content renders.\n4) Confirm in browser using playwright MCP (and/or chrome-devtools) that selecting a repository triggers the loading UI and that no stale content flash is shown before new data appears."
+  }
+}

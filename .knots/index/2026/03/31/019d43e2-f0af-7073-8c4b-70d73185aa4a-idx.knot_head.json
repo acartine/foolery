@@ -1,0 +1,21 @@
+{
+  "event_id": "019d43e2-f0af-7073-8c4b-70d73185aa4a",
+  "occurred_at": "2026-03-31T12:33:59.46534Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f3eb",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Screen loading when changing repository selection",
+    "type": "work",
+    "updated_at": "2026-03-31T12:33:59.46534Z",
+    "workflow_id": "compatibility"
+  }
+}

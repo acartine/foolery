@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed6-abf1-7333-a4d5-4f9bca05e199",
+  "occurred_at": "2026-03-27T10:28:33.905164Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch worktree-fix-920b-vertical-align (commit 602b9c431cb7). Changes: (1) TableCell align-top → align-middle in ui/table.tsx for consistent row vertical alignment. (2) Profile and owner-type ad-hoc pills normalized to h-5 height matching Badge primitive, removed py-0.5/leading-none. (3) Title column flex container switched from items-start to items-center, chevron button mt-0.5 removed. (4) Three regression tests added to beats-page-layout.test.ts verifying align-middle, h-5 pill height, and centered title column. All quality gates pass: lint, typecheck, 2260 tests, build.",
+    "datetime": "2026-03-27T10:28:33.905164Z",
+    "entry_id": "019d2ed6-abf1-7333-a4d5-4f868c4da6fe",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

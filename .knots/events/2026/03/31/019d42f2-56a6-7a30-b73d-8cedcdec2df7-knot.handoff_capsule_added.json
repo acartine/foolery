@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f2-56a6-7a30-b73d-8cedcdec2df7",
+  "occurred_at": "2026-03-31T08:11:11.398177Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review approved on commit aa1951bc2f01. Reviewed diff against origin/main: ReTakes row title container now uses min-width/flex shrink guards in src/components/retake-row-parts.tsx, with regression coverage in src/lib/__tests__/retake-row-layout.test.ts. Verified existing shared layout keeps scrollbar gutter stabilization in src/app/globals.css. Sanity gates passed in /Users/cartine/foolery/.knots/_worktree/foolery-44f1: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Browser validation on http://127.0.0.1:3001/beats confirmed stable header geometry across Queues, ReTakes, Diagnostics, and Active: header inner left/right 39.625px/1545.375px, Home button left 56.625px, Diagnostics button left/right 1295.546875px/1426.625px, Add button left/right 1440.375px/1528.375px where present, with no horizontal jitter observed.",
+    "datetime": "2026-03-31T08:11:11.398177Z",
+    "entry_id": "019d42f2-56a6-7a30-b73d-8cd66d63f31e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

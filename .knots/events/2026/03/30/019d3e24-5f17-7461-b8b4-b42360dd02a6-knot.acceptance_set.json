@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3e24-5f17-7461-b8b4-b42360dd02a6",
+  "occurred_at": "2026-03-30T09:47:44.27972Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Running the agent scan from the CLI allows the user to select and add more than one model in a single session.\n2. Previously added models do not block additional selections.\n3. All selected models are persisted correctly in settings.\n4. Selecting zero models (cancelling) still works without error."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb0-1299-77e3-9716-2eb745399c07",
+  "occurred_at": "2026-03-30T12:20:19.737051Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Add `scrollbar-gutter: stable` to the `html` rule in `src/app/globals.css` (one line). This reserves vertical scrollbar space permanently, preventing the layout shift caused by scrollbar appearing/disappearing between content-heavy list views and shorter ReTakes/Diagnostics views. No component changes needed.",
+    "datetime": "2026-03-30T12:20:19.737051Z",
+    "entry_id": "019d3eb0-1299-77e3-9716-2ea2774313ce",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d446e-c266-7ee2-861f-a68f2d86201a",
+  "occurred_at": "2026-03-31T15:06:42.662522Z",
+  "knot_id": "foolery-2d86",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete. Primary implementation should stay focused on the Knots wrapper and structured execution backend: add step fields to `KnotUpdateInput`, serialize them in `updateKnot()`, and record step entries with agent metadata during complete/rollback iteration flows. Test coverage should prove both CLI arg emission and execution-backend step writes with `agentInfo`.\n\nThe `kno update` CLI already supports step metadata flags, so no CLI fallback is needed. The conversation-log `knotsLeaseId` omission is real but should be handled as a separate follow-up unless implementation reveals a hard dependency.",
+    "datetime": "2026-03-31T15:06:42.662522Z",
+    "entry_id": "019d446e-c266-7ee2-861f-a674f85e8cc0",
+    "model": "gpt-5.4",
+    "username": "codex",
+    "version": "xhigh"
+  }
+}

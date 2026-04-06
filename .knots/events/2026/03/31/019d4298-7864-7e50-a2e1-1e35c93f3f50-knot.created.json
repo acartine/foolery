@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4298-7864-7e50-a2e1-1e35c93f3f50",
+  "occurred_at": "2026-03-31T06:33:01.796715Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.created",
+  "data": {
+    "body": "there is a string like OpenCode preceding all the model names - remove it.\nexpand the pulldown so that the full model name is revealed.\ntokenize modelname by '/' character and use the last token as the model name",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Agents: OpenCode: model pulldown truncates model names",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

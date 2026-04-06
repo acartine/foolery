@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42ec-2cc9-7b03-8d16-8c20cc2ab86f",
+  "occurred_at": "2026-03-31T08:04:27.465457Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- In Settings, the Claude, Codex, and Gemini model pulldowns each list all currently available models for that provider.\n- The pulldowns do not display meaningless, placeholder, or ambiguous option rows.\n- When a model is selected, the selected pill displays the actual model name, not the provider name or other generic text.\n- For Claude specifically, if Opus 4.6 is selected, the pill displays \"Opus 4.6\".\n- If multiple models are available for a provider, the pulldown shows multiple selectable rows rather than collapsing to a single row.\n- Users can clear or unselect a previously chosen model for Claude, Codex, and Gemini.\n- Clearing a selection updates the UI to show that no model is selected."
+  }
+}

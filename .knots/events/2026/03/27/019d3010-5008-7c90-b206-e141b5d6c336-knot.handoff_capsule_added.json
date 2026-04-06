@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3010-5008-7c90-b206-e141b5d6c336",
+  "occurred_at": "2026-03-27T16:11:08.680386Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Root cause: fire-and-forget appendLeaseAuditEvent in finalizeClaim (take-agent.ts:341). Fix: await the promise. One-line change, low risk.",
+    "datetime": "2026-03-27T16:11:08.680386Z",
+    "entry_id": "019d3010-5008-7c90-b206-e137150889ab",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

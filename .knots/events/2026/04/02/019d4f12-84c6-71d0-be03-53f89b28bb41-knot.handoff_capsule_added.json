@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f12-84c6-71d0-be03-53f89b28bb41",
+  "occurred_at": "2026-04-02T16:41:46.950284Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan needs revision before implementation. Verified root cause is plausible: shared SelectContent still defaults to position=\"item-aligned\" in src/components/ui/select.tsx, and Queues View multi-select/filter controls instantiate these selects in src/components/filter-bar.tsx. RepoSwitcher uses DropdownMenu, so it should remain part of verification scope but is likely not the root cause. Blocking issue: proposed automated coverage is only a source contract asserting the default value, which does not meet acceptance criterion 5 requiring Playwright or equivalent browser assertions for stable scroll position and nearby element boxes across every pulldown in this view. Once the plan explicitly adds that browser-level check, the implementation approach looks feasible.",
+    "datetime": "2026-04-02T16:41:26Z",
+    "entry_id": "019d4f12-84c6-71d0-be03-53ed67f6dc1a",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

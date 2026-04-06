@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42fb-257a-7d90-ac14-739e6d7f57c0",
+  "occurred_at": "2026-03-31T08:20:48.634624Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented full-pool rotation for take-loop retries. Added per-queue failed-agent tracking, made failure-driven pool rotation work even in basic dispatch mode when a pool exists, and changed pool exclusion to return null instead of silently falling back to an excluded agent. Added tests covering strict exclusion, basic-mode error retry rotation, full-pool rotation across repeated failures, and early stop once all pooled agents have failed. Validation: bun run lint (passes with existing react-hooks/incompatible-library warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, bun run build. Branch: beat/foolery-20ee. Commit: 598b787ed33e.",
+    "datetime": "2026-03-31T08:20:48.634624Z",
+    "entry_id": "019d42fb-257a-7d90-ac14-7380a6c5dbdf",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3013-9278-7dd1-a456-c087e12d090b",
+  "occurred_at": "2026-03-27T16:14:42.285976Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-84a6",
+    "profile_id": "autopilot_with_pr",
+    "state": "planning",
+    "terminal": false,
+    "title": "Fix version badge double-v label",
+    "type": "work",
+    "updated_at": "2026-03-27T16:14:42.285976Z",
+    "workflow_id": "compatibility"
+  }
+}

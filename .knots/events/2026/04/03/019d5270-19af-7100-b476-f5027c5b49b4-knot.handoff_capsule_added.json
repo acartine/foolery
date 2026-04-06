@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5270-19af-7100-b476-f5027c5b49b4",
+  "occurred_at": "2026-04-03T08:22:51.567757Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-agent-session-runtime. Shared agent session runtime is implemented and adopted by terminal-manager initial/take-loop paths. Runtime centralizes capabilities, normalized event handling, AskUser auto-response, follow-up prompting, stdin close timing, watchdog timeout handling, and process-group termination across Claude, Codex, Gemini, Copilot, and OpenCode. Validation in /Users/cartine/foolery/.claude/worktrees/agent-session-runtime: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-03T08:22:51.567757Z",
+    "entry_id": "019d5270-19af-7100-b476-f4f117ceb806",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "5"
+  }
+}

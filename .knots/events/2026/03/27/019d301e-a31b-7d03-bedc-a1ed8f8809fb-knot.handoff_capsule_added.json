@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301e-a31b-7d03-bedc-a1ed8f8809fb",
+  "occurred_at": "2026-03-27T16:26:47.451601Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: add SpeedTable to audit screen with effective speed (accounting for review overhead on rejections). Two files changed. Dependency a43f is shipped.",
+    "datetime": "2026-03-27T16:26:47.451601Z",
+    "entry_id": "019d301e-a31b-7d03-bedc-a1d8f1345fbc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

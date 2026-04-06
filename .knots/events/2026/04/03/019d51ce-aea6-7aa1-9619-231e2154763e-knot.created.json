@@ -1,0 +1,17 @@
+{
+  "event_id": "019d51ce-aea6-7aa1-9619-231e2154763e",
+  "occurred_at": "2026-04-03T05:26:32.870858Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.created",
+  "data": {
+    "body": "add a 4th column, acceptance criteria.  insert it into the 2nd position, just after the description column.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "queues/active screen: active item overview: add acceptance criteria to ",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

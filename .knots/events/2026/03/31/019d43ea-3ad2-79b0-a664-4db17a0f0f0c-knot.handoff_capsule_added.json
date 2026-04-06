@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43ea-3ad2-79b0-a664-4db17a0f0f0c",
+  "occurred_at": "2026-03-31T12:41:57.201999Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The proposed implementation targets the confirmed stale-data source in repo-scoped React Query hooks that currently use keepPreviousData, covers the beats list plus sibling final-cut and retakes views, and includes the beat-detail stale-content risk. Test strategy is sufficient if it validates repo-switch clearing/loading behavior while preserving same-repo background refetch UX, and browser verification should confirm the loader appears within 1 second with no old-repo content flash.",
+    "datetime": "2026-03-31T12:41:57.201999Z",
+    "entry_id": "019d43ea-3ad2-79b0-a664-4da675275b9d",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

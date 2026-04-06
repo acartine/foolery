@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d9-bd65-76c0-b78b-624b56252f74",
+  "occurred_at": "2026-04-03T05:38:37.540982Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Revised implementation plan for the active-item overview acceptance column:\n\nScope and targets\n- Primary target is `src/components/beat-table-summary.tsx`, specifically `InlineSummary`; do not modify the table header/column definition files for this knot.\n- Source the new overview content from `beat.acceptance`, which already exists on the `Beat` type and is already used by other detail/preview surfaces.\n\nImplementation steps\n1. Expand the `InlineSummary` visibility guard so rows with acceptance criteria but no description/notes/capsules still render the overview.\n2. Insert a new `SummaryColumn` labeled `Acceptance criteria` immediately after `Description`, with `text={beat.acceptance || \"\"}`.\n3. Update the summary grid from 3 tracks to 4 tracks and preserve the existing reading order: Description, Acceptance criteria, Notes, Handoff Capsules.\n4. Keep the existing overflow/line-clamp behavior from `SummaryColumn`; only adjust rounding/background classes as needed so the first column remains left-rounded, interior columns remain square, and the handoff column remains the right-rounded trailing column.\n5. Validate narrow viewport behavior for the expanded four-column overview. If four equal tracks prove unreadable on smaller widths, add responsive grid classes in the same component while preserving the required desktop order.\n\nTest plan\n- Update `src/lib/__tests__/beats-page-layout.test.ts` to reflect the four-column summary grid and assert that the summary source contains the `Acceptance criteria` label.\n- Add a focused component test (new file under `src/components/__tests__/`, e.g. `beat-table-summary.test.tsx`) that renders `InlineSummary` and verifies:\n  - acceptance-only beats no longer return `null`\n  - label order is Description -> Acceptance criteria -> Notes -> Handoff Capsules\n  - acceptance text is rendered in the summary output\n- UI validation for the implementation step should use Playwright or Chrome DevTools on the queues/active screen to confirm column order, readability, and responsive behavior.\n\nComplexity and risks\n- Complexity: small to medium; this is a localized UI/layout change plus targeted tests.\n- Main risks: repeating the earlier mistake of editing table headers instead of the inline summary, forgetting the acceptance-aware visibility guard, and making the four-column layout unreadable on narrower widths.\n\nDependencies and notes\n- No child knots are required for this scope.\n- No invariants are currently listed on the knot.\n- When implementation happens later, finish with the repo quality gates (`bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`) after dependency install in the active worktree if needed.",
+    "datetime": "2026-04-03T05:38:37.540982Z",
+    "entry_id": "019d51d9-bd64-7ff0-9989-e888127069ec",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

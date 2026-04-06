@@ -1,0 +1,17 @@
+{
+  "event_id": "019d433a-2549-7f73-982e-f21affbcde4e",
+  "occurred_at": "2026-03-31T09:29:37.353512Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "moonshotai/kimi-k2.5",
+    "agent_name": "opencode",
+    "agent_version": "1.0",
+    "force": false,
+    "from": "implementation",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation_review",
+    "workflow_id": "compatibility"
+  }
+}

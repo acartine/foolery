@@ -1,0 +1,15 @@
+{
+  "event_id": "019d430c-fb70-7752-becf-37981fd01c56",
+  "occurred_at": "2026-03-31T08:40:17.52033Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on main@56f05dd5dcbe. Verified shipped commit 440b0eeb and merge commit 56f05dd5 are tagged on the knot, no invariants are defined, and remote Actions CI (23788153389) plus Coverage Badge (23788153392) completed successfully for head SHA 56f05dd5dcbe304a203c7119785f455ee1914266. Browser verification against the running main app at http://127.0.0.1:3000/beats measured zero horizontal delta for the Home button, Diagnostics tab, and search field across queues -> ReTakes -> Diagnostics -> active transitions, so the top navigation row stays anchored through the affected view changes.",
+    "datetime": "2026-03-31T08:40:17.52033Z",
+    "entry_id": "019d430c-fb70-7752-becf-378bf0cc211f",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

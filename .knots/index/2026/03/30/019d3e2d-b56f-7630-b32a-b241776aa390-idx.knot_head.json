@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3e2d-b56f-7630-b32a-b241776aa390",
+  "occurred_at": "2026-03-30T09:57:56.207937Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0f6a",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Fix case-insensitive search filtering in Settings → Agents",
+    "type": "work",
+    "updated_at": "2026-03-30T09:57:56.207937Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3e2d-77b1-7192-bcc3-cb99b52c060d"
+  }
+}

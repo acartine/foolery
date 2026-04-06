@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4308-890d-7182-89dd-4eb450980cb5",
+  "occurred_at": "2026-03-31T08:35:26.093025Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved implementation review: reviewed commit 704c9e17 for the Settings model-selector fix. The Claude, Codex, and Gemini scan results now populate concrete per-provider model catalogs, selector rows render real model labels instead of placeholder values, selected pills display stripped model names such as Opus 4.6, and pills expose clear actions that remove registered selections so the UI returns to an unselected state when the last model is cleared. Coverage is present in settings scan, model-label, and scanned-settings component tests. Validation in this review: targeted unit tests passed (23 tests), bunx tsc --noEmit passed, bun run build passed, and bun run lint reported only one unrelated pre-existing warning in src/components/beat-form.tsx.",
+    "datetime": "2026-03-31T08:35:26.093025Z",
+    "entry_id": "019d4308-890d-7182-89dd-4eaa23a87f25",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3088-ea02-7542-a48f-b574694135b6",
+  "occurred_at": "2026-03-27T18:22:52.41801Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. The branch is scoped to UI display normalization, covers both prefixed and unprefixed release tags in tests, and validation is green on lint, typecheck, unit tests, and build. No regressions against the knot description were found.",
+    "datetime": "2026-03-27T18:22:52.41801Z",
+    "entry_id": "019d3088-ea02-7542-a48f-b5635053fab9",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

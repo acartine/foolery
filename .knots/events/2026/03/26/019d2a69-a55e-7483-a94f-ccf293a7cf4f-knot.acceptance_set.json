@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a69-a55e-7483-a94f-ccf293a7cf4f",
+  "occurred_at": "2026-03-26T13:50:59.934936Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- All cell contents in each Queues view row are vertically centered (or share a single consistent vertical alignment).\n- Beat ID number aligns vertically with the repo name in the same row.\n- Pill elements (profile, owner type, etc.) align vertically with adjacent cell contents.\n- No layout regressions in the Queues view across standard viewport widths."
+  }
+}

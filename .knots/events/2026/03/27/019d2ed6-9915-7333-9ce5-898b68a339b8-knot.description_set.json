@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2ed6-9915-7333-9ce5-898b68a339b8",
+  "occurred_at": "2026-03-27T10:28:29.077036Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In the Queues and Active views, the divider line in each beat row is currently positioned between the normalized fields and the title, which makes the layout feel awkward. Move the divider so it appears below the last updated/time elapsed and tags section, creating a cleaner separation within each row."
+  }
+}

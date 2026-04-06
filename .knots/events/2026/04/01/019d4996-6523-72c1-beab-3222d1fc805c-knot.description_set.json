@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4996-6523-72c1-beab-3222d1fc805c",
+  "occurred_at": "2026-04-01T15:08:06.307323Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Currently, when users create a bead using the 'Create More' action, the form fields retain the previous entry's data. Users must manually clear these fields before entering the next bead, which is tedious and introduces error risk.\n\nAfter a bead is successfully created in the 'Create More' flow, all form input fields should automatically clear, allowing users to immediately proceed with the next entry without manual cleanup."
+  }
+}

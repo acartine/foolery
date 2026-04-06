@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3013-18cc-7792-aa09-7b1e47da1d2a",
+  "occurred_at": "2026-03-27T16:14:11.148455Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped. Commit 03a630ec on main. Fix awaits appendLeaseAuditEvent in finalizeClaim to prevent dropped planning audit events.",
+    "datetime": "2026-03-27T16:14:11.148455Z",
+    "entry_id": "019d3013-18cc-7792-aa09-7b067a0ea921",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

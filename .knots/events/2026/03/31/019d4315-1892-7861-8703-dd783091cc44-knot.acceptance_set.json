@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4315-1892-7861-8703-dd783091cc44",
+  "occurred_at": "2026-03-31T08:49:09.266423Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) In the OpenCode model pulldown, each visible option shows only the last segment of the model identifier after splitting by '/'.\n2) The hardcoded 'OpenCode' (or equivalent) prefix is not shown in option labels.\n3) The dropdown no longer truncates the displayed model name for existing entries; full last-token names are visible.\n4) The selected model value and behavior used by the app remain unchanged (only the UI label rendering is affected)."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ae-5cba-7453-aada-134a2cb2c2a9",
+  "occurred_at": "2026-03-31T06:56:56.506494Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected. Token usage is still duplicated across every beat attached to a shared session: logTokenUsageForEvent fans one turn.completed usage payload out to every beatId it is passed, and orchestration/initial-io call sites pass multi-beat scopes. That violates the requirement for saved per-agent, per-beat counts because a single turn's full tokens are attributed to multiple beats instead of the beat that actually consumed them.",
+    "datetime": "2026-03-31T06:56:56.506494Z",
+    "entry_id": "019d42ae-5cba-7453-aada-1336bf84c493",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

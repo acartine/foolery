@@ -1,0 +1,15 @@
+{
+  "event_id": "019d548c-ca05-7093-af54-17e59851ccab",
+  "occurred_at": "2026-04-03T18:13:26.149634Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected.\n\nFindings\n1. `src/lib/agent-session-runtime.ts:143-181` only clears `state.resultObserved` for JSON-RPC turns. Copilot follow-up turns go through the plain stdin-stream path, so after `session.task_complete` the runtime stays in `result_observed` even after `sendUserTurn(...)`. I reproduced this directly in the artifact worktree: after emitting `session.task_complete`, calling `sendUserTurn`, and waiting longer than a reduced watchdog timeout, the runtime still reported `resultObserved=true` and `exitReason=result_observed` instead of timing out. This breaks acceptance criterion 3 because follow-up prompting no longer shares the same watchdog/timeout behavior as the other interactive agents.\n2. `src/lib/__tests__/copilot-interactive-session.test.ts:238-256` is labeled `resets resultObserved after new turn`, but it never asserts that reset actually happens after `sendUserTurn(...)`, and there is no regression test for a hung follow-up turn timing out. Acceptance criterion 4 is therefore not met for retry/watchdog behavior across follow-up turns.\n\nValidation\n- `bun run lint` passed (one existing React Compiler warning in `src/components/beat-form.tsx:368`).\n- `bunx tsc --noEmit` passed.\n- `bun run test` passed.\n- `bun run build` passed.\n\nRecommendation\n- Reset the shared runtime state for every successfully sent interactive follow-up turn, not only JSON-RPC turns, and add a regression test that asserts the watchdog can fire after a Copilot follow-up turn hangs.",
+    "datetime": "2026-04-03T18:12:52Z",
+    "entry_id": "019d548c-ca05-7093-af54-17d7aa320a20",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

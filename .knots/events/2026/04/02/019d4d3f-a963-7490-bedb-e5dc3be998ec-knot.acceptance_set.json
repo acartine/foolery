@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d3f-a963-7490-bedb-e5dc3be998ec",
+  "occurred_at": "2026-04-02T08:11:51.004227Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A shared interface or runtime abstraction exists for agent session capabilities, normalized events, and lifecycle hooks.\n2. Terminal-manager initial and take-loop paths use that shared abstraction instead of dialect-specific Claude-only branching for interactivity.\n3. The runtime centralizes watchdog timeout, process-group termination, close-input handling, and follow-up prompting semantics.\n4. Conformance tests cover turn completion, session exit, timeout handling, retry, and abort behavior across multiple agent implementations."
+  }
+}

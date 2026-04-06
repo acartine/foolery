@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49a1-42a1-7d71-9561-c0e205a6d31c",
+  "occurred_at": "2026-04-01T15:19:58.369747Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The current create-more path in src/components/beat-form.tsx clears the draft before calling onCreateMore() and then mutates local relationship state, which can re-trigger the draft persistence effects and repopulate stale values. Moving clearDraft() into the success callback in src/components/create-beat-dialog.tsx immediately before setFormKey() removes that race while preserving entered data on validation or network failure because submitBeat() only invokes onSuccess when result.ok is true. Removing setBlocks([]) and setBlockedBy([]) from the submit handler is safe because the keyed BeatForm remount already resets component-local relationship state, and the title input should regain focus on the new instance via existing autoFocus. Manual verification with DevTools or Playwright is sufficient for this small call-order change, though an automated regression test could be added later if this flow becomes fragile.",
+    "datetime": "2026-04-01T15:19:58.369747Z",
+    "entry_id": "019d49a1-42a1-7d71-9561-c0dbb1ee5309",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

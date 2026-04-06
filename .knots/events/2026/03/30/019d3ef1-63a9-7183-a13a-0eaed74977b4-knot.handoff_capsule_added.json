@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ef1-63a9-7183-a13a-0eaed74977b4",
+  "occurred_at": "2026-03-30T13:31:40.329783Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Tightened ReTakes row width constraints so long beat titles cannot widen the document and shift the centered header. Added min-w-0/flex-1 truncation on RetakeRowTitle and a regression test in src/lib/__tests__/retake-row-layout.test.ts. Verified with bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, and bun run build in the foolery-44f1 worktree.",
+    "datetime": "2026-03-30T13:31:40.329783Z",
+    "entry_id": "019d3ef1-63a9-7183-a13a-0e9fb611b3d3",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

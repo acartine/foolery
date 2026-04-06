@@ -1,0 +1,15 @@
+{
+  "event_id": "019d529a-6f83-7533-ba0f-bacc59c62f07",
+  "occurred_at": "2026-04-03T09:09:06.051611Z",
+  "knot_id": "foolery-2b52",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: feat/foolery-2b52-interactive-session-protocol\nCommit: ab882541",
+    "datetime": "2026-04-03T09:09:06.051611Z",
+    "entry_id": "019d529a-6f83-7533-ba0f-babf6b4117da",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

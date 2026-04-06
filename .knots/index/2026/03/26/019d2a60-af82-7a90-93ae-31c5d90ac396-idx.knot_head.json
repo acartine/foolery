@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2a60-af82-7a90-93ae-31c5d90ac396",
+  "occurred_at": "2026-03-26T13:41:12.698899Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6aaf",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Make the version pill clickable to check for updates",
+    "type": "work",
+    "updated_at": "2026-03-26T13:41:12.698899Z",
+    "workflow_id": "compatibility"
+  }
+}

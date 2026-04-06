@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2de8-9539-71c3-a579-7e7c57fd9c24",
+  "occurred_at": "2026-03-27T06:08:30.521821Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented a clickable version badge that forces a version check on click, surfaces either 'Update now to v{version}' or 'Latest version installed', and adds Storybook interaction coverage for both click-driven outcomes. Validation in /Users/cartine/foolery-6aaf: bun run lint src/components/version-badge.tsx src/stories/version-badge.stories.tsx; bunx tsc --noEmit; bun run test; bun run test:storybook -- src/stories/version-badge.stories.tsx; bun run build. Note: bun run test:all is still blocked by an existing unrelated Storybook import failure in src/stories/beat-status-badge.stories.tsx.",
+    "datetime": "2026-03-27T06:08:22Z",
+    "entry_id": "019d2de8-9539-71c3-a579-7e67954ba978",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "unknown"
+  }
+}

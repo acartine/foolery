@@ -1,0 +1,21 @@
+{
+  "event_id": "019d5278-67d1-7120-837f-3c0e7e7a8a5e",
+  "occurred_at": "2026-04-03T08:31:55.857584Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e199",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add agent session runtime conformance coverage",
+    "type": "work",
+    "updated_at": "2026-04-03T08:31:55.857584Z",
+    "workflow_id": "compatibility"
+  }
+}

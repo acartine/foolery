@@ -1,0 +1,15 @@
+{
+  "event_id": "019d548c-ca05-7093-af54-17c2c1b512fc",
+  "occurred_at": "2026-04-03T18:13:26.149634Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected: Copilot follow-up turns do not reset the shared session runtime after a result, so watchdog timeout semantics diverge from the shared interactive protocol.",
+    "datetime": "2026-04-03T18:12:52Z",
+    "entry_id": "019d548c-ca05-7093-af54-17bad8355a04",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

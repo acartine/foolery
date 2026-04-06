@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f10-24dc-78e0-98b2-b55bc9a2b346",
+  "occurred_at": "2026-04-02T16:39:11.324059Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Root Cause\n\nRadix UI Select component's SelectContent defaults to position=\"item-aligned\" (src/components/ui/select.tsx:56). This positioning mode aligns the currently-selected item in the dropdown with the trigger element by manipulating viewport scroll position. In toolbar/filter contexts with scrollable parent containers, this causes visible page jitter when opening any Select dropdown.\n\nIn Queues View multi-select mode, BulkEditControls renders 4 Select components (Type, Priority, Profile, State) that all use this default. FilterControls has 3 more. Each one triggers viewport jitter on open.\n\nThe RepoSwitcher uses DropdownMenu (Radix DropdownMenu), which already uses Popper positioning by default — no jitter expected there.\n\n### Fix\n\n**Step 1: Change SelectContent default position to popper**\n- File: src/components/ui/select.tsx\n- Change position = \"item-aligned\" to position = \"popper\" in SelectContent (line 56)\n- Popper positioning places dropdown below/above trigger using Floating UI without viewport manipulation\n- All existing SelectContent consumers (filter-bar, beat-form, settings pages, pagination, retakes-view, move-to-project-dialog) are toolbar/form contexts where popper is appropriate\n- No consumer currently passes position explicitly, so this single change fixes all\n\n**Step 2: Add layout-stability test assertion**\n- File: src/lib/__tests__/beats-page-layout.test.ts\n- Add test asserting SelectContent uses position=\"popper\" as default (source-level contract test matching existing pattern)\n- Prevents regression if someone changes the default back\n\n**Step 3: Browser verification**\n- Open Queues View, select multiple beats to enter multi-select mode\n- Open each of the 4 bulk-edit Select dropdowns and confirm no viewport shift\n- Switch to FilterControls mode and verify filter dropdowns similarly stable\n- Open RepoSwitcher DropdownMenu — confirm still works\n- Use Chrome DevTools to capture scroll metrics before/after\n\n### Complexity\nLow. Single default value change in one shared component, plus a regression test.\n\n### Risks\n- Changing from item-aligned to popper alters dropdown visual placement globally (content appears below/above trigger instead of overlaying it). Standard UX, unlikely to cause issues, but worth visual-checking in settings pages and beat-form.\n\n### Test Strategy\n1. Source-level contract test — assert SelectContent defaults to popper position\n2. In-browser manual verification — all pulldowns in Queues View multi-select mode\n3. Run full test suite (bun run test:all) for regressions\n4. Quality gates — lint, typecheck, build must pass",
+    "datetime": "2026-04-02T16:39:11.324059Z",
+    "entry_id": "019d4f10-24dc-78e0-98b2-b540d628d6c5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

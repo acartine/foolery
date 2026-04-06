@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a8f-b223-7771-b1f9-5b2fc2fffc28",
+  "occurred_at": "2026-03-26T14:32:33.571059Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete. Fixed bare printf '->' in scripts/setup.sh:67 and scripts/agent-wizard.sh:51 by using printf '%s' '->' (matching the existing fix in scripts/install.sh). Added regression test scripts-printf-safety.test.ts that scans all scripts/*.sh for bare printf with dash-prefixed arguments. All quality gates pass (lint, typecheck, 2260 tests, build). PR: https://github.com/acartine/foolery/pull/28 on branch fix/foolery-9df0-printf-arrow.",
+    "datetime": "2026-03-26T14:32:33.571059Z",
+    "entry_id": "019d2a8f-b223-7771-b1f9-5b1e8d26d3e0",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

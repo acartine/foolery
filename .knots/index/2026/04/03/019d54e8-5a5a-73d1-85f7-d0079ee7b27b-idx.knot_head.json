@@ -1,0 +1,37 @@
+{
+  "event_id": "019d54e8-5a5a-73d1-85f7-d0079ee7b27b",
+  "occurred_at": "2026-04-03T19:53:26.874071Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-160c",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Add interactive OpenCode session support",
+    "type": "work",
+    "updated_at": "2026-04-03T19:53:26.874071Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d54e8-27cc-70d0-a38f-444130361773"
+  }
+}

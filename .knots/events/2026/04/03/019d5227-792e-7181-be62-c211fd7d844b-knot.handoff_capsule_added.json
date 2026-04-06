@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5227-792e-7181-be62-c211fd7d844b",
+  "occurred_at": "2026-04-03T07:03:31.885931Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Revision needed before implementation. Update the design so Gemini is included in AgentDialect/capability resolution and test coverage, and extend the shared runtime contract to explicitly model turn completion detection, session-end detection, and post-exit validation hooks per dialect. After that, the refactor of terminal-manager initial/take paths and the shared watchdog/IO centralization looks feasible.",
+    "datetime": "2026-04-03T07:02:17Z",
+    "entry_id": "019d5227-792d-7581-99a5-a7081eeb4fe1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

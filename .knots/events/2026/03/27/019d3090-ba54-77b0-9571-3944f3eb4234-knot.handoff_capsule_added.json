@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3090-ba54-77b0-9571-3944f3eb4234",
+  "occurred_at": "2026-03-27T18:31:24.500146Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the backend-managed update flow on branch feat/foolery-ea93-backend-update. Added a new `/api/app-update` route plus launcher-backed update orchestration/status persistence, rewired the version update CTA to call that API and poll through restarts, and added server/client regression coverage for the new behavior. Validation passed: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.",
+    "datetime": "2026-03-27T18:31:24.500146Z",
+    "entry_id": "019d3090-ba54-77b0-9571-393e7e1a9f3a",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

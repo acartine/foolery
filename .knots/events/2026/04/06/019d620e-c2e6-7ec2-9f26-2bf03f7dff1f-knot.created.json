@@ -1,0 +1,17 @@
+{
+  "event_id": "019d620e-c2e6-7ec2-9f26-2bf03f7dff1f",
+  "occurred_at": "2026-04-06T09:10:27.814511Z",
+  "knot_id": "foolery-b784",
+  "type": "knot.created",
+  "data": {
+    "body": "## Problem\n\nWhen All Repositories Mode loads data, the user sees either a loading spinner or empty state, then a sudden dump of all data at once. With incremental streaming (sibling knot), data will arrive repo-by-repo, but without proper UX treatment this creates a jarring experience — rows appearing suddenly, table jumping, scroll position lost.\n\n## Proposed Fix\n\n1. **Per-repo loading indicators**: Show which repos are loaded vs still loading. A subtle status bar or inline indicator (e.g., \"Loaded 3/5 repos\") gives the user a sense of progress and sets expectations.\n\n2. **Skeleton rows or shimmer states**: While repos are still loading, show placeholder rows that indicate more data is expected. This prevents the \"is it done?\" confusion.\n\n3. **Smooth data insertion**: When a new repo's results arrive, insert rows with a brief fade-in animation or batch insertion rather than instant table reflow. This prevents the jarring \"table just jumped\" feeling.\n\n4. **Stable sort with insertion**: New rows should be inserted in their correct sort position without re-sorting the entire visible table. If the user has scrolled, their scroll position should be preserved.\n\n5. **Completion signal**: A subtle visual cue when all repos have finished loading (e.g., loading indicator disappears, status text changes to \"All repositories loaded\").\n\n## Key Files\n- `src/app/beats/page.tsx` — main beats page\n- `src/components/beat-table.tsx` — table rendering\n- `src/app/beats/use-beats-query.ts` — query state (loading, partial, complete)\n- `src/components/repo-switcher.tsx` — repo selection UI\n\n## Design Constraints\n- Must not add layout shift that pushes content around\n- Animations should be subtle (150-250ms) and respect `prefers-reduced-motion`\n- Loading state must distinguish 'no results yet' from 'zero results found'\n- Works with existing Tailwind/shadcn component system",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Progressive loading UX for All Repositories Mode",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

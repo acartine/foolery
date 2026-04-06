@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d40-0d56-7541-89ba-1ca9263be86f",
+  "occurred_at": "2026-04-02T08:12:16.585158Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. OpenCode can run claimed-step and take-loop sessions in interactive mode through the shared session runtime.\n2. OpenCode turn completion and session completion are detected from explicit protocol signals and normalized into the shared event model.\n3. Follow-up prompting, timeout/kill, retry, and abort behavior match the shared protocol rather than bespoke OpenCode logic.\n4. Tests cover successful completion, hang timeout, and retry/abort behavior for interactive OpenCode sessions."
+  }
+}

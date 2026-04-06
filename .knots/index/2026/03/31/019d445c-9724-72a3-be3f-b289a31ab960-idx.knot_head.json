@@ -1,0 +1,24 @@
+{
+  "event_id": "019d445c-9724-72a3-be3f-b289a31ab960",
+  "occurred_at": "2026-03-31T14:46:51.940158Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7540",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Fix scanned Claude model imports so settings UI and runtime stay consistent",
+    "type": "work",
+    "updated_at": "2026-03-31T14:46:51.940158Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d43f4-c2c6-7b42-81d8-46b202c6060d"
+  }
+}

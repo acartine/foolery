@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2ed6-9915-7333-9ce5-899a0ad48466",
+  "occurred_at": "2026-03-27T10:28:29.077036Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "In both the Queues view and the Active view, each beat row places the divider line below the last updated/time elapsed and tags section. The divider no longer appears between the normalized fields and the title. The change only adjusts divider placement and preserves the existing content and behavior of the row."
+  }
+}

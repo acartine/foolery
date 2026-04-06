@@ -1,0 +1,18 @@
+{
+  "event_id": "019d4f27-da80-7ae1-b39d-edaec99ea698",
+  "occurred_at": "2026-04-02T17:05:05.152485Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected. The branch changes SelectContent to default to popper and passes the added unit contract test, but it does not satisfy acceptance criteria 4-5: there is no page-level Playwright/browser verification for the actual Queues View multi-select composition at non-zero scroll, no coverage for RepoSwitcher or other pulldowns in that composed view, and no recorded Chrome DevTools before/after scroll/layout validation.",
+    "datetime": "2026-04-02T17:04:48Z",
+    "entry_id": "019d4f27-da80-7ae1-b39d-ed92760ff171",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  },
+  "precondition": {
+    "profile_etag": "019d4f24-f4b6-7fe2-8da3-c3a9d49b1e21"
+  }
+}

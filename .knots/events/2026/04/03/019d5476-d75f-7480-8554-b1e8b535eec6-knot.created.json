@@ -1,0 +1,17 @@
+{
+  "event_id": "019d5476-d75f-7480-8554-b1e8b535eec6",
+  "occurred_at": "2026-04-03T17:49:27.775754Z",
+  "knot_id": "foolery-9493",
+  "type": "knot.created",
+  "data": {
+    "body": "Generalize the interactive session startup path so Copilot can run through the shared runtime in claimed-step and take-loop sessions. Choose a stable Copilot session entrypoint, preserve model selection, and remove Codex/Claude-specific assumptions from capability selection and spawn wiring.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Refactor shared interactive runtime for Copilot transport",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

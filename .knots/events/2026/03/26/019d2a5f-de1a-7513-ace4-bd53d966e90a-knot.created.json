@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2a5f-de1a-7513-ace4-bd53d966e90a",
+  "occurred_at": "2026-03-26T13:40:19.098503Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, it’s not necessary, we only show “work\"",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove beat “type” column from Queues screen",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

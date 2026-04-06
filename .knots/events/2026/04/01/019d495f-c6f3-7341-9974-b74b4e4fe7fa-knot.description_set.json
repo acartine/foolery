@@ -1,0 +1,9 @@
+{
+  "event_id": "019d495f-c6f3-7341-9974-b74b4e4fe7fa",
+  "occurred_at": "2026-04-01T14:08:26.867869Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Currently, the queue and active screens refresh on a 10-second polling interval, creating noticeable lag when users create or modify beats. To improve responsiveness, invalidate (force refresh) the queue and active screens within 1 second when the user creates a new beat or modifies beat state/attributes. This applies only to direct user actions—other background events should continue using the standard 10-second interval."
+  }
+}

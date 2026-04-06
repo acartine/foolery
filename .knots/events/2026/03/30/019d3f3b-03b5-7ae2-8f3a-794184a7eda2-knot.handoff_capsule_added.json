@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f3b-03b5-7ae2-8f3a-794184a7eda2",
+  "occurred_at": "2026-03-30T14:52:05.429679Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. Current main commit 819e6369 fixes the scanned-agent selection state by deriving selected model ids from persisted registered agent ids instead of transient scan-local state, so additional models remain addable during the same scan session and previously added models no longer block further selections. Reviewed coverage includes src/components/__tests__/settings-agents-scanned.test.ts for registered-option resolution and scanned list rendering, plus agent identity display coverage. Validation passed: bun test src/components/__tests__/settings-agents-scanned.test.ts src/lib/__tests__/agent-identity-display-parts.test.ts, bun run lint (1 pre-existing warning in src/components/beat-form.tsx, no errors), bunx tsc --noEmit, bun run test, bun run build. No knot invariants were defined, and no security or regression issues were found relative to the acceptance criteria.",
+    "datetime": "2026-03-30T14:51:53Z",
+    "entry_id": "019d3f3b-03b5-7ae2-8f3a-7935e88bf388",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

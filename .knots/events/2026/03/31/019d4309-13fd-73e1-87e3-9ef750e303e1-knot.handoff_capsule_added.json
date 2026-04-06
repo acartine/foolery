@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4309-13fd-73e1-87e3-9ef750e303e1",
+  "occurred_at": "2026-03-31T08:36:01.66197Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped merge commit 56f05dd5dcbe to origin/main from foolery-44f1-fix-jitter. Remote Actions passed on the shipped commit: CI https://github.com/acartine/foolery/actions/runs/23788153389 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23788153392. Changes preserve header position by using symmetric scrollbar gutter reservation and update the layout contract test accordingly.",
+    "datetime": "2026-03-31T08:36:01.66197Z",
+    "entry_id": "019d4309-13fd-73e1-87e3-9eea351908ef",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

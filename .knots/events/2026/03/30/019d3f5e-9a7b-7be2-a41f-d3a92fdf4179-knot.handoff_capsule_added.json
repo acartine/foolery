@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f5e-9a7b-7be2-a41f-d3a92fdf4179",
+  "occurred_at": "2026-03-30T15:30:57.787845Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved. Verified implementation commit 819e636981a7 and shipment merge commit 976a088c0df6 are on main, with the merge commit reachable from current main. GitHub Actions runs 23748438545 (CI) and 23748438519 (Coverage Badge) completed successfully for 976a088c0df6 on 2026-03-30. No knot invariants are defined, and the reviewed changes plus prior implementation-review coverage show the multi-model scan flow, persistence, and zero-selection cancel path without new regressions.",
+    "datetime": "2026-03-30T15:30:44Z",
+    "entry_id": "019d3f5e-9a7b-7be2-a41f-d397b3878bf4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

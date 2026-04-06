@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d3f-94df-7a71-acb0-0a471ea662af",
+  "occurred_at": "2026-04-02T08:11:45.759806Z",
+  "knot_id": "foolery-2b52",
+  "type": "knot.created",
+  "data": {
+    "body": "Write the protocol down as the source of truth for interactive agent integrations. The design should capture: declared agent capabilities; startup handshake; prompt delivery mode; normalized stream-event contract; how a turn-complete signal differs from a step-complete signal; how follow-up prompts are sent in-session; when stdin is closed; how wrapper code waits for process exit; how post-exit backend state validation determines workflow success; and how inactivity watchdogs, retries, and aborts work across agents. Prefer a markdown design artifact under the repo so later implementations target the same contract.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Document the interactive agent session protocol",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

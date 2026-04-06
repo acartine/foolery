@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f4e-9a80-7b32-a160-c1c9bba020c3",
+  "occurred_at": "2026-03-30T15:13:29.216753Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Implemented on branch `foolery-5a78`.\n- Removed the redundant static Escalations action button from `ActionButton` when `beatsView === \"finalcut\"`; the action slot now renders empty for that view.\n- Added a unit test asserting `ActionButton` returns `null` for the finalcut view.\n- Validation: `bun run test -- src/components/__tests__/app-header-parts.test.ts`, `bun run lint` (passes with an existing warning in `src/components/beat-form.tsx:368`), `bunx tsc --noEmit`, `bun run build`.\n- Commit: `835f1b3705f3",
+    "datetime": "2026-03-30T15:13:29.216753Z",
+    "entry_id": "019d3f4e-9a80-7b32-a160-c1bebbad714b",
+    "model": "openrouter/z-ai/glm-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

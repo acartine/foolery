@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4377-0878-7253-ad8e-39af57079753",
+  "occurred_at": "2026-03-31T10:36:07.672256Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) Add a Light Theme toggle control in the Terminal header and in the History Terminal header. 2) Add a Light Theme setting in Settings that maps to the same underlying preference. 3) Toggling light theme updates the active terminal UI immediately; toggling in either header or settings updates the other control consistently. 4) Save the theme preference to the server-side settings store and load it on app/session start so the theme is restored for both terminals. 5) New or changed preference must survive app restart/new session with the selected mode applied before user interaction. 6) Validate by using chrome-devtools and/or playwright MCP: switch light theme from header/settings, navigate between both terminals, reload/new session, and confirm persisted theme state is preserved."
+  }
+}

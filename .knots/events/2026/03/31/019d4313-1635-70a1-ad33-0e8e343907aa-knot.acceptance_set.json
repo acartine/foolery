@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-1635-70a1-ad33-0e8e343907aa",
+  "occurred_at": "2026-03-31T08:46:57.589093Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "When opening that specific history entry (sessionID ses_2bd50fd1affe90pf9TPxctTv1W, messageID msg_d42af031b001E9LrZkGS9Wy7jp), the visible agent label must match the model/provider in the response metadata, not \"CODEX GPT-5.4 5.4\"; OpenRouter-backed entries should never be relabeled as a local Codex model in the history UI; the history/conversation list must consistently display the same agent/provider source value that is shown in response metadata for all entries; no other fields or workflow behavior should change, only the displayed agent label."
+  }
+}

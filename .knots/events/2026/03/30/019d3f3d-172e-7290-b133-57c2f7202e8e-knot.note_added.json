@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f3d-172e-7290-b133-57c2f7202e8e",
+  "occurred_at": "2026-03-30T14:54:21.486648Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment blocked: merging branch foolery-67b5 into main hit content conflicts in scripts/setup.sh and scripts/agent-wizard.sh. Main already contains overlapping shell wizard changes, so the multi-select fix needs conflict resolution before shipment can be retried.",
+    "datetime": "2026-03-30T14:54:21.486648Z",
+    "entry_id": "019d3f3d-172e-7290-b133-57b553b23a1f",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

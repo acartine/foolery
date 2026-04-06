@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4475-a2d7-74c0-85b3-5f34531d9bef",
+  "occurred_at": "2026-03-31T15:14:13.335261Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9a7f",
+    "profile_id": "autopilot",
+    "state": "lease_active",
+    "terminal": false,
+    "title": "Lease: foolery:terminal_manager_take:term-1774969430476-kvefax",
+    "type": "lease",
+    "updated_at": "2026-03-31T15:14:13.335261Z",
+    "workflow_id": "compatibility"
+  }
+}

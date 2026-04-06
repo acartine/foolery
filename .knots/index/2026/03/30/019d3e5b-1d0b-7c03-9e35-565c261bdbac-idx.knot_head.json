@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3e5b-1d0b-7c03-9e35-565c261bdbac",
+  "occurred_at": "2026-03-30T10:47:31.851924Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-67b5",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "settings: agent scan allows only one model selection from CLI",
+    "type": "work",
+    "updated_at": "2026-03-30T10:47:31.851924Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3e5a-e04d-7af2-87cf-a8b570395b86"
+  }
+}

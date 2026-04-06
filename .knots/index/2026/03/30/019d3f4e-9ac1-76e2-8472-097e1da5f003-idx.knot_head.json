@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3f4e-9ac1-76e2-8472-097e1da5f003",
+  "occurred_at": "2026-03-30T15:13:29.272938Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5a78",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Remove redundant Escalations button from header action slot",
+    "type": "work",
+    "updated_at": "2026-03-30T15:13:29.272938Z",
+    "workflow_id": "compatibility"
+  }
+}

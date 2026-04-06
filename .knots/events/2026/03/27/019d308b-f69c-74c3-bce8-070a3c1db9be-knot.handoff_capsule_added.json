@@ -1,0 +1,15 @@
+{
+  "event_id": "019d308b-f69c-74c3-bce8-070a3c1db9be",
+  "occurred_at": "2026-03-27T18:26:12.252378Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan is to add a launcher-backed backend update API with persistent status across restart, then rewire the existing update CTA to call that API instead of copying a command. The key design decision is to reuse the shipped launcher behavior and wrap it in a detached supervisor/status layer rather than duplicating runtime lifecycle logic inside the app server.",
+    "datetime": "2026-03-27T18:26:12.252378Z",
+    "entry_id": "019d308b-f69c-74c3-bce8-06fd3697899d",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

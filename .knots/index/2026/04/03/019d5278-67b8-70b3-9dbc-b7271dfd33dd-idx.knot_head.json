@@ -1,0 +1,21 @@
+{
+  "event_id": "019d5278-67b8-70b3-9dbc-b7271dfd33dd",
+  "occurred_at": "2026-04-03T08:31:55.832755Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ab95",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Characterize Gemini CLI session protocol",
+    "type": "work",
+    "updated_at": "2026-04-03T08:31:55.832755Z",
+    "workflow_id": "compatibility"
+  }
+}

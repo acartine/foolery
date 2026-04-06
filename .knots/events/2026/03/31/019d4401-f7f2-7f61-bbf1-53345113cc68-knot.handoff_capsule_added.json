@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4401-f7f2-7f61-bbf1-53345113cc68",
+  "occurred_at": "2026-03-31T13:07:52.946665Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented repo-switch loading gating across beats, final cut, and retakes by marking the target scope before URL navigation and masking repo-scoped query data until the new scope query settles. Added unit coverage for the masking helper. Verified in browser on http://localhost:3001/beats by delaying the knots repo beats fetch by 2s and switching from foolery to knots: the URL and repo label changed immediately, the stale row \"Wire lease agent metadata into knot step records\" disappeared, and only the Loading beats placeholder remained until the knots response rendered.",
+    "datetime": "2026-03-31T13:07:52.946665Z",
+    "entry_id": "019d4401-f7f2-7f61-bbf1-53230dcc7f3f",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

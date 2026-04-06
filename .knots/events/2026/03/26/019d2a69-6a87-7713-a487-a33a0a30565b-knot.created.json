@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2a69-6a87-7713-a487-a33a0a30565b",
+  "occurred_at": "2026-03-26T13:50:44.871509Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.created",
+  "data": {
+    "body": "Beat id appears to have a vertical cell alignment, holding it in a higher y axis position than the repo name.  get them aligned so it doesn’t look weird.\n\nRealistically this is true for all the values in the row, for example profile and owner type have smaller pills that appear to be verticall aligned on the bottom.  just get all that stuff in proper alignment.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Queues view: Beat id number not vertically aligned with repo name",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

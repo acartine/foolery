@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa2-e1cb-75e2-bf56-16384121be87",
+  "occurred_at": "2026-03-26T14:53:30.955607Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on branch feat/foolery-6aaf-version-pill (e14229f2243c). VersionBadge converted from static span to Popover-wrapped button. On click, fetches /api/version?force=1 and shows one of four states: loading spinner, 'Update now to v{version}', 'Latest version installed', or error fallback. AbortController cleans up on popover close. Tests (7 passing) verify button rendering, cursor-pointer, version-badge class, monospace font, and green dot. Story added for visual review. All quality gates pass (lint, typecheck, test, build).",
+    "datetime": "2026-03-26T14:53:30.955607Z",
+    "entry_id": "019d2aa2-e1cb-75e2-bf56-16234b76332b",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

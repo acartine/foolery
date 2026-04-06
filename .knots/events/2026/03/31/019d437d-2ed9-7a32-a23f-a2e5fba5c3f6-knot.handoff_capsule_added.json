@@ -1,0 +1,15 @@
+{
+  "event_id": "019d437d-2ed9-7a32-a23f-a2e5fba5c3f6",
+  "occurred_at": "2026-03-31T10:42:50.713484Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review approved. Scope is limited to src/components/beat-detail-lightbox.tsx and src/lib/__tests__/beat-detail-lightbox-width.test.ts. The header now uses a two-column grid so the title editor expands across the available header width while preserving a fixed close-button column, and the input chrome is removed with border-0, transparent background, appearance-none, no ring, and no outline. Browser verification at http://localhost:3001/beats?beat=6a0d&detailRepo=%2FUsers%2Fcartine%2Ffoolery&repo=%2FUsers%2Fcartine%2Ffoolery confirmed the title enters inline edit mode on click, keeps focus with a visible text cursor, uses about 95.97% of the header row width, leaves a 12.74px gap before the Close button, and shows 0px overlap. Sanity gates in /Users/cartine/foolery-6a0d passed: bun run lint (same pre-existing warning in src/components/beat-form.tsx:368 for react-hooks/incompatible-library), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-31T10:42:50.713484Z",
+    "entry_id": "019d437d-2ed9-7a32-a23f-a2d7be24d869",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

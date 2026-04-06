@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3025-4e0d-7c72-8bbf-0d74846a9f5d",
+  "occurred_at": "2026-03-27T16:34:04.429935Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped. Commit 73b730c4 on main.",
+    "datetime": "2026-03-27T16:34:04.429935Z",
+    "entry_id": "019d3025-4e0d-7c72-8bbf-0d681864f3ad",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

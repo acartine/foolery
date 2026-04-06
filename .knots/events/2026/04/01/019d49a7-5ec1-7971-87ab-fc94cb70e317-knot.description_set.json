@@ -1,0 +1,9 @@
+{
+  "event_id": "019d49a7-5ec1-7971-87ab-fc94cb70e317",
+  "occurred_at": "2026-04-01T15:26:38.785295Z",
+  "knot_id": "foolery-c85c",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Refine this smoke check to ensure the Create-More flow leaves the form in a clean, reusable state after a successful submission by resetting all user inputs and related form state."
+  }
+}

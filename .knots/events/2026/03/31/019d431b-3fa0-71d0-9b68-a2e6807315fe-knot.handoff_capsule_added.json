@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431b-3fa0-71d0-9b68-a2e6807315fe",
+  "occurred_at": "2026-03-31T08:55:52.480664Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review approved. The proposed fix correctly targets the actual mismatch: history labels are currently built from session_start agent fields, while response entries do not carry response-level provider/model identity. The plan stays within scope by adding response-identity extraction in the history parser, centralizing metadata-first label selection with strict fallback to existing session fields, updating the session/response history surfaces to consume that source, and adding regression tests around OpenRouter-backed response metadata. No invariant conflicts were found. Implementation caveat: when deriving a single session-header label, use the same metadata-first precedence as response rows so the header cannot fall back to session-start Codex fields when response metadata provides the authoritative provider/model identity.",
+    "datetime": "2026-03-31T08:55:52.480664Z",
+    "entry_id": "019d431b-3fa0-71d0-9b68-a2df3fc75c75",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

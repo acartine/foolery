@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f1a-ef8c-7421-ad3b-34a60f9ec042",
+  "occurred_at": "2026-04-02T16:50:58.572114Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review requested revisions. The root-cause hypothesis in src/components/ui/select.tsx is plausible, but the verification scope does not satisfy the acceptance criteria as written. In multi-select mode, FilterBar renders BulkEditControls instead of FilterControls, so this state exposes 4 Select pulldowns, not 7. A FilterBar-only Storybook scenario would also miss the header-level RepoSwitcher pulldown that is explicitly called out in acceptance. Revise the plan to validate the actual Queues View composition with multi-select active, add automated browser coverage for RepoSwitcher and any other pulldowns present in that view, and ensure the test runs in a scrollable non-zero-scroll scenario so viewport-stability assertions are meaningful.",
+    "datetime": "2026-04-02T16:50:25Z",
+    "entry_id": "019d4f1a-ef8c-7421-ad3b-349be92d3eed",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-04-02"
+  }
+}

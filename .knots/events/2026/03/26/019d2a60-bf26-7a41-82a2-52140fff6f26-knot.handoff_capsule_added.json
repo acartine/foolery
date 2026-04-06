@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a60-bf26-7a41-82a2-52140fff6f26",
+  "occurred_at": "2026-03-26T13:41:16.710891Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. Single-file change to `src/components/version-badge.tsx`: convert static span to clickable button with Popover. On click, fetches `/api/version?force=1` and shows result in popover — either \"Update now to v{version}\" or \"Latest version installed\". Reuses existing API route and release-version infrastructure. No new files, routes, or dependencies needed. Low complexity, low risk.",
+    "datetime": "2026-03-26T13:41:16.710891Z",
+    "entry_id": "019d2a60-bf26-7a41-82a2-5209f6c14fe1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

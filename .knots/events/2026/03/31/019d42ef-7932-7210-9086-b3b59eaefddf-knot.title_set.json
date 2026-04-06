@@ -1,0 +1,10 @@
+{
+  "event_id": "019d42ef-7932-7210-9086-b3b59eaefddf",
+  "occurred_at": "2026-03-31T08:08:03.63416Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Claim Loop:  Rotate through available models after failures",
+    "to": "Claim loop: rotate through pool agents after repeated failures"
+  }
+}

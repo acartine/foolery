@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2edb-1202-7d50-8fbf-38d1c43c91e3",
+  "occurred_at": "2026-03-27T10:33:22.169217Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-920b",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Queues view: Fix vertical alignment of row cell contents",
+    "type": "work",
+    "updated_at": "2026-03-27T10:33:22.169217Z",
+    "workflow_id": "compatibility"
+  }
+}

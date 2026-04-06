@@ -1,0 +1,9 @@
+{
+  "event_id": "019d446b-bdbd-70c3-9d2a-cae7fdce4e5d",
+  "occurred_at": "2026-03-31T15:03:24.861929Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When you open a new browser instance or window while agents are actively working in terminals, the new instance doesn't display any of the active terminal sessions. The UI shows an empty state instead. This indicates terminal state is stored in browser-local memory rather than fetched from the server. Terminal state should be served by the backend and synced across all connected browser instances in real time, showing active sessions, rolling status indicators, agent activity, and control buttons."
+  }
+}

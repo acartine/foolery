@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4995-6c03-77e1-aaac-985a32762683",
+  "occurred_at": "2026-04-01T15:07:02.531958Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  can't have the whole screenjitter to the lift just because i clicked on a pulldown in multi-view mode.\n\nmake sure to test every single pulldown to ensure it doesn't jitter the entire screen.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Multi-select mode in Queues View:  Clicking any pulldown, including the repositories pulldown, jitters the entire screen to the lift",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

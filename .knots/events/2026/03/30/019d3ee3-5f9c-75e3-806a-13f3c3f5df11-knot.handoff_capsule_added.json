@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee3-5f9c-75e3-806a-13f3c3f5df11",
+  "occurred_at": "2026-03-30T13:16:21.788806Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Verified: (1) merge commit 71d3849e on main with feature commits b091f5ac, 8550f31d; (2) settings-pools-section.tsx reverted from grid to flex layout with fixed widths w-[140px]/sm:w-[220px]; (3) AgentDisplayLabel gains layout prop (default 'inline', 'stacked' only used in pool row) — 7 other consumers unaffected; (4) tests updated to assert flex layout and stacked pills; (5) lint clean (0 errors), typecheck clean, 2355 tests pass, build succeeds. All acceptance criteria met.",
+    "datetime": "2026-03-30T13:16:21.788806Z",
+    "entry_id": "019d3ee3-5f9c-75e3-806a-13eb17bed9a3",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

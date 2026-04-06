@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ecb-c672-7743-8606-b966996f594d",
+  "occurred_at": "2026-03-30T12:50:35.250003Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan needs revision before implementation. The main issue is correctness: the proposed token_usage log entry is session-scoped, while existing history already supports one session covering multiple beatIds, so later aggregation cannot recover accurate per-beat counts from those entries alone. The revised plan should include beat identity in persisted token usage records or another explicit beat-scoped attribution mechanism, then parse and aggregate from that source. Secondary cleanup: use one beat summary field name consistently for per-agent aggregates and ensure tests cover a multi-beat session so duplication is caught.",
+    "datetime": "2026-03-30T12:50:19Z",
+    "entry_id": "019d3ecb-c672-7743-8606-b9509c41aca8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

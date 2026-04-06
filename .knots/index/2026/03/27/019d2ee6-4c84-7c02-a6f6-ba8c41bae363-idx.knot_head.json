@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2ee6-4c84-7c02-a6f6-ba8c41bae363",
+  "occurred_at": "2026-03-27T10:45:38.052253Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8831",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "Queues/Active views: move divider below last updated and tags",
+    "type": "work",
+    "updated_at": "2026-03-27T10:45:38.052253Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4323-4493-7ab1-a492-27612e92b7f1",
+  "occurred_at": "2026-03-31T09:04:38.035176Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the history agent-label fix on branch foolery-b45e. Response entries now extract provider/model identity from response metadata with OpenRouter-specific precedence, session headers reuse that metadata-derived identity instead of stale session_start Codex fields, and response rows prefer entry identity without leaking the old session version. Added regression coverage in agent-history session parsing plus SessionCard rendering. Validation run in the worktree: bun run test -- src/lib/__tests__/agent-history-sessions.test.ts src/components/__tests__/agent-history-session-card.test.tsx; bun run lint src/lib/agent-history.ts src/lib/agent-history-parse.ts src/lib/agent-history-identity.ts src/components/agent-history-utils.tsx src/components/agent-history-session-card.tsx src/components/agent-history-response-row.tsx src/lib/__tests__/agent-history-sessions.test.ts src/components/__tests__/agent-history-session-card.test.tsx; bunx tsc --noEmit. Commit: 003ff2fc4dc8",
+    "datetime": "2026-03-31T09:04:38.035176Z",
+    "entry_id": "019d4323-4493-7ab1-a492-27588e8582b7",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

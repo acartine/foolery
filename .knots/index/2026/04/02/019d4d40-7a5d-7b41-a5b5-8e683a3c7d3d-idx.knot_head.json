@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d40-7a5d-7b41-a5b5-8e683a3c7d3d",
+  "occurred_at": "2026-04-02T08:12:44.509567Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c198",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Add interactive Copilot session support",
+    "type": "work",
+    "updated_at": "2026-04-02T08:12:44.509567Z",
+    "workflow_id": "compatibility"
+  }
+}

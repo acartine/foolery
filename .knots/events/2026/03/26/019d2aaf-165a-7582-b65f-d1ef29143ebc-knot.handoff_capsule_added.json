@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aaf-165a-7582-b65f-d1ef29143ebc",
+  "occurred_at": "2026-03-26T15:06:50.842663Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "1. Acceptance requires click-driven UI behavior: clicking the version pill must trigger the update check and surface the resulting message/action. 2. The implementation appears to render those states in src/components/version-badge.tsx, but the new tests in src/components/__tests__/version-badge.test.ts exercise only checkForUpdates() and never render VersionBadge or simulate clicking the pill. 3. Because the review step requires verifying tests cover the required behavior, add component-level coverage that proves the click starts the check and that the UI shows either 'Update now to v{version}' or 'Latest version installed' based on the response.",
+    "datetime": "2026-03-26T15:06:41Z",
+    "entry_id": "019d2aaf-165a-7582-b65f-d1d59d347eb8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

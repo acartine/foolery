@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a95-f285-78f2-95e7-69b3d1daee96",
+  "occurred_at": "2026-03-26T14:39:23.269101Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review rejected on 2026-03-26T14:39:09Z. Verified the intended change exists on origin/foolery-6c3e, where src/components/beat-columns.tsx no longer inserts the type column, but the tagged shipment commit aea8120e78aa is not contained in origin/main and origin/main still imports/inserts typeColumn(). Acceptance is therefore not live on main. CI is green for current origin/main tip 3f3476530e08, but there is no evidence of a successful deployment of this beat to main. Return to shipment and merge/deploy the beat's commit set before requesting shipment review again.",
+    "datetime": "2026-03-26T14:39:09Z",
+    "entry_id": "019d2a95-f285-78f2-95e7-69a219b44da3",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

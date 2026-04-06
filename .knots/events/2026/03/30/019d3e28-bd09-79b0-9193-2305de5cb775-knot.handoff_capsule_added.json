@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e28-bd09-79b0-9193-2305de5cb775",
+  "occurred_at": "2026-03-30T09:52:30.473669Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved: the proposed change correctly targets SearchableOptionCombobox in settings-agents-scanned.tsx, and the custom cmdk filter is feasible because the local Command wrapper forwards filter props to CommandPrimitive. The plan remains within scope, has no invariant conflicts, addresses the stated substring-matching failure for model/provider fields, and the test strategy covers acceptance via lint, typecheck, tests, and manual verification of case-insensitive partial matches plus clearing the search.",
+    "datetime": "2026-03-30T09:52:22Z",
+    "entry_id": "019d3e28-bd09-79b0-9193-22f9f74104d8",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

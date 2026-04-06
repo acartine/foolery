@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebb-2684-76e3-8caa-6cc5f80b84b9",
+  "occurred_at": "2026-03-30T12:32:25.732341Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Added UI acceptance tests covering all 5 acceptance criteria. Source-code verification test (header-actions-refine-scope.test.ts) proves HeaderActions wires isPending from Zustand store to button disabled prop, Refinement pending label, and spinner animation. Integration test (scope-refinement-pending-integration.test.ts) proves filterNewCompletions + markComplete round-trip clears pending state and that the hook source calls markComplete for each completed beatId. All quality gates pass: lint clean, tsc clean, 2331 tests pass, build succeeds. Commit 5b766f790c86 on branch worktree-aae0-refine-scope-pending.",
+    "datetime": "2026-03-30T12:32:25.732341Z",
+    "entry_id": "019d3ebb-2684-76e3-8caa-6cbf88679920",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

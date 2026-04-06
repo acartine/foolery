@@ -1,0 +1,10 @@
+{
+  "event_id": "019d2a68-9902-7c30-8e23-9768aa700e9c",
+  "occurred_at": "2026-03-26T13:49:51.234711Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Remove the title column from Queues and Active, showing it as an inline row below priority, workflow profile, owner, and status",
+    "to": "Inline title below metadata row instead of dedicated column in Queues and Active tables"
+  }
+}

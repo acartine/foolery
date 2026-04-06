@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3015-3455-7803-9032-9e8ed2c9ea1f",
+  "occurred_at": "2026-03-27T16:16:29.269027Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a43f",
+    "profile_id": "autopilot",
+    "state": "ready_for_plan_review",
+    "terminal": false,
+    "title": "Capture per-step duration data in lease audit events",
+    "type": "work",
+    "updated_at": "2026-03-27T16:16:29.269027Z",
+    "workflow_id": "compatibility"
+  }
+}

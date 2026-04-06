@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4313-4970-7710-b217-89f1d57f32d1",
+  "occurred_at": "2026-03-31T08:47:10.704014Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Settings: Agents Scan — update Gemini model list",
+    "to": "Settings: Agents Scan — use required Gemini model set"
+  }
+}

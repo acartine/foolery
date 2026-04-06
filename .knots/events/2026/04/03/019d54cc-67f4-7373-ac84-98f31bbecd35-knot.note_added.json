@@ -1,0 +1,15 @@
+{
+  "event_id": "019d54cc-67f4-7373-ac84-98f31bbecd35",
+  "occurred_at": "2026-04-03T19:22:55.348542Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected: interactive OpenCode wiring uses an invalid CLI entrypoint. In the artifact worktree, 'opencode session --help' exposes only session management (list/delete), and 'opencode session --format json' exits 1 instead of starting a streamable session, so claimed-step and take-loop interactive sessions cannot run.",
+    "datetime": "2026-04-03T19:22:40Z",
+    "entry_id": "019d54cc-67f4-7373-ac84-98e89cc78e63",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

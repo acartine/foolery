@@ -1,0 +1,15 @@
+{
+  "event_id": "019d449e-2c38-78c0-8b26-9ac86481b3ff",
+  "occurred_at": "2026-03-31T15:58:29.944679Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Validated existing leaderboard threshold implementation in dedicated worktree /Users/cartine/foolery/.knots/_worktree/foolery-a71f on branch foolery-a71f. Confirmed src/components/lease-audit-helpers.ts filters leaderboard entries to agents with at least 10 completed attempts and success rate greater than 25%, and skips steps with no qualified entries. Confirmed regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts for under-10 exclusion, 25%-or-lower exclusion, qualified-only stats, runner-up filtering, and omission when no qualified agents remain. Sanity gates in the worktree: bun install --frozen-lockfile, bun run test -- src/components/__tests__/lease-audit-view-helpers.test.ts, bun run lint (passes with one pre-existing warning in src/components/beat-form.tsx:368 from react-hooks/incompatible-library), bunx tsc --noEmit, and bun run build.",
+    "datetime": "2026-03-31T15:58:29.944679Z",
+    "entry_id": "019d449e-2c38-78c0-8b26-9ab53bc830f9",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

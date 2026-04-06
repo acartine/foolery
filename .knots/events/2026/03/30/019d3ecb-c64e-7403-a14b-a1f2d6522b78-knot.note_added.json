@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ecb-c64e-7403-a14b-a1f2d6522b78",
+  "occurred_at": "2026-03-30T12:50:35.214288Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review requested revision: token usage is logged only at session scope, but agent-history sessions can span multiple beatIds. That would force duplication or misattribution when diagnostics need per-agent, per-beat counts. Revise the plan to persist beat-scoped token_usage entries, or otherwise carry beat identity through capture and parsing. Also align the proposed beat summary field name consistently (the plan uses both tokenUsage and tokenUsageByAgent).",
+    "datetime": "2026-03-30T12:50:35.214288Z",
+    "entry_id": "019d3ecb-c64e-7403-a14b-a1ecb475e599",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

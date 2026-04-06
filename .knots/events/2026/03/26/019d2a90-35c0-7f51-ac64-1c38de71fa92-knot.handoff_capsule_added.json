@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a90-35c0-7f51-ac64-1c38de71fa92",
+  "occurred_at": "2026-03-26T14:33:07.264544Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. The implementation in commit 57ecb5e3763a removes the Type column insertion from getBeatColumns for the Queues/default view, which matches the requested UI change. 2. Sanity gates passed on an isolated snapshot of that commit: bun run lint, bunx tsc --noEmit, bun run test, and bun run build all succeeded. 3. The required behavior is not covered by tests: src/lib/__tests__/beat-columns-helpers.test.ts only asserts that the type column is hidden in the active view, and it does not assert that the Queues/default view omits the type column. 4. Return this beat to implementation to add or update a test that explicitly verifies the Queues/default columns do not include type.",
+    "datetime": "2026-03-26T14:33:07.264544Z",
+    "entry_id": "019d2a90-35c0-7f51-ac64-1c2234976fc4",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

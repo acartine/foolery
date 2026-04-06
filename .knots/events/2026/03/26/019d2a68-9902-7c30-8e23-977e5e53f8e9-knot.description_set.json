@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a68-9902-7c30-8e23-977e5e53f8e9",
+  "occurred_at": "2026-03-26T13:49:51.234711Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Remove the title as a separate table column in both the Queues and Active views. Instead, render the title as a compact secondary line within each row, displayed below the existing metadata fields (priority, workflow profile, owner type, state). The current summary/preview behavior (focus-triggered description/notes/handoff panel with mouseover expand) must remain unchanged."
+  }
+}

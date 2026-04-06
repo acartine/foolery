@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3ea8-b401-7ea1-aeed-fffbe58ff22b",
+  "occurred_at": "2026-03-30T12:12:16.769288Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, you can see the page jitter, the foolery icon popping left, when switching to ReTakes or Diagnostics.\n\nEvery single view must anchor the top row with the foolery icon (and ending with Diagnostics or Add) to the exact same position and location.  Fix ReTakes and Diagnostics to do just htat.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Clicking on ReTakes or Diagnostics from any other view causes the page to jitter outward to both left and right",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

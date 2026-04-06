@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f50-be11-7310-940e-f4ad09583ece",
+  "occurred_at": "2026-03-27T12:41:53.937374Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n- Scope only `src/components/beat-detail.tsx`; remove the `BeatTypeBadge` import and stop rendering `<BeatTypeBadge type={beat.type} />` inside `BeatDetailHeader`.\n- Preserve the rest of the header layout and behavior: `StateDropdown`, priority badge/dropdown, metadata badges, timestamps, and labels stay unchanged.\n- Do not modify other `BeatTypeBadge` consumers such as `src/components/beat-column-defs.tsx`, `src/components/wave-planner-sections.tsx`, or Storybook stories.\n- Validation strategy for the implementation step: run `bun install --frozen-lockfile` in the active worktree if needed, then `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.\n- Risk is low and localized to header spacing/wrapping after removing one badge; implementation should do a quick visual/regression check of the Beat Detail header.\n- Repository is currently dirty in unrelated lease-audit files, so the implementation should avoid touching those files and keep the change isolated.",
+    "datetime": "2026-03-27T12:41:53.937374Z",
+    "entry_id": "019d2f50-be11-7310-940e-f49ddef49469",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

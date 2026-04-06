@@ -1,0 +1,15 @@
+{
+  "event_id": "019d34c7-2bd7-7822-ad4f-1ef0878add62",
+  "occurred_at": "2026-03-28T14:09:21.367861Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Copilot",
+    "content": "Approved in implementation_review. Reviewed commit 7734df82 on feat/foolery-2794: the change is limited to src/components/beat-column-defs-extra.tsx and adds explicit size/min/max constraints to the State column (120/100/150) while reducing meta.minWidthPx to 100. This aligns the State column with the other fixed-width Active-table columns so extra width is no longer absorbed primarily by State. No scope, data, or behavior changes beyond layout. Sanity gates verified in an isolated checkout of feat/foolery-2794: bun run lint, bunx tsc --noEmit, bun run test (192 files, 2293 passed), and bun run build all passed.",
+    "datetime": "2026-03-28T14:09:21.367861Z",
+    "entry_id": "019d34c7-2bd7-7822-ad4f-1eec45329817",
+    "model": "haiku/claude",
+    "username": "unknown",
+    "version": "4.5"
+  }
+}

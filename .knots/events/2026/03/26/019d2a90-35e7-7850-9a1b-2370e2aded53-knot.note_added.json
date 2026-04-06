@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a90-35e7-7850-9a1b-2370e2aded53",
+  "occurred_at": "2026-03-26T14:33:07.303327Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review requested changes: the code change removes the Type column from Queues, and lint/typecheck/test/build passed on an isolated snapshot of commit 57ecb5e3763a, but there is no test that asserts the Queues/default columns exclude the type column, so the beat's required behavior is not locked in against regression.",
+    "datetime": "2026-03-26T14:33:07.303327Z",
+    "entry_id": "019d2a90-35e7-7850-9a1b-23601a4181b1",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3013-0d6f-7aa1-a773-c327787d415d",
+  "occurred_at": "2026-03-27T16:14:08.23977Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.created",
+  "data": {
+    "body": "Normalize release version rendering across VersionBadge and related update surfaces so GitHub tags with or without a leading 'v' display consistently and never produce duplicated prefixes like 'vv0.6.2'. Update or add targeted UI tests around the popover/button copy and any other version-display surface fed by latestVersion.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "title": "Normalize version display in update surfaces",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

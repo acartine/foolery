@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ef8-8416-76b0-8561-df1c35d31cb9",
+  "occurred_at": "2026-03-30T13:39:27.382055Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped scoped fix by cherry-picking commit 1ad707b8a930 onto main to preserve shipment scope. Pushed origin/main at 1ad707b8a93001464f01c0ca3fab929a9efcb349. Local verification passed: bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, bun run build. Remote validation passed on main push runs CI (23747619941) and Coverage Badge (23747619947).",
+    "datetime": "2026-03-30T13:39:17Z",
+    "entry_id": "019d3ef8-8416-76b0-8561-df0e6f4304c7",
+    "model": "gpt-5",
+    "username": "acartine",
+    "version": "unknown"
+  }
+}

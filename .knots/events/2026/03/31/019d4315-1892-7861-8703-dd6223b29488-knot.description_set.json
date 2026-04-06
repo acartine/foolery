@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4315-1892-7861-8703-dd6223b29488",
+  "occurred_at": "2026-03-31T08:49:09.266423Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In Settings > Agents, the OpenCode model dropdown currently shows each model name with a hardcoded preceding string and truncates long labels. Update the display label for each option so it is derived from the model identifier by splitting on '/' and showing only the last token, ensuring the full last-token name is visible in the dropdown."
+  }
+}

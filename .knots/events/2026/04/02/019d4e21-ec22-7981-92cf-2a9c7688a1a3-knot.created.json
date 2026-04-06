@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4e21-ec22-7981-92cf-2a9c7688a1a3",
+  "occurred_at": "2026-04-02T12:18:59.234067Z",
+  "knot_id": "foolery-3a5e",
+  "type": "knot.created",
+  "data": {
+    "body": "Add automated regression coverage for the Queue/Active scroll-range fix and capture the required browser verification steps for terminal running, minimized, and closed states using DOM scroll metrics.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add regression coverage for terminal-state scroll bounds on Queue/Active screens",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

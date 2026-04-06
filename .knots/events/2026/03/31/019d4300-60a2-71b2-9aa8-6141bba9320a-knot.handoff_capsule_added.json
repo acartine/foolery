@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4300-60a2-71b2-9aa8-6141bba9320a",
+  "occurred_at": "2026-03-31T08:26:31.458872Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment complete. Merged beat/foolery-20ee into main (commit 31ba16ff) and pushed to origin. All quality gates passed: lint clean (1 pre-existing warning), tsc --noEmit clean, 207 test files / 2370 tests green. Merge was clean with no conflicts. The implementation commit 598b787e (Rotate take-loop agent pools across failures) is now on main.",
+    "datetime": "2026-03-31T08:26:31.458872Z",
+    "entry_id": "019d4300-60a2-71b2-9aa8-6132795fa39d",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

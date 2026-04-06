@@ -1,0 +1,37 @@
+{
+  "event_id": "019d5290-3c12-73e3-b25d-e098c843ef80",
+  "occurred_at": "2026-04-03T08:57:57.522768Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f8f4",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Auto-clear form fields after creating a bead via 'Create More'",
+    "type": "work",
+    "updated_at": "2026-04-03T08:57:57.522768Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d5249-909c-73d2-9b0c-2fa3ad1e9cbf"
+  }
+}

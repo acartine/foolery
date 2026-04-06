@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eaf-33ed-7042-a189-85df1538bfba",
+  "occurred_at": "2026-03-30T12:19:22.733827Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Implement in the create-beat UI only: persist all Create New draft fields and relationship selections to localStorage on change, restore them when the dialog reopens or the page reloads, add a left-aligned Clear button that resets to fresh defaults and removes the draft, and clear persisted data after successful Done/Create More submission. Primary touchpoints are `src/components/create-beat-dialog.tsx` for lifecycle/default handling and `src/components/beat-form.tsx` for field state plus footer actions. Main implementation risk is reconciling restored drafts with async default profile resolution without overwriting user data. Add targeted tests for persistence wiring, Clear presence/reset behavior, and submit-time draft clearing before running full quality gates in the implementation step.",
+    "datetime": "2026-03-30T12:19:22.733827Z",
+    "entry_id": "019d3eaf-33ed-7042-a189-85cc4781ab34",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

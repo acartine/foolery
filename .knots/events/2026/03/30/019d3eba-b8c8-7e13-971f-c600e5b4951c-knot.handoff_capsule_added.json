@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eba-b8c8-7e13-971f-c600e5b4951c",
+  "occurred_at": "2026-03-30T12:31:57.640405Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented multi-select CLI agent scan support for discovered-model CLIs in scripts/setup.sh and scripts/agent-wizard.sh. The shell wizard now registers one settings entry per selected model variant using slugged ids such as copilot-gpt-5-2, keeps action mapping and TOML writing keyed off registered entries, and preserves the base CLI id when the user finishes with zero selections. Bash 3.2 KV helpers were hardened to support hyphenated generated ids. Coverage now includes multi-entry settings writer assertions, zero-selection fallback assertions, and an installed-launcher PTY smoke test that selects two Copilot models in one scan session and leaves Codex at the base id. Validation passed: bun install --frozen-lockfile; bun run lint; bunx tsc --noEmit; bun run test; bun run build; bash scripts/test-install-copilot-setup.sh.",
+    "datetime": "2026-03-30T12:31:27Z",
+    "entry_id": "019d3eba-b8c8-7e13-971f-c5f6152e03c0",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

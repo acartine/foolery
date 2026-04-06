@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3014-fea5-7ac3-b0df-ec59dfd20610",
+  "occurred_at": "2026-03-27T16:16:15.525109Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: thread claimedAt through TakeLoopContext, compute durationMs at outcome time, add to LeaseAuditEvent. 6 files, all backward compatible.",
+    "datetime": "2026-03-27T16:16:15.525109Z",
+    "entry_id": "019d3014-fea5-7ac3-b0df-ec4aa03e1262",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

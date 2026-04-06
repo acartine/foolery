@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2edd-644d-77b0-baf1-ea5177f0e7e8",
+  "occurred_at": "2026-03-27T10:35:54.317766Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit 36c1837aa497 is on main. Changes: TableCell align-top→align-middle, profile/owner pills normalized to h-5, title column flex centered. 3 regression tests added. Typecheck clean, 2264 tests pass, no lint errors in changed files. All acceptance criteria met.",
+    "datetime": "2026-03-27T10:35:54.317766Z",
+    "entry_id": "019d2edd-644d-77b0-baf1-ea4d22a4fc15",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

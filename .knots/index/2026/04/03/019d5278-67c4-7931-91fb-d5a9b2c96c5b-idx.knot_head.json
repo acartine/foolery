@@ -1,0 +1,21 @@
+{
+  "event_id": "019d5278-67c4-7931-91fb-d5a9b2c96c5b",
+  "occurred_at": "2026-04-03T08:31:55.844928Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ac6e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Adopt shared runtime in terminal manager session paths",
+    "type": "work",
+    "updated_at": "2026-04-03T08:31:55.844928Z",
+    "workflow_id": "compatibility"
+  }
+}

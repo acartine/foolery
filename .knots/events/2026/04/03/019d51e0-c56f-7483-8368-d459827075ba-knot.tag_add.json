@@ -1,0 +1,9 @@
+{
+  "event_id": "019d51e0-c56f-7483-8368-d459827075ba",
+  "occurred_at": "2026-04-03T05:46:18.351583Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:feat/foolery-500d-acceptance-column"
+  }
+}

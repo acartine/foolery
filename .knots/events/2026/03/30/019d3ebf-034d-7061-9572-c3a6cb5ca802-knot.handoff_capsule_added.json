@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebf-034d-7061-9572-c3a6cb5ca802",
+  "occurred_at": "2026-03-30T12:36:38.861125Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feature branch foolery-67b5 (commit 30f960fa) into main via rebase. Final commit on main: 1601a1b4e991. All quality gates passed locally (lint, typecheck, 2316 tests). Pushed to origin/main. CI green (run 23744984778).",
+    "datetime": "2026-03-30T12:36:38.861125Z",
+    "entry_id": "019d3ebf-034d-7061-9572-c39472d958e3",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

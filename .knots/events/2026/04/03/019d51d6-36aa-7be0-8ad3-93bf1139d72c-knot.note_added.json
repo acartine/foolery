@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d6-36aa-7be0-8ad3-93bf1139d72c",
+  "occurred_at": "2026-04-03T05:34:46.442984Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "## Implementation Plan\n\n### Summary\nAdd an 'Acceptance criteria' column to the active items table. The acceptance field already exists on the Beat type (src/lib/types.ts:68), so no data model changes are needed.\n\n### Complexity: Low\nSingle-feature, 2-3 files changed. Follows existing column patterns closely.\n\n### Steps\n\n**Step 1: Define the acceptance criteria column**\n- File: src/components/beat-column-defs-extra.tsx\n- Add acceptanceColumn() function following existing column patterns\n- Column config: accessorKey: 'acceptance', header: 'Acceptance criteria'\n- Sizing: size: 180, minSize: 120, maxSize: 280\n- Cell: render row.original.acceptance with truncation (truncate class) and title tooltip\n- Use text-xs text-muted-foreground styling consistent with other text columns\n\n**Step 2: Insert column into active view column order**\n- File: src/components/beat-columns.tsx\n- Import acceptanceColumn from beat-column-defs-extra\n- Insert after idColumn() (position index 2) — this is the 2nd data column after select checkbox\n- Guard with if (showAgent) so it only appears in the active/queues view\n\n**Step 3: Verify responsive behavior**\n- Table container already uses overflow-x-auto for horizontal scroll on narrow viewports\n- Column min/max sizing ensures appropriate adaptation\n- No additional responsive work expected\n\n### Dependencies & Risks\n- None. The acceptance field is already on the Beat type and populated by the API.\n- If most beats have empty acceptance criteria, column may appear mostly blank — acceptable.\n\n### Test Strategy\n- Run existing Playwright tests (bun run test) for regression check\n- Verify column position, header text, and content rendering\n- Verify truncation and tooltip for long text\n\n### Files Changed\n1. src/components/beat-column-defs-extra.tsx — new acceptanceColumn() function\n2. src/components/beat-columns.tsx — import and insert column",
+    "datetime": "2026-04-03T05:34:46.442984Z",
+    "entry_id": "019d51d6-36aa-7be0-8ad3-93a4cc5a24a9",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

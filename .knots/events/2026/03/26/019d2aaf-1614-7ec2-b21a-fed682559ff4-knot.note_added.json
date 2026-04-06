@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aaf-1614-7ec2-b21a-fed682559ff4",
+  "occurred_at": "2026-03-26T15:06:50.772762Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: the code implements the clickable version pill and update states, but the added tests only cover checkForUpdates() and do not verify the required click-driven UI behavior (clicking the version pill, triggering the fetch, and rendering the update-available or latest-installed outcomes).",
+    "datetime": "2026-03-26T15:06:50.772762Z",
+    "entry_id": "019d2aaf-1614-7ec2-b21a-fec38031defe",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

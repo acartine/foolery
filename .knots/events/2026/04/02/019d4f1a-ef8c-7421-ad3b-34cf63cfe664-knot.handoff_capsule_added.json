@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f1a-ef8c-7421-ad3b-34cf63cfe664",
+  "occurred_at": "2026-04-02T16:50:58.572114Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan not approved. The proposed production change may be correct, but the test plan currently misses the real page composition: multi-select mode swaps FilterControls out for BulkEditControls, so the expected pulldown count is wrong, and a FilterBar-only story would not exercise RepoSwitcher. Next plan revision should target a page-level or equivalent composed scenario with multi-select active, automate stability checks for RepoSwitcher plus the bulk-edit pulldowns, and include non-zero scroll verification so layout-jump assertions are meaningful.",
+    "datetime": "2026-04-02T16:50:25Z",
+    "entry_id": "019d4f1a-ef8c-7421-ad3b-34be615a3182",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-04-02"
+  }
+}

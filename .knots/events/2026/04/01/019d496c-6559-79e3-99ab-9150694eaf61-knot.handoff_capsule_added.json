@@ -1,0 +1,15 @@
+{
+  "event_id": "019d496c-6559-79e3-99ab-9150694eaf61",
+  "occurred_at": "2026-04-01T14:22:13.849572Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: deployment issue. The prior implementation session left changes uncommitted in the main worktree working directory. git diff --stat shows 100 lines of changes across 4 files; 2 test files remain untracked. No commit exists on main for this beat. Shipment agent must: (1) commit all implementation changes to main, (2) push to origin/main, then shipment review can re-run.",
+    "datetime": "2026-04-01T14:22:13.849572Z",
+    "entry_id": "019d496c-6559-79e3-99ab-9144b7bf932c",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

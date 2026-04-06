@@ -1,0 +1,9 @@
+{
+  "event_id": "019d495d-d88b-7f62-80e2-e30a9f0b7f36",
+  "occurred_at": "2026-04-01T14:06:20.299529Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Refine Scope action appears in the multi-select toolbar/menu when knots are selected\n2. Action correctly initiates scope refinement for all selected knots\n3. Action works with offline-created knots without data loss or state issues\n4. Verify via Playwright: select multiple knots in Queues → confirm Refine Scope action is visible, clickable, and executes without error"
+  }
+}

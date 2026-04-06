@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2ee1-5847-70c0-a539-0d0297f4a620",
+  "occurred_at": "2026-03-27T10:40:13.372073Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8ab7",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Update banner includes a link that starts the version update",
+    "type": "work",
+    "updated_at": "2026-03-27T10:40:13.372073Z",
+    "workflow_id": "compatibility"
+  }
+}

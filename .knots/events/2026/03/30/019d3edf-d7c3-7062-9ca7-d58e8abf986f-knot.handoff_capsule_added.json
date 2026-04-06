@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3edf-d7c3-7062-9ca7-d58e8abf986f",
+  "occurred_at": "2026-03-30T13:12:30.403727Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation_review. Verified the implementation in /Users/cartine/foolery/.knots/_worktree/foolery-81ad against the acceptance criteria: beat-scoped token_usage lines are persisted with explicit beatId and agent identity, history parsing aggregates saved tokenUsageByAgent per beat without session-scope inference, and diagnostics renders the saved per-agent token counts. Validation on the review target worktree passed: bun run lint (pre-existing warning only in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-30T15:12:30+02:00",
+    "entry_id": "019d3edf-d7c3-7062-9ca7-d577b6057efc",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "codex"
+  }
+}

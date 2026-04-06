@@ -1,0 +1,9 @@
+{
+  "event_id": "019d51ce-f7a3-7fa2-866b-b48d1e1c3416",
+  "occurred_at": "2026-04-03T05:26:51.555594Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The acceptance criteria column renders in the UI at 2nd position (after description column).\n2. Column header displays 'Acceptance criteria' clearly.\n3. Acceptance criteria content is visible and readable for each row.\n4. Column width and alignment are consistent with existing columns.\n5. No visual regression: existing columns (description, queue name, etc.) remain properly styled and positioned.\n6. Responsive layout adapts appropriately on smaller viewports.\n\nValidation: Use Chrome DevTools to inspect column structure and position, or use Playwright to programmatically verify column order and content rendering."
+  }
+}

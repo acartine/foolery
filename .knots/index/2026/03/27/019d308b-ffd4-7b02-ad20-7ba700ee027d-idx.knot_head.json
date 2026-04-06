@@ -1,0 +1,21 @@
+{
+  "event_id": "019d308b-ffd4-7b02-ad20-7ba700ee027d",
+  "occurred_at": "2026-03-27T18:26:14.612419Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ea93",
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_plan_review",
+    "terminal": false,
+    "title": "Implement backend-triggered update and restart flow",
+    "type": "work",
+    "updated_at": "2026-03-27T18:26:14.612419Z",
+    "workflow_id": "compatibility"
+  }
+}

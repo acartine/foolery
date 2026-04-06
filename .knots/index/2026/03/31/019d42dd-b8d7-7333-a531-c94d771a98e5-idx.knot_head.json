@@ -1,0 +1,21 @@
+{
+  "event_id": "019d42dd-b8d7-7333-a531-c94d771a98e5",
+  "occurred_at": "2026-03-31T07:48:40.279099Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-284e",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "History: Conversation Log: Add dates to pulldown, not just time",
+    "type": "work",
+    "updated_at": "2026-03-31T07:48:40.279099Z",
+    "workflow_id": "compatibility"
+  }
+}

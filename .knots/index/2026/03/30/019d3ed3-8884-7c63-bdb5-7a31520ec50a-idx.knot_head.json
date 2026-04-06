@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3ed3-8884-7c63-bdb5-7a31520ec50a",
+  "occurred_at": "2026-03-30T12:59:03.679014Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-23f3",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "clean up shitty Agents UX",
+    "type": "work",
+    "updated_at": "2026-03-30T12:59:03.679014Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51e0-c56f-7483-8368-d4702139c325",
+  "occurred_at": "2026-04-03T05:46:18.351583Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the active-item inline summary acceptance column in a feature worktree, added focused tests plus layout characterization coverage, validated the active view in-browser at 1400px and 800px, and pushed the review artifact branch. Branch: feat/foolery-500d-acceptance-column",
+    "datetime": "2026-04-03T05:46:18.351583Z",
+    "entry_id": "019d51e0-c56f-7483-8368-d46e0fc82646",
+    "model": "GPT",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

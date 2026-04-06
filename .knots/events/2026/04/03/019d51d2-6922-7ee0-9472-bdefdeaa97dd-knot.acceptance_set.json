@@ -1,0 +1,9 @@
+{
+  "event_id": "019d51d2-6922-7ee0-9472-bdefdeaa97dd",
+  "occurred_at": "2026-04-03T05:30:37.218204Z",
+  "knot_id": "foolery-fd27",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) Reproduce the issue on existing pages with the repository pulldown and verify that each open/close interaction no longer causes horizontal movement of the page content or adjacent controls.\n2) The repository pulldown must still open, display options, and close as before, with no functional regression in selection behavior.\n3) Validate with Chrome DevTools/Playwright MCP by recording/capturing before, open, and close frames and confirming the x-position of the dropdown trigger row and nearby UI elements remains stable (no visible jitter).\n4) If using Playwright MCP, run a loop (e.g., 10 clicks) that opens/closes the pulldown and assert no unexpected horizontal shift in captured screenshot bounding boxes or DOM offsets for surrounding elements."
+  }
+}

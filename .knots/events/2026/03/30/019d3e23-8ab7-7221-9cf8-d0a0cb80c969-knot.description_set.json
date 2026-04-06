@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3e23-8ab7-7221-9cf8-d0a0cb80c969",
+  "occurred_at": "2026-03-30T09:46:49.911222Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The search/filter input on the Settings → Agents screen (Opencode scan) does not meaningfully filter the agent list. Typing a partial model or provider name (e.g. \"glm\", \"minimax\") should narrow the displayed results via case-insensitive substring matching, but currently it fails to filter correctly."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d30b7-af7d-7ee3-80d7-2d8ffcfbeeb7",
+  "occurred_at": "2026-03-27T19:13:57.629738Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review approved against feat/foolery-9b5c-prefix at bc0930a4. The reviewed change switches beat and terminal ID prefix stripping from first-hyphen to last-hyphen logic in beat navigation/display, terminal tab parsing, and history ID stripping, which preserves full hyphenated project prefixes and returns the expected local ID suffix. Regression tests now cover feature-builder style IDs for beat navigation, beat display, hierarchical aliases, and terminal tab IDs, and I found no acceptance-criteria or invariant violations in the reviewed patch.",
+    "datetime": "2026-03-27T19:13:57.629738Z",
+    "entry_id": "019d30b7-af7d-7ee3-80d7-2d70c9eeed98",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

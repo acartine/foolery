@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d3f-cb5c-77a2-b460-3e0a4e86b09a",
+  "occurred_at": "2026-04-02T08:11:59.708417Z",
+  "knot_id": "foolery-f5ee",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement Codex on top of the shared interactive session protocol instead of forcing all Codex work through . Choose a stable interactive invocation path, keep stdin open for follow-up turns, normalize Codex stream events into the shared event model, and make turn completion/session completion feed the same post-exit workflow validation used for Claude. The implementation should preserve non-interactive Codex execution where appropriate, but support claimed-step sessions and take-loop retries through interactive Codex sessions.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add interactive Codex session support",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

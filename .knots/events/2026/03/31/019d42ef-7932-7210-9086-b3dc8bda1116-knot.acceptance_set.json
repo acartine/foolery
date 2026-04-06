@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42ef-7932-7210-9086-b3dc8bda1116",
+  "occurred_at": "2026-03-31T08:08:03.63416Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. After a failed claim (step-failure rollback or non-zero exit), the next claim MUST select a different agent from the pool when alternatives exist — verified by unit test.\n2. Agent rotation tracks all previously-failed agents for a given queue type within the session, not just the most recent one, so the loop cycles through the full pool before re-trying any agent.\n3. When the pool is exhausted (every agent has failed), the loop stops early rather than re-running an already-failed agent up to `maxClaimsPerQueueType`.\n4. Agent rotation on failure applies in both `basic` and `advanced` dispatch modes.\n5. `selectFromPool` no longer silently falls back to the excluded agent — if strict exclusion fails it returns null and the caller decides whether to stop or fall back explicitly.\n6. Existing tests in `terminal-manager-queue-claims.test.ts` continue to pass; new tests cover the multi-failure rotation and early-stop scenarios."
+  }
+}

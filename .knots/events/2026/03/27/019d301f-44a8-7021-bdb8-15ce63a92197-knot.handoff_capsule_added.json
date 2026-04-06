@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301f-44a8-7021-bdb8-15ce63a92197",
+  "occurred_at": "2026-03-27T16:27:28.808062Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review passed. Effective speed formula accounts for review overhead correctly. Edge cases handled. Proceed to implementation.",
+    "datetime": "2026-03-27T16:27:28.808062Z",
+    "entry_id": "019d301f-44a8-7021-bdb8-15bcd0dd5e34",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

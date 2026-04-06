@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f3-cc8d-7562-a129-0027f6bbbe47",
+  "occurred_at": "2026-03-31T08:12:47.116984Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review requested revision: the proposed clear-selection implementation is not feasible as written. In SettingsAgentsSection, handleToggleOption is add-only and returns early when an option is already registered, so having SelectedModelPills call onToggle for selected IDs will not clear or unselect anything. Revise the plan to add an explicit removal path for scanned selections (for example, wiring removeAgent through ScannedAgentsList/ScannedAgentRow/SelectedModelPills, or a dedicated clear handler), and add tests that cover both selecting and clearing registered Claude/Codex/Gemini models.",
+    "datetime": "2026-03-31T08:12:47.116984Z",
+    "entry_id": "019d42f3-cc8d-7562-a129-001987bfbd6b",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

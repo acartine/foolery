@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2ed6-6e6f-7353-b3dc-7b497f929f72",
+  "occurred_at": "2026-03-27T10:28:18.159452Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says - the divider line is awkwardly between the normalized fields and the title\n\nit should be below the “time elapsed/updated” and tags section to more neatly divide the beat rows.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Queues/Active views:  move divider line to under last updated and tags",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4996-6523-72c1-beab-3237aa414a63",
+  "occurred_at": "2026-04-01T15:08:06.307323Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. After a bead is successfully created via the 'Create More' action, all input fields are cleared (text inputs, dropdowns, checkboxes, radio buttons, and other form controls)\n2. The form is reset to a clean state, ready for immediate re-entry\n3. Form does NOT clear if creation fails due to validation errors or network failures\n4. Verify using browser DevTools (inspect form element values) or Playwright to assert field states before and after the 'Create More' action\n5. Confirm that focus/cursor positioning supports quick re-entry of data"
+  }
+}

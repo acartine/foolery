@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3086-43fc-7942-a2b3-e861f4809800",
+  "occurred_at": "2026-03-27T18:19:58.844601Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan\n- Add a small shared display formatter for release versions that guarantees exactly one visible `v` prefix while preserving the underlying raw version string for comparison logic.\n- Apply that formatter to all UI surfaces that render `latestVersion` or installed/latest version labels in the update UX, starting with `src/components/version-badge.tsx` and `src/components/app-header-parts.tsx`.\n- Keep normalization at the presentation layer only; do not change `src/lib/release-version.ts`, because semver comparison already strips an optional prefix and release metadata should remain raw.\n- Extend existing component tests so both `v0.6.2` and `0.6.2` inputs render `v0.6.2`, and explicitly cover the prior `vv0.6.2` regression in the badge CTA.\n\nFiles / tests\n- `src/components/version-badge.tsx`\n- `src/components/app-header-parts.tsx`\n- optional shared helper in `src/lib/` or nearby component util file\n- `src/components/__tests__/version-badge.test.ts`\n- `src/components/__tests__/app-header-parts.test.ts`\n\nComplexity / risks\n- Low complexity. Main risk is fixing the badge CTA but missing another update surface that renders the same raw string.",
+    "datetime": "2026-03-27T18:19:58.844601Z",
+    "entry_id": "019d3086-43fc-7942-a2b3-e858adb3a082",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

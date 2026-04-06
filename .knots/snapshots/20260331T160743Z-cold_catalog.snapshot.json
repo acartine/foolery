@@ -1,0 +1,5748 @@
+{
+  "schema_version": 1,
+  "written_at": "2026-03-31T16:07:43.20644Z",
+  "cold": [
+    {
+      "id": "foolery-6d7b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774523443212-9ogpdw",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T11:16:33.281044Z"
+    },
+    {
+      "id": "foolery-7f40",
+      "title": "Resize + Add button to match action-bar tab height",
+      "state": "shipped",
+      "updated_at": "2026-03-26T11:16:33.254914Z"
+    },
+    {
+      "id": "foolery-14c8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774523443212-9ogpdw",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T11:14:54.516188Z"
+    },
+    {
+      "id": "foolery-ec32",
+      "title": "Lease: foolery:terminal_manager_take:term-1774523443212-9ogpdw",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T11:11:51.102616Z"
+    },
+    {
+      "id": "foolery-267b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774523284620-wfag4c",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T11:09:41.487338Z"
+    },
+    {
+      "id": "foolery-5e12",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:32:03.526203Z"
+    },
+    {
+      "id": "foolery-d17b",
+      "title": "Fix code style: lib/core-modules",
+      "state": "shipped",
+      "updated_at": "2026-03-26T10:32:03.505148Z"
+    },
+    {
+      "id": "foolery-facf",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:30:02.337906Z"
+    },
+    {
+      "id": "foolery-577f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:29:11.898114Z"
+    },
+    {
+      "id": "foolery-2f0d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:26:11.360323Z"
+    },
+    {
+      "id": "foolery-57ce",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:18:44.179672Z"
+    },
+    {
+      "id": "foolery-dc62",
+      "title": "Fix code style: components/ui-panels",
+      "state": "shipped",
+      "updated_at": "2026-03-26T10:18:36.686016Z"
+    },
+    {
+      "id": "foolery-ada9",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:17:27.999228Z"
+    },
+    {
+      "id": "foolery-9bb3",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:14:57.866674Z"
+    },
+    {
+      "id": "foolery-c527",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:13:55.281901Z"
+    },
+    {
+      "id": "foolery-d0c3",
+      "title": "Fix code style: components/dialogs-and-settings",
+      "state": "shipped",
+      "updated_at": "2026-03-26T10:13:49.182795Z"
+    },
+    {
+      "id": "foolery-85d1",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:12:56.485299Z"
+    },
+    {
+      "id": "foolery-4859",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:12:50.061009Z"
+    },
+    {
+      "id": "foolery-9c4e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:11:30.293919Z"
+    },
+    {
+      "id": "foolery-fccd",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:10:19.470533Z"
+    },
+    {
+      "id": "foolery-1aed",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T10:00:44.901219Z"
+    },
+    {
+      "id": "foolery-2031",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:58:12.623113Z"
+    },
+    {
+      "id": "foolery-cd0a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:55:45.577706Z"
+    },
+    {
+      "id": "foolery-188c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:53:27.594585Z"
+    },
+    {
+      "id": "foolery-d89a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513332-fjfhfg",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:48:35.451504Z"
+    },
+    {
+      "id": "foolery-3246",
+      "title": "Fix code style: components/views-and-pages",
+      "state": "shipped",
+      "updated_at": "2026-03-26T09:48:32.619509Z"
+    },
+    {
+      "id": "foolery-848b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:48:18.435809Z"
+    },
+    {
+      "id": "foolery-4ede",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513332-fjfhfg",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:47:17.129764Z"
+    },
+    {
+      "id": "foolery-699d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:46:24.855384Z"
+    },
+    {
+      "id": "foolery-e253",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513332-fjfhfg",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:43:17.868221Z"
+    },
+    {
+      "id": "foolery-df9b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513332-fjfhfg",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:40:35.888128Z"
+    },
+    {
+      "id": "foolery-96a5",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:39:01.558356Z"
+    },
+    {
+      "id": "foolery-6074",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:38:38.596628Z"
+    },
+    {
+      "id": "foolery-2b7a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:37:47.374836Z"
+    },
+    {
+      "id": "foolery-e172",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:36:45.557754Z"
+    },
+    {
+      "id": "foolery-530b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:34:58.869539Z"
+    },
+    {
+      "id": "foolery-743b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:34:58.800892Z"
+    },
+    {
+      "id": "foolery-85a6",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:32:54.030035Z"
+    },
+    {
+      "id": "foolery-5e34",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513413-eyqpot",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:32:12.536504Z"
+    },
+    {
+      "id": "foolery-3d55",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513499-dfy3li",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:31:25.236558Z"
+    },
+    {
+      "id": "foolery-2c1e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513250-67fj2t",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:30:31.375964Z"
+    },
+    {
+      "id": "foolery-5e1c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513067-6ts5k5",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:26:58.904165Z"
+    },
+    {
+      "id": "foolery-6dbc",
+      "title": "Fix code style: tests/stores-and-hooks",
+      "state": "shipped",
+      "updated_at": "2026-03-26T09:26:52.607755Z"
+    },
+    {
+      "id": "foolery-15b2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513067-6ts5k5",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:25:36.902065Z"
+    },
+    {
+      "id": "foolery-52f7",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513067-6ts5k5",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:24:12.82986Z"
+    },
+    {
+      "id": "foolery-a14a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513067-6ts5k5",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:22:37.545832Z"
+    },
+    {
+      "id": "foolery-eb73",
+      "title": "Lease: foolery:terminal_manager_take:term-1774516513170-y147en",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-26T09:17:46.596212Z"
+    },
+    {
+      "id": "foolery-6a27",
+      "title": "Lease: foolery:terminal_manager_take:term-1774421307740-uzz7jc",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-25T07:37:09.993726Z"
+    },
+    {
+      "id": "foolery-62da",
+      "title": "Escalations:  Change Icon to something more clever",
+      "state": "shipped",
+      "updated_at": "2026-03-25T07:37:09.960106Z"
+    },
+    {
+      "id": "foolery-45f8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774421307740-uzz7jc",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-25T06:55:22.529454Z"
+    },
+    {
+      "id": "foolery-6e65",
+      "title": "Lease: foolery:terminal_manager_take:term-1774421307740-uzz7jc",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-25T06:52:43.313075Z"
+    },
+    {
+      "id": "foolery-f033",
+      "title": "Lease: foolery:terminal_manager_take:term-1774421307740-uzz7jc",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-25T06:50:44.763915Z"
+    },
+    {
+      "id": "foolery-5c13",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:53:13.479979Z"
+    },
+    {
+      "id": "foolery-1918",
+      "title": "Reload doesn't remember selected project state",
+      "state": "shipped",
+      "updated_at": "2026-03-24T13:53:13.458857Z"
+    },
+    {
+      "id": "foolery-a398",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:51:17.141854Z"
+    },
+    {
+      "id": "foolery-9a13",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:47:47.050701Z"
+    },
+    {
+      "id": "foolery-ca3d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:45:52.41126Z"
+    },
+    {
+      "id": "foolery-0c0d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:42:10.970121Z"
+    },
+    {
+      "id": "foolery-9176",
+      "title": "Lease: foolery:terminal_manager_take:term-1774359562735-6ts03b",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-24T13:41:07.196601Z"
+    },
+    {
+      "id": "foolery-354d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T16:12:23.07518Z"
+    },
+    {
+      "id": "foolery-c2ee",
+      "title": "Audit: UX Design Improvements",
+      "state": "shipped",
+      "updated_at": "2026-03-23T16:12:07.97879Z"
+    },
+    {
+      "id": "foolery-b2b7",
+      "title": "Implement lease audit data derivations and rolling time filters",
+      "state": "shipped",
+      "updated_at": "2026-03-23T16:11:37.190902Z"
+    },
+    {
+      "id": "foolery-beb0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T16:06:51.140188Z"
+    },
+    {
+      "id": "foolery-0e2b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T16:04:06.158783Z"
+    },
+    {
+      "id": "foolery-dafe",
+      "title": "Add lease audit regression coverage for new UX metrics",
+      "state": "shipped",
+      "updated_at": "2026-03-23T15:59:24.5773Z"
+    },
+    {
+      "id": "foolery-5bc8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:57:08.528322Z"
+    },
+    {
+      "id": "foolery-b63e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:56:27.487971Z"
+    },
+    {
+      "id": "foolery-2288",
+      "title": "Refresh lease audit view layout and controls",
+      "state": "shipped",
+      "updated_at": "2026-03-23T15:55:18.559984Z"
+    },
+    {
+      "id": "foolery-79d0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:52:06.951404Z"
+    },
+    {
+      "id": "foolery-fdcc",
+      "title": "Queue Screen:  Shows children without parent",
+      "state": "shipped",
+      "updated_at": "2026-03-23T15:52:00.241247Z"
+    },
+    {
+      "id": "foolery-0e58",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:51:10.719974Z"
+    },
+    {
+      "id": "foolery-0499",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:50:30.496018Z"
+    },
+    {
+      "id": "foolery-cc0b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:50:11.632327Z"
+    },
+    {
+      "id": "foolery-cb79",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:47:50.380197Z"
+    },
+    {
+      "id": "foolery-fe26",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:44:11.602058Z"
+    },
+    {
+      "id": "foolery-8708",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:42:25.387045Z"
+    },
+    {
+      "id": "foolery-d026",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:39:18.320611Z"
+    },
+    {
+      "id": "foolery-5ce2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774280113086-81yiaq",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:37:47.435485Z"
+    },
+    {
+      "id": "foolery-4289",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:33:18.248677Z"
+    },
+    {
+      "id": "foolery-d42f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774279666423-tqouh8",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T15:31:43.617066Z"
+    },
+    {
+      "id": "foolery-53a8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774272101084-xe4v7v",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T13:34:01.463159Z"
+    },
+    {
+      "id": "foolery-5c85",
+      "title": "replace Human Action link with Escalations",
+      "state": "shipped",
+      "updated_at": "2026-03-23T13:34:01.423203Z"
+    },
+    {
+      "id": "foolery-c8b9",
+      "title": "Lease: foolery:terminal_manager_take:term-1774272101084-xe4v7v",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T13:32:06.323423Z"
+    },
+    {
+      "id": "foolery-42e8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774272101084-xe4v7v",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T13:28:35.195146Z"
+    },
+    {
+      "id": "foolery-6a17",
+      "title": "Lease: foolery:terminal_manager_take:term-1774272101084-xe4v7v",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T13:25:45.063182Z"
+    },
+    {
+      "id": "foolery-c31e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774262098062-klqi44",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:48:04.639027Z"
+    },
+    {
+      "id": "foolery-b72e",
+      "title": "Retakes Screen: Minor cleanups",
+      "state": "shipped",
+      "updated_at": "2026-03-23T10:48:04.613254Z"
+    },
+    {
+      "id": "foolery-9913",
+      "title": "Lease: foolery:terminal_manager_take:term-1774262098062-klqi44",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:46:51.746911Z"
+    },
+    {
+      "id": "foolery-1f22",
+      "title": "Lease: foolery:terminal_manager_take:term-1774262098062-klqi44",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:44:07.537639Z"
+    },
+    {
+      "id": "foolery-22e4",
+      "title": "Lease: foolery:terminal_manager_take:term-1774262098062-klqi44",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:43:04.748402Z"
+    },
+    {
+      "id": "foolery-34c8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774262098062-klqi44",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:39:50.867919Z"
+    },
+    {
+      "id": "foolery-48f0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:15:14.421098Z"
+    },
+    {
+      "id": "foolery-d8cb",
+      "title": "Audit Page loaded with mistakes",
+      "state": "shipped",
+      "updated_at": "2026-03-23T10:15:14.400044Z"
+    },
+    {
+      "id": "foolery-8810",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:14:30.753417Z"
+    },
+    {
+      "id": "foolery-c938",
+      "title": "beat detail:  Take! button fails with \"Error fetching foolery-b555 no issue found matching\"",
+      "state": "shipped",
+      "updated_at": "2026-03-23T10:14:26.61714Z"
+    },
+    {
+      "id": "foolery-d82b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:13:22.680465Z"
+    },
+    {
+      "id": "foolery-5de8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:12:39.427328Z"
+    },
+    {
+      "id": "foolery-8617",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594329-ut4ram",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:12:04.467739Z"
+    },
+    {
+      "id": "foolery-b555",
+      "title": "History: Beats with Agent Sessions:  Show beat id alias instead of beat id if alias is available",
+      "state": "shipped",
+      "updated_at": "2026-03-23T10:11:57.365341Z"
+    },
+    {
+      "id": "foolery-003f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:10:56.348275Z"
+    },
+    {
+      "id": "foolery-3164",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:10:24.973984Z"
+    },
+    {
+      "id": "foolery-59ca",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:08:27.177357Z"
+    },
+    {
+      "id": "foolery-4aae",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:07:50.622174Z"
+    },
+    {
+      "id": "foolery-e0c3",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:03:51.937376Z"
+    },
+    {
+      "id": "foolery-0cfa",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:03:03.914625Z"
+    },
+    {
+      "id": "foolery-6612",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:02:51.949526Z"
+    },
+    {
+      "id": "foolery-e000",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594329-ut4ram",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:02:43.449608Z"
+    },
+    {
+      "id": "foolery-fc07",
+      "title": "ReTakes Screen:  Display beats in order of when they were last updated, most recently first",
+      "state": "shipped",
+      "updated_at": "2026-03-23T10:02:42.58204Z"
+    },
+    {
+      "id": "foolery-c664",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594210-fd0b7s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:02:39.969492Z"
+    },
+    {
+      "id": "foolery-a9c1",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259948481-p73wq0",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:01:36.826022Z"
+    },
+    {
+      "id": "foolery-db80",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T10:00:35.712842Z"
+    },
+    {
+      "id": "foolery-4978",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594329-ut4ram",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:59:15.745211Z"
+    },
+    {
+      "id": "foolery-1980",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:57:57.092027Z"
+    },
+    {
+      "id": "foolery-5391",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259594329-ut4ram",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:57:49.300345Z"
+    },
+    {
+      "id": "foolery-c5a2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:56:25.878619Z"
+    },
+    {
+      "id": "foolery-c91b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:50:59.303236Z"
+    },
+    {
+      "id": "foolery-6810",
+      "title": "Lease: foolery:terminal_manager_take:term-1774259291736-607ne7",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:50:22.995024Z"
+    },
+    {
+      "id": "foolery-2399",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:30:41.153387Z"
+    },
+    {
+      "id": "foolery-e805",
+      "title": "Active Screen: If beat is child beat and in action state, show the parent too, regardless of whether or not the parent is in action state",
+      "state": "shipped",
+      "updated_at": "2026-03-23T09:30:20.47476Z"
+    },
+    {
+      "id": "foolery-b4ce",
+      "title": "Implement active ancestor inclusion across backend filters",
+      "state": "shipped",
+      "updated_at": "2026-03-23T09:30:16.386189Z"
+    },
+    {
+      "id": "foolery-2cc9",
+      "title": "Add active-view regression coverage for direct and auto-routed backends",
+      "state": "shipped",
+      "updated_at": "2026-03-23T09:30:16.363553Z"
+    },
+    {
+      "id": "foolery-1051",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:27:39.847791Z"
+    },
+    {
+      "id": "foolery-c505",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:24:16.147404Z"
+    },
+    {
+      "id": "foolery-85df",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:20:08.768909Z"
+    },
+    {
+      "id": "foolery-6cde",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:19:48.250285Z"
+    },
+    {
+      "id": "foolery-89e8",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:09:29.151254Z"
+    },
+    {
+      "id": "foolery-3387",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:01:51.031193Z"
+    },
+    {
+      "id": "foolery-0a75",
+      "title": "Audit Screen:  Show timeseries above table",
+      "state": "shipped",
+      "updated_at": "2026-03-23T09:01:43.570627Z"
+    },
+    {
+      "id": "foolery-446e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T09:00:15.155194Z"
+    },
+    {
+      "id": "foolery-0b33",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:57:03.293234Z"
+    },
+    {
+      "id": "foolery-3ca2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:56:50.840307Z"
+    },
+    {
+      "id": "foolery-282e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:55:27.644811Z"
+    },
+    {
+      "id": "foolery-1558",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:54:53.421894Z"
+    },
+    {
+      "id": "foolery-8812",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:50:46.508142Z"
+    },
+    {
+      "id": "foolery-da60",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:50:38.580137Z"
+    },
+    {
+      "id": "foolery-03f4",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557669-o1luhx",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:49:49.365687Z"
+    },
+    {
+      "id": "foolery-3903",
+      "title": "Lease: foolery:terminal_manager_take:term-1774255557744-92ei9i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T08:48:42.702865Z"
+    },
+    {
+      "id": "foolery-ccda",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:55:04.170292Z"
+    },
+    {
+      "id": "foolery-be1c",
+      "title": "Active Screen:  Maestro repo shows 3b3b.2, which is shipped",
+      "state": "shipped",
+      "updated_at": "2026-03-23T06:55:04.139305Z"
+    },
+    {
+      "id": "foolery-f87d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:54:13.224831Z"
+    },
+    {
+      "id": "foolery-5b1b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:51:16.818129Z"
+    },
+    {
+      "id": "foolery-8594",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:50:01.181082Z"
+    },
+    {
+      "id": "foolery-9e36",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:46:16.487385Z"
+    },
+    {
+      "id": "foolery-d4ca",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:41:19.73227Z"
+    },
+    {
+      "id": "foolery-91de",
+      "title": "Lease: foolery:terminal_manager_take:term-1774247795846-ikw7pu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-23T06:39:24.330702Z"
+    },
+    {
+      "id": "foolery-7a3e",
+      "title": "kno sync shouldn't error out when there are active leasees.  it should queue the sync operation and trigger it when the leases are terminated.",
+      "state": "abandoned",
+      "updated_at": "2026-03-23T06:25:34.725076Z"
+    },
+    {
+      "id": "foolery-163f",
+      "title": "kno skills update claude should NOT update user level claude skills.  only project level.",
+      "state": "abandoned",
+      "updated_at": "2026-03-23T06:25:34.145603Z"
+    },
+    {
+      "id": "foolery-d984",
+      "title": "Create New:  Spawn asynchronous  Scope Refinement job when ticket is created.",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:06.7803Z"
+    },
+    {
+      "id": "foolery-e382",
+      "title": "Extend settings schema with scopeRefinement config and scope_refinement pool entry",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:06.768628Z"
+    },
+    {
+      "id": "foolery-d961",
+      "title": "Create in-memory scope refinement job queue",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:05.684455Z"
+    },
+    {
+      "id": "foolery-681b",
+      "title": "Create scope refinement async worker with agent dispatch",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:04.664603Z"
+    },
+    {
+      "id": "foolery-47a2",
+      "title": "Hook beat creation to enqueue scope refinement jobs",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:03.605002Z"
+    },
+    {
+      "id": "foolery-3465",
+      "title": "Create scope refinement default prompt template",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:02.54191Z"
+    },
+    {
+      "id": "foolery-26e7",
+      "title": "Add scope refinement settings to Dispatch and Defaults UI tabs",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:01.519447Z"
+    },
+    {
+      "id": "foolery-1061",
+      "title": "Add scope refinement completion notification hook and status endpoint",
+      "state": "shipped",
+      "updated_at": "2026-03-22T19:13:00.44601Z"
+    },
+    {
+      "id": "foolery-9504",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T19:12:34.402153Z"
+    },
+    {
+      "id": "foolery-fc3b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:19:38.912788Z"
+    },
+    {
+      "id": "foolery-0fab",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:18:58.288898Z"
+    },
+    {
+      "id": "foolery-6121",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:15:39.867912Z"
+    },
+    {
+      "id": "foolery-fb49",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:11:07.07765Z"
+    },
+    {
+      "id": "foolery-13de",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:10:35.270523Z"
+    },
+    {
+      "id": "foolery-c7ca",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:10:05.389796Z"
+    },
+    {
+      "id": "foolery-c248",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:09:08.454766Z"
+    },
+    {
+      "id": "foolery-5406",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:08:07.827199Z"
+    },
+    {
+      "id": "foolery-613b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:07:38.263597Z"
+    },
+    {
+      "id": "foolery-bcb3",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:06:40.065507Z"
+    },
+    {
+      "id": "foolery-9549",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:06:07.97521Z"
+    },
+    {
+      "id": "foolery-3f3e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T15:04:37.34274Z"
+    },
+    {
+      "id": "foolery-b52b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:58:09.831787Z"
+    },
+    {
+      "id": "foolery-a57f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:46:41.192845Z"
+    },
+    {
+      "id": "foolery-e15e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:37:30.803607Z"
+    },
+    {
+      "id": "foolery-1278",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:36:28.620405Z"
+    },
+    {
+      "id": "foolery-bbef",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:35:13.202509Z"
+    },
+    {
+      "id": "foolery-5485",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:31:13.916844Z"
+    },
+    {
+      "id": "foolery-fe31",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:30:29.43894Z"
+    },
+    {
+      "id": "foolery-56cc",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:24:17.747177Z"
+    },
+    {
+      "id": "foolery-3245",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:12:19.658574Z"
+    },
+    {
+      "id": "foolery-6083",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:04:38.514408Z"
+    },
+    {
+      "id": "foolery-f0d2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T14:03:51.941091Z"
+    },
+    {
+      "id": "foolery-1901",
+      "title": "All Repositories Mode:  Beat Detail:  Editing Acceptance Criteria is corrupted and pasted into Notes instead",
+      "state": "shipped",
+      "updated_at": "2026-03-22T14:00:06.244467Z"
+    },
+    {
+      "id": "foolery-77c6",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:56:57.768947Z"
+    },
+    {
+      "id": "foolery-aefb",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:49:47.718903Z"
+    },
+    {
+      "id": "foolery-afa5",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:47:56.86775Z"
+    },
+    {
+      "id": "foolery-16f9",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:42:07.149733Z"
+    },
+    {
+      "id": "foolery-b618",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:42:00.947868Z"
+    },
+    {
+      "id": "foolery-5717",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186595340-8540yo",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:40:25.556891Z"
+    },
+    {
+      "id": "foolery-a6f0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774186492210-8opf2i",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T13:39:53.315358Z"
+    },
+    {
+      "id": "foolery-8988",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T08:00:30.353544Z"
+    },
+    {
+      "id": "foolery-d486",
+      "title": "UI Terminal & Conversation History: Content filter toggles",
+      "state": "shipped",
+      "updated_at": "2026-03-22T08:00:24.126538Z"
+    },
+    {
+      "id": "foolery-a75a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:58:11.646062Z"
+    },
+    {
+      "id": "foolery-ff33",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:45:55.734641Z"
+    },
+    {
+      "id": "foolery-d54b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:43:41.715179Z"
+    },
+    {
+      "id": "foolery-53bf",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:43:13.261956Z"
+    },
+    {
+      "id": "foolery-9162",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:40:33.116316Z"
+    },
+    {
+      "id": "foolery-5cca",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163742599-t7kt6o",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:37:48.831789Z"
+    },
+    {
+      "id": "foolery-52e3",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:35:34.817723Z"
+    },
+    {
+      "id": "foolery-c355",
+      "title": "Conversation History - Conversation Log - make all fonts one size bigger and provide better contrast",
+      "state": "shipped",
+      "updated_at": "2026-03-22T07:35:10.250318Z"
+    },
+    {
+      "id": "foolery-b40d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163742599-t7kt6o",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:31:23.581504Z"
+    },
+    {
+      "id": "foolery-ea70",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163742599-t7kt6o",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:24:23.653089Z"
+    },
+    {
+      "id": "foolery-4b9f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163372747-wdrzqu",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:23:27.263038Z"
+    },
+    {
+      "id": "foolery-327c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774163742599-t7kt6o",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:22:43.809974Z"
+    },
+    {
+      "id": "foolery-9adc",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:13:30.579306Z"
+    },
+    {
+      "id": "foolery-5f83",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:11:41.859378Z"
+    },
+    {
+      "id": "foolery-5a51",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:10:56.909863Z"
+    },
+    {
+      "id": "foolery-210a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:08:31.238455Z"
+    },
+    {
+      "id": "foolery-3f35",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:06:23.661851Z"
+    },
+    {
+      "id": "foolery-75f7",
+      "title": "Lease: foolery:terminal_manager_take:term-1774162605882-ahwr5q",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-22T07:03:07.146619Z"
+    },
+    {
+      "id": "foolery-e63d",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:58:56.418932Z"
+    },
+    {
+      "id": "foolery-fa58",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:57:00.146485Z"
+    },
+    {
+      "id": "foolery-ecb1",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:53:52.620746Z"
+    },
+    {
+      "id": "foolery-f29f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:51:35.64368Z"
+    },
+    {
+      "id": "foolery-802e",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099543559-52g3nl",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:50:42.158308Z"
+    },
+    {
+      "id": "foolery-db99",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:45:50.724659Z"
+    },
+    {
+      "id": "foolery-0fad",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099642030-tc3m95",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:43:09.290963Z"
+    },
+    {
+      "id": "foolery-16a0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099543559-52g3nl",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:40:15.230822Z"
+    },
+    {
+      "id": "foolery-4beb",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099543559-52g3nl",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:33:36.607061Z"
+    },
+    {
+      "id": "foolery-8983",
+      "title": "Lease: foolery:terminal_manager_take:term-1774099543559-52g3nl",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T13:32:07.182973Z"
+    },
+    {
+      "id": "foolery-653c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:25:22.263652Z"
+    },
+    {
+      "id": "foolery-ee66",
+      "title": "History view: Should show description, notes, handoff_capsules, and states when toggled.",
+      "state": "shipped",
+      "updated_at": "2026-03-21T09:25:16.966838Z"
+    },
+    {
+      "id": "foolery-14ce",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:23:14.844191Z"
+    },
+    {
+      "id": "foolery-d913",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:19:13.179591Z"
+    },
+    {
+      "id": "foolery-899c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:16:09.869559Z"
+    },
+    {
+      "id": "foolery-7eb9",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:15:11.517976Z"
+    },
+    {
+      "id": "foolery-bb6f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:14:18.780414Z"
+    },
+    {
+      "id": "foolery-b1c0",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:12:50.161775Z"
+    },
+    {
+      "id": "foolery-a899",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:10:29.868224Z"
+    },
+    {
+      "id": "foolery-9d6a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:06:45.125738Z"
+    },
+    {
+      "id": "foolery-ac3f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:05:14.244455Z"
+    },
+    {
+      "id": "foolery-ddcb",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083680733-vpdrls",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:04:11.993939Z"
+    },
+    {
+      "id": "foolery-7b5a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774083686885-gtjxsi",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T09:04:02.106001Z"
+    },
+    {
+      "id": "foolery-7401",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:51:20.389087Z"
+    },
+    {
+      "id": "foolery-d85f",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:40:07.52917Z"
+    },
+    {
+      "id": "foolery-4d9b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:39:20.313043Z"
+    },
+    {
+      "id": "foolery-18dc",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:25:47.687029Z"
+    },
+    {
+      "id": "foolery-634b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:18:50.058875Z"
+    },
+    {
+      "id": "foolery-8b2b",
+      "title": "Lease: foolery:terminal_manager_take:term-1774080624956-q3ar3y",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-21T08:16:11.891213Z"
+    },
+    {
+      "id": "foolery-1c11",
+      "title": "Lease: foolery:terminal_manager_take:term-1774025588439-aigaf1",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T17:05:17.51365Z"
+    },
+    {
+      "id": "foolery-3bcc",
+      "title": "Settings: Dispatch: Advanced: Save/Reset buttons missing",
+      "state": "shipped",
+      "updated_at": "2026-03-20T17:03:04.295002Z"
+    },
+    {
+      "id": "foolery-b602",
+      "title": "Lease: foolery:terminal_manager_take:term-1774025588439-aigaf1",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T17:00:02.21716Z"
+    },
+    {
+      "id": "foolery-0bca",
+      "title": "Lease: foolery:terminal_manager_take:term-1774025588439-aigaf1",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T16:54:41.177999Z"
+    },
+    {
+      "id": "foolery-5aba",
+      "title": "Lease: foolery:terminal_manager_take:term-1774024819639-hq33za",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T16:52:47.812311Z"
+    },
+    {
+      "id": "foolery-777c",
+      "title": "Lease: foolery:terminal_manager_take:term-1774024819639-hq33za",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T16:47:13.928048Z"
+    },
+    {
+      "id": "foolery-33a2",
+      "title": "Lease: foolery:terminal_manager_take:term-1774024819639-hq33za",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T16:45:08.531726Z"
+    },
+    {
+      "id": "foolery-434a",
+      "title": "Lease: foolery:terminal_manager_take:term-1774024819639-hq33za",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T16:44:00.33603Z"
+    },
+    {
+      "id": "foolery-5c31",
+      "title": "Lease: foolery:terminal_manager_take:term-1774012809939-60l14s",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-20T13:35:34.02041Z"
+    },
+    {
+      "id": "foolery-fc8e",
+      "title": "Audit Settings: Reset counters button and confirm dialog",
+      "state": "shipped",
+      "updated_at": "2026-03-20T13:35:27.922712Z"
+    },
+    {
+      "id": "foolery-bdea",
+      "title": "Lease: foolery:terminal_manager_take:term-1773932217659-kfbo4h",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-19T18:17:26.661113Z"
+    },
+    {
+      "id": "foolery-1f10",
+      "title": "Claude Error detection - catch and try different agent",
+      "state": "shipped",
+      "updated_at": "2026-03-19T18:17:19.135737Z"
+    },
+    {
+      "id": "foolery-97ae",
+      "title": "Lease: foolery:terminal_manager_take:term-1773929459586-mn8khs",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-19T18:00:31.118041Z"
+    },
+    {
+      "id": "foolery-1f27",
+      "title": "Lease: foolery:terminal_manager_take:term-1773932217780-8kmzku",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-19T15:10:08.391254Z"
+    },
+    {
+      "id": "foolery-d517",
+      "title": "Lease: foolery:terminal_manager_take:term-1773929427417-ensrbr",
+      "state": "lease_terminated",
+      "updated_at": "2026-03-19T15:08:28.530303Z"
+    },
+    {
+      "id": "foolery-1b9c",
+      "title": "Queue screen: filter out knots of type \"lease\"",
+      "state": "shipped",
+      "updated_at": "2026-03-19T15:08:20.095027Z"
+    },
+    {
+      "id": "foolery-6240",
+      "title": "Ralph Wiggum Loop (ish) - counters per action step",
+      "state": "shipped",
+      "updated_at": "2026-03-19T12:50:37.334267Z"
+    },
+    {
+      "id": "foolery-6a61",
+      "title": "Queue-type claim limit and agent rotation",
+      "state": "shipped",
+      "updated_at": "2026-03-19T12:49:39.650355Z"
+    },
+    {
+      "id": "foolery-447e",
+      "title": "Dispatch settings control and audit screen",
+      "state": "shipped",
+      "updated_at": "2026-03-19T12:34:39.757425Z"
+    },
+    {
+      "id": "foolery-3727",
+      "title": "Persist queue-type audit counters and aggregation",
+      "state": "shipped",
+      "updated_at": "2026-03-19T12:25:06.268329Z"
+    },
+    {
+      "id": "foolery-6df0",
+      "title": "Retakes view:  collapse notes and handoff capsules by default, provide toggle to uncollapse",
+      "state": "shipped",
+      "updated_at": "2026-03-19T12:01:57.614759Z"
+    },
+    {
+      "id": "foolery-6428",
+      "title": "Retake Dialog:  Replace button with two buttons, Stage and Retake Now",
+      "state": "shipped",
+      "updated_at": "2026-03-19T11:41:38.958692Z"
+    },
+    {
+      "id": "foolery-5fc1",
+      "title": "Make max concurrent sessions a configurable setting in the settings view",
+      "state": "shipped",
+      "updated_at": "2026-03-19T11:29:31.434975Z"
+    },
+    {
+      "id": "foolery-1789",
+      "title": "Improve Search:  Search by beat ids (with and without suffix)",
+      "state": "shipped",
+      "updated_at": "2026-03-19T10:25:01.786673Z"
+    },
+    {
+      "id": "foolery-c4cc",
+      "title": "queue view: hierarchical id dispaly tightening",
+      "state": "shipped",
+      "updated_at": "2026-03-19T10:13:13.923497Z"
+    },
+    {
+      "id": "foolery-ce5a",
+      "title": "queues view:  always show all children recursively if the parent is in a queue state",
+      "state": "shipped",
+      "updated_at": "2026-03-18T05:54:17.603246Z"
+    },
+    {
+      "id": "foolery-62fa",
+      "title": "Queues:  You should be able to set state to Shipped, Abandon or Deferred during multi-select",
+      "state": "shipped",
+      "updated_at": "2026-03-17T17:13:32.309751Z"
+    },
+    {
+      "id": "foolery-7171",
+      "title": "search should be a minimum view of 20 characters",
+      "state": "shipped",
+      "updated_at": "2026-03-17T14:19:19.33968Z"
+    },
+    {
+      "id": "foolery-bcc2",
+      "title": "Bead Detail Dialog:  Make it twice as wide",
+      "state": "shipped",
+      "updated_at": "2026-03-17T13:56:38.587284Z"
+    },
+    {
+      "id": "foolery-afbb",
+      "title": "test rollback behavior",
+      "state": "shipped",
+      "updated_at": "2026-03-15T08:09:22.597489Z"
+    },
+    {
+      "id": "foolery-70ec",
+      "title": "History Debugger:  From history view, interactive UI Terminal for debugging.",
+      "state": "shipped",
+      "updated_at": "2026-03-15T08:02:29.982648Z"
+    },
+    {
+      "id": "foolery-79f6",
+      "title": "doctor --fix applies the wrong prompt",
+      "state": "shipped",
+      "updated_at": "2026-03-14T18:23:29.087385Z"
+    },
+    {
+      "id": "foolery-e7a3",
+      "title": "Integrate HistoryDebugPanel into AgentHistoryView",
+      "state": "shipped",
+      "updated_at": "2026-03-14T18:20:45.008122Z"
+    },
+    {
+      "id": "foolery-2f7b",
+      "title": "Rename dispatch mode values to meaningful names",
+      "state": "shipped",
+      "updated_at": "2026-03-14T18:16:11.863288Z"
+    },
+    {
+      "id": "foolery-121b",
+      "title": "Repository Selection:  All Repostories immediately changes away",
+      "state": "shipped",
+      "updated_at": "2026-03-14T16:10:23.302667Z"
+    },
+    {
+      "id": "foolery-705e",
+      "title": "add step-failure rollback and invariant enforcement tests for terminal-manager",
+      "state": "shipped",
+      "updated_at": "2026-03-14T16:07:53.373481Z"
+    },
+    {
+      "id": "foolery-742c",
+      "title": "Create HistoryDebugPanel component with form and embedded terminal",
+      "state": "shipped",
+      "updated_at": "2026-03-14T16:05:00.956144Z"
+    },
+    {
+      "id": "foolery-59fb",
+      "title": "Create history-debug-prompt.ts — prompt builder for debug investigation",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:59:38.009858Z"
+    },
+    {
+      "id": "foolery-c891",
+      "title": "Remove prompt-guidance commands from launcher and setup",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:52:10.73561Z"
+    },
+    {
+      "id": "foolery-f37c",
+      "title": "add execution-backend rollbackIteration tests",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:29:55.676003Z"
+    },
+    {
+      "id": "foolery-99a8",
+      "title": "add step-failure rollback and invariant enforcement tests for terminal-manager",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:29:26.375922Z"
+    },
+    {
+      "id": "foolery-2ac4",
+      "title": "expand rollbackBeatState unit tests in memory-manager-commands-coverage",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:27:18.578958Z"
+    },
+    {
+      "id": "foolery-90c5",
+      "title": "Hosted Foolery architecture note for Obsidian",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:26:40.180556Z"
+    },
+    {
+      "id": "foolery-e01f",
+      "title": "Remove prompt-guidance checks and fixes from doctor",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:23:33.257523Z"
+    },
+    {
+      "id": "foolery-e991",
+      "title": "expand rollbackBeatState unit tests in memory-manager-commands-coverage",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:22:57.992384Z"
+    },
+    {
+      "id": "foolery-d164",
+      "title": "add execution-backend rollbackIteration tests",
+      "state": "shipped",
+      "updated_at": "2026-03-14T15:21:51.382541Z"
+    },
+    {
+      "id": "foolery-9c9a",
+      "title": "Clean prompt-guidance docs, runtime packaging, and tests",
+      "state": "shipped",
+      "updated_at": "2026-03-12T13:34:49.426767Z"
+    },
+    {
+      "id": "foolery-38a0",
+      "title": "add pre-dispatch rollback edge case tests to terminal-manager-knots-next-guard",
+      "state": "shipped",
+      "updated_at": "2026-03-12T13:05:29.660419Z"
+    },
+    {
+      "id": "foolery-76ec",
+      "title": "Foolery --help:  Add some colors to commands",
+      "state": "shipped",
+      "updated_at": "2026-03-12T12:31:17.485891Z"
+    },
+    {
+      "id": "foolery-c38b",
+      "title": "Foolery prompt: add --remove, --dry-run, and --help options",
+      "state": "shipped",
+      "updated_at": "2026-03-11T15:44:42.416963Z"
+    },
+    {
+      "id": "foolery-fe17",
+      "title": "foolery doctor: Not handling readme's/prompts gracefully",
+      "state": "shipped",
+      "updated_at": "2026-03-11T13:57:14.326275Z"
+    },
+    {
+      "id": "foolery-7afc",
+      "title": "Foolery Install: Boring as hell",
+      "state": "shipped",
+      "updated_at": "2026-03-11T13:12:22.335642Z"
+    },
+    {
+      "id": "foolery-d08e",
+      "title": "Search should work on every screen",
+      "state": "shipped",
+      "updated_at": "2026-03-11T08:58:34.121573Z"
+    },
+    {
+      "id": "foolery-02d0",
+      "title": "Beat Detail: only shows natural beat id, even if alias is present",
+      "state": "shipped",
+      "updated_at": "2026-03-11T08:42:12.680385Z"
+    },
+    {
+      "id": "foolery-9c91",
+      "title": "migrate rollbackBeatState to use kno rb",
+      "state": "shipped",
+      "updated_at": "2026-03-11T06:05:20.596756Z"
+    },
+    {
+      "id": "foolery-8caa",
+      "title": "Beat Detail:  Make lightbox wider",
+      "state": "shipped",
+      "updated_at": "2026-03-10T18:58:42.425267Z"
+    },
+    {
+      "id": "foolery-813a",
+      "title": "queue screen:  much too wide minimum width when notes and description are visible",
+      "state": "shipped",
+      "updated_at": "2026-03-10T18:57:10.117938Z"
+    },
+    {
+      "id": "foolery-433b",
+      "title": "clicking on parent beat's scene action fails with 'knot not claimable' error",
+      "state": "shipped",
+      "updated_at": "2026-03-10T18:56:08.82935Z"
+    },
+    {
+      "id": "foolery-3715",
+      "title": "remove action column and Type from Active view",
+      "state": "shipped",
+      "updated_at": "2026-03-10T10:09:56.288645Z"
+    },
+    {
+      "id": "foolery-df3a",
+      "title": "views should use knot aliases if they exist",
+      "state": "shipped",
+      "updated_at": "2026-03-10T09:28:01.658268Z"
+    },
+    {
+      "id": "foolery-e0cc",
+      "title": "b71a did not terminate after clicking terminate",
+      "state": "shipped",
+      "updated_at": "2026-03-10T09:08:31.771549Z"
+    },
+    {
+      "id": "foolery-aa57",
+      "title": "detail view should show full bead id and bead aliases",
+      "state": "shipped",
+      "updated_at": "2026-03-10T08:41:18.607694Z"
+    },
+    {
+      "id": "foolery-e6cd",
+      "title": "improve UI Terminal logging",
+      "state": "shipped",
+      "updated_at": "2026-03-09T16:14:43.393964Z"
+    },
+    {
+      "id": "foolery-1c2e",
+      "title": "beat description:  dependencies should be grouped and visible",
+      "state": "shipped",
+      "updated_at": "2026-03-09T14:46:25.450523Z"
+    },
+    {
+      "id": "foolery-dc26",
+      "title": "Active View: codex gpt 5.4 needs better parsing",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T14:38:57.886703Z"
+    },
+    {
+      "id": "foolery-9460",
+      "title": "Foolery: harden workflow prompts to single-step authority",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T14:38:22.037075Z"
+    },
+    {
+      "id": "foolery-1d12",
+      "title": "show handoff_capsules in beat detail view",
+      "state": "shipped",
+      "updated_at": "2026-03-09T11:45:43.772606Z"
+    },
+    {
+      "id": "foolery-b607",
+      "title": "README.md images",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T11:32:41.316838Z"
+    },
+    {
+      "id": "foolery-b71a",
+      "title": "Active View: Agent/Model  for Claude Opus 4.6 is not correct",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T11:32:07.861593Z"
+    },
+    {
+      "id": "foolery-bf71",
+      "title": "Improve UI Terminal logging of -- TAKE N/",
+      "state": "shipped",
+      "updated_at": "2026-03-09T10:17:19.084294Z"
+    },
+    {
+      "id": "foolery-4c2f",
+      "title": "Eliminate memory-manager type switches in terminal-manager",
+      "state": "shipped",
+      "updated_at": "2026-03-09T09:39:47.887771Z"
+    },
+    {
+      "id": "foolery-97a9",
+      "title": "UI Terminal:  Horizontal scroll bar must be removed",
+      "state": "shipped",
+      "updated_at": "2026-03-09T09:22:57.440958Z"
+    },
+    {
+      "id": "foolery-e372",
+      "title": "Terminal-manager wrapper prompt is unconditionally implementation-biased",
+      "state": "shipped",
+      "updated_at": "2026-03-09T09:09:54.464853Z"
+    },
+    {
+      "id": "foolery-9407",
+      "title": "Roll back knots in action state before dispatch instead of dispatching into stale claims",
+      "state": "shipped",
+      "updated_at": "2026-03-09T09:07:37.102143Z"
+    },
+    {
+      "id": "foolery-7714",
+      "title": "Audit the markdown files to make sure the content is up to date",
+      "state": "shipped",
+      "updated_at": "2026-03-09T09:03:08.990397Z"
+    },
+    {
+      "id": "foolery-c873",
+      "title": "retakes.png must be replaced with actual listed items",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T08:57:09.345322Z"
+    },
+    {
+      "id": "foolery-9c47",
+      "title": "history.png -> screenshot should select a beat so that the conversation log shows",
+      "state": "shipped",
+      "updated_at": "2026-03-09T08:52:59.10616Z"
+    },
+    {
+      "id": "foolery-8ddf",
+      "title": "Support arm64/Linux runtime builds",
+      "state": "shipped",
+      "updated_at": "2026-03-09T08:41:52.324318Z"
+    },
+    {
+      "id": "foolery-0bbe",
+      "title": "Settings: Dispatch: \"Swap Agent\" functionality should be global, not per step",
+      "state": "abandoned",
+      "updated_at": "2026-03-09T08:28:04.776459Z"
+    },
+    {
+      "id": "foolery-b13d",
+      "title": "Settings: Agents and Dispatch agent titles should be more consistent",
+      "state": "shipped",
+      "updated_at": "2026-03-08T17:00:11.328458Z"
+    },
+    {
+      "id": "foolery-3985",
+      "title": "Console log tap: tee all console output to daily log file",
+      "state": "shipped",
+      "updated_at": "2026-03-08T15:53:00.383644Z"
+    },
+    {
+      "id": "foolery-4c75",
+      "title": "Beads: map unlabeled open/in_progress items to implementation states",
+      "state": "shipped",
+      "updated_at": "2026-03-08T15:34:56.443229Z"
+    },
+    {
+      "id": "foolery-28b0",
+      "title": "Wire pool swap config mutation",
+      "state": "abandoned",
+      "updated_at": "2026-03-08T15:20:23.500385Z"
+    },
+    {
+      "id": "foolery-2234",
+      "title": "Implement pool swap UI controls",
+      "state": "abandoned",
+      "updated_at": "2026-03-08T15:20:15.920355Z"
+    },
+    {
+      "id": "foolery-a55e",
+      "title": "Beads CLI filters: support queued and in_action phase aliases",
+      "state": "shipped",
+      "updated_at": "2026-03-08T15:15:26.742368Z"
+    },
+    {
+      "id": "foolery-1f67",
+      "title": "Doctor: remove stale settings keys (agent, verification, actions.direct)",
+      "state": "shipped",
+      "updated_at": "2026-03-08T15:15:09.027681Z"
+    },
+    {
+      "id": "foolery-ad30",
+      "title": "Doctor: make registry-consistency mismatch fixable",
+      "state": "shipped",
+      "updated_at": "2026-03-08T15:06:00.225786Z"
+    },
+    {
+      "id": "foolery-3d03",
+      "title": "reload does not remember active project",
+      "state": "shipped",
+      "updated_at": "2026-03-08T14:55:38.824736Z"
+    },
+    {
+      "id": "foolery-4f1f",
+      "title": "Doctor: add permissions check for registry.json",
+      "state": "shipped",
+      "updated_at": "2026-03-08T14:55:37.863625Z"
+    },
+    {
+      "id": "foolery-ba29",
+      "title": "Setup: write complete settings.toml with backend, defaults, pools, dispatchMode",
+      "state": "shipped",
+      "updated_at": "2026-03-08T14:37:07.876256Z"
+    },
+    {
+      "id": "foolery-4331",
+      "title": "Doctor: migrate backend.type from cli to auto",
+      "state": "shipped",
+      "updated_at": "2026-03-08T14:33:15.507676Z"
+    },
+    {
+      "id": "foolery-cd8b",
+      "title": "Setup: replace openrouter with opencode in KNOWN_AGENTS",
+      "state": "shipped",
+      "updated_at": "2026-03-08T14:30:43.529651Z"
+    },
+    {
+      "id": "foolery-0237",
+      "title": "reload does not remember active project",
+      "state": "abandoned",
+      "updated_at": "2026-03-08T14:22:54.731704Z"
+    },
+    {
+      "id": "foolery-5e40",
+      "title": "reload does not remember active project",
+      "state": "abandoned",
+      "updated_at": "2026-03-08T14:22:45.616438Z"
+    },
+    {
+      "id": "foolery-6473",
+      "title": "Unknown tool calls from OpenRouter models should not be fatal",
+      "state": "abandoned",
+      "updated_at": "2026-03-08T13:43:51.253294Z"
+    },
+    {
+      "id": "foolery-68d7",
+      "title": "Settings: Agents: OpenCode agents needs to be searchable",
+      "state": "shipped",
+      "updated_at": "2026-03-06T17:24:28.852293Z"
+    },
+    {
+      "id": "foolery-46a3",
+      "title": "OpenRouter prompt sends unreachable kno/bd CLI commands to worker agents",
+      "state": "abandoned",
+      "updated_at": "2026-03-06T17:08:22.489597Z"
+    },
+    {
+      "id": "foolery-791f",
+      "title": "Replace OpenRouter with OpenCode CLI",
+      "state": "shipped",
+      "updated_at": "2026-03-06T17:02:24.489269Z"
+    },
+    {
+      "id": "foolery-745b",
+      "title": "add kno create as an alias to kno new",
+      "state": "shipped",
+      "updated_at": "2026-03-06T17:00:57.537353Z"
+    },
+    {
+      "id": "foolery-2bf1",
+      "title": "kno commands on aliases like ba0e.2 should work.  currently it says knot not found.  it should resolve to 28b0",
+      "state": "shipped",
+      "updated_at": "2026-03-06T17:00:33.868494Z"
+    },
+    {
+      "id": "foolery-b0f2",
+      "title": "Remove OpenRouter from settings and add OpenCode scanning",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:49.295886Z"
+    },
+    {
+      "id": "foolery-3a1d",
+      "title": "Remove OpenRouter from UI components",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:44.960328Z"
+    },
+    {
+      "id": "foolery-9697",
+      "title": "Add OpenCode dialect to agent-adapter",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:35.38839Z"
+    },
+    {
+      "id": "foolery-2b3c",
+      "title": "Update tests for OpenCode and remove OpenRouter test references",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:30.276729Z"
+    },
+    {
+      "id": "foolery-57e8",
+      "title": "Simplify agent-pool to CLI-only targets",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:27.524624Z"
+    },
+    {
+      "id": "foolery-2828",
+      "title": "Delete OpenRouter files and clean up keychain",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:21.879173Z"
+    },
+    {
+      "id": "foolery-9181",
+      "title": "Remove OpenRouter from OpenAPI spec",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:19.607467Z"
+    },
+    {
+      "id": "foolery-8921",
+      "title": "Replace OpenRouter with OpenCode in agent-identity",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:18.418122Z"
+    },
+    {
+      "id": "foolery-57fc",
+      "title": "Remove OpenRouter API routes and settings-api",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:13.868109Z"
+    },
+    {
+      "id": "foolery-0b3c",
+      "title": "Remove OpenRouter from runtime and execution",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:10.871837Z"
+    },
+    {
+      "id": "foolery-69c6",
+      "title": "Remove OpenRouter types and schemas",
+      "state": "shipped",
+      "updated_at": "2026-03-06T16:59:05.788208Z"
+    },
+    {
+      "id": "foolery-1239",
+      "title": "Settings: scanned agent versions should only show real detected versions",
+      "state": "abandoned",
+      "updated_at": "2026-03-06T13:40:09.30293Z"
+    },
+    {
+      "id": "foolery-d156",
+      "title": "Workflow Profile consistency",
+      "state": "shipped",
+      "updated_at": "2026-03-06T10:16:48.596214Z"
+    },
+    {
+      "id": "foolery-ba0e",
+      "title": "settings: dispatch: pools:  add a model swap function",
+      "state": "shipped",
+      "updated_at": "2026-03-06T09:46:38.287566Z"
+    },
+    {
+      "id": "foolery-0121",
+      "title": "Settings:  Reorganize into tabs and smaller fonts",
+      "state": "shipped",
+      "updated_at": "2026-03-06T09:44:24.168824Z"
+    },
+    {
+      "id": "foolery-6503",
+      "title": "Settings: agent scan should offer selectable model/version imports",
+      "state": "shipped",
+      "updated_at": "2026-03-06T08:17:17.522244Z"
+    },
+    {
+      "id": "foolery-ad97",
+      "title": "Settings: Agent Scan still not working properly, agent names are not normalized",
+      "state": "shipped",
+      "updated_at": "2026-03-06T06:41:15.87795Z"
+    },
+    {
+      "id": "foolery-0df2",
+      "title": "Settings:  Add some color and some pizazz",
+      "state": "abandoned",
+      "updated_at": "2026-03-06T06:20:38.703729Z"
+    },
+    {
+      "id": "foolery-5f5b",
+      "title": "settings: scan should check for new model versions",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:46:01.084701Z"
+    },
+    {
+      "id": "foolery-be4d",
+      "title": "Active view: Add columns for agent / model / model version",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:38:32.439237Z"
+    },
+    {
+      "id": "foolery-faf2",
+      "title": "clicking on beat link in notification from different project results in \"beat not found\"",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:33:29.22391Z"
+    },
+    {
+      "id": "foolery-d46a",
+      "title": "Add support for invariants",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:30:37.779753Z"
+    },
+    {
+      "id": "foolery-b0c4",
+      "title": "Settings: Devmistral shown twice in advanced pulldown",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:15:52.288438Z"
+    },
+    {
+      "id": "foolery-7814",
+      "title": "Settings: Advanced: Bar sizes don't match percentages",
+      "state": "shipped",
+      "updated_at": "2026-03-05T22:10:27.724558Z"
+    },
+    {
+      "id": "foolery-e1f2",
+      "title": "Beads Workflow Integration: Claim/Next/Poll",
+      "state": "shipped",
+      "updated_at": "2026-03-05T21:33:37.552465Z"
+    },
+    {
+      "id": "foolery-1be4",
+      "title": "Phase 8: Tests for beads workflow integration",
+      "state": "shipped",
+      "updated_at": "2026-03-05T21:33:15.761525Z"
+    },
+    {
+      "id": "foolery-ef46",
+      "title": "Phase 7: Verification orchestrator dispatch",
+      "state": "shipped",
+      "updated_at": "2026-03-05T16:28:08.785121Z"
+    },
+    {
+      "id": "foolery-ff25",
+      "title": "shift-r  and cmd-shift-r does not work right, doesn't cycle through the repositories",
+      "state": "shipped",
+      "updated_at": "2026-03-05T16:21:49.61419Z"
+    },
+    {
+      "id": "foolery-560e",
+      "title": "keyboard shortcuts shift-h only works on queues and active screens",
+      "state": "shipped",
+      "updated_at": "2026-03-05T16:00:40.929089Z"
+    },
+    {
+      "id": "foolery-e6fd",
+      "title": "Phase 6: Terminal manager dispatch and take loop gate removal",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:44:11.308013Z"
+    },
+    {
+      "id": "foolery-7e3a",
+      "title": "Terminal manager: env injection + dialect check",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.127795Z"
+    },
+    {
+      "id": "foolery-ea38",
+      "title": "Tests for OpenRouter integration",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.106603Z"
+    },
+    {
+      "id": "foolery-8aad",
+      "title": "UI: Dispatch selector updates",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.085136Z"
+    },
+    {
+      "id": "foolery-f1d5",
+      "title": "Settings resolution: multi-agent virtual agents",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.065292Z"
+    },
+    {
+      "id": "foolery-520e",
+      "title": "Agent adapter: OpenRouter dialect",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.044842Z"
+    },
+    {
+      "id": "foolery-28dc",
+      "title": "UI: Agents section OpenRouter integration",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:09.023928Z"
+    },
+    {
+      "id": "foolery-2722",
+      "title": "OpenRouter first-class agent integration",
+      "state": "shipped",
+      "updated_at": "2026-03-05T15:29:05.728684Z"
+    },
+    {
+      "id": "foolery-be49",
+      "title": "Phase 5: BdCliBackend delegation for buildTakePrompt and buildPollPrompt",
+      "state": "shipped",
+      "updated_at": "2026-03-05T13:42:53.439311Z"
+    },
+    {
+      "id": "foolery-156f",
+      "title": "OpenRouter agent shim script",
+      "state": "shipped",
+      "updated_at": "2026-03-05T13:42:36.031042Z"
+    },
+    {
+      "id": "foolery-c736",
+      "title": "Schema: multi-agent OpenRouter config",
+      "state": "shipped",
+      "updated_at": "2026-03-05T13:40:30.197002Z"
+    },
+    {
+      "id": "foolery-c7e5",
+      "title": "Phase 4: BeadsBackend buildTakePrompt and buildPollPrompt upgrades",
+      "state": "shipped",
+      "updated_at": "2026-03-05T13:13:51.03581Z"
+    },
+    {
+      "id": "foolery-f34e",
+      "title": "ReTakes: Totally broken, shows nothing",
+      "state": "shipped",
+      "updated_at": "2026-03-05T12:31:57.16874Z"
+    },
+    {
+      "id": "foolery-e8d7",
+      "title": "Phase 2: Beads state machine module",
+      "state": "shipped",
+      "updated_at": "2026-03-05T12:24:49.891474Z"
+    },
+    {
+      "id": "foolery-f471",
+      "title": "Phase 1: Workflow transition helpers in workflows.ts",
+      "state": "shipped",
+      "updated_at": "2026-03-05T12:06:33.477192Z"
+    },
+    {
+      "id": "foolery-fde6",
+      "title": "Phase 3: Skill prompts for beads",
+      "state": "shipped",
+      "updated_at": "2026-03-05T12:06:26.106859Z"
+    },
+    {
+      "id": "foolery-97c5",
+      "title": "Phase 1: Workflow transition helpers in workflows.ts",
+      "state": "shipped",
+      "updated_at": "2026-03-05T12:05:10.483247Z"
+    },
+    {
+      "id": "foolery-9d97",
+      "title": "Remove Scenes view wiring from Beads UI",
+      "state": "shipped",
+      "updated_at": "2026-03-05T11:32:33.992389Z"
+    },
+    {
+      "id": "foolery-7097",
+      "title": "Remove Scenes screen",
+      "state": "shipped",
+      "updated_at": "2026-03-05T11:30:00.948613Z"
+    },
+    {
+      "id": "foolery-3141",
+      "title": "Beats: Refactor into two screens - Queues and Active",
+      "state": "shipped",
+      "updated_at": "2026-03-05T08:12:15.17476Z"
+    },
+    {
+      "id": "foolery-0143",
+      "title": "History:  Filter only shows Initial Prompt, we want to see every prompt",
+      "state": "shipped",
+      "updated_at": "2026-03-05T08:00:35.923027Z"
+    },
+    {
+      "id": "foolery-82e8",
+      "title": "History: Increase font size by 1 for every single text component",
+      "state": "shipped",
+      "updated_at": "2026-03-04T14:41:07.664798Z"
+    },
+    {
+      "id": "foolery-f73a",
+      "title": "Allow backward state edits from active beat states",
+      "state": "abandoned",
+      "updated_at": "2026-03-04T14:30:42.780896Z"
+    },
+    {
+      "id": "foolery-b83f",
+      "title": "ui terminals:  better handling of tabs when browser width can't accomodate the tabs",
+      "state": "shipped",
+      "updated_at": "2026-03-04T14:12:47.038013Z"
+    },
+    {
+      "id": "foolery-ae6b",
+      "title": "Still can't edit beat state",
+      "state": "shipped",
+      "updated_at": "2026-03-04T14:05:33.231519Z"
+    },
+    {
+      "id": "foolery-5c54",
+      "title": "Add regression coverage for history beat-id copy affordance",
+      "state": "shipped",
+      "updated_at": "2026-03-04T14:01:12.918889Z"
+    },
+    {
+      "id": "foolery-007e",
+      "title": "tmp rollback test",
+      "state": "abandoned",
+      "updated_at": "2026-03-04T13:55:09.311806Z"
+    },
+    {
+      "id": "foolery-9918",
+      "title": "ReTake lightbox has wrong copy and wrong action",
+      "state": "shipped",
+      "updated_at": "2026-03-04T13:54:25.283452Z"
+    },
+    {
+      "id": "foolery-debf",
+      "title": "History: Increase font size by 1pt",
+      "state": "shipped",
+      "updated_at": "2026-03-04T13:52:15.475605Z"
+    },
+    {
+      "id": "foolery-41e0",
+      "title": "history view:  beat id should be click-to-copy",
+      "state": "shipped",
+      "updated_at": "2026-03-04T13:45:56.222139Z"
+    },
+    {
+      "id": "foolery-90e4",
+      "title": "History view beat-id UX umbrella",
+      "state": "shipped",
+      "updated_at": "2026-03-04T13:43:03.223431Z"
+    },
+    {
+      "id": "foolery-355d",
+      "title": "Remove transition-lock cruft and show correct beat state",
+      "state": "shipped",
+      "updated_at": "2026-03-04T06:56:47.680725Z"
+    },
+    {
+      "id": "foolery-de46",
+      "title": "Beats View: States over run column to the right",
+      "state": "shipped",
+      "updated_at": "2026-03-04T06:56:05.069833Z"
+    },
+    {
+      "id": "foolery-87ec",
+      "title": "beats view: 355d and de46, can't alter state",
+      "state": "shipped",
+      "updated_at": "2026-03-04T06:40:41.06227Z"
+    },
+    {
+      "id": "foolery-f8d5",
+      "title": "beat detail:  Take button is grayed out / disabled ",
+      "state": "shipped",
+      "updated_at": "2026-03-04T06:30:28.511698Z"
+    },
+    {
+      "id": "foolery-0e20",
+      "title": "History:  Codex history logs don't show initial or loop app prompts.",
+      "state": "shipped",
+      "updated_at": "2026-03-03T23:05:45.436048Z"
+    },
+    {
+      "id": "foolery-3440",
+      "title": "OpenRouter models don't show up in model list",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:58:07.96429Z"
+    },
+    {
+      "id": "foolery-6d3b",
+      "title": "Scenes view:  shows Abandoned knots and shouldn't",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:53:43.25605Z"
+    },
+    {
+      "id": "foolery-vdk0",
+      "title": "Scene jolie-gladiator: support openrouter",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:39:57.211982Z"
+    },
+    {
+      "id": "foolery-zuf7",
+      "title": "Evaluate repo-first API route shape for beads endpoints",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:36:35.599529Z"
+    },
+    {
+      "id": "foolery-e6d4",
+      "title": "Fix double kno-next causing knots to skip action states",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:36:28.525799Z"
+    },
+    {
+      "id": "foolery-vdk0.5",
+      "title": "Scene hanks-uncut: Hardening",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.602317Z"
+    },
+    {
+      "id": "foolery-vdk0.5.3",
+      "title": "Run regression matrix for CLI and OpenRouter modes",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.585962Z"
+    },
+    {
+      "id": "foolery-vdk0.5.2",
+      "title": "Document OpenRouter setup and pricing behavior",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.569485Z"
+    },
+    {
+      "id": "foolery-vdk0.5.1",
+      "title": "Add diagnostics for OpenRouter misconfiguration",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.552386Z"
+    },
+    {
+      "id": "foolery-vdk0.4",
+      "title": "Scene adams-vertigo: Planner Integration",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.535132Z"
+    },
+    {
+      "id": "foolery-vdk0.4.5",
+      "title": "Add integration tests for OpenRouter planner sessions",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.518583Z"
+    },
+    {
+      "id": "foolery-vdk0.4.4",
+      "title": "Integrate provider routing in breakdown manager",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.501895Z"
+    },
+    {
+      "id": "foolery-vdk0.4.3",
+      "title": "Integrate provider routing in orchestration manager",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.484274Z"
+    },
+    {
+      "id": "foolery-vdk0.4.2",
+      "title": "Implement OpenRouter planning executor with stream normalization",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.467609Z"
+    },
+    {
+      "id": "foolery-vdk0.4.1",
+      "title": "Add planner provider selection for Direct and Breakdown",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.450359Z"
+    },
+    {
+      "id": "foolery-vdk0.3",
+      "title": "Scene winslet-gladiator: Settings UI",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.433263Z"
+    },
+    {
+      "id": "foolery-vdk0.3.4",
+      "title": "Add UI coverage for OpenRouter settings flows",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.415285Z"
+    },
+    {
+      "id": "foolery-vdk0.3.3",
+      "title": "Render model catalog with cost columns",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.39708Z"
+    },
+    {
+      "id": "foolery-vdk0.3.2",
+      "title": "Wire frontend settings API methods for OpenRouter",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.379839Z"
+    },
+    {
+      "id": "foolery-vdk0.3.1",
+      "title": "Add OpenRouter section to Settings sheet",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.361758Z"
+    },
+    {
+      "id": "foolery-vdk0.2",
+      "title": "Scene croft-rocky: Provider Backend",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.344308Z"
+    },
+    {
+      "id": "foolery-vdk0.2.5",
+      "title": "Add unit tests for OpenRouter client and parsers",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.327327Z"
+    },
+    {
+      "id": "foolery-vdk0.2.4",
+      "title": "Add OpenRouter connectivity-check endpoint",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.309086Z"
+    },
+    {
+      "id": "foolery-vdk0.2.3",
+      "title": "Add cached models endpoint for Settings UI",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.291603Z"
+    },
+    {
+      "id": "foolery-vdk0.2.2",
+      "title": "Normalize OpenRouter model metadata and pricing",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.274154Z"
+    },
+    {
+      "id": "foolery-vdk0.2.1",
+      "title": "Create OpenRouter API client module",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.257465Z"
+    },
+    {
+      "id": "foolery-vdk0.1",
+      "title": "Scene washington-heat: Settings Contract",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.240649Z"
+    },
+    {
+      "id": "foolery-vdk0.1.3",
+      "title": "Add settings tests for OpenRouter defaults and TOML round-trip",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.223658Z"
+    },
+    {
+      "id": "foolery-vdk0.1.2",
+      "title": "Update settings merge logic for OpenRouter partial updates",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.206008Z"
+    },
+    {
+      "id": "foolery-vdk0.1.1",
+      "title": "Extend settings schema with OpenRouter section",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T22:33:59.186358Z"
+    },
+    {
+      "id": "foolery-46fc",
+      "title": "clicking on state in beats view doesn't change state",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:31:48.261801Z"
+    },
+    {
+      "id": "foolery-1dea",
+      "title": "27bb and 1fbb ui console tabs started flashing animation for no reason",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:28:52.091373Z"
+    },
+    {
+      "id": "foolery-a91e",
+      "title": "clicking on profile on beats view and selecting new profile fails",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:22:09.006889Z"
+    },
+    {
+      "id": "foolery-9b86",
+      "title": "notifications are iditoically implemented",
+      "state": "shipped",
+      "updated_at": "2026-03-03T22:14:46.408182Z"
+    },
+    {
+      "id": "foolery-1fbb",
+      "title": "ReTakes screen isn't paginated",
+      "state": "shipped",
+      "updated_at": "2026-03-03T21:53:23.819855Z"
+    },
+    {
+      "id": "foolery-277b",
+      "title": "notifications lightbox should close after click 'mark all as read'",
+      "state": "shipped",
+      "updated_at": "2026-03-03T21:53:23.803084Z"
+    },
+    {
+      "id": "foolery-48e6",
+      "title": "history page is still pretty broken",
+      "state": "shipped",
+      "updated_at": "2026-03-03T18:24:57.703074Z"
+    },
+    {
+      "id": "foolery-p0bo",
+      "title": "Final Cut View:  status column is overloaded incorrectly when setatus is knots:verifying",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T17:58:55.963717Z"
+    },
+    {
+      "id": "foolery-da96",
+      "title": "ui console should show id prefix in tabs",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:54:30.229224Z"
+    },
+    {
+      "id": "foolery-6241",
+      "title": "Use OS keychain for OpenRouter API key storage",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:52:57.006289Z"
+    },
+    {
+      "id": "foolery-58cc",
+      "title": "Document OpenRouter API key security in README",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:59.092815Z"
+    },
+    {
+      "id": "foolery-e108",
+      "title": "Set file permissions to 0600 on settings.toml",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:59.068918Z"
+    },
+    {
+      "id": "foolery-a1c9",
+      "title": "Verify settings.toml is in .gitignore",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:59.046355Z"
+    },
+    {
+      "id": "foolery-95b3",
+      "title": "Server-side only key storage with masked UI display",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:59.023149Z"
+    },
+    {
+      "id": "foolery-db94",
+      "title": "Add 'Is This Secure?' lightbox to OpenRouter settings section",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:58.999487Z"
+    },
+    {
+      "id": "foolery-c051",
+      "title": "Scene streep-arrival: Secure OpenRouter API key storage and user transparency",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:49:56.116277Z"
+    },
+    {
+      "id": "foolery-ff81",
+      "title": "History view  is still broken,  missing dozens of recently worked beats, also \"incorrectly says 28 closed beats — most recently updated first\"",
+      "state": "shipped",
+      "updated_at": "2026-03-03T16:42:06.437171Z"
+    },
+    {
+      "id": "foolery-051a",
+      "title": "Remove Direct View",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:49:34.09729Z"
+    },
+    {
+      "id": "foolery-8bbd",
+      "title": "UX Terminal: Completion animation won't trigger until you click on the tab",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:41:44.849317Z"
+    },
+    {
+      "id": "foolery-8ec0",
+      "title": "c051 is in invalid state and can't be corrected with ui",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:35:24.546558Z"
+    },
+    {
+      "id": "foolery-7311",
+      "title": "i have openrouter configured and agent selected, but it doesn't show up in agent list",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:15:34.225207Z"
+    },
+    {
+      "id": "foolery-dbeb",
+      "title": "UI terminal times are incorrect",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:14:09.667644Z"
+    },
+    {
+      "id": "foolery-2fb0",
+      "title": "Don't send notifications for user created beats",
+      "state": "shipped",
+      "updated_at": "2026-03-03T15:11:42.20966Z"
+    },
+    {
+      "id": "foolery-3b7b",
+      "title": "remove Approve/Reject/Built For Review, checkmark, thumbsdown",
+      "state": "shipped",
+      "updated_at": "2026-03-03T13:32:30.396824Z"
+    },
+    {
+      "id": "foolery-685d",
+      "title": "investigate state issues with c051",
+      "state": "shipped",
+      "updated_at": "2026-03-03T13:32:25.009088Z"
+    },
+    {
+      "id": "foolery-8198",
+      "title": "Can't add OpenRouter model to agent Pool",
+      "state": "shipped",
+      "updated_at": "2026-03-03T13:19:38.061279Z"
+    },
+    {
+      "id": "foolery-f8ce",
+      "title": "6fbb says Session stream disconnected",
+      "state": "shipped",
+      "updated_at": "2026-03-03T13:10:14.138359Z"
+    },
+    {
+      "id": "foolery-2ce5",
+      "title": "test-beat-creation",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T12:54:04.571017Z"
+    },
+    {
+      "id": "foolery-f646",
+      "title": "Show time elapsed in ui terminal subtitle along with beat state",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:47:29.797126Z"
+    },
+    {
+      "id": "foolery-4a52",
+      "title": "child beats should be \"rolling\" when parent is rolling",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:43:50.606108Z"
+    },
+    {
+      "id": "foolery-6fbb",
+      "title": "settings: remove default agent at bottom",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:35:54.067529Z"
+    },
+    {
+      "id": "foolery-98b4",
+      "title": "history console search refinements",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:35:09.611874Z"
+    },
+    {
+      "id": "foolery-g3y1.7",
+      "title": "Create follow-up epic for Knots-native flow/API realignment",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.471961Z"
+    },
+    {
+      "id": "foolery-g3y1.6.4",
+      "title": "Run quality gates and record verification handoff capsule",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.453399Z"
+    },
+    {
+      "id": "foolery-g3y1.6.3",
+      "title": "Update README, memory contract, and backend extension docs",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.436494Z"
+    },
+    {
+      "id": "foolery-g3y1.6.2",
+      "title": "Add integration tests for auto-routing and mixed trackers",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.420228Z"
+    },
+    {
+      "id": "foolery-g3y1.6.1",
+      "title": "Run backend contract harness and close Knots parity gaps",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.404403Z"
+    },
+    {
+      "id": "foolery-g3y1.5",
+      "title": "Scene theron-noir: API/UI compatibility and guardrails",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.388071Z"
+    },
+    {
+      "id": "foolery-g3y1.5.4",
+      "title": "Validate mixed All Repositories behavior",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.371096Z"
+    },
+    {
+      "id": "foolery-g3y1.5.3",
+      "title": "Validate table/filter/sort/hierarchy views on Knots repos",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.355103Z"
+    },
+    {
+      "id": "foolery-g3y1.5.2",
+      "title": "Add capability-aware API guard behavior",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.339289Z"
+    },
+    {
+      "id": "foolery-g3y1.5.1",
+      "title": "Implement Knots-state compression with raw state metadata",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.322694Z"
+    },
+    {
+      "id": "foolery-g3y1.4.4",
+      "title": "Add regression coverage for retry/verification on Knots repos",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.305338Z"
+    },
+    {
+      "id": "foolery-g3y1.4.3",
+      "title": "Remove Beads-only wording from orchestration and breakdown prompts",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.288767Z"
+    },
+    {
+      "id": "foolery-g3y1.4.2",
+      "title": "Make verification prompts backend-agnostic",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.271722Z"
+    },
+    {
+      "id": "foolery-g3y1.4.1",
+      "title": "Render tracker-aware prompt commands in terminal flows",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.254758Z"
+    },
+    {
+      "id": "foolery-g3y1.2.4",
+      "title": "Backfill and doctor checks for Knots-aware repo metadata",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.237127Z"
+    },
+    {
+      "id": "foolery-g3y1.2.3",
+      "title": "Implement per-repo backend delegator with caching",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.220385Z"
+    },
+    {
+      "id": "foolery-g3y1.2.2",
+      "title": "Update tracker labels and compatibility messaging",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.202409Z"
+    },
+    {
+      "id": "foolery-g3y1.2.1",
+      "title": "Add knots tracker marker and precedence rules",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.185466Z"
+    },
+    {
+      "id": "foolery-g3y1.1.4",
+      "title": "Publish compatibility ADR",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.168227Z"
+    },
+    {
+      "id": "foolery-g3y1.1.3",
+      "title": "Define unsupported operation policy and capability behavior",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.150212Z"
+    },
+    {
+      "id": "foolery-g3y1.1.2",
+      "title": "Capture CLI fixture corpus and freeze parser behavior",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:40.13088Z"
+    },
+    {
+      "id": "foolery-g3y1.1.1",
+      "title": "Define canonical Knots/Foolery field-status-dependency mapping",
+      "state": "abandoned",
+      "updated_at": "2026-03-03T11:15:35.304564Z"
+    },
+    {
+      "id": "foolery-xmvb",
+      "title": "\"created\" notification in loewr right corner and top header component should show clickable bead id",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:06:45.183697Z"
+    },
+    {
+      "id": "foolery-g3y1",
+      "title": "Scene affleck-goodfellas: Knots implementation for Foolery Agent Memory API",
+      "state": "shipped",
+      "updated_at": "2026-03-03T11:05:03.801856Z"
+    },
+    {
+      "id": "foolery-235a",
+      "title": "History tab is still totallly wrong",
+      "state": "shipped",
+      "updated_at": "2026-03-03T08:07:01.625212Z"
+    },
+    {
+      "id": "foolery-b68e",
+      "title": "settings:  auto-verification should be moved to the basic tab",
+      "state": "shipped",
+      "updated_at": "2026-03-03T07:52:40.357256Z"
+    },
+    {
+      "id": "foolery-c33b",
+      "title": "ReTakes: Should show more info",
+      "state": "shipped",
+      "updated_at": "2026-03-03T07:05:57.640035Z"
+    },
+    {
+      "id": "foolery-075d",
+      "title": "History screen is very broken - showing only old stuff",
+      "state": "shipped",
+      "updated_at": "2026-03-03T06:54:51.262231Z"
+    },
+    {
+      "id": "foolery-3f6a",
+      "title": "Settings:  Can't scroll, bottom is cut off",
+      "state": "shipped",
+      "updated_at": "2026-03-03T06:46:10.75454Z"
+    },
+    {
+      "id": "foolery-5240",
+      "title": "Terminal AgentInfoBar shows global default agent instead of actual session agent",
+      "state": "shipped",
+      "updated_at": "2026-03-03T06:36:49.537463Z"
+    },
+    {
+      "id": "foolery-754b",
+      "title": "Improve terminal error output: structured context and actionable diagnostics",
+      "state": "shipped",
+      "updated_at": "2026-03-03T06:19:16.207Z"
+    },
+    {
+      "id": "foolery-e09f",
+      "title": "Bug: take-loop fails for codex agents - stdin prompt sent to non-interactive process",
+      "state": "shipped",
+      "updated_at": "2026-03-03T06:19:15.656855Z"
+    },
+    {
+      "id": "foolery-3c09",
+      "title": "Settings: When Agent Pools are configured, gray out/disable the action settings",
+      "state": "shipped",
+      "updated_at": "2026-03-03T05:18:40.577419Z"
+    },
+    {
+      "id": "foolery-9v09",
+      "title": "Scene eastwood-uncut: exploration: api docs for openclaw or other agents",
+      "state": "shipped",
+      "updated_at": "2026-03-02T17:39:58.635405Z"
+    },
+    {
+      "id": "foolery-6812",
+      "title": "Agent Pools: Cross agent review supersedes pool weights",
+      "state": "shipped",
+      "updated_at": "2026-03-02T17:10:27.716234Z"
+    },
+    {
+      "id": "foolery-a994",
+      "title": "Take!:  convert to poll loop for knots backed beats",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T17:01:53.226068Z"
+    },
+    {
+      "id": "foolery-261d",
+      "title": "Replace kno update --status with kno next in transitionToRetry",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:51:29.613085Z"
+    },
+    {
+      "id": "foolery-ef28",
+      "title": "Add retry with exponential backoff to knots.nextKnot",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:50:35.79678Z"
+    },
+    {
+      "id": "foolery-198d",
+      "title": "Replace kno update --status with kno next in enforceQueueTerminalInvariant",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:48:40.342639Z"
+    },
+    {
+      "id": "foolery-8fc5",
+      "title": "Add per-knot-id async queueing to knots.nextKnot",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:48:25.690068Z"
+    },
+    {
+      "id": "foolery-037e",
+      "title": "Replace kno update --status with kno next in buildWorkflowStateCommand",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:47:48.278425Z"
+    },
+    {
+      "id": "foolery-e4df",
+      "title": "beats view: remove ready option from state pulldown",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:43:06.412811Z"
+    },
+    {
+      "id": "foolery-5690",
+      "title": "Beats view: Owner Type column is wrong",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:39:04.735248Z"
+    },
+    {
+      "id": "foolery-9b59",
+      "title": "Scene Action: Simplify to reuse Take! workflow",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:35:34.486566Z"
+    },
+    {
+      "id": "foolery-f4ff",
+      "title": "beat e4df throws error when Take! selected",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:20:34.927719Z"
+    },
+    {
+      "id": "foolery-30bb",
+      "title": "beats view: clicking on beat id to copy to clipboard is broken",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:19:37.026487Z"
+    },
+    {
+      "id": "foolery-f637",
+      "title": "Beats View: Remove profile and owner type pills from title  column",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:09:51.580229Z"
+    },
+    {
+      "id": "foolery-c760",
+      "title": "Enforce queue/terminal state invariant on agent work iteration exit",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:08:56.367147Z"
+    },
+    {
+      "id": "foolery-9861",
+      "title": "Log agent stdout/stderr to file",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:08:32.296071Z"
+    },
+    {
+      "id": "foolery-aca8",
+      "title": "Log beat state before/after each prompt with loop iteration ID",
+      "state": "shipped",
+      "updated_at": "2026-03-02T15:05:27.753176Z"
+    },
+    {
+      "id": "foolery-6q2x",
+      "title": "invalidate final cut state on window open or agent action completion",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T14:23:52.286175Z"
+    },
+    {
+      "id": "foolery-6c7c",
+      "title": "Stabilize Beads lock health and commit Dolt hook fixes",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T14:23:45.216097Z"
+    },
+    {
+      "id": "foolery-ioos",
+      "title": "agent message type index",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:51:04.87271Z"
+    },
+    {
+      "id": "foolery-da39",
+      "title": "New Feature: Agent Pools",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:54.332891Z"
+    },
+    {
+      "id": "foolery-90f0",
+      "title": "Agent Pools: Unit tests for weighted selection",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:42.299681Z"
+    },
+    {
+      "id": "foolery-460d",
+      "title": "Agent Pools: Runtime integration with terminal/orchestration/breakdown",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:41.773603Z"
+    },
+    {
+      "id": "foolery-0555",
+      "title": "Agent Pools: Settings UI tabs refactor and pool configuration",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:41.232802Z"
+    },
+    {
+      "id": "foolery-fcfc",
+      "title": "Agent Pools: Settings integration and server-side resolution",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:40.094475Z"
+    },
+    {
+      "id": "foolery-3186",
+      "title": "Agent Pools: Schema, types, and pool selection engine",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:26:34.667067Z"
+    },
+    {
+      "id": "foolery-fa2b",
+      "title": "test-skill-repro",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T13:24:23.977319Z"
+    },
+    {
+      "id": "foolery-f8c6",
+      "title": "beats view: in action filter shows mismatched ownership",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:16:24.849175Z"
+    },
+    {
+      "id": "foolery-nh8w",
+      "title": "Add multi-channel local/release tooling",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T13:12:32.484599Z"
+    },
+    {
+      "id": "foolery-c550",
+      "title": "beats view:  add profile column",
+      "state": "shipped",
+      "updated_at": "2026-03-02T13:09:40.238655Z"
+    },
+    {
+      "id": "foolery-d073",
+      "title": "\"Created\" toast link is broken",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T13:07:52.644825Z"
+    },
+    {
+      "id": "foolery-3a9d",
+      "title": "beats view: state should be possible to rollback",
+      "state": "shipped",
+      "updated_at": "2026-03-02T12:58:58.254352Z"
+    },
+    {
+      "id": "foolery-cbb7",
+      "title": "Settings: Default beat workflow profiles",
+      "state": "shipped",
+      "updated_at": "2026-03-02T12:49:10.985006Z"
+    },
+    {
+      "id": "foolery-d119",
+      "title": "Add soft coverage regression gate to CI",
+      "state": "shipped",
+      "updated_at": "2026-03-02T12:35:59.357514Z"
+    },
+    {
+      "id": "foolery-5492",
+      "title": "Raise overall test coverage from 82% to 90%+",
+      "state": "shipped",
+      "updated_at": "2026-03-02T12:35:58.64216Z"
+    },
+    {
+      "id": "foolery-knots-native",
+      "title": "Knots-native Foolery workflow + Memory API realignment",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T12:29:20.634284Z"
+    },
+    {
+      "id": "foolery-jzww",
+      "title": "Verification stage is broken with knots",
+      "state": "abandoned",
+      "updated_at": "2026-03-02T12:29:12.952779Z"
+    },
+    {
+      "id": "foolery-3a7b",
+      "title": "History:  Don't show beats for which we have no history of anymore",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:52:22.471081Z"
+    },
+    {
+      "id": "foolery-eaa9",
+      "title": "Take! prompt should be supplied by the implemented memory manager",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:48:57.389847Z"
+    },
+    {
+      "id": "foolery-drmp",
+      "title": "in history view, list and detail components should NOT show id prefix",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:40:58.825877Z"
+    },
+    {
+      "id": "foolery-2268",
+      "title": "history view: drive list from actual conversations, not beat state",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:39:22.582138Z"
+    },
+    {
+      "id": "foolery-2a54",
+      "title": "Remove \"Types\" filter if the active project is not a beads project",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:35:45.808595Z"
+    },
+    {
+      "id": "foolery-af02",
+      "title": "Take loop stops at action states: isAgentClaimable false for agent-owned action states",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:33:46.399123Z"
+    },
+    {
+      "id": "foolery-0770",
+      "title": "step-enum: beads parity tests and dead code cleanup",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:27:44.800052Z"
+    },
+    {
+      "id": "foolery-0e94",
+      "title": "step-enum: refactor internals and delete backend duplicates",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:27:36.782367Z"
+    },
+    {
+      "id": "foolery-73c5",
+      "title": "step-enum: fix take-loop and update UI helpers",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:27:12.799375Z"
+    },
+    {
+      "id": "foolery-e5f5",
+      "title": "step-enum: add WorkflowStep, StepPhase, resolveStep",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:27:06.663625Z"
+    },
+    {
+      "id": "foolery-1e23",
+      "title": "Add code coverage badge and reporting to README/GitHub",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:44.906618Z"
+    },
+    {
+      "id": "foolery-c2de",
+      "title": "Improve test coverage for backend-factory.ts (62.9% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:44.416039Z"
+    },
+    {
+      "id": "foolery-2c20",
+      "title": "Remove dead bead-*.ts files (0% coverage, replaced by beat-*.ts)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:43.933159Z"
+    },
+    {
+      "id": "foolery-6c49",
+      "title": "Improve test coverage for instrumentation.ts (56.52% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:43.401119Z"
+    },
+    {
+      "id": "foolery-1b64",
+      "title": "Improve test coverage for knots.ts (40.59% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:42.644802Z"
+    },
+    {
+      "id": "foolery-f156",
+      "title": "Improve test coverage for stub-backend.ts (27.77% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:41.589122Z"
+    },
+    {
+      "id": "foolery-6dd8",
+      "title": "Improve test coverage for bd-cli-backend.ts (22.85% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:40.982779Z"
+    },
+    {
+      "id": "foolery-b382",
+      "title": "Improve test coverage for execution-logger.ts (4.87% → 70%+)",
+      "state": "shipped",
+      "updated_at": "2026-03-02T09:26:40.407608Z"
+    },
+    {
+      "id": "foolery-08af",
+      "title": "Serialize KnotsBackend writes to prevent SQLite lock contention",
+      "state": "shipped",
+      "updated_at": "2026-03-02T08:12:41.132874Z"
+    },
+    {
+      "id": "foolery-g3y1.6",
+      "title": "Validation, docs, and rollout hardening",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:43:01.28794Z"
+    },
+    {
+      "id": "foolery-g3y1.1",
+      "title": "Knots compatibility contract and mapping spec",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:41:34.70573Z"
+    },
+    {
+      "id": "foolery-g3y1.2",
+      "title": "Tracker detection and backend auto-routing foundation",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:41:07.599369Z"
+    },
+    {
+      "id": "foolery-g3y1.3",
+      "title": "Knots backend implementation",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:40:09.868254Z"
+    },
+    {
+      "id": "foolery-4162",
+      "title": "unable to change beat state from Beats list view",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:39:50.515887Z"
+    },
+    {
+      "id": "foolery-g3y1.4",
+      "title": "Workflow and prompt compatibility across backends",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:39:43.539706Z"
+    },
+    {
+      "id": "foolery-g3y1.3.5",
+      "title": "Wire backend factory/settings/backend-instance for knots",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:14:08.590197Z"
+    },
+    {
+      "id": "foolery-g3y1.3.4",
+      "title": "Implement dependency and hierarchy translation via edges",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:14:08.569044Z"
+    },
+    {
+      "id": "foolery-g3y1.3.3",
+      "title": "Implement KnotsBackend mutation paths",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:14:08.546745Z"
+    },
+    {
+      "id": "foolery-g3y1.3.2",
+      "title": "Implement KnotsBackend read paths",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:14:08.525762Z"
+    },
+    {
+      "id": "foolery-g3y1.3.1",
+      "title": "Build knots CLI wrapper with timeout/error classification",
+      "state": "shipped",
+      "updated_at": "2026-03-01T17:14:08.502478Z"
+    },
+    {
+      "id": "foolery-77fc",
+      "title": "Diagnosis test knot",
+      "state": "abandoned",
+      "updated_at": "2026-02-28T15:06:34.251801Z"
+    },
+    {
+      "id": "foolery-8135",
+      "title": "Handle ship follow-up failure when worktree path is missing",
+      "state": "shipped",
+      "updated_at": "2026-02-24T19:39:29Z"
+    },
+    {
+      "id": "foolery-9wk7",
+      "title": "History View: Console search and navigation upgrade",
+      "state": "shipped",
+      "updated_at": "2026-02-24T19:39:13Z"
+    },
+    {
+      "id": "foolery-vsnv",
+      "title": "Create Lightbox: Knots create fails",
+      "state": "shipped",
+      "updated_at": "2026-02-24T18:05:41Z"
+    },
+    {
+      "id": "foolery-we6f",
+      "title": "Breakdown still can't parse codex response properly",
+      "state": "shipped",
+      "updated_at": "2026-02-24T14:16:09Z"
+    },
+    {
+      "id": "foolery-lxpz",
+      "title": "dependency application is reversed in create dialogue",
+      "state": "shipped",
+      "updated_at": "2026-02-24T09:05:33Z"
+    },
+    {
+      "id": "foolery-kcxj",
+      "title": "Capture verifier output and update notes on failure",
+      "state": "shipped",
+      "updated_at": "2026-02-24T07:48:55Z"
+    },
+    {
+      "id": "foolery-0f0n",
+      "title": "Rebrand issue tracker integration docs to agent memory tutorial",
+      "state": "shipped",
+      "updated_at": "2026-02-24T07:22:56Z"
+    },
+    {
+      "id": "foolery-fyj6",
+      "title": "in list views, the bead id needs about 25% more horizontal space.",
+      "state": "shipped",
+      "updated_at": "2026-02-24T07:13:02Z"
+    },
+    {
+      "id": "foolery-42yx",
+      "title": "Add animated waiting spinner words for Breakdown/Direct actions",
+      "state": "shipped",
+      "updated_at": "2026-02-23T16:40:32Z"
+    },
+    {
+      "id": "foolery-2pks",
+      "title": "settings:  claude opus not showing version, should show actual version",
+      "state": "shipped",
+      "updated_at": "2026-02-23T16:40:20Z"
+    },
+    {
+      "id": "foolery-fyhe",
+      "title": "clicking breakdown in Create New lightbox should open Direct view, populate prompt, and start run action",
+      "state": "shipped",
+      "updated_at": "2026-02-23T14:57:42Z"
+    },
+    {
+      "id": "foolery-ncho",
+      "title": "can't edit beat title from beat detail  view",
+      "state": "shipped",
+      "updated_at": "2026-02-23T14:55:16Z"
+    },
+    {
+      "id": "foolery-l1pc",
+      "title": "show version in a cool way in title area",
+      "state": "shipped",
+      "updated_at": "2026-02-23T14:35:59Z"
+    },
+    {
+      "id": "foolery-tm5f",
+      "title": "detail view: standardize buttons, move to second row",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:57:59Z"
+    },
+    {
+      "id": "foolery-c23y",
+      "title": "Make repo discovery tracker-aware in setup and settings",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:51Z"
+    },
+    {
+      "id": "foolery-xmg8",
+      "title": "Scene fonda-rocky: auto-verification: after an agent invocation completes for Take!, Scene!, or similar actions",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:09Z"
+    },
+    {
+      "id": "foolery-xmg8.4",
+      "title": "Scene streep-arrival: Validation & Rollout",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:09Z"
+    },
+    {
+      "id": "foolery-xmg8.4.5",
+      "title": "Document operational runbook",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:09Z"
+    },
+    {
+      "id": "foolery-xmg8.4.2",
+      "title": "Add end-to-end tests for retry paths",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:08Z"
+    },
+    {
+      "id": "foolery-xmg8.4.3",
+      "title": "Add race-condition/idempotency tests",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:08Z"
+    },
+    {
+      "id": "foolery-xmg8.4.4",
+      "title": "Add regression tests for verification edit locks",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:08Z"
+    },
+    {
+      "id": "foolery-xmg8.3",
+      "title": "Scene theron-noir: Verification UX",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:07Z"
+    },
+    {
+      "id": "foolery-xmg8.3.5",
+      "title": "Enforce edit lock on server/API",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:07Z"
+    },
+    {
+      "id": "foolery-xmg8.4.1",
+      "title": "Add end-to-end tests for pass path",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:07Z"
+    },
+    {
+      "id": "foolery-xmg8.3.1",
+      "title": "Add auto-verification settings toggle with info icon",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:06Z"
+    },
+    {
+      "id": "foolery-xmg8.3.2",
+      "title": "Add verification-agent selector in settings",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:06Z"
+    },
+    {
+      "id": "foolery-xmg8.3.3",
+      "title": "Render transition:verification status treatment",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:06Z"
+    },
+    {
+      "id": "foolery-xmg8.3.4",
+      "title": "Disable editing interactions during verification",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:06Z"
+    },
+    {
+      "id": "foolery-xmg8.2",
+      "title": "Scene pitt-inception: Backend Automation",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:05Z"
+    },
+    {
+      "id": "foolery-xmg8.2.4",
+      "title": "Apply verifier outcomes to bead state",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:04Z"
+    },
+    {
+      "id": "foolery-xmg8.2.5",
+      "title": "Add orchestration idempotency and dedupe locks",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:04Z"
+    },
+    {
+      "id": "foolery-xmg8.2.6",
+      "title": "Persist verification lifecycle events",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:04Z"
+    },
+    {
+      "id": "foolery-xmg8.2.1",
+      "title": "Hook agent completion to verification transition",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:03Z"
+    },
+    {
+      "id": "foolery-xmg8.2.2",
+      "title": "Implement commit-label remediation loop",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:03Z"
+    },
+    {
+      "id": "foolery-xmg8.2.3",
+      "title": "Launch verifier agent using commit label",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:03Z"
+    },
+    {
+      "id": "foolery-xmg8.1",
+      "title": "Scene hamill-prestige: Workflow Contract",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:02Z"
+    },
+    {
+      "id": "foolery-xmg8.1.3",
+      "title": "Extend settings schema for auto-verification",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:02Z"
+    },
+    {
+      "id": "foolery-xmg8.1.4",
+      "title": "Add bead label parsing/mutation helpers",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:02Z"
+    },
+    {
+      "id": "foolery-xmg8.1.1",
+      "title": "Define verification state machine and label invariants",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:01Z"
+    },
+    {
+      "id": "foolery-xmg8.1.2",
+      "title": "Classify eligible post-run actions",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:40:01Z"
+    },
+    {
+      "id": "foolery-8iga",
+      "title": "make Take!/Scene! terminals persistent until completed",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:39:00Z"
+    },
+    {
+      "id": "foolery-rhre",
+      "title": "Add Foolery Issue Tracker Integration API doc",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:38:46Z"
+    },
+    {
+      "id": "foolery-hh7o",
+      "title": "Prepare release summary and run release checklist",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:38:40Z"
+    },
+    {
+      "id": "foolery-bwws",
+      "title": "Show issue tracker type in registered repos settings",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:38:31Z"
+    },
+    {
+      "id": "foolery-1guy",
+      "title": "Scene weaver-prestige: abstraction layer between foolery and beads",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:42Z"
+    },
+    {
+      "id": "foolery-1guy.4",
+      "title": "Scene spotlight-take: Beads Adapter",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:42Z"
+    },
+    {
+      "id": "foolery-1guy.5",
+      "title": "Scene sunset-props: Cutover Verify",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:42Z"
+    },
+    {
+      "id": "foolery-1guy.5.3",
+      "title": "Replace test utilities with backend-aware fixtures",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:42Z"
+    },
+    {
+      "id": "foolery-1guy.3.4",
+      "title": "Add temporary stub backend for incremental migration",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:41Z"
+    },
+    {
+      "id": "foolery-1guy.2",
+      "title": "Scene clooney-heat: Contract Spec",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:40Z"
+    },
+    {
+      "id": "foolery-1guy.3.2",
+      "title": "Add internal backend selection configuration",
+      "state": "shipped",
+      "updated_at": "2026-02-23T12:37:40Z"
+    },
+    {
+      "id": "foolery-rm0f",
+      "title": "history list navigation is laggy and provides no feedback",
+      "state": "shipped",
+      "updated_at": "2026-02-23T10:47:50Z"
+    },
+    {
+      "id": "foolery-1guy.5.2",
+      "title": "Migrate automation and background paths to BackendPort",
+      "state": "shipped",
+      "updated_at": "2026-02-23T07:23:58Z"
+    },
+    {
+      "id": "foolery-1guy.5.4",
+      "title": "Enforce adapter boundary with static check",
+      "state": "shipped",
+      "updated_at": "2026-02-23T07:23:58Z"
+    },
+    {
+      "id": "foolery-1guy.5.5",
+      "title": "Run full regression and parity validation with beads default",
+      "state": "shipped",
+      "updated_at": "2026-02-23T07:23:58Z"
+    },
+    {
+      "id": "foolery-1guy.5.6",
+      "title": "Document backend extension guide for future implementations",
+      "state": "shipped",
+      "updated_at": "2026-02-23T07:23:58Z"
+    },
+    {
+      "id": "foolery-1guy.5.1",
+      "title": "Migrate remaining CLI and service callsites to BackendPort",
+      "state": "shipped",
+      "updated_at": "2026-02-23T07:23:51Z"
+    },
+    {
+      "id": "foolery-1guy.4.3",
+      "title": "Implement beads adapter sync/history/lifecycle operations",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:41:21Z"
+    },
+    {
+      "id": "foolery-1guy.4.4",
+      "title": "Add beads-to-domain translation for DTOs and errors",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:40:54Z"
+    },
+    {
+      "id": "foolery-1guy.4.1",
+      "title": "Implement beads adapter read/query operations",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:40:07Z"
+    },
+    {
+      "id": "foolery-1guy.1",
+      "title": "Scene blanchett-inception: Surface Audit",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:22:24Z"
+    },
+    {
+      "id": "foolery-1guy.1.1",
+      "title": "Inventory direct beads usage across the repository",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:22:24Z"
+    },
+    {
+      "id": "foolery-1guy.1.2",
+      "title": "Map required workflows to backend operations",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:22:24Z"
+    },
+    {
+      "id": "foolery-1guy.1.3",
+      "title": "Capture current failure modes and edge cases",
+      "state": "shipped",
+      "updated_at": "2026-02-23T06:22:24Z"
+    },
+    {
+      "id": "foolery-1guy.4.5",
+      "title": "Make beads adapter pass contract harness",
+      "state": "shipped",
+      "updated_at": "2026-02-22T22:03:01Z"
+    },
+    {
+      "id": "foolery-1guy.4.2",
+      "title": "Implement beads adapter write/mutation operations",
+      "state": "shipped",
+      "updated_at": "2026-02-22T22:03:00Z"
+    },
+    {
+      "id": "foolery-p63",
+      "title": "id ~ 1guy",
+      "state": "shipped",
+      "updated_at": "2026-02-22T21:53:09Z"
+    },
+    {
+      "id": "foolery-1guy.3",
+      "title": "Scene titanic-lens: Core Seams",
+      "state": "shipped",
+      "updated_at": "2026-02-22T18:58:51Z"
+    },
+    {
+      "id": "foolery-1guy.3.1",
+      "title": "Add backend factory and dependency injection seam",
+      "state": "shipped",
+      "updated_at": "2026-02-22T18:58:51Z"
+    },
+    {
+      "id": "foolery-1guy.3.3",
+      "title": "Refactor shared layers to consume BackendPort",
+      "state": "shipped",
+      "updated_at": "2026-02-22T18:58:51Z"
+    },
+    {
+      "id": "foolery-28hf",
+      "title": "Reduce unnecessary /api/registry polling on beads route",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-98qh",
+      "title": "Gate agent-history API usage to history view only",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-cinw",
+      "title": "Stop stale bead-detail 404 polling when bead param is invalid",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-mvc5",
+      "title": "Stop closed-bead queries unless explicitly requested",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-r1mi",
+      "title": "Fix Beads v0.55.1 Dolt hook integration for push/pull workflows",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-rmje",
+      "title": "Prevent concurrent bd subprocesses from crashing embedded Dolt",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-t7rn",
+      "title": "Mount only active /beads view to stop hidden polling",
+      "state": "shipped",
+      "updated_at": "2026-02-22T16:53:50Z"
+    },
+    {
+      "id": "foolery-sz41",
+      "title": "Agent History View UX improvements",
+      "state": "shipped",
+      "updated_at": "2026-02-22T12:03:27Z"
+    },
+    {
+      "id": "foolery-1guy.2.4",
+      "title": "Build reusable backend contract test harness",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:27:10Z"
+    },
+    {
+      "id": "foolery-1guy.2.3",
+      "title": "Define capability flags for optional backend behavior",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:26:43Z"
+    },
+    {
+      "id": "foolery-1guy.2.1",
+      "title": "Define BackendPort interface and domain DTOs",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:26:11Z"
+    },
+    {
+      "id": "foolery-1guy.2.2",
+      "title": "Specify backend error taxonomy and retry semantics",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:25:58Z"
+    },
+    {
+      "id": "foolery-odiq",
+      "title": "in History View: add a way to cycle to different messages",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:22:26Z"
+    },
+    {
+      "id": "foolery-mm5n",
+      "title": "Agent History:  Show agent/model in title when APP sends messages",
+      "state": "shipped",
+      "updated_at": "2026-02-22T09:21:24Z"
+    },
+    {
+      "id": "foolery-qqla.4",
+      "title": "Scene swank-heat: Validation & Polish",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:58Z"
+    },
+    {
+      "id": "foolery-qqla.3",
+      "title": "Scene poitier-inception: Direct Autorun",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:57Z"
+    },
+    {
+      "id": "foolery-qqla.1",
+      "title": "Scene reeves-arrival: Prompt Plumbing",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:56Z"
+    },
+    {
+      "id": "foolery-qqla.2",
+      "title": "Scene pacino-prestige: Bead Detail CTA",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:56Z"
+    },
+    {
+      "id": "foolery-3ji.4",
+      "title": "Scene waltz-goodfellas: Git-driven install path (curl | bash)",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:55Z"
+    },
+    {
+      "id": "foolery-qqla",
+      "title": "Scene depp-noir: bead detail screen should show 'Breakdown'",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:55Z"
+    },
+    {
+      "id": "foolery-mqv",
+      "title": "Scene mckellen-gladiator: Foolery Orchestration: Ship Now + Wave Planner",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:53Z"
+    },
+    {
+      "id": "foolery-mqv.2",
+      "title": "Scene bardem-vertigo: Wave Planner - Dependency-Based Execution Waves",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:50:53Z"
+    },
+    {
+      "id": "foolery-3ji",
+      "title": "Scene hoffman-rocky: Ship foolery as installable executable (Homebrew + GitHub install)",
+      "state": "deferred",
+      "updated_at": "2026-02-22T08:50:52Z"
+    },
+    {
+      "id": "foolery-1guy.1.4",
+      "title": "Create characterization test matrix for current behavior",
+      "state": "shipped",
+      "updated_at": "2026-02-22T08:31:54Z"
+    },
+    {
+      "id": "foolery-ghqh",
+      "title": "FInal Cut View:  Needs a description header like Direct",
+      "state": "shipped",
+      "updated_at": "2026-02-22T05:43:29Z"
+    },
+    {
+      "id": "foolery-pc33",
+      "title": "Don't count child beats for notifications and final cut",
+      "state": "shipped",
+      "updated_at": "2026-02-22T05:43:28Z"
+    },
+    {
+      "id": "foolery-o65u",
+      "title": "prompt tightening",
+      "state": "shipped",
+      "updated_at": "2026-02-22T03:18:07Z"
+    },
+    {
+      "id": "foolery-kyfp",
+      "title": "history view should just show the last 5 items, regardless of when they happened",
+      "state": "shipped",
+      "updated_at": "2026-02-22T03:16:56Z"
+    },
+    {
+      "id": "foolery-10bd",
+      "title": "spacebar selects active row in beats view",
+      "state": "shipped",
+      "updated_at": "2026-02-22T03:16:50Z"
+    },
+    {
+      "id": "foolery-81h1",
+      "title": "Backfill missing automated review post-prompt setting on startup and via doctor",
+      "state": "shipped",
+      "updated_at": "2026-02-21T14:53:05Z"
+    },
+    {
+      "id": "foolery-49zm",
+      "title": "Beat view:  Changing beat property pulldown values should have feedback",
+      "state": "shipped",
+      "updated_at": "2026-02-21T14:52:59Z"
+    },
+    {
+      "id": "foolery-9gl7",
+      "title": "Add Agent History and ReTake screenshots to README",
+      "state": "shipped",
+      "updated_at": "2026-02-21T14:51:47Z"
+    },
+    {
+      "id": "foolery-72rr",
+      "title": "Agent History View:  Search by beat",
+      "state": "shipped",
+      "updated_at": "2026-02-20T19:11:59Z"
+    },
+    {
+      "id": "foolery-l4wa",
+      "title": "Final Cut View: Rejecting a beat should provide UX feedback",
+      "state": "shipped",
+      "updated_at": "2026-02-20T15:52:11Z"
+    },
+    {
+      "id": "foolery-jbtq",
+      "title": "Final Cut view - there should be no 'take' link",
+      "state": "shipped",
+      "updated_at": "2026-02-20T15:52:08Z"
+    },
+    {
+      "id": "foolery-lodw",
+      "title": "dozens of api calls per second making ui sluggish",
+      "state": "shipped",
+      "updated_at": "2026-02-20T15:51:36Z"
+    },
+    {
+      "id": "foolery-ptzv",
+      "title": "direct view: put console and diagram components side by side",
+      "state": "shipped",
+      "updated_at": "2026-02-20T15:51:28Z"
+    },
+    {
+      "id": "foolery-v318",
+      "title": "paginate ReTakes",
+      "state": "shipped",
+      "updated_at": "2026-02-20T15:50:15Z"
+    },
+    {
+      "id": "foolery-7wrg",
+      "title": "Direct:  Add Discard button",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:26:08Z"
+    },
+    {
+      "id": "foolery-wxr8",
+      "title": "List/Final Cut Views:  Overview component (desc. and notes) is out of alignment with title",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:20:52Z"
+    },
+    {
+      "id": "foolery-dw44",
+      "title": "child beats should not count towards paging limit",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:20:33Z"
+    },
+    {
+      "id": "foolery-qiqm",
+      "title": "top level parent beats title misaligned, count pill and arrows should be swapped",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:20:23Z"
+    },
+    {
+      "id": "foolery-ivtu",
+      "title": "breakdown opens it's own page instead of using the Direct view",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:19:46Z"
+    },
+    {
+      "id": "foolery-h6q6",
+      "title": "add copy icon and action to all consoles top right corner",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:19:42Z"
+    },
+    {
+      "id": "foolery-dz4j",
+      "title": "beats view: parent folding/child count should be full depth cumulative",
+      "state": "shipped",
+      "updated_at": "2026-02-20T12:19:35Z"
+    },
+    {
+      "id": "foolery-ctup",
+      "title": "show child task count in pill next to > when parent task is folded",
+      "state": "shipped",
+      "updated_at": "2026-02-20T11:27:23Z"
+    },
+    {
+      "id": "foolery-yn6q",
+      "title": "Find out why Breakdown/Direct actions are creating molecules and  fix it",
+      "state": "shipped",
+      "updated_at": "2026-02-20T11:27:06Z"
+    },
+    {
+      "id": "foolery-y7rj",
+      "title": "in list and final cut views, beat type appears to be slightly misaligned vertically.",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:41:42Z"
+    },
+    {
+      "id": "foolery-j2l0",
+      "title": "parent bead titles should not include ^> toggles in alignment",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:41:19Z"
+    },
+    {
+      "id": "foolery-cf81",
+      "title": "by default, parent beats should be folded in all views",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:40:59Z"
+    },
+    {
+      "id": "foolery-79zi",
+      "title": "add shift-< and shift- > to fold and unold, respectively",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:40:55Z"
+    },
+    {
+      "id": "foolery-8t9j",
+      "title": "shift-T should work in all views",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:14:24Z"
+    },
+    {
+      "id": "foolery-hkd6",
+      "title": "in all views, hierarchical beads should be listed in the proper order.",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:11:40Z"
+    },
+    {
+      "id": "foolery-njng",
+      "title": "Fix hierarchical bead ordering in all views",
+      "state": "shipped",
+      "updated_at": "2026-02-20T10:10:53Z"
+    },
+    {
+      "id": "foolery-3e8",
+      "title": "Registry and browse API routes",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:31:08Z"
+    },
+    {
+      "id": "foolery-qqla.2.3",
+      "title": "Track Breakdown invocation event",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:42Z"
+    },
+    {
+      "id": "foolery-qqla.1.2",
+      "title": "Define navigation payload contract for Direct prefill",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:41Z"
+    },
+    {
+      "id": "foolery-qqla.1.3",
+      "title": "Add unit tests for prompt template and payload parsing",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:41Z"
+    },
+    {
+      "id": "foolery-qqla.2.2",
+      "title": "Wire Breakdown click to prompt generation and navigation",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:41Z"
+    },
+    {
+      "id": "foolery-qqla.1.1",
+      "title": "Define breakdown prompt builder utility",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:40Z"
+    },
+    {
+      "id": "foolery-qqla.2.1",
+      "title": "Add Breakdown action to bead detail screen",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:27Z"
+    },
+    {
+      "id": "foolery-qqla.3.2",
+      "title": "Implement one-shot auto Run Now trigger",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:25Z"
+    },
+    {
+      "id": "foolery-qqla.3.1",
+      "title": "Hydrate Direct input from incoming prompt payload",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:12Z"
+    },
+    {
+      "id": "foolery-qqla.3.3",
+      "title": "Add Direct-page failure and fallback behavior",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:30:07Z"
+    },
+    {
+      "id": "foolery-z51l",
+      "title": "Scene memento-gaffer: ReTakes Build",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:29:43Z"
+    },
+    {
+      "id": "foolery-seev",
+      "title": "add a view ReTakes that shows closed beads in order of last updated",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:29:23Z"
+    },
+    {
+      "id": "foolery-o2wo",
+      "title": "breakdown: creates new parent bead instead of making source bead the parent bead",
+      "state": "shipped",
+      "updated_at": "2026-02-20T07:29:15Z"
+    },
+    {
+      "id": "foolery-qqla.4.3",
+      "title": "Update user-facing/help docs for Breakdown action",
+      "state": "shipped",
+      "updated_at": "2026-02-20T06:09:40Z"
+    },
+    {
+      "id": "foolery-qqla.4.2",
+      "title": "Add regression tests for non-autorun Direct usage",
+      "state": "shipped",
+      "updated_at": "2026-02-20T06:09:37Z"
+    },
+    {
+      "id": "foolery-qqla.4.1",
+      "title": "Add end-to-end test for bead-detail-to-Direct auto-run journey",
+      "state": "shipped",
+      "updated_at": "2026-02-20T06:09:34Z"
+    },
+    {
+      "id": "foolery-6gcd",
+      "title": "Fix build",
+      "state": "shipped",
+      "updated_at": "2026-02-20T06:08:35Z"
+    },
+    {
+      "id": "foolery-5jlw",
+      "title": "FInal Cut View: shift-v causes the entire list to disappear for 10 seconds.  This is a bug",
+      "state": "shipped",
+      "updated_at": "2026-02-20T05:58:59Z"
+    },
+    {
+      "id": "foolery-6h4u",
+      "title": "get ci tests running in remote workflow",
+      "state": "shipped",
+      "updated_at": "2026-02-20T05:36:52Z"
+    },
+    {
+      "id": "foolery-0vdz",
+      "title": "code coverage tweaking",
+      "state": "shipped",
+      "updated_at": "2026-02-19T17:24:11Z"
+    },
+    {
+      "id": "foolery-7qvg",
+      "title": "bulk action: merge beads",
+      "state": "shipped",
+      "updated_at": "2026-02-19T17:10:36Z"
+    },
+    {
+      "id": "foolery-wefn",
+      "title": "List Viiew: Ready Filter:  Labels are missing, should be shown",
+      "state": "shipped",
+      "updated_at": "2026-02-19T17:10:17Z"
+    },
+    {
+      "id": "foolery-75fs",
+      "title": "Dwet missing contest:orch label on Beats screen",
+      "state": "shipped",
+      "updated_at": "2026-02-19T16:40:39Z"
+    },
+    {
+      "id": "foolery-7tom",
+      "title": "Improve Scene auth-failure UX when agent token is expired",
+      "state": "shipped",
+      "updated_at": "2026-02-19T16:40:08Z"
+    },
+    {
+      "id": "foolery-qym6",
+      "title": "Fix foolery uninstall to clean up app state data (~/.config/foolery)",
+      "state": "shipped",
+      "updated_at": "2026-02-19T10:16:58Z"
+    },
+    {
+      "id": "foolery-csjr",
+      "title": "Beef up unit test code coverage",
+      "state": "shipped",
+      "updated_at": "2026-02-19T10:16:54Z"
+    },
+    {
+      "id": "foolery-5i57",
+      "title": "Manual bd doctor cleanup (config + artifact)",
+      "state": "shipped",
+      "updated_at": "2026-02-19T10:15:45Z"
+    },
+    {
+      "id": "foolery-2fqg",
+      "title": "Refresh README badges and screenshots",
+      "state": "shipped",
+      "updated_at": "2026-02-19T10:15:37Z"
+    },
+    {
+      "id": "foolery-kx5f",
+      "title": "Ready view: hide descendants when parent chain is not ready",
+      "state": "shipped",
+      "updated_at": "2026-02-18T18:38:16Z"
+    },
+    {
+      "id": "foolery-f0sq",
+      "title": "Progressive diagnostic output for foolery doctor",
+      "state": "shipped",
+      "updated_at": "2026-02-18T18:37:45Z"
+    },
+    {
+      "id": "foolery-2qv7",
+      "title": "Fix foolery doctor showing undefined instead of check results",
+      "state": "shipped",
+      "updated_at": "2026-02-18T18:37:43Z"
+    },
+    {
+      "id": "foolery-ryv0",
+      "title": "doctor --fix questionnaire answers are not applying fixes in stream test",
+      "state": "shipped",
+      "updated_at": "2026-02-18T18:37:41Z"
+    },
+    {
+      "id": "foolery-twrr",
+      "title": "Add log lifecycle policy (compress, archive, remove)",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:17:41Z"
+    },
+    {
+      "id": "foolery-9a6a",
+      "title": "shift-v points to wrong action in list view",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:15:31Z"
+    },
+    {
+      "id": "foolery-bso3",
+      "title": "Doctor --fix should prompt user before applying fixes",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:14:30Z"
+    },
+    {
+      "id": "foolery-kmof",
+      "title": "Coverage analysis: path to 70%",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:14:13Z"
+    },
+    {
+      "id": "foolery-r57u",
+      "title": "Take! on parent should prompt agent with children also",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:13:14Z"
+    },
+    {
+      "id": "foolery-pqvx",
+      "title": "scenes screen should have Shoot Them All! button",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:13:08Z"
+    },
+    {
+      "id": "foolery-ran1",
+      "title": "on list page, parent beads should say Scene! instead of Take!",
+      "state": "shipped",
+      "updated_at": "2026-02-18T10:12:03Z"
+    },
+    {
+      "id": "foolery-gv86",
+      "title": "Quick Direct tightening",
+      "state": "shipped",
+      "updated_at": "2026-02-18T09:32:50Z"
+    },
+    {
+      "id": "foolery-c1uk",
+      "title": "Add Foolery guidance prompt flow (README/PROMPT.md/CLI/setup/doctor)",
+      "state": "shipped",
+      "updated_at": "2026-02-18T09:32:30Z"
+    },
+    {
+      "id": "foolery-kxl1",
+      "title": "by default, hierarchical beats in beats view should be folded",
+      "state": "shipped",
+      "updated_at": "2026-02-18T09:15:17Z"
+    },
+    {
+      "id": "foolery-oxud",
+      "title": "bulk select Scene! should actually create a scene visible on the scenes screen",
+      "state": "shipped",
+      "updated_at": "2026-02-18T09:15:00Z"
+    },
+    {
+      "id": "foolery-w6b8",
+      "title": "fix hierarchy display on list and final cut views",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:52:53Z"
+    },
+    {
+      "id": "foolery-vw50",
+      "title": "Fix unbound GREEN variable in install.sh heredoc",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:35Z"
+    },
+    {
+      "id": "foolery-8eob",
+      "title": "Fix Codex CLI integration for Direct & Breakdown actions",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:31Z"
+    },
+    {
+      "id": "foolery-qgi5",
+      "title": "viewswitcher component hopping from left to right",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:28Z"
+    },
+    {
+      "id": "foolery-8r59",
+      "title": "Sort beats by priority then status in List/Final Cut",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:25Z"
+    },
+    {
+      "id": "foolery-hdtj",
+      "title": "make foolery doctor output more pleasant",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:17Z"
+    },
+    {
+      "id": "foolery-dnyl",
+      "title": "issue detail light box is too small for content",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:47:08Z"
+    },
+    {
+      "id": "foolery-wsk4",
+      "title": "Add button dynamically changes based on selected view",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:44:17Z"
+    },
+    {
+      "id": "foolery-jxog",
+      "title": "Add button dynamically changes action, text, icon, and tooltip based on selected view",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:44:06Z"
+    },
+    {
+      "id": "foolery-mec",
+      "title": "Breakdown Feature",
+      "state": "shipped",
+      "updated_at": "2026-02-18T04:41:25Z"
+    },
+    {
+      "id": "foolery-bjv",
+      "title": "visual consistency during bulk edit",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-ccu",
+      "title": "detail page clean up",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-cds",
+      "title": "Enable full Playwright MCP auto-accept for Codex and Claude user configs",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-cpcu",
+      "title": "when auto-refershing, if dolt is locked by another client, list screen shows big red error message",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-cvg",
+      "title": "streamline repo table view (/beads)",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-d45",
+      "title": "/beads : priority column should be before type and status columns",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-epa",
+      "title": "verify / reject",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-hbt",
+      "title": "Final Cut view",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-iki",
+      "title": "cmd shift R should not go to All Repositories",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-jln",
+      "title": "configurable paging",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-k18",
+      "title": "don't make 'all repositories' default state",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-k2n",
+      "title": "enhance repo engagement",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-myw",
+      "title": "remove delete option on bead detail page",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-nex",
+      "title": "verification stage beads at top of /beads table",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-pnk",
+      "title": "remove assignee column",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-smj",
+      "title": "remove \"Fooler\" header text from top left corner of /beads",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-ubaj",
+      "title": "swap 'direct' with 'scenes'",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-ue5",
+      "title": "copiable bead id",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-uqg",
+      "title": "Ignore .playwright-mcp directory in git",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-w8a",
+      "title": "Normalize stage label transitions for agent workflow",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:17Z"
+    },
+    {
+      "id": "foolery-094",
+      "title": "All Repositories - New Bead",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-0i68",
+      "title": "Redesign Beats detail view as dense lightbox",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-0sr",
+      "title": "Update AGENTS/CLAUDE policy for in_progress and worktrees",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-1iu",
+      "title": "remove 'close' button from top right of bead detail page",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-1ya",
+      "title": "add note functionality in detail page",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-1zh",
+      "title": "\"bulk edit\" should support 'Scene!'",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-22b",
+      "title": "remove unnecessary fields from bead creation",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-31f",
+      "title": "the blue dot next to the bead id in the terminal should blink when the terminal is running.",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-3jt",
+      "title": "table and detail pages should be moderately self updating",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-3of",
+      "title": "condense all components",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-4p1",
+      "title": "Implement option 1 command-style header layout",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-4vt",
+      "title": "Replace Foolery in top left with foolery_icon.png",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-5ws",
+      "title": "Status filter should show 'Ready' option",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-75n",
+      "title": "shift o hotkey to create notes",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-76t",
+      "title": "sub title info on /beads",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-79u",
+      "title": "make bead details editable on bead detail page",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-7axc",
+      "title": "Model selection menu for setup/agent-wizard",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-7gj",
+      "title": "search bar centered in top between logo and repo pull down",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-8ftr",
+      "title": "spacebar checks active row in list view",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-a0w",
+      "title": "bulk edit",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-ajb",
+      "title": "show hot key lightbox by default",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:31:15Z"
+    },
+    {
+      "id": "foolery-xccx",
+      "title": "log all agent interactions",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:15:56Z"
+    },
+    {
+      "id": "foolery-rdfu",
+      "title": "Claude Code opus in model detail bar of terminal should say the version number (4.6), not just the name.",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:15:54Z"
+    },
+    {
+      "id": "foolery-6ego",
+      "title": "Detail Page:  clean up",
+      "state": "shipped",
+      "updated_at": "2026-02-17T21:11:51Z"
+    },
+    {
+      "id": "foolery-2e2i",
+      "title": "on final cut or list view, clicking thumbs down or shift-v should open notes",
+      "state": "shipped",
+      "updated_at": "2026-02-17T16:44:58Z"
+    },
+    {
+      "id": "foolery-ydl1",
+      "title": "foolery doctor",
+      "state": "shipped",
+      "updated_at": "2026-02-17T16:25:27Z"
+    },
+    {
+      "id": "foolery-iein",
+      "title": "Scenes fine tuning.",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:50:08Z"
+    },
+    {
+      "id": "foolery-g45w",
+      "title": "clicking on the foolery icon should never change the repository",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:49:41Z"
+    },
+    {
+      "id": "foolery-e92j",
+      "title": "remove repo page - make list page default - repo registry in settings page",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:49:31Z"
+    },
+    {
+      "id": "foolery-cl8g",
+      "title": "search fails with long red error",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:47:53Z"
+    },
+    {
+      "id": "foolery-ozjw",
+      "title": "change page title to just \"Foolery\"",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:39:39Z"
+    },
+    {
+      "id": "foolery-9kll",
+      "title": "Wave whiplash-take: unblocked-p0",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:32:52Z"
+    },
+    {
+      "id": "foolery-gj7q",
+      "title": "Show agent info in terminal and Direct view",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:25:02Z"
+    },
+    {
+      "id": "foolery-frac",
+      "title": "OOM on gc",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:24:58Z"
+    },
+    {
+      "id": "foolery-bykz",
+      "title": "final cut badge should not clear, should always show items waiting for verification",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:23:07Z"
+    },
+    {
+      "id": "foolery-mg4s",
+      "title": "settings pane ux issues",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:22:43Z"
+    },
+    {
+      "id": "foolery-11cr",
+      "title": "list view: selecting item causes vertical jitter",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:08:54Z"
+    },
+    {
+      "id": "foolery-av6g",
+      "title": "switching from beats view to final cut and back causes vertical jitter in the table",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:05:35Z"
+    },
+    {
+      "id": "foolery-8czc",
+      "title": "Align agent instructions to disable default ship_with_review in foolery",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:04:21Z"
+    },
+    {
+      "id": "foolery-321t",
+      "title": "settings scan results overflows past right side of container",
+      "state": "shipped",
+      "updated_at": "2026-02-17T15:04:09Z"
+    },
+    {
+      "id": "foolery-qyey",
+      "title": "settings scan results should support 'add all' button",
+      "state": "shipped",
+      "updated_at": "2026-02-17T12:05:43Z"
+    },
+    {
+      "id": "foolery-hzii",
+      "title": "notifications",
+      "state": "shipped",
+      "updated_at": "2026-02-17T12:04:19Z"
+    },
+    {
+      "id": "foolery-b3v",
+      "title": "Fix AppHeader hydration mismatch from localStorage-backed store init",
+      "state": "shipped",
+      "updated_at": "2026-02-17T12:04:07Z"
+    },
+    {
+      "id": "foolery-e32l",
+      "title": "Improve release script UX with interactive version bumping",
+      "state": "shipped",
+      "updated_at": "2026-02-17T09:12:49Z"
+    },
+    {
+      "id": "foolery-l15m",
+      "title": "fix: bash 3.2 compatibility for foolery setup",
+      "state": "shipped",
+      "updated_at": "2026-02-17T09:12:45Z"
+    },
+    {
+      "id": "foolery-d61u",
+      "title": "list checkbox state not unique per repo",
+      "state": "shipped",
+      "updated_at": "2026-02-17T09:12:43Z"
+    },
+    {
+      "id": "foolery-sftb",
+      "title": "list checkbox state not mapped to item",
+      "state": "shipped",
+      "updated_at": "2026-02-17T09:12:42Z"
+    },
+    {
+      "id": "foolery-v1dg",
+      "title": "once agents are registered, the 'agent command' should be grayed out",
+      "state": "shipped",
+      "updated_at": "2026-02-17T09:12:29Z"
+    },
+    {
+      "id": "foolery-31ho",
+      "title": "install prompts for agent scan and register",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:57:17Z"
+    },
+    {
+      "id": "foolery-sbl2",
+      "title": "default status for list page should be Ready",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:57:13Z"
+    },
+    {
+      "id": "foolery-iw2e",
+      "title": "foolery setup: interactive post-install configuration for repos and agents",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:57:11Z"
+    },
+    {
+      "id": "foolery-50u7",
+      "title": "back button on detail page has broken navigation",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:56:59Z"
+    },
+    {
+      "id": "foolery-2xmh",
+      "title": "back button on detail page has broken navigation",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:56:45Z"
+    },
+    {
+      "id": "foolery-988k",
+      "title": "Exclude stage:verification beats from Ready view",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:13:48Z"
+    },
+    {
+      "id": "foolery-cxcv",
+      "title": "auto scan for repos during install",
+      "state": "shipped",
+      "updated_at": "2026-02-17T08:13:43Z"
+    },
+    {
+      "id": "foolery-8zu2",
+      "title": "repository flow is a dead end",
+      "state": "shipped",
+      "updated_at": "2026-02-16T21:47:16Z"
+    },
+    {
+      "id": "foolery-sgue",
+      "title": "Enhance settings",
+      "state": "shipped",
+      "updated_at": "2026-02-16T21:47:05Z"
+    },
+    {
+      "id": "foolery-l3fv",
+      "title": "Investigate false 'no beads found' in repo view",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:39:21Z"
+    },
+    {
+      "id": "foolery-mh2m",
+      "title": "Fix failing test suites",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:39:18Z"
+    },
+    {
+      "id": "foolery-en5d",
+      "title": "show the attempts: label in disabled label (no x)",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:35:30Z"
+    },
+    {
+      "id": "foolery-y97y",
+      "title": "foolery launcher syntax error on update",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:35:26Z"
+    },
+    {
+      "id": "foolery-3ji.1",
+      "title": "Package foolery into runnable release artifact",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:21:21Z"
+    },
+    {
+      "id": "foolery-3ji.3",
+      "title": "Document Homebrew and GitHub installation in README",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:21:21Z"
+    },
+    {
+      "id": "foolery-3zj",
+      "title": "settings module / view",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:21:21Z"
+    },
+    {
+      "id": "foolery-7zn",
+      "title": "Move repo/filter/page-size state from localStorage to URL params",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:21:21Z"
+    },
+    {
+      "id": "foolery-y5e",
+      "title": "remove prev/next zoom out/in buttons from Existing ORchestrations",
+      "state": "shipped",
+      "updated_at": "2026-02-16T19:21:21Z"
+    },
+    {
+      "id": "foolery-0ku8",
+      "title": "custom behavior for beats that are rolling/running",
+      "state": "shipped",
+      "updated_at": "2026-02-16T18:31:35Z"
+    },
+    {
+      "id": "foolery-jurb",
+      "title": "Add open command and update notice banner",
+      "state": "shipped",
+      "updated_at": "2026-02-16T16:57:41Z"
+    },
+    {
+      "id": "foolery-gcvf",
+      "title": "Add bun release wrapper for GitHub release publishing",
+      "state": "shipped",
+      "updated_at": "2026-02-16T15:09:17Z"
+    },
+    {
+      "id": "foolery-5hvk",
+      "title": "Scene mode should execute directly without planning handoff",
+      "state": "shipped",
+      "updated_at": "2026-02-16T15:09:00Z"
+    },
+    {
+      "id": "foolery-kxwv",
+      "title": "state corruption - shift o on mec opens 5hvk",
+      "state": "shipped",
+      "updated_at": "2026-02-16T15:07:11Z"
+    },
+    {
+      "id": "foolery-3ji.4.1",
+      "title": "Implement GitHub install script and local launcher",
+      "state": "shipped",
+      "updated_at": "2026-02-16T14:53:03Z"
+    },
+    {
+      "id": "foolery-bd8i",
+      "title": "replace orchestration waves with scenes",
+      "state": "shipped",
+      "updated_at": "2026-02-15T16:11:27Z"
+    },
+    {
+      "id": "foolery-s2vh",
+      "title": "Descriptive mouse overs",
+      "state": "shipped",
+      "updated_at": "2026-02-15T16:11:12Z"
+    },
+    {
+      "id": "foolery-ttx5",
+      "title": "rewrite README.md",
+      "state": "shipped",
+      "updated_at": "2026-02-15T16:10:40Z"
+    },
+    {
+      "id": "foolery-4fa",
+      "title": "Graceful transition when bead leaves filtered list after update",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:28:16Z"
+    },
+    {
+      "id": "foolery-0z0",
+      "title": "Wave hamill-prestige: implement-remaining-p0",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:28:08Z"
+    },
+    {
+      "id": "foolery-tgz",
+      "title": "changing filter shows keyboard shortcuts even if user explicitly turned them off",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:28:08Z"
+    },
+    {
+      "id": "foolery-ra5",
+      "title": "after selecting bead filter, focus should return to top row",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:27:58Z"
+    },
+    {
+      "id": "foolery-59o",
+      "title": "when process completes, flicker for the tab for 5 seconds and then close unless clicked on.",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:27:55Z"
+    },
+    {
+      "id": "foolery-0gz",
+      "title": "Wave ledger-goodfellas: verify-prior-fixes",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:22Z"
+    },
+    {
+      "id": "foolery-3no",
+      "title": "Rolling... with stop button table cell gets cut off",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:21Z"
+    },
+    {
+      "id": "foolery-fo1",
+      "title": "Prevent duplicate beat creation on repeated Done clicks",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:20Z"
+    },
+    {
+      "id": "foolery-i22",
+      "title": "don't show wave tags",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:13Z"
+    },
+    {
+      "id": "foolery-c47",
+      "title": "wave tree shows closed parents and omits wave id in title",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:08Z"
+    },
+    {
+      "id": "foolery-0j4",
+      "title": "Investigate and fix bead action latency (~10s)",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:21:01Z"
+    },
+    {
+      "id": "foolery-brt",
+      "title": "tab title blue dot in console should not keep flickering afte process is complete..",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:20:55Z"
+    },
+    {
+      "id": "foolery-hw7",
+      "title": "Wave pacino-prestige: UI polish & cleanup",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:11:37Z"
+    },
+    {
+      "id": "foolery-1ng",
+      "title": "Show initial Plan Waves prompt in orchestration console",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:03:08Z"
+    },
+    {
+      "id": "foolery-7u0",
+      "title": "Rewrite apply should auto-close emptied source wave parents",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:03:02Z"
+    },
+    {
+      "id": "foolery-z26",
+      "title": "\"Ready\" filter is wrong, is missing In Progress",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:02:53Z"
+    },
+    {
+      "id": "foolery-mr0",
+      "title": "wave view, child beats shouldn't show project prefix in front of beat id",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:01:04Z"
+    },
+    {
+      "id": "foolery-517",
+      "title": "keyboard shortcuts needs to be in 2 columns",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:00:49Z"
+    },
+    {
+      "id": "foolery-98w",
+      "title": "Remove legacy navigation from Scenes",
+      "state": "shipped",
+      "updated_at": "2026-02-15T07:00:47Z"
+    },
+    {
+      "id": "foolery-d6d",
+      "title": "Wave reeves-arrival: Bug fixes & stability",
+      "state": "shipped",
+      "updated_at": "2026-02-15T06:13:54Z"
+    },
+    {
+      "id": "foolery-w3r",
+      "title": "Add worktree dependency bootstrap guidance for agents",
+      "state": "shipped",
+      "updated_at": "2026-02-15T06:13:13Z"
+    },
+    {
+      "id": "foolery-4gp",
+      "title": "beat console/terminal should show first 40 characters of title after bead id",
+      "state": "shipped",
+      "updated_at": "2026-02-15T06:12:32Z"
+    },
+    {
+      "id": "foolery-b9r",
+      "title": "Wave winslet-gladiator: verify-in-progress",
+      "state": "shipped",
+      "updated_at": "2026-02-15T05:51:04Z"
+    },
+    {
+      "id": "foolery-cgc",
+      "title": "Wave redmayne-noir: hotkeys-filters-layout",
+      "state": "shipped",
+      "updated_at": "2026-02-15T05:51:04Z"
+    },
+    {
+      "id": "foolery-0gg",
+      "title": "Metaphor theming for orchestration view",
+      "state": "shipped",
+      "updated_at": "2026-02-15T05:32:23Z"
+    },
+    {
+      "id": "foolery-6qg",
+      "title": "Wave bardem-vertigo: P0 UI fixes & small features",
+      "state": "shipped",
+      "updated_at": "2026-02-14T19:01:48Z"
+    },
+    {
+      "id": "foolery-tu0",
+      "title": "after hitting shift-v on bead, the next item should be in focus",
+      "state": "shipped",
+      "updated_at": "2026-02-14T19:01:48Z"
+    },
+    {
+      "id": "foolery-fon",
+      "title": "shift-] and shift-[ should toggle between views",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:57:56Z"
+    },
+    {
+      "id": "foolery-6y6",
+      "title": "Wave theron-noir: branding-and-shortcuts",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:43:11Z"
+    },
+    {
+      "id": "foolery-j4z",
+      "title": "update keyboard shortcuts helper",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:43:05Z"
+    },
+    {
+      "id": "foolery-s2x",
+      "title": "introduce film metaphor",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:42:59Z"
+    },
+    {
+      "id": "foolery-glj",
+      "title": "replace ship with Take! and clapperboard icon",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:42:49Z"
+    },
+    {
+      "id": "foolery-pil",
+      "title": "regroom orchestration",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:42:45Z"
+    },
+    {
+      "id": "foolery-w5u",
+      "title": "Directory browser logic (src/lib/browse.ts)",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:00:34Z"
+    },
+    {
+      "id": "foolery-033",
+      "title": "looks like double output in the console",
+      "state": "shipped",
+      "updated_at": "2026-02-14T18:00:25Z"
+    },
+    {
+      "id": "foolery-dgx",
+      "title": "reload clears search filters, very annoying",
+      "state": "shipped",
+      "updated_at": "2026-02-14T17:41:50Z"
+    },
+    {
+      "id": "foolery-6m7",
+      "title": "shift-c should close focused bead in list view",
+      "state": "shipped",
+      "updated_at": "2026-02-14T17:41:41Z"
+    },
+    {
+      "id": "foolery-2eh",
+      "title": "in list view, child task overview under title is not aligned with the title",
+      "state": "shipped",
+      "updated_at": "2026-02-14T17:41:34Z"
+    },
+    {
+      "id": "foolery-shg",
+      "title": "rearrange orchestration page layout for summary, terminal, wave diagram, and applied section",
+      "state": "shipped",
+      "updated_at": "2026-02-14T17:32:23Z"
+    },
+    {
+      "id": "foolery-a5z",
+      "title": "add ship and wave follow-up prompts for merge+verification state",
+      "state": "shipped",
+      "updated_at": "2026-02-14T17:32:22Z"
+    },
+    {
+      "id": "foolery-l8n",
+      "title": "toggling between orchestrate and list throws away all the orchestration state",
+      "state": "shipped",
+      "updated_at": "2026-02-14T09:11:03Z"
+    },
+    {
+      "id": "foolery-td6",
+      "title": "Wave eastwood-uncut: Wave 2 epic kickoff",
+      "state": "shipped",
+      "updated_at": "2026-02-14T08:51:00Z"
+    },
+    {
+      "id": "foolery-5mt",
+      "title": "Wave hoffman-rocky: Hotkey features + unblock terminal/orchestration",
+      "state": "shipped",
+      "updated_at": "2026-02-14T08:50:38Z"
+    },
+    {
+      "id": "foolery-060",
+      "title": "Wave clooney-heat: Verify in-flight + quick UI fixes",
+      "state": "shipped",
+      "updated_at": "2026-02-14T08:49:22Z"
+    },
+    {
+      "id": "foolery-53d",
+      "title": "Wave mckellen-gladiator: Verify & fix in-flight P0s",
+      "state": "shipped",
+      "updated_at": "2026-02-14T06:53:27Z"
+    },
+    {
+      "id": "foolery-32r",
+      "title": "clicking thumbs down doesn't remove stage:verification label",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:37:50Z"
+    },
+    {
+      "id": "foolery-563",
+      "title": "create wave beads doesn't create relationships",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:36:19Z"
+    },
+    {
+      "id": "foolery-yp0",
+      "title": "error when accepting/rejecting verification in /beads",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:36:06Z"
+    },
+    {
+      "id": "foolery-wrb",
+      "title": "improved parsing and display of orchestration console",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:35:40Z"
+    },
+    {
+      "id": "foolery-cxc",
+      "title": "multi terminal support",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:21:18Z"
+    },
+    {
+      "id": "foolery-ez2",
+      "title": "Ship Now terminal: stream-json parsing + globalThis session sharing",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:20:51Z"
+    },
+    {
+      "id": "foolery-jac",
+      "title": "orchestration waves should flow nicely into \"trigger now\"",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:20:45Z"
+    },
+    {
+      "id": "foolery-a3b",
+      "title": "improved parsing and display of orchestration console",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:20:40Z"
+    },
+    {
+      "id": "foolery-11j",
+      "title": "console 'stop' button",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:13:27Z"
+    },
+    {
+      "id": "foolery-s3q",
+      "title": "ship vs. shipping states",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:13:26Z"
+    },
+    {
+      "id": "foolery-h9m",
+      "title": "remove the TERMINAL label from the terminal title bar",
+      "state": "shipped",
+      "updated_at": "2026-02-13T22:13:24Z"
+    },
+    {
+      "id": "foolery-mqv.2.6",
+      "title": "Orchestration v2 command center (Now/Next/Later + Ship Next)",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:44:47Z"
+    },
+    {
+      "id": "foolery-mqv.2.5",
+      "title": "Wave planner data model v2 (readiness + blockers + diagnostics)",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:44:30Z"
+    },
+    {
+      "id": "foolery-mqv.5",
+      "title": "Orchestration UX references and interaction spec",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:44:21Z"
+    },
+    {
+      "id": "foolery-mqv.1",
+      "title": "Ship Now - Embedded Terminal",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:44:19Z"
+    },
+    {
+      "id": "foolery-s9v",
+      "title": "console gets caught in infinite loop after task is finished",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:22:12Z"
+    },
+    {
+      "id": "foolery-fhc",
+      "title": "bead sort order",
+      "state": "shipped",
+      "updated_at": "2026-02-13T15:21:52Z"
+    },
+    {
+      "id": "foolery-1s9",
+      "title": "'All Statuses' does not show closed beads",
+      "state": "shipped",
+      "updated_at": "2026-02-13T14:09:51Z"
+    },
+    {
+      "id": "foolery-gps",
+      "title": "bead hierarch in list view is broken",
+      "state": "shipped",
+      "updated_at": "2026-02-13T14:01:31Z"
+    },
+    {
+      "id": "foolery-d2l",
+      "title": "lots of garbage in top light green component after wave building finishes",
+      "state": "shipped",
+      "updated_at": "2026-02-13T13:44:23Z"
+    },
+    {
+      "id": "foolery-z9y",
+      "title": "parse \"event\" and \"text\" and other keys in claude stream",
+      "state": "shipped",
+      "updated_at": "2026-02-13T13:34:58Z"
+    },
+    {
+      "id": "foolery-0in",
+      "title": "bead detail page should allow you to move it to another project",
+      "state": "shipped",
+      "updated_at": "2026-02-13T13:34:52Z"
+    },
+    {
+      "id": "foolery-f61",
+      "title": "console active status circle",
+      "state": "shipped",
+      "updated_at": "2026-02-13T10:25:51Z"
+    },
+    {
+      "id": "foolery-kri",
+      "title": "Figure out how to proxy AskUserQuestion in Ship Now mode",
+      "state": "shipped",
+      "updated_at": "2026-02-13T08:58:50Z"
+    },
+    {
+      "id": "foolery-hbf",
+      "title": "shift-r from /beads switches repos",
+      "state": "shipped",
+      "updated_at": "2026-02-13T08:58:47Z"
+    },
+    {
+      "id": "foolery-ejm",
+      "title": "move the new button directly under the repo pulldown",
+      "state": "shipped",
+      "updated_at": "2026-02-13T06:41:35Z"
+    },
+    {
+      "id": "foolery-edn",
+      "title": "'Add' label",
+      "state": "shipped",
+      "updated_at": "2026-02-13T06:41:31Z"
+    },
+    {
+      "id": "foolery-6xc",
+      "title": "only show pagination row if there are more beads",
+      "state": "shipped",
+      "updated_at": "2026-02-13T06:41:13Z"
+    },
+    {
+      "id": "foolery-083",
+      "title": "Fix: stream-json requires --verbose with --print in terminal-manager",
+      "state": "shipped",
+      "updated_at": "2026-02-13T06:41:08Z"
+    },
+    {
+      "id": "foolery-fij",
+      "title": "fix: status/label updates fail after switching active repo",
+      "state": "shipped",
+      "updated_at": "2026-02-13T06:08:49Z"
+    },
+    {
+      "id": "foolery-dhk",
+      "title": "text of the new button should be centered, not right aligned",
+      "state": "shipped",
+      "updated_at": "2026-02-12T17:51:17Z"
+    },
+    {
+      "id": "foolery-16e",
+      "title": "Registry persistence layer (src/lib/registry.ts)",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:03:15Z"
+    },
+    {
+      "id": "foolery-2vu",
+      "title": "Multi-repo bd.ts support",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:03:15Z"
+    },
+    {
+      "id": "foolery-6pi",
+      "title": "Repo switcher and page integration",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:03:15Z"
+    },
+    {
+      "id": "foolery-cnp",
+      "title": "Directory browser UI component",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:03:15Z"
+    },
+    {
+      "id": "foolery-fcr",
+      "title": "Client-side registry API and store",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:03:15Z"
+    },
+    {
+      "id": "foolery-hwj",
+      "title": "fix: thumbs down (reject) button broken — bd label add never implemented",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:02:43Z"
+    },
+    {
+      "id": "foolery-se1",
+      "title": "reject thumbs down should add labels",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:02:35Z"
+    },
+    {
+      "id": "foolery-bad",
+      "title": "h hotkey shows hotkey help lightbox",
+      "state": "shipped",
+      "updated_at": "2026-02-12T12:01:36Z"
+    },
+    {
+      "id": "foolery-26y",
+      "title": "labels can be removed",
+      "state": "shipped",
+      "updated_at": "2026-02-12T11:45:31Z"
+    },
+    {
+      "id": "foolery-vje",
+      "title": "the alignment of the /beads page is totally broken",
+      "state": "shipped",
+      "updated_at": "2026-02-12T11:45:15Z"
+    },
+    {
+      "id": "foolery-z5c",
+      "title": "limit summary section of title row",
+      "state": "shipped",
+      "updated_at": "2026-02-12T11:45:01Z"
+    },
+    {
+      "id": "foolery-m24",
+      "title": "Clicking bead in /beads shows bead not found",
+      "state": "shipped",
+      "updated_at": "2026-02-12T11:44:09Z"
+    },
+    {
+      "id": "foolery-ayw",
+      "title": "Repo registry screen component",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:37:38Z"
+    },
+    {
+      "id": "foolery-3pn",
+      "title": "create hotkey",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:14:33Z"
+    },
+    {
+      "id": "foolery-kzg",
+      "title": "shift-v and shift-f hotkeys",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:14:14Z"
+    },
+    {
+      "id": "foolery-kce",
+      "title": "make f logo 25% smaller",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:13:59Z"
+    },
+    {
+      "id": "foolery-nnw",
+      "title": "change search text",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:10:55Z"
+    },
+    {
+      "id": "foolery-i5f",
+      "title": "create new focus",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:10:51Z"
+    },
+    {
+      "id": "foolery-9j4",
+      "title": "add relationships in create and detail flows",
+      "state": "shipped",
+      "updated_at": "2026-02-12T10:10:43Z"
+    },
+    {
+      "id": "foolery-217",
+      "title": "search leads to dead-end navigation",
+      "state": "shipped",
+      "updated_at": "2026-02-12T06:47:23Z"
+    },
+    {
+      "id": "foolery-0xl",
+      "title": "button colors",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:17:30Z"
+    },
+    {
+      "id": "foolery-0dn",
+      "title": "table column widths jitter when cycling up/down",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:55Z"
+    },
+    {
+      "id": "foolery-090",
+      "title": "top align id column so the id doesn't move when cycle",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:41Z"
+    },
+    {
+      "id": "foolery-v3u",
+      "title": "reduce button and pulldown component internal padding",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:37Z"
+    },
+    {
+      "id": "foolery-6t1",
+      "title": "make repo pulldown and new button aligned horizontally on the right",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:31Z"
+    },
+    {
+      "id": "foolery-kyo",
+      "title": "slight filter pull downs to the right, next to the new button",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:29Z"
+    },
+    {
+      "id": "foolery-6tn",
+      "title": "realign logo and search bar",
+      "state": "shipped",
+      "updated_at": "2026-02-11T17:16:19Z"
+    },
+    {
+      "id": "foolery-ad6",
+      "title": "Investigate how application handles multiple open clients",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:22:36Z"
+    },
+    {
+      "id": "foolery-56x",
+      "title": "when create dialogue is open, up and down arrows still have focus on the underlying screen",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:22:13Z"
+    },
+    {
+      "id": "foolery-86h",
+      "title": "search should be better",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:20:03Z"
+    },
+    {
+      "id": "foolery-ary",
+      "title": "remove horizontal rule under logo",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:19:29Z"
+    },
+    {
+      "id": "foolery-6vh",
+      "title": "rename New Bead button to New",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:18:55Z"
+    },
+    {
+      "id": "foolery-eno",
+      "title": "enhance creation flow",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:18:53Z"
+    },
+    {
+      "id": "foolery-b1m",
+      "title": "condense table padding/spacing/margin",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:18:49Z"
+    },
+    {
+      "id": "foolery-4u9",
+      "title": "replace split pane with inline summary",
+      "state": "shipped",
+      "updated_at": "2026-02-11T12:16:24Z"
+    },
+    {
+      "id": "foolery-akj",
+      "title": "detail page overview section tightening",
+      "state": "shipped",
+      "updated_at": "2026-02-11T07:44:58Z"
+    },
+    {
+      "id": "foolery-dq2",
+      "title": "split pane",
+      "state": "shipped",
+      "updated_at": "2026-02-11T07:44:53Z"
+    },
+    {
+      "id": "foolery-4ue",
+      "title": "stricter clicking on table rows",
+      "state": "shipped",
+      "updated_at": "2026-02-11T07:43:56Z"
+    },
+    {
+      "id": "foolery-2j3",
+      "title": "remove id header",
+      "state": "shipped",
+      "updated_at": "2026-02-11T07:43:23Z"
+    },
+    {
+      "id": "foolery-yab",
+      "title": "edit within table in /beads",
+      "state": "shipped",
+      "updated_at": "2026-02-11T06:41:23Z"
+    },
+    {
+      "id": "foolery-ojo",
+      "title": "clean up the logo and make it bigger",
+      "state": "shipped",
+      "updated_at": "2026-02-11T06:35:04Z"
+    },
+    {
+      "id": "foolery-6p6",
+      "title": "hierarchical beads view in table",
+      "state": "shipped",
+      "updated_at": "2026-02-11T06:27:12Z"
+    },
+    {
+      "id": "foolery-d0l",
+      "title": "clicking reject thumbs down doesn't work",
+      "state": "shipped",
+      "updated_at": "2026-02-11T06:25:05Z"
+    },
+    {
+      "id": "foolery-ajv",
+      "title": "Fix BeadTypeBadge crash on unknown type",
+      "state": "shipped",
+      "updated_at": "2026-02-10T09:58:42Z"
+    },
+    {
+      "id": "foolery-g5g",
+      "title": "Fix Bun.spawn -> Node execFile in bd.ts",
+      "state": "shipped",
+      "updated_at": "2026-02-10T09:58:42Z"
+    }
+  ]
+}

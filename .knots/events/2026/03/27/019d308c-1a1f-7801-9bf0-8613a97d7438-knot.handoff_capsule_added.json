@@ -1,0 +1,15 @@
+{
+  "event_id": "019d308c-1a1f-7801-9bf0-8613a97d7438",
+  "occurred_at": "2026-03-27T18:26:21.343719Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. Reusing the launcher plus a detached supervisor/status layer is the right constraint-respecting design, and the plan covers the two hard parts of this feature: surviving the restart boundary and preventing unsafe overlapping/local-origin update requests.",
+    "datetime": "2026-03-27T18:26:21.343719Z",
+    "entry_id": "019d308c-1a1f-7801-9bf0-860c2d316952",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

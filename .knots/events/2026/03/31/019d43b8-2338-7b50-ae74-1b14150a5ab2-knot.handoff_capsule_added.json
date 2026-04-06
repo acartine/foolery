@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b8-2338-7b50-ae74-1b14150a5ab2",
+  "occurred_at": "2026-03-31T11:47:14.360787Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Implemented the Settings > Agents Gemini scan selector update in worktree /Users/cartine/foolery/.worktrees/foolery-38f3 on branch feature/gemini-scan-models. The Gemini static scan catalog now exposes exactly five model IDs: gemini-3.1-pro-preview, gemini-3-flash-preview, gemini-2.5-pro, gemini-2.5-flash, and gemini-2.5-flash-lite. Gemini import options now ignore out-of-set detected history models so the selector cannot show extra Gemini entries, and Gemini preview labels render as Gemini Pro 3.1 Preview and Gemini Flash 3 Preview. Validation completed in the worktree with bun run test src/lib/__tests__/settings-scan.test.ts, bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Commit pushed: ead1e657109c on origin/feature/gemini-scan-models.",
+    "datetime": "2026-03-31T11:47:14.360787Z",
+    "entry_id": "019d43b8-2338-7b50-ae74-1b0014c76ff8",
+    "model": "openrouter/minimax/minimax-m2.7",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

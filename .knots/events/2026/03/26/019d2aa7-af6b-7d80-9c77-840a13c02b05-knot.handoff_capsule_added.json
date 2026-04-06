@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa7-af6b-7d80-9c77-840a13c02b05",
+  "occurred_at": "2026-03-26T14:58:45.739356Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Merge commit fce29edec038 (feature commit e7613a5829d0) verified on origin/main. CI green (runs 23601158941, 23601158908). All 6 acceptance criteria met: title column removed, inline title row renders below metadata with truncation, hierarchy/badges preserved, summary panel unchanged. No invariants. Clean, well-scoped diff across 7 files.",
+    "datetime": "2026-03-26T14:58:45.739356Z",
+    "entry_id": "019d2aa7-af6b-7d80-9c77-83f0b45f94d6",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

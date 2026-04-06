@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d77-524b-7943-8e1e-a76a78576f7c",
+  "occurred_at": "2026-04-02T09:12:38.731913Z",
+  "knot_id": "foolery-5de9",
+  "type": "knot.created",
+  "data": {
+    "body": "the scroll pane doesn't honor the visible view, so it stopps scrolling as if the terminal (or even minimized terminal) is not there.  it should bbe smart enough to scroll up when the bottom of the screen is hidden",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Queue/Active screens:  Scrollpane doesn't allow scrolling all the way up when terminal is running, even when minimized",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

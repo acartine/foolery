@@ -1,0 +1,15 @@
+{
+  "event_id": "019d432b-fe34-7df1-b64b-8dafcd0bc43c",
+  "occurred_at": "2026-03-31T09:14:09.84484Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the history agent-label fix in worktree branch foolery-b45e. Response identity extraction now only trusts explicit response metadata/provider-model fields and no longer falls back to unrelated nested ids like message.id, so OpenRouter-backed responses preserve their provider/model label while sessions without response metadata keep the session-start agent label. Enabled unit Vitest discovery for .test.tsx files so the SessionCard render regression runs, and added parser coverage for both metadata override and no-metadata fallback. Also resolved existing BeatForm lint/compiler issues by replacing the draft ref/watch callback pattern with lazy draft state plus react-hook-form subscribe/useEffectEvent. Validation in /Users/cartine/foolery/.worktrees/foolery-b45e passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Commit: 8dfb44c27277 pushed to origin/foolery-b45e.",
+    "datetime": "2026-03-31T09:14:09.84484Z",
+    "entry_id": "019d432b-fe34-7df1-b64b-8d91dba4c6be",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

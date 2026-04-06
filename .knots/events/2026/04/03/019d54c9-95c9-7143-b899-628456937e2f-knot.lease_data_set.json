@@ -1,0 +1,19 @@
+{
+  "event_id": "019d54c9-95c9-7143-b899-628456937e2f",
+  "occurred_at": "2026-04-03T19:19:50.473245Z",
+  "knot_id": "foolery-0684",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "Codex",
+        "agent_type": "",
+        "model": "gpt",
+        "model_version": "5.4",
+        "provider": "Codex"
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1775238416915-49vtjy"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a8d-dae8-7461-becf-cfe9e53ee2ec",
+  "occurred_at": "2026-03-26T14:30:32.936528Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Removed the Type column from the Queues screen. Changed beat-columns.tsx to no longer splice typeColumn() into the columns array for the non-active (queues) view. Removed the unused typeColumn import. All quality gates pass (lint, typecheck, test, build). Branch: feat/remove-type-column, commit: 57ecb5e3763a.",
+    "datetime": "2026-03-26T14:30:32.936528Z",
+    "entry_id": "019d2a8d-dae8-7461-becf-cfde63100eee",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

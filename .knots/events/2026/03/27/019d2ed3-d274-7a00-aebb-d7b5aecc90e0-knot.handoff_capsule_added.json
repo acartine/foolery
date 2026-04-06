@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed3-d274-7a00-aebb-d7b5aecc90e0",
+  "occurred_at": "2026-03-27T10:25:27.156121Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Verified align-top on TableCell is root cause; ad hoc profile/owner pills confirmed inconsistent with Badge height. Secondary colSpan rows unaffected by align-middle change. No invariant violations. Plan is complete, correct, and minimal-risk.",
+    "datetime": "2026-03-27T10:25:27.156121Z",
+    "entry_id": "019d2ed3-d274-7a00-aebb-d7a0e7bf9999",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

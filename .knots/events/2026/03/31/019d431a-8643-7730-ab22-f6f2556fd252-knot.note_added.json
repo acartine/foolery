@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431a-8643-7730-ab22-f6f2556fd252",
+  "occurred_at": "2026-03-31T08:55:05.02702Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Revised implementation plan:\n1. Update `src/components/lease-audit-helpers.ts` so `buildLeaderboard` applies a single qualification rule per step before ranking: keep only agent rows with at least 10 completed attempts and success rate strictly greater than 25%.\n2. Compute every leaderboard-visible field from the qualified set only, not the full step stats. That includes the ranked winner/runner-up list, the per-step mean used for `margin`, and `totalN`, so excluded low-signal agents cannot still influence displayed output.\n3. Preserve existing ordering/tie-break behavior among qualified entries: sort by success rate descending, then completed-attempt count descending.\n4. Skip a step entirely when no qualified agents remain after filtering.\n5. Extend `src/components/__tests__/lease-audit-view-helpers.test.ts` with regression coverage for: a mixed-step case where an excluded low-signal agent would otherwise skew `margin` and `totalN`; exclusion of entries with fewer than 10 attempts; exclusion of entries with success rate at or below 25%; and omission of the step when all agents are filtered out.\n6. Validation for implementation should run the focused lease-audit helper test file first, then the broader repo quality gates if the workflow later authorizes implementation.",
+    "datetime": "2026-03-31T08:55:05.02702Z",
+    "entry_id": "019d431a-8643-7730-ab22-f6eccec20898",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

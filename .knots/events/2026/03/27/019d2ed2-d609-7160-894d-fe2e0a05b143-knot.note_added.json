@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed2-d609-7160-894d-fe2e0a05b143",
+  "occurred_at": "2026-03-27T10:24:22.537931Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n1. Reuse the existing update action in src/components/version-badge.tsx, which currently copies the command foolery update to the clipboard.\n2. Extract that update trigger into a shared helper or small hook so the version badge and the header banner call the same behavior.\n3. Update src/components/app-header-parts.tsx and related header wiring in src/components/app-header.tsx or src/components/app-header-hooks.ts so the banner shows a visible link or button only when updateAvailable data exists, while preserving dismiss behavior.\n4. Add focused tests around the shared update trigger and the banner action rendering and click path, while keeping coverage for the no banner and no update cases.\n5. Risk is low to medium. Main checks are keeping clipboard access inside a client event handler and preventing the banner and popover update flows from drifting.",
+    "datetime": "2026-03-27T10:24:22.537931Z",
+    "entry_id": "019d2ed2-d609-7160-894d-fe15dd012338",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

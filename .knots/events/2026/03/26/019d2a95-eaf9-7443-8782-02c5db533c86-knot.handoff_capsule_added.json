@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a95-eaf9-7443-8782-02c5db533c86",
+  "occurred_at": "2026-03-26T14:39:21.337182Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan attached. Implementation should remove the shared title column, extract the existing hierarchical title UI into a reusable inline block, render it as a compact single-line band beneath metadata cells in both Queues and Active, and adjust summary-row colSpan/padding so focus and hover-expansion behavior remain unchanged. Key files: `src/components/beat-columns.tsx`, `src/components/beat-column-defs.tsx`, `src/components/beat-column-helpers.tsx`, `src/components/beat-table-content.tsx`, plus table stories/tests and full quality gates.",
+    "datetime": "2026-03-26T14:39:21.337182Z",
+    "entry_id": "019d2a95-eaf9-7443-8782-02bd10e5bcbd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

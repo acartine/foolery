@@ -1,0 +1,21 @@
+{
+  "event_id": "019d42e0-913e-7b90-b074-d8cd4f8c5ea6",
+  "occurred_at": "2026-03-31T07:51:46.740559Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-20ee",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Claim Loop:  Rotate through available models after failures",
+    "type": "work",
+    "updated_at": "2026-03-31T07:51:46.740559Z",
+    "workflow_id": "compatibility"
+  }
+}

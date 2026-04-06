@@ -1,0 +1,15 @@
+{
+  "event_id": "019d30b2-97af-7312-9125-c9d2ae8de8f0",
+  "occurred_at": "2026-03-27T19:08:23.855044Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Fix 4 functions that split on first hyphen to use last hyphen instead, aligning with the already-correct extractBeatPrefix. Files: beat-navigation.ts, beat-display.ts, terminal-tab-id.ts, agent-history-utils.tsx. Low risk — single-hyphen IDs produce identical results with lastIndexOf. Tests need multi-hyphen cases added.",
+    "datetime": "2026-03-27T19:08:23.855044Z",
+    "entry_id": "019d30b2-97af-7312-9125-c9c6ec0de20c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

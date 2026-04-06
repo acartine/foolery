@@ -1,0 +1,10 @@
+{
+  "event_id": "019d495f-c6f3-7341-9974-b7370628af11",
+  "occurred_at": "2026-04-01T14:08:26.867869Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "user initiated beat creation and update events should invalidate queue and active screens after 1 second",
+    "to": "Reduce beat update latency to 1 second on user-initiated creation and state changes"
+  }
+}

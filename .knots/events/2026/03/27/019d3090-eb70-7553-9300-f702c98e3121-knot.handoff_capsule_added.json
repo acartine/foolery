@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3090-eb70-7553-9300-f702c98e3121",
+  "occurred_at": "2026-03-27T18:31:37.072754Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. The branch introduces a launcher-backed backend update API, persists status across restart, rewires the UI away from clipboard-only behavior, and includes targeted route/helper/client tests with all gates green. No violations of the knot description were found.",
+    "datetime": "2026-03-27T18:31:37.072754Z",
+    "entry_id": "019d3090-eb70-7553-9300-f6fcec3ead6f",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

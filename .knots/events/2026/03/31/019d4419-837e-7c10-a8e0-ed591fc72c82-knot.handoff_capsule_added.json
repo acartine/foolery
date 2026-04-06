@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4419-837e-7c10-a8e0-ed591fc72c82",
+  "occurred_at": "2026-03-31T13:33:35.99831Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Rebased foolery-f3eb-loading-feedback on main (53f9867f), fast-forward merged to main. New commits: dd27ece5 (Show loading feedback on repo switch) and a4e13b1f (Clear stale repo data during repo switches). Pushed to origin/main. CI green on a4e13b1f.",
+    "datetime": "2026-03-31T13:33:35.99831Z",
+    "entry_id": "019d4419-837e-7c10-a8e0-ed4fac5c9f86",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

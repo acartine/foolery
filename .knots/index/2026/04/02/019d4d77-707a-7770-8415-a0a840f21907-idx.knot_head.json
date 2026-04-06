@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d77-707a-7770-8415-a0a840f21907",
+  "occurred_at": "2026-04-02T09:12:46.437739Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5de9",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Fix Queue/Active scroll pane clamping when terminal is running or minimized",
+    "type": "work",
+    "updated_at": "2026-04-02T09:12:46.437739Z",
+    "workflow_id": "compatibility"
+  }
+}

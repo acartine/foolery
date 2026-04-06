@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ff-0dba-77d3-a325-7f189caa9a37",
+  "occurred_at": "2026-03-31T08:25:04.698123Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review REJECTED: Implementation commit 598b787ed33e (Rotate take-loop agent pools across failures) is NOT on main. It exists only on branch beat/foolery-20ee. The prior shipment step incorrectly claimed success by referencing commit 32fd3e5f (Merge scope refinement worker), which is an unrelated pre-existing commit. The implementation must be merged to main and pushed to origin before shipment can be verified.",
+    "datetime": "2026-03-31T08:25:04.698123Z",
+    "entry_id": "019d42ff-0dba-77d3-a325-7f0f0fa4653c",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

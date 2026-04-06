@@ -1,0 +1,9 @@
+{
+  "event_id": "019d5487-fe6d-7282-ab8c-1fe381b602cf",
+  "occurred_at": "2026-04-03T18:08:11.885149Z",
+  "knot_id": "foolery-29fa",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-copilot-interactive-session"
+  }
+}

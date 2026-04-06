@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa7-eb57-78c0-864f-ec87a090ed94",
+  "occurred_at": "2026-03-26T14:59:01.079629Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. Acceptance requires the UI to display an action to update now when a newer version is available, but src/components/version-badge.tsx:42-47 renders a non-interactive span with 'Update now to v{result.latestVersion}' and provides no button, link, or handler to perform an update. 2. Test coverage does not verify the required behavior. src/components/__tests__/version-badge.test.ts only checks server-rendered static markup and never exercises clicking the pill, fetching /api/version?force=1, the update-available branch, or the 'Latest version installed' branch.",
+    "datetime": "2026-03-26T14:59:01.079629Z",
+    "entry_id": "019d2aa7-eb57-78c0-864f-ec73c810b844",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

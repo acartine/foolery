@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b6-beda-7613-9a5b-739079f1362c",
+  "occurred_at": "2026-03-31T11:45:43.130279Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Planning complete. Recommended implementation is to add a persisted boolean settings field for terminal light theme, expose it through one shared client preference hook backed by `/api/settings`, and thread that hook into three surfaces: Terminal header, History Debug header, and Settings. Update both xterm theme definitions plus the surrounding terminal chrome classes so the UI switches immediately in both terminal views. Tests should cover settings round-trip/merge behavior, shared control synchronization, and revised history terminal palette contracts. Main risk: do not rely on the Settings sheet's deferred Save flow for this preference or the header toggles and Settings UI will drift.",
+    "datetime": "2026-03-31T11:45:43.130279Z",
+    "entry_id": "019d43b6-beda-7613-9a5b-7382120b23d6",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

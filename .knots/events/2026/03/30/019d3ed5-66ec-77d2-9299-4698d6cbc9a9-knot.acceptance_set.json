@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3ed5-66ec-77d2-9299-4698d6cbc9a9",
+  "occurred_at": "2026-03-30T13:01:06.156636Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- [ ] Per-row 'Add' button is removed from `ScannedAgentRow`.\n- [ ] 'registered' Badge is removed from `ScannedAgentRow`.\n- [ ] 'Add All' button is removed from `ScannedAgentsList`.\n- [ ] Each CLI-type agent row displays the full binary path (e.g. `/usr/local/bin/claude`) below the agent name.\n- [ ] All UI references to 'OpenAI' read 'Codex'; `PROVIDER_LABELS.openai` updated to `'Codex'`; detection logic in `agent-identity.ts` returns the updated provider id.\n- [ ] The lowercase `agent.id` text preceding the model dropdown in `renderOptionSelector` is removed.\n- [ ] Model dropdown is converted to a multi-select; users can choose more than one model per agent.\n- [ ] Selected models render as pill badges to the right of the agent row (occupying the former Add/registered area).\n- [ ] Add button (section-level) uses dark-green styling (`variant=\"success\"` / emerald-600).\n- [ ] Scan button uses light-green styling consistent with the 'Create More' button.\n- [ ] Existing lint, typecheck, and tests pass (`bun run lint`, `bunx tsc --noEmit`, `bun run test`)."
+  }
+}

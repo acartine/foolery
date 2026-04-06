@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4486-384a-7770-8487-035dceb7245c",
+  "occurred_at": "2026-03-31T15:32:20.170507Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment issue: implementation commits f0ec2a34 (fix: always fetch backend sessions on rehydration for cross-browser sync) and 5dad96ce (test: validate terminal rehydration across browser instances) are on worktree-foolery-7e6d-terminal-rehydration branch but were never merged to main/origin/main. Shipment must merge the worktree branch to main before shipment_review can proceed.",
+    "datetime": "2026-03-31T15:32:20.170507Z",
+    "entry_id": "019d4486-384a-7770-8487-034a47931ccc",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

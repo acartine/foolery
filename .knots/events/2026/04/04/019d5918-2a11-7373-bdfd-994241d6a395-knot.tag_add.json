@@ -1,0 +1,9 @@
+{
+  "event_id": "019d5918-2a11-7373-bdfd-994241d6a395",
+  "occurred_at": "2026-04-04T15:24:09.105548Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-gemini-interactive-54a2"
+  }
+}

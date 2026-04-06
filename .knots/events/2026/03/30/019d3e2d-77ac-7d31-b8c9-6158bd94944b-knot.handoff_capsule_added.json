@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e2d-77ac-7d31-b8c9-6158bd94944b",
+  "occurred_at": "2026-03-30T09:57:40.396768Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved. Verified src/components/settings-agents-scanned.tsx adds a custom cmdk filter that performs case-insensitive substring matching across option ids and provider/model keywords, satisfying the required partial-match behavior and clearing behavior. Verified unit coverage in src/components/__tests__/settings-agents-scanned.test.ts for value matches, keyword matches, no-match behavior, and cleared-search visibility. Sanity gates passed in the implementation worktree: bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-30T09:57:29Z",
+    "entry_id": "019d3e2d-77ac-7d31-b8c9-6141b0531389",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

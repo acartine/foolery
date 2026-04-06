@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4315-1892-7861-8703-dd5fcd5970e6",
+  "occurred_at": "2026-03-31T08:49:09.266423Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Settings: Agents: OpenCode: model pulldown truncates model names",
+    "to": "Settings > Agents: Fix truncated OpenCode model names in dropdown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3efd-0ae1-71c2-bd32-73d1190fa286",
+  "occurred_at": "2026-03-30T13:44:24.033826Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review requested changes.\n\nViolations:\n1. Selected-model state can diverge from actual registration state. In src/components/settings-agents-section.tsx:62-77, the row is marked selected before handleAddScannedOption/addAgent succeeds, and there is no rollback on failure. With the per-row Add button and registered badge removed, that false-positive selection is now the only visible import state.\n2. Required behavior is not covered by tests. src/components/__tests__/settings-agents-scanned.test.ts:1-45 covers only filterSearchableOption and does not exercise the new multi-select combobox, pill rendering, removed scanned-row actions, CLI path display, or button styling/import behavior.\n\nSanity gates on an isolated branch archive passed: bun install --frozen-lockfile, bun run lint (1 pre-existing warning only), bunx tsc --noEmit, bun run test.",
+    "datetime": "2026-03-30T13:44:24.033826Z",
+    "entry_id": "019d3efd-0ae1-71c2-bd32-73c3833ad588",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

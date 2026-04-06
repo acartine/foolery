@@ -1,0 +1,15 @@
+{
+  "event_id": "019d449c-ff09-7330-90e9-8f78575b1823",
+  "occurred_at": "2026-03-31T15:57:12.840954Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review findings: 1. The leaderboard threshold logic in src/components/lease-audit-helpers.ts satisfies the requested behavior by filtering each per-step agent entry to at least 10 completed attempts and success rate greater than 25%, then computing ranked entries, mean/margin, and totalN from only that qualified set. 2. Regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts covers under-10 exclusion, 25%-or-lower exclusion, qualified-only margin/totalN, runner-up filtering, and omission when no qualified agents remain; the focused test file passes (33 tests). 3. Approval is blocked because the sanity gate 'bunx tsc --noEmit' fails outside this change at .next/types/validator.ts:394 with TS2344: route '/api/test/terminal-fixture' does not satisfy AppRouteHandlerRoutes. Returning to ready_for_implementation until the required typecheck gate passes.",
+    "datetime": "2026-03-31T15:57:12.840954Z",
+    "entry_id": "019d449c-ff09-7330-90e9-8f656f63af7b",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d308b-f685-7e73-9e02-b672a5f6bea5",
+  "occurred_at": "2026-03-27T18:26:12.229257Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan\n- Replace the clipboard-only client helper with a small client state machine that talks to a new backend update API instead of writing `foolery update` to the clipboard.\n- Add a server-only update orchestration module that resolves the installed launcher path, guards against concurrent runs, persists operation status to disk, and spawns a detached supervisor command so the request can return before the current Next.js server stops.\n- Keep the launcher as the single source of truth for lifecycle behavior. The backend should invoke the existing launcher with a command sequence equivalent to `foolery update` followed by `foolery restart`, rather than re-implementing install/start/stop logic in app code.\n- Expose a route pair under `src/app/api/` such as `POST /api/app-update` to start the operation and `GET /api/app-update` to read the persisted status. Persist status outside process memory so the UI can survive the restart boundary.\n- Update the badge/banner CTA and `useVersionUpdateAction` consumers to surface `idle`, `updating`, `restarting`, `failed`, and `completed` states. The UX should tolerate the temporary disconnect during restart and still offer a manual fallback if automation fails.\n- Add server tests that mock `child_process` and filesystem state for launcher discovery, in-progress guardrails, success/failure transitions, and route responses. Add client tests for the new CTA states and polling behavior where practical.\n\nSuggested files\n- `src/components/version-update-action.ts`\n- `src/components/version-badge.tsx`\n- `src/components/app-header.tsx` / `src/components/app-header-parts.tsx` as needed for status wiring\n- new server helper under `src/lib/` for launcher resolution + update status persistence\n- new API route under `src/app/api/`\n- tests near the new helper/route plus existing version-update-action tests\n\nComplexity / risks\n- Medium/high complexity because the server must hand off update/restart to a detached process and then disappear cleanly.\n- Main risks: launcher-path discovery, overlapping update attempts, stale status after crashes, and accidental exposure of a local mutating endpoint. The route should be POST-only for mutation and reject non-local/origin-mismatched callers.\n- Validation should include `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` after implementation.",
+    "datetime": "2026-03-27T18:26:12.229257Z",
+    "entry_id": "019d308b-f685-7e73-9e02-b66fcaeb6ec3",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

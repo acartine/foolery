@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa6-89ec-7542-9ddc-2ca60a8d9782",
+  "occurred_at": "2026-03-26T14:57:30.604624Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipped on main via merge commit fce29edec038. Pushed to origin/main and verified remote GitHub Actions runs 23601158941 (CI) and 23601158908 (Coverage Badge) completed successfully for this commit. Scope remains limited to inline title rendering in Queues and Active tables plus associated layout test updates.",
+    "datetime": "2026-03-26T14:57:30.604624Z",
+    "entry_id": "019d2aa6-89ec-7542-9ddc-2c9e70064dc5",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

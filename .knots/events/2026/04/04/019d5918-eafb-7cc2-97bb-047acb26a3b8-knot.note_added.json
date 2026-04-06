@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5918-eafb-7cc2-97bb-047acb26a3b8",
+  "occurred_at": "2026-04-04T15:24:58.491922Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: worktree-gemini-interactive-54a2. Implements interactive Gemini session support via shared session runtime with stdin-stream-json transport, --sandbox mode, NDJSON user_turn messages, status-result detection, 30s watchdog, and per-turn text accumulator reset.",
+    "datetime": "2026-04-04T15:24:58.491922Z",
+    "entry_id": "019d5918-eafb-7cc2-97bb-046ba2671781",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

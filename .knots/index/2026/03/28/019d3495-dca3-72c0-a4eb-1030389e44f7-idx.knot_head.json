@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3495-dca3-72c0-a4eb-1030389e44f7",
+  "occurred_at": "2026-03-28T13:15:29.822129Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ab20",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Create New:  Loses all data if user accidently hits escape, x, or outside window, or reloads",
+    "type": "work",
+    "updated_at": "2026-03-28T13:15:29.822129Z",
+    "workflow_id": "compatibility"
+  }
+}

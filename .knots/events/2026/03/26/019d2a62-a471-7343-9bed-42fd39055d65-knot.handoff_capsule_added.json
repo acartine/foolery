@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a62-a471-7343-9bed-42fd39055d65",
+  "occurred_at": "2026-03-26T13:43:20.944948Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the approved printf fallback fix in scripts/setup.sh and scripts/agent-wizard.sh by changing prompt icon output from printf '->' to printf '%s' '->', which prevents bash from treating the arrow as an option. Validation in worktree /private/tmp/foolery-9df0: bun install --frozen-lockfile; bash -n scripts/setup.sh; bash -n scripts/agent-wizard.sh; rg \"printf '\\\\-\" scripts (no matches); bun run lint (pre-existing warnings only, 0 errors); bunx tsc --noEmit; bun run test; bun run build. Branch: feat/foolery-9df0. Commit: 491c740c0829.",
+    "datetime": "2026-03-26T13:43:20.944948Z",
+    "entry_id": "019d2a62-a471-7343-9bed-42e0d5e83477",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

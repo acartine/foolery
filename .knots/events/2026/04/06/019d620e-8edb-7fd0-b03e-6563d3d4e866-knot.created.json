@@ -1,0 +1,17 @@
+{
+  "event_id": "019d620e-8edb-7fd0-b03e-6563d3d4e866",
+  "occurred_at": "2026-04-06T09:10:14.491516Z",
+  "knot_id": "foolery-bf85",
+  "type": "knot.created",
+  "data": {
+    "body": "## Problem\n\n`beats-multi-repo.ts:loadFreshAggregate()` uses `Promise.all()` to fetch all registered repos in parallel, but returns nothing until every repo has responded. With N repos where one is slow (cold cache, large dataset, network latency), the user stares at an empty screen for the duration of the slowest backend.\n\n## Proposed Fix\n\nReplace the all-or-nothing aggregation with incremental streaming:\n\n1. **API route (`src/app/api/beats/route.ts`)**: When `scope=all`, switch from `NextResponse.json()` to a streaming response (SSE or NDJSON). Each repo's results are sent as a chunk the moment they resolve.\n\n2. **`beats-multi-repo.ts`**: Replace `Promise.all()` with `Promise.allSettled()` + per-repo callback pattern, or use an async iterator that yields `{ repo, beats }` tuples as each repo completes.\n\n3. **Client query hook (`use-beats-query.ts`)**: Consume the streaming response and merge chunks into the TanStack Query cache incrementally. Each chunk appends to the existing data rather than replacing it.\n\n4. **Cache key stability**: Ensure TanStack Query doesn't thrash — the query key stays stable while chunks arrive, and `placeholderData` or optimistic updates keep previously-loaded repos visible during refresh.\n\n## Key Files\n- `src/lib/beats-multi-repo.ts` — core aggregation logic\n- `src/app/api/beats/route.ts` — API response format\n- `src/app/beats/use-beats-query.ts` — client consumption\n- `src/lib/api.ts` — `fetchBeatsForScope()` client fetch\n\n## Constraints\n- Must preserve the `_degraded` partial-failure semantics\n- Must not break single-repo mode (only applies when scope=all)\n- Consider back-pressure if a repo returns thousands of beats\n- LRU cache (5s TTL) should still work for repeat loads",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Stream multi-repo beat results incrementally as each repo responds",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

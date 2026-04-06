@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f6-e11f-7e31-a1a8-b9c574b6f193",
+  "occurred_at": "2026-03-31T08:16:08.991443Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review APPROVED. Verified both commits on main: ddbde9dda1cb (scrollbar-gutter: stable in globals.css) and 1ad707b8a930 (constrain retake row title width in retake-row-parts.tsx). CI green on main (32fd3e5f). Quality gates pass: lint 0 errors, typecheck clean, 2365/2365 tests pass. Commit tags already present on knot. No invariants defined. No regressions detected.",
+    "datetime": "2026-03-31T08:16:08.991443Z",
+    "entry_id": "019d42f6-e11f-7e31-a1a8-b9bde4759bea",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

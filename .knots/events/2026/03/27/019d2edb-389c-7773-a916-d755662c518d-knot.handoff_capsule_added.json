@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2edb-389c-7773-a916-d755662c518d",
+  "occurred_at": "2026-03-27T10:33:32.060016Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Moved the divider line in beat table rows from between the data columns and the title row to below the title/tags row. In BeatTableRow, added border-b-0 to Row 1 (data columns) and removed border-b-0 from Row 2 (title + InlineTitleContent). All quality gates pass. Commit b857254a on main.",
+    "datetime": "2026-03-27T10:33:32.060016Z",
+    "entry_id": "019d2edb-389c-7773-a916-d743612ebea4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

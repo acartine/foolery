@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4313-1635-70a1-ad33-0e647eb4f58a",
+  "occurred_at": "2026-03-31T08:46:57.589093Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.title_set",
+  "data": {
+    "from": "History Screen: Wrong Agent displayed",
+    "to": "History Screen Shows Incorrect Agent for Logged Model"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3088-ab94-7b73-a0e8-0be733dfe8a5",
+  "occurred_at": "2026-03-27T18:22:36.436317Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented display-only version normalization on branch feat/foolery-4c96-version-normalize. Added `src/lib/version-display.ts`, updated the version badge/banner to render a single visible `v` prefix for both prefixed and unprefixed release tags, and added regression coverage for the update popover and banner rendering. Validation passed: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.",
+    "datetime": "2026-03-27T18:22:36.436317Z",
+    "entry_id": "019d3088-ab94-7b73-a0e8-0bdf477da419",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

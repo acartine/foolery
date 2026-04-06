@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d1-c27a-7a11-96d1-7d44a65dda25",
+  "occurred_at": "2026-04-03T05:29:54.554244Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "# Implementation Plan: Acceptance Criteria Column\n\n## Analysis\nThe active items overview table renders columns via getBeatColumns() in beat-columns.tsx. Current active-view column order: select, id, priority, profile, ownerType, state, agent columns. The Beat type already has an acceptance?: string field (types.ts:68).\n\n## Steps\n1. Define acceptanceColumn() in beat-column-defs.tsx — header \"Acceptance criteria\", accessor: acceptance, truncated text, ~20-25% width\n2. Export and import in beat-columns.tsx\n3. Insert at position index 2 (after select + id) in getBeatColumns()\n4. Run lint, typecheck, build to verify\n\n## Complexity: Low\n## Risks: Table crowding on small viewports (mitigated by truncation)\n## Test Strategy: Playwright or manual column position verification",
+    "datetime": "2026-04-03T05:29:54.554244Z",
+    "entry_id": "019d51d1-c27a-7a11-96d1-7d3255ce8bc0",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "1.0"
+  }
+}

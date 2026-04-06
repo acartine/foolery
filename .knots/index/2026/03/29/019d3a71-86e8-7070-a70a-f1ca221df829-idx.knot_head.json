@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3a71-86e8-7070-a70a-f1ca221df829",
+  "occurred_at": "2026-03-29T16:33:31.880977Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-aa22",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment",
+    "terminal": false,
+    "title": "web ui diagnostics baseline",
+    "type": "work",
+    "updated_at": "2026-03-29T16:33:31.880977Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3a71-7bb8-7833-9cad-ffacdf02771c"
+  }
+}

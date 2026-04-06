@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5490-f670-7aa0-b815-8524ff8a4eab",
+  "occurred_at": "2026-04-03T18:17:59.664409Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: feat/foolery-c198-copilot-interactive-session\nCommits: fbc53adf, b1dc4e76\nSummary: Copilot now uses the shared interactive session runtime with session-mode transport, normalized result/session events, shared follow-up/abort semantics, and a follow-up watchdog reset fix for hung turns.\nValidation: bun run lint (existing warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-03T18:17:59.664409Z",
+    "entry_id": "019d5490-f670-7aa0-b815-851767bd144d",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "codex-cli"
+  }
+}

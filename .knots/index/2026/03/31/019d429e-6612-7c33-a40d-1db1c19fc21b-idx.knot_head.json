@@ -1,0 +1,21 @@
+{
+  "event_id": "019d429e-6612-7c33-a40d-1db1c19fc21b",
+  "occurred_at": "2026-03-31T06:39:30.311803Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b5c5",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "settings: agents: scan: pulldowns for claude, codex, gemini are utterly broken",
+    "type": "work",
+    "updated_at": "2026-03-31T06:39:30.311803Z",
+    "workflow_id": "compatibility"
+  }
+}

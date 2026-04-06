@@ -1,0 +1,9 @@
+{
+  "event_id": "019d495f-c6f3-7341-9974-b75c73f70958",
+  "occurred_at": "2026-04-01T14:08:26.867869Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. When user creates a new beat: queue and active screens display changes within 1 second (verify with Chrome DevTools Network tab or Playwright network monitoring)\n2. When user modifies beat state/attributes: queue and active screens update within 1 second\n3. Non-user-initiated events (e.g., background syncs) still follow the 10-second polling interval\n4. Use Playwright to write an automated test that: creates/updates a beat, monitors the fetch/update event, and asserts the refresh completes within 1 second\n5. Verify in browser DevTools that no unnecessary refreshes are triggered by other events"
+  }
+}

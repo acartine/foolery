@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ed8-d0af-7830-9893-d43ae9679110",
+  "occurred_at": "2026-03-30T13:04:49.839885Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented the Dispatch > Advanced pool-row fix on branch feat/foolery-7a57. AgentDisplayLabel now wraps multi-pill content within the content-sized label column, which prevents pill overflow from colliding with the adjacent numeric summary in multi-pill rows. Added a regression test covering the wrapping/content-sizing contract. Validation: bun run test -- src/lib/__tests__/settings-pools-layout.test.ts, bun run test, bunx tsc --noEmit, bun run build. bun run lint completed with one pre-existing warning in src/components/beat-form.tsx from react-hooks/incompatible-library.",
+    "datetime": "2026-03-30T13:04:49.839885Z",
+    "entry_id": "019d3ed8-d0af-7830-9893-d421121b08a4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

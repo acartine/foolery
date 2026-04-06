@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b9-2d92-7300-bf77-48dc4d149e48",
+  "occurred_at": "2026-04-01T15:46:05.842199Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: commits 808a123557cd and d661bd7e6a7b exist on local main but have not been pushed to origin/main (local is 2 ahead of remote). CI has not run on the merged state. Cannot approve shipment review until code is live on remote main.",
+    "datetime": "2026-04-01T15:46:05.842199Z",
+    "entry_id": "019d49b9-2d92-7300-bf77-48c038f7bccf",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

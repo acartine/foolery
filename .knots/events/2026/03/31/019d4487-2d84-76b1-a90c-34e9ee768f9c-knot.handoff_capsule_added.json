@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4487-2d84-76b1-a90c-34e9ee768f9c",
+  "occurred_at": "2026-03-31T15:33:22.948362Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Commits dd27ece5 (Show loading feedback on repo switch) and a4e13b1f (Clear stale repo data during repo switches) were already present on origin/main. CI passed (both CI and Coverage Badge green) on a4e13b1f. No merge conflicts. Acceptance criteria verified in prior implementation review: stale content cleared immediately on repo switch, loading indicator shown until new data ready, background refetches do not blank screen.",
+    "datetime": "2026-03-31T15:33:22.948362Z",
+    "entry_id": "019d4487-2d84-76b1-a90c-34d0f248436b",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

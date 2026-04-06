@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3edd-6d90-7ea0-a821-e430d08eb0d1",
+  "occurred_at": "2026-03-30T13:09:52.144742Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-23f3",
+    "profile_id": "autopilot",
+    "state": "plan_review",
+    "terminal": false,
+    "title": "Agents settings: streamline scanned-agent rows and button styling",
+    "type": "work",
+    "updated_at": "2026-03-30T13:09:52.144742Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3edd-0d78-7800-af58-4bcb5376eb3e"
+  }
+}

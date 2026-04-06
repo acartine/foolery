@@ -1,0 +1,17 @@
+{
+  "event_id": "019d42d3-ae55-7220-b2a8-5281d2a0bfcf",
+  "occurred_at": "2026-03-31T07:37:42.229832Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.created",
+  "data": {
+    "body": "if you look at the history/conversation logs from 44f1, 8:57:45AM this morning (3/31/26) you can see that Prompt 11, Take 11, Debug target: term-1774873034101-2p7pxo\nsays that it's using CODEX GPT-5.4 5.4\n\nthis was pretty clearly an openrouter model, you can see the metadata in the response.\n\n    \"id\": \"prt_d42af1bc8001mEC6Yao5hJ6q7F\",\n    \"sessionID\": \"ses_2bd50fd1affe90pf9TPxctTv1W\",\n    \"messageID\": \"msg_d42af031b001E9LrZkGS9Wy7jp\",",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "History Screen: Wrong Agent displayed",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

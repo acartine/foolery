@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2f46-9283-7862-b15f-102e279c59ac",
+  "occurred_at": "2026-03-27T12:30:47.427619Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.created",
+  "data": {
+    "body": "Once it's been triggered, the button shouldn't be active, and there should probably be an indicator saying \"scope refinement is pending\"\n\nonce the refinement is applied, we can reenable the button and remove any refinement indicators",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Beat Detail:  When you click on refine scope, and it gets queued, the button should gray itself out until complete",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

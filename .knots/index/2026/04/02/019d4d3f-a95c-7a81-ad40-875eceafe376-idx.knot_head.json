@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d3f-a95c-7a81-ad40-875eceafe376",
+  "occurred_at": "2026-04-02T08:11:51.004227Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-51f8",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Implement a shared interactive agent session runtime",
+    "type": "work",
+    "updated_at": "2026-04-02T08:11:51.004227Z",
+    "workflow_id": "compatibility"
+  }
+}

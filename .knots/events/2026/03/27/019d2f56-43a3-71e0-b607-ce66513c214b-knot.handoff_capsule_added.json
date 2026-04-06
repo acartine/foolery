@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f56-43a3-71e0-b607-ce66513c214b",
+  "occurred_at": "2026-03-27T12:47:55.811935Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Fast-forward merged commit 48fa904f to main and pushed to origin. CI run 23646866423 passed (lint, tests, coverage, build all green). Coverage annotations are warnings only, not failures.",
+    "datetime": "2026-03-27T12:47:55.811935Z",
+    "entry_id": "019d2f56-43a3-71e0-b607-ce5281a63bc1",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f46-cd92-7953-914d-f1be5aef9a51",
+  "occurred_at": "2026-03-27T12:31:02.546109Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. After the user clicks Refine Scope and the request enters a queued or in-progress state, the Refine Scope button becomes disabled or visually grayed out. 2. While refinement is queued or in progress, the user cannot trigger Refine Scope again from that button. 3. While refinement is pending, the UI displays a visible status indicator communicating that scope refinement is pending. 4. After the refinement completes and is applied, the pending status indicator is removed. 5. After the refinement completes and is applied, the Refine Scope button returns to its normal enabled state."
+  }
+}

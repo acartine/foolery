@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ec2-ea43-7151-b7de-79214bd4d910",
+  "occurred_at": "2026-03-30T12:40:54.595758Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified origin/main head is shipped merge commit f46e477d6945, and knot tags include implementation commits 71124b72cb76 and 5b766f790c86 plus merge commit f46e477d6945. Confirmed CI and Coverage Badge runs 23745056114 and 23745056079 completed successfully for SHA f46e477d694537bf596ee453b5b7be58ceedd84b. Reviewed shipped code on the merge commit: Refine Scope disables while enqueue/pending, shows a pending label, and re-enables through notification-driven markComplete; automated coverage exists in header-actions-refine-scope.test.ts, scope-refinement-pending-integration.test.ts, and scope-refinement-pending-store.test.ts.",
+    "datetime": "2026-03-30T12:40:54.595758Z",
+    "entry_id": "019d3ec2-ea43-7151-b7de-79177ac0597c",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d34c5-3de1-7f33-803b-546e569bc21c",
+  "occurred_at": "2026-03-28T14:07:14.913187Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete: Added explicit size constraints (120px default, 100-150px range) to the State column in beat-column-defs-extra.tsx. This prevents the State column from absorbing excess horizontal space and ensures available width is distributed evenly across all visible columns on the Queues/Active screen.\n\nChanges:\n- Added size: 120, minSize: 100, maxSize: 150 to stateColumn definition\n- Adjusted meta.minWidthPx from 128 to 100 for better flex distribution\n- All tests pass (2293 tests)\n- Linting and type checking pass\n\nFeature branch: feat/foolery-2794\nCommit: 7734df82dde7",
+    "datetime": "2026-03-28T14:07:14.913187Z",
+    "entry_id": "019d34c5-3de1-7f33-803b-545639a64d94",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

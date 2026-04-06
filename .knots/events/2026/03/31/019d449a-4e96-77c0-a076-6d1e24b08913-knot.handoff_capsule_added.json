@@ -1,0 +1,15 @@
+{
+  "event_id": "019d449a-4e96-77c0-a076-6d1e24b08913",
+  "occurred_at": "2026-03-31T15:54:16.598315Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation already on main at commit 7b17b3e038c0. buildLeaderboard in lease-audit-helpers.ts filters agents via meetsLeaderboardThresholds (>=10 attempts AND >25% success rate). Mean, margin, and totalN computed from qualified set only. Steps with no qualified agents are omitted. 33 tests pass in lease-audit-view-helpers.test.ts covering: <10 attempts excluded, <=25% excluded, >25% included, qualified-only margin/totalN, runner-up exclusion, and all-filtered omission.",
+    "datetime": "2026-03-31T15:54:16.598315Z",
+    "entry_id": "019d449a-4e96-77c0-a076-6d05476c0087",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

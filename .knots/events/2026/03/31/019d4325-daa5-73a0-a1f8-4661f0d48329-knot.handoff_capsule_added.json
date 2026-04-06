@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4325-daa5-73a0-a1f8-4661f0d48329",
+  "occurred_at": "2026-03-31T09:07:27.525887Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. src/lib/agent-history-identity.ts violates the acceptance fallback requirement: extractIdentityCandidate recursively accepts generic nested id/model-like strings and will label plain assistant payloads with message ids when no provider/model metadata exists. Reproduced with bun -e importing extractResponseAgentIdentity on {message:{id:\"msg_d42af031b001E9LrZkGS9Wy7jp\"}} returning {agentModel:\"msg_d42af031b001E9LrZkGS9Wy7jp\"}. This can change unrelated history rows/session headers instead of strictly falling back to existing session fields. 2. The intended render regression coverage is not active: src/components/__tests__/agent-history-session-card.test.tsx is excluded by the current unit Vitest include pattern (src/**/__tests__/**/*.test.ts). Running bunx vitest run src/components/__tests__/agent-history-session-card.test.tsx reports No test files found, so the UI surface in the acceptance criteria is not actually protected.",
+    "datetime": "2026-03-31T09:07:27.525887Z",
+    "entry_id": "019d4325-daa5-73a0-a1f8-465400f9ad01",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

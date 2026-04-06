@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2f47-01b7-7d32-ad64-058c6ba618b7",
+  "occurred_at": "2026-03-27T12:31:15.895048Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2090",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Beat Detail: Remove beat type",
+    "type": "work",
+    "updated_at": "2026-03-27T12:31:15.895048Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4419-9a2b-7381-b999-bcd6a1364bff",
+  "occurred_at": "2026-03-31T13:33:41.803011Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "claude-sonnet-4-6",
+    "agent_name": "Claude Code",
+    "agent_version": "1.0",
+    "force": false,
+    "from": "shipment",
+    "profile_id": "autopilot",
+    "to": "ready_for_shipment_review",
+    "workflow_id": "compatibility"
+  }
+}

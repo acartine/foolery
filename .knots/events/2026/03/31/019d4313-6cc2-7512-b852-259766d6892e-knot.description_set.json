@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-6cc2-7512-b852-259766d6892e",
+  "occurred_at": "2026-03-31T08:47:19.746406Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Refine the history conversation log pulldown entries so users can see the conversation date (in addition to time), while clearly showing a single conversation identifier. Keep the existing dropdown behavior unchanged, but stop showing both Prompt and Take numbers when they are always identical."
+  }
+}

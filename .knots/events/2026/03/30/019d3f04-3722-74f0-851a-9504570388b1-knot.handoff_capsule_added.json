@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f04-3722-74f0-851a-9504570388b1",
+  "occurred_at": "2026-03-30T13:52:14.114504Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review approved. Verified the feat/foolery-23f3 worktree against the spec: per-row Add and registered controls are removed, Add All is removed, CLI rows show full binary paths, the option selector no longer shows agent.id, selected models render as pills, scan/add toolbar buttons use success-light and success variants, and OpenAI detection/labels now resolve to Codex including openai-path detection. Coverage now includes scanned-agents rendering/legacy-control removal/button variants plus agent-identity Codex detection. Validation in /Users/cartine/foolery-23f3: bun run lint (passes with 1 pre-existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, and bun run test.",
+    "datetime": "2026-03-30T13:52:14.114504Z",
+    "entry_id": "019d3f04-3722-74f0-851a-94f3dafe1120",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

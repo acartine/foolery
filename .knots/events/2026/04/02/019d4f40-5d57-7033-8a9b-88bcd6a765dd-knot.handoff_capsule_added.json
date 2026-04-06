@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f40-5d57-7033-8a9b-88bcd6a765dd",
+  "occurred_at": "2026-04-02T17:31:51.511695Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Branch: worktree-foolery-de99-fix\nCommit: 405fe7e2\n\nImplementation:\n- Added `bun run test:smoke:beats:pulldowns`, a Playwright smoke harness for the real `/beats` Queues composition in selection mode at non-zero scroll. It verifies 16 pulldowns, including the RepoSwitcher, bulk edit selects, and visible row-level pulldowns.\n- Added stable `data-testid` hooks on the beats page and beat table so browser checks can compare layout boxes directly.\n- Fixed the remaining live jitter by overriding `body[data-scroll-locked] { margin-right: 0 !important; }` in `src/app/globals.css`. Chrome DevTools showed Radix scroll lock was adding a 15px body margin and shifting the page horizontally when pulldowns opened.\n\nValidation:\n- `bun run test:smoke:beats:pulldowns`\n- `bun run lint`\n- `bunx tsc --noEmit`\n- `bun run test`\n- `bun run build`\n\nChrome DevTools validation on `http://127.0.0.1:3325/beats?view=queues&state=queued&repo=%2FUsers%2Fcartine%2Ffoolery` with a 1440x420 viewport and `scrollY=8`:\n- RepoSwitcher before/open metrics: `scrollY 8 -> 8`; trigger/page/filter/table rects unchanged.\n- Bulk `Set type...` before/open metrics: `scrollY 8 -> 8`; trigger/page/filter/table rects unchanged.",
+    "datetime": "2026-04-02T17:31:02Z",
+    "entry_id": "019d4f40-5d57-7033-8a9b-88a71479e535",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "xhigh"
+  }
+}

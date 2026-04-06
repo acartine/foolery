@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4996-6523-72c1-beab-3217c95bf0af",
+  "occurred_at": "2026-04-01T15:08:06.307323Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Create New:  When clicking Create More, once the bead is created the form fields should clear",
+    "to": "Auto-clear form fields after creating a bead via 'Create More'"
+  }
+}

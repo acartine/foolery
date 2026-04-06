@@ -1,0 +1,9 @@
+{
+  "event_id": "019d620e-8ee1-7ea1-a5f9-fb7576efc7ba",
+  "occurred_at": "2026-04-06T09:10:14.491516Z",
+  "knot_id": "foolery-bf85",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. When in All Repositories Mode, the first repo's results appear in the UI within 200ms of its backend responding, regardless of other repos' latency.\n2. Each subsequent repo's results appear incrementally without clearing previously loaded data.\n3. Single-repo mode is unaffected.\n4. Partial failure (_degraded) semantics are preserved — if one repo fails, others still display.\n5. Repeat loads within the cache TTL return instantly from cache.\n6. All existing tests pass; new tests cover the streaming aggregation path."
+  }
+}

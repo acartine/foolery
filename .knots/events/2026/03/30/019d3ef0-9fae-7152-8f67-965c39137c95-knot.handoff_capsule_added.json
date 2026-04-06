@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ef0-9fae-7152-8f67-965c39137c95",
+  "occurred_at": "2026-03-30T13:30:50.15849Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected. 1. Scanned-agent import flow is broken: [src/components/settings-agents-section.tsx] stops wiring any add callback into the scan-results UI (reviewed commit c264551c9e0e, lines 46-71), while [src/components/settings-agents-scanned.tsx] renders only dismiss and multi-select controls with no add action (lines 80-122, 147-245). The remaining add logic in [src/components/settings-agents-hooks.tsx] is now unreachable dead code (lines 134-210). This violates the knot intent to streamline scanned-agent rows, not remove the ability to add scanned agents. Sanity gates on an isolated snapshot of c264551c9e0e: tsc passed, unit tests passed, lint exited 0 with one unrelated existing warning.",
+    "datetime": "2026-03-30T13:30:50.15849Z",
+    "entry_id": "019d3ef0-9fae-7152-8f67-96446c5eb0d8",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

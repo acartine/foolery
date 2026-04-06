@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebd-4e71-77c0-8756-920dea3c846e",
+  "occurred_at": "2026-03-30T12:34:47.025831Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation_review. Verified the Refine Scope action disables once enqueue succeeds, shows a visible 'Refinement pending' indicator while the beat id remains in the pending store, and re-enables only after the completion polling hook marks that beat complete. Added automated coverage for store behavior, HeaderActions wiring, and completion round-trip clearing. Sanity gates verified in /Users/cartine/foolery/.claude/worktrees/aae0-refine-scope-pending: bun run lint, bunx tsc --noEmit, bun run test (2331 passed), and bun run build all succeeded.",
+    "datetime": "2026-03-30T12:34:30Z",
+    "entry_id": "019d3ebd-4e71-77c0-8756-91fdf7d3ab21",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

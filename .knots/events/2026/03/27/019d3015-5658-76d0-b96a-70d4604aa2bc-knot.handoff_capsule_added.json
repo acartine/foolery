@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3015-5658-76d0-b96a-70d4604aa2bc",
+  "occurred_at": "2026-03-27T16:16:37.97671Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review passed. Approach is clean: optional fields, context threading, no breaking changes. Proceed to implementation.",
+    "datetime": "2026-03-27T16:16:37.97671Z",
+    "entry_id": "019d3015-5658-76d0-b96a-70c544368411",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ecb-2d95-7f11-92dc-6a305d4fc722",
+  "occurred_at": "2026-03-30T12:49:56.117361Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review passed. Verified: merge commit c01008a4d882 and implementation commit d6ea6656529b are on main HEAD. CI run 23745418873 green (lint, tests, coverage, build). All 6 acceptance criteria met: localStorage persistence on input change, restore on reopen, Clear button in form actions, form reset on Clear, draft cleared on Done/CreateMore, no new dependencies. Previously flagged issues (tsc dotAll regex, unrelated settings-pools changes) are resolved — no unrelated files in final diff. tsc --noEmit clean, 204 test files / 2348 tests passing locally.",
+    "datetime": "2026-03-30T12:49:56.117361Z",
+    "entry_id": "019d3ecb-2d95-7f11-92dc-6a28862d545f",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

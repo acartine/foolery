@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b8-08da-7cd1-be17-ed3b8b40f8c0",
+  "occurred_at": "2026-04-01T15:44:50.906347Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment unblocked pending user action: commits 808a1235 ('fix(beats): reset create-more form after success (#foolery-f8f4)') and d661bd7e are on local main but cannot be pushed due to shell policy denying `git push origin main`. User must push manually, then re-trigger shipment step.",
+    "datetime": "2026-04-01T15:44:50.906347Z",
+    "entry_id": "019d49b8-08da-7cd1-be17-ed25da9f7049",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

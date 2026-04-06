@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431a-c5f2-7f42-b44b-2ccaf406e6b7",
+  "occurred_at": "2026-03-31T08:55:21.330439Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from implementation to ready_for_implementation — agent \"OpenCode\" left knot in action state",
+    "datetime": "2026-03-31T08:55:21.330439Z",
+    "entry_id": "019d431a-c5f2-7f42-b44b-2cb38e4161d5",
+    "model": "openrouter/minimax/minimax-m2.7",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

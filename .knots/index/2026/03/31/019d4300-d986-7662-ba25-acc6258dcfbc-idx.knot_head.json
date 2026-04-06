@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4300-d986-7662-ba25-acc6258dcfbc",
+  "occurred_at": "2026-03-31T08:27:02.400942Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b5c5",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Settings: Agent model pulldowns for Claude, Codex, and Gemini show incorrect options and selections",
+    "type": "work",
+    "updated_at": "2026-03-31T08:27:02.400942Z",
+    "workflow_id": "compatibility"
+  }
+}

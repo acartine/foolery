@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3ed3-8856-7a02-8577-2df600423001",
+  "occurred_at": "2026-03-30T12:59:03.63876Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.created",
+  "data": {
+    "body": "- get rid of the “add” button and “registered” pill\n- show the full location of the cli under the Cli name\n- replace OpenAI with Codex\n- get rid of the stupid lower case text preceding the pull down\n- make the pulldown a multi-select and allow selecting any model.  if selected, show the select models to the right where the Add button and registered pill used to be.\n- get rid of stupid Add All button.\n- use dark green for Add button (like in page header for queued)\n- use light green for Scan button (like in Create More button)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "clean up shitty Agents UX",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

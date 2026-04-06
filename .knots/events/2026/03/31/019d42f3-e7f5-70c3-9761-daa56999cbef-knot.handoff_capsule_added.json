@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f3-e7f5-70c3-9761-daa56999cbef",
+  "occurred_at": "2026-03-31T08:12:54.133697Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The 6-step plan correctly targets all 4 primary source files and maps cleanly to all 6 acceptance criteria. Key design decisions validated: (1) agentId-based exclusion identity is correct given pool keying, (2) multi-exclusion Set<string> API is the right abstraction for accumulated failures, (3) removing advanced-mode gate only for failure-retry paths preserves basic-mode normal selection, (4) reset semantics for failure history on queue-type transitions prevent stale exclusions. Test strategy covers the three critical new scenarios (multi-failure rotation, basic-mode retry, early-stop on exhaustion). No invariant violations. Low implementation risk.",
+    "datetime": "2026-03-31T08:12:54.133697Z",
+    "entry_id": "019d42f3-e7f5-70c3-9761-da9e691cb797",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

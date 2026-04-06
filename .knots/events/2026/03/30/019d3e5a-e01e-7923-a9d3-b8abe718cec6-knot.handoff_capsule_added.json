@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e5a-e01e-7923-a9d3-b8abe718cec6",
+  "occurred_at": "2026-03-30T10:47:16.254641Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planned implementation targets the duplicated shell scan flows in `scripts/setup.sh` and `scripts/agent-wizard.sh`. The fix should convert single-value model capture into multi-select registration that emits separate agent entries per chosen model, reuse the web import id semantics where practical, update action mapping to reference generated agent ids, and add shell/PTY coverage for multi-select persistence plus zero-selection cancellation.",
+    "datetime": "2026-03-30T10:45:55Z",
+    "entry_id": "019d3e5a-e01e-7923-a9d3-b8906b7d8e26",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

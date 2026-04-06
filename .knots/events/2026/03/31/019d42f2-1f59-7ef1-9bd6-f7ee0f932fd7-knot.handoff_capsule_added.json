@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f2-1f59-7ef1-9bd6-f7ee0f932fd7",
+  "occurred_at": "2026-03-31T08:10:57.241042Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan addresses the two prior review gaps directly: remove the advanced-mode-only gate from non-zero-exit retry selection, and change pool exclusion semantics so excluded agents are never silently reselected. Implementation should add queue-type failed-agent history to the take-loop context, use that history to exclude all previously failed pooled agentIds on retry until the pool is exhausted, and stop early once no eligible retry agent remains. Primary files to change in the implementation step are src/lib/terminal-manager-take-loop.ts, src/lib/terminal-manager-take-agent.ts, src/lib/terminal-manager-take-iteration.ts, and src/lib/agent-pool.ts. Primary regression coverage should land in src/lib/__tests__/terminal-manager-queue-claims.test.ts plus updated agent-pool tests for null-on-exhausted exclusion behavior.",
+    "datetime": "2026-03-31T08:10:57.241042Z",
+    "entry_id": "019d42f2-1f59-7ef1-9bd6-f7d2f5a2845e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

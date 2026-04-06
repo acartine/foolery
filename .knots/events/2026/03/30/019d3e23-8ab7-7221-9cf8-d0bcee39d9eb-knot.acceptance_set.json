@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3e23-8ab7-7221-9cf8-d0bcee39d9eb",
+  "occurred_at": "2026-03-30T09:46:49.911222Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Typing a substring into the Agents search input filters the visible list by case-insensitive match against agent/model name and provider fields.\n2. Partial strings (e.g. \"glm\", \"minimax\", \"Gem\") return only matching entries.\n3. Clearing the search input restores the full unfiltered list.\n4. No regressions in existing Settings UI functionality."
+  }
+}

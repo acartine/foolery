@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42cc-33c0-7931-9c61-6d70ba34a012",
+  "occurred_at": "2026-03-31T07:29:32.096245Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved on main at f0c63bcb9fdf. Verified src/lib/terminal-manager-initial-child.ts now scopes stdout token logging to [beatId], preserving single-beat attribution for each agent turn; interaction-logger persists token_usage with agent metadata; agent-history parsing/aggregation and diagnostics rendering surface the saved per-agent token totals without broader metrics changes. Knot commit tags cover the shipped implementation commit 290bf452e2fb and merge commit f0c63bcb9fdf. GitHub Actions runs 23785596655 (CI) and 23785596652 (Coverage Badge) both completed successfully for the live main commit.",
+    "datetime": "2026-03-31T07:29:32.096245Z",
+    "entry_id": "019d42cc-33c0-7931-9c61-6d6d1f8d86ba",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

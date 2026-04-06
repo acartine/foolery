@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3010-c2af-70d3-856b-c01ce6700b82",
+  "occurred_at": "2026-03-27T16:11:38.03158Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan approved. Root cause is clear (fire-and-forget Promise dropping audit writes), fix is minimal (await the call), risk is low. Proceed to implementation.",
+    "datetime": "2026-03-27T16:11:38.03158Z",
+    "entry_id": "019d3010-c2af-70d3-856b-c005a79dd8b9",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

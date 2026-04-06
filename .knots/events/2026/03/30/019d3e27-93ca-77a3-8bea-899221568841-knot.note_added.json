@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e27-93ca-77a3-8bea-899221568841",
+  "occurred_at": "2026-03-30T09:51:14.378084Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Implementation Plan\n\n## Root Cause\nThe `SearchableOptionCombobox` in `settings-agents-scanned.tsx` (line 202) renders a `<Command>` component from cmdk without a custom `filter` prop. cmdk v1.1.1 defaults to `command-score`, a fuzzy/word-boundary matching algorithm. This works well for command palettes but poorly for filtering model IDs and provider names like \"glm-4-flash\" or \"minimax\", where partial substrings often score 0 and get hidden.\n\n## Fix\nAdd a custom `filter` function to the `<Command>` component that:\n1. Lowercases both the search term and the item value\n2. Checks if the value contains the search term as a substring\n3. Also checks all keywords for substring matches\n4. Returns 1 for match, 0 for no match\n\n## File Changes\n- `src/components/settings-agents-scanned.tsx`: Add a custom filter function to the `<Command>` component in `SearchableOptionCombobox` (around line 202).\n\n## Test Strategy\n1. Run `bun run lint` and `bunx tsc --noEmit` to verify no regressions.\n2. Run `bun run test` for existing test coverage.\n3. Manual verification: open Settings → Agents, Scan, and type partial strings like \"glm\", \"minimax\", \"Gem\" into the search input — should filter correctly.\n\n## Complexity: Low\nSingle-file change, ~10 lines added. No architectural changes.\n\n## Risks: None\nThe custom filter is strictly more permissive than the default (substring vs fuzzy). All previously-matching items will still match.",
+    "datetime": "2026-03-30T09:51:14.378084Z",
+    "entry_id": "019d3e27-93ca-77a3-8bea-898531f57633",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

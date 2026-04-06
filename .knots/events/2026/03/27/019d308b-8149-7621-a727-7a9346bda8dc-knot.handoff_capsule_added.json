@@ -1,0 +1,15 @@
+{
+  "event_id": "019d308b-8149-7621-a727-7a9346bda8dc",
+  "occurred_at": "2026-03-27T18:25:42.217853Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved. The change is present on origin/main at merge commit 1daa7fcb6b75, both implementation and shipment commits are tagged on the knot, and the remote CI plus Coverage Badge workflows completed successfully for the shipped revision.",
+    "datetime": "2026-03-27T18:25:42.217853Z",
+    "entry_id": "019d308b-8149-7621-a727-7a8af7800cb6",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

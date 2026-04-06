@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-1635-70a1-ad33-0e7693ef7b9e",
+  "occurred_at": "2026-03-31T08:46:57.589093Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In the history/conversation log entry at 3/31/2026 08:57:45 AM (44f1, Prompt 11 / Take 11, debug target term-1774873034101-2p7pxo), the screen displays the agent as \"CODEX GPT-5.4 5.4\" even though the response metadata for that message shows the model/provider is OpenRouter. The history list should display the agent name from the response metadata field used for model/provider identity, not an incorrect or hardcoded model label."
+  }
+}

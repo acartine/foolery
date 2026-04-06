@@ -1,0 +1,10 @@
+{
+  "event_id": "019d2f46-cd92-7953-914d-f19855b1403d",
+  "occurred_at": "2026-03-27T12:31:02.546109Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Beat Detail:  When you click on refine scope, and it gets queued, the button should gray itself out until complete",
+    "to": "Disable Refine Scope While Refinement Is Pending"
+  }
+}

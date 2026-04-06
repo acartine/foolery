@@ -1,0 +1,15 @@
+{
+  "event_id": "019d308b-2f91-74e3-a81c-f67cc6024119",
+  "occurred_at": "2026-03-27T18:25:21.297516Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped 4c96 by merging `feat/foolery-4c96-version-normalize` into `main` as commit `1daa7fcb6b75` and pushing `main` to origin. Remote checks on the merge commit are green: GitHub Actions `CI` passed and `Coverage Badge` completed successfully. Note: the CI run emitted non-failing coverage-regression annotations, but the workflow itself concluded success.",
+    "datetime": "2026-03-27T18:25:21.297516Z",
+    "entry_id": "019d308b-2f91-74e3-a81c-f66b6354ce9b",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f57-278d-7f61-9e57-ca0ab7b81544",
+  "occurred_at": "2026-03-30T15:22:49.613879Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment blocked by merge conflicts while merging foolery-67b5 onto origin/main. Conflicts need implementation resolution in scripts/agent-wizard.sh, scripts/setup.sh, src/components/__tests__/settings-agents-scanned.test.ts, src/components/settings-agents-hooks.tsx, src/components/settings-agents-scanned.tsx, and src/components/settings-agents-section.tsx. Merge was aborted; no main push or state transition was performed.",
+    "datetime": "2026-03-30T15:22:10Z",
+    "entry_id": "019d3f57-278d-7f61-9e57-c9fcaa9d58ef",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

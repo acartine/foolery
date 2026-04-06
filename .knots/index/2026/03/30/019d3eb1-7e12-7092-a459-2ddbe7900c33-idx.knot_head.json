@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3eb1-7e12-7092-a459-2ddbe7900c33",
+  "occurred_at": "2026-03-30T12:21:52.786748Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-aae0",
+    "profile_id": "autopilot",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Disable Refine Scope While Refinement Is Pending",
+    "type": "work",
+    "updated_at": "2026-03-30T12:21:52.786748Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f12-63b2-7fe1-944e-ca7504338f8c",
+  "occurred_at": "2026-04-02T16:41:38.482624Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected: changing SelectContent default to popper looks feasible and likely addresses the bulk-edit/filter jitter, but the plan does not satisfy acceptance criterion 5. Replace the source-level contract-only test with a browser-level Playwright or equivalent assertion that records scroll position and nearby element bounding boxes before and after opening each pulldown in Queues View, including bulk-edit selects, filter selects, and the Repositories dropdown.",
+    "datetime": "2026-04-02T16:41:38.482624Z",
+    "entry_id": "019d4f12-63b2-7fe1-944e-ca6eaa43d21a",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

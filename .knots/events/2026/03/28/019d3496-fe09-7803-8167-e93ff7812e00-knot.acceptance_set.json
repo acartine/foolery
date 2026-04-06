@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3496-fe09-7803-8167-e93ff7812e00",
+  "occurred_at": "2026-03-28T13:16:43.913739Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "On the Queues/Active screen, extra horizontal space is distributed evenly across the visible columns instead of being taken primarily by the State column. The State column no longer appears disproportionately wide relative to the other columns. The update is limited to column width distribution on the Queues/Active screen and does not change the screen's data, column set, or behavior beyond layout."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2fef-fbfb-7b40-aa6b-5927cf282b89",
+  "occurred_at": "2026-03-27T15:35:50.011994Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.created",
+  "data": {
+    "body": "Capture per-step duration data in the lease audit log so we can compute speed and cost-adjusted throughput metrics.\n\n## Requirements\n\n### New data to capture\nExtend the audit event model to record timing for each agent step:\n- `durationMs`: wall-clock time from claim to step completion (success or fail)\n- This must be recorded on the success/fail outcome event, not on the claim event\n- Correlate via beatId + sessionId to pair claim with outcome\n\n### Where to instrument\n1. In `finalizeClaim` (terminal-manager-take-agent.ts): record `claimedAt = Date.now()` and pass it through to the outcome path\n2. In `markBeatShipped` and the step-failure/rollback path: compute `durationMs = Date.now() - claimedAt` and include it on the audit event\n3. Handle edge cases: agent crash (no explicit completion), timeout, concurrent abort during rollback\n\n### Data model changes\n- Add optional `durationMs?: number` field to `LeaseAuditEvent`\n- Add optional `claimedAt?: string` (ISO timestamp) to track start time through the claim lifecycle\n- Keep backward compatible with existing events that lack these fields\n\n### Aggregation support\nExtend `aggregateLeaseAudit` (or add a new function) to compute per agent per step:\n- Median duration (p50)\n- p90 duration\n- Mean duration\n- Count of timed events vs total events (coverage indicator since old events won't have timing)\n\n### Acceptance criteria\n- All new agent claims record durationMs on their outcome event\n- Old events without durationMs are gracefully handled (treated as untimed)\n- Unit tests cover: normal claim-to-success timing, claim-to-fail timing, missing timing on legacy events\n- No regression in existing audit functionality",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Capture per-step duration data in lease audit events",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

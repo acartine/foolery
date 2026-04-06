@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb1-0d27-7f93-9731-c4b98207393c",
+  "occurred_at": "2026-03-30T12:21:23.879392Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Plan is complete, correct, and feasible. All 6 acceptance criteria are covered. Key risks (async defaultProfileId vs restored drafts, relationship state outside react-hook-form, storage lifecycle across Done/Create More/dismissal) are correctly identified with clear mitigation strategies. localStorage approach follows existing codebase patterns (beat-table-expand.tsx, app-store.ts). Test strategy is pragmatic given the repo's test harness. No invariant violations. Ready for implementation.",
+    "datetime": "2026-03-30T12:21:23.879392Z",
+    "entry_id": "019d3eb1-0d27-7f93-9731-c4a61ae0e3ea",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

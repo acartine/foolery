@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3e24-1923-7250-aeba-3a76883210a3",
+  "occurred_at": "2026-03-30T09:47:26.365157Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-67b5",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "settings: agents: scan doesn't let you add more models from a cli if you've already added one.",
+    "type": "work",
+    "updated_at": "2026-03-30T09:47:26.365157Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d3f-a95c-7a81-ad40-874cd633cca7",
+  "occurred_at": "2026-04-02T08:11:51.004227Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.created",
+  "data": {
+    "body": "Introduce a shared runtime/interface for interactive agents so terminal-manager no longer hard-codes Claude as the only interactive dialect. The shared layer should let each agent declare capabilities such as interactive vs one-shot support, prompt transport, follow-up support, turn-result detection, session-end detection, stdin draining behavior, and inactivity watchdog policy. It should also centralize process-group kill, close-input timing, normalized event emission, and post-exit validation hooks so Codex, OpenCode, Gemini, Copilot, and Claude all follow the same protocol.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Implement a shared interactive agent session runtime",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

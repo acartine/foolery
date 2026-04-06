@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3e23-48d7-7831-b903-85c910f7b672",
+  "occurred_at": "2026-03-30T09:46:33.047804Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0f6a",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Fix Opencode scan search in settings->agents",
+    "type": "work",
+    "updated_at": "2026-03-30T09:46:33.047804Z",
+    "workflow_id": "compatibility"
+  }
+}

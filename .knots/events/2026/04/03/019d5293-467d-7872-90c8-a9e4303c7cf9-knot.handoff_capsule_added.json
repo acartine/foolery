@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5293-467d-7872-90c8-a9e4303c7cf9",
+  "occurred_at": "2026-04-03T09:01:16.797004Z",
+  "knot_id": "foolery-2b52",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning completed for foolery-2b52. Recommended implementation is a bounded documentation pass: codify the shipped shared-runtime behavior in docs/interactive-agent-session-protocol.md, covering capabilities, startup handshake, prompt transport, normalized stream events, turn-complete vs step/session completion, follow-up prompting, stdin close/drain, process exit and post-exit validation, plus watchdog/retry/abort semantics. Likely companion touch is docs/MANIFEST.md for discoverability. Key source files to ground the document are src/lib/agent-session-capabilities.ts, src/lib/agent-adapter.ts, src/lib/agent-session-runtime.ts, src/lib/terminal-manager-initial-io.ts, src/lib/terminal-manager-take-loop.ts, src/lib/terminal-manager-take-iteration.ts, and src/lib/terminal-manager-workflow.ts. Primary risk is documenting turn completion as success; the doc must state that workflow success is only decided after exit plus backend state validation/classification. No child knots were created because scope is a single documentation artifact.",
+    "datetime": "2026-04-03T08:59:36Z",
+    "entry_id": "019d5293-467d-7872-90c8-a9da6b20403f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

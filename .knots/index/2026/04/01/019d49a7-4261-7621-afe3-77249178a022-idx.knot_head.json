@@ -1,0 +1,21 @@
+{
+  "event_id": "019d49a7-4261-7621-afe3-77249178a022",
+  "occurred_at": "2026-04-01T15:26:31.50604Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c85c",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Create more reset smoke 2026-04-01 17:25",
+    "type": "work",
+    "updated_at": "2026-04-01T15:26:31.50604Z",
+    "workflow_id": "compatibility"
+  }
+}

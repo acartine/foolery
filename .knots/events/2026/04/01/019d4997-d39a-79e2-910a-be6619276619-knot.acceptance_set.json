@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4997-d39a-79e2-910a-be6619276619",
+  "occurred_at": "2026-04-01T15:09:40.12277Z",
+  "knot_id": "foolery-17ee",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) In Queue Screen multiselect mode, all action buttons (default, hover, active, focus, and disabled states) render with the same font family, weight, and size as title-bar buttons. 2) No multiselect action button state uses a white background; background/border colors must use existing theme color tokens only. 3) Existing button labels, order, and click behavior remain unchanged. 4) Validate in browser using Chrome DevTools (computed style checks for typography and colors) and Playwright MCP screenshots of the Queue Screen multiselect state before/after styling changes."
+  }
+}

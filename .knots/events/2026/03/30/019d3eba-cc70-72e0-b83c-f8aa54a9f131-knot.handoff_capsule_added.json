@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eba-cc70-72e0-b83c-f8aa54a9f131",
+  "occurred_at": "2026-03-30T12:32:02.672851Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch feat/ab20-persist-create-form (commit 90b8fe9ceed6). Changes: (1) New src/lib/create-draft.ts with localStorage-backed get/persist/clear helpers using foolery:createBeatDraft key. (2) Modified src/components/beat-form.tsx: useBeatForm reads saved draft on mount for initial form values and relationship state; useDraftPersistence hook subscribes to form.watch and relationship array changes to persist on every input change; handleClear resets form to defaults, clears relationships, and removes draft from storage; handleFormSubmit and handleCreateMoreClick both call clearCreateBeatDraft before delegating to parent callbacks; Clear button rendered in footer (left-aligned, outline variant) only in create mode. (3) Extracted FormField to src/components/form-field.tsx and ProfileInfoDialog to src/components/profile-info-dialog.tsx to keep beat-form.tsx under 500-line limit. (4) 12 contract tests in src/lib/__tests__/create-draft-persistence-contract.test.ts covering helper API, SSR guards, draft restore, persistence wiring, clear behavior, and submit cleanup. All quality gates pass: lint clean, tsc --noEmit clean, 200 test files / 2325 tests pass, build succeeds.",
+    "datetime": "2026-03-30T12:32:02.672851Z",
+    "entry_id": "019d3eba-cc70-72e0-b83c-f89d489d755d",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

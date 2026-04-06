@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ab-dc40-72d2-8aed-ab2bb7cb5d8c",
+  "occurred_at": "2026-03-31T06:54:12.544922Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation verified complete on main. All token usage tracking code is in place: types (agent-history-types.ts), extraction (agent-token-usage.ts for Codex turn.completed), beat-scoped persistence (interaction-logger.ts logTokenUsage), parsing (agent-history-parse.ts parseTokenUsageLine), aggregation (agent-history.ts mergeTokenUsage), and UI display (agent-history-beat-detail.tsx BeatTokenUsageList). Quality gates: lint 0 errors, tsc clean, 2361 tests passed. Key commits already on main: bdc3d7fa (Track per-agent beat token usage), 9eeae9e2 (Merge branch foolery-81ad).",
+    "datetime": "2026-03-31T06:54:12.544922Z",
+    "entry_id": "019d42ab-dc40-72d2-8aed-ab11532b1370",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4472-2522-7213-82d1-e14efe0086b8",
+  "occurred_at": "2026-03-31T15:10:24.539763Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2d86",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Wire lease agent metadata into knot step records",
+    "type": "work",
+    "updated_at": "2026-03-31T15:10:24.539763Z",
+    "workflow_id": "compatibility"
+  }
+}

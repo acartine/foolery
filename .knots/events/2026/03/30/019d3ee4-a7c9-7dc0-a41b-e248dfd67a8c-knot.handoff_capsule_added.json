@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee4-a7c9-7dc0-a41b-e248dfd67a8c",
+  "occurred_at": "2026-03-30T13:17:45.801393Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected. The proposed implementation approach for the scanned-agents UI is feasible, but the plan is incomplete against the current codebase: it misses existing Codex/OpenAI expectations in src/lib/__tests__/settings-scan.test.ts and src/lib/__tests__/settings-coverage.test.ts, and it cites a non-existent src/lib/__tests__/agent-identity.test.ts. Revise the plan to include the actual test files and complete rename scope, then return it for review.",
+    "datetime": "2026-03-30T13:17:30Z",
+    "entry_id": "019d3ee4-a7c9-7dc0-a41b-e23651e5ecb8",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

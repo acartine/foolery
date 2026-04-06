@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3496-fe09-7803-8167-e92fc19eb0db",
+  "occurred_at": "2026-03-28T13:16:43.913739Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.description_set",
+  "data": {
+    "description": "On the Queues/Active screen, the State column currently absorbs most of the extra horizontal space, which makes the table layout look unbalanced. Adjust the column sizing so the available width is distributed evenly across the columns for a more natural and consistent presentation."
+  }
+}

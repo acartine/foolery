@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ee2-f61b-7dd2-801f-c79b509bcb3a",
+  "occurred_at": "2026-03-27T10:41:59.323228Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Added a regression test in src/lib/__tests__/beats-page-layout.test.ts to lock the divider below the inline title metadata row, and ignored .knots/_worktree in eslint.config.mjs so bun run lint stays green in generated worktree checkouts. Verified bun run lint, bunx tsc --noEmit, bun run test, and bun run build in /private/tmp/foolery-8831 on branch feat/foolery-8831.",
+    "datetime": "2026-03-27T10:41:34Z",
+    "entry_id": "019d2ee2-f61b-7dd2-801f-c78441148a45",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-27"
+  }
+}

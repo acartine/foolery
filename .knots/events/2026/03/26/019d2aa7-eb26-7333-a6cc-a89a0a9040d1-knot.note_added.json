@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa7-eb26-7333-a6cc-a89a0a9040d1",
+  "occurred_at": "2026-03-26T14:59:01.030512Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: the update-available state only renders static text, not an actionable 'Update now' control, and the added tests cover static markup only rather than the required click/fetch/outcome behavior.",
+    "datetime": "2026-03-26T14:59:01.030512Z",
+    "entry_id": "019d2aa7-eb26-7333-a6cc-a88aba960090",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

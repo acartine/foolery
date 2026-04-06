@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb9-6d35-7032-bf02-d765f4e7a886",
+  "occurred_at": "2026-03-30T12:30:32.757966Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped by merging approved branch foolery-44f1 into origin/main as d407a55424f0. Remote CI passed for https://github.com/acartine/foolery/actions/runs/23744696937. Scope remains limited to stabilizing the shared header layout across ReTakes and Diagnostics transitions.",
+    "datetime": "2026-03-30T12:30:24Z",
+    "entry_id": "019d3eb9-6d35-7032-bf02-d755d21e3e3e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

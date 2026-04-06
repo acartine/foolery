@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee3-4469-7683-8ae2-27e94e6238f3",
+  "occurred_at": "2026-03-30T13:16:14.825458Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified main is clean at 9eeae9e240de and matches origin/main, with commit tags commit:bdc3d7fafd42 and commit:9eeae9e240de present on the knot. Reviewed the shipped token-usage path end to end: beat-scoped token_usage lines are emitted from completion events with explicit beatIds, parsed from persisted logs, aggregated into tokenUsageByAgent, and rendered in beat diagnostics. Confirmed remote CI run 23746517036 succeeded for merge SHA 9eeae9e240de. Re-ran focused unit coverage on the shipped tree: 33 tests passed across agent-token-usage, interaction-logger, agent-history summaries, and beat-detail rendering.",
+    "datetime": "2026-03-30T13:16:14.825458Z",
+    "entry_id": "019d3ee3-4469-7683-8ae2-27d86bd5e956",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

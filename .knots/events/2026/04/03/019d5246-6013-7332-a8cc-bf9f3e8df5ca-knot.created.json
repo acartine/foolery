@@ -1,0 +1,17 @@
+{
+  "event_id": "019d5246-6013-7332-a8cc-bf9f3e8df5ca",
+  "occurred_at": "2026-04-03T07:37:17.075262Z",
+  "knot_id": "foolery-e199",
+  "type": "knot.created",
+  "data": {
+    "body": "Add unit and integration tests for the shared runtime across at least one interactive dialect and one one-shot dialect, including turn completion, session exit, timeout, retry, abort, and close-input behavior.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add agent session runtime conformance coverage",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

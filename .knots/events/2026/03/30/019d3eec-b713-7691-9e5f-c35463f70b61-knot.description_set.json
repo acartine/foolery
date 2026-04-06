@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3eec-b713-7691-9e5f-c35463f70b61",
+  "occurred_at": "2026-03-30T13:26:34.00321Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When the Escalations (finalcut) view is active, the ActionButton component renders a static \"Escalations\" button with a UserRoundCheck icon in the action slot to the right of the navigation tabs. This button has no onClick handler and duplicates the already-active Escalations tab in the ViewSwitcher. It should be removed so the action slot behaves consistently across views (showing the Add button or nothing)."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ec6-16fe-78d2-a86f-d26bb31ac0e6",
+  "occurred_at": "2026-03-30T12:44:22.654425Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review APPROVED. All 6 acceptance criteria met. Quality gates pass: lint 0 errors (1 pre-existing React Compiler warning), tsc clean, 2330/2330 tests pass, build succeeds. Prior review issues resolved: regex/dotAll test file removed, unrelated settings-pools changes removed. Clean diff: persistence module with defensive localStorage handling, form integration via watch()+useEffect, Clear button in BeatFormActions, clearDraft on submit/createMore. FormField and ProfileInfoDialog correctly extracted to separate files.",
+    "datetime": "2026-03-30T12:44:22.654425Z",
+    "entry_id": "019d3ec6-16fe-78d2-a86f-d2592a7c54ed",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

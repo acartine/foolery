@@ -1,0 +1,21 @@
+{
+  "event_id": "019d43ba-54b2-7d73-83ad-139ad60747ba",
+  "occurred_at": "2026-03-31T11:49:38.098066Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-38f3",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Settings: Agents Scan — use required Gemini model set",
+    "type": "work",
+    "updated_at": "2026-03-31T11:49:38.098066Z",
+    "workflow_id": "compatibility"
+  }
+}

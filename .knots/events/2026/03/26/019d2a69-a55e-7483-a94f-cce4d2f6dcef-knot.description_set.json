@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a69-a55e-7483-a94f-cce4d2f6dcef",
+  "occurred_at": "2026-03-26T13:50:59.934936Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In the Queues view, cell contents within each row are not vertically aligned consistently. The beat ID number sits higher than the repo name, and smaller pill elements (e.g., profile, owner type) appear bottom-aligned rather than centered. All cell contents in a row should share consistent vertical alignment."
+  }
+}

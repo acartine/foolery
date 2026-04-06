@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4301-90a2-7281-bf9c-cde46005d305",
+  "occurred_at": "2026-03-31T08:27:49.282693Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review APPROVED. Verified: (1) commits 598b787ed33e and 31ba16ffa62b are on origin/main; (2) all 6 acceptance criteria met — failedAgentsPerQueueType tracks full failure history, selectFromPool returns null on exhaustion instead of silent fallback, rotation works in both basic and advanced dispatch modes, checkAlternativeAgent no longer gated on dispatchMode; (3) 207 test files / 2370 tests green; (4) no invariants on this knot. Tagged both commits.",
+    "datetime": "2026-03-31T08:27:49.282693Z",
+    "entry_id": "019d4301-90a2-7281-bf9c-cdd092c31b7e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

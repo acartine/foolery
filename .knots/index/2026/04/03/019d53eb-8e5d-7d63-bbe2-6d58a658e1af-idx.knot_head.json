@@ -1,0 +1,21 @@
+{
+  "event_id": "019d53eb-8e5d-7d63-bbe2-6d58a658e1af",
+  "occurred_at": "2026-04-03T15:17:19.581359Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f5ee",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add interactive Codex session support",
+    "type": "work",
+    "updated_at": "2026-04-03T15:17:19.581359Z",
+    "workflow_id": "compatibility"
+  }
+}

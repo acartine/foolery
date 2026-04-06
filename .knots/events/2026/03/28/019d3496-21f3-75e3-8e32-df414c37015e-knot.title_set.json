@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3496-21f3-75e3-8e32-df414c37015e",
+  "occurred_at": "2026-03-28T13:15:47.571559Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Create New:  Loses all data if user accidently hits escape, x, or outside window, or reloads",
+    "to": "Persist Create New form inputs across accidental dismissals and reloads"
+  }
+}

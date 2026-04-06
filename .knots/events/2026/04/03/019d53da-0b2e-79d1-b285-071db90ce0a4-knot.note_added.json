@@ -1,0 +1,15 @@
+{
+  "event_id": "019d53da-0b2e-79d1-b285-071db90ce0a4",
+  "occurred_at": "2026-04-03T14:58:11.886648Z",
+  "knot_id": "foolery-f5ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Plan Review\n\n## Verdict: APPROVED with corrections\n\n### Corrections Required\n\n1. **Remove `--ephemeral` from app-server args.** The flag only exists on `codex exec`, not `codex app-server`. Session persistence is controlled at the thread level — check if `thread/start` accepts an `ephemeral` param, otherwise accept that sessions persist to `~/.codex/sessions/`.\n\n2. **Simplify approval handling.** The plan proposes auto-approving server approval requests. This is unnecessary — `thread/start` accepts `approvalPolicy: \"never\"` which bypasses approvals entirely (verified live). Remove the auto-approval logic from the JSON-RPC client scope.\n\n3. **Add MCP notification filtering.** The app-server emits `mcpServer/startupStatus/updated` notifications during startup. The translation layer must ignore these (and any other non-turn notifications) rather than passing them to the normalizer.\n\n4. **Clarify threadId lifecycle.** The JSON-RPC client must extract threadId from the `thread/start` response and store it for all subsequent `turn/start` calls. This is implicit in the plan but should be explicit.\n\n### Confirmed Sound\n\n- Translation layer architecture (JSON-RPC → JSONL → existing normalizer)\n- Mode selection (interactive for take-loop, one-shot for orchestration)\n- Layer separation and file organization\n- Test strategy coverage\n- Risk assessment (except ephemeral flag)\n- Complexity estimate (~740 lines reasonable)\n\n### Net Effect on Scope\n\nCorrections 1-2 reduce scope (less code). Correction 3 adds ~10 lines. Net: slightly smaller than estimated.",
+    "datetime": "2026-04-03T14:58:11.886648Z",
+    "entry_id": "019d53da-0b2e-79d1-b285-070439cf143d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

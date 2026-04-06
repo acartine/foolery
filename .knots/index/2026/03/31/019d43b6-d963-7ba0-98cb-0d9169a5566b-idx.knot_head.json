@@ -1,0 +1,21 @@
+{
+  "event_id": "019d43b6-d963-7ba0-98cb-0d9169a5566b",
+  "occurred_at": "2026-03-31T11:45:49.92335Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8909",
+    "profile_id": "autopilot",
+    "state": "ready_for_plan_review",
+    "terminal": false,
+    "title": "Implement persistent light theme support for Terminal and History Terminal",
+    "type": "work",
+    "updated_at": "2026-03-31T11:45:49.92335Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3efd-2c27-7490-b654-a3820d45aaa1",
+  "occurred_at": "2026-03-30T13:44:32.551983Z",
+  "knot_id": "foolery-177c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented ReTakes lease hydration for Knots-backed metadata. Foolery now reads lease lifecycle logs to standardize handoff and note agent metadata from the lease it created, backfills unknown usernames from the local user, and synthesizes fallback step entries from lease-audit claim history when Knots step history is absent. Validation in /private/tmp/foolery-177c: bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-30T13:44:32.551983Z",
+    "entry_id": "019d3efd-2c27-7490-b654-a37f4f60cc23",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

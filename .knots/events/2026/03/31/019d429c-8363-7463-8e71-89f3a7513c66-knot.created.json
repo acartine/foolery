@@ -1,0 +1,17 @@
+{
+  "event_id": "019d429c-8363-7463-8e71-89f3a7513c66",
+  "occurred_at": "2026-03-31T06:37:26.755095Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.created",
+  "data": {
+    "body": "- show a nonsense name row that means nothing - you don't even know what model is select\n- only shows one row despite many models being offered\n- the Claude section shows \"Claude\" as the selected model, instead of Opus 4.6\n\ndefiition of done is claude, codex, gemini should show all available models.\nthe selected models pills should actually show the name of the selected model.  not nonsense like \"Gemini\" and \"Claude\"",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "settings: agents: scan: pulldowns for claude, codex, gemini are utterly broken",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

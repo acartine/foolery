@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb2-ad6a-7c12-9db0-41bfcfb0443e",
+  "occurred_at": "2026-03-30T12:23:10.442248Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the Dispatch > Advanced pool row layout fix in the feature worktree. PoolAgentRow now uses a content-aware CSS grid so multi-pill agent labels size from rendered content instead of the old fixed 140px/220px column, which prevents the adjacent weight input from overlapping. Added settings-pools-layout.test.ts to lock in the new grid contract and removal of the fixed-width label column. Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-03-30T12:22:58Z",
+    "entry_id": "019d3eb2-ad6a-7c12-9db0-41a2d0e192a4",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026.03"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d49a7-5edc-7102-8786-e5e87b04c607",
+  "occurred_at": "2026-04-01T15:26:38.785295Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c85c",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Verify form resets after successful Create-More",
+    "type": "work",
+    "updated_at": "2026-04-01T15:26:38.785295Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4465-0da3-7062-bbaa-7723ea37c84d",
+  "occurred_at": "2026-03-31T14:56:06.563494Z",
+  "knot_id": "foolery-7540",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review: APPROVED. Both implementation commits live on main (704c9e17569e: Fix scanned settings model selectors; 7b036a815d4a: fix(settings): normalize imported agent model ids). agent-config-normalization.ts (147 lines) canonicalizes Claude model IDs (dots→hyphens) at scan, detect, load, save, and doctor/backfill paths. CI green (all success). No invariants on this knot. No regressions detected. All commit tags confirmed.",
+    "datetime": "2026-03-31T14:56:06.563494Z",
+    "entry_id": "019d4465-0da3-7062-bbaa-77103efc8603",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

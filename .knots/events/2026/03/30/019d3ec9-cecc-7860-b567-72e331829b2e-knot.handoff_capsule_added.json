@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ec9-cecc-7860-b567-72e331829b2e",
+  "occurred_at": "2026-03-30T12:48:26.316875Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipped the approved Create New draft persistence work by merging branch ab20/create-draft-persistence into main as commit c01008a4d882 and pushing origin/main. Remote CI passed for GitHub Actions run 23745418873 on commit c01008a4d882, covering lint, unit tests with coverage, coverage regression check, and build.",
+    "datetime": "2026-03-30T12:46:21Z",
+    "entry_id": "019d3ec9-cecc-7860-b567-72d3bce6e2ae",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

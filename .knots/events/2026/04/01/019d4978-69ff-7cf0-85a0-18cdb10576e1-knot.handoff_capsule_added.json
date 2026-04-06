@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4978-69ff-7cf0-85a0-18cdb10576e1",
+  "occurred_at": "2026-04-01T14:35:21.47185Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Committed 6 files to main (b8f494fe2a4c): src/app/beats/page.tsx, src/app/beats/use-beat-actions.ts, src/components/beat-table-mutations.tsx, src/components/filter-bar.tsx, and 2 new test files. Fixed a max-lines-per-function lint violation in filter-bar.tsx by extracting BulkActionButtons component. CI passed (job: ci ✓). Coverage annotations present but non-blocking.",
+    "datetime": "2026-04-01T14:35:21.47185Z",
+    "entry_id": "019d4978-69ff-7cf0-85a0-18b57aa52fdb",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

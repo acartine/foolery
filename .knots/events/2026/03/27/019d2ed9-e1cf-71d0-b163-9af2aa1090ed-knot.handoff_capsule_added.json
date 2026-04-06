@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed9-e1cf-71d0-b163-9af2aa1090ed",
+  "occurred_at": "2026-03-27T10:32:04.303603Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented a shared version update action in src/components/version-update-action.ts, reused it from the version badge and the header update banner, and added focused tests for the shared trigger and banner action wiring. Verified in worktree feat/foolery-8ab7-banner-update with bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-27T10:31:56Z",
+    "entry_id": "019d2ed9-e1cf-71d0-b163-9ae5f4e1f820",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-27"
+  }
+}

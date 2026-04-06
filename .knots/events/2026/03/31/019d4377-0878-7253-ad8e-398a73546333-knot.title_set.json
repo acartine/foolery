@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4377-0878-7253-ad8e-398a73546333",
+  "occurred_at": "2026-03-31T10:36:07.672256Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.title_set",
+  "data": {
+    "from": "UI Terminal and History Terminal:  Support light theme",
+    "to": "Implement persistent light theme support for Terminal and History Terminal"
+  }
+}

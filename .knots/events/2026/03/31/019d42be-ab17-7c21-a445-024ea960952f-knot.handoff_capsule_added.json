@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42be-ab17-7c21-a445-024ea960952f",
+  "occurred_at": "2026-03-31T07:14:45.143224Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected. 1. Acceptance criteria require persisted token counts to remain scoped to the agent and beat that actually consumed them, but src/lib/terminal-manager-initial-child.ts:110-111 still expands a wave session to prepared.waveBeatIds and src/lib/agent-token-usage.ts:54-72 writes the same turn.completed usage to every beatId in that array. 2. The focused regression test still codifies the wrong behavior in src/lib/__tests__/agent-token-usage.test.ts:33-65 by asserting that one turn should create token_usage entries for both beat-a and beat-b, which masks the bug instead of protecting against it. Sanity gates on the reviewed checkout: bun run lint (same pre-existing warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-31T07:14:45.143224Z",
+    "entry_id": "019d42be-ab17-7c21-a445-02366c81defa",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

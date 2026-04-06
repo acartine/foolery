@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee2-ab12-7a33-bea2-e9a43afa09b0",
+  "occurred_at": "2026-03-30T13:15:35.570821Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Revised plan v2 addresses both review concerns: (1) Section-level \"Add Selected\" button replaces per-row Add and Add All — collects all multi-selected models across agents, imports in one action, uses variant=\"success\" styling. (2) Codex rename scope is explicit: AgentProviderId type, PROVIDER_LABELS, detectAgentProviderId return value, normalizeAgentIdentity/normalizeCopilotModel/formatAgentFamily guards, VENDOR_CONFIG key in agent-info-bar.tsx, and agent-identity tests. Lease-audit test data left unchanged (raw stored strings, not type-level). State shape changes from Record<string,string> to Record<string,string[]>. Multi-select uses unified Popover+Command combobox replacing both Select and SearchableOptionCombobox paths. Execution: identity rename → hooks state shape → scanned UI → section wiring → quality gates.",
+    "datetime": "2026-03-30T13:15:35.570821Z",
+    "entry_id": "019d3ee2-ab12-7a33-bea2-e9914b026c69",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

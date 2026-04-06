@@ -1,0 +1,15 @@
+{
+  "event_id": "019d446e-f597-7673-96f4-f7f61e1437f8",
+  "occurred_at": "2026-03-31T15:06:55.767072Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. Root cause: useRehydrateTerminals short-circuits when localStorage is empty, never fetching backend sessions. Fix: (1) remove the early-return guard so listSessions() always runs, (2) set panelOpen=true in computeRehydrate when orphan running sessions are discovered. 2 files changed (~15 lines), plus unit and E2E tests. Existing orphan-recovery and SSE sync infrastructure handles the rest.",
+    "datetime": "2026-03-31T15:06:55.767072Z",
+    "entry_id": "019d446e-f597-7673-96f4-f7efac064085",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3ea8-b401-7ea1-aeee-000bb61108ea",
+  "occurred_at": "2026-03-30T12:12:16.769288Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-44f1",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Clicking on ReTakes or Diagnostics from any other view causes the page to jitter outward to both left and right",
+    "type": "work",
+    "updated_at": "2026-03-30T12:12:16.769288Z",
+    "workflow_id": "compatibility"
+  }
+}

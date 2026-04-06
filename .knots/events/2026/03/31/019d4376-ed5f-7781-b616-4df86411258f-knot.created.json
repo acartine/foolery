@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4376-ed5f-7781-b616-4df86411258f",
+  "occurred_at": "2026-03-31T10:36:00.735285Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.created",
+  "data": {
+    "body": "add light theme toggles and persist them in settings.  users should be able to toggle light theme in either terminal header bar and in settings.  the setting should be remembered from session to session, using server side store (settings file is fine)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "UI Terminal and History Terminal:  Support light theme",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

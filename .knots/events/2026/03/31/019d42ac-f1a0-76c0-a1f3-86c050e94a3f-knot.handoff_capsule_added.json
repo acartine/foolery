@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ac-f1a0-76c0-a1f3-86c050e94a3f",
+  "occurred_at": "2026-03-31T06:55:23.552899Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Validated implementation on branch foolery-44f1 at commit aa1951bc2f01.\n\nWhat is implemented\n- Existing branch commit constrains the ReTakes row title width to prevent the view from widening its centered layout shell.\n- Existing shared layout keeps the header/page shell aligned, with scrollbar gutter stabilization present in src/app/globals.css.\n\nVerification\n- Browser validation against the knot worktree dev server on http://127.0.0.1:3001 measured stable header positions across Queues, ReTakes, and Diagnostics: header left 39.625px, Foolery left 56.625px, header row right edge 1528.375px.\n- No horizontal movement was observed in the top navigation row when switching between those views.\n- Sanity gates passed in the knot worktree after bun install --frozen-lockfile:\n  - bun run lint\n  - bunx tsc --noEmit\n  - bun run test\n  - bun run build\n\nRepo state\n- git status is clean.\n- No additional code changes were required in this session because the implementation branch already satisfied the acceptance criteria.",
+    "datetime": "2026-03-31T06:55:23.552899Z",
+    "entry_id": "019d42ac-f1a0-76c0-a1f3-86b58bb5edc1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

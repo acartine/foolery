@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2df0-3b03-7542-8423-09653558b463",
+  "occurred_at": "2026-03-27T06:16:51.71531Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. All acceptance criteria verified: (1) clicking the version pill triggers checkForUpdates via /api/version?force=1, (2) update-available state renders 'Update now to v{latestVersion}', (3) up-to-date state renders 'Latest version installed'. Scope limited to version-badge.tsx and its test file. CI green (runs 23633825757, 23633825758). Typecheck clean, 2257 tests pass, no lint errors in changed files. Commits tagged: 27cf50d62f60 (feature), 274b1de5ba9c (merge), d4025cae1776 (lint fix).",
+    "datetime": "2026-03-27T06:16:51.71531Z",
+    "entry_id": "019d2df0-3b03-7542-8423-095f0f0aa96a",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

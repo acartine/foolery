@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e27-a980-7883-ab5e-ec5dbd77f2e0",
+  "occurred_at": "2026-03-30T09:51:19.936365Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan: Add a custom case-insensitive substring filter to the <Command> component in SearchableOptionCombobox (settings-agents-scanned.tsx:202). The cmdk default filter uses command-score (fuzzy/word-boundary matching) which fails for partial model IDs like \"glm\" or \"minimax\". Fix is ~10 lines in a single file. No child knots needed — this is a straightforward single-file fix.",
+    "datetime": "2026-03-30T09:51:19.936365Z",
+    "entry_id": "019d3e27-a980-7883-ab5e-ec43b11a08d8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

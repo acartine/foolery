@@ -1,0 +1,24 @@
+{
+  "event_id": "019d4960-94f5-7eb3-b965-90bffe5ea1a8",
+  "occurred_at": "2026-04-01T14:09:19.605621Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1a2d",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Reduce beat update latency to 1 second on user-initiated creation and state changes",
+    "type": "work",
+    "updated_at": "2026-04-01T14:09:19.605621Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d495f-c705-7e33-a1a9-bb49e2053379"
+  }
+}

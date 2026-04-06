@@ -1,0 +1,17 @@
+{
+  "event_id": "019d42dd-b8d7-7333-a531-c93a2541e450",
+  "occurred_at": "2026-03-31T07:48:40.279099Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.created",
+  "data": {
+    "body": "Seeing the dates and the conversation number is helpful.\nalso no need to show Prompt and Take number if they are always the same.  Just pick one.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "History: Conversation Log: Add dates to pulldown, not just time",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

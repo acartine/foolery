@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4310-91f0-74a3-8453-e53854d87266",
+  "occurred_at": "2026-03-31T08:44:12.656317Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update the Scan model selector in Settings → Agents to reflect the required Gemini model set. Replace the existing list with exactly: 3.1-pro-preview, 3-flash-preview, 2.5-pro, 2.5-flash, and 2.5-flash-lite. Scope is limited to this model list update only."
+  }
+}

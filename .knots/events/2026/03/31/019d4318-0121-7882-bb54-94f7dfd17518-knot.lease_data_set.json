@@ -1,0 +1,19 @@
+{
+  "event_id": "019d4318-0121-7882-bb54-94f7dfd17518",
+  "occurred_at": "2026-03-31T08:52:19.87332Z",
+  "knot_id": "foolery-f959",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "OpenCode",
+        "agent_type": "",
+        "model": "openrouter/minimax/minimax-m2.7",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1774947064077-iogxkx"
+    }
+  }
+}

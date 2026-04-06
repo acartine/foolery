@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f6-72ce-70b3-b879-4cebea8c2248",
+  "occurred_at": "2026-03-31T08:15:40.750968Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review approved. The proposed fix correctly targets the two observed root causes in the current code: settings scan falls back to provider-only placeholder options for Claude/Codex/Gemini when dynamic discovery is unavailable, and the scanned settings UI only supports add-only toggles so selections cannot be cleared. Adding explicit provider model catalogs in src/lib/settings-agent-scan.ts, merging them with detected configured-model metadata, and wiring a dedicated remove path through the scanned settings UI is feasible, bounded, and consistent with the existing agent identity and label helpers. The test plan covers the key acceptance criteria: multi-row pulldowns, real selected-model pill labels including Claude Opus 4.6, and clearing previously selected scanned models back to no selection without affecting unrelated agents. No knot invariants are present, and no security, performance, or maintainability issues in the plan block implementation.",
+    "datetime": "2026-03-31T08:15:40.750968Z",
+    "entry_id": "019d42f6-72ce-70b3-b879-4cdcab772995",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4974-40b3-75a0-bccf-2eda651613d4",
+  "occurred_at": "2026-04-01T14:30:48.755782Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1) src/components/use-beat-detail-data.ts: useAddDepMutation currently only invalidates beat-deps cache on add-dependency success. Acceptance requires user-initiated beat changes to be reflected in queue/active views within 1 second; dependency edits can change beat attributes/relationships, but this path has no list-level invalidation. 2) Implementation lacks the requested Playwright automated test coverage: there is no Playwright/e2e test scaffold or timing test for create/update flows, so criteria around 1-second verification and network monitoring are unverified by test.,",
+    "datetime": "2026-04-01T14:30:48.755782Z",
+    "entry_id": "019d4974-40b3-75a0-bccf-2ec80be1021e",
+    "model": "codex-spark/gpt",
+    "username": "Codex",
+    "version": "5.3"
+  }
+}

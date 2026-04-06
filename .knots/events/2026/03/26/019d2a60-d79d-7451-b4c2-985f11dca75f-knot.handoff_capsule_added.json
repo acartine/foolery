@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a60-d79d-7451-b4c2-985f11dca75f",
+  "occurred_at": "2026-03-26T13:41:22.973067Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan approved in plan_review. Root cause is confirmed: scripts/setup.sh:67 and scripts/agent-wizard.sh:51 still use unsafe printf '->', while scripts/install.sh already uses printf '%s' '->'. Scope is minimal and correct, invariants list is empty, and a repo-wide scan of scripts found no additional printf-with-leading-dash cases beyond the two planned fixes. Test strategy is adequate for this change: syntax-check both scripts and verify no remaining matching patterns before reinstall/runtime verification.",
+    "datetime": "2026-03-26T13:41:11Z",
+    "entry_id": "019d2a60-d79d-7451-b4c2-9848da9f7be9",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

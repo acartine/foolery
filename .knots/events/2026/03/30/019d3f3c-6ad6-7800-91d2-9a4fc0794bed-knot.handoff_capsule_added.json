@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f3c-6ad6-7800-91d2-9a4fc0794bed",
+  "occurred_at": "2026-03-30T14:53:37.366169Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment failed on 2026-03-30 while merging foolery-67b5 into main. git merge --no-ff foolery-67b5 produced content conflicts in scripts/setup.sh and scripts/agent-wizard.sh; the branch also adds scripts/test-install-copilot-setup-single-cli.sh. Merge was aborted. Return knot to implementation to rebase or manually reconcile the shell wizard changes before retrying shipment.",
+    "datetime": "2026-03-30T14:53:37.366169Z",
+    "entry_id": "019d3f3c-6ad6-7800-91d2-9a395e509e89",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

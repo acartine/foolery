@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa1-fe8e-7661-b86f-dcaa5060ef9a",
+  "occurred_at": "2026-03-26T14:52:32.782383Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch worktree-inline-title-9345. Removed title column from getBeatColumns. Created InlineTitleContent component in beat-column-helpers.tsx preserving hierarchy rendering (chevrons, indentation, child-count badges), wave-slug prefix, meta badges, labels, title click. BeatTableRow now renders 3-row structure: metadata cells, inline title band (truncated, spans all cols), optional summary. TitleRenderOpts threaded from useBeatTableState. Summary colSpan uses totalCols. All gates pass: lint 0 errors, typecheck clean, 2250/2250 tests, build OK.",
+    "datetime": "2026-03-26T14:52:32.782383Z",
+    "entry_id": "019d2aa1-fe8e-7661-b86f-dc98e1ae636f",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

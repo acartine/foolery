@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42fd-9d6c-7b72-962e-dbd07e862c96",
+  "occurred_at": "2026-03-31T08:23:30.41292Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved on branch b5c5-settings-model-pulldowns at commit 704c9e17569e. Verified the scan layer now supplies real multi-model catalogs for Claude, Codex, and Gemini; selected pills resolve to model names instead of provider names, including the Claude Opus 4.6 case; and scanned selections can be cleared via the new remove path without affecting unrelated agents. Confirmed test coverage in settings scan/model-label/UI tests for provider catalogs, pill labels, and clear affordances. Validation rerun in /Users/cartine/foolery-b5c5: bun run lint (passes with one pre-existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-31T08:23:16Z",
+    "entry_id": "019d42fd-9d6c-7b72-962e-dbc913969c2f",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

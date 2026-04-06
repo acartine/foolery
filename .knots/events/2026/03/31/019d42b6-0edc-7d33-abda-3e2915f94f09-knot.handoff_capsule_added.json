@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42b6-0edc-7d33-abda-3e2915f94f09",
+  "occurred_at": "2026-03-31T07:05:20.860476Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Acceptance criteria failure: src/lib/agent-token-usage.ts still fans one turn.completed usage payload out to every beatId it receives, so persisted token_usage records are not truly beat-scoped when the caller provides multiple beats. 2. The violating multi-beat call path remains active in src/lib/terminal-manager-initial-child.ts, which passes prepared.waveBeatIds for parent-scoped sessions into wireStdout/processStdoutLine and then into logTokenUsageForEvent. 3. Existing tests pass, but coverage is misaligned with the requirement: src/lib/__tests__/agent-token-usage.test.ts asserts the duplicated multi-beat behavior instead of rejecting or skipping it, so the regression is currently codified rather than prevented.",
+    "datetime": "2026-03-31T07:05:07Z",
+    "entry_id": "019d42b6-0edc-7d33-abda-3e1ddeedf7f9",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

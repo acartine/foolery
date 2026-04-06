@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee1-dc2a-7032-a511-7c3757373717",
+  "occurred_at": "2026-03-30T13:14:42.602959Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete: merged feat/foolery-7a57 to main (merge commit 71d3849e), pushed to origin/main. CI green — lint, tests (2349 passed), build all succeeded. Files changed: agent-display-label.tsx (layout prop for stacked pills), settings-pools-section.tsx (restored flex layout with fixed widths), settings-pools-layout.test.ts (updated tests).",
+    "datetime": "2026-03-30T13:14:42.602959Z",
+    "entry_id": "019d3ee1-dc2a-7032-a511-7c2cf4e51e8e",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

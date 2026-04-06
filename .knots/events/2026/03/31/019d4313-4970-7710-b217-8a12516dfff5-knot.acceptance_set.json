@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-4970-7710-b217-8a12516dfff5",
+  "occurred_at": "2026-03-31T08:47:10.704014Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) The Scan model selector in Settings → Agents displays exactly five entries: 3.1-pro-preview, 3-flash-preview, 2.5-pro, 2.5-flash, and 2.5-flash-lite. 2) No other Gemini model options are present in this selector and none of the five required entries are missing. 3) Selecting and saving a model works exactly as before, with the only functional difference being the updated model names list."
+  }
+}

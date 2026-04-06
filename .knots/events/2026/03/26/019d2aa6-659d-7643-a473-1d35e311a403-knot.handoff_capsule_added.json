@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa6-659d-7643-a473-1d35e311a403",
+  "occurred_at": "2026-03-26T14:57:21.309612Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented clickable version pill update check on branch feat/foolery-6aaf-version-pill at commit e14229f2243c. VersionBadge now opens a popover on click, requests /api/version?force=1, and shows loading, update-available, latest-installed, or error states. Added coverage in src/components/__tests__/version-badge.test.ts and visual review in src/stories/version-badge.stories.tsx. Validation completed in /Users/cartine/foolery-6aaf-impl: bun run lint (warnings only, exit 0), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-26T16:00:00+01:00",
+    "entry_id": "019d2aa6-659d-7643-a473-1d2b53547500",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "GPT-5"
+  }
+}

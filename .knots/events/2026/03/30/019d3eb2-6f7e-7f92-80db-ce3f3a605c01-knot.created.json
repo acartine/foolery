@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3eb2-6f7e-7f92-80db-ce3f3a605c01",
+  "occurred_at": "2026-03-30T12:22:54.590389Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.   show them in diagnostics",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Collect and save token counts per agent per beat",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

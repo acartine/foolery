@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3093-1a0f-7620-b0ab-be5bb95b8356",
+  "occurred_at": "2026-03-27T18:34:00.079594Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved. The backend-managed update flow is present on origin/main at merge commit f823d24495ae, both implementation and shipment commits are tagged on the knot, and the remote CI plus Coverage Badge workflows completed successfully for the shipped revision.",
+    "datetime": "2026-03-27T18:34:00.079594Z",
+    "entry_id": "019d3093-1a0f-7620-b0ab-be447a6f5b39",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

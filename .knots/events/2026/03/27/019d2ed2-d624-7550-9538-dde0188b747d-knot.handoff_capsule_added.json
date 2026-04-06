@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed2-d624-7550-9538-dde0188b747d",
+  "occurred_at": "2026-03-27T10:24:22.564432Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planned a shared update action change: extract the existing clipboard based update trigger from src/components/version-badge.tsx, reuse it from the update banner in src/components/app-header-parts.tsx, and add focused coverage for the banner click path and no action case.",
+    "datetime": "2026-03-27T10:24:22Z",
+    "entry_id": "019d2ed2-d624-7550-9538-ddd0c220fc07",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

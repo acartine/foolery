@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42b3-da67-7cd0-92d7-5b31c1a142cb",
+  "occurred_at": "2026-03-31T07:02:56.359425Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented beat-scoped token usage attribution fix in worktree branch foolery-81ad. logTokenUsageForEvent now persists usage only when a completed event resolves to exactly one beat, preventing multi-beat scene/direct fan-out; initial child close-path buffering now applies the same token logging so final buffered turn.completed events are saved consistently. Added unit coverage for single-beat logging and multi-beat skip behavior. Validation: bun run lint (passes with one pre-existing react-hooks/incompatible-library warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, bun run build. Commit pushed: fdfcce1f72fb.",
+    "datetime": "2026-03-31T07:02:27Z",
+    "entry_id": "019d42b3-da67-7cd0-92d7-5b2c1c793549",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

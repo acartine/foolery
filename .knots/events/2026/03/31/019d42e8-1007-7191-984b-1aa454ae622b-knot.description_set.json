@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42e8-1007-7191-984b-1aa454ae622b",
+  "occurred_at": "2026-03-31T07:59:57.959356Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Update lease diagnostics leaderboards to suppress low-signal entries that are mostly noise. An entry should only appear on the leaderboard if it has at least 10 attempts and a success rate greater than 25%. Entries that do not meet both thresholds should be excluded from leaderboard output."
+  }
+}

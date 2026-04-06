@@ -1,0 +1,15 @@
+{
+  "event_id": "019d54cc-67f4-7373-ac84-9911c9f65c45",
+  "occurred_at": "2026-04-03T19:22:55.348542Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Review result: request changes. The implementation correctly adds capability wiring, runtime reuse, tests, and clean targeted gates (targeted vitest passed; lint exited 0 with one existing warning in beat-form.tsx; tsc and build passed), but it does not satisfy acceptance criterion 1. The chosen interactive entrypoint is 'opencode session --format json' via buildOpenCodeInteractiveArgs(). On the installed CLI, 'opencode session --help' shows only management subcommands ('list' and 'delete'), and a direct invocation of 'opencode session --format json' exits with code 1 after printing that help text. Because the process cannot start an interactive stream, OpenCode cannot participate in claimed-step or take-loop sessions through the shared runtime. The fix should select a real stable headless/interactive OpenCode transport before re-review.",
+    "datetime": "2026-04-03T19:22:40Z",
+    "entry_id": "019d54cc-67f4-7373-ac84-9900a9b2e4cb",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

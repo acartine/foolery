@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42bc-55a3-7051-bb0a-a2dd19f31bea",
+  "occurred_at": "2026-03-31T07:12:12.194996Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Tightened token-usage persistence to require a single resolved beat ID before writing a token_usage record, which prevents scene/orchestration sessions from misattributing one turn's usage across multiple beats. Updated the terminal take/breakdown/orchestration call paths to pass explicit beat-scoped attribution only when it is safe, and kept diagnostics coverage aligned with the persisted values by updating the focused token-usage test.\n\nValidation: bun run lint (same pre-existing warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-31T07:12:12.194996Z",
+    "entry_id": "019d42bc-55a3-7051-bb0a-a2c60cfe33d3",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

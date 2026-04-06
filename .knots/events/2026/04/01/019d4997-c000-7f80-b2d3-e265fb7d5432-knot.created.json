@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4997-c000-7f80-b2d3-e265fb7d5432",
+  "occurred_at": "2026-04-01T15:09:35.104974Z",
+  "knot_id": "foolery-17ee",
+  "type": "knot.created",
+  "data": {
+    "body": "make button font, font size match the buttons in the title bar.\n\nuse the color scheme, no white buttons, that's just terrible.  light purple, light green, whatever.  just no white buttons.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Queue Screen: Multiselect: Buttons are fugly",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

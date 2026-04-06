@@ -1,0 +1,10 @@
+{
+  "event_id": "019d446b-bdbd-70c3-9d2a-cad6bb25b3ce",
+  "occurred_at": "2026-03-31T15:03:24.861929Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "UI Terminal: Doesn't persist across. browsers",
+    "to": "Active terminals don't appear in new browser instances"
+  }
+}

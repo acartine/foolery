@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a64-4c51-70f3-8a18-daaa661ec49f",
+  "occurred_at": "2026-03-26T13:45:09.457246Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan covers converting VersionBadge into a Popover-based clickable element that fetches /api/version?force=1 on open. Four UI states: loading, update available (\"Update now to v{version}\"), up to date (\"Latest version installed\"), and error fallback. Reuses existing Popover primitives and API endpoint. Test strategy includes Vitest unit tests for all four states with mocked fetch, Storybook stories for visual coverage, and manual verification. Single file modification (version-badge.tsx) plus two new test/story files. No API or state management changes needed.",
+    "datetime": "2026-03-26T13:45:09.457246Z",
+    "entry_id": "019d2a64-4c51-70f3-8a18-da9e438f24c4",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

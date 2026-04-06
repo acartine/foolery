@@ -1,0 +1,19 @@
+{
+  "event_id": "019d3f55-1b6a-72b3-8632-bb6e0556279b",
+  "occurred_at": "2026-03-30T15:20:35.434256Z",
+  "knot_id": "foolery-ae1a",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "OpenCode",
+        "agent_type": "",
+        "model": "openrouter/mistralai/devstral-2512",
+        "model_version": "",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1774881851760-m9b1x7"
+    }
+  }
+}

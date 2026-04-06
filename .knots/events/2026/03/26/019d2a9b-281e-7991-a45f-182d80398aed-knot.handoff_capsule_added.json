@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a9b-281e-7991-a45f-182d80398aed",
+  "occurred_at": "2026-03-26T14:45:04.670296Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved on 2026-03-26. Verified origin/main contains shipped commit 99e7a2d4fa9d (ancestor of origin/main) and src/components/beat-columns.tsx no longer includes the Type column insertion, so queues no longer show the constant work value. Commit tags present: 57ecb5e3763a, aea8120e78aa, 99e7a2d4fa9d. GitHub Actions CI run 23600460557 succeeded for head SHA 99e7a2d4fa9d with lint, unit tests with coverage, coverage regression check, and build all passing.",
+    "datetime": "2026-03-26T14:45:04.670296Z",
+    "entry_id": "019d2a9b-281e-7991-a45f-181c68033225",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "2026-03-26"
+  }
+}

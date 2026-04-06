@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49a9-6edf-74b2-8e43-7dd868979359",
+  "occurred_at": "2026-04-01T15:28:53.983923Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the create-more reset fix by removing early draft clearing and relationship-state resets from src/components/beat-form.tsx, then clearing the draft only inside the successful submitBeat callback in src/components/create-beat-dialog.tsx immediately before the keyed remount. Added src/components/__tests__/create-more-draft-reset.test.ts to lock the create-more callback ordering and title autofocus. Verified with bun run lint (existing react-hooks/incompatible-library warning only), bunx tsc --noEmit, bun run test, bun run build, and a Playwright smoke check on http://localhost:3001/beats that showed title, description, labels, and acceptance clearing, priority resetting from P1 to P2, and focus returning to the title input after a successful Create More submission.",
+    "datetime": "2026-04-01T15:28:53.983923Z",
+    "entry_id": "019d49a9-6edf-74b2-8e43-7dc108b1fbf1",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

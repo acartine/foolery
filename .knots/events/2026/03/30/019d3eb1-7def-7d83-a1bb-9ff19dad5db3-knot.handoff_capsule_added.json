@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb1-7def-7d83-a1bb-9ff19dad5db3",
+  "occurred_at": "2026-03-30T12:21:52.751803Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan approved for implementation. The proposed pending-refinement Zustand store fits the current architecture: HeaderActions only needs to combine enqueue-in-flight with pending state for disabling and indicator rendering, and the existing useScopeRefinementNotifications polling hook is the right place to clear pending beat ids on completion. Test coverage is adequate if it includes the new store behavior plus UI disabled/indicator states and completion-driven clearing. Implementation note: update pending Set immutably or use selectors that subscribe to derived booleans so button state re-renders correctly.",
+    "datetime": "2026-03-30T12:21:44Z",
+    "entry_id": "019d3eb1-7def-7d83-a1bb-9fef6051f93e",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

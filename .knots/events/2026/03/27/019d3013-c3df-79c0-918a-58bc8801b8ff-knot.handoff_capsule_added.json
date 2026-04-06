@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3013-c3df-79c0-918a-58bc8801b8ff",
+  "occurred_at": "2026-03-27T16:14:54.943384Z",
+  "knot_id": "foolery-84a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "84a6 now has the right hierarchy and a concrete parent plan, but Knots rejected advancement because children 4c96 and ea93 are still behind. Plan those child knots first; once they reach plan review, move back to 84a6 and advance the parent.",
+    "datetime": "2026-03-27T16:14:54.943384Z",
+    "entry_id": "019d3013-c3df-79c0-918a-58a316e80a41",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

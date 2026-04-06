@@ -1,0 +1,9 @@
+{
+  "event_id": "019d49a7-5ec1-7971-87ab-fca43f34d79f",
+  "occurred_at": "2026-04-01T15:26:38.785295Z",
+  "knot_id": "foolery-c85c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Acceptance criteria: (1) After a successful Create-More operation, all form fields are cleared or returned to their default values (no stale values from the previous submission). (2) Form validation and touched/dirty flags are reset so a subsequent Create-More starts as a fresh form. (3) The Create-More action can be triggered repeatedly and each submission uses the reset form state. (4) Validate in a browser context by using Playwright or chrome-devtools MCP scripts to assert post-submit DOM state and repeat the flow without stale input persistence."
+  }
+}

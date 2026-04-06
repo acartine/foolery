@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4968-b5b0-7312-80ea-c5c2c5c99ee1",
+  "occurred_at": "2026-04-01T14:18:12.272092Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review approved. All 4 acceptance criteria met: (1) Refine Scope button renders in BulkEditControls when onRefineScope prop provided, (2) handleRefineScope fires parallel refineBeatScope() calls via Promise.allSettled with summary toasts, (3) resolveRepoForBeat fallback to activeRepo handles offline-created knots, (4) source-code verification tests pass (3 tests in bulk-refine-scope.test.ts, 5 tests in use-beat-actions-refine-scope.test.ts). Quality gates all green: lint clean, tsc clean, 2412 tests passing.",
+    "datetime": "2026-04-01T14:18:12.272092Z",
+    "entry_id": "019d4968-b5b0-7312-80ea-c5b49ce11260",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

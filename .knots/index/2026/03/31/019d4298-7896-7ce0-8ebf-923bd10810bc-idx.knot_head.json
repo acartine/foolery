@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4298-7896-7ce0-8ebf-923bd10810bc",
+  "occurred_at": "2026-03-31T06:33:01.84032Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5cc7",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Settings: Agents: OpenCode: model pulldown truncates model names",
+    "type": "work",
+    "updated_at": "2026-03-31T06:33:01.84032Z",
+    "workflow_id": "compatibility"
+  }
+}

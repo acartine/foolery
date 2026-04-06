@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2a67-205d-7833-b059-ed3cedc0b00c",
+  "occurred_at": "2026-03-26T13:48:14.813519Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, let’s make easier to always read the title - it should be more compactly inlined below the normalized fields.  we want to preserve the same summary/preview behavior that exists today for the selected row (with mouseover, etc.)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Remove the title column from Queues and Active, showing it as an inline row below priority, workflow profile, owner, and status",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

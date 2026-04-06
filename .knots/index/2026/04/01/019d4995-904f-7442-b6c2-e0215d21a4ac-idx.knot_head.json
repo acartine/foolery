@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4995-904f-7442-b6c2-e0215d21a4ac",
+  "occurred_at": "2026-04-01T15:07:11.797533Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-de99",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Fix dropdown-induced jitter in Queues View multi-select mode",
+    "type": "work",
+    "updated_at": "2026-04-01T15:07:11.797533Z",
+    "workflow_id": "compatibility"
+  }
+}

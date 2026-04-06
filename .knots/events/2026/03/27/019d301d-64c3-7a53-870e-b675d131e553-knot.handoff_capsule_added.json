@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301d-64c3-7a53-870e-b675d131e553",
+  "occurred_at": "2026-03-27T16:25:25.955229Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. 8 files changed: LeaseAuditEvent.durationMs, TakeLoopContext.claimedAt, finalizeClaim sets timestamp, outcome path computes and records durationMs, aggregateDurations helper added. All gates green. Commit b7db2add on main.",
+    "datetime": "2026-03-27T16:25:25.955229Z",
+    "entry_id": "019d301d-64c3-7a53-870e-b66b42137337",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

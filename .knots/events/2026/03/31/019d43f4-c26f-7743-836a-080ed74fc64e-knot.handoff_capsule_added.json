@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43f4-c26f-7743-836a-080ed74fc64e",
+  "occurred_at": "2026-03-31T12:53:27.279683Z",
+  "knot_id": "foolery-7540",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Normalized imported agent model identifiers so runtime values are canonical and display metadata stays separate. Added importer tests for codex, opencode, copilot, claude, and gemini, and extended settings doctor/backfill to detect and repair non-canonical persisted agent model values such as dotted Claude model ids.",
+    "datetime": "2026-03-31T12:53:27.279683Z",
+    "entry_id": "019d43f4-c26f-7743-836a-07ff9f4d09c3",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

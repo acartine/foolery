@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4964-594e-70e2-9d21-011c2e3a7886",
+  "occurred_at": "2026-04-01T14:13:26.478613Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-12cc",
+    "profile_id": "autopilot",
+    "state": "ready_for_plan_review",
+    "terminal": false,
+    "title": "Enable Refine Scope action in Queues multi-select mode",
+    "type": "work",
+    "updated_at": "2026-04-01T14:13:26.478613Z",
+    "workflow_id": "compatibility"
+  }
+}

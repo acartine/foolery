@@ -1,0 +1,21 @@
+{
+  "event_id": "019d51df-a595-7ec3-9fe2-63b61d62ae0a",
+  "occurred_at": "2026-04-03T05:45:04.661404Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fd27",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Fix horizontal jitter when opening the repository dropdown",
+    "type": "work",
+    "updated_at": "2026-04-03T05:45:04.661404Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb0-2992-7fe0-ae02-5a963acc57ee",
+  "occurred_at": "2026-03-30T12:20:25.618643Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. Implementation creates a Zustand store (scope-refinement-pending-store.ts) to track beatIds with pending refinements. HeaderActions integrates the store to disable button and show \"scope refinement is pending\" indicator. The existing useScopeRefinementNotifications hook clears pending state when completions arrive via its 10s polling. 3 files touched (1 new store, 2 modified). Low-medium complexity.",
+    "datetime": "2026-03-30T12:20:25.618643Z",
+    "entry_id": "019d3eb0-2992-7fe0-ae02-5a89b0844ea7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a93-c8cd-7242-ba01-c7c4f8839755",
+  "occurred_at": "2026-03-26T14:37:01.517562Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review approved. The Queues/default column set no longer inserts the type column, so rows no longer show the constant 'work' value. Regression coverage now asserts getBeatColumns({}) excludes the type column. Validation in /Users/cartine/foolery/.knots/_worktree/foolery-6c3e: bun run lint completed with existing warnings only; bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-26T14:37:01.517562Z",
+    "entry_id": "019d2a93-c8cd-7242-ba01-c7bd348f8492",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

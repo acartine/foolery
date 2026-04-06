@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3025-1cdd-7c02-933a-6c38c052b794",
+  "occurred_at": "2026-03-27T16:33:51.837358Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review passed. SpeedTable renders correctly, effective speed formula accounts for review overhead, graceful degradation for missing data. Ready to ship.",
+    "datetime": "2026-03-27T16:33:51.837358Z",
+    "entry_id": "019d3025-1cdd-7c02-933a-6c24664ae1f2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b1-4c3f-72d2-9383-ba6173d73bcb",
+  "occurred_at": "2026-04-01T15:37:29.407455Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review APPROVED. Verified 3-file diff: beat-form.tsx removes early clearDraft/setBlocks/setBlockedBy from handleCreateMoreClick; create-beat-dialog.tsx adds clearDraft() in submitBeat success callback before setFormKey remount; new test file locks callback ordering and title autofocus. All 5 acceptance criteria satisfied: fields clear on success, preserved on failure, focus returns to title. Quality gates pass (tsc, tests, build). No security issues or regressions.",
+    "datetime": "2026-04-01T15:37:29.407455Z",
+    "entry_id": "019d49b1-4c3f-72d2-9383-ba555afe3741",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

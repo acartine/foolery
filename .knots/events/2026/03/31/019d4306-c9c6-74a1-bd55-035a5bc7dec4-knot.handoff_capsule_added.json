@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4306-c9c6-74a1-bd55-035a5bc7dec4",
+  "occurred_at": "2026-03-31T08:33:31.59031Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation already on main at commit 704c9e17569e (Fix scanned settings model selectors). Verified all acceptance criteria in clean worktree: static provider catalogs for Claude (5 models), Codex (8 models), and Gemini (3 models) populate pulldowns with real model rows; selected pills display actual model names via prefix-stripping (e.g. Opus 4.6 for Claude Opus 4.6); clear/remove affordances on pills call handleRemoveScannedOption to unregister; clearing last selection shows no pill. All quality gates pass: 207 test files (2370 tests), lint clean (1 pre-existing warning), tsc --noEmit clean, build succeeds.",
+    "datetime": "2026-03-31T08:33:31.59031Z",
+    "entry_id": "019d4306-c9c6-74a1-bd55-034387eb99a6",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

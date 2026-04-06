@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f47-8996-7261-8ef1-04e280328102",
+  "occurred_at": "2026-03-27T12:31:50.678671Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- The BeatTypeBadge component is no longer rendered in the BeatDetailHeader.\n- The BeatTypeBadge import is removed from beat-detail.tsx.\n- The Beat Detail header still renders the state dropdown, priority badge, metadata, and labels unchanged.\n- No other views that use BeatTypeBadge are affected (e.g., stories, table rows).\n- The app builds, lints, type-checks, and all existing tests pass."
+  }
+}

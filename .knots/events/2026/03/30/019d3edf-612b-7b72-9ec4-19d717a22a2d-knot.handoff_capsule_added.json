@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3edf-612b-7b72-9ec4-19d717a22a2d",
+  "occurred_at": "2026-03-30T13:12:00.043803Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. Verified: (1) grid layout from 3b4ca4f1 reverted — pool row uses flex with w-[140px]/sm:w-[220px] fixed widths. (2) Pills stack beneath agent name via layout=\"stacked\" prop on AgentDisplayLabel in pool row only. (3) Default inline layout preserved — 5 other consumers unaffected, zero diff on their files. (4) Tests validate flex layout, fixed widths, no grid classes, and stacked prop usage. All quality gates pass: lint 0 errors, tsc clean, 2349 tests passed, build OK.",
+    "datetime": "2026-03-30T13:12:00.043803Z",
+    "entry_id": "019d3edf-612b-7b72-9ec4-19c7bf1cb99b",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

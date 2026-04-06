@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f49-84b2-7942-9531-0c7b59cc92c7",
+  "occurred_at": "2026-03-30T15:07:55.954407Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Implemented multi-add continuation for scanned agent imports in Settings. After a scanned model is added, the row now advances to the next unregistered option so the same scan session can keep importing more models without rescanning. Added unit coverage for next-option selection and extended the Copilot settings UI smoke test to verify two models persist from one scan; updated the fake Copilot fixture to expose multiple models via help config. Validation passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build, bash scripts/test-copilot-settings-ui.sh.",
+    "datetime": "2026-03-30T15:07:55.954407Z",
+    "entry_id": "019d3f49-84b2-7942-9531-0c69c7aebef8",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

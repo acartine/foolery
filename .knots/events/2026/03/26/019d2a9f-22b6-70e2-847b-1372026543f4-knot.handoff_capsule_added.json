@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a9f-22b6-70e2-847b-1372026543f4",
+  "occurred_at": "2026-03-26T14:49:25.430238Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review approved. Verified: (1) /api/version?force=1 endpoint exists and returns {installedVersion, latestVersion, updateAvailable}, (2) force param correctly bypasses memory+disk caches, (3) Popover UI primitive available, (4) VersionBadge is a simple 36-line static span easy to wrap, (5) no conflicts with existing header hook that fetches /api/version on mount. Plan is complete, feasible, and correctly scoped.",
+    "datetime": "2026-03-26T14:49:25.430238Z",
+    "entry_id": "019d2a9f-22b6-70e2-847b-1368e4ac0fcd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

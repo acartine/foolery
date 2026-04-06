@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3496-21f3-75e3-8e32-df5f8a04cedd",
+  "occurred_at": "2026-03-28T13:15:47.571559Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When using the Create New dialog, all entered field data is lost if the user accidentally presses Escape, clicks outside the window, clicks the close button, or reloads the page. Form inputs should be persisted so users can recover their work. A Clear button should be added to let users explicitly reset the form."
+  }
+}

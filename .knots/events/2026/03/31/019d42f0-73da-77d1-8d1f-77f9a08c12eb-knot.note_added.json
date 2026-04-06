@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f0-73da-77d1-8d1f-77f9a08c12eb",
+  "occurred_at": "2026-03-31T08:09:07.802873Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: revise the implementation plan to explicitly address both remaining code paths called out by the acceptance criteria. The current plan focuses on model-aware exclusion in take-loop retry, but it does not explicitly remove the basic-mode gate in src/lib/terminal-manager-take-agent.ts that currently stops non-zero-exit rotation unless dispatchMode is \"advanced\", and it does not explicitly state how src/lib/agent-pool.ts will change so selectFromPool no longer falls back to the excluded agent when exclusion is requested. Update the plan so it names those code changes directly, clarifies whether retry exclusion will be agentId-based, effective-target-based, or both, and adds regression tests for basic-mode retry rotation plus the no-silent-fallback behavior.",
+    "datetime": "2026-03-31T08:09:07.802873Z",
+    "entry_id": "019d42f0-73da-77d1-8d1f-77e9f3d9432a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

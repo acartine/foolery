@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3025-81cf-7993-b25f-877fd3fb700d",
+  "occurred_at": "2026-03-27T16:34:17.679624Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review passed. Commit 73b730c4 verified on main. All gates green. Marking shipped.",
+    "datetime": "2026-03-27T16:34:17.679624Z",
+    "entry_id": "019d3025-81cf-7993-b25f-876244ed2daa",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

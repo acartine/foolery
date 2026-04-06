@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed9-2ba5-7630-b78a-57a8e909eb79",
+  "occurred_at": "2026-03-27T10:31:17.669676Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: APPROVED. Changes correctly address all acceptance criteria: (1) TableCell align-top→align-middle for consistent row vertical alignment; (2) profile and owner-type pills normalized to h-5 matching Badge height; (3) title column flex container switched to items-center with mt-0.5 nudge removed from chevron button; (4) three regression tests added. All quality gates pass: 0 lint errors, typecheck clean, 2260/2260 tests pass, build succeeds. No security issues or regressions found.",
+    "datetime": "2026-03-27T10:31:17.669676Z",
+    "entry_id": "019d2ed9-2ba5-7630-b78a-57966965cdb2",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

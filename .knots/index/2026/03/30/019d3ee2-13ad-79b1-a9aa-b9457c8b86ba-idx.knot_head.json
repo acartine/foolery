@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3ee2-13ad-79b1-a9aa-b9457c8b86ba",
+  "occurred_at": "2026-03-30T13:14:56.795311Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2e06",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Design diagnostics health model separating client and server health from raw perf traces",
+    "type": "work",
+    "updated_at": "2026-03-30T13:14:56.795311Z",
+    "workflow_id": "compatibility"
+  }
+}

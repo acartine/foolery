@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42ef-7932-7210-9086-b3c6be757693",
+  "occurred_at": "2026-03-31T08:08:03.63416Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In conversation #3 for knot 44f1 (term-1774873034101-2p7pxo), the take loop hit the same OpenRouter agent 10 consecutive times, exhausting `maxClaimsPerQueueType` without ever switching models.\n\nThe purpose of agent pools is to rotate through available models when one fails, but the current rotation logic has gaps:\n- `lastAgentPerQueueType` only tracks the single most-recent agent, so the pool selection can oscillate between two agents or fall back to the same one when the pool is small.\n- Error-exit agent switching is gated behind `dispatchMode: \"advanced\"`, meaning basic-mode sessions never rotate on non-zero exits.\n- `selectFromPool` falls back to the excluded agent when no alternative is found, silently defeating the exclusion.\n\nThe fix should ensure the claim loop genuinely rotates through all available pool agents before exhausting retries, regardless of dispatch mode."
+  }
+}

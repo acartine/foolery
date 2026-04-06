@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4317-b9c4-7ba3-8cc5-039c573cd4be",
+  "occurred_at": "2026-03-31T08:52:01.604771Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan for fixing truncated OpenCode model names in Settings > Agents:\n\nScope and current behavior\n- Relevant discovery path: `src/lib/settings-agent-scan.ts` sets OpenCode scanned option `label` to the raw `modelId` returned by `opencode models`.\n- Relevant UI path: `src/components/settings-agents-scanned.tsx` renders dropdown rows and selected-model pills using `buildModelLabelDisplayMap()` from `src/lib/model-labels.ts`.\n- Current display logic only strips a shared prefix across the full option set. For OpenCode identifiers this still leaves intermediate path segments visible (for example `provider/model-name` instead of only `model-name`), and the combobox row uses `truncate`, so long labels can still collapse visually.\n\nPlanned changes\n- Update `src/lib/model-labels.ts` so OpenCode-style slash-delimited identifiers can render from the last path token when that token is unique enough for display, while preserving the original option id/value and full label as backing data.\n- Keep collision safety in the label utility so if two options would produce the same last token, the display map falls back to a less-ambiguous label instead of changing selection behavior.\n- Update `src/components/settings-agents-scanned.tsx` so the dropdown option label no longer truncates the rendered display text for these model entries, while keeping search keywords and selection wiring unchanged.\n\nFiles expected to change\n- `src/lib/model-labels.ts`\n- `src/components/settings-agents-scanned.tsx`\n- `src/lib/__tests__/model-labels.test.ts`\n- `src/components/__tests__/settings-agents-scanned.test.ts`\n\nVerification strategy\n- Add/adjust unit coverage for the display-map behavior so OpenCode examples like `opencode/provider/very-long-model-name` render as `very-long-model-name`.\n- Add/adjust component markup coverage to verify the scanned agents dropdown/pills use the shortened OpenCode display label and do not render the hardcoded provider prefix.\n- Run targeted tests for the affected suites during implementation.\n\nComplexity and risks\n- Complexity is low and localized to presentation logic.\n- Main risk is accidental ambiguity if multiple OpenCode ids share the same last token; mitigation is to preserve collision fallback in the display-map utility.\n- Another risk is over-broad changes to non-OpenCode providers; mitigation is to keep the transformation constrained to slash-delimited identifier display behavior already centralized in the shared label helper.",
+    "datetime": "2026-03-31T08:52:01.604771Z",
+    "entry_id": "019d4317-b9c4-7ba3-8cc5-03834d83285c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

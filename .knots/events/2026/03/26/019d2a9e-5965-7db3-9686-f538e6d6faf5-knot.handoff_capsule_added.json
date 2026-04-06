@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a9e-5965-7db3-9686-f538e6d6faf5",
+  "occurred_at": "2026-03-26T14:48:33.893462Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Fixed the installer stale-launcher edge by honoring FOOLERY_LAUNCHER_PATH when writing the launcher, so upgrades/reinstalls can refresh custom/channel launchers instead of always targeting $BIN_DIR/foolery. Added src/lib/__tests__/install-launcher-path.test.ts to source the installer without running main, write the launcher through an override path, and assert the generated launcher lands at the override path with the safe printf '%s' '->' tip icon. Validation in /private/tmp/foolery-9df0: bash -n scripts/install.sh; bun run test -- src/lib/__tests__/install-launcher-path.test.ts; bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-03-26T14:48:33.893462Z",
+    "entry_id": "019d2a9e-5965-7db3-9686-f52d1d31d6a0",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

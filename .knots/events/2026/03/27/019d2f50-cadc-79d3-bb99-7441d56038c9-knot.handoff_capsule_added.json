@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f50-cadc-79d3-bb99-7441d56038c9",
+  "occurred_at": "2026-03-27T12:41:57.21295Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Planning complete. Implement by editing only `src/components/beat-detail.tsx` to remove the BeatTypeBadge import and header render, leaving state, priority, metadata, and labels intact. Keep all other BeatTypeBadge usages unchanged. Before completing implementation, run the full quality gates: install deps in the worktree if needed, then lint, typecheck, test, and build.",
+    "datetime": "2026-03-27T12:41:57.21295Z",
+    "entry_id": "019d2f50-cadc-79d3-bb99-74358e6b769a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f18-80df-76f1-8e32-89305c45b92b",
+  "occurred_at": "2026-04-02T16:48:19.167378Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan v3 addresses the two prior rejection reasons: (1) the fix changes SelectContent default from item-aligned to popper in select.tsx:56, and (2) browser-level verification uses a Storybook play() function with @storybook/test that records scroll position and bounding rects before/after opening each of the 7 selects in the FilterBar multi-select view. RepoSwitcher (DropdownMenu) is verification-only scope. All quality gates listed. Ready for plan_review.",
+    "datetime": "2026-04-02T16:48:19.167378Z",
+    "entry_id": "019d4f18-80df-76f1-8e32-892f2d7b26ef",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

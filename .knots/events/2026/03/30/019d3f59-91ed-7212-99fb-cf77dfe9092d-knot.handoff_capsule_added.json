@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f59-91ed-7212-99fb-cf77dfe9092d",
+  "occurred_at": "2026-03-30T15:25:27.917247Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Verified existing implementation branch foolery-67b5 / origin/foolery-67b5 for multi-model agent scan. The branch includes CLI wizard changes in scripts/agent-wizard.sh and scripts/setup.sh plus settings scan persistence and regression coverage in src/components/settings-agents-hooks.tsx, src/components/settings-agents-scanned.tsx, src/components/__tests__/settings-agents-scanned.test.ts, src/lib/__tests__/setup-settings-writer.test.ts, and the Copilot smoke scripts. Validation passed in the dedicated worktree: bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-30T15:25:27.917247Z",
+    "entry_id": "019d3f59-91ed-7212-99fb-cf6c96d3e438",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

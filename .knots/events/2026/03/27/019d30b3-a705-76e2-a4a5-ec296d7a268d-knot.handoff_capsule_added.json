@@ -1,0 +1,15 @@
+{
+  "event_id": "019d30b3-a705-76e2-a4a5-ec296d7a268d",
+  "occurred_at": "2026-03-27T19:09:33.316997Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review approved: the plan targets the correct four first-hyphen split sites, aligns them with the already-correct last-hyphen convention in extractBeatPrefix, and covers the affected tests for no-hyphen, single-hyphen, and multi-hyphen beat IDs. No invariants are present, and the change is low risk because lastIndexOf preserves existing single-hyphen behavior.",
+    "datetime": "2026-03-27T19:09:33.316997Z",
+    "entry_id": "019d30b3-a705-76e2-a4a5-ec1ff6ba19e5",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

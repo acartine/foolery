@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed3-222b-7d63-bdee-051312e66d2d",
+  "occurred_at": "2026-03-27T10:24:42.027428Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan recorded for `foolery-920b`: align queue-row cells by moving the beats table to middle-aligned data cells and normalizing the custom queue pills/buttons to the same visual height as the existing badge components. Expected implementation touch points are `src/components/ui/table.tsx`, `src/components/beat-column-defs.tsx`, `src/components/beat-column-defs-extra.tsx`, plus a small beat-table layout regression test and manual Queues-view verification with and without the repo column.",
+    "datetime": "2026-03-27T10:24:41Z",
+    "entry_id": "019d2ed3-222b-7d63-bdee-050b33d5344f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

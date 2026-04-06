@@ -1,0 +1,17 @@
+{
+  "event_id": "019d5246-5ff9-7470-9059-225df2a56fb2",
+  "occurred_at": "2026-04-03T07:37:17.049434Z",
+  "knot_id": "foolery-fd80",
+  "type": "knot.created",
+  "data": {
+    "body": "Create a shared runtime and capability interface for interactive and one-shot agent sessions. Centralize normalized event processing, AskUser auto-response gating, follow-up prompting, stdin drain scheduling, watchdog lifecycle, process-group termination, and post-exit validation state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Build shared agent session runtime",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

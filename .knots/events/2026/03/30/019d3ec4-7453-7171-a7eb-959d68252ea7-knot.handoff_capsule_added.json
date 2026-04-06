@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ec4-7453-7171-a7eb-959d68252ea7",
+  "occurred_at": "2026-03-30T12:42:35.474997Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation complete on branch ab20/create-draft-persistence (d6ea6656529b). All 6 acceptance criteria met: (1) Form values persisted to localStorage on each input change via form.watch() subscription and useEffect for blocks/blockedBy. (2) Persisted values restored when dialog reopens by loading draft in useBeatForm and merging with defaults. (3) Clear button added in lower-left of BeatFormActions with variant=outline. (4) Clear resets form via formKey increment and removes localStorage data. (5) clearDraft() called in both handleFormSubmit and handleCreateMoreClick before onSubmit. (6) No new dependencies — uses native localStorage. Extracted ProfileInfoDialog and FormField into separate files to stay under 500-line limit. All quality gates pass: lint (warning only — React Compiler skip on form.watch, pre-existing pattern), tsc --noEmit clean, 201 test files / 2330 tests passing, build succeeds.",
+    "datetime": "2026-03-30T12:42:35.474997Z",
+    "entry_id": "019d3ec4-7453-7171-a7eb-958568a7da14",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

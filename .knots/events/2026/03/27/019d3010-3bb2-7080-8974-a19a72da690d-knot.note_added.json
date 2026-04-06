@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3010-3bb2-7080-8974-a19a72da690d",
+  "occurred_at": "2026-03-27T16:11:03.474276Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Plan\n\n### Root Cause\n\nIn `finalizeClaim` (terminal-manager-take-agent.ts:341), `appendLeaseAuditEvent` is called as a fire-and-forget Promise — it is NOT awaited. When planning steps complete quickly, the process exits before the async disk write completes, dropping the audit event.\n\nEvidence: plan_review has 71 events but planning has only 14. Every beat that reaches plan_review must first pass through planning, so ~80% of planning claim events are being silently dropped.\n\nIn contrast, `markBeatShipped` (lease-audit.ts:363) correctly uses `await appendLeaseAuditEvent(...)`, so outcome events are not affected.\n\n### Fix\n\n**File: src/lib/terminal-manager-take-agent.ts**\n\nChange line 341 from:\n```typescript\nPromise.resolve(appendLeaseAuditEvent({...})).catch(...);\n```\nTo:\n```typescript\nawait appendLeaseAuditEvent({...}).catch(...);\n```\n\nThe `finalizeClaim` function is already async (returns Promise), so awaiting is safe and correct. The `.catch()` can remain to prevent audit write failures from breaking the claim flow.\n\n### Test Strategy\n\n1. Verify existing tests pass (the mock already returns a resolved promise)\n2. Add a focused test that verifies `appendLeaseAuditEvent` is called and awaited during planning claims\n3. Manual verification: after deploying, observe that planning claim counts in the audit screen increase to match plan_review counts\n\n### Risk\n\nLow. Awaiting the audit write adds a few ms to claim time. If the write fails, the `.catch()` handler still prevents it from breaking the claim. No behavioral change except audit events are now reliably persisted.\n\n### Files Changed\n\n- `src/lib/terminal-manager-take-agent.ts` — await the audit event write in finalizeClaim",
+    "datetime": "2026-03-27T16:11:03.474276Z",
+    "entry_id": "019d3010-3bb2-7080-8974-a181940a08df",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a61-9f75-7c22-b76f-386f3a1b5888",
+  "occurred_at": "2026-03-26T13:42:14.13367Z",
+  "knot_id": "foolery-0b97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan ready for review. Implement by extending the existing beat detail API surface to enqueue scope refinement server-side, add a typed client helper, add a Refine Scope action to HeaderActions with terminal-state disable + pending feedback, and cover the route/UI behavior with focused tests. Main design point to confirm in review: use an added method/action on src/app/api/beats/[id]/route.ts so the feature reuses the current queue/worker infrastructure without creating a separate endpoint family.",
+    "datetime": "2026-03-26T13:42:14.13367Z",
+    "entry_id": "019d2a61-9f75-7c22-b76f-3853b7642fa7",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

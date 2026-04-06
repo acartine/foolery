@@ -1,0 +1,21 @@
+{
+  "event_id": "019d42d3-ae55-7220-b2a8-529d55be9949",
+  "occurred_at": "2026-03-31T07:37:42.229832Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b45e",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "History Screen: Wrong Agent displayed",
+    "type": "work",
+    "updated_at": "2026-03-31T07:37:42.229832Z",
+    "workflow_id": "compatibility"
+  }
+}

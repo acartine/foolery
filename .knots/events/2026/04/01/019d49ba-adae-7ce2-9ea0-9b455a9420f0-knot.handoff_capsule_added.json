@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49ba-adae-7ce2-9ea0-9b455a9420f0",
+  "occurred_at": "2026-04-01T15:47:44.174463Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: origin/main is 2 commits behind local main. Commits 808a123557cd and d661bd7e6a7b are ready but not pushed. Shell sandbox policy prevents `git push`. User must push manually: `git push origin main`. After push, re-trigger shipment so CI runs and this review can proceed.",
+    "datetime": "2026-04-01T15:47:44.174463Z",
+    "entry_id": "019d49ba-adae-7ce2-9ea0-9b32eed15757",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

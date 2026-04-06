@@ -1,0 +1,15 @@
+{
+  "event_id": "019d430a-6df9-7cd3-95f9-ac70d15a34c8",
+  "occurred_at": "2026-03-31T08:37:30.232999Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Commit 704c9e17569e is on main, CI green (207 test files, 2370 tests pass). All acceptance criteria verified: static model catalogs provide full model lists for Claude/Codex/Gemini; stripCommonModelLabelPrefix correctly strips provider-space prefixes so pills show model names (e.g. 'Opus 4.6'); clear/unselect via X button on pills works through handleRemoveScannedOption. No regressions, no invariant violations.",
+    "datetime": "2026-03-31T08:37:30.232999Z",
+    "entry_id": "019d430a-6df9-7cd3-95f9-ac6579d91c96",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

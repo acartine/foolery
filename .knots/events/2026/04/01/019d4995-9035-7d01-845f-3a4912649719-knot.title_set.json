@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4995-9035-7d01-845f-3a4912649719",
+  "occurred_at": "2026-04-01T15:07:11.797533Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Multi-select mode in Queues View:  Clicking any pulldown, including the repositories pulldown, jitters the entire screen to the lift",
+    "to": "Fix dropdown-induced jitter in Queues View multi-select mode"
+  }
+}

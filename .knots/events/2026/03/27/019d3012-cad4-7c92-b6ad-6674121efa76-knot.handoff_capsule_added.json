@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3012-cad4-7c92-b6ad-6674121efa76",
+  "occurred_at": "2026-03-27T16:13:51.188395Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review passed. Change is minimal and correct: finalizeClaim made async, audit write awaited. All quality gates green. Ready to ship.",
+    "datetime": "2026-03-27T16:13:51.188395Z",
+    "entry_id": "019d3012-cad4-7c92-b6ad-666cc08e644c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

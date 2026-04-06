@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f54-ff81-71c3-8973-a5840e6a34b3",
+  "occurred_at": "2026-03-30T15:20:28.289313Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved implementation review. Verified the CLI/settings scan flow now supports adding multiple models from one scan interaction, preserves previously added models so subsequent Add actions continue advancing to the next unregistered option, persists all selected models in settings, and leaves settings unchanged when the scan is dismissed with zero selections. Validation run in /Users/cartine/foolery/.knots/_worktree/foolery-67b5: bun run lint; bunx tsc --noEmit; bun run test; bun run build; bun run test:smoke:copilot:ui; bash scripts/test-install-copilot-setup-single-cli.sh; bash scripts/test-install-copilot-setup.sh.",
+    "datetime": "2026-03-30T15:20:12Z",
+    "entry_id": "019d3f54-ff81-71c3-8973-a57c6c42542e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

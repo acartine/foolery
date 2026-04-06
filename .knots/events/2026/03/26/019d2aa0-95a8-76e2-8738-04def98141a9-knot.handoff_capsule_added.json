@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa0-95a8-76e2-8738-04def98141a9",
+  "occurred_at": "2026-03-26T14:51:00.392622Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. All printf dash-arg instances fixed in setup.sh and agent-wizard.sh. Launcher template already had the fix on main; this branch completes coverage. FOOLERY_LAUNCHER_PATH override in install.sh is clean. Test validates launcher path override and safe printf pattern. No unsafe printf patterns remain in any script.",
+    "datetime": "2026-03-26T14:51:00.392622Z",
+    "entry_id": "019d2aa0-95a8-76e2-8738-04cbfde4ba96",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

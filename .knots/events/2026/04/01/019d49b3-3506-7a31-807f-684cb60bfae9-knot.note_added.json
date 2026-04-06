@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b3-3506-7a31-807f-684cb60bfae9",
+  "occurred_at": "2026-04-01T15:39:34.534097Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: branch foolery-f8f4 (commit d661bd7e) has correct implementation but was never merged to main. No PR opened. Code must be pushed/merged to origin/main before re-entering shipment_review.",
+    "datetime": "2026-04-01T15:39:34.534097Z",
+    "entry_id": "019d49b3-3506-7a31-807f-68389a599c38",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

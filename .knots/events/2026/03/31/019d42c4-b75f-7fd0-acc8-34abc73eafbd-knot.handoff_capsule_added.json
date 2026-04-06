@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42c4-b75f-7fd0-acc8-34abc73eafbd",
+  "occurred_at": "2026-03-31T07:21:21.503073Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Fixed token usage misattribution in wave sessions. The root cause was terminal-manager-initial-child.ts:110-112 using prepared.waveBeatIds (all child beat IDs) as sessionBeatIds when effectiveParent was true. This caused logTokenUsageForEvent to duplicate the same turn.completed token counts across every child beat. Fix: sessionBeatIds is now always [beatId], attributing tokens to the single beat that consumed the agent turn. Tests updated: agent-token-usage.test.ts now asserts single-beat attribution instead of multi-beat duplication; terminal-manager-knots-parent.test.ts updated to match. All quality gates pass: lint (pre-existing warning only), tsc --noEmit clean, 207 test files / 2362 tests pass, build succeeds. Branch: feat/foolery-81ad, commit: 290bf452e2fb.",
+    "datetime": "2026-03-31T07:21:21.503073Z",
+    "entry_id": "019d42c4-b75f-7fd0-acc8-3498876b1fe6",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

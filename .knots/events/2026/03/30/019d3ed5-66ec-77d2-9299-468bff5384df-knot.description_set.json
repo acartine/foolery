@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3ed5-66ec-77d2-9299-468bff5384df",
+  "occurred_at": "2026-03-30T13:01:06.156636Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Rework the scanned-agents section in the Settings Agents tab:\n\n1. **Remove per-row Add button and 'registered' pill** — the individual Add button and the 'registered' Badge on each ScannedAgentRow should be removed.\n2. **Show full CLI path under agent name** — display the resolved CLI binary path (e.g. `/usr/local/bin/claude`) beneath the agent label so users can distinguish installs.\n3. **Rename OpenAI provider to Codex** — update the provider ID, label, and detection logic in `agent-identity.ts` so the vendor displays as 'Codex' instead of 'OpenAI'.\n4. **Remove the agent-id text before the model dropdown** — the lowercase `agent.id` span preceding the Select/Combobox in `renderOptionSelector` should be removed.\n5. **Convert model dropdown to multi-select** — replace the single-select dropdown with a multi-select control. When models are selected, render them as pills/badges to the right of the agent row (in the space formerly occupied by the Add button and registered pill).\n6. **Remove the 'Add All' button** from the ScannedAgentsList header.\n7. **Button color updates:**\n   - Add button (wherever retained, e.g. section-level): use dark-green style matching the page-header success variant (emerald-600 bg, emerald-300 border).\n   - Scan button: use light-green style matching the 'Create More' button."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4478-b51e-74a0-9c71-8fbf8107c3c0",
+  "occurred_at": "2026-03-31T15:17:34.622159Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation already present on branch/main via commits dd27ece5 and a4e13b1f; no additional code changes were required in this action. Verified from worktree /Users/cartine/foolery/.worktrees/foolery-f3eb with bun install --frozen-lockfile, bun run lint (passes with the existing react-hooks/incompatible-library warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build. Browser-verified on http://localhost:3001/beats: switching repos cleared stale rows immediately, rendered the repo-switch loading state (Loading beats...) on the beats view, and then rendered the new repo content without the previous repo flashing back. Chrome DevTools snapshots captured the immediate loading state on knots -> maestro and the final maestro rows after load.",
+    "datetime": "2026-03-31T15:17:34.622159Z",
+    "entry_id": "019d4478-b51e-74a0-9c71-8fa67a1bf9b5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

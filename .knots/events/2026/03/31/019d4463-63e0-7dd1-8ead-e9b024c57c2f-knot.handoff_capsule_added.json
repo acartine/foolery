@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4463-63e0-7dd1-8ead-e9b024c57c2f",
+  "occurred_at": "2026-03-31T14:54:17.568151Z",
+  "knot_id": "foolery-7540",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: APPROVED. All quality gates pass (lint clean, tsc clean, 2392/2392 tests pass). The implementation correctly canonicalizes Claude model identifiers (dots to hyphens) at scan, detect, load, save, and doctor/backfill paths. New agent-config-normalization.ts (147 lines) is well-structured. Tests comprehensively cover all importers (codex, copilot, claude, gemini, opencode) and settings normalization flows. No security issues, no regressions, no invariant violations.",
+    "datetime": "2026-03-31T14:54:17.568151Z",
+    "entry_id": "019d4463-63e0-7dd1-8ead-e9a1041075b4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

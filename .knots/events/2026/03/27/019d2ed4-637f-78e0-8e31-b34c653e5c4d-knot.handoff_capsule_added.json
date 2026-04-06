@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed4-637f-78e0-8e31-b34c653e5c4d",
+  "occurred_at": "2026-03-27T10:26:04.28704Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan reviewed and approved. The approach of extracting the clipboard-based update trigger into a shared helper and wiring it into the banner is sound, complete, and low-risk. Test strategy covers key paths. No invariant violations. Ready for implementation.",
+    "datetime": "2026-03-27T10:26:04.28704Z",
+    "entry_id": "019d2ed4-637f-78e0-8e31-b33c93b8d79d",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

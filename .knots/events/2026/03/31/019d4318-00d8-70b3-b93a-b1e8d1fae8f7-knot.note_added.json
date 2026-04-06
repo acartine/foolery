@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4318-00d8-70b3-b93a-b1e8d1fae8f7",
+  "occurred_at": "2026-03-31T08:52:19.800387Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from implementation to ready_for_implementation — agent \"OpenCode\" left knot in action state",
+    "datetime": "2026-03-31T08:52:19.800387Z",
+    "entry_id": "019d4318-00d8-70b3-b93a-b1dbe3ea3308",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

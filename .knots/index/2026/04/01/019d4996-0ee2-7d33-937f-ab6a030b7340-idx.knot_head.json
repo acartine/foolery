@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4996-0ee2-7d33-937f-ab6a030b7340",
+  "occurred_at": "2026-04-01T15:07:44.219049Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f8f4",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Create New:  When clicking Create More, once the bead is created the form fields should clear",
+    "type": "work",
+    "updated_at": "2026-04-01T15:07:44.219049Z",
+    "workflow_id": "compatibility"
+  }
+}

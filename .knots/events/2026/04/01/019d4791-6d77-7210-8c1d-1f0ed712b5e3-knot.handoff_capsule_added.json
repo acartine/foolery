@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4791-6d77-7210-8c1d-1f0ed712b5e3",
+  "occurred_at": "2026-04-01T05:43:26.327974Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Commit 7b17b3e038c0 is on main. meetsLeaderboardThresholds (lease-audit-helpers.ts:213-221) enforces total>=10 AND rate>25%. buildLeaderboard filters all input to qualifiedStats before ranking, computing mean/margin/totalN — excluded agents cannot influence any displayed metric. Steps with no qualified agents are omitted entirely. All 56 tests pass (including threshold edge cases), tsc and eslint clean. No invariants defined; no regressions detected.",
+    "datetime": "2026-04-01T05:43:26.327974Z",
+    "entry_id": "019d4791-6d77-7210-8c1d-1effdbe2e250",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

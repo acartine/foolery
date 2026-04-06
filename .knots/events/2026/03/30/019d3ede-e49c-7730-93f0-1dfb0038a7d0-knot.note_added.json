@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ede-e49c-7730-93f0-1dfb0038a7d0",
+  "occurred_at": "2026-03-30T13:11:28.156147Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan revision needed: the proposed edits remove the per-row Add action and the Add All action but do not introduce a replacement scanned-agent import control, so the scanned list would lose its registration path. Revise the plan to specify the retained add affordance and wiring for multi-select imports, and explicitly include non-test provider-id consumers such as agent-info-bar vendor mapping when renaming openai to codex.",
+    "datetime": "2026-03-30T13:11:28.156147Z",
+    "entry_id": "019d3ede-e49c-7730-93f0-1deb15ebb545",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

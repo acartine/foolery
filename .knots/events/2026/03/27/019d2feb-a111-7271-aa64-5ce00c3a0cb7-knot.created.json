@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2feb-a111-7271-aa64-5ce00c3a0cb7",
+  "occurred_at": "2026-03-27T15:31:04.593452Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.created",
+  "data": {
+    "body": "The audit screen shows drastically fewer planning iterations than implementation (e.g., 7 planning vs 58 implementation). This is clearly wrong — planning runs at least as often as implementation.\n\nLikely causes to investigate:\n1. appendLeaseAuditEvent may not be called for planning claims — check finalizeClaim in terminal-manager-take-agent.ts and verify the queueType is correctly resolved for planning states\n2. Planning steps might go through a code path that skips audit logging even when the owner IS an agent\n3. resolveStep() mapping may not correctly map planning states to the 'planning' queueType\n4. Worktree log aggregation (resolveAuditLogRoots) may be missing logs from worktrees where planning work happened\n5. markBeatShipped outcome recording may attribute planning outcomes to a different queueType\n\nRepro: Open /beats?view=audit, select All time, compare Implementation n vs Planning n.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix missing planning audit data — events not recorded for planning steps",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

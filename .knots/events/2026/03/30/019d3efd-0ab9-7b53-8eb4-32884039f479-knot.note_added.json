@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3efd-0ab9-7b53-8eb4-32884039f479",
+  "occurred_at": "2026-03-30T13:44:23.993175Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected.\n\n1. src/components/settings-agents-section.tsx:62-77 updates selectedMultiOptions before addAgent completes and never rolls that optimistic state back on failure. Since selected pills now replace the Add/registered affordances, a failed add can still leave the model rendered as selected/imported.\n2. src/components/__tests__/settings-agents-scanned.test.ts only exercises filterSearchableOption. The review step requires coverage for the shipped behavior, but there are no tests for the multi-select import flow, selected-model pills, removed Add/Add All/registered controls, CLI path display, or button variant changes.\n\nValidation run on an isolated archive of feat/foolery-23f3: bun install --frozen-lockfile, bun run lint (0 errors, 1 pre-existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, and bun run test all passed.",
+    "datetime": "2026-03-30T13:44:23.993175Z",
+    "entry_id": "019d3efd-0ab9-7b53-8eb4-32782118752c",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

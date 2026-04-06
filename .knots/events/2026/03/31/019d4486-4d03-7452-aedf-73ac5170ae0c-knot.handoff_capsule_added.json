@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4486-4d03-7452-aedf-73ac5170ae0c",
+  "occurred_at": "2026-03-31T15:32:25.475645Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: implementation commits not on main. Branch worktree-foolery-7e6d-terminal-rehydration has two commits ahead of main — f0ec2a34 (core fix: remove early-return in useRehydrateTerminals) and 5dad96ce (tests: multi-context Playwright + unit tests). Both must be merged to origin/main before shipment_review can sign off. The implementation itself looks correct and complete based on worktree inspection.",
+    "datetime": "2026-03-31T15:32:25.475645Z",
+    "entry_id": "019d4486-4d03-7452-aedf-73923cadd2a8",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d30b6-1d78-7042-b4f8-32e1fae2a78c",
+  "occurred_at": "2026-03-27T19:12:14.712254Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented last-hyphen prefix stripping for beat and terminal IDs so multi-hyphen project names keep the full project prefix intact. Updated the shared strip helpers in beat navigation/display, terminal tab ID splitting, and agent history ID stripping, and added regressions for feature-builder-style IDs.\n\nValidation on commit bc0930a40613 and branch feat/foolery-9b5c-prefix: bun run lint, bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-27T19:11:59Z",
+    "entry_id": "019d30b6-1d78-7042-b4f8-32d6d37137f0",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

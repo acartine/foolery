@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3013-0d6f-7aa1-a773-c33e51ef2dd9",
+  "occurred_at": "2026-03-27T16:14:08.23977Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4c96",
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Normalize version display in update surfaces",
+    "type": "work",
+    "updated_at": "2026-03-27T16:14:08.23977Z",
+    "workflow_id": "compatibility"
+  }
+}

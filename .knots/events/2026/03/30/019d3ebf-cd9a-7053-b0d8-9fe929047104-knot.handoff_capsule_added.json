@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebf-cd9a-7053-b0d8-9fe929047104",
+  "occurred_at": "2026-03-30T12:37:30.650074Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. Commit 1601a1b4e991 verified on main. CI green (CI + Coverage Badge). Multi-select CLI scan works: loop with Done option, duplicate prevention via _append_unique, per-model agent entries via _register_model_agents. Tests cover multi-model and zero-selection scenarios. No invariants. No regressions.",
+    "datetime": "2026-03-30T12:37:30.650074Z",
+    "entry_id": "019d3ebf-cd9a-7053-b0d8-9fd82e9630f8",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

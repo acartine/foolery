@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49bb-b8cb-7a13-ba2f-2d2a29e86822",
+  "occurred_at": "2026-04-01T15:48:52.555349Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment blocked (4th attempt): local main has commits 808a123557cd and d661bd7e6a7b ready, both tagged. Shell policy denies `git push origin main`. User must push manually, then re-trigger shipment so CI can run.",
+    "datetime": "2026-04-01T15:48:52.555349Z",
+    "entry_id": "019d49bb-b8cb-7a13-ba2f-2d1c8e723aeb",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d446b-72d1-7211-bcdc-cad04fd8e209",
+  "occurred_at": "2026-03-31T15:03:05.681666Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.created",
+  "data": {
+    "body": "When you open another instance of the foolery web ui, and there are agents working in terminals, you don't see them in the new instance of the web ui.\n\nThis implies some sort of browser-local state, which is wrong - you should be able to reopen the UI and see all the same things - the UI Terminals showing you the agents working, the slow flickering of the state to show that an agent is working on it, the \"Rolling...\" and stop buttons etc.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "UI Terminal: Doesn't persist across. browsers",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

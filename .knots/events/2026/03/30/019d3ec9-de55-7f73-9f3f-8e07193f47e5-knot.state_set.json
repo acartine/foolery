@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3ec9-de55-7f73-9f3f-8e07193f47e5",
+  "occurred_at": "2026-03-30T12:48:30.29374Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "gpt",
+    "agent_name": "OpenAI",
+    "agent_version": "5.4",
+    "force": false,
+    "from": "shipment",
+    "profile_id": "autopilot",
+    "to": "ready_for_shipment_review",
+    "workflow_id": "compatibility"
+  }
+}

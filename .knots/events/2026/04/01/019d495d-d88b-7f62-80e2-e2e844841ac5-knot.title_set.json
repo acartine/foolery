@@ -1,0 +1,10 @@
+{
+  "event_id": "019d495d-d88b-7f62-80e2-e2e844841ac5",
+  "occurred_at": "2026-04-01T14:06:20.299529Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add \"Refine Scope\" to Queues multi-select mode",
+    "to": "Enable Refine Scope action in Queues multi-select mode"
+  }
+}

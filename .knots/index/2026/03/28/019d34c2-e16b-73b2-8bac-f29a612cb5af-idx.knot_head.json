@@ -1,0 +1,24 @@
+{
+  "event_id": "019d34c2-e16b-73b2-8bac-f29a612cb5af",
+  "occurred_at": "2026-03-28T14:04:40.171821Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2794",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Queues/Active Screen: distribute available width evenly across columns",
+    "type": "work",
+    "updated_at": "2026-03-28T14:04:40.171821Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d34c2-5139-70a2-8a03-78b5f5b75e09"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4472-251b-7623-9447-36573d522fca",
+  "occurred_at": "2026-03-31T15:10:24.539763Z",
+  "knot_id": "foolery-2d86",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected: --add-step flag assumed in plan does not exist in kno CLI. Revise to use existing --agent-name/--agent-model/--agent-version flags on kno next and kno update. Simpler approach: enrich existing nextKnot() and updateKnot() calls with agent metadata rather than adding a separate step-recording mechanism.",
+    "datetime": "2026-03-31T15:10:24.539763Z",
+    "entry_id": "019d4472-251b-7623-9447-364ec197d7c6",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

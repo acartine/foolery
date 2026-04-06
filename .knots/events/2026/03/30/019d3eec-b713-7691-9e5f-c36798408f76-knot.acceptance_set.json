@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3eec-b713-7691-9e5f-c36798408f76",
+  "occurred_at": "2026-03-30T13:26:34.00321Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- The standalone \"Escalations\" button (UserRoundCheck icon) no longer renders in the action slot when the finalcut view is active.\n- The Escalations tab in the ViewSwitcher navigation bar is unchanged and continues to work.\n- When the finalcut view is active, the action slot follows the same visibility logic as other views that don't show an action (e.g., hidden placeholder or empty).\n- Lint, typecheck, and build pass."
+  }
+}

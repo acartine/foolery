@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f3-ccb0-78c3-a542-b6b5cd170e85",
+  "occurred_at": "2026-03-31T08:12:47.15232Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review: revision required. Root cause analysis for provider-only fallback is sound, and static provider catalogs for Claude/Codex/Gemini are a feasible way to satisfy the multi-row and label requirements. However, the proposed clear-selection step is incorrect: the current callback chain ends at SettingsAgentsSection.handleToggleOption, which only adds missing options and cannot remove an already registered option, so calling onToggle for selected IDs would not clear anything. Revise the plan to introduce an explicit remove/clear flow and corresponding tests for selection removal before implementation.",
+    "datetime": "2026-03-31T08:12:47.15232Z",
+    "entry_id": "019d42f3-ccb0-78c3-a542-b6a931755577",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

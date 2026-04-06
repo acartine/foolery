@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3eec-48a0-7702-840f-1ce0eff40f2f",
+  "occurred_at": "2026-03-30T13:26:05.724138Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5a78",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Escalations view:  Remove weird escalation button to the right of navigation bar",
+    "type": "work",
+    "updated_at": "2026-03-30T13:26:05.724138Z",
+    "workflow_id": "compatibility"
+  }
+}

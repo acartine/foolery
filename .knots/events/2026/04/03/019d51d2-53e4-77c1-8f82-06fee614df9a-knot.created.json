@@ -1,0 +1,17 @@
+{
+  "event_id": "019d51d2-53e4-77c1-8f82-06fee614df9a",
+  "occurred_at": "2026-04-03T05:30:31.780674Z",
+  "knot_id": "foolery-fd27",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  fix the fucking jitter",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "clicking on repository pulldown causes horizontal jitter",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

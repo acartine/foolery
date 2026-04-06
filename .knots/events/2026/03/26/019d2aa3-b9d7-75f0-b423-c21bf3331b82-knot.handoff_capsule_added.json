@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa3-b9d7-75f0-b423-c21bf3331b82",
+  "occurred_at": "2026-03-26T14:54:26.263893Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: APPROVED. Title column correctly removed from getBeatColumns. InlineTitleContent component properly renders title as compact secondary row beneath metadata with truncation, hierarchy indentation, chevrons, child-count badges, wave-slug prefix, and labels. Summary panel behavior preserved (click-focus, mouseover-expand). Tests updated. colSpan logic simplified to totalCols. Code is clean and matches all 6 acceptance criteria.",
+    "datetime": "2026-03-26T14:54:26.263893Z",
+    "entry_id": "019d2aa3-b9d7-75f0-b423-c200c9356ead",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

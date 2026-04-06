@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a97-4fe9-76f2-9b17-4479f54f80e9",
+  "occurred_at": "2026-03-26T14:40:52.713541Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review: APPROVED. Plan correctly identifies all key files and the general approach (remove title column, extract reusable title block, render as secondary row band). One implementation note: BeatTableRow lines 181-185 and 195 use titleIdx to gate showSummary and compute colSpan — removing the title column makes titleIdx=-1, disabling the summary panel entirely. The implementer must replace the title-column anchor with a new strategy (e.g. span all columns, or anchor on the first metadata column). The 3-row-per-beat structure (metadata cells, title band, summary panel) should be explicitly planned. Otherwise the plan is complete, feasible, and respects acceptance criteria.",
+    "datetime": "2026-03-26T14:40:52.713541Z",
+    "entry_id": "019d2a97-4fe9-76f2-9b17-446c85176e12",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d440c-de1b-7281-9364-f17beeb4ea48",
+  "occurred_at": "2026-03-31T13:19:47.227474Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Rebased `foolery-f3eb-loading-feedback` onto current `origin/main` and preserved the repo-switch loading patch as commits `9e4dcc5a9807` and `959e5bb946c5` on top of main. The implementation masks stale repo-scoped query data during repo switches, shows explicit loading placeholders for beats/final-cut/retakes, and clears an open beat detail when the selected repo changes. Validation on 2026-03-31: `bun install --frozen-lockfile`, `bun run lint` (passes with the existing React Compiler warning in `src/components/beat-form.tsx:368`), `bunx tsc --noEmit`, `bun run test`, and `bun run build` all succeeded in `/Users/cartine/foolery/.worktrees/foolery-f3eb`. Browser verification on 2026-03-31 at `http://localhost:3001/beats?view=history&repo=%2FUsers%2Fcartine%2Ffoolery`: after switching repo from `foolery` to `knots` with a delayed `agent-history` fetch, the URL and repo label updated immediately, the stale `foolery` rows disappeared, the loading placeholder remained visible during the fetch, and the new `knots` rows rendered only after the request completed.",
+    "datetime": "2026-03-31T13:19:47.227474Z",
+    "entry_id": "019d440c-de1b-7281-9364-f16f472d87b6",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

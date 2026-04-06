@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42fb-c4d1-7c83-b941-6a6f30126958",
+  "occurred_at": "2026-03-31T08:21:29.425616Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the Settings model-selector fix on branch b5c5-settings-model-pulldowns (commit 704c9e17569e). Added static scan catalogs for Claude/Codex/Gemini so pulldowns always list real model rows, updated scanned Settings selection to toggle/remove registered model options, and added clear affordances on selected pills with provider-prefix stripping so pills show model names like Opus 4.6. Validation in /Users/cartine/foolery-b5c5: bun run lint (passes with one pre-existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-31T08:21:29.425616Z",
+    "entry_id": "019d42fb-c4d1-7c83-b941-6a52c8bcd55e",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

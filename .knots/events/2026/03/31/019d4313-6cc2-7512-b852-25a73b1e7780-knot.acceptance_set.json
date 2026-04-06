@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4313-6cc2-7512-b852-25a73b1e7780",
+  "occurred_at": "2026-03-31T08:47:19.746406Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) Each item in the conversation history pulldown shows the conversation date alongside time so users can distinguish sessions by day.\n2) Conversation number remains visible in each pulldown entry.\n3) Prompt/Take numbering is shown only once (a single label/value) when they are equivalent.\n4) No new functionality outside the conversation log pulldown is added."
+  }
+}

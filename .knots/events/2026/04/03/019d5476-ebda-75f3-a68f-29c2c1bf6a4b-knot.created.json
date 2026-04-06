@@ -1,0 +1,17 @@
+{
+  "event_id": "019d5476-ebda-75f3-a68f-29c2c1bf6a4b",
+  "occurred_at": "2026-04-03T17:49:33.018171Z",
+  "knot_id": "foolery-29fa",
+  "type": "knot.created",
+  "data": {
+    "body": "Add fixtures and tests covering successful Copilot interactive completion, hang timeout/watchdog handling, and retry or abort behavior so the shared runtime contract stays enforced.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Add Copilot interactive session regression coverage",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

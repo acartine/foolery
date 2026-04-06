@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42be-ab43-7561-9965-708eda132b1a",
+  "occurred_at": "2026-03-31T07:14:45.187675Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: token usage is still misattributed in multi-beat sessions. src/lib/terminal-manager-initial-child.ts:110-111 still passes prepared.waveBeatIds into the stdout token-logging path, and src/lib/agent-token-usage.ts:54-72 still persists the full turn.completed usage once per beatId in that list. That records one agent turn against multiple beats instead of the single beat that consumed it, so the saved per-agent, per-beat counts are incorrect despite lint/typecheck/test/build passing.",
+    "datetime": "2026-03-31T07:14:45.187675Z",
+    "entry_id": "019d42be-ab43-7561-9965-707c1c18eb46",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

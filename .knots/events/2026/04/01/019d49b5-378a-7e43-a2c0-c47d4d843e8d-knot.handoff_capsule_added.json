@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b5-378a-7e43-a2c0-c47d4d843e8d",
+  "occurred_at": "2026-04-01T15:41:46.250204Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment issue (third occurrence): local main has the fix commits (808a1235, d661bd7e) but origin/main stops at b8f494fe. The code was never pushed. Shipment step must run `git push origin main`, verify CI green on origin/main, then re-enter shipment_review. Review constraints prevented push in this session.",
+    "datetime": "2026-04-01T15:41:46.250204Z",
+    "entry_id": "019d49b5-378a-7e43-a2c0-c46fd8ac3058",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

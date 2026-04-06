@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4317-c82d-7280-8bcc-e2b752a789f3",
+  "occurred_at": "2026-03-31T08:52:05.293206Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan recorded. Implementation should adjust `buildModelLabelDisplayMap()` to derive OpenCode dropdown display labels from the last `/` token with collision-safe fallback, remove combobox text truncation for those visible labels, and cover the behavior in `model-labels` plus `settings-agents-scanned` tests. No code or git write work was performed in this planning step.",
+    "datetime": "2026-03-31T08:52:05.293206Z",
+    "entry_id": "019d4317-c82d-7280-8bcc-e2a2b4c47097",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

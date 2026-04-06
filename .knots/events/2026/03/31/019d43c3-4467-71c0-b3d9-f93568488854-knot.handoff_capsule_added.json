@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43c3-4467-71c0-b3d9-f93568488854",
+  "occurred_at": "2026-03-31T11:59:23.751275Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "1. Sanity gates do not pass, so the implementation is not ready for shipment from this state. I verified bun run test passes, but bunx tsc --noEmit and bun run build both fail in main/src/stories/beat-form.stories.tsx, beat-priority-badge.stories.tsx, beat-type-badge.stories.tsx, and beat-status-badge.stories.tsx because story args no longer match component props or imports. 2. bun run lint is not green in this checkout because ESLint is traversing generated files under .worktrees/*/.next, and the newly added src/components/__tests__/interaction-picker-formatting.test.tsx has an unused local (testDate). 3. The pulldown UI changes themselves appear scoped correctly and the new formatting helpers behave as expected under unit test, but the knot should return to implementation until the required validation gates are actually green.",
+    "datetime": "2026-03-31T11:59:23.751275Z",
+    "entry_id": "019d43c3-4467-71c0-b3d9-f9239e9a26ca",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

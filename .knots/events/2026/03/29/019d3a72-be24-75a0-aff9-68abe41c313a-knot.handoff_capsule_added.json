@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3a72-be24-75a0-aff9-68abe41c313a",
+  "occurred_at": "2026-03-29T16:34:51.556077Z",
+  "knot_id": "foolery-aa22",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment completed. Merged origin/codex/web-ui-diagnostics-redo into a clean shipment branch from origin/main, producing merge commit a72e88c47757, and pushed that merged head to origin/main. Re-ran bun run lint, bunx tsc --noEmit, bun run test, and bun run build on the merged main worktree before push; all passed. GitHub reports no combined-status checks for commit a72e88c47757, so there were no remote CI statuses to wait on.",
+    "datetime": "2026-03-29T16:35:00Z",
+    "entry_id": "019d3a72-be24-75a0-aff9-6890228d101d",
+    "model": "gpt-5",
+    "username": "Andrew Cartine",
+    "version": "desktop"
+  }
+}

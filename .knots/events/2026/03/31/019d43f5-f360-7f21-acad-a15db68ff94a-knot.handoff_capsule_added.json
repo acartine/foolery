@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43f5-f360-7f21-acad-a15db68ff94a",
+  "occurred_at": "2026-03-31T12:54:45.344158Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review requested changes. 1) Acceptance criteria 1 and 2 are not met at runtime: after switching repositories on /beats, the previous repository rows remain visible instead of clearing immediately and showing the loading placeholder. Reproduced in browser by injecting a 2s delay on /api/beats/query, then using repo-switch shortcuts between foolery and knots; the repo button and URL changed immediately while stale rows such as 'Wire lease agent metadata into knot step records' stayed on screen for at least 500ms. 2) Acceptance criterion 3 is therefore not met either, because the loading indicator is not what remains visible until the new repo finishes rendering. 3) Regression coverage is insufficient: src/lib/__tests__/repo-switch-loading-contract.test.ts only asserts source strings and did not catch the failing runtime behavior.",
+    "datetime": "2026-03-31T12:54:45.344158Z",
+    "entry_id": "019d43f5-f360-7f21-acad-a14d93136df4",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

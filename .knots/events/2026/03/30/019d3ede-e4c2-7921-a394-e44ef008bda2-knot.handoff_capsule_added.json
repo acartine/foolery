@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ede-e4c2-7921-a394-e44ef008bda2",
+  "occurred_at": "2026-03-30T13:11:28.194518Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review requested revisions. The current plan is directionally correct on the UI cleanup and multi-select state shape, but it drops all scanned-agent import actions by removing both ScannedAgentRow Add and ScannedAgentsList Add All without defining a replacement section-level add flow. Before implementation, revise the plan to name the retained add control, how it submits one or many selected models, and where the wiring lives after onAdd/onAddAll are removed. Also make the Codex rename scope explicit for provider-id consumers outside agent-identity.ts, including vendor-key mappings like settings/terminal agent info surfaces and impacted tests.",
+    "datetime": "2026-03-30T13:11:11Z",
+    "entry_id": "019d3ede-e4c2-7921-a394-e43c64b3b79f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

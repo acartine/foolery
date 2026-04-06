@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4305-aec6-7863-8aca-fb2441183d1b",
+  "occurred_at": "2026-03-31T08:32:19.142056Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review: APPROVED. Single CSS property change (scrollbar-gutter: stable both-edges) correctly fixes layout jitter by reserving symmetric gutter space on both sides, keeping centered content stable across scrollbar state transitions. Test updated to lock the contract. Playwright verification confirmed pixel-identical header coordinates across all view transitions. All quality gates pass. No regressions, no scope drift, no security concerns.",
+    "datetime": "2026-03-31T08:32:19.142056Z",
+    "entry_id": "019d4305-aec6-7863-8aca-fb1d265ea208",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

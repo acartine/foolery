@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b5-e20a-7722-9f01-c4931a287196",
+  "occurred_at": "2026-04-01T15:42:29.898919Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment blocked (fourth occurrence): git push origin main is denied by Claude Code shell policy (deny rule matches /^git\\s+push\\s+(origin\\s+)?(main|master)(\\s+.*)?$/). Local main is correct at 808a1235 with 2 commits ahead of origin/main. User must run `git push origin main` manually, then verify CI and transition the knot.",
+    "datetime": "2026-04-01T15:42:29.898919Z",
+    "entry_id": "019d49b5-e20a-7722-9f01-c480e9562146",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "event_id": "019d34c5-5cb2-75c2-8c45-c74ceba36254",
+  "occurred_at": "2026-03-28T14:07:22.8027Z",
+  "knot_id": "foolery-256d",
+  "type": "knot.lease_data_set",
+  "data": {
+    "lease_data": {
+      "agent_info": {
+        "agent_name": "Copilot",
+        "agent_type": "",
+        "model": "haiku/claude",
+        "model_version": "4.5",
+        "provider": ""
+      },
+      "lease_type": "agent",
+      "nickname": "foolery:terminal_manager_take:term-1774706670772-h3gexg"
+    }
+  }
+}

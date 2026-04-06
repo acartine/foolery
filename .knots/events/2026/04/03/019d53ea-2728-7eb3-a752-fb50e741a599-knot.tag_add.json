@@ -1,0 +1,9 @@
+{
+  "event_id": "019d53ea-2728-7eb3-a752-fb50e741a599",
+  "occurred_at": "2026-04-03T15:15:47.6242Z",
+  "knot_id": "foolery-f5ee",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-f5ee-codex-interactive"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4996-0eb0-7343-a9d1-dbdf63b2042d",
+  "occurred_at": "2026-04-01T15:07:44.176837Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says.  really annoying to have to manually clear the fields.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create New:  When clicking Create More, once the bead is created the form fields should clear",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

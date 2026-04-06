@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ece-93a2-79f3-b47a-6ea3be8f4877",
+  "occurred_at": "2026-03-30T12:53:38.849999Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review approved: scoped beat-level token tracking only; persist explicit token_usage lines keyed by beatId and agent identity; aggregate into a single beat summary field tokenUsageByAgent; extend existing beat diagnostics UI only; cover logger extraction, parser aggregation, UI rendering, and multi-beat session isolation to prevent double counting.",
+    "datetime": "2026-03-30T12:53:19Z",
+    "entry_id": "019d3ece-93a2-79f3-b47a-6e9428f4f67d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5-codex"
+  }
+}

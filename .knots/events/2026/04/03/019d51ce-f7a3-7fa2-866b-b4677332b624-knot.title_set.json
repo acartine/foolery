@@ -1,0 +1,10 @@
+{
+  "event_id": "019d51ce-f7a3-7fa2-866b-b4677332b624",
+  "occurred_at": "2026-04-03T05:26:51.555594Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "queues/active screen: active item overview: add acceptance criteria to ",
+    "to": "feat: add acceptance criteria column to active item overview"
+  }
+}

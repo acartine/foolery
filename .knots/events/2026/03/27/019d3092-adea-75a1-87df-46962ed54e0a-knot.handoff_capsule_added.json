@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3092-adea-75a1-87df-46962ed54e0a",
+  "occurred_at": "2026-03-27T18:33:32.394185Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped ea93 by merging `feat/foolery-ea93-backend-update` into `main` as commit `f823d24495ae` and pushing `main` to origin. Remote checks on the merge commit are green: GitHub Actions `CI` passed and `Coverage Badge` completed successfully. The CI run emitted non-failing coverage-regression annotations, but the workflow itself concluded success.",
+    "datetime": "2026-03-27T18:33:32.394185Z",
+    "entry_id": "019d3092-adea-75a1-87df-468b2d2d1619",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

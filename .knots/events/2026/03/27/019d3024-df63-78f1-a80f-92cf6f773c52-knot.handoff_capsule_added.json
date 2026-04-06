@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3024-df63-78f1-a80f-92cf6f773c52",
+  "occurred_at": "2026-03-27T16:33:36.099659Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. 3 new files (speed helpers, SpeedTable component, extracted AgentBreakdownBody), 2 modified. All gates green. Commit 73b730c4 on main.",
+    "datetime": "2026-03-27T16:33:36.099659Z",
+    "entry_id": "019d3024-df63-78f1-a80f-92b4253f4c0e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

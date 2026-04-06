@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4318-47ef-7313-8519-daf32ec2b025",
+  "occurred_at": "2026-03-31T08:52:37.999928Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation plan:\n1. Update `buildLeaderboard` in `src/components/lease-audit-helpers.ts` so step leaderboards ignore agent entries unless they satisfy both thresholds: at least 10 completed attempts (`success + fail >= 10`) and success rate strictly greater than 25%.\n2. Keep existing ranking behavior for qualified entries only: sort by success rate descending, then total completed count descending, then build the same `LeaderboardEntry` output from the filtered ranking.\n3. Preserve current empty-state behavior by skipping a step entirely when no agent for that step survives the new filter, which will also keep `RateLeaderboardTable` hidden when the resulting leaderboard is empty.\n4. Extend `src/components/__tests__/lease-audit-view-helpers.test.ts` with targeted `buildLeaderboard` coverage for: fewer than 10 attempts excluded, exactly 10 attempts eligible, exactly 25% excluded, greater than 25% included, and mixed-step input where only qualifying steps remain.\n5. During implementation, run the focused helper test file first, then broader repo checks required by the active implementation step if needed.",
+    "datetime": "2026-03-31T08:52:37.999928Z",
+    "entry_id": "019d4318-47ef-7313-8519-dae5bc8448a8",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

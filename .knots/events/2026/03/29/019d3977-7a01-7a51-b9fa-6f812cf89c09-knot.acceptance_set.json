@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3977-7a01-7a51-b9fa-6f812cf89c09",
+  "occurred_at": "2026-03-29T12:00:24.577419Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "In Settings > Dispatch > Advanced, agents that render multiple pills no longer overlap or corrupt the number component. Container sizing is recalculated based on the rendered pill content so the pills and number component each receive the width they need. The affected row remains visually correct for both single-pill and multi-pill agents, with no overlapping elements in the Implementation view."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb1-0888-7062-a929-12b90c5bbef1",
+  "occurred_at": "2026-03-30T12:21:22.696207Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved: the proposed root cause matches the current beats layout, where both the shared header and page body are centered with max-w-[95vw] and would shift when the body scrollbar disappears. Adding scrollbar-gutter: stable to the existing html rule in src/app/globals.css is a minimal, maintainable fix that addresses ReTakes and Diagnostics without component churn. The manual test strategy covers the stated acceptance criteria and regression surface.",
+    "datetime": "2026-03-30T12:21:22.696207Z",
+    "entry_id": "019d3eb1-0888-7062-a929-12ab186cabf9",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

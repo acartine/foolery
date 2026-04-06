@@ -1,0 +1,17 @@
+{
+  "event_id": "019d42e6-0311-77a0-abf5-ffa86385e9ad",
+  "occurred_at": "2026-03-31T07:57:43.569381Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.created",
+  "data": {
+    "body": "Make it be almost the width of the lightbox, without overlapping the Close button.  Don't show the textbox borders or anything, should just be a seamless cursor, like editing a text label.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Beat Detail: Clicking on title makes text box hilariously small",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4318-6724-73e1-bfe8-8901463e0bac",
+  "occurred_at": "2026-03-31T08:52:45.98824Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan handoff:\n- Primary change is isolated to `src/components/lease-audit-helpers.ts` in `buildLeaderboard`; no API or view contract changes are expected.\n- Enforce both thresholds on each per-step agent candidate before ranking: attempts >= 10 and success rate > 25%.\n- Add regression tests in `src/components/__tests__/lease-audit-view-helpers.test.ts` for low-attempt filtering, 25% boundary filtering, and retention of valid entries.\n- Main risk is off-by-one handling at the boundaries, so the tests should explicitly cover 9 vs 10 attempts and 25% vs 26% success rates.",
+    "datetime": "2026-03-31T08:52:45.98824Z",
+    "entry_id": "019d4318-6724-73e1-bfe8-88f4937ea52a",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

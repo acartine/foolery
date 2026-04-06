@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4964-43a4-7bb2-a1d6-5e923ca8813d",
+  "occurred_at": "2026-04-01T14:13:20.932172Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan written. Implementation adds a Refine Scope button to BulkEditControls in filter-bar.tsx, wired through a new handleRefineScope callback in use-beat-actions.ts that fires parallel refineBeatScope() API calls for each selected beat. No new API endpoints needed. 4 files touched, ~50-80 lines new code. Key risk: no batch API (acceptable at typical selection sizes). See plan note for full details.",
+    "datetime": "2026-04-01T14:13:20.932172Z",
+    "entry_id": "019d4964-43a4-7bb2-a1d6-5e821a93d390",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

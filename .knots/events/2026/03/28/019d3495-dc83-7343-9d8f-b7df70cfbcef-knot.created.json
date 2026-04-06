@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3495-dc83-7343-9d8f-b7df70cfbcef",
+  "occurred_at": "2026-03-28T13:15:29.795278Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.created",
+  "data": {
+    "body": "We should store the field inputs so that it's not all lost during a reload or an accidental exit.  We should also add a \"Clear\" button on the lower left of Done",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create New:  Loses all data if user accidently hits escape, x, or outside window, or reloads",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

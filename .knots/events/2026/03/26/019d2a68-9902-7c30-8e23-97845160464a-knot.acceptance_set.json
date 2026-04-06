@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a68-9902-7c30-8e23-97845160464a",
+  "occurred_at": "2026-03-26T13:49:51.234711Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The title column is removed from the column definitions in both Queues and Active views (no header, no dedicated cell).\n2. Each row renders the title (including wave-slug prefix, meta badges, labels, and expand/collapse chevron for hierarchical beats) as an inline secondary line beneath the row's metadata fields.\n3. The title line is visually compact — single line with text truncation, not wrapping to multiple lines.\n4. Row-focus summary panel (description, notes, handoff capsules) still appears on click and expands on mouseover exactly as before.\n5. Hierarchical indentation and child-count badges still render correctly on the inlined title.\n6. All quality gates pass: lint, typecheck, tests, build."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4322-4a20-7680-9fa0-96170f629e94",
+  "occurred_at": "2026-03-31T09:03:33.920936Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation_review. Reviewed commit 04d2eb4e in /private/tmp/foolery-a71f. buildLeaderboard now filters leaderboard rows to agents with at least 10 completed attempts and success rate strictly greater than 25% before ranking, and computes mean margin and totalN from that qualified set only, so weak-signal entries cannot influence displayed output. Steps with no qualified agents are omitted. Regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts covers low-signal exclusion from ranking and aggregate fields, <10 attempts, <=25% success rate, tie-break ordering among qualified agents, and all-filtered omission. Validation rerun in the worktree: bun run vitest src/components/__tests__/lease-audit-view-helpers.test.ts, bun run lint (passes with one pre-existing react-hooks/incompatible-library warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-31T09:03:33.920936Z",
+    "entry_id": "019d4322-4a20-7680-9fa0-960720f42aa4",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

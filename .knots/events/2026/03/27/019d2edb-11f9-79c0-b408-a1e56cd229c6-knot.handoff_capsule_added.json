@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2edb-11f9-79c0-b408-a1e56cd229c6",
+  "occurred_at": "2026-03-27T10:33:22.169217Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Feature branch worktree-fix-920b-vertical-align merged to main via fast-forward, rebased on latest remote main, and pushed as commit 36c1837aa497. All quality gates pass: typecheck clean, 2260/2260 tests pass, build succeeds. Changes: TableCell align-top→align-middle, profile/owner pills normalized to h-5, title column flex centered, 3 regression tests added.",
+    "datetime": "2026-03-27T10:33:22.169217Z",
+    "entry_id": "019d2edb-11f9-79c0-b408-a1d4ca0b47f0",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

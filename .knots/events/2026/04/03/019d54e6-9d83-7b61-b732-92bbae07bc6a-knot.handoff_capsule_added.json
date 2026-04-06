@@ -1,0 +1,15 @@
+{
+  "event_id": "019d54e6-9d83-7b61-b732-92bbae07bc6a",
+  "occurred_at": "2026-04-03T19:51:32.99549Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review. The latest artifact on worktree-foolery-160c (commit 79d35ab22e0e5be7de7c80bc50dba315b552638a) now uses opencode serve --port 0 --print-logs as the interactive/headless entrypoint via OpenCodeHttpSession, with URL discovery from stdout, shared runtime event injection, follow-up turn delivery, close-input scheduling, watchdog timeout handling, and take-loop/claimed-step wiring through the common session runtime. Verified against the installed CLI that opencode serve exists and that a live server start prints the listening URL on stdout. Gates passed in the implementation worktree: bun run test (227 files, 2538 tests passed), bunx tsc --noEmit, and bun run build. bun run lint exited 0 with one existing warning in src/components/beat-form.tsx unrelated to this change.",
+    "datetime": "2026-04-03T19:51:32Z",
+    "entry_id": "019d54e6-9d83-7b61-b732-92a984f9987c",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

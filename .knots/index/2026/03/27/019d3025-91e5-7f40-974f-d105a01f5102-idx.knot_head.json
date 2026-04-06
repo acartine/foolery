@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3025-91e5-7f40-974f-d105a01f5102",
+  "occurred_at": "2026-03-27T16:34:21.797946Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4f43",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Render speed and cost-adjusted throughput metrics in audit screen",
+    "type": "work",
+    "updated_at": "2026-03-27T16:34:21.797946Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a92-2fe1-7cb2-b293-4291625477c0",
+  "occurred_at": "2026-03-26T14:35:16.833259Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Removed the Type column from the shared Queues/default column set and added a regression test asserting getBeatColumns({}) excludes type. Validation in /Users/cartine/foolery/.knots/_worktree/foolery-6c3e: bun run lint (repo has existing warnings only), bunx tsc --noEmit, bun run test, and bun run build all succeeded.",
+    "datetime": "2026-03-26T14:34:56Z",
+    "entry_id": "019d2a92-2fe1-7cb2-b293-428e6275b989",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

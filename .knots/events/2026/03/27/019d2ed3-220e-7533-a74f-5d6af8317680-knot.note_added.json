@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ed3-220e-7533-a74f-5d6af8317680",
+  "occurred_at": "2026-03-27T10:24:41.99806Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning summary\n- Relevant code path: queues rows are rendered by `src/components/beat-table-content.tsx`; shared cell alignment comes from `src/components/ui/table.tsx`; the queue-specific custom pills and text cells live in `src/components/beat-column-defs.tsx` and `src/components/beat-column-defs-extra.tsx`.\n- Likely cause: `TableCell` currently uses `align-top`, while the queues row mixes full-height `Badge` components with smaller ad hoc `span` pills and plain text cells. That produces inconsistent perceived vertical alignment between the beat ID, repo name, and the smaller profile/owner pills.\n- Proposed implementation:\n  1. Normalize the beats-table data-row baseline to middle alignment. Since `TableCell` is only consumed by the beat table today, updating the shared table cell class is likely safe; if the implementation step finds a cleaner local override, keep the change scoped to the beats table.\n  2. Normalize queue-row pills to a shared height. Prefer reusing the existing `Badge` primitive or an equivalent `inline-flex h-5 items-center` class for the profile and owner-type pills in `src/components/beat-column-defs.tsx`, matching the existing state/priority/type badge height.\n  3. Audit the remaining queue-row custom cells in `idColumn`, `repoColumn`, and `actionColumn` so text/button content sits inside a centered wrapper or min-height that matches adjacent badges. This should address the beat ID vs repo-name offset and keep action controls aligned with the rest of the row.\n  4. Leave the lower inline-title/summary rows functionally unchanged aside from any inherited cell-alignment update, and verify they do not pick up unwanted spacing changes.\n- Expected files:\n  - `src/components/ui/table.tsx`\n  - `src/components/beat-column-defs.tsx`\n  - `src/components/beat-column-defs-extra.tsx`\n  - `src/lib/__tests__/beats-page-layout.test.ts` or a nearby beat-table regression test\n- Test strategy:\n  - Add a focused regression assertion for middle-aligned beat-table cells and standardized queue-row pill sizing/classes.\n  - Run targeted tests for the beats layout regression file, then broader `bun run test` if the implementation step changes the shared table primitive.\n  - Manually verify the Queues view on `/beats` with and without the repo column visible, checking rows that show profile/owner pills and rows with action buttons at common desktop widths (about 900px and 1280px).\n- Complexity/risk: low-medium. The main risk is unintended spacing changes in the secondary title/summary rows or narrow-column wrapping after normalizing pill sizes. Reusing the existing badge height should keep that contained.\n- Child knots: none needed for this fix.",
+    "datetime": "2026-03-27T10:24:41Z",
+    "entry_id": "019d2ed3-220e-7533-a74f-5d55c0ec3213",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

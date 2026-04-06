@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3013-0d5a-79c1-ad95-749a0fd6e971",
+  "occurred_at": "2026-03-27T16:14:08.218004Z",
+  "knot_id": "foolery-ea93",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace the clipboard-only update CTA with a backend-managed flow that can invoke the existing launcher update/restart behavior safely from the local web app. Scope includes API design, detached supervisor/process handoff, progress/error reporting, restart UX, and tests for success/failure behavior without requiring manual terminal commands.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "title": "Implement backend-triggered update and restart flow",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

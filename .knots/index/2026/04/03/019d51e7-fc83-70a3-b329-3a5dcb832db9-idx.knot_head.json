@@ -1,0 +1,21 @@
+{
+  "event_id": "019d51e7-fc83-70a3-b329-3a5dcb832db9",
+  "occurred_at": "2026-04-03T05:54:11.203574Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-500d",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "feat: add acceptance criteria column to active item overview",
+    "type": "work",
+    "updated_at": "2026-04-03T05:54:11.203574Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42e6-45ce-7650-bd7f-5a4f50d65091",
+  "occurred_at": "2026-03-31T07:58:00.654352Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "When the user clicks the title in the lightbox, the inline editing field expands to nearly the full lightbox width. The field does not overlap, cover, or push the Close button. The editing state shows no visible textbox border or input chrome, presenting as a seamless text-label editing experience with a visible text cursor. Only the title editing presentation and sizing are changed; no other lightbox behavior or scope is altered."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4482-877b-74c0-9c4c-5919b28767d5",
+  "occurred_at": "2026-03-31T15:28:18.299259Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review APPROVED. Core fix correctly removes early-return in useRehydrateTerminals so listSessions() always fetches backend state on mount, enabling cross-browser terminal discovery. Session registry extraction is clean. Store correctly opens panel for orphan running sessions. Test coverage comprehensive: unit test for always-fetch, 4 store tests for panel open/minimize on rehydration, Playwright multi-context smoke script validating cross-browser rehydration, live status updates, and terminate controls. All gates pass (tsc clean, 211 test files / 2397 tests). Fixture route gated behind env var. No security concerns.",
+    "datetime": "2026-03-31T15:28:18.299259Z",
+    "entry_id": "019d4482-877b-74c0-9c4c-59052954ea37",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

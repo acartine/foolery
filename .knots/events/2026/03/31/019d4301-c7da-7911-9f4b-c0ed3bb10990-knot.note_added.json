@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4301-c7da-7911-9f4b-c0ed3bb10990",
+  "occurred_at": "2026-03-31T08:28:03.418769Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: working tree is dirty due to untracked .test-copilot-settings-ui/. Main is at 31ba16ffa62b while the knot tag records shipped commit 704c9e17569e, so I could not complete a clean read-only shipment review.",
+    "datetime": "2026-03-31T08:28:03.418769Z",
+    "entry_id": "019d4301-c7da-7911-9f4b-c0df6362e378",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

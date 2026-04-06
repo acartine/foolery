@@ -1,0 +1,24 @@
+{
+  "event_id": "019d431a-57ad-7c61-937c-124882f09088",
+  "occurred_at": "2026-03-31T08:54:53.101262Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6a0d",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Title Editor Expands to Lightbox Width Without Overlapping Close Button",
+    "type": "work",
+    "updated_at": "2026-03-31T08:54:53.101262Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d4319-fec1-7360-93da-1630b61633b6"
+  }
+}

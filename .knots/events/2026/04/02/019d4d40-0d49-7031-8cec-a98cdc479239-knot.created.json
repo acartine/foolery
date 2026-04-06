@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d40-0d49-7031-8cec-a98cdc479239",
+  "occurred_at": "2026-04-02T08:12:16.585158Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement OpenCode on top of the shared interactive session protocol instead of treating it only as . Choose a stable interactive/headless entrypoint that can participate in claimed-step and take-loop sessions, keep stdin or equivalent follow-up transport open for subsequent turns, normalize OpenCode events into the shared event model, and enforce the same close-input, process-exit, watchdog, retry, and post-exit validation rules as other interactive agents.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add interactive OpenCode session support",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

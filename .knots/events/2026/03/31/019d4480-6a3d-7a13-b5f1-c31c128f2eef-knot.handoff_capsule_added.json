@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4480-6a3d-7a13-b5f1-c31c128f2eef",
+  "occurred_at": "2026-03-31T15:25:59.741147Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Validated cross-browser terminal rehydration. Added a unit regression test for useRehydrateTerminals always calling listSessions() with an empty local store, plus a dev-only terminal fixture route and Playwright smoke script that proves a fresh browser instance rehydrates active backend sessions, shows live running/completed state, and can terminate a session from the new instance. Repo gates passed: bunx tsc --noEmit, bun run test, bun run build, and bun run lint with the existing unrelated warning in src/components/beat-form.tsx. Smoke validation passed via scripts/test-terminal-rehydration-multicontext.sh.",
+    "datetime": "2026-03-31T15:25:36Z",
+    "entry_id": "019d4480-6a3d-7a13-b5f1-c3026d5f6eb6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

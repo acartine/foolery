@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43c3-4427-78c3-8350-e11ac1394164",
+  "occurred_at": "2026-03-31T11:59:23.687703Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: pulldown formatting changes are present, but required validation is not green in this checkout. Verified: tests pass. Failing gates: bunx tsc --noEmit and bun run build fail in main/src/stories/* with Storybook prop/type errors; bun run lint fails because generated .worktrees/.next artifacts are being linted, and the new src/components/__tests__/interaction-picker-formatting.test.tsx introduces an unused local (testDate).",
+    "datetime": "2026-03-31T11:59:23.687703Z",
+    "entry_id": "019d43c3-4427-78c3-8350-e10b9aee3430",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

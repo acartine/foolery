@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e2b-cb07-7f11-8c4b-8077d5798a32",
+  "occurred_at": "2026-03-30T09:55:50.663708Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented case-insensitive substring filtering for the Settings Agents searchable model combobox by adding a custom cmdk filter that matches against option IDs and keywords (provider/model metadata). Added unit coverage for value matches, keyword matches, no-match behavior, and clearing the search. Validation passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build. Branch: foolery-0f6a. Commit: 3f6e5a9f1e02.",
+    "datetime": "2026-03-30T09:53:16Z",
+    "entry_id": "019d3e2b-cb07-7f11-8c4b-806cec055d75",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-30"
+  }
+}

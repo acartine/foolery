@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3086-7988-7903-a72d-78d5c5bdc1f3",
+  "occurred_at": "2026-03-27T18:20:12.552562Z",
+  "knot_id": "foolery-4c96",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The scope is correctly limited to display normalization, avoids changing release metadata semantics, and includes regression coverage for both prefixed and unprefixed tags so the  bug is directly tested.",
+    "datetime": "2026-03-27T18:20:12.552562Z",
+    "entry_id": "019d3086-7988-7903-a72d-78c64f36d068",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

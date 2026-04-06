@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43e8-d93f-7590-8751-afcee2c5b524",
+  "occurred_at": "2026-03-31T12:40:26.686989Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan: stop preserving prior repo data during repo-key changes in the repo-scoped React Query hooks (`use-beats-query`, `final-cut-view`, and retakes query), then surface a real loading state in the beats UI so stale rows are cleared immediately while the next repo loads. Validate that beat-detail state does not leak old-repo content across the transition.\n\nFiles likely touched: `main/src/app/beats/use-beats-query.ts`, `main/src/app/beats/page.tsx`, `main/src/components/final-cut-view.tsx`, `main/src/lib/retake-view-helpers.ts`, and related tests.\n\nVerification plan: add regression tests for repo-switch loading behavior and confirm in browser with Playwright MCP that switching repos shows loading feedback within 1 second, hides stale content during fetch, and only removes the loader after the new repo renders.\n\nRisk: avoid turning normal same-repo polling/refetches into full-screen blank states; gate the clearing/loading behavior to meaningful repo-scope transitions.",
+    "datetime": "2026-03-31T12:39:17Z",
+    "entry_id": "019d43e8-d93e-7ca3-8174-8c238569b903",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-31"
+  }
+}

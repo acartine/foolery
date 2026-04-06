@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebd-06bf-7182-84fe-0fb4cf34bea2",
+  "occurred_at": "2026-03-30T12:34:28.671195Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review blocked: implementation commit 30f960fa is on branch foolery-67b5 but not merged to main. Rolling back to ready_for_shipment so the merge can be completed before re-review.",
+    "datetime": "2026-03-30T12:34:28.671195Z",
+    "entry_id": "019d3ebd-06bf-7182-84fe-0fa24a123ab2",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

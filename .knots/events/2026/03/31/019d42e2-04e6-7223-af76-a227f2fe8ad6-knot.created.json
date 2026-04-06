@@ -1,0 +1,17 @@
+{
+  "event_id": "019d42e2-04e6-7223-af76-a227f2fe8ad6",
+  "occurred_at": "2026-03-31T07:53:21.894956Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.created",
+  "data": {
+    "body": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Diagnostics: Leases:  Filter leaderboards to exclude:",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3e23-48d7-7831-b903-85b357d62d1f",
+  "occurred_at": "2026-03-30T09:46:33.047804Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.created",
+  "data": {
+    "body": "the search is totally worthless.  i should be able to type \"glm\", or \"minimax\" and actually have it filter by those strings case insensitive.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix Opencode scan search in settings->agents",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

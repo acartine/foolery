@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2aa4-7079-7f43-aa0c-bf69f1e2d9e8",
+  "occurred_at": "2026-03-26T14:55:13.017665Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feat/foolery-9df0 into main (71084203f5e3) with --no-ff. Changes: printf dash-arg fixes in scripts/setup.sh, scripts/agent-wizard.sh, scripts/install.sh, plus launcher path test. CI green on remote (both CI and Coverage Badge workflows passed).",
+    "datetime": "2026-03-26T14:55:13.017665Z",
+    "entry_id": "019d2aa4-7079-7f43-aa0c-bf5ad5470541",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

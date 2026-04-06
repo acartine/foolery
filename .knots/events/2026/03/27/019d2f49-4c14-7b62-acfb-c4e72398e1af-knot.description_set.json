@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f49-4c14-7b62-acfb-c4e72398e1af",
+  "occurred_at": "2026-03-27T12:33:46.0043Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When deriving a stripped project-name prefix from a project name that contains hyphens, use the last hyphen as the split point rather than the first. For example, a name like \"feature-builder\" must be handled so the prefix-stripping logic uses the final hyphen index."
+  }
+}

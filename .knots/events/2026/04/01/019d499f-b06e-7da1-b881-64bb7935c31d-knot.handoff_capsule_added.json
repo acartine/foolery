@@ -1,0 +1,15 @@
+{
+  "event_id": "019d499f-b06e-7da1-b881-64bb7935c31d",
+  "occurred_at": "2026-04-01T15:18:15.406889Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan complete. The fix is a 2-file reordering change:\n\n1. **beat-form.tsx**: Remove clearDraft(), setBlocks([]), and setBlockedBy([]) from handleCreateMoreClick — they cause a draft re-persistence race and are unnecessary since the form remounts.\n2. **create-beat-dialog.tsx**: Add clearDraft() in handleCreateMore's success callback, right before setFormKey(k+1) — ensures draft is cleared atomically with form remount.\n\nFocus positioning already works via autoFocus on the title input. No new tests needed — existing draft persistence tests cover primitives, and the fix is a call reordering. See plan note for full details.",
+    "datetime": "2026-04-01T15:18:15.406889Z",
+    "entry_id": "019d499f-b06e-7da1-b881-64a5abafa45f",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

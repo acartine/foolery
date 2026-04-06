@@ -1,0 +1,24 @@
+{
+  "event_id": "019d49ba-f461-75f1-9584-39ef8dc1fa1c",
+  "occurred_at": "2026-04-01T15:48:02.273487Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f8f4",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Auto-clear form fields after creating a bead via 'Create More'",
+    "type": "work",
+    "updated_at": "2026-04-01T15:48:02.273487Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d49ba-adb6-7420-bf71-8459353b6605"
+  }
+}

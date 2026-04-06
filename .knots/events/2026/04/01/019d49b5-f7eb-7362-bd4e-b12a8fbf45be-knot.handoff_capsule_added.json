@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b5-f7eb-7362-bd4e-b12a8fbf45be",
+  "occurred_at": "2026-04-01T15:42:35.499105Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment blocked by Claude Code shell policy denying `git push origin main`. Local main is ready at 808a1235 (2 commits ahead of origin/main: 808a1235 and d661bd7e). User action required: run `git push origin main`, confirm CI green, then run `kno next foolery-f8f4 --expected-state shipment --actor-kind agent --agent-name Claude --agent-model claude-sonnet-4-6 --agent-version claude-code`.",
+    "datetime": "2026-04-01T15:42:35.499105Z",
+    "entry_id": "019d49b5-f7eb-7362-bd4e-b1162e70121a",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

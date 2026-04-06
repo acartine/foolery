@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a62-e5f5-7140-afbc-4cfce25ccb5f",
+  "occurred_at": "2026-03-26T13:43:37.717684Z",
+  "knot_id": "foolery-0b97",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan review approved. Verified: HeaderActions has correct button pattern (outline/xs/lucide icon), enqueueBeatScopeRefinement signature matches plan, useScopeRefinementNotifications already invalidates beat detail queries for auto-refresh, isTerminalBeat() guard exists. Minor refinement: use dedicated sub-route file at /api/beats/[id]/refine-scope/route.ts (matches close/ and deps/ precedent) rather than extending the main route.ts. Test strategy is sound — existing patterns cover both component utilities and scope-refinement mocking. No blockers.",
+    "datetime": "2026-03-26T13:43:37.717684Z",
+    "entry_id": "019d2a62-e5f5-7140-afbc-4ce98f60effa",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

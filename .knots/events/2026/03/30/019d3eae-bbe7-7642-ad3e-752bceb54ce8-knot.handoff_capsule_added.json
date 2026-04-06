@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eae-bbe7-7642-ad3e-752bceb54ce8",
+  "occurred_at": "2026-03-30T12:18:52.007119Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan complete. The bug is localized to the advanced dispatch pool row layout in src/components/settings-pools-section.tsx, where PoolAgentRow uses a fixed-width agent label column that does not account for AgentDisplayLabel rendering multiple pills. Implementation should switch that row to a content-aware layout, most likely a CSS grid with explicit columns for agent identity, weight input, flexible bar, percentage, and remove button. Validate with a layout contract test plus manual verification in Settings > Dispatch > Advanced using a multi-pill agent such as an opencode/openrouter Mistral entry.",
+    "datetime": "2026-03-30T12:18:32Z",
+    "entry_id": "019d3eae-bbe7-7642-ad3e-7510d53f1140",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

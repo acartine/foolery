@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a95-db86-7681-a4dc-26f432ffdab0",
+  "occurred_at": "2026-03-26T14:39:17.38276Z",
+  "knot_id": "foolery-9345",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan for inline title in Queues/Active:\n1. Remove the dedicated `title` column from `getBeatColumns` in `src/components/beat-columns.tsx` for both Queues and Active so the visible header/cell disappears while leaving the metadata columns (`priority`, `profile`, `ownerType`, `state`) intact.\n2. Split current title rendering concerns in `src/components/beat-column-defs.tsx` and `src/components/beat-column-helpers.tsx` so the hierarchical title UI can be reused outside a standalone column. The reusable title block must preserve wave-slug prefix, orchestrated/meta badges, visible labels, add/remove label affordances, title click behavior, and parent expand/collapse chevron plus collapsed child-count badge with depth-based indentation.\n3. Update `BeatTableRow` in `src/components/beat-table-content.tsx` to render a compact secondary title line beneath the metadata cells instead of inside a dedicated title cell. Likely shape: keep the normal metadata row, then add a second row/cell band aligned under the metadata section, with single-line truncation styling (`truncate`, `min-w-0`, no wrapping) and indentation for hierarchy.\n4. Rework summary-row alignment in `BeatTableRow` so the focus-triggered inline summary still opens exactly as today after the new title band is inserted. The summary should remain click-focused and mouseover-expandable, with padding/colSpan computed from the new metadata/title layout rather than the removed `title` column index.\n5. Verify Active-specific agent/model/version columns and Queues-only type/action columns still layout correctly once the title column is gone, and ensure the inline title band spans the correct trailing column region in both views.\n6. Update or add tests/stories around table layout and summary behavior, then run quality gates: `bun install --frozen-lockfile` if needed in the active worktree, `bun run lint`, `bunx tsc --noEmit`, `bun run test` (or targeted table tests if faster before full suite), and `bun run build`.\nComplexity/risk: medium. Main risk is keeping summary-row positioning and hierarchy controls correct after the title column is removed from the shared table renderer.",
+    "datetime": "2026-03-26T14:39:17.38276Z",
+    "entry_id": "019d2a95-db86-7681-a4dc-26ea262e18ad",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

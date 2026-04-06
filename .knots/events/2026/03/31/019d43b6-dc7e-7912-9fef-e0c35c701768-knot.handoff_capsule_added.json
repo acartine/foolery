@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b6-dc7e-7912-9fef-e0c35c701768",
+  "occurred_at": "2026-03-31T11:45:50.718185Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review approved: scope stays limited to the history conversation-log pulldown, existing selection/sorting behavior remains unchanged, and the proposed data-flow changes are confined to the interaction picker item shape plus pulldown rendering. The plan covers the acceptance criteria by adding date alongside time, keeping the conversation identifier visible, and collapsing redundant Prompt/Take numbering when equivalent. Test coverage is appropriately targeted at the pulldown text surface or a shared formatter helper, which is sufficient for this low-risk UI-only change. No knot invariants are present, and no obvious security, performance, or maintainability concerns block implementation.",
+    "datetime": "2026-03-31T11:45:50.718185Z",
+    "entry_id": "019d43b6-dc7e-7912-9fef-e0b9b1553a78",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

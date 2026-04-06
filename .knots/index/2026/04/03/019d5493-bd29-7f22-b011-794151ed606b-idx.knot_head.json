@@ -1,0 +1,37 @@
+{
+  "event_id": "019d5493-bd29-7f22-b011-794151ed606b",
+  "occurred_at": "2026-04-03T18:21:01.609168Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9493",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Refactor shared interactive runtime for Copilot transport",
+    "type": "work",
+    "updated_at": "2026-04-03T18:21:01.609168Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d5493-3ac2-7fb2-b9f1-c8e554fd770c"
+  }
+}

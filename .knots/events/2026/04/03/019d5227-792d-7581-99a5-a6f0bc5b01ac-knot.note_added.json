@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5227-792d-7581-99a5-a6f0bc5b01ac",
+  "occurred_at": "2026-04-03T07:03:31.885931Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review rejected: the proposed AgentSessionCapabilities/runtime does not cover Gemini even though the beat explicitly names it and the repo already treats Gemini as a first-class agent. The capability shape is also missing explicit per-agent turn-result detection, session-end detection, and post-exit validation hooks required by the beat; the plan still relies on generic result handling instead of a declared protocol.",
+    "datetime": "2026-04-03T07:02:17Z",
+    "entry_id": "019d5227-792d-7581-99a5-a6e3b2d937f4",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d499b-c378-7233-9551-0a92808b2963",
+  "occurred_at": "2026-04-01T15:13:58.136148Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review rejected: no plan artifacts were produced by the planning phase. Detailed root-cause analysis and requirements for the next planning pass have been added as a note. The core issue is a draft re-persistence race condition in beat-form.tsx where useEffect re-saves stale form values to localStorage after clearDraft() is called.",
+    "datetime": "2026-04-01T15:13:58.136148Z",
+    "entry_id": "019d499b-c378-7233-9551-0a873b8e180e",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

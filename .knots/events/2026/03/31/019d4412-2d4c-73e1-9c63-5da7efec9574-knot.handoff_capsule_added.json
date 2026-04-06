@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4412-2d4c-73e1-9c63-5da7efec9574",
+  "occurred_at": "2026-03-31T13:25:35.180305Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged feature/terminal-light-theme into main and pushed to remote. Commits: c729c634fd63 (light theme feature), d2410939c25f (stash + tsconfig worktree exclusion + conflict resolution), 53f9867f9e5f (fix test failures: logLeaseAudit Promise.resolve wrapper + showKnot mock in 4 test files). All quality gates green: tsc clean, 208 test files / 2385 tests passing, build OK, lint 0 errors. CI green on remote (both CI and Coverage Badge succeeded). One rebase conflict resolved in settings-load.test.ts (kept both normalization test from remote and light theme test from feature branch).",
+    "datetime": "2026-03-31T13:25:35.180305Z",
+    "entry_id": "019d4412-2d4c-73e1-9c63-5d91139b1327",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

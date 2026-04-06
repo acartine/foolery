@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ef4-3abd-78a1-a266-910a5afe7f6e",
+  "occurred_at": "2026-03-30T13:34:46.461085Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Approved in implementation_review. The remaining branch change constrains ReTakes row titles so long titles cannot widen the centered page container: src/components/retake-row-parts.tsx adds min-w-0 on the title row wrapper and flex-1 min-w-0 truncation on the clickable/static title element. Existing coverage already verifies the shared scrollbar-gutter stabilization for cross-view header positioning in src/lib/__tests__/beats-page-layout.test.ts, and this branch adds src/lib/__tests__/retake-row-layout.test.ts to lock in the ReTakes-specific shrink behavior. Verified in worktree commit aa1951bc2f012a86537649d7499d5aea54837c12 with bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, and bun run build; all passed.",
+    "datetime": "2026-03-30T13:34:46.461085Z",
+    "entry_id": "019d3ef4-3abd-78a1-a266-90fb328d5046",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

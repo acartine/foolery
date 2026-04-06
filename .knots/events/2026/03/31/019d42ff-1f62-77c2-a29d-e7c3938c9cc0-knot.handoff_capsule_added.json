@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ff-1f62-77c2-a29d-e7c3938c9cc0",
+  "occurred_at": "2026-03-31T08:25:09.218975Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review REJECTED. The implementation commit 598b787ed33e exists only on beat/foolery-20ee, not on main or origin/main. The prior shipment step mistakenly reported commit 32fd3e5f (an unrelated scope-refinement merge) as the shipped artifact. Re-shipment must merge beat/foolery-20ee into main and push to origin.",
+    "datetime": "2026-03-31T08:25:09.218975Z",
+    "entry_id": "019d42ff-1f62-77c2-a29d-e7b2d81b3825",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

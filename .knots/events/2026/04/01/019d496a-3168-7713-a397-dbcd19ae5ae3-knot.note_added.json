@@ -1,0 +1,15 @@
+{
+  "event_id": "019d496a-3168-7713-a397-dbcd19ae5ae3",
+  "occurred_at": "2026-04-01T14:19:49.480703Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from implementation to ready_for_implementation — agent \"Claude\" left knot in action state",
+    "datetime": "2026-04-01T14:19:49.480703Z",
+    "entry_id": "019d496a-3168-7713-a397-dbb70949e36a",
+    "model": "opus/claude",
+    "username": "foolery",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f52-fe4e-7b13-a0fb-f8c66563fd45",
+  "occurred_at": "2026-03-27T12:44:21.454327Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Removed BeatTypeBadge import and render from beat-detail.tsx. Branch feat/foolery-2090-remove-beat-type-badge pushed to origin. All quality gates pass: lint, typecheck, 190 test files (2265 tests passed), build. No other BeatTypeBadge consumers were touched.",
+    "datetime": "2026-03-27T12:44:21.454327Z",
+    "entry_id": "019d2f52-fe4e-7b13-a0fb-f8bfb41318f8",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4d3f-4480-7521-a721-7ecebb19ca42",
+  "occurred_at": "2026-04-02T08:11:25.184263Z",
+  "knot_id": "foolery-39c1",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace the current hard-coded non-Claude one-shot treatment with a capability-driven multi-agent session model. Persist a clean protocol for interactive agent sessions that normalizes prompt delivery, turn completion, session completion, follow-up prompting, inactivity watchdogs, process-group termination, and post-exit workflow-state validation. Decompose this into child knots for protocol design, shared runtime/interface work, and one implementation knot per agent CLI.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Support interactive sessions for Codex, OpenCode, Gemini, and Copilot",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

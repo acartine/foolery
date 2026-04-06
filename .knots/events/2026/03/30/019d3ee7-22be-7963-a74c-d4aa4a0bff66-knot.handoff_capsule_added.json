@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee7-22be-7963-a74c-d4aa4a0bff66",
+  "occurred_at": "2026-03-30T13:20:28.350003Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan approved for implementation. The proposed scope matches the current code paths: scanned selection state in settings-agents-hooks must expand from one selected option id per scanned CLI to many; settings-agents-scanned and settings-agents-section must remove row-level Add/registered affordances and Add All, show scanned.path under the label, convert the chooser to searchable multi-select with selected-model badges on the row, and restyle the section Add/Scan buttons. The Codex rename is correctly scoped to the settings identity/display layer and should include direct vendor-label consumers such as agent-info-bar while avoiding unrelated analytics/storage uses of literal openai keys. Test coverage is adequate if implementation updates the identified scan/settings/component suites and then runs bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, and bun run test in the implementation worktree.",
+    "datetime": "2026-03-30T13:20:08Z",
+    "entry_id": "019d3ee7-22be-7963-a74c-d495489981d1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

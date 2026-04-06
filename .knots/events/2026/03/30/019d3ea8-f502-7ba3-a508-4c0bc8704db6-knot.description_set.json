@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3ea8-f502-7ba3-a508-4c0bc8704db6",
+  "occurred_at": "2026-03-30T12:12:33.410762Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Switching to the ReTakes or Diagnostics view causes visible horizontal jitter — the page shifts outward on both sides and the Foolery icon visibly pops to the left. The top navigation row (Foolery icon through the rightmost button) must remain at a fixed position across all view transitions. Fix ReTakes and Diagnostics so their layout anchors the top row identically to the other views."
+  }
+}

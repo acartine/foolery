@@ -1,0 +1,21 @@
+{
+  "event_id": "019d3013-3057-7e62-8941-9aa847112493",
+  "occurred_at": "2026-03-27T16:14:17.175155Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c858",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment_review",
+    "terminal": false,
+    "title": "Fix missing planning audit data — events not recorded for planning steps",
+    "type": "work",
+    "updated_at": "2026-03-27T16:14:17.175155Z",
+    "workflow_id": "compatibility"
+  }
+}

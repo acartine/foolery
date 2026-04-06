@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f51-4ad6-77e1-ba03-7317fdac83d8",
+  "occurred_at": "2026-03-27T12:42:29.97463Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan reviewed and approved. The plan correctly scopes the change to beat-detail.tsx only (remove import on line 18 and render on line 297). Other BeatTypeBadge consumers are unaffected. The flex-wrap container will handle layout naturally after removal. Validation strategy (lint, typecheck, test, build) is appropriate for this low-risk change.",
+    "datetime": "2026-03-27T12:42:29.97463Z",
+    "entry_id": "019d2f51-4ad6-77e1-ba03-73010c638233",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

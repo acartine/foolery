@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4e22-a43d-72d0-9e53-aef46a087156",
+  "occurred_at": "2026-04-02T12:19:46.365117Z",
+  "knot_id": "foolery-5de9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan complete. The likely fix is to make Queue/Active reserve terminal-aware bottom inset space from the existing terminal store state instead of letting the fixed terminal panel/minimized bar shrink the usable viewport without affecting list layout. Keep scope on Queue/Active list layout, prefer a single helper for open/minimized/closed inset derivation, and validate the actual scroll owner in-browser with `scrollTop`/`scrollHeight`/`clientHeight` across all three terminal states.\n\nChild knots created:\n- `foolery-4dfd` implementation\n- `foolery-3a5e` regression coverage and browser verification",
+    "datetime": "2026-04-02T12:19:12Z",
+    "entry_id": "019d4e22-a43d-72d0-9e53-aee1b5b3b5cc",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "xhigh"
+  }
+}

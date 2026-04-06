@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42e6-45ce-7650-bd7f-5a3490447ff0",
+  "occurred_at": "2026-03-31T07:58:00.654352Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Adjust the inline title editing field in the lightbox so it uses nearly the full available width while preserving space for the Close button. The editing state should appear seamless, with no visible textbox border or chrome, and should feel like editing the title label directly."
+  }
+}

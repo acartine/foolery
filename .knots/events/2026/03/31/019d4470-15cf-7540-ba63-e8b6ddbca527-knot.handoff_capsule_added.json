@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4470-15cf-7540-ba63-e8b6ddbca527",
+  "occurred_at": "2026-03-31T15:08:09.551869Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan approved. Root cause and proposed fix match the current code: useRehydrateTerminals skips listSessions() when local terminals are empty, and computeRehydrate currently adopts orphaned running sessions without opening the panel. The plan is scoped correctly, respects invariants, and is feasible with the existing session connection manager. Implementation should include a hook-level test proving rehydration still calls listSessions() with an empty local store, store tests that opening/unminimizing happens when orphan running sessions are discovered, and a multi-context browser validation that also verifies stop/status propagation remains consistent across both instances.",
+    "datetime": "2026-03-31T15:08:09.551869Z",
+    "entry_id": "019d4470-15cf-7540-ba63-e8a7fdc5c4c5",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

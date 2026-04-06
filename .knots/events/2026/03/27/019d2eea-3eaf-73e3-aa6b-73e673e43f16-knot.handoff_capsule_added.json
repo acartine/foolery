@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2eea-3eaf-73e3-aa6b-73e673e43f16",
+  "occurred_at": "2026-03-27T10:49:56.655796Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped approved divider-layout verification by fast-forwarding origin/main from 3d2f79d65a9f to 6c5e6705771d. The underlying divider placement change was already present on main at commit b857254a411d; this shipment put the approved regression coverage on main in src/lib/__tests__/beats-page-layout.test.ts and the related .knots/_worktree ESLint ignore entry. Remote workflows passed for commit 6c5e6705771d: CI run 23642684349 and Coverage Badge run 23642683664. GitHub Actions reported non-blocking annotations for Node.js 20 action deprecation and coverage regression warnings, but both workflows concluded success. No new merge commit was created during shipment, so no additional commit tag was required.",
+    "datetime": "2026-03-27T10:49:48Z",
+    "entry_id": "019d2eea-3eaf-73e3-aa6b-73d27ddf5278",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

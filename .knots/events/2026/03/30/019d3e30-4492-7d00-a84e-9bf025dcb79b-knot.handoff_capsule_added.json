@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e30-4492-7d00-a84e-9bf025dcb79b",
+  "occurred_at": "2026-03-30T10:00:43.922535Z",
+  "knot_id": "foolery-0f6a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipped commit 3f6e5a9f1e02 to origin/main via fast-forward from branch foolery-0f6a. Remote checks for this commit are green: ci https://github.com/acartine/foolery/actions/runs/23738970132/job/69150877272 and coverage https://github.com/acartine/foolery/actions/runs/23738970088/job/69150877162 both completed successfully on 2026-03-30.",
+    "datetime": "2026-03-30T10:00:43.922535Z",
+    "entry_id": "019d3e30-4492-7d00-a84e-9be2b011b723",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

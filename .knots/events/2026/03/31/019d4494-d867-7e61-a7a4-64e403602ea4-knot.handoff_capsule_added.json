@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4494-d867-7e61-a7a4-64e403602ea4",
+  "occurred_at": "2026-03-31T15:48:18.663404Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review APPROVED. Commit 32bf30fb5805 is on main. Fix: replaced `flex-1` (useless, parent not flex) + missing `w-full` with `block w-full` on the title input, and stripped all visible border/bg/ring chrome for seamless inline editing appearance. Layout verified: input sits inside a `min-w-0 flex-1` container that is a flex sibling of the Close button — no overlap possible. CI: both CI and Coverage Badge workflows completed successfully (green). No invariants on this knot. Change is scoped entirely to the input className in `TitleEditor` in `beat-detail-lightbox.tsx` — no other behavior altered.",
+    "datetime": "2026-03-31T15:48:18.663404Z",
+    "entry_id": "019d4494-d867-7e61-a7a4-64d3270da41b",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

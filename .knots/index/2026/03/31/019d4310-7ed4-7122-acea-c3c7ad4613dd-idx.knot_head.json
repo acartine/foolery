@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4310-7ed4-7122-acea-c3c7ad4613dd",
+  "occurred_at": "2026-03-31T08:44:07.758389Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-38f3",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Settings: Agents: Scan - update gemini models",
+    "type": "work",
+    "updated_at": "2026-03-31T08:44:07.758389Z",
+    "workflow_id": "compatibility"
+  }
+}

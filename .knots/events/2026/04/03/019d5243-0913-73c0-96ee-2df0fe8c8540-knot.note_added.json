@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5243-0913-73c0-96ee-2df0fe8c8540",
+  "occurred_at": "2026-04-03T07:33:38.195075Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review requests revision.\n\nThe current plan is not complete enough to satisfy the shared runtime acceptance criteria. It adds a capability map, but it does not yet centralize the duplicated stdout/result/close-input runtime that still exists in terminal-manager-initial-io.ts and terminal-manager-take-child.ts. It also declares sessionEnd, watchdog, and postExitValidation hooks without a concrete step to capture normalized per-child events or wire watchdog timers into the live close and abort paths.\n\nPlease revise the plan to:\n1. Introduce a shared runtime helper that owns normalized event processing, result detection, follow-up and AskUser auto-response gating, stdin drain scheduling, and formatted event emission for both initial and take-loop children.\n2. Add explicit wiring steps for session-end detection, watchdog lifecycle, and post-exit validation, including where the runtime stores the last normalized events needed by validators.\n3. Replace the Gemini TODO stub with a characterization step that confirms Gemini CLI invocation and JSON event shape before adapter and conformance work is scoped.\n4. Expand the test plan beyond capability and adapter unit tests to cover terminal-manager integration behavior for at least one interactive dialect and one one-shot dialect, including abort, retry, timeout, and close-input behavior.\n\nNo knot invariants were listed, so there is no invariant conflict beyond the missing runtime completeness above.",
+    "datetime": "2026-04-03T07:32:33Z",
+    "entry_id": "019d5243-0913-73c0-96ee-2de94a811b86",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f57-4585-7d91-88d4-69dda1ae76f5",
+  "occurred_at": "2026-03-27T12:49:01.829517Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review passed. Commit 48fa904f4ed8 is on main, CI runs 23646866442 and 23646866423 both green. Change is scoped to beat-detail.tsx only (3 lines removed). BeatTypeBadge import and render removed from BeatDetailHeader; other consumers (beat-column-defs, wave-planner-sections, stories) unaffected. No invariants defined. No regressions detected.",
+    "datetime": "2026-03-27T12:49:01.829517Z",
+    "entry_id": "019d2f57-4585-7d91-88d4-69c409d39847",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d478c-2905-74e0-94bd-35014e1145b8",
+  "occurred_at": "2026-04-01T05:37:41.125696Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation already on main (commit 7b17b3e038c0). meetsLeaderboardThresholds at lease-audit-helpers.ts:213-221 enforces total>=10 AND rate>25%. buildLeaderboard filters to qualifiedStats before all ranking/aggregation. All 33 tests pass including threshold edge cases. tsc and eslint clean.",
+    "datetime": "2026-04-01T05:37:41.125696Z",
+    "entry_id": "019d478c-2905-74e0-94bd-34ff60473eeb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a5f-e87c-70d2-8bd8-7a021432bb8e",
+  "occurred_at": "2026-03-26T13:40:21.756102Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Two files still have `printf '->'` bug: setup.sh:67 and agent-wizard.sh:51. Fix is `printf '%s' '->'` in both. install.sh already fixed. Low complexity, two one-line changes.",
+    "datetime": "2026-03-26T13:40:21.756102Z",
+    "entry_id": "019d2a5f-e87c-70d2-8bd8-79fee3aca84e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

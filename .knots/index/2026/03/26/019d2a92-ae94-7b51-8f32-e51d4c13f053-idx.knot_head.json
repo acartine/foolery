@@ -1,0 +1,23 @@
+{
+  "event_id": "019d2a92-ae94-7b51-8f32-e51d4c13f053",
+  "occurred_at": "2026-03-26T14:35:49.268832Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6c3e",
+    "profile_id": "autopilot_no_planning",
+    "state": "implementation_review",
+    "terminal": false,
+    "title": "Remove the Type column from the Queues screen",
+    "type": "work",
+    "updated_at": "2026-03-26T14:35:49.268832Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d2a92-6f58-7af2-af51-49c6c83427e2"
+  }
+}

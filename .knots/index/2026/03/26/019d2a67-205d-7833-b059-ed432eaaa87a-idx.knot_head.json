@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2a67-205d-7833-b059-ed432eaaa87a",
+  "occurred_at": "2026-03-26T13:48:14.813519Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9345",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Remove the title column from Queues and Active, showing it as an inline row below priority, workflow profile, owner, and status",
+    "type": "work",
+    "updated_at": "2026-03-26T13:48:14.813519Z",
+    "workflow_id": "compatibility"
+  }
+}

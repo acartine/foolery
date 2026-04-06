@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43cc-e95c-7b71-a464-415b53ae4eb1",
+  "occurred_at": "2026-03-31T12:09:55.804528Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. Verified the conversation log pulldown entries now show both date and time, keep a single visible conversation identifier as #<conversation> <sessionId>, and avoid duplicated Prompt/Take numbering by displaying only Prompt #<n> when the values are equivalent. Scope remained limited to the pulldown formatting/data helpers and focused formatter tests. Sanity gates re-run in .worktrees/foolery-284e: bun run lint (passes with one pre-existing React Compiler warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-31T12:09:48Z",
+    "entry_id": "019d43cc-e95c-7b71-a464-4141414bef42",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ee6-4c6a-7a90-b627-3f7cfbf6d387",
+  "occurred_at": "2026-03-27T10:45:38.026459Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Approved in implementation_review. Verified the divider remains below the inline title metadata row in Queues and Active via src/lib/__tests__/beats-page-layout.test.ts, and verified bun run lint, bunx tsc --noEmit, bun run test, and bun run build pass in /private/tmp/foolery-8831 on feat/foolery-8831.",
+    "datetime": "2026-03-27T10:45:38.026459Z",
+    "entry_id": "019d2ee6-4c6a-7a90-b627-3f6e0babcb47",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

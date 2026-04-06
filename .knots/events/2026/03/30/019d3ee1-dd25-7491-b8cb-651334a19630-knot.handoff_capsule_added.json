@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee1-dd25-7491-b8cb-651334a19630",
+  "occurred_at": "2026-03-30T13:14:42.853471Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Merged feature branch foolery-81ad to main (merge commit 9eeae9e240de). All quality gates passed locally (lint, typecheck, 2355 tests, build). Pushed to origin/main. CI green on remote (run 23746517036). Coverage regression warnings are pre-existing, not blocking.",
+    "datetime": "2026-03-30T13:14:42.853471Z",
+    "entry_id": "019d3ee1-dd25-7491-b8cb-6506e141f4c0",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

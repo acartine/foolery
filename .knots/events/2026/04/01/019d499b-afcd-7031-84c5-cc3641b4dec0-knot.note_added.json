@@ -1,0 +1,15 @@
+{
+  "event_id": "019d499b-afcd-7031-84c5-cc3641b4dec0",
+  "occurred_at": "2026-04-01T15:13:53.101018Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "PLAN REVIEW REJECTION: No plan artifacts found — the planning phase completed without producing any notes or handoff capsules. There is no plan to review.\n\nROOT CAUSE ANALYSIS (for the next planning pass):\n\nThe bug is a race condition in the draft persistence layer:\n\n1. handleCreateMoreClick (beat-form.tsx:392-403) calls clearDraft(), then create.onCreateMore(), then setBlocks([]) / setBlockedBy([]).\n2. The setBlocks/setBlockedBy state updates trigger a re-render, which fires the useEffect at beat-form.tsx:372-375.\n3. That effect calls persistDraft(form.getValues()), re-saving the OLD form values to localStorage AFTER clearDraft() already cleared them.\n4. Later, when submitBeat resolves and setFormKey remounts the form, loadDraft() finds the re-persisted stale draft and populates the form with old data.\n\nREQUIRED IN NEXT PLAN:\n- Identify the fix for the draft re-persistence race (e.g., add a guard flag to skip persistence after clearDraft, or clear draft inside the submitBeat success callback after setFormKey, or restructure the ordering so setBlocks/setBlockedBy happen after formKey increment).\n- Address focus/cursor positioning after reset (acceptance criterion 5).\n- Define test strategy covering: successful create-more clears form, failed create-more preserves form, focus returns to first input.\n- List files to modify.",
+    "datetime": "2026-04-01T15:13:53.101018Z",
+    "entry_id": "019d499b-afcd-7031-84c5-cc277fe3fd14",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

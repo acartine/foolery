@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ecd-792a-75e2-957f-af1fef0d0be3",
+  "occurred_at": "2026-03-30T12:52:26.538518Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Revised planning fixes the prior correctness gap: persist beat-scoped token_usage entries with explicit beatId, aggregate them into a single beat summary field tokenUsageByAgent, and cover multi-beat sessions in tests so session-level duplication cannot slip through. Target areas are interaction-logger, output completion handling for usage capture, agent-history parse/summary/types, and the existing history diagnostics beat detail UI.",
+    "datetime": "2026-03-30T12:52:04Z",
+    "entry_id": "019d3ecd-792a-75e2-957f-af0f3d959d89",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "2026-03-30"
+  }
+}

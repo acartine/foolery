@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ebc-fa0d-7ea0-a4b2-bfae105aff57",
+  "occurred_at": "2026-03-30T12:34:25.420997Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review blocked: commit 30f960fa (Allow multi-select CLI agent scan models) exists on branch foolery-67b5 but is NOT merged to main. Code must be on main before shipment review can approve.",
+    "datetime": "2026-03-30T12:34:25.420997Z",
+    "entry_id": "019d3ebc-fa0d-7ea0-a4b2-bf9494422c63",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

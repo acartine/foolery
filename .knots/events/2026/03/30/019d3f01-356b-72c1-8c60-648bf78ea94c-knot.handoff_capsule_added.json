@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f01-356b-72c1-8c60-648bf78ea94c",
+  "occurred_at": "2026-03-30T13:48:57.067677Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the scanned-agents Settings UI pass on feat/foolery-23f3.\n\nWhat changed:\n- removed the remaining optimistic selected-model state from the scan flow; selected pills/checkmarks now derive from successfully registered agent ids, so failed adds cannot leave false imported state in the row UI\n- kept the requested streamlined scanned row presentation: no per-row Add or registered badge, full CLI path under the provider label, no Add All button, and success/success-light toolbar button variants\n- retained the Codex provider rename and added unit coverage that openai/openai-path detection resolves to Codex\n- expanded scanned-agents tests to cover registered-model pill rendering, absence of legacy controls, CLI path display, and toolbar button variants\n\nValidation:\n- bun run lint (passes with 1 pre-existing warning in src/components/beat-form.tsx about react-hooks/incompatible-library)\n- bunx tsc --noEmit\n- bun run test\n- bun run build",
+    "datetime": "2026-03-30T13:48:57.067677Z",
+    "entry_id": "019d3f01-356b-72c1-8c60-6478e86425fa",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb5-4b01-7142-b6b6-d25ef1183398",
+  "occurred_at": "2026-03-30T12:26:01.857612Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. The fix replaces the fixed-width flex layout (w-[140px]/w-[220px]) with a CSS grid using max-content column sizing, so multi-pill agent labels size from rendered content and no longer overlap the weight input. Mobile layout correctly spans the label across all columns. All quality gates pass: lint clean, tsc clean, 200/200 test files (2314 tests passed). Layout contract test locks in the grid structure and absence of fixed-width classes.",
+    "datetime": "2026-03-30T12:26:01.857612Z",
+    "entry_id": "019d3eb5-4b01-7142-b6b6-d24ac77aae50",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

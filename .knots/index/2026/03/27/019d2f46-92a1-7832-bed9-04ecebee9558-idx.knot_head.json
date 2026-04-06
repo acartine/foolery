@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2f46-92a1-7832-bed9-04ecebee9558",
+  "occurred_at": "2026-03-27T12:30:47.452783Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-aae0",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Beat Detail:  When you click on refine scope, and it gets queued, the button should gray itself out until complete",
+    "type": "work",
+    "updated_at": "2026-03-27T12:30:47.452783Z",
+    "workflow_id": "compatibility"
+  }
+}

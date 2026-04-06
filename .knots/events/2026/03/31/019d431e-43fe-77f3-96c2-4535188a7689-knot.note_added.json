@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431e-43fe-77f3-96c2-4535188a7689",
+  "occurred_at": "2026-03-31T08:59:10.205969Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "ReTake: 100% completely does not work at all.  not even close.  use the chrome or playwright mcp to actually verify the fix this time.",
+    "datetime": "2026-03-31T08:59:10.205969Z",
+    "entry_id": "019d431e-43fe-77f3-96c2-4527354fc098",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

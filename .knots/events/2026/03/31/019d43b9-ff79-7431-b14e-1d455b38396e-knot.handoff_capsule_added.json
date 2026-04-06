@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b9-ff79-7431-b14e-1d455b38396e",
+  "occurred_at": "2026-03-31T11:49:16.281674Z",
+  "knot_id": "foolery-38f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Approved in implementation_review. Reviewed feature/gemini-scan-models at ead1e657109cffd09c0cf82526e42db96019ae2c against the knot acceptance criteria. Gemini scan options are now restricted to exactly five static model IDs: gemini-3.1-pro-preview, gemini-3-flash-preview, gemini-2.5-pro, gemini-2.5-flash, and gemini-2.5-flash-lite, and out-of-set detected Gemini history models no longer appear in the selector. Preview labels render as Gemini Pro 3.1 Preview and Gemini Flash 3 Preview. Verified read-only review coverage with bun run test src/lib/__tests__/settings-scan.test.ts, bun run lint, bunx tsc --noEmit, bun run test, and bun run build; all passed, with only a pre-existing lint warning in src/components/beat-form.tsx unrelated to this change.",
+    "datetime": "2026-03-31T11:49:16.281674Z",
+    "entry_id": "019d43b9-ff79-7431-b14e-1d3525399c94",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

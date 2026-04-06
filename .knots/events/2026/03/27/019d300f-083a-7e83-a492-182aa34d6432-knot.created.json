@@ -1,0 +1,17 @@
+{
+  "event_id": "019d300f-083a-7e83-a492-182aa34d6432",
+  "occurred_at": "2026-03-27T16:09:44.762902Z",
+  "knot_id": "foolery-84a6",
+  "type": "knot.created",
+  "data": {
+    "body": "VersionBadge currently renders the update CTA as 'Update now to v', but release tags come from GitHub tag_name and may already include a leading 'v', producing labels like 'vv0.6.2'. Expected outcome: normalize display so the badge/popover shows a single version prefix consistently. Relevant context: src/components/version-badge.tsx hardcodes a 'v' prefix while src/lib/release-version.ts preserves the release tag verbatim. Also assess whether the update CTA should remain clipboard-only or grow a backend-triggered update/restart flow; current implementation only copies 'foolery update' and does not invoke any server-side update path.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_with_pr",
+    "state": "ready_for_planning",
+    "title": "Fix version badge double-v label",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

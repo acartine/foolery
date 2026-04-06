@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d40-4c61-7743-9c07-c9381831d09a",
+  "occurred_at": "2026-04-02T08:12:32.729218Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Gemini can run claimed-step and take-loop sessions in interactive mode through the shared session runtime.\n2. Gemini turn completion and session completion are detected from explicit protocol signals and normalized into the shared event model.\n3. Any Gemini-specific shim needed for machine-readable interactive events is documented and implemented without changing the shared protocol contract.\n4. Tests cover successful completion, hang timeout, and retry/abort behavior for interactive Gemini sessions."
+  }
+}

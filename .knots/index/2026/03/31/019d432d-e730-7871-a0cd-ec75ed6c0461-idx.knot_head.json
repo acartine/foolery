@@ -1,0 +1,21 @@
+{
+  "event_id": "019d432d-e730-7871-a0cd-ec75ed6c0461",
+  "occurred_at": "2026-03-31T09:16:15.02482Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b45e",
+    "profile_id": "autopilot",
+    "state": "ready_for_shipment",
+    "terminal": false,
+    "title": "History Screen Shows Incorrect Agent for Logged Model",
+    "type": "work",
+    "updated_at": "2026-03-31T09:16:15.02482Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f46-cd92-7953-914d-f1a0c2561719",
+  "occurred_at": "2026-03-27T12:31:02.546109Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a user clicks the Refine Scope button and the refinement request is queued or in progress, the button should be disabled so it cannot be triggered again. While refinement is pending, the UI should display a clear indicator such as \"scope refinement is pending.\" Once the refinement completes and is applied, the button should be re-enabled and the pending indicator should be removed."
+  }
+}

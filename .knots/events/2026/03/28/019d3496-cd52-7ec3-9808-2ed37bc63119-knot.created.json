@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3496-cd52-7ec3-9808-2ed37bc63119",
+  "occurred_at": "2026-03-28T13:16:31.442754Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.created",
+  "data": {
+    "body": "Presently the State column gets what looks like ALL of the extra width, making the screen look weird.  Just distribute width evenly across the columns for a more natural look.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Queues/Active Screen: share available width evenly across columns.",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4301-c801-7cc2-8ad0-0f584df649ca",
+  "occurred_at": "2026-03-31T08:28:03.457873Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Dirty workspace blocked shipment review. main/origin-main are at 31ba16ffa62b, the knot is tagged with shipped commit 704c9e17569e, and .test-copilot-settings-ui/ is untracked in the repo root. I did not perform code or git writes; rerun shipment review from a clean workspace.",
+    "datetime": "2026-03-31T08:27:40Z",
+    "entry_id": "019d4301-c801-7cc2-8ad0-0f45b8f32e01",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

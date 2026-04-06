@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ecf-440a-73b3-aa4a-cca80ac35cef",
+  "occurred_at": "2026-03-27T10:20:28.554532Z",
+  "knot_id": "foolery-920b",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Consider just making all the pills the same size",
+    "datetime": "2026-03-27T10:20:28.554532Z",
+    "entry_id": "019d2ecf-440a-73b3-aa4a-cc90ae3a196d",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

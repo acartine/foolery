@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb6-73c1-70e2-9519-8e4c0dc50df9",
+  "occurred_at": "2026-03-30T12:27:17.825505Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review requested changes: the new store and notification hook changes are in place, but the acceptance behavior is not covered by tests. Add an automated UI or integration test that proves Refine Scope disables after enqueue, shows the pending indicator while waiting, and re-enables/removes the indicator after completion is applied.",
+    "datetime": "2026-03-30T12:27:17.825505Z",
+    "entry_id": "019d3eb6-73c1-70e2-9519-8e3dbc808dca",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

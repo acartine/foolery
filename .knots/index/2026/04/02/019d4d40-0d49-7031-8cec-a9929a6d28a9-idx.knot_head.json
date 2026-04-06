@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d40-0d49-7031-8cec-a9929a6d28a9",
+  "occurred_at": "2026-04-02T08:12:16.585158Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-160c",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Add interactive OpenCode session support",
+    "type": "work",
+    "updated_at": "2026-04-02T08:12:16.585158Z",
+    "workflow_id": "compatibility"
+  }
+}

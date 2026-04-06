@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d77-7065-7dd1-b291-6789c9c8ec28",
+  "occurred_at": "2026-04-02T09:12:46.437739Z",
+  "knot_id": "foolery-5de9",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) When terminal is running (expanded), users can scroll from the bottom to the first item in the Queue/Active list without being blocked by an artificial upper bound.\n2) When terminal is minimized, users can still scroll to the same true top boundary of the list; the maximum upward scroll is not shortened by minimized-terminal layout state.\n3) Switching terminal state between running/ minimized/closed updates scroll bounds immediately without refresh and preserves expected scroll-to-top behavior in each state.\n4) Validate in-browser with Playwright and/or Chrome DevTools: assert `scrollTop`, `scrollHeight`, and `clientHeight` in each terminal state and confirm the computed scroll range reaches the expected top limit in both running and minimized states."
+  }
+}

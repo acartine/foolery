@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a8b-9b28-79a1-b34b-58c184d8fbd7",
+  "occurred_at": "2026-03-26T14:28:05.544652Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review requested changes. 1. The knot description is the installed 'foolery stop' failure that emits 'printf: ->: invalid option', but the reviewed change only updates [scripts/setup.sh] prompt output at line 67 and [scripts/agent-wizard.sh] prompt output at line 51. 2. The install/generated runtime path that produces the installed 'foolery' script was already using the safe form before this commit: [scripts/install.sh] line 78 and generated line 297 both use printf '%s' '->'. 3. Because the implementation does not modify the stop/install path described by the knot, it does not resolve the reported user-visible failure and there is no regression test covering that path. Required follow-up: change the implementation to address the installed/runtime stop path or the upgrade/reinstall flow that leaves users with the broken script, and add validation for the reported behavior.",
+    "datetime": "2026-03-26T14:27:55Z",
+    "entry_id": "019d2a8b-9b28-79a1-b34b-58b28731ca37",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "gpt-5-codex"
+  }
+}

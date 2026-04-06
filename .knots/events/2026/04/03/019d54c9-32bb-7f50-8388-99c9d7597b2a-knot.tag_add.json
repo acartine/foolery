@@ -1,0 +1,9 @@
+{
+  "event_id": "019d54c9-32bb-7f50-8388-99c9d7597b2a",
+  "occurred_at": "2026-04-03T19:19:25.115694Z",
+  "knot_id": "foolery-160c",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-160c-opencode"
+  }
+}

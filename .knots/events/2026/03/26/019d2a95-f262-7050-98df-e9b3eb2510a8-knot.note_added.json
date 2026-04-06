@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a95-f262-7050-98df-e9b3eb2510a8",
+  "occurred_at": "2026-03-26T14:39:23.23458Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked on 2026-03-26: tagged shipment commit aea8120e78aa is not an ancestor of origin/main, and origin/main:src/components/beat-columns.tsx still imports/inserts typeColumn(), so the Queues screen on main still shows the Type column. GitHub Actions is green for origin/main commit 3f3476530e08, but that is unrelated to this beat because the beat's shipped commit is not live on main.",
+    "datetime": "2026-03-26T14:39:23.23458Z",
+    "entry_id": "019d2a95-f262-7050-98df-e9a7a63c58ef",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

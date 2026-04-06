@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4ed0-3f97-7802-ac99-89ab5b856147",
+  "occurred_at": "2026-04-02T15:29:23.863983Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4dfd",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement terminal-aware scroll bounds for Queue/Active list viewport",
+    "type": "work",
+    "updated_at": "2026-04-02T15:29:23.863983Z",
+    "workflow_id": "compatibility"
+  }
+}

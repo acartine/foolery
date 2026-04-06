@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3edd-982d-7df0-a603-31c0f4c8767f",
+  "occurred_at": "2026-03-30T13:10:03.053798Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Restored the dispatch pool row to the original fixed-width flex layout, kept AgentDisplayLabel's default inline behavior, and added a pool-row-only stacked layout so agent pills render beneath the name without overlapping the weight summary. Validation: bun run lint (passes with one pre-existing react-hooks/incompatible-library warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-30T13:09:34Z",
+    "entry_id": "019d3edd-982d-7df0-a603-31b71b6efc77",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d34c5-4b63-7a40-9a94-8f953319506c",
+  "occurred_at": "2026-03-28T14:07:18.371311Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "agent_model": "claude-haiku-4.5",
+    "agent_name": "copilot-cli",
+    "agent_version": "1.0.12",
+    "force": false,
+    "from": "implementation",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation_review",
+    "workflow_id": "compatibility"
+  }
+}

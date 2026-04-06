@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2f49-2fa1-7753-a9fc-bc9ac5166a05",
+  "occurred_at": "2026-03-27T12:33:38.721952Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.created",
+  "data": {
+    "body": "with a project name like \"feature-builder\", make sure that we are striping project names by using the last hyphen and not the first as the index offset.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Project names with hyphens - handle prefix strip correctly",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

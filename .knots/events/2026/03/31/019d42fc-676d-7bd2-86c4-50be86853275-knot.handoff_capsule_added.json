@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42fc-676d-7bd2-86c4-50be86853275",
+  "occurred_at": "2026-03-31T08:22:11.053791Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review APPROVED. All 6 acceptance criteria verified against code diff and passing tests. Key changes: (1) failedAgentsPerQueueType accumulates all failed agents per queue type, not just the last one. (2) selectFromPool returns null instead of silently falling back to excluded agent. (3) Basic dispatch mode now enters pool rotation path when a step pool exists and there is a failed agent. (4) selectErrorRetryAgent stops early when pool is fully exhausted. (5) Two new integration tests verify basic-mode error rotation and full-pool cycling. (6) All quality gates pass (lint clean except pre-existing react-hooks warning, tsc clean, 46/46 tests pass, build succeeds).",
+    "datetime": "2026-03-31T08:22:11.053791Z",
+    "entry_id": "019d42fc-676d-7bd2-86c4-50a8cae2c1cc",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

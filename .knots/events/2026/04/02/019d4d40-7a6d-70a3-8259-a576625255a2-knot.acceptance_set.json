@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d40-7a6d-70a3-8259-a576625255a2",
+  "occurred_at": "2026-04-02T08:12:44.509567Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Copilot can run claimed-step and take-loop sessions in interactive mode through the shared session runtime.\n2. Copilot turn completion and session completion are detected from explicit protocol signals and normalized into the shared event model.\n3. Follow-up prompting, timeout/kill, retry, and abort behavior match the shared protocol rather than bespoke Copilot logic.\n4. Tests cover successful completion, hang timeout, and retry/abort behavior for interactive Copilot sessions."
+  }
+}

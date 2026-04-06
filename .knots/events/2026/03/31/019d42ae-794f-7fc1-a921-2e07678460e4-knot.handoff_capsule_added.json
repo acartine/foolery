@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ae-794f-7fc1-a921-2e07678460e4",
+  "occurred_at": "2026-03-31T06:57:03.823106Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review: changes requested. 1. [src/lib/agent-token-usage.ts](/Users/cartine/foolery/src/lib/agent-token-usage.ts#L54) logs the same extracted usage once for every beatId it receives, so token attribution is fan-out, not beat-specific. 2. [src/lib/orchestration-session-create.ts](/Users/cartine/foolery/src/lib/orchestration-session-create.ts#L349) and [src/lib/terminal-manager-initial-io.ts](/Users/cartine/foolery/src/lib/terminal-manager-initial-io.ts#L266) pass multi-beat scopes into that helper, so one completed turn can be persisted against multiple beats. 3. The added test in [src/lib/__tests__/agent-token-usage.test.ts](/Users/cartine/foolery/src/lib/__tests__/agent-token-usage.test.ts#L33) codifies this duplication instead of preventing it. Acceptance requires persisted per-agent, per-beat counts to match saved values for each beat, so the implementation must stop duplicating a shared turn's totals across all beats. Read-only verification: targeted token-usage/history tests passed, tsc passed, build passed, lint had one unrelated pre-existing warning in [src/components/beat-form.tsx](/Users/cartine/foolery/src/components/beat-form.tsx#L368).",
+    "datetime": "2026-03-31T06:57:03.823106Z",
+    "entry_id": "019d42ae-794f-7fc1-a921-2df29637856e",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

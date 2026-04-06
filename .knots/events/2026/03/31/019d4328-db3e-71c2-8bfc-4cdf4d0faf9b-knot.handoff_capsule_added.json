@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4328-db3e-71c2-8bfc-4cdf4d0faf9b",
+  "occurred_at": "2026-03-31T09:10:44.286231Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation review. Diff is limited to src/components/beat-detail-lightbox.tsx and src/lib/__tests__/beat-detail-lightbox-width.test.ts. Header layout now uses a two-column grid with an auto-width Close button track, and the title editor input is chrome-less via appearance-none, border-0, transparent background, no ring, and no shadow. Sanity gates in /Users/cartine/foolery-6a0d: bun run lint (passes with one pre-existing warning in src/components/beat-form.tsx:368 for react-hooks/incompatible-library), bunx tsc --noEmit, bun run test, bun run build. Playwright verification on http://localhost:3001/beats confirmed the inline title editor remained focused with a visible caret, occupied ~92.9% of the header row width, did not overlap the Close button, and preserved a ~12.74px gap while reporting 0px borders, transparent background, appearance none, and no visible outline/ring chrome.",
+    "datetime": "2026-03-31T09:10:34Z",
+    "entry_id": "019d4328-db3e-71c2-8bfc-4ccb942e2c23",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5"
+  }
+}

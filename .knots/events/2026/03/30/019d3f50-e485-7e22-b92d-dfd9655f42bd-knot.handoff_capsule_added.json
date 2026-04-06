@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f50-e485-7e22-b92d-dfd9655f42bd",
+  "occurred_at": "2026-03-30T15:15:59.23785Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Validated the scanned-agent multi-add flow end to end. Added a cancel-path assertion to scripts/test-copilot-settings-ui.mjs so the smoke check now reopens Scan, dismisses without selecting a model, and verifies the two previously added Copilot models remain unchanged. Validation run in /Users/cartine/foolery/.knots/_worktree/foolery-67b5: bun run lint; bunx tsc --noEmit; bun run test; bun run build; bun run test:smoke:copilot:ui. Commit: 57dec4156e3a.",
+    "datetime": "2026-03-30T15:15:59.23785Z",
+    "entry_id": "019d3f50-e485-7e22-b92d-dfcb36a71709",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

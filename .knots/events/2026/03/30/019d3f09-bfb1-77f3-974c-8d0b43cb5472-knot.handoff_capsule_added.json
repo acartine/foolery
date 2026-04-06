@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f09-bfb1-77f3-974c-8d0b43cb5472",
+  "occurred_at": "2026-03-30T13:58:16.753474Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified merge commit 976a088c0df6 is live on main and origin/main, knot tags include commit:c264551c9e0e, commit:09119b329784, commit:819e636981a7, and commit:976a088c0df6, shipped UI/provider changes match the acceptance criteria on main, and GitHub Actions runs 23748438545 (CI) and 23748438519 (Coverage Badge) completed successfully for the merge commit with no regressions indicated by shipped tests.",
+    "datetime": "2026-03-30T13:58:16.753474Z",
+    "entry_id": "019d3f09-bfb1-77f3-974c-8cf8a4e0ce29",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

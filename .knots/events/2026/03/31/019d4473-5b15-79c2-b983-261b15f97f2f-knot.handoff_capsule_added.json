@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4473-5b15-79c2-b983-261b15f97f2f",
+  "occurred_at": "2026-03-31T15:11:43.893202Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on branch worktree-foolery-7e6d-terminal-rehydration (commit f0ec2a34). Two changes: (1) Removed early-return guard in useRehydrateTerminals that skipped listSessions() when local terminals were empty — now always fetches backend sessions so new browser instances discover active work. (2) Updated computeRehydrate to set panelOpen:true, panelMinimized:false when orphan running sessions are found, so the panel auto-opens. Added 4 new tests covering panel auto-open on orphan discovery, no-op when no orphans, no-op for completed orphans, and unminimize behavior. All quality gates pass: lint clean, tsc clean, 2429 tests passing, build succeeds.",
+    "datetime": "2026-03-31T15:11:43.893202Z",
+    "entry_id": "019d4473-5b15-79c2-b983-2608ec0d5561",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

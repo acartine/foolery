@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2a60-036f-7e33-9f1a-615945865a79",
+  "occurred_at": "2026-03-26T13:40:28.65519Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "The Queues screen no longer displays a “Type” column. Queue rows no longer show the “work” value in that column position. The rest of the Queues screen layout and data remain unchanged apart from the removal of this column."
+  }
+}

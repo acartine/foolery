@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4d40-9e18-7980-964c-9c9b06c3d83c",
+  "occurred_at": "2026-04-02T08:12:53.649931Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-39c1",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Support interactive sessions for Codex, OpenCode, Gemini, and Copilot",
+    "type": "work",
+    "updated_at": "2026-04-02T08:12:53.649931Z",
+    "workflow_id": "compatibility"
+  }
+}

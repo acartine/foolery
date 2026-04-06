@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43cb-a753-7313-860e-60551344c25c",
+  "occurred_at": "2026-03-31T12:08:33.3632Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented the conversation-log pulldown update on branch foolery-284e-history-date. Each dropdown entry now shows a single conversation identifier (#<conversation> <sessionId>) and includes the conversation date alongside the existing time, while the selected trigger behavior stays unchanged. Added focused unit coverage for the date/time and conversation label helpers. Validation in worktree .worktrees/foolery-284e: bun run lint (passes with one existing React Compiler warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build all passed. Commit: 2663ac9b8742.",
+    "datetime": "2026-03-31T12:08:33.3632Z",
+    "entry_id": "019d43cb-a753-7313-860e-604ac1dde69e",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

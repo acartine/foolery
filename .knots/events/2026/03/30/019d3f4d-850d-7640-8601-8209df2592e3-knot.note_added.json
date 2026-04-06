@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f4d-850d-7640-8601-8209df2592e3",
+  "occurred_at": "2026-03-30T15:12:18.189287Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Implementation review rejected: the required multi-model scan flow is not covered by a valid end-to-end check. scripts/test-copilot-settings-ui.mjs still drives a single Add click and waits for a removed 'registered' marker, and scripts/test-fixtures/fake-copilot.sh does not expose multiple scan models via 'copilot help config'. The current unit tests are markup-only and do not verify multi-add persistence or zero-selection cancel behavior.",
+    "datetime": "2026-03-30T15:12:18.189287Z",
+    "entry_id": "019d3f4d-850d-7640-8601-81fc1870134e",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

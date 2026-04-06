@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3496-21f3-75e3-8e32-df63d8785783",
+  "occurred_at": "2026-03-28T13:15:47.571559Z",
+  "knot_id": "foolery-ab20",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. All Create New form field values are persisted (e.g., localStorage) on each input change.\n2. When the dialog is reopened after accidental Escape, click-outside, close-button, or page reload, persisted values are restored into the form fields.\n3. A \"Clear\" button is displayed in the lower-left area of the dialog, next to or aligned with the existing Done button.\n4. Clicking Clear resets all form fields to their defaults and removes persisted data.\n5. Persisted data is cleared on successful submission (Done) so stale drafts do not reappear.\n6. No new external dependencies are introduced for persistence."
+  }
+}

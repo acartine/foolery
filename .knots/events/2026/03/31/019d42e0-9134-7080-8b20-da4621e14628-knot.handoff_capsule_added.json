@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42e0-9134-7080-8b20-da4621e14628",
+  "occurred_at": "2026-03-31T07:51:46.740559Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Observed failure mode: `.foolery-logs/lease-audit.jsonl` shows session `term-1774939778582-yv322h` repeatedly reclaiming `implementation_review` with the same OpenRouter model `openrouter/z-ai/glm-5` after each failure. Existing retry coverage only excludes by `agentId`, so the likely fix is to make take-loop retry/continuation exclusion model-aware at the effective target level while preserving current review-step behavior. Primary implementation target: `src/lib/terminal-manager-take-agent.ts` plus supporting agent-pool plumbing and regression tests in `src/lib/__tests__/terminal-manager-error-retry-retry.test.ts`.",
+    "datetime": "2026-03-31T07:51:46.740559Z",
+    "entry_id": "019d42e0-9134-7080-8b20-da37b75b1360",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

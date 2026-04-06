@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3eb2-916a-7450-8a84-d8a2687f1b43",
+  "occurred_at": "2026-03-30T12:23:03.274549Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Record token usage for each agent on every beat and persist those counts so they can be surfaced in diagnostics. Keep the tracking scoped to per-agent, per-beat token counts and expose the saved values in the existing diagnostics output."
+  }
+}

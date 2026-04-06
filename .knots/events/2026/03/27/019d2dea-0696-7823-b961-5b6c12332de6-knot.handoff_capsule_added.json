@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2dea-0696-7823-b961-5b6c12332de6",
+  "occurred_at": "2026-03-27T06:10:05.078764Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review approved. Code changes (version-badge.tsx, version-badge.stories.tsx) satisfy all acceptance criteria: clicking the version pill triggers an update check via /api/version?force=1, shows 'Update now to {version}' when an update is available (as a link to GitHub releases), and shows 'Latest version installed' when current. Storybook interaction tests cover both click-driven outcomes. All quality gates pass (lint, typecheck, 2251 tests, build). No security issues or regressions found.",
+    "datetime": "2026-03-27T06:10:05.078764Z",
+    "entry_id": "019d2dea-0696-7823-b961-5b5a9fd37e07",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

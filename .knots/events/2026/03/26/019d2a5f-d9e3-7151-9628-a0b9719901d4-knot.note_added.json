@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a5f-d9e3-7151-9628-a0b9719901d4",
+  "occurred_at": "2026-03-26T13:40:18.019323Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Plan: Fix printf '->' invalid option errors\n\n### Root Cause\n`printf '->'` causes bash to interpret `->` as a printf option flag because it starts with `-`. This triggers the error:\n```\nprintf: ->: invalid option\nprintf: usage: printf [-v var] format [arguments]\n```\n\n### Already Fixed\n- `scripts/install.sh` line 78 (`_icon_for`): uses `printf '%s' '->'` ✅\n- `scripts/install.sh` line 297 (generated `icon_for`): uses `printf '%s' '->'` ✅\n- The installed script at `~/.local/bin/foolery` still has the old `printf '->'` from a pre-fix install, which is what the user sees. Re-installing will pick up the fix from install.sh.\n\n### Still Broken (needs fix)\n1. **`scripts/setup.sh` line 67**: `printf '->'` → `printf '%s' '->'`\n2. **`scripts/agent-wizard.sh` line 51**: `printf '->'` → `printf '%s' '->'`\n\n### Fix\nChange `printf '->'` to `printf '%s' '->'` in both files. The `%s` format specifier ensures the string is treated as data, not as a printf option.\n\n### Test Strategy\n- Run `bash -n scripts/setup.sh` and `bash -n scripts/agent-wizard.sh` for syntax check\n- Grep for any remaining `printf '-` patterns that could have the same issue\n- Run `foolery stop` after reinstalling to verify the error is gone\n\n### Complexity\nLow — two single-line changes in two files.",
+    "datetime": "2026-03-26T13:40:18.019323Z",
+    "entry_id": "019d2a5f-d9e3-7151-9628-a0aeb16bcde1",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

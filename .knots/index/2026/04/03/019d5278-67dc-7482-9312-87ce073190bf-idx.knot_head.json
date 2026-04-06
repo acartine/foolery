@@ -1,0 +1,21 @@
+{
+  "event_id": "019d5278-67dc-7482-9312-87ce073190bf",
+  "occurred_at": "2026-04-03T08:31:55.868493Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fd80",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Build shared agent session runtime",
+    "type": "work",
+    "updated_at": "2026-04-03T08:31:55.868493Z",
+    "workflow_id": "compatibility"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4309-32b3-7d21-8d31-cf310c3059b7",
+  "occurred_at": "2026-03-31T08:36:09.523073Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete. Commit 704c9e17 (Fix scanned settings model selectors) is on main and pushed to origin/main. CI is green — both CI and Coverage Badge workflows passed. The commit was already tagged on the knot. No merge was needed as the work was already integrated into main.",
+    "datetime": "2026-03-31T08:36:09.523073Z",
+    "entry_id": "019d4309-32b3-7d21-8d31-cf24cd4c3c7d",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

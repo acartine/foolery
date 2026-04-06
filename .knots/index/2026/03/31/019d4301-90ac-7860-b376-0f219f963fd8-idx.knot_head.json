@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4301-90ac-7860-b376-0f219f963fd8",
+  "occurred_at": "2026-03-31T08:27:49.282693Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-20ee",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Claim loop: rotate through pool agents after repeated failures",
+    "type": "work",
+    "updated_at": "2026-03-31T08:27:49.282693Z",
+    "workflow_id": "compatibility"
+  }
+}

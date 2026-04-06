@@ -1,0 +1,15 @@
+{
+  "event_id": "019d44a8-4783-7843-98ef-19dc6656f4c3",
+  "occurred_at": "2026-03-31T16:09:32.291111Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Commit 7b17b3e038c0 (feat(lease-diagnostics): exclude weak-signal entries from leaderboards) is live on origin/main. Implementation: meetsLeaderboardThresholds (lease-audit-helpers.ts:213-221) correctly enforces total>=10 AND rate>25% (strictly greater, so exactly 25% is excluded). buildLeaderboard (lines 223+) filters to qualifiedStats before all ranking/aggregation, and steps with zero qualified agents are fully omitted. Verification: 33 tests pass (all threshold edge cases covered), tsc --noEmit clean, no regressions.",
+    "datetime": "2026-03-31T16:09:32.291111Z",
+    "entry_id": "019d44a8-4783-7843-98ef-19c49b84ea76",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

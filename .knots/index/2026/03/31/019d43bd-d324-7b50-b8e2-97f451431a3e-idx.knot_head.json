@@ -1,0 +1,21 @@
+{
+  "event_id": "019d43bd-d324-7b50-b8e2-97f451431a3e",
+  "occurred_at": "2026-03-31T11:53:27.076683Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4e2a",
+    "profile_id": "autopilot",
+    "state": "lease_terminated",
+    "terminal": true,
+    "title": "Lease: foolery:terminal_manager_take:term-1774957375952-uh7zrc",
+    "type": "lease",
+    "updated_at": "2026-03-31T11:53:27.076683Z",
+    "workflow_id": "compatibility"
+  }
+}

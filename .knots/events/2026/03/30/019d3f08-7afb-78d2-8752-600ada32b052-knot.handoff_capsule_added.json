@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f08-7afb-78d2-8752-600ada32b052",
+  "occurred_at": "2026-03-30T13:56:53.627287Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipped on main via merge commit 976a088c0df6 (Merge branch 'feat/foolery-23f3'). Local validation passed: bun run lint (1 pre-existing warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, bun run build. Remote workflows succeeded on 976a088c0df6: CI https://github.com/acartine/foolery/actions/runs/23748438545 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23748438519.",
+    "datetime": "2026-03-30T13:56:53.627287Z",
+    "entry_id": "019d3f08-7afb-78d2-8752-5fff8619652c",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

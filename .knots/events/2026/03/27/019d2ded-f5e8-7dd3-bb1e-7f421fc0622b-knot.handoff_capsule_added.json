@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ded-f5e8-7dd3-bb1e-7f421fc0622b",
+  "occurred_at": "2026-03-27T06:14:22.952478Z",
+  "knot_id": "foolery-6aaf",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feat/foolery-6aaf to main (274b1de5ba9c) and fixed a max-lines-per-function lint error in version-badge tests (d4025cae1776). Pushed to origin/main. CI green on both runs (23633825757, 23633825758).",
+    "datetime": "2026-03-27T06:14:22.952478Z",
+    "entry_id": "019d2ded-f5e8-7dd3-bb1e-7f3d86f67c53",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

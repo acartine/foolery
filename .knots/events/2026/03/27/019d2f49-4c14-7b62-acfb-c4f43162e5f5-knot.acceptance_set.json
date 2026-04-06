@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f49-4c14-7b62-acfb-c4f43162e5f5",
+  "occurred_at": "2026-03-27T12:33:46.0043Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Given a project name that contains no hyphen, existing behavior remains unchanged. Given a project name that contains one hyphen, the prefix-stripping logic uses that hyphen. Given a project name that contains multiple hyphens, the prefix-stripping logic uses the last hyphen, not the first. A project name such as \"feature-builder\" is processed correctly by this rule."
+  }
+}

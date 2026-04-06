@@ -1,0 +1,15 @@
+{
+  "event_id": "019d616c-8ab4-7de3-8744-b6aafc5b3042",
+  "occurred_at": "2026-04-06T06:13:16.596744Z",
+  "knot_id": "foolery-3e75",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan\n\n### Prerequisites (already satisfied)\n- `typescript-eslint` v8.55 installed (via eslint-config-next)\n- `@typescript-eslint/parser` v8.55 installed\n- `tsconfig.json` exists at repo root\n- ESLint v9 flat config (`eslint.config.mjs`) in use\n\n### Step 1: Add the rule to eslint.config.mjs\n- Import `typescript-eslint` (the v8 unified package)\n- Add a type-checked config block for `src/**/*.{ts,tsx}` with:\n  - `languageOptions.parserOptions.projectService: true`\n  - `@typescript-eslint/no-floating-promises: \"error\"`\n- No new dependencies needed\n\n### Step 2: Fix existing violations (~10 instances)\nAll are intentional fire-and-forget — prefix with `void`:\n- `src/lib/terminal-manager-take-prompt.ts:226` — markBeatShipped\n- `src/lib/terminal-manager-initial-finish.ts:93,105` — regroomAncestors, updateMessageTypeIndex\n- `src/lib/terminal-manager-take-child.ts:269,311` — two .catch() chains\n- `src/lib/interaction-logger.ts:183,291` — writeLine, cleanupLogs\n- `src/app/api/beats/[id]/route.ts:131` — regroomAncestors\n- `src/components/beat-detail.tsx:211,218` — onUpdate .catch()\n- React hooks with .then() chains (clipboard, fetches) — ~6 instances\n\n### Step 3: Validate\n- `bun run lint` passes\n- `bunx tsc --noEmit` passes\n- `bun run test` passes\n- Measure lint time before/after (type-checked linting adds overhead)\n\n### Complexity: Low\n- No new deps, mechanical fixes, ~1 hour\n### Risks\n- Type-checked linting is slower; projectService mitigates this via caching\n- Some Next.js config internals may conflict with explicit parser settings",
+    "datetime": "2026-04-06T06:13:16.596744Z",
+    "entry_id": "019d616c-8ab4-7de3-8744-b699a9a937ac",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

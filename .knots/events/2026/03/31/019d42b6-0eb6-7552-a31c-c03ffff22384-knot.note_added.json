@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42b6-0eb6-7552-a31c-c03ffff22384",
+  "occurred_at": "2026-03-31T07:05:20.822633Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: token usage is still misattributed in multi-beat sessions. src/lib/terminal-manager-initial-child.ts passes prepared.waveBeatIds into logTokenUsageForEvent, and src/lib/agent-token-usage.ts writes the full turn.completed usage to every beatId in that list, so one turn's tokens are persisted against multiple beats instead of the single beat that consumed them. This violates the required per-agent, per-beat saved counts. Sanity gates: bun run lint (1 pre-existing warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, and bun run build all passed.",
+    "datetime": "2026-03-31T07:05:20.822633Z",
+    "entry_id": "019d42b6-0eb6-7552-a31c-c02f6f4328b8",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

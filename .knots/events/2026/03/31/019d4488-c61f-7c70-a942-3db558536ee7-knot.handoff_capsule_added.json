@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4488-c61f-7c70-a942-3db558536ee7",
+  "occurred_at": "2026-03-31T15:35:07.551196Z",
+  "knot_id": "foolery-7e6d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment complete: merged worktree-foolery-7e6d-terminal-rehydration to main via fast-forward (f0ec2a3400b2, 5dad96ce2488). CI green on origin/main. Fix removes early-return in useRehydrateTerminals so backend sessions are always fetched on rehydration, enabling cross-browser sync. Tests added: multi-context Playwright script and unit tests for terminal store/hooks.",
+    "datetime": "2026-03-31T15:35:07.551196Z",
+    "entry_id": "019d4488-c61f-7c70-a942-3da8d506799d",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

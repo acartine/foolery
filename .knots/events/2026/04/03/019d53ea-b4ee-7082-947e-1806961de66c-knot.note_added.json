@@ -1,0 +1,15 @@
+{
+  "event_id": "019d53ea-b4ee-7082-947e-1806961de66c",
+  "occurred_at": "2026-04-03T15:16:23.918704Z",
+  "knot_id": "foolery-f5ee",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "# Implementation Review\n\n## Verdict: APPROVED\n\n### Acceptance Criteria Verification\n\n1. **AC1 (interactive take-loop sessions):** PASS — both initial-child and take-child resolve interactive Codex for take-loop sessions, create jsonrpcSession, send handshake, and deliver prompts via turn/start.\n\n2. **AC2 (explicit turn completion):** PASS — JSON-RPC `turn/completed` notifications translate to `{ type: \"turn.completed\" }` which the existing normalizer maps to result events. No silence-based inference.\n\n3. **AC3 (follow-up, stdin close, watchdog, retry, abort):** PASS — supportsFollowUp enabled, closeInput sends turn/interrupt before closing, 30s watchdog configured, retry/abort handled by existing take-loop infrastructure.\n\n4. **AC4 (test coverage):** PASS — 19 new tests across 2 test files covering handshake, turn lifecycle, notification translation, MCP filtering, edge cases, and runtime integration. All 2496 tests pass.\n\n### Plan Corrections Applied\n\n- No --ephemeral flag (doesn't exist on app-server): APPLIED\n- Simplified approval via approvalPolicy:\"never\": APPLIED\n- MCP notification filtering: APPLIED\n- Explicit threadId lifecycle: APPLIED\n\n### Quality Gates\n\n- Lint: PASS (0 errors, 1 pre-existing warning)\n- Typecheck: PASS (0 errors)\n- Tests: PASS (225 files, 2496 tests)\n- Build: PASS\n\n### Observations\n\n- Clean separation: JSON-RPC → JSONL translation layer means zero changes to the existing Codex normalizer\n- Pending turn queue handles async handshake elegantly\n- 1266 lines added across 9 files (within plan estimate of ~740 for new code)",
+    "datetime": "2026-04-03T15:16:23.918704Z",
+    "entry_id": "019d53ea-b4ee-7082-947e-17fbb02b9f38",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

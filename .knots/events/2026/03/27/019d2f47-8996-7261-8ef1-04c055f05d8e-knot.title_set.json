@@ -1,0 +1,10 @@
+{
+  "event_id": "019d2f47-8996-7261-8ef1-04c055f05d8e",
+  "occurred_at": "2026-03-27T12:31:50.678671Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Beat Detail: Remove beat type",
+    "to": "Beat Detail: remove beat type badge"
+  }
+}

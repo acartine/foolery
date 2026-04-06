@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d8-05d4-7561-8a5f-ea05c07989d7",
+  "occurred_at": "2026-04-03T05:36:45.012821Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan needs revision before implementation. The current plan is not aligned with the existing UI surface: the active-item overview is the inline summary grid in src/components/beat-table-summary.tsx:154-197, not the table column list in src/components/beat-columns.tsx:44-66. The revised plan should target InlineSummary, insert Acceptance criteria immediately after Description, include acceptance in the visibility guard, expand the grid to four columns, and test the overview layout/order/content on narrow viewports.",
+    "datetime": "2026-04-03T05:36:20Z",
+    "entry_id": "019d51d8-05d4-7561-8a5f-e9fd6c880699",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

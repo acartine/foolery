@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3e24-5f17-7461-b8b4-b404ba724dda",
+  "occurred_at": "2026-03-30T09:47:44.27972Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.title_set",
+  "data": {
+    "from": "settings: agents: scan doesn't let you add more models from a cli if you've already added one.",
+    "to": "settings: agent scan allows only one model selection from CLI"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3eec-b713-7691-9e5f-c344d9068fb1",
+  "occurred_at": "2026-03-30T13:26:34.00321Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Escalations view:  Remove weird escalation button to the right of navigation bar",
+    "to": "Remove redundant Escalations button from header action slot"
+  }
+}

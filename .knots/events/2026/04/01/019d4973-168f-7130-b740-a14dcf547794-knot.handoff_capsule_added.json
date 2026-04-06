@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4973-168f-7130-b740-a14dcf547794",
+  "occurred_at": "2026-04-01T14:29:32.431827Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on branch feat/foolery-1a2d-beat-update-latency (commit 68a7a5d6b4c1). Centralized all ad-hoc beat query invalidation across 6 source files to use invalidateBeatListQueries(queryClient) from beat-query-cache.ts, which uses refetchType:'active' for immediate refresh of mounted observers (<1s). Fixed missing beat list invalidation on add-dependency mutation in use-beat-detail-data.ts. Added beat-invalidation-consistency.test.ts (7 tests) to guard against regression. All quality gates pass: lint clean, typecheck clean, 213 test files / 2411 tests pass, build succeeds. No changes to polling intervals — background 10s polling unaffected.",
+    "datetime": "2026-04-01T14:29:32.431827Z",
+    "entry_id": "019d4973-168f-7130-b740-a133ae16272b",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

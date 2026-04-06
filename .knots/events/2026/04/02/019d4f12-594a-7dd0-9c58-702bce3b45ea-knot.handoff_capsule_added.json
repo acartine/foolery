@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f12-594a-7dd0-9c58-702bce3b45ea",
+  "occurred_at": "2026-04-02T16:41:35.818892Z",
+  "knot_id": "foolery-17ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Branch: feat/foolery-17ee-queue-buttons\\nCommit: 67fb7999\\nScope: Queue multiselect buttons now use title-bar-aligned typography and non-white purple/green theme variants without behavior changes.\\nValidation: Chrome DevTools computed styles on localhost:3001/beats confirmed Manrope 14.875px/600 on title-bar and multiselect buttons, with non-white secondary/success-light backgrounds; Playwright screenshots captured before-queue-multiselect.png and after-queue-multiselect.png.",
+    "datetime": "2026-04-02T16:41:35.818892Z",
+    "entry_id": "019d4f12-594a-7dd0-9c58-7010ff474d41",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "codex-cli"
+  }
+}

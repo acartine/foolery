@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2f47-01b7-7d32-ad64-057bee3d8694",
+  "occurred_at": "2026-03-27T12:31:15.895048Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.created",
+  "data": {
+    "body": "doesn't fit in, there's only one type, just remove it, it will look cleaner",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Beat Detail: Remove beat type",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

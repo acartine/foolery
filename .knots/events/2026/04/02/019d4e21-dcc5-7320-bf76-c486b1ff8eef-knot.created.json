@@ -1,0 +1,17 @@
+{
+  "event_id": "019d4e21-dcc5-7320-bf76-c486b1ff8eef",
+  "occurred_at": "2026-04-02T12:18:55.301853Z",
+  "knot_id": "foolery-4dfd",
+  "type": "knot.created",
+  "data": {
+    "body": "Adjust Queue/Active list layout so terminal open and minimized states reserve the correct visible viewport space and do not clamp scroll-to-top behavior. Likely touch beats page layout and terminal-state-derived viewport spacing only.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Implement terminal-aware scroll bounds for Queue/Active list viewport",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

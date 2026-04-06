@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b6-7c00-7bc0-8377-334d13948276",
+  "occurred_at": "2026-03-31T11:45:26.016973Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan\n\nCurrent findings\n- The session selector in `src/components/agent-history-conversation-log.tsx` already shows a single conversation identifier as `#<index> <sessionId>` and does not need behavior changes.\n- The pulldown entries users actually navigate are built in `src/components/interaction-picker.tsx` and rendered in `src/components/interaction-picker-ui.tsx`. Those entries currently label items as `Prompt #<n> · <source>` and show only workflow state plus time in the secondary row.\n- Session data already contains everything needed for the request (`sessionId`, `startedAt`, `updatedAt`, prompt number, session ordering). No parser or backend changes are required.\n\nImplementation plan\n1. Extend the interaction item shape in `src/components/interaction-picker.tsx` to carry the conversation number/session identifier and the session date needed by the pulldown renderer. Keep selection IDs and sorting unchanged so dropdown behavior stays the same.\n2. Add a focused label builder for pulldown entries that makes the conversation identifier primary and collapses redundant numbering into one value when prompt and take/conversation numbers are equivalent. Avoid showing both labels when they represent the same ordinal.\n3. Update `src/components/interaction-picker-ui.tsx` so each pulldown option shows the conversation date alongside the existing time, while preserving the workflow-state metadata and current open/select interactions.\n4. Keep all changes scoped to the history conversation-log pulldown path; do not alter the debug session selector, session cards, history parser, or unrelated history surfaces.\n\nTest strategy\n- Add or extend a component-level test around the history view / interaction picker rendering to assert that pulldown entries include the conversation date, still include the conversation identifier, and no longer duplicate Prompt/Take numbering when the values match.\n- If the UI test surface is awkward, extract a small pure formatter helper and cover its combinations directly with Vitest for deterministic output.\n\nComplexity and risks\n- Complexity is low to moderate; the main risk is ambiguous date formatting in tests because locale/timezone-sensitive `toLocale*` output can be brittle. Prefer a single shared formatter with explicit date/time options or assertions that target stable substrings.",
+    "datetime": "2026-03-31T11:45:26.016973Z",
+    "entry_id": "019d43b6-7c00-7bc0-8377-3334af371d12",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

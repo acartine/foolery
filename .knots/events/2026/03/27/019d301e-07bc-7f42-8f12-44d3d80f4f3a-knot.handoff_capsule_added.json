@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301e-07bc-7f42-8f12-44d3d80f4f3a",
+  "occurred_at": "2026-03-27T16:26:07.676324Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review passed. Commit b7db2add verified on main. Marking shipped.",
+    "datetime": "2026-03-27T16:26:07.676324Z",
+    "entry_id": "019d301e-07bc-7f42-8f12-44c054dbbacc",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

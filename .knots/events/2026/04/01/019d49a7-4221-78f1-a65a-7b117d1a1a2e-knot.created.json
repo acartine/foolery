@@ -1,0 +1,17 @@
+{
+  "event_id": "019d49a7-4221-78f1-a65a-7b117d1a1a2e",
+  "occurred_at": "2026-04-01T15:26:31.457285Z",
+  "knot_id": "foolery-c85c",
+  "type": "knot.created",
+  "data": {
+    "body": "Verifying form reset after Create More.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create more reset smoke 2026-04-01 17:25",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

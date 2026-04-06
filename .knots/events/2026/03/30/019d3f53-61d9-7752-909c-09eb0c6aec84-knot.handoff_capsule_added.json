@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f53-61d9-7752-909c-09eb0c6aec84",
+  "occurred_at": "2026-03-30T15:18:42.393746Z",
+  "knot_id": "foolery-5a78",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment: fast-forwarded main from 976a088c to approved commit 835f1b37 (Remove redundant Escalations header button), pushed HEAD to origin/main, and verified remote GitHub Actions success for CI run 23752342026 and Coverage Badge run 23752342031. CI emitted non-blocking annotations for Node 20 action deprecation and coverage regression warnings.",
+    "datetime": "2026-03-30T15:18:42.393746Z",
+    "entry_id": "019d3f53-61d9-7752-909c-09dc0c4f8efb",
+    "model": "openrouter/z-ai/glm-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

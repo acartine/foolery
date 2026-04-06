@@ -1,0 +1,15 @@
+{
+  "event_id": "019d30ba-b612-75b3-9744-59a632578525",
+  "occurred_at": "2026-03-27T19:17:15.922936Z",
+  "knot_id": "foolery-9b5c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged feat/foolery-9b5c-prefix into main as 33398f371969, pushed origin/main, and verified GitHub Actions CI run 23663341086 passed for the merge commit. Scope remained limited to the hyphenated project-prefix stripping fix and its regression tests.",
+    "datetime": "2026-03-27T19:17:10Z",
+    "entry_id": "019d30ba-b612-75b3-9744-5991686e9f96",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

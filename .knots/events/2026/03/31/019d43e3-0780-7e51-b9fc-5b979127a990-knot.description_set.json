@@ -1,0 +1,9 @@
+{
+  "event_id": "019d43e3-0780-7e51-b9fc-5b979127a990",
+  "occurred_at": "2026-03-31T12:34:05.312875Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When a user selects a different repository, the screen currently appears unchanged for several seconds before updating. Update the flow so the previous repository content is cleared immediately and a loading state (spinner and/or skeleton) is shown while the new repository data is fetched, then switch to the new repository view once the request completes."
+  }
+}

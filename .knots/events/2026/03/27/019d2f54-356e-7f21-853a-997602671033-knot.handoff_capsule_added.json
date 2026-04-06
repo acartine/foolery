@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2f54-356e-7f21-853a-997602671033",
+  "occurred_at": "2026-03-27T12:45:41.102024Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review: APPROVED. Single commit (48fa904f) removes the BeatTypeBadge import and render from beat-detail.tsx. All 5 acceptance criteria verified: badge removed from header, import removed, remaining header elements (StateDropdown, priority badge/dropdown, metadata, labels) intact, no other BeatTypeBadge consumers modified, quality gates pass.",
+    "datetime": "2026-03-27T12:45:41.102024Z",
+    "entry_id": "019d2f54-356e-7f21-853a-99677514f8b0",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

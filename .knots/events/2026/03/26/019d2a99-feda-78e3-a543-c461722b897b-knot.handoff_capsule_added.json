@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a99-feda-78e3-a543-c461722b897b",
+  "occurred_at": "2026-03-26T14:43:48.570722Z",
+  "knot_id": "foolery-6c3e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Cherry-picked commit aea8120e onto main as 99e7a2d4. Pushed to origin/main. CI green (run 23600460557): lint, tests, coverage, and build all pass.",
+    "datetime": "2026-03-26T14:43:48.570722Z",
+    "entry_id": "019d2a99-feda-78e3-a543-c451747f61a0",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

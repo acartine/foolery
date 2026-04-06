@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5275-a4d9-7a92-a3a3-efde32be08c2",
+  "occurred_at": "2026-04-03T08:28:54.873269Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from shipment to ready_for_shipment — agent \"Codex\" left knot in action state",
+    "datetime": "2026-04-03T08:28:54.873269Z",
+    "entry_id": "019d5275-a4d9-7a92-a3a3-efc75a9bbd0a",
+    "model": "codex-spark/gpt",
+    "username": "foolery",
+    "version": "5.3"
+  }
+}

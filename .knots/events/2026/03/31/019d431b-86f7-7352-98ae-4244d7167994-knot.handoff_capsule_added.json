@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431b-86f7-7352-98ae-4244d7167994",
+  "occurred_at": "2026-03-31T08:56:10.743395Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan review approved. The current leaderboard implementation in src/components/lease-audit-helpers.ts computes mean, ranking, and totalN from all completed rows, so the planned change to qualify agents first is necessary and sufficient. Implement the >=10 completed-attempt and >25% success-rate filters before ranking, then derive best/runner-up, margin baseline, and totalN only from the qualified set; skip steps with no qualified agents. Proposed regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts is adequate, including the mixed-step skew case, fewer-than-10 exclusion, <=25% exclusion, preserved tie-break ordering among qualified rows, and omission when all agents are filtered out. No knot invariants are listed, and the plan is feasible without scope expansion.",
+    "datetime": "2026-03-31T08:56:10.743395Z",
+    "entry_id": "019d431b-86f7-7352-98ae-423ec37e1406",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

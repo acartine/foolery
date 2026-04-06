@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3eb2-916a-7450-8a84-d8bb1be2d6cd",
+  "occurred_at": "2026-03-30T12:23:03.274549Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "For each beat, the system records token counts separately for each agent involved. The recorded per-agent token counts are persisted so they remain available after the beat is processed. Diagnostics displays the persisted per-agent token counts for a beat. The diagnostics output matches the saved values for each agent and beat. No unrelated metrics or broader diagnostics changes are introduced."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d2ff0-328a-75f1-9e92-dcf7a31a8013",
+  "occurred_at": "2026-03-27T15:36:03.978484Z",
+  "knot_id": "foolery-4f43",
+  "type": "knot.created",
+  "data": {
+    "body": "Render speed and cost-adjusted throughput metrics in the audit screen using duration data captured in the audit log.\n\n## Requirements\n\n### Effective speed metric\nThe core insight: a fast agent that fails often is slower than a reliable agent that takes longer per attempt. We need to show this.\n\nFormula: `effective_time = avg_duration / success_rate`\n\nMore precisely, accounting for wasted review time on rejections:\n`effective_time = avg_step_duration + (rejection_rate × (avg_review_duration + effective_time))`\nSolving: `effective_time = (avg_step_duration + rejection_rate × avg_review_duration) / success_rate`\n\nThis factors in that a rejected step wastes both the step time AND the review time.\n\n### New table: Speed & Throughput\nPer agent per step, show:\n- Raw Speed: median duration per attempt\n- Success Rate: (already have)\n- Attempts/Ship: `1 / success_rate` — average attempts needed to get one accepted\n- Effective Speed: duration adjusted for failure rate and review overhead\n- n: sample size of timed events\n\n### Chart: Effective speed comparison\nBar chart or similar showing effective speed per agent per step, making it immediately obvious which agent delivers shipped work fastest.\n\n### Agent breakdown table updates\nAdd speed columns to the existing per-agent breakdown:\n- Median duration\n- Effective speed\n- Speed vs mean (offset, like we do for rate)\n\n### Edge cases\n- If no timed events exist yet (fresh deploy or all legacy data), show a message like 'Duration data collecting...'\n- If only some events have timing, show n/total to indicate coverage\n- Handle steps with 0% success rate gracefully (effective speed = infinity → show '-' or 'N/A')\n\n### Dependencies\n- Depends on the duration capture knot being complete (needs durationMs on audit events)\n- Can stub with synthetic data for development\n\n### Acceptance criteria\n- Speed table renders with real data when available\n- Effective speed correctly accounts for both attempt duration and review overhead on failures\n- Graceful degradation when timing data is partial or absent\n- All quality gates pass (lint, typecheck, test, build)",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Render speed and cost-adjusted throughput metrics in audit screen",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

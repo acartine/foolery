@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3efa-937c-7cd3-9a93-fa54e7e899e5",
+  "occurred_at": "2026-03-30T13:41:42.396373Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment review approved on main at 1ad707b8a93001464f01c0ca3fab929a9efcb349. Verified clean main equals origin/main, commit tags include ddbde9dda1cb and 1ad707b8a930 for the shipped header-gutter and ReTakes follow-up fixes, GitHub Actions CI run 23747619941 and Coverage Badge run 23747619947 completed successfully, and focused tests passed: bun test src/lib/__tests__/beats-page-layout.test.ts src/lib/__tests__/retake-row-layout.test.ts.",
+    "datetime": "2026-03-30T13:41:42.396373Z",
+    "entry_id": "019d3efa-937c-7cd3-9a93-fa4effef36c5",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

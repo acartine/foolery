@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5941-ecd4-7151-8634-604a42df225b",
+  "occurred_at": "2026-04-04T16:09:45.940856Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: worktree-gemini-interactive-session. Commit: 29bca2d9. Implementation adds interactive Gemini session support via stdin stream-json transport with 30s watchdog, follow-up turns, and status-result detection.",
+    "datetime": "2026-04-04T16:09:45.940856Z",
+    "entry_id": "019d5941-ecd4-7151-8634-603c3b17e5d5",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

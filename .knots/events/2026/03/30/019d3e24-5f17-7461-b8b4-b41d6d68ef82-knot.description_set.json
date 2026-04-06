@@ -1,0 +1,9 @@
+{
+  "event_id": "019d3e24-5f17-7461-b8b4-b41d6d68ef82",
+  "occurred_at": "2026-03-30T09:47:44.27972Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When using the CLI to scan and add agents in settings, the interface only permits selecting a single model. After one model is added, the user cannot continue adding more from the same scan. The CLI must allow selecting multiple agents/models from a single scan interaction."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f0-8a7d-7231-b7d7-55a187a00091",
+  "occurred_at": "2026-03-31T08:09:13.597837Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review requested revisions. The proposed plan correctly identifies the likely model-identity gap behind the repeated OpenRouter failure loop, but it is not complete against the acceptance criteria as written. It does not explicitly remove the current basic-mode stop condition for error retries in src/lib/terminal-manager-take-agent.ts, so acceptance criterion 4 is not yet covered. It also does not explicitly describe the required behavior change in src/lib/agent-pool.ts so exclusion requests never silently fall back to the excluded agent, leaving acceptance criterion 5 underspecified. Revised plan should name those code paths directly, define the exclusion identity strategy clearly, and include regression tests for basic-mode retry rotation and no-silent-fallback selection.",
+    "datetime": "2026-03-31T08:09:13.597837Z",
+    "entry_id": "019d42f0-8a7d-7231-b7d7-559f0956680c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

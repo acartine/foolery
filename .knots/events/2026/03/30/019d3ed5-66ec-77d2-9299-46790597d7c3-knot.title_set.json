@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3ed5-66ec-77d2-9299-46790597d7c3",
+  "occurred_at": "2026-03-30T13:01:06.156636Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.title_set",
+  "data": {
+    "from": "clean up shitty Agents UX",
+    "to": "Agents settings: streamline scanned-agent rows and button styling"
+  }
+}

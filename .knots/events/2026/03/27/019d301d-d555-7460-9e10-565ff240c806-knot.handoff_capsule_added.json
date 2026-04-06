@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301d-d555-7460-9e10-565ff240c806",
+  "occurred_at": "2026-03-27T16:25:54.773219Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipped. Commit b7db2add on main.",
+    "datetime": "2026-03-27T16:25:54.773219Z",
+    "entry_id": "019d301d-d555-7460-9e10-564ec1cb4569",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

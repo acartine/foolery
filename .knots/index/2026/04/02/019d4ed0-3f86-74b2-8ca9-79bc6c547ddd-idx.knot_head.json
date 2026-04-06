@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4ed0-3f86-74b2-8ca9-79bc6c547ddd",
+  "occurred_at": "2026-04-02T15:29:23.846464Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-3a5e",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add regression coverage for terminal-state scroll bounds on Queue/Active screens",
+    "type": "work",
+    "updated_at": "2026-04-02T15:29:23.846464Z",
+    "workflow_id": "compatibility"
+  }
+}

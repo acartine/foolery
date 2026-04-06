@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4416-64f0-75e3-8634-c9137e4732e3",
+  "occurred_at": "2026-03-31T13:30:11.568641Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review failed: f3eb code not on main. Commits 9e4dcc5a and 959e5bb9 on branch foolery-f3eb-loading-feedback were never merged to origin/main. Branch needs rebase on current main (53f9867f) first — main advanced 3 commits since the branch fork. Action required: rebase foolery-f3eb-loading-feedback on main, then push to origin/main, then re-enter shipment_review.",
+    "datetime": "2026-03-31T13:30:11.568641Z",
+    "entry_id": "019d4416-64f0-75e3-8634-c902d584fe73",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

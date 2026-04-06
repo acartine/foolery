@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3ec4-c28a-7223-9c9e-f520123a004d",
+  "occurred_at": "2026-03-30T12:42:55.498395Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-81ad",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Collect and display token counts per agent for each beat",
+    "type": "work",
+    "updated_at": "2026-03-30T12:42:55.498395Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3eb2-9183-74e2-b5ed-031db8043227"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43b6-7c2a-7502-8ac5-796c83ae2dc1",
+  "occurred_at": "2026-03-31T11:45:26.058033Z",
+  "knot_id": "foolery-284e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete. Relevant scope is the interaction picker dropdown inside the history conversation log, not the separate debug session selector. Use `src/components/interaction-picker.tsx` to enrich item metadata and centralize the new label logic, then render date + time in `src/components/interaction-picker-ui.tsx` while keeping selection/sorting behavior unchanged. Add targeted coverage for the pulldown text so conversation number remains visible and duplicate Prompt/Take numbering is collapsed to one ordinal when equivalent.",
+    "datetime": "2026-03-31T11:45:26Z",
+    "entry_id": "019d43b6-7c2a-7502-8ac5-795c04f39ea9",
+    "model": "gpt-5",
+    "username": "codex",
+    "version": "2026-03-31"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431f-f6ea-76f0-a246-9e1315dea872",
+  "occurred_at": "2026-03-31T09:01:01.546477Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implemented leaderboard qualification filtering in src/components/lease-audit-helpers.ts so only agents with at least 10 completed attempts and success rate >25% are ranked. Mean, margin, and totalN now derive only from qualified rows, and steps with no qualified agents are omitted. Added regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts for mixed low-signal exclusion, <10 attempts, <=25% success rate, qualified tie-break ordering, and all-filtered omission. Validation in worktree /private/tmp/foolery-a71f: bun run vitest src/components/__tests__/lease-audit-view-helpers.test.ts, bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-31T09:01:01.546477Z",
+    "entry_id": "019d431f-f6ea-76f0-a246-9e0019814609",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

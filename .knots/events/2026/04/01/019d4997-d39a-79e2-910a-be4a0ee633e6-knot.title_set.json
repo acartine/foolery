@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4997-d39a-79e2-910a-be4a0ee633e6",
+  "occurred_at": "2026-04-01T15:09:40.12277Z",
+  "knot_id": "foolery-17ee",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queue Screen: Multiselect: Buttons are fugly",
+    "to": "Queue screen multiselect buttons should match title-bar button styling"
+  }
+}

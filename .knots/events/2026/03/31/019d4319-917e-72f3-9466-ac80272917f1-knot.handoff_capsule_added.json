@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4319-917e-72f3-9466-ac80272917f1",
+  "occurred_at": "2026-03-31T08:54:02.366668Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan needs revision before implementation. The core filter thresholds are correct, but the current plan does not explicitly cover every leaderboard-visible field derived in buildLeaderboard. Because the helper currently computes mean for margin and totalN from the full stats set, low-signal agents could still influence displayed output unless the plan requires recomputing all derived values from qualified entries only. Add explicit implementation and regression-test coverage for filtered mean/margin and filtered totals, plus the no-qualified-agents empty-step case.",
+    "datetime": "2026-03-31T08:54:02.366668Z",
+    "entry_id": "019d4319-917e-72f3-9466-ac7528760933",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

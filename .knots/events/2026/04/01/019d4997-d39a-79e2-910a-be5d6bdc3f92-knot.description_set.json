@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4997-d39a-79e2-910a-be5d6bdc3f92",
+  "occurred_at": "2026-04-01T15:09:40.12277Z",
+  "knot_id": "foolery-17ee",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Align the Queue Screen multiselect action buttons with the title-bar button style by applying the same font family, weight, and size, and replace the white button appearance with colors from the app’s existing color scheme (e.g., approved light purple/green variants from current design tokens). Do not change behavior or button set; only visual styling consistency is in scope."
+  }
+}

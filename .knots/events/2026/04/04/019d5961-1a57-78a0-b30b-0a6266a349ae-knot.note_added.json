@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5961-1a57-78a0-b30b-0a6266a349ae",
+  "occurred_at": "2026-04-04T16:43:49.207795Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review rejected.\n\n1. src/lib/agent-adapter.ts:116-125 builds Gemini interactive args as `-p -i stream-json -o stream-json -y`, but the local Gemini CLI help and official Gemini docs define `-p/--prompt` as a string that forces headless mode and `-i/--prompt-interactive` as a string prompt. This argv therefore does not select a valid Gemini interactive machine-readable session entrypoint, so acceptance criteria 1-3 are not met.\n2. src/lib/terminal-manager-initial-child.ts:377-379 and src/lib/terminal-manager-take-child.ts:211-215 route both claimed-step and take-loop Gemini sessions through that invalid argv. The new runtime/tests validate a synthetic stdin stream-json protocol instead of a verified Gemini session contract, so acceptance criterion 4 does not cover the real integration risk.",
+    "datetime": "2026-04-04T16:43:12Z",
+    "entry_id": "019d5961-1a57-78a0-b30b-0a57b3d2078d",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

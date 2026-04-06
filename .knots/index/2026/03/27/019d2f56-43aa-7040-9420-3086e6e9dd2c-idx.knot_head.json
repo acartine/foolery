@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2f56-43aa-7040-9420-3086e6e9dd2c",
+  "occurred_at": "2026-03-27T12:47:55.811935Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2090",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Beat Detail: remove beat type badge",
+    "type": "work",
+    "updated_at": "2026-03-27T12:47:55.811935Z",
+    "workflow_id": "compatibility"
+  }
+}

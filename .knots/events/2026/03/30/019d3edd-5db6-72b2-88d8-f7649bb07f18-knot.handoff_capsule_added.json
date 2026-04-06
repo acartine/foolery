@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3edd-5db6-72b2-88d8-f7649bb07f18",
+  "occurred_at": "2026-03-30T13:09:48.086426Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented beat-scoped per-agent token tracking. Added persisted token_usage log lines from Codex turn.completed usage in terminal, orchestration, and breakdown flows; parsed and aggregated saved tokenUsageByAgent into beat summaries; rendered saved per-agent counts in beat diagnostics; added logger/extraction/history/render tests. Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build. Branch: foolery-81ad. Commit: bdc3d7fafd42.",
+    "datetime": "2026-03-30T13:09:37Z",
+    "entry_id": "019d3edd-5db6-72b2-88d8-f75bb9299303",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

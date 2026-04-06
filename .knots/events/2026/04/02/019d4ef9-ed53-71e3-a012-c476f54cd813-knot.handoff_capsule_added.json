@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4ef9-ed53-71e3-a012-c476f54cd813",
+  "occurred_at": "2026-04-02T16:14:55.315264Z",
+  "knot_id": "foolery-1a2d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented immediate beat-list invalidation for direct user mutations and removed immediate list refresh from background session exits/scope refinement. Added regression coverage in src/lib/__tests__/beat-invalidation-consistency.test.ts and a Playwright smoke harness in scripts/test-beat-refresh-latency.{sh,mjs}. Validation passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build, bash scripts/test-beat-refresh-latency.sh (create 327ms, update 28ms, background no immediate refresh). Branch: feat/foolery-1a2d-user-refresh-latency commit 178dcc92c795.",
+    "datetime": "2026-04-02T16:14:46Z",
+    "entry_id": "019d4ef9-ed53-71e3-a012-c464dcbc352c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "1"
+  }
+}

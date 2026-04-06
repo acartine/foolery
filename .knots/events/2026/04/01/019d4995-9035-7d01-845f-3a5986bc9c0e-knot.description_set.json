@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4995-9035-7d01-845f-3a5986bc9c0e",
+  "occurred_at": "2026-04-01T15:07:11.797533Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.description_set",
+  "data": {
+    "description": "In Queues View when multi-select mode is active, opening any pulldown (including the Repositories pulldown) should not cause the whole screen to jump or jitter. Dropdown interaction should only open/close the selected menu and keep the page content and scroll position stable."
+  }
+}

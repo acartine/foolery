@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4376-ed5f-7781-b616-4e03229a3096",
+  "occurred_at": "2026-03-31T10:36:00.735285Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8909",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "UI Terminal and History Terminal:  Support light theme",
+    "type": "work",
+    "updated_at": "2026-03-31T10:36:00.735285Z",
+    "workflow_id": "compatibility"
+  }
+}

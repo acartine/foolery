@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2edf-da4d-7683-a384-a6388a973f09",
+  "occurred_at": "2026-03-27T10:38:35.597196Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment complete. Merged feat/foolery-8ab7-banner-update into main (commit 3d2f79d65a9f). CI green on remote (run 23642289136). All quality gates pass: lint clean on changed files, typecheck passes, 2264 tests pass, build succeeds. Coverage regression warnings are pre-existing and not caused by this change.",
+    "datetime": "2026-03-27T10:38:35.597196Z",
+    "entry_id": "019d2edf-da4d-7683-a384-a6200282d0e7",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

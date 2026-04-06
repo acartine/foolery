@@ -1,0 +1,10 @@
+{
+  "event_id": "019d42e8-1007-7191-984b-1a9818b0db80",
+  "occurred_at": "2026-03-31T07:59:57.959356Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Diagnostics: Leases:  Filter leaderboards to exclude weak signals",
+    "to": "Diagnostics: Leases: Exclude weak-signal entries from leaderboards"
+  }
+}

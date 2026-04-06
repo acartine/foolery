@@ -1,0 +1,9 @@
+{
+  "event_id": "019d51d2-6922-7ee0-9472-bddfaca296db",
+  "occurred_at": "2026-04-03T05:30:37.218204Z",
+  "knot_id": "foolery-fd27",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When clicking the repository pulldown, the UI currently shifts horizontally (jitter) as the menu opens/closes. Scope is limited to stabilizing the existing repository selector interaction so it opens and closes without horizontal movement while preserving current behavior and styling."
+  }
+}

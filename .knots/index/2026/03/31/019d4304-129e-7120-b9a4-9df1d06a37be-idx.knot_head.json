@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4304-129e-7120-b9a4-9df1d06a37be",
+  "occurred_at": "2026-03-31T08:30:33.62461Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-44f1",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "Fix page jitter when navigating to ReTakes or Diagnostics views",
+    "type": "work",
+    "updated_at": "2026-03-31T08:30:33.62461Z",
+    "workflow_id": "compatibility"
+  }
+}

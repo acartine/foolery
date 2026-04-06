@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3e24-18f9-7990-a8ee-c2d177365279",
+  "occurred_at": "2026-03-30T09:47:26.329765Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.created",
+  "data": {
+    "body": "you have to be able to select multiple agents from a cli, not just one.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "settings: agents: scan doesn't let you add more models from a cli if you've already added one.",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

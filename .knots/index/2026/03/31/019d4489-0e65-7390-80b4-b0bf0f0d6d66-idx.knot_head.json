@@ -1,0 +1,24 @@
+{
+  "event_id": "019d4489-0e65-7390-80b4-b0bf0f0d6d66",
+  "occurred_at": "2026-03-31T15:35:26.053126Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7e6d",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "terminal": false,
+    "title": "Active terminals don't appear in new browser instances",
+    "type": "work",
+    "updated_at": "2026-03-31T15:35:26.053126Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d4488-d70a-7042-bd1a-1f0e922cccde"
+  }
+}

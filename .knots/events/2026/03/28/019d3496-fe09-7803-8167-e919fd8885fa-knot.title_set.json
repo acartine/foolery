@@ -1,0 +1,10 @@
+{
+  "event_id": "019d3496-fe09-7803-8167-e919fd8885fa",
+  "occurred_at": "2026-03-28T13:16:43.913739Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queues/Active Screen: share available width evenly across columns.",
+    "to": "Queues/Active Screen: distribute available width evenly across columns"
+  }
+}

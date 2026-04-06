@@ -1,0 +1,9 @@
+{
+  "event_id": "019d5e02-8364-7442-88af-e88e682ddcce",
+  "occurred_at": "2026-04-05T14:18:36.260588Z",
+  "knot_id": "foolery-3e75",
+  "type": "knot.description_set",
+  "data": {
+    "description": "A race condition bug (fixed in a09a8428) was caused by an unawaited async call in terminal-manager.ts. The existing ESLint config has no type-aware typescript-eslint rules, so this went undetected.\n\nEnable @typescript-eslint/no-floating-promises as an error-level rule across all src/**/*.ts and src/**/*.tsx files. Add typescript-eslint with type-checked linting (parserOptions.project pointing to tsconfig.json). Fix or explicitly void-annotate all existing violations. Ensure bun run lint passes cleanly. Verify no performance regression from type-aware linting."
+  }
+}

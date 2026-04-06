@@ -1,0 +1,10 @@
+{
+  "event_id": "019d4d77-7065-7dd1-b291-67676489fe5b",
+  "occurred_at": "2026-04-02T09:12:46.437739Z",
+  "knot_id": "foolery-5de9",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Queue/Active screens:  Scrollpane doesn't allow scrolling all the way up when terminal is running, even when minimized",
+    "to": "Fix Queue/Active scroll pane clamping when terminal is running or minimized"
+  }
+}

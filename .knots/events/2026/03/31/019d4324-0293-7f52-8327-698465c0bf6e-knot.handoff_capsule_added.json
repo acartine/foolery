@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4324-0293-7f52-8327-698465c0bf6e",
+  "occurred_at": "2026-03-31T09:05:26.675926Z",
+  "knot_id": "foolery-6a0d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implemented a retake on branch foolery-6a0d to make the lightbox title editor reserve close-button space with an explicit grid track () instead of a looser flex row. Also removed remaining native input chrome with  and  so the editing state reads like inline text. Updated the regression test to assert the reserved close-button layout and chrome-less input classes. Validation in /Users/cartine/foolery-6a0d: bun run lint (passes with one pre-existing warning in src/components/beat-form.tsx:368 about react-hooks/incompatible-library), bunx tsc --noEmit, bun run test, bun run build. Playwright verification against http://localhost:3001/beats?beat=foolery-6a0d&detailRepo=%2FUsers%2Fcartine%2Ffoolery&repo=%2FUsers%2Fcartine%2Ffoolery&state=queued confirmed the editing input remained within the reserved title track (, gap ~12.7px), the Close button stayed visible, and the input computed with , , and transparent background.",
+    "datetime": "2026-03-31T09:05:26.675926Z",
+    "entry_id": "019d4324-0293-7f52-8327-697f1a3ce611",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

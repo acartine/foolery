@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d3f-94e7-7000-9292-7c72c759249a",
+  "occurred_at": "2026-04-02T08:11:45.759806Z",
+  "knot_id": "foolery-2b52",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A markdown design document defines the lifecycle state machine for interactive sessions: start, prompt_sent, active_turn, turn_complete, optional_follow_up, draining, exited, validated.\n2. The design defines a normalized event model covering assistant text, tool use, tool result, ask-user, turn-result, session-error, and session-end signals.\n3. The design states that workflow completion requires both agent/session completion signals and post-exit backend state validation, not stream silence alone.\n4. The design specifies watchdog thresholds, process-group termination rules, retry handoff to alternate agents, and abort semantics."
+  }
+}

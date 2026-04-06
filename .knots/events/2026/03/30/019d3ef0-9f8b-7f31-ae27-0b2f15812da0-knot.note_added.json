@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ef0-9f8b-7f31-ae27-0b2f15812da0",
+  "occurred_at": "2026-03-30T13:30:50.123444Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Scanned-agent import is regressed in commit c264551c9e0e. SettingsAgentsSection no longer passes an add/import handler into ScannedAgentsList, and the scanned rows only expose model toggles plus dismiss. As a result, users can select models in scan results but cannot register any scanned agent from that UI. Validation on an isolated archive of the reviewed commit: bun install --frozen-lockfile, bunx tsc --noEmit, and bun run test passed; bun run lint exited 0 with one pre-existing react-hooks/incompatible-library warning in src/components/beat-form.tsx unrelated to this knot.",
+    "datetime": "2026-03-30T13:30:50.123444Z",
+    "entry_id": "019d3ef0-9f8b-7f31-ae27-0b1e07d453e5",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

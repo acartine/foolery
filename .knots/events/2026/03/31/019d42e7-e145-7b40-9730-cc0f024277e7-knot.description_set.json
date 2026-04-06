@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42e7-e145-7b40-9730-cc0f024277e7",
+  "occurred_at": "2026-03-31T07:59:45.98913Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.description_set",
+  "data": {
+    "description": "has to be at least 10 attempts\nhas to have a success rate > 25%\n\notherwise suppress it, it's just noise."
+  }
+}

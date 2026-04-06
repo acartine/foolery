@@ -1,0 +1,9 @@
+{
+  "event_id": "019d495d-d88b-7f62-80e2-e2ff75357d7f",
+  "occurred_at": "2026-04-01T14:06:20.299529Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The Refine Scope action is currently unavailable when multiple knots are selected in Queues. This prevents users who create knots offline from efficiently batch-refining scope. Enable this action in multi-select mode to support this workflow."
+  }
+}

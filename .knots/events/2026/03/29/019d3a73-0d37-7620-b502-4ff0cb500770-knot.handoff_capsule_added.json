@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3a73-0d37-7620-b502-4ff0cb500770",
+  "occurred_at": "2026-03-29T16:35:11.799667Z",
+  "knot_id": "foolery-aa22",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved. origin/main now points to merge commit a72e88c47757, the implementation commit d84c52ca646d and shipment commit a72e88c47757 are both tagged on the knot, and the merged main worktree passed bun run lint, bunx tsc --noEmit, bun run test, and bun run build before push. GitHub exposes no combined-status checks for this repository on the shipped commit, so there were no remote CI statuses to validate beyond the successful push and local gate reruns.",
+    "datetime": "2026-03-29T16:36:00Z",
+    "entry_id": "019d3a73-0d37-7620-b502-4fe8baf9ef65",
+    "model": "gpt-5",
+    "username": "Andrew Cartine",
+    "version": "desktop"
+  }
+}

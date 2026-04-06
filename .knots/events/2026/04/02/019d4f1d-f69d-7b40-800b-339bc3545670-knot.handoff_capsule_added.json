@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4f1d-f69d-7b40-800b-339bc3545670",
+  "occurred_at": "2026-04-02T16:54:16.989564Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Planning complete for de99. The key correction is scope: multi-select Queues View is not `FilterControls`; it is four `BulkEditControls` selects plus the header `RepoSwitcher`, with the header Add dropdown only when `shouldChooseRepo` is true. The implementation should start by reproducing on the composed page at non-zero scroll, then inspect/fix `src/components/ui/select.tsx` and `src/components/ui/dropdown-menu.tsx` for layout/scroll side effects, using call-site opt-ins only if a global wrapper change is too risky. Verification must be page-level or equivalent composed browser coverage, not a FilterBar-only scenario, and must assert stable `window.scrollY` plus stable nearby element rects for each pulldown after open/close.",
+    "datetime": "2026-04-02T16:54:16.989564Z",
+    "entry_id": "019d4f1d-f69d-7b40-800b-3387bc1a06fc",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "codex-cli"
+  }
+}

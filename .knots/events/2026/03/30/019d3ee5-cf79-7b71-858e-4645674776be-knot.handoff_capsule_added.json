@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3ee5-cf79-7b71-858e-4645674776be",
+  "occurred_at": "2026-03-30T13:19:01.497301Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implement in the settings agents scan flow only: refactor scanned selection state to support multiple option ids per CLI, remove row-level Add/registered affordances and the Add All header action, show scanned.path under the row label, convert the model chooser to searchable multi-select with selected-model badges on the row, and restyle section-level Add/Scan buttons to the requested green variants. Rename the OpenAI-facing provider surface in agent-identity to Codex, but audit downstream tests carefully because some openai strings may be analytics keys rather than display labels. Confirmed test updates are needed at least in settings-scan, settings-coverage, and settings-agents-scanned, with likely follow-on assertions in lease-audit, local-worker, settings-agents, settings-load, and setup-settings-writer. After implementation, install deps in the worktree and run lint, tsc, and test before advancing.",
+    "datetime": "2026-03-30T13:18:34Z",
+    "entry_id": "019d3ee5-cf79-7b71-858e-463eb51d8196",
+    "model": "GPT-5",
+    "username": "codex",
+    "version": "5"
+  }
+}

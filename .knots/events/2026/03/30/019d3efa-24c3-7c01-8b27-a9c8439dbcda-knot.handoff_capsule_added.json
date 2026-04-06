@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3efa-24c3-7c01-8b27-a9c8439dbcda",
+  "occurred_at": "2026-03-30T13:41:14.051198Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation complete on feat/foolery-23f3 (commit 09119b329784).\n\nChanges summary:\n1. Renamed OpenAI provider to Codex: AgentProviderId type, PROVIDER_LABELS, detectAgentProviderId, and all downstream label references updated in agent-identity.ts. agent-info-bar.tsx vendor config key updated. All test files updated.\n2. Removed per-row Add button and 'registered' pill from ScannedAgentRow.\n3. Removed 'Add All' button from ScannedAgentsList header.\n4. CLI path now shown as plain text below agent name (replacing the truncated Badge).\n5. Removed agent.id text from renderOptionSelector.\n6. Converted single-select dropdown to multi-select combobox (MultiSelectModelCombobox). Users can toggle multiple models per agent. Selected models render as pill badges to the right of the agent row.\n7. Multi-select auto-registers: toggling a model ON calls handleAddScannedOption which invokes addAgent, preserving the add flow that was broken in the previous attempt.\n8. Button colors updated: Add button uses variant=\"success\" (emerald-600), Scan uses variant=\"success-light\".\n9. Hooks refactored: selectedScannedOptions changed from Record<string, string> to Record<string, string[]> (selectedMultiOptions). handleAddAll removed. handleAddScanned replaced with handleAddScannedOption that takes explicit (agent, option) params. resolveSelectedOption still exported for backward compat.\n\nQuality gates: lint (0 errors, 1 pre-existing warning), tsc --noEmit, 206 test files (2355 tests passed), build all passed.",
+    "datetime": "2026-03-30T13:41:14.051198Z",
+    "entry_id": "019d3efa-24c3-7c01-8b27-a9b11a6e0b82",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

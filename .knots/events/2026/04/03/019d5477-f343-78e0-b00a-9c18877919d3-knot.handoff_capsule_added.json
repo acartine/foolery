@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5477-f343-78e0-b00a-9c18877919d3",
+  "occurred_at": "2026-04-03T17:50:40.451127Z",
+  "knot_id": "foolery-c198",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning completed for interactive Copilot session support.\n\nRecommended execution order\n1. `foolery-9493`: make Copilot an interactive shared-session dialect in claimed-step and take-loop startup, preserving model flags and removing Codex-only interactive selection.\n2. `foolery-5f6b`: wire Copilot protocol completion/session signals into the shared event model and transport abstraction so follow-up, close-input, watchdog, retry, and abort semantics come from the common runtime.\n3. `foolery-29fa`: add fixture and regression coverage for success, watchdog timeout, retry, and abort behavior.\n\nKey files expected to change\n- `src/lib/agent-session-capabilities.ts`\n- `src/lib/agent-adapter.ts`\n- `src/lib/terminal-manager-initial-child.ts`\n- `src/lib/terminal-manager-initial-io.ts`\n- `src/lib/terminal-manager-take-child.ts`\n- interactive transport wrapper around `src/lib/codex-jsonrpc-session.ts`\n- Copilot fixtures/tests/docs listed in the plan note\n\nPrimary risk\n- Copilot session handshake/completion semantics may differ from the current Codex transport wrapper; keep the transport layer narrow and require explicit protocol completion before post-exit success classification.",
+    "datetime": "2026-04-03T17:49:20Z",
+    "entry_id": "019d5477-f343-78e0-b00a-9c05f91fdcea",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

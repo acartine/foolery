@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3013-926d-75f0-9792-dc6df712303d",
+  "occurred_at": "2026-03-27T16:14:42.285976Z",
+  "knot_id": "foolery-84a6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned 84a6 as a parent knot with two children: 4c96 for the low-risk version-prefix normalization bug, and ea93 for the larger backend-managed update/restart flow. The key implementation decision is to keep `scripts/install.sh` as the lifecycle source of truth and build a detached server-side handoff plus persistent status API around it, rather than trying to restart the Node server inline from a request. Primary risks are process handoff, concurrent updates, stale status across restart, and local-endpoint hardening.",
+    "datetime": "2026-03-27T16:14:42.285976Z",
+    "entry_id": "019d3013-926d-75f0-9792-dc5261080013",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

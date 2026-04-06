@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43f0-f995-7641-980d-557c15549d0c",
+  "occurred_at": "2026-03-31T12:49:19.253022Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented repo-switch loading behavior in worktree branch `foolery-f3eb-loading-feedback`.\n\nChanges:\n- Removed `keepPreviousData` from repo-scoped beats, final-cut, and retakes queries so repo changes clear stale data instead of holding prior repo results.\n- Added shared `RepoSwitchLoadingState` with spinner/skeleton and wired it into beats, final-cut, and retakes views.\n- Closed an open beat detail lightbox when `activeRepo` changes to avoid stale beat detail content during transitions.\n- Added `src/lib/__tests__/repo-switch-loading-contract.test.ts` to lock the loading contract.\n\nValidation:\n- `bun run lint` (passes; one existing warning remains in `src/components/beat-form.tsx` about `react-hooks/incompatible-library`)\n- `bunx tsc --noEmit`\n- `bun run test`\n- `bun run build`\n\nBrowser verification on `http://localhost:3001/beats`:\n- Switched from repo `foolery` to `knots`.\n- Observed the URL change immediately to `?repo=%2FUsers%2Fcartine%2Fknots`.\n- During the fetch delay, page body showed `Loading beats...` and no stale text from the previous repo row (`Wire lease agent metadata into knot step records`).\n- After completion, loading state disappeared and the new repo view rendered without flashing the old repo content.\n\nCommit:\n- `c001f5b3003f` Show loading feedback on repo switch",
+    "datetime": "2026-03-31T12:49:19.253022Z",
+    "entry_id": "019d43f0-f995-7641-980d-5569cff2c9b6",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3e5c-88fd-7331-adfb-0460bcd06b85",
+  "occurred_at": "2026-03-30T10:49:05.021481Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Plan reviewed and approved. The approach of converting single-model-per-agent to multi-select with generated agent IDs (matching web buildAgentOptionId semantics) is correct. Bash 3.2 compat is handled by existing _kv_set/_kv_get. Test strategy covers multi-select, zero-selection, and writer tests. No invariants to verify. Implementation can proceed.",
+    "datetime": "2026-03-30T10:49:05.021481Z",
+    "entry_id": "019d3e5c-88fd-7331-adfb-045960a2642b",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

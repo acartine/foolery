@@ -1,0 +1,21 @@
+{
+  "event_id": "019d4997-c000-7f80-b2d3-e27bcd2b5c95",
+  "occurred_at": "2026-04-01T15:09:35.104974Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-17ee",
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "terminal": false,
+    "title": "Queue Screen: Multiselect: Buttons are fugly",
+    "type": "work",
+    "updated_at": "2026-04-01T15:09:35.104974Z",
+    "workflow_id": "compatibility"
+  }
+}

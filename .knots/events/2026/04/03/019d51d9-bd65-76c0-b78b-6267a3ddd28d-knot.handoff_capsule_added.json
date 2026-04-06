@@ -1,0 +1,15 @@
+{
+  "event_id": "019d51d9-bd65-76c0-b78b-6267a3ddd28d",
+  "occurred_at": "2026-04-03T05:38:37.540982Z",
+  "knot_id": "foolery-500d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning revised to the correct surface: add the new Acceptance criteria overview column in `src/components/beat-table-summary.tsx` as the second `InlineSummary` column, include acceptance in the render guard, expand the summary grid to four columns, and cover the change with both the layout characterization test and a focused summary render test.",
+    "datetime": "2026-04-03T05:38:37.540982Z",
+    "entry_id": "019d51d9-bd65-76c0-b78b-62526dbabbdb",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

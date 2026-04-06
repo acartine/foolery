@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eba-9882-7702-9d0a-b219c0a4e701",
+  "occurred_at": "2026-03-30T12:31:49.378316Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review approved. Verified origin/main contains commit tags commit:ddbde9dda1cb and commit:d407a55424f0, with ddbde9dda1cb adding scrollbar-gutter: stable in src/app/globals.css and d407a55424f0 merged on origin/main. Knot has no invariants to check. CI run 23744696937 completed successfully on main. Local main is behind origin/main, but the shipped branch state on origin/main matches the approved scope and shows no regression signal beyond the passing CI pipeline.",
+    "datetime": "2026-03-30T12:31:49.378316Z",
+    "entry_id": "019d3eba-9882-7702-9d0a-b2054dbe6504",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "event_id": "019d51d2-6922-7ee0-9472-bdc3bf1127ac",
+  "occurred_at": "2026-04-03T05:30:37.218204Z",
+  "knot_id": "foolery-fd27",
+  "type": "knot.title_set",
+  "data": {
+    "from": "clicking on repository pulldown causes horizontal jitter",
+    "to": "Fix horizontal jitter when opening the repository dropdown"
+  }
+}

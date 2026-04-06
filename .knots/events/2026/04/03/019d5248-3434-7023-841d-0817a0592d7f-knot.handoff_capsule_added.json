@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5248-3434-7023-841d-0817a0592d7f",
+  "occurred_at": "2026-04-03T07:39:16.91689Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning revision completed for `foolery-51f8`. The updated plan now explicitly centralizes the duplicated runtime that currently lives in `src/lib/terminal-manager-initial-io.ts`, `src/lib/terminal-manager-take-child.ts`, and `src/lib/terminal-manager.ts` into a shared capability-driven agent session runtime with event history, watchdog ownership, stdin drain handling, process-group termination, and post-exit validation. It also replaces the prior Gemini stub with a required characterization step based on local CLI evidence: Gemini is installed and advertises interactive mode by default plus headless `-p` and `stream-json` output, but its actual event schema still needs to be captured before adapter behavior is finalized.\n\nCreated child knots:\n- `foolery-ab95` for Gemini protocol characterization\n- `foolery-fd80` for the shared runtime/capability layer\n- `foolery-ac6e` for terminal-manager adoption\n- `foolery-e199` for conformance and integration coverage\n\nMain risks called out in the plan are lifecycle regressions between initial and take-loop close/error handling and unknown Gemini completion semantics. Test scope in the plan now includes terminal-manager integration for one interactive dialect and one one-shot dialect, plus abort, retry, timeout, and close-input behavior.",
+    "datetime": "2026-04-03T07:39:16Z",
+    "entry_id": "019d5248-3434-7023-841d-0800ebcea860",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

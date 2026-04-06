@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b7-3dd7-7b43-af2e-8406beda5782",
+  "occurred_at": "2026-04-01T15:43:58.935015Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Shipment review blocked: fix commits (808a123557cd, d661bd7e6a7b) are on local main but not on origin/main. git push origin main must be run by user before shipment_review can proceed. Knot moved back to ready_for_shipment.",
+    "datetime": "2026-04-01T15:43:58.935015Z",
+    "entry_id": "019d49b7-3dd7-7b43-af2e-83f73eb8b8dd",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

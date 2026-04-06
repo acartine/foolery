@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42ca-6b14-72f3-88ba-7c3f7bc4f7c8",
+  "occurred_at": "2026-03-31T07:27:35.188149Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Merged feat/foolery-81ad into main as f0c63bcb9fdf. Shipped the per-agent, per-beat token attribution fix without broader diagnostics changes. Remote checks on main passed for this merge commit: CI run 23785596655 and Coverage Badge run 23785596652 both concluded success.",
+    "datetime": "2026-03-31T07:27:35.188149Z",
+    "entry_id": "019d42ca-6b14-72f3-88ba-7c21b81d3f07",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

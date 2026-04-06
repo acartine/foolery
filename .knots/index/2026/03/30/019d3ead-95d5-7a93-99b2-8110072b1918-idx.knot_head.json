@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3ead-95d5-7a93-99b2-8110072b1918",
+  "occurred_at": "2026-03-30T12:17:36.725672Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-7a57",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Settings: Dispatch Advanced: Multi-pill agents overlap number component",
+    "type": "work",
+    "updated_at": "2026-03-30T12:17:36.725672Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3977-7a11-7410-bb16-69a0e61a789d"
+  }
+}

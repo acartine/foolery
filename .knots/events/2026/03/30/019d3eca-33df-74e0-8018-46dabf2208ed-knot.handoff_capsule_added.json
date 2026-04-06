@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eca-33df-74e0-8018-46dabf2208ed",
+  "occurred_at": "2026-03-30T12:48:52.191577Z",
+  "knot_id": "foolery-81ad",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan complete. 8 files to change across 3 layers: (1) capture token counts from agent NDJSON output via normalizers in agent-adapter.ts, (2) persist as kind:token_usage entries in existing JSONL interaction logs, (3) parse and aggregate in agent-history-parse.ts, and display in agent-history-session-card.tsx and beat detail views. No new storage systems — piggybacks on existing interaction log infrastructure. Low complexity, additive-only changes.",
+    "datetime": "2026-03-30T12:48:52.191577Z",
+    "entry_id": "019d3eca-33df-74e0-8018-46c16cba71af",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

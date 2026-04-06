@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb6-9426-7c00-a452-fad6a2d09d35",
+  "occurred_at": "2026-03-30T12:27:26.118534Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. Acceptance criteria 1-5 are not directly covered by automated tests. The added tests only cover the Zustand store and the filterNewCompletions helper, but there is no test that renders the Refine Scope control and proves it becomes disabled or visually pending after a successful enqueue. 2. There is no test that exercises useScopeRefinementNotifications end-to-end with the pending store, so the review could not verify by automation that a completion event clears pending state and re-enables the button/removes the indicator. Sanity gates run in /Users/cartine/foolery/.claude/worktrees/aae0-refine-scope-pending and passed: bun run lint, bunx tsc --noEmit, bun run test src/stores/__tests__/scope-refinement-pending-store.test.ts src/hooks/__tests__/use-scope-refinement-notifications.test.ts src/lib/__tests__/beat-detail-lightbox.test.ts, bun run build.",
+    "datetime": "2026-03-30T14:27:17+02:00",
+    "entry_id": "019d3eb6-9426-7c00-a452-fac81e662b0f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-30"
+  }
+}

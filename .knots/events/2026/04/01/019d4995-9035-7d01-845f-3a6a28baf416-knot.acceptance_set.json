@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4995-9035-7d01-845f-3a6a28baf416",
+  "occurred_at": "2026-04-01T15:07:11.797533Z",
+  "knot_id": "foolery-de99",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1) With multi-select mode enabled in Queues View, opening and closing every pulldown control does not move the page viewport, and there is no visible shift of the surrounding layout.\n2) No unexpected scroll position changes occur when any pulldown is opened or closed.\n3) Existing pulldown behavior remains intact (it opens, allows selection, and closes correctly).\n4) Validate all pulldowns in-browser and confirm stability using Chrome DevTools (layout/scroll metrics before and after each click).\n5) Add or run Playwright checks (or equivalent) that assert page position and nearby element bounding boxes remain unchanged during pulldown interactions, covering all pulldowns in this view."
+  }
+}

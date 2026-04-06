@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ee1-583c-72b1-bd4b-23175c65a0eb",
+  "occurred_at": "2026-03-27T10:40:13.372073Z",
+  "knot_id": "foolery-8ab7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Shipment review approved. All 3 feature-branch commits tagged. Merge commit 3d2f79d6 is HEAD of main, CI green (run 23642289136). Code review confirms: shared update trigger extracted to version-update-action.ts, banner renders visible Update now link only when updateAvailable, both banner and badge use useVersionUpdateAction hook. Tests cover banner action rendering, click routing, clipboard success/failure. No invariants to verify. No regressions found.",
+    "datetime": "2026-03-27T10:40:13.372073Z",
+    "entry_id": "019d2ee1-583c-72b1-bd4b-2307580c6284",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

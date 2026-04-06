@@ -1,0 +1,9 @@
+{
+  "event_id": "019d42e8-1007-7191-984b-1abe9486638a",
+  "occurred_at": "2026-03-31T07:59:57.959356Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "Lease diagnostics leaderboards exclude any entry with fewer than 10 attempts. Lease diagnostics leaderboards exclude any entry with a success rate of 25% or lower. An entry appears on the leaderboard only when it meets both conditions: at least 10 attempts and success rate greater than 25%. Entries that fail either threshold are not shown in leaderboard results."
+  }
+}

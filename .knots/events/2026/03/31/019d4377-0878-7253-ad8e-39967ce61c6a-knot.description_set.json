@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4377-0878-7253-ad8e-39967ce61c6a",
+  "occurred_at": "2026-03-31T10:36:07.672256Z",
+  "knot_id": "foolery-8909",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Add a light theme option for both Terminal and History Terminal. Provide a user-facing toggle in each terminal header and in Settings, with both controls reflecting the same state. Persist the preference in the existing server-side settings store (settings file accepted), and load it on startup so the selected theme is retained between sessions."
+  }
+}

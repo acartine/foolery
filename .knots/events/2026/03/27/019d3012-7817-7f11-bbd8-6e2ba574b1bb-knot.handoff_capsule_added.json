@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3012-7817-7f11-bbd8-6e2ba574b1bb",
+  "occurred_at": "2026-03-27T16:13:30.006994Z",
+  "knot_id": "foolery-c858",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete. Made finalizeClaim async and awaited appendLeaseAuditEvent. All quality gates pass (lint, typecheck, 190 test files/2265 tests). Committed and pushed to main.",
+    "datetime": "2026-03-27T16:13:30.006994Z",
+    "entry_id": "019d3012-7816-77b2-81b4-ad02e48007cb",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

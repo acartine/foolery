@@ -1,0 +1,24 @@
+{
+  "event_id": "019d43b6-f6c1-7113-86c7-643647f24ee5",
+  "occurred_at": "2026-03-31T11:45:57.441302Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-284e",
+    "profile_id": "autopilot",
+    "state": "implementation",
+    "terminal": false,
+    "title": "History: Add Date to Conversation Log Pulldown",
+    "type": "work",
+    "updated_at": "2026-03-31T11:45:57.441302Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d43b6-dca6-77d2-8914-0211de080767"
+  }
+}

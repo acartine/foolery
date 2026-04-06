@@ -1,0 +1,13 @@
+{
+  "event_id": "019d3eb6-73c1-70e2-9519-8e25e5b8a936",
+  "occurred_at": "2026-03-30T12:27:17.825505Z",
+  "knot_id": "foolery-aae0",
+  "type": "knot.state_set",
+  "data": {
+    "force": false,
+    "from": "implementation_review",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation",
+    "workflow_id": "compatibility"
+  }
+}

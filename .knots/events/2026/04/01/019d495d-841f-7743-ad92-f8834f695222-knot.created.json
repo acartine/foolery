@@ -1,0 +1,17 @@
+{
+  "event_id": "019d495d-841f-7743-ad92-f8834f695222",
+  "occurred_at": "2026-04-01T14:05:58.687118Z",
+  "knot_id": "foolery-12cc",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, this would be nice for offline created knots",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add \"Refine Scope\" to Queues multi-select mode",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

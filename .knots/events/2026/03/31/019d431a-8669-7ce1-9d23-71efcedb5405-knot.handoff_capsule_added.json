@@ -1,0 +1,15 @@
+{
+  "event_id": "019d431a-8669-7ce1-9d23-71efcedb5405",
+  "occurred_at": "2026-03-31T08:55:05.065101Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Planning revised after plan-review feedback. `buildLeaderboard` currently computes `mean` before ranking and derives `totalN` from all ranked rows, so implementation must qualify agents first and derive winner, runner-up, margin baseline, and totals strictly from qualified entries only. Add regression tests for the mixed-step skew case and the no-qualified-agents empty-step case.",
+    "datetime": "2026-03-31T08:55:05.065101Z",
+    "entry_id": "019d431a-8669-7ce1-9d23-71de387e9e32",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

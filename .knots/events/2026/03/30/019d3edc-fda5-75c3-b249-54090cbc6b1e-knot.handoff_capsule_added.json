@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3edc-fda5-75c3-b249-54090cbc6b1e",
+  "occurred_at": "2026-03-30T13:09:23.493667Z",
+  "knot_id": "foolery-23f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan covers 7 changes across 3-5 files: (1) OpenAI→Codex rename in agent-identity.ts, (2) remove per-row Add/registered/Add All buttons, (3) show CLI path below agent name, (4) remove agent-id text before dropdown, (5) convert to multi-select with pill badges using Popover+Command pattern, (6) button color updates (success/success-light variants). State shape changes from Record<string,string> to Record<string,string[]> in hooks. Execution order: identity rename first, then hooks, then UI, then wiring. Main risk is multi-select consolidation — both Select and Combobox paths merge into one Popover+Command multi-toggle control.",
+    "datetime": "2026-03-30T13:09:23.493667Z",
+    "entry_id": "019d3edc-fda5-75c3-b249-53fe289e8b97",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

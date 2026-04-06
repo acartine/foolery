@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4300-d980-7420-8178-62cdd5ad4c94",
+  "occurred_at": "2026-03-31T08:27:02.400942Z",
+  "knot_id": "foolery-b5c5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipped by fast-forwarding main to 704c9e17569e (Fix scanned settings model selectors). Pushed origin/main and verified remote workflows passed: CI https://github.com/acartine/foolery/actions/runs/23787792368 and Coverage Badge https://github.com/acartine/foolery/actions/runs/23787792435. GitHub reported non-blocking Node 20 deprecation and coverage-regression annotations during CI.",
+    "datetime": "2026-03-31T08:24:34Z",
+    "entry_id": "019d4300-d980-7420-8178-62b0c2b6c6f9",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

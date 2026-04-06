@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4413-7eba-7782-b24d-12299bc42d14",
+  "occurred_at": "2026-03-31T13:27:01.562178Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved on current main. The repo-switch patch is narrowly scoped to beats/final-cut/retakes plus clearing an open beat detail on repo change; it removes keepPreviousData for repo-scoped queries, masks stale data via pendingRepoScopeKey until the new repo query settles, and shows explicit loading placeholders during the switch. Validation in /Users/cartine/foolery/.worktrees/foolery-f3eb on 2026-03-31: bun run lint (passes with the existing React Compiler warning in src/components/beat-form.tsx:368), bunx tsc --noEmit, bun run test, and bun run build all succeeded. Browser confirmation used Chrome DevTools against http://localhost:3001/beats?view=history&repo=%2FUsers%2Fcartine%2Ffoolery with mocked delayed repo responses: after switching from foolery to knots, the repo label updated immediately, the stale Foolery loading sentinel row disappeared during loading, the loading message remained visible until the Knots loading sentinel row rendered, and no stale-content flash was observed.",
+    "datetime": "2026-03-31T13:27:01.562178Z",
+    "entry_id": "019d4413-7eba-7782-b24d-12133b1a868c",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

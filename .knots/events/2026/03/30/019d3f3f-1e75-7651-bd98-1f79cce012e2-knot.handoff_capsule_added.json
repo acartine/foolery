@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f3f-1e75-7651-bd98-1f79cce012e2",
+  "occurred_at": "2026-03-30T14:56:34.421219Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Shipment attempt on 2026-03-30 failed at merge. Command: git merge --no-ff --no-edit foolery-67b5 on main. Conflicts: scripts/setup.sh, scripts/agent-wizard.sh. I aborted the merge with git merge --abort, leaving main clean. Next implementation step: rebase or manually reconcile those shell wizard changes, then retry shipment.",
+    "datetime": "2026-03-30T14:56:34.421219Z",
+    "entry_id": "019d3f3f-1e75-7651-bd98-1f6b907dea88",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

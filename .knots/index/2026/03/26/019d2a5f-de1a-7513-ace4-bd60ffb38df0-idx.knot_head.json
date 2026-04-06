@@ -1,0 +1,20 @@
+{
+  "event_id": "019d2a5f-de1a-7513-ace4-bd60ffb38df0",
+  "occurred_at": "2026-03-26T13:40:19.098503Z",
+  "type": "idx.knot_head",
+  "data": {
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6c3e",
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "terminal": false,
+    "title": "Remove beat “type” column from Queues screen",
+    "type": "work",
+    "updated_at": "2026-03-26T13:40:19.098503Z",
+    "workflow_id": "compatibility"
+  }
+}

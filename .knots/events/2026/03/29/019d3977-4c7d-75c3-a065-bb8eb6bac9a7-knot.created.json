@@ -1,0 +1,17 @@
+{
+  "event_id": "019d3977-4c7d-75c3-a065-bb8eb6bac9a7",
+  "occurred_at": "2026-03-29T12:00:12.925741Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.created",
+  "data": {
+    "body": "if you look at mistralai's agent in something like \"Implementation\", it has multiple pills which then corrupts the view of the number component because they occupy the same x/y.  need to recompute container sizes there so that each component gets the required width",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Settings: Dispatch: Advanced: agents with multiple pills overwrite number component",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

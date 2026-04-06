@@ -1,0 +1,24 @@
+{
+  "event_id": "019d3ec6-6de0-7a71-938b-0da75e1cc801",
+  "occurred_at": "2026-03-30T12:44:44.896683Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ab20",
+    "profile_id": "autopilot",
+    "state": "shipment",
+    "terminal": false,
+    "title": "Persist Create New form inputs across accidental dismissals and reloads",
+    "type": "work",
+    "updated_at": "2026-03-30T12:44:44.896683Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d3ec6-277f-72e2-9127-8848277db629"
+  }
+}

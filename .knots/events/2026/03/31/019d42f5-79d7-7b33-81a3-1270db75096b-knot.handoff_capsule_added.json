@@ -1,0 +1,15 @@
+{
+  "event_id": "019d42f5-79d7-7b33-81a3-1270db75096b",
+  "occurred_at": "2026-03-31T08:14:37.015538Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment completed against existing origin/main commit 32fd3e5f9ece, which already contains the Diagnostics scrollbar-gutter stabilization and the approved ReTakes width fix from aa1951bc. Verified remote GitHub Actions for main commit 32fd3e5f9ece are green (CI and Coverage Badge succeeded on 2026-03-31). Revalidated in /private/tmp/foolery-44f1-ship2.Cpwwlx with bun install --frozen-lockfile, bun run lint, bunx tsc --noEmit, bun run test, and bun run build; lint emitted the existing react-hooks/incompatible-library warning in src/components/beat-form.tsx but exited successfully. No new shipment commit was needed, and git push origin HEAD:main reported Everything up-to-date.",
+    "datetime": "2026-03-31T08:13:16Z",
+    "entry_id": "019d42f5-79d7-7b33-81a3-1266360f3945",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli-0.98.0"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "event_id": "019d4317-3a57-70e1-a0e2-1a7c531efe66",
+  "occurred_at": "2026-03-31T08:51:28.983302Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a71f",
+    "profile_id": "autopilot",
+    "state": "planning",
+    "terminal": false,
+    "title": "Diagnostics: Leases: Exclude weak-signal entries from leaderboards",
+    "type": "work",
+    "updated_at": "2026-03-31T08:51:28.983302Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d42e8-1019-7932-8c10-08fbb2e26b74"
+  }
+}

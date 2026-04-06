@@ -1,0 +1,9 @@
+{
+  "event_id": "019d4d3f-cb65-7642-bd33-17f546916ded",
+  "occurred_at": "2026-04-02T08:11:59.708417Z",
+  "knot_id": "foolery-f5ee",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Codex can run claimed-step and take-loop sessions in interactive mode through the shared session runtime.\n2. Codex turn completion is detected from explicit Codex stream/result signals, not inferred from silence.\n3. Follow-up prompts, stdin closing, process exit, watchdog timeout, retry, and abort all work under the shared protocol.\n4. Tests cover successful completion, hang timeout, and retry/abort behavior for interactive Codex sessions."
+  }
+}

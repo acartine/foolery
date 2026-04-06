@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3f5b-9754-77b0-aaf2-58ade158ebd4",
+  "occurred_at": "2026-03-30T15:27:40.37233Z",
+  "knot_id": "foolery-67b5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "OpenCode",
+    "content": "Approved in implementation_review. Verified UI scan now supports repeated Add on the same scanned CLI by advancing selection to the next unregistered option, so multiple models can be added from one scan interaction. CLI/setup wizard now collects multiple model selections in one session, persists separate agent entries per selected model, and falls back to the base CLI entry when zero models are selected. Validation passed in /Users/cartine/foolery/.knots/_worktree/foolery-67b5 for bun run lint, bunx tsc --noEmit, bun run test, bun run build, and bun run test:smoke:copilot:ui. Residual verification gap: scripts/test-install-copilot-setup.sh and scripts/test-install-copilot-setup-single-cli.sh were blocked locally before exercising the feature because bun run build:runtime failed with Bun link EEXIST collisions in this environment.",
+    "datetime": "2026-03-30T15:27:40.37233Z",
+    "entry_id": "019d3f5b-9754-77b0-aaf2-5898cad1abc9",
+    "model": "openrouter/mistralai/devstral-2512",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

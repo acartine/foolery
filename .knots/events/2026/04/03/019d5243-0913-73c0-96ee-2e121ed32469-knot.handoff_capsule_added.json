@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5243-0913-73c0-96ee-2e121ed32469",
+  "occurred_at": "2026-04-03T07:33:38.195075Z",
+  "knot_id": "foolery-51f8",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review did not approve the current implementation plan.\n\nKey gaps:\n- The proposal parameterizes dialect behavior, but it does not yet centralize the duplicated runtime logic that currently lives in both initial and take-loop child I/O paths.\n- sessionEnd, watchdog, and postExitValidation are modeled in the proposed types, but the implementation steps do not say how those hooks will actually run or what event history they inspect.\n- Gemini support is still underspecified because the plan relies on a TODO normalizer with unknown CLI JSON semantics.\n- The proposed tests do not yet cover terminal-manager integration for abort, retry, timeout, and close-input behavior across multiple dialect styles.\n\nNext planning revision should address those gaps and then return for plan review.",
+    "datetime": "2026-04-03T07:32:33Z",
+    "entry_id": "019d5243-0913-73c0-96ee-2e06b2fc69c6",
+    "model": "unknown",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

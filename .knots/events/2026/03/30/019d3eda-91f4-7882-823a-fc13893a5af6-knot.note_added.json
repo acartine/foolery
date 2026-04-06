@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eda-91f4-7882-823a-fc13893a5af6",
+  "occurred_at": "2026-03-30T13:06:44.85283Z",
+  "knot_id": "foolery-7a57",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "OpenAI",
+    "content": "Implementation review rejection (2026-03-30):\n\n1. REVERT NOT DONE: The grid layout from commit 3b4ca4f1 was not reverted. The note explicitly requires reverting those changes to settings-pools-section.tsx, but the feature branch has zero diff against main for that file. The grid-cols/col-span-4 layout remains.\n\n2. WRONG APPROACH: The note says to move pills beneath the agent name/identifier. The implementation adds flex-wrap to AgentDisplayLabel instead, which only wraps on overflow and doesn't reliably stack pills below the name. The fix must restore the original flex layout (w-[140px] sm:w-[220px]) and solve the overlap by stacking pills beneath the agent name within that fixed-width column.\n\n3. SHARED COMPONENT RISK: AgentDisplayLabel changed from inline-flex to flex (block-level), affecting 7+ consumers (settings-actions-section, settings-dispatch-global-swap, settings-agents-forms, agent-info-line, agent-info-bar). No regression analysis was done.\n\nRequired implementation:\na) Revert settings-pools-section.tsx to its state before 3b4ca4f1 (restore flex layout with fixed widths).\nb) In the pool row context only, arrange AgentDisplayLabel so pills render beneath the agent name (e.g., flex-col on the label wrapper inside PoolAgentRow, or a layout prop).\nc) Do NOT change AgentDisplayLabel's default display model — use a pool-row-specific wrapper or className prop instead.\nd) Verify other AgentDisplayLabel consumers are unaffected.",
+    "datetime": "2026-03-30T13:06:44.85283Z",
+    "entry_id": "019d3eda-91f4-7882-823a-fc0b48849616",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

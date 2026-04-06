@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2a8b-8146-76a0-b990-93542560c707",
+  "occurred_at": "2026-03-26T14:27:58.918168Z",
+  "knot_id": "foolery-9df0",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation review rejected: the knot description is the installed 'foolery stop' printf error, but commit 491c740c only changes scripts/setup.sh and scripts/agent-wizard.sh. The generated/install path in scripts/install.sh already uses printf '%s' '->', so the reviewed change does not address the described stop-path regression or add coverage for it.",
+    "datetime": "2026-03-26T14:27:58.918168Z",
+    "entry_id": "019d2a8b-8146-76a0-b990-93497572fbbc",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

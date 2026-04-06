@@ -1,0 +1,15 @@
+{
+  "event_id": "019d49b5-2610-7f31-b8e8-616322151068",
+  "occurred_at": "2026-04-01T15:41:41.776794Z",
+  "knot_id": "foolery-f8f4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Deployment issue: commits 808a1235 and d661bd7e exist on local main but were never pushed to origin/main. CI has not run on these changes. Shipment step must push local main to origin/main and verify CI green before re-entering shipment_review.",
+    "datetime": "2026-04-01T15:41:41.776794Z",
+    "entry_id": "019d49b5-2610-7f31-b8e8-6151f3518a01",
+    "model": "sonnet/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

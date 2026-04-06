@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4319-b78f-73f0-9ee7-f5f94d21ff09",
+  "occurred_at": "2026-03-31T08:54:12.111705Z",
+  "knot_id": "foolery-b45e",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Planning handoff:\n- Root cause candidate: history session/row labels are derived from session-start agent fields, while the failing response message already carries provider identity in response metadata (`part.metadata.openrouter`).\n- Implementation should add response-level identity parsing and make the history UI prefer that metadata-derived label over session-start fallback fields.\n- Keep the change scoped to the displayed agent label only; do not alter timestamps, workflow badges, prompt numbering, or history navigation behavior.\n- Cover the regression with parser/history tests using an OpenRouter-backed response fixture and expand shared label tests if formatting helpers change.",
+    "datetime": "2026-03-31T08:54:12.111705Z",
+    "entry_id": "019d4319-b78f-73f0-9ee7-f5ebb4282e06",
+    "model": "opus/claude",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

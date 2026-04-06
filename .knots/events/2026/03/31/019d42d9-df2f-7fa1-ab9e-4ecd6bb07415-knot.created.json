@@ -1,0 +1,17 @@
+{
+  "event_id": "019d42d9-df2f-7fa1-ab9e-4ecd6bb07415",
+  "occurred_at": "2026-03-31T07:44:27.951592Z",
+  "knot_id": "foolery-20ee",
+  "type": "knot.created",
+  "data": {
+    "body": "if you look at conversation #3 for 44f1, term-1774873034101-2p7pxo, , it looks like we hit the same openrouter agent repeatedly, 10 times in a row, and then exited.  \n\nthe idea of the multiple takes is to rotate through the models when one fails - specifically to avoid repeated failure loops like this one.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Claim Loop:  Rotate through available models after failures",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

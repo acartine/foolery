@@ -1,0 +1,15 @@
+{
+  "event_id": "019d301d-a34f-7e41-8cdb-f0f7248dc9ce",
+  "occurred_at": "2026-03-27T16:25:41.967739Z",
+  "knot_id": "foolery-a43f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review passed. All fields optional, backward compatible. Duration computed correctly at outcome time. Test updated to verify. Ready to ship.",
+    "datetime": "2026-03-27T16:25:41.967739Z",
+    "entry_id": "019d301d-a34f-7e41-8cdb-f0e1eb91a413",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

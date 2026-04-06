@@ -1,0 +1,9 @@
+{
+  "event_id": "019d2f47-8996-7261-8ef1-04d0799d985b",
+  "occurred_at": "2026-03-27T12:31:50.678671Z",
+  "knot_id": "foolery-2090",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Remove the BeatTypeBadge from the Beat Detail header. In practice only one beat type is used, so the badge adds visual clutter without conveying useful information. Removing it produces a cleaner header layout."
+  }
+}

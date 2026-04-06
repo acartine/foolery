@@ -1,0 +1,15 @@
+{
+  "event_id": "019d5961-1a57-78a0-b30b-0a841aa476a8",
+  "occurred_at": "2026-04-04T16:43:49.207795Z",
+  "knot_id": "foolery-54a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Rejected in implementation_review.\n\nFindings:\n1. `src/lib/agent-adapter.ts:116-125` constructs `buildGeminiInteractiveArgs()` as `[\"-p\", \"-i\", \"stream-json\", \"-o\", \"stream-json\", \"-y\"]`. Verified on 2026-04-04 via local `gemini --help` and Gemini CLI docs: `-p/--prompt` is a string prompt for non-interactive mode, `-i/--prompt-interactive` is a string prompt for interactive mode, and `--acp` is the documented stdio JSON-RPC integration mode. The reviewed argv therefore cannot be the stable Gemini interactive/session entrypoint requested by the knot.\n2. `src/lib/terminal-manager-initial-child.ts:377-379` and `src/lib/terminal-manager-take-child.ts:211-215` both dispatch Gemini interactive sessions through that argv, so claimed-step and take-loop paths inherit the same integration bug.\n3. Sanity gates in `/Users/cartine/foolery/.worktrees/foolery-54a2` all passed during review: `bun run lint` (1 existing React Compiler warning in `src/components/beat-form.tsx`), `bunx tsc --noEmit`, `bun run test` (229 files, 2563 tests passed), and `bun run build`. The failure is correctness against the real Gemini CLI contract, not CI coverage.\n\nRequired follow-up: rework Gemini interactive support around a verified Gemini protocol surface, likely ACP if machine-readable session events are required, then add coverage that exercises the real entrypoint semantics rather than a fabricated stdin stream-json contract.",
+    "datetime": "2026-04-04T16:43:12Z",
+    "entry_id": "019d5961-1a57-78a0-b30b-0a75f110146e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

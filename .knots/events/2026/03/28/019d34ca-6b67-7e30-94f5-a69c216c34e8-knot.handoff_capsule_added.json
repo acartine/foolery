@@ -1,0 +1,15 @@
+{
+  "event_id": "019d34ca-6b67-7e30-94f5-a69c216c34e8",
+  "occurred_at": "2026-03-28T14:12:54.247179Z",
+  "knot_id": "foolery-2794",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipped via fast-forward of feat/foolery-2794 to main at 7734df82dde7. Scope remained limited to src/components/beat-column-defs-extra.tsx for Active/Queues column width balancing. Remote checks passed on main for this commit: CI run 23686953585 and Coverage Badge run 23686953599.",
+    "datetime": "2026-03-28T14:12:43Z",
+    "entry_id": "019d34ca-6b67-7e30-94f5-a68274d4d526",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "2026-03-28"
+  }
+}

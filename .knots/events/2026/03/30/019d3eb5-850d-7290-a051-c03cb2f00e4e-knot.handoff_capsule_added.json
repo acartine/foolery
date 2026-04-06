@@ -1,0 +1,15 @@
+{
+  "event_id": "019d3eb5-850d-7290-a051-c03cb2f00e4e",
+  "occurred_at": "2026-03-30T12:26:16.717621Z",
+  "knot_id": "foolery-44f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved in implementation_review. Reviewed commit ddbde9dda1cbc2bf56bb117974b56d867bb8d2c2 on branch foolery-44f1. Change adds scrollbar-gutter: stable to src/app/globals.css to reserve scrollbar width and keep the shared top navigation row anchored across ReTakes and Diagnostics transitions, plus a regression assertion in src/lib/__tests__/beats-page-layout.test.ts. Verified against acceptance criteria and found no invariant or regression issues. Sanity gates passed in /Users/cartine/foolery/.knots/_worktree/foolery-44f1: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-03-30T14:26:09+02:00",
+    "entry_id": "019d3eb5-850d-7290-a051-c021ed186eaf",
+    "model": "GPT-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

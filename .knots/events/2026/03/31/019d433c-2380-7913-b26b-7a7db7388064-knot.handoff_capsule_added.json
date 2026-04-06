@@ -1,0 +1,15 @@
+{
+  "event_id": "019d433c-2380-7913-b26b-7a7db7388064",
+  "occurred_at": "2026-03-31T09:31:47.968058Z",
+  "knot_id": "foolery-a71f",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Approved in implementation_review. Reviewed commit 04d2eb4e in /private/tmp/foolery-a71f. buildLeaderboard now excludes agents unless that agent has at least 10 completed attempts and a success rate strictly greater than 25%, and computes margin and totalN from the qualified set only so filtered agents cannot affect displayed leaderboard output. Steps with no qualified agents are omitted. Regression coverage in src/components/__tests__/lease-audit-view-helpers.test.ts covers <10 attempts excluded, <=25% success excluded, qualified-only margin/totalN, qualified tie-break ordering, and all-filtered omission. Validation rerun in the worktree: bun run vitest src/components/__tests__/lease-audit-view-helpers.test.ts, bun run lint (passes with one pre-existing react-hooks/incompatible-library warning in src/components/beat-form.tsx), bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-03-31T09:31:30Z",
+    "entry_id": "019d433c-2380-7913-b26b-7a620aca290b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

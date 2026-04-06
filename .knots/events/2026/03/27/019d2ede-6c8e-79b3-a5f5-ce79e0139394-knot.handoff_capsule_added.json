@@ -1,0 +1,15 @@
+{
+  "event_id": "019d2ede-6c8e-79b3-a5f5-ce79e0139394",
+  "occurred_at": "2026-03-27T10:37:01.966884Z",
+  "knot_id": "foolery-8831",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "1. There is no automated test that asserts the divider remains below the title and tags row in BeatTableRow, so the accepted behavior is not covered by tests.\n2. The required sanity gates are not all green in this checkout: bun run lint exits 1 after traversing generated/worktree paths (.next and .knots/_worktree), so implementation review could not verify a passing lint gate.",
+    "datetime": "2026-03-27T10:36:09Z",
+    "entry_id": "019d2ede-6c8e-79b3-a5f5-ce61b70718b5",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

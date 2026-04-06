@@ -1,0 +1,15 @@
+{
+  "event_id": "019d43f5-f332-77b1-b733-812f58f2fc69",
+  "occurred_at": "2026-03-31T12:54:45.298374Z",
+  "knot_id": "foolery-f3eb",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review failed. Browser verification on http://localhost:3001/beats still shows stale repository content during a repo switch: with a 2s browser-only delay on /api/beats/query, switching repos updates the URL and repo selector immediately but keeps old rows visible for at least 500ms instead of clearing the view and showing a loading state. Static gates passed (lint with one existing warning in src/components/beat-form.tsx, tsc, test, build).",
+    "datetime": "2026-03-31T12:54:45.298374Z",
+    "entry_id": "019d43f5-f332-77b1-b733-811c696b3efa",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

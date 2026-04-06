@@ -1,0 +1,15 @@
+{
+  "event_id": "019d4321-5e71-7ed0-b145-be19d4d68c27",
+  "occurred_at": "2026-03-31T09:02:33.585121Z",
+  "knot_id": "foolery-5cc7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. The OpenCode scan now derives option labels from the last non-empty '/'-delimited model-id segment in src/lib/settings-agent-scan.ts, while preserving the original modelId/value. The settings combobox option label no longer uses truncate in src/components/settings-agents-scanned.tsx, so long final tokens remain fully visible. Acceptance criteria verified against the branch diff and tests. Validation run in .knots/_worktree/foolery-5cc7: bun run test src/lib/__tests__/settings-scan.test.ts src/components/__tests__/settings-agents-scanned.test.ts; bunx tsc --noEmit; bun run lint; bun run test; bun run build.",
+    "datetime": "2026-03-31T09:02:33.585121Z",
+    "entry_id": "019d4321-5e71-7ed0-b145-be0c6ea54205",
+    "model": "gpt",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

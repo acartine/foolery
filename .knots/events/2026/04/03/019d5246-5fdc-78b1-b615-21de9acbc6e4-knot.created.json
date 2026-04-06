@@ -1,0 +1,17 @@
+{
+  "event_id": "019d5246-5fdc-78b1-b615-21de9acbc6e4",
+  "occurred_at": "2026-04-03T07:37:17.020916Z",
+  "knot_id": "foolery-ac6e",
+  "type": "knot.created",
+  "data": {
+    "body": "Refactor terminal-manager initial-child and take-loop child paths to consume the shared runtime instead of dialect-specific Claude-only branching, while preserving current queue, lease, close, abort, and retry semantics.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Adopt shared runtime in terminal manager session paths",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
