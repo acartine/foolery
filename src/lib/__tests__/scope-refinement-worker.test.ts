@@ -15,8 +15,11 @@ vi.mock("@/lib/backend-instance", () => ({
 }));
 
 vi.mock("@/lib/settings", () => ({
-  getScopeRefinementSettings: () => mockGetScopeRefinementSettings(),
-  getScopeRefinementAgent: () => mockGetScopeRefinementAgent(),
+  getScopeRefinementSettings: () =>
+    mockGetScopeRefinementSettings(),
+  getScopeRefinementAgent: (
+    ...args: unknown[]
+  ) => mockGetScopeRefinementAgent(...args),
 }));
 
 vi.mock("node:child_process", () => ({
@@ -27,8 +30,13 @@ import {
   clearScopeRefinementCompletions,
   listScopeRefinementCompletions,
 } from "@/lib/scope-refinement-events";
-import { clearScopeRefinementQueue, getScopeRefinementQueueSize } from "@/lib/scope-refinement-queue";
 import {
+  clearScopeRefinementQueue,
+  dequeueScopeRefinementJob,
+  getScopeRefinementQueueSize,
+} from "@/lib/scope-refinement-queue";
+import {
+  getScopeRefinementWorkerHealth,
   processScopeRefinementJob,
   resetScopeRefinementWorkerState,
 } from "@/lib/scope-refinement-worker";
@@ -252,7 +260,37 @@ describe("processScopeRefinementJob: failure", () => {
 describe("processScopeRefinementJob: timeout", () => {
   beforeEach(setupScopeRefinementDefaults);
 
-  it("kills child and re-enqueues after 180s", async () => {
+  it("kills child and re-enqueues after 600s", async () => {
+    vi.useFakeTimers();
+    const child = new EventEmitter() as MockChild;
+    child.stdout = new EventEmitter();
+    child.stderr = new EventEmitter();
+    child.kill = vi.fn();
+    child.emitOutput = () => {};
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      createdAt: Date.now(),
+    });
+
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+
+    vi.advanceTimersByTime(600_001);
+
+    await promise;
+
+    vi.useRealTimers();
+
+    expect(child.kill).toHaveBeenCalledWith("SIGKILL");
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(getScopeRefinementQueueSize()).toBe(1);
+  });
+
+  it("does not trigger at old 180s timeout", async () => {
     vi.useFakeTimers();
     const child = new EventEmitter() as MockChild;
     child.stdout = new EventEmitter();
@@ -273,12 +311,136 @@ describe("processScopeRefinementJob: timeout", () => {
 
     vi.advanceTimersByTime(180_001);
 
-    await promise;
+    expect(child.kill).not.toHaveBeenCalled();
 
+    vi.advanceTimersByTime(420_000);
+    await promise;
     vi.useRealTimers();
 
     expect(child.kill).toHaveBeenCalledWith("SIGKILL");
-    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("processScopeRefinementJob: agent exclusion on retry", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+  it("carries failed agentId in excludeAgentIds on re-enqueue", async () => {
+    mockGetScopeRefinementAgent.mockResolvedValue({
+      kind: "cli",
+      command: "claude",
+      agentId: "agent-a",
+    });
+    const child = createMockChild("", 1);
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      createdAt: Date.now(),
+    });
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+    child.stderr.emit(
+      "data", Buffer.from("agent crashed"),
+    );
+    child.emit("close", 1);
+    await promise;
+
     expect(getScopeRefinementQueueSize()).toBe(1);
+    const requeued = dequeueScopeRefinementJob();
+    expect(requeued?.excludeAgentIds).toEqual(
+      ["agent-a"],
+    );
+  });
+
+  it("accumulates excluded agents across retries", async () => {
+    mockGetScopeRefinementAgent.mockResolvedValue({
+      kind: "cli",
+      command: "claude",
+      agentId: "agent-b",
+    });
+    const child = createMockChild("", 1);
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      excludeAgentIds: ["agent-a"],
+      createdAt: Date.now(),
+    });
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+    child.stderr.emit(
+      "data", Buffer.from("agent crashed"),
+    );
+    child.emit("close", 1);
+    await promise;
+
+    const requeued = dequeueScopeRefinementJob();
+    expect(requeued?.excludeAgentIds).toEqual(
+      ["agent-a", "agent-b"],
+    );
+  });
+});
+
+describe("processScopeRefinementJob: agent fallback resolution", () => {
+  beforeEach(setupScopeRefinementDefaults);
+
+  it("passes exclusions to getScopeRefinementAgent", async () => {
+    mockGetScopeRefinementAgent.mockResolvedValue({
+      kind: "cli",
+      command: "claude",
+      agentId: "agent-c",
+    });
+    const payload =
+      '<scope_refinement_json>'
+      + '{"title":"T","description":"D"}'
+      + '</scope_refinement_json>';
+    const child = createMockChild(
+      `${JSON.stringify({ type: "result", result: payload })}\n`,
+    );
+    mockSpawn.mockReturnValue(child);
+
+    const promise = processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      excludeAgentIds: ["agent-a"],
+      createdAt: Date.now(),
+    });
+    await vi.waitFor(() => {
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+    child.emitOutput();
+    await promise;
+
+    expect(
+      mockGetScopeRefinementAgent,
+    ).toHaveBeenCalledWith(new Set(["agent-a"]));
+  });
+
+  it("fails gracefully when all agents exhausted", async () => {
+    mockGetScopeRefinementAgent.mockResolvedValue(
+      null,
+    );
+
+    await processScopeRefinementJob({
+      id: "job-1",
+      beatId: "foolery-1",
+      excludeAgentIds: ["agent-a", "agent-b"],
+      createdAt: Date.now(),
+    });
+
+    expect(mockSpawn).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(getScopeRefinementQueueSize()).toBe(0);
+
+    const health = getScopeRefinementWorkerHealth();
+    expect(health.totalFailed).toBe(1);
+    expect(health.recentFailures).toHaveLength(1);
+    expect(
+      health.recentFailures[0]!.reason,
+    ).toContain("no alternative refinement agent");
   });
 });

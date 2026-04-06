@@ -5,6 +5,7 @@ import {
   createLineNormalizer,
   resolveDialect,
 } from "@/lib/agent-adapter";
+import type { AgentTarget } from "@/lib/types-agent-target";
 import { getScopeRefinementAgent } from "@/lib/settings";
 import {
   interpolateScopeRefinementPrompt,
@@ -12,7 +13,7 @@ import {
 
 const SCOPE_REFINEMENT_JSON_TAG = "scope_refinement_json";
 
-export const PROMPT_TIMEOUT_MS = 180_000;
+export const PROMPT_TIMEOUT_MS = 600_000;
 
 export const refinementOutputSchema = z.object({
   title: z.string().trim().min(1),
@@ -267,8 +268,10 @@ function spawnAndWire(
 export async function runScopeRefinementPrompt(
   prompt: string,
   repoPath?: string,
+  preResolvedAgent?: AgentTarget,
 ): Promise<string> {
-  const agent = await getScopeRefinementAgent();
+  const agent =
+    preResolvedAgent ?? await getScopeRefinementAgent();
   if (!agent) {
     throw new Error(
       "no scope refinement agent configured",

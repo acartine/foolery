@@ -106,9 +106,23 @@ function getNotifier(): WorkNotifier {
 
 // ── Retry logic ───────────────────────────────────────────
 
+function recordFailure(
+  state: WorkerState,
+  beatId: string,
+  reason: string,
+): void {
+  state.retryCounts.delete(beatId);
+  state.totalFailed++;
+  state.recentFailures = [
+    { beatId, reason, timestamp: Date.now() },
+    ...state.recentFailures,
+  ].slice(0, MAX_RECENT_FAILURES);
+}
+
 function maybeReenqueue(
   job: ScopeRefinementJob,
   reason: string,
+  failedAgentId?: string,
 ): boolean {
   const state = getWorkerState();
   const retries =
@@ -119,22 +133,20 @@ function maybeReenqueue(
         + `${job.beatId} after ${retries} retries: `
         + reason,
     );
-    state.retryCounts.delete(job.beatId);
-    state.totalFailed++;
-    state.recentFailures = [
-      {
-        beatId: job.beatId,
-        reason,
-        timestamp: Date.now(),
-      },
-      ...state.recentFailures,
-    ].slice(0, MAX_RECENT_FAILURES);
+    recordFailure(state, job.beatId, reason);
     return false;
   }
+  const excludeAgentIds = [
+    ...(job.excludeAgentIds ?? []),
+    ...(failedAgentId ? [failedAgentId] : []),
+  ];
   state.retryCounts.set(job.beatId, retries + 1);
   enqueueScopeRefinementJob({
     beatId: job.beatId,
     repoPath: job.repoPath,
+    ...(excludeAgentIds.length
+      ? { excludeAgentIds }
+      : {}),
   });
   console.warn(
     `[scope-refinement] re-enqueued `
@@ -143,6 +155,48 @@ function maybeReenqueue(
       + reason,
   );
   return true;
+}
+
+// ── Agent resolution with exclusion ──────────────────────
+
+import type { AgentTarget } from "@/lib/types-agent-target";
+
+interface ResolvedAgent {
+  agent: AgentTarget;
+  agentId: string | undefined;
+}
+
+async function resolveJobAgent(
+  job: ScopeRefinementJob,
+): Promise<ResolvedAgent | null> {
+  const exclusions = job.excludeAgentIds?.length
+    ? new Set(job.excludeAgentIds)
+    : undefined;
+  const agent = await getScopeRefinementAgent(
+    exclusions,
+  );
+  if (!agent) {
+    const noAlt = exclusions && exclusions.size > 0;
+    const reason = noAlt
+      ? "no alternative refinement agent available"
+        + ` (excluded: `
+        + `${[...exclusions].join(", ")})`
+      : "no scope refinement agent configured";
+    console.warn(
+      `[scope-refinement] skipping `
+        + `${job.beatId}: ${reason}`,
+    );
+    if (noAlt) {
+      recordFailure(
+        getWorkerState(), job.beatId, reason,
+      );
+    }
+    return null;
+  }
+  const agentId = "agentId" in agent
+    ? (agent.agentId as string | undefined)
+    : undefined;
+  return { agent, agentId };
 }
 
 // ── Process a single job ──────────────────────────────────
@@ -154,14 +208,9 @@ export async function processScopeRefinementJob(
     `[scope-refinement] processing ${job.beatId}`,
   );
   const settings = await getScopeRefinementSettings();
-  const agent = await getScopeRefinementAgent();
-  if (!agent) {
-    console.warn(
-      `[scope-refinement] skipping ${job.beatId}: `
-        + "no scope refinement agent configured",
-    );
-    return;
-  }
+  const resolved = await resolveJobAgent(job);
+  if (!resolved) return;
+  const { agent, agentId } = resolved;
 
   const beatResult = await getBackend().get(
     job.beatId, job.repoPath,
@@ -190,7 +239,7 @@ export async function processScopeRefinementJob(
   let rawResponse: string;
   try {
     rawResponse = await runScopeRefinementPrompt(
-      prompt, job.repoPath,
+      prompt, job.repoPath, agent,
     );
   } catch (error) {
     const message =
@@ -201,7 +250,7 @@ export async function processScopeRefinementJob(
       `[scope-refinement] agent failed for `
         + `${job.beatId}: ${message}`,
     );
-    maybeReenqueue(job, message);
+    maybeReenqueue(job, message, agentId);
     return;
   }
 
@@ -213,7 +262,9 @@ export async function processScopeRefinementJob(
       `[scope-refinement] could not parse agent `
         + `output for ${job.beatId}`,
     );
-    maybeReenqueue(job, "unparseable agent output");
+    maybeReenqueue(
+      job, "unparseable agent output", agentId,
+    );
     return;
   }
 

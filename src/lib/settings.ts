@@ -269,9 +269,9 @@ export async function getScopeRefinementSettings(): Promise<
   return settings.scopeRefinement;
 }
 
-export async function getScopeRefinementAgent(): Promise<
-  AgentTarget | null
-> {
+export async function getScopeRefinementAgent(
+  excludeAgentIds?: ReadonlySet<string>,
+): Promise<AgentTarget | null> {
   const settings = await loadSettings();
 
   if (settings.dispatchMode === "advanced") {
@@ -279,17 +279,22 @@ export async function getScopeRefinementAgent(): Promise<
       "scope_refinement",
       settings.pools,
       settings.agents,
+      excludeAgentIds,
     );
     if (poolAgent) return poolAgent;
   }
 
-  const agentId = settings.actions.scopeRefinement ?? "";
+  const agentId =
+    settings.actions.scopeRefinement ?? "";
   if (
     agentId &&
     agentId !== "default" &&
     settings.agents[agentId]
+    && !excludeAgentIds?.has(agentId)
   ) {
-    return toCliTarget(settings.agents[agentId], agentId);
+    return toCliTarget(
+      settings.agents[agentId], agentId,
+    );
   }
 
   return null;

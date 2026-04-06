@@ -2,6 +2,7 @@ export interface ScopeRefinementJob {
   id: string;
   beatId: string;
   repoPath?: string;
+  excludeAgentIds?: string[];
   createdAt: number;
 }
 
@@ -54,7 +55,12 @@ export function enqueueScopeRefinementJob(
   const job: ScopeRefinementJob = {
     id: `scope-refinement-${state.nextId++}`,
     beatId: input.beatId,
-    ...(input.repoPath ? { repoPath: input.repoPath } : {}),
+    ...(input.repoPath
+      ? { repoPath: input.repoPath }
+      : {}),
+    ...(input.excludeAgentIds?.length
+      ? { excludeAgentIds: input.excludeAgentIds }
+      : {}),
     createdAt: Date.now(),
   };
   state.jobs.push(job);
