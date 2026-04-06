@@ -104,6 +104,8 @@ export function useBeatsQuery(
       beatsView, signal, queryKey,
       setQueryData: (updater) =>
         queryClient.setQueryData(queryKey, updater),
+      getQueryData: () =>
+        queryClient.getQueryData<QueryData>(queryKey),
       onStreamStart: streaming.onStreamStart,
       onRepoLoaded: streaming.onRepoLoaded,
       onStreamComplete: streaming.onStreamComplete,
@@ -195,6 +197,7 @@ interface StreamingFetchArgs {
   signal: AbortSignal;
   queryKey: readonly unknown[];
   setQueryData: SetQueryData;
+  getQueryData: () => QueryData | undefined;
   onStreamStart: (total: number) => void;
   onRepoLoaded: (repo: string) => void;
   onStreamComplete: () => void;
@@ -202,15 +205,16 @@ interface StreamingFetchArgs {
 
 /**
  * For `scope=all`, use NDJSON streaming to show per-repo
- * results incrementally.  For other scopes, fall back to
- * the standard non-streaming fetch.
+ * results incrementally on **initial load** (empty cache).
+ * Background refetches with populated cache skip the
+ * streaming UI and silently swap the final result.
  */
 async function fetchBeatsWithStreaming(
   args: StreamingFetchArgs,
 ): Promise<QueryData> {
   const {
     params, scope, registeredRepos,
-    beatsView, signal, setQueryData,
+    beatsView, signal, setQueryData, getQueryData,
     onStreamStart, onRepoLoaded, onStreamComplete,
   } = args;
 
@@ -228,6 +232,28 @@ async function fetchBeatsWithStreaming(
     return result;
   }
 
+  /* Background refresh: cache already has data, so skip
+     streaming progress UI to avoid the 10s flicker. */
+  const cached = getQueryData();
+  const isBackgroundRefresh =
+    cached?.ok && (cached.data?.length ?? 0) > 0;
+
+  if (isBackgroundRefresh) {
+    const result = await withClientPerfSpan(
+      "query", "beats:list-stream",
+      () => fetchBeatsForScopeStreaming(params, scope, {
+        signal,
+        onRepoChunk: () => { /* silent */ },
+      }),
+      () => ({
+        meta: { beatsView, params, scope: scope.key },
+      }),
+    );
+    throwIfDegraded(result);
+    return result;
+  }
+
+  /* Initial load: show per-repo progress. */
   onStreamStart(registeredRepos.length);
 
   const result = await withClientPerfSpan(
