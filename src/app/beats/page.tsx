@@ -23,6 +23,12 @@ import {
   DiagnosticsView,
 } from "@/components/lease-audit-view";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
+import {
+  StreamingProgressBar,
+} from "@/components/streaming-progress-bar";
+import type {
+  StreamingProgress,
+} from "./use-streaming-progress";
 import { useAppStore } from "@/stores/app-store";
 import { useTerminalStore } from "@/stores/terminal-store";
 import { AlertTriangle } from "lucide-react";
@@ -90,6 +96,7 @@ function useBeatsPageState() {
   const {
     beats, isLoading, loadError,
     isDegradedError, hasRollingAncestor,
+    streamingProgress,
   } = useBeatsQuery({
     beatsView, searchQuery, isListView, activeRepo,
     registeredRepos, shippingByBeatId,
@@ -127,7 +134,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
-    listViewportInset,
+    listViewportInset, streamingProgress,
     ...bulk, ...actions, ...detail,
   };
 }
@@ -256,6 +263,9 @@ function BeatsViewBody({
           shippingByBeatId={s.shippingByBeatId}
           onAbortShipping={s.handleAbortShipping}
           listViewportInset={s.listViewportInset}
+          streamingProgress={
+            s.streamingProgress
+          }
         />
       )}
     </div>
@@ -280,6 +290,7 @@ interface BeatsListContentProps {
     beatId: string,
   ) => Promise<void>;
   listViewportInset: string;
+  streamingProgress: StreamingProgress;
 }
 
 function BeatsListContent(
@@ -292,10 +303,15 @@ function BeatsListContent(
     selectionVersion, searchQuery,
     onOpenBeat, onShipBeat,
     shippingByBeatId, onAbortShipping,
-    listViewportInset,
+    listViewportInset, streamingProgress,
   } = props;
 
-  if (isLoading) {
+  const isStreamActive =
+    streamingProgress.isStreaming
+    || (streamingProgress.isComplete
+      && streamingProgress.totalRepos > 0);
+
+  if (isLoading && !isStreamActive) {
     return (
       <RepoSwitchLoadingState
         data-testid="repo-switch-loading-beats"
@@ -321,6 +337,11 @@ function BeatsListContent(
       {isDegradedError && (
         <DegradedBanner message={loadError} />
       )}
+      {isStreamActive && (
+        <StreamingProgressBar
+          progress={streamingProgress}
+        />
+      )}
       <BeatTable
         data={beats}
         showRepoColumn={showRepoColumn}
@@ -333,6 +354,9 @@ function BeatsListContent(
         onShipBeat={onShipBeat}
         shippingByBeatId={shippingByBeatId}
         onAbortShipping={onAbortShipping}
+        isStreaming={
+          streamingProgress.isStreaming
+        }
       />
     </div>
   );

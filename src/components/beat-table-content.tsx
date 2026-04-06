@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useReactTable,
@@ -131,6 +131,32 @@ function BeatTableHeader({
   );
 }
 
+/**
+ * Track which beat IDs are "new" in the current render
+ * so we can apply a fade-in animation class.
+ * Uses React state (with setState-in-render pattern)
+ * to store the previous set of IDs.
+ */
+function useNewRowIds(
+  rows: { original: { id: string } }[],
+): Set<string> {
+  const [prevIds, setPrevIds] =
+    useState<Set<string> | null>(null);
+  const currentIds = new Set(
+    rows.map((r) => r.original.id),
+  );
+  const key = [...currentIds].sort().join(",");
+  const prevKey = prevIds
+    ? [...prevIds].sort().join(",") : "";
+  if (key !== prevKey) {
+    setPrevIds(currentIds);
+  }
+  if (!prevIds) return new Set<string>();
+  return new Set(
+    [...currentIds].filter((id) => !prevIds.has(id)),
+  );
+}
+
 function BeatTableBody({
   table,
   columns,
@@ -151,6 +177,7 @@ function BeatTableBody({
   titleRenderOpts: TitleRenderOpts;
 }) {
   const rows = table.getRowModel().rows;
+  const newRowIds = useNewRowIds(rows);
 
   return (
     <TableBody>
@@ -162,6 +189,7 @@ function BeatTableBody({
             focusedRowId={focusedRowId}
             handleRowFocus={handleRowFocus}
             titleRenderOpts={titleRenderOpts}
+            isNewRow={newRowIds.has(row.original.id)}
           />
         ))
       ) : (
@@ -176,20 +204,48 @@ function BeatTableBody({
   );
 }
 
-function BeatTableRow({
-  row,
-  focusedRowId,
-  handleRowFocus,
-  titleRenderOpts,
+type BeatRow = ReturnType<
+  ReturnType<
+    typeof useReactTable<Beat>
+  >["getRowModel"]
+>["rows"][number];
+
+function BeatRowSummary({
+  beat, totalCols, indent, capsules,
 }: {
-  row: ReturnType<
-    ReturnType<
-      typeof useReactTable<Beat>
-    >["getRowModel"]
-  >["rows"][number];
+  beat: Beat;
+  totalCols: number;
+  indent: string;
+  capsules: ReturnType<typeof renderedHandoffCapsules>;
+}) {
+  return (
+    <TableRow className="bg-muted/30">
+      <TableCell
+        colSpan={totalCols}
+        className="whitespace-normal pt-0"
+      >
+        <div
+          className="min-w-0"
+          style={{ paddingLeft: indent }}
+        >
+          <InlineSummary
+            beat={beat} capsules={capsules}
+          />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function BeatTableRow({
+  row, focusedRowId, handleRowFocus,
+  titleRenderOpts, isNewRow,
+}: {
+  row: BeatRow;
   focusedRowId: string | null;
   handleRowFocus: (beat: Beat) => void;
   titleRenderOpts: TitleRenderOpts;
+  isNewRow?: boolean;
 }) {
   const cells = row.getVisibleCells();
   const totalCols = cells.length;
@@ -201,13 +257,11 @@ function BeatTableRow({
   const capsules = renderedHandoffCapsules(
     row.original,
   );
-  const showSummary =
-    isFocused &&
-    Boolean(
-      row.original.description ||
-        row.original.notes ||
-        capsules.length > 0,
-    );
+  const showSummary = isFocused && Boolean(
+    row.original.description
+    || row.original.notes
+    || capsules.length > 0,
+  );
 
   return (
     <Fragment>
@@ -215,6 +269,7 @@ function BeatTableRow({
         className={cn(
           "border-b-0",
           isFocused && "bg-muted/50",
+          isNewRow && "animate-beat-row-enter",
         )}
         onClick={() => handleRowFocus(row.original)}
       >
@@ -226,9 +281,7 @@ function BeatTableRow({
           return (
             <TableCell
               key={cell.id}
-              className={cellClassName(
-                meta, maxSize,
-              )}
+              className={cellClassName(meta, maxSize)}
             >
               {flexRender(
                 cell.column.columnDef.cell,
@@ -239,9 +292,7 @@ function BeatTableRow({
         })}
       </TableRow>
       <TableRow
-        className={cn(
-          isFocused && "bg-muted/50",
-        )}
+        className={cn(isFocused && "bg-muted/50")}
         onClick={() => handleRowFocus(row.original)}
       >
         <TableCell
@@ -249,28 +300,17 @@ function BeatTableRow({
           className="pt-0 pb-1 truncate"
         >
           <InlineTitleContent
-            beat={row.original}
-            opts={titleRenderOpts}
+            beat={row.original} opts={titleRenderOpts}
           />
         </TableCell>
       </TableRow>
       {showSummary && (
-        <TableRow className="bg-muted/30">
-          <TableCell
-            colSpan={totalCols}
-            className="whitespace-normal pt-0"
-          >
-            <div
-              className="min-w-0"
-              style={{ paddingLeft: indent }}
-            >
-              <InlineSummary
-                beat={row.original}
-                capsules={capsules}
-              />
-            </div>
-          </TableCell>
-        </TableRow>
+        <BeatRowSummary
+          beat={row.original}
+          totalCols={totalCols}
+          indent={indent}
+          capsules={capsules}
+        />
       )}
     </Fragment>
   );

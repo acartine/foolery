@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -42,6 +42,8 @@ type BeatTableProps = {
   onShipBeat?: (beat: Beat) => void;
   shippingByBeatId?: Record<string, string>;
   onAbortShipping?: (beatId: string) => void;
+  /** When true, suppress page-0 reset on data growth. */
+  isStreaming?: boolean;
 };
 
 // eslint-disable-next-line max-lines-per-function
@@ -57,6 +59,7 @@ export function BeatTable({
   onShipBeat,
   shippingByBeatId = {},
   onAbortShipping,
+  isStreaming = false,
 }: BeatTableProps) {
   const s = useBeatTableState({
     data, showRepoColumn, showAgentColumns,
@@ -77,9 +80,17 @@ export function BeatTable({
     setRowSelection({});
   }, [s.activeRepo]);
   const { sortedLen, filtersKey, setPageIdx } = s;
+  const prevSortedLenRef = useRef(sortedLen);
   useEffect(() => {
+    const grew =
+      sortedLen > prevSortedLenRef.current;
+    prevSortedLenRef.current = sortedLen;
+    // During streaming, data grows as repos load in.
+    // Only reset to page 0 on filter changes, not
+    // on data growth from streaming insertion.
+    if (isStreaming && grew) return;
     setPageIdx(() => 0);
-  }, [sortedLen, filtersKey, setPageIdx]);
+  }, [sortedLen, filtersKey, setPageIdx, isStreaming]);
   useEffect(() => {
     performance.mark("beat-table:render-ready");
   }, [data.length, sortedLen]);

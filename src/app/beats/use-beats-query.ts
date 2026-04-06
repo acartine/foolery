@@ -18,6 +18,12 @@ import {
   hasRollingAncestor as hasRollingAncestorLib,
 } from "@/lib/rolling-ancestor";
 import type { Beat, RegisteredRepo } from "@/lib/types";
+import {
+  useStreamingProgress,
+} from "./use-streaming-progress";
+import type {
+  StreamingProgress,
+} from "./use-streaming-progress";
 
 const DEGRADED_ERROR_PREFIX =
   "Unable to interact with beats store";
@@ -49,6 +55,8 @@ interface UseBeatsQueryArgs {
   shippingByBeatId: Record<string, string>;
 }
 
+export type { StreamingProgress };
+
 export interface UseBeatsQueryResult {
   beats: Beat[];
   isLoading: boolean;
@@ -57,6 +65,7 @@ export interface UseBeatsQueryResult {
   hasRollingAncestor: (
     beat: Pick<Beat, "id" | "parent">,
   ) => boolean;
+  streamingProgress: StreamingProgress;
 }
 
 export function useBeatsQuery(
@@ -68,6 +77,7 @@ export function useBeatsQuery(
   } = args;
   const { filters } = useAppStore();
   const scope = resolveBeatsScope(activeRepo, registeredRepos);
+  const streaming = useStreamingProgress();
 
   const params: Record<string, string> = {};
   if (!searchQuery && filters.state) {
@@ -94,6 +104,9 @@ export function useBeatsQuery(
       beatsView, signal, queryKey,
       setQueryData: (updater) =>
         queryClient.setQueryData(queryKey, updater),
+      onStreamStart: streaming.onStreamStart,
+      onRepoLoaded: streaming.onRepoLoaded,
+      onStreamComplete: streaming.onStreamComplete,
     }),
     enabled: isListView && (
       Boolean(activeRepo) || registeredRepos.length > 0
@@ -150,6 +163,7 @@ export function useBeatsQuery(
   return {
     beats, isLoading: display.isLoading, loadError,
     isDegradedError, hasRollingAncestor,
+    streamingProgress: streaming.progress,
   };
 }
 
@@ -181,6 +195,9 @@ interface StreamingFetchArgs {
   signal: AbortSignal;
   queryKey: readonly unknown[];
   setQueryData: SetQueryData;
+  onStreamStart: (total: number) => void;
+  onRepoLoaded: (repo: string) => void;
+  onStreamComplete: () => void;
 }
 
 /**
@@ -194,6 +211,7 @@ async function fetchBeatsWithStreaming(
   const {
     params, scope, registeredRepos,
     beatsView, signal, setQueryData,
+    onStreamStart, onRepoLoaded, onStreamComplete,
   } = args;
 
   if (scope.kind !== "all") {
@@ -210,11 +228,13 @@ async function fetchBeatsWithStreaming(
     return result;
   }
 
+  onStreamStart(registeredRepos.length);
+
   const result = await withClientPerfSpan(
     "query", "beats:list-stream",
     () => fetchBeatsForScopeStreaming(params, scope, {
       signal,
-      onRepoChunk: (_repo, _repoName, beats) => {
+      onRepoChunk: (repo, _repoName, beats) => {
         setQueryData((old) => {
           const prev = old?.ok ? (old.data ?? []) : [];
           return {
@@ -222,12 +242,14 @@ async function fetchBeatsWithStreaming(
             data: [...prev, ...beats],
           };
         });
+        onRepoLoaded(repo);
       },
     }),
     () => ({
       meta: { beatsView, params, scope: scope.key },
     }),
   );
+  onStreamComplete();
   throwIfDegraded(result);
   return result;
 }
