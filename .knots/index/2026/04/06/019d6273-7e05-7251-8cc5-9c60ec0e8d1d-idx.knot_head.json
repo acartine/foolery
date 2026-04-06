@@ -1,0 +1,37 @@
+{
+  "event_id": "019d6273-7e05-7251-8cc5-9c60ec0e8d1d",
+  "occurred_at": "2026-04-06T11:00:29.317706Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-bf85",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Stream multi-repo beat results incrementally as each repo responds",
+    "type": "work",
+    "updated_at": "2026-04-06T11:00:29.317706Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d6273-71a9-7551-8585-0f8fe186cf38"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d6270-4a68-74f1-9c27-887c62e6fbf0",
+  "occurred_at": "2026-04-06T10:56:59.496486Z",
+  "knot_id": "foolery-bf85",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-bf85-stream-beats"
+  }
+}

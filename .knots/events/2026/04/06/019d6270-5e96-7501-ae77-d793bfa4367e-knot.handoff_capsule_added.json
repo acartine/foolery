@@ -1,0 +1,15 @@
+{
+  "event_id": "019d6270-5e96-7501-ae77-d793bfa4367e",
+  "occurred_at": "2026-04-06T10:57:04.662096Z",
+  "knot_id": "foolery-bf85",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation complete on branch worktree-bf85-stream-beats (commit 7cf555b5). Changes: beats-multi-repo.ts adds streamBeatsAcrossRegisteredRepos() async generator with race-and-yield pattern. API route serves NDJSON when Accept: application/x-ndjson for scope=all. New ndjson-stream.ts reusable consumer. api.ts adds fetchBeatsForScopeStreaming(). use-beats-query.ts does incremental cache merge via setQueryData(). 3 new test files with 13 tests. All quality gates pass: lint 0 errors, tsc 0 errors, 231 tests pass, build succeeds.",
+    "datetime": "2026-04-06T10:57:04.662096Z",
+    "entry_id": "019d6270-5e96-7501-ae77-d781c0a5ea42",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "1.0"
+  }
+}
