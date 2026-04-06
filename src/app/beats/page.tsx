@@ -329,6 +329,15 @@ function BeatsListContent(
       </div>
     );
   }
+
+  const streamingEmpty =
+    streamingProgress.isStreaming
+    && beats.length === 0;
+  const allReposEmpty =
+    streamingProgress.isComplete
+    && streamingProgress.totalRepos > 0
+    && beats.length === 0;
+
   return (
     <div
       className="overflow-x-auto"
@@ -342,22 +351,56 @@ function BeatsListContent(
           progress={streamingProgress}
         />
       )}
-      <BeatTable
-        data={beats}
-        showRepoColumn={showRepoColumn}
-        showAgentColumns={isActiveView}
-        agentInfoByBeatId={agentInfoByBeatId}
-        onSelectionChange={onSelectionChange}
-        selectionVersion={selectionVersion}
-        searchQuery={searchQuery}
-        onOpenBeat={onOpenBeat}
-        onShipBeat={onShipBeat}
-        shippingByBeatId={shippingByBeatId}
-        onAbortShipping={onAbortShipping}
-        isStreaming={
-          streamingProgress.isStreaming
-        }
-      />
+      {streamingEmpty ? (
+        <StreamingEmptyState />
+      ) : allReposEmpty ? (
+        <AllReposEmptyState />
+      ) : (
+        <BeatTable
+          data={beats}
+          showRepoColumn={showRepoColumn}
+          showAgentColumns={isActiveView}
+          agentInfoByBeatId={agentInfoByBeatId}
+          onSelectionChange={onSelectionChange}
+          selectionVersion={selectionVersion}
+          searchQuery={searchQuery}
+          onOpenBeat={onOpenBeat}
+          onShipBeat={onShipBeat}
+          shippingByBeatId={shippingByBeatId}
+          onAbortShipping={onAbortShipping}
+          isStreaming={
+            streamingProgress.isStreaming
+          }
+        />
+      )}
+    </div>
+  );
+}
+
+function StreamingEmptyState() {
+  return (
+    <div
+      data-testid="streaming-empty-state"
+      className={
+        "flex items-center justify-center"
+        + " py-6 text-sm text-muted-foreground"
+      }
+    >
+      Loading repositories...
+    </div>
+  );
+}
+
+function AllReposEmptyState() {
+  return (
+    <div
+      data-testid="all-repos-empty-state"
+      className={
+        "flex items-center justify-center"
+        + " py-6 text-sm text-muted-foreground"
+      }
+    >
+      No results found across all repositories.
     </div>
   );
 }
