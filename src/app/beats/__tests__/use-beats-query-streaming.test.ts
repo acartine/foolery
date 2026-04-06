@@ -19,6 +19,7 @@ function simulateStreamingFetch(
   let progress: StreamingProgress = {
     totalRepos: 0,
     loadedRepos: [],
+    loadedBeatsCount: 0,
     isStreaming: false,
     isComplete: false,
   };
@@ -27,6 +28,7 @@ function simulateStreamingFetch(
   progress = {
     totalRepos: repoCount,
     loadedRepos: [],
+    loadedBeatsCount: 0,
     isStreaming: true,
     isComplete: false,
   };
@@ -95,6 +97,7 @@ describe(
         const idle: StreamingProgress = {
           totalRepos: 0,
           loadedRepos: [],
+          loadedBeatsCount: 0,
           isStreaming: false,
           isComplete: false,
         };

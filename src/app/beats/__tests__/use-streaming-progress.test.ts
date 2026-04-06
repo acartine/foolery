@@ -12,6 +12,7 @@ import type { StreamingProgress } from
 const EMPTY: StreamingProgress = {
   totalRepos: 0,
   loadedRepos: [],
+  loadedBeatsCount: 0,
   isStreaming: false,
   isComplete: false,
 };
@@ -22,6 +23,7 @@ function applyStreamStart(
   return {
     totalRepos: total,
     loadedRepos: [],
+    loadedBeatsCount: 0,
     isStreaming: true,
     isComplete: false,
   };
@@ -56,6 +58,7 @@ describe("streaming progress transitions", () => {
     expect(EMPTY).toEqual({
       totalRepos: 0,
       loadedRepos: [],
+      loadedBeatsCount: 0,
       isStreaming: false,
       isComplete: false,
     });

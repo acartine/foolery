@@ -9,6 +9,8 @@ export interface StreamingProgress {
   totalRepos: number;
   /** Repo paths that have finished loading. */
   loadedRepos: string[];
+  /** Running count of beats received so far. */
+  loadedBeatsCount: number;
   /** True while the streaming fetch is in flight. */
   isStreaming: boolean;
   /** True once all repos have responded. */
@@ -18,6 +20,7 @@ export interface StreamingProgress {
 const EMPTY_PROGRESS: StreamingProgress = {
   totalRepos: 0,
   loadedRepos: [],
+  loadedBeatsCount: 0,
   isStreaming: false,
   isComplete: false,
 };
@@ -25,7 +28,9 @@ const EMPTY_PROGRESS: StreamingProgress = {
 export interface StreamingProgressHandle {
   progress: StreamingProgress;
   onStreamStart: (totalRepos: number) => void;
-  onRepoLoaded: (repoPath: string) => void;
+  onRepoLoaded: (
+    repoPath: string, beatsCount: number,
+  ) => void;
   onStreamComplete: () => void;
   resetProgress: () => void;
 }
@@ -48,6 +53,7 @@ export function useStreamingProgress():
       setProgress({
         totalRepos,
         loadedRepos: [],
+        loadedBeatsCount: 0,
         isStreaming: true,
         isComplete: false,
       });
@@ -56,16 +62,14 @@ export function useStreamingProgress():
   );
 
   const onRepoLoaded = useCallback(
-    (repoPath: string) => {
+    (repoPath: string, beatsCount: number) => {
       setProgress((prev) => {
         const loaded = [...prev.loadedRepos, repoPath];
-        const complete =
-          loaded.length >= totalRef.current;
         return {
           ...prev,
           loadedRepos: loaded,
-          isComplete: complete,
-          isStreaming: !complete,
+          loadedBeatsCount:
+            prev.loadedBeatsCount + beatsCount,
         };
       });
     },

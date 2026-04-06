@@ -199,7 +199,9 @@ interface StreamingFetchArgs {
   setQueryData: SetQueryData;
   getQueryData: () => QueryData | undefined;
   onStreamStart: (total: number) => void;
-  onRepoLoaded: (repo: string) => void;
+  onRepoLoaded: (
+    repo: string, beatsCount: number,
+  ) => void;
   onStreamComplete: () => void;
 }
 
@@ -268,7 +270,7 @@ async function fetchBeatsWithStreaming(
             data: [...prev, ...beats],
           };
         });
-        onRepoLoaded(repo);
+        onRepoLoaded(repo, beats.length);
       },
     }),
     () => ({

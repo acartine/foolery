@@ -8,9 +8,15 @@ import type { StreamingProgress } from
  */
 
 function deriveLabel(p: StreamingProgress): string {
-  if (p.isComplete) return "All repositories loaded";
-  return `Loaded ${p.loadedRepos.length}`
-    + `/${p.totalRepos} repositories`;
+  if (!p.isStreaming && p.isComplete) {
+    return "All repositories loaded";
+  }
+  if (p.loadedBeatsCount > 0) {
+    return `Loading\u2026 ${p.loadedBeatsCount} beats`
+      + ` from ${p.loadedRepos.length}`
+      + `/${p.totalRepos} repos`;
+  }
+  return `Loading ${p.totalRepos} repositories\u2026`;
 }
 
 function derivePct(p: StreamingProgress): number {
@@ -32,25 +38,27 @@ describe("streaming progress bar logic", () => {
   const base: StreamingProgress = {
     totalRepos: 5,
     loadedRepos: [],
+    loadedBeatsCount: 0,
     isStreaming: true,
     isComplete: false,
   };
 
-  it("shows 0/5 at start", () => {
+  it("shows loading at start", () => {
     expect(derivePct(base)).toBe(0);
     expect(deriveLabel(base)).toBe(
-      "Loaded 0/5 repositories",
+      "Loading 5 repositories\u2026",
     );
   });
 
-  it("shows 60% at 3/5", () => {
+  it("shows beat count at 3/5 repos", () => {
     const p = {
       ...base,
       loadedRepos: ["/a", "/b", "/c"],
+      loadedBeatsCount: 42,
     };
     expect(derivePct(p)).toBe(60);
     expect(deriveLabel(p)).toBe(
-      "Loaded 3/5 repositories",
+      "Loading\u2026 42 beats from 3/5 repos",
     );
   });
 
@@ -58,6 +66,7 @@ describe("streaming progress bar logic", () => {
     const p: StreamingProgress = {
       totalRepos: 5,
       loadedRepos: ["/a", "/b", "/c", "/d", "/e"],
+      loadedBeatsCount: 50,
       isStreaming: false,
       isComplete: true,
     };
@@ -93,6 +102,7 @@ describe("streaming progress bar logic", () => {
     const idle: StreamingProgress = {
       totalRepos: 0,
       loadedRepos: [],
+      loadedBeatsCount: 0,
       isStreaming: false,
       isComplete: false,
     };
@@ -103,6 +113,7 @@ describe("streaming progress bar logic", () => {
     const empty: StreamingProgress = {
       totalRepos: 0,
       loadedRepos: [],
+      loadedBeatsCount: 0,
       isStreaming: true,
       isComplete: false,
     };

@@ -54,10 +54,13 @@ export function StreamingProgressBar({
     )
     : 0;
 
-  const label = progress.isComplete
+  const label = !progress.isStreaming && progress.isComplete
     ? "All repositories loaded"
-    : `Loaded ${progress.loadedRepos.length}`
-      + `/${progress.totalRepos} repositories`;
+    : progress.loadedBeatsCount > 0
+      ? `Loading\u2026 ${progress.loadedBeatsCount} beats`
+        + ` from ${progress.loadedRepos.length}`
+        + `/${progress.totalRepos} repos`
+      : `Loading ${progress.totalRepos} repositories\u2026`;
 
   return (
     <div
