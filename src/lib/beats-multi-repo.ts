@@ -16,6 +16,16 @@ export type AggregateBeatsResult = BdResult<Beat[]> & {
   _degraded?: string;
 };
 
+/** A per-repo chunk yielded by the streaming generator. */
+export type RepoBeatsChunk =
+  | { done?: false; repo: string; repoName: string; beats: Beat[] }
+  | {
+    done: true;
+    _degraded?: string;
+    allBeats: Beat[];
+    totalErrors: number;
+  };
+
 interface AggregateCacheEntry {
   result: AggregateBeatsResult;
   expiresAt: number;
@@ -36,6 +46,116 @@ export async function listBeatsAcrossRegisteredRepos(
 ): Promise<AggregateBeatsResult> {
   const repos = await listRepos();
   return loadAggregate({ filters, query, repos });
+}
+
+/**
+ * Stream per-repo beat results as each backend responds.
+ * Yields one chunk per repo (in resolution order), then a final
+ * summary chunk with `done: true`.  Cache-aware: a cache hit
+ * emits one repo-data chunk plus the summary immediately.
+ */
+export async function* streamBeatsAcrossRegisteredRepos(
+  filters: BeatListFilters,
+  query?: string,
+): AsyncGenerator<RepoBeatsChunk> {
+  const repos = await listRepos();
+  yield* streamAggregate({ filters, query, repos });
+}
+
+async function* streamAggregate(
+  request: AggregateRequest,
+): AsyncGenerator<RepoBeatsChunk> {
+  const key = buildCacheKey(request);
+  const cached = getCachedResult(key);
+  if (cached) {
+    yield* chunksFromCached(cached);
+    return;
+  }
+  yield* streamFreshAggregate(request, key);
+}
+
+function* chunksFromCached(
+  result: AggregateBeatsResult,
+): Generator<RepoBeatsChunk> {
+  const beats = result.ok ? (result.data ?? []) : [];
+  // Group beats by repo so the client sees per-repo chunks.
+  const byRepo = new Map<string, Beat[]>();
+  for (const beat of beats) {
+    const rp = (beat as Beat & { _repoPath?: string })
+      ._repoPath ?? "unknown";
+    const arr = byRepo.get(rp) ?? [];
+    arr.push(beat);
+    byRepo.set(rp, arr);
+  }
+  for (const [repo, repoBeats] of byRepo) {
+    const name = (repoBeats[0] as Beat & { _repoName?: string })
+      ._repoName ?? repo;
+    yield { repo, repoName: name, beats: repoBeats };
+  }
+  yield {
+    done: true,
+    _degraded: result._degraded,
+    allBeats: beats,
+    totalErrors: result.ok ? 0 : 1,
+  };
+}
+
+async function* streamFreshAggregate(
+  request: AggregateRequest,
+  cacheKey: string,
+): AsyncGenerator<RepoBeatsChunk> {
+  if (request.repos.length === 0) {
+    yield { done: true, allBeats: [], totalErrors: 0 };
+    return;
+  }
+
+  const allBeats: Beat[] = [];
+  const errors: string[] = [];
+
+  // Build tagged promises so we can yield in resolution order.
+  type Tagged = { repo: RegisteredRepo; beats: Beat[] };
+  let pending = request.repos.map((repo) => {
+    const errBucket: string[] = [];
+    return loadRepoBeats(repo, request, errBucket).then(
+      (beats) => {
+        errors.push(...errBucket);
+        return { repo, beats } as Tagged;
+      },
+    );
+  });
+
+  while (pending.length > 0) {
+    const settled = await raceSettled(pending);
+    pending = settled.remaining;
+    if (settled.value) {
+      const { repo, beats } = settled.value;
+      allBeats.push(...beats);
+      if (beats.length > 0) {
+        yield { repo: repo.path, repoName: repo.name, beats };
+      }
+    }
+  }
+
+  const result = buildAggregateResult(allBeats, errors);
+  setCachedResult(cacheKey, result);
+  yield {
+    done: true,
+    _degraded: result._degraded,
+    allBeats,
+    totalErrors: errors.length,
+  };
+}
+
+/** Race an array of promises; resolve with the first settled and
+ *  return the remaining still-pending promises. */
+async function raceSettled<T>(
+  promises: Promise<T>[],
+): Promise<{ value: T | null; remaining: Promise<T>[] }> {
+  const indexed = promises.map((p, i) =>
+    p.then((v) => ({ index: i, value: v })));
+  const winner = await Promise.race(indexed);
+  const remaining = promises.filter((_, i) => i !== winner.index);
+  return { value: winner.value, remaining };
 }
 
 function buildCacheKey(request: AggregateRequest): string {
@@ -105,25 +225,33 @@ async function loadFreshAggregate(
 
   const errors: string[] = [];
   const results = await Promise.all(
-    request.repos.map((repo) => loadRepoBeats(repo, request, errors)),
+    request.repos.map(
+      (repo) => loadRepoBeats(repo, request, errors),
+    ),
   );
-  const beats = results.flat();
+  return buildAggregateResult(results.flat(), errors);
+}
 
+function buildAggregateResult(
+  beats: Beat[],
+  errors: string[],
+): AggregateBeatsResult {
   if (beats.length === 0 && errors.length > 0) {
     return { ok: false, error: errors[0] };
   }
-
   if (errors.length === 0) {
     return { ok: true, data: beats };
   }
-
-  const degraded = errors.some((message) => message === DEGRADED_ERROR_MESSAGE);
+  const degraded = errors.some(
+    (msg) => msg === DEGRADED_ERROR_MESSAGE,
+  );
   return {
     ok: true,
     data: beats,
     _degraded: degraded
       ? DEGRADED_ERROR_MESSAGE
-      : `Failed to load ${errors.length} repositories; showing partial results.`,
+      : `Failed to load ${errors.length} repositories;`
+        + " showing partial results.",
   };
 }
 

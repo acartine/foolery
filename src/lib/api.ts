@@ -14,6 +14,8 @@ import type {
   AddDepInput,
 } from "./schemas";
 import type { CascadeDescendant } from "./cascade-close";
+import type { RepoBeatsChunk } from "./beats-multi-repo";
+import { consumeNdjsonStream } from "./ndjson-stream";
 import { withClientPerfSpan } from "@/lib/client-perf";
 
 const BASE = "/api/beats";
@@ -150,6 +152,62 @@ export async function fetchBeatsForScope(
   }
 
   return fetchBeats(params);
+}
+
+export interface StreamingBeatsCallbacks {
+  /** Called when a repo's beats arrive. */
+  onRepoChunk: (
+    repo: string,
+    repoName: string,
+    beats: Beat[],
+  ) => void;
+  /** Optional AbortSignal for cancellation. */
+  signal?: AbortSignal;
+}
+
+/**
+ * Fetch beats for `scope=all` using NDJSON streaming.
+ * Calls `onRepoChunk` as each repo responds, then returns the
+ * final aggregated result.
+ */
+export async function fetchBeatsForScopeStreaming(
+  params: Record<string, string>,
+  scope: BeatsScope,
+  callbacks: StreamingBeatsCallbacks,
+): Promise<BdResult<Beat[]> & { _degraded?: string }> {
+  const url =
+    `${BASE}${buildQs({ ...params, scope: ALL_SCOPE })}`;
+  const res = await fetch(url, {
+    headers: { Accept: "application/x-ndjson" },
+    signal: callbacks.signal,
+  });
+  if (!res.ok || !res.body) {
+    const json = await res.json() as Record<string, unknown>;
+    return {
+      ok: false,
+      error: typeof json.error === "string"
+        ? json.error : "Request failed",
+    };
+  }
+
+  let degraded: string | undefined;
+  const allBeats: Beat[] = [];
+
+  await consumeNdjsonStream<RepoBeatsChunk>(res.body, {
+    signal: callbacks.signal,
+    onLine: (chunk) => {
+      if (chunk.done) {
+        degraded = chunk._degraded;
+        return;
+      }
+      allBeats.push(...chunk.beats);
+      callbacks.onRepoChunk(
+        chunk.repo, chunk.repoName, chunk.beats,
+      );
+    },
+  });
+
+  return { ok: true, data: allBeats, _degraded: degraded };
 }
 
 

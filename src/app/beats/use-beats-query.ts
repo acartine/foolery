@@ -1,10 +1,16 @@
 import { useMemo, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   buildBeatsQueryKey,
   fetchBeatsForScope,
+  fetchBeatsForScopeStreaming,
   resolveBeatsScope,
 } from "@/lib/api";
+import type { BeatsScope } from "@/lib/api";
+import type { BdResult } from "@/lib/types";
 import { withClientPerfSpan } from "@/lib/client-perf";
 import { useAppStore } from "@/stores/app-store";
 import { useRepoSwitchQueryState } from "@/hooks/use-repo-switch-query-state";
@@ -73,21 +79,22 @@ export function useBeatsQuery(
   }
   if (searchQuery) params.q = searchQuery;
 
+  const queryClient = useQueryClient();
+  const queryKey = buildBeatsQueryKey(
+    beatsView, params, scope,
+  );
+
   const {
     data, isLoading, isFetched,
     fetchStatus, error: queryError,
   } = useQuery({
-    queryKey: buildBeatsQueryKey(beatsView, params, scope),
-    queryFn: async () => {
-      const result = await withClientPerfSpan(
-        "query",
-        "beats:list",
-        () => fetchBeatsForScope(params, scope, registeredRepos),
-        () => ({ meta: { beatsView, params, scope: scope.key } }),
-      );
-      throwIfDegraded(result);
-      return result;
-    },
+    queryKey,
+    queryFn: ({ signal }) => fetchBeatsWithStreaming({
+      params, scope, registeredRepos,
+      beatsView, signal, queryKey,
+      setQueryData: (updater) =>
+        queryClient.setQueryData(queryKey, updater),
+    }),
     enabled: isListView && (
       Boolean(activeRepo) || registeredRepos.length > 0
     ),
@@ -159,4 +166,68 @@ function deriveLoadError(
     return data.error ?? "Failed to load beats.";
   }
   return null;
+}
+
+type QueryData = BdResult<Beat[]> & { _degraded?: string };
+type SetQueryData = (
+  updater: (old: QueryData | undefined) => QueryData,
+) => void;
+
+interface StreamingFetchArgs {
+  params: Record<string, string>;
+  scope: BeatsScope;
+  registeredRepos: RegisteredRepo[];
+  beatsView: string;
+  signal: AbortSignal;
+  queryKey: readonly unknown[];
+  setQueryData: SetQueryData;
+}
+
+/**
+ * For `scope=all`, use NDJSON streaming to show per-repo
+ * results incrementally.  For other scopes, fall back to
+ * the standard non-streaming fetch.
+ */
+async function fetchBeatsWithStreaming(
+  args: StreamingFetchArgs,
+): Promise<QueryData> {
+  const {
+    params, scope, registeredRepos,
+    beatsView, signal, setQueryData,
+  } = args;
+
+  if (scope.kind !== "all") {
+    const result = await withClientPerfSpan(
+      "query", "beats:list",
+      () => fetchBeatsForScope(
+        params, scope, registeredRepos,
+      ),
+      () => ({
+        meta: { beatsView, params, scope: scope.key },
+      }),
+    );
+    throwIfDegraded(result);
+    return result;
+  }
+
+  const result = await withClientPerfSpan(
+    "query", "beats:list-stream",
+    () => fetchBeatsForScopeStreaming(params, scope, {
+      signal,
+      onRepoChunk: (_repo, _repoName, beats) => {
+        setQueryData((old) => {
+          const prev = old?.ok ? (old.data ?? []) : [];
+          return {
+            ok: true,
+            data: [...prev, ...beats],
+          };
+        });
+      },
+    }),
+    () => ({
+      meta: { beatsView, params, scope: scope.key },
+    }),
+  );
+  throwIfDegraded(result);
+  return result;
 }

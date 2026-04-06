@@ -5,6 +5,7 @@ import { DEGRADED_ERROR_MESSAGE } from "@/lib/bd-error-suppression";
 const mockList = vi.fn();
 const mockSearch = vi.fn();
 const mockAggregate = vi.fn();
+const mockStream = vi.fn();
 
 vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({
@@ -14,7 +15,10 @@ vi.mock("@/lib/backend-instance", () => ({
 }));
 
 vi.mock("@/lib/beats-multi-repo", () => ({
-  listBeatsAcrossRegisteredRepos: (...args: unknown[]) => mockAggregate(...args),
+  listBeatsAcrossRegisteredRepos: (...args: unknown[]) =>
+    mockAggregate(...args),
+  streamBeatsAcrossRegisteredRepos: (...args: unknown[]) =>
+    mockStream(...args),
   aggregateBeatsErrorStatus: (error: string) =>
     error === DEGRADED_ERROR_MESSAGE ? 503 : 500,
 }));
@@ -64,5 +68,46 @@ describe("GET /api/beats scope=all", () => {
 
     expect(response.status).toBe(503);
     expect(json).toEqual({ error: DEGRADED_ERROR_MESSAGE });
+  });
+
+  it("streams NDJSON when Accept header is application/x-ndjson", async () => {
+    async function* fakeStream() {
+      yield {
+        repo: "/tmp/a",
+        repoName: "repo-a",
+        beats: [{ id: "a1", title: "A1" }],
+      };
+      yield {
+        done: true as const,
+        allBeats: [{ id: "a1", title: "A1" }],
+        totalErrors: 0,
+      };
+    }
+    mockStream.mockReturnValue(fakeStream());
+
+    const req = new NextRequest(
+      "http://localhost/api/beats?scope=all&state=queued",
+      { headers: { Accept: "application/x-ndjson" } },
+    );
+    const response = await GET(req);
+
+    expect(response.headers.get("content-type"))
+      .toBe("application/x-ndjson");
+
+    const text = await response.text();
+    const lines = text.trim().split("\n");
+    expect(lines).toHaveLength(2);
+
+    const chunk = JSON.parse(lines[0]!);
+    expect(chunk).toMatchObject({
+      repo: "/tmp/a",
+      repoName: "repo-a",
+    });
+
+    const summary = JSON.parse(lines[1]!);
+    expect(summary).toMatchObject({
+      done: true,
+      totalErrors: 0,
+    });
   });
 });

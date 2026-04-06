@@ -10,6 +10,7 @@ import { enqueueBeatScopeRefinement } from "@/lib/scope-refinement-worker";
 import {
   aggregateBeatsErrorStatus,
   listBeatsAcrossRegisteredRepos,
+  streamBeatsAcrossRegisteredRepos,
 } from "@/lib/beats-multi-repo";
 
 export async function GET(request: NextRequest) {
@@ -28,10 +29,19 @@ export async function GET(request: NextRequest) {
     },
     async ({ measure }) => {
       if (scope === "all" && !repoPath) {
-        const result = await measure("multi_repo", () => listBeatsAcrossRegisteredRepos(
-          params as BeatListFilters,
-          query,
-        ));
+        const wantStream =
+          request.headers.get("accept") === "application/x-ndjson";
+        if (wantStream) {
+          return streamMultiRepoNdjson(
+            params as BeatListFilters, query,
+          );
+        }
+        const result = await measure(
+          "multi_repo",
+          () => listBeatsAcrossRegisteredRepos(
+            params as BeatListFilters, query,
+          ),
+        );
         if (!result.ok) {
           const error = result.error ?? "Request failed";
           return NextResponse.json(
@@ -65,6 +75,40 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: result.data });
     },
   );
+}
+
+function streamMultiRepoNdjson(
+  filters: BeatListFilters,
+  query?: string,
+): Response {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const gen = streamBeatsAcrossRegisteredRepos(
+          filters, query,
+        );
+        for await (const chunk of gen) {
+          const line = JSON.stringify(chunk) + "\n";
+          controller.enqueue(encoder.encode(line));
+        }
+      } catch (err) {
+        const msg = err instanceof Error
+          ? err.message : String(err);
+        const line = JSON.stringify({ error: msg }) + "\n";
+        controller.enqueue(encoder.encode(line));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "application/x-ndjson",
+      "Cache-Control": "no-cache",
+      "Transfer-Encoding": "chunked",
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {
