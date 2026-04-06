@@ -1,0 +1,37 @@
+{
+  "event_id": "019d6282-cd41-7060-867d-dae95d90b914",
+  "occurred_at": "2026-04-06T11:17:12.641027Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b784",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Progressive loading UX for All Repositories Mode",
+    "type": "work",
+    "updated_at": "2026-04-06T11:17:12.641027Z",
+    "workflow_id": "compatibility"
+  },
+  "precondition": {
+    "profile_etag": "019d6282-c190-7ed1-bdb3-5190df73d1de"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d6280-501d-7e92-80c0-fb1ac84e554a",
+  "occurred_at": "2026-04-06T11:14:29.533815Z",
+  "knot_id": "foolery-b784",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Branch: worktree-b784-progressive-loading\nCommit: 5cb86c78\n\nImplementation summary:\n- New: use-streaming-progress.ts (hook tracking per-repo streaming state)\n- New: streaming-progress-bar.tsx (progress bar with fade-out completion)\n- New: beat-table-skeleton-rows.tsx (shimmer placeholders)\n- Modified: use-beats-query.ts (integrated streaming callbacks)\n- Modified: page.tsx (wired progress bar, conditional streaming UI)\n- Modified: beat-table.tsx (isStreaming prop, suppress page reset)\n- Modified: beat-table-content.tsx (fade-in animation on new rows)\n- Modified: globals.css (beat-row-enter keyframes, reduced-motion)\n- 4 new test files, all 235 suites pass (2593 tests)\n- Lint, typecheck, build all green",
+    "datetime": "2026-04-06T11:14:29.533815Z",
+    "entry_id": "019d6280-501d-7e92-80c0-fb0a874e14dc",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "1.0"
+  }
+}

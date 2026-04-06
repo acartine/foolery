@@ -1,0 +1,9 @@
+{
+  "event_id": "019d6280-32a3-75b1-baf4-d51be0b61980",
+  "occurred_at": "2026-04-06T11:14:21.987841Z",
+  "knot_id": "foolery-b784",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-b784-progressive-loading"
+  }
+}
