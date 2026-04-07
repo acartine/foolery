@@ -1,0 +1,7 @@
+interface:
+  display_name: "Investigate Foolery Leases"
+  short_description: "Trace Foolery lease and turn failures"
+  default_prompt: "Use $investigate-foolery-leases to inspect recent Foolery lease, session, and server logs across ports 3000 and 3210."
+
+policy:
+  allow_implicit_invocation: true
