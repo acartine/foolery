@@ -323,11 +323,11 @@ function useBeatInfo(
     queryFn: () => withClientPerfSpan(
       "query",
       "terminal-panel:beat",
-      () => fetchBeat(
-        activeBeatId!, activeRepoPath,
-      ),
+      () => activeBeatId
+        ? fetchBeat(activeBeatId, activeRepoPath)
+        : Promise.resolve({ ok: true, data: undefined }),
     ),
-    enabled: !!activeBeatId,
+    enabled: true,
     refetchInterval: 15_000,
   });
   return useMemo<BeatInfoForBar | null>(() => {

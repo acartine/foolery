@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const listSessionsMock = vi.fn();
 const rehydrateFromBackendMock = vi.fn();
@@ -25,8 +25,13 @@ vi.mock("@/stores/terminal-store", () => ({
 
 describe("useRehydrateTerminals", () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     listSessionsMock.mockReset();
     rehydrateFromBackendMock.mockReset();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("fetches backend sessions even when the local store is empty", async () => {
@@ -51,5 +56,37 @@ describe("useRehydrateTerminals", () => {
     expect(listSessionsMock).toHaveBeenCalledTimes(1);
     expect(rehydrateFromBackendMock).toHaveBeenCalledWith(sessions);
     expect(setEnabled).toHaveBeenCalledWith(true);
+  });
+
+  it("keeps polling for sessions created after mount", async () => {
+    const initialSessions: never[] = [];
+    const nextSessions = [{
+      id: "sess-2",
+      beatId: "beat-2",
+      beatTitle: "Late Session",
+      status: "running",
+      startedAt: "2026-04-07T12:31:07.724Z",
+    }];
+    const setEnabled = vi.fn();
+    listSessionsMock
+      .mockResolvedValueOnce(initialSessions)
+      .mockResolvedValueOnce(nextSessions);
+
+    const { useRehydrateTerminals } = await import(
+      "../use-terminal-panel-effects"
+    );
+
+    useRehydrateTerminals(setEnabled);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    vi.advanceTimersByTime(5_000);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(listSessionsMock).toHaveBeenCalledTimes(2);
+    expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(1, initialSessions);
+    expect(rehydrateFromBackendMock).toHaveBeenNthCalledWith(2, nextSessions);
+    expect(setEnabled).toHaveBeenCalledTimes(1);
   });
 });

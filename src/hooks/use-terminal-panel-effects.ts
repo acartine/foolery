@@ -6,6 +6,8 @@ import { listSessions } from "@/lib/terminal-api";
 import type { FitAddon as XtermFitAddon }
   from "@xterm/addon-fit";
 
+const SESSION_DISCOVERY_INTERVAL_MS = 5_000;
+
 export function useRehydrateTerminals(
   setEnabled: (v: boolean) => void,
 ) {
@@ -15,17 +17,26 @@ export function useRehydrateTerminals(
     if (hasRehydrated.current) return;
     hasRehydrated.current = true;
     let cancelled = false;
-    const enable = () => {
-      if (!cancelled) setEnabled(true);
+    const syncSessions = async () => {
+      const sessions = await listSessions();
+      if (cancelled) return;
+      useTerminalStore
+        .getState()
+        .rehydrateFromBackend(sessions);
     };
-    void listSessions()
-      .then((sessions) => {
-        useTerminalStore
-          .getState()
-          .rehydrateFromBackend(sessions);
-      })
-      .finally(enable);
-    return () => { cancelled = true; };
+
+    void syncSessions().finally(() => {
+      if (!cancelled) setEnabled(true);
+    });
+
+    const intervalId = setInterval(() => {
+      void syncSessions();
+    }, SESSION_DISCOVERY_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, [setEnabled]);
 }
 
