@@ -33,7 +33,7 @@ async function requestStatus(
     const json = (await res.json()) as {
       data?: AppUpdateStatus;
     };
-    if (!res.ok || !json.data) {
+    if (!json.data) {
       return null;
     }
     return json.data;
