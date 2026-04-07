@@ -52,13 +52,19 @@ next-env.d.ts
 storybook-static
 
 # claude code
-.claude/
+.claude/*
+!.claude/skills/
+!.claude/skills/**
 
 # interaction logs (dev mode)
 .foolery-logs/
 
 # playwright mcp
 .playwright-mcp/
+
+# local git worktrees
+/.worktrees/
+
 # bd worktree
 codex-release-wrapper/
 
