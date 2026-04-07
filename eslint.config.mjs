@@ -20,6 +20,7 @@ const eslintConfig = defineConfig([
     "codex-release-wrapper/**",
     // Agent worktree build artifacts
     ".claude/worktrees/**",
+    ".worktrees/**",
     ".knots/_worktree/**",
   ]),
   ...storybook.configs["flat/recommended"],

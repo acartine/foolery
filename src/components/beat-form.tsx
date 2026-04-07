@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect, useCallback } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   saveDraft,
@@ -314,8 +314,9 @@ function useBeatForm(props: BeatFormProps) {
   const schema =
     mode === "create" ? createBeatSchema : updateBeatSchema;
 
-  const draftRef = useRef(mode === "create" ? loadDraft() : null);
-  const draft = draftRef.current;
+  const [draft] = useState(() =>
+    mode === "create" ? loadDraft() : null,
+  );
 
   const [blocks, setBlocks] = useState<string[]>(
     draft?.blocks ?? [],
@@ -343,6 +344,9 @@ function useBeatForm(props: BeatFormProps) {
         ? mergeDraftDefaults(baseDefaults, draft)
         : baseDefaults,
   });
+  const watchedDraftValues = useWatch({
+    control: form.control,
+  }) as Record<string, unknown>;
 
   const persistDraft = useCallback(
     (vals: Record<string, unknown>) => {
@@ -365,9 +369,8 @@ function useBeatForm(props: BeatFormProps) {
 
   useEffect(() => {
     if (mode !== "create") return;
-    const sub = form.watch((vals) => persistDraft(vals));
-    return () => sub.unsubscribe();
-  }, [mode, form, persistDraft]);
+    persistDraft(watchedDraftValues);
+  }, [mode, persistDraft, watchedDraftValues]);
 
   useEffect(() => {
     if (mode !== "create") return;
