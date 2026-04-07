@@ -1,6 +1,6 @@
 {
   "name": "foolery",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "bin": {
     "openrouter-agent": "./src/bin/openrouter-agent.ts"
