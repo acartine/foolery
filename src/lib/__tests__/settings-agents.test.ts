@@ -21,6 +21,7 @@ import {
   getActionAgent,
   getScopeRefinementAgent,
   addRegisteredAgent,
+  getAgentRemovalImpact,
   removeRegisteredAgent,
   getStepAgent,
   _resetCache,
@@ -173,6 +174,106 @@ describe("removeRegisteredAgent", () => {
     mockReadFile.mockResolvedValue("");
     const result = await removeRegisteredAgent("nonexistent");
     expect(result.agents).toEqual({});
+  });
+});
+
+describe("removeRegisteredAgent planning", () => {
+  it("reports removal impact for actions and pools", async () => {
+    const toml = [
+      '[agents.claude]', 'command = "claude"',
+      '[agents.codex]', 'command = "codex"',
+      '[actions]', 'take = "claude"',
+      '[[pools.implementation]]', 'agentId = "claude"', 'weight = 1',
+      '[[pools.implementation]]', 'agentId = "codex"', 'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const impact = await getAgentRemovalImpact("claude");
+
+    expect(impact.actionUsages).toEqual([
+      { action: "take", requiresReplacement: true },
+    ]);
+    expect(impact.poolUsages).toEqual([
+      {
+        step: "implementation",
+        affectedEntries: 1,
+        remainingEntries: 1,
+        requiresReplacement: false,
+      },
+    ]);
+    expect(impact.canRemove).toBe(true);
+    expect(impact.replacementAgentIds).toEqual(["codex"]);
+  });
+
+  it("requires an explicit replacement plan for affected settings", async () => {
+    const toml = [
+      '[agents.claude]', 'command = "claude"',
+      '[agents.codex]', 'command = "codex"',
+      '[actions]', 'take = "claude"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    await expect(
+      removeRegisteredAgent("claude"),
+    ).rejects.toThrow(
+      'Action "take" requires a replacement agent',
+    );
+  });
+
+  it("removes an agent with explicit action and pool decisions", async () => {
+    const toml = [
+      '[agents.claude]', 'command = "claude"',
+      '[agents.codex]', 'command = "codex"',
+      '[agents.gemini]', 'command = "gemini"',
+      '[actions]', 'take = "claude"',
+      '[[pools.implementation]]', 'agentId = "claude"', 'weight = 1',
+      '[[pools.implementation]]', 'agentId = "codex"', 'weight = 1',
+      '[[pools.plan_review]]', 'agentId = "claude"', 'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const result = await removeRegisteredAgent({
+      id: "claude",
+      actionReplacements: {
+        take: "codex",
+      },
+      poolDecisions: {
+        implementation: { mode: "remove" },
+        plan_review: {
+          mode: "replace",
+          replacementAgentId: "gemini",
+        },
+      },
+    });
+
+    expect(result.agents.claude).toBeUndefined();
+    expect(result.actions.take).toBe("codex");
+    expect(result.pools.implementation).toEqual([
+      { agentId: "codex", weight: 1 },
+    ]);
+    expect(result.pools.plan_review).toEqual([
+      { agentId: "gemini", weight: 1 },
+    ]);
+  });
+
+  it("blocks removing the last pool entry without replacement", async () => {
+    const toml = [
+      '[agents.claude]', 'command = "claude"',
+      '[agents.codex]', 'command = "codex"',
+      '[[pools.plan_review]]', 'agentId = "claude"', 'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    await expect(
+      removeRegisteredAgent({
+        id: "claude",
+        poolDecisions: {
+          plan_review: { mode: "remove" },
+        },
+      }),
+    ).rejects.toThrow(
+      'Pool "plan_review" requires a replacement agent',
+    );
   });
 });
 

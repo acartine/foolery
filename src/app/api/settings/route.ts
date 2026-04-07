@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loadSettings, updateSettings } from "@/lib/settings";
+import { logApiError } from "@/lib/server-logger";
 
 export async function GET() {
   const settings = await loadSettings();
@@ -18,6 +19,12 @@ export async function PUT(request: NextRequest) {
       data: updated,
     });
   } catch (err) {
+    logApiError({
+      method: "PUT",
+      path: "/api/settings",
+      status: 400,
+      error: (err as Error).message,
+    });
     return NextResponse.json(
       { ok: false, error: (err as Error).message },
       { status: 400 },
@@ -38,6 +45,12 @@ export async function PATCH(request: NextRequest) {
       data: updated,
     });
   } catch (err) {
+    logApiError({
+      method: "PATCH",
+      path: "/api/settings",
+      status: 400,
+      error: (err as Error).message,
+    });
     return NextResponse.json(
       { ok: false, error: (err as Error).message },
       { status: 400 },

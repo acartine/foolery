@@ -1,4 +1,10 @@
-import type { BdResult, RegisteredAgent, ScannedAgent } from "./types";
+import type {
+  AgentRemovalImpact,
+  AgentRemovalRequest,
+  BdResult,
+  RegisteredAgent,
+  ScannedAgent,
+} from "./types";
 import type { FoolerySettings, ActionAgentMappings, PoolsSettings } from "./schemas";
 
 const SETTINGS_BASE = "/api/settings";
@@ -67,14 +73,23 @@ export function addAgent(
 }
 
 export function removeAgent(
-  id: string,
-): Promise<BdResult<Record<string, RegisteredAgent>>> {
-  return request<Record<string, RegisteredAgent>>(
+  requestBody: AgentRemovalRequest,
+): Promise<BdResult<FoolerySettings>> {
+  return request<FoolerySettings>(
     `${SETTINGS_BASE}/agents`,
     {
       method: "DELETE",
-      body: JSON.stringify({ id }),
+      body: JSON.stringify(requestBody),
     },
+  );
+}
+
+export function fetchAgentRemovalImpact(
+  id: string,
+): Promise<BdResult<AgentRemovalImpact>> {
+  const query = new URLSearchParams({ id });
+  return request<AgentRemovalImpact>(
+    `${SETTINGS_BASE}/agents/remove?${query.toString()}`,
   );
 }
 

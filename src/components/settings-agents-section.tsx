@@ -1,66 +1,199 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { Scan, Plus } from "lucide-react";
+import { Plus, Scan } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type {
+  AgentRemovalImpact,
+  AgentRemovalRequest,
   RegisteredAgent,
   ScannedAgent,
 } from "@/lib/types";
-import { addAgent } from "@/lib/settings-api";
+import type {
+  FoolerySettings,
+} from "@/lib/schemas";
 import {
-  ScannedAgentsList,
-} from "@/components/settings-agents-scanned";
+  addAgent,
+  fetchAgentRemovalImpact,
+  removeAgent,
+} from "@/lib/settings-api";
 import {
   AddAgentForm,
   AgentRow,
 } from "@/components/settings-agents-forms";
 import {
-  useAgentScanner,
+  ScannedAgentsList,
+} from "@/components/settings-agents-scanned";
+import {
+  SettingsAgentRemoveDialog,
+} from "@/components/settings-agent-remove-dialog";
+import {
   useAgentMutations,
+  useAgentScanner,
 } from "@/components/settings-agents-hooks";
 
 interface AgentsSectionProps {
   agents: Record<string, RegisteredAgent>;
-  onAgentsChange: (
-    agents: Record<string, RegisteredAgent>,
-  ) => void;
+  onSettingsChange: (next: {
+    agents: Record<string, RegisteredAgent>;
+    actions?: FoolerySettings["actions"];
+    pools?: FoolerySettings["pools"];
+  }) => void;
+}
+
+function applySettingsSnapshot(
+  settings: FoolerySettings,
+  onSettingsChange: AgentsSectionProps["onSettingsChange"],
+) {
+  onSettingsChange({
+    agents: settings.agents,
+    actions: settings.actions,
+    pools: settings.pools,
+  });
+}
+
+function useAgentRemovalFlow(
+  onSettingsChange: AgentsSectionProps["onSettingsChange"],
+) {
+  const [removalImpact, setRemovalImpact] =
+    useState<AgentRemovalImpact | null>(null);
+  const [removing, setRemoving] =
+    useState(false);
+
+  const requestRemove = useCallback(
+    async (id: string, successLabel?: string) => {
+      const impactRes =
+        await fetchAgentRemovalImpact(id);
+      if (!impactRes.ok || !impactRes.data) {
+        toast.error(
+          impactRes.error
+            ?? "Failed to inspect agent removal",
+        );
+        return;
+      }
+
+      const impact = impactRes.data;
+      if (
+        impact.actionUsages.length > 0
+        || impact.poolUsages.length > 0
+      ) {
+        setRemovalImpact(impact);
+        return;
+      }
+
+      const removeRes = await removeAgent({ id });
+      if (removeRes.ok && removeRes.data) {
+        applySettingsSnapshot(
+          removeRes.data,
+          onSettingsChange,
+        );
+        toast.success(
+          successLabel ?? `Removed ${id}`,
+        );
+        return;
+      }
+      toast.error(
+        removeRes.error
+          ?? "Failed to remove agent",
+      );
+    },
+    [onSettingsChange],
+  );
+
+  const confirmRemove = useCallback(
+    async (request: AgentRemovalRequest) => {
+      setRemoving(true);
+      const res = await removeAgent(request);
+      setRemoving(false);
+      if (res.ok && res.data) {
+        applySettingsSnapshot(
+          res.data,
+          onSettingsChange,
+        );
+        setRemovalImpact(null);
+        toast.success(`Removed ${request.id}`);
+        return;
+      }
+      toast.error(
+        res.error ?? "Failed to remove agent",
+      );
+    },
+    [onSettingsChange],
+  );
+
+  return {
+    confirmRemove,
+    removalImpact,
+    removing,
+    requestRemove,
+    setRemovalImpact,
+  };
+}
+
+function AddAgentInlineForm({
+  onClose,
+  onSettingsChange,
+}: {
+  onClose: () => void;
+  onSettingsChange: AgentsSectionProps["onSettingsChange"];
+}) {
+  return (
+    <AddAgentForm
+      onAdd={async (id, agent) => {
+        const res = await addAgent(id, agent);
+        if (res.ok && res.data) {
+          onSettingsChange({
+            agents: res.data,
+          });
+          onClose();
+          toast.success(`Added ${id}`);
+          return;
+        }
+        toast.error(
+          res.error ?? "Failed to add agent",
+        );
+      }}
+      onCancel={onClose}
+    />
+  );
 }
 
 export function SettingsAgentsSection({
   agents,
-  onAgentsChange,
+  onSettingsChange,
 }: AgentsSectionProps) {
-  const [showAddForm, setShowAddForm] =
-    useState(false);
   const [editingId, setEditingId] =
     useState<string | null>(null);
-
+  const [showAddForm, setShowAddForm] =
+    useState(false);
   const {
     scanning,
     scannedAgents,
     handleScan,
     dismissScan,
   } = useAgentScanner();
-
+  const { handleAddScannedOption } =
+    useAgentMutations(onSettingsChange);
   const {
-    handleAddScannedOption,
-    handleRemoveScannedOption,
-    handleRemove,
-  } = useAgentMutations(onAgentsChange);
+    confirmRemove,
+    removalImpact,
+    removing,
+    requestRemove,
+    setRemovalImpact,
+  } = useAgentRemovalFlow(onSettingsChange);
 
   const handleToggleOption = useCallback(
     async (agent: ScannedAgent, optionId: string) => {
-      const options = agent.options ?? [];
-      const option = options.find(
-        (o) => o.id === optionId,
+      const option = (agent.options ?? []).find(
+        (candidate) =>
+          candidate.id === optionId,
       );
       if (!option) return;
       if (agents[option.id]) {
-        await handleRemoveScannedOption(
+        await requestRemove(
           option.id,
-          option.label,
+          `Cleared ${option.label}`,
         );
         return;
       }
@@ -69,11 +202,9 @@ export function SettingsAgentsSection({
     [
       agents,
       handleAddScannedOption,
-      handleRemoveScannedOption,
+      requestRemove,
     ],
   );
-
-  const agentEntries = Object.entries(agents);
 
   return (
     <div className="space-y-3">
@@ -82,7 +213,6 @@ export function SettingsAgentsSection({
         onScan={handleScan}
         onAdd={() => setShowAddForm(true)}
       />
-
       {scannedAgents && (
         <ScannedAgentsList
           scanned={scannedAgents}
@@ -92,56 +222,47 @@ export function SettingsAgentsSection({
           onDismiss={dismissScan}
         />
       )}
-
       {showAddForm && (
-        <AddAgentForm
-          onAdd={async (id, agent) => {
-            const res = await addAgent(
-              id,
-              agent,
-            );
-            if (res.ok && res.data) {
-              onAgentsChange(res.data);
-              setShowAddForm(false);
-              toast.success(`Added ${id}`);
-            } else {
-              toast.error(
-                res.error
-                  ?? "Failed to add agent",
-              );
-            }
-          }}
-          onCancel={() => setShowAddForm(false)}
+        <AddAgentInlineForm
+          onClose={() => setShowAddForm(false)}
+          onSettingsChange={onSettingsChange}
         />
       )}
-
       <AgentsList
-        entries={agentEntries}
         editingId={editingId}
-        onAgentsChange={onAgentsChange}
+        entries={Object.entries(agents)}
+        onRemove={requestRemove}
+        onSettingsChange={onSettingsChange}
         setEditingId={setEditingId}
-        onRemove={handleRemove}
+      />
+      <SettingsAgentRemoveDialog
+        agents={agents}
+        impact={removalImpact}
+        open={removalImpact !== null}
+        removing={removing}
+        onConfirm={confirmRemove}
+        onOpenChange={(open) => {
+          if (!open && !removing) {
+            setRemovalImpact(null);
+          }
+        }}
       />
     </div>
   );
 }
 
-/* ── Agent list ──────────────────────────────────────── */
-
 function AgentsList({
-  entries,
   editingId,
-  onAgentsChange,
-  setEditingId,
+  entries,
   onRemove,
+  onSettingsChange,
+  setEditingId,
 }: {
-  entries: [string, RegisteredAgent][];
   editingId: string | null;
-  onAgentsChange: (
-    agents: Record<string, RegisteredAgent>,
-  ) => void;
-  setEditingId: (id: string | null) => void;
+  entries: [string, RegisteredAgent][];
   onRemove: (id: string) => void;
+  onSettingsChange: AgentsSectionProps["onSettingsChange"];
+  setEditingId: (id: string | null) => void;
 }) {
   if (entries.length === 0) {
     return (
@@ -162,20 +283,18 @@ function AgentsList({
           onEdit={() => setEditingId(id)}
           onCancelEdit={() => setEditingId(null)}
           onSave={async (updated) => {
-            const res = await addAgent(
-              id,
-              updated,
-            );
+            const res = await addAgent(id, updated);
             if (res.ok && res.data) {
-              onAgentsChange(res.data);
+              onSettingsChange({
+                agents: res.data,
+              });
               setEditingId(null);
               toast.success(`Updated ${id}`);
-            } else {
-              toast.error(
-                res.error
-                  ?? "Failed to update",
-              );
+              return;
             }
+            toast.error(
+              res.error ?? "Failed to update",
+            );
           }}
           onRemove={() => onRemove(id)}
         />
@@ -183,8 +302,6 @@ function AgentsList({
     </div>
   );
 }
-
-/* ── Section toolbar ─────────────────────────────────── */
 
 function SectionToolbar({
   scanning,
@@ -204,7 +321,7 @@ function SectionToolbar({
           onClick={onScan}
           disabled={scanning}
         >
-          <Scan className="size-3.5 mr-1" />
+          <Scan className="mr-1 size-3.5" />
           {scanning ? "Scanning..." : "Scan"}
         </Button>
         <Button
@@ -212,7 +329,7 @@ function SectionToolbar({
           size="sm"
           onClick={onAdd}
         >
-          <Plus className="size-3.5 mr-1" />
+          <Plus className="mr-1 size-3.5" />
           Add
         </Button>
       </div>

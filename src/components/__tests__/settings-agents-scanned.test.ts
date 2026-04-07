@@ -202,7 +202,7 @@ describe("SettingsAgentsSection", () => {
     const markup = renderToStaticMarkup(
       createElement(SettingsAgentsSection, {
         agents: {},
-        onAgentsChange: () => undefined,
+        onSettingsChange: () => undefined,
       }),
     );
 

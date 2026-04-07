@@ -6,6 +6,9 @@ import {
   foolerySettingsSchema,
   type FoolerySettings,
 } from "@/lib/schemas";
+import {
+  serverLog,
+} from "@/lib/server-logger";
 
 export const CONFIG_DIR = join(homedir(), ".config", "foolery");
 export const SETTINGS_FILE = join(CONFIG_DIR, "settings.toml");
@@ -154,8 +157,15 @@ export async function readRawSettings(): Promise<{
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
     if (code === "ENOENT") {
+      serverLog("info", "settings", "settings file missing", {
+        settingsFile: SETTINGS_FILE,
+      });
       return { parsed: {}, fileMissing: true };
     }
+    serverLog("error", "settings", "settings read failed", {
+      settingsFile: SETTINGS_FILE,
+      error: formatError(error),
+    });
     return {
       parsed: {},
       fileMissing: false,
@@ -169,6 +179,10 @@ export async function readRawSettings(): Promise<{
       fileMissing: false,
     };
   } catch (error) {
+    serverLog("error", "settings", "settings parse failed", {
+      settingsFile: SETTINGS_FILE,
+      error: formatError(error),
+    });
     return {
       parsed: {},
       fileMissing: false,

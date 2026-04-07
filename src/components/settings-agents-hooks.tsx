@@ -13,11 +13,13 @@ import {
 import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
 import {
   addAgent,
-  removeAgent,
   scanAgents,
   saveActions,
 } from "@/lib/settings-api";
-import type { ActionAgentMappings } from "@/lib/schemas";
+import type {
+  ActionAgentMappings,
+  PoolsSettings,
+} from "@/lib/schemas";
 import {
   resolveSelectedOption,
 } from "@/components/settings-agents-scanned";
@@ -31,7 +33,7 @@ async function setDefaultAgentForActions(
     breakdown: agentId,
     scopeRefinement: agentId,
   };
-  await saveActions(mappings);
+  return saveActions(mappings);
 }
 
 function buildAgentPayload(
@@ -98,9 +100,11 @@ export function useAgentScanner() {
 }
 
 export function useAgentMutations(
-  onAgentsChange: (
-    agents: Record<string, RegisteredAgent>,
-  ) => void,
+  onSettingsChange: (next: {
+    agents: Record<string, RegisteredAgent>;
+    actions?: ActionAgentMappings;
+    pools?: PoolsSettings;
+  }) => void,
 ) {
   const handleAddScannedOption = useCallback(
     async (
@@ -112,12 +116,25 @@ export function useAgentMutations(
         buildAgentPayload(scanned, option),
       );
       if (res.ok && res.data) {
-        onAgentsChange(res.data);
+        const nextPatch: {
+          agents: Record<string, RegisteredAgent>;
+          actions?: ActionAgentMappings;
+        } = {
+          agents: res.data,
+        };
         if (Object.keys(res.data).length === 1) {
-          await setDefaultAgentForActions(
-            option.id,
-          );
+          const actionsRes =
+            await setDefaultAgentForActions(option.id);
+          if (actionsRes.ok && actionsRes.data) {
+            nextPatch.actions = actionsRes.data;
+          } else {
+            toast.error(
+              actionsRes.error
+                ?? "Failed to save default action mappings",
+            );
+          }
         }
+        onSettingsChange(nextPatch);
         toast.success(
           `Added ${option.label}`,
         );
@@ -127,52 +144,11 @@ export function useAgentMutations(
         );
       }
     },
-    [onAgentsChange],
-  );
-
-  const handleRemove = useCallback(
-    async (id: string) => {
-      const res = await removeAgent(id);
-      if (res.ok && res.data) {
-        onAgentsChange(res.data);
-        toast.success(`Removed ${id}`);
-      } else {
-        toast.error(
-          res.error
-            ?? "Failed to remove agent",
-        );
-      }
-    },
-    [onAgentsChange],
-  );
-
-  const handleRemoveScannedOption = useCallback(
-    async (
-      id: string,
-      optionLabel?: string,
-    ) => {
-      const res = await removeAgent(id);
-      if (res.ok && res.data) {
-        onAgentsChange(res.data);
-        toast.success(
-          optionLabel
-            ? `Cleared ${optionLabel}`
-            : `Removed ${id}`,
-        );
-      } else {
-        toast.error(
-          res.error
-            ?? "Failed to remove agent",
-        );
-      }
-    },
-    [onAgentsChange],
+    [onSettingsChange],
   );
 
   return {
     handleAddScannedOption,
-    handleRemoveScannedOption,
-    handleRemove,
   };
 }
 

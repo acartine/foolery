@@ -10,6 +10,8 @@ import {
 import type {
   RegisteredAgent,
   ActionName,
+  AgentRemovalImpact,
+  AgentRemovalRequest,
 } from "@/lib/types";
 import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
 import {
@@ -31,12 +33,20 @@ import {
   normalizeSettingsAgents,
 } from "@/lib/agent-config-normalization";
 import {
+  applyAgentRemovalPlan,
+  buildAgentRemovalImpact,
+} from "@/lib/settings-agent-removal";
+import {
+  serverLog,
+} from "@/lib/server-logger";
+import {
   CONFIG_DIR,
   SETTINGS_FILE,
   CACHE_TTL_MS,
   DEFAULT_SETTINGS,
   getCache,
   setCache,
+  formatError,
   mergeMissingDefaults,
   readRawSettings,
 } from "@/lib/settings-core";
@@ -73,22 +83,64 @@ export { scanForAgents } from "@/lib/settings-agent-detect";
 export async function loadSettings(): Promise<FoolerySettings> {
   const cached = getCache();
   if (cached && Date.now() - cached.loadedAt < CACHE_TTL_MS) {
+    serverLog("debug", "settings", "load cache hit", {
+      settingsFile: SETTINGS_FILE,
+    });
     return cached.value;
   }
-  const raw = await readRawSettings();
-  const { merged } = mergeMissingDefaults(
-    raw.parsed,
-    DEFAULT_SETTINGS as unknown as Record<string, unknown>,
-  );
-  const { normalized } = normalizeSettingsAgents(merged);
-  let settings: FoolerySettings;
   try {
-    settings = foolerySettingsSchema.parse(normalized);
-  } catch {
-    settings = DEFAULT_SETTINGS;
+    serverLog("debug", "settings", "load start", {
+      settingsFile: SETTINGS_FILE,
+    });
+    const raw = await readRawSettings();
+    if (raw.error) {
+      serverLog("warn", "settings", "load read fallback", {
+        settingsFile: SETTINGS_FILE,
+        fileMissing: raw.fileMissing,
+        error: raw.error,
+      });
+    }
+    const { merged } = mergeMissingDefaults(
+      raw.parsed,
+      DEFAULT_SETTINGS as unknown as Record<
+        string,
+        unknown
+      >,
+    );
+    const { normalized } =
+      normalizeSettingsAgents(merged);
+    let settings: FoolerySettings;
+    try {
+      settings = foolerySettingsSchema.parse(
+        normalized,
+      );
+    } catch (error) {
+      serverLog(
+        "error",
+        "settings",
+        "load validation fallback",
+        {
+          settingsFile: SETTINGS_FILE,
+          error: formatError(error),
+        },
+      );
+      settings = DEFAULT_SETTINGS;
+    }
+    setCache(settings);
+    serverLog("info", "settings", "load success", {
+      settingsFile: SETTINGS_FILE,
+      source: raw.fileMissing ? "defaults" : "disk",
+      agentCount: Object.keys(settings.agents).length,
+      dispatchMode: settings.dispatchMode,
+    });
+    return settings;
+  } catch (error) {
+    serverLog("error", "settings", "load failed", {
+      settingsFile: SETTINGS_FILE,
+      error: formatError(error),
+    });
+    throw error;
   }
-  setCache(settings);
-  return settings;
 }
 
 /**
@@ -98,14 +150,32 @@ export async function loadSettings(): Promise<FoolerySettings> {
 export async function saveSettings(
   settings: FoolerySettings,
 ): Promise<void> {
-  await mkdir(CONFIG_DIR, { recursive: true });
-  const normalized = foolerySettingsSchema.parse(
-    normalizeSettingsAgents(settings).normalized,
-  );
-  const toml = stringify(normalized);
-  await writeFile(SETTINGS_FILE, toml, "utf-8");
-  await chmod(SETTINGS_FILE, 0o600);
-  setCache(normalized);
+  try {
+    serverLog("info", "settings", "save start", {
+      settingsFile: SETTINGS_FILE,
+      agentCount: Object.keys(settings.agents).length,
+      dispatchMode: settings.dispatchMode,
+    });
+    await mkdir(CONFIG_DIR, { recursive: true });
+    const normalized = foolerySettingsSchema.parse(
+      normalizeSettingsAgents(settings).normalized,
+    );
+    const toml = stringify(normalized);
+    await writeFile(SETTINGS_FILE, toml, "utf-8");
+    await chmod(SETTINGS_FILE, 0o600);
+    setCache(normalized);
+    serverLog("info", "settings", "save success", {
+      settingsFile: SETTINGS_FILE,
+      agentCount: Object.keys(normalized.agents).length,
+      dispatchMode: normalized.dispatchMode,
+    });
+  } catch (error) {
+    serverLog("error", "settings", "save failed", {
+      settingsFile: SETTINGS_FILE,
+      error: formatError(error),
+    });
+    throw error;
+  }
 }
 
 /** Partial shape accepted by updateSettings for deep merging. */
@@ -130,11 +200,32 @@ export type SettingsPartial = Partial<{
 export async function updateSettings(
   partial: SettingsPartial,
 ): Promise<FoolerySettings> {
-  const current = await loadSettings();
-  const merged = mergeSettingsPartial(current, partial);
-  const validated = foolerySettingsSchema.parse(merged);
-  await saveSettings(validated);
-  return validated;
+  try {
+    serverLog("debug", "settings", "update start", {
+      settingsFile: SETTINGS_FILE,
+      keys: Object.keys(partial),
+    });
+    const current = await loadSettings();
+    const merged = mergeSettingsPartial(
+      current,
+      partial,
+    );
+    const validated =
+      foolerySettingsSchema.parse(merged);
+    await saveSettings(validated);
+    serverLog("info", "settings", "update success", {
+      settingsFile: SETTINGS_FILE,
+      keys: Object.keys(partial),
+    });
+    return validated;
+  } catch (error) {
+    serverLog("error", "settings", "update failed", {
+      settingsFile: SETTINGS_FILE,
+      keys: Object.keys(partial),
+      error: formatError(error),
+    });
+    throw error;
+  }
 }
 
 function mergeSettingsPartial(
@@ -326,21 +417,51 @@ export async function addRegisteredAgent(
   return updateSettings({ agents });
 }
 
+export async function getAgentRemovalImpact(
+  id: string,
+): Promise<AgentRemovalImpact> {
+  const settings = await loadSettings();
+  return buildAgentRemovalImpact(settings, id);
+}
+
 /** Removes a registered agent by id. */
 export async function removeRegisteredAgent(
-  id: string,
+  request: string | AgentRemovalRequest,
 ): Promise<FoolerySettings> {
+  const removalRequest = typeof request === "string"
+    ? { id: request }
+    : request;
   const current = await loadSettings();
-  const remaining = Object.fromEntries(
-    Object.entries(current.agents).filter(
-      ([key]) => key !== id,
-    ),
+  const impact = buildAgentRemovalImpact(
+    current,
+    removalRequest.id,
   );
-  const updated: FoolerySettings = {
-    ...current,
-    agents: remaining,
-  };
-  const validated = foolerySettingsSchema.parse(updated);
+  if (
+    impact.actionUsages.length > 0
+    || impact.poolUsages.length > 0
+  ) {
+    serverLog(
+      "info",
+      "settings",
+      "remove agent with impact",
+      {
+        agentId: removalRequest.id,
+        actionUsages: impact.actionUsages.map(
+          (usage) => usage.action,
+        ),
+        poolUsages: impact.poolUsages.map(
+          (usage) => usage.step,
+        ),
+      },
+    );
+  }
+  const updated = applyAgentRemovalPlan(
+    current,
+    removalRequest,
+  );
+  const validated = foolerySettingsSchema.parse(
+    updated,
+  );
   await saveSettings(validated);
   return validated;
 }

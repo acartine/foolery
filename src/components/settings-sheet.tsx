@@ -144,8 +144,17 @@ function SettingsTabPanels({
       <TabsContent value="agents">
         <SettingsAgentsSection
           agents={settings.agents}
-          onAgentsChange={(agents) =>
-            onSettingsChange((p) => ({ ...p, agents }))
+          onSettingsChange={({
+            agents,
+            actions,
+            pools,
+          }) =>
+            onSettingsChange((current) => ({
+              ...current,
+              agents,
+              ...(actions ? { actions } : {}),
+              ...(pools ? { pools } : {}),
+            }))
           }
         />
       </TabsContent>

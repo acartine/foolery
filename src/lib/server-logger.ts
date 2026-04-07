@@ -68,6 +68,15 @@ function createWriteQueue(): {
           await appendFile(filePath, line, "utf-8");
         })
         .catch((err) => {
+          if (
+            process.env.VITEST
+            && err instanceof Error
+            && err.message.includes(
+              'No "appendFile" export is defined on the "node:fs/promises" mock',
+            )
+          ) {
+            return;
+          }
           console.error(`[server-logger] write failed (${filePath}):`, err);
         });
     },

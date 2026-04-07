@@ -1,4 +1,5 @@
 import type { MemoryManagerType } from "@/lib/memory-managers";
+import type { FoolerySettings } from "@/lib/schemas";
 
 // ── Beat types ──────────────────────────────────────────────
 
@@ -372,6 +373,56 @@ export type ActionName =
   | "scene"
   | "breakdown"
   | "scopeRefinement";
+
+export type SettingsPoolStep =
+  | "planning"
+  | "plan_review"
+  | "implementation"
+  | "implementation_review"
+  | "shipment"
+  | "shipment_review"
+  | "scope_refinement";
+
+export interface AgentRemovalActionUsage {
+  action: ActionName;
+  requiresReplacement: boolean;
+}
+
+export interface AgentRemovalPoolUsage {
+  step: SettingsPoolStep;
+  affectedEntries: number;
+  remainingEntries: number;
+  requiresReplacement: boolean;
+}
+
+export interface AgentRemovalImpact {
+  agentId: string;
+  registered: boolean;
+  actionUsages: AgentRemovalActionUsage[];
+  poolUsages: AgentRemovalPoolUsage[];
+  replacementAgentIds: string[];
+  canRemove: boolean;
+}
+
+export interface AgentRemovalPoolDecision {
+  mode: "remove" | "replace";
+  replacementAgentId?: string;
+}
+
+export interface AgentRemovalRequest {
+  id: string;
+  actionReplacements?: Partial<
+    Record<ActionName, string>
+  >;
+  poolDecisions?: Partial<
+    Record<SettingsPoolStep, AgentRemovalPoolDecision>
+  >;
+}
+
+export interface AgentRemovalResult {
+  impact: AgentRemovalImpact;
+  settings: FoolerySettings;
+}
 
 export interface ScopeRefinementCompletion {
   id: string;
