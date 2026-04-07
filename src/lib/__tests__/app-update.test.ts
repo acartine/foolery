@@ -1,4 +1,10 @@
-import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -36,7 +42,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("app-update", () => {
+describe("app-update status", () => {
   it("returns idle status when no persisted status exists", async () => {
     const tempDir = await makeTempDir();
 
@@ -50,7 +56,9 @@ describe("app-update", () => {
       VERSION_UPDATE_COMMAND,
     );
   });
+});
 
+describe("app-update startup", () => {
   it("starts a detached update worker and persists status", async () => {
     const tempDir = await makeTempDir();
     const launcherPath = join(tempDir, "foolery");
@@ -71,6 +79,42 @@ describe("app-update", () => {
     expect(result.status.phase).toBe("updating");
     expect(result.status.workerPid).toBe(4321);
     expect(mockSpawn).toHaveBeenCalledTimes(1);
+  });
+
+  it("persists a failure status and log when startup fails early", async () => {
+    const tempDir = await makeTempDir();
+    const launcherPath = join(tempDir, "missing-foolery");
+    const statusPath = join(tempDir, "app-update-status.json");
+    const logPath = join(tempDir, "app-update.log");
+
+    await expect(
+      startAppUpdate({
+        ...process.env,
+        FOOLERY_STATE_DIR: tempDir,
+        FOOLERY_LAUNCHER_PATH: launcherPath,
+        FOOLERY_UPDATE_STATUS_PATH: statusPath,
+        FOOLERY_UPDATE_LOG_PATH: logPath,
+      }),
+    ).rejects.toThrow();
+
+    const status = JSON.parse(
+      await readFile(statusPath, "utf8"),
+    ) as {
+      phase: string;
+      error: string;
+      launcherPath: string;
+    };
+    expect(status.phase).toBe("failed");
+    expect(status.error).toMatch(/missing-foolery/);
+    expect(status.launcherPath).toBe(launcherPath);
+
+    const log = await readFile(logPath, "utf8");
+    expect(log).toContain(
+      `Update requested for launcher ${launcherPath}`,
+    );
+    expect(log).toContain(
+      "Update failed before worker start:",
+    );
   });
 
   it("refuses to start a second update while one is in progress", async () => {
@@ -107,14 +151,16 @@ describe("app-update", () => {
     expect(result.status.phase).toBe("updating");
     expect(mockSpawn).not.toHaveBeenCalled();
   });
+});
 
-  it("accepts only same-origin local POST callers", () => {
+describe("app-update request validation", () => {
+  it("accepts loopback host aliases on the same port", () => {
     const good = new NextRequest(
       "http://localhost:3210/api/app-update",
       {
         method: "POST",
         headers: {
-          origin: "http://localhost:3210",
+          origin: "http://127.0.0.1:3210",
         },
       },
     );
@@ -123,7 +169,7 @@ describe("app-update", () => {
       {
         method: "POST",
         headers: {
-          origin: "https://evil.example",
+          origin: "http://127.0.0.1:9999",
         },
       },
     );

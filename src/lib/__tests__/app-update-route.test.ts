@@ -4,12 +4,15 @@ import type { AppUpdateStatus } from "@/lib/app-update-types";
 const mockReadAppUpdateStatus = vi.fn();
 const mockStartAppUpdate = vi.fn();
 const mockIsAllowedLocalUpdateRequest = vi.fn();
+const mockLogAppUpdateEvent = vi.fn();
 
 vi.mock("@/lib/app-update", () => ({
   readAppUpdateStatus: () => mockReadAppUpdateStatus(),
   startAppUpdate: () => mockStartAppUpdate(),
   isAllowedLocalUpdateRequest: (request: unknown) =>
     mockIsAllowedLocalUpdateRequest(request),
+  logAppUpdateEvent: (...args: unknown[]) =>
+    mockLogAppUpdateEvent(...args),
 }));
 
 import { NextRequest } from "next/server";
@@ -53,10 +56,14 @@ describe("app-update route", () => {
     const response = await POST(
       new NextRequest("http://localhost/api/app-update", {
         method: "POST",
+        headers: { origin: "http://127.0.0.1" },
       }),
     );
 
     expect(response.status).toBe(403);
+    expect(mockLogAppUpdateEvent).toHaveBeenCalledWith(
+      "Rejected update request from origin http://127.0.0.1.",
+    );
   });
 
   it("returns 202 when an update is started", async () => {
@@ -93,5 +100,27 @@ describe("app-update route", () => {
     );
 
     expect(response.status).toBe(409);
+  });
+
+  it("returns persisted failure state when startup throws", async () => {
+    mockIsAllowedLocalUpdateRequest.mockReturnValue(true);
+    mockStartAppUpdate.mockRejectedValue(
+      new Error("launcher missing"),
+    );
+    mockReadAppUpdateStatus.mockResolvedValue(
+      makeStatus("failed"),
+    );
+
+    const response = await POST(
+      new NextRequest("http://localhost/api/app-update", {
+        method: "POST",
+        headers: { origin: "http://localhost" },
+      }),
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(json.error).toBe("launcher missing");
+    expect(json.data.phase).toBe("failed");
   });
 });

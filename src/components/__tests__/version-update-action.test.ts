@@ -41,6 +41,26 @@ describe("triggerVersionUpdate", () => {
     ).resolves.toBeNull();
   });
 
+  it("returns failure status payloads even from a 500 response", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        data: {
+          ...idleUpdateStatus(),
+          phase: "failed",
+          error: "launcher missing",
+        },
+      }),
+    });
+
+    await expect(
+      triggerVersionUpdate(fetchMock as unknown as typeof fetch),
+    ).resolves.toMatchObject({
+      phase: "failed",
+      error: "launcher missing",
+    });
+  });
+
   it("reads persisted backend update status", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

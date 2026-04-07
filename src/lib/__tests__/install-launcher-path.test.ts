@@ -67,5 +67,11 @@ describe("install launcher path overrides", () => {
     expect(launcher).toContain("tip) printf '%s' '->' ;;");
     expect(launcher).not.toContain("tip) printf '->' ;;");
     expect(launcher).toContain("FOOLERY_SETUP_URL");
+    expect(launcher).toContain(
+      'FOOLERY_LAUNCHER_PATH="$LAUNCHER_PATH"',
+    );
+    expect(launcher).toContain(
+      'FOOLERY_STATE_DIR="$STATE_DIR"',
+    );
   });
 });

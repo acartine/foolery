@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   isAllowedLocalUpdateRequest,
+  logAppUpdateEvent,
   readAppUpdateStatus,
   startAppUpdate,
 } from "@/lib/app-update";
@@ -12,6 +13,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   if (!isAllowedLocalUpdateRequest(request)) {
+    const origin = request.headers.get("origin") ?? "missing";
+    await logAppUpdateEvent(
+      `Rejected update request from origin ${origin}.`,
+    );
     return NextResponse.json(
       { error: "Forbidden" },
       { status: 403 },
@@ -29,8 +34,9 @@ export async function POST(request: NextRequest) {
       error instanceof Error
         ? error.message
         : "Failed to start update";
+    const data = await readAppUpdateStatus();
     return NextResponse.json(
-      { error: message },
+      { error: message, data },
       { status: 500 },
     );
   }

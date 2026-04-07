@@ -751,7 +751,31 @@ start_cmd() {
   step "Starting Foolery on \$URL"
   (
     cd "\$APP_DIR"
-    nohup env NODE_ENV=production node "\$NEXT_BIN" start --hostname "\$HOST" --port "\$PORT" >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
+    nohup env \
+      NODE_ENV=production \
+      FOOLERY_APP_DIR="\$APP_DIR" \
+      FOOLERY_INSTALL_ROOT="\$INSTALL_ROOT" \
+      FOOLERY_BIN_DIR="\$BIN_DIR" \
+      FOOLERY_LAUNCHER_PATH="\$LAUNCHER_PATH" \
+      FOOLERY_STATE_DIR="\$STATE_DIR" \
+      FOOLERY_HOST="\$HOST" \
+      FOOLERY_PORT="\$PORT" \
+      FOOLERY_URL="\$URL" \
+      FOOLERY_NEXT_BIN="\$NEXT_BIN" \
+      FOOLERY_LOG_DIR="\$LOG_DIR" \
+      FOOLERY_PID_FILE="\$PID_FILE" \
+      FOOLERY_LEGACY_PID_FILE="\$LEGACY_PID_FILE" \
+      FOOLERY_STDOUT_LOG="\$STDOUT_LOG" \
+      FOOLERY_STDERR_LOG="\$STDERR_LOG" \
+      FOOLERY_RELEASE_OWNER="\$RELEASE_OWNER" \
+      FOOLERY_RELEASE_REPO="\$RELEASE_REPO" \
+      FOOLERY_RELEASE_TAG="\$RELEASE_TAG" \
+      FOOLERY_SETUP_URL="\$SETUP_URL" \
+      FOOLERY_UPDATE_CHECK="\$UPDATE_CHECK_ENABLED" \
+      FOOLERY_UPDATE_CHECK_INTERVAL_SECONDS="\$UPDATE_CHECK_INTERVAL_SECONDS" \
+      FOOLERY_UPDATE_CHECK_FILE="\$UPDATE_CHECK_FILE" \
+      node "\$NEXT_BIN" start --hostname "\$HOST" --port "\$PORT" \
+      >>"\$STDOUT_LOG" 2>>"\$STDERR_LOG" < /dev/null &
     write_pid \$!
   )
 
