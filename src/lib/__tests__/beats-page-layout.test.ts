@@ -52,6 +52,12 @@ const minimizedTerminalBarSource = src(
 const terminalViewportSource = src(
   "src/lib/terminal-viewport.ts",
 );
+const providerSource = src(
+  "src/components/providers.tsx",
+);
+const insetSyncSource = src(
+  "src/components/terminal-viewport-inset-sync.tsx",
+);
 
 describe("beats page layout: scrolling and hotkeys", () => {
   it("allows vertical scrolling in the main wrapper", () => {
@@ -69,15 +75,33 @@ describe("beats page layout: scrolling and hotkeys", () => {
     );
   });
 
-  it("derives Queue/Active list bottom inset from terminal visibility state", () => {
-    expect(pageSource).toContain(
-      'beatsView === "queues" || beatsView === "active"',
+  it("syncs terminal clearance into a shared body inset", () => {
+    expect(insetSyncSource).toContain(
+      "panelOpen",
     );
-    expect(pageSource).toContain(
+    expect(insetSyncSource).toContain(
+      "panelMinimized",
+    );
+    expect(insetSyncSource).toContain(
+      "panelHeight",
+    );
+    expect(insetSyncSource).toContain(
+      "terminalCount: terminals.length",
+    );
+    expect(insetSyncSource).toContain(
       "getTerminalViewportInset",
     );
-    expect(pageSource).toContain(
-      "style={{ paddingBottom: listViewportInset }}",
+    expect(providerSource).toContain(
+      "TerminalViewportInsetSync",
+    );
+    expect(globalStylesSource).toContain(
+      "--terminal-viewport-inset: 0px;",
+    );
+    expect(globalStylesSource).toContain(
+      "padding-bottom: var(--terminal-viewport-inset);",
+    );
+    expect(globalStylesSource).toContain(
+      "scroll-padding-bottom: var(",
     );
     expect(terminalViewportSource).toContain(
       "MINIMIZED_TERMINAL_BAR_HEIGHT_PX = 32",
@@ -85,8 +109,13 @@ describe("beats page layout: scrolling and hotkeys", () => {
     expect(minimizedTerminalBarSource).toContain(
       "MINIMIZED_TERMINAL_BAR_HEIGHT_PX",
     );
+    expect(pageSource).not.toContain(
+      "style={{ paddingBottom: listViewportInset }}",
+    );
   });
+});
 
+describe("beats page layout: hotkeys and search header", () => {
   it("binds Shift+H shortcut help globally for beats screens", () => {
     expect(appHeaderHooksSource).toContain(
       "useHotkeyHelpHotkey",
@@ -157,7 +186,6 @@ describe("beats page layout: scrolling and hotkeys", () => {
       "order-3",
     );
   });
-
 });
 
 describe("beats page layout: row vertical alignment", () => {

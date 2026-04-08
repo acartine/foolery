@@ -35,9 +35,6 @@ import { AlertTriangle } from "lucide-react";
 import {
   isListBeatsView, parseBeatsView,
 } from "@/lib/beats-view";
-import {
-  getTerminalViewportInset,
-} from "@/lib/terminal-viewport";
 import { useBeatsQuery } from "./use-beats-query";
 import { useAgentInfoMap } from "./use-agent-info-map";
 import { useBulkActions } from "./use-bulk-actions";
@@ -79,9 +76,6 @@ function useBeatsPageState() {
   const { activeRepo, registeredRepos } = useAppStore();
   const {
     terminals,
-    panelOpen,
-    panelMinimized,
-    panelHeight,
   } = useTerminalStore();
 
   const shippingByBeatId = terminals.reduce<
@@ -117,16 +111,6 @@ function useBeatsPageState() {
     beats, detailBeatId, detailRepo, isListView,
     activeRepo,
   });
-  const listViewportInset =
-    beatsView === "queues" || beatsView === "active"
-      ? getTerminalViewportInset({
-        panelOpen,
-        panelMinimized,
-        panelHeight,
-        terminalCount: terminals.length,
-      })
-      : "0px";
-
   return {
     beatsView, isListView, viewPhase,
     isActiveView, activeRepo,
@@ -134,7 +118,7 @@ function useBeatsPageState() {
     beats, isLoading, loadError, isDegradedError,
     hasRollingAncestor, showRepoColumn,
     agentInfoByBeatId, shippingByBeatId,
-    listViewportInset, streamingProgress,
+    streamingProgress,
     ...bulk, ...actions, ...detail,
   };
 }
@@ -262,7 +246,6 @@ function BeatsViewBody({
           onShipBeat={s.handleShipBeat}
           shippingByBeatId={s.shippingByBeatId}
           onAbortShipping={s.handleAbortShipping}
-          listViewportInset={s.listViewportInset}
           streamingProgress={
             s.streamingProgress
           }
@@ -289,7 +272,6 @@ interface BeatsListContentProps {
   onAbortShipping: (
     beatId: string,
   ) => Promise<void>;
-  listViewportInset: string;
   streamingProgress: StreamingProgress;
 }
 
@@ -303,7 +285,7 @@ function BeatsListContent(
     selectionVersion, searchQuery,
     onOpenBeat, onShipBeat,
     shippingByBeatId, onAbortShipping,
-    listViewportInset, streamingProgress,
+    streamingProgress,
   } = props;
 
   const isStreamActive =
@@ -339,10 +321,7 @@ function BeatsListContent(
     && beats.length === 0;
 
   return (
-    <div
-      className="overflow-x-auto"
-      style={{ paddingBottom: listViewportInset }}
-    >
+    <div className="overflow-x-auto">
       {isDegradedError && (
         <DegradedBanner message={loadError} />
       )}

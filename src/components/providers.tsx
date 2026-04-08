@@ -4,6 +4,9 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { ClientDiagnosticsRuntime } from "@/components/client-diagnostics-runtime";
+import {
+  TerminalViewportInsetSync,
+} from "@/components/terminal-viewport-inset-sync";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWindowFocusInvalidation } from "@/hooks/use-window-focus-invalidation";
 import { initializeDiagnostics } from "@/lib/client-perf";
@@ -28,6 +31,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ClientDiagnosticsRuntime />
+      <TerminalViewportInsetSync />
       <GlobalQueryHooks />
       <TooltipProvider>
         {children}
