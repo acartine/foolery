@@ -12,6 +12,7 @@ import {
   createSessionRuntime,
   type AgentSessionRuntime,
   type SessionRuntimeConfig,
+  type SessionExitReason,
 } from "@/lib/agent-session-runtime";
 import type {
   TerminalEvent,
@@ -162,13 +163,18 @@ export function wireClose(
   agent: CliAgentTarget,
   prepared: PreparedTargets,
   takeLoopCtx: TakeLoopContext,
+  continueAfterCleanClose?: (
+    exitReason: SessionExitReason | null,
+  ) => Promise<boolean>,
 ): void {
-  child.on("close", (code, signal) => {
+  child.on("close", async (code, signal) => {
     state.runtime.flushLineBuffer(child);
     logClose(
       id, beatId, isTakeLoop, code, signal,
       entry.buffer.length,
     );
+    const exitReason =
+      state.runtime.state.exitReason;
     state.runtime.dispose();
     child.stdout?.removeAllListeners();
     child.stderr?.removeAllListeners();
@@ -188,6 +194,13 @@ export function wireClose(
         );
         finishSession(code ?? 1);
       });
+      return;
+    }
+
+    if (
+      continueAfterCleanClose &&
+      await continueAfterCleanClose(exitReason)
+    ) {
       return;
     }
 

@@ -13,7 +13,7 @@ import type {
   MemoryWorkflowDescriptor,
 } from "@/lib/types";
 import {
-  agentDisplayName,
+  toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
   markBeatShipped,
@@ -247,7 +247,8 @@ async function rollbackStepFailure(
     `[terminal-manager] [${ctx.id}] [take-loop]`;
   const rollState =
     queueStateForStep(resolved.step);
-  const failedAgent = agentDisplayName(ctx.agent);
+  const failedAgent =
+    toExecutionAgentInfo(ctx.agent).agentName;
   console.warn(
     `${tag} [STEP_FAILURE] ` +
     `agent "${failedAgent}" ` +

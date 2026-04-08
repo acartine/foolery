@@ -57,4 +57,18 @@ describe("toActiveAgentInfo", () => {
       version: "5.4",
     });
   });
+
+  it("preserves a fully qualified agent label over the command family", () => {
+    expect(
+      toActiveAgentInfo({
+        agentCommand: "codex",
+        agentName: "GPT Codex Spark 5.3",
+        model: "gpt-5.3-codex-spark",
+      }),
+    ).toMatchObject({
+      agentName: "GPT Codex Spark 5.3",
+      model: "GPT Codex Spark",
+      version: "5.3",
+    });
+  });
 });

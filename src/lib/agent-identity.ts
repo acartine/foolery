@@ -302,15 +302,6 @@ export function displayCommandLabel(command?: string): string | undefined {
   return undefined;
 }
 
-export function agentDisplayName(agent: AgentIdentityLike): string {
-  return (
-    providerLabel(agent.provider, agent.command) ??
-    cleanValue(agent.label) ??
-    cleanValue(agent.command) ??
-    "Unknown"
-  );
-}
-
 export function formatModelDisplay(model?: string): string | undefined {
   const cleaned = cleanValue(model);
   if (!cleaned) return undefined;
@@ -452,8 +443,18 @@ export function buildAgentOptionId(
 
 export function toExecutionAgentInfo(agent: AgentIdentityLike): ExecutionAgentInfo {
   const n = normalizeAgentIdentity(agent);
+  const explicitLabel = cleanValue(agent.label);
+  const explicitCommand = cleanValue(agent.command);
+  const agentName =
+    explicitLabel && explicitCommand &&
+      explicitLabel.toLowerCase() === explicitCommand.toLowerCase()
+      ? displayCommandLabel(explicitLabel) ?? explicitLabel
+      : explicitLabel ??
+        providerLabel(agent.provider, agent.command) ??
+        explicitCommand ??
+        "Unknown";
   return {
-    agentName: agentDisplayName(agent),
+    agentName,
     agentProvider: n.provider,
     agentModel: [n.flavor, n.model].filter(Boolean).join("/") || agent.model,
     agentVersion: n.version,

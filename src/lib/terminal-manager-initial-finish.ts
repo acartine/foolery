@@ -14,7 +14,7 @@ import {
 } from "@/lib/agent-message-type-index";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  agentDisplayName,
+  toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import type {
   SessionEntry,
@@ -100,7 +100,7 @@ export function handleSuccessCleanup(
   if (logFile) {
     updateMessageTypeIndexFromSession(
       logFile,
-      agentDisplayName(agent),
+      toExecutionAgentInfo(agent).agentName,
       agent.model,
     ).catch((err) => {
       console.error(

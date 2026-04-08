@@ -23,9 +23,6 @@ import {
   createCodexJsonRpcSession,
 } from "@/lib/codex-jsonrpc-session";
 import {
-  createOpenCodeHttpSession,
-} from "@/lib/opencode-http-session";
-import {
   createGeminiAcpSession,
 } from "@/lib/gemini-acp-session";
 import {
@@ -37,7 +34,7 @@ import type {
 } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  agentDisplayName,
+  formatAgentDisplayLabel,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
@@ -64,6 +61,12 @@ import {
   wireClose,
   wireError,
 } from "@/lib/terminal-manager-initial-io";
+import {
+  buildContinueAfterCleanClose,
+} from "@/lib/terminal-manager-initial-follow-up";
+import {
+  createInitialRuntime,
+} from "@/lib/terminal-manager-initial-runtime";
 
 // ─── Session lifecycle factory ──────────────────────
 
@@ -158,44 +161,49 @@ export function spawnInitialChild(
   const autoShipPrompt = buildAutoShipPrompt(
     isInteractive, customPrompt, prepared,
   );
-  const sessionBeatIds = [beatId];
-  const httpSession = isHttpServer
-    ? createOpenCodeHttpSession(
-        (jsonLine) => {
-          if (state.child) {
-            state.runtime.injectLine(
-              state.child, jsonLine,
-            );
-          }
-        },
-        (errMsg) => {
-          pushEvent({
-            type: "stderr",
-            data: errMsg + "\n",
-            timestamp: Date.now(),
-          });
-        },
-      )
-    : undefined;
-  const state = buildInitialState(autoShipPrompt, {
-    id, dialect, capabilities, normalizeEvent,
-    pushEvent, interactionLog,
-    beatIds: sessionBeatIds,
-    jsonrpcSession, httpSession, acpSession,
-  });
-  const child = spawnAndWire(
-    agentCmd, args, prepared, isInteractive,
-    id, beatId, isTakeLoop, sessionBeatIds,
-    dialect, interactionLog, normalizeEvent,
-    pushEvent, state, entry, finishSession,
-    agent, takeLoopCtx, jsonrpcSession, acpSession,
+  const {
+    sessionBeatIds,
+    stateRef,
+    runtimeConfig,
+  } = createInitialRuntime(
+    id,
+    dialect,
+    capabilities,
+    normalizeEvent,
+    pushEvent,
+    interactionLog,
+    beatId,
+    jsonrpcSession,
+    acpSession,
   );
-  sendInitialPrompt(
-    child, isInteractive,
-    isJsonRpc || isHttpServer || isAcp, state,
-    interactionLog, session, entry, id, agent,
-    prompt, sessions,
+  stateRef.current = buildInitialState(
+    autoShipPrompt, runtimeConfig,
   );
+  const startTurn = (turnPrompt: string) => {
+    const child = spawnAndWire(
+      agentCmd, args, prepared, isInteractive,
+      id, beatId, isTakeLoop, sessionBeatIds,
+      dialect, interactionLog, normalizeEvent,
+      pushEvent, stateRef.current, entry,
+      finishSession,
+      agent, takeLoopCtx, jsonrpcSession, acpSession,
+      buildContinueAfterCleanClose(
+        stateRef,
+        runtimeConfig,
+        buildInitialState,
+        pushEvent,
+        startTurn,
+      ),
+    );
+    sendInitialPrompt(
+      child, isInteractive,
+      isJsonRpc || isHttpServer || isAcp,
+      stateRef.current,
+      interactionLog, session, entry, id, agent,
+      turnPrompt, sessions,
+    );
+  };
+  startTurn(prompt);
   return session;
 }
 
@@ -229,6 +237,11 @@ function spawnAndWire(
   acpSession?: import(
     "@/lib/gemini-acp-session"
   ).GeminiAcpSession,
+  continueAfterCleanClose?: (
+    exitReason: import(
+      "@/lib/agent-session-runtime"
+    ).SessionExitReason | null,
+  ) => Promise<boolean>,
 ): import("node:child_process").ChildProcess {
   const child = spawn(agentCmd, args, {
     cwd: prepared.resolvedRepoPath,
@@ -253,6 +266,7 @@ function spawnAndWire(
     child, id, beatId, isTakeLoop, state, entry,
     interactionLog, pushEvent, finishSession,
     agent, prepared, takeLoopCtx,
+    continueAfterCleanClose,
   );
   wireError(
     child, id, isTakeLoop, state, entry,
@@ -454,7 +468,7 @@ function sendInitialPrompt(
       );
       sessions.delete(id);
       const desc =
-        `${agentDisplayName(agent)}` +
+        `${formatAgentDisplayLabel(agent)}` +
         (agent.model
           ? ` (model: ${agent.model})`
           : "");

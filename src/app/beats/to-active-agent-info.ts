@@ -17,8 +17,15 @@ export function toActiveAgentInfo(input: {
     model: input.model,
     version: input.version,
   });
+  const explicitAgentName = input.agentName?.trim();
+  const normalizedAgentName =
+    explicitAgentName && command &&
+      explicitAgentName.toLowerCase() === command.trim().toLowerCase()
+      ? displayCommandLabel(explicitAgentName) ?? explicitAgentName
+      : explicitAgentName;
   const agentName =
-    displayCommandLabel(command) ?? input.agentName;
+    normalizedAgentName ??
+    displayCommandLabel(command);
   const family = formatAgentFamily({
     provider: normalized.provider,
     model: normalized.model,

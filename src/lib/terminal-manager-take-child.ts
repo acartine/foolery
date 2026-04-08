@@ -34,7 +34,6 @@ import {
 } from "@/lib/agent-session-runtime";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  agentDisplayName,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
@@ -94,7 +93,7 @@ export function spawnTakeChild(
   ctx.agentInfo =
     toExecutionAgentInfo(effectiveAgent);
   ctx.session.agentName =
-    agentDisplayName(effectiveAgent);
+    ctx.agentInfo.agentName;
   ctx.session.agentModel = effectiveAgent.model;
   ctx.session.agentVersion =
     effectiveAgent.version;

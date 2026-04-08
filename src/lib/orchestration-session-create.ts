@@ -13,7 +13,10 @@ import {
   startInteractionLog,
   noopInteractionLog,
 } from "@/lib/interaction-logger";
-import { agentDisplayName } from "@/lib/agent-identity";
+import {
+  formatAgentDisplayLabel,
+  toExecutionAgentInfo,
+} from "@/lib/agent-identity";
 import type {
   OrchestrationPlan,
   OrchestrationSession,
@@ -201,7 +204,7 @@ async function initSessionEntry(
     interactionType: "direct",
     repoPath,
     beatIds: beats.map((b) => b.id),
-    agentName: agentDisplayName(agent),
+    agentName: toExecutionAgentInfo(agent).agentName,
     agentModel: agent.model,
     agentVersion: agent.version,
   }).catch((err) => {
@@ -278,7 +281,7 @@ function wireChildProcess(
 
   child.on("error", (err) => {
     releaseChildStreams();
-    const agentLabel = agentDisplayName(agent);
+    const agentLabel = formatAgentDisplayLabel(agent);
     finalizeSession(
       entry,
       "error",
@@ -328,7 +331,7 @@ export async function createOrchestrationSession(
   pushEvent(
     entry,
     "status",
-    `Waiting on ${agentDisplayName(agent)}...`,
+    `Waiting on ${formatAgentDisplayLabel(agent)}...`,
   );
 
   return session;
@@ -368,7 +371,7 @@ function handleCloseEvent(
     }
   }
 
-  const agentName = agentDisplayName(agent);
+  const agentName = toExecutionAgentInfo(agent).agentName;
   const isSuccess = code === 0 && signal == null;
   const message = isSuccess
     ? `${agentName} orchestration complete`

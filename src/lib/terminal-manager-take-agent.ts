@@ -6,7 +6,7 @@
 import { loadSettings } from "@/lib/settings";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  agentDisplayName,
+  formatAgentDisplayLabel,
   normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
@@ -263,7 +263,7 @@ export async function rotateKnotsLease(
     "lease_rotation", "success",
     {
       reason: "next_iteration",
-      nextAgent: agentDisplayName(nextAgent),
+      nextAgent: formatAgentDisplayLabel(nextAgent),
     },
   );
   const newLeaseId = await ensureKnotsLease({

@@ -8,6 +8,10 @@ import {
 import { getStepAgent } from "@/lib/settings";
 import { WorkflowStep } from "@/lib/workflows";
 import {
+  formatAgentDisplayLabel,
+  toExecutionAgentInfo,
+} from "@/lib/agent-identity";
+import {
   buildPromptModeArgs,
   resolveDialect,
   createLineNormalizer,
@@ -31,7 +35,6 @@ import {
   normalizeBreakdownPlan,
   extractPlanFromTaggedJson,
 } from "@/lib/breakdown-normalize";
-import { agentDisplayName } from "@/lib/agent-identity";
 
 interface BreakdownSessionEntry {
   session: BreakdownSession;
@@ -421,7 +424,7 @@ export async function createBreakdownSession(
     interactionType: "breakdown",
     repoPath,
     beatIds: [parentBeatId],
-    agentName: agentDisplayName(agent),
+    agentName: toExecutionAgentInfo(agent).agentName,
     agentModel: agent.model,
     agentVersion: agent.version,
   }).catch((err) => {
@@ -456,7 +459,7 @@ export async function createBreakdownSession(
   });
   entry.process = child;
 
-  const agentLabel = agentDisplayName(agent);
+  const agentLabel = formatAgentDisplayLabel(agent);
   wireChildProcess(
     child,
     entry,

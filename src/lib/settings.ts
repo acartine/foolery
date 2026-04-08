@@ -25,7 +25,7 @@ import {
   recordStepAgent,
 } from "@/lib/agent-pool";
 import {
-  agentDisplayName,
+  formatAgentDisplayLabel,
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 import {
@@ -294,8 +294,12 @@ function toCliTarget(
     ...(normalized.version
       ? { version: normalized.version }
       : {}),
-    ...((agent.label ?? agentDisplayName(agent))
-      ? { label: agent.label ?? agentDisplayName(agent) }
+    ...((agent.label ?? formatAgentDisplayLabel(agent))
+      ? {
+        label:
+          agent.label ??
+          formatAgentDisplayLabel(agent),
+      }
       : {}),
     ...(agentId ? { agentId } : {}),
   };

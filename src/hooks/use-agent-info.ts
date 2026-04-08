@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { fetchSettings } from "@/lib/settings-api";
 import type { ActionName } from "@/lib/types";
 import {
-  agentDisplayName,
   detectAgentProviderId,
+  formatAgentDisplayLabel,
   formatModelDisplay as formatAgentModelDisplay,
 } from "@/lib/agent-identity";
 
@@ -46,7 +46,7 @@ export function useAgentInfo(action: ActionName): ResolvedAgentInfo | null {
         const command = registered.command;
         const vendor = detectVendor(command);
         setInfo({
-          name: agentDisplayName(registered),
+          name: formatAgentDisplayLabel(registered),
           model: registered.model,
           flavor: registered.flavor,
           version: registered.version,
@@ -58,7 +58,7 @@ export function useAgentInfo(action: ActionName): ResolvedAgentInfo | null {
         const command = first?.command ?? "claude";
         const vendor = detectVendor(command);
         setInfo({
-          name: agentDisplayName(first ?? { command }),
+          name: formatAgentDisplayLabel(first ?? { command }),
           model: first?.model,
           flavor: first?.flavor,
           version: first?.version,

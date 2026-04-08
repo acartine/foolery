@@ -12,7 +12,6 @@ import {
 } from "@/lib/settings";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  agentDisplayName,
   normalizeAgentIdentity,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
@@ -201,7 +200,7 @@ function buildSession(
     beatId: prepared.beat.id,
     beatTitle: prepared.beat.title,
     repoPath: prepared.resolvedRepoPath,
-    agentName: agentDisplayName(agent),
+    agentName: toExecutionAgentInfo(agent).agentName,
     agentModel: agent.model,
     agentVersion: agent.version,
     ...(agent.kind === "cli"
@@ -225,7 +224,7 @@ async function startSessionLog(
     beatIds: prepared.effectiveParent
       ? prepared.waveBeatIds
       : [prepared.beat.id],
-    agentName: agentDisplayName(agent),
+    agentName: toExecutionAgentInfo(agent).agentName,
     agentProvider: normalizeAgentIdentity(agent).provider,
     agentModel: agent.model,
     agentVersion: agent.version,
@@ -441,4 +440,3 @@ export function abortSession(id: string): boolean {
   terminateProcessGroup(entry.process);
   return true;
 }
-
