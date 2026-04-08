@@ -363,7 +363,6 @@ Shell scripts that reference `bd` or beads.
 
 | Path | Purpose | bd Commands Used |
 |------|---------|-----------------|
-| `scripts/setup-beads-dolt-hooks.sh` | Install Dolt-native git hooks (pre-push, post-merge, post-checkout) for beads sync | `bd config set`, `bd sql`, `bd vc commit`, `bd hooks list`, `bd doctor` |
 | `scripts/setup.sh` | Interactive repo discovery and agent configuration wizard | Scans for `.beads/` directories; no direct `bd` invocations |
 | `scripts/install.sh` | Foolery installer | Checks `bd` is on PATH (line 1207) |
 | `scripts/agent-wizard.sh` | Agent discovery wizard | References bead actions in prompts ("execute single bead", "multi-bead orchestration") |

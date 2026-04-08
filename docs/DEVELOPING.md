@@ -24,23 +24,14 @@ Open [http://localhost:3000](http://localhost:3000). The dev server hot-reloads 
 
 The production app runs on port 3210 by default (`foolery start`). Dev and production can coexist since they use different ports.
 
-## Beads Dolt Hooks (v0.55.1)
+## Git Hooks
 
-If your clone needs Dolt-native Beads sync hooks for `git push` and merge-style `git pull`, run:
+`bun install` runs `scripts/setup-git-hooks.sh`, which points `core.hooksPath`
+at the committed `.githooks/` directory for the current checkout.
 
-```bash
-bash scripts/setup-beats-dolt-hooks.sh
-```
-
-Then validate:
-
-```bash
-bd hooks list
-bd doctor
-.git/hooks/pre-push
-```
-
-This replaces only `pre-push`, `post-merge`, and `post-checkout` in local git hooks. It does not modify `pre-commit` or `prepare-commit-msg`.
+The default hook is `pre-commit`, which runs ESLint on staged `src/**/*.ts(x)`
+files. That enforces the file, function, and line-length constraints through the
+existing ESLint rules before a commit lands.
 
 ## Project Layout
 
@@ -72,6 +63,7 @@ docs/                   Project documentation
 | `bun run test:all` | All test suites |
 | `bun run test:coverage` | Unit tests with coverage |
 | `bun run lint` | ESLint |
+| `bun run lint:staged-size` | ESLint on staged `src/**/*.ts(x)` files |
 | `bun run storybook` | Storybook dev on :6006 |
 | `bun run build:runtime` | Package runtime artifact for distribution |
 | `bun run changeset` | Create a release note + semver bump intent file |

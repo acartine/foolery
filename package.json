@@ -22,6 +22,8 @@
     "test:smoke:beats:latency": "bash scripts/test-beat-refresh-latency.sh",
     "test:smoke:beats:pulldowns": "bash scripts/test-queue-pulldown-stability.sh",
     "perf:baseline": "node scripts/collect-perf-baseline.mjs",
+    "lint:staged-size": "bash scripts/lint-staged-size.sh",
+    "prepare": "bash scripts/setup-git-hooks.sh",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

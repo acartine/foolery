@@ -11,7 +11,8 @@ Build, release, and setup scripts for Foolery.
 - **`release.sh`** — Cut a release from the current state
 - **`release-from-package-version.sh`** — Tag and release using the version from `package.json`
 - **`agent-wizard.sh`** — Legacy interactive wizard for configuring agent settings
-- **`setup-beats-dolt-hooks.sh`** — Install Dolt-native git hooks for Beads sync
+- **`setup-git-hooks.sh`** — Point `core.hooksPath` at the committed `.githooks/` directory
+- **`lint-staged-size.sh`** — Run ESLint on staged `src/**/*.ts(x)` files before commit
 - **`check-coverage.mjs`** — Verify test coverage thresholds
 - **`test-doctor-stream.sh`** — Smoke test for the doctor streaming endpoint
 - **`test-start-restart-settings.sh`** — Smoke test for settings load on startup
