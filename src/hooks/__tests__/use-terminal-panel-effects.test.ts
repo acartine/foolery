@@ -80,7 +80,7 @@ describe("useRehydrateTerminals", () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    vi.advanceTimersByTime(5_000);
+    await vi.advanceTimersByTimeAsync(5_000);
     await Promise.resolve();
     await Promise.resolve();
 
