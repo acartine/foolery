@@ -13,46 +13,52 @@ function src(rel: string): string {
 }
 
 const pageSource = src("src/app/beats/page.tsx");
-const minimizedBarSource = src(
-  "src/components/minimized-terminal-bar.tsx",
+const providerSource = src(
+  "src/components/providers.tsx",
+);
+const insetSyncSource = src(
+  "src/components/terminal-viewport-inset-sync.tsx",
 );
 const terminalViewportSource = src(
   "src/lib/terminal-viewport.ts",
 );
+const globalCssSource = src(
+  "src/app/globals.css",
+);
 
 describe("terminal scroll layout contract", () => {
-  it("reads the terminal viewport state needed for Queue/Active insets", () => {
-    expect(pageSource).toContain(
+  it("syncs terminal viewport state into a shared body inset", () => {
+    expect(insetSyncSource).toContain(
       "panelOpen",
     );
-    expect(pageSource).toContain(
+    expect(insetSyncSource).toContain(
       "panelMinimized",
     );
-    expect(pageSource).toContain(
+    expect(insetSyncSource).toContain(
       "panelHeight",
     );
-    expect(pageSource).toContain(
+    expect(insetSyncSource).toContain(
       "terminalCount: terminals.length",
     );
   });
 
-  it("limits the terminal inset to Queue and Active views", () => {
-    expect(pageSource).toContain(
-      'beatsView === "queues" || beatsView === "active"',
-    );
-    expect(pageSource).toContain(
-      ': "0px";',
+  it("registers the terminal viewport inset sync globally", () => {
+    expect(providerSource).toContain(
+      "TerminalViewportInsetSync",
     );
   });
 
-  it("keeps minimized bar height and list inset on the same shared constant", () => {
+  it("applies the shared terminal inset through global layout styles", () => {
     expect(terminalViewportSource).toContain(
-      "MINIMIZED_TERMINAL_BAR_HEIGHT_PX",
+      "getTerminalViewportInset",
     );
-    expect(minimizedBarSource).toContain(
-      "height: `${MINIMIZED_TERMINAL_BAR_HEIGHT_PX}px`",
+    expect(globalCssSource).toContain(
+      "padding-bottom: var(--terminal-viewport-inset);",
     );
-    expect(pageSource).toContain(
+    expect(globalCssSource).toContain(
+      "scroll-padding-bottom: var(",
+    );
+    expect(pageSource).not.toContain(
       "style={{ paddingBottom: listViewportInset }}",
     );
   });
