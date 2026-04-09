@@ -140,6 +140,12 @@ require_cmd() {
   fi
 }
 
+has_supported_runtime_cli() {
+  command -v bd >/dev/null 2>&1 ||
+    command -v kno >/dev/null 2>&1 ||
+    command -v knots >/dev/null 2>&1
+}
+
 normalize_os() {
   case "$1" in
     Darwin) printf 'darwin\n' ;;
@@ -1503,8 +1509,8 @@ main() {
   require_cmd tar
   require_cmd node
 
-  if ! command -v bd >/dev/null 2>&1; then
-    warn "bd CLI is not on PATH. Foolery relies on bd at runtime."
+  if ! has_supported_runtime_cli; then
+    warn "Neither bd nor Knots (kno/knots) is on PATH. Foolery relies on one of them at runtime."
   fi
 
   mkdir -p "$INSTALL_ROOT" "$BIN_DIR" "$STATE_DIR"
