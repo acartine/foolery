@@ -80,7 +80,7 @@ main() {
   log "Installing production dependencies into runtime bundle"
   (
     cd "$RUNTIME_DIR"
-    bun install --frozen-lockfile --production
+    bun install --frozen-lockfile --production --ignore-scripts
   )
 
   cp -R "$ROOT_DIR/.next" "$RUNTIME_DIR/.next"
