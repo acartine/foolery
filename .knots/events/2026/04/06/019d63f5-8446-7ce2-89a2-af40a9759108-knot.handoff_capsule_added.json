@@ -1,0 +1,15 @@
+{
+  "event_id": "019d63f5-8446-7ce2-89a2-af40a9759108",
+  "occurred_at": "2026-04-06T18:02:07.814397Z",
+  "knot_id": "foolery-a5a1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-a5a1-scope-refinement-timeout | Commit: c7eacd29 | Validation: bun run lint; bunx tsc --noEmit; bun run test; bun run build",
+    "datetime": "2026-04-06T18:02:07.814397Z",
+    "entry_id": "019d63f5-8446-7ce2-89a2-af3ecc093d18",
+    "model": "gpt-5",
+    "username": "Codex",
+    "version": "2026-04-06"
+  }
+}

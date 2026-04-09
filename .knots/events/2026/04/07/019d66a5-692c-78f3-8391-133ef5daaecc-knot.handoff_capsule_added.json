@@ -1,0 +1,15 @@
+{
+  "event_id": "019d66a5-692c-78f3-8391-133ef5daaecc",
+  "occurred_at": "2026-04-07T06:33:29.644256Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment completed. Merged `chore/foolery-1940-update-logging` into main as commit `23064d564854` and pushed to `origin/main`. Remote workflow results for this push: `CI` succeeded in 1m39s and `Coverage Badge` succeeded in 40s. GitHub emitted warning annotations about coverage regression and Node 20 action deprecation, but both workflows concluded successfully. Local merged-main validation in the shipment worktree also passed: `bun run test`, `bunx tsc --noEmit`, and `bun run build` succeeded; lint remained clean apart from the existing `src/components/beat-form.tsx` React Compiler warning.",
+    "datetime": "2026-04-07T06:33:29.644256Z",
+    "entry_id": "019d66a5-692c-78f3-8391-1328fdc37cdd",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

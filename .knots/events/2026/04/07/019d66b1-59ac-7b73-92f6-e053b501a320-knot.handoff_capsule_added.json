@@ -1,0 +1,15 @@
+{
+  "event_id": "019d66b1-59ac-7b73-92f6-e053b501a320",
+  "occurred_at": "2026-04-07T06:46:32.108615Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment review approved. The shipped result is live on `origin/main` at commit `23064d564854`, both remote workflows for that push succeeded (`CI` and `Coverage Badge`), and the knot has the relevant commit tags for implementation (`e81340edfe4a`) and shipment (`23064d564854`). The change set on main matches the reviewed scope and no further action is required.",
+    "datetime": "2026-04-07T06:46:32.108615Z",
+    "entry_id": "019d66b1-59ac-7b73-92f6-e0449dd596d5",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

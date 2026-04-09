@@ -1,0 +1,9 @@
+{
+  "event_id": "019d63e0-d719-7f31-82c7-6932436a8d2c",
+  "occurred_at": "2026-04-06T17:39:32.761386Z",
+  "knot_id": "foolery-a5a1",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-a5a1-scope-refinement-timeout"
+  }
+}

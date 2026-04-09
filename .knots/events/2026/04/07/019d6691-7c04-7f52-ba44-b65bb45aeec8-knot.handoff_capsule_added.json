@@ -1,0 +1,15 @@
+{
+  "event_id": "019d6691-7c04-7f52-ba44-b65bb45aeec8",
+  "occurred_at": "2026-04-07T06:11:43.748208Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Investigated the automatic update failure path. Root cause is environment loss between the generated launcher and the Next server: custom launcher/state paths are not exported into the app process, so src/lib/app-update.ts falls back to ~/.local defaults and fails on non-default installs. Proposed fix is to forward FOOLERY_* install/runtime vars in scripts/install.sh start_cmd and add regression coverage around generated launcher output.",
+    "datetime": "2026-04-07T06:11:43.748208Z",
+    "entry_id": "019d6691-7c04-7f52-ba44-b642165ac04c",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

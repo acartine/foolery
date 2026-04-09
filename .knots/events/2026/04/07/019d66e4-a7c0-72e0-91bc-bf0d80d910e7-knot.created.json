@@ -1,0 +1,17 @@
+{
+  "event_id": "019d66e4-a7c0-72e0-91bc-bf0d80d910e7",
+  "occurred_at": "2026-04-07T07:42:34.432301Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.created",
+  "data": {
+    "body": "Address the GitHub Actions deprecation annotation seen during the v0.8.3 Release Runtime Artifact workflow (run 24069981601). The current workflow uses actions that still run on Node.js 20, including actions/checkout@v4, actions/upload-artifact@v4, and softprops/action-gh-release@v2. Expected outcome: update the workflow to use Node 24-compatible action versions or another supported configuration so release builds and asset uploads remain functional without deprecation annotations. Preserve the existing release behavior for linux-arm64, linux-x64, and darwin-arm64 artifacts, and verify the release/runtime workflow still passes after the change.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Update GitHub Actions off Node 20",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

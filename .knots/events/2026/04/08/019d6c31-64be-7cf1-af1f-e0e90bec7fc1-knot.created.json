@@ -1,0 +1,17 @@
+{
+  "event_id": "019d6c31-64be-7cf1-af1f-e0e90bec7fc1",
+  "occurred_at": "2026-04-08T08:24:29.630952Z",
+  "knot_id": "foolery-58ed",
+  "type": "knot.created",
+  "data": {
+    "body": "Investigate recent step-failure handling for maestro-2325, verify whether a follow-up prompt was sent after the failure, and remove any remaining hardcoded or fallback agent name that surfaces as 'Codex' instead of the fully qualified actual agent identity. Implement a durable fix and validate with logs and tests. Do not move to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix agent identity and follow-up prompt handling",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

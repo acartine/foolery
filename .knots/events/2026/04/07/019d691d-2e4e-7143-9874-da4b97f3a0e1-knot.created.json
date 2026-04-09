@@ -1,0 +1,17 @@
+{
+  "event_id": "019d691d-2e4e-7143-9874-da4b97f3a0e1",
+  "occurred_at": "2026-04-07T18:03:33.326704Z",
+  "knot_id": "foolery-c5aa",
+  "type": "knot.created",
+  "data": {
+    "body": "When an interactive agent exits cleanly without producing a valid knot transition, send one follow-up nudge in the same session telling it to perform the step-closing action from the claim prompt such as next or rollback. If the nudge still fails, keep the existing rollback and alternate-agent recovery behavior. Also count the unrecovered outcome as an agent failure in lease/diagnostic reporting.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Recover incomplete interactive knot transitions",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

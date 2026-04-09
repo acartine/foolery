@@ -1,0 +1,15 @@
+{
+  "event_id": "019d66a2-ac28-7282-848e-7221be515b5f",
+  "occurred_at": "2026-04-07T06:30:30.18401Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review approved. Branch `chore/foolery-1940-update-logging` at commit `e81340edfe4a` matches the knot scope: it fixes automatic update failures caused by loopback-origin rejection, adds earlier updater logging/status persistence for pre-worker failures, preserves failure status through the API/client path, and forwards launcher env into the server for non-default installs. Validation already passed for focused updater tests plus `bun run test`, `bunx tsc --noEmit`, and `bun run build`; lint is clean aside from the pre-existing `src/components/beat-form.tsx` React Compiler warning.",
+    "datetime": "2026-04-07T06:30:30.18401Z",
+    "entry_id": "019d66a2-ac28-7282-848e-7219ee7fd134",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

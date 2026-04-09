@@ -1,0 +1,17 @@
+{
+  "event_id": "019d68f5-a585-7793-9799-66825cbce7eb",
+  "occurred_at": "2026-04-07T17:20:22.405753Z",
+  "knot_id": "foolery-4dc6",
+  "type": "knot.created",
+  "data": {
+    "body": "Add a project-level skill under .agents/skills that investigates Foolery lease/runtime logs across both the dev server on port 3000 and the installed runtime on port 3210, correlates lease lifecycle logs with session/interactions and server logs, and reports anomalies like turns that ended without advancing or rolling back, hung turns, missing lease coverage, and likely causes. Do not ship or close terminally without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create lease investigation skill",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

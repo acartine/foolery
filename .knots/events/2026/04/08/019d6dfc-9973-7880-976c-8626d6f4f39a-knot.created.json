@@ -1,0 +1,17 @@
+{
+  "event_id": "019d6dfc-9973-7880-976c-8626d6f4f39a",
+  "occurred_at": "2026-04-08T16:46:04.147756Z",
+  "knot_id": "foolery-42bc",
+  "type": "knot.created",
+  "data": {
+    "body": "Ensure active screen content can always scroll fully above the bottom terminal UI in both expanded and minimized states. Current issue: hover-expanded summaries and other view-pane content can extend under the terminal and become unreadable because the scrollable viewport does not reserve reliable bottom clearance.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix terminal viewport scrolling",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}

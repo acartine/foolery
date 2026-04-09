@@ -1,0 +1,15 @@
+{
+  "event_id": "019d63d3-db03-7681-a13f-3065b6bf700e",
+  "occurred_at": "2026-04-06T17:25:21.79532Z",
+  "knot_id": "foolery-a5a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Branch: feat/a5a1-scope-refinement-timeout (commit 20dec724). Timeout 3m->10m, agent retry with pool exclusion, graceful failure when pool exhausted. All quality gates pass (lint, typecheck, 2628 tests, build).",
+    "datetime": "2026-04-06T17:25:21.79532Z",
+    "entry_id": "019d63d3-db03-7681-a13f-305d900939cb",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

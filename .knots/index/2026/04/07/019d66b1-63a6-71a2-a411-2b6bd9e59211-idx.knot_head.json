@@ -1,0 +1,21 @@
+{
+  "event_id": "019d66b1-63a6-71a2-a411-2b6bd9e59211",
+  "occurred_at": "2026-04-07T06:46:34.66199Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1940",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Investigate automatic update failure",
+    "type": "work",
+    "updated_at": "2026-04-07T06:46:34.66199Z",
+    "workflow_id": "compatibility"
+  }
+}

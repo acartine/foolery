@@ -1,0 +1,15 @@
+{
+  "event_id": "019d669d-6f06-76c3-b300-8a10144182d0",
+  "occurred_at": "2026-04-07T06:24:46.854355Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented the automatic-update investigation fix on local branch `chore/foolery-1940-update-logging` at commit `e81340edfe4a`. Findings: 1) the running app rejected update POSTs from `http://127.0.0.1:3210` with `403 Forbidden` while accepting `http://localhost:3210`, which explains a failed click with no update log because `startAppUpdate()` never ran; 2) pre-worker failures in `startAppUpdate()` also produced no `app-update.log` or status file because logging only began inside the detached worker; 3) the launcher did not forward install/runtime env vars into the Next server process. Changes: accept loopback host aliases on the same port in `isAllowedLocalUpdateRequest`, log rejected update requests, persist log/status entries before pre-worker failures, return persisted failure state from the API/client path, and forward FOOLERY_* runtime vars when starting the server. Validation: focused updater tests passed, `bun run test` passed, `bunx tsc --noEmit` passed, and `bun run build` passed. `bun run lint` passed with the existing `src/components/beat-form.tsx` React Compiler warning only. Not pushed to remote in this session.",
+    "datetime": "2026-04-07T06:24:46.854355Z",
+    "entry_id": "019d669d-6f06-76c3-b300-8a000aa21a8c",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

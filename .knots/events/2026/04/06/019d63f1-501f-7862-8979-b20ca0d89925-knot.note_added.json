@@ -1,0 +1,15 @@
+{
+  "event_id": "019d63f1-501f-7862-8979-b20ca0d89925",
+  "occurred_at": "2026-04-06T17:57:32.319147Z",
+  "knot_id": "foolery-a5a1",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review requested changes: timeout and exclusion wiring look correct, and lint/typecheck/test/build passed in the implementation worktree, but the acceptance criterion requiring a successful retry completion with an alternate agent is not yet verified. The added tests cover exclusion propagation and exhausted-agent failure, not an end-to-end retry-success path.",
+    "datetime": "2026-04-06T17:57:32.319147Z",
+    "entry_id": "019d63f1-501f-7862-8979-b1f019a8d870",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

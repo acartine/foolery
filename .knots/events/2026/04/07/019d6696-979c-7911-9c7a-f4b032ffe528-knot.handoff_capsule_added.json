@@ -1,0 +1,15 @@
+{
+  "event_id": "019d6696-979c-7911-9c7a-f4b032ffe528",
+  "occurred_at": "2026-04-07T06:17:18.492175Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The plan is feasible, test coverage is appropriate, and the main added requirement from investigation is explicit logging for pre-worker failures inside `startAppUpdate()`, because missing launcher-path env currently fails before the detached worker can write `app-update.log` or `app-update-status.json`.",
+    "datetime": "2026-04-07T06:17:18.492175Z",
+    "entry_id": "019d6696-979c-7911-9c7a-f4a297706e70",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5"
+  }
+}

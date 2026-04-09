@@ -1,0 +1,15 @@
+{
+  "event_id": "019d6691-7c04-7f52-ba44-b6395a853bc8",
+  "occurred_at": "2026-04-07T06:11:43.748208Z",
+  "knot_id": "foolery-1940",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Root cause\n- The generated launcher in scripts/install.sh starts Next with `nohup env NODE_ENV=production node ...` and does not forward `FOOLERY_LAUNCHER_PATH`, `FOOLERY_STATE_DIR`, or related install-path env vars into the server process.\n- Server-side update code in src/lib/app-update.ts resolves the launcher and status/log paths from process env, otherwise it falls back to ~/.local/bin/foolery and ~/.local/state/foolery.\n- Result: if Foolery was installed anywhere other than the default ~/.local locations, clicking Automatic Update calls the API successfully but the backend tries to run the wrong launcher and/or read/write the wrong status file, surfacing `Automatic update failed`.\n\nImplementation plan\n1. Create a dedicated git worktree for implementation and run `bun install --frozen-lockfile` there per repo policy.\n2. Patch `scripts/install.sh` so `start_cmd` forwards the launcher/runtime env vars into the spawned Next server process. Minimum set: `FOOLERY_APP_DIR`, `FOOLERY_INSTALL_ROOT`, `FOOLERY_BIN_DIR`, `FOOLERY_LAUNCHER_PATH`, `FOOLERY_STATE_DIR`, `FOOLERY_HOST`, `FOOLERY_PORT`, `FOOLERY_URL`, release metadata, and any path vars used by updater/status handling.\n3. Keep `src/lib/app-update.ts` unchanged unless validation shows a second issue; once the server receives the correct env, its path resolution should target the active install.\n4. Add regression coverage. Best target is a launcher-generation test that asserts the generated script forwards `FOOLERY_LAUNCHER_PATH` and `FOOLERY_STATE_DIR` when launching Next, plus update-lib tests if needed.\n5. Validate in the worktree with focused tests first, then full gates: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`.\n\nComplexity and risks\n- Complexity: low to moderate; the bug is localized to launcher/server env propagation.\n- Main risk: forwarding too few vars leaves partial failures for custom installs/channels; forwarding too many is lower risk because these values already define launcher behavior.\n- Secondary risk: shell quoting in generated launcher. Test coverage should assert the generated command includes the env pass-through exactly.",
+    "datetime": "2026-04-07T06:11:43.748208Z",
+    "entry_id": "019d6691-7c04-7f52-ba44-b62ba465fa87",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d6b7e-1f57-7113-8edc-ec9903efb18b",
+  "occurred_at": "2026-04-08T05:08:40.919798Z",
+  "knot_id": "foolery-eb08",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove the Beads/Dolt hook installer and related docs. Add a repo-managed git hook setup that enforces the file/function/line size constraints locally using the existing ESLint rules, following sister-repo patterns where sensible. Do not move this knot to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Replace Beads hooks with size-check hook",
+    "type": "work",
+    "workflow_id": "compatibility"
+  }
+}
