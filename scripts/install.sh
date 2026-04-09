@@ -733,7 +733,6 @@ start_cmd() {
     local pid
     pid="\$(read_pid)"
     log "Already running (pid \$pid) at \$URL"
-    open_browser
     return 0
   fi
 
@@ -742,7 +741,6 @@ start_cmd() {
     if looks_like_foolery_pid "\$listen_pid"; then
       write_pid "\$listen_pid"
       log "Detected existing Foolery server (pid \$listen_pid) at \$URL"
-      open_browser
       return 0
     fi
     fail "Port \$PORT is already in use by pid \$listen_pid. Stop that process or set FOOLERY_PORT to another port."
@@ -794,7 +792,6 @@ start_cmd() {
   success "Started (pid \$pid)"
   log "stdout: \$STDOUT_LOG"
   log "stderr: \$STDERR_LOG"
-  open_browser
 
   if [[ "\$WAIT_FOR_READY" == "1" ]]; then
     if ! wait_for_startup "\$pid"; then
@@ -1390,7 +1387,7 @@ usage() {
   if [[ -n "\$d" ]]; then
     desc_style="\$d"
   fi
-  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background and open browser" "\$r"
+  printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color start)"     "start"     "\$r" "\$desc_style" "Start Foolery in the background" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color open)"      "open"      "\$r" "\$desc_style" "Open Foolery in your browser (skips if already open)" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color setup)"     "setup"     "\$r" "\$desc_style" "Configure repos and agents interactively" "\$r"
   printf '  %b%-11s%b %b%s%b\n' "\$(help_command_color update)"    "update"    "\$r" "\$desc_style" "Download and install the latest Foolery runtime" "\$r"
