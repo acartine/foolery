@@ -164,6 +164,9 @@ _discover_models() {
     gemini)
       printf '%s\n' gemini-2.5-pro gemini-2.5-flash
       ;;
+    opencode)
+      opencode models 2>/dev/null
+      ;;
   esac
 }
 
@@ -183,11 +186,32 @@ _agent_label() {
 
 # Write a complete settings file from the collected state.
 # Reads from globals: REGISTERED_AGENTS; uses _kv_get for AGENT_* / ACTION_MAP.
+_DEFAULT_SCOPE_REFINEMENT_PROMPT='You are refining a newly created engineering work item.
+Tighten the title, rewrite the description for clarity, and define or tighten acceptance criteria.
+Keep the scope unchanged. Do not broaden the request or add speculative work.
+
+Current beat:
+Title: {{title}}
+Description:
+{{description}}
+
+Acceptance criteria:
+{{acceptance}}
+'
+
 _write_settings_toml() {
   mkdir -p "$CONFIG_DIR"
 
   {
-    printf 'dispatchMode = "basic"\n\n'
+    local dm
+    dm="$(_kv_get DISPATCH dispatch_mode "basic")"
+    printf 'dispatchMode = "%s"\n' "$dm"
+
+    local mcs mcq
+    mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
+    mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
+    printf 'maxConcurrentSessions = %d\n' "$mcs"
+    printf 'maxClaimsPerQueueType = %d\n\n' "$mcq"
 
     local registered_agents=()
     if [[ "${REGISTERED_AGENTS+set}" == "set" && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
@@ -213,15 +237,24 @@ _write_settings_toml() {
 
     printf '[actions]\n'
     local action
-    for action in take scene breakdown; do
-      printf '%s = "%s"\n' "$action" "$(_kv_get ACTION_MAP "$action" "default")"
+    for action in take scene breakdown scopeRefinement; do
+      printf '%s = "%s"\n' "$action" \
+        "$(_kv_get ACTION_MAP "$action" "")"
     done
 
     printf '\n[backend]\ntype = "auto"\n'
     printf '\n[defaults]\nprofileId = ""\n'
+
+    printf '\n[scopeRefinement]\n'
+    local prompt
+    prompt="${_SCOPE_PROMPT:-$_DEFAULT_SCOPE_REFINEMENT_PROMPT}"
+    printf 'prompt = """\n%s"""\n' "$prompt"
+
     printf '\n[pools]\n'
     local step
-    for step in planning plan_review implementation implementation_review shipment shipment_review; do
+    for step in planning plan_review implementation \
+      implementation_review shipment shipment_review \
+      scope_refinement; do
       printf '%s = []\n' "$step"
     done
   } > "$SETTINGS_FILE"

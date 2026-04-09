@@ -100,17 +100,23 @@ describe("settings writers", () => {
     async (scriptName) => {
       const { raw, parsed } = await runWriter(scriptName);
 
-      expect(raw.startsWith('dispatchMode = "basic"\n\n')).toBe(true);
+      expect(raw).toContain('dispatchMode = "basic"');
+      expect(raw).toContain("maxConcurrentSessions = 5");
+      expect(raw).toContain("maxClaimsPerQueueType = 10");
       expect(raw).toContain("[backend]");
       expect(raw).toContain("[defaults]");
+      expect(raw).toContain("[scopeRefinement]");
       expect(raw).toContain("[pools]");
 
       expect(parsed).toMatchObject({
         dispatchMode: "basic",
+        maxConcurrentSessions: 5,
+        maxClaimsPerQueueType: 10,
         actions: {
           take: "codex-gpt-5",
           scene: "claude",
           breakdown: "codex-gpt-5-2",
+          scopeRefinement: "",
         },
         backend: { type: "auto" },
         defaults: { profileId: "" },
@@ -121,8 +127,14 @@ describe("settings writers", () => {
           implementation_review: [],
           shipment: [],
           shipment_review: [],
+          scope_refinement: [],
         },
       });
+
+      expect(parsed.scopeRefinement).toHaveProperty("prompt");
+      expect(
+        (parsed.scopeRefinement as { prompt: string }).prompt,
+      ).toContain("{{title}}");
 
       expect(parsed.agents).toMatchObject({
         "codex-gpt-5": {
@@ -155,6 +167,7 @@ describe("settings writers", () => {
         take: "copilot",
         scene: "copilot",
         breakdown: "copilot",
+        scopeRefinement: "",
       });
       expect((parsed.agents as Record<string, unknown>).copilot).not.toHaveProperty(
         "model",
