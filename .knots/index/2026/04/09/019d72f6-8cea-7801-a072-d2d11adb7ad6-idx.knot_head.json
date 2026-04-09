@@ -1,0 +1,34 @@
+{
+  "event_id": "019d72f6-8cea-7801-a072-d2d11adb7ad6",
+  "occurred_at": "2026-04-09T15:57:33.795704Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-56d4",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Adjust install CLI warning",
+    "type": "work",
+    "updated_at": "2026-04-09T15:57:33.795704Z",
+    "workflow_id": "work_sdlc"
+  }
+}

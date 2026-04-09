@@ -1,0 +1,21 @@
+{
+  "event_id": "019d72f6-8d04-7052-b6cc-5d0535f0b79a",
+  "occurred_at": "2026-04-09T15:57:33.828404Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-56d4",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Adjust install CLI warning",
+    "type": "work",
+    "updated_at": "2026-04-09T15:57:33.828404Z",
+    "workflow_id": "work_sdlc"
+  }
+}

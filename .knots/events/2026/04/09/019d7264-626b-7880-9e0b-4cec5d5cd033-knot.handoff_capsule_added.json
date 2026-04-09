@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7264-626b-7880-9e0b-4cec5d5cd033",
+  "occurred_at": "2026-04-09T13:17:54.667961Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan recorded for the installer dependency warning. Implement by updating `scripts/install.sh` so `bd`, `kno`, or `knots` each satisfy the PATH check, and only warn when all are missing. Add focused installer coverage for the four PATH variants and validate with the relevant installer test path.",
+    "datetime": "2026-04-09T13:17:29Z",
+    "entry_id": "019d7264-626b-7880-9e0b-4cd1766e5656",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

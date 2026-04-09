@@ -1,0 +1,15 @@
+{
+  "event_id": "019d72f6-8ce3-7c42-83a7-c420cb3be1d3",
+  "occurred_at": "2026-04-09T15:57:33.795704Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Shipment review approved. Remote `main` still points to shipped commit `09b25b326af60d42e665dd7e0b2975828372244c`, the knot carries both tagged commits (`659c1ad25cff`, `09b25b326af6`) plus the branch tag, and GitHub runs `CI` and `Coverage Badge` are both `completed/success` for the shipped SHA. The shipped code matches the requested installer behavior and there were no blocking regressions detected.",
+    "datetime": "2026-04-09T15:56:42Z",
+    "entry_id": "019d72f6-8ce3-7c42-83a7-c41db03540c1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

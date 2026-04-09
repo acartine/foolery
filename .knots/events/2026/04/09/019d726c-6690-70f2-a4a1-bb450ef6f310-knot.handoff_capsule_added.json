@@ -1,0 +1,15 @@
+{
+  "event_id": "019d726c-6690-70f2-a4a1-bb450ef6f310",
+  "occurred_at": "2026-04-09T13:26:40.016837Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved. Branch `codex/56d4-install-cli-warning` at commit `659c1ad25cff` matches the knot requirement: installer warning logic now accepts `bd`, `kno`, or `knots`, and the added test coverage verifies the warning is emitted only when all are absent. Validation evidence is green (`bun run lint`, `bunx tsc --noEmit`, `bun run test`, `bun run build`) and the worktree is clean.",
+    "datetime": "2026-04-09T13:26:35Z",
+    "entry_id": "019d726c-6690-70f2-a4a1-bb39e89d8248",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d726c-2e18-7dd1-b5ba-ee315ee1be9c",
+  "occurred_at": "2026-04-09T13:26:25.560316Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation complete on branch `codex/56d4-install-cli-warning`. Updated `scripts/install.sh` so the install warning only fires when `bd`, `kno`, and `knots` are all absent from PATH, and added focused installer coverage for the four PATH variants in `src/lib/__tests__/install-launcher-path.test.ts`.\n\nValidation:\n- `bun run lint`\n- `bunx tsc --noEmit`\n- `bun run test`\n- `bun run build`\n\nBranch: codex/56d4-install-cli-warning\nCommit: 659c1ad25cff",
+    "datetime": "2026-04-09T13:26:17Z",
+    "entry_id": "019d726c-2e18-7dd1-b5ba-ee29086976d0",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

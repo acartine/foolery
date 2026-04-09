@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7264-554a-7421-a5e6-dc7f93d03cf2",
+  "occurred_at": "2026-04-09T13:17:51.306333Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation plan:\n- Update the PATH preflight in `scripts/install.sh` `main()` so install only warns when none of these commands are present: `bd`, `kno`, or `knots`.\n- Keep the change local to the installer warning path; do not alter runtime installation, launcher generation, or the required `curl`/`tar`/`node` checks.\n- Prefer a small Bash-compatible helper or compact conditional that works on macOS Bash 3.2 and keeps the warning logic easy to scan.\n- Replace the current bd-only warning text with a message that reflects the accepted runtime CLIs and only emits when all probes fail.\n\nTest strategy:\n- Add or extend installer-focused coverage to exercise PATH detection with isolated bins.\n- Cover at least these cases: only `bd` present, only `kno` present, only `knots` present, and none present.\n- Assert the warning is suppressed in the first three cases and emitted only in the last case.\n- Re-run the relevant focused install test plus the broader shell/build validation already used for installer changes.\n\nComplexity and risks:\n- Complexity is low; scope is limited to one installer branch and focused tests.\n- Main risk is introducing shell logic that is less portable than the existing script, so the implementation should avoid Bash features that are awkward on 3.2.\n- Secondary risk is choosing the wrong command names for Knots detection; current requirement is to accept either `kno` or `knots` as satisfying the runtime dependency check.\n\nChild knots:\n- None needed; the task is small and self-contained.",
+    "datetime": "2026-04-09T13:17:51.306333Z",
+    "entry_id": "019d7264-554a-7421-a5e6-dc6b73043a99",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

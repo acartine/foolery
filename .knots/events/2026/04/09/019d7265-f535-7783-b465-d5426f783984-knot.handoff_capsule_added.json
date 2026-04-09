@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7265-f535-7783-b465-d5426f783984",
+  "occurred_at": "2026-04-09T13:19:37.781565Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review approved. The change is narrowly scoped, feasible in Bash 3.2, and the proposed test matrix covers the required PATH cases: `bd`, `kno`, `knots`, and none present. No security, performance, or maintainability concerns were identified for this approach.",
+    "datetime": "2026-04-09T13:19:33Z",
+    "entry_id": "019d7265-f535-7783-b465-d530cbd930e2",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

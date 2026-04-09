@@ -1,0 +1,9 @@
+{
+  "event_id": "019d726c-2df8-7322-9087-d18afa52f9ff",
+  "occurred_at": "2026-04-09T13:26:25.528599Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:codex/56d4-install-cli-warning"
+  }
+}

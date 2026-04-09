@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7263-97ac-7550-9da5-1918e942eb58",
+  "occurred_at": "2026-04-09T13:17:02.764517Z",
+  "knot_id": "foolery-56d4",
+  "type": "knot.created",
+  "data": {
+    "body": "Update foolery install so the runtime dependency warning checks for bd and kno/knots, and only warns when none of them are available on PATH.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Adjust install CLI warning",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
