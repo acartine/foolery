@@ -120,14 +120,17 @@ describe("SessionConnectionManager: connection lifecycle", () => {
     expect(mockUpdateStatus).toHaveBeenCalledWith("sess-3", "error");
   });
 
-  it("exit event does not invalidate beat queries for background completions", () => {
+  it("exit event invalidates beat queries for background completions", () => {
     const mockQueryClient = { invalidateQueries: vi.fn().mockResolvedValue(undefined) } as unknown as import("@tanstack/react-query").QueryClient;
     sessionConnections.startSync(mockQueryClient);
 
     sessionConnections.connect("sess-4");
     capturedOnEvent!({ type: "exit", data: "0", timestamp: Date.now() });
 
-    expect(mockQueryClient.invalidateQueries).not.toHaveBeenCalled();
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["beats"],
+      refetchType: "active",
+    });
   });
 
   it("subscribe() receives forwarded events", () => {

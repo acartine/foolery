@@ -184,6 +184,33 @@ describe("connectToSession disconnect recovery", () => {
       expect(es.closed).toBe(true);
     });
 
+    it("synthesizes non-zero exit when backend shows aborted after disconnect", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => ({
+            data: [{ id: "sess-r2", status: "aborted", exitCode: 1 }],
+          }),
+        }),
+      );
+
+      const onEvent = vi.fn();
+      const onError = vi.fn();
+      connectToSession("sess-r2", onEvent, onError);
+
+      const es = lastES();
+      es.simulateError();
+
+      await vi.advanceTimersByTimeAsync(200);
+
+      expect(onEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "exit", data: "1" }),
+      );
+      expect(onError).not.toHaveBeenCalled();
+      expect(es.closed).toBe(true);
+    });
+
     it("synthesizes exit 0 when backend session is gone after disconnect", async () => {
       vi.stubGlobal(
         "fetch",

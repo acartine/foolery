@@ -101,13 +101,14 @@ export function connectToSession(
       }
       // Poll backend to recover from missed exit events
       const session = await fetchSessionStatus(sessionId);
-      if (
-        session &&
-        (session.status === "completed" || session.status === "error")
-      ) {
+      if (session && session.status !== "running") {
+        const exitCode =
+          session.status === "disconnected"
+            ? -2
+            : session.exitCode ?? (session.status === "completed" ? 0 : 1);
         onEvent({
           type: "exit",
-          data: String(session.exitCode ?? 0),
+          data: String(exitCode),
           timestamp: Date.now(),
         });
       } else if (!session) {

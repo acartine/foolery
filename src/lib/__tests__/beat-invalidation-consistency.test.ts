@@ -54,7 +54,7 @@ describe("beat invalidation consistency", () => {
     );
   });
 
-  it("keeps background refresh paths off the immediate beat helper", () => {
+  it("lets selected background refresh paths use the shared beat helper", () => {
     const sessionSource = fs.readFileSync(
       path.join(
         SRC,
@@ -70,7 +70,7 @@ describe("beat invalidation consistency", () => {
       "utf8",
     );
 
-    expect(sessionSource).not.toContain(
+    expect(sessionSource).toContain(
       "invalidateBeatListQueries",
     );
     expect(scopeRefinementSource).not.toContain(
