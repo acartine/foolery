@@ -1,0 +1,17 @@
+{
+  "event_id": "019d71b5-a22b-7fa1-93fd-4ed7a17c56eb",
+  "occurred_at": "2026-04-09T10:07:02.186974Z",
+  "knot_id": "foolery-5fc5",
+  "type": "knot.created",
+  "data": {
+    "body": "Fix Foolery so Knots profile state-level owners from kno profile list are preserved in runtime ownership derivation. Current bug: a knot can advance from planning to ready_for_plan_review with agent-owned queue state in Knots, but Foolery collapses ownership to the broader plan_review step and marks requiresHumanAction=true, which stops autonomous execution after planning. Investigate and patch the Knots adapter/runtime, add regression tests, and do not move the knot to a terminal state without explicit user instruction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Honor Knots state owners in runtime queue ownership",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
