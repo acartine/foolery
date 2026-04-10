@@ -80,7 +80,14 @@ export interface KnotWorkflowDefinition {
 }
 
 export interface KnotProfileOwners {
-  states: Record<string, { kind: "agent" | "human" }>;
+  states?: Record<string, { kind: "agent" | "human" }>;
+  // Legacy individual fields (pre-states-map kno binaries)
+  planning?: { kind: "agent" | "human" };
+  plan_review?: { kind: "agent" | "human" };
+  implementation?: { kind: "agent" | "human" };
+  implementation_review?: { kind: "agent" | "human" };
+  shipment?: { kind: "agent" | "human" };
+  shipment_review?: { kind: "agent" | "human" };
 }
 
 export interface KnotProfileDefinition {

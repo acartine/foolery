@@ -361,12 +361,15 @@ export function isBlockedByEdges(
 
 // ── Workflow / profile mapping ──────────────────────────────────────
 
+type OwnerStep = "planning" | "plan_review" | "implementation"
+  | "implementation_review" | "shipment" | "shipment_review";
+
 function normalizeOwners(
   profile: KnotProfileDefinition,
 ): MemoryWorkflowOwners {
-  const states = profile.owners.states ?? {};
-  const get = (key: string): ActionOwnerKind =>
-    states[key]?.kind ?? "none";
+  const o = profile.owners;
+  const get = (key: OwnerStep): ActionOwnerKind =>
+    o.states?.[key]?.kind ?? o[key]?.kind ?? "none";
   return {
     planning: get("planning"),
     plan_review: get("plan_review"),
