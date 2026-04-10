@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7707-b35a-73a1-a441-719783baeefe",
+  "occurred_at": "2026-04-10T10:54:46.618733Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Plan complete for foolery-19f6. 5 changes across 3 workflow files: bump actions/checkout v4→v6, actions/upload-artifact v4→v6 (both node24), replace softprops/action-gh-release@v2 (still node20) with gh release upload CLI. oven-sh/setup-bun@v2 already node24. Verification strategy includes static actionlint, workflow_dispatch build-path test, AND a draft pre-release to validate the release:published asset upload path end-to-end (addressing prior review feedback). Low complexity, low risk, trivial rollback.",
+    "datetime": "2026-04-10T10:54:46.618733Z",
+    "entry_id": "019d7707-b35a-73a1-a441-718f7eb97c72",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

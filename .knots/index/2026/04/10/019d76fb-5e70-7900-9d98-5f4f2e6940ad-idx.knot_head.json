@@ -1,0 +1,34 @@
+{
+  "event_id": "019d76fb-5e70-7900-9d98-5f4f2e6940ad",
+  "occurred_at": "2026-04-10T10:41:18.448222Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6f51",
+    "profile_id": "lease",
+    "state": "lease_active",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "lease_active",
+      "output": {
+        "artifact_type": ""
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Lease: foolery:terminal_manager_take:term-1775817667571-h04eka",
+    "type": "lease",
+    "updated_at": "2026-04-10T10:41:18.448222Z",
+    "workflow_id": "lease_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d76fe-d5a0-7d42-8b98-31d374e48ecc",
+  "occurred_at": "2026-04-10T10:45:05.568664Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "## Implementation Plan\n\n### Summary\nUpdate all three GitHub Actions workflow files to eliminate Node 20 deprecation warnings by upgrading action versions and replacing the one action that lacks a Node 24 release.\n\n### Complexity: Low\nStraightforward version bumps plus one action replacement. No logic changes to build scripts or release behavior.\n\n### Changes by File\n\n**1. `.github/workflows/release-runtime-artifact.yml`** (primary target)\n- `actions/checkout@v4` → `actions/checkout@v6` (node24)\n- `actions/upload-artifact@v4` → `actions/upload-artifact@v7` (node24)\n- `softprops/action-gh-release@v2` → replace with `gh release upload` run step\n  - No Node 24 version available (latest v2.6.1 still node20, no v3)\n  - Replacement: `gh release upload \"${{ github.event.release.tag_name }}\" dist/foolery-runtime-*.tar.gz dist/foolery-runtime-*.tar.gz.sha256 --clobber` with `GH_TOKEN: ${{ github.token }}`\n  - `--clobber` handles re-runs safely; preserves `if: github.event_name == 'release'` guard\n\n**2. `.github/workflows/ci.yml`**\n- `actions/checkout@v4` → `actions/checkout@v6`\n- `oven-sh/setup-bun@v2` — no change needed (already node24)\n\n**3. `.github/workflows/coverage.yml`**\n- `actions/checkout@v4` → `actions/checkout@v6`\n- `oven-sh/setup-bun@v2` — no change needed (already node24)\n\n### Version Summary\n| Action | Current | Target | Node Runtime |\n|---|---|---|---|\n| actions/checkout | @v4 | @v6 | node20 → node24 |\n| actions/upload-artifact | @v4 | @v7 | node20 → node24 |\n| softprops/action-gh-release | @v2 | replaced with gh CLI | node20 → N/A |\n| oven-sh/setup-bun | @v2 | @v2 (no change) | already node24 |\n\n### Risks & Mitigations\n- **checkout@v6**: Basic checkout with no special options — minimal risk.\n- **upload-artifact@v7**: Only uses `name` and `path` — low risk.\n- **gh release upload replacing softprops**: gh CLI is pre-installed on runners. --clobber ensures idempotency. GITHUB_TOKEN available via github.token.\n\n### Test Strategy\n1. Push changes to main — CI workflow self-tests checkout + setup-bun upgrades.\n2. Trigger workflow_dispatch of release-runtime-artifact to validate build + upload-artifact.\n3. Verify the next release produces artifacts without Node 20 deprecation annotations.\n\n### Dependencies\nNone. All target versions are already released and stable.",
+    "datetime": "2026-04-10T10:45:05.568664Z",
+    "entry_id": "019d76fe-d5a0-7d42-8b98-31c2cc66444a",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

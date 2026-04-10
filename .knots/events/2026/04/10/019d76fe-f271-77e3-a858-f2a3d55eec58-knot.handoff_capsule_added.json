@@ -1,0 +1,15 @@
+{
+  "event_id": "019d76fe-f271-77e3-a858-f2a3d55eec58",
+  "occurred_at": "2026-04-10T10:45:12.945385Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Planning complete for Node 20 deprecation fix. Three workflow files need updates: (1) release-runtime-artifact.yml gets checkout v4→v6, upload-artifact v4→v7, and softprops/action-gh-release replaced with `gh release upload` CLI (no node24 version exists for softprops). (2) ci.yml and coverage.yml get checkout v4→v6. oven-sh/setup-bun@v2 already uses node24. Low complexity — version bumps plus one action-to-CLI replacement. No build script or release behavior changes. See plan note for full details.",
+    "datetime": "2026-04-10T10:45:12.945385Z",
+    "entry_id": "019d76fe-f271-77e3-a858-f29ed06db11d",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

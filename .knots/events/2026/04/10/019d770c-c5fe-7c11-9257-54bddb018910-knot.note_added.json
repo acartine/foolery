@@ -1,0 +1,15 @@
+{
+  "event_id": "019d770c-c5fe-7c11-9257-54bddb018910",
+  "occurred_at": "2026-04-10T11:00:19.070903Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "GPT 5.4",
+    "content": "Implementation review rejected: the workflow diff is narrowly scoped and actionlint passes, but the required post-change verification is missing. No GitHub Actions runs exist for branch foolery-19f6-update-actions or commit 52eabd4c, so the updated workflow_dispatch matrix path and the release-only asset upload path have not been verified after the change.",
+    "datetime": "2026-04-10T11:00:19.070903Z",
+    "entry_id": "019d770c-c5fe-7c11-9257-54a8809d9427",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

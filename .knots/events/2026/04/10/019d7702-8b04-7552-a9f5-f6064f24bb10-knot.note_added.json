@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7702-8b04-7552-a9f5-f6064f24bb10",
+  "occurred_at": "2026-04-10T10:49:08.61239Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan is directionally correct and feasible, but the validation strategy does not yet cover the behavior being changed.  exercises build and artifact upload only; it does not execute the  step that will change from  to . Revise the plan to include a concrete verification path for the release-triggered asset upload behavior, either by exercising the release/tag path directly or by restructuring the workflow so the upload logic can be validated under a non-release trigger. Also make the hosted-runner dependency explicit: the CLI replacement is feasible because current GitHub-hosted x64/macOS runners and the current  partner image include GitHub CLI.",
+    "datetime": "2026-04-10T10:48:54Z",
+    "entry_id": "019d7702-8b04-7552-a9f5-f5fdea74573e",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

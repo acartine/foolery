@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7712-38ae-7700-a3b0-3a11a593551f",
+  "occurred_at": "2026-04-10T11:06:16.110516Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented Node 24 GitHub Actions migration on branch foolery-19f6-update-actions at commit 52eabd4ca309. Workflow changes: actions/checkout v4->v6 in ci.yml, coverage.yml, and release-runtime-artifact.yml; actions/upload-artifact v4->v6 in release-runtime-artifact.yml; replaced softprops/action-gh-release@v2 with gh release upload using GITHUB_TOKEN. Local validation in worktree /Users/cartine/foolery/.worktrees/foolery-19f6-update-actions passed: bun run lint, bunx tsc --noEmit, bun run test, bun run build, actionlint on the three touched workflows. GitHub verification passed on the feature-branch commit: workflow_dispatch run 24239815113 succeeded for linux-arm64, linux-x64, and darwin-arm64; release run 24239875353 succeeded for linux-arm64, linux-x64, and darwin-arm64 and completed Upload release assets for all three jobs. Log scans for both runs found no deprecated / Node.js 20 / node20 text. A temporary prerelease tag verify-foolery-19f6-node24-20260410110417 was created only to exercise the release path, verified to contain all six runtime assets plus checksums, then deleted after confirmation.",
+    "datetime": "2026-04-10T11:06:16Z",
+    "entry_id": "019d7712-38ae-7700-a3b0-3a0f44043b52",
+    "model": "gpt-5.4-codex",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

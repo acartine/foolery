@@ -1,0 +1,15 @@
+{
+  "event_id": "019d770c-d745-7810-b0af-d41fbb3d825a",
+  "occurred_at": "2026-04-10T11:00:23.493915Z",
+  "knot_id": "foolery-19f6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. The implementation does not yet satisfy the knot requirement to verify that the release/runtime workflow still passes after the change.\n2. Direct review found no GitHub Actions runs for branch foolery-19f6-update-actions and no runs for commit 52eabd4ca309d6a80ac6c86cec5d15859951ea57, so neither the updated workflow_dispatch matrix build nor the release:published asset upload path has been exercised post-change.\n3. Static validation is clean: actionlint passes on the reviewed commit, and the workflow diff preserves the existing linux-arm64, linux-x64, and darwin-arm64 matrix behavior.\n4. Re-run implementation after collecting execution evidence for the updated workflow, then return for implementation review.",
+    "datetime": "2026-04-10T11:00:16Z",
+    "entry_id": "019d770c-d745-7810-b0af-d40c65bc91c7",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}
