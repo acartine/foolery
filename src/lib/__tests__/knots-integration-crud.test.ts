@@ -268,7 +268,9 @@ describe("listProfiles: success and fallback paths", () => {
     expect(result.data).toHaveLength(1);
     expect(result.data![0].id).toBe("granular");
     expect(result.data![0].owners).toBeDefined();
-    expect(result.data![0].owners.planning.kind).toBe("agent");
+    expect(result.data![0].owners.states.planning.kind).toBe(
+      "agent",
+    );
   });
 });
 
@@ -322,8 +324,14 @@ describe("listProfiles: error and workflow conversion", () => {
     resolveNext(JSON.stringify(workflows));
     const result = await promise;
     expect(result.ok).toBe(true);
-    expect(result.data![0].owners.plan_review.kind).toBe("human");
-    expect(result.data![0].owners.implementation_review.kind).toBe("human");
-    expect(result.data![0].owners.planning.kind).toBe("agent");
+    expect(
+      result.data![0].owners.states.plan_review.kind,
+    ).toBe("human");
+    expect(
+      result.data![0].owners.states.implementation_review.kind,
+    ).toBe("human");
+    expect(
+      result.data![0].owners.states.planning.kind,
+    ).toBe("agent");
   });
 });

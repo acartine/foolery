@@ -80,12 +80,7 @@ export interface KnotWorkflowDefinition {
 }
 
 export interface KnotProfileOwners {
-  planning: { kind: "agent" | "human" };
-  plan_review: { kind: "agent" | "human" };
-  implementation: { kind: "agent" | "human" };
-  implementation_review: { kind: "agent" | "human" };
-  shipment: { kind: "agent" | "human" };
-  shipment_review: { kind: "agent" | "human" };
+  states: Record<string, { kind: "agent" | "human" }>;
 }
 
 export interface KnotProfileDefinition {
@@ -319,12 +314,14 @@ function workflowToLegacyProfile(workflow: KnotWorkflowDefinition): KnotProfileD
     implementation_review_mode: "required",
     output: "remote_main",
     owners: {
-      planning: { kind: "agent" },
-      plan_review: { kind: humanReview ? "human" : "agent" },
-      implementation: { kind: "agent" },
-      implementation_review: { kind: humanReview ? "human" : "agent" },
-      shipment: { kind: "agent" },
-      shipment_review: { kind: "agent" },
+      states: {
+        planning: { kind: "agent" },
+        plan_review: { kind: humanReview ? "human" : "agent" },
+        implementation: { kind: "agent" },
+        implementation_review: { kind: humanReview ? "human" : "agent" },
+        shipment: { kind: "agent" },
+        shipment_review: { kind: "agent" },
+      },
     },
     initial_state: workflow.initial_state,
     states: workflow.states,

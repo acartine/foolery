@@ -7,6 +7,7 @@ import type { BackendResult } from "@/lib/backend-port";
 import type { BackendErrorCode } from "@/lib/backend-errors";
 import { isRetryableByDefault } from "@/lib/backend-errors";
 import type {
+  ActionOwnerKind,
   Invariant,
   MemoryWorkflowDescriptor,
   MemoryWorkflowOwners,
@@ -363,14 +364,16 @@ export function isBlockedByEdges(
 function normalizeOwners(
   profile: KnotProfileDefinition,
 ): MemoryWorkflowOwners {
+  const states = profile.owners.states ?? {};
+  const get = (key: string): ActionOwnerKind =>
+    states[key]?.kind ?? "none";
   return {
-    planning: profile.owners.planning.kind,
-    plan_review: profile.owners.plan_review.kind,
-    implementation: profile.owners.implementation.kind,
-    implementation_review:
-      profile.owners.implementation_review.kind,
-    shipment: profile.owners.shipment.kind,
-    shipment_review: profile.owners.shipment_review.kind,
+    planning: get("planning"),
+    plan_review: get("plan_review"),
+    implementation: get("implementation"),
+    implementation_review: get("implementation_review"),
+    shipment: get("shipment"),
+    shipment_review: get("shipment_review"),
   };
 }
 

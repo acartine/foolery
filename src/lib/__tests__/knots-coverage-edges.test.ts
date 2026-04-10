@@ -141,12 +141,14 @@ describe("listProfiles: parsing and fallback", () => {
       {
         id: "autopilot",
         owners: {
-          planning: { kind: "agent" },
-          plan_review: { kind: "agent" },
-          implementation: { kind: "agent" },
-          implementation_review: { kind: "agent" },
-          shipment: { kind: "agent" },
-          shipment_review: { kind: "agent" },
+          states: {
+            planning: { kind: "agent" },
+            plan_review: { kind: "agent" },
+            implementation: { kind: "agent" },
+            implementation_review: { kind: "agent" },
+            shipment: { kind: "agent" },
+            shipment_review: { kind: "agent" },
+          },
         },
         initial_state: "ready_for_planning",
         states: ["ready_for_planning", "planning"],
@@ -164,12 +166,14 @@ describe("listProfiles: parsing and fallback", () => {
       {
         id: "fallback",
         owners: {
-          planning: { kind: "agent" },
-          plan_review: { kind: "agent" },
-          implementation: { kind: "agent" },
-          implementation_review: { kind: "agent" },
-          shipment: { kind: "agent" },
-          shipment_review: { kind: "agent" },
+          states: {
+            planning: { kind: "agent" },
+            plan_review: { kind: "agent" },
+            implementation: { kind: "agent" },
+            implementation_review: { kind: "agent" },
+            shipment: { kind: "agent" },
+            shipment_review: { kind: "agent" },
+          },
         },
         initial_state: "open",
         states: ["open"],
