@@ -15,7 +15,20 @@ export interface AgentIdentityLike {
   flavor?: string;
   version?: string;
   label?: string;
+  agent_type?: string;
+  vendor?: string;
+  agent_name?: string;
+  lease_model?: string;
   kind?: "cli";
+}
+
+export interface CanonicalLeaseIdentity {
+  agent_type?: string;
+  vendor?: string;
+  provider?: string;
+  agent_name?: string;
+  lease_model?: string;
+  version?: string;
 }
 
 export interface AgentOptionSeed {
@@ -441,22 +454,50 @@ export function buildAgentOptionId(
   return parts.join("-");
 }
 
-export function toExecutionAgentInfo(agent: AgentIdentityLike): ExecutionAgentInfo {
+export function toCanonicalLeaseIdentity(
+  agent: AgentIdentityLike,
+): CanonicalLeaseIdentity {
   const n = normalizeAgentIdentity(agent);
-  const explicitLabel = cleanValue(agent.label);
   const explicitCommand = cleanValue(agent.command);
-  const agentName =
-    explicitLabel && explicitCommand &&
-      explicitLabel.toLowerCase() === explicitCommand.toLowerCase()
-      ? displayCommandLabel(explicitLabel) ?? explicitLabel
-      : explicitLabel ??
-        providerLabel(agent.provider, agent.command) ??
-        explicitCommand ??
-        "Unknown";
+  const agentType =
+    cleanValue(agent.agent_type)
+    ?? cleanValue(agent.kind)
+    ?? "cli";
+  const vendor = cleanValue(agent.vendor)
+    ?? (explicitCommand
+      ? detectAgentProviderId(explicitCommand)
+      : undefined);
+  const provider = cleanValue(agent.provider) ?? n.provider;
+  const explicitLabel = cleanValue(agent.label);
+  const agentName = cleanValue(agent.agent_name)
+    ?? explicitLabel
+    ?? displayCommandLabel(explicitCommand)
+    ?? provider
+    ?? explicitCommand
+    ?? "Unknown";
+  const derivedLeaseModel =
+    [n.flavor, n.model].filter(Boolean).join("/")
+    || cleanValue(agent.model);
+  const leaseModel = cleanValue(agent.lease_model)
+    ?? derivedLeaseModel;
+
   return {
-    agentName,
-    agentProvider: n.provider,
-    agentModel: [n.flavor, n.model].filter(Boolean).join("/") || agent.model,
-    agentVersion: n.version,
+    ...(agentType ? { agent_type: agentType } : {}),
+    ...(vendor && vendor !== "unknown" ? { vendor } : {}),
+    ...(provider ? { provider } : {}),
+    ...(agentName ? { agent_name: agentName } : {}),
+    ...(leaseModel ? { lease_model: leaseModel } : {}),
+    ...(n.version ? { version: n.version } : {}),
+  };
+}
+
+export function toExecutionAgentInfo(agent: AgentIdentityLike): ExecutionAgentInfo {
+  const canonical = toCanonicalLeaseIdentity(agent);
+  return {
+    agentName: canonical.agent_name,
+    agentProvider: canonical.provider,
+    agentModel: canonical.lease_model,
+    agentVersion: canonical.version,
+    agentType: canonical.agent_type,
   };
 }

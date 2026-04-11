@@ -107,7 +107,11 @@ export type RemoveRepoInput = z.infer<typeof removeRepoSchema>;
 // A single registered agent
 export const registeredAgentSchema = z.object({
   command: z.string().min(1),
+  agent_type: z.string().optional(),
+  vendor: z.string().optional(),
   provider: z.string().optional(),
+  agent_name: z.string().optional(),
+  lease_model: z.string().optional(),
   model: z.string().optional(),
   flavor: z.string().optional(),
   version: z.string().optional(),

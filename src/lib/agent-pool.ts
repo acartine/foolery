@@ -357,7 +357,17 @@ function toAgentTarget(
   const target: CliAgentTarget = {
     kind: "cli",
     command: reg.command,
+    ...(reg.agent_type
+      ? { agent_type: reg.agent_type }
+      : {}),
+    ...(reg.vendor ? { vendor: reg.vendor } : {}),
     ...(reg.provider ? { provider: reg.provider } : {}),
+    ...(reg.agent_name
+      ? { agent_name: reg.agent_name }
+      : {}),
+    ...(reg.lease_model
+      ? { lease_model: reg.lease_model }
+      : {}),
     ...(reg.model ? { model: reg.model } : {}),
     ...(reg.flavor ? { flavor: reg.flavor } : {}),
     ...(reg.version ? { version: reg.version } : {}),

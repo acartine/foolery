@@ -11,8 +11,10 @@ import {
   setCache,
 } from "@/lib/settings-core";
 import { foolerySettingsSchema, type FoolerySettings } from "@/lib/schemas";
-import { isDeepStrictEqual } from "node:util";
-import { normalizeSettingsAgents } from "@/lib/agent-config-normalization";
+import {
+  hydrateSettingsAgents,
+  normalizeSettingsAgents,
+} from "@/lib/agent-config-normalization";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -135,21 +137,19 @@ async function computeSettingsDefaultsStatus(): Promise<
   const normalizedResult = normalizeSettingsAgents(merged);
 
   try {
-    const settings = foolerySettingsSchema.parse(
+    const hydrated = hydrateSettingsAgents(
       normalizedResult.normalized,
     );
-    const normalized = settings as unknown as Record<string, unknown>;
+    const settings = foolerySettingsSchema.parse(
+      hydrated,
+    );
     return {
       settings,
-      merged: normalized,
+      merged: normalizedResult.normalized,
       missingPaths,
       normalizationPaths: normalizedResult.changedPaths,
       normalizationChanged:
-        normalizedResult.changedPaths.length > 0 ||
-        !isDeepStrictEqual(
-          normalized,
-          normalizedResult.normalized,
-        ),
+        normalizedResult.changedPaths.length > 0,
       fileMissing: raw.fileMissing,
     };
   } catch (error) {

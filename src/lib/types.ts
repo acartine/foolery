@@ -357,7 +357,11 @@ export interface ApplyBreakdownResult {
 
 export interface RegisteredAgent {
   command: string;
+  agent_type?: string;
+  vendor?: string;
   provider?: string;
+  agent_name?: string;
+  lease_model?: string;
   model?: string;
   flavor?: string;
   version?: string;

@@ -333,6 +333,11 @@ const coreSchemas = {
     required: ["command"],
     properties: {
       command: { type: "string" },
+      agent_type: { type: "string" },
+      vendor: { type: "string" },
+      provider: { type: "string" },
+      agent_name: { type: "string" },
+      lease_model: { type: "string" },
       model: { type: "string" },
       flavor: { type: "string" },
       version: { type: "string" },
