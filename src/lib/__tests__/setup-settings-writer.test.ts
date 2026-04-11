@@ -86,6 +86,42 @@ async function runZeroSelectionWriter(
   return { raw, parsed };
 }
 
+async function runPartialSelectionWriter(
+  scriptName: "setup.sh" | "agent-wizard.sh",
+) {
+  const homeDir = await mkdtemp(
+    join(tmpdir(), "foolery-settings-writer-"),
+  );
+  createdHomes.push(homeDir);
+
+  const scriptPath = join(
+    process.cwd(), "scripts", scriptName,
+  );
+  await execFileAsync(
+    "bash",
+    [
+      "-lc",
+      `
+        source "$1"
+        REGISTERED_AGENTS=()
+        _register_model_agents claude sonnet-4 opus-4
+        _kv_set ACTION_MAP take claude-sonnet-4
+        _write_settings_toml
+      `,
+      "bash",
+      scriptPath,
+    ],
+    { env: { ...process.env, HOME: homeDir } },
+  );
+
+  const settingsPath = join(
+    homeDir, ".config", "foolery", "settings.toml",
+  );
+  const raw = await readFile(settingsPath, "utf8");
+  const parsed = parse(raw) as Record<string, unknown>;
+  return { raw, parsed };
+}
+
 afterEach(async () => {
   await Promise.all(
     createdHomes.splice(0).map((homeDir) =>
@@ -172,6 +208,28 @@ describe("settings writers", () => {
       expect((parsed.agents as Record<string, unknown>).copilot).not.toHaveProperty(
         "model",
       );
+    },
+  );
+
+  it.each(["setup.sh", "agent-wizard.sh"] as const)(
+    "includes only agents with models, not unselected harnesses in %s",
+    async (scriptName) => {
+      const { parsed } =
+        await runPartialSelectionWriter(scriptName);
+
+      const agents = parsed.agents as
+        Record<string, Record<string, string>>;
+      expect(Object.keys(agents)).toHaveLength(2);
+      expect(agents["claude-sonnet-4"]).toMatchObject({
+        command: "claude",
+        model: "sonnet-4",
+      });
+      expect(agents["claude-opus-4"]).toMatchObject({
+        command: "claude",
+        model: "opus-4",
+      });
+      expect(agents).not.toHaveProperty("codex");
+      expect(agents).not.toHaveProperty("gemini");
     },
   );
 });

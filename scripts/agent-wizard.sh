@@ -458,8 +458,6 @@ $models_list
 EOF
     if [[ ${#selected[@]} -gt 0 ]]; then
       _register_model_agents "$aid" "${selected[@]}"
-    else
-      _register_model_agents "$aid"
     fi
   done
 }
