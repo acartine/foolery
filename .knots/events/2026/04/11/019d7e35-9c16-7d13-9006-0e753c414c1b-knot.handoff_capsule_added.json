@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7e35-9c16-7d13-9006-0e753c414c1b",
+  "occurred_at": "2026-04-11T20:22:15.830528Z",
+  "knot_id": "foolery-55b2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment artifact:\n- Integrated to `origin/main` from `foolery-55b2-no-browser-start`\n- Main commit: `1558a00eaf237a2d334a1daca2a424084a79fb25`\n- Remote CI status: `ci=success`, `coverage=success`\n- Scope: `foolery start` and therefore `foolery restart` no longer open a browser implicitly; `foolery open` remains the explicit browser-opening path.",
+    "datetime": "2026-04-11T20:22:15.830528Z",
+    "entry_id": "019d7e35-9c16-7d13-9006-0e68358bdcfb",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "2026-04-11"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7e33-18cc-7400-b429-62be646feeb9",
+  "occurred_at": "2026-04-11T20:19:31.148655Z",
+  "knot_id": "foolery-55b2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation artifact:\n- Branch: `foolery-55b2-no-browser-start`\n- Commit: `1558a00e`\n- Change: removed implicit `open_browser` calls from `start_cmd` in `scripts/install.sh`, which also restores non-opening behavior for `foolery restart`; kept `open_cmd` as the explicit browser-opening path; aligned the `start` help text.\n- Verification run from the dedicated worktree:\n  1. `bun install --frozen-lockfile`\n  2. `bun run lint`\n  3. `bunx tsc --noEmit`\n  4. `bun run test`\n  5. `bun run build`",
+    "datetime": "2026-04-11T20:19:31.148655Z",
+    "entry_id": "019d7e33-18cc-7400-b429-62aeeb7327dd",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "2026-04-11"
+  }
+}

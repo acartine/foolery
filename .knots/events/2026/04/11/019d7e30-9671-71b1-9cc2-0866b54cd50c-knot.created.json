@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7e30-9671-71b1-9cc2-0866b54cd50c",
+  "occurred_at": "2026-04-11T20:16:46.704844Z",
+  "knot_id": "foolery-55b2",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRestore the launcher behavior so `foolery start` acts as a pure server start and `foolery restart` no longer opens the browser implicitly. Keep `foolery open` as the explicit browser-opening path, and align help text with the behavior.\n\nVerification:\n1. Inspect `scripts/install.sh` and confirm `start_cmd` no longer calls `open_browser`, while `open_cmd` still does.\n2. Run `bun install --frozen-lockfile` in the dedicated worktree, then run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` successfully from that worktree.\n\nConstraints:\nDo not introduce any new browser-opening path for `start` or `restart`. Keep the explicit `open` command behavior intact.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Restore no-browser start",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

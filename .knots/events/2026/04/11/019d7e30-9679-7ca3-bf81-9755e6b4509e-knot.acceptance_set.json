@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7e30-9679-7ca3-bf81-9755e6b4509e",
+  "occurred_at": "2026-04-11T20:16:46.704844Z",
+  "knot_id": "foolery-55b2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `scripts/install.sh` removes implicit browser opening from `start_cmd`, so `restart` also avoids opening the browser because it delegates to `start_cmd`.\n2. The launcher help text for `start` matches the restored non-browser-opening behavior.\n3. The project passes lint, typecheck, tests, and build from the implementation worktree."
+  }
+}

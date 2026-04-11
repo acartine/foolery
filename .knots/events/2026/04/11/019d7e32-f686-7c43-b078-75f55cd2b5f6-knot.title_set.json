@@ -1,0 +1,10 @@
+{
+  "event_id": "019d7e32-f686-7c43-b078-75f55cd2b5f6",
+  "occurred_at": "2026-04-11T20:19:22.374023Z",
+  "knot_id": "foolery-1fd3",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Implement interactive OpenCode model picker",
+    "to": "Add searchable model picker for large OpenCode model lists"
+  }
+}

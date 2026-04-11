@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7e31-163c-7e80-8b67-319cf0a9e4fa",
+  "occurred_at": "2026-04-11T20:17:19.420372Z",
+  "knot_id": "foolery-55b2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Restore the prior launcher behavior by removing `open_browser` calls from `start_cmd` in `scripts/install.sh`, which also makes `foolery restart` stop opening a browser because it delegates to `start_cmd`.\n2. Keep `open_cmd` unchanged so `foolery open` remains the explicit browser-opening path.\n3. Update the `start` help text to match the restored behavior.\n4. Run `bun install --frozen-lockfile`, then `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` from the dedicated worktree.\n\nComplexity: low.\nRisk: low; the change is isolated to launcher shell logic, with the main risk being accidental regression of explicit `open` behavior or mismatched help text.",
+    "datetime": "2026-04-11T20:17:19.420372Z",
+    "entry_id": "019d7e31-163c-7e80-8b67-318244a3a4e8",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "2026-04-11"
+  }
+}

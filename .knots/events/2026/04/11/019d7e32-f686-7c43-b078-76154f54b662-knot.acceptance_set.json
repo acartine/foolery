@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7e32-f686-7c43-b078-76154f54b662",
+  "occurred_at": "2026-04-11T20:19:22.374023Z",
+  "knot_id": "foolery-1fd3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- Threshold defined: picker activates when discovered model count exceeds N\n- Large lists (>N models): searchable picker displays with case-insensitive filtering; manual entry available\n- Small lists (≤N models): existing numbered menu displays unchanged\n- Search functionality: filters models as user types; empty input shows all models\n- Manual entry: available in both picker and numbered menu modes, preserves existing behavior\n- Both scripts functional: feature tested and working in setup.sh and agent-wizard.sh\n- Verification: manual testing with varying model list sizes confirms correct mode selection and search behavior"
+  }
+}
