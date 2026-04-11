@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7bac-a95d-7ad0-a44d-49ae5b44e3a0",
+  "occurred_at": "2026-04-11T08:33:26.365473Z",
+  "knot_id": "foolery-d939",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-d939-hide-unselected-harnesses"
+  }
+}

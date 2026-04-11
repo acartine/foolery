@@ -1,0 +1,21 @@
+{
+  "event_id": "019d7bb2-ced7-7aa0-8ad0-c7e8562a990c",
+  "occurred_at": "2026-04-11T08:40:09.175395Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d939",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "setup-cli: hide harnesses with no selected models",
+    "type": "work",
+    "updated_at": "2026-04-11T08:40:09.175395Z",
+    "workflow_id": "work_sdlc"
+  }
+}

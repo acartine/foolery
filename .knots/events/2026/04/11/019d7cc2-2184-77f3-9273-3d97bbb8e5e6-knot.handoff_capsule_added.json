@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7cc2-2184-77f3-9273-3d97bbb8e5e6",
+  "occurred_at": "2026-04-11T13:36:30.596254Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review requested revisions. Main gaps: agent-wizard.sh still needs additive dispatch and pool preservation, the shared settings reader and writer must round-trip provider, flavor, and version agent metadata from smol-toml output, and the large-list model-picker flow needs current-selection visibility plus duplicate-safe additive behavior. Expand the PTY tests to seed advanced pools and agent metadata, then rerun agent-wizard and setup to prove one targeted change leaves unrelated config untouched.",
+    "datetime": "2026-04-11T13:35:41Z",
+    "entry_id": "019d7cc2-2184-77f3-9273-3d8c66ecfb69",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

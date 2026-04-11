@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8bfc-7bf0-9da7-0db3ba56b6dd",
+  "occurred_at": "2026-04-11T14:08:38.396178Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Use only canonical agent identity fields to create Knots leases and to pass claim/poll metadata. Foolery should send `agent_type`, `provider`, `agent_name` when present, `lease_model`, and `version`, then rely on Knots to expose and stamp that metadata."
+  }
+}

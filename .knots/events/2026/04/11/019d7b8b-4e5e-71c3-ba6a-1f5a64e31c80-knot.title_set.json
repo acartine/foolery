@@ -1,0 +1,10 @@
+{
+  "event_id": "019d7b8b-4e5e-71c3-ba6a-1f5a64e31c80",
+  "occurred_at": "2026-04-11T07:57:00.3828Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.title_set",
+  "data": {
+    "from": "OpenCode cli setup for model selection should be smarter",
+    "to": "Add search/filter capability to OpenCode CLI model selection"
+  }
+}

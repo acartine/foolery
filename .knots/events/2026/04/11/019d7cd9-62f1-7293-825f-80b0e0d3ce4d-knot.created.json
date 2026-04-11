@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7cd9-62f1-7293-825f-80b0e0d3ce4d",
+  "occurred_at": "2026-04-11T14:01:54.673666Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAfter canonical agent identity config exists, update Foolery lease creation and claim/poll wiring to send only the canonical lease metadata that Knots should own and propagate. Use the explicit lease identity fields to create the lease, claim with the lease, and rely on Knots-exposed lease metadata rather than rebuilding alternate agent identity strings inside Foolery.\n\nVerification:\n1. Run targeted coverage for the lease and claim/poll paths in terminal-manager, structured execution backend helpers, and Knots operation wrappers, and confirm the canonical lease identity fields are the only values passed into lease/claim/poll metadata.\n2. Start a representative take or poll for Codex, Claude, and OpenCode examples and inspect `kno lease list --json`; the lease `agent_info` fields should match the canonical identity fields from config.\n3. Claim a knot with the lease and inspect `kno claim ... --json` and `kno show ... --json`; the knot should expose the same canonical lease metadata without Foolery substituting display labels or raw CLI model identifiers.\n\nConstraints:\n- Use `agentType`, `provider`, `agentName` when present, `leaseModel`, and `version` as the lease metadata source of truth.\n- Do not send display labels or raw CLI `model` values as lease metadata unless a canonical field explicitly requires it.\n- Prefer Knots lease metadata as the upstream source for later Foolery consumers.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create Knots leases from canonical agent identity",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

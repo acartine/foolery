@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7b9c-6c6d-7fb1-8265-80e74180ba12",
+  "occurred_at": "2026-04-11T08:15:42.188896Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.created",
+  "data": {
+    "body": "you don't want to have reselect al lthe same models and agents for everything, you should be able to see what is already selected and keep it by default, or manually remove it.  for example is i want to add a new opencode mode, i don't want to wipe out dozens of agent and dispatch configs by simply adding one opencode model.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "setup cli, model selection, dispatch config: throws away previous settings, not additive",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

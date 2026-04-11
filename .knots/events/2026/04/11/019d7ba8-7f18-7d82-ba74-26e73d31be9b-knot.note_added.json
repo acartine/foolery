@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7ba8-7f18-7d82-ba74-26e73d31be9b",
+  "occurred_at": "2026-04-11T08:28:53.400877Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review requests revision.\n\n1. The plan does not preserve all unrelated settings currently clobbered by the shell writers. Both writers still hardcode `[backend] type = \"auto\"` and `[defaults] profileId = \"\"` in `scripts/setup.sh:653-654` and `scripts/agent-wizard.sh:245-246`, and the schema still persists `terminalLightTheme` in `src/lib/schemas.ts:196-206`. Step 1 only proposes loading dispatch/default concurrency, agents, actions, pools, and scope refinement prompt, and Step 6 incorrectly says no writer changes are needed. As written, rerunning setup would still overwrite backend/defaults and drop terminalLightTheme, which violates the additive-update requirement for unrelated configuration.\n\n2. The proposed test additions in `src/lib/__tests__/setup-settings-writer.test.ts:12-177` only exercise writer round-trips. They do not verify the acceptance criterion that the CLI shows current configuration before prompting, nor that step-scoped edits keep current selections by default. Revise the plan to include shell-flow coverage that seeds an existing settings file, runs the relevant wizard path, and asserts both preserved values and the displayed/defaulted current selections.",
+    "datetime": "2026-04-11T08:28:11Z",
+    "entry_id": "019d7ba8-7f18-7d82-ba74-26d48eaba8e1",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

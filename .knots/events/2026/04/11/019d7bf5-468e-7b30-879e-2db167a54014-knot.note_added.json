@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bf5-468e-7b30-879e-2db167a54014",
+  "occurred_at": "2026-04-11T09:52:45.198927Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude Opus 4.6",
+    "content": "Branch: feat/model-search-picker (remote). Two commits: 232f3d92 (feat: add searchable model picker) and 8e94014d (fix: conditional source). All quality gates pass: lint, tsc, 2628 vitest tests, bash model-picker tests (14/14), and next build. Implementation adds scripts/model-picker.sh with interactive search picker (case-insensitive substring filter, arrow key navigation, Enter to select, Esc to clear, backspace support, match count display). Integrated into setup.sh and agent-wizard.sh with threshold gate (>20 models triggers search mode). Both child knots (ec3a, cd7e) are in ready_for_shipment.",
+    "datetime": "2026-04-11T09:52:45.198927Z",
+    "entry_id": "019d7bf5-468e-7b30-879e-2da60ad8d2d6",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

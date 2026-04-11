@@ -1,0 +1,10 @@
+{
+  "event_id": "019d7b86-29c3-7333-980c-1e123b6777ce",
+  "occurred_at": "2026-04-11T07:51:23.331148Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.title_set",
+  "data": {
+    "from": "foolery setup: directory scan: Enter numbers to mount:  Don't show mountted repositories a second time",
+    "to": "setup: show only unmounted repositories in discovery scan"
+  }
+}

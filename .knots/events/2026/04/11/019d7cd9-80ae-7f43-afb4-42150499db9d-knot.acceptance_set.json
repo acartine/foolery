@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cd9-80ae-7f43-afb4-42150499db9d",
+  "occurred_at": "2026-04-11T14:02:02.28038Z",
+  "knot_id": "foolery-4973",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Active screen and related agent identity views derive `Agent`, `Model`, and `Version` from Knots lease metadata, using lease `agentName` when present plus `leaseModel` and `version`.\n2. Active-agent UI code no longer treats `knotsHandoffCapsules`, step metadata, or terminal-store display labels as the authoritative source for active agent identity columns.\n3. Representative Codex, Claude, and OpenCode lease examples render as separate `Agent`, `Model`, and `Version` values without regressions such as `Agent = \"Claude Opus 4.6\"` and `Model = \"Claude Opus\"`.\n4. Automated UI/state coverage exists to compare rendered active-agent values against lease metadata exposed by Knots."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bc0-4e62-7d60-b399-d87fb4c472ef",
+  "occurred_at": "2026-04-11T08:54:53.794119Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "GPT 5.4",
+    "content": "Plan review rejected. The proposed search-then-select loop does not satisfy two explicit acceptance criteria: filtering is not real-time because results update only after submitting a query, and the design keeps numeric selection only instead of supporting arrow-key navigation in filtered results. The test strategy is also incomplete for this behavior: sourcing the script in a unit test can cover pure filtering helpers, but it cannot validate /dev/tty incremental input, backspace handling, redraw behavior, or arrow-key selection. Revise the plan to describe an incremental TTY selector/redraw loop, a concrete approach for arrow keys and backspace/clear-to-full-list behavior, and PTY-based coverage for the interactive flow in setup.sh and agent-wizard.sh.",
+    "datetime": "2026-04-11T08:54:53.794119Z",
+    "entry_id": "019d7bc0-4e62-7d60-b399-d864b27efd54",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

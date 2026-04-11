@@ -1,0 +1,21 @@
+{
+  "event_id": "019d7b86-9b80-7862-8705-a5e4c654f26c",
+  "occurred_at": "2026-04-11T07:51:52.436624Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-58ed",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Fix agent identity and follow-up prompt handling",
+    "type": "work",
+    "updated_at": "2026-04-11T07:51:52.436624Z",
+    "workflow_id": "work_sdlc"
+  }
+}

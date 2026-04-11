@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7bdf-272b-76c3-9df4-d45362b3bd3f",
+  "occurred_at": "2026-04-11T09:28:35.371017Z",
+  "knot_id": "foolery-cd7e",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:feat/model-search-picker"
+  }
+}

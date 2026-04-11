@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8c38-7170-bcae-8f30ed3dc5b8",
+  "occurred_at": "2026-04-11T14:08:38.4566Z",
+  "knot_id": "foolery-4973",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Active screen derives `Agent`, `Model`, and `Version` directly from lease metadata, using lease `agent_name` when present plus `lease_model` and `version`.\n2. Active-agent UI code no longer treats `knotsHandoffCapsules`, step metadata, or terminal-store labels as authoritative for these columns.\n3. Representative Claude, Codex, and OpenCode lease examples render as separate `Agent`, `Model`, and `Version` values without collapsed strings like `Agent = \"Claude Opus 4.6\"`.\n4. Automated UI/state coverage compares rendered active-agent values against Knots lease metadata."
+  }
+}

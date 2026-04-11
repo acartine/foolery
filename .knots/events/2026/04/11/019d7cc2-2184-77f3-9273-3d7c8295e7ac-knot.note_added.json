@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7cc2-2184-77f3-9273-3d7c8295e7ac",
+  "occurred_at": "2026-04-11T13:36:30.596254Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Rejected plan review. The current plan still misses additive preservation in scripts/agent-wizard.sh: its writer still serializes empty pools and its action remap flow still defaults to the first agent, so rerunning it to add a model can still wipe existing dispatch config. The parser and writer scope also omits agents provider, flavor, and version fields from smol-toml settings, so reruns would strip existing agent metadata. Finally, the plan does not cover the large-list model picker path that goes through model-picker.sh, so providers with many models would not show current registrations or duplicate-safe additive selection. Revise the plan to make both setup.sh and agent-wizard.sh preserve current mappings and pools by default, round-trip full agent metadata, and add interactive tests that cover advanced dispatch plus the search-picker path.",
+    "datetime": "2026-04-11T13:35:41Z",
+    "entry_id": "019d7cc2-2184-77f3-9273-3d60e9af2c7f",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

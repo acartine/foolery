@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7c0f-1e59-7611-8343-b3a150ac4228",
+  "occurred_at": "2026-04-11T10:20:58.841285Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-2dfe-model-search"
+  }
+}

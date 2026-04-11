@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8bb5-7053-acfd-89aa4836c632",
+  "occurred_at": "2026-04-11T14:08:38.325587Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Canonicalize registered agent config for lease identity. Keep `model` as the raw CLI identifier. Add explicit canonical fields for lease metadata: `agent_type`, `vendor`, `provider`, `agent_name`, `lease_model`, and `version`. Remove stored `label` as an identity source. Add explicit parsing and legacy-config rewrite/backfill for Codex, Claude, and OpenCode. Make pool references resolve from persisted agent ids rather than runtime naming conventions."
+  }
+}

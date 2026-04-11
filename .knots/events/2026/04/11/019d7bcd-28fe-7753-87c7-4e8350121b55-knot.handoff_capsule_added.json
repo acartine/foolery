@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bcd-28fe-7753-87c7-4e8350121b55",
+  "occurred_at": "2026-04-11T09:08:56.190007Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Plan complete for interactive model picker with incremental TTY input. Key design: raw terminal mode (stty raw -echo) with character-by-character read loop from /dev/tty. Arrow keys parsed via ESC sequence detection with 100ms timeout. Backspace removes last query char and refilters (empty query restores full list). Pre-computed lowercase array for 175+ model filtering avoids per-keystroke subprocesses. Multi-select via Enter toggle, Tab/Esc to submit. Threshold dispatch: >15 models triggers interactive picker, <=15 keeps existing numbered menu (no regression). \"Other (type manually)\" preserved as virtual entry with temporary raw mode exit. Changes to both setup.sh and agent-wizard.sh. Two new test scripts: unit tests for filter logic, PTY-based integration tests using script command with explicit byte sequences for arrow keys, backspace, and selection.",
+    "datetime": "2026-04-11T09:08:56.190007Z",
+    "entry_id": "019d7bcd-28fe-7753-87c7-4e704e94a1bc",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

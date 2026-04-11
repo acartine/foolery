@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bb3-2c32-7010-aecb-d6eb6bade20b",
+  "occurred_at": "2026-04-11T08:40:33.074711Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Plan review rejected for revision.\n\nRequired revisions before implementation:\n- Expand the reader plan to handle real existing settings files, not only the shell writer's TOML subset. `saveSettings()` in `src/lib/settings.ts` writes via `smol-toml`, including escaped strings such as `scopeRefinement.prompt = \"line1\\nline2\\n\"`, so a reader that only handles the shell's triple-quoted prompt form is incomplete.\n- Make the merge behavior explicit in both setup entry points. `scripts/setup.sh` and `scripts/agent-wizard.sh` both reset `REGISTERED_AGENTS=()` after detection, so simply seeding existing settings is not enough; the plan must explicitly remove or replace those resets and define the dedup/merge behavior in both scripts.\n- Expand the interactive plan for dispatch editing. The current revision only defaults the dispatch mode choice, but `scripts/setup.sh` still prompts action mappings with `Choice [1]` and rebuilds pools from an empty `pool_count=0` flow. The plan must explicitly show current action assignments and current pool membership/weights, and let Enter keep them by default.\n- Strengthen verification for interactive behavior. Seed+write tests are not enough to prove the acceptance criteria; add tests that exercise incremental edits and assert current mappings/pools are shown and preserved when the user keeps defaults.",
+    "datetime": "2026-04-11T08:39:55Z",
+    "entry_id": "019d7bb3-2c32-7010-aecb-d6df9d31a454",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

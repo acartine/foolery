@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7cd9-80a8-75f0-b0a0-eab2403768f2",
+  "occurred_at": "2026-04-11T14:02:02.28038Z",
+  "knot_id": "foolery-4973",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nUpdate the active-agent screens and views so the displayed agent identity comes directly from Knots lease metadata instead of handoff capsules, step metadata, or terminal-store display labels. Build the active agent display from lease `agentName` when present plus `leaseModel` and `version`, and split the `Agent`, `Model`, and `Version` columns directly from the lease-backed values.\n\nVerification:\n1. Run targeted UI/state coverage for the active agent info mapping and active table rendering, and confirm representative Codex, Claude, and OpenCode lease examples render the expected `Agent`, `Model`, and `Version` values.\n2. Start a running claimed knot, compare the Active screen columns and related agent identity UI against `kno lease list --json` and `kno show ... --json`, and confirm the UI matches the lease metadata exactly.\n3. Verify that the active-agent views no longer change when handoff capsules, step metadata, or terminal display labels disagree with the lease metadata.\n\nConstraints:\n- Columnar values should be sourced from the lease metadata exposed by Knots.\n- Build the display from `agentName` if not null, plus `leaseModel` and `version`; do not collapse those values back into a single label.\n- Treat handoff capsules and step metadata as non-authoritative for active agent identity.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Drive active agent UI from lease metadata",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

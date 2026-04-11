@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7b91-d691-7013-a237-5f3619a1e6a4",
+  "occurred_at": "2026-04-11T08:04:08.465666Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: fix/setup-hide-mounted-repos. Commit: 4755f0af14957dca435c566c73419e660d6a685b. Setup scan header now reports the unmounted repository count, and the regression test asserts the exact counted header while mounted repositories remain excluded from subsequent scans. Validation: bash scripts/test-setup-scan-unmounted.sh; bun run lint; bunx tsc --noEmit; bun run test; bun run build.",
+    "datetime": "2026-04-11T08:03:48Z",
+    "entry_id": "019d7b91-d691-7013-a237-5f2e746dd930",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

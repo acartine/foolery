@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7baa-9cea-7c40-a5fd-3cc15111b0c3",
+  "occurred_at": "2026-04-11T08:31:12.106363Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Plan complete for searchable model selection. All implementation stays within scripts/setup.sh (self-contained, no external deps). Uses submit-then-filter pattern: threshold-based dispatch (>15 models triggers search), _filter_models() for case-insensitive substring matching via tr+case glob, _collect_models_searchable() for the interactive loop with count display and re-search. Preserves \"Other (type manually)\" fallback. Tests: Vitest unit test for _filter_models in src/lib/__tests__/setup-model-filter.test.ts, PTY smoke test extension with mocked opencode producing 20+ models. Small-list behavior unchanged (no regression).",
+    "datetime": "2026-04-11T08:31:12.106363Z",
+    "entry_id": "019d7baa-9cea-7c40-a5fd-3cbb596d56fd",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

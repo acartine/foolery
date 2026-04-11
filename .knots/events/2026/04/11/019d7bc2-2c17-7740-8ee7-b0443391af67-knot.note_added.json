@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bc2-2c17-7740-8ee7-b0443391af67",
+  "occurred_at": "2026-04-11T08:56:56.087178Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "foolery",
+    "content": "Foolery take-loop: rolled back from planning to ready_for_planning — agent \"GPT 5.4\" left knot in action state",
+    "datetime": "2026-04-11T08:56:56.087178Z",
+    "entry_id": "019d7bc2-2c17-7740-8ee7-b03ea8769f89",
+    "model": "unknown",
+    "username": "foolery",
+    "version": "unknown"
+  }
+}

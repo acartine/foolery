@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7b8e-9b67-70d0-bbc2-37260d66d459",
+  "occurred_at": "2026-04-11T08:00:36.711147Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Requested changes after implementation review of branch fix/setup-hide-mounted-repos at commit 34333c71514ea7158eb85c79a485de393303fe5b. The implementation correctly filters mounted repositories out of subsequent scans and the artifact passed `bash scripts/test-setup-scan-unmounted.sh`, `bun run test -- src/lib/__tests__/app-update.test.ts`, `bunx tsc --noEmit`, `bun run lint`, and `bun run build` in an isolated checkout. However, acceptance criterion 2 specifically requires the UI message to display 'Found N unmounted repositories'. The implementation currently emits 'Found unmounted repositories:' with no count, and the new test only asserts that the header contains the word 'unmounted', so the required exact behavior is still missing and unverified.",
+    "datetime": "2026-04-11T08:00:11Z",
+    "entry_id": "019d7b8e-9b67-70d0-bbc2-3715aaee704b",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bc0-5ed0-7e01-bcba-196d0f4bc741",
+  "occurred_at": "2026-04-11T08:54:58.000446Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected. The current proposal only adds a submitted search prompt plus a numbered filtered menu. That is not sufficient for the stated acceptance criteria, which require real-time filtering while typing, full-list restoration when the query is cleared via backspace, and arrow-key selection from filtered results. Please revise the implementation plan to cover an incremental /dev/tty input loop with redraw behavior, specify how arrow keys and backspace are parsed, and add PTY-based validation for the interactive flow in both scripts. Pure helper tests are still useful, but they are not enough on their own for this TTY-driven UX.",
+    "datetime": "2026-04-11T08:54:22Z",
+    "entry_id": "019d7bc0-5ed0-7e01-bcba-19503ea81336",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7b8e-9b67-70d0-bbc2-370a9b721a37",
+  "occurred_at": "2026-04-11T08:00:36.711147Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review requested changes: acceptance criterion 2 requires the scan message to display 'Found N unmounted repositories', but commit 34333c71514ea7158eb85c79a485de393303fe5b emits 'Found unmounted repositories:' with no count. The added shell test only checks that the header mentions 'unmounted', so the missing count is not covered.",
+    "datetime": "2026-04-11T08:00:11Z",
+    "entry_id": "019d7b8e-9b67-70d0-bbc2-36fc6c12f5d3",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

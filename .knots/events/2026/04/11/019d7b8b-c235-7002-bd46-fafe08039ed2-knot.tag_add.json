@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b8b-c235-7002-bd46-fafe08039ed2",
+  "occurred_at": "2026-04-11T07:57:30.037769Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:fix/setup-hide-mounted-repos"
+  }
+}

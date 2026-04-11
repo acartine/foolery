@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bed-750f-74d1-930f-7383b6768a8d",
+  "occurred_at": "2026-04-11T09:44:12.815743Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. `scripts/model-picker.sh:160-202` never maps digit keys to menu selection. `Enter` commits the highlighted row and arrows move the cursor, but every printable character, including `1`-`9`, is appended to `query`, so the acceptance criterion requiring selection via number/arrow keys is not met.\n2. The added tests only exercise `_model_picker_filter` and the threshold constant (`scripts/test-model-picker.sh:34-167`, `src/lib/__tests__/model-picker-filter.test.ts:14-101`). They do not drive `_model_search_pick_one` / `_model_search_pick` through a PTY to cover real-time filtering, backspace or Esc clearing, arrow navigation, or numeric selection, so the required interactive behavior is not actually verified.\nValidation summary: `bash scripts/test-model-picker.sh`, targeted `vitest` for `src/lib/__tests__/model-picker-filter.test.ts`, `eslint .`, and `tsc --noEmit` passed in an isolated branch snapshot. The full unit suite still hits an unrelated existing sandbox failure in `src/lib/__tests__/app-update.test.ts`, and `next build` could not be validated from the archive snapshot because Turbopack rejects a symlinked `node_modules`.",
+    "datetime": "2026-04-11T09:44:12Z",
+    "entry_id": "019d7bed-750f-74d1-930f-7374611eebc1",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

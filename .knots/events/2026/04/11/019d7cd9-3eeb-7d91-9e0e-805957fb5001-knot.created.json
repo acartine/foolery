@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7cd9-3eeb-7d91-9e0e-805957fb5001",
+  "occurred_at": "2026-04-11T14:01:45.451731Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nIntroduce canonical agent identity fields in Knots-related Foolery config so lease metadata can be produced without guessing from display labels or overloading the CLI model identifier. Keep the existing `model` field as the raw CLI model/config value, add explicit lease identity fields for the data Knots needs, add provider-specific parsing for Codex, Claude, and OpenCode, rewrite or backfill legacy configs into the canonical shape, and make pool references resolve from persisted agent ids instead of runtime naming conventions.\n\nVerification:\n1. Run targeted settings coverage for schema/load/scan/migration behavior and confirm Codex, Claude, and OpenCode examples load and save with stable canonical identity fields while preserving the raw `model` value.\n2. Inspect representative written TOML fixtures or `~/.config/foolery/settings.toml` output and confirm the canonical lease identity fields are present, legacy label-derived data is removed or ignored, and pool agent ids resolve from persisted config data.\n3. Validate legacy-config rewrite/backfill on representative old settings fixtures and confirm the rewritten config preserves routing while normalizing lease identity data.\n\nConstraints:\n- Do not repurpose the existing `model` field; it must remain the raw identifier/config value used by the agent CLI.\n- Remove display `label` as an authoritative identity source; display strings should be derived from canonical fields.\n- Cover Codex, Claude, and OpenCode explicitly; do not rely on one generic parser for all three.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Canonicalize agent lease identity config",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

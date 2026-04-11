@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7bcf-f2dc-7d63-84a0-47b8d063c983",
+  "occurred_at": "2026-04-11T09:11:58.939877Z",
+  "knot_id": "foolery-cd7e",
+  "type": "knot.created",
+  "data": {
+    "body": "Add focused shell and PTY coverage for OpenCode model filtering, query clearing, keyboard navigation, multi-select behavior, and the existing small-list fallback path.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add OpenCode model picker regression coverage",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

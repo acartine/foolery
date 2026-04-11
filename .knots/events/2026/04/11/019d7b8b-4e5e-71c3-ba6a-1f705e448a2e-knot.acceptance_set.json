@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b8b-4e5e-71c3-ba6a-1f705e448a2e",
+  "occurred_at": "2026-04-11T07:57:00.3828Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- [ ] User can type a search query when prompted to select a model\n- [ ] List filters in real-time as text is typed (case-insensitive substring match)\n- [ ] Example searches work correctly: \"glm\", \"minimax\", \"qwen\" (and mixed-case variants) return relevant results\n- [ ] Backspacing/clearing search shows the full model list again\n- [ ] Filtered results count is visible (e.g., \"3 of 175 models match\" or similar)\n- [ ] Search is responsive with 175+ models (no perceptible lag when typing)\n- [ ] User can select a model from filtered results via number/arrow keys\n- [ ] No regression: model selection works normally if user does not search"
+  }
+}

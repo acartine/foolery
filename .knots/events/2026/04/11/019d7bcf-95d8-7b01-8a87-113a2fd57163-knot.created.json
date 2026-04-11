@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7bcf-95d8-7b01-8a87-113a2fd57163",
+  "occurred_at": "2026-04-11T09:11:35.128657Z",
+  "knot_id": "foolery-1fd3",
+  "type": "knot.created",
+  "data": {
+    "body": "Add a searchable, case-insensitive model picker to scripts/setup.sh and scripts/agent-wizard.sh for large discovered model lists while preserving manual entry and the existing small-list numbered flow.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Implement interactive OpenCode model picker",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bbf-bd4b-7b93-9619-9ac7537bde23",
+  "occurred_at": "2026-04-11T08:54:16.651832Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected for two blocking gaps:\n1. Step 4 proposes filtering out detected agents when their base command already has registered variants. That blocks the main additive use case of adding a new model variant to an existing provider family, such as adding another Codex model without wiping current Codex variants.\n2. The test plan still lacks the interactive verification explicitly requested in the prior rejection. Round-trip/parser tests are useful, but this change also needs a PTY-driven setup rerun that proves keeping current selections by default preserves unrelated agents, action mappings, pools, and defaults while adding one targeted change.\nRevise the plan so scan/add flows allow incremental variants for already-registered providers, and add an interactive verification path using the existing setup/install shell harnesses or a similar PTY test.",
+    "datetime": "2026-04-11T08:53:44Z",
+    "entry_id": "019d7bbf-bd4b-7b93-9619-9aba305f6c01",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

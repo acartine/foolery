@@ -1,0 +1,47 @@
+{
+  "event_id": "019d7bd1-3037-7e53-ad37-d3730a0ba0e8",
+  "occurred_at": "2026-04-11T09:13:20.183074Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ec3a",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Implement interactive OpenCode model picker",
+    "type": "work",
+    "updated_at": "2026-04-11T09:13:20.183074Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b9c-b1dc-74a0-b770-79df35ad9e7f",
+  "occurred_at": "2026-04-11T08:15:59.964117Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The setup CLI currently replaces configuration settings entirely rather than preserving existing values. When users make incremental changes—such as adding a new model or dispatch configuration—the CLI erases all unrelated configurations. This forces users to reconfigure everything from scratch.\n\nThe setup CLI should preserve existing configurations during updates: users should see their current selections, be able to keep them by default, and only modify the specific setting they intend to change. For example, adding a new OpenAI model variant should not clear existing models, agents, or dispatch configs."
+  }
+}

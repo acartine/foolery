@@ -1,0 +1,10 @@
+{
+  "event_id": "019d7b9c-b1dc-74a0-b770-79cac6d2dced",
+  "occurred_at": "2026-04-11T08:15:59.964117Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.title_set",
+  "data": {
+    "from": "setup cli, model selection, dispatch config: throws away previous settings, not additive",
+    "to": "Make setup CLI additive instead of replacing configurations"
+  }
+}

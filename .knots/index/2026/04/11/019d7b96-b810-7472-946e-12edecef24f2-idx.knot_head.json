@@ -1,0 +1,21 @@
+{
+  "event_id": "019d7b96-b810-7472-946e-12edecef24f2",
+  "occurred_at": "2026-04-11T08:09:28.33602Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2521",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "setup: show only unmounted repositories in discovery scan",
+    "type": "work",
+    "updated_at": "2026-04-11T08:09:28.33602Z",
+    "workflow_id": "work_sdlc"
+  }
+}

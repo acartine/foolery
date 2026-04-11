@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7ba4-9c0c-78a0-bd2f-86806eb9eddc",
+  "occurred_at": "2026-04-11T08:24:38.668288Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected. Revise around three concrete gaps: (1) standalone setup flow cannot depend on a sibling scripts/select-models.ts file or dev-only prompt packages because install.sh downloads setup.sh by itself and the runtime artifact excludes scripts/ plus devDependencies; (2) preserve the current manual fallback/Other entry path in the searchable UX so large-list users can still type an arbitrary model; (3) put automated coverage on the repo's actual test rails by using src/**/__tests__/** for Vitest and extending the installed PTY smoke test for setup.sh. After those issues are addressed, the plan should be ready for implementation.",
+    "datetime": "2026-04-11T08:23:35Z",
+    "entry_id": "019d7ba4-9c0c-78a0-bd2f-867872938f7c",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex"
+  }
+}

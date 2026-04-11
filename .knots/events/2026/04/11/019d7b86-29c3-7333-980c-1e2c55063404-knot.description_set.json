@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b86-29c3-7333-980c-1e2c55063404",
+  "occurred_at": "2026-04-11T07:51:23.331148Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.description_set",
+  "data": {
+    "description": "When mounting repositories in Step 1 of setup, the UI correctly displays currently-mounted repositories. However, when scanning for additional repositories to mount, the results include all discovered repositories—including already-mounted ones. This is confusing and defeats the purpose of the scan. The UI should filter out mounted repositories and display 'Found X unmounted repositories' instead of 'Found repositories'."
+  }
+}

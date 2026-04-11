@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7ba1-b201-7132-b66a-a93fb688c470",
+  "occurred_at": "2026-04-11T08:21:27.681734Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Plan drafted for searchable CLI model selection. Key decisions: (1) Bun-based TypeScript selector script (scripts/select-models.ts) using @inquirer/search or @clack/prompts, invoked from bash scripts when model count > 15 and bun is available. (2) Existing numbered list preserved as fallback. (3) Five implementation steps: add library, create selector script, add bash helper, modify _collect_discovered_models() in both setup.sh and agent-wizard.sh, write tests. Estimated 3-5 hours, medium complexity, low-medium risk. Primary risk is library/Bun compatibility—mitigated by fallback path. Ready for plan_review gate.",
+    "datetime": "2026-04-11T08:21:27.681734Z",
+    "entry_id": "019d7ba1-b201-7132-b66a-a9267711997a",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

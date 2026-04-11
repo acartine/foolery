@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7ccd-e777-7823-81ea-29789c5062fe",
+  "occurred_at": "2026-04-11T13:49:22.167042Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review rejected pending two correctness fixes and one coverage expansion: remove the single-agent overwrite branch from the additive flow, make the shell writer round-trip quoted/free-form agent ids, and prove preservation by rerunning both setup.sh and agent-wizard.sh against seeded advanced settings with metadata and pools intact.",
+    "datetime": "2026-04-11T13:49:22Z",
+    "entry_id": "019d7ccd-e777-7823-81ea-296fd6028616",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

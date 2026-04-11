@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b86-29c3-7333-980c-1e358f136a9d",
+  "occurred_at": "2026-04-11T07:51:23.331148Z",
+  "knot_id": "foolery-2521",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Initial \"Mounted repositories\" display in Step 1 works as currently implemented\n2. When user initiates a new directory scan to add more repositories:\n   - Results filter to show only unmounted repositories (mounted ones are excluded)\n   - Message displays \"Found N unmounted repositories\" (not generic \"Found repositories\")\n   - Selection list contains only unmounted repositories\n3. Previously-mounted repositories do not appear in any subsequent discovery scans\n4. **Validation**: Manually mount 2-3 repositories, trigger a new scan, verify those mounted repos do not appear in the results list or selection interface"
+  }
+}

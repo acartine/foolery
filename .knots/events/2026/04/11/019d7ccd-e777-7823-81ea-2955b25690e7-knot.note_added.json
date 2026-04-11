@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7ccd-e777-7823-81ea-2955b25690e7",
+  "occurred_at": "2026-04-11T13:49:22.167042Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review requests revisions.\n\n1. The plan must explicitly remove or rewrite the FOUND_AGENTS==1 fast path in both scripts/setup.sh and scripts/agent-wizard.sh. As written today, that branch re-registers a single detected command and resets action mappings, which would still clobber existing model variants and dispatch selections in the common single-agent case.\n\n2. The shared reader mentions [agents.\"<id>\"] input, but the plan does not add matching writer logic for quoted/free-form agent ids. That is a correctness gap because the settings API/schema accept arbitrary non-empty ids, so preserving existing agents requires TOML-safe quoting/escaping on write plus round-trip tests.\n\n3. Expand the PTY/integration coverage to rerun both setup.sh and agent-wizard.sh against seeded advanced settings, metadata, and preserved pools/actions so a one-setting edit proves unrelated configuration survives unchanged, including the single-agent path.",
+    "datetime": "2026-04-11T13:49:22Z",
+    "entry_id": "019d7ccd-e777-7823-81ea-29476e2c904b",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8bfc-7bf0-9da7-0dc2c433edf2",
+  "occurred_at": "2026-04-11T14:08:38.396178Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Lease creation uses canonical fields from config: `agent_type`, `provider`, `agent_name` when present, `lease_model`, and `version`.\n2. Claim and poll paths pass the same canonical fields; they do not rebuild identity from `label` or raw CLI `model`.\n3. For representative Claude, Codex, and OpenCode configs, `kno lease list --json`, `kno claim --json`, and `kno show --json` expose the same canonical lease metadata.\n4. Automated coverage exists for terminal-manager, execution backend, and Knots wrapper paths that create leases or claims with canonical metadata."
+  }
+}

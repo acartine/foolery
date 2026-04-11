@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8c38-7170-bcae-8f253031b20d",
+  "occurred_at": "2026-04-11T14:08:38.4566Z",
+  "knot_id": "foolery-4973",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Use Knots lease metadata as the sole source of truth for active agent identity in the UI. Build the Active-screen values directly from lease `agent_name` when present, plus `lease_model` and `version`. Ignore handoff capsules, step metadata, and terminal display labels for active identity columns."
+  }
+}

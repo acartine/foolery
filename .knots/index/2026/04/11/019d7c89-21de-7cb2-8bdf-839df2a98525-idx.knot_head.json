@@ -1,0 +1,21 @@
+{
+  "event_id": "019d7c89-21de-7cb2-8bdf-839df2a98525",
+  "occurred_at": "2026-04-11T12:34:15.13406Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2dfe",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add search/filter capability to OpenCode CLI model selection",
+    "type": "work",
+    "updated_at": "2026-04-11T12:34:15.13406Z",
+    "workflow_id": "work_sdlc"
+  }
+}

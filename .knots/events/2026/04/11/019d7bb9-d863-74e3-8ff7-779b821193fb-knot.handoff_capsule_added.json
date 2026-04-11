@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bb9-d863-74e3-8ff7-779b821193fb",
+  "occurred_at": "2026-04-11T08:47:50.371462Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Plan complete for searchable model selection in setup.sh. Threshold-based dispatch: lists >15 models get a search-then-select loop via new _filter_models() and _collect_models_searchable() functions. Small lists keep existing numbered menu (no regression). grep -i for fast case-insensitive filtering. Count display shows \"N of M models\". Tests: unit test for _filter_models via bash execFile, integration test for full search flow. All changes in scripts/setup.sh + one new test file. Low-medium complexity, no external deps.",
+    "datetime": "2026-04-11T08:47:50.371462Z",
+    "entry_id": "019d7bb9-d863-74e3-8ff7-7788e3748d06",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

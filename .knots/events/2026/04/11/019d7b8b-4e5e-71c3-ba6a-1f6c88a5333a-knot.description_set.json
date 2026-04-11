@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b8b-4e5e-71c3-ba6a-1f6c88a5333a",
+  "occurred_at": "2026-04-11T07:57:00.3828Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Improve the model selection experience in OpenCode CLI setup. Currently, users are presented with an overwhelming list of 175+ models with no way to quickly locate their desired model. Add searchable/filterable model selection that allows users to type partial model names like \"GLM\", \"minimax\", \"qwen\", etc. to narrow the list in real-time with case-insensitive matching."
+  }
+}

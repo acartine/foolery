@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cdf-8bb5-7053-acfd-89bde160bb8a",
+  "occurred_at": "2026-04-11T14:08:38.325587Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Registered agent config persists canonical lease fields `agent_type`, `vendor`, `provider`, `agent_name`, `lease_model`, and `version` separately from raw `model`.\n2. Legacy Claude, Codex, and OpenCode configs are rewritten or backfilled into the canonical shape without changing the raw `model` value used by the CLI.\n3. Stored `label` is removed or ignored as an authoritative identity field for config load, save, scan, and migration paths.\n4. Pool entries resolve from explicit persisted agent ids in TOML; they do not depend on runtime-generated id conventions.\n5. Automated coverage exists for schema, settings load/save, scan/import, and legacy rewrite behavior for representative Claude, Codex, and OpenCode configs."
+  }
+}

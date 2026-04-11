@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7b8b-013f-7652-9756-b42c5c1a3418",
+  "occurred_at": "2026-04-11T07:56:40.639526Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.created",
+  "data": {
+    "body": "Instead of listing 175 models, you should be able to search and filter, typing things like GLM (case insensitive search), minimax, qwen, etc. etc.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "OpenCode cli setup for model selection should be smarter",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

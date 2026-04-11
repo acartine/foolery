@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cd9-3ef5-77f0-a8a2-327ab8fa9868",
+  "occurred_at": "2026-04-11T14:01:45.451731Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Registered agent config persists explicit lease identity fields separate from the raw CLI `model` field, and settings schema/load/save paths round-trip them without deriving lease metadata from `label`.\n2. Codex, Claude, and OpenCode each have explicit parsing/import rules that populate canonical lease identity fields from legacy config and scan/import sources, including automatic rewrite or backfill of legacy settings.\n3. Display `label` is no longer stored or treated as canonical agent identity for lease creation, claim/poll metadata, or migration.\n4. Pool agent references resolve from explicit persisted agent ids in config/TOML instead of runtime-generated naming conventions, and legacy pool config migrates cleanly.\n5. Automated coverage exists for schema, settings load/save, scan/import, and legacy rewrite behavior for representative Codex, Claude, and OpenCode examples."
+  }
+}

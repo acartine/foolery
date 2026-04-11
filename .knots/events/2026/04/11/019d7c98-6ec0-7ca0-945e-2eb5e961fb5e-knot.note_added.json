@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7c98-6ec0-7ca0-945e-2eb5e961fb5e",
+  "occurred_at": "2026-04-11T12:50:57.856749Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "-",
+    "datetime": "2026-04-11T12:50:57.856749Z",
+    "entry_id": "019d7c98-6ec0-7ca0-945e-2ea5959c8bb1",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

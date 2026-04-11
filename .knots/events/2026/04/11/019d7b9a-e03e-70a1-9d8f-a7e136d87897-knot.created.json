@@ -1,0 +1,17 @@
+{
+  "event_id": "019d7b9a-e03e-70a1-9d8f-a7e136d87897",
+  "occurred_at": "2026-04-11T08:14:00.766374Z",
+  "knot_id": "foolery-d939",
+  "type": "knot.created",
+  "data": {
+    "body": "shows 'gemini' and 'opencode' even though i didn't choose any moels from those harnesses.  just hide them if we didn't choose one of their models.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "setup cli, dispatch config - shows harness names when no model for that harness is selected",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d7b86-2e78-76a0-9bdd-0c6d7cfc2abd",
+  "occurred_at": "2026-04-11T07:51:24.530811Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c5aa",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Recover incomplete interactive knot transitions",
+    "type": "work",
+    "updated_at": "2026-04-11T07:51:24.530811Z",
+    "workflow_id": "work_sdlc"
+  }
+}

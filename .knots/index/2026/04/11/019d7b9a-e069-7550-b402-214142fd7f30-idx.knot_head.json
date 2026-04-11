@@ -1,0 +1,47 @@
+{
+  "event_id": "019d7b9a-e069-7550-b402-214142fd7f30",
+  "occurred_at": "2026-04-11T08:14:00.804057Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d939",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "implementation",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "setup cli, dispatch config - shows harness names when no model for that harness is selected",
+    "type": "work",
+    "updated_at": "2026-04-11T08:14:00.804057Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bd0-48e5-73d2-9a9f-5e3f3639c2c1",
+  "occurred_at": "2026-04-11T09:12:20.965011Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan recorded against the current duplicate `_collect_discovered_models()` implementations in `scripts/setup.sh` and `scripts/agent-wizard.sh`. The recommended implementation is a thresholded interactive picker for large OpenCode model lists only, preserving the current small-list numbered menu and manual-entry path. Two child knots were created: `foolery-ec3a` for the picker implementation and `foolery-cd7e` for shell plus PTY regression coverage. Primary execution risks are raw-terminal cleanup and escape-sequence handling; PTY tests should verify filtering, backspace reset, arrow navigation, multi-select, and small-list no-regression behavior.",
+    "datetime": "2026-04-11T09:12:20Z",
+    "entry_id": "019d7bd0-48e5-73d2-9a9f-5e2ef8e63817",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

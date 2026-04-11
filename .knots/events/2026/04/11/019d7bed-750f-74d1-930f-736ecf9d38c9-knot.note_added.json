@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bed-750f-74d1-930f-736ecf9d38c9",
+  "occurred_at": "2026-04-11T09:44:12.815743Z",
+  "knot_id": "foolery-2dfe",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected: the interactive picker still lacks number-key selection, and the added tests do not verify the interactive filter/navigation behavior required by the knot.",
+    "datetime": "2026-04-11T09:44:12Z",
+    "entry_id": "019d7bed-750f-74d1-930f-735d9a8b21f0",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

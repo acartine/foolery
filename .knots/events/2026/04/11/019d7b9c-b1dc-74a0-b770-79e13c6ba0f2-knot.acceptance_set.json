@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7b9c-b1dc-74a0-b770-79e13c6ba0f2",
+  "occurred_at": "2026-04-11T08:15:59.964117Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "- Adding a model to the configuration preserves all existing models (configs are merged, not replaced)\n- Adding a dispatch configuration preserves all existing dispatch configurations\n- The setup CLI displays the current configuration state before prompting for user input\n- Modifying a single configuration element (e.g., adding one model) does not affect unrelated configurations (e.g., agents, dispatch rules, other models remain unchanged)\n- Users can see what is currently set and make incremental edits without losing prior choices"
+  }
+}

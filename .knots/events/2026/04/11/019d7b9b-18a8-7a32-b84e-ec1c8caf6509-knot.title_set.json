@@ -1,0 +1,10 @@
+{
+  "event_id": "019d7b9b-18a8-7a32-b84e-ec1c8caf6509",
+  "occurred_at": "2026-04-11T08:14:15.208179Z",
+  "knot_id": "foolery-d939",
+  "type": "knot.title_set",
+  "data": {
+    "from": "setup cli, dispatch config - shows harness names when no model for that harness is selected",
+    "to": "setup-cli: hide harnesses with no selected models"
+  }
+}

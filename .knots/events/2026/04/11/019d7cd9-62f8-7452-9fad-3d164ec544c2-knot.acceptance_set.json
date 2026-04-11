@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7cd9-62f8-7452-9fad-3d164ec544c2",
+  "occurred_at": "2026-04-11T14:01:54.673666Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Foolery lease creation, claim, and poll paths use canonical agent identity fields from config to populate Knots lease metadata, including `agentType`, `provider`, `agentName` when present, `leaseModel`, and `version`.\n2. `kno lease list --json`, `kno claim ... --json`, and `kno show ... --json` expose the same canonical lease metadata for representative Codex, Claude, and OpenCode examples.\n3. Foolery stops constructing alternate lease identity values from display labels or overloaded raw `model` fields in the lease/claim/poll pipeline.\n4. Automated coverage exists for terminal-manager, execution backend, and Knots wrapper paths that create leases or claims with canonical identity metadata."
+  }
+}

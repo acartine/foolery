@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7bbf-bd4b-7b93-9619-9ae9903e36fe",
+  "occurred_at": "2026-04-11T08:54:16.651832Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Rejected plan review. The revised plan fixes the smol-toml parsing scope, removes both REGISTERED_AGENTS resets, and makes dispatch/default prompts additive on paper, but it still misses the required additive behavior and verification. Step 4 would filter out any detected agent whose base command already has registered variants, which would prevent adding a new model variant for an already-registered provider family. The next revision should preserve existing variants while still allowing new variants from the same detected command to be added incrementally. The test strategy also needs interactive verification, not just writer/parser tests: add a PTY-driven setup rerun that seeds existing settings, keeps current selections by default, adds one new model or dispatch edit, and proves unrelated agents, mappings, pools, and defaults remain intact.",
+    "datetime": "2026-04-11T08:53:44Z",
+    "entry_id": "019d7bbf-bd4b-7b93-9619-9ad4c76e3c61",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}
