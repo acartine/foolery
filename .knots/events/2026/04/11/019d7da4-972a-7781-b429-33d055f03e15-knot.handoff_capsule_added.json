@@ -1,0 +1,15 @@
+{
+  "event_id": "019d7da4-972a-7781-b429-33d055f03e15",
+  "occurred_at": "2026-04-11T17:43:51.850102Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Branch: b059-lease-identity; Commit: 5401bf94; Verification: bun run lint, bunx tsc --noEmit, bun run test, bun run build",
+    "datetime": "2026-04-11T17:43:51.850102Z",
+    "entry_id": "019d7da4-972a-7781-b429-33cef532fd19",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

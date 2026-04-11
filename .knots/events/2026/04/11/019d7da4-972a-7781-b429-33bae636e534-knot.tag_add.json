@@ -1,0 +1,9 @@
+{
+  "event_id": "019d7da4-972a-7781-b429-33bae636e534",
+  "occurred_at": "2026-04-11T17:43:51.850102Z",
+  "knot_id": "foolery-b059",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:b059-lease-identity"
+  }
+}
