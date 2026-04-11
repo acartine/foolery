@@ -7,6 +7,10 @@
 
 set -euo pipefail
 
+SETUP_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=model-picker.sh
+source "${SETUP_SCRIPT_DIR}/model-picker.sh"
+
 # ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
@@ -813,12 +817,19 @@ _collect_discovered_models() {
 $models_list
 EOF
 
+  if ((${#models[@]} > _MODEL_SEARCH_THRESHOLD)); then
+    _model_search_pick _setup_heading _setup_prompt \
+      _prompt_model_manual "$aid" "${models[@]}"
+    return
+  fi
+
   local -a selected=()
   while true; do
     local -a remaining=()
     local model
     for model in "${models[@]}"; do
-      if [[ ${#selected[@]} -eq 0 ]] || _append_unique "$model" "${selected[@]}"; then
+      if [[ ${#selected[@]} -eq 0 ]] || \
+        _append_unique "$model" "${selected[@]}"; then
         remaining+=("$model")
       fi
     done
@@ -843,9 +854,11 @@ EOF
         continue
       fi
       if ((choice == count + 2)); then
-        model="$(_prompt_model_manual "$aid" 'Enter model name (optional): ')"
+        model="$(_prompt_model_manual "$aid" \
+          'Enter model name (optional): ')"
         if [[ -n "$model" ]] && \
-          ([[ ${#selected[@]} -eq 0 ]] || _append_unique "$model" "${selected[@]}"); then
+          ([[ ${#selected[@]} -eq 0 ]] || \
+            _append_unique "$model" "${selected[@]}"); then
           selected+=("$model")
         fi
       fi
