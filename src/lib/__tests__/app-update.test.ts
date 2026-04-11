@@ -49,6 +49,8 @@ describe("app-update status", () => {
     const status = await readAppUpdateStatus({
       ...process.env,
       FOOLERY_STATE_DIR: tempDir,
+      FOOLERY_UPDATE_STATUS_PATH: undefined,
+      FOOLERY_UPDATE_LOG_PATH: undefined,
     });
 
     expect(status.phase).toBe("idle");
@@ -73,6 +75,8 @@ describe("app-update startup", () => {
       ...process.env,
       FOOLERY_STATE_DIR: tempDir,
       FOOLERY_LAUNCHER_PATH: launcherPath,
+      FOOLERY_UPDATE_STATUS_PATH: undefined,
+      FOOLERY_UPDATE_LOG_PATH: undefined,
     });
 
     expect(result.started).toBe(true);

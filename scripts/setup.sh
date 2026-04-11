@@ -403,25 +403,19 @@ _write_registry_entry() {
 }
 
 _display_scan_results() {
-  local found_repos="$1" i=0 new_count=0
+  local found_repos="$1" i=0
   printf '\n' >&2
-  _setup_emit 2 repo 'Found repositories:'
+  _setup_emit 2 repo 'Found unmounted repositories:'
   while IFS= read -r record; do
     [[ -z "$record" ]] && continue
     local memory_manager_type repo_dir
     memory_manager_type="${record%%|*}"
     repo_dir="${record#*|}"
     i=$((i + 1))
-    if _is_path_registered "$repo_dir"; then
-      printf '  %d) %s [%s] (already mounted)\n' "$i" "$repo_dir" "$memory_manager_type" >&2
-    else
-      printf '  %d) %s [%s]\n' "$i" "$repo_dir" "$memory_manager_type" >&2
-      new_count=$((new_count + 1))
-    fi
+    printf '  %d) %s [%s]\n' "$i" "$repo_dir" "$memory_manager_type" >&2
   done <<EOF
 $found_repos
 EOF
-  printf '%d\n' "$new_count"
 }
 
 _mount_selected_repos() {
@@ -478,15 +472,25 @@ EOF
     return 0
   fi
 
-  local new_count
-  new_count="$(_display_scan_results "$found_repos")"
+  local unmounted_repos="" record repo_dir
+  while IFS= read -r record; do
+    [[ -z "$record" ]] && continue
+    repo_dir="${record#*|}"
+    if ! _is_path_registered "$repo_dir"; then
+      unmounted_repos="$(printf '%s\n%s' "$unmounted_repos" "$record")"
+    fi
+  done <<EOF
+$found_repos
+EOF
+  unmounted_repos="$(printf '%s\n' "$unmounted_repos" | sed '/^$/d')"
 
-  if [[ "$new_count" -eq 0 ]]; then
+  if [[ -z "$unmounted_repos" ]]; then
     _setup_log "All found repositories are already mounted."
     return 0
   fi
 
-  _mount_selected_repos "$found_repos"
+  _display_scan_results "$unmounted_repos"
+  _mount_selected_repos "$unmounted_repos"
 }
 
 _handle_manual_entry() {
