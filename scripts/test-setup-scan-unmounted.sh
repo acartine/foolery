@@ -78,11 +78,11 @@ else
   fail "unmounted repo-c should appear in scan results"
 fi
 
-# --- Test 2: header says "unmounted" ---
-if printf '%s' "$stderr_output" | grep -qi "unmounted"; then
-  pass "header mentions 'unmounted'"
+# --- Test 2: header includes the exact unmounted count ---
+if printf '%s' "$stderr_output" | grep -q "Found 2 unmounted repositories:"; then
+  pass "header shows exact unmounted repository count"
 else
-  fail "header should mention 'unmounted'"
+  fail "header should show the exact unmounted repository count"
 fi
 
 # --- Test 3: numbering starts at 1 for first unmounted repo ---

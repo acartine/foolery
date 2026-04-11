@@ -403,9 +403,14 @@ _write_registry_entry() {
 }
 
 _display_scan_results() {
-  local found_repos="$1" i=0
+  local found_repos="$1" i=0 count noun
+  count="$(printf '%s\n' "$found_repos" | sed '/^$/d' | wc -l | tr -d ' ')"
+  noun='repositories'
+  if [[ "$count" == "1" ]]; then
+    noun='repository'
+  fi
   printf '\n' >&2
-  _setup_emit 2 repo 'Found unmounted repositories:'
+  _setup_emit 2 repo "Found $count unmounted $noun:"
   while IFS= read -r record; do
     [[ -z "$record" ]] && continue
     local memory_manager_type repo_dir
