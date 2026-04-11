@@ -8,8 +8,12 @@
 set -euo pipefail
 
 SETUP_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=model-picker.sh
-source "${SETUP_SCRIPT_DIR}/model-picker.sh"
+_HAS_MODEL_PICKER=0
+if [[ -f "${SETUP_SCRIPT_DIR}/model-picker.sh" ]]; then
+  # shellcheck source=model-picker.sh
+  source "${SETUP_SCRIPT_DIR}/model-picker.sh"
+  _HAS_MODEL_PICKER=1
+fi
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -817,7 +821,8 @@ _collect_discovered_models() {
 $models_list
 EOF
 
-  if ((${#models[@]} > _MODEL_SEARCH_THRESHOLD)); then
+  if ((_HAS_MODEL_PICKER && ${#models[@]} > _MODEL_SEARCH_THRESHOLD))
+  then
     _model_search_pick _setup_heading _setup_prompt \
       _prompt_model_manual "$aid" "${models[@]}"
     return
