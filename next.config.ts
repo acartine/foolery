@@ -7,6 +7,7 @@ const pkg = JSON.parse(
 ) as { version: string };
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   env: {
     NEXT_PUBLIC_APP_VERSION: pkg.version,
   },
