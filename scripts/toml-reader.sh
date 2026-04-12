@@ -153,9 +153,14 @@ _read_settings_toml() {
         # Single-line triple-quoted
         value="${after%\"\"\"}"
       else
-        # True multi-line
-        multiline_value="${after}
+        # True multi-line — per TOML spec, a newline
+        # immediately after """ is trimmed.
+        if [[ -n "$after" ]]; then
+          multiline_value="${after}
 "
+        else
+          multiline_value=""
+        fi
         multiline_key="$key"
         if [[ "$current_section" == "scope" && "$key" == "prompt" ]]; then
           in_multiline="scope_prompt"

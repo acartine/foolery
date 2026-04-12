@@ -361,7 +361,9 @@ describe("additive no-existing-file fallback", () => {
 });
 
 describe("additive advanced pools round-trip", () => {
-    it("preserves pool entries through read-write cycle", async () => {
+    it.each(["setup.sh", "agent-wizard.sh"] as const)(
+      "preserves pool entries through read-write in %s",
+      async (scriptName) => {
       const poolSeed = `\
 dispatchMode = "advanced"
 maxConcurrentSessions = 5
@@ -422,7 +424,7 @@ weight = 1
         _write_settings_toml
       `;
       const { parsed } = await runAdditive(
-        "setup.sh",
+        scriptName,
         poolSeed,
         snippet,
       );
@@ -450,6 +452,51 @@ weight = 1
       expect(pools.implementation_review).toHaveLength(1);
       expect(pools.plan_review).toHaveLength(0);
     });
+});
+
+describe("scope prompt round-trip stability", () => {
+    it.each(["setup.sh", "agent-wizard.sh"] as const)(
+      "preserves scope prompt without adding newlines in %s",
+      async (scriptName) => {
+        const snippet = `
+          source "$1"
+          _read_settings_toml "\$HOME/.config/foolery/settings.toml"
+          _write_settings_toml
+        `;
+        // Round-trip 1
+        const { parsed: first, homeDir } = await runAdditive(
+          scriptName,
+          SEED_TOML,
+          snippet,
+        );
+        const firstPrompt = (
+          first.scopeRefinement as { prompt: string }
+        ).prompt;
+
+        // Round-trip 2 — re-read the output from round-trip 1
+        const settingsPath = join(
+          homeDir,
+          ".config",
+          "foolery",
+          "settings.toml",
+        );
+        const secondSeed = await readFile(
+          settingsPath,
+          "utf8",
+        );
+        const { parsed: second } = await runAdditive(
+          scriptName,
+          secondSeed,
+          snippet,
+        );
+        const secondPrompt = (
+          second.scopeRefinement as { prompt: string }
+        ).prompt;
+
+        expect(firstPrompt).toBe(secondPrompt);
+        expect(firstPrompt).not.toMatch(/^\n/);
+      },
+    );
 });
 
 describe("additive metadata fields", () => {

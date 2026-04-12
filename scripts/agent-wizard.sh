@@ -301,12 +301,44 @@ _write_settings_toml() {
     printf 'prompt = """\n%s"""\n' "$prompt"
 
     printf '\n[pools]\n'
-    local step
-    for step in planning plan_review implementation \
-      implementation_review shipment shipment_review \
-      scope_refinement; do
-      printf '%s = []\n' "$step"
-    done
+    if [[ "$dm" == "advanced" ]]; then
+      local step
+      for step in planning plan_review implementation \
+        implementation_review shipment shipment_review \
+        scope_refinement; do
+        local count
+        count="$(_kv_get POOL_COUNT "$step" "0")"
+        if [[ "$count" -eq 0 ]]; then
+          printf '%s = []\n' "$step"
+        fi
+      done
+      for step in planning plan_review implementation \
+        implementation_review shipment shipment_review \
+        scope_refinement; do
+        local count
+        count="$(_kv_get POOL_COUNT "$step" "0")"
+        if [[ "$count" -gt 0 ]]; then
+          printf '\n'
+          local j
+          for ((j = 0; j < count; j++)); do
+            local agent_id weight
+            agent_id="$(_kv_get "POOL_AGENT_${step}" \
+              "$j" "")"
+            weight="$(_kv_get "POOL_WEIGHT_${step}" \
+              "$agent_id" "1")"
+            printf '[[pools.%s]]\nagentId = "%s"\nweight = %d\n' \
+              "$step" "$agent_id" "$weight"
+          done
+        fi
+      done
+    else
+      local step
+      for step in planning plan_review implementation \
+        implementation_review shipment shipment_review \
+        scope_refinement; do
+        printf '%s = []\n' "$step"
+      done
+    fi
   } > "$SETTINGS_FILE"
 }
 
