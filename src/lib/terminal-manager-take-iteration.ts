@@ -21,6 +21,9 @@ import {
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 import {
+  recordTakeLoopLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
+import {
   resolveWorkflowForBeat,
 } from "@/lib/terminal-manager-workflow";
 import type {
@@ -103,6 +106,13 @@ async function fetchPostExitState(
         `${tag} post-close beat state: ` +
         `beat=${ctx.beatId} state=${r.data.state} ` +
         `isAgentClaimable=${r.data.isAgentClaimable}`,
+      );
+      recordTakeLoopLifecycle(
+        ctx,
+        "post_exit_state_observed",
+        {
+          postExitState: r.data.state,
+        },
       );
       return r.data.state;
     }
@@ -194,6 +204,10 @@ async function handleErrorExit(
     `${tag} non-zero exit code=${code} — ` +
     `attempting rollback and retry`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    postExitState,
+    loopDecision: `non_zero_exit:${code}`,
+  });
   recordFailedAgent(
     ctx, claimedQueueType(record), iterationAgent,
   );
@@ -240,17 +254,30 @@ async function handleErrorExit(
         `${tag} STOP: no retry available ` +
         `(buildNextTakePrompt returned null)`,
       );
+      recordTakeLoopLifecycle(ctx, "loop_stop", {
+        postExitState,
+        loopDecision: "retry_unavailable",
+      });
     } catch (err) {
       console.error(
         `${tag} error retry ` +
         `buildNextTakePrompt threw:`, err,
       );
+      recordTakeLoopLifecycle(ctx, "loop_stop", {
+        postExitState,
+        loopDecision:
+          `retry_builder_threw:${String(err)}`,
+      });
     }
   } else {
     console.log(
       `${tag} STOP: no agentId ` +
       `for error retry exclusion`,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      postExitState,
+      loopDecision: "retry_exclusion_missing_agent_id",
+    });
   }
 
   ctx.finishSession(code);
@@ -371,6 +398,10 @@ async function handleSuccessExit(
     `${tag} evaluating next iteration ` +
     `(code=0, iteration=${ctx.takeIteration.value})`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_continue", {
+    postExitState: record.postExitState,
+    loopDecision: "evaluate_next_iteration",
+  });
   try {
     const nextTake = await buildNextTakePrompt(ctx);
     if (nextTake) {
@@ -386,10 +417,18 @@ async function handleSuccessExit(
       `${tag} buildNextTakePrompt returned null ` +
       `— ending session`,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      postExitState: record.postExitState,
+      loopDecision: "build_next_take_prompt_returned_null",
+    });
   } catch (err) {
     console.error(
       `${tag} buildNextTakePrompt threw:`, err,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      postExitState: record.postExitState,
+      loopDecision: `build_next_take_prompt_threw:${String(err)}`,
+    });
     const beatSlice = ctx.beatId.slice(0, 12);
     const errMsg = err instanceof Error
       ? err.message : String(err);

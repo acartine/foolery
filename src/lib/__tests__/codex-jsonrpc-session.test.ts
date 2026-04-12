@@ -43,6 +43,21 @@ function parseWrites(
   return writes.map((w) => JSON.parse(w));
 }
 
+function readySession() {
+  const session = createCodexJsonRpcSession();
+  session.processLine({
+    id: 1,
+    result: { userAgent: "test" },
+  });
+  session.processLine({
+    id: 2,
+    result: {
+      thread: { id: "t-1" },
+    },
+  });
+  return session;
+}
+
 // ── Handshake ────────────────────────────────────────
 
 describe("codex-jsonrpc: handshake", () => {
@@ -95,21 +110,6 @@ describe("codex-jsonrpc: handshake", () => {
 // ── Turn lifecycle ───────────────────────────────────
 
 describe("codex-jsonrpc: turn lifecycle", () => {
-  function readySession() {
-    const session = createCodexJsonRpcSession();
-    session.processLine({
-      id: 1,
-      result: { userAgent: "test" },
-    });
-    session.processLine({
-      id: 2,
-      result: {
-        thread: { id: "t-1" },
-      },
-    });
-    return session;
-  }
-
   it("startTurn sends turn/start request", () => {
     const session = readySession();
     const child = makeChild();
@@ -163,6 +163,37 @@ describe("codex-jsonrpc: turn lifecycle", () => {
     const params =
       msgs[0].params as Record<string, unknown>;
     expect(params.threadId).toBe("t-2");
+  });
+
+  it("emits deferred and dispatched prompt delivery hooks", () => {
+    const hooks = {
+      onDeferred: vi.fn(),
+      onAttempted: vi.fn(),
+      onSucceeded: vi.fn(),
+      onFailed: vi.fn(),
+    };
+    const session = createCodexJsonRpcSession(hooks);
+    const child = makeChild();
+
+    expect(session.startTurn(child, "queued prompt")).toBe(
+      true,
+    );
+    expect(hooks.onDeferred).toHaveBeenCalledWith(
+      "awaiting_thread_start",
+    );
+
+    session.processLine({
+      id: 1,
+      result: { userAgent: "test" },
+    });
+    session.processLine({
+      id: 2,
+      result: { thread: { id: "t-2" } },
+    });
+
+    expect(hooks.onAttempted).toHaveBeenCalled();
+    expect(hooks.onSucceeded).toHaveBeenCalled();
+    expect(hooks.onFailed).not.toHaveBeenCalled();
   });
 
   it("interruptTurn sends turn/interrupt", () => {

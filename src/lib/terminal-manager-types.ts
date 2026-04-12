@@ -6,6 +6,9 @@ import type { ChildProcess } from "node:child_process";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import type { TerminalSession, TerminalEvent } from "@/lib/types";
 import type { ExecutionAgentInfo } from "@/lib/execution-port";
+import type {
+  TakeLoopIterationTrace,
+} from "@/lib/terminal-manager-take-lifecycle";
 
 export interface SessionEntry {
   session: TerminalSession;
@@ -24,6 +27,7 @@ export interface SessionEntry {
   knotsLeaseStep?: string;
   knotsLeaseAgentInfo?: ExecutionAgentInfo;
   lastReleasedKnotsLeaseId?: string;
+  takeLoopLifecycle?: Map<number, TakeLoopIterationTrace>;
 }
 
 export const INPUT_CLOSE_GRACE_MS = 2000;

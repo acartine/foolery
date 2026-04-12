@@ -31,6 +31,37 @@ afterEach(async () => {
   await rm(tempDir, { recursive: true, force: true });
 });
 
+function lifecycleMeta() {
+  return {
+    sessionId: "methods-session",
+    interactionType: "scene" as const,
+    repoPath: "/tmp/test-repo",
+    beatIds: ["b-1"],
+  };
+}
+
+async function startLifecycleLogInTemp() {
+  const origCwd = process.cwd();
+  const origEnv = process.env.NODE_ENV;
+  setNodeEnv("development");
+  process.chdir(tempDir);
+  try {
+    return await startInteractionLog(lifecycleMeta());
+  } finally {
+    process.chdir(origCwd);
+    setNodeEnv(origEnv!);
+  }
+}
+
+async function readJsonLogLines(filePath: string) {
+  await new Promise((r) => setTimeout(r, 50));
+  const content = await readFile(filePath, "utf-8");
+  return content
+    .trim()
+    .split("\n")
+    .map((l) => JSON.parse(l));
+}
+
 // ---------------------------------------------------------------------------
 // resolveInteractionLogRoot
 // ---------------------------------------------------------------------------
@@ -379,48 +410,15 @@ describe("InteractionLog: session end and beat state", () => {
 });
 
 describe("InteractionLog: lifecycle and phases", () => {
-  function baseMeta() {
-    return {
-      sessionId: "methods-session",
-      interactionType: "scene" as const,
-      repoPath: "/tmp/test-repo",
-      beatIds: ["b-1"],
-    };
-  }
-
-  async function startLogInTemp() {
-    const origCwd = process.cwd();
-    const origEnv = process.env.NODE_ENV;
-    setNodeEnv("development");
-    process.chdir(tempDir);
-    try {
-      return await startInteractionLog(baseMeta());
-    } finally {
-      process.chdir(origCwd);
-      setNodeEnv(origEnv!);
-    }
-  }
-
-  /** Read all JSONL lines from a log file. */
-  async function readLogLines(filePath: string) {
-    // Small delay to let fire-and-forget writes settle
-    await new Promise((r) => setTimeout(r, 50));
-    const content = await readFile(filePath, "utf-8");
-    return content
-      .trim()
-      .split("\n")
-      .map((l) => JSON.parse(l));
-  }
-
   it("logBeatState records after_prompt phase", async () => {
-    const log = await startLogInTemp();
+    const log = await startLifecycleLogInTemp();
     log.logBeatState({
       beatId: "beat-99",
       state: "ready_for_plan_review",
       phase: "after_prompt",
       iteration: 1,
     });
-    const lines = await readLogLines(log.filePath);
+    const lines = await readJsonLogLines(log.filePath);
 
     const beatLine = lines.find(
       (l: Record<string, unknown>) => l.kind === "beat_state",
@@ -431,8 +429,14 @@ describe("InteractionLog: lifecycle and phases", () => {
   });
 
   it("full session lifecycle writes all expected entries", async () => {
-    const log = await startLogInTemp();
+    const log = await startLifecycleLogInTemp();
     log.logPrompt("prompt text", { source: "cli" });
+    log.logLifecycle?.({
+      event: "prompt_delivery_succeeded",
+      beatId: "b-1",
+      iteration: 1,
+      promptDeliveryTransport: "stdio",
+    });
     log.logBeatState({
       beatId: "b-1",
       state: "planning",
@@ -448,16 +452,43 @@ describe("InteractionLog: lifecycle and phases", () => {
     });
     log.logEnd(0, "completed");
 
-    const lines = await readLogLines(log.filePath);
+    const lines = await readJsonLogLines(log.filePath);
     const kinds = lines.map((l: Record<string, unknown>) => l.kind);
     // Fire-and-forget writes are not guaranteed to arrive in strict order,
     // so verify presence rather than exact ordering for the async entries.
     expect(kinds[0]).toBe("session_start");
     expect(kinds).toContain("prompt");
+    expect(kinds).toContain("lifecycle");
     expect(kinds).toContain("beat_state");
     expect(kinds).toContain("response");
     expect(kinds).toContain("session_end");
-    expect(kinds).toHaveLength(6);
+    expect(kinds).toHaveLength(7);
+  });
+
+  it("logLifecycle writes a lifecycle entry", async () => {
+    const log = await startLifecycleLogInTemp();
+    log.logLifecycle?.({
+      event: "prompt_delivery_deferred",
+      beatId: "b-1",
+      iteration: 2,
+      promptDeliveryTransport: "jsonrpc",
+      promptDeliveryDeferredReason:
+        "awaiting_thread_start",
+    });
+
+    const lines = await readJsonLogLines(log.filePath);
+    const lifecycleLine = lines.find(
+      (l: Record<string, unknown>) => l.kind === "lifecycle",
+    );
+    expect(lifecycleLine).toBeDefined();
+    expect(lifecycleLine.event).toBe(
+      "prompt_delivery_deferred",
+    );
+    expect(lifecycleLine.beatId).toBe("b-1");
+    expect(lifecycleLine.iteration).toBe(2);
+    expect(lifecycleLine.promptDeliveryTransport).toBe(
+      "jsonrpc",
+    );
   });
 });
 

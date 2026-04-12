@@ -10,6 +10,9 @@
  *      JSONL events for the existing Codex normalizer
  */
 import type { ChildProcess } from "node:child_process";
+import type {
+  PromptDispatchHooks,
+} from "@/lib/session-prompt-delivery";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -60,6 +63,7 @@ interface SessionState {
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
+  hooks: PromptDispatchHooks;
 }
 
 // ── Constants ─────────────────────────────────────────
@@ -138,7 +142,8 @@ function flushPendingTurn(s: SessionState): void {
   s.pendingTurn = null;
   const id = s.nextId++;
   s.activeTurnRequestId = id;
-  writeRequest(child, {
+  s.hooks.onAttempted?.();
+  const sent = writeRequest(child, {
     jsonrpc: "2.0",
     id,
     method: "turn/start",
@@ -147,6 +152,79 @@ function flushPendingTurn(s: SessionState): void {
       input: [{ type: "text", text: prompt }],
     },
   });
+  if (sent) {
+    s.hooks.onSucceeded?.();
+  } else {
+    s.hooks.onFailed?.(
+      "flush_pending_turn_write_failed",
+    );
+  }
+}
+
+function processSessionMessage(
+  parsed: Record<string, unknown>,
+  s: SessionState,
+): Record<string, unknown> | null {
+  if ("id" in parsed && "result" in parsed) {
+    handleResponse(
+      parsed as unknown as JsonRpcResponse,
+      s,
+    );
+    return null;
+  }
+  if ("id" in parsed && "error" in parsed) {
+    const msg = parsed as unknown as JsonRpcError;
+    console.error(
+      `[codex-jsonrpc] error id=${msg.id}: ` +
+      msg.error.message,
+    );
+    return null;
+  }
+  if (
+    "method" in parsed &&
+    typeof parsed.method === "string"
+  ) {
+    return translateNotification(
+      {
+        method: parsed.method,
+        params: (
+          parsed.params as Record<string, unknown>
+        ) ?? {},
+      },
+      s,
+    );
+  }
+  return null;
+}
+
+function startTurnRequest(
+  s: SessionState,
+  child: ChildProcess,
+  prompt: string,
+): boolean {
+  if (!s.ready || !s.threadId) {
+    s.pendingTurn = { child, prompt };
+    s.hooks.onDeferred?.("awaiting_thread_start");
+    return true;
+  }
+  const id = s.nextId++;
+  s.activeTurnRequestId = id;
+  s.hooks.onAttempted?.();
+  const sent = writeRequest(child, {
+    jsonrpc: "2.0",
+    id,
+    method: "turn/start",
+    params: {
+      threadId: s.threadId,
+      input: [{ type: "text", text: prompt }],
+    },
+  });
+  if (sent) {
+    s.hooks.onSucceeded?.();
+  } else {
+    s.hooks.onFailed?.("turn_start_write_failed");
+  }
+  return sent;
 }
 
 // ── Item translation ──────────────────────────────────
@@ -336,6 +414,7 @@ function translateTurnCompleted(
 // ── Factory ───────────────────────────────────────────
 
 export function createCodexJsonRpcSession(
+  hooks: PromptDispatchHooks = {},
 ): CodexJsonRpcSession {
   const s: SessionState = {
     nextId: 3,
@@ -344,6 +423,7 @@ export function createCodexJsonRpcSession(
     turnId: null,
     activeTurnRequestId: null,
     pendingTurn: null,
+    hooks,
   };
 
   return {
@@ -352,37 +432,7 @@ export function createCodexJsonRpcSession(
     get turnId() { return s.turnId; },
 
     processLine(parsed) {
-      if ("id" in parsed && "result" in parsed) {
-        handleResponse(
-          parsed as unknown as JsonRpcResponse, s,
-        );
-        return null;
-      }
-      if ("id" in parsed && "error" in parsed) {
-        const msg =
-          parsed as unknown as JsonRpcError;
-        console.error(
-          `[codex-jsonrpc] error id=${msg.id}` +
-          `: ${msg.error.message}`,
-        );
-        return null;
-      }
-      if (
-        "method" in parsed &&
-        typeof parsed.method === "string"
-      ) {
-        return translateNotification(
-          {
-            method: parsed.method,
-            params: (
-              parsed.params as
-                Record<string, unknown>
-            ) ?? {},
-          },
-          s,
-        );
-      }
-      return null;
+      return processSessionMessage(parsed, s);
     },
 
     sendHandshake(child) {
@@ -406,23 +456,7 @@ export function createCodexJsonRpcSession(
     },
 
     startTurn(child, prompt) {
-      if (!s.ready || !s.threadId) {
-        s.pendingTurn = { child, prompt };
-        return true;
-      }
-      const id = s.nextId++;
-      s.activeTurnRequestId = id;
-      return writeRequest(child, {
-        jsonrpc: "2.0",
-        id,
-        method: "turn/start",
-        params: {
-          threadId: s.threadId,
-          input: [
-            { type: "text", text: prompt },
-          ],
-        },
-      });
+      return startTurnRequest(s, child, prompt);
     },
 
     interruptTurn(child) {

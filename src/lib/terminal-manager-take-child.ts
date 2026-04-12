@@ -5,13 +5,7 @@
  * the shared AgentSessionRuntime.
  */
 import { spawn } from "node:child_process";
-import type { ChildProcess } from "node:child_process";
 import {
-  buildPromptModeArgs,
-  buildCodexInteractiveArgs,
-  buildCopilotInteractiveArgs,
-  buildOpenCodeInteractiveArgs,
-  buildGeminiInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -20,64 +14,31 @@ import {
   supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
-  createCodexJsonRpcSession,
-} from "@/lib/codex-jsonrpc-session";
-import {
-  createOpenCodeHttpSession,
-} from "@/lib/opencode-http-session";
-import {
-  createGeminiAcpSession,
-} from "@/lib/gemini-acp-session";
-import {
   createSessionRuntime,
-  type AgentSessionRuntime,
+  type SessionRuntimeLifecycleEvent,
 } from "@/lib/agent-session-runtime";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
-import {
-  resolveAgentCommand,
-} from "@/lib/terminal-manager-types";
 import type {
   TakeLoopContext,
 } from "@/lib/terminal-manager-take-loop";
 import {
-  handleTakeIterationClose,
-} from "@/lib/terminal-manager-take-loop";
-
-// ─── HTTP session helper ────────────────────────────
-
-interface DeferredHttpRefs {
-  childRef: ChildProcess | null;
-  runtimeRef: AgentSessionRuntime | null;
-}
-
-function createDeferredHttpSession(
-  isHttpServer: boolean,
-  refs: DeferredHttpRefs,
-  pushEvent: TakeLoopContext["pushEvent"],
-): import(
-  "@/lib/opencode-http-session"
-).OpenCodeHttpSession | undefined {
-  if (!isHttpServer) return undefined;
-  return createOpenCodeHttpSession(
-    (jsonLine) => {
-      if (refs.runtimeRef && refs.childRef) {
-        refs.runtimeRef.injectLine(
-          refs.childRef, jsonLine,
-        );
-      }
-    },
-    (errMsg) => {
-      pushEvent({
-        type: "stderr",
-        data: errMsg + "\n",
-        timestamp: Date.now(),
-      });
-    },
-  );
-}
+  recordTakeLoopLifecycle,
+  runtimeAgentPatch,
+} from "@/lib/terminal-manager-take-lifecycle";
+import {
+  createTakeLoopRuntimeLifecycleHandler,
+} from "@/lib/terminal-manager-runtime-lifecycle";
+import {
+  buildSpawnArgs,
+  createTakeTransportSessions,
+  type DeferredHttpRefs,
+  logAndSendTakePrompt,
+  wireTakeChildClose,
+  wireTakeChildError,
+} from "@/lib/terminal-manager-take-child-helpers";
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
@@ -99,6 +60,13 @@ export function spawnTakeChild(
     effectiveAgent.version;
   ctx.session.agentCommand =
     effectiveAgent.command;
+  recordTakeLoopLifecycle(ctx, "prompt_built", {
+    claimedState: beatState,
+    leaseId: ctx.entry.knotsLeaseId,
+    promptLength: takePrompt.length,
+    promptSource: `take_${ctx.takeIteration.value}`,
+    ...runtimeAgentPatch(effectiveAgent),
+  });
   const effectiveDialect = resolveDialect(
     effectiveAgent.command,
   );
@@ -117,33 +85,20 @@ export function spawnTakeChild(
     isInteractive, isJsonRpc, isHttpServer, isAcp,
     takePrompt,
   );
-  const normalizeEvent = createLineNormalizer(
-    effectiveDialect,
-  );
-
-  const jsonrpcSession = isJsonRpc
-    ? createCodexJsonRpcSession() : undefined;
-  const acpSession = isAcp
-    ? createGeminiAcpSession(ctx.cwd) : undefined;
-  const httpRefs: DeferredHttpRefs = {
-    childRef: null, runtimeRef: null,
-  };
-  const httpSession = createDeferredHttpSession(
-    isHttpServer, httpRefs, ctx.pushEvent,
-  );
-  const runtime = createSessionRuntime({
-    id: ctx.id,
-    dialect: effectiveDialect,
-    capabilities,
-    normalizeEvent,
-    pushEvent: ctx.pushEvent,
-    interactionLog: ctx.interactionLog,
-    beatIds: [ctx.beatId],
+  const {
+    runtime,
+    httpRefs,
     jsonrpcSession,
-    httpSession,
     acpSession,
-  });
-  httpRefs.runtimeRef = runtime;
+  } = createTakeRuntimeBundle(
+    ctx,
+    beatState,
+    effectiveDialect,
+    capabilities,
+    isJsonRpc,
+    isHttpServer,
+    isAcp,
+  );
 
   const takeChild = spawn(cmd, args, {
     cwd: ctx.cwd,
@@ -163,202 +118,82 @@ export function spawnTakeChild(
     `beat=${ctx.beatId} ` +
     `beat_state=${beatState ?? "unknown"}`,
   );
+  recordTakeLoopLifecycle(ctx, "child_spawned", {
+    claimedState: beatState,
+    leaseId: ctx.entry.knotsLeaseId,
+    childPid: takeChild.pid,
+  });
 
   runtime.wireStdout(takeChild);
   runtime.wireStderr(takeChild);
-  wireClose(
+  wireTakeChildClose(
     ctx, takeChild, runtime,
-    effectiveAgent, effectiveDialect,
+    effectiveAgent,
     beatState,
   );
-  wireError(
+  wireTakeChildError(
     ctx, takeChild, runtime,
     effectiveAgent, effectiveDialect, beatState,
   );
   jsonrpcSession?.sendHandshake(takeChild);
   acpSession?.sendHandshake(takeChild);
-  logAndSendPrompt(
+  logAndSendTakePrompt(
     ctx, takeChild, runtime,
     isInteractive, effectiveDialect,
     takePrompt, beatState,
   );
 }
 
-// ─── Spawn args ──────────────────────────────────────
-
-function buildSpawnArgs(
-  agent: CliAgentTarget,
-  dialect: import("@/lib/agent-adapter").AgentDialect,
-  isInteractive: boolean,
+function createTakeRuntimeBundle(
+  ctx: TakeLoopContext,
+  beatState: string | undefined,
+  effectiveDialect: import("@/lib/agent-adapter").AgentDialect,
+  capabilities: ReturnType<typeof resolveCapabilities>,
   isJsonRpc: boolean,
   isHttpServer: boolean,
   isAcp: boolean,
-  takePrompt: string,
-): { cmd: string; args: string[] } {
-  let cmd: string;
-  let args: string[];
-  if (isJsonRpc) {
-    const built = buildCodexInteractiveArgs(agent);
-    cmd = built.command;
-    args = built.args;
-  } else if (isHttpServer) {
-    const built =
-      buildOpenCodeInteractiveArgs(agent);
-    cmd = built.command;
-    args = built.args;
-  } else if (isAcp) {
-    const built =
-      buildGeminiInteractiveArgs(agent);
-    cmd = built.command;
-    args = built.args;
-  } else if (isInteractive && dialect === "copilot") {
-    const built =
-      buildCopilotInteractiveArgs(agent);
-    cmd = built.command;
-    args = built.args;
-  } else if (isInteractive) {
-    cmd = agent.command;
-    args = [
-      "-p", "--input-format", "stream-json",
-      "--verbose", "--output-format", "stream-json",
-      "--dangerously-skip-permissions",
-    ];
-    if (agent.model) {
-      args.push("--model", agent.model);
-    }
-  } else {
-    const built = buildPromptModeArgs(
-      agent, takePrompt,
+) {
+  const handleLifecycleEvent =
+    createTakeLoopRuntimeLifecycleHandler(
+      ctx,
+      beatState,
     );
-    cmd = built.command;
-    args = built.args;
-  }
-  cmd = resolveAgentCommand(cmd);
-  return { cmd, args };
-}
-
-// ─── Close / Error ───────────────────────────────────
-
-function wireClose(
-  ctx: TakeLoopContext,
-  takeChild: ChildProcess,
-  runtime: AgentSessionRuntime,
-  effectiveAgent: CliAgentTarget,
-  _effectiveDialect: string,
-  beatState: string | undefined,
-): void {
-  takeChild.on("close", (takeCode) => {
-    runtime.flushLineBuffer(takeChild);
-    runtime.dispose();
-    takeChild.stdout?.removeAllListeners();
-    takeChild.stderr?.removeAllListeners();
-    ctx.entry.process = null;
-
-    console.log(
-      `[terminal-manager] [${ctx.id}] [take-loop]` +
-      ` child close: code=${takeCode}` +
-      ` iteration=${ctx.takeIteration.value}` +
-      ` beat=${ctx.beatId}` +
-      ` aborted=${ctx.sessionAborted()}`,
-    );
-
-    handleTakeIterationClose(
-      ctx, takeCode, effectiveAgent,
-      beatState ?? "unknown",
-    ).catch((err) => {
-      console.error(
-        `[terminal-manager] [${ctx.id}] ` +
-        `[take-loop] ` +
-        `handleTakeIterationClose error:`, err,
-      );
-      ctx.finishSession(takeCode ?? 1);
-    });
+  const emitRuntimeLifecycle = (
+    event: SessionRuntimeLifecycleEvent,
+  ) => handleLifecycleEvent(event);
+  const httpRefs: DeferredHttpRefs = {
+    childRef: null,
+    runtimeRef: null,
+  };
+  const sessions = createTakeTransportSessions(
+    isJsonRpc,
+    isHttpServer,
+    isAcp,
+    ctx.cwd,
+    httpRefs,
+    ctx.pushEvent,
+    emitRuntimeLifecycle,
+  );
+  const runtime = createSessionRuntime({
+    id: ctx.id,
+    dialect: effectiveDialect,
+    capabilities,
+    normalizeEvent: createLineNormalizer(
+      effectiveDialect,
+    ),
+    pushEvent: ctx.pushEvent,
+    interactionLog: ctx.interactionLog,
+    beatIds: [ctx.beatId],
+    onLifecycleEvent: handleLifecycleEvent,
+    jsonrpcSession: sessions.jsonrpcSession,
+    httpSession: sessions.httpSession,
+    acpSession: sessions.acpSession,
   });
-}
-
-function wireError(
-  ctx: TakeLoopContext,
-  takeChild: ChildProcess,
-  runtime: AgentSessionRuntime,
-  effectiveAgent: CliAgentTarget,
-  effectiveDialect: string,
-  beatState: string | undefined,
-): void {
-  const errorPrefix =
-    `[take ${ctx.takeIteration.value} ` +
-    `| beat: ${ctx.beatId.slice(0, 12)} ` +
-    `| agent: ${effectiveDialect}]`;
-
-  takeChild.on("error", (err) => {
-    console.error(
-      `[terminal-manager] [${ctx.id}] ` +
-      `[take-loop] spawn error:`, err.message,
-    );
-    runtime.dispose();
-    ctx.pushEvent({
-      type: "stderr",
-      data: `${errorPrefix} Process error: ` +
-        `${err.message}\n`,
-      timestamp: Date.now(),
-    });
-    takeChild.stdout?.removeAllListeners();
-    takeChild.stderr?.removeAllListeners();
-    ctx.entry.process = null;
-    handleTakeIterationClose(
-      ctx, 1, effectiveAgent,
-      beatState ?? "unknown",
-    ).catch((e) => {
-      console.error(
-        `[terminal-manager] [${ctx.id}] ` +
-        `[take-loop] ` +
-        `handleTakeIterationClose error ` +
-        `after spawn error:`, e,
-      );
-      ctx.finishSession(1);
-    });
-  });
-}
-
-function logAndSendPrompt(
-  ctx: TakeLoopContext,
-  takeChild: ChildProcess,
-  runtime: AgentSessionRuntime,
-  isInteractive: boolean,
-  dialect: string,
-  takePrompt: string,
-  beatState: string | undefined,
-): void {
-  ctx.interactionLog.logBeatState({
-    beatId: ctx.beatId,
-    state: beatState ?? "unknown",
-    phase: "before_prompt",
-    iteration: ctx.takeIteration.value,
-  });
-
-  if (isInteractive) {
-    const iter = ctx.takeIteration.value;
-    const sent = runtime.sendUserTurn(
-      takeChild, takePrompt, `take_${iter}`,
-    );
-    if (!sent) {
-      runtime.closeInput(takeChild);
-      const pfx =
-        `[take ${iter} ` +
-        `| beat: ${ctx.beatId.slice(0, 12)} ` +
-        `| agent: ${dialect}]`;
-      ctx.pushEvent({
-        type: "stderr",
-        data: `${pfx} Failed to send prompt ` +
-          `— stdin is closed or unavailable.\n`,
-        timestamp: Date.now(),
-      });
-      takeChild.kill("SIGTERM");
-      ctx.entry.process = null;
-      ctx.finishSession(1);
-    }
-  } else {
-    ctx.interactionLog.logPrompt(takePrompt, {
-      source: `take_${ctx.takeIteration.value}`,
-    });
-  }
+  httpRefs.runtimeRef = runtime;
+  return {
+    runtime,
+    httpRefs,
+    jsonrpcSession: sessions.jsonrpcSession,
+    acpSession: sessions.acpSession,
+  };
 }

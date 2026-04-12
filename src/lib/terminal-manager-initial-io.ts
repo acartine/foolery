@@ -23,6 +23,9 @@ import {
   enforceQueueTerminalInvariant,
   handleTakeIterationClose,
 } from "@/lib/terminal-manager-take-loop";
+import {
+  recordTakeLoopLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
 import type {
   SessionEntry,
 } from "@/lib/terminal-manager-types";
@@ -182,6 +185,16 @@ export function wireClose(
     state.child = null;
 
     if (isTakeLoop) {
+      recordTakeLoopLifecycle(
+        takeLoopCtx,
+        "child_close",
+        {
+          claimedState:
+            prepared.beat.state ?? "unknown",
+          childExitCode: code,
+          childSignal: signal,
+        },
+      );
       handleTakeIterationClose(
         takeLoopCtx, code, agent,
         prepared.beat.state ?? "unknown",

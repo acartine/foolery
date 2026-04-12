@@ -40,6 +40,13 @@ export interface PromptLogMetadata {
   source?: string;
 }
 
+export interface LifecycleLogEntry {
+  event: string;
+  beatId?: string;
+  iteration?: number;
+  [key: string]: unknown;
+}
+
 export type BeatStatePhase = "before_prompt" | "after_prompt" | "rollback";
 
 export interface BeatStateLogEntry {
@@ -174,6 +181,8 @@ export interface InteractionLog {
   logStdout(chunk: string): void;
   /** Log a raw stderr chunk from the agent child process. */
   logStderr(chunk: string): void;
+  /** Log a structured lifecycle event for prompt/response handoff. */
+  logLifecycle?(entry: LifecycleLogEntry): void;
   /** Log session completion. */
   logEnd(exitCode: number | null, status: string): void;
 }
@@ -259,6 +268,14 @@ function createInteractionLogHandle(
 
     logStdout: createWriteQueue(stdoutFile),
     logStderr: createWriteQueue(stderrFile),
+    logLifecycle(entry: LifecycleLogEntry) {
+      write({
+        kind: "lifecycle",
+        ts: new Date().toISOString(),
+        sessionId: meta.sessionId,
+        ...entry,
+      });
+    },
 
     logEnd(exitCode: number | null, status: string) {
       write({
@@ -356,6 +373,7 @@ export function noopInteractionLog(): InteractionLog {
     logTokenUsage() {},
     logStdout() {},
     logStderr() {},
+    logLifecycle() {},
     logEnd() {},
   };
 }

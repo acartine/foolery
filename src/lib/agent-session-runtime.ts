@@ -49,6 +49,39 @@ export type SessionExitReason =
   | "external_abort"
   | "raw_close";
 
+export type SessionRuntimeLifecycleEvent =
+  | {
+    type: "prompt_delivery_deferred";
+    transport: "stdio" | "jsonrpc" | "http" | "acp";
+    reason?: string;
+  }
+  | {
+    type: "prompt_delivery_attempted";
+    transport: "stdio" | "jsonrpc" | "http" | "acp";
+  }
+  | {
+    type: "prompt_delivery_succeeded";
+    transport: "stdio" | "jsonrpc" | "http" | "acp";
+  }
+  | {
+    type: "prompt_delivery_failed";
+    transport: "stdio" | "jsonrpc" | "http" | "acp";
+    reason?: string;
+  }
+  | { type: "stdout_observed"; preview?: string }
+  | { type: "stderr_observed"; preview?: string }
+  | { type: "response_logged"; rawLine: string }
+  | {
+    type: "normalized_event_observed";
+    eventType?: string;
+    isError?: boolean;
+  }
+  | {
+    type: "result_observed";
+    eventType?: string;
+    isError?: boolean;
+  };
+
 // ── Runtime configuration ──────────────────────────────
 
 export interface SessionRuntimeConfig {
@@ -67,6 +100,9 @@ export interface SessionRuntimeConfig {
    * which prevents stdin close scheduling.
    */
   onResult?: () => boolean;
+  onLifecycleEvent?: (
+    event: SessionRuntimeLifecycleEvent,
+  ) => void;
   /**
    * Optional Codex JSON-RPC session for
    * jsonrpc-stdio transport.
@@ -130,9 +166,17 @@ function handleResultEvent(
   child: ChildProcess,
   state: SessionRuntimeState,
   config: SessionRuntimeConfig,
+  obj: Record<string, unknown>,
 ): void {
   state.resultObserved = true;
   state.exitReason = "result_observed";
+  config.onLifecycleEvent?.({
+    type: "result_observed",
+    eventType: typeof obj.type === "string"
+      ? obj.type
+      : undefined,
+    isError: obj.is_error === true,
+  });
   const followUpSent =
     config.onResult?.() ?? false;
   if (!followUpSent) {
@@ -149,8 +193,15 @@ function processNormalizedEvent(
   state.lastNormalizedEvent = obj;
   doResetWatchdog(child, state, config);
   autoAnswerAskUser(child, obj, state, config);
+  config.onLifecycleEvent?.({
+    type: "normalized_event_observed",
+    eventType: typeof obj.type === "string"
+      ? obj.type
+      : undefined,
+    isError: obj.is_error === true,
+  });
   if (obj.type === "result") {
-    handleResultEvent(child, state, config);
+    handleResultEvent(child, state, config, obj);
   } else {
     doCancelInputClose(state);
   }
@@ -274,6 +325,10 @@ function doWireStdout(
   child.stdout?.on("data", (chunk: Buffer) => {
     const text = chunk.toString();
     config.interactionLog.logStdout(text);
+    config.onLifecycleEvent?.({
+      type: "stdout_observed",
+      preview: text.slice(0, 160),
+    });
 
     // HTTP transport: stdout carries server logs,
     // not agent events. Pass lines to httpSession
@@ -301,6 +356,10 @@ function doWireStdout(
     for (const line of lines) {
       if (!line.trim()) continue;
       config.interactionLog.logResponse(line);
+      config.onLifecycleEvent?.({
+        type: "response_logged",
+        rawLine: line,
+      });
       processLine(child, line, state, config);
     }
   });
@@ -315,6 +374,10 @@ function doFlushLineBuffer(
   config.interactionLog.logResponse(
     state.lineBuffer,
   );
+  config.onLifecycleEvent?.({
+    type: "response_logged",
+    rawLine: state.lineBuffer,
+  });
   try {
     const obj = JSON.parse(
       state.lineBuffer,
@@ -364,6 +427,10 @@ export function createSessionRuntime(
         "data", (chunk: Buffer) => {
           const text = chunk.toString();
           config.interactionLog.logStderr(text);
+          config.onLifecycleEvent?.({
+            type: "stderr_observed",
+            preview: text.slice(0, 160),
+          });
           console.log(
             `[terminal-manager] [${config.id}] ` +
             `stderr: ${text.slice(0, 200)}`,

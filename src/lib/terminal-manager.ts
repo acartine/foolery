@@ -21,6 +21,9 @@ import {
   logAttachedKnotsLease,
   terminateKnotsRuntimeLease,
 } from "@/lib/knots-lease-runtime";
+import {
+  recordLeaseReleaseLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
 import { recordStepAgent } from "@/lib/agent-pool";
 import { validateCwd } from "@/lib/validate-cwd";
 import type {
@@ -254,6 +257,15 @@ async function setupKnotsLease(
     started = true;
     const knotsLeaseId = entry.knotsLeaseId;
     if (!knotsLeaseId) return;
+    recordLeaseReleaseLifecycle(
+      entry,
+      entry.interactionLog,
+      id,
+      prepared.beat.id,
+      reason,
+      outcome,
+      data,
+    );
     entry.lastReleasedKnotsLeaseId = knotsLeaseId;
     entry.knotsLeaseId = undefined;
     entry.knotsLeaseStep = undefined;

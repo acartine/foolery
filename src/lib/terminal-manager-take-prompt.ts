@@ -26,6 +26,9 @@ import {
 import {
   resolveWorkflowForBeat,
 } from "@/lib/terminal-manager-workflow";
+import {
+  recordTakeLoopLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
 import type {
   TakeLoopContext,
 } from "@/lib/terminal-manager-take-loop";
@@ -52,7 +55,6 @@ export async function buildNextTakePrompt(
   const tag =
     `[terminal-manager] [${ctx.id}] [take-loop]`;
   const { beatId, repoPath } = ctx;
-
   const currentResult = await getBackend().get(
     beatId, repoPath,
   );
@@ -60,7 +62,6 @@ export async function buildNextTakePrompt(
     logFetchFailure(ctx, currentResult);
     return null;
   }
-
   let current = currentResult.data;
   let workflow = resolveWorkflowForBeat(
     current, ctx.workflowsById, ctx.fallbackWorkflow,
@@ -97,10 +98,10 @@ export async function buildNextTakePrompt(
   }
 
   const queueType = resolved.step;
-  const count =
-    (ctx.claimsPerQueueType.get(queueType) ?? 0) + 1;
+  const count = (
+    ctx.claimsPerQueueType.get(queueType) ?? 0
+  ) + 1;
   ctx.claimsPerQueueType.set(queueType, count);
-
   const agentResult = await selectStepAgent(
     ctx, resolved, queueType,
     stepFailureRollback, lastErrorAgentId,
@@ -113,24 +114,12 @@ export async function buildNextTakePrompt(
       ctx, current, queueType, count, maxClaims,
     );
   }
-
-  try {
-    await rotateKnotsLease(
-      ctx,
-      stepAgentOverride ?? ctx.agent,
-    );
-  } catch (err) {
-    const tag =
-      `[terminal-manager] [${ctx.id}] [take-loop]`;
-    console.error(
-      `${tag} lease rotation failed:`, err,
-    );
-    ctx.pushEvent({
-      type: "stderr",
-      data: `Take loop: lease rotation failed ` +
-        `for ${ctx.beatId}\n`,
-      timestamp: Date.now(),
-    });
+  const rotated = await rotateLeaseForClaim(
+    ctx,
+    current.state,
+    stepAgentOverride,
+  );
+  if (!rotated) {
     return null;
   }
   ctx.entry.knotsLeaseStep = queueType;
@@ -155,6 +144,41 @@ export async function buildNextTakePrompt(
   );
 }
 
+async function rotateLeaseForClaim(
+  ctx: TakeLoopContext,
+  currentState: string,
+  stepAgentOverride?: import(
+    "@/lib/types-agent-target"
+  ).CliAgentTarget,
+): Promise<boolean> {
+  try {
+    await rotateKnotsLease(
+      ctx,
+      stepAgentOverride ?? ctx.agent,
+    );
+    return true;
+  } catch (err) {
+    const tag =
+      `[terminal-manager] [${ctx.id}] [take-loop]`;
+    console.error(
+      `${tag} lease rotation failed:`,
+      err,
+    );
+    ctx.pushEvent({
+      type: "stderr",
+      data:
+        `Take loop: lease rotation failed for ${ctx.beatId}\n`,
+      timestamp: Date.now(),
+    });
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      claimedState: currentState,
+      loopDecision:
+        `lease_rotation_failed:${String(err)}`,
+    });
+    return false;
+  }
+}
+
 // ─── Sub-helpers ─────────────────────────────────────
 
 function logFetchFailure(
@@ -171,6 +195,9 @@ function logFetchFailure(
     `${tag} get(${ctx.beatId}) failed: ` +
     `ok=${result.ok} error=${err}`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    loopDecision: `fetch_failed:${err}`,
+  });
   ctx.pushEvent({
     type: "stderr",
     data: `Take loop: failed to fetch ` +
@@ -198,8 +225,8 @@ function logBeatState(
     `requiresHumanAction=` +
     `${current.requiresHumanAction} ` +
     `terminalStates=` +
-    `[${workflow.terminalStates}] ` +
-    `iteration=${ctx.takeIteration.value}`,
+      `[${workflow.terminalStates}] ` +
+      `iteration=${ctx.takeIteration.value}`,
   );
 }
 
@@ -213,6 +240,11 @@ function handleTerminalState(
     `${tag} STOP: terminal state ` +
     `"${current.state}"`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    claimedState: current.state,
+    postExitState: current.state,
+    loopDecision: `terminal_state:${current.state}`,
+  });
   ctx.pushEvent({
     type: "stdout",
     data: `\x1b[33m--- ` +
@@ -254,8 +286,13 @@ async function rollbackStepFailure(
     `agent "${failedAgent}" ` +
     `left ${ctx.beatId} in active ` +
     `state="${current.state}" — ` +
-    `rolling back to "${rollState}"`,
+      `rolling back to "${rollState}"`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    claimedState: current.state,
+    loopDecision:
+      `step_failure_rollback:${current.state}->${rollState}`,
+  });
   ctx.pushEvent({
     type: "stdout",
     data: `\x1b[33m--- Step failure: ` +
@@ -281,6 +318,11 @@ async function rollbackStepFailure(
       `${tag} rollback failed ` +
       `for ${ctx.beatId}:`, err,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      claimedState: current.state,
+      loopDecision:
+        `step_failure_rollback_failed:${String(err)}`,
+    });
     ctx.pushEvent({
       type: "stderr",
       data: `Step failure rollback failed for ` +
@@ -298,6 +340,10 @@ async function rollbackStepFailure(
       `${tag} STOP: failed to reload ` +
       `${ctx.beatId} after step failure rollback`,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      claimedState: rollState,
+      loopDecision: "reload_after_rollback_failed",
+    });
     return null;
   }
 
@@ -342,8 +388,14 @@ function handleNotAgentOwned(
     `state=${current.state} ` +
     `step=${stepName} ` +
     `phase=${phase} ` +
-    `stepOwner=${ownerKind}`,
+      `stepOwner=${ownerKind}`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    claimedState: current.state,
+    postExitState: current.state,
+    loopDecision:
+      `not_agent_owned:${stepName}:${ownerKind}`,
+  });
   ctx.pushEvent({
     type: "stdout",
     data: `\x1b[33m--- ` +
