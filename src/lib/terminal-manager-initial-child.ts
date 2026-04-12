@@ -7,11 +7,6 @@ import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import type { InteractionLog } from "@/lib/interaction-logger";
 import {
-  buildPromptModeArgs,
-  buildCodexInteractiveArgs,
-  buildCopilotInteractiveArgs,
-  buildOpenCodeInteractiveArgs,
-  buildGeminiInteractiveArgs,
   resolveDialect,
   createLineNormalizer,
 } from "@/lib/agent-adapter";
@@ -20,42 +15,28 @@ import {
   supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
-  createCodexJsonRpcSession,
-} from "@/lib/codex-jsonrpc-session";
-import {
-  createGeminiAcpSession,
-} from "@/lib/gemini-acp-session";
-import {
-  supportsAutoFollowUp,
-} from "@/lib/memory-manager-commands";
-import type {
   TerminalSession,
   TerminalEvent,
 } from "@/lib/types";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
-  formatAgentDisplayLabel,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
 import {
   finishSessionImpl,
 } from "@/lib/terminal-manager-initial-finish";
 import {
-  buildSingleBeatCompletionFollowUp,
-  buildWaveCompletionFollowUp,
-} from "@/lib/terminal-manager-workflow";
+  recordTakeLoopLifecycle,
+  recordSessionFinishLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
 import type { TakeLoopContext } from "@/lib/terminal-manager-take-loop";
 import {
   type SessionEntry,
-  resolveAgentCommand,
 } from "@/lib/terminal-manager-types";
 import type {
   PreparedTargets,
 } from "@/lib/terminal-manager-session-prep";
 import {
-  createInitialChildState,
-  closeInput,
-  sendUserTurn,
   wireStdout,
   wireStderr,
   wireClose,
@@ -67,6 +48,21 @@ import {
 import {
   createInitialRuntime,
 } from "@/lib/terminal-manager-initial-runtime";
+import type {
+  SessionRuntimeLifecycleEvent,
+} from "@/lib/agent-session-runtime";
+import {
+  buildAgentArgs,
+  buildAutoShipPrompt,
+  buildInitialState,
+  buildTakeLoopCtx,
+  createInitialTransportSessions,
+  logAgentSpawn,
+  sendInitialPrompt,
+} from "@/lib/terminal-manager-initial-child-helpers";
+import {
+  createTakeLoopRuntimeLifecycleHandler,
+} from "@/lib/terminal-manager-runtime-lifecycle";
 
 // ─── Session lifecycle factory ──────────────────────
 
@@ -93,6 +89,14 @@ function createSessionLifecycle(
     finishSession: (exitCode: number) => {
       if (finished) return;
       finished = true;
+      recordSessionFinishLifecycle(
+        entry,
+        interactionLog,
+        id,
+        beatId,
+        session,
+        exitCode,
+      );
       finishSessionImpl(
         exitCode, session, aborted,
         interactionLog, pushEvent, entry,
@@ -129,57 +133,48 @@ export function spawnInitialChild(
       agent, sessions,
     );
   const dialect = resolveDialect(agent.command);
-  const isTakeLoop =
-    !prepared.effectiveParent && !customPrompt;
-  const preferInteractive =
-    isTakeLoop && supportsInteractive(dialect);
-  const capabilities = resolveCapabilities(
-    dialect, preferInteractive,
-  );
-  const isInteractive = capabilities.interactive;
-  const pt = capabilities.promptTransport;
-  const isJsonRpc = pt === "jsonrpc-stdio";
-  const isHttpServer = pt === "http-server";
-  const isAcp = pt === "acp-stdio";
-  const { agentCmd, args } = buildAgentArgs(
-    agent, dialect, isInteractive,
-    isJsonRpc, isHttpServer, isAcp, prompt,
-  );
-  const normalizeEvent = createLineNormalizer(dialect);
-  const jsonrpcSession = isJsonRpc
-    ? createCodexJsonRpcSession() : undefined;
-  const acpSession = isAcp
-    ? createGeminiAcpSession(
-        prepared.resolvedRepoPath,
-      )
-    : undefined;
-  const takeLoopCtx = buildTakeLoopCtx(
-    id, beatId, prepared, agent, agentInfo,
-    entry, session, interactionLog, emitter,
-    pushEvent, finishSession, sessionAborted,
-  );
-  const autoShipPrompt = buildAutoShipPrompt(
-    isInteractive, customPrompt, prepared,
-  );
   const {
+    isTakeLoop,
+    isInteractive,
+    agentCmd,
+    args,
+    normalizeEvent,
+    takeLoopCtx,
     sessionBeatIds,
     stateRef,
     runtimeConfig,
-  } = createInitialRuntime(
-    id,
-    dialect,
-    capabilities,
-    normalizeEvent,
-    pushEvent,
-    interactionLog,
-    beatId,
     jsonrpcSession,
     acpSession,
-  );
-  stateRef.current = buildInitialState(
-    autoShipPrompt, runtimeConfig,
+  } = prepareInitialRuntimeBundle(
+    id,
+    beatId,
+    prepared,
+    agent,
+    agentInfo,
+    session,
+    entry,
+    emitter,
+    interactionLog,
+    pushEvent,
+    prompt,
+    customPrompt,
+    finishSession,
+    sessionAborted,
+    dialect,
   );
   const startTurn = (turnPrompt: string) => {
+    if (isTakeLoop) {
+      recordTakeLoopLifecycle(
+        takeLoopCtx,
+        "prompt_built",
+        {
+          claimedState: prepared.beat.state,
+          leaseId: entry.knotsLeaseId,
+          promptLength: turnPrompt.length,
+          promptSource: "initial",
+        },
+      );
+    }
     const child = spawnAndWire(
       agentCmd, args, prepared, isInteractive,
       id, beatId, isTakeLoop, sessionBeatIds,
@@ -197,14 +192,144 @@ export function spawnInitialChild(
     );
     sendInitialPrompt(
       child, isInteractive,
-      isJsonRpc || isHttpServer || isAcp,
       stateRef.current,
       interactionLog, session, entry, id, agent,
       turnPrompt, sessions,
+      isTakeLoop ? takeLoopCtx : undefined,
     );
   };
   startTurn(prompt);
   return session;
+}
+
+function prepareInitialRuntimeBundle(
+  id: string,
+  beatId: string,
+  prepared: PreparedTargets,
+  agent: CliAgentTarget,
+  agentInfo: ReturnType<typeof toExecutionAgentInfo>,
+  session: TerminalSession,
+  entry: SessionEntry,
+  emitter: EventEmitter,
+  interactionLog: InteractionLog,
+  pushEvent: (evt: TerminalEvent) => void,
+  prompt: string,
+  customPrompt: string | undefined,
+  finishSession: (code: number) => void,
+  sessionAborted: () => boolean,
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+) {
+  const isTakeLoop = !prepared.effectiveParent &&
+    !customPrompt;
+  const capabilities = resolveCapabilities(
+    dialect,
+    isTakeLoop && supportsInteractive(dialect),
+  );
+  const isInteractive = capabilities.interactive;
+  const transport = capabilities.promptTransport;
+  const { agentCmd, args } = buildAgentArgs(
+    agent,
+    dialect,
+    isInteractive,
+    transport === "jsonrpc-stdio",
+    transport === "http-server",
+    transport === "acp-stdio",
+    prompt,
+  );
+  const normalizeEvent = createLineNormalizer(dialect);
+  const takeLoopCtx = buildTakeLoopCtx(
+    id,
+    beatId,
+    prepared,
+    agent,
+    agentInfo,
+    entry,
+    session,
+    interactionLog,
+    emitter,
+    pushEvent,
+    finishSession,
+    sessionAborted,
+  );
+  const { sessionBeatIds, stateRef, runtimeConfig } =
+    createInitialRuntime(
+      id,
+      dialect,
+      capabilities,
+      normalizeEvent,
+      pushEvent,
+      interactionLog,
+      beatId,
+    );
+  const emitRuntimeLifecycle = (event:
+    SessionRuntimeLifecycleEvent) =>
+    runtimeConfig.onLifecycleEvent?.(event);
+  const sessions = createInitialTransportSessions(
+    transport === "jsonrpc-stdio",
+    transport === "http-server",
+    transport === "acp-stdio",
+    prepared.resolvedRepoPath,
+    stateRef,
+    pushEvent,
+    emitRuntimeLifecycle,
+  );
+  finalizeInitialRuntimeConfig(
+    runtimeConfig,
+    sessions,
+    isTakeLoop
+      ? createTakeLoopRuntimeLifecycleHandler(
+        takeLoopCtx,
+      )
+      : undefined,
+    buildAutoShipPrompt(
+      isInteractive,
+      customPrompt,
+      prepared,
+    ),
+    stateRef,
+  );
+  return {
+    isTakeLoop,
+    isInteractive,
+    agentCmd,
+    args,
+    normalizeEvent,
+    takeLoopCtx,
+    sessionBeatIds,
+    stateRef,
+    runtimeConfig,
+    jsonrpcSession: sessions.jsonrpcSession,
+    acpSession: sessions.acpSession,
+  };
+}
+
+function finalizeInitialRuntimeConfig(
+  runtimeConfig: ReturnType<
+    typeof createInitialRuntime
+  >["runtimeConfig"],
+  sessions: ReturnType<
+    typeof createInitialTransportSessions
+  >,
+  lifecycleHandler:
+    | ((event: SessionRuntimeLifecycleEvent) => void)
+    | undefined,
+  autoShipPrompt: string | null,
+  stateRef: ReturnType<
+    typeof createInitialRuntime
+  >["stateRef"],
+): void {
+  Object.assign(runtimeConfig, {
+    httpSession: sessions.httpSession,
+    jsonrpcSession: sessions.jsonrpcSession,
+    acpSession: sessions.acpSession,
+    ...(lifecycleHandler
+      ? { onLifecycleEvent: lifecycleHandler }
+      : {}),
+  });
+  stateRef.current = buildInitialState(
+    autoShipPrompt,
+    runtimeConfig,
+  );
 }
 
 // ─── Spawn + wire ───────────────────────────────────
@@ -252,7 +377,7 @@ function spawnAndWire(
     detached: true,
   });
   entry.process = child;
-  logAgentSpawn(id, agent, child);
+  logAgentSpawn(agent, child);
 
   wireStdout(
     child, id, sessionBeatIds, dialect,
@@ -291,195 +416,4 @@ function spawnAndWire(
   }
 
   return child;
-}
-
-// ─── Small helpers ───────────────────────────────────
-
-function buildInitialState(
-  autoShipPrompt: string | null,
-  runtimeConfig: import(
-    "@/lib/agent-session-runtime"
-  ).SessionRuntimeConfig,
-): import(
-  "@/lib/terminal-manager-initial-io"
-).InitialChildState {
-  return createInitialChildState(
-    autoShipPrompt, runtimeConfig,
-  );
-}
-
-function buildTakeLoopCtx(
-  id: string,
-  beatId: string,
-  prepared: PreparedTargets,
-  agent: CliAgentTarget,
-  agentInfo: ReturnType<typeof toExecutionAgentInfo>,
-  entry: SessionEntry,
-  session: TerminalSession,
-  interactionLog: InteractionLog,
-  emitter: EventEmitter,
-  pushEvent: (evt: TerminalEvent) => void,
-  finishSession: (code: number) => void,
-  sessionAborted: () => boolean,
-): TakeLoopContext {
-  return {
-    id, beatId,
-    beat: prepared.beat,
-    repoPath: prepared.repoPath,
-    resolvedRepoPath: prepared.resolvedRepoPath,
-    cwd: prepared.resolvedRepoPath,
-    memoryManagerType: prepared.memoryManagerType,
-    workflowsById: prepared.workflowsById,
-    fallbackWorkflow: prepared.fallbackWorkflow,
-    agent, agentInfo, entry, session,
-    interactionLog, emitter, pushEvent,
-    finishSession, sessionAborted,
-    knotsLeaseTerminationStarted: { value: false },
-    takeIteration: { value: 1 },
-    claimsPerQueueType: new Map(),
-    lastAgentPerQueueType: new Map(),
-    failedAgentsPerQueueType: new Map(),
-    claimedAt: Date.now(),
-  };
-}
-
-function buildAutoShipPrompt(
-  isInteractive: boolean,
-  customPrompt: string | undefined,
-  prepared: PreparedTargets,
-): string | null {
-  if (!isInteractive || customPrompt) return null;
-  if (
-    !supportsAutoFollowUp(prepared.memoryManagerType)
-  ) {
-    return null;
-  }
-  return prepared.effectiveParent
-    ? buildWaveCompletionFollowUp(
-      prepared.beat.id,
-      prepared.sceneTargets,
-      prepared.memoryManagerType,
-    )
-    : buildSingleBeatCompletionFollowUp(
-      prepared.primaryTarget,
-      prepared.memoryManagerType,
-    );
-}
-
-function buildAgentArgs(
-  agent: CliAgentTarget,
-  dialect: import("@/lib/agent-adapter").AgentDialect,
-  isInteractive: boolean,
-  isJsonRpc: boolean,
-  isHttpServer: boolean,
-  isAcp: boolean,
-  prompt: string,
-): { agentCmd: string; args: string[] } {
-  let agentCmd: string;
-  let args: string[];
-  if (isJsonRpc) {
-    const built = buildCodexInteractiveArgs(agent);
-    agentCmd = built.command;
-    args = built.args;
-  } else if (isHttpServer) {
-    const built =
-      buildOpenCodeInteractiveArgs(agent);
-    agentCmd = built.command;
-    args = built.args;
-  } else if (isAcp) {
-    const built =
-      buildGeminiInteractiveArgs(agent);
-    agentCmd = built.command;
-    args = built.args;
-  } else if (isInteractive && dialect === "copilot") {
-    const built =
-      buildCopilotInteractiveArgs(agent);
-    agentCmd = built.command;
-    args = built.args;
-  } else if (isInteractive) {
-    agentCmd = agent.command;
-    args = [
-      "-p", "--input-format", "stream-json",
-      "--verbose", "--output-format", "stream-json",
-      "--dangerously-skip-permissions",
-    ];
-    if (agent.model) {
-      args.push("--model", agent.model);
-    }
-  } else {
-    const built = buildPromptModeArgs(agent, prompt);
-    agentCmd = built.command;
-    args = built.args;
-  }
-  agentCmd = resolveAgentCommand(agentCmd);
-  return { agentCmd, args };
-}
-
-function logAgentSpawn(
-  id: string,
-  agent: CliAgentTarget,
-  child: import("node:child_process").ChildProcess,
-): void {
-  const modelStr = agent.model
-    ? ` (model: ${agent.model})` : "";
-  console.log(
-    `[terminal-manager]   agent: ` +
-    `${agent.command}${modelStr}`,
-  );
-  console.log(
-    `[terminal-manager]   pid: ` +
-    `${child.pid ?? "failed to spawn"}`,
-  );
-}
-
-// ─── sendInitialPrompt ──────────────────────────────
-
-function sendInitialPrompt(
-  child: import("node:child_process").ChildProcess,
-  isInteractive: boolean,
-  isJsonRpc: boolean,
-  state: import(
-    "@/lib/terminal-manager-initial-io"
-  ).InitialChildState,
-  interactionLog: InteractionLog,
-  session: TerminalSession,
-  entry: SessionEntry,
-  id: string,
-  agent: CliAgentTarget,
-  prompt: string,
-  sessions: Map<string, SessionEntry>,
-): void {
-  if (isInteractive) {
-    // For JSON-RPC, sendUserTurn delegates to
-    // startTurn() which queues until handshake
-    // completes. For stream-json, it writes
-    // directly to stdin.
-    const sent = sendUserTurn(
-      child, state, interactionLog,
-      prompt, "initial",
-    );
-    if (!sent) {
-      closeInput(child, state);
-      session.status = "error";
-      interactionLog.logEnd(1, "error");
-      child.kill("SIGTERM");
-      entry.releaseKnotsLease?.(
-        "initial_prompt_send_failed", "error",
-      );
-      sessions.delete(id);
-      const desc =
-        `${formatAgentDisplayLabel(agent)}` +
-        (agent.model
-          ? ` (model: ${agent.model})`
-          : "");
-      throw new Error(
-        `Failed to send initial prompt ` +
-        `to agent: ${desc}`,
-      );
-    }
-  } else {
-    interactionLog.logPrompt(prompt, {
-      source: "initial",
-    });
-  }
 }

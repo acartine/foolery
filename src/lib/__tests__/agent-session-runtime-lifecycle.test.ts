@@ -15,6 +15,9 @@ import {
 import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import type {
+  SessionRuntimeLifecycleEvent,
+} from "@/lib/agent-session-runtime";
 
 // ── Helpers ────────────────────────────────────────────
 
@@ -174,6 +177,74 @@ describe("runtime: onResult callback", () => {
     );
     vi.advanceTimersByTime(2000);
     expect(endSpy).toHaveBeenCalledOnce();
+  });
+});
+
+describe("runtime: lifecycle callbacks", () => {
+  it("emits prompt delivery events for stdio turns", () => {
+    const events: SessionRuntimeLifecycleEvent[] = [];
+    const rt = createSessionRuntime(
+      makeConfig("claude", {
+        onLifecycleEvent: (event) => {
+          events.push(event);
+        },
+      }),
+    );
+    const child = makeChild(true);
+
+    expect(
+      rt.sendUserTurn(child, "instrument this", "manual"),
+    ).toBe(true);
+    expect(events).toContainEqual({
+      type: "prompt_delivery_attempted",
+      transport: "stdio",
+    });
+    expect(events).toContainEqual({
+      type: "prompt_delivery_succeeded",
+      transport: "stdio",
+    });
+  });
+
+  it("emits observation events for response and result lines", () => {
+    const events: SessionRuntimeLifecycleEvent[] = [];
+    const rt = createSessionRuntime(
+      makeConfig("claude", {
+        onLifecycleEvent: (event) => {
+          events.push(event);
+        },
+      }),
+    );
+    const child = makeChild(true);
+
+    rt.wireStdout(child);
+    child.stdout!.emit(
+      "data",
+      Buffer.from(JSON.stringify({
+        type: "result",
+        result: "done",
+        is_error: false,
+      }) + "\n"),
+    );
+
+    expect(events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "stdout_observed",
+        }),
+        expect.objectContaining({
+          type: "response_logged",
+        }),
+        expect.objectContaining({
+          type: "normalized_event_observed",
+          eventType: "result",
+        }),
+        expect.objectContaining({
+          type: "result_observed",
+          eventType: "result",
+          isError: false,
+        }),
+      ]),
+    );
   });
 });
 

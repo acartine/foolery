@@ -57,6 +57,115 @@ export function doScheduleInputClose(
   );
 }
 
+function resetForNewTurn(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+): void {
+  state.resultObserved = false;
+  state.exitReason = null;
+  doResetWatchdog(child, state, config);
+}
+
+function failPromptDelivery(
+  config: SessionRuntimeConfig,
+  transport: "stdio" | "jsonrpc" | "http" | "acp",
+  reason: string,
+): false {
+  config.onLifecycleEvent?.({
+    type: "prompt_delivery_failed",
+    transport,
+    reason,
+  });
+  return false;
+}
+
+function sendHttpTurn(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+  text: string,
+  source: string,
+): boolean {
+  if (state.stdinClosed) {
+    return failPromptDelivery(
+      config,
+      "http",
+      "stdin_closed",
+    );
+  }
+  doCancelInputClose(state);
+  const sent = config.httpSession?.startTurn(
+    child,
+    text,
+  );
+  if (sent) {
+    resetForNewTurn(child, state, config);
+    config.interactionLog.logPrompt(
+      text,
+      { source },
+    );
+  }
+  return sent ?? false;
+}
+
+function sendSessionTurn(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+  text: string,
+  source: string,
+  transport: "jsonrpc" | "acp",
+): boolean {
+  const session = transport === "jsonrpc"
+    ? config.jsonrpcSession
+    : config.acpSession;
+  const sent = session?.startTurn(child, text);
+  if (sent) {
+    resetForNewTurn(child, state, config);
+    config.interactionLog.logPrompt(
+      text,
+      { source },
+    );
+  }
+  return sent ?? false;
+}
+
+function sendStdioTurn(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+  text: string,
+  source: string,
+): boolean {
+  const line = config.dialect === "copilot"
+    ? makeCopilotUserMessageLine(text)
+    : makeUserMessageLine(text);
+  try {
+    config.onLifecycleEvent?.({
+      type: "prompt_delivery_attempted",
+      transport: "stdio",
+    });
+    child.stdin!.write(line);
+    resetForNewTurn(child, state, config);
+    config.onLifecycleEvent?.({
+      type: "prompt_delivery_succeeded",
+      transport: "stdio",
+    });
+    config.interactionLog.logPrompt(
+      text,
+      { source },
+    );
+    return true;
+  } catch {
+    return failPromptDelivery(
+      config,
+      "stdio",
+      "stdin_write_threw",
+    );
+  }
+}
+
 export function doSendUserTurn(
   child: ChildProcess,
   state: SessionRuntimeState,
@@ -64,78 +173,43 @@ export function doSendUserTurn(
   text: string,
   source: string,
 ): boolean {
-  // HTTP transport: no stdin guard needed
   if (config.httpSession) {
-    if (state.stdinClosed) return false;
-    doCancelInputClose(state);
-    const sent =
-      config.httpSession.startTurn(child, text);
-    if (sent) {
-      state.resultObserved = false;
-      state.exitReason = null;
-      doResetWatchdog(child, state, config);
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
+    return sendHttpTurn(
+      child, state, config, text, source,
+    );
   }
-
   if (
     !child.stdin ||
     child.stdin.destroyed ||
     child.stdin.writableEnded ||
     state.stdinClosed
   ) {
-    return false;
+    const transport = config.jsonrpcSession
+      ? "jsonrpc"
+      : config.acpSession
+        ? "acp"
+        : "stdio";
+    return failPromptDelivery(
+      config,
+      transport,
+      "stdin_unavailable",
+    );
   }
   doCancelInputClose(state);
-
-  const resetForNewTurn = () => {
-    state.resultObserved = false;
-    state.exitReason = null;
-    doResetWatchdog(child, state, config);
-  };
-
-  // JSON-RPC transport: use startTurn()
   if (config.jsonrpcSession) {
-    const sent =
-      config.jsonrpcSession.startTurn(child, text);
-    if (sent) {
-      resetForNewTurn();
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
-  }
-
-  // ACP transport: use startTurn()
-  if (config.acpSession) {
-    const sent =
-      config.acpSession.startTurn(child, text);
-    if (sent) {
-      resetForNewTurn();
-      config.interactionLog.logPrompt(
-        text, { source },
-      );
-    }
-    return sent;
-  }
-
-  const line = config.dialect === "copilot"
-    ? makeCopilotUserMessageLine(text)
-    : makeUserMessageLine(text);
-  try {
-    child.stdin.write(line);
-    resetForNewTurn();
-    config.interactionLog.logPrompt(
-      text, { source },
+    return sendSessionTurn(
+      child, state, config, text, source,
+      "jsonrpc",
     );
-    return true;
-  } catch {
-    return false;
   }
+  if (config.acpSession) {
+    return sendSessionTurn(
+      child, state, config, text, source, "acp",
+    );
+  }
+  return sendStdioTurn(
+    child, state, config, text, source,
+  );
 }
 
 // ── AskUser auto-response ──────────────────────────────

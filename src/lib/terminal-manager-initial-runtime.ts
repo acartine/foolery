@@ -57,6 +57,9 @@ export function createInitialRuntime(
   pushEvent: (evt: TerminalEvent) => void,
   interactionLog: InteractionLog,
   beatId: string,
+  httpSession?: import(
+    "@/lib/opencode-http-session"
+  ).OpenCodeHttpSession,
   jsonrpcSession?: import(
     "@/lib/codex-jsonrpc-session"
   ).CodexJsonRpcSession,
@@ -66,11 +69,12 @@ export function createInitialRuntime(
 ) {
   const sessionBeatIds = [beatId];
   const stateRef = createStateRef();
-  const httpSession = createHttpSession(
-    capabilities.promptTransport === "http-server",
-    stateRef,
-    pushEvent,
-  );
+  const resolvedHttpSession = httpSession ??
+    createHttpSession(
+      capabilities.promptTransport === "http-server",
+      stateRef,
+      pushEvent,
+    );
   const runtimeConfig: SessionRuntimeConfig = {
     id,
     dialect,
@@ -80,7 +84,7 @@ export function createInitialRuntime(
     interactionLog,
     beatIds: sessionBeatIds,
     jsonrpcSession,
-    httpSession,
+    httpSession: resolvedHttpSession,
     acpSession,
   };
   return {

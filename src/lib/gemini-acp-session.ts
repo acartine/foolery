@@ -17,6 +17,9 @@
 import type { ChildProcess } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import type { TerminalStore } from "@/lib/gemini-acp-terminals";
+import type {
+  PromptDispatchHooks,
+} from "@/lib/session-prompt-delivery";
 import {
   handleTermCreate,
   handleTermOutput,
@@ -49,6 +52,7 @@ interface AcpState {
   pendingTurn: {
     child: ChildProcess; prompt: string;
   } | null;
+  hooks: PromptDispatchHooks;
   termStore: TerminalStore;
 }
 
@@ -124,7 +128,8 @@ function flushPending(s: AcpState): void {
   s.pendingTurn = null;
   const id = s.nextId++;
   s.activePromptId = id;
-  writeJson(child, {
+  s.hooks.onAttempted?.();
+  const sent = writeJson(child, {
     jsonrpc: "2.0",
     id,
     method: "session/prompt",
@@ -133,6 +138,13 @@ function flushPending(s: AcpState): void {
       prompt: [{ type: "text", text: prompt }],
     },
   });
+  if (sent) {
+    s.hooks.onSucceeded?.();
+  } else {
+    s.hooks.onFailed?.(
+      "flush_pending_prompt_write_failed",
+    );
+  }
 }
 
 // ── Notification translation ──────────────────────
@@ -331,6 +343,7 @@ function handleFsWrite(
 
 export function createGeminiAcpSession(
   cwd: string,
+  hooks: PromptDispatchHooks = {},
 ): GeminiAcpSession {
   const s: AcpState = {
     nextId: 3,
@@ -338,6 +351,7 @@ export function createGeminiAcpSession(
     ready: false,
     activePromptId: null,
     pendingTurn: null,
+    hooks,
     termStore: {
       terminals: new Map(),
       nextId: 1,
@@ -374,11 +388,15 @@ export function createGeminiAcpSession(
     startTurn(child, prompt) {
       if (!s.ready || !s.sessionId) {
         s.pendingTurn = { child, prompt };
+        s.hooks.onDeferred?.(
+          "awaiting_session_new",
+        );
         return true;
       }
       const id = s.nextId++;
       s.activePromptId = id;
-      return writeJson(child, {
+      s.hooks.onAttempted?.();
+      const sent = writeJson(child, {
         jsonrpc: "2.0", id,
         method: "session/prompt",
         params: {
@@ -388,6 +406,14 @@ export function createGeminiAcpSession(
           ],
         },
       });
+      if (sent) {
+        s.hooks.onSucceeded?.();
+      } else {
+        s.hooks.onFailed?.(
+          "session_prompt_write_failed",
+        );
+      }
+      return sent;
     },
 
     interruptTurn(child) {

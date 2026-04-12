@@ -11,6 +11,9 @@
  *      events for the existing OpenCode normalizer
  */
 import type { ChildProcess } from "node:child_process";
+import type {
+  PromptDispatchHooks,
+} from "@/lib/session-prompt-delivery";
 
 // ── Types ─────────────────────────────────────────────
 
@@ -204,11 +207,16 @@ async function doTurn(
   s: SessionState,
   cb: SessionCallbacks,
   prompt: string,
+  hooks: PromptDispatchHooks,
 ): Promise<void> {
   s.turnInFlight = true;
+  hooks.onAttempted?.();
   try {
     const ok = await ensureSession(s, cb);
     if (!ok || !s.serverUrl || !s.sessionId) {
+      hooks.onFailed?.(
+        "http_session_not_ready",
+      );
       cb.onError(
         "OpenCode HTTP session not ready " +
         "for turn delivery.",
@@ -220,12 +228,14 @@ async function doTurn(
       s.serverUrl, s.sessionId, prompt,
     );
     if (!resp || !resp.parts) {
+      hooks.onFailed?.("http_message_request_failed");
       cb.onError(
         "OpenCode HTTP message request failed.",
       );
       emitErrorResult(cb);
       return;
     }
+    hooks.onSucceeded?.();
     for (const part of resp.parts) {
       const translated = translatePart(part);
       if (translated) {
@@ -233,6 +243,7 @@ async function doTurn(
       }
     }
   } catch (err) {
+    hooks.onFailed?.("http_turn_threw");
     const msg = err instanceof Error
       ? err.message : "Unknown error";
     cb.onError(
@@ -247,11 +258,12 @@ async function doTurn(
 function flushPendingTurn(
   s: SessionState,
   cb: SessionCallbacks,
+  hooks: PromptDispatchHooks,
 ): void {
   if (!s.pendingTurn || !s.ready) return;
   const { prompt } = s.pendingTurn;
   s.pendingTurn = null;
-  void doTurn(s, cb, prompt);
+  void doTurn(s, cb, prompt, hooks);
 }
 
 // ── Factory ───────────────────────────────────────────
@@ -259,6 +271,7 @@ function flushPendingTurn(
 export function createOpenCodeHttpSession(
   onEvent: (jsonLine: string) => void,
   onError: (message: string) => void,
+  hooks: PromptDispatchHooks = {},
 ): OpenCodeHttpSession {
   const s: SessionState = {
     serverUrl: null,
@@ -281,16 +294,17 @@ export function createOpenCodeHttpSession(
       if (!match) return false;
       s.serverUrl = match[1];
       s.ready = true;
-      flushPendingTurn(s, cb);
+      flushPendingTurn(s, cb, hooks);
       return true;
     },
 
     startTurn(_, prompt) {
       if (!s.ready) {
         s.pendingTurn = { child: _, prompt };
+        hooks.onDeferred?.("awaiting_server_url");
         return true;
       }
-      void doTurn(s, cb, prompt);
+      void doTurn(s, cb, prompt, hooks);
       return true;
     },
 

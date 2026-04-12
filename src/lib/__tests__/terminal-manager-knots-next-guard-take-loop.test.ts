@@ -34,6 +34,7 @@ const backend = {
 const interactionLog = {
   filePath: undefined as string | undefined,
   logPrompt: vi.fn(),
+  logLifecycle: vi.fn(),
   logStdout: vi.fn(),
   logStderr: vi.fn(),
   logResponse: vi.fn(),
@@ -131,7 +132,11 @@ vi.mock("@/lib/agent-message-type-index", () => ({
   updateMessageTypeIndexFromSession: vi.fn(async () => undefined),
 }));
 
-import { createSession, getSession } from "@/lib/terminal-manager";
+import {
+  abortSession,
+  createSession,
+  getSession,
+} from "@/lib/terminal-manager";
 import {
   rollbackBeatState,
   assertClaimable,
@@ -171,6 +176,7 @@ function resetTakeLoopMocks(): void {
   backend.buildTakePrompt.mockReset();
   backend.update.mockReset();
   interactionLog.logPrompt.mockReset();
+  interactionLog.logLifecycle.mockReset();
   interactionLog.logStdout.mockReset();
   interactionLog.logStderr.mockReset();
   interactionLog.logResponse.mockReset();
@@ -191,6 +197,9 @@ async function setupTakeLoopMocks(): Promise<void> {
 function clearTakeLoopSessions(): void {
   type GS = { __terminalSessions?: Map<string, unknown> };
   const sessions = (globalThis as GS).__terminalSessions;
+  for (const sessionId of sessions?.keys() ?? []) {
+    abortSession(sessionId);
+  }
   sessions?.clear();
 }
 
@@ -241,6 +250,41 @@ describe("take-loop: logs prompts for one-shot agents", () => {
       expect(typeof loopPrompt).toBe("string");
       expect(loopPrompt).toContain("FOOLERY EXECUTION BOUNDARY:");
       expect(loopPrompt).toContain("loop app prompt");
+    });
+  });
+
+  it("records take-loop lifecycle around prompt handoff", async () => {
+    backend.get.mockResolvedValue({
+      ok: true,
+      data: {
+        id: "foolery-2001",
+        title: "Take-loop lifecycle visibility",
+        state: "ready_for_implementation",
+        isAgentClaimable: true,
+      },
+    });
+    backend.listWorkflows.mockResolvedValue({ ok: true, data: [] });
+    backend.list.mockResolvedValue({ ok: true, data: [] });
+    backend.buildTakePrompt.mockResolvedValue({
+      ok: true,
+      data: { prompt: "initial app prompt" },
+    });
+
+    await createSession("foolery-2001", "/tmp/repo");
+    expect(spawnedChildren).toHaveLength(1);
+    spawnedChildren[0].emit("close", 0, null);
+
+    await waitFor(() => {
+      const lifecycleEvents = interactionLog.logLifecycle.mock.calls
+        .map((args: unknown[]) => args[0] as Record<string, unknown>)
+        .map((entry) => entry.event);
+      expect(lifecycleEvents).toContain("prompt_built");
+      expect(lifecycleEvents).toContain("prompt_send_attempted");
+      expect(lifecycleEvents).toContain("prompt_delivery_deferred");
+      expect(lifecycleEvents).toContain("child_close");
+    });
+    await waitFor(() => {
+      expect(spawnedChildren.length).toBe(2);
     });
   });
 });

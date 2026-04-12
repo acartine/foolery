@@ -21,6 +21,10 @@ import {
   ensureKnotsLease,
 } from "@/lib/knots-lease-runtime";
 import {
+  recordTakeLoopLifecycle,
+  recordLeaseReleaseLifecycle,
+} from "@/lib/terminal-manager-take-lifecycle";
+import {
   isReviewStep,
   priorActionStep,
   resolveStep,
@@ -85,6 +89,10 @@ export async function selectStepAgent(
         `${tag} STOP: error retry not possible ` +
         `without advanced dispatch mode`,
       );
+      recordTakeLoopLifecycle(ctx, "loop_stop", {
+        loopDecision:
+          "error_retry_requires_advanced_dispatch",
+      });
       return "stop";
     }
   } catch {
@@ -93,6 +101,10 @@ export async function selectStepAgent(
         `${tag} STOP: settings load failed ` +
         `during error retry`,
       );
+      recordTakeLoopLifecycle(ctx, "loop_stop", {
+        loopDecision:
+          "error_retry_settings_load_failed",
+      });
       return "stop";
     }
   }
@@ -186,6 +198,9 @@ function selectErrorRetryAgent(
       `${tag} STOP: no pool configured ` +
       `for error retry exclusion`,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      loopDecision: "error_retry_pool_missing",
+    });
     return "stop";
   }
   const excludedAgentIds =
@@ -202,6 +217,10 @@ function selectErrorRetryAgent(
       `(excluded: ` +
       `${[...excludedAgentIds].join(", ")})`,
     );
+    recordTakeLoopLifecycle(ctx, "loop_stop", {
+      loopDecision:
+        `error_retry_no_alternative:${[...excludedAgentIds].join(",")}`,
+    });
     return "stop";
   }
   if (strictAgent.kind === "cli") {
@@ -238,6 +257,11 @@ export async function handleMaxClaims(
     `reached for "${queueType}" ` +
     `(${count}/${maxClaims})`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    claimedState: current.state,
+    loopDecision:
+      `max_claims_reached:${queueType}:${count}/${maxClaims}`,
+  });
   ctx.pushEvent({
     type: "stdout",
     data: `\x1b[33m--- ${new Date().toISOString()} ` +
@@ -258,6 +282,10 @@ export async function rotateKnotsLease(
   nextAgent: CliAgentTarget = ctx.agent,
 ): Promise<void> {
   if (ctx.memoryManagerType !== "knots") return;
+  recordTakeLoopLifecycle(ctx, "loop_continue", {
+    loopDecision: "rotate_lease_for_next_iteration",
+    leaseId: ctx.entry.knotsLeaseId,
+  });
   const nextAgentInfo = toExecutionAgentInfo(nextAgent);
   ctx.entry.releaseKnotsLease?.(
     "lease_rotation", "success",
@@ -293,6 +321,15 @@ export async function rotateKnotsLease(
     ctx.knotsLeaseTerminationStarted.value = true;
     const leaseId = ctx.entry.knotsLeaseId;
     if (!leaseId) return;
+    recordLeaseReleaseLifecycle(
+      ctx.entry,
+      ctx.interactionLog,
+      ctx.id,
+      ctx.beatId,
+      reason,
+      outcome,
+      data,
+    );
     ctx.entry.lastReleasedKnotsLeaseId = leaseId;
     ctx.entry.knotsLeaseId = undefined;
     ctx.entry.knotsLeaseStep = undefined;
@@ -326,6 +363,10 @@ export function logClaimFailure(
     `${tag} STOP: buildTakePrompt failed — ` +
     `ok=${result.ok} error=${err}`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_stop", {
+    loopDecision:
+      `build_take_prompt_failed:${err}`,
+  });
   ctx.pushEvent({
     type: "stderr",
     data: `Take loop: failed to claim ` +
@@ -362,6 +403,12 @@ export async function finalizeClaim(
     `${tag} CONTINUE: claimed ${ctx.beatId} ` +
     `-> iteration ${iter}`,
   );
+  recordTakeLoopLifecycle(ctx, "loop_continue", {
+    iteration: iter,
+    claimedState: current.state,
+    leaseId: ctx.entry.knotsLeaseId,
+    loopDecision: `claimed:${queueType}`,
+  });
   ctx.pushEvent({
     type: "stdout",
     data: `\x1b[36m--- ${new Date().toISOString()} ` +
