@@ -14,6 +14,12 @@ if [[ -f "${SETUP_SCRIPT_DIR}/model-picker.sh" ]]; then
   source "${SETUP_SCRIPT_DIR}/model-picker.sh"
   _HAS_MODEL_PICKER=1
 fi
+# shellcheck source=toml-reader.sh
+source "${SETUP_SCRIPT_DIR}/toml-reader.sh"
+
+# Configurable I/O for testability — override to redirect prompts.
+_SETUP_INPUT="${_SETUP_INPUT:-/dev/tty}"
+_SETUP_OUTPUT="${_SETUP_OUTPUT:-/dev/tty}"
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -122,7 +128,7 @@ _setup_heading() {
     color="$(_setup_color blue)"
     reset="$(_setup_color reset)"
   fi
-  printf '\n%b[foolery]%b %s %s\n' "$color" "$reset" "$(_setup_icon heading 2)" "$1" >/dev/tty
+  printf '\n%b[foolery]%b %s %s\n' "$color" "$reset" "$(_setup_icon heading 2)" "$1" >"$_SETUP_OUTPUT"
 }
 
 _setup_prompt() {
@@ -131,14 +137,14 @@ _setup_prompt() {
     color="$(_setup_color blue)"
     reset="$(_setup_color reset)"
   fi
-  printf '%b[foolery]%b %s %s' "$color" "$reset" "$(_setup_icon prompt 2)" "$1" >/dev/tty
+  printf '%b[foolery]%b %s %s' "$color" "$reset" "$(_setup_icon prompt 2)" "$1" >"$_SETUP_OUTPUT"
 }
 
 _setup_confirm() {
   local prompt="$1" default="${2:-y}"
   local answer
   _setup_prompt "$prompt"
-  read -r answer </dev/tty || answer=""
+  read -r answer <"$_SETUP_INPUT" || answer=""
   answer="${answer:-$default}"
   case "$answer" in
     [Yy]*) return 0 ;;
@@ -434,7 +440,7 @@ EOF
 _mount_selected_repos() {
   local found_repos="$1" choice
   _setup_prompt "Enter numbers to mount (comma-separated, or 'all') [all]: "
-  read -r choice </dev/tty || choice=""
+  read -r choice <"$_SETUP_INPUT" || choice=""
   choice="${choice:-all}"
   choice="${choice// /}"
 
@@ -510,7 +516,7 @@ _handle_manual_entry() {
   while true; do
     local repo_path
     _setup_prompt 'Enter repository path (or empty to finish): '
-    read -r repo_path </dev/tty || break
+    read -r repo_path <"$_SETUP_INPUT" || break
     if [[ -z "$repo_path" ]]; then
       break
     fi
@@ -545,14 +551,14 @@ _prompt_scan_method() {
   printf '  2) Manually specify paths\n'
   local method
   _setup_prompt 'Choice [1]: '
-  read -r method </dev/tty || method=""
+  read -r method <"$_SETUP_INPUT" || method=""
   method="${method:-1}"
 
   case "$method" in
     1)
       local scan_dir
       _setup_prompt "Directory to scan [$HOME]: "
-      read -r scan_dir </dev/tty || scan_dir=""
+      read -r scan_dir <"$_SETUP_INPUT" || scan_dir=""
       scan_dir="${scan_dir:-$HOME}"
       case "$scan_dir" in
         "~"*) scan_dir="${HOME}${scan_dir#"~"}" ;;
@@ -590,6 +596,8 @@ _repo_wizard() {
 _AGENT_CONFIG_DIR="${HOME}/.config/foolery"
 _AGENT_SETTINGS_FILE="${_AGENT_CONFIG_DIR}/settings.toml"
 KNOWN_AGENTS=(claude copilot codex gemini opencode)
+REGISTERED_AGENTS=()
+FOUND_AGENTS=()
 
 _agent_label() {
   case "$1" in
@@ -615,6 +623,47 @@ Acceptance criteria:
 {{acceptance}}
 '
 
+_needs_quoting() {
+  case "$1" in
+    *[.\ ]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+_emit_agent_toml() {
+  local aid="$1"
+  local qid="$aid"
+  if _needs_quoting "$aid"; then
+    qid="\"$aid\""
+  fi
+  local cmd lbl
+  cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
+  lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
+  printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
+    "$qid" "$cmd" "$lbl"
+
+  local field val
+  for field in model agent_type vendor provider \
+    agent_name lease_model flavor version; do
+    local kv_ns=""
+    case "$field" in
+      model) kv_ns="AGENT_MODELS" ;;
+      agent_type) kv_ns="AGENT_TYPES" ;;
+      vendor) kv_ns="AGENT_VENDORS" ;;
+      provider) kv_ns="AGENT_PROVIDERS" ;;
+      agent_name) kv_ns="AGENT_NAMES" ;;
+      lease_model) kv_ns="AGENT_LEASE_MODELS" ;;
+      flavor) kv_ns="AGENT_FLAVORS" ;;
+      version) kv_ns="AGENT_VERSIONS" ;;
+    esac
+    val="$(_kv_get "$kv_ns" "$aid" "")"
+    if [[ -n "$val" ]]; then
+      printf '%s = "%s"\n' "$field" "$val"
+    fi
+  done
+  printf '\n'
+}
+
 _write_settings_toml() {
   mkdir -p "$_AGENT_CONFIG_DIR"
 
@@ -627,28 +676,25 @@ _write_settings_toml() {
     mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
     mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
     printf 'maxConcurrentSessions = %d\n' "$mcs"
-    printf 'maxClaimsPerQueueType = %d\n\n' "$mcq"
+    printf 'maxClaimsPerQueueType = %d\n' "$mcq"
+
+    local tlt
+    tlt="$(_kv_get DEFAULTS terminal_light_theme "")"
+    if [[ "$tlt" == "true" ]]; then
+      printf 'terminalLightTheme = true\n'
+    fi
+    printf '\n'
 
     local registered_agents=()
-    if [[ "${REGISTERED_AGENTS+set}" == "set" && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
+    if [[ ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
       registered_agents=("${REGISTERED_AGENTS[@]}")
-    else
+    elif [[ ${#FOUND_AGENTS[@]} -gt 0 ]]; then
       registered_agents=("${FOUND_AGENTS[@]}")
     fi
 
     local aid
     for aid in "${registered_agents[@]}"; do
-      local lbl cmd
-      lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
-      cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
-      printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
-        "$aid" "$cmd" "$lbl"
-      local _model
-      _model="$(_kv_get AGENT_MODELS "$aid" "")"
-      if [[ -n "$_model" ]]; then
-        printf 'model = "%s"\n' "$_model"
-      fi
-      printf '\n'
+      _emit_agent_toml "$aid"
     done
 
     printf '[actions]\n'
@@ -658,8 +704,13 @@ _write_settings_toml() {
         "$(_kv_get ACTION_MAP "$action" "")"
     done
 
-    printf '\n[backend]\ntype = "auto"\n'
-    printf '\n[defaults]\nprofileId = ""\n'
+    local bt
+    bt="$(_kv_get BACKEND type "auto")"
+    printf '\n[backend]\ntype = "%s"\n' "$bt"
+
+    local pid
+    pid="$(_kv_get DEFAULTS_SECTION profileId "")"
+    printf '\n[defaults]\nprofileId = "%s"\n' "$pid"
 
     printf '\n[scopeRefinement]\n'
     local prompt
@@ -691,7 +742,8 @@ _write_settings_toml() {
           local j
           for ((j = 0; j < count; j++)); do
             local agent_id weight
-            agent_id="$(_kv_get "POOL_AGENT_${step}" "$j" "")"
+            agent_id="$(_kv_get "POOL_AGENT_${step}" \
+              "$j" "")"
             weight="$(_kv_get "POOL_WEIGHT_${step}" \
               "$agent_id" "1")"
             printf '[[pools.%s]]\nagentId = "%s"\nweight = %d\n' \
@@ -725,25 +777,40 @@ _detect_agents() {
 
 _prompt_action_choice() {
   local action_label="$1"
-  shift
+  local current_agent="$2"
+  shift 2
   local agents=("$@")
   local count=${#agents[@]}
 
-  _setup_heading "Which agent for \"$action_label\"?"
-  local i
+  # Find the index of the currently mapped agent (1-based).
+  local default_idx=1 i
   for ((i = 0; i < count; i++)); do
-    printf '  %d) %s\n' "$((i + 1))" "${agents[$i]}" >/dev/tty
+    if [[ "${agents[$i]}" == "$current_agent" ]]; then
+      default_idx=$((i + 1))
+      break
+    fi
+  done
+
+  _setup_heading "Which agent for \"$action_label\"?"
+  for ((i = 0; i < count; i++)); do
+    local marker=""
+    if [[ $((i + 1)) -eq "$default_idx" ]]; then
+      marker=" (current)"
+    fi
+    printf '  %d) %s%s\n' "$((i + 1))" \
+      "${agents[$i]}" "$marker" >"$_SETUP_OUTPUT"
   done
 
   local choice
-  _setup_prompt 'Choice [1]: '
-  read -r choice </dev/tty || true
-  choice="${choice:-1}"
+  _setup_prompt "Choice [$default_idx]: "
+  read -r choice <"$_SETUP_INPUT" || true
+  choice="${choice:-$default_idx}"
 
-  if [[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= count)); then
+  if [[ "$choice" =~ ^[0-9]+$ ]] \
+    && ((choice >= 1 && choice <= count)); then
     printf '%s' "${agents[$((choice - 1))]}"
   else
-    printf '%s' "${agents[0]}"
+    printf '%s' "${agents[$((default_idx - 1))]}"
   fi
 }
 
@@ -797,7 +864,7 @@ _prompt_model_manual() {
   else
     _setup_prompt "Model for $aid (optional, press Enter to skip): "
   fi
-  read -r model </dev/tty || true
+  read -r model <"$_SETUP_INPUT" || true
   printf '%s' "$model"
 }
 
@@ -843,14 +910,14 @@ EOF
     _setup_heading "Available models for $aid"
     local i
     for ((i = 0; i < count; i++)); do
-      printf '  %d) %s\n' "$((i + 1))" "${remaining[$i]}" >/dev/tty
+      printf '  %d) %s\n' "$((i + 1))" "${remaining[$i]}" >"$_SETUP_OUTPUT"
     done
-    printf '  %d) Done\n' "$((count + 1))" >/dev/tty
-    printf '  %d) Other (type manually)\n' "$((count + 2))" >/dev/tty
+    printf '  %d) Done\n' "$((count + 1))" >"$_SETUP_OUTPUT"
+    printf '  %d) Other (type manually)\n' "$((count + 2))" >"$_SETUP_OUTPUT"
 
     local choice
     _setup_prompt "Choice [$((count + 1))]: "
-    read -r choice </dev/tty || true
+    read -r choice <"$_SETUP_INPUT" || true
     choice="${choice:-$((count + 1))}"
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then
@@ -887,15 +954,19 @@ _prompt_action_mappings() {
 
   local i
   for ((i = 0; i < ${#action_names[@]}; i++)); do
+    local current
+    current="$(_kv_get ACTION_MAP "${action_names[$i]}" "")"
     local chosen
-    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${REGISTERED_AGENTS[@]}")"
+    chosen="$(_prompt_action_choice \
+      "${action_labels[$i]}" "$current" \
+      "${REGISTERED_AGENTS[@]}")"
     _kv_set ACTION_MAP "${action_names[$i]}" "$chosen"
   done
 }
 
 _register_scanned_agents() {
   local aid
-  printf '\n' >/dev/tty
+  printf '\n' >"$_SETUP_OUTPUT"
   for aid in "${FOUND_AGENTS[@]}"; do
     local models_list
     models_list="$(_collect_discovered_models "$aid")"
@@ -912,7 +983,28 @@ EOF
   done
 }
 
+_show_existing_agents() {
+  if [[ ${#REGISTERED_AGENTS[@]} -eq 0 ]]; then
+    return
+  fi
+  _setup_heading "Current registered agents:"
+  local _ea
+  for _ea in "${REGISTERED_AGENTS[@]}"; do
+    local _elbl _emod
+    _elbl="$(_kv_get AGENT_LABELS "$_ea" "$_ea")"
+    _emod="$(_kv_get AGENT_MODELS "$_ea" "")"
+    if [[ -n "$_emod" ]]; then
+      printf '  - %s (%s, model: %s)\n' \
+        "$_ea" "$_elbl" "$_emod" >"$_SETUP_OUTPUT"
+    else
+      printf '  - %s (%s)\n' "$_ea" "$_elbl" >"$_SETUP_OUTPUT"
+    fi
+  done
+}
+
 _agent_wizard() {
+  _show_existing_agents
+
   printf '\n'
   if ! _setup_confirm \
     "Scan for and auto-register AI agents? [Y/n] " "y"; then
@@ -927,16 +1019,32 @@ _agent_wizard() {
     return 0
   fi
 
-  REGISTERED_AGENTS=()
+  # Do NOT reset REGISTERED_AGENTS — keep existing agents loaded
+  # from settings.toml. New agents will be appended.
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local detected_model
     detected_model="$(_configured_model "$sole")"
-    _register_default_agent "$sole" "$detected_model"
+    # Only register if not already present
+    local _already_registered=0 _ex
+    for _ex in "${REGISTERED_AGENTS[@]}"; do
+      if [[ "$_ex" == "$sole" ]]; then
+        _already_registered=1
+        break
+      fi
+    done
+    if [[ "$_already_registered" -eq 0 ]]; then
+      _register_default_agent "$sole" "$detected_model"
+    fi
+    # Only set action mappings if not already configured
     local action
     for action in take scene breakdown scopeRefinement; do
-      _kv_set ACTION_MAP "$action" "$sole"
+      local existing
+      existing="$(_kv_get ACTION_MAP "$action" "")"
+      if [[ -z "$existing" ]]; then
+        _kv_set ACTION_MAP "$action" "$sole"
+      fi
     done
     _setup_success "Registered $sole for all actions."
   else
@@ -965,19 +1073,47 @@ _prompt_single_pool() {
     return 0
   fi
 
+  local existing_count
+  existing_count="$(_kv_get POOL_COUNT "$step" "0")"
+
   _setup_heading "Pool: $label"
+
+  # Show existing pool and offer to keep it.
+  if [[ "$existing_count" -gt 0 ]]; then
+    printf '  Current pool (%d agent(s)):\n' \
+      "$existing_count" >"$_SETUP_OUTPUT"
+    local j
+    for ((j = 0; j < existing_count; j++)); do
+      local eid ew
+      eid="$(_kv_get "POOL_AGENT_${step}" "$j" "")"
+      ew="$(_kv_get "POOL_WEIGHT_${step}" "$eid" "1")"
+      printf '    - %s (weight %d)\n' \
+        "$eid" "$ew" >"$_SETUP_OUTPUT"
+    done
+    printf '  1) Keep current\n' >"$_SETUP_OUTPUT"
+    printf '  2) Reconfigure\n' >"$_SETUP_OUTPUT"
+    local keep_choice
+    _setup_prompt "Choice [1]: "
+    read -r keep_choice <"$_SETUP_INPUT" || keep_choice=""
+    keep_choice="${keep_choice:-1}"
+    if [[ "$keep_choice" != "2" ]]; then
+      return 0
+    fi
+  fi
+
   local count=${#REGISTERED_AGENTS[@]}
   local i
   for ((i = 0; i < count; i++)); do
-    printf '  %d) %s\n' "$((i + 1))" "${REGISTERED_AGENTS[$i]}" >/dev/tty
+    printf '  %d) %s\n' "$((i + 1))" \
+      "${REGISTERED_AGENTS[$i]}" >"$_SETUP_OUTPUT"
   done
-  printf '  0) Skip (empty pool)\n' >/dev/tty
+  printf '  0) Skip (empty pool)\n' >"$_SETUP_OUTPUT"
 
   local pool_count=0
   while true; do
     local choice
     _setup_prompt "Add agent to pool (0 when done) [0]: "
-    read -r choice </dev/tty || choice=""
+    read -r choice <"$_SETUP_INPUT" || choice=""
     choice="${choice:-0}"
 
     if [[ "$choice" == "0" ]]; then
@@ -989,7 +1125,7 @@ _prompt_single_pool() {
       local agent_id="${REGISTERED_AGENTS[$((choice - 1))]}"
       local weight
       _setup_prompt "Weight for $agent_id [1]: "
-      read -r weight </dev/tty || weight=""
+      read -r weight <"$_SETUP_INPUT" || weight=""
       weight="${weight:-1}"
       if ! [[ "$weight" =~ ^[0-9]+$ ]] || ((weight < 1)); then
         weight=1
@@ -1017,6 +1153,36 @@ _prompt_pool_config() {
   done
 }
 
+_show_existing_dispatch() {
+  local dm
+  dm="$(_kv_get DISPATCH dispatch_mode "")"
+  if [[ -z "$dm" ]]; then
+    return
+  fi
+  _setup_heading "Current dispatch configuration:"
+  printf '  Mode: %s\n' "$dm" >"$_SETUP_OUTPUT"
+  if [[ "$dm" == "basic" ]]; then
+    local action val
+    for action in take scene breakdown scopeRefinement; do
+      val="$(_kv_get ACTION_MAP "$action" "")"
+      if [[ -n "$val" ]]; then
+        printf '  %s -> %s\n' "$action" "$val" >"$_SETUP_OUTPUT"
+      fi
+    done
+  else
+    local i step label count
+    for ((i = 0; i < ${#_ALL_POOL_STEPS[@]}; i++)); do
+      step="${_ALL_POOL_STEPS[$i]}"
+      label="${_ALL_POOL_LABELS[$i]}"
+      count="$(_kv_get POOL_COUNT "$step" "0")"
+      if [[ "$count" -gt 0 ]]; then
+        printf '  %s: %s agent(s)\n' \
+          "$label" "$count" >"$_SETUP_OUTPUT"
+      fi
+    done
+  fi
+}
+
 _dispatch_wizard() {
   _setup_heading 'Dispatch Configuration'
 
@@ -1026,13 +1192,22 @@ _dispatch_wizard() {
     return 0
   fi
 
-  printf '  1) Simple  — one agent per action\n' >/dev/tty
-  printf '  2) Advanced — weighted pools per workflow step\n' >/dev/tty
+  _show_existing_dispatch
+
+  printf '  1) Simple  — one agent per action\n' >"$_SETUP_OUTPUT"
+  printf '  2) Advanced — weighted pools per workflow step\n' >"$_SETUP_OUTPUT"
+
+  local current_dm
+  current_dm="$(_kv_get DISPATCH dispatch_mode "basic")"
+  local dm_default=1
+  if [[ "$current_dm" == "advanced" ]]; then
+    dm_default=2
+  fi
 
   local mode_choice
-  _setup_prompt 'Choice [1]: '
-  read -r mode_choice </dev/tty || mode_choice=""
-  mode_choice="${mode_choice:-1}"
+  _setup_prompt "Choice [$dm_default]: "
+  read -r mode_choice <"$_SETUP_INPUT" || mode_choice=""
+  mode_choice="${mode_choice:-$dm_default}"
 
   case "$mode_choice" in
     2)
@@ -1067,20 +1242,20 @@ _validate_int_range() {
 
 _prompt_scope_refinement_prompt() {
   _setup_heading 'Scope Refinement Prompt'
-  printf '\n  Current prompt:\n' >/dev/tty
+  printf '\n  Current prompt:\n' >"$_SETUP_OUTPUT"
   local line
   while IFS= read -r line; do
-    printf '  | %s\n' "$line" >/dev/tty
+    printf '  | %s\n' "$line" >"$_SETUP_OUTPUT"
   done <<< "${_SCOPE_PROMPT:-$_DEFAULT_SCOPE_REFINEMENT_PROMPT}"
-  printf '\n' >/dev/tty
+  printf '\n' >"$_SETUP_OUTPUT"
 
-  printf '  1) Keep current (recommended)\n' >/dev/tty
-  printf '  2) Edit with %s\n' "${EDITOR:-vi}" >/dev/tty
-  printf '  3) Type a replacement\n' >/dev/tty
+  printf '  1) Keep current (recommended)\n' >"$_SETUP_OUTPUT"
+  printf '  2) Edit with %s\n' "${EDITOR:-vi}" >"$_SETUP_OUTPUT"
+  printf '  3) Type a replacement\n' >"$_SETUP_OUTPUT"
 
   local choice
   _setup_prompt 'Choice [1]: '
-  read -r choice </dev/tty || choice=""
+  read -r choice <"$_SETUP_INPUT" || choice=""
   choice="${choice:-1}"
 
   case "$choice" in
@@ -1090,7 +1265,7 @@ _prompt_scope_refinement_prompt() {
       printf '%s\n' \
         "${_SCOPE_PROMPT:-$_DEFAULT_SCOPE_REFINEMENT_PROMPT}" \
         > "$tmpfile"
-      "${EDITOR:-vi}" "$tmpfile" </dev/tty >/dev/tty
+      "${EDITOR:-vi}" "$tmpfile" <"$_SETUP_INPUT" >"$_SETUP_OUTPUT"
       _SCOPE_PROMPT="$(cat "$tmpfile")"
       rm -f "$tmpfile"
       _setup_success "Prompt updated."
@@ -1100,7 +1275,7 @@ _prompt_scope_refinement_prompt() {
         "Supports {{title}}, {{description}}, {{acceptance}}."
       _setup_log "Enter an empty line to finish."
       local line new_prompt=""
-      while IFS= read -r line </dev/tty; do
+      while IFS= read -r line <"$_SETUP_INPUT"; do
         [[ -z "$line" ]] && break
         if [[ -z "$new_prompt" ]]; then
           new_prompt="$line"
@@ -1125,16 +1300,21 @@ _prompt_scope_refinement_prompt() {
 _defaults_wizard() {
   _setup_heading 'Defaults & Scope Refinement'
 
+  local cur_mcs cur_mcq
+  cur_mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
+  cur_mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
+
   local mcs
-  _setup_prompt "Max concurrent sessions (1-20) [5]: "
-  read -r mcs </dev/tty || mcs=""
-  mcs="$(_validate_int_range "${mcs:-5}" 1 20 5)"
+  _setup_prompt "Max concurrent sessions (1-20) [$cur_mcs]: "
+  read -r mcs <"$_SETUP_INPUT" || mcs=""
+  mcs="$(_validate_int_range "${mcs:-$cur_mcs}" 1 20 "$cur_mcs")"
   _kv_set DEFAULTS max_concurrent_sessions "$mcs"
 
   local mcq
-  _setup_prompt "Max claims per queue type (1-50) [10]: "
-  read -r mcq </dev/tty || mcq=""
-  mcq="$(_validate_int_range "${mcq:-10}" 1 50 10)"
+  _setup_prompt "Max claims per queue type (1-50) [$cur_mcq]: "
+  read -r mcq <"$_SETUP_INPUT" || mcq=""
+  mcq="$(_validate_int_range \
+    "${mcq:-$cur_mcq}" 1 50 "$cur_mcq")"
   _kv_set DEFAULTS max_claims_per_queue_type "$mcq"
 
   _prompt_scope_refinement_prompt
@@ -1153,7 +1333,7 @@ _STEPS=(
 )
 
 _show_main_menu() {
-  printf '\n' >/dev/tty
+  printf '\n' >"$_SETUP_OUTPUT"
   _setup_heading 'Foolery Setup'
   local i
   for ((i = 0; i < ${#_STEPS[@]}; i++)); do
@@ -1161,12 +1341,12 @@ _show_main_menu() {
     status="$(_kv_get STEP_STATUS "${_STEPS[$i]}" "")"
     if [[ -n "$status" ]]; then
       printf '  %d) %s [%s]\n' \
-        "$((i + 1))" "${_STEPS[$i]}" "$status" >/dev/tty
+        "$((i + 1))" "${_STEPS[$i]}" "$status" >"$_SETUP_OUTPUT"
     else
-      printf '  %d) %s\n' "$((i + 1))" "${_STEPS[$i]}" >/dev/tty
+      printf '  %d) %s\n' "$((i + 1))" "${_STEPS[$i]}" >"$_SETUP_OUTPUT"
     fi
   done
-  printf '  q) Quit without saving\n' >/dev/tty
+  printf '  q) Quit without saving\n' >"$_SETUP_OUTPUT"
 }
 
 foolery_setup() {
@@ -1175,11 +1355,14 @@ foolery_setup() {
     return 1
   fi
 
+  # Load existing configuration so all wizards are additive
+  _read_settings_toml "$_AGENT_SETTINGS_FILE"
+
   while true; do
     _show_main_menu
     local choice
     _setup_prompt 'Step [1-5, or q]: '
-    read -r choice </dev/tty || break
+    read -r choice <"$_SETUP_INPUT" || break
     case "$choice" in
       1)
         _repo_wizard
