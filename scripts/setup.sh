@@ -144,7 +144,7 @@ _setup_confirm() {
   local prompt="$1" default="${2:-y}"
   local answer
   _setup_prompt "$prompt"
-  read -r answer <"$_SETUP_INPUT" || answer=""
+  read -r answer || answer=""
   answer="${answer:-$default}"
   case "$answer" in
     [Yy]*) return 0 ;;
@@ -440,7 +440,7 @@ EOF
 _mount_selected_repos() {
   local found_repos="$1" choice
   _setup_prompt "Enter numbers to mount (comma-separated, or 'all') [all]: "
-  read -r choice <"$_SETUP_INPUT" || choice=""
+  read -r choice || choice=""
   choice="${choice:-all}"
   choice="${choice// /}"
 
@@ -516,7 +516,7 @@ _handle_manual_entry() {
   while true; do
     local repo_path
     _setup_prompt 'Enter repository path (or empty to finish): '
-    read -r repo_path <"$_SETUP_INPUT" || break
+    read -r repo_path || break
     if [[ -z "$repo_path" ]]; then
       break
     fi
@@ -551,14 +551,14 @@ _prompt_scan_method() {
   printf '  2) Manually specify paths\n'
   local method
   _setup_prompt 'Choice [1]: '
-  read -r method <"$_SETUP_INPUT" || method=""
+  read -r method || method=""
   method="${method:-1}"
 
   case "$method" in
     1)
       local scan_dir
       _setup_prompt "Directory to scan [$HOME]: "
-      read -r scan_dir <"$_SETUP_INPUT" || scan_dir=""
+      read -r scan_dir || scan_dir=""
       scan_dir="${scan_dir:-$HOME}"
       case "$scan_dir" in
         "~"*) scan_dir="${HOME}${scan_dir#"~"}" ;;
@@ -803,7 +803,7 @@ _prompt_action_choice() {
 
   local choice
   _setup_prompt "Choice [$default_idx]: "
-  read -r choice <"$_SETUP_INPUT" || true
+  read -r choice || true
   choice="${choice:-$default_idx}"
 
   if [[ "$choice" =~ ^[0-9]+$ ]] \
@@ -864,7 +864,7 @@ _prompt_model_manual() {
   else
     _setup_prompt "Model for $aid (optional, press Enter to skip): "
   fi
-  read -r model <"$_SETUP_INPUT" || true
+  read -r model || true
   printf '%s' "$model"
 }
 
@@ -917,7 +917,7 @@ EOF
 
     local choice
     _setup_prompt "Choice [$((count + 1))]: "
-    read -r choice <"$_SETUP_INPUT" || true
+    read -r choice || true
     choice="${choice:-$((count + 1))}"
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then
@@ -1094,7 +1094,7 @@ _prompt_single_pool() {
     printf '  2) Reconfigure\n' >"$_SETUP_OUTPUT"
     local keep_choice
     _setup_prompt "Choice [1]: "
-    read -r keep_choice <"$_SETUP_INPUT" || keep_choice=""
+    read -r keep_choice || keep_choice=""
     keep_choice="${keep_choice:-1}"
     if [[ "$keep_choice" != "2" ]]; then
       return 0
@@ -1113,7 +1113,7 @@ _prompt_single_pool() {
   while true; do
     local choice
     _setup_prompt "Add agent to pool (0 when done) [0]: "
-    read -r choice <"$_SETUP_INPUT" || choice=""
+    read -r choice || choice=""
     choice="${choice:-0}"
 
     if [[ "$choice" == "0" ]]; then
@@ -1125,7 +1125,7 @@ _prompt_single_pool() {
       local agent_id="${REGISTERED_AGENTS[$((choice - 1))]}"
       local weight
       _setup_prompt "Weight for $agent_id [1]: "
-      read -r weight <"$_SETUP_INPUT" || weight=""
+      read -r weight || weight=""
       weight="${weight:-1}"
       if ! [[ "$weight" =~ ^[0-9]+$ ]] || ((weight < 1)); then
         weight=1
@@ -1206,7 +1206,7 @@ _dispatch_wizard() {
 
   local mode_choice
   _setup_prompt "Choice [$dm_default]: "
-  read -r mode_choice <"$_SETUP_INPUT" || mode_choice=""
+  read -r mode_choice || mode_choice=""
   mode_choice="${mode_choice:-$dm_default}"
 
   case "$mode_choice" in
@@ -1255,7 +1255,7 @@ _prompt_scope_refinement_prompt() {
 
   local choice
   _setup_prompt 'Choice [1]: '
-  read -r choice <"$_SETUP_INPUT" || choice=""
+  read -r choice || choice=""
   choice="${choice:-1}"
 
   case "$choice" in
@@ -1265,7 +1265,7 @@ _prompt_scope_refinement_prompt() {
       printf '%s\n' \
         "${_SCOPE_PROMPT:-$_DEFAULT_SCOPE_REFINEMENT_PROMPT}" \
         > "$tmpfile"
-      "${EDITOR:-vi}" "$tmpfile" <"$_SETUP_INPUT" >"$_SETUP_OUTPUT"
+      "${EDITOR:-vi}" "$tmpfile" >"$_SETUP_OUTPUT"
       _SCOPE_PROMPT="$(cat "$tmpfile")"
       rm -f "$tmpfile"
       _setup_success "Prompt updated."
@@ -1275,7 +1275,7 @@ _prompt_scope_refinement_prompt() {
         "Supports {{title}}, {{description}}, {{acceptance}}."
       _setup_log "Enter an empty line to finish."
       local line new_prompt=""
-      while IFS= read -r line <"$_SETUP_INPUT"; do
+      while IFS= read -r line; do
         [[ -z "$line" ]] && break
         if [[ -z "$new_prompt" ]]; then
           new_prompt="$line"
@@ -1306,13 +1306,13 @@ _defaults_wizard() {
 
   local mcs
   _setup_prompt "Max concurrent sessions (1-20) [$cur_mcs]: "
-  read -r mcs <"$_SETUP_INPUT" || mcs=""
+  read -r mcs || mcs=""
   mcs="$(_validate_int_range "${mcs:-$cur_mcs}" 1 20 "$cur_mcs")"
   _kv_set DEFAULTS max_concurrent_sessions "$mcs"
 
   local mcq
   _setup_prompt "Max claims per queue type (1-50) [$cur_mcq]: "
-  read -r mcq <"$_SETUP_INPUT" || mcq=""
+  read -r mcq || mcq=""
   mcq="$(_validate_int_range \
     "${mcq:-$cur_mcq}" 1 50 "$cur_mcq")"
   _kv_set DEFAULTS max_claims_per_queue_type "$mcq"
@@ -1362,7 +1362,7 @@ foolery_setup() {
     _show_main_menu
     local choice
     _setup_prompt 'Step [1-5, or q]: '
-    read -r choice <"$_SETUP_INPUT" || break
+    read -r choice || break
     case "$choice" in
       1)
         _repo_wizard

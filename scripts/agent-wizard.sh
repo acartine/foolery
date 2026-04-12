@@ -396,7 +396,7 @@ _prompt_action_choice() {
 
   local choice
   _wizard_prompt "Choice [$default_idx]: "
-  read -r choice <"$_SETUP_INPUT" || true
+  read -r choice || true
   choice="${choice:-$default_idx}"
 
   if [[ "$choice" =~ ^[0-9]+$ ]] \
@@ -457,7 +457,7 @@ _prompt_model_manual() {
   else
     _wizard_prompt "Model for $aid (optional, press Enter to skip): "
   fi
-  read -r model <"$_SETUP_INPUT" || true
+  read -r model || true
   printf '%s' "$model"
 }
 
@@ -509,7 +509,7 @@ EOF
 
     local choice
     _wizard_prompt "Choice [$((count + 1))]: "
-    read -r choice <"$_SETUP_INPUT" || true
+    read -r choice || true
     choice="${choice:-$((count + 1))}"
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then
@@ -607,7 +607,7 @@ maybe_agent_wizard() {
   printf '\n' >"$_SETUP_OUTPUT"
   _wizard_prompt 'Scan for and auto-register AI agents? [Y/n] '
   local answer
-  read -r answer <"$_SETUP_INPUT" || true
+  read -r answer || true
   case "$answer" in [nN])
     # Even if skipped, write back loaded config to preserve it
     if [[ "$_TOML_LOADED" -eq 1 ]]; then
