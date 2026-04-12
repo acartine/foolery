@@ -52,21 +52,12 @@ async function runInteractive(
     scriptName,
   );
 
-  // Write stdin input to a file so reads work reliably across
-  // all platforms (avoids /dev/stdin behaviour differences
-  // between macOS and Linux bash versions).
-  const inputFile = join(homeDir, "_test_input.txt");
-  await writeFile(inputFile, stdinInput, "utf8");
-
-  // Prepend `exec < inputFile` so fd 0 becomes the file;
-  // _SETUP_INPUT=/dev/stdin then reads sequentially from it.
-  const wrappedSnippet = `exec < ${JSON.stringify(inputFile)}
-${bashSnippet}`;
-
+  // Use bash -c (not -lc) so login-shell profile init does not
+  // run and consume piped stdin before the snippet executes.
   await new Promise<void>((resolve, reject) => {
     const child = spawn(
       "bash",
-      ["-c", wrappedSnippet, "bash", scriptPath],
+      ["-c", bashSnippet, "bash", scriptPath],
       {
         env: {
           ...process.env,
@@ -83,6 +74,7 @@ ${bashSnippet}`;
       stderr += d.toString();
     });
 
+    child.stdin?.write(stdinInput);
     child.stdin?.end();
 
     child.on("close", (code) => {
