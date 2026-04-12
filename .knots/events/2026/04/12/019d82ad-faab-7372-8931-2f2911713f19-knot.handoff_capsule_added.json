@@ -1,0 +1,15 @@
+{
+  "event_id": "019d82ad-faab-7372-8931-2f2911713f19",
+  "occurred_at": "2026-04-12T17:12:13.227396Z",
+  "knot_id": "foolery-4dc6",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Approved implementation review for commit 85a8d04f on branch foolery-4dc6-lease-investigation-skill (branch is now identical to main). The new skill covers dev (.foolery-logs, port 3000) and installed (~/.config/foolery/logs, port 3210) log roots, correlates lease/session/server logs, includes heuristics for hung turns and completed-without-progress outcomes, and the .claude mirror matches. Sanity gates passed on the reviewed artifact: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-12T17:11:17Z",
+    "entry_id": "019d82ad-faab-7372-8931-2f1bd39e58c8",
+    "model": "gpt",
+    "username": "Codex",
+    "version": "5.4"
+  }
+}

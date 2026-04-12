@@ -1,0 +1,9 @@
+{
+  "event_id": "019d82ab-4b05-7bd0-88d0-7888f9b594d5",
+  "occurred_at": "2026-04-12T17:09:17.189028Z",
+  "knot_id": "foolery-4dc6",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:foolery-4dc6-lease-investigation-skill"
+  }
+}

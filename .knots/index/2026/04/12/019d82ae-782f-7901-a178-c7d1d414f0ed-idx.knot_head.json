@@ -1,0 +1,37 @@
+{
+  "event_id": "019d82ae-782f-7901-a178-c7d1d414f0ed",
+  "occurred_at": "2026-04-12T17:12:45.359176Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4dc6",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Create lease investigation skill",
+    "type": "work",
+    "updated_at": "2026-04-12T17:12:45.359176Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019d82ae-3bfd-7031-abfb-297a372fda20"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d82af-f13e-7973-a5d1-2c28a8600a80",
+  "occurred_at": "2026-04-12T17:14:21.886676Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4dc6",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create lease investigation skill",
+    "type": "work",
+    "updated_at": "2026-04-12T17:14:21.886676Z",
+    "workflow_id": "work_sdlc"
+  }
+}

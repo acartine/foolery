@@ -1,0 +1,9 @@
+{
+  "event_id": "019d82ae-7857-7f62-b190-fa1e72be81a2",
+  "occurred_at": "2026-04-12T17:12:45.399086Z",
+  "knot_id": "foolery-4dc6",
+  "type": "knot.lease_id_set",
+  "data": {
+    "lease_id": "foolery-83dc"
+  }
+}
