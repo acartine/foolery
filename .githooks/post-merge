@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# knots-managed-post-merge-hook
+if [ -x "$(dirname "$0")/post-merge.local" ]; then
+  "$(dirname "$0")/post-merge.local" "$@"
+fi
+kno pull
