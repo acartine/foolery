@@ -11,6 +11,8 @@ SETTINGS_FILE="${CONFIG_DIR}/settings.toml"
 _WIZARD_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=model-picker.sh
 source "${_WIZARD_SCRIPT_DIR}/model-picker.sh"
+# shellcheck source=toml-reader.sh
+source "${_WIZARD_SCRIPT_DIR}/toml-reader.sh"
 
 # Known agent ids checked during detection.
 KNOWN_AGENTS=(claude copilot codex gemini opencode)
@@ -203,6 +205,47 @@ Acceptance criteria:
 {{acceptance}}
 '
 
+_needs_quoting() {
+  case "$1" in
+    *[.\ ]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+_emit_agent_toml() {
+  local aid="$1"
+  local qid="$aid"
+  if _needs_quoting "$aid"; then
+    qid="\"$aid\""
+  fi
+  local cmd lbl
+  cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
+  lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
+  printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
+    "$qid" "$cmd" "$lbl"
+
+  local field val
+  for field in model agent_type vendor provider \
+    agent_name lease_model flavor version; do
+    local kv_ns=""
+    case "$field" in
+      model) kv_ns="AGENT_MODELS" ;;
+      agent_type) kv_ns="AGENT_TYPES" ;;
+      vendor) kv_ns="AGENT_VENDORS" ;;
+      provider) kv_ns="AGENT_PROVIDERS" ;;
+      agent_name) kv_ns="AGENT_NAMES" ;;
+      lease_model) kv_ns="AGENT_LEASE_MODELS" ;;
+      flavor) kv_ns="AGENT_FLAVORS" ;;
+      version) kv_ns="AGENT_VERSIONS" ;;
+    esac
+    val="$(_kv_get "$kv_ns" "$aid" "")"
+    if [[ -n "$val" ]]; then
+      printf '%s = "%s"\n' "$field" "$val"
+    fi
+  done
+  printf '\n'
+}
+
 _write_settings_toml() {
   mkdir -p "$CONFIG_DIR"
 
@@ -215,10 +258,18 @@ _write_settings_toml() {
     mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
     mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
     printf 'maxConcurrentSessions = %d\n' "$mcs"
-    printf 'maxClaimsPerQueueType = %d\n\n' "$mcq"
+    printf 'maxClaimsPerQueueType = %d\n' "$mcq"
+
+    local tlt
+    tlt="$(_kv_get DEFAULTS terminal_light_theme "")"
+    if [[ "$tlt" == "true" ]]; then
+      printf 'terminalLightTheme = true\n'
+    fi
+    printf '\n'
 
     local registered_agents=()
-    if [[ "${REGISTERED_AGENTS+set}" == "set" && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
+    if [[ "${REGISTERED_AGENTS+set}" == "set" \
+      && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
       registered_agents=("${REGISTERED_AGENTS[@]}")
     else
       registered_agents=("${FOUND_AGENTS[@]}")
@@ -226,17 +277,7 @@ _write_settings_toml() {
 
     local aid
     for aid in "${registered_agents[@]}"; do
-      local lbl cmd
-      lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
-      cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
-      printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
-        "$aid" "$cmd" "$lbl"
-      local _model
-      _model="$(_kv_get AGENT_MODELS "$aid" "")"
-      if [[ -n "$_model" ]]; then
-        printf 'model = "%s"\n' "$_model"
-      fi
-      printf '\n'
+      _emit_agent_toml "$aid"
     done
 
     printf '[actions]\n'
@@ -246,8 +287,13 @@ _write_settings_toml() {
         "$(_kv_get ACTION_MAP "$action" "")"
     done
 
-    printf '\n[backend]\ntype = "auto"\n'
-    printf '\n[defaults]\nprofileId = ""\n'
+    local bt
+    bt="$(_kv_get BACKEND type "auto")"
+    printf '\n[backend]\ntype = "%s"\n' "$bt"
+
+    local pid
+    pid="$(_kv_get DEFAULTS_SECTION profileId "")"
+    printf '\n[defaults]\nprofileId = "%s"\n' "$pid"
 
     printf '\n[scopeRefinement]\n'
     local prompt
@@ -483,29 +529,75 @@ maybe_agent_wizard() {
     return 0
   fi
 
+  # Load existing configuration so new agents are merged in
+  _read_settings_toml "$SETTINGS_FILE"
+
+  if [[ "$_TOML_LOADED" -eq 1 \
+    && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
+    _wizard_heading "Current registered agents:"
+    local _ea
+    for _ea in "${REGISTERED_AGENTS[@]}"; do
+      local _elbl _emod
+      _elbl="$(_kv_get AGENT_LABELS "$_ea" "$_ea")"
+      _emod="$(_kv_get AGENT_MODELS "$_ea" "")"
+      if [[ -n "$_emod" ]]; then
+        printf '  - %s (%s, model: %s)\n' \
+          "$_ea" "$_elbl" "$_emod" >/dev/tty
+      else
+        printf '  - %s (%s)\n' "$_ea" "$_elbl" >/dev/tty
+      fi
+    done
+  fi
+
   printf '\n' >/dev/tty
   _wizard_prompt 'Scan for and auto-register AI agents? [Y/n] '
   local answer
   read -r answer </dev/tty || true
-  case "$answer" in [nN]) return 0 ;; esac
+  case "$answer" in [nN])
+    # Even if skipped, write back loaded config to preserve it
+    if [[ "$_TOML_LOADED" -eq 1 ]]; then
+      _write_settings_toml
+    fi
+    return 0
+    ;;
+  esac
 
   detect_agents
 
   if [[ ${#FOUND_AGENTS[@]} -eq 0 ]]; then
     _wizard_log "No supported agents found on PATH. You can add them later in Settings."
+    if [[ "$_TOML_LOADED" -eq 1 ]]; then
+      _write_settings_toml
+    fi
     return 0
   fi
 
-  REGISTERED_AGENTS=()
+  # Do NOT reset REGISTERED_AGENTS — keep existing agents loaded
+  # from settings.toml. New agents will be appended.
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local detected_model
     detected_model="$(_configured_model "$sole")"
-    _register_default_agent "$sole" "$detected_model"
+    # Only register if not already present
+    local _already_registered=0 _ex
+    for _ex in "${REGISTERED_AGENTS[@]}"; do
+      if [[ "$_ex" == "$sole" ]]; then
+        _already_registered=1
+        break
+      fi
+    done
+    if [[ "$_already_registered" -eq 0 ]]; then
+      _register_default_agent "$sole" "$detected_model"
+    fi
+    # Only set action mappings if not already configured
     local action
     for action in take scene breakdown; do
-      _kv_set ACTION_MAP "$action" "$sole"
+      local existing
+      existing="$(_kv_get ACTION_MAP "$action" "")"
+      if [[ -z "$existing" ]]; then
+        _kv_set ACTION_MAP "$action" "$sole"
+      fi
     done
     _wizard_success "Registered $sole for all actions."
   else

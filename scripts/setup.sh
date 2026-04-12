@@ -14,6 +14,8 @@ if [[ -f "${SETUP_SCRIPT_DIR}/model-picker.sh" ]]; then
   source "${SETUP_SCRIPT_DIR}/model-picker.sh"
   _HAS_MODEL_PICKER=1
 fi
+# shellcheck source=toml-reader.sh
+source "${SETUP_SCRIPT_DIR}/toml-reader.sh"
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -590,6 +592,8 @@ _repo_wizard() {
 _AGENT_CONFIG_DIR="${HOME}/.config/foolery"
 _AGENT_SETTINGS_FILE="${_AGENT_CONFIG_DIR}/settings.toml"
 KNOWN_AGENTS=(claude copilot codex gemini opencode)
+REGISTERED_AGENTS=()
+FOUND_AGENTS=()
 
 _agent_label() {
   case "$1" in
@@ -615,6 +619,47 @@ Acceptance criteria:
 {{acceptance}}
 '
 
+_needs_quoting() {
+  case "$1" in
+    *[.\ ]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+_emit_agent_toml() {
+  local aid="$1"
+  local qid="$aid"
+  if _needs_quoting "$aid"; then
+    qid="\"$aid\""
+  fi
+  local cmd lbl
+  cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
+  lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
+  printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
+    "$qid" "$cmd" "$lbl"
+
+  local field val
+  for field in model agent_type vendor provider \
+    agent_name lease_model flavor version; do
+    local kv_ns=""
+    case "$field" in
+      model) kv_ns="AGENT_MODELS" ;;
+      agent_type) kv_ns="AGENT_TYPES" ;;
+      vendor) kv_ns="AGENT_VENDORS" ;;
+      provider) kv_ns="AGENT_PROVIDERS" ;;
+      agent_name) kv_ns="AGENT_NAMES" ;;
+      lease_model) kv_ns="AGENT_LEASE_MODELS" ;;
+      flavor) kv_ns="AGENT_FLAVORS" ;;
+      version) kv_ns="AGENT_VERSIONS" ;;
+    esac
+    val="$(_kv_get "$kv_ns" "$aid" "")"
+    if [[ -n "$val" ]]; then
+      printf '%s = "%s"\n' "$field" "$val"
+    fi
+  done
+  printf '\n'
+}
+
 _write_settings_toml() {
   mkdir -p "$_AGENT_CONFIG_DIR"
 
@@ -627,28 +672,25 @@ _write_settings_toml() {
     mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
     mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
     printf 'maxConcurrentSessions = %d\n' "$mcs"
-    printf 'maxClaimsPerQueueType = %d\n\n' "$mcq"
+    printf 'maxClaimsPerQueueType = %d\n' "$mcq"
+
+    local tlt
+    tlt="$(_kv_get DEFAULTS terminal_light_theme "")"
+    if [[ "$tlt" == "true" ]]; then
+      printf 'terminalLightTheme = true\n'
+    fi
+    printf '\n'
 
     local registered_agents=()
-    if [[ "${REGISTERED_AGENTS+set}" == "set" && ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
+    if [[ ${#REGISTERED_AGENTS[@]} -gt 0 ]]; then
       registered_agents=("${REGISTERED_AGENTS[@]}")
-    else
+    elif [[ ${#FOUND_AGENTS[@]} -gt 0 ]]; then
       registered_agents=("${FOUND_AGENTS[@]}")
     fi
 
     local aid
     for aid in "${registered_agents[@]}"; do
-      local lbl cmd
-      lbl="$(_kv_get AGENT_LABELS "$aid" "$(_agent_label "$aid")")"
-      cmd="$(_kv_get AGENT_COMMANDS "$aid" "$aid")"
-      printf '[agents.%s]\ncommand = "%s"\nlabel = "%s"\n' \
-        "$aid" "$cmd" "$lbl"
-      local _model
-      _model="$(_kv_get AGENT_MODELS "$aid" "")"
-      if [[ -n "$_model" ]]; then
-        printf 'model = "%s"\n' "$_model"
-      fi
-      printf '\n'
+      _emit_agent_toml "$aid"
     done
 
     printf '[actions]\n'
@@ -658,8 +700,13 @@ _write_settings_toml() {
         "$(_kv_get ACTION_MAP "$action" "")"
     done
 
-    printf '\n[backend]\ntype = "auto"\n'
-    printf '\n[defaults]\nprofileId = ""\n'
+    local bt
+    bt="$(_kv_get BACKEND type "auto")"
+    printf '\n[backend]\ntype = "%s"\n' "$bt"
+
+    local pid
+    pid="$(_kv_get DEFAULTS_SECTION profileId "")"
+    printf '\n[defaults]\nprofileId = "%s"\n' "$pid"
 
     printf '\n[scopeRefinement]\n'
     local prompt
@@ -691,7 +738,8 @@ _write_settings_toml() {
           local j
           for ((j = 0; j < count; j++)); do
             local agent_id weight
-            agent_id="$(_kv_get "POOL_AGENT_${step}" "$j" "")"
+            agent_id="$(_kv_get "POOL_AGENT_${step}" \
+              "$j" "")"
             weight="$(_kv_get "POOL_WEIGHT_${step}" \
               "$agent_id" "1")"
             printf '[[pools.%s]]\nagentId = "%s"\nweight = %d\n' \
@@ -912,7 +960,28 @@ EOF
   done
 }
 
+_show_existing_agents() {
+  if [[ ${#REGISTERED_AGENTS[@]} -eq 0 ]]; then
+    return
+  fi
+  _setup_heading "Current registered agents:"
+  local _ea
+  for _ea in "${REGISTERED_AGENTS[@]}"; do
+    local _elbl _emod
+    _elbl="$(_kv_get AGENT_LABELS "$_ea" "$_ea")"
+    _emod="$(_kv_get AGENT_MODELS "$_ea" "")"
+    if [[ -n "$_emod" ]]; then
+      printf '  - %s (%s, model: %s)\n' \
+        "$_ea" "$_elbl" "$_emod" >/dev/tty
+    else
+      printf '  - %s (%s)\n' "$_ea" "$_elbl" >/dev/tty
+    fi
+  done
+}
+
 _agent_wizard() {
+  _show_existing_agents
+
   printf '\n'
   if ! _setup_confirm \
     "Scan for and auto-register AI agents? [Y/n] " "y"; then
@@ -927,16 +996,32 @@ _agent_wizard() {
     return 0
   fi
 
-  REGISTERED_AGENTS=()
+  # Do NOT reset REGISTERED_AGENTS — keep existing agents loaded
+  # from settings.toml. New agents will be appended.
 
   if [[ ${#FOUND_AGENTS[@]} -eq 1 ]]; then
     local sole="${FOUND_AGENTS[0]}"
     local detected_model
     detected_model="$(_configured_model "$sole")"
-    _register_default_agent "$sole" "$detected_model"
+    # Only register if not already present
+    local _already_registered=0 _ex
+    for _ex in "${REGISTERED_AGENTS[@]}"; do
+      if [[ "$_ex" == "$sole" ]]; then
+        _already_registered=1
+        break
+      fi
+    done
+    if [[ "$_already_registered" -eq 0 ]]; then
+      _register_default_agent "$sole" "$detected_model"
+    fi
+    # Only set action mappings if not already configured
     local action
     for action in take scene breakdown scopeRefinement; do
-      _kv_set ACTION_MAP "$action" "$sole"
+      local existing
+      existing="$(_kv_get ACTION_MAP "$action" "")"
+      if [[ -z "$existing" ]]; then
+        _kv_set ACTION_MAP "$action" "$sole"
+      fi
     done
     _setup_success "Registered $sole for all actions."
   else
@@ -1017,6 +1102,36 @@ _prompt_pool_config() {
   done
 }
 
+_show_existing_dispatch() {
+  local dm
+  dm="$(_kv_get DISPATCH dispatch_mode "")"
+  if [[ -z "$dm" ]]; then
+    return
+  fi
+  _setup_heading "Current dispatch configuration:"
+  printf '  Mode: %s\n' "$dm" >/dev/tty
+  if [[ "$dm" == "basic" ]]; then
+    local action val
+    for action in take scene breakdown scopeRefinement; do
+      val="$(_kv_get ACTION_MAP "$action" "")"
+      if [[ -n "$val" ]]; then
+        printf '  %s -> %s\n' "$action" "$val" >/dev/tty
+      fi
+    done
+  else
+    local i step label count
+    for ((i = 0; i < ${#_ALL_POOL_STEPS[@]}; i++)); do
+      step="${_ALL_POOL_STEPS[$i]}"
+      label="${_ALL_POOL_LABELS[$i]}"
+      count="$(_kv_get POOL_COUNT "$step" "0")"
+      if [[ "$count" -gt 0 ]]; then
+        printf '  %s: %s agent(s)\n' \
+          "$label" "$count" >/dev/tty
+      fi
+    done
+  fi
+}
+
 _dispatch_wizard() {
   _setup_heading 'Dispatch Configuration'
 
@@ -1026,13 +1141,22 @@ _dispatch_wizard() {
     return 0
   fi
 
+  _show_existing_dispatch
+
   printf '  1) Simple  — one agent per action\n' >/dev/tty
   printf '  2) Advanced — weighted pools per workflow step\n' >/dev/tty
 
+  local current_dm
+  current_dm="$(_kv_get DISPATCH dispatch_mode "basic")"
+  local dm_default=1
+  if [[ "$current_dm" == "advanced" ]]; then
+    dm_default=2
+  fi
+
   local mode_choice
-  _setup_prompt 'Choice [1]: '
+  _setup_prompt "Choice [$dm_default]: "
   read -r mode_choice </dev/tty || mode_choice=""
-  mode_choice="${mode_choice:-1}"
+  mode_choice="${mode_choice:-$dm_default}"
 
   case "$mode_choice" in
     2)
@@ -1125,16 +1249,21 @@ _prompt_scope_refinement_prompt() {
 _defaults_wizard() {
   _setup_heading 'Defaults & Scope Refinement'
 
+  local cur_mcs cur_mcq
+  cur_mcs="$(_kv_get DEFAULTS max_concurrent_sessions "5")"
+  cur_mcq="$(_kv_get DEFAULTS max_claims_per_queue_type "10")"
+
   local mcs
-  _setup_prompt "Max concurrent sessions (1-20) [5]: "
+  _setup_prompt "Max concurrent sessions (1-20) [$cur_mcs]: "
   read -r mcs </dev/tty || mcs=""
-  mcs="$(_validate_int_range "${mcs:-5}" 1 20 5)"
+  mcs="$(_validate_int_range "${mcs:-$cur_mcs}" 1 20 "$cur_mcs")"
   _kv_set DEFAULTS max_concurrent_sessions "$mcs"
 
   local mcq
-  _setup_prompt "Max claims per queue type (1-50) [10]: "
+  _setup_prompt "Max claims per queue type (1-50) [$cur_mcq]: "
   read -r mcq </dev/tty || mcq=""
-  mcq="$(_validate_int_range "${mcq:-10}" 1 50 10)"
+  mcq="$(_validate_int_range \
+    "${mcq:-$cur_mcq}" 1 50 "$cur_mcq")"
   _kv_set DEFAULTS max_claims_per_queue_type "$mcq"
 
   _prompt_scope_refinement_prompt
@@ -1174,6 +1303,9 @@ foolery_setup() {
     _setup_emit 2 error 'setup requires an interactive terminal.'
     return 1
   fi
+
+  # Load existing configuration so all wizards are additive
+  _read_settings_toml "$_AGENT_SETTINGS_FILE"
 
   while true; do
     _show_main_menu
