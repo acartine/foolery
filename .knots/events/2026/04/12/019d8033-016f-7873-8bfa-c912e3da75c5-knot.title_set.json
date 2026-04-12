@@ -1,0 +1,10 @@
+{
+  "event_id": "019d8033-016f-7873-8bfa-c912e3da75c5",
+  "occurred_at": "2026-04-12T05:38:39.59924Z",
+  "knot_id": "foolery-5fc5",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Honor Knots state owners in runtime queue ownership",
+    "to": "Preserve state-level owners from Knots profile in Foolery runtime queue derivation"
+  }
+}

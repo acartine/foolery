@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8033-016f-7873-8bfa-c93603bb2250",
+  "occurred_at": "2026-04-12T05:38:39.59924Z",
+  "knot_id": "foolery-5fc5",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. **State owner preserved**: When a Knots state has agent-level ownership in the profile, Foolery's runtime queue derivation preserves that ownership (does not collapse to step-level) — verify in code review and test assertions.\n2. **requiresHumanAction correct**: A knot advancing to an agent-owned state does not have requiresHumanAction=true set; only set when ownership requires human approval.\n3. **Autonomous execution continues**: After the fix, a knot with agent-owned state can advance to the next phase without manual intervention (verify by observing knot lifecycle in test).\n4. **Regression test**: Add at least one test case verifying that state-level agent ownership is preserved across a state transition (e.g., planning → ready_for_plan_review with agent owner).\n5. **Fix location confirmed**: Code review confirms the change is in the Knots adapter/runtime layer, not elsewhere in the ownership derivation chain."
+  }
+}

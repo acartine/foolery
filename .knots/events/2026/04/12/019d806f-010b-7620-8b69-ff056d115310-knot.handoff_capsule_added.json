@@ -1,0 +1,15 @@
+{
+  "event_id": "019d806f-010b-7620-8b69-ff056d115310",
+  "occurred_at": "2026-04-12T06:44:11.659213Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "1. [scripts/setup.sh](/tmp/foolery-review-d8ae.B7tFT7/scripts/setup.sh:774) and [scripts/setup.sh](/tmp/foolery-review-d8ae.B7tFT7/scripts/setup.sh:1135) still violate the keep-current-by-default requirement for basic dispatch. The wizard shows the current mappings, but choosing basic mode always re-enters `_prompt_action_mappings`, and `_prompt_action_choice` defaults every prompt to `Choice [1]` instead of the currently mapped agent. A user who revisits Dispatch and presses Enter will rewrite `take`, `scene`, `breakdown`, and `scopeRefinement` to the first registered agent.\n\n2. [scripts/setup.sh](/tmp/foolery-review-d8ae.B7tFT7/scripts/setup.sh:1047) and [scripts/setup.sh](/tmp/foolery-review-d8ae.B7tFT7/scripts/setup.sh:1161) are still destructive for advanced dispatch pools. Entering advanced mode always rebuilds each pool from `pool_count=0`; taking the default `Add agent to pool (0 when done) [0]` path writes `POOL_COUNT=0` for every step, which clears existing pools instead of preserving them.\n\n3. [src/lib/__tests__/setup-additive.test.ts](/tmp/foolery-review-d8ae.B7tFT7/src/lib/__tests__/setup-additive.test.ts:18) does not cover the acceptance-critical interactive behavior. `runAdditive()` only sources the scripts and calls helpers under `bash -lc`; it never drives the `/dev/tty` prompts. There is no test proving that current selections are shown with keep-by-default defaults, or that revisiting basic/advanced dispatch leaves untouched mappings and pools intact.\n\nSanity gates on branch `worktree-d8ae-additive-setup` at `858c37f0` passed: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.",
+    "datetime": "2026-04-12T06:43:46Z",
+    "entry_id": "019d806f-010b-7620-8b69-fef59aab435a",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "gpt-5.4"
+  }
+}

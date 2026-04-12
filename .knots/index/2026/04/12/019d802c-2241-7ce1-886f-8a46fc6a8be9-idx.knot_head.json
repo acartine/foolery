@@ -1,0 +1,21 @@
+{
+  "event_id": "019d802c-2241-7ce1-886f-8a46fc6a8be9",
+  "occurred_at": "2026-04-12T05:31:09.242665Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-55b2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Restore no-browser start",
+    "type": "work",
+    "updated_at": "2026-04-12T05:31:09.242665Z",
+    "workflow_id": "work_sdlc"
+  }
+}

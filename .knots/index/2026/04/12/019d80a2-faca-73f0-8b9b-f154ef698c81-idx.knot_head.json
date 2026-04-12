@@ -1,0 +1,21 @@
+{
+  "event_id": "019d80a2-faca-73f0-8b9b-f154ef698c81",
+  "occurred_at": "2026-04-12T07:40:57.93092Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-d8ae",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Make setup CLI additive instead of replacing configurations",
+    "type": "work",
+    "updated_at": "2026-04-12T07:40:57.93092Z",
+    "workflow_id": "work_sdlc"
+  }
+}

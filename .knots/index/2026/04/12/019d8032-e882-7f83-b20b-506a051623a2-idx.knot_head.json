@@ -1,0 +1,21 @@
+{
+  "event_id": "019d8032-e882-7f83-b20b-506a051623a2",
+  "occurred_at": "2026-04-12T05:38:33.218113Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b059",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Canonicalize agent lease identity config",
+    "type": "work",
+    "updated_at": "2026-04-12T05:38:33.218113Z",
+    "workflow_id": "work_sdlc"
+  }
+}

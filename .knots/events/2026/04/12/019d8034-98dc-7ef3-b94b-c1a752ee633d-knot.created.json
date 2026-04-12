@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8034-98dc-7ef3-b94b-c1a752ee633d",
+  "occurred_at": "2026-04-12T05:40:23.899762Z",
+  "knot_id": "foolery-85c3",
+  "type": "knot.created",
+  "data": {
+    "body": "⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure \"allowedDevOrigins\" in next.config to allow this.\nRead more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "update cors setting to resolve warning",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

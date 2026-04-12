@@ -1,0 +1,10 @@
+{
+  "event_id": "019d8034-d545-7301-81e3-ab602760f16c",
+  "occurred_at": "2026-04-12T05:40:39.365988Z",
+  "knot_id": "foolery-85c3",
+  "type": "knot.title_set",
+  "data": {
+    "from": "update cors setting to resolve warning",
+    "to": "Configure Next.js allowedDevOrigins to suppress localhost CORS warning"
+  }
+}

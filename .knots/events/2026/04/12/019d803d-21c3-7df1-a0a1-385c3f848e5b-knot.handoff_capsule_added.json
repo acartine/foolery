@@ -1,0 +1,15 @@
+{
+  "event_id": "019d803d-21c3-7df1-a0a1-385c3f848e5b",
+  "occurred_at": "2026-04-12T05:49:43.235167Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Code",
+    "content": "Plan complete for additive setup CLI. Four-layer approach: (1) new bash TOML reader (~150 lines) parsing existing settings.toml into KV store — handles both shell-writer and smol-toml formats, all agent metadata fields, quoted keys, pools, multi-line strings; (2) writer fixes quoting agent IDs and emitting all metadata + preserving backend.type/defaults.profileId/terminalLightTheme from loaded values; (3) additive wizard behavior in both setup.sh and agent-wizard.sh — load existing config, seed REGISTERED_AGENTS from file, remove both REGISTERED_AGENTS=() resets, remove both single-agent overwrite branches, show existing agents/mappings/pools with keep-by-default prompts, allow adding new variants for already-registered commands, make dispatch and defaults wizards additive; (4) comprehensive tests including TOML reader unit tests, cross-format round-trip tests, and PTY integration tests seeding advanced settings with 3 agents (full metadata), weighted pools, custom scope prompt, non-default scalars, and terminalLightTheme=true — then verifying one incremental change preserves everything. ~1020 lines across 8 files. All 12 prior rejection points explicitly addressed.",
+    "datetime": "2026-04-12T05:49:43.235167Z",
+    "entry_id": "019d803d-21c3-7df1-a0a1-384210c59413",
+    "model": "opus-4.6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

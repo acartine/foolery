@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8087-9881-7d71-96e8-8a0810ff2020",
+  "occurred_at": "2026-04-12T07:11:03.297127Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Reviewed branch knot/foolery-d8ae against main. The setup CLI now loads existing settings before prompting, preserves unrelated agents/actions/backend/defaults/scope prompt/pools during updates, and shows current dispatch configuration before edits. Verified interactive keep-by-default behavior for basic mappings and advanced pools, plus additive round-trip coverage for setup.sh and agent-wizard.sh. Sanity gates passed on the review artifact after bun install --frozen-lockfile: bun run lint, bunx tsc --noEmit, bun run test, and bun run build.",
+    "datetime": "2026-04-12T07:11:03Z",
+    "entry_id": "019d8087-9881-7d71-96e8-89f4d1176f6e",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "gpt-5.4"
+  }
+}

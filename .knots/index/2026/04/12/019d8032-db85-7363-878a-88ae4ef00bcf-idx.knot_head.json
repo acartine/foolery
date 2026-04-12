@@ -1,0 +1,37 @@
+{
+  "event_id": "019d8032-db85-7363-878a-88ae4ef00bcf",
+  "occurred_at": "2026-04-12T05:38:29.893692Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b059",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Canonicalize agent lease identity config",
+    "type": "work",
+    "updated_at": "2026-04-12T05:38:29.893692Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019d8032-affb-79a3-98ad-a482d279af00"
+  }
+}

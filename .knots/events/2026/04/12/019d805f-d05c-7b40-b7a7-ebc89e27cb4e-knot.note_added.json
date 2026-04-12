@@ -1,0 +1,15 @@
+{
+  "event_id": "019d805f-d05c-7b40-b7a7-ebc89e27cb4e",
+  "occurred_at": "2026-04-12T06:27:36.156231Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Branch: worktree-d8ae-additive-setup (commit 42c7574b). Implementation adds toml-reader.sh that parses existing settings.toml into KV store. Both setup.sh and agent-wizard.sh load existing config before wizard prompts and merge rather than replace. Writer emits all agent metadata fields and preserves backend.type, defaults.profileId, terminalLightTheme, custom scope prompts. Single-agent fast path made additive. Dispatch wizard shows current state. Defaults wizard shows loaded values. 17 new tests covering round-trip, additive registration, scalar preservation, pool round-trip, metadata fields, no-file fallback. All 2645 tests pass, lint clean, typecheck clean, build green.",
+    "datetime": "2026-04-12T06:27:36.156231Z",
+    "entry_id": "019d805f-d05c-7b40-b7a7-ebbb868a388c",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

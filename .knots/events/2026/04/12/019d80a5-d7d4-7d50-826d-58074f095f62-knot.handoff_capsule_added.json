@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80a5-d7d4-7d50-826d-58074f095f62",
+  "occurred_at": "2026-04-12T07:44:05.588931Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implementation should start by separating canonical Knots identity from display labels in `src/lib/agent-identity.ts`, then thread the resulting canonical fields through lease creation and claim/poll callers in the execution backend and terminal-manager paths. Verification should cover agent identity normalization plus representative Claude, Codex, and OpenCode lease/claim/poll fixtures in the existing Knots, execution-backend, terminal-manager, and local-worker tests. No child knots were created during planning.",
+    "datetime": "2026-04-12T07:43:33Z",
+    "entry_id": "019d80a5-d7d4-7d50-826d-57fab4b6f915",
+    "model": "gpt",
+    "username": "codex",
+    "version": "5.4"
+  }
+}

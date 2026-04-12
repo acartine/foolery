@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8034-d546-76f1-a67d-379b86143f26",
+  "occurred_at": "2026-04-12T05:40:39.365988Z",
+  "knot_id": "foolery-85c3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Add `allowedDevOrigins` configuration to next.config.js that includes the required development origins (127.0.0.1 and/or localhost)\n2. Run the development server (`bun run dev`)\n3. Verify the CORS warning no longer appears in the console output\n4. Confirm the dev server starts successfully and the application functions normally"
+  }
+}

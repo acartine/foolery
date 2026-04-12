@@ -1,0 +1,21 @@
+{
+  "event_id": "019d80ac-1988-7923-bb08-261f95e2e649",
+  "occurred_at": "2026-04-12T07:50:55.624624Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-85c3",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Configure Next.js allowedDevOrigins to suppress localhost CORS warning",
+    "type": "work",
+    "updated_at": "2026-04-12T07:50:55.624624Z",
+    "workflow_id": "work_sdlc"
+  }
+}

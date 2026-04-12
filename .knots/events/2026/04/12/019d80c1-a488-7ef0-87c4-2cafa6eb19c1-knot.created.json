@@ -1,0 +1,17 @@
+{
+  "event_id": "019d80c1-a488-7ef0-87c4-2cafa6eb19c1",
+  "occurred_at": "2026-04-12T08:14:27.46425Z",
+  "knot_id": "foolery-e8f3",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAdd detailed server-side instrumentation for the terminal-manager handoff from prompt creation through agent response, child exit, and lease cleanup so we can explain stuck action-state beats and unexpected take-loop termination. Capture enough context to prove whether a prompt was built, delivered, consumed by the agent, produced output, exited cleanly, or died without cleanup.\n\nVerification:\n1. Run targeted tests covering the terminal manager and session logging paths; expected result: logs/assertions include prompt-built, prompt-delivered, first-agent-output, child-close, session-end, and missing-cleanup cases.\n2. Reproduce or simulate a session where the agent exits before normal completion; expected result: logs identify the exact last observed lifecycle event and whether lease termination/session close ran.\n3. Inspect the emitted logs for a normal successful path; expected result: a single correlated trace shows prompt creation through final response and cleanup for one session/beat.\n\nConstraints:\n- Focus on rigorous logging around the prompt-to-response handoff and take-loop termination decisions.\n- Do not change workflow semantics beyond adding instrumentation and narrow safeguards needed to preserve observability.\n- Keep correlation fields stable across prompt, agent output, child lifecycle, and lease events.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Instrument prompt handoff lifecycle",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

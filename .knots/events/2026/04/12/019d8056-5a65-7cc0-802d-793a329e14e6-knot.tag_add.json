@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8056-5a65-7cc0-802d-793a329e14e6",
+  "occurred_at": "2026-04-12T06:17:16.133238Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-d8ae-additive-setup"
+  }
+}

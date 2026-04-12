@@ -1,0 +1,21 @@
+{
+  "event_id": "019d801e-dac0-7c00-97a2-3c4c04b8c69e",
+  "occurred_at": "2026-04-12T05:16:38.964658Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-eb08",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Replace Beads hooks with size-check hook",
+    "type": "work",
+    "updated_at": "2026-04-12T05:16:38.964658Z",
+    "workflow_id": "work_sdlc"
+  }
+}

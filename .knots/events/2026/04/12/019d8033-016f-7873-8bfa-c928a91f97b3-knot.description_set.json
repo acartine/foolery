@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8033-016f-7873-8bfa-c928a91f97b3",
+  "occurred_at": "2026-04-12T05:38:39.59924Z",
+  "knot_id": "foolery-5fc5",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Fix Foolery to honor Knots profile state-level owners during runtime queue ownership derivation. Currently, when a knot has agent-level ownership at the state level in its Knots profile, Foolery incorrectly collapses ownership to the broader step level and sets requiresHumanAction=true, which blocks autonomous execution. This prevents a knot from advancing autonomously from planning to ready_for_plan_review when that state is agent-owned. Investigate the Knots adapter and runtime queue ownership logic, patch to preserve state-level owners, add regression tests to prevent recurrence, and leave the knot in its current non-terminal state after completion."
+  }
+}

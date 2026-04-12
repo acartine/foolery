@@ -1,0 +1,9 @@
+{
+  "event_id": "019d80c1-a490-7640-9bb9-abc82df216cf",
+  "occurred_at": "2026-04-12T08:14:27.46425Z",
+  "knot_id": "foolery-e8f3",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Terminal-manager logging records a correlated lifecycle for each claimed iteration including session id, beat id, iteration, lease id, agent identity, prompt creation, prompt delivery, first agent output, child close, and post-close state evaluation.\n2. When a beat remains in an action state without successful completion, logs make it explicit whether the prompt was delivered, whether any agent output was observed, whether the child process exited, and whether lease termination/session end were attempted.\n3. Take-loop termination paths log the exact reason the loop stopped or continued, including terminal state, rollback, retry/limit handling, and any unexpected early stop.\n4. Automated coverage verifies both a normal handoff and a broken/missing-cleanup path emit the expected diagnostic events."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80a5-86f8-76d0-984a-1af81e0bf1f6",
+  "occurred_at": "2026-04-12T07:43:44.888629Z",
+  "knot_id": "foolery-1fd3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned the searchable model picker work as a single implementation knot. The implementation should keep `scripts/model-picker.sh` as the shared search UI, bring `scripts/agent-wizard.sh` into parity with `scripts/setup.sh` on optional helper loading and threshold gating, preserve the existing numbered menu for small lists, and extend shell coverage for both caller integrations plus manual entry. No child knots were created because the scope is bounded and best handled in one implementation pass with focused tests and the standard repo quality gates.",
+    "datetime": "2026-04-12T07:43:05Z",
+    "entry_id": "019d80a5-86f8-76d0-984a-1ae61c9d137f",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

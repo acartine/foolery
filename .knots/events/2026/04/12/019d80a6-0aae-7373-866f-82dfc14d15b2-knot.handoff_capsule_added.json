@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80a6-0aae-7373-866f-82dfc14d15b2",
+  "occurred_at": "2026-04-12T07:44:18.606102Z",
+  "knot_id": "foolery-4973",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan prepared for `foolery-4973`: expose Knots lease-agent metadata in beat data, refactor the Active screen to source Agent/Model/Version from lease metadata instead of handoff capsules or terminal display labels, and add mapper plus active-view coverage for Claude, Codex, and OpenCode cases. No child knots proposed. Dependency noted: `foolery-0768` is defining the canonical lease identity contract this UI change should consume.",
+    "datetime": "2026-04-12T07:43:14Z",
+    "entry_id": "019d80a6-0aae-7373-866f-82cd9e03d6c4",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

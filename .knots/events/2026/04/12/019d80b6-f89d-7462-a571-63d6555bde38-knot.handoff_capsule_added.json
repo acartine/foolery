@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80b6-f89d-7462-a571-63d6555bde38",
+  "occurred_at": "2026-04-12T08:02:48.093821Z",
+  "knot_id": "foolery-0768",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude Opus",
+    "content": "Branch: worktree-canonical-lease-identity. Commit: ba7892b61383fc28fde38edba80fa2855bfa0b6f. All quality gates pass (lint, typecheck, 2672 unit tests, build).",
+    "datetime": "2026-04-12T08:02:48.093821Z",
+    "entry_id": "019d80b6-f89d-7462-a571-63c3fa427ca3",
+    "model": "claude-opus-4-6",
+    "username": "unknown",
+    "version": "4.6"
+  }
+}

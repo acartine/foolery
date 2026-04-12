@@ -1,0 +1,15 @@
+{
+  "event_id": "019d806f-010b-7620-8b69-feeffcd717d0",
+  "occurred_at": "2026-04-12T06:44:11.659213Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation review rejected. Dispatch editing is still destructive, and the new tests do not cover the required interactive keep-by-default behavior.",
+    "datetime": "2026-04-12T06:43:46Z",
+    "entry_id": "019d806f-010b-7620-8b69-fed15071f2c9",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "gpt-5.4"
+  }
+}

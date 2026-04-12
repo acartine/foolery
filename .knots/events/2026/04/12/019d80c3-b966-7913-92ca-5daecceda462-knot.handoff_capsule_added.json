@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80c3-b966-7913-92ca-5daecceda462",
+  "occurred_at": "2026-04-12T08:16:43.878532Z",
+  "knot_id": "foolery-e8f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved: the instrumentation plan is feasible, keeps control flow stable, preserves the knot constraints, and adds direct evidence for prompt delivery, first agent output, child exit, lease cleanup, and loop-stop reasoning without requiring semantic workflow changes.",
+    "datetime": "2026-04-12T08:16:43.878532Z",
+    "entry_id": "019d80c3-b966-7913-92ca-5d90e5bf013a",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

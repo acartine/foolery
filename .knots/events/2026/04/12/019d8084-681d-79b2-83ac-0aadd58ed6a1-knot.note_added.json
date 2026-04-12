@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8084-681d-79b2-83ac-0aadd58ed6a1",
+  "occurred_at": "2026-04-12T07:07:34.301888Z",
+  "knot_id": "foolery-d8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Branch: knot/foolery-d8ae (3 commits: 7ac0ba6f, bbbfe832, 2ce59750). Adds toml-reader.sh for reading existing settings.toml into KV store. Setup/agent-wizard now load config before prompts so all wizards are additive. _prompt_action_choice defaults to current agent. _prompt_single_pool shows existing pools with Keep/Reconfigure option. _SETUP_INPUT/_SETUP_OUTPUT variables enable testability. Three test suites: setup-additive (20 tests), setup-interactive (5 tests, piped stdin verifying keep-by-default), setup-settings-writer (6 tests). All quality gates pass: lint, tsc, 2653 tests, build.",
+    "datetime": "2026-04-12T07:07:34.301888Z",
+    "entry_id": "019d8084-681d-79b2-83ac-0a93cd433649",
+    "model": "opus/claude",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

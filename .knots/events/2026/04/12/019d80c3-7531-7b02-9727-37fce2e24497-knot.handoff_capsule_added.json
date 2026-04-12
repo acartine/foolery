@@ -1,0 +1,15 @@
+{
+  "event_id": "019d80c3-7531-7b02-9727-37fce2e24497",
+  "occurred_at": "2026-04-12T08:16:26.417825Z",
+  "knot_id": "foolery-e8f3",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan approved for `foolery-e8f3`: add a per-iteration take-loop lifecycle trace with stable correlation fields, instrument prompt send / first output / normalized-event / result / child-close / finishSession / lease-release milestones, log explicit continue-stop reasons for every loop decision, and add tests for both a normal handoff and a prompt-delivered-but-cleanup-missing path.",
+    "datetime": "2026-04-12T08:16:26.417825Z",
+    "entry_id": "019d80c3-7531-7b02-9727-37e3f2beefa9",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8034-d546-76f1-a67d-378011880059",
+  "occurred_at": "2026-04-12T05:40:39.365988Z",
+  "knot_id": "foolery-85c3",
+  "type": "knot.description_set",
+  "data": {
+    "description": "The development server emits a warning about cross-origin requests from 127.0.0.1 to /_next/* resources. Next.js requires explicit configuration of `allowedDevOrigins` in next.config.js to allow development-time requests from different origins. Without this configuration, a future major version of Next.js will block these requests entirely.\n\nReference: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins"
+  }
+}
