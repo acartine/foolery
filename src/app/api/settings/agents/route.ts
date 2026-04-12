@@ -20,7 +20,11 @@ const addAgentBody = z.object({
     message: '"default" is a reserved agent id',
   }),
   command: z.string().min(1),
+  agent_type: z.string().optional(),
+  vendor: z.string().optional(),
   provider: z.string().optional(),
+  agent_name: z.string().optional(),
+  lease_model: z.string().optional(),
   model: z.string().optional(),
   flavor: z.string().optional(),
   version: z.string().optional(),
@@ -32,7 +36,11 @@ export async function POST(request: NextRequest) {
     const body = addAgentBody.parse(await request.json());
     const agent = registeredAgentSchema.parse({
       command: body.command,
+      agent_type: body.agent_type,
+      vendor: body.vendor,
       provider: body.provider,
+      agent_name: body.agent_name,
+      lease_model: body.lease_model,
       model: body.model,
       flavor: body.flavor,
       version: body.version,

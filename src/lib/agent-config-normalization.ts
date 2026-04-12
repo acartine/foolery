@@ -1,12 +1,10 @@
 import type { RegisteredAgentConfig } from "@/lib/schemas";
 import {
   detectAgentProviderId,
+  formatAgentDisplayLabel,
   normalizeAgentIdentity,
+  toCanonicalLeaseIdentity,
 } from "@/lib/agent-identity";
-
-interface NormalizeAgentConfigOptions {
-  fillLabel: boolean;
-}
 
 interface SettingsNormalizationResult {
   normalized: Record<string, unknown>;
@@ -59,28 +57,56 @@ export function canonicalizeRuntimeModel(
 
 export function normalizeRegisteredAgentConfig(
   agent: RegisteredAgentConfig,
-  options: NormalizeAgentConfigOptions = {
-    fillLabel: true,
-  },
 ): RegisteredAgentConfig {
   const command = cleanString(agent.command) ?? agent.command;
-  const label = cleanString(agent.label);
   const model = canonicalizeRuntimeModel(
     command,
     cleanString(agent.model),
   );
-  const normalized = normalizeAgentIdentity({
+  const canonical = toCanonicalLeaseIdentity({
     command,
+    agent_type: cleanString(agent.agent_type),
+    vendor: cleanString(agent.vendor),
     provider: cleanString(agent.provider),
+    agent_name: cleanString(agent.agent_name),
+    lease_model: cleanString(agent.lease_model),
     model,
     flavor: cleanString(agent.flavor),
     version: cleanString(agent.version),
-    label,
   });
 
   return {
     command,
+    ...(canonical.agent_type
+      ? { agent_type: canonical.agent_type }
+      : {}),
+    ...(canonical.vendor
+      ? { vendor: canonical.vendor }
+      : {}),
+    ...(canonical.provider
+      ? { provider: canonical.provider }
+      : {}),
+    ...(canonical.agent_name
+      ? { agent_name: canonical.agent_name }
+      : {}),
+    ...(canonical.lease_model
+      ? { lease_model: canonical.lease_model }
+      : {}),
     ...(model ? { model } : {}),
+    ...(canonical.version
+      ? { version: canonical.version }
+      : {}),
+  };
+}
+
+export function hydrateRegisteredAgentConfig(
+  agent: RegisteredAgentConfig,
+): RegisteredAgentConfig {
+  const normalized = normalizeAgentIdentity(agent);
+  const label = formatAgentDisplayLabel(agent);
+
+  return {
+    ...agent,
     ...(normalized.provider
       ? { provider: normalized.provider }
       : {}),
@@ -90,11 +116,32 @@ export function normalizeRegisteredAgentConfig(
     ...(normalized.version
       ? { version: normalized.version }
       : {}),
-    ...(label
-      ? { label }
-      : options.fillLabel && normalized.provider
-        ? { label: normalized.provider }
-        : {}),
+    ...(label ? { label } : {}),
+  };
+}
+
+export function hydrateSettingsAgents(
+  settings: Record<string, unknown>,
+): Record<string, unknown> {
+  if (!isRecord(settings.agents)) {
+    return settings;
+  }
+
+  return {
+    ...settings,
+    agents: Object.fromEntries(
+      Object.entries(settings.agents).map(([agentId, rawAgent]) => {
+        if (!isRecord(rawAgent) || typeof rawAgent.command !== "string") {
+          return [agentId, rawAgent];
+        }
+        return [
+          agentId,
+          hydrateRegisteredAgentConfig(
+            rawAgent as RegisteredAgentConfig,
+          ),
+        ];
+      }),
+    ),
   };
 }
 
@@ -119,16 +166,19 @@ export function normalizeSettingsAgents(
 
     const normalizedAgent = normalizeRegisteredAgentConfig(
       rawAgent as RegisteredAgentConfig,
-      { fillLabel: false },
     );
     normalizedAgents[agentId] = normalizedAgent;
 
     for (const key of [
       "command",
-      "model",
+      "agent_type",
+      "vendor",
       "provider",
-      "flavor",
+      "agent_name",
+      "lease_model",
+      "model",
       "version",
+      "flavor",
       "label",
     ] as const) {
       const before = cleanString(rawAgent[key]);

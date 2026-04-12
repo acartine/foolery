@@ -13,7 +13,7 @@ import type {
   AgentRemovalImpact,
   AgentRemovalRequest,
 } from "@/lib/types";
-import type { AgentTarget, CliAgentTarget } from "@/lib/types-agent-target";
+import type { AgentTarget } from "@/lib/types-agent-target";
 import {
   type WorkflowStep,
   isReviewStep,
@@ -25,10 +25,11 @@ import {
   recordStepAgent,
 } from "@/lib/agent-pool";
 import {
-  formatAgentDisplayLabel,
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
 import {
+  hydrateRegisteredAgentConfig,
+  hydrateSettingsAgents,
   normalizeRegisteredAgentConfig,
   normalizeSettingsAgents,
 } from "@/lib/agent-config-normalization";
@@ -39,6 +40,10 @@ import {
 import {
   serverLog,
 } from "@/lib/server-logger";
+import {
+  getFallbackCommand,
+  toCliTarget,
+} from "@/lib/settings-agent-targets";
 import {
   CONFIG_DIR,
   SETTINGS_FILE,
@@ -112,7 +117,7 @@ export async function loadSettings(): Promise<FoolerySettings> {
     let settings: FoolerySettings;
     try {
       settings = foolerySettingsSchema.parse(
-        normalized,
+        hydrateSettingsAgents(normalized),
       );
     } catch (error) {
       serverLog(
@@ -158,9 +163,13 @@ export async function saveSettings(
     });
     await mkdir(CONFIG_DIR, { recursive: true });
     const normalized = foolerySettingsSchema.parse(
-      normalizeSettingsAgents(settings).normalized,
+      hydrateSettingsAgents(
+        normalizeSettingsAgents(settings).normalized,
+      ),
     );
-    const toml = stringify(normalized);
+    const toml = stringify(
+      normalizeSettingsAgents(normalized).normalized,
+    );
     await writeFile(SETTINGS_FILE, toml, "utf-8");
     await chmod(SETTINGS_FILE, 0o600);
     setCache(normalized);
@@ -270,47 +279,12 @@ function mergeSettingsPartial(
   };
 }
 
-// ── Agent target helpers ─────────────────────────────────────
-
-/** Returns fallback command: first registered agent, or "claude". */
-function getFallbackCommand(settings: FoolerySettings): string {
-  const first = Object.values(settings.agents)[0];
-  return first?.command ?? "claude";
-}
-
-function toCliTarget(
-  agent: RegisteredAgentConfig | RegisteredAgent,
-  agentId?: string,
-): CliAgentTarget {
-  const normalized = normalizeAgentIdentity(agent);
-  return {
-    kind: "cli",
-    command: agent.command,
-    ...(normalized.provider
-      ? { provider: normalized.provider }
-      : {}),
-    ...(agent.model ? { model: agent.model } : {}),
-    ...(normalized.flavor ? { flavor: normalized.flavor } : {}),
-    ...(normalized.version
-      ? { version: normalized.version }
-      : {}),
-    ...((agent.label ?? formatAgentDisplayLabel(agent))
-      ? {
-        label:
-          agent.label ??
-          formatAgentDisplayLabel(agent),
-      }
-      : {}),
-    ...(agentId ? { agentId } : {}),
-  };
-}
-
 // ── Public dispatch API ──────────────────────────────────────
 
 /** Returns the dispatch fallback command for unmapped actions. */
 export async function getAgentCommand(): Promise<string> {
   const settings = await loadSettings();
-  return getFallbackCommand(settings);
+  return getFallbackCommand(settings.agents);
 }
 
 /** Returns the registered agents map. */
@@ -320,11 +294,12 @@ export async function getRegisteredAgents(): Promise<
   const settings = await loadSettings();
   return Object.fromEntries(
     Object.entries(settings.agents).map(([id, agent]) => {
-      const normalized = normalizeAgentIdentity(agent);
+      const hydrated = hydrateRegisteredAgentConfig(agent);
+      const normalized = normalizeAgentIdentity(hydrated);
       return [
         id,
         {
-          ...agent,
+          ...hydrated,
           ...(normalized.provider
             ? { provider: normalized.provider }
             : {}),
@@ -334,7 +309,9 @@ export async function getRegisteredAgents(): Promise<
           ...(normalized.version
             ? { version: normalized.version }
             : {}),
-          ...(agent.label ? { label: agent.label } : {}),
+          ...(hydrated.label
+            ? { label: hydrated.label }
+            : {}),
         },
       ];
     }),
@@ -354,7 +331,9 @@ export async function getActionAgent(
   ) {
     return toCliTarget(settings.agents[agentId], agentId);
   }
-  return toCliTarget({ command: getFallbackCommand(settings) });
+  return toCliTarget({
+    command: getFallbackCommand(settings.agents),
+  });
 }
 
 export async function getScopeRefinementSettings(): Promise<
@@ -511,7 +490,9 @@ export async function getStepAgent(
     }
   }
 
-  return toCliTarget({ command: getFallbackCommand(settings) });
+  return toCliTarget({
+    command: getFallbackCommand(settings.agents),
+  });
 }
 
 function resolveStepFromPool(

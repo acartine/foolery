@@ -50,8 +50,14 @@ describe("getRegisteredAgents", () => {
     ].join("\n");
     mockReadFile.mockResolvedValue(toml);
     const agents = await getRegisteredAgents();
-    expect(agents.claude.command).toBe("claude");
-    expect(agents.claude.label).toBe("Claude Code");
+    expect(agents.claude).toMatchObject({
+      command: "claude",
+      agent_type: "cli",
+      vendor: "claude",
+      provider: "Claude",
+      agent_name: "Claude",
+      label: "Claude",
+    });
   });
 });
 
@@ -85,7 +91,12 @@ describe("getActionAgent", () => {
     const agent = await getActionAgent("take");
     expect(agent.command).toBe("codex");
     expect(agent.model).toBe("o3");
-    expect(agent.label).toBe("OpenAI Codex");
+    expect(agent).toMatchObject({
+      provider: "Codex",
+      agent_name: "Codex",
+      lease_model: "o3",
+      label: "Codex o3",
+    });
   });
 
   it("preserves provider metadata for mapped agents", async () => {
@@ -153,8 +164,13 @@ describe("addRegisteredAgent", () => {
     const result = await addRegisteredAgent("gemini", {
       command: "gemini", label: "Google Gemini",
     });
-    expect(result.agents.gemini.command).toBe("gemini");
-    expect(result.agents.gemini.label).toBe("Google Gemini");
+    expect(result.agents.gemini).toMatchObject({
+      command: "gemini",
+      agent_type: "cli",
+      vendor: "gemini",
+      provider: "Gemini",
+      agent_name: "Gemini",
+    });
   });
 });
 
@@ -289,7 +305,12 @@ describe("getStepAgent: dispatch mode resolution", () => {
     mockReadFile.mockResolvedValue(toml);
     const agent = await getStepAgent(WorkflowStep.Implementation, "take");
     expect(agent.model).toBe("sonnet-4");
-    expect(agent.label).toBe("Claude Sonnet");
+    expect(agent).toMatchObject({
+      provider: "Claude",
+      agent_name: "Claude",
+      lease_model: "sonnet/claude",
+      label: "Claude Sonnet 4",
+    });
   });
 
   it("preserves provider metadata for pool-selected agents", async () => {

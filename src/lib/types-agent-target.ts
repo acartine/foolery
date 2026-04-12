@@ -2,7 +2,11 @@ export type AgentTargetKind = "cli";
 
 export interface AgentTargetBase {
   kind: AgentTargetKind;
+  agent_type?: string;
+  vendor?: string;
   provider?: string;
+  agent_name?: string;
+  lease_model?: string;
   model?: string;
   flavor?: string;
   version?: string;

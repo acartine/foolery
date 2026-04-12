@@ -9,6 +9,7 @@ import type {
 } from "@/lib/types";
 import {
   formatAgentOptionLabel,
+  toCanonicalLeaseIdentity,
 } from "@/lib/agent-identity";
 import { canonicalizeRuntimeModel } from "@/lib/agent-config-normalization";
 import {
@@ -44,12 +45,33 @@ function buildAgentPayload(
     scanned.command,
     selected.modelId ?? selected.model,
   );
-  return {
+  const canonical = toCanonicalLeaseIdentity({
     command: scanned.path,
     provider: selected.provider,
-    ...(runtimeModel ? { model: runtimeModel } : {}),
     flavor: selected.flavor,
     version: selected.version,
+    ...(runtimeModel ? { model: runtimeModel } : {}),
+  });
+
+  return {
+    command: scanned.path,
+    ...(canonical.agent_type
+      ? { agent_type: canonical.agent_type }
+      : {}),
+    ...(canonical.vendor ? { vendor: canonical.vendor } : {}),
+    ...(canonical.provider
+      ? { provider: canonical.provider }
+      : {}),
+    ...(canonical.agent_name
+      ? { agent_name: canonical.agent_name }
+      : {}),
+    ...(canonical.lease_model
+      ? { lease_model: canonical.lease_model }
+      : {}),
+    ...(runtimeModel ? { model: runtimeModel } : {}),
+    ...(canonical.version
+      ? { version: canonical.version }
+      : {}),
     label: formatAgentOptionLabel(selected),
   };
 }

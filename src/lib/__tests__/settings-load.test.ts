@@ -178,11 +178,18 @@ describe("backfillMissingSettingsDefaults", () => {
     expect(result.normalizationPaths).toContain(
       "agents.claude-opus.model",
     );
+    expect(result.normalizationPaths).toContain(
+      "agents.claude-opus.label",
+    );
     const written = mockWriteFile.mock.calls[0][1] as string;
+    expect(written).toContain('agent_type = "cli"');
+    expect(written).toContain('vendor = "claude"');
     expect(written).toContain('model = "claude-opus-4-6"');
     expect(written).toContain('provider = "Claude"');
-    expect(written).toContain('flavor = "opus"');
+    expect(written).toContain('agent_name = "Claude"');
+    expect(written).toContain('lease_model = "opus/claude"');
     expect(written).toContain('version = "4.6"');
+    expect(written).not.toContain('label = "Claude Opus 4.6"');
   });
 
   it("does not write when defaults are already present", async () => {
