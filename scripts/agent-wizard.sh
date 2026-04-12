@@ -14,6 +14,10 @@ source "${_WIZARD_SCRIPT_DIR}/model-picker.sh"
 # shellcheck source=toml-reader.sh
 source "${_WIZARD_SCRIPT_DIR}/toml-reader.sh"
 
+# Configurable I/O for testability — override to redirect prompts.
+_SETUP_INPUT="${_SETUP_INPUT:-/dev/tty}"
+_SETUP_OUTPUT="${_SETUP_OUTPUT:-/dev/tty}"
+
 # Known agent ids checked during detection.
 KNOWN_AGENTS=(claude copilot codex gemini opencode)
 
@@ -87,11 +91,11 @@ _wizard_success() {
 }
 
 _wizard_heading() {
-  printf '\n%s %s\n' "$(_wizard_prefix heading)" "$1" >/dev/tty
+  printf '\n%s %s\n' "$(_wizard_prefix heading)" "$1" >"$_SETUP_OUTPUT"
 }
 
 _wizard_prompt() {
-  printf '%s %s' "$(_wizard_prefix prompt)" "$1" >/dev/tty
+  printf '%s %s' "$(_wizard_prefix prompt)" "$1" >"$_SETUP_OUTPUT"
 }
 
 # Bash 3.2-safe key-value helpers (replaces associative arrays).
@@ -366,25 +370,40 @@ detect_agents() {
 # Prints the chosen agent id to stdout.
 _prompt_action_choice() {
   local action_label="$1"
-  shift
+  local current_agent="$2"
+  shift 2
   local agents=("$@")
   local count=${#agents[@]}
 
-  _wizard_heading "Which agent for \"$action_label\"?"
-  local i
+  # Find the index of the currently mapped agent (1-based).
+  local default_idx=1 i
   for ((i = 0; i < count; i++)); do
-    printf '  %d) %s\n' "$((i + 1))" "${agents[$i]}" >/dev/tty
+    if [[ "${agents[$i]}" == "$current_agent" ]]; then
+      default_idx=$((i + 1))
+      break
+    fi
+  done
+
+  _wizard_heading "Which agent for \"$action_label\"?"
+  for ((i = 0; i < count; i++)); do
+    local marker=""
+    if [[ $((i + 1)) -eq "$default_idx" ]]; then
+      marker=" (current)"
+    fi
+    printf '  %d) %s%s\n' "$((i + 1))" \
+      "${agents[$i]}" "$marker" >"$_SETUP_OUTPUT"
   done
 
   local choice
-  _wizard_prompt 'Choice [1]: '
-  read -r choice </dev/tty || true
-  choice="${choice:-1}"
+  _wizard_prompt "Choice [$default_idx]: "
+  read -r choice <"$_SETUP_INPUT" || true
+  choice="${choice:-$default_idx}"
 
-  if [[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= count)); then
+  if [[ "$choice" =~ ^[0-9]+$ ]] \
+    && ((choice >= 1 && choice <= count)); then
     printf '%s' "${agents[$((choice - 1))]}"
   else
-    printf '%s' "${agents[0]}"
+    printf '%s' "${agents[$((default_idx - 1))]}"
   fi
 }
 
@@ -438,7 +457,7 @@ _prompt_model_manual() {
   else
     _wizard_prompt "Model for $aid (optional, press Enter to skip): "
   fi
-  read -r model </dev/tty || true
+  read -r model <"$_SETUP_INPUT" || true
   printf '%s' "$model"
 }
 
@@ -483,14 +502,14 @@ EOF
     _wizard_heading "Available models for $aid"
     local i
     for ((i = 0; i < count; i++)); do
-      printf '  %d) %s\n' "$((i + 1))" "${remaining[$i]}" >/dev/tty
+      printf '  %d) %s\n' "$((i + 1))" "${remaining[$i]}" >"$_SETUP_OUTPUT"
     done
-    printf '  %d) Done\n' "$((count + 1))" >/dev/tty
-    printf '  %d) Other (type manually)\n' "$((count + 2))" >/dev/tty
+    printf '  %d) Done\n' "$((count + 1))" >"$_SETUP_OUTPUT"
+    printf '  %d) Other (type manually)\n' "$((count + 2))" >"$_SETUP_OUTPUT"
 
     local choice
     _wizard_prompt "Choice [$((count + 1))]: "
-    read -r choice </dev/tty || true
+    read -r choice <"$_SETUP_INPUT" || true
     choice="${choice:-$((count + 1))}"
 
     if [[ "$choice" =~ ^[0-9]+$ ]]; then
@@ -527,8 +546,12 @@ _prompt_action_mappings() {
 
   local i
   for ((i = 0; i < ${#action_names[@]}; i++)); do
+    local current
+    current="$(_kv_get ACTION_MAP "${action_names[$i]}" "")"
     local chosen
-    chosen="$(_prompt_action_choice "${action_labels[$i]}" "${REGISTERED_AGENTS[@]}")"
+    chosen="$(_prompt_action_choice \
+      "${action_labels[$i]}" "$current" \
+      "${REGISTERED_AGENTS[@]}")"
     _kv_set ACTION_MAP "${action_names[$i]}" "$chosen"
   done
 }
@@ -536,7 +559,7 @@ _prompt_action_mappings() {
 # Prompt for model preferences for each found agent.
 _register_scanned_agents() {
   local aid
-  printf '\n' >/dev/tty
+  printf '\n' >"$_SETUP_OUTPUT"
   for aid in "${FOUND_AGENTS[@]}"; do
     local models_list
     models_list="$(_collect_discovered_models "$aid")"
@@ -574,17 +597,17 @@ maybe_agent_wizard() {
       _emod="$(_kv_get AGENT_MODELS "$_ea" "")"
       if [[ -n "$_emod" ]]; then
         printf '  - %s (%s, model: %s)\n' \
-          "$_ea" "$_elbl" "$_emod" >/dev/tty
+          "$_ea" "$_elbl" "$_emod" >"$_SETUP_OUTPUT"
       else
-        printf '  - %s (%s)\n' "$_ea" "$_elbl" >/dev/tty
+        printf '  - %s (%s)\n' "$_ea" "$_elbl" >"$_SETUP_OUTPUT"
       fi
     done
   fi
 
-  printf '\n' >/dev/tty
+  printf '\n' >"$_SETUP_OUTPUT"
   _wizard_prompt 'Scan for and auto-register AI agents? [Y/n] '
   local answer
-  read -r answer </dev/tty || true
+  read -r answer <"$_SETUP_INPUT" || true
   case "$answer" in [nN])
     # Even if skipped, write back loaded config to preserve it
     if [[ "$_TOML_LOADED" -eq 1 ]]; then
