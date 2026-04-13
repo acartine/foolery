@@ -130,61 +130,73 @@ afterEach(async () => {
   );
 });
 
+function expectDefaultSettingsOutput(
+  raw: string,
+  parsed: Record<string, unknown>,
+) {
+  expect(raw).toContain('dispatchMode = "basic"');
+  expect(raw).toContain("maxConcurrentSessions = 5");
+  expect(raw).toContain("maxClaimsPerQueueType = 10");
+  expect(raw).toContain("[backend]");
+  expect(raw).toContain("[defaults]");
+  expect(raw).toContain(
+    "interactiveSessionTimeoutMinutes = 10",
+  );
+  expect(raw).toContain("[scopeRefinement]");
+  expect(raw).toContain("[pools]");
+
+  expect(parsed).toMatchObject({
+    dispatchMode: "basic",
+    maxConcurrentSessions: 5,
+    maxClaimsPerQueueType: 10,
+    actions: {
+      take: "codex-gpt-5",
+      scene: "claude",
+      breakdown: "codex-gpt-5-2",
+      scopeRefinement: "",
+    },
+    backend: { type: "auto" },
+    defaults: {
+      profileId: "",
+      interactiveSessionTimeoutMinutes: 10,
+    },
+    pools: {
+      planning: [],
+      plan_review: [],
+      implementation: [],
+      implementation_review: [],
+      shipment: [],
+      shipment_review: [],
+      scope_refinement: [],
+    },
+  });
+
+  expect(parsed.scopeRefinement).toHaveProperty("prompt");
+  expect(
+    (parsed.scopeRefinement as { prompt: string }).prompt,
+  ).toContain("{{title}}");
+
+  expect(parsed.agents).toMatchObject({
+    "codex-gpt-5": {
+      command: "codex",
+      label: "OpenAI Codex",
+      model: "gpt-5",
+    },
+    "codex-gpt-5-2": {
+      command: "codex",
+      label: "OpenAI Codex",
+      model: "gpt-5.2",
+    },
+    claude: { command: "claude", label: "Claude Code" },
+  });
+}
+
 describe("settings writers", () => {
   it.each(["setup.sh", "agent-wizard.sh"] as const)(
     "writes complete default settings from %s",
     async (scriptName) => {
       const { raw, parsed } = await runWriter(scriptName);
-
-      expect(raw).toContain('dispatchMode = "basic"');
-      expect(raw).toContain("maxConcurrentSessions = 5");
-      expect(raw).toContain("maxClaimsPerQueueType = 10");
-      expect(raw).toContain("[backend]");
-      expect(raw).toContain("[defaults]");
-      expect(raw).toContain("[scopeRefinement]");
-      expect(raw).toContain("[pools]");
-
-      expect(parsed).toMatchObject({
-        dispatchMode: "basic",
-        maxConcurrentSessions: 5,
-        maxClaimsPerQueueType: 10,
-        actions: {
-          take: "codex-gpt-5",
-          scene: "claude",
-          breakdown: "codex-gpt-5-2",
-          scopeRefinement: "",
-        },
-        backend: { type: "auto" },
-        defaults: { profileId: "" },
-        pools: {
-          planning: [],
-          plan_review: [],
-          implementation: [],
-          implementation_review: [],
-          shipment: [],
-          shipment_review: [],
-          scope_refinement: [],
-        },
-      });
-
-      expect(parsed.scopeRefinement).toHaveProperty("prompt");
-      expect(
-        (parsed.scopeRefinement as { prompt: string }).prompt,
-      ).toContain("{{title}}");
-
-      expect(parsed.agents).toMatchObject({
-        "codex-gpt-5": {
-          command: "codex",
-          label: "OpenAI Codex",
-          model: "gpt-5",
-        },
-        "codex-gpt-5-2": {
-          command: "codex",
-          label: "OpenAI Codex",
-          model: "gpt-5.2",
-        },
-        claude: { command: "claude", label: "Claude Code" },
-      });
+      expectDefaultSettingsOutput(raw, parsed);
     },
   );
 

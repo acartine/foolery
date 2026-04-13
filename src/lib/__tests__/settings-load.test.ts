@@ -26,6 +26,9 @@ import {
   cleanStaleSettingsKeys,
   _resetCache,
 } from "@/lib/settings";
+import {
+  DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+} from "@/lib/interactive-session-timeout";
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 
 const DEFAULT_ACTIONS = {
@@ -43,7 +46,11 @@ const DEFAULT_SETTINGS = {
   agents: {},
   actions: DEFAULT_ACTIONS,
   backend: { type: "auto" },
-  defaults: { profileId: "" },
+  defaults: {
+    profileId: "",
+    interactiveSessionTimeoutMinutes:
+      DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+  },
   scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
   pools: DEFAULT_POOLS,
   dispatchMode: "basic",
@@ -108,6 +115,9 @@ describe("inspectSettingsDefaults", () => {
     expect(result.fileMissing).toBe(false);
     expect(result.error).toBeUndefined();
     expect(result.missingPaths).toContain("defaults.profileId");
+    expect(result.missingPaths).toContain(
+      "defaults.interactiveSessionTimeoutMinutes",
+    );
   });
 });
 
@@ -139,6 +149,9 @@ describe("backfillMissingSettingsDefaults", () => {
     const written = mockWriteFile.mock.calls[0][1] as string;
     expect(written).toContain("[defaults]");
     expect(written).toContain('profileId = ""');
+    expect(written).toContain(
+      `interactiveSessionTimeoutMinutes = ${DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES}`,
+    );
     expect(mockChmod).toHaveBeenCalledWith(
       expect.stringContaining("settings.toml"), 0o600,
     );
@@ -202,7 +215,9 @@ describe("backfillMissingSettingsDefaults", () => {
         '[actions]', 'take = ""', 'scene = ""',
         'breakdown = ""', 'scopeRefinement = ""',
         '[backend]', 'type = "cli"',
-        '[defaults]', 'profileId = ""',
+        '[defaults]',
+        'profileId = ""',
+        `interactiveSessionTimeoutMinutes = ${DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES}`,
         '[scopeRefinement]',
         `prompt = """${DEFAULT_SCOPE_REFINEMENT_PROMPT}"""`,
         '[pools]', 'planning = []', 'plan_review = []',
@@ -256,7 +271,11 @@ describe("saveSettings", () => {
       agents: { "my-agent": { command: "my-agent" } },
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
-      defaults: { profileId: "" },
+      defaults: {
+        profileId: "",
+        interactiveSessionTimeoutMinutes:
+          DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+      },
       scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
@@ -276,7 +295,11 @@ describe("saveSettings", () => {
       agents: {},
       actions: DEFAULT_ACTIONS,
       backend: { type: "auto" as const },
-      defaults: { profileId: "" },
+      defaults: {
+        profileId: "",
+        interactiveSessionTimeoutMinutes:
+          DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+      },
       scopeRefinement: { prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT },
       pools: DEFAULT_POOLS,
       dispatchMode: "basic" as const,
@@ -374,6 +397,32 @@ describe("updateSettings", () => {
 
     expect(updated.terminalLightTheme).toBe(true);
     expect(updated.maxConcurrentSessions).toBe(7);
+    expect(updated.actions.take).toBe("claude");
+  });
+
+  it("merges interactive timeout defaults without clobbering other settings", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[defaults]',
+        'profileId = "autopilot"',
+        `interactiveSessionTimeoutMinutes = ${DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES}`,
+        '[actions]',
+        'take = "claude"',
+      ].join("\n"),
+    );
+
+    const updated = await updateSettings({
+      defaults: {
+        interactiveSessionTimeoutMinutes: 25,
+      },
+    });
+
+    expect(
+      updated.defaults.interactiveSessionTimeoutMinutes,
+    ).toBe(25);
+    expect(updated.defaults.profileId).toBe(
+      "autopilot",
+    );
     expect(updated.actions.take).toBe("claude");
   });
 });

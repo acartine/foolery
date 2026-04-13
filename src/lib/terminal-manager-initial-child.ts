@@ -15,6 +15,9 @@ import {
   supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
+  resolveInteractiveSessionWatchdogTimeoutMs,
+} from "@/lib/interactive-session-timeout";
+import {
   TerminalSession,
   TerminalEvent,
 } from "@/lib/types";
@@ -114,6 +117,7 @@ export function spawnInitialChild(
   id: string,
   beatId: string,
   prepared: PreparedTargets,
+  interactiveSessionTimeoutMinutes: number,
   agent: CliAgentTarget,
   agentInfo: ReturnType<typeof toExecutionAgentInfo>,
   session: TerminalSession,
@@ -149,6 +153,7 @@ export function spawnInitialChild(
     id,
     beatId,
     prepared,
+    interactiveSessionTimeoutMinutes,
     agent,
     agentInfo,
     session,
@@ -202,10 +207,86 @@ export function spawnInitialChild(
   return session;
 }
 
+function resolveInitialRuntimeSelection(
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+  isTakeLoop: boolean,
+  interactiveSessionTimeoutMinutes: number,
+) {
+  const capabilities = resolveCapabilities(
+    dialect,
+    isTakeLoop && supportsInteractive(dialect),
+  );
+  return {
+    capabilities,
+    isInteractive: capabilities.interactive,
+    transport: capabilities.promptTransport,
+    watchdogTimeoutMs:
+      resolveInteractiveSessionWatchdogTimeoutMs(
+        capabilities.interactive,
+        interactiveSessionTimeoutMinutes,
+      ),
+  };
+}
+
+function buildInitialRuntimeContext(
+  id: string,
+  dialect: import("@/lib/agent-adapter").AgentDialect,
+  capabilities: ReturnType<typeof resolveCapabilities>,
+  watchdogTimeoutMs: number | null,
+  normalizeEvent: ReturnType<typeof createLineNormalizer>,
+  pushEvent: (evt: TerminalEvent) => void,
+  interactionLog: InteractionLog,
+  beatId: string,
+) {
+  return createInitialRuntime(
+    id,
+    dialect,
+    capabilities,
+    watchdogTimeoutMs,
+    normalizeEvent,
+    pushEvent,
+    interactionLog,
+    beatId,
+  );
+}
+
+function buildInitialTakeLoopContext(
+  id: string,
+  beatId: string,
+  prepared: PreparedTargets,
+  interactiveSessionTimeoutMinutes: number,
+  agent: CliAgentTarget,
+  agentInfo: ReturnType<typeof toExecutionAgentInfo>,
+  entry: SessionEntry,
+  session: TerminalSession,
+  interactionLog: InteractionLog,
+  emitter: EventEmitter,
+  pushEvent: (evt: TerminalEvent) => void,
+  finishSession: (code: number) => void,
+  sessionAborted: () => boolean,
+) {
+  return buildTakeLoopCtx(
+    id,
+    beatId,
+    prepared,
+    interactiveSessionTimeoutMinutes,
+    agent,
+    agentInfo,
+    entry,
+    session,
+    interactionLog,
+    emitter,
+    pushEvent,
+    finishSession,
+    sessionAborted,
+  );
+}
+
 function prepareInitialRuntimeBundle(
   id: string,
   beatId: string,
   prepared: PreparedTargets,
+  interactiveSessionTimeoutMinutes: number,
   agent: CliAgentTarget,
   agentInfo: ReturnType<typeof toExecutionAgentInfo>,
   session: TerminalSession,
@@ -221,45 +302,36 @@ function prepareInitialRuntimeBundle(
 ) {
   const isTakeLoop = !prepared.effectiveParent &&
     !customPrompt;
-  const capabilities = resolveCapabilities(
-    dialect,
-    isTakeLoop && supportsInteractive(dialect),
-  );
-  const isInteractive = capabilities.interactive;
-  const transport = capabilities.promptTransport;
-  const { agentCmd, args } = buildAgentArgs(
-    agent,
-    dialect,
+  const {
+    capabilities,
     isInteractive,
+    transport,
+    watchdogTimeoutMs,
+  } = resolveInitialRuntimeSelection(
+    dialect,
+    isTakeLoop,
+    interactiveSessionTimeoutMinutes,
+  );
+  const { agentCmd, args } = buildAgentArgs(
+    agent, dialect, isInteractive,
     transport === "jsonrpc-stdio",
     transport === "http-server",
-    transport === "acp-stdio",
-    prompt,
+    transport === "acp-stdio", prompt,
   );
   const normalizeEvent = createLineNormalizer(dialect);
-  const takeLoopCtx = buildTakeLoopCtx(
-    id,
-    beatId,
-    prepared,
-    agent,
-    agentInfo,
-    entry,
-    session,
-    interactionLog,
-    emitter,
-    pushEvent,
+  const takeLoopCtx = buildInitialTakeLoopContext(
+    id, beatId, prepared,
+    interactiveSessionTimeoutMinutes,
+    agent, agentInfo, entry,
+    session, interactionLog, emitter, pushEvent,
     finishSession,
     sessionAborted,
   );
   const { sessionBeatIds, stateRef, runtimeConfig } =
-    createInitialRuntime(
-      id,
-      dialect,
-      capabilities,
-      normalizeEvent,
-      pushEvent,
-      interactionLog,
-      beatId,
+    buildInitialRuntimeContext(
+      id, dialect, capabilities,
+      watchdogTimeoutMs, normalizeEvent,
+      pushEvent, interactionLog, beatId,
     );
   const emitRuntimeLifecycle = (event:
     SessionRuntimeLifecycleEvent) =>

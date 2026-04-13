@@ -277,7 +277,7 @@ export function doResetWatchdog(
   state: SessionRuntimeState,
   config: SessionRuntimeConfig,
 ): void {
-  const ms = config.capabilities.watchdogTimeoutMs;
+  const ms = config.watchdogTimeoutMs;
   if (ms == null) return;
   if (state.watchdogTimer) {
     clearTimeout(state.watchdogTimer);

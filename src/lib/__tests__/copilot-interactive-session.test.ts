@@ -21,6 +21,12 @@ import {
 import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
+import {
+  interactiveSessionTimeoutMinutesToMs,
+} from "@/lib/interactive-session-timeout";
+
+const DEFAULT_WATCHDOG_TIMEOUT_MS =
+  interactiveSessionTimeoutMinutesToMs(10);
 
 // ── Helpers ──────────────────────────────────────────
 
@@ -59,6 +65,7 @@ function makeConfig(
     id: "copilot-test",
     dialect: "copilot",
     capabilities: caps,
+    watchdogTimeoutMs: DEFAULT_WATCHDOG_TIMEOUT_MS,
     normalizeEvent:
       createLineNormalizer("copilot"),
     pushEvent: vi.fn(),
@@ -143,13 +150,15 @@ describe("copilot interactive: watchdog", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("terminates after 30s inactivity", () => {
+  it("terminates after the shared 10 minute inactivity timeout", () => {
     const rt = createSessionRuntime(makeConfig());
     const child = makeChild();
     rt.wireStdout(child);
     expect(rt.state.watchdogTimer).not.toBeNull();
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe("timeout");
     expect(rt.state.watchdogTimer).toBeNull();
   });
@@ -159,13 +168,17 @@ describe("copilot interactive: watchdog", () => {
     const child = makeChild();
     rt.wireStdout(child);
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     emitLine(child, {
       type: "assistant.message_delta",
       data: { messageId: "m1", deltaContent: "hi" },
     });
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     expect(rt.state.exitReason).toBeNull();
 
     vi.advanceTimersByTime(6_000);
@@ -183,7 +196,9 @@ describe("copilot interactive: watchdog", () => {
     });
     expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe(
       "result_observed",
     );
@@ -262,12 +277,8 @@ describe("copilot interactive: follow-up", () => {
   });
 
   it("times out when a follow-up turn hangs", () => {
-    const caps = {
-      ...resolveCapabilities("copilot", true),
-      watchdogTimeoutMs: 5_000,
-    };
     const rt = createSessionRuntime(
-      makeConfig({ capabilities: caps }),
+      makeConfig({ watchdogTimeoutMs: 5_000 }),
     );
     const child = makeChild();
     rt.wireStdout(child);

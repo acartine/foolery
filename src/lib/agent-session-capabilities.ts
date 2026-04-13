@@ -47,11 +47,6 @@ export interface AgentSessionCapabilities {
   resultDetection: ResultDetection;
   /** How stdin should be handled after result. */
   stdinDrainPolicy: StdinDrainPolicy;
-  /**
-   * Inactivity watchdog timeout in ms.
-   * Null means no watchdog.
-   */
-  watchdogTimeoutMs: number | null;
 }
 
 // ── Capability resolution ──────────────────────────────
@@ -67,7 +62,6 @@ const CAPABILITIES: Record<
     supportsAskUserAutoResponse: true,
     resultDetection: "type-result",
     stdinDrainPolicy: "close-after-result",
-    watchdogTimeoutMs: null,
   },
   codex: {
     interactive: false,
@@ -76,7 +70,6 @@ const CAPABILITIES: Record<
     supportsAskUserAutoResponse: false,
     resultDetection: "type-result",
     stdinDrainPolicy: "never-opened",
-    watchdogTimeoutMs: null,
   },
   copilot: {
     interactive: false,
@@ -85,7 +78,6 @@ const CAPABILITIES: Record<
     supportsAskUserAutoResponse: true,
     resultDetection: "type-result",
     stdinDrainPolicy: "never-opened",
-    watchdogTimeoutMs: null,
   },
   opencode: {
     interactive: false,
@@ -94,7 +86,6 @@ const CAPABILITIES: Record<
     supportsAskUserAutoResponse: false,
     resultDetection: "type-result",
     stdinDrainPolicy: "never-opened",
-    watchdogTimeoutMs: null,
   },
   gemini: {
     interactive: false,
@@ -103,7 +94,6 @@ const CAPABILITIES: Record<
     supportsAskUserAutoResponse: false,
     resultDetection: "status-result",
     stdinDrainPolicy: "never-opened",
-    watchdogTimeoutMs: null,
   },
 };
 
@@ -115,7 +105,6 @@ const CODEX_INTERACTIVE: AgentSessionCapabilities = {
   supportsAskUserAutoResponse: false,
   resultDetection: "type-result",
   stdinDrainPolicy: "close-after-result",
-  watchdogTimeoutMs: 30_000,
 };
 
 /** Interactive Copilot capabilities (session mode). */
@@ -126,7 +115,6 @@ const COPILOT_INTERACTIVE: AgentSessionCapabilities = {
   supportsAskUserAutoResponse: true,
   resultDetection: "type-result",
   stdinDrainPolicy: "close-after-result",
-  watchdogTimeoutMs: 30_000,
 };
 
 /** Interactive OpenCode capabilities (serve mode). */
@@ -137,7 +125,6 @@ const OPENCODE_INTERACTIVE: AgentSessionCapabilities = {
   supportsAskUserAutoResponse: false,
   resultDetection: "type-result",
   stdinDrainPolicy: "close-after-result",
-  watchdogTimeoutMs: 30_000,
 };
 
 /** Interactive Gemini capabilities (ACP mode). */
@@ -148,7 +135,6 @@ const GEMINI_INTERACTIVE: AgentSessionCapabilities = {
   supportsAskUserAutoResponse: false,
   resultDetection: "status-result",
   stdinDrainPolicy: "close-after-result",
-  watchdogTimeoutMs: 30_000,
 };
 
 /** Interactive presets keyed by dialect. */

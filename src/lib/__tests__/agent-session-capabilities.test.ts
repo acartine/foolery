@@ -81,15 +81,15 @@ describe("resolveCapabilities", () => {
     ).toBe("status-result");
   });
 
-  it("no dialect has a watchdog by default", () => {
+  it("base capabilities stay transport-focused", () => {
     const dialects: AgentDialect[] = [
       "claude", "codex", "copilot",
       "opencode", "gemini",
     ];
     for (const d of dialects) {
-      expect(
-        resolveCapabilities(d).watchdogTimeoutMs,
-      ).toBeNull();
+      expect(resolveCapabilities(d)).not.toHaveProperty(
+        "watchdogTimeoutMs",
+      );
     }
   });
 
@@ -103,7 +103,6 @@ describe("resolveCapabilities: interactive", () => {
       "jsonrpc-stdio",
     );
     expect(caps.supportsFollowUp).toBe(true);
-    expect(caps.watchdogTimeoutMs).toBe(30_000);
   });
 
   it("copilot interactive uses stdin-stream-json", () => {
@@ -116,7 +115,6 @@ describe("resolveCapabilities: interactive", () => {
     expect(caps.supportsAskUserAutoResponse).toBe(
       true,
     );
-    expect(caps.watchdogTimeoutMs).toBe(30_000);
     expect(caps.stdinDrainPolicy).toBe(
       "close-after-result",
     );
@@ -138,7 +136,6 @@ describe("resolveCapabilities: interactive", () => {
     expect(caps.supportsAskUserAutoResponse).toBe(
       false,
     );
-    expect(caps.watchdogTimeoutMs).toBe(30_000);
     expect(caps.stdinDrainPolicy).toBe(
       "close-after-result",
     );
@@ -152,7 +149,6 @@ describe("resolveCapabilities: interactive", () => {
     expect(caps.supportsAskUserAutoResponse).toBe(
       false,
     );
-    expect(caps.watchdogTimeoutMs).toBe(30_000);
     expect(caps.stdinDrainPolicy).toBe(
       "close-after-result",
     );

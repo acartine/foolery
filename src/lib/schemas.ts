@@ -1,5 +1,10 @@
 import { z } from "zod/v4";
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
+import {
+  DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+  MAX_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+  MIN_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+} from "@/lib/interactive-session-timeout";
 
 // ── Beat schemas ────────────────────────────────────────────
 
@@ -151,8 +156,20 @@ export const defaultsSettingsSchema = z
   .object({
     /** Default workflow profile ID for new beats (empty = "autopilot" fallback). */
     profileId: z.string().default(""),
+    /** Inactivity timeout for interactive agent sessions, in minutes. */
+    interactiveSessionTimeoutMinutes: z.number()
+      .int()
+      .min(MIN_INTERACTIVE_SESSION_TIMEOUT_MINUTES)
+      .max(MAX_INTERACTIVE_SESSION_TIMEOUT_MINUTES)
+      .default(
+        DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+      ),
   })
-  .default({ profileId: "" });
+  .default({
+    profileId: "",
+    interactiveSessionTimeoutMinutes:
+      DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+  });
 
 export const scopeRefinementSettingsSchema = z
   .object({

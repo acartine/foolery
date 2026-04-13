@@ -88,6 +88,7 @@ export interface SessionRuntimeConfig {
   id: string;
   dialect: AgentDialect;
   capabilities: AgentSessionCapabilities;
+  watchdogTimeoutMs: number | null;
   normalizeEvent: ReturnType<
     typeof createLineNormalizer
   >;

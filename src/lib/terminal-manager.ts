@@ -10,6 +10,9 @@ import {
   getStepAgent,
   loadSettings,
 } from "@/lib/settings";
+import {
+  DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+} from "@/lib/interactive-session-timeout";
 import type { CliAgentTarget } from "@/lib/types-agent-target";
 import {
   normalizeAgentIdentity,
@@ -100,6 +103,10 @@ export async function createSession(
   const maxSessions =
     settings.maxConcurrentSessions ??
     DEFAULT_MAX_SESSIONS;
+  const interactiveSessionTimeoutMinutes =
+    settings.defaults
+      ?.interactiveSessionTimeoutMinutes ??
+    DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES;
   const running = Array.from(sessions.values()).filter(
     (e) => e.session.status === "running",
   );
@@ -173,7 +180,12 @@ export async function createSession(
   );
 
   return spawnInitialChild(
-    id, beatId, prepared, agent, agentInfo,
+    id,
+    beatId,
+    prepared,
+    interactiveSessionTimeoutMinutes,
+    agent,
+    agentInfo,
     session, entry, emitter, buffer,
     interactionLog, pushEvent, prompt,
     customPrompt, sessions,

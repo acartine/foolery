@@ -60,6 +60,7 @@ function makeConfig(
     id: "test-session",
     dialect,
     capabilities,
+    watchdogTimeoutMs: null,
     normalizeEvent:
       createLineNormalizer(dialect),
     pushEvent: vi.fn(),
@@ -81,6 +82,7 @@ function makeInteractiveCodexConfig(
     id: "test-session",
     dialect: "codex",
     capabilities,
+    watchdogTimeoutMs: null,
     normalizeEvent: createLineNormalizer("codex"),
     pushEvent: vi.fn(),
     interactionLog: makeInteractionLog(),
@@ -447,4 +449,3 @@ describe("runtime: interactive codex stdout", () => {
     ).toBeNull();
   });
 });
-

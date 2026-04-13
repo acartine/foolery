@@ -18,6 +18,9 @@ import { SettingsDefaultsSection } from "@/components/settings-defaults-section"
 import { SettingsDispatchSection } from "@/components/settings-dispatch-section";
 import { fetchSettings, saveSettings } from "@/lib/settings-api";
 import { useTerminalThemePreference } from "@/hooks/use-terminal-theme-preference";
+import {
+  DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
+} from "@/lib/interactive-session-timeout";
 import { DEFAULT_SCOPE_REFINEMENT_PROMPT } from "@/lib/scope-refinement-defaults";
 import type { RegisteredAgent } from "@/lib/types";
 import type {
@@ -63,6 +66,8 @@ const DEFAULTS: SettingsData = {
   },
   defaults: {
     profileId: "",
+    interactiveSessionTimeoutMinutes:
+      DEFAULT_INTERACTIVE_SESSION_TIMEOUT_MINUTES,
   },
   scopeRefinement: {
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,

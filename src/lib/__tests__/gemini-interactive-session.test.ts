@@ -23,8 +23,14 @@ import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
+  interactiveSessionTimeoutMinutesToMs,
+} from "@/lib/interactive-session-timeout";
+import {
   createGeminiAcpSession,
 } from "@/lib/gemini-acp-session";
+
+const DEFAULT_WATCHDOG_TIMEOUT_MS =
+  interactiveSessionTimeoutMinutesToMs(10);
 
 // ── Helpers ──────────────────────────────────────────
 
@@ -62,6 +68,7 @@ function makeConfig(
     id: "gemini-test",
     dialect: "gemini",
     capabilities: caps,
+    watchdogTimeoutMs: DEFAULT_WATCHDOG_TIMEOUT_MS,
     normalizeEvent:
       createLineNormalizer("gemini"),
     pushEvent: vi.fn(),
@@ -180,7 +187,7 @@ describe("gemini interactive: watchdog", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("terminates after 30s inactivity", () => {
+  it("terminates after the shared 10 minute inactivity timeout", () => {
     const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
       makeConfig({ acpSession }),
@@ -189,7 +196,9 @@ describe("gemini interactive: watchdog", () => {
     rt.wireStdout(child);
     expect(rt.state.watchdogTimer).not.toBeNull();
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe("timeout");
     expect(rt.state.watchdogTimer).toBeNull();
   });
@@ -204,7 +213,9 @@ describe("gemini interactive: watchdog", () => {
     completeHandshake(child);
     rt.sendUserTurn(child, "go", "test");
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     emitLine(child, {
       method: "session/update",
       params: {
@@ -216,7 +227,9 @@ describe("gemini interactive: watchdog", () => {
       },
     });
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     expect(rt.state.exitReason).toBeNull();
 
     vi.advanceTimersByTime(6_000);
@@ -239,7 +252,9 @@ describe("gemini interactive: watchdog", () => {
     });
     expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe(
       "result_observed",
     );
@@ -301,13 +316,9 @@ describe("gemini interactive: follow-up", () => {
   });
 
   it("times out when follow-up hangs", () => {
-    const caps = {
-      ...resolveCapabilities("gemini", true),
-      watchdogTimeoutMs: 5_000,
-    };
     const acpSession = createGeminiAcpSession("/tmp");
     const rt = createSessionRuntime(
-      makeConfig({ acpSession, capabilities: caps }),
+      makeConfig({ acpSession, watchdogTimeoutMs: 5_000 }),
     );
     const child = makeChild();
     rt.wireStdout(child);

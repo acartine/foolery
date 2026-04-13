@@ -165,7 +165,10 @@ async function installApiMocks(page) {
 
     if (url.pathname === "/api/settings") {
       return fulfillJson(route, {
-        defaults: { profileId: "autopilot" },
+        defaults: {
+          profileId: "autopilot",
+          interactiveSessionTimeoutMinutes: 10,
+        },
       });
     }
 

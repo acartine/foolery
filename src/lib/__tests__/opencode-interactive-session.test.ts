@@ -23,9 +23,15 @@ import {
   createLineNormalizer,
 } from "@/lib/agent-adapter";
 import {
+  interactiveSessionTimeoutMinutesToMs,
+} from "@/lib/interactive-session-timeout";
+import {
   createOpenCodeHttpSession,
   type OpenCodeHttpSession,
 } from "@/lib/opencode-http-session";
+
+const DEFAULT_WATCHDOG_TIMEOUT_MS =
+  interactiveSessionTimeoutMinutesToMs(10);
 
 // ── Helpers ──────────────────────────────────────────
 
@@ -86,6 +92,7 @@ function makeConfigWithHttp(
     id: "opencode-test",
     dialect: "opencode",
     capabilities: caps,
+    watchdogTimeoutMs: DEFAULT_WATCHDOG_TIMEOUT_MS,
     normalizeEvent:
       createLineNormalizer("opencode"),
     pushEvent: vi.fn(),
@@ -260,14 +267,16 @@ describe("opencode interactive: watchdog", () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(() => { vi.useRealTimers(); });
 
-  it("terminates after 30s inactivity", () => {
+  it("terminates after the shared 10 minute inactivity timeout", () => {
     const { config } = makeConfigWithHttp();
     const rt = createSessionRuntime(config);
     const child = makeChild();
     rt.wireStdout(child);
     expect(rt.state.watchdogTimer).not.toBeNull();
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe("timeout");
     expect(rt.state.watchdogTimer).toBeNull();
   });
@@ -278,13 +287,17 @@ describe("opencode interactive: watchdog", () => {
     const child = makeChild();
     rt.wireStdout(child);
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     rt.injectLine(child, JSON.stringify({
       type: "text",
       part: { text: "progress" },
     }));
 
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS - 5_000,
+    );
     expect(rt.state.exitReason).toBeNull();
 
     vi.advanceTimersByTime(6_000);
@@ -303,7 +316,9 @@ describe("opencode interactive: watchdog", () => {
     }));
     expect(rt.state.resultObserved).toBe(true);
 
-    vi.advanceTimersByTime(30_000);
+    vi.advanceTimersByTime(
+      DEFAULT_WATCHDOG_TIMEOUT_MS,
+    );
     expect(rt.state.exitReason).toBe(
       "result_observed",
     );
@@ -357,12 +372,8 @@ describe("opencode interactive: follow-up", () => {
   });
 
   it("times out when a follow-up turn hangs", () => {
-    const caps = {
-      ...resolveCapabilities("opencode", true),
-      watchdogTimeoutMs: 5_000,
-    };
     const { config } =
-      makeConfigWithHttp({ capabilities: caps });
+      makeConfigWithHttp({ watchdogTimeoutMs: 5_000 });
     const rt = createSessionRuntime(config);
     const child = makeChild();
     rt.wireStdout(child);

@@ -413,7 +413,15 @@ const coreSchemas = {
       },
       defaults: {
         type: "object",
-        properties: { profileId: { type: "string" } },
+        properties: {
+          profileId: { type: "string" },
+          interactiveSessionTimeoutMinutes: {
+            type: "integer",
+            minimum: 1,
+            maximum: 240,
+            default: 10,
+          },
+        },
       },
       scopeRefinement: {
         type: "object",

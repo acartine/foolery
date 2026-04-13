@@ -61,6 +61,7 @@ function makeConfig(
     id: "test-session",
     dialect,
     capabilities,
+    watchdogTimeoutMs: null,
     normalizeEvent:
       createLineNormalizer(dialect),
     pushEvent: vi.fn(),
@@ -356,12 +357,10 @@ describe("runtime: watchdog", () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it("terminates after inactivity timeout", () => {
-    const caps = {
-      ...resolveCapabilities("claude"),
-      watchdogTimeoutMs: 30_000,
-    };
     const rt = createSessionRuntime(
-      makeConfig("claude", { capabilities: caps }),
+      makeConfig("claude", {
+        watchdogTimeoutMs: 30_000,
+      }),
     );
     const child = makeChild(true);
     rt.wireStdout(child);
@@ -372,12 +371,10 @@ describe("runtime: watchdog", () => {
   });
 
   it("resets on event activity", () => {
-    const caps = {
-      ...resolveCapabilities("claude"),
-      watchdogTimeoutMs: 10_000,
-    };
     const rt = createSessionRuntime(
-      makeConfig("claude", { capabilities: caps }),
+      makeConfig("claude", {
+        watchdogTimeoutMs: 10_000,
+      }),
     );
     const child = makeChild(true);
     rt.wireStdout(child);
@@ -407,12 +404,10 @@ describe("runtime: watchdog", () => {
   });
 
   it("is cleared by dispose", () => {
-    const caps = {
-      ...resolveCapabilities("claude"),
-      watchdogTimeoutMs: 10_000,
-    };
     const rt = createSessionRuntime(
-      makeConfig("claude", { capabilities: caps }),
+      makeConfig("claude", {
+        watchdogTimeoutMs: 10_000,
+      }),
     );
     const child = makeChild(true);
     rt.wireStdout(child);
@@ -424,12 +419,10 @@ describe("runtime: watchdog", () => {
   });
 
   it("skips termination after result", () => {
-    const caps = {
-      ...resolveCapabilities("claude"),
-      watchdogTimeoutMs: 5_000,
-    };
     const rt = createSessionRuntime(
-      makeConfig("claude", { capabilities: caps }),
+      makeConfig("claude", {
+        watchdogTimeoutMs: 5_000,
+      }),
     );
     const child = makeChild(true);
     rt.wireStdout(child);

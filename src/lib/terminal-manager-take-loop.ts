@@ -40,6 +40,7 @@ export interface TakeLoopContext {
   repoPath: string | undefined;
   resolvedRepoPath: string;
   cwd: string;
+  interactiveSessionTimeoutMinutes: number;
   memoryManagerType: MemoryManagerType;
   workflowsById: Map<string, MemoryWorkflowDescriptor>;
   fallbackWorkflow: MemoryWorkflowDescriptor;

@@ -135,6 +135,7 @@ type = "auto"
 
 [defaults]
 profileId = ""
+interactiveSessionTimeoutMinutes = 10
 
 [scopeRefinement]
 prompt = """
@@ -177,6 +178,7 @@ type = "auto"
 
 [defaults]
 profileId = ""
+interactiveSessionTimeoutMinutes = 10
 
 [scopeRefinement]
 prompt = """

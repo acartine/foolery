@@ -91,6 +91,7 @@ type = "knots"
 
 [defaults]
 profileId = "autopilot"
+interactiveSessionTimeoutMinutes = 45
 
 [scopeRefinement]
 prompt = """
@@ -163,6 +164,7 @@ describe("additive TOML reader", () => {
         });
         expect(parsed.defaults).toMatchObject({
           profileId: "autopilot",
+          interactiveSessionTimeoutMinutes: 45,
         });
       },
     );
@@ -259,6 +261,7 @@ describe("additive scalar preservation", () => {
         });
         expect(parsed.defaults).toMatchObject({
           profileId: "autopilot",
+          interactiveSessionTimeoutMinutes: 45,
         });
       },
     );
@@ -390,6 +393,7 @@ type = "auto"
 
 [defaults]
 profileId = ""
+interactiveSessionTimeoutMinutes = 10
 
 [scopeRefinement]
 prompt = """

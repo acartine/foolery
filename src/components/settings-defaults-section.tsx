@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { InteractiveSessionTimeoutSection } from "@/components/settings-interactive-session-timeout-section";
 import {
   Select,
   SelectContent,
@@ -109,6 +110,10 @@ export function SettingsDefaultsSection({
       <MaxConcurrentSessionsSection
         value={maxConcurrentSessions}
         onChange={onMaxConcurrentSessionsChange}
+      />
+      <InteractiveSessionTimeoutSection
+        defaults={defaults}
+        onDefaultsChange={onDefaultsChange}
       />
       <TerminalThemeSection
         lightTheme={terminalLightTheme}

@@ -14,6 +14,9 @@ import {
   supportsInteractive,
 } from "@/lib/agent-session-capabilities";
 import {
+  resolveInteractiveSessionWatchdogTimeoutMs,
+} from "@/lib/interactive-session-timeout";
+import {
   createSessionRuntime,
   type SessionRuntimeLifecycleEvent,
 } from "@/lib/agent-session-runtime";
@@ -42,14 +45,10 @@ import {
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
-export function spawnTakeChild(
+function applyEffectiveAgent(
   ctx: TakeLoopContext,
-  takePrompt: string,
-  beatState?: string,
-  agentOverride?: CliAgentTarget,
+  effectiveAgent: CliAgentTarget,
 ): void {
-  const effectiveAgent =
-    agentOverride ?? ctx.agent;
   ctx.agent = effectiveAgent;
   ctx.agentInfo =
     toExecutionAgentInfo(effectiveAgent);
@@ -60,6 +59,17 @@ export function spawnTakeChild(
     effectiveAgent.version;
   ctx.session.agentCommand =
     effectiveAgent.command;
+}
+
+export function spawnTakeChild(
+  ctx: TakeLoopContext,
+  takePrompt: string,
+  beatState?: string,
+  agentOverride?: CliAgentTarget,
+): void {
+  const effectiveAgent =
+    agentOverride ?? ctx.agent;
+  applyEffectiveAgent(ctx, effectiveAgent);
   recordTakeLoopLifecycle(ctx, "prompt_built", {
     claimedState: beatState,
     leaseId: ctx.entry.knotsLeaseId,
@@ -76,6 +86,11 @@ export function spawnTakeChild(
     effectiveDialect, preferInteractive,
   );
   const isInteractive = capabilities.interactive;
+  const watchdogTimeoutMs =
+    resolveInteractiveSessionWatchdogTimeoutMs(
+      isInteractive,
+      ctx.interactiveSessionTimeoutMinutes,
+    );
   const pt = capabilities.promptTransport;
   const isJsonRpc = pt === "jsonrpc-stdio";
   const isHttpServer = pt === "http-server";
@@ -95,6 +110,7 @@ export function spawnTakeChild(
     beatState,
     effectiveDialect,
     capabilities,
+    watchdogTimeoutMs,
     isJsonRpc,
     isHttpServer,
     isAcp,
@@ -149,6 +165,7 @@ function createTakeRuntimeBundle(
   beatState: string | undefined,
   effectiveDialect: import("@/lib/agent-adapter").AgentDialect,
   capabilities: ReturnType<typeof resolveCapabilities>,
+  watchdogTimeoutMs: number | null,
   isJsonRpc: boolean,
   isHttpServer: boolean,
   isAcp: boolean,
@@ -178,6 +195,7 @@ function createTakeRuntimeBundle(
     id: ctx.id,
     dialect: effectiveDialect,
     capabilities,
+    watchdogTimeoutMs,
     normalizeEvent: createLineNormalizer(
       effectiveDialect,
     ),

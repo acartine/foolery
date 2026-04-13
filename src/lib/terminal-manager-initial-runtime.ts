@@ -51,6 +51,7 @@ export function createInitialRuntime(
   id: string,
   dialect: import("@/lib/agent-adapter").AgentDialect,
   capabilities: ReturnType<typeof resolveCapabilities>,
+  watchdogTimeoutMs: number | null,
   normalizeEvent: ReturnType<
     typeof createLineNormalizer
   >,
@@ -79,6 +80,7 @@ export function createInitialRuntime(
     id,
     dialect,
     capabilities,
+    watchdogTimeoutMs,
     normalizeEvent,
     pushEvent,
     interactionLog,

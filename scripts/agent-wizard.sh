@@ -297,7 +297,10 @@ _write_settings_toml() {
 
     local pid
     pid="$(_kv_get DEFAULTS_SECTION profileId "")"
-    printf '\n[defaults]\nprofileId = "%s"\n' "$pid"
+    local interactive_timeout_minutes
+    interactive_timeout_minutes="$(_kv_get DEFAULTS_SECTION interactiveSessionTimeoutMinutes "10")"
+    printf '\n[defaults]\nprofileId = "%s"\ninteractiveSessionTimeoutMinutes = %s\n' \
+      "$pid" "$interactive_timeout_minutes"
 
     printf '\n[scopeRefinement]\n'
     local prompt

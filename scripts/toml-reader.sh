@@ -255,6 +255,9 @@ _read_settings_toml() {
           profileId)
             _kv_set DEFAULTS_SECTION profileId "$value"
             ;;
+          interactiveSessionTimeoutMinutes)
+            _kv_set DEFAULTS_SECTION interactiveSessionTimeoutMinutes "$value"
+            ;;
         esac
         ;;
       scope)
