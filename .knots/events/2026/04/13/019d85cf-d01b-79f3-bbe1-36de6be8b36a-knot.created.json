@@ -1,0 +1,17 @@
+{
+  "event_id": "019d85cf-d01b-79f3-bbe1-36de6be8b36a",
+  "occurred_at": "2026-04-13T07:48:02.203226Z",
+  "knot_id": "foolery-d8ea",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nWhen a take-loop agent exits cleanly without moving the knot forward or backward, Foolery should issue one follow-up prompt before treating the step as failed. Session and transport failures that are unrelated to the agent response must remain exempt.\n\nVerification:\n1. Add and run a targeted test where a take-loop child exits 0 after prompt delivery and leaves the knot in the same active state; expected result: exactly one follow-up prompt is issued before rollback handling.\n2. Add and run targeted tests for spawn or prompt-delivery failure and external/session abort; expected result: no follow-up prompt is issued and existing error handling remains in place.\n\nConstraints:\n- Make the follow-up decision from the take-loop close path after post-exit state is observed.\n- Do not rely on `result` or `onResult` to decide whether the take loop should continue.\n- Follow-up must be one-shot per attempt.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix take-loop clean-close follow-up",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d85cf-d025-7310-89cc-cad25b94ff37",
+  "occurred_at": "2026-04-13T07:48:02.203226Z",
+  "knot_id": "foolery-d8ea",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The take-loop close path evaluates a one-shot follow-up after post-exit state is observed and before step-failure rollback.\n2. Foolery sends a follow-up only when prompt delivery succeeded, the child exits 0, no follow-up has already been sent, and the knot remains in the claimed action state.\n3. Foolery does not send a follow-up for spawn errors, prompt-delivery failures, external aborts, or session aborts.\n4. Automated tests cover the clean-close follow-up path and the exempt error paths."
+  }
+}
