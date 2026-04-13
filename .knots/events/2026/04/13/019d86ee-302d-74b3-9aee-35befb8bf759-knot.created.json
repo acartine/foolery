@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-302d-74b3-9aee-35befb8bf759",
+  "occurred_at": "2026-04-13T13:00:50.092823Z",
+  "knot_id": "foolery-a873",
+  "type": "knot.created",
+  "data": {
+    "body": "Rename scene references in orchestration code to use consistent orchestration terminology. ORCHESTRATION_WAVE_LABEL, log messages, error strings, type names. The action mapping scene in settings can stay for backward compat but add orchestration as an alias.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Clean up scene terminology to orchestration",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86bc-b562-79c3-bb05-2af818dc9356",
+  "occurred_at": "2026-04-13T12:06:47.394558Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAdd structured logging around interactive session watchdog behavior so fast session exits can be diagnosed from Foolery logs without code inspection. The logs should make it obvious which configured timeout value was applied to a session, when the watchdog was armed or reset, and whether a timeout-driven kill occurred.\n\nVerification:\n1. Run the interactive session tests and confirm the lifecycle log/assertions cover configured timeout metadata plus watchdog arm/reset/fire events.\n2. Start an interactive session and inspect the resulting `.foolery-logs/.../*.jsonl` lifecycle entries to confirm the configured timeout minutes/ms are recorded and timeout-driven termination is distinguishable from normal close.\n\nConstraints:\n- Use the shared runtime/lifecycle logging path rather than ad hoc per-harness console logging.\n- Logging must work for any interactive harness that uses the shared runtime abstraction.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Log interactive watchdog lifecycle",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

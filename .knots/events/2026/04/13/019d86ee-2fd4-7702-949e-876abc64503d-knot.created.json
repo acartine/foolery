@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-2fd4-7702-949e-876abc64503d",
+  "occurred_at": "2026-04-13T13:00:50.004441Z",
+  "knot_id": "foolery-4d52",
+  "type": "knot.created",
+  "data": {
+    "body": "buildPrompt() currently passes beat metadata but no edges. Extend collectContext() or derivePromptScope() to also load edges for in-scope beats. Inject them into the prompt so the agent doesn't have to self-discover blockers. Format: 'BEAT-A blocks BEAT-B'.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Include dependency edges in orchestration prompt",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

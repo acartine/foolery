@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-2fb5-7a72-b93d-dce7d3d3409b",
+  "occurred_at": "2026-04-13T13:00:49.972748Z",
+  "knot_id": "foolery-27fe",
+  "type": "knot.created",
+  "data": {
+    "body": "Create getOrchestrationAgent() helper in settings.ts (or a new file). Resolution order: pools.orchestration → actions.scene → default command. Update createOrchestrationSession to use this instead of getStepAgent(WorkflowStep.Planning, 'scene').",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Wire orchestration agent resolution through new pool",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

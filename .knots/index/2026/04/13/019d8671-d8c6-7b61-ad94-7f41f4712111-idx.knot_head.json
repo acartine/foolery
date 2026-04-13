@@ -1,0 +1,21 @@
+{
+  "event_id": "019d8671-d8c6-7b61-ad94-7f41f4712111",
+  "occurred_at": "2026-04-13T10:45:01.254625Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f02d",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Globalize interactive agent timeout",
+    "type": "work",
+    "updated_at": "2026-04-13T10:45:01.254625Z",
+    "workflow_id": "work_sdlc"
+  }
+}

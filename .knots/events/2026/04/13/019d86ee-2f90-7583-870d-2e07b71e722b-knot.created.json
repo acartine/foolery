@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-2f90-7583-870d-2e07b71e722b",
+  "occurred_at": "2026-04-13T13:00:49.935809Z",
+  "knot_id": "foolery-fec0",
+  "type": "knot.created",
+  "data": {
+    "body": "Add 'orchestration' to poolsSettingsSchema in src/lib/schemas.ts alongside the existing 7 pool keys. Default to empty array. This gives orchestration/grooming its own agent pool separate from beat-level planning.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add orchestration pool key to settings schema",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

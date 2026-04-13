@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8663-6f8a-7bf0-a3a9-98e42b901fee",
+  "occurred_at": "2026-04-13T10:29:16.810352Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "## Implementation plan\n1. Add a shared interactive session timeout setting to the persisted settings schema/defaults layer, defaulting to 10 minutes and normalized in the same path as other user defaults.\n2. Expose that setting in the Defaults settings UI with explicit copy that it controls the inactivity timeout for interactive agent sessions, and ensure edits flow through existing settings save/reload behavior.\n3. Move interactive watchdog policy out of per-dialect capability presets by introducing one shared timeout source above the harness layer, then thread that value into interactive runtime construction so Codex, Copilot, OpenCode, and Gemini all inherit it automatically through the standard interactive session abstraction.\n4. Keep harness-specific transport/result-detection behavior intact while removing timeout-specific literals from `src/lib/agent-session-capabilities.ts` and any per-harness runtime wiring.\n5. Update tests in settings/runtime/capability areas to cover the 10-minute default, settings round-trip/persistence, and shared interactive watchdog behavior for the current interactive dialects.\n\n## File targets\n- `src/lib/schemas.ts`\n- `src/lib/settings-core.ts` / `src/lib/settings.ts` if normalization helpers need extension\n- `src/components/settings-defaults-section.tsx`\n- shared interactive runtime/session prep files under `src/lib/` that currently consume `watchdogTimeoutMs`\n- affected tests under `src/lib/__tests__/` and any settings UI tests if present\n\n## Risks\n- The runtime currently reads timeout from capabilities, so the refactor needs a narrow replacement that does not break one-shot sessions.\n- Settings defaults and UI state must stay backward-compatible for existing settings files with no timeout field.\n- Interactive transport coverage is split across multiple session tests, so assertions should focus on the shared source rather than reintroducing per-harness literals.\n\n## Test strategy\n- Add schema/defaults assertions for a fresh settings state.\n- Add settings persistence coverage for save/load round-trip of the timeout field.\n- Update shared runtime tests to assert inactivity termination uses the configured timeout.\n- Keep dialect-specific interactive tests proving they still honor the shared timeout through the common runtime path.",
+    "datetime": "2026-04-13T10:29:16.810352Z",
+    "entry_id": "019d8663-6f8a-7bf0-a3a9-98d07d501199",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

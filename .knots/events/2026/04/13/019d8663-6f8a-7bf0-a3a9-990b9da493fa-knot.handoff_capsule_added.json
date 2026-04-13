@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8663-6f8a-7bf0-a3a9-990b9da493fa",
+  "occurred_at": "2026-04-13T10:29:16.810352Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. The implementation should introduce one persisted interactive inactivity timeout in shared settings/defaults, surface it in Settings > Defaults, remove per-harness timeout literals from interactive capability presets, and route Codex/Copilot/OpenCode/Gemini through one shared runtime-configured watchdog source with coverage for defaults, persistence, and shared timeout behavior.",
+    "datetime": "2026-04-13T10:29:16.810352Z",
+    "entry_id": "019d8663-6f8a-7bf0-a3a9-98f94d5ebf0b",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

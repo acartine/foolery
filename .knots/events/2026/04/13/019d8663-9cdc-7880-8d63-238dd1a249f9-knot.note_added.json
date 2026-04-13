@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8663-9cdc-7880-8d63-238dd1a249f9",
+  "occurred_at": "2026-04-13T10:29:28.412117Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Plan review approved. The plan maps directly onto the existing architecture: settings schema/defaults (`src/lib/schemas.ts`, `src/lib/settings-core.ts`), Defaults UI (`src/components/settings-defaults-section.tsx`), and the shared interactive runtime path (`src/lib/agent-session-runtime*`). The migration is feasible without harness-specific timeout policy by moving the configurable inactivity timeout above capability presets and keeping transport-specific behavior unchanged. Test coverage targets the right layers: default/backfill, settings round-trip, shared runtime enforcement, and dialect-level regression coverage.",
+    "datetime": "2026-04-13T10:29:28.412117Z",
+    "entry_id": "019d8663-9cdc-7880-8d63-237208a61b9d",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8671-449d-7a23-afe3-f6ca9b63b2c7",
+  "occurred_at": "2026-04-13T10:44:23.325564Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Shipment complete. Branch `knot/foolery-f02d` was fast-forwarded onto local `main` and pushed to `origin/main` at commit `a1cbe5c33d64783f86cd63b4c001952afb1fd539`. Remote verification: GitHub Actions run `CI` (24339110247) completed with success for `main`, and `Coverage Badge` (24339110255) completed with success. The CI run reported non-blocking coverage regression annotations, but the shipped checks remained green.",
+    "datetime": "2026-04-13T10:44:23.325564Z",
+    "entry_id": "019d8671-449d-7a23-afe3-f6bee77d1688",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-3010-7200-bf7d-6adb15f6cac1",
+  "occurred_at": "2026-04-13T13:00:50.063765Z",
+  "knot_id": "foolery-4e28",
+  "type": "knot.created",
+  "data": {
+    "body": "The current prompt is metadata-only. Add grooming-specific instructions: read file paths touched by beats, identify shared modules, group beats touching the same files into the same step for sequential execution, separate independent beats into parallel steps. Gate behind a mode param (scene vs groom) so the existing lightweight scene flow isn't affected.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Enhance orchestration prompt for code-aware grooming",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

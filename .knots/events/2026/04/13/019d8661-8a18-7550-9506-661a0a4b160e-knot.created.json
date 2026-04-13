@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8661-8a18-7550-9506-661a0a4b160e",
+  "occurred_at": "2026-04-13T10:27:12.536008Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nReplace the per-agent interactive watchdog constants with one shared interactive-session timeout owned by the common runtime/settings layer. The timeout must default to 10 minutes, be editable in the Settings UI, and apply uniformly to every interactive agent session without requiring per-harness timeout code. Today the four interactive implementations that must converge on this shared path are Codex (`jsonrpc-stdio`), Copilot (`stdin-stream-json`), OpenCode (`http-server`), and Gemini (`acp-stdio`). Future interactive harnesses should inherit the timeout automatically by using the shared interactive session abstraction, with no harness-specific timeout wiring.\n\nVerification:\n1. Open Settings -> Defaults and confirm an interactive session timeout control is present, defaults to 10 minutes for a fresh settings state, and persists edits after save/reload.\n2. Run `bun run test` and confirm the interactive-session/runtime/settings test suite passes with coverage for the shared timeout source and settings round-trip.\n3. Inspect the interactive session capability/runtime path and confirm the timeout is sourced once from shared settings/runtime code, not hardcoded separately in Codex, Copilot, OpenCode, or Gemini capability presets.\n\nConstraints:\n- The timeout must be modeled in shared settings/schema code, not as per-agent literals in `src/lib/agent-session-capabilities.ts`.\n- Interactive harness implementations must not own timeout policy; they should only participate in the shared session abstraction that enforces it.\n- The design must make new interactive harnesses inherit the timeout automatically without additional timeout-specific implementation work.\n- Keep the Settings UI wording explicit that this controls the inactivity timeout for interactive agent sessions.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Globalize interactive agent timeout",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

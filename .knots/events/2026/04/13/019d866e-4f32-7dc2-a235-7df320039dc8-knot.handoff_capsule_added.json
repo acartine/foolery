@@ -1,0 +1,15 @@
+{
+  "event_id": "019d866e-4f32-7dc2-a235-7df320039dc8",
+  "occurred_at": "2026-04-13T10:41:09.426069Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation complete on branch `knot/foolery-f02d` at commit `a1cbe5c33d64783f86cd63b4c001952afb1fd539` and pushed to `origin/knot/foolery-f02d`. Added one persisted `defaults.interactiveSessionTimeoutMinutes` setting with a 10 minute default, exposed it in Settings > Defaults, moved interactive watchdog policy out of per-agent capability presets into shared runtime configuration, and updated setup/settings/runtime tests to cover defaults, persistence, and the shared timeout behavior. Validation passed: `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`.",
+    "datetime": "2026-04-13T10:41:09.426069Z",
+    "entry_id": "019d866e-4f32-7dc2-a235-7deb46bf6c33",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

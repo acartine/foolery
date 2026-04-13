@@ -1,0 +1,17 @@
+{
+  "event_id": "019d86ee-2ff3-78a1-ba25-4f564479be5e",
+  "occurred_at": "2026-04-13T13:00:50.035097Z",
+  "knot_id": "foolery-0dee",
+  "type": "knot.created",
+  "data": {
+    "body": "Extend OrchestrationWave to contain an optional steps[] array where each step is a concurrent execution group of beats. Update NDJSON output protocol in buildPrompt() to document step-level structure within waves. Update normalizePlan/normalizeWave to handle steps. Backward-compatible: if no steps, treat wave.beats as a single implicit step.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add Step concept to OrchestrationWave type and output protocol",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

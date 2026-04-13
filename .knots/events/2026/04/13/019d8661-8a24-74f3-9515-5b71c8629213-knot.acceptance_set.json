@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8661-8a24-74f3-9515-5b71c8629213",
+  "occurred_at": "2026-04-13T10:27:12.536008Z",
+  "knot_id": "foolery-f02d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Foolery settings include one persisted interactive-session inactivity timeout with a default of 10 minutes, and the Settings UI exposes it on a user-editable control.\n2. Interactive watchdog enforcement is configured from one shared settings/runtime source above the harness layer rather than from per-agent `watchdogTimeoutMs` literals.\n3. The current interactive Codex, Copilot, OpenCode, and Gemini paths all consume that shared timeout behavior with no harness-specific timeout policy remaining.\n4. The shared design makes a newly added interactive harness inherit the inactivity timeout automatically when it uses the standard interactive session abstraction.\n5. Tests cover the default value, settings persistence/normalization, and shared interactive watchdog behavior."
+  }
+}

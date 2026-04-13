@@ -1,0 +1,9 @@
+{
+  "event_id": "019d86bc-b56a-7460-8895-cbc7acc57b9f",
+  "occurred_at": "2026-04-13T12:06:47.394558Z",
+  "knot_id": "foolery-cd5e",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Session lifecycle logs record the configured interactive timeout for a run in both minutes and derived milliseconds.\n2. Shared runtime lifecycle emits structured watchdog arm/reset/fire events.\n3. The take-loop lifecycle log preserves those events with enough metadata to distinguish timeout-driven termination from normal child close.\n4. Logging is added at the shared runtime/lifecycle layer, not in individual interactive harness implementations.\n5. Tests cover the new watchdog lifecycle logging."
+  }
+}
