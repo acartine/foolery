@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8be1-aedc-79c3-95b5-550933073b55",
+  "occurred_at": "2026-04-14T12:05:16.636508Z",
+  "knot_id": "foolery-865c",
+  "type": "knot.created",
+  "data": {
+    "body": "Return a skill-formatted guidance prompt with persisted execution plans so external harnesses can follow the plan structure. Cover taxonomy, parallelism within a step, sequential assumptions across steps/waves, and milestone reporting guidance. Keep the original immutable plan document clear in the API response and update tests/openapi accordingly.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add skill prompt to execution plan responses",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

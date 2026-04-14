@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8b85-abf0-76c1-94d9-1366ddecc284",
+  "occurred_at": "2026-04-14T10:24:46.576753Z",
+  "knot_id": "foolery-97b8",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "User decision recorded:\n- `GET /api/plans/:id` should include derived progress inline as long as the original plan remains clearly visible.\n- Plans are immutable; revising a plan should create a new plan artifact rather than mutating the old one.\n- Revision lineage should use explicit edges such as `replaces` / `replaced_by`.\n- For now, only `shipped` counts as satisfying a beat for derived progress.",
+    "datetime": "2026-04-14T10:24:46.576753Z",
+    "entry_id": "019d8b85-abf0-76c1-94d9-135ad80b905b",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

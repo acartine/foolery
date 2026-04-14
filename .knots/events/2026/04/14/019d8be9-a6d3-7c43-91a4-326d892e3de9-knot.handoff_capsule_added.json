@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8be9-a6d3-7c43-91a4-326d892e3de9",
+  "occurred_at": "2026-04-14T12:13:58.867446Z",
+  "knot_id": "foolery-865c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented in commit 3c8cfd54 on origin/main. Added a skill-formatted  to persisted plan records, returned the enriched plan record directly from POST /api/plans, and updated OpenAPI plus route/manager tests. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build in /tmp/foolery-execution-plan.",
+    "datetime": "2026-04-14T12:13:58.867446Z",
+    "entry_id": "019d8be9-a6d3-7c43-91a4-325e0e394adc",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

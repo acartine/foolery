@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b85-7aea-7813-8d58-1aacdf143a8d",
+  "occurred_at": "2026-04-14T10:24:34.019194Z",
+  "knot_id": "foolery-23b7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Execution-plan revisions are represented as new immutable plan artifacts.\n2. Revision lineage is expressed with explicit edges such as `replaces` / `replaced_by`.\n3. The prior plan remains readable after a new revision is created."
+  }
+}

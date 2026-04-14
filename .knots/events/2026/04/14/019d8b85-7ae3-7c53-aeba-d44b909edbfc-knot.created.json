@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b85-7ae3-7c53-aeba-d44b909edbfc",
+  "occurred_at": "2026-04-14T10:24:34.019194Z",
+  "knot_id": "foolery-23b7",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nImplement immutable execution-plan revision semantics so changing the scope or grouping of a plan creates a new plan artifact instead of mutating the old one. The relationship between plan versions should be represented with explicit edges such as `replaces` / `replaced_by`.\n\nVerification:\n1. The execution-plan model and docs state that plans are immutable.\n2. Revising a plan creates a new plan artifact rather than mutating the prior one.\n3. Revision relationships are representable and queryable via explicit edges.\n\nConstraints:\n- Do not overload workflow state to mean revision lineage.\n- Preserve the original persisted plan document when a new revision is created.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add immutable execution-plan revision edges",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

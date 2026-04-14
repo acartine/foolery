@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8be9-bc5f-7591-828a-f29b2a803a2f",
+  "occurred_at": "2026-04-14T12:14:04.383736Z",
+  "knot_id": "foolery-865c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented in commit 3c8cfd54 on origin/main. Added a skill-formatted prompt field to persisted plan records, returned the enriched plan record directly from POST /api/plans, and updated OpenAPI plus route/manager tests. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build in /tmp/foolery-execution-plan.",
+    "datetime": "2026-04-14T12:14:04.383736Z",
+    "entry_id": "019d8be9-bc5f-7591-828a-f2891375e3d4",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

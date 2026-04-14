@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b85-7af0-74b2-baf7-a76203d94a63",
+  "occurred_at": "2026-04-14T10:24:34.019194Z",
+  "knot_id": "foolery-23b7",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "spec:foolery/specs/spec - grooming to execution plan.md"
+  }
+}
