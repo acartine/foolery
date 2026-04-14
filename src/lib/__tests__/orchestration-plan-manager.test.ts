@@ -1,15 +1,16 @@
 import { EventEmitter } from "node:events";
 import { readFile } from "node:fs/promises";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import type { OrchestrationPlan } from "@/lib/types";
 
 const mockAddEdge = vi.fn();
 const mockBackendGet = vi.fn();
-const mockCreateSession = vi.fn();
+const mockCreateExplicitSession = vi.fn();
 const mockGetSession = vi.fn();
 const mockListEdges = vi.fn();
 const mockListKnots = vi.fn();
+const mockListRepos = vi.fn();
 const mockNewKnot = vi.fn();
 const mockRemoveEdge = vi.fn();
 const mockShowKnot = vi.fn();
@@ -26,30 +27,137 @@ vi.mock("@/lib/knots", () => ({
 }));
 
 vi.mock("@/lib/orchestration-manager", () => ({
-  createOrchestrationSession: (...args: unknown[]) =>
-    mockCreateSession(...args),
+  createExplicitOrchestrationSession: (...args: unknown[]) =>
+    mockCreateExplicitSession(...args),
   getOrchestrationSession: (...args: unknown[]) =>
     mockGetSession(...args),
-}));
-
-vi.mock("@/lib/terminal-manager", () => ({
-  createSession: (...args: unknown[]) =>
-    mockCreateSession(...args),
 }));
 
 vi.mock("@/lib/backend-instance", () => ({
   getBackend: () => ({ get: mockBackendGet }),
 }));
 
+vi.mock("@/lib/registry", () => ({
+  listRepos: (...args: unknown[]) => mockListRepos(...args),
+}));
+
 import {
-  completePlanStep,
   createPlan,
-  failPlanStep,
   getPlan,
-  getNextPlanStep,
   listPlans,
-  startPlanStep,
 } from "@/lib/orchestration-plan-manager";
+
+const CREATED_PLAN: OrchestrationPlan = {
+  summary: "Summary",
+  waves: [
+    {
+      waveIndex: 1,
+      name: "Wave 1",
+      objective: "Do work",
+      agents: [],
+      beats: [
+        { id: "beat-1", title: "Beat 1" },
+        { id: "beat-2", title: "Beat 2" },
+      ],
+      steps: [
+        {
+          stepIndex: 1,
+          beatIds: ["beat-1", "beat-2"],
+          notes: "Keep these together.",
+        },
+      ],
+    },
+  ],
+  unassignedBeatIds: ["beat-3"],
+  assumptions: ["One"],
+};
+
+function makePlanKnot(
+  plan: Record<string, unknown>,
+  id = "plan-1",
+) {
+  return {
+    ok: true,
+    data: {
+      id,
+      type: "execution_plan",
+      state: "design",
+      workflow_id: "execution_plan_sdlc",
+      created_at: "2026-04-14T00:00:00Z",
+      updated_at: "2026-04-14T01:00:00Z",
+      execution_plan: plan,
+    },
+  };
+}
+
+function mockReplacedPlan() {
+  mockShowKnot.mockResolvedValue({
+    ok: true,
+    data: {
+      id: "plan-0",
+      type: "execution_plan",
+      state: "design",
+      updated_at: "2026-04-14T00:00:00Z",
+    },
+  });
+}
+
+function expectPersistedExecutionPlan(
+  input: { executionPlanFile?: string },
+) {
+  const filePath = input.executionPlanFile;
+  expect(filePath).toBeTruthy();
+  return readFile(filePath!, "utf8").then((raw) => {
+    const parsed = JSON.parse(raw);
+    expect(parsed.repo_path).toBe("/repo");
+    expect(parsed.beat_ids).toEqual(["beat-1", "beat-2"]);
+    expect(parsed.unassigned_beat_ids).toEqual(["beat-3"]);
+    expect(parsed.waves[0]?.steps[0]).toEqual({
+      step_index: 1,
+      beat_ids: ["beat-1", "beat-2"],
+      notes: "Keep these together.",
+    });
+  });
+}
+
+function completeSessionWithPlan(
+  entry: ReturnType<typeof makeSessionEntry>,
+  plan: OrchestrationPlan,
+) {
+  entry.session.plan = plan;
+  entry.session.status = "completed";
+  entry.emitter.emit("data", {
+    type: "exit",
+    data: "done",
+  });
+}
+
+function mockLineageEdges() {
+  mockListEdges.mockImplementation(
+    async (
+      _id: string,
+      direction: "incoming" | "outgoing" | "both",
+    ) => ({
+      ok: true,
+      data:
+        direction === "incoming"
+          ? [{ src: "plan-2", kind: "replaces", dst: "plan-1" }]
+          : [{ src: "plan-1", kind: "replaces", dst: "plan-0" }],
+    }),
+  );
+}
+
+function mockLiveBeatStates() {
+  mockBackendGet
+    .mockResolvedValueOnce({
+      ok: true,
+      data: { id: "beat-1", title: "Beat 1", state: "shipped" },
+    })
+    .mockResolvedValueOnce({
+      ok: true,
+      data: { id: "beat-2", title: "Beat 2", state: "in_progress" },
+    });
+}
 
 function makeSessionEntry() {
   const emitter = new EventEmitter();
@@ -68,191 +176,154 @@ function makeSessionEntry() {
 beforeEach(() => {
   vi.clearAllMocks();
   mockListEdges.mockResolvedValue({ ok: true, data: [] });
+  mockListRepos.mockResolvedValue([]);
   mockAddEdge.mockResolvedValue({ ok: true });
   mockRemoveEdge.mockResolvedValue({ ok: true });
 });
 
-describe("orchestration-plan-manager createPlan", () => {
-  it("creates a plan, persists execution_plan payload, and links beats", async () => {
-    const entry = makeSessionEntry();
-    mockCreateSession.mockResolvedValue({ id: "orch-1" });
-    mockGetSession.mockImplementation(() => entry);
-    mockNewKnot.mockResolvedValue({ ok: true, data: { id: "plan-1" } });
-    mockListEdges.mockResolvedValue({ ok: true, data: [] });
-    mockAddEdge.mockResolvedValue({ ok: true });
-    mockRemoveEdge.mockResolvedValue({ ok: true });
-    mockUpdateKnot.mockImplementation(
-      async (
-        _id: string,
-        input: { executionPlanFile?: string },
-      ) => {
-        const filePath = input.executionPlanFile;
-        expect(filePath).toBeTruthy();
-        const raw = await readFile(filePath!, "utf8");
-        const parsed = JSON.parse(raw);
-        expect(parsed.repo_path).toBe("/repo");
-        expect(parsed.unassigned_beat_ids).toEqual(["beat-3"]);
-        return { ok: true };
-      },
-    );
+it("creates a plan, persists execution_plan payload, and links beats", async () => {
+  const entry = makeSessionEntry();
+  mockCreateExplicitSession.mockResolvedValue({ id: "orch-1" });
+  mockGetSession.mockImplementation(() => entry);
+  mockNewKnot.mockResolvedValue({ ok: true, data: { id: "1234" } });
+  mockReplacedPlan();
+  mockUpdateKnot.mockImplementation(async (_id, input) => {
+    await expectPersistedExecutionPlan(input);
+    return { ok: true };
+  });
 
-    const promise = createPlan({
-      repoPath: "/repo",
-      objective: "Ship it",
+  const promise = createPlan({
+    repoPath: "/repo",
+    beatIds: ["beat-1", "beat-2"],
+    objective: "Ship it",
+    mode: "groom",
+    replacesPlanId: "plan-0",
+  });
+  completeSessionWithPlan(entry, CREATED_PLAN);
+
+  await expect(promise).resolves.toEqual({
+    planId: "repo-1234",
+  });
+  expect(mockCreateExplicitSession).toHaveBeenCalledWith(
+    "/repo",
+    ["beat-1", "beat-2"],
+    "Ship it",
+    {
+      model: undefined,
       mode: "groom",
-    });
-    entry.session.plan = {
+    },
+  );
+  expect(mockNewKnot).toHaveBeenCalledWith(
+    "Execution plan: Ship it",
+    expect.objectContaining({ type: "execution_plan" }),
+    "/repo",
+  );
+  expect(mockAddEdge).toHaveBeenCalledWith(
+    "beat-1",
+    "planned_by",
+    "repo-1234",
+    "/repo",
+  );
+  expect(mockAddEdge).toHaveBeenCalledWith(
+    "beat-2",
+    "planned_by",
+    "repo-1234",
+    "/repo",
+  );
+  expect(mockAddEdge).toHaveBeenCalledWith(
+    "repo-1234",
+    "replaces",
+    "plan-0",
+    "/repo",
+  );
+});
+
+it("returns artifact, plan, progress, and lineage", async () => {
+  mockShowKnot.mockResolvedValue(
+    makePlanKnot({
+      repo_path: "/repo",
+      beat_ids: ["beat-1", "beat-2"],
       summary: "Summary",
       waves: [
         {
-          waveIndex: 1,
+          wave_index: 1,
           name: "Wave 1",
           objective: "Do work",
           agents: [],
-          beats: [
-            { id: "beat-1", title: "Beat 1" },
-            { id: "beat-2", title: "Beat 2" },
+          beats: [{ id: "beat-1", title: "Beat 1" }],
+          steps: [
+            {
+              step_index: 1,
+              beat_ids: ["beat-1"],
+            },
+            {
+              step_index: 2,
+              beat_ids: ["beat-2"],
+            },
           ],
         },
       ],
-      unassignedBeatIds: ["beat-3"],
-      assumptions: ["One"],
-    };
-    entry.session.status = "completed";
-    entry.emitter.emit("data", {
-      type: "exit",
-      data: "done",
-    });
+      assumptions: [],
+      unassigned_beat_ids: [],
+    }),
+  );
+  mockLineageEdges();
+  mockLiveBeatStates();
 
-    await expect(promise).resolves.toEqual({
-      planId: "plan-1",
-    });
-    expect(mockCreateSession).toHaveBeenCalledWith(
-      "/repo",
-      "Ship it",
-      {
-        model: undefined,
-        mode: "groom",
-      },
-    );
-    expect(mockNewKnot).toHaveBeenCalledWith(
-      "Execution plan: Ship it",
-      expect.objectContaining({ type: "execution_plan" }),
-      "/repo",
-    );
-    expect(mockAddEdge).toHaveBeenCalledTimes(2);
+  const plan = await getPlan("plan-1", "/repo");
+  expect(plan).not.toBeNull();
+  expect(plan?.artifact).toMatchObject({
+    id: "plan-1",
+    type: "execution_plan",
+    state: "design",
+  });
+  expect(plan?.plan.beatIds).toEqual(["beat-1", "beat-2"]);
+  expect(plan?.progress.satisfiedBeatIds).toEqual(["beat-1"]);
+  expect(plan?.progress.remainingBeatIds).toEqual(["beat-2"]);
+  expect(plan?.progress.nextStep).toEqual({
+    waveIndex: 1,
+    stepIndex: 2,
+    beatIds: ["beat-2"],
+    notes: undefined,
+  });
+  expect(plan?.lineage).toEqual({
+    replacesPlanId: "plan-0",
+    replacedByPlanIds: ["plan-2"],
   });
 });
 
-describe("orchestration-plan-manager queries", () => {
-  it("maps plan knots back into API plans with implicit steps", async () => {
-    mockShowKnot.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "plan-1",
-        type: "execution_plan",
-        created_at: "2026-04-14T00:00:00Z",
-        updated_at: "2026-04-14T01:00:00Z",
-        execution_plan: {
+it("resolves a plan from the repo registry when repoPath is omitted", async () => {
+  mockListRepos.mockResolvedValue([
+    {
+      path: "/repo",
+      name: "repo",
+      addedAt: "2026-04-14T00:00:00Z",
+      memoryManagerType: "knots",
+    },
+    {
+      path: "/other",
+      name: "other",
+      addedAt: "2026-04-14T00:00:00Z",
+      memoryManagerType: "knots",
+    },
+  ]);
+  mockShowKnot
+    .mockResolvedValueOnce(
+      makePlanKnot(
+        {
           repo_path: "/repo",
-          status: "draft",
+          beat_ids: ["beat-1"],
           summary: "Summary",
           waves: [
             {
-              waveIndex: 1,
-              name: "Wave 1",
-              objective: "Do work",
-              agents: [],
-              beats: [{ id: "beat-1", title: "Beat 1" }],
-            },
-          ],
-          assumptions: [],
-          unassigned_beat_ids: [],
-        },
-      },
-    });
-
-    const plan = await getPlan("plan-1");
-    expect(plan?.waves[0]?.steps[0]).toMatchObject({
-      waveIndex: 1,
-      stepIndex: 1,
-      beatIds: ["beat-1"],
-      status: "pending",
-    });
-  });
-
-  it("lists only plan knots for the requested repo", async () => {
-    mockListKnots.mockResolvedValue({
-      ok: true,
-      data: [
-        {
-          id: "plan-1",
-          type: "execution_plan",
-          created_at: "2026-04-14T00:00:00Z",
-          updated_at: "2026-04-14T01:00:00Z",
-          execution_plan: {
-            repo_path: "/repo",
-            status: "draft",
-            summary: "Summary",
-            waves: [],
-            assumptions: [],
-            unassigned_beat_ids: [],
-          },
-        },
-        {
-          id: "plan-2",
-          type: "execution_plan",
-          created_at: "2026-04-14T00:00:00Z",
-          updated_at: "2026-04-14T01:00:00Z",
-          execution_plan: {
-            repo_path: "/other",
-            status: "draft",
-            summary: "Other",
-            waves: [],
-            assumptions: [],
-            unassigned_beat_ids: [],
-          },
-        },
-      ],
-    });
-
-    const plans = await listPlans("/repo");
-    expect(plans).toHaveLength(1);
-    expect(plans[0]?.id).toBe("plan-1");
-  });
-});
-
-describe("orchestration-plan-manager next step", () => {
-  it("returns the next executable step in order", async () => {
-    mockShowKnot.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "plan-1",
-        type: "execution_plan",
-        created_at: "2026-04-14T00:00:00Z",
-        updated_at: "2026-04-14T01:00:00Z",
-        execution_plan: {
-          repo_path: "/repo",
-          status: "active",
-          waves: [
-            {
-              waveIndex: 1,
+              wave_index: 1,
               name: "Wave 1",
               objective: "Do work",
               beats: [{ id: "beat-1", title: "Beat 1" }],
               steps: [
                 {
-                  id: "step-1",
-                  title: "First",
+                  step_index: 1,
                   beat_ids: ["beat-1"],
-                  status: "complete",
-                },
-                {
-                  id: "step-2",
-                  title: "Second",
-                  beat_ids: ["beat-2"],
-                  status: "pending",
-                  depends_on: ["step-1"],
                 },
               ],
             },
@@ -260,227 +331,55 @@ describe("orchestration-plan-manager next step", () => {
           assumptions: [],
           unassigned_beat_ids: [],
         },
-      },
-    });
-
-    await expect(
-      getNextPlanStep("plan-1", "/repo"),
-    ).resolves.toMatchObject({
-      id: "step-2",
-      status: "pending",
-    });
-  });
-});
-
-describe("orchestration-plan-manager startPlanStep", () => {
-  it("starts a pending step, creates sessions, and persists state", async () => {
-    mockShowKnot.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "plan-1",
-        type: "execution_plan",
-        created_at: "2026-04-14T00:00:00Z",
-        updated_at: "2026-04-14T01:00:00Z",
-        execution_plan: {
-          repo_path: "/repo",
-          status: "draft",
-          waves: [
-            {
-              waveIndex: 1,
-              name: "Wave 1",
-              objective: "Do work",
-              beats: [
-                { id: "beat-1", title: "Beat 1" },
-                { id: "beat-2", title: "Beat 2" },
-              ],
-              steps: [
-                {
-                  id: "step-1",
-                  title: "First",
-                  beat_ids: ["beat-1", "beat-2"],
-                  status: "pending",
-                },
-              ],
-            },
-          ],
-          assumptions: [],
-          unassigned_beat_ids: [],
-        },
-      },
-    });
-    mockCreateSession
-      .mockResolvedValueOnce({ id: "term-1" })
-      .mockResolvedValueOnce({ id: "term-2" });
-    mockUpdateKnot.mockImplementation(
-      async (
-        _id: string,
-        input: { executionPlanFile?: string },
-      ) => {
-        const raw = await readFile(
-          input.executionPlanFile!,
-          "utf8",
-        );
-        const parsed = JSON.parse(raw);
-        expect(parsed.status).toBe("active");
-        expect(
-          parsed.waves[0]?.steps[0]?.status,
-        ).toBe("in_progress");
-        expect(
-          parsed.waves[0]?.steps[0]?.started_at,
-        ).toMatch(/^\d{4}-\d{2}-\d{2}T/u);
-        return { ok: true };
-      },
-    );
-
-    await expect(
-      startPlanStep("plan-1", "step-1", "/repo"),
-    ).resolves.toEqual({
-      beats: [
-        { beatId: "beat-1", sessionId: "term-1" },
-        { beatId: "beat-2", sessionId: "term-2" },
-      ],
-    });
-    expect(mockCreateSession).toHaveBeenNthCalledWith(
-      1,
-      "beat-1",
-      "/repo",
-    );
-    expect(mockCreateSession).toHaveBeenNthCalledWith(
-      2,
-      "beat-2",
-      "/repo",
-    );
-  });
-});
-
-describe("orchestration-plan-manager completePlanStep", () => {
-  it("completes an in-progress step only after all beats are shipped", async () => {
-    mockShowKnot.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "plan-1",
-        type: "execution_plan",
-        created_at: "2026-04-14T00:00:00Z",
-        updated_at: "2026-04-14T01:00:00Z",
-        execution_plan: {
-          repo_path: "/repo",
-          status: "active",
-          waves: [
-            {
-              waveIndex: 1,
-              name: "Wave 1",
-              objective: "Do work",
-              beats: [{ id: "beat-1", title: "Beat 1" }],
-              steps: [
-                {
-                  id: "step-1",
-                  title: "First",
-                  beat_ids: ["beat-1"],
-                  status: "in_progress",
-                },
-              ],
-            },
-          ],
-          assumptions: [],
-          unassigned_beat_ids: [],
-        },
-      },
-    });
-    mockBackendGet.mockResolvedValue({
-      ok: true,
-      data: { id: "beat-1", state: "shipped" },
-    });
-    mockUpdateKnot.mockImplementation(
-      async (
-        _id: string,
-        input: { executionPlanFile?: string },
-      ) => {
-        const raw = await readFile(
-          input.executionPlanFile!,
-          "utf8",
-        );
-        const parsed = JSON.parse(raw);
-        expect(parsed.status).toBe("complete");
-        expect(
-          parsed.waves[0]?.steps[0]?.status,
-        ).toBe("complete");
-        return { ok: true };
-      },
-    );
-
-    await expect(
-      completePlanStep("plan-1", "step-1", "/repo"),
-    ).resolves.toEqual({
-      stepId: "step-1",
-      status: "complete",
-    });
-  });
-});
-
-describe("orchestration-plan-manager failPlanStep", () => {
-  it("fails a step, records the reason, and aborts the plan", async () => {
-    mockShowKnot.mockResolvedValue({
-      ok: true,
-      data: {
-        id: "plan-1",
-        type: "execution_plan",
-        created_at: "2026-04-14T00:00:00Z",
-        updated_at: "2026-04-14T01:00:00Z",
-        execution_plan: {
-          repo_path: "/repo",
-          status: "active",
-          waves: [
-            {
-              waveIndex: 1,
-              name: "Wave 1",
-              objective: "Do work",
-              beats: [{ id: "beat-1", title: "Beat 1" }],
-              steps: [
-                {
-                  id: "step-1",
-                  title: "First",
-                  beat_ids: ["beat-1"],
-                  status: "in_progress",
-                },
-              ],
-            },
-          ],
-          assumptions: [],
-          unassigned_beat_ids: [],
-        },
-      },
-    });
-    mockUpdateKnot.mockImplementation(
-      async (
-        _id: string,
-        input: { executionPlanFile?: string },
-      ) => {
-        const raw = await readFile(
-          input.executionPlanFile!,
-          "utf8",
-        );
-        const parsed = JSON.parse(raw);
-        expect(parsed.status).toBe("aborted");
-        expect(
-          parsed.waves[0]?.steps[0]?.status,
-        ).toBe("failed");
-        expect(
-          parsed.waves[0]?.steps[0]?.failure_reason,
-        ).toBe("Session crashed");
-        return { ok: true };
-      },
-    );
-
-    await expect(
-      failPlanStep(
-        "plan-1",
-        "step-1",
-        "Session crashed",
-        "/repo",
+        "repo-plan-1",
       ),
-    ).resolves.toEqual({
-      stepId: "step-1",
-      status: "failed",
+    )
+    .mockResolvedValueOnce({
+      ok: false,
+      error:
+        "error: workflow error: invalid workflow bundle: knot type 'execution_plan' has no registered workflows",
     });
+  mockListEdges.mockResolvedValue({ ok: true, data: [] });
+  mockBackendGet.mockResolvedValue({
+    ok: true,
+    data: { id: "beat-1", title: "Beat 1", state: "ready" },
   });
+
+  const plan = await getPlan("repo-plan-1");
+
+  expect(mockShowKnot).toHaveBeenCalledWith(
+    "repo-plan-1",
+    "/repo",
+  );
+  expect(mockShowKnot).toHaveBeenCalledTimes(1);
+  expect(plan?.artifact.id).toBe("repo-plan-1");
+});
+
+it("lists only plan knots for the requested repo", async () => {
+  mockListKnots.mockResolvedValue({
+    ok: true,
+    data: [
+      makePlanKnot({
+        repo_path: "/repo",
+        beat_ids: ["beat-1"],
+        summary: "Summary",
+        waves: [],
+        assumptions: [],
+        unassigned_beat_ids: [],
+      }).data,
+      makePlanKnot({
+        repo_path: "/other",
+        beat_ids: ["beat-2"],
+        summary: "Other",
+        waves: [],
+        assumptions: [],
+        unassigned_beat_ids: [],
+      }).data,
+    ],
+  });
+
+  const plans = await listPlans("/repo");
+  expect(plans).toHaveLength(1);
+  expect(plans[0]?.artifact.id).toBe("plan-1");
+  expect(plans[0]?.plan.repoPath).toBe("/repo");
 });

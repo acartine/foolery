@@ -5,31 +5,21 @@ import type {
 import type { OrchestrationPlan } from "@/lib/types";
 import type {
   CreatePlanInput,
-  Plan,
-  PlanStatus,
+  PlanArtifact,
+  PlanDocument,
   PlanStep,
+  PlanSummary,
   PlanWave,
 } from "@/lib/orchestration-plan-types";
 
 const DEFAULT_MODE = "groom";
 
 interface RawPlanStep {
-  id?: unknown;
-  title?: unknown;
+  step_index?: unknown;
+  stepIndex?: unknown;
   beat_ids?: unknown;
   beatIds?: unknown;
-  status?: unknown;
-  depends_on?: unknown;
-  dependsOn?: unknown;
   notes?: unknown;
-  started_at?: unknown;
-  startedAt?: unknown;
-  completed_at?: unknown;
-  completedAt?: unknown;
-  failed_at?: unknown;
-  failedAt?: unknown;
-  failure_reason?: unknown;
-  failureReason?: unknown;
 }
 
 interface RawPlanWave {
@@ -45,18 +35,16 @@ interface RawPlanWave {
 
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .filter((item): item is string => typeof item === "string")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
-}
-
-function toPlanStatus(value: unknown): PlanStatus {
-  return value === "active" ||
-    value === "complete" ||
-    value === "aborted"
-    ? value
-    : "draft";
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string") continue;
+    const trimmed = item.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    result.push(trimmed);
+  }
+  return result;
 }
 
 function normalizeSummary(
@@ -91,6 +79,15 @@ function normalizeWaveIndex(
   return Math.max(1, Math.trunc(parsed));
 }
 
+function normalizeStepIndex(
+  value: unknown,
+  fallback: number,
+): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(1, Math.trunc(parsed));
+}
+
 function normalizeBeatIds(
   value: unknown,
   fallback: string[] = [],
@@ -99,215 +96,166 @@ function normalizeBeatIds(
   return result.length > 0 ? result : fallback;
 }
 
-function normalizeStepStatus(value: unknown): PlanStep["status"] {
-  return value === "in_progress" ||
-    value === "complete" ||
-    value === "failed"
-    ? value
-    : "pending";
+function normalizeNotes(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim()
+    ? value.trim()
+    : undefined;
 }
 
 function normalizeStep(
   raw: RawPlanStep,
-  waveIndex: number,
   stepIndex: number,
   fallbackBeatIds: string[],
-  defaultDependsOn: string[],
 ): PlanStep {
-  const beatIds = normalizeBeatIds(
-    raw.beat_ids ?? raw.beatIds,
-    fallbackBeatIds,
-  );
-  const idValue =
-    typeof raw.id === "string" && raw.id.trim()
-      ? raw.id.trim()
-      : `wave-${waveIndex}-step-${stepIndex}`;
-  const titleValue =
-    typeof raw.title === "string" && raw.title.trim()
-      ? raw.title.trim()
-      : `Step ${stepIndex}`;
-
   return {
-    id: idValue,
-    title: titleValue,
-    waveIndex,
-    stepIndex,
-    beatIds,
-    status: normalizeStepStatus(raw.status),
-    dependsOn: normalizeBeatIds(
-      raw.depends_on ?? raw.dependsOn,
-      defaultDependsOn,
+    stepIndex: normalizeStepIndex(
+      raw.step_index ?? raw.stepIndex,
+      stepIndex,
     ),
-    notes:
-      typeof raw.notes === "string" && raw.notes.trim()
-        ? raw.notes.trim()
-        : undefined,
-    startedAt:
-      typeof raw.started_at === "string"
-        ? raw.started_at
-        : typeof raw.startedAt === "string"
-          ? raw.startedAt
-          : undefined,
-    completedAt:
-      typeof raw.completed_at === "string"
-        ? raw.completed_at
-        : typeof raw.completedAt === "string"
-          ? raw.completedAt
-          : undefined,
-    failedAt:
-      typeof raw.failed_at === "string"
-        ? raw.failed_at
-        : typeof raw.failedAt === "string"
-          ? raw.failedAt
-          : undefined,
-    failureReason:
-      typeof raw.failure_reason === "string"
-        ? raw.failure_reason
-        : typeof raw.failureReason === "string"
-          ? raw.failureReason
-          : undefined,
+    beatIds: normalizeBeatIds(
+      raw.beat_ids ?? raw.beatIds,
+      fallbackBeatIds,
+    ),
+    notes: normalizeNotes(raw.notes),
   };
+}
+
+function normalizeBeats(
+  value: unknown,
+): Array<{ id: string; title: string }> {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  const beats: Array<{ id: string; title: string }> = [];
+  for (const beat of value) {
+    if (!beat || typeof beat !== "object") continue;
+    const obj = beat as Record<string, unknown>;
+    const id =
+      typeof obj.id === "string" ? obj.id.trim() : "";
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    beats.push({
+      id,
+      title:
+        typeof obj.title === "string" && obj.title.trim()
+          ? obj.title.trim()
+          : id,
+    });
+  }
+  return beats;
 }
 
 function normalizeWave(
   raw: RawPlanWave,
   fallbackIndex: number,
-  previousStepId?: string,
-): { wave: PlanWave; lastStepId?: string } {
+): PlanWave {
   const waveIndex = normalizeWaveIndex(
     raw.waveIndex ?? raw.wave_index,
     fallbackIndex,
   );
-  const beats = Array.isArray(raw.beats)
-    ? raw.beats
-        .map((beat) => {
-          if (!beat || typeof beat !== "object") return null;
-          const obj = beat as Record<string, unknown>;
-          const id =
-            typeof obj.id === "string" ? obj.id.trim() : "";
-          if (!id) return null;
-          return {
-            id,
-            title:
-              typeof obj.title === "string" && obj.title.trim()
-                ? obj.title.trim()
-                : id,
-          };
-        })
-        .filter(
-          (
-            beat,
-          ): beat is { id: string; title: string } =>
-            Boolean(beat),
-        )
-    : [];
-  const beatIds = beats.map((beat) => beat.id);
-
+  const beats = normalizeBeats(raw.beats);
+  const fallbackBeatIds = beats.map((beat) => beat.id);
   const rawSteps = Array.isArray(raw.steps)
     ? raw.steps.filter(
         (step): step is RawPlanStep =>
           Boolean(step) && typeof step === "object",
       )
     : [];
-
   const steps =
     rawSteps.length > 0
-      ? rawSteps.map((step, index) => {
-          const dependsOn =
-            index === 0
-              ? previousStepId
-                ? [previousStepId]
-                : []
-              : [];
-          return normalizeStep(
-            step,
-            waveIndex,
-            index + 1,
-            beatIds,
-            dependsOn,
-          );
-        })
+      ? rawSteps.map((step, index) =>
+          normalizeStep(step, index + 1, fallbackBeatIds),
+        )
       : [
           normalizeStep(
             {},
-            waveIndex,
             1,
-            beatIds,
-            previousStepId ? [previousStepId] : [],
+            fallbackBeatIds,
           ),
         ];
 
-  for (let index = 1; index < steps.length; index += 1) {
-    if (steps[index].dependsOn.length === 0) {
-      steps[index].dependsOn = [steps[index - 1].id];
+  return {
+    waveIndex,
+    name:
+      typeof raw.name === "string" && raw.name.trim()
+        ? raw.name.trim()
+        : `Wave ${waveIndex}`,
+    objective:
+      typeof raw.objective === "string" && raw.objective.trim()
+        ? raw.objective.trim()
+        : "Execute assigned beats.",
+    agents: Array.isArray(raw.agents)
+      ? (raw.agents as PlanWave["agents"])
+      : [],
+    beats,
+    steps,
+    notes: normalizeNotes(raw.notes),
+  };
+}
+
+function collectBeatIdsFromWaves(
+  waves: PlanWave[],
+): string[] {
+  const ids = new Set<string>();
+  for (const wave of waves) {
+    for (const beat of wave.beats) {
+      ids.add(beat.id);
+    }
+    for (const step of wave.steps) {
+      for (const beatId of step.beatIds) {
+        ids.add(beatId);
+      }
     }
   }
-
-  return {
-    wave: {
-      waveIndex,
-      name:
-        typeof raw.name === "string" && raw.name.trim()
-          ? raw.name.trim()
-          : `Wave ${waveIndex}`,
-      objective:
-        typeof raw.objective === "string" && raw.objective.trim()
-          ? raw.objective.trim()
-          : "Execute assigned beats.",
-      agents: Array.isArray(raw.agents)
-        ? (raw.agents as PlanWave["agents"])
-        : [],
-      beats,
-      steps,
-      notes:
-        typeof raw.notes === "string" && raw.notes.trim()
-          ? raw.notes.trim()
-          : undefined,
-    },
-    lastStepId: steps.at(-1)?.id,
-  };
+  return Array.from(ids);
 }
 
 export function isPlanKnot(record: KnotRecord): boolean {
   return record.type === "execution_plan";
 }
 
-export function mapExecutionPlanRecord(
+export function mapPlanArtifact(
   record: KnotRecord,
-): Plan | null {
+): PlanArtifact | null {
+  if (!isPlanKnot(record)) return null;
+  return {
+    id: record.id,
+    type: "execution_plan",
+    state: record.state,
+    workflowId: record.workflow_id ?? undefined,
+    createdAt: record.created_at ?? record.updated_at,
+    updatedAt: record.updated_at,
+  };
+}
+
+export function mapExecutionPlanDocument(
+  record: KnotRecord,
+): PlanDocument | null {
   const payload = record.execution_plan;
   if (!payload) return null;
 
   const rawWaves = Array.isArray(payload.waves)
     ? (payload.waves as RawPlanWave[])
     : [];
-  const waves: PlanWave[] = [];
-  let previousStepId: string | undefined;
-  for (const [index, wave] of rawWaves.entries()) {
-    const normalized = normalizeWave(
-      wave,
-      index + 1,
-      previousStepId,
-    );
-    waves.push(normalized.wave);
-    previousStepId = normalized.lastStepId;
-  }
+  const waves = rawWaves.map((wave, index) =>
+    normalizeWave(wave, index + 1),
+  );
+  const beatIds = normalizeBeatIds(
+    payload.beat_ids,
+    collectBeatIdsFromWaves(waves),
+  );
 
   return {
-    id: record.id,
     repoPath:
       typeof payload.repo_path === "string" &&
       payload.repo_path.trim()
         ? payload.repo_path.trim()
         : "",
+    beatIds,
     objective:
       typeof payload.objective === "string" &&
       payload.objective.trim()
         ? payload.objective.trim()
         : undefined,
-    createdAt: record.created_at ?? record.updated_at,
-    updatedAt: record.updated_at,
-    status: toPlanStatus(payload.status),
     summary: normalizeSummary(payload, payload.objective),
     waves,
     unassignedBeatIds: toStringArray(
@@ -322,15 +270,34 @@ export function mapExecutionPlanRecord(
   };
 }
 
+export function mapPlanSummary(
+  record: KnotRecord,
+): PlanSummary | null {
+  const artifact = mapPlanArtifact(record);
+  const plan = mapExecutionPlanDocument(record);
+  if (!artifact || !plan) return null;
+  return {
+    artifact,
+    plan: {
+      repoPath: plan.repoPath,
+      beatIds: plan.beatIds,
+      objective: plan.objective,
+      summary: plan.summary,
+      mode: plan.mode,
+      model: plan.model,
+    },
+  };
+}
+
 export function toExecutionPlanRecord(
   input: CreatePlanInput,
   plan: OrchestrationPlan,
 ): ExecutionPlanRecord {
   return {
-    status: "draft",
     repo_path: input.repoPath,
     objective: input.objective,
     summary: plan.summary,
+    beat_ids: input.beatIds,
     waves: plan.waves.map((wave) => {
       const fallbackBeatIds = wave.beats.map((beat) => beat.id);
       const steps =
@@ -338,17 +305,14 @@ export function toExecutionPlanRecord(
           ? wave.steps
           : [{ stepIndex: 1, beatIds: fallbackBeatIds }];
       return {
-        waveIndex: wave.waveIndex,
+        wave_index: wave.waveIndex,
         name: wave.name,
         objective: wave.objective,
         agents: wave.agents,
         beats: wave.beats,
         notes: wave.notes,
         steps: steps.map((step, index) => ({
-          id:
-            `wave-${wave.waveIndex}-step-` +
-            `${step.stepIndex ?? index + 1}`,
-          title: `Step ${step.stepIndex ?? index + 1}`,
+          step_index: step.stepIndex ?? index + 1,
           beat_ids: step.beatIds,
           notes: step.notes,
         })),
@@ -362,35 +326,28 @@ export function toExecutionPlanRecord(
 }
 
 export function serializePlanRecord(
-  plan: Plan,
+  plan: PlanDocument,
 ): ExecutionPlanRecord {
   return {
-    status: plan.status,
     repo_path: plan.repoPath,
     objective: plan.objective,
     summary: plan.summary,
+    beat_ids: plan.beatIds,
     model: plan.model,
     mode: plan.mode,
     assumptions: plan.assumptions,
     unassigned_beat_ids: plan.unassignedBeatIds,
     waves: plan.waves.map((wave) => ({
-      waveIndex: wave.waveIndex,
+      wave_index: wave.waveIndex,
       name: wave.name,
       objective: wave.objective,
       agents: wave.agents,
       beats: wave.beats,
       notes: wave.notes,
       steps: wave.steps.map((step) => ({
-        id: step.id,
-        title: step.title,
+        step_index: step.stepIndex,
         beat_ids: step.beatIds,
-        status: step.status,
-        depends_on: step.dependsOn,
         notes: step.notes,
-        started_at: step.startedAt,
-        completed_at: step.completedAt,
-        failed_at: step.failedAt,
-        failure_reason: step.failureReason,
       })),
     })),
   };
@@ -400,18 +357,15 @@ export function collectPlannedBeatIds(
   payload: ExecutionPlanRecord,
 ): Set<string> {
   const ids = new Set<string>();
+  for (const beatId of toStringArray(payload.beat_ids)) {
+    ids.add(beatId);
+  }
   const waves = Array.isArray(payload.waves)
     ? payload.waves
     : [];
   for (const wave of waves as RawPlanWave[]) {
-    if (Array.isArray(wave.beats)) {
-      for (const beat of wave.beats) {
-        if (!beat || typeof beat !== "object") continue;
-        const id = (beat as Record<string, unknown>).id;
-        if (typeof id === "string" && id.trim()) {
-          ids.add(id.trim());
-        }
-      }
+    for (const beat of normalizeBeats(wave.beats)) {
+      ids.add(beat.id);
     }
     if (!Array.isArray(wave.steps)) continue;
     for (const step of wave.steps as RawPlanStep[]) {

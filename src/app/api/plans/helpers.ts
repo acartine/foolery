@@ -41,6 +41,7 @@ export function getPlanRouteError(
     normalized.includes("not in progress") ||
     normalized.includes("incomplete predecessors") ||
     normalized.includes("not shipped") ||
+    normalized.includes("multiple plans match") ||
     normalized.includes("max concurrent sessions") ||
     normalized.includes("already complete")
   ) {

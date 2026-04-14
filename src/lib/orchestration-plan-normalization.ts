@@ -104,7 +104,7 @@ export function buildPrompt(
     }),
     ...(unresolvedScopeIds.length > 0
       ? [
-          "Objective mentioned IDs not present in open/in_progress/blocked work items:",
+          "Objective mentioned IDs not present in the loaded planning scope:",
           ...unresolvedScopeIds.map((id) => `- ${id}`),
         ]
       : []),
@@ -126,7 +126,8 @@ export function buildPrompt(
           "- Use steps to represent independent concurrent groups inside a wave when the metadata already supports that split.",
         ]),
     "",
-    "Use your memory manager CLI commands to inspect missing context instead of guessing.",
+    "Use focused repo search and file-read commands to inspect missing context instead of guessing.",
+    "Once you have enough context to place every in-scope beat, stop exploring and emit the plan.",
     "",
     "Hard rules:",
     "- Every in-scope beat ID must appear in exactly one wave or in unassigned_beat_ids.",

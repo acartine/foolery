@@ -29,28 +29,34 @@ interface ExecOptions {
 }
 
 export interface ExecutionPlanStepRecord {
-  id: string;
-  title?: string;
-  status?: string;
+  step_index?: number;
   beat_ids?: string[];
-  depends_on?: string[];
+  notes?: string;
   [key: string]: unknown;
 }
 
 export interface ExecutionPlanWaveRecord {
-  id?: string;
+  wave_index?: number;
   name?: string;
   objective?: string;
-  status?: string;
-  beat_ids?: string[];
+  agents?: Array<{
+    role?: string;
+    count?: number;
+    specialty?: string;
+  }>;
+  beats?: Array<{
+    id?: string;
+    title?: string;
+  }>;
   steps?: ExecutionPlanStepRecord[];
+  notes?: string;
   [key: string]: unknown;
 }
 
 export interface ExecutionPlanRecord {
-  status?: string;
   repo_path?: string;
   objective?: string;
+  summary?: string;
   mode?: string;
   model?: string;
   beat_ids?: string[];

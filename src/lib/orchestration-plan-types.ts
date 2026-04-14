@@ -3,31 +3,10 @@ import type {
   OrchestrationWaveBeat,
 } from "@/lib/types";
 
-export type PlanStatus =
-  | "draft"
-  | "active"
-  | "complete"
-  | "aborted";
-
-export type PlanStepStatus =
-  | "pending"
-  | "in_progress"
-  | "complete"
-  | "failed";
-
 export interface PlanStep {
-  id: string;
-  title: string;
-  waveIndex: number;
   stepIndex: number;
   beatIds: string[];
-  status: PlanStepStatus;
-  dependsOn: string[];
   notes?: string;
-  startedAt?: string;
-  completedAt?: string;
-  failedAt?: string;
-  failureReason?: string;
 }
 
 export interface PlanWave {
@@ -40,13 +19,10 @@ export interface PlanWave {
   notes?: string;
 }
 
-export interface Plan {
-  id: string;
+export interface PlanDocument {
   repoPath: string;
+  beatIds: string[];
   objective?: string;
-  createdAt: string;
-  updatedAt: string;
-  status: PlanStatus;
   summary: string;
   waves: PlanWave[];
   unassignedBeatIds: string[];
@@ -55,9 +31,80 @@ export interface Plan {
   model?: string;
 }
 
+export interface PlanArtifact {
+  id: string;
+  type: "execution_plan";
+  state: string;
+  workflowId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PlanLineage {
+  replacesPlanId?: string;
+  replacedByPlanIds: string[];
+}
+
+export interface PlanBeatProgress {
+  beatId: string;
+  title?: string;
+  state: string;
+  satisfied: boolean;
+}
+
+export interface PlanStepProgress {
+  waveIndex: number;
+  stepIndex: number;
+  beatIds: string[];
+  notes?: string;
+  complete: boolean;
+  satisfiedBeatIds: string[];
+  remainingBeatIds: string[];
+}
+
+export interface PlanWaveProgress {
+  waveIndex: number;
+  complete: boolean;
+  steps: PlanStepProgress[];
+}
+
+export interface NextPlanStep {
+  waveIndex: number;
+  stepIndex: number;
+  beatIds: string[];
+  notes?: string;
+}
+
+export interface PlanProgress {
+  generatedAt: string;
+  completionRule: "shipped";
+  beatStates: PlanBeatProgress[];
+  satisfiedBeatIds: string[];
+  remainingBeatIds: string[];
+  nextStep: NextPlanStep | null;
+  waves: PlanWaveProgress[];
+}
+
+export interface PlanRecord {
+  artifact: PlanArtifact;
+  plan: PlanDocument;
+  progress: PlanProgress;
+  lineage: PlanLineage;
+}
+
+export interface PlanSummary {
+  artifact: PlanArtifact;
+  plan: Pick<
+    PlanDocument,
+    "repoPath" | "beatIds" | "objective" | "summary" | "mode" | "model"
+  >;
+}
+
 export interface CreatePlanInput {
   repoPath: string;
+  beatIds: string[];
   objective?: string;
   model?: string;
   mode?: "scene" | "groom";
+  replacesPlanId?: string;
 }

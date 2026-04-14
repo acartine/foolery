@@ -130,9 +130,14 @@ describe("showKnot", () => {
       state: "planning",
       updated_at: "2025-01-01",
       execution_plan: {
-        status: "draft",
         repo_path: "/repo",
-        waves: [{ id: "wave-1", steps: [{ id: "step-1", status: "pending" }] }],
+        summary: "Summary",
+        waves: [{
+          wave_index: 1,
+          name: "wave-1",
+          objective: "Do work",
+          steps: [{ step_index: 1, beat_ids: ["beat-1"] }],
+        }],
       },
     };
     const promise = showKnot("K-1", "/repo");
@@ -145,7 +150,7 @@ describe("showKnot", () => {
     expect(result.ok).toBe(true);
     expect(result.data).toEqual(knot);
     expect(result.data?.execution_plan?.waves?.[0]).toMatchObject({
-      id: "wave-1",
+      wave_index: 1,
     });
   });
 

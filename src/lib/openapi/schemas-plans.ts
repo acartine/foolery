@@ -1,5 +1,5 @@
 /**
- * OpenAPI schemas for persisted execution plans and plan-driving APIs.
+ * OpenAPI schemas for persisted execution plans.
  */
 
 export const planComponentSchemas = {
@@ -22,43 +22,13 @@ export const planComponentSchemas = {
     },
   },
 
-  OrchestrationWaveStep: {
+  PlanStep: {
     type: "object",
     required: ["stepIndex", "beatIds"],
     properties: {
       stepIndex: { type: "integer", minimum: 1 },
       beatIds: { type: "array", items: { type: "string" } },
       notes: { type: "string" },
-    },
-  },
-
-  PlanStep: {
-    type: "object",
-    required: [
-      "id",
-      "title",
-      "waveIndex",
-      "stepIndex",
-      "beatIds",
-      "status",
-      "dependsOn",
-    ],
-    properties: {
-      id: { type: "string" },
-      title: { type: "string" },
-      waveIndex: { type: "integer", minimum: 1 },
-      stepIndex: { type: "integer", minimum: 1 },
-      beatIds: { type: "array", items: { type: "string" } },
-      status: {
-        type: "string",
-        enum: ["pending", "in_progress", "complete", "failed"],
-      },
-      dependsOn: { type: "array", items: { type: "string" } },
-      notes: { type: "string" },
-      startedAt: { type: "string", format: "date-time" },
-      completedAt: { type: "string", format: "date-time" },
-      failedAt: { type: "string", format: "date-time" },
-      failureReason: { type: "string" },
     },
   },
 
@@ -85,29 +55,33 @@ export const planComponentSchemas = {
     },
   },
 
-  PersistedPlan: {
+  PlanArtifact: {
+    type: "object",
+    required: ["id", "type", "state", "createdAt", "updatedAt"],
+    properties: {
+      id: { type: "string" },
+      type: { type: "string", enum: ["execution_plan"] },
+      state: { type: "string" },
+      workflowId: { type: "string" },
+      createdAt: { type: "string", format: "date-time" },
+      updatedAt: { type: "string", format: "date-time" },
+    },
+  },
+
+  PlanDocument: {
     type: "object",
     required: [
-      "id",
       "repoPath",
-      "createdAt",
-      "updatedAt",
-      "status",
+      "beatIds",
       "summary",
       "waves",
       "unassignedBeatIds",
       "assumptions",
     ],
     properties: {
-      id: { type: "string" },
       repoPath: { type: "string" },
+      beatIds: { type: "array", items: { type: "string" } },
       objective: { type: "string" },
-      createdAt: { type: "string", format: "date-time" },
-      updatedAt: { type: "string", format: "date-time" },
-      status: {
-        type: "string",
-        enum: ["draft", "active", "complete", "aborted"],
-      },
       summary: { type: "string" },
       waves: {
         type: "array",
@@ -126,14 +100,148 @@ export const planComponentSchemas = {
     },
   },
 
+  PlanBeatProgress: {
+    type: "object",
+    required: ["beatId", "state", "satisfied"],
+    properties: {
+      beatId: { type: "string" },
+      title: { type: "string" },
+      state: { type: "string" },
+      satisfied: { type: "boolean" },
+    },
+  },
+
+  PlanStepProgress: {
+    type: "object",
+    required: [
+      "waveIndex",
+      "stepIndex",
+      "beatIds",
+      "complete",
+      "satisfiedBeatIds",
+      "remainingBeatIds",
+    ],
+    properties: {
+      waveIndex: { type: "integer", minimum: 1 },
+      stepIndex: { type: "integer", minimum: 1 },
+      beatIds: { type: "array", items: { type: "string" } },
+      notes: { type: "string" },
+      complete: { type: "boolean" },
+      satisfiedBeatIds: { type: "array", items: { type: "string" } },
+      remainingBeatIds: { type: "array", items: { type: "string" } },
+    },
+  },
+
+  PlanWaveProgress: {
+    type: "object",
+    required: ["waveIndex", "complete", "steps"],
+    properties: {
+      waveIndex: { type: "integer", minimum: 1 },
+      complete: { type: "boolean" },
+      steps: {
+        type: "array",
+        items: { $ref: "#/components/schemas/PlanStepProgress" },
+      },
+    },
+  },
+
+  NextPlanStep: {
+    type: "object",
+    required: ["waveIndex", "stepIndex", "beatIds"],
+    properties: {
+      waveIndex: { type: "integer", minimum: 1 },
+      stepIndex: { type: "integer", minimum: 1 },
+      beatIds: { type: "array", items: { type: "string" } },
+      notes: { type: "string" },
+    },
+  },
+
+  PlanProgress: {
+    type: "object",
+    required: [
+      "generatedAt",
+      "completionRule",
+      "beatStates",
+      "satisfiedBeatIds",
+      "remainingBeatIds",
+      "nextStep",
+      "waves",
+    ],
+    properties: {
+      generatedAt: { type: "string", format: "date-time" },
+      completionRule: { type: "string", enum: ["shipped"] },
+      beatStates: {
+        type: "array",
+        items: { $ref: "#/components/schemas/PlanBeatProgress" },
+      },
+      satisfiedBeatIds: { type: "array", items: { type: "string" } },
+      remainingBeatIds: { type: "array", items: { type: "string" } },
+      nextStep: {
+        oneOf: [
+          { $ref: "#/components/schemas/NextPlanStep" },
+          { type: "null" },
+        ],
+      },
+      waves: {
+        type: "array",
+        items: { $ref: "#/components/schemas/PlanWaveProgress" },
+      },
+    },
+  },
+
+  PlanLineage: {
+    type: "object",
+    required: ["replacedByPlanIds"],
+    properties: {
+      replacesPlanId: { type: "string" },
+      replacedByPlanIds: {
+        type: "array",
+        items: { type: "string" },
+      },
+    },
+  },
+
+  PersistedPlan: {
+    type: "object",
+    required: ["artifact", "plan", "progress", "lineage"],
+    properties: {
+      artifact: { $ref: "#/components/schemas/PlanArtifact" },
+      plan: { $ref: "#/components/schemas/PlanDocument" },
+      progress: { $ref: "#/components/schemas/PlanProgress" },
+      lineage: { $ref: "#/components/schemas/PlanLineage" },
+    },
+  },
+
+  PlanSummary: {
+    type: "object",
+    required: ["artifact", "plan"],
+    properties: {
+      artifact: { $ref: "#/components/schemas/PlanArtifact" },
+      plan: {
+        type: "object",
+        required: ["repoPath", "beatIds", "summary"],
+        properties: {
+          repoPath: { type: "string" },
+          beatIds: { type: "array", items: { type: "string" } },
+          objective: { type: "string" },
+          summary: { type: "string" },
+          mode: { type: "string", enum: ["scene", "groom"] },
+          model: { type: "string" },
+        },
+      },
+    },
+  },
+
   CreatePlanRequest: {
     type: "object",
-    required: ["repoPath"],
+    required: ["repoPath", "beatIds"],
     properties: {
       repoPath: { type: "string" },
+      beatIds: { type: "array", items: { type: "string" } },
       objective: { type: "string" },
       mode: { type: "string", enum: ["scene", "groom"] },
       model: { type: "string" },
+      replacesPlanId: { type: "string" },
     },
   },
 
@@ -148,33 +256,6 @@ export const planComponentSchemas = {
           planId: { type: "string" },
         },
       },
-    },
-  },
-
-  PlanStepStartResult: {
-    type: "object",
-    required: ["beats"],
-    properties: {
-      beats: {
-        type: "array",
-        items: {
-          type: "object",
-          required: ["beatId", "sessionId"],
-          properties: {
-            beatId: { type: "string" },
-            sessionId: { type: "string" },
-          },
-        },
-      },
-    },
-  },
-
-  PlanStepStatusResult: {
-    type: "object",
-    required: ["stepId", "status"],
-    properties: {
-      stepId: { type: "string" },
-      status: { type: "string", enum: ["complete", "failed"] },
     },
   },
 } as const;

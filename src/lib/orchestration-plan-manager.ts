@@ -1,6 +1,3 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { basename, join } from "node:path";
 import { EventEmitter } from "node:events";
 
 import {
@@ -10,80 +7,45 @@ import {
   newKnot,
   removeEdge,
   showKnot,
-  updateKnot,
   type ExecutionPlanRecord,
   type KnotEdge,
+  type KnotRecord,
 } from "@/lib/knots";
 import {
-  createOrchestrationSession,
+  createExplicitOrchestrationSession,
   getOrchestrationSession,
 } from "@/lib/orchestration-manager";
-import { createSession } from "@/lib/terminal-manager";
 import { getBackend } from "@/lib/backend-instance";
 import type { OrchestrationPlan } from "@/lib/types";
 import type {
   CreatePlanInput,
-  Plan,
-  PlanStep,
+  NextPlanStep,
+  PlanBeatProgress,
+  PlanDocument,
+  PlanLineage,
+  PlanProgress,
+  PlanRecord,
+  PlanStepProgress,
+  PlanSummary,
+  PlanWaveProgress,
 } from "@/lib/orchestration-plan-types";
 import {
   collectPlannedBeatIds,
   isPlanKnot,
-  mapExecutionPlanRecord,
-  serializePlanRecord,
+  mapExecutionPlanDocument,
+  mapPlanArtifact,
+  mapPlanSummary,
   toExecutionPlanRecord,
 } from "@/lib/orchestration-plan-payload";
+import {
+  buildPlanTitle,
+  canonicalizePlanId,
+  normalizeSelectedBeatIds,
+  resolvePlanLookupRepos,
+} from "@/lib/orchestration-plan-id-resolution";
+import { persistPlanPayload } from "@/lib/orchestration-plan-storage";
 
 const PLAN_TIMEOUT_MS = 3 * 60 * 1000;
-
-async function writePlanPayloadFile(
-  payload: ExecutionPlanRecord,
-): Promise<string> {
-  const dir = await mkdtemp(
-    join(tmpdir(), "foolery-plan-"),
-  );
-  const filePath = join(dir, "execution-plan.json");
-  await writeFile(
-    filePath,
-    JSON.stringify(payload, null, 2),
-    "utf8",
-  );
-  return filePath;
-}
-
-async function cleanupPlanPayloadFile(
-  filePath: string,
-): Promise<void> {
-  const dirPath = filePath.replace(/\/execution-plan\.json$/u, "");
-  await rm(filePath, { force: true }).catch(() => undefined);
-  await rm(dirPath, {
-    force: true,
-    recursive: true,
-  }).catch(() => undefined);
-}
-
-async function persistPlanPayload(
-  planId: string,
-  payload: ExecutionPlanRecord,
-  repoPath: string,
-): Promise<void> {
-  const filePath = await writePlanPayloadFile(payload);
-  try {
-    const updateResult = await updateKnot(
-      planId,
-      { executionPlanFile: filePath },
-      repoPath,
-    );
-    if (!updateResult.ok) {
-      throw new Error(
-        updateResult.error ??
-          "Failed to persist execution plan payload.",
-      );
-    }
-  } finally {
-    await cleanupPlanPayloadFile(filePath);
-  }
-}
 
 async function waitForSessionPlan(
   sessionId: string,
@@ -151,7 +113,7 @@ async function waitForSessionPlan(
   );
 }
 
-async function reconcilePlannedByEdges(
+async function reconcileProvenanceEdges(
   planId: string,
   payload: ExecutionPlanRecord,
   repoPath: string,
@@ -199,72 +161,290 @@ async function reconcilePlannedByEdges(
   );
 }
 
-function buildPlanTitle(input: CreatePlanInput): string {
-  const repoLabel = basename(input.repoPath);
-  const objective = input.objective?.trim();
-  if (objective) {
-    return `Execution plan: ${objective}`;
+async function assertReplacedPlanExists(
+  replacesPlanId: string,
+  repoPath: string,
+): Promise<void> {
+  const result = await showKnot(replacesPlanId, repoPath);
+  if (!result.ok || !result.data) {
+    throw new Error(
+      `Replaced plan ${replacesPlanId} was not found.`,
+    );
   }
-  return `Execution plan for ${repoLabel}`;
-}
-
-function listAllSteps(plan: Plan): PlanStep[] {
-  return plan.waves.flatMap((wave) => wave.steps);
-}
-
-function findStep(plan: Plan, stepId: string): PlanStep | null {
-  for (const wave of plan.waves) {
-    const found =
-      wave.steps.find((step) => step.id === stepId) ?? null;
-    if (found) return found;
+  if (!isPlanKnot(result.data)) {
+    throw new Error(
+      `Knot ${replacesPlanId} is not an execution plan.`,
+    );
   }
-  return null;
 }
 
-function areDependenciesComplete(
-  plan: Plan,
-  step: PlanStep,
-): boolean {
-  const byId = new Map(
-    listAllSteps(plan).map((candidate) => [
-      candidate.id,
-      candidate,
-    ]),
-  );
-  return step.dependsOn.every((dependencyId) => {
-    const dependency = byId.get(dependencyId);
-    return dependency?.status === "complete";
-  });
-}
-
-async function loadStoredPlan(
+async function addRevisionEdge(
   planId: string,
-  repoPath?: string,
-): Promise<{ plan: Plan; repoPath: string }> {
-  const plan = await getPlan(planId, repoPath);
-  if (!plan) {
-    throw new Error("Plan not found");
+  replacesPlanId: string | undefined,
+  repoPath: string,
+): Promise<void> {
+  if (!replacesPlanId) return;
+  if (replacesPlanId === planId) {
+    throw new Error("A plan cannot replace itself.");
   }
+  await assertReplacedPlanExists(replacesPlanId, repoPath);
+  const addResult = await addEdge(
+    planId,
+    "replaces",
+    replacesPlanId,
+    repoPath,
+  );
+  if (!addResult.ok) {
+    throw new Error(
+      addResult.error ??
+        "Failed to record plan revision lineage.",
+    );
+  }
+}
+
+function indexBeatTitles(
+  plan: PlanDocument,
+): Map<string, string> {
+  const titles = new Map<string, string>();
+  for (const wave of plan.waves) {
+    for (const beat of wave.beats) {
+      titles.set(beat.id, beat.title);
+    }
+  }
+  return titles;
+}
+
+async function deriveProgress(
+  plan: PlanDocument,
+  repoPath: string,
+): Promise<PlanProgress> {
+  const beatTitles = indexBeatTitles(plan);
+  const beatStates = await Promise.all(
+    plan.beatIds.map(async (beatId) => {
+      const result = await getBackend().get(beatId, repoPath);
+      const state = !result.ok || !result.data
+        ? "missing"
+        : result.data.state;
+      const title =
+        result.ok && result.data
+          ? result.data.title
+          : beatTitles.get(beatId);
+      return {
+        beatId,
+        title,
+        state,
+        satisfied: state === "shipped",
+      } satisfies PlanBeatProgress;
+    }),
+  );
+
+  const beatStateById = new Map(
+    beatStates.map((beat) => [beat.beatId, beat]),
+  );
+  const satisfiedBeatIds = beatStates
+    .filter((beat) => beat.satisfied)
+    .map((beat) => beat.beatId);
+  const remainingBeatIds = beatStates
+    .filter((beat) => !beat.satisfied)
+    .map((beat) => beat.beatId);
+
+  const waves: PlanWaveProgress[] = [];
+  let nextStep: NextPlanStep | null = null;
+
+  const sortedWaves = [...plan.waves].sort(
+    (left, right) => left.waveIndex - right.waveIndex,
+  );
+  for (const wave of sortedWaves) {
+    const steps: PlanStepProgress[] = [];
+    const sortedSteps = [...wave.steps].sort(
+      (left, right) => left.stepIndex - right.stepIndex,
+    );
+    for (const step of sortedSteps) {
+      const satisfiedForStep = step.beatIds.filter(
+        (beatId) => beatStateById.get(beatId)?.satisfied,
+      );
+      const remainingForStep = step.beatIds.filter(
+        (beatId) => !beatStateById.get(beatId)?.satisfied,
+      );
+      const complete = remainingForStep.length === 0;
+      steps.push({
+        waveIndex: wave.waveIndex,
+        stepIndex: step.stepIndex,
+        beatIds: step.beatIds,
+        notes: step.notes,
+        complete,
+        satisfiedBeatIds: satisfiedForStep,
+        remainingBeatIds: remainingForStep,
+      });
+      if (!complete && !nextStep) {
+        nextStep = {
+          waveIndex: wave.waveIndex,
+          stepIndex: step.stepIndex,
+          beatIds: step.beatIds,
+          notes: step.notes,
+        };
+      }
+    }
+
+    waves.push({
+      waveIndex: wave.waveIndex,
+      complete: steps.every((step) => step.complete),
+      steps,
+    });
+  }
+
   return {
-    plan,
-    repoPath: plan.repoPath || repoPath || process.cwd(),
+    generatedAt: new Date().toISOString(),
+    completionRule: "shipped",
+    beatStates,
+    satisfiedBeatIds,
+    remainingBeatIds,
+    nextStep,
+    waves,
   };
 }
 
-async function persistPlan(
-  plan: Plan,
+async function deriveLineage(
+  planId: string,
   repoPath: string,
-): Promise<void> {
-  const payload = serializePlanRecord(plan);
-  await persistPlanPayload(plan.id, payload, repoPath);
-  await reconcilePlannedByEdges(plan.id, payload, repoPath);
+): Promise<PlanLineage> {
+  const [incoming, outgoing] = await Promise.all([
+    listEdges(planId, "incoming", repoPath),
+    listEdges(planId, "outgoing", repoPath),
+  ]);
+
+  if (!incoming.ok) {
+    throw new Error(
+      incoming.error ??
+        "Failed to read incoming plan edges.",
+    );
+  }
+  if (!outgoing.ok) {
+    throw new Error(
+      outgoing.error ??
+        "Failed to read outgoing plan edges.",
+    );
+  }
+
+  return {
+    replacesPlanId: (outgoing.data ?? []).find(
+      (edge) =>
+        edge.kind === "replaces" && edge.src === planId,
+    )?.dst,
+    replacedByPlanIds: (incoming.data ?? [])
+      .filter(
+        (edge) =>
+          edge.kind === "replaces" && edge.dst === planId,
+      )
+      .map((edge) => edge.src)
+      .sort((left, right) => left.localeCompare(right)),
+  };
+}
+
+async function loadPlanKnot(
+  planId: string,
+  repoPath?: string,
+): Promise<KnotRecord | null> {
+  if (repoPath) {
+    const canonicalPlanId = canonicalizePlanId(
+      planId,
+      repoPath,
+    );
+    const result = await showKnot(
+      canonicalPlanId,
+      repoPath,
+    );
+    if (!result.ok) {
+      if (
+        result.error?.toLowerCase().includes("not found")
+      ) {
+        return null;
+      }
+      throw new Error(
+        result.error ?? "Failed to load execution plan.",
+      );
+    }
+    if (!result.data || !isPlanKnot(result.data)) return null;
+    return result.data;
+  }
+
+  const candidateRepos = await resolvePlanLookupRepos(
+    planId,
+    undefined,
+  );
+  const matches: KnotRecord[] = [];
+
+  for (const candidateRepo of candidateRepos) {
+    const canonicalPlanId = canonicalizePlanId(
+      planId,
+      candidateRepo,
+    );
+    const result = await showKnot(
+      canonicalPlanId,
+      candidateRepo,
+    );
+    if (!result.ok) {
+      if (
+        result.error?.toLowerCase().includes("not found")
+      ) {
+        continue;
+      }
+      if (
+        result.error?.toLowerCase().includes(
+          "has no registered workflows",
+        ) ||
+        result.error?.toLowerCase().includes(
+          "invalid workflow bundle",
+        )
+      ) {
+        continue;
+      }
+      throw new Error(
+        result.error ?? "Failed to load execution plan.",
+      );
+    }
+    if (!result.data || !isPlanKnot(result.data)) continue;
+    matches.push(result.data);
+    if (planId.includes("-")) {
+      return result.data;
+    }
+  }
+
+  if (matches.length === 0) return null;
+  if (matches.length > 1) {
+    throw new Error(
+      `Multiple plans match ${planId}; provide repoPath to disambiguate.`,
+    );
+  }
+  return matches[0] ?? null;
+}
+
+function toPlanRecord(
+  record: KnotRecord,
+  progress: PlanProgress,
+  lineage: PlanLineage,
+): PlanRecord {
+  const artifact = mapPlanArtifact(record);
+  const plan = mapExecutionPlanDocument(record);
+  if (!artifact || !plan) {
+    throw new Error("Plan record is missing execution plan data.");
+  }
+  return { artifact, plan, progress, lineage };
 }
 
 export async function createPlan(
   input: CreatePlanInput,
 ): Promise<{ planId: string }> {
-  const session = await createOrchestrationSession(
+  const beatIds = normalizeSelectedBeatIds(input.beatIds);
+  if (beatIds.length === 0) {
+    throw new Error(
+      "beatIds must contain at least one knot id.",
+    );
+  }
+
+  const session = await createExplicitOrchestrationSession(
     input.repoPath,
+    beatIds,
     input.objective,
     {
       model: input.model,
@@ -272,10 +452,13 @@ export async function createPlan(
     },
   );
   const plan = await waitForSessionPlan(session.id);
-  const payload = toExecutionPlanRecord(input, plan);
+  const payload = toExecutionPlanRecord(
+    { ...input, beatIds },
+    plan,
+  );
 
   const createResult = await newKnot(
-    buildPlanTitle(input),
+    buildPlanTitle({ ...input, beatIds }),
     {
       description:
         `Persisted execution plan for ${input.repoPath}`,
@@ -290,40 +473,50 @@ export async function createPlan(
     );
   }
 
+  const canonicalPlanId = canonicalizePlanId(
+    createResult.data.id,
+    input.repoPath,
+  );
+
   await persistPlanPayload(
-    createResult.data.id,
+    canonicalPlanId,
     payload,
     input.repoPath,
   );
-  await reconcilePlannedByEdges(
-    createResult.data.id,
+  await reconcileProvenanceEdges(
+    canonicalPlanId,
     payload,
     input.repoPath,
   );
-  return { planId: createResult.data.id };
+  await addRevisionEdge(
+    canonicalPlanId,
+    input.replacesPlanId,
+    input.repoPath,
+  );
+
+  return { planId: canonicalPlanId };
 }
 
 export async function getPlan(
   planId: string,
   repoPath?: string,
-): Promise<Plan | null> {
-  const result = await showKnot(planId, repoPath);
-  if (!result.ok) {
-    if (result.error?.toLowerCase().includes("not found")) {
-      return null;
-    }
-    throw new Error(
-      result.error ?? "Failed to load execution plan.",
-    );
-  }
-
-  if (!result.data || !isPlanKnot(result.data)) return null;
-  return mapExecutionPlanRecord(result.data);
+): Promise<PlanRecord | null> {
+  const record = await loadPlanKnot(planId, repoPath);
+  if (!record) return null;
+  const plan = mapExecutionPlanDocument(record);
+  if (!plan) return null;
+  const resolvedRepoPath =
+    plan.repoPath || repoPath || process.cwd();
+  const [progress, lineage] = await Promise.all([
+    deriveProgress(plan, resolvedRepoPath),
+    deriveLineage(planId, resolvedRepoPath),
+  ]);
+  return toPlanRecord(record, progress, lineage);
 }
 
 export async function listPlans(
   repoPath: string,
-): Promise<Plan[]> {
+): Promise<PlanSummary[]> {
   const result = await listKnots(repoPath);
   if (!result.ok) {
     throw new Error(
@@ -333,115 +526,7 @@ export async function listPlans(
 
   return (result.data ?? [])
     .filter(isPlanKnot)
-    .map(mapExecutionPlanRecord)
-    .filter((plan): plan is Plan => Boolean(plan))
-    .filter((plan) => plan.repoPath === repoPath);
-}
-
-export async function getNextPlanStep(
-  planId: string,
-  repoPath?: string,
-): Promise<PlanStep | null> {
-  const { plan } = await loadStoredPlan(planId, repoPath);
-  for (const step of listAllSteps(plan)) {
-    if (step.status !== "pending") continue;
-    if (areDependenciesComplete(plan, step)) {
-      return step;
-    }
-  }
-  return null;
-}
-
-export async function startPlanStep(
-  planId: string,
-  stepId: string,
-  repoPath?: string,
-): Promise<{ beats: Array<{ beatId: string; sessionId: string }> }> {
-  const loaded = await loadStoredPlan(planId, repoPath);
-  const step = findStep(loaded.plan, stepId);
-  if (!step) {
-    throw new Error(`Step ${stepId} not found.`);
-  }
-  if (step.status !== "pending") {
-    throw new Error(`Step ${stepId} is not pending.`);
-  }
-  if (!areDependenciesComplete(loaded.plan, step)) {
-    throw new Error(
-      `Step ${stepId} still has incomplete predecessors.`,
-    );
-  }
-
-  step.status = "in_progress";
-  step.startedAt = new Date().toISOString();
-  loaded.plan.status = "active";
-
-  const beats = await Promise.all(
-    step.beatIds.map(async (beatId) => {
-      const session = await createSession(
-        beatId,
-        loaded.repoPath,
-      );
-      return { beatId, sessionId: session.id };
-    }),
-  );
-
-  await persistPlan(loaded.plan, loaded.repoPath);
-  return { beats };
-}
-
-export async function completePlanStep(
-  planId: string,
-  stepId: string,
-  repoPath?: string,
-): Promise<{ stepId: string; status: "complete" }> {
-  const loaded = await loadStoredPlan(planId, repoPath);
-  const step = findStep(loaded.plan, stepId);
-  if (!step) {
-    throw new Error(`Step ${stepId} not found.`);
-  }
-  if (step.status !== "in_progress") {
-    throw new Error(`Step ${stepId} is not in progress.`);
-  }
-
-  for (const beatId of step.beatIds) {
-    const result = await getBackend().get(
-      beatId,
-      loaded.repoPath,
-    );
-    if (!result.ok || result.data?.state !== "shipped") {
-      throw new Error(
-        `Beat ${beatId} is not shipped yet.`,
-      );
-    }
-  }
-
-  step.status = "complete";
-  step.completedAt = new Date().toISOString();
-  if (listAllSteps(loaded.plan).every((item) => item.status === "complete")) {
-    loaded.plan.status = "complete";
-  }
-
-  await persistPlan(loaded.plan, loaded.repoPath);
-  return { stepId, status: "complete" };
-}
-
-export async function failPlanStep(
-  planId: string,
-  stepId: string,
-  reason?: string,
-  repoPath?: string,
-): Promise<{ stepId: string; status: "failed" }> {
-  const loaded = await loadStoredPlan(planId, repoPath);
-  const step = findStep(loaded.plan, stepId);
-  if (!step) {
-    throw new Error(`Step ${stepId} not found.`);
-  }
-
-  step.status = "failed";
-  step.failedAt = new Date().toISOString();
-  step.failureReason = reason?.trim() || "Step failed";
-  loaded.plan.status = "aborted";
-
-  await persistPlan(loaded.plan, loaded.repoPath);
-  return { stepId, status: "failed" };
+    .map(mapPlanSummary)
+    .filter((plan): plan is PlanSummary => Boolean(plan))
+    .filter((plan) => plan.plan.repoPath === repoPath);
 }

@@ -121,6 +121,86 @@ export function dedupeBeats(items: Beat[]): Beat[] {
   return Array.from(byId.values());
 }
 
+export function toPromptScopeBeats(
+  beats: Beat[],
+): PromptScopeBeat[] {
+  return beats
+    .map((beat) => ({
+      id: beat.id,
+      title: beat.title,
+      type: beat.type,
+      state: beat.state,
+      priority: beat.priority,
+      description: beat.description,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function normalizeBeatIds(beatIds: string[]): string[] {
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+  for (const beatId of beatIds) {
+    const trimmed = beatId.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    normalized.push(trimmed);
+  }
+  return normalized;
+}
+
+async function collectPromptDependencyEdges(
+  repoPath: string,
+  beats: Beat[],
+): Promise<PromptDependencyEdge[]> {
+  const inScopeIds = new Set(beats.map((beat) => beat.id));
+  const edgeKeys = new Set<string>();
+  const edges: PromptDependencyEdge[] = [];
+
+  const dependencyResults = await Promise.all(
+    beats.map((beat) =>
+      getBackend().listDependencies(
+        beat.id,
+        repoPath,
+        { type: "blocks" },
+      ),
+    ),
+  );
+
+  for (const result of dependencyResults) {
+    if (!result.ok) {
+      throw new Error(
+        result.error?.message ??
+          "Failed to load dependency edges for orchestration",
+      );
+    }
+    for (const dependency of result.data ?? []) {
+      const blockerId = dependency.source?.trim();
+      const blockedId = dependency.target?.trim();
+      if (!blockerId || !blockedId) continue;
+      if (
+        !inScopeIds.has(blockerId) ||
+        !inScopeIds.has(blockedId)
+      ) {
+        continue;
+      }
+      const edgeKey = `${blockerId}->${blockedId}`;
+      if (edgeKeys.has(edgeKey)) continue;
+      edgeKeys.add(edgeKey);
+      edges.push({ blockerId, blockedId });
+    }
+  }
+
+  edges.sort((left, right) => {
+    const blocker = left.blockerId.localeCompare(
+      right.blockerId,
+    );
+    if (blocker !== 0) return blocker;
+    return left.blockedId.localeCompare(right.blockedId);
+  });
+
+  return edges;
+}
+
 // ── Event helpers ───────────────────────────────────────────────────
 
 export function pushEvent(
@@ -233,4 +313,39 @@ export async function collectContext(
   });
 
   return { beats, edges };
+}
+
+export async function collectExplicitContext(
+  repoPath: string,
+  beatIds: string[],
+): Promise<{
+  beats: Beat[];
+  edges: PromptDependencyEdge[];
+  missingBeatIds: string[];
+}> {
+  const selectedBeatIds = normalizeBeatIds(beatIds);
+  const resolved: Beat[] = [];
+  const missingBeatIds: string[] = [];
+
+  const results = await Promise.all(
+    selectedBeatIds.map(async (beatId) => ({
+      beatId,
+      result: await getBackend().get(beatId, repoPath),
+    })),
+  );
+
+  for (const { beatId, result } of results) {
+    if (!result.ok || !result.data) {
+      missingBeatIds.push(beatId);
+      continue;
+    }
+    resolved.push(result.data);
+  }
+
+  const edges = await collectPromptDependencyEdges(
+    repoPath,
+    resolved,
+  );
+
+  return { beats: resolved, edges, missingBeatIds };
 }

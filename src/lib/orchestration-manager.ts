@@ -4,7 +4,8 @@
  * Implementation is split across sibling modules to stay within the
  * 500-line file limit:
  *   - orchestration-internals.ts   (types, helpers, session store)
- *   - orchestration-session-create.ts  (create / restage)
+ *   - orchestration-session-create.ts  (create)
+ *   - orchestration-session-restage.ts (restage)
  *   - orchestration-session-apply.ts   (apply)
  */
 
@@ -18,9 +19,10 @@ import {
 
 // Re-export the heavy async entry points from their own modules.
 export {
+  createExplicitOrchestrationSession,
   createOrchestrationSession,
-  createRestagedOrchestrationSession,
 } from "@/lib/orchestration-session-create";
+export { createRestagedOrchestrationSession } from "@/lib/orchestration-session-restage";
 
 export { applyOrchestrationSession } from "@/lib/orchestration-session-apply";
 

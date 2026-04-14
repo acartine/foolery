@@ -62,15 +62,40 @@ export async function POST(request: NextRequest) {
     typeof body?.model === "string" && body.model.trim()
       ? body.model.trim()
       : undefined;
+  const beatIds = Array.isArray(body?.beatIds)
+    ? body.beatIds
+        .filter(
+          (beatId: unknown): beatId is string =>
+            typeof beatId === "string",
+        )
+        .map((beatId: string) => beatId.trim())
+        .filter((beatId: string) => beatId.length > 0)
+    : [];
+  if (beatIds.length === 0) {
+    return NextResponse.json(
+      { error: "beatIds is required" },
+      { status: 400 },
+    );
+  }
   const mode =
     body?.mode === "scene" || body?.mode === "groom"
       ? body.mode
+      : undefined;
+  const replacesPlanId =
+    typeof body?.replacesPlanId === "string" &&
+    body.replacesPlanId.trim()
+      ? body.replacesPlanId.trim()
       : undefined;
 
   return withServerTiming(
     {
       route: "POST /api/plans",
-      context: { repoPath, objective, mode },
+      context: {
+        repoPath,
+        objective,
+        mode,
+        beatCount: beatIds.length,
+      },
     },
     async ({ measure }) => {
       try {
@@ -79,9 +104,11 @@ export async function POST(request: NextRequest) {
           () =>
             createPlan({
               repoPath,
+              beatIds,
               objective,
               model,
               mode,
+              replacesPlanId,
             }),
         );
         return NextResponse.json(

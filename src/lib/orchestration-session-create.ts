@@ -16,22 +16,21 @@ import {
   formatAgentDisplayLabel,
   toExecutionAgentInfo,
 } from "@/lib/agent-identity";
-import type {
-  OrchestrationPlan,
-  OrchestrationSession,
-} from "@/lib/types";
+import type { OrchestrationSession } from "@/lib/types";
 import {
   type OrchestrationSessionEntry,
   sessions,
   generateId,
   toObject,
+  buildPrompt,
   collectContext,
-  collectEligibleBeats,
+  collectExplicitContext,
   pushEvent,
   consumeAssistantText,
   formatStructuredLogLine,
   applyLineEvent,
   extractPlanFromTaggedJson,
+  toPromptScopeBeats,
   summarizeResult,
   finalizeSession,
 } from "@/lib/orchestration-internals";
@@ -89,8 +88,33 @@ function handleParsedStdoutEvent(
     return;
   }
 
+  if (obj.type === "text") {
+    handleTextEvent(entry, obj);
+    return;
+  }
+
+  if (obj.type === "item.completed") {
+    handleCompletedItemEvent(entry, obj);
+    return;
+  }
+
   if (obj.type === "result") {
     handleResultEvent(entry, obj);
+  }
+}
+
+function appendPlannerText(
+  entry: OrchestrationSessionEntry,
+  text: string,
+) {
+  if (!text) return;
+
+  entry.assistantText +=
+    (entry.assistantText ? "\n" : "") + text;
+  entry.lineBuffer = "";
+
+  for (const line of text.split("\n")) {
+    applyLineEvent(entry, line);
   }
 }
 
@@ -129,20 +153,39 @@ function handleAssistantEvent(
     })
     .join("");
 
-  if (text) {
-    // Accumulate rather than replace -- crucial for Codex where
-    // multiple agent_message events deliver distinct content.
-    entry.assistantText +=
-      (entry.assistantText ? "\n" : "") + text;
+  appendPlannerText(entry, text);
+}
 
-    // Stale partial line from prior stream_event deltas is superseded.
-    entry.lineBuffer = "";
+function handleTextEvent(
+  entry: OrchestrationSessionEntry,
+  obj: Record<string, unknown>,
+) {
+  const part = toObject(obj.part);
+  const text =
+    typeof part?.text === "string"
+      ? part.text
+      : typeof obj.text === "string"
+        ? obj.text
+        : "";
+  appendPlannerText(entry, text);
+}
 
-    // Parse the full text line-by-line for NDJSON plan events.
-    for (const line of text.split("\n")) {
-      applyLineEvent(entry, line);
-    }
+function handleCompletedItemEvent(
+  entry: OrchestrationSessionEntry,
+  obj: Record<string, unknown>,
+) {
+  const item = toObject(obj.item);
+  const itemType =
+    typeof item?.type === "string" ? item.type : "";
+  if (
+    itemType !== "agent_message" &&
+    itemType !== "assistant_message"
+  ) {
+    return;
   }
+  const text =
+    typeof item?.text === "string" ? item.text : "";
+  appendPlannerText(entry, text);
 }
 
 function handleResultEvent(
@@ -288,16 +331,51 @@ function wireChildProcess(
 
   child.on("close", (code, signal) => {
     releaseChildStreams();
-    handleCloseEvent(
-      entry,
-      ndjsonState,
-      dialect,
-      normalizeEvent,
-      agent,
-      code,
-      signal,
-    );
+    setImmediate(() => {
+      handleCloseEvent(
+        entry,
+        ndjsonState,
+        dialect,
+        normalizeEvent,
+        agent,
+        code,
+        signal,
+      );
+    });
   });
+}
+
+function emitExplicitPromptLog(
+  entry: OrchestrationSessionEntry,
+  beats: import("@/lib/types").Beat[],
+  edges: { blockerId: string; blockedId: string }[],
+  repoPath: string,
+  objective: string | undefined,
+  mode: "scene" | "groom" = "groom",
+): string {
+  const scopedBeats = toPromptScopeBeats(beats);
+  const prompt = buildPrompt(
+    repoPath,
+    scopedBeats,
+    [],
+    edges,
+    objective,
+    mode,
+  );
+  entry.interactionLog.logPrompt(prompt);
+  pushEvent(entry, "log", [
+    "prompt_initial | Orchestration prompt sent",
+    `scope | ${scopedBeats.map((beat) => beat.id).join(", ")}`,
+    objective?.trim()
+      ? `objective | ${objective.trim()}`
+      : "",
+    `mode | ${mode}`,
+    edges.length > 0
+      ? `edges | ${edges.length}`
+      : "",
+    "",
+  ].filter(Boolean).join("\n"));
+  return prompt;
 }
 
 export async function createOrchestrationSession(
@@ -326,6 +404,57 @@ export async function createOrchestrationSession(
     );
 
   const prompt = emitPromptLog(
+    entry,
+    beats,
+    edges,
+    repoPath,
+    objective,
+    options?.mode ?? "groom",
+  );
+
+  wireChildProcess(entry, agent, prompt, repoPath);
+
+  pushEvent(
+    entry,
+    "status",
+    `Waiting on ${formatAgentDisplayLabel(agent)}...`,
+  );
+
+  return session;
+}
+
+export async function createExplicitOrchestrationSession(
+  repoPath: string,
+  beatIds: string[],
+  objective?: string,
+  options?: {
+    model?: string;
+    mode?: "scene" | "groom";
+  },
+): Promise<OrchestrationSession> {
+  const { beats, edges, missingBeatIds } =
+    await collectExplicitContext(repoPath, beatIds);
+
+  if (missingBeatIds.length > 0) {
+    throw new Error(
+      `Missing beats for orchestration: ${missingBeatIds.join(", ")}`,
+    );
+  }
+
+  if (beats.length === 0) {
+    throw new Error(
+      "No explicit beats provided for orchestration",
+    );
+  }
+
+  const { session, entry, agent } = await initSessionEntry(
+    repoPath,
+    beats,
+    objective,
+    options?.model,
+  );
+
+  const prompt = emitExplicitPromptLog(
     entry,
     beats,
     edges,
@@ -390,156 +519,4 @@ function handleCloseEvent(
     isSuccess ? "completed" : "error",
     message
   );
-}
-
-function normalizeRestagePlan(
-  plan: OrchestrationPlan,
-  allBeats: Map<string, import("@/lib/types").Beat>,
-): OrchestrationPlan {
-  const assigned = new Set<string>();
-
-  const normalizedWaves = plan.waves
-    .slice()
-    .sort((a, b) => a.waveIndex - b.waveIndex)
-    .map((wave, index) => {
-      const fallbackWaveIndex = index + 1;
-      const waveIndex = Number.isFinite(wave.waveIndex)
-        ? Math.max(1, Math.trunc(wave.waveIndex))
-        : fallbackWaveIndex;
-      const name =
-        wave.name?.trim() || `Scene ${waveIndex}`;
-      const waveObjective =
-        wave.objective?.trim() ||
-        "Execute assigned beats for this scene.";
-      const notes = wave.notes?.trim() || undefined;
-      const agents = wave.agents
-        .filter((a) => Boolean(a.role?.trim()))
-        .map((a) => ({
-          role: a.role.trim(),
-          count: Math.max(1, Math.trunc(a.count || 1)),
-          specialty: a.specialty?.trim() || undefined,
-        }));
-
-      const beatsForWave = wave.beats
-        .filter(
-          (beat) =>
-            typeof beat.id === "string" &&
-            beat.id.trim().length > 0,
-        )
-        .map((beat) => beat.id.trim())
-        .filter(
-          (beatId) =>
-            allBeats.has(beatId) && !assigned.has(beatId),
-        )
-        .map((beatId) => {
-          assigned.add(beatId);
-          return {
-            id: beatId,
-            title:
-              allBeats.get(beatId)?.title ?? beatId,
-          };
-        });
-
-      return {
-        waveIndex,
-        name,
-        objective: waveObjective,
-        agents,
-        beats: beatsForWave,
-        notes,
-      };
-    })
-    .filter((wave) => wave.beats.length > 0);
-
-  if (normalizedWaves.length === 0) {
-    throw new Error(
-      "Restaged plan has no beats currently eligible " +
-        "(open/in_progress/blocked).",
-    );
-  }
-
-  return {
-    summary:
-      plan.summary?.trim() ||
-      `Restaged ${normalizedWaves.length} scene${
-        normalizedWaves.length === 1 ? "" : "s"
-      }.`,
-    waves: normalizedWaves,
-    unassignedBeatIds: (
-      plan.unassignedBeatIds ?? []
-    ).filter(
-      (id) =>
-        typeof id === "string" &&
-        allBeats.has(id) &&
-        !assigned.has(id),
-    ),
-    assumptions: (plan.assumptions ?? [])
-      .filter(
-        (assumption): assumption is string =>
-          typeof assumption === "string",
-      )
-      .map((assumption) => assumption.trim())
-      .filter((assumption) => assumption.length > 0),
-  };
-}
-
-// ── createRestagedOrchestrationSession ──────────────────────────────
-
-export async function createRestagedOrchestrationSession(
-  repoPath: string,
-  plan: OrchestrationPlan,
-  objective?: string,
-): Promise<OrchestrationSession> {
-  const beats = await collectEligibleBeats(repoPath);
-
-  if (beats.length === 0) {
-    throw new Error(
-      "No open/in_progress/blocked beats available " +
-        "for orchestration",
-    );
-  }
-
-  const allBeats = new Map(
-    beats.map((beat) => [beat.id, beat]),
-  );
-  const normalizedPlan = normalizeRestagePlan(
-    plan,
-    allBeats,
-  );
-
-  const session: OrchestrationSession = {
-    id: generateId(),
-    repoPath,
-    status: "running",
-    startedAt: new Date().toISOString(),
-    objective: objective?.trim() || undefined,
-    plan: normalizedPlan,
-  };
-
-  const entry: OrchestrationSessionEntry = {
-    session,
-    process: null,
-    emitter: new EventEmitter(),
-    buffer: [],
-    allBeats,
-    draftWaves: new Map(
-      normalizedPlan.waves.map((wave) => [
-        wave.waveIndex,
-        wave,
-      ]),
-    ),
-    assistantText: "",
-    lineBuffer: "",
-    exited: false,
-    interactionLog: noopInteractionLog(),
-  };
-  entry.emitter.setMaxListeners(20);
-  sessions.set(session.id, entry);
-
-  finalizeSession(
-    entry,
-    "completed",
-    "Restaged existing groups into Scene view",
-  );
-  return session;
 }
