@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2d-e55f-7731-b453-b9f4d339bd76",
+  "occurred_at": "2026-04-14T08:48:54.111172Z",
+  "knot_id": "foolery-97b8",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRepair the execution-plan design so the execution-plan knot workflow, the persisted plan document fields, and any step-level runtime state each have a clear and non-overlapping meaning. In particular, resolve the current confusion around statuses like `draft` and `active`, and decide whether those fields belong in the payload at all, the knot workflow, or neither.\n\nVerification:\n1. The `execution_plan_sdlc` workflow and Foolery plan payload use clearly differentiated concepts.\n2. A reader can tell what the knot workflow state means versus what any persisted plan or step runtime state means.\n3. Any redundant or contradictory status fields are removed or renamed.\n\nConstraints:\n- Do not rely on \"authoring workflow\" language unless the resulting concept is still justified by the spec.\n- Align the model with how external agents actually read and drive plans through the REST API.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Separate plan artifact lifecycle from runtime semantics",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

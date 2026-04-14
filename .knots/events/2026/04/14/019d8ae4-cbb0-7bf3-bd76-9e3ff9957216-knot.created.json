@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-cbb0-7bf3-bd76-9e3ff9957216",
+  "occurred_at": "2026-04-14T07:29:03.407867Z",
+  "knot_id": "foolery-08c3",
+  "type": "knot.created",
+  "data": {
+    "body": "Add dependency-aware prompt context and explicit step protocol support.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Improve prompt and step protocol",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

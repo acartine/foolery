@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-cb76-7b20-9f23-aee8463ce715",
+  "occurred_at": "2026-04-14T07:29:03.349659Z",
+  "knot_id": "foolery-4fdd",
+  "type": "knot.created",
+  "data": {
+    "body": "Tune orchestration agent resolution and model selection.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Configure orchestration planner selection",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

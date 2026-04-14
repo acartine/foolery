@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-c98e-7ff3-a221-eaba9940411f",
+  "occurred_at": "2026-04-14T07:29:02.861333Z",
+  "knot_id": "foolery-1a3d",
+  "type": "knot.created",
+  "data": {
+    "body": "Add execution plan persistence and typed storage surfaces.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Implement execution plan storage and types",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

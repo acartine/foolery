@@ -1,0 +1,47 @@
+{
+  "event_id": "019d8ae4-c911-72c1-8bae-d8bde1b23ecf",
+  "occurred_at": "2026-04-14T07:29:02.735679Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-79a3",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_design",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Ship local execution-plan API and driver",
+    "type": "execution_plan",
+    "updated_at": "2026-04-14T07:29:02.735679Z",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}

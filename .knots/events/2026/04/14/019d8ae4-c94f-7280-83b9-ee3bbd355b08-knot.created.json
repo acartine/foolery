@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-c94f-7280-83b9-ee3bbd355b08",
+  "occurred_at": "2026-04-14T07:29:02.798675Z",
+  "knot_id": "foolery-e819",
+  "type": "knot.created",
+  "data": {
+    "body": "Slice 1 tracker parent.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Persist and expose execution plans",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

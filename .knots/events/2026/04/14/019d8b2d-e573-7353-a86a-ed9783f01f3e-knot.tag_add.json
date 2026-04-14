@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2d-e573-7353-a86a-ed9783f01f3e",
+  "occurred_at": "2026-04-14T08:48:54.111172Z",
+  "knot_id": "foolery-97b8",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "execution-plan-repair"
+  }
+}

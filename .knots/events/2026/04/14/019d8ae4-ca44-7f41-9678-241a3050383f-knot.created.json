@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-ca44-7f41-9678-241a3050383f",
+  "occurred_at": "2026-04-14T07:29:03.043353Z",
+  "knot_id": "foolery-85d7",
+  "type": "knot.created",
+  "data": {
+    "body": "Slice 2 tracker parent.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Let external agents drive execution plans",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

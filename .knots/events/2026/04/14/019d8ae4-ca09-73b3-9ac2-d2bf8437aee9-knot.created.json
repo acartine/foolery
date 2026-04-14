@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-ca09-73b3-9ac2-d2bf8437aee9",
+  "occurred_at": "2026-04-14T07:29:02.984252Z",
+  "knot_id": "foolery-0cae",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover plan persistence and readback behavior.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add persisted plan API coverage",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

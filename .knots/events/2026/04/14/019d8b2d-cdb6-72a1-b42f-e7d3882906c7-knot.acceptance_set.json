@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2d-cdb6-72a1-b42f-e7d3882906c7",
+  "occurred_at": "2026-04-14T08:48:48.047347Z",
+  "knot_id": "foolery-8470",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Plan, wave, step, beat, and execution-plan knot are each defined unambiguously in Foolery-facing docs or code comments.\n2. The implementation explicitly states whether steps are knots and what the execution-plan knot represents.\n3. Ambiguous terminology such as unsupported legacy state vocabularies or overloaded status names is either removed or marked for removal by dependent repair knots."
+  }
+}

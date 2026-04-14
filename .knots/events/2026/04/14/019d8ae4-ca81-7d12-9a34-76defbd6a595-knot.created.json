@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-ca81-7d12-9a34-76defbd6a595",
+  "occurred_at": "2026-04-14T07:29:03.104502Z",
+  "knot_id": "foolery-5b94",
+  "type": "knot.created",
+  "data": {
+    "body": "Add executable-step selection and per-step status tracking.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Implement plan next-step selection and step state",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

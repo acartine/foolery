@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2d-e566-7881-9e0c-9ceba7ab2928",
+  "occurred_at": "2026-04-14T08:48:54.111172Z",
+  "knot_id": "foolery-97b8",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The purpose of the `execution_plan` knot workflow is explicit and no longer conflicts with plan-runtime semantics.\n2. The meaning of every remaining plan-level and step-level status field is documented and testable.\n3. Ambiguous status pairs such as knot-workflow state versus payload `status` are either separated cleanly or collapsed into a simpler model."
+  }
+}

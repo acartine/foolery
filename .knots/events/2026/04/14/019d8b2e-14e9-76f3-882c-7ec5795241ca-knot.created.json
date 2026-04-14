@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2e-14e9-76f3-882c-7ec5795241ca",
+  "occurred_at": "2026-04-14T08:49:06.2816Z",
+  "knot_id": "foolery-dd18",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nStop implementing persisted execution plans by delegating through the older Scene/orchestration session path. Build a dedicated execution-plan planning flow whose beat selection, prompt context, persistence, and step structure are all grounded in the execution-plan spec rather than inherited Scene assumptions.\n\nVerification:\n1. `POST /api/plans` no longer depends on legacy Scene intake helpers whose eligibility logic is built around generic beat-store states.\n2. Plan generation input selection is explicit, workflow-aware, and spec-native.\n3. The resulting plan payload is persisted as an `execution_plan` knot without requiring legacy orchestration-wave materialization semantics.\n\nConstraints:\n- Reuse code only where the concepts actually match the spec.\n- Do not hide legacy coupling behind thin wrappers.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Replace legacy Scene coupling in POST /api/plans",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2d-af56-71c1-8939-cf30ec8cba1b",
+  "occurred_at": "2026-04-14T08:48:40.278066Z",
+  "knot_id": "foolery-8a87",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRe-ground Foolery's execution-plan implementation in the Grooming to Execution Plan spec and the Knots taxonomy. This parent tracks the repair work needed after we discovered that the current `/api/plans` path still inherits legacy Scene and beat-store assumptions instead of using spec-native execution-plan concepts.\n\nVerification:\n1. `kno edge list <parent-id>` shows child knots covering taxonomy, workflow/runtime semantics, compat-status removal, plan-generation path repair, and live validation.\n2. Child outcomes collectively leave `/api/plans` grounded in spec-native terminology and validated against a real Knots repo.\n\nConstraints:\n- Do not add new compatibility layers to preserve invalid abstractions.\n- Prefer removing unsupported concepts over translating them.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Repair execution-plan taxonomy and spec alignment",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

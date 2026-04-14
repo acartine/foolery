@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2e-14f0-71a3-aa96-315112416513",
+  "occurred_at": "2026-04-14T08:49:06.2816Z",
+  "knot_id": "foolery-dd18",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. `POST /api/plans` uses a dedicated execution-plan generation path instead of inheriting the old Scene eligibility logic.\n2. Beat selection and prompt context are based on execution-plan-specific rules, not legacy generic status filters.\n3. The persisted execution-plan object can be explained directly from the spec without referencing legacy Scene behavior."
+  }
+}

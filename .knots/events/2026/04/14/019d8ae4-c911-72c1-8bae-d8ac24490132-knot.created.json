@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-c911-72c1-8bae-d8ac24490132",
+  "occurred_at": "2026-04-14T07:29:02.735679Z",
+  "knot_id": "foolery-79a3",
+  "type": "knot.created",
+  "data": {
+    "body": "Native execution plan artifact for the Grooming to Execution Plan spec.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_design",
+    "title": "Ship local execution-plan API and driver",
+    "type": "execution_plan",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}

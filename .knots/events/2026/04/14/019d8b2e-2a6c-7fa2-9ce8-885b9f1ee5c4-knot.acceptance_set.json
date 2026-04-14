@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2e-2a6c-7fa2-9ce8-885b9f1ee5c4",
+  "occurred_at": "2026-04-14T08:49:11.779164Z",
+  "knot_id": "foolery-54e9",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. There is a repeatable live validation recipe for the execution-plan REST API against a real Knots repo.\n2. The recipe verifies persisted plan creation and readback using plan, wave, step, and beat terminology from the spec.\n3. The validation is strong enough to catch the kind of taxonomy and path-coupling failures uncovered during the Stitch test."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-cafd-7b12-a6dd-44b786c70cb6",
+  "occurred_at": "2026-04-14T07:29:03.228825Z",
+  "knot_id": "foolery-b7cf",
+  "type": "knot.created",
+  "data": {
+    "body": "Cover step-driving flows from next through completion and failure.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add end-to-end plan-driving coverage",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

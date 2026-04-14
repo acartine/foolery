@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-cb3b-7172-9a22-07c68ec8effd",
+  "occurred_at": "2026-04-14T07:29:03.290131Z",
+  "knot_id": "foolery-a0cb",
+  "type": "knot.created",
+  "data": {
+    "body": "Slice 3 tracker parent.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Improve execution plan generation quality",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

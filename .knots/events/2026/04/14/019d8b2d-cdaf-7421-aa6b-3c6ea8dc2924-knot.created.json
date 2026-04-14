@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2d-cdaf-7421-aa6b-3c6ea8dc2924",
+  "occurred_at": "2026-04-14T08:48:48.047347Z",
+  "knot_id": "foolery-8470",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nDefine a single source of truth for the execution-plan concepts in this feature: plan, wave, step, beat, execution-plan knot, and any remaining runtime fields. Resolve the current ambiguity about whether steps are knots, what the execution-plan knot itself represents, and which terms are valid in the Foolery codebase.\n\nVerification:\n1. The relevant types, docs, and implementation notes identify what a plan is, what a step is, and whether those concepts map to knots.\n2. The resulting glossary is reflected consistently in the plan API types and the execution-plan knot design.\n3. Invalid or ambiguous terms discovered during the audit are called out for removal or replacement.\n\nConstraints:\n- Use the Grooming to Execution Plan spec as the primary source of truth.\n- Do not preserve terms just because an older Scene path already used them.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Re-ground execution-plan taxonomy in Foolery",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

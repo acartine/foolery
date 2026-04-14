@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b3b-189c-7c83-b574-986afad9f80d",
+  "occurred_at": "2026-04-14T09:03:19.195792Z",
+  "knot_id": "foolery-dacc",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRedesign the execution-plan creation interface so the client explicitly tells Foolery which knots to plan, instead of Foolery discovering candidate knots by scanning a repo. This should align the API with the intended control flow where the caller owns querying and scope selection, whether by explicit ids or by its own higher-level filters like `ready for grooming`.\n\nVerification:\n1. The plan-creation request contract states exactly how the caller supplies the in-scope knots.\n2. `POST /api/plans` no longer assumes that giving a `repoPath` means \"look at all eligible knots in the repo and make a plan from them\".\n3. The interface cleanly supports the future flow where the client queries knots in a specific state and then submits the chosen ids for planning.\n\nConstraints:\n- Prefer explicit client-selected knot ids over server-side implicit discovery.\n- Keep single-repo scope unless a later spec deliberately expands it.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Make POST /api/plans client-scoped instead of repo-scoped",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

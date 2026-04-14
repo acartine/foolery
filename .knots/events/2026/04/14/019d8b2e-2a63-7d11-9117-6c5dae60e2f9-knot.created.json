@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2e-2a63-7d11-9117-6c5dae60e2f9",
+  "occurred_at": "2026-04-14T08:49:11.779164Z",
+  "knot_id": "foolery-54e9",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nCreate a repeatable live validation path for the execution-plan REST API using a real Knots repo such as Stitch. This work should catch taxonomy drift, bad eligibility logic, and persistence mistakes before changes are considered shipped.\n\nVerification:\n1. A documented command sequence exercises `POST /api/plans` and `GET /api/plans/:id` against a real local repo.\n2. The validation checks that the returned plan is persisted, addressable, and structurally aligned with the spec's plan/wave/step/beat model.\n3. Failures from that run produce actionable diagnostics instead of generic errors.\n\nConstraints:\n- Use a real local Knots repo, not only unit tests or mocks.\n- Validate the execution-plan path itself, not just the older orchestration endpoints.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add live execution-plan API validation",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

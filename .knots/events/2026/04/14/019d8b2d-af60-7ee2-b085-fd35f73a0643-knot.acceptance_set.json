@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2d-af60-7ee2-b085-fd35f73a0643",
+  "occurred_at": "2026-04-14T08:48:40.278066Z",
+  "knot_id": "foolery-8a87",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The repair track covers taxonomy, workflow/runtime semantics, compat-status removal, legacy Scene coupling, and live REST validation.\n2. The parent does not advance until the child knots have resolved those issues and a live `/api/plans` run has been validated against a real Knots repo."
+  }
+}

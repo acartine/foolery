@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8b2f-68f5-7411-af66-35fe37cf599c",
+  "occurred_at": "2026-04-14T08:50:33.333572Z",
+  "knot_id": "foolery-8470",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Taxonomy planning complete. The agreed repair direction is: beats are knots; steps and waves are structural plan elements, not knots; one `execution_plan` knot is the persisted plan artifact; artifact lifecycle must be separated from any execution-progress fields; and the old Scene intake path plus compat-status vocabulary must be removed from the plan path. Child knots `97b8`, `48c1`, `dd18`, and `54e9` capture the repair sequence.",
+    "datetime": "2026-04-14T08:50:33.333572Z",
+    "entry_id": "019d8b2f-68f5-7411-af66-35ea8c255ef0",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

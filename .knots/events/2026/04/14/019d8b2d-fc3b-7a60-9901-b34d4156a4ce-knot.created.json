@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8b2d-fc3b-7a60-9901-b34d4156a4ce",
+  "occurred_at": "2026-04-14T08:48:59.963204Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRemove the unsupported compat-status vocabulary and translation layer from Foolery run paths so execution-plan behavior is expressed directly in Knots and Foolery terms instead of generic states like `open`, `in_progress`, or `closed`. This includes identifying where compat-status logic exists today, removing it from execution-plan paths first, and then eliminating the abstraction entirely if nothing legitimate still depends on it.\n\nVerification:\n1. Execution-plan code paths no longer depend on compat-status filters or mappings.\n2. Remaining references to compat-status concepts are either removed from the codebase or justified as temporary migration debt outside the plan path.\n3. Tests cover the direct, spec-native behavior after removal.\n\nConstraints:\n- Do not replace compat-status with a different generic translation layer.\n- Prefer direct workflow-aware logic over hidden state remapping.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Rip out compat-status abstractions from Foolery",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

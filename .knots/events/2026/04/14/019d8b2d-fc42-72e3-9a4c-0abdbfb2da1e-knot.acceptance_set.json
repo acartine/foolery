@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b2d-fc42-72e3-9a4c-0abdbfb2da1e",
+  "occurred_at": "2026-04-14T08:48:59.963204Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. No execution-plan run path depends on compat-status mappings or generic state aliases.\n2. The codebase no longer treats compat status as a supported conceptual layer for Foolery behavior.\n3. Any surviving references are explicitly quarantined as migration debt with a clear follow-up path, not treated as valid design."
+  }
+}

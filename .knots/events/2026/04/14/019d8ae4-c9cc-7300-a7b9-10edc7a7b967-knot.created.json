@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-c9cc-7300-a7b9-10edc7a7b967",
+  "occurred_at": "2026-04-14T07:29:02.922882Z",
+  "knot_id": "foolery-ef9c",
+  "type": "knot.created",
+  "data": {
+    "body": "Expose persisted plans through /api/plans.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add execution plan create/get/list API",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

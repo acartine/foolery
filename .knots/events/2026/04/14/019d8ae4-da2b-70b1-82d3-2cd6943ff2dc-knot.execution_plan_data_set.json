@@ -1,0 +1,191 @@
+{
+  "event_id": "019d8ae4-da2b-70b1-82d3-2cd6943ff2dc",
+  "occurred_at": "2026-04-14T07:29:07.115261Z",
+  "knot_id": "foolery-79a3",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "assumptions": [
+        "Work knots carry hierarchy and dependencies; the execution_plan knot carries plan provenance and wave structure.",
+        "Slice 3 reuses the six existing April 13 knots instead of recreating them."
+      ],
+      "beat_ids": [
+        "e819",
+        "1a3d",
+        "ef9c",
+        "0cae",
+        "85d7",
+        "5b94",
+        "18e3",
+        "b7cf",
+        "a0cb",
+        "4fdd",
+        "08c3",
+        "foolery-fec0",
+        "foolery-27fe",
+        "foolery-0dee",
+        "foolery-4d52",
+        "foolery-4e28",
+        "foolery-a873"
+      ],
+      "mode": "groom",
+      "objective": "Ship the Grooming to Execution Plan spec",
+      "repo_path": "/Users/cartine/foolery",
+      "status": "draft",
+      "waves": [
+        {
+          "beat_ids": [
+            "e819",
+            "1a3d",
+            "ef9c",
+            "0cae"
+          ],
+          "id": "slice-1",
+          "steps": [
+            {
+              "beat_ids": [
+                "1a3d"
+              ],
+              "id": "slice-1-step-1",
+              "status": "pending",
+              "summary": "Persist execution plans as typed data.",
+              "title": "Execution plan storage and types"
+            },
+            {
+              "beat_ids": [
+                "ef9c"
+              ],
+              "blocked_by_step_ids": [
+                "slice-1-step-1"
+              ],
+              "id": "slice-1-step-2",
+              "status": "pending",
+              "summary": "Expose create/get/list plan routes.",
+              "title": "Execution plan read/write API"
+            },
+            {
+              "beat_ids": [
+                "0cae"
+              ],
+              "blocked_by_step_ids": [
+                "slice-1-step-2"
+              ],
+              "id": "slice-1-step-3",
+              "status": "pending",
+              "summary": "Cover persistence and readback behavior.",
+              "title": "Persisted plan coverage"
+            }
+          ],
+          "summary": "Land execution-plan storage, APIs, and coverage.",
+          "title": "Persist and expose execution plans"
+        },
+        {
+          "beat_ids": [
+            "85d7",
+            "5b94",
+            "18e3",
+            "b7cf"
+          ],
+          "blocked_by_wave_ids": [
+            "slice-1"
+          ],
+          "id": "slice-2",
+          "steps": [
+            {
+              "beat_ids": [
+                "5b94"
+              ],
+              "id": "slice-2-step-1",
+              "status": "pending",
+              "summary": "Choose the next executable plan step.",
+              "title": "Next-step selection"
+            },
+            {
+              "beat_ids": [
+                "18e3"
+              ],
+              "blocked_by_step_ids": [
+                "slice-2-step-1"
+              ],
+              "id": "slice-2-step-2",
+              "status": "pending",
+              "summary": "Start, complete, and fail plan steps.",
+              "title": "Step-driving routes"
+            },
+            {
+              "beat_ids": [
+                "b7cf"
+              ],
+              "blocked_by_step_ids": [
+                "slice-2-step-2"
+              ],
+              "id": "slice-2-step-3",
+              "status": "pending",
+              "summary": "Verify end-to-end plan driving flows.",
+              "title": "Plan-driving coverage"
+            }
+          ],
+          "summary": "Expose next/start/complete/fail plan-driving behavior.",
+          "title": "Let external agents drive execution plans"
+        },
+        {
+          "beat_ids": [
+            "a0cb",
+            "4fdd",
+            "08c3",
+            "foolery-fec0",
+            "foolery-27fe",
+            "foolery-0dee",
+            "foolery-4d52",
+            "foolery-4e28",
+            "foolery-a873"
+          ],
+          "blocked_by_wave_ids": [
+            "slice-2"
+          ],
+          "id": "slice-3",
+          "steps": [
+            {
+              "beat_ids": [
+                "foolery-fec0",
+                "foolery-0dee",
+                "foolery-4d52"
+              ],
+              "id": "slice-3-step-1",
+              "status": "pending",
+              "summary": "Land the first planner and prompt prerequisites.",
+              "title": "Planner selection and prompt foundations"
+            },
+            {
+              "beat_ids": [
+                "foolery-27fe",
+                "foolery-4e28"
+              ],
+              "blocked_by_step_ids": [
+                "slice-3-step-1"
+              ],
+              "id": "slice-3-step-2",
+              "status": "pending",
+              "summary": "Complete planner follow-up and prompt step protocol work.",
+              "title": "Step protocol follow-through"
+            },
+            {
+              "beat_ids": [
+                "foolery-a873"
+              ],
+              "blocked_by_step_ids": [
+                "slice-3-step-2"
+              ],
+              "id": "slice-3-step-3",
+              "status": "pending",
+              "summary": "Finish the final quality and cleanup pass.",
+              "title": "Plan quality cleanup"
+            }
+          ],
+          "summary": "Improve planner selection, prompt context, and step protocol.",
+          "title": "Improve execution plan generation quality"
+        }
+      ]
+    }
+  }
+}

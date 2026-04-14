@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ae4-cac1-7ee2-9215-b26c783ef0df",
+  "occurred_at": "2026-04-14T07:29:03.168409Z",
+  "knot_id": "foolery-18e3",
+  "type": "knot.created",
+  "data": {
+    "body": "Expose external step-driving plan routes.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add plan step start/complete/fail routes",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

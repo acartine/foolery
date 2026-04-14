@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8b3b-18a6-77c2-ba03-d66d40dcbe79",
+  "occurred_at": "2026-04-14T09:03:19.195792Z",
+  "knot_id": "foolery-dacc",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The execution-plan API contract makes the client responsible for selecting the knots to be planned.\n2. Server-side repo scans are no longer the primary meaning of `POST /api/plans`.\n3. The revised interface is compatible with a future client flow that queries `ready for grooming` knots and submits those ids for planning."
+  }
+}
