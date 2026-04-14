@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac2-85f2-7b62-b2e4-7e9b7ac92a83",
+  "occurred_at": "2026-04-14T06:51:37.329802Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAdd a typed execution-plan payload model to Knots, persist it through storage and sync, and expose supported CLI read/write surfaces so other tools can treat execution plans as structured data instead of freeform notes.\n\nVerification:\n1. In the Knots worktree, run targeted tests for payload round-tripping through the local database, event log/snapshot sync, rehydrate, and kno show --json serialization.\n2. Run a CLI smoke check that writes payload data from a file and then reads it back to confirm typed fields survive persistence and sync boundaries.\n\nConstraints:\n- Model payload separately from workflow state. The payload owns runtime fields like status, waves, steps, assumptions, and beat ids.\n- Add plan-specific CLI write support rather than hiding JSON in description or note fields.\n- Add or preserve a provenance edge kind planned_by for work-knot -> execution_plan relationships without giving it parent_of semantics.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Persist execution_plan payload in Knots",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

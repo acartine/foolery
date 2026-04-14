@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac2-ff4b-7422-80a1-484d8fa96f2c",
+  "occurred_at": "2026-04-14T06:52:08.39506Z",
+  "knot_id": "foolery-ca9a",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nTeach Foolery to select the next runnable step and mutate per-step execution state directly inside execution_plan knot payloads so external agents can drive a plan from start to finish.\n\nVerification:\n1. In the Foolery worktree, run targeted tests for GET /api/plans/:id/next and the step start/complete/fail routes; expect payload step state to update and next-step selection to honor dependencies.\n2. Exercise a manual drive flow against a stored execution plan and confirm pending, in_progress, complete, and failed step states persist across requests.\n\nConstraints:\n- Keep the reviewed route surface: GET /api/plans/:id/next plus POST /api/plans/:id/steps/:stepId/start, /complete, and /fail.\n- Step dependency logic should read from the persisted execution-plan structure, including waves and steps, not transient process state.\n- Preserve spec runtime status fields in payload form rather than overloading knot workflow state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Drive Foolery plan steps from execution_plan payload",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

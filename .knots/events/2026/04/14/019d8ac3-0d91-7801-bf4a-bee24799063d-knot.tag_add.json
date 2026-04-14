@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac3-0d91-7801-bf4a-bee24799063d",
+  "occurred_at": "2026-04-14T06:52:12.049617Z",
+  "knot_id": "foolery-ca9a",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "repo:foolery"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac6-988d-7e50-a513-6f12553a041c",
+  "occurred_at": "2026-04-14T06:56:04.23733Z",
+  "knot_id": "foolery-2fb5",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Add a persistent plan resource under `src/app/api/orchestration/plans` with collection and item routes for create/list/get, keeping live session SSE endpoints under `src/app/api/orchestration/*` focused on active orchestration sessions.\n2. Introduce a dedicated library module such as `src/lib/orchestration-plan-manager.ts` that talks to the Knots-backed execution_plan store, reuses `orchestration-plan-helpers.ts` for normalization/shape handling, and returns API DTOs with the execution_plan knot id as `planId`.\n3. Replace process-local or sidecar plan retrieval for the supported flows with persistent execution_plan knot reads/writes only.\n4. Update OpenAPI path/schema definitions so the persistent plan routes are documented alongside the existing streaming/session routes.\n5. Add route tests for create/list/get because current orchestration route coverage is mostly indirect or helper-level.\n\nComplexity and risks:\n- Medium-high. The biggest risk is muddling persistent plan resources with live session resources and accidentally coupling the new plan APIs to the current in-memory session store.\n- A secondary risk is drifting the returned JSON shape from the reviewed spec while translating between Knots payloads and existing orchestration helper types.\n\nTest strategy:\n- Add direct route tests for POST/list/get plan endpoints.\n- Extend helper-level tests where plan normalization or tagged-plan extraction is reused.\n- Verify OpenAPI paths/schemas for the new endpoints if there are snapshot-style tests around them.\n\nHierarchy:\n- No new child knots are needed for planning. Step driving and final plan-tree creation remain separate sibling knots.",
+    "datetime": "2026-04-14T06:56:04.23733Z",
+    "entry_id": "019d8ac6-988d-7e50-a513-6f0d97eca397",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

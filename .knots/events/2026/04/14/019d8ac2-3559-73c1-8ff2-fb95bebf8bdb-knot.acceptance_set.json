@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-3559-73c1-8ff2-fb95bebf8bdb",
+  "occurred_at": "2026-04-14T06:51:16.691826Z",
+  "knot_id": "foolery-c0b2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Knots supports a native execution_plan knot type with the execution_plan_sdlc builtin workflow and both autopilot and semiauto profiles.\n2. Knots persists typed execution-plan payload data and exposes supported CLI read/write surfaces for it.\n3. Foolery persists and drives execution plans through execution_plan knots instead of sidecar or in-memory plan storage.\n4. Foolery creates or reconciles planned_by provenance edges between generated work knots and their execution_plan knot.\n5. A real Foolery execution_plan knot exists for the grooming-to-execution spec and its generated work tree is linked and tagged according to the reviewed design."
+  }
+}

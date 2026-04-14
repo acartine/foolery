@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-85f6-77e0-81ea-e2a8c1e478bb",
+  "occurred_at": "2026-04-14T06:51:37.329802Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Knots persists typed ExecutionPlanData alongside existing typed payloads such as GateData and LeaseData.\n2. kno show --json exposes execution_plan payload data in a structured execution_plan field.\n3. A supported CLI surface exists to write execution-plan payload data from a file or equivalent structured input.\n4. Execution-plan payload data survives local persistence, sync, snapshot, and rehydrate flows.\n5. planned_by edges can be created and listed without triggering hierarchy or dependency side effects."
+  }
+}

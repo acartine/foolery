@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac4-f04a-7873-b372-011504da8283",
+  "occurred_at": "2026-04-14T06:54:15.626385Z",
+  "knot_id": "foolery-a9a2",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Start implementation in the Knots worktree by landing the enum/registry/builtin-workflow changes first, then add the new `loom/execution_plan_sdlc` bundle and extend command-level tests that prove `kno new --type execution_plan` resolves to the builtin workflow with `autopilot` as default and `semiauto` available. The main integration risk is incomplete builtin registration across init/doctor/profile code paths.",
+    "datetime": "2026-04-14T06:54:15.626385Z",
+    "entry_id": "019d8ac4-f04a-7873-b372-010441b577c6",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac5-a71f-79b0-8f9f-9cd17ce942c7",
+  "occurred_at": "2026-04-14T06:55:02.431488Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implementation should start in the Knots worktree by modeling `ExecutionPlanData`, then threading it through DB/cache/app views, then adding the command-level file-input path and finally extending sync/rehydrate tests. Treat sync persistence as the highest-risk area because it is easiest to miss while local show/update still appears correct.",
+    "datetime": "2026-04-14T06:55:02.431488Z",
+    "entry_id": "019d8ac5-a71f-79b0-8f9f-9cc4f6bc0de2",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

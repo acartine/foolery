@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac7-2044-7aa0-83a3-c2865eb54cad",
+  "occurred_at": "2026-04-14T06:56:38.980203Z",
+  "knot_id": "foolery-ca9a",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Extend the persisted execution-plan model on the Foolery side to include step-level state and dependency metadata in a form the API can query deterministically.\n2. Add resource routes under the persistent plan subtree for next-step lookup and step status transitions: `GET /api/orchestration/plans/[planId]/next` plus `POST /api/orchestration/plans/[planId]/steps/[stepId]/{start,complete,fail}` or the equivalent reviewed path shape.\n3. Implement a library helper in the persistent plan manager that computes the next runnable step from the stored waves/steps/dependency graph and updates payload state atomically for start/complete/fail transitions.\n4. Keep the current live-session stack (`orchestration-session-*`) focused on plan generation and application, and have the step-driving routes operate purely on persisted execution_plan payloads.\n5. Add direct route tests plus helper tests for dependency ordering and persisted status transitions.\n\nComplexity and risks:\n- Medium-high. The main risk is encoding step dependency/state rules in more than one place and letting live-session logic diverge from persisted-plan logic.\n- Another risk is partial updates that mark step status without updating plan-level runtime status or next-step eligibility consistently.\n\nTest strategy:\n- Add direct API tests for next/start/complete/fail routes.\n- Add helper-level tests for dependency-aware next-step selection.\n- Verify persisted state across multiple requests so the behavior is not process-local.\n\nHierarchy:\n- No additional child knots are needed. This knot depends on persistent plan storage and precedes final plan-tree instantiation.",
+    "datetime": "2026-04-14T06:56:38.980203Z",
+    "entry_id": "019d8ac7-2044-7aa0-83a3-c278b16ec3b8",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

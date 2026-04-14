@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-c599-7123-a8cb-8f942f311fcb",
+  "occurred_at": "2026-04-14T06:51:53.62588Z",
+  "knot_id": "foolery-2fb5",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "initiative:execution-plan"
+  }
+}

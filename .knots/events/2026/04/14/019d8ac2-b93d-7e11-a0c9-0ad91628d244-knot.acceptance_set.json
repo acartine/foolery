@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-b93d-7e11-a0c9-0ad91628d244",
+  "occurred_at": "2026-04-14T06:51:50.456055Z",
+  "knot_id": "foolery-2fb5",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. POST /api/plans creates or updates an execution_plan knot and returns its knot id as planId.\n2. GET /api/plans/:id reads its response from the execution_plan knot payload.\n3. GET /api/plans?repoPath=... lists execution_plan knots for the repo path and returns payload-backed summaries.\n4. Foolery no longer depends on sidecar or in-memory-only execution-plan persistence for the supported API flows."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac2-3554-7cf2-8d0d-e1e363c985f3",
+  "occurred_at": "2026-04-14T06:51:16.691826Z",
+  "knot_id": "foolery-c0b2",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nImplement the reviewed execution-plan initiative across Knots and Foolery so execution plans become first-class knots, Foolery persists plans in those knots, and generated work is linked back to its plan with provenance edges.\n\nVerification:\n1. In the Knots worktree, run the execution_plan-focused tests covering type parsing, builtin workflow registration, payload persistence/serialization, and CLI read/write surfaces; expect them to pass.\n2. In the Foolery worktree, run the execution-plan API and orchestration-plan tests covering POST/GET/list/next/start/complete/fail flows against execution_plan knots; expect them to pass.\n3. Use kno commands in Foolery to confirm a real execution_plan knot exists for spec:foolery/Specs/Spec - Grooming to Execution Plan.md and that generated work knots are linked to it with planned_by edges.\n\nConstraints:\n- Do the cross-repo implementation in dedicated git worktrees.\n- Preserve the agreed execution_plan design: builtin workflow id execution_plan_sdlc, default autopilot profile with agent review, semiauto profile for human review, and planned_by edges from work knots to the plan knot.\n- Do not use parent_of between an execution_plan knot and generated work knots.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Ship native execution_plan knots end to end",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

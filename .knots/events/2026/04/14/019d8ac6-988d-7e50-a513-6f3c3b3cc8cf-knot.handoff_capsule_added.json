@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac6-988d-7e50-a513-6f3c3b3cc8cf",
+  "occurred_at": "2026-04-14T06:56:04.23733Z",
+  "knot_id": "foolery-2fb5",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implementation should carve persistent plans out as a new resource subtree under `src/app/api/orchestration/plans/**` backed by a dedicated `orchestration-plan-manager` library module, while leaving the existing live-session routes focused on session creation/SSE/apply. The main design guardrail is to keep execution_plan-knot storage separate from the current in-memory session store.",
+    "datetime": "2026-04-14T06:56:04.23733Z",
+    "entry_id": "019d8ac6-988d-7e50-a513-6f26c8d38e2c",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

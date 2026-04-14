@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac4-f04a-7873-b372-00f21dc2fa27",
+  "occurred_at": "2026-04-14T06:54:15.626385Z",
+  "knot_id": "foolery-a9a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Extend Knots core type plumbing for execution_plan by updating `src/domain/knot_type.rs`, knot-type registry/default-workflow resolution, CLI type parsing/help text, and any type-filter/test surfaces that enumerate builtin types.\n2. Add the builtin `loom/execution_plan_sdlc` workflow bundle with the reviewed authoring lifecycle (`ready_for_design -> design -> ready_for_review -> review -> shipped` plus standard blocked/deferred/abandoned states), `autopilot` as the default profile, `semiauto` as the human-reviewed alternative, and prompt outputs aligned to `note` and `approval`.\n3. Register the bundled workflow in the embedded/builtin workflow loader and extend bundled-workflow tests so execution_plan is treated like work/gate/lease/explore.\n4. Validate the end-to-end creation path with focused tests plus a smoke check that `kno new --type execution_plan` resolves to `execution_plan_sdlc`.\n\nComplexity and risks:\n- Medium. The knot-type enum change is broad because it fans into help text, registry defaults, and test snapshots.\n- The main risk is missing one of the builtin-workflow registration paths or profile defaults, which would make creation succeed in some commands but fail in init/doctor/profile commands.\n\nTest strategy:\n- Extend knot-type parsing/unit tests.\n- Extend builtin workflow registry/profile tests.\n- Add or extend command-level tests covering `kno new --type execution_plan` and workflow resolution.\n\nHierarchy:\n- No additional child knots are needed for this planning step; payload persistence and Foolery adoption are already tracked as sibling knots.",
+    "datetime": "2026-04-14T06:54:15.626385Z",
+    "entry_id": "019d8ac4-f04a-7873-b372-00ee6b7ed048",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

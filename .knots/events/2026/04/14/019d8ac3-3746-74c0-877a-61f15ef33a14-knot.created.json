@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac3-3746-74c0-877a-61f15ef33a14",
+  "occurred_at": "2026-04-14T06:52:22.726032Z",
+  "knot_id": "foolery-56e7",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nOnce native execution_plan support exists, instantiate the real execution_plan knot for the grooming-to-execution spec, attach the reviewed slice hierarchy beneath it with provenance edges, and reconcile the existing slice-3 work knots into that tree.\n\nVerification:\n1. Use kno ls/show/edge list in Foolery to confirm the execution_plan knot exists with the spec tag and slice:all tag.\n2. Confirm the generated Slice 1 and Slice 2 work knots plus the existing Slice 3 work knots are linked to the execution_plan knot with planned_by edges and expected parent_of/blocked_by relationships inside the work tree.\n3. Confirm the existing April 13 Slice 3 knots are reparented under the reviewed Slice 3 grouping parents rather than recreated.\n\nConstraints:\n- The execution_plan knot must be of the native execution_plan type, not a work knot.\n- Do not use parent_of from the plan knot to the generated work knots; use planned_by for provenance and keep hierarchy among work knots only.\n- Reuse the literal spec tag spec:foolery/Specs/Spec - Grooming to Execution Plan.md and the agreed slice tags.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Create Foolery execution_plan knot and work tree",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

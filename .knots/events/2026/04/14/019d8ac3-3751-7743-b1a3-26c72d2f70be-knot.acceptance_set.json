@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac3-3751-7743-b1a3-26c72d2f70be",
+  "occurred_at": "2026-04-14T06:52:22.726032Z",
+  "knot_id": "foolery-56e7",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. A real execution_plan knot exists in Foolery for spec:foolery/Specs/Spec - Grooming to Execution Plan.md.\n2. The plan knot carries the slice:all tag and every generated work knot carries the spec tag plus exactly one slice tag.\n3. Generated or referenced work knots are connected to the plan knot with planned_by edges.\n4. The existing Slice 3 knots foolery-fec0, foolery-27fe, foolery-0dee, foolery-4d52, foolery-4e28, and foolery-a873 are reparented into the reviewed hierarchy instead of recreated."
+  }
+}

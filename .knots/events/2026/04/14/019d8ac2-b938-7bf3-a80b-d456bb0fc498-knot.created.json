@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac2-b938-7bf3-a80b-d456bb0fc498",
+  "occurred_at": "2026-04-14T06:51:50.456055Z",
+  "knot_id": "foolery-2fb5",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nChange Foolery plan storage and retrieval so execution plans are created, listed, fetched, and updated as real execution_plan knots with typed payload data instead of sidecar or process-local storage.\n\nVerification:\n1. In the Foolery worktree, run targeted tests for POST /api/plans and GET /api/plans plus GET /api/plans/:id against the Knots-backed execution-plan store; expect persisted payloads to round-trip.\n2. Exercise a manual create/list/get flow and confirm the returned planId is the execution_plan knot id and the payload fields match the stored execution_plan data.\n\nConstraints:\n- Keep the API surface compatible with the reviewed spec where possible: POST /api/plans, GET /api/plans/:id, and GET /api/plans?repoPath=...\n- Treat knot workflow state as plan authoring lifecycle only; runtime plan status remains in the typed payload.\n- Resolve storage to execution_plan knots only; do not preserve flat-file plan storage as a fallback.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Adopt execution_plan knots in Foolery plan APIs",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

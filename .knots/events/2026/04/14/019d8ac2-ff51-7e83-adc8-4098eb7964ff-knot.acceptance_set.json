@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-ff51-7e83-adc8-4098eb7964ff",
+  "occurred_at": "2026-04-14T06:52:08.39506Z",
+  "knot_id": "foolery-ca9a",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. GET /api/plans/:id/next returns the next runnable step based on persisted execution_plan payload data.\n2. POST /api/plans/:id/steps/:stepId/start marks the step in_progress in the payload.\n3. POST /api/plans/:id/steps/:stepId/complete marks the step complete in the payload.\n4. POST /api/plans/:id/steps/:stepId/fail marks the step failed in the payload.\n5. Next-step selection and step state survive process boundaries because they are persisted in the execution_plan knot payload."
+  }
+}

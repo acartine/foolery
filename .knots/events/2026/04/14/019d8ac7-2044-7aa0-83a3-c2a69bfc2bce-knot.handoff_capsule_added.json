@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac7-2044-7aa0-83a3-c2a69bfc2bce",
+  "occurred_at": "2026-04-14T06:56:38.980203Z",
+  "knot_id": "foolery-ca9a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implementation should add a single persistent-plan step engine in the Foolery plan manager and have the next/start/complete/fail routes delegate to it, rather than duplicating step-state rules in route handlers or live-session code. The highest-risk area is keeping next-step eligibility and persisted status transitions consistent across repeated requests.",
+    "datetime": "2026-04-14T06:56:38.980203Z",
+    "entry_id": "019d8ac7-2044-7aa0-83a3-c2906b492ca1",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

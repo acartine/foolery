@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac5-a71f-79b0-8f9f-9cba03aee9d9",
+  "occurred_at": "2026-04-14T06:55:02.431488Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Add a new typed domain model `ExecutionPlanData` plus validation/serde tests, parallel to `GateData` and `LeaseData`, including runtime fields for plan status, objective, repo path, waves, steps, beat ids, assumptions, and unassigned beat ids.\n2. Thread the new payload through Knots persistence by extending DB schema/records, cache records, and app view conversion so execution_plan knots expose structured payload data in `kno show --json`.\n3. Add a dedicated write surface on update/create command parsing that can read execution-plan JSON from a file and store it through the typed update path, rather than encoding it into description or notes.\n4. Extend event, sync, snapshot, and rehydrate flows so execution-plan payload data survives replication boundaries.\n5. Verify that arbitrary edge kinds such as `planned_by` continue to work without new hierarchy semantics, and add focused tests where helpful.\n\nComplexity and risks:\n- High. This touches storage, command parsing, app views, and sync/event code paths.\n- The main risk is introducing partial support where local show/update works but sync/rehydrate or tests still drop the payload field.\n\nTest strategy:\n- Add domain serde/default tests for ExecutionPlanData.\n- Extend DB/app tests for round-trip persistence and show JSON rendering.\n- Extend sync/apply/rehydrate tests so payload data survives export/import style flows.\n- Add command-level tests for the new structured input path.\n\nHierarchy:\n- No additional child knots are needed; this knot is the payload and CLI layer between the type/workflow slice and Foolery adoption.",
+    "datetime": "2026-04-14T06:55:02.431488Z",
+    "entry_id": "019d8ac5-a71f-79b0-8f9f-9cacc4fc18e3",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

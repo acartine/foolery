@@ -1,0 +1,9 @@
+{
+  "event_id": "019d8ac2-5a44-7832-b2f2-af7e30b5feb2",
+  "occurred_at": "2026-04-14T06:51:26.143067Z",
+  "knot_id": "foolery-a9a2",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. KNOT_TYPE execution_plan is accepted anywhere Knots parses, validates, or lists builtin knot types.\n2. execution_plan_sdlc is installed as a builtin workflow with prompts, profiles, and distribution artifacts alongside the existing builtin workflows.\n3. The default execution_plan profile is autopilot and keeps review agent-owned; semiauto is available as the human-reviewed variant.\n4. kno new --type execution_plan creates a knot that resolves to the execution_plan_sdlc workflow and its initial state."
+  }
+}

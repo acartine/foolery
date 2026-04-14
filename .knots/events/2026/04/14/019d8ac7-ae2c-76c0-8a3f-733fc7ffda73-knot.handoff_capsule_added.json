@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac7-ae2c-76c0-8a3f-733fc7ffda73",
+  "occurred_at": "2026-04-14T06:57:15.308918Z",
+  "knot_id": "foolery-56e7",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning complete. Implementation should instantiate the real execution_plan knot only after the Knots type and payload slices are available, then build the Slice 1/2 work hierarchy around it and reparent the existing Slice 3 knots underneath the reviewed grouping parents. The key guardrail is to use `planned_by` only for plan provenance and keep `parent_of` limited to the work-knot hierarchy.",
+    "datetime": "2026-04-14T06:57:15.308918Z",
+    "entry_id": "019d8ac7-ae2c-76c0-8a3f-732a63ce83a6",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

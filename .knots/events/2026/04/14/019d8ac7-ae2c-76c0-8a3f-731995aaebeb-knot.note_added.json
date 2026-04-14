@@ -1,0 +1,15 @@
+{
+  "event_id": "019d8ac7-ae2c-76c0-8a3f-731995aaebeb",
+  "occurred_at": "2026-04-14T06:57:15.308918Z",
+  "knot_id": "foolery-56e7",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implementation plan:\n1. Once native execution_plan creation and payload writing exist, create the real Foolery plan knot for the reviewed spec using the native `execution_plan` type and store the generated execution-plan payload on it.\n2. Create the remaining Slice 1 and Slice 2 work hierarchy as ordinary work knots, then add `planned_by` edges from every generated or referenced work knot to the execution_plan knot.\n3. Reparent the existing Slice 3 knots under the reviewed grouping parents instead of recreating them, and add any missing `blocked_by` edges inside the slice tree.\n4. Apply tags consistently: the plan knot gets the spec tag plus `slice:all`; every work knot gets the spec tag plus exactly one slice tag.\n5. Add verification coverage or scripts where practical so the creation flow can assert the plan knot type, payload, and provenance edges without depending on manual inspection alone.\n\nComplexity and risks:\n- Medium. The main risk is mixing provenance edges and hierarchy edges incorrectly, especially if `planned_by` creation gets folded into parent/child setup by mistake.\n- Another risk is tag drift after reparenting the existing Slice 3 knots.\n\nTest strategy:\n- Add or update focused tests around the plan-instantiation helper if one exists.\n- Verify with direct kno commands that the created plan knot, tags, and edges match the reviewed structure.\n\nHierarchy:\n- This knot creates the reviewed execution-plan artifact and work tree; no additional planning children are required.",
+    "datetime": "2026-04-14T06:57:15.308918Z",
+    "entry_id": "019d8ac7-ae2c-76c0-8a3f-730a7fd9fbe2",
+    "model": "gpt-5.4",
+    "username": "unknown",
+    "version": "5.4"
+  }
+}

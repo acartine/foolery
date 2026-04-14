@@ -1,0 +1,17 @@
+{
+  "event_id": "019d8ac2-5a3f-7a93-a3ad-7149c8e29d27",
+  "occurred_at": "2026-04-14T06:51:26.143067Z",
+  "knot_id": "foolery-a9a2",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nTeach Knots about a first-class execution_plan knot type with a builtin execution_plan_sdlc workflow so plans are no longer modeled as generic work knots or ad hoc payloads.\n\nVerification:\n1. In the Knots worktree, run targeted tests for knot-type parsing/validation, builtin workflow installation, repo defaults, and kno new/show paths for execution_plan.\n2. Run a manual smoke check like kno new --type execution_plan in a test repo and confirm the created knot reports the execution_plan_sdlc workflow and expected default profile.\n\nConstraints:\n- Bundle both profiles: autopilot defaulting to agent review and semiauto defaulting to human review.\n- Use note for design output and approval for review output.\n- Keep execution-plan authoring lifecycle in the workflow state machine and reserve runtime plan status for typed payload data.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add execution_plan type and workflow to Knots",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
