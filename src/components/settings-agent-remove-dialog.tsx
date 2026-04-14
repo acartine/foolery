@@ -35,6 +35,7 @@ const ACTION_LABELS: Record<ActionName, string> = {
 };
 
 const STEP_LABELS: Record<SettingsPoolStep, string> = {
+  orchestration: "Orchestration",
   planning: "Planning",
   plan_review: "Plan Review",
   implementation: "Implementation",

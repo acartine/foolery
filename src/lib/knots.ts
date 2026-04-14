@@ -28,6 +28,38 @@ interface ExecOptions {
   repoPath?: string;
 }
 
+export interface ExecutionPlanStepRecord {
+  id: string;
+  title?: string;
+  status?: string;
+  beat_ids?: string[];
+  depends_on?: string[];
+  [key: string]: unknown;
+}
+
+export interface ExecutionPlanWaveRecord {
+  id?: string;
+  name?: string;
+  objective?: string;
+  status?: string;
+  beat_ids?: string[];
+  steps?: ExecutionPlanStepRecord[];
+  [key: string]: unknown;
+}
+
+export interface ExecutionPlanRecord {
+  status?: string;
+  repo_path?: string;
+  objective?: string;
+  mode?: string;
+  model?: string;
+  beat_ids?: string[];
+  unassigned_beat_ids?: string[];
+  assumptions?: string[];
+  waves?: ExecutionPlanWaveRecord[];
+  [key: string]: unknown;
+}
+
 export interface KnotRecord {
   id: string;
   /** Singular alias returned by `kno show --json` / `kno ls --json`. */
@@ -56,6 +88,7 @@ export interface KnotRecord {
   invariants?: Invariant[];
   workflow_etag?: string | null;
   created_at?: string | null;
+  execution_plan?: ExecutionPlanRecord | null;
   lease_id?: string | null;
   lease?: {
     lease_type: string;
@@ -146,6 +179,7 @@ export interface KnotUpdateInput {
   addInvariants?: string[];
   removeInvariants?: string[];
   clearInvariants?: boolean;
+  executionPlanFile?: string;
   force?: boolean;
 }
 

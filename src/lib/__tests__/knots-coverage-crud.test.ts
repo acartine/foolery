@@ -196,12 +196,29 @@ describe("newKnot", () => {
     expect(callArgs).toContain("semiauto");
   });
 
-  it("passes workflow as profile option", async () => {
+  it("passes workflow option", async () => {
     responseQueue.push({ stdout: "created 104" });
     await newKnot("Title", { workflow: "autopilot" }, "/repo");
     const callArgs = execFileCallArgs[0]!;
-    expect(callArgs).toContain("--profile");
+    expect(callArgs).toContain("--workflow");
     expect(callArgs).toContain("autopilot");
+  });
+
+  it("passes native knot type and tags", async () => {
+    responseQueue.push({ stdout: "created 105" });
+    await newKnot(
+      "Title",
+      {
+        type: "execution_plan",
+        tags: ["spec:foolery/spec.md", "slice:all", ""],
+      },
+      "/repo",
+    );
+    const callArgs = execFileCallArgs[0]!;
+    expect(callArgs).toContain("--type");
+    expect(callArgs).toContain("execution_plan");
+    expect(callArgs).toContain("--tag=spec:foolery/spec.md");
+    expect(callArgs).toContain("--tag=slice:all");
   });
 
   it("returns error on non-zero exit", async () => {
@@ -337,11 +354,15 @@ describe("updateKnot", () => {
       noteModel: "opus", noteVersion: "1.0",
       addHandoffCapsule: "Capsule text", handoffUsername: "user2",
       handoffDatetime: "2026-01-02", handoffAgentname: "agent2",
-      handoffModel: "model2", handoffVersion: "2.0", force: true,
+      handoffModel: "model2", handoffVersion: "2.0",
+      executionPlanFile: "/tmp/plan.json",
+      force: true,
     }, "/repo");
     expect(result.ok).toBe(true);
     const callArgs = execFileCallArgs[0]!;
     expect(callArgs).toContain("--title=New Title");
+    expect(callArgs).toContain("--execution-plan-file");
+    expect(callArgs).toContain("/tmp/plan.json");
     expect(callArgs).toContain("--force");
   });
 

@@ -20,6 +20,7 @@ const ACTION_NAMES: readonly ActionName[] = [
 ];
 
 const POOL_STEPS: readonly SettingsPoolStep[] = [
+  "orchestration",
   "planning",
   "plan_review",
   "implementation",

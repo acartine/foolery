@@ -43,8 +43,10 @@ export async function newKnot(
     body?: string;
     acceptance?: string;
     state?: string;
+    type?: string;
     profile?: string;
     workflow?: string;
+    tags?: string[];
   },
   repoPath?: string,
 ): Promise<BdResult<{ id: string }>> {
@@ -55,9 +57,13 @@ export async function newKnot(
     args.push(`--acceptance=${options.acceptance}`);
   }
   if (options?.state) args.push("--state", options.state);
+  if (options?.type) args.push("--type", options.type);
 
-  const selectedProfile = options?.profile ?? options?.workflow;
-  if (selectedProfile) args.push("--profile", selectedProfile);
+  if (options?.profile) args.push("--profile", options.profile);
+  if (options?.workflow) args.push("--workflow", options.workflow);
+  for (const tag of options?.tags ?? []) {
+    if (tag.trim()) args.push(`--tag=${tag}`);
+  }
 
   args.push("--", title);
 
@@ -232,6 +238,9 @@ export async function updateKnot(
   appendNoteArgs(args, input);
   appendHandoffArgs(args, input);
   appendInvariantArgs(args, input);
+  if (input.executionPlanFile) {
+    args.push("--execution-plan-file", input.executionPlanFile);
+  }
 
   if (input.force) args.push("--force");
 

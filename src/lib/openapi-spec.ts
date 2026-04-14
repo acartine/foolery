@@ -7,6 +7,7 @@
 import { componentSchemas } from "@/lib/openapi/schemas";
 import { beatsPaths } from "@/lib/openapi/paths-beats";
 import { depsPaths } from "@/lib/openapi/paths-deps";
+import { plansPaths } from "@/lib/openapi/paths-plans";
 import { wavesPaths } from "@/lib/openapi/paths-waves";
 import {
   terminalPaths,
@@ -30,6 +31,7 @@ export const openApiSpec = {
   tags: [
     { name: "Beats", description: "Beat (work item) CRUD and actions" },
     { name: "Dependencies", description: "Beat dependency management" },
+    { name: "Plans", description: "Persisted execution plans and step driving" },
     { name: "Waves", description: "Wave-based execution planning" },
     { name: "Terminal", description: "Agent terminal sessions and SSE streams" },
     { name: "Breakdown", description: "Beat breakdown planning sessions" },
@@ -41,6 +43,7 @@ export const openApiSpec = {
   paths: {
     ...beatsPaths,
     ...depsPaths,
+    ...plansPaths,
     ...wavesPaths,
     ...terminalPaths,
     ...breakdownPaths,

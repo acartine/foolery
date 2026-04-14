@@ -49,6 +49,7 @@ describe("selectFromPoolStrict", () => {
 
 describe("hasAlternativeAgent", () => {
   const pools: PoolsSettings = {
+    orchestration: [],
     planning: pool,
     plan_review: pool,
     implementation: pool,
@@ -68,6 +69,7 @@ describe("hasAlternativeAgent", () => {
 
   it("returns false for empty pools", () => {
     const emptyPools: PoolsSettings = {
+      orchestration: [],
       planning: [],
       plan_review: [],
       implementation: [],

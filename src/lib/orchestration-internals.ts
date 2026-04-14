@@ -61,6 +61,12 @@ export interface PromptScopeBeat {
   type: Beat["type"];
   state: Beat["state"];
   priority: Beat["priority"];
+  description?: string;
+}
+
+export interface PromptDependencyEdge {
+  blockerId: string;
+  blockedId: string;
 }
 
 // ── Constants ───────────────────────────────────────────────────────
@@ -173,9 +179,58 @@ export async function collectEligibleBeats(
 
 export async function collectContext(
   repoPath: string,
-): Promise<{ beats: Beat[] }> {
+): Promise<{
+  beats: Beat[];
+  edges: PromptDependencyEdge[];
+}> {
   const beats = await collectEligibleBeats(repoPath, {
     excludeOrchestrationWaves: true,
   });
-  return { beats };
+  const inScopeIds = new Set(beats.map((beat) => beat.id));
+  const edgeKeys = new Set<string>();
+  const edges: PromptDependencyEdge[] = [];
+
+  const dependencyResults = await Promise.all(
+    beats.map((beat) =>
+      getBackend().listDependencies(
+        beat.id,
+        repoPath,
+        { type: "blocks" },
+      ),
+    ),
+  );
+
+  for (const result of dependencyResults) {
+    if (!result.ok) {
+      throw new Error(
+        result.error?.message ??
+          "Failed to load dependency edges for orchestration",
+      );
+    }
+    for (const dependency of result.data ?? []) {
+      const blockerId = dependency.source?.trim();
+      const blockedId = dependency.target?.trim();
+      if (!blockerId || !blockedId) continue;
+      if (
+        !inScopeIds.has(blockerId) ||
+        !inScopeIds.has(blockedId)
+      ) {
+        continue;
+      }
+      const edgeKey = `${blockerId}->${blockedId}`;
+      if (edgeKeys.has(edgeKey)) continue;
+      edgeKeys.add(edgeKey);
+      edges.push({ blockerId, blockedId });
+    }
+  }
+
+  edges.sort((left, right) => {
+    const blocker = left.blockerId.localeCompare(
+      right.blockerId,
+    );
+    if (blocker !== 0) return blocker;
+    return left.blockedId.localeCompare(right.blockedId);
+  });
+
+  return { beats, edges };
 }

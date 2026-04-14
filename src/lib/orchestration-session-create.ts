@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { getStepAgent } from "@/lib/settings";
-import { WorkflowStep } from "@/lib/workflows";
+import { getOrchestrationAgent } from "@/lib/settings";
 import {
   buildPromptModeArgs,
   resolveDialect,
@@ -181,10 +180,11 @@ async function initSessionEntry(
   repoPath: string,
   beats: import("@/lib/types").Beat[],
   objective?: string,
+  model?: string,
 ): Promise<{
   session: OrchestrationSession;
   entry: OrchestrationSessionEntry;
-  agent: Awaited<ReturnType<typeof getStepAgent>>;
+  agent: Awaited<ReturnType<typeof getOrchestrationAgent>>;
 }> {
   const session: OrchestrationSession = {
     id: generateId(),
@@ -194,10 +194,7 @@ async function initSessionEntry(
     objective: objective?.trim() || undefined,
   };
 
-  const agent = await getStepAgent(
-    WorkflowStep.Planning,
-    "scene",
-  );
+  const agent = await getOrchestrationAgent(model);
 
   const orchInteractionLog = await startInteractionLog({
     sessionId: session.id,
@@ -237,7 +234,7 @@ async function initSessionEntry(
 
 function wireChildProcess(
   entry: OrchestrationSessionEntry,
-  agent: Awaited<ReturnType<typeof getStepAgent>>,
+  agent: Awaited<ReturnType<typeof getOrchestrationAgent>>,
   prompt: string,
   repoPath: string,
 ) {
@@ -306,8 +303,12 @@ function wireChildProcess(
 export async function createOrchestrationSession(
   repoPath: string,
   objective?: string,
+  options?: {
+    model?: string;
+    mode?: "scene" | "groom";
+  },
 ): Promise<OrchestrationSession> {
-  const { beats } = await collectContext(repoPath);
+  const { beats, edges } = await collectContext(repoPath);
 
   if (beats.length === 0) {
     throw new Error(
@@ -317,13 +318,20 @@ export async function createOrchestrationSession(
   }
 
   const { session, entry, agent } =
-    await initSessionEntry(repoPath, beats, objective);
+    await initSessionEntry(
+      repoPath,
+      beats,
+      objective,
+      options?.model,
+    );
 
   const prompt = emitPromptLog(
     entry,
     beats,
+    edges,
     repoPath,
     objective,
+    options?.mode ?? "groom",
   );
 
   wireChildProcess(entry, agent, prompt, repoPath);

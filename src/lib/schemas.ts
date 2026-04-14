@@ -196,6 +196,7 @@ export const poolEntrySchema = z.object({
 // Pools keyed by workflow step
 export const poolsSettingsSchema = z
   .object({
+    orchestration: z.array(poolEntrySchema).default([]),
     planning: z.array(poolEntrySchema).default([]),
     plan_review: z.array(poolEntrySchema).default([]),
     implementation: z.array(poolEntrySchema).default([]),
@@ -205,6 +206,7 @@ export const poolsSettingsSchema = z
     scope_refinement: z.array(poolEntrySchema).default([]),
   })
   .default({
+    orchestration: [],
     planning: [],
     plan_review: [],
     implementation: [],

@@ -225,12 +225,19 @@ export interface OrchestrationWaveBeat {
   title: string;
 }
 
+export interface OrchestrationWaveStep {
+  stepIndex: number;
+  beatIds: string[];
+  notes?: string;
+}
+
 export interface OrchestrationWave {
   waveIndex: number;
   name: string;
   objective: string;
   agents: OrchestrationAgentSpec[];
   beats: OrchestrationWaveBeat[];
+  steps?: OrchestrationWaveStep[];
   notes?: string;
 }
 
@@ -379,6 +386,7 @@ export type ActionName =
   | "scopeRefinement";
 
 export type SettingsPoolStep =
+  | "orchestration"
   | "planning"
   | "plan_review"
   | "implementation"

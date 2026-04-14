@@ -19,6 +19,7 @@ vi.mock("node:fs/promises", () => ({
 import {
   getRegisteredAgents,
   getActionAgent,
+  getOrchestrationAgent,
   getScopeRefinementAgent,
   addRegisteredAgent,
   getAgentRemovalImpact,
@@ -155,6 +156,49 @@ describe("getScopeRefinementAgent", () => {
     mockReadFile.mockResolvedValue("");
     const agent = await getScopeRefinementAgent();
     expect(agent).toBeNull();
+  });
+});
+
+describe("getOrchestrationAgent", () => {
+  it("uses the orchestration pool in advanced mode", async () => {
+    const toml = [
+      'dispatchMode = "advanced"',
+      '[agents.codex]', 'command = "codex"', 'label = "Codex"',
+      '[[pools.orchestration]]', 'agentId = "codex"', 'weight = 1',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getOrchestrationAgent();
+
+    expect(agent.command).toBe("codex");
+    expect(agent.agentId).toBe("codex");
+  });
+
+  it("falls back to the scene action mapping when no orchestration pool is configured", async () => {
+    const toml = [
+      '[agents.sonnet]', 'command = "claude"', 'model = "sonnet-4"',
+      '[actions]', 'scene = "sonnet"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getOrchestrationAgent();
+
+    expect(agent.command).toBe("claude");
+    expect(agent.agentId).toBe("sonnet");
+    expect(agent.model).toBe("sonnet-4");
+  });
+
+  it("applies a model override after agent resolution", async () => {
+    const toml = [
+      '[agents.sonnet]', 'command = "claude"', 'model = "sonnet-4"',
+      '[actions]', 'scene = "sonnet"',
+    ].join("\n");
+    mockReadFile.mockResolvedValue(toml);
+
+    const agent = await getOrchestrationAgent("gpt-5.4");
+
+    expect(agent.command).toBe("claude");
+    expect(agent.model).toBe("gpt-5.4");
   });
 });
 

@@ -222,6 +222,7 @@ export function swapActionsAgent(
 }
 
 const DEFAULT_POOL_STEPS: ReadonlyArray<keyof PoolsSettings> = [
+  "orchestration",
   WorkflowStep.Planning,
   WorkflowStep.PlanReview,
   WorkflowStep.Implementation,

@@ -73,6 +73,7 @@ const DEFAULTS: SettingsData = {
     prompt: DEFAULT_SCOPE_REFINEMENT_PROMPT,
   },
   pools: {
+    orchestration: [],
     planning: [],
     plan_review: [],
     implementation: [],

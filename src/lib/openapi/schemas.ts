@@ -3,6 +3,7 @@
  */
 
 import { extendedComponentSchemas } from "./schemas-extended";
+import { planComponentSchemas } from "./schemas-plans";
 
 const coreSchemas = {
   Beat: {
@@ -251,12 +252,13 @@ const coreSchemas = {
             beats: {
               type: "array",
               items: {
-                type: "object",
-                required: ["id", "title"],
-                properties: {
-                  id: { type: "string" },
-                  title: { type: "string" },
-                },
+                $ref: "#/components/schemas/OrchestrationWaveBeat",
+              },
+            },
+            steps: {
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/OrchestrationWaveStep",
               },
             },
             notes: { type: "string" },
@@ -433,6 +435,7 @@ const coreSchemas = {
       pools: {
         type: "object",
         properties: {
+          orchestration: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           planning: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           plan_review: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
           implementation: { type: "array", items: { $ref: "#/components/schemas/PoolEntry" } },
@@ -460,5 +463,6 @@ const coreSchemas = {
 
 export const componentSchemas = {
   ...coreSchemas,
+  ...planComponentSchemas,
   ...extendedComponentSchemas,
 } as const;

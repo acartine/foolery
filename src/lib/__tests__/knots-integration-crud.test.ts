@@ -124,7 +124,17 @@ describe("listKnots", () => {
 
 describe("showKnot", () => {
   it("returns parsed knot on success", async () => {
-    const knot = { id: "K-1", title: "show me", state: "planning", updated_at: "2025-01-01" };
+    const knot = {
+      id: "K-1",
+      title: "show me",
+      state: "planning",
+      updated_at: "2025-01-01",
+      execution_plan: {
+        status: "draft",
+        repo_path: "/repo",
+        waves: [{ id: "wave-1", steps: [{ id: "step-1", status: "pending" }] }],
+      },
+    };
     const promise = showKnot("K-1", "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     expect(execFileCallbacks[0].args).toEqual(
@@ -134,6 +144,9 @@ describe("showKnot", () => {
     const result = await promise;
     expect(result.ok).toBe(true);
     expect(result.data).toEqual(knot);
+    expect(result.data?.execution_plan?.waves?.[0]).toMatchObject({
+      id: "wave-1",
+    });
   });
 
   it("returns error on CLI failure", async () => {
@@ -178,13 +191,35 @@ describe("newKnot", () => {
     await promise;
   });
 
-  it("passes --profile when workflow option is set (falls back)", async () => {
+  it("passes --workflow when workflow option is set", async () => {
     const promise = newKnot("Task", { workflow: "granular" }, "/repo");
     await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
     expect(execFileCallbacks[0].args).toEqual(
-      expect.arrayContaining(["--profile", "granular"]),
+      expect.arrayContaining(["--workflow", "granular"]),
     );
     resolveNext("created K-0001");
+    await promise;
+  });
+
+  it("passes knot type and tags when provided", async () => {
+    const promise = newKnot(
+      "Plan",
+      {
+        type: "execution_plan",
+        tags: ["spec:foo/bar.md", "slice:all", "   "],
+      },
+      "/repo",
+    );
+    await vi.waitFor(() => expect(execFileCallbacks).toHaveLength(1));
+    expect(execFileCallbacks[0].args).toEqual(
+      expect.arrayContaining([
+        "--type",
+        "execution_plan",
+        "--tag=spec:foo/bar.md",
+        "--tag=slice:all",
+      ]),
+    );
+    resolveNext("created K-0002");
     await promise;
   });
 

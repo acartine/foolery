@@ -14,16 +14,8 @@ import type {
   AgentRemovalRequest,
 } from "@/lib/types";
 import type { AgentTarget } from "@/lib/types-agent-target";
-import {
-  type WorkflowStep,
-  isReviewStep,
-  priorActionStep,
-} from "@/lib/workflows";
-import {
-  resolvePoolAgent,
-  getLastStepAgent,
-  recordStepAgent,
-} from "@/lib/agent-pool";
+import type { WorkflowStep } from "@/lib/workflows";
+import { resolvePoolAgent } from "@/lib/agent-pool";
 import {
   normalizeAgentIdentity,
 } from "@/lib/agent-identity";
@@ -55,6 +47,14 @@ import {
   mergeMissingDefaults,
   readRawSettings,
 } from "@/lib/settings-core";
+import type { SettingsPartial } from "@/lib/settings-types";
+import {
+  resolveOrchestrationAgent,
+  resolveStepAgent,
+} from "@/lib/settings-orchestration";
+import {
+  mergeSettingsPartial,
+} from "@/lib/settings-update";
 
 // ── Re-exports for API compatibility ─────────────────────────
 
@@ -187,19 +187,7 @@ export async function saveSettings(
   }
 }
 
-/** Partial shape accepted by updateSettings for deep merging. */
-export type SettingsPartial = Partial<{
-  agents: FoolerySettings["agents"];
-  actions: Partial<FoolerySettings["actions"]>;
-  backend: Partial<FoolerySettings["backend"]>;
-  defaults: Partial<FoolerySettings["defaults"]>;
-  scopeRefinement: Partial<FoolerySettings["scopeRefinement"]>;
-  pools: Partial<FoolerySettings["pools"]>;
-  dispatchMode: FoolerySettings["dispatchMode"];
-  maxConcurrentSessions: FoolerySettings["maxConcurrentSessions"];
-  maxClaimsPerQueueType: FoolerySettings["maxClaimsPerQueueType"];
-  terminalLightTheme: FoolerySettings["terminalLightTheme"];
-}>;
+export type { SettingsPartial } from "@/lib/settings-types";
 
 /**
  * Merge a partial update into the current settings, save,
@@ -235,48 +223,6 @@ export async function updateSettings(
     });
     throw error;
   }
-}
-
-function mergeSettingsPartial(
-  current: FoolerySettings,
-  partial: SettingsPartial,
-): FoolerySettings {
-  return {
-    ...current,
-    agents: partial.agents !== undefined
-      ? { ...current.agents, ...partial.agents }
-      : current.agents,
-    actions: partial.actions !== undefined
-      ? { ...current.actions, ...partial.actions }
-      : current.actions,
-    backend: partial.backend !== undefined
-      ? { ...current.backend, ...partial.backend }
-      : current.backend,
-    defaults: partial.defaults !== undefined
-      ? { ...current.defaults, ...partial.defaults }
-      : current.defaults,
-    scopeRefinement: partial.scopeRefinement !== undefined
-      ? { ...current.scopeRefinement, ...partial.scopeRefinement }
-      : current.scopeRefinement,
-    pools: partial.pools !== undefined
-      ? { ...current.pools, ...partial.pools }
-      : current.pools,
-    dispatchMode: partial.dispatchMode !== undefined
-      ? partial.dispatchMode
-      : current.dispatchMode,
-    maxConcurrentSessions:
-      partial.maxConcurrentSessions !== undefined
-        ? partial.maxConcurrentSessions
-        : current.maxConcurrentSessions,
-    maxClaimsPerQueueType:
-      partial.maxClaimsPerQueueType !== undefined
-        ? partial.maxClaimsPerQueueType
-        : current.maxClaimsPerQueueType,
-    terminalLightTheme:
-      partial.terminalLightTheme !== undefined
-        ? partial.terminalLightTheme
-        : current.terminalLightTheme,
-  };
 }
 
 // ── Public dispatch API ──────────────────────────────────────
@@ -334,6 +280,13 @@ export async function getActionAgent(
   return toCliTarget({
     command: getFallbackCommand(settings.agents),
   });
+}
+
+export async function getOrchestrationAgent(
+  modelOverride?: string,
+): Promise<AgentTarget> {
+  const settings = await loadSettings();
+  return resolveOrchestrationAgent(settings, modelOverride);
 }
 
 export async function getScopeRefinementSettings(): Promise<
@@ -468,83 +421,12 @@ export async function getStepAgent(
   beatId?: string,
 ): Promise<AgentTarget> {
   const settings = await loadSettings();
-
-  if (settings.dispatchMode === "advanced") {
-    const result = resolveStepFromPool(
-      step,
-      settings,
-      beatId,
-      fallbackAction,
-    );
-    if (result) return result;
-  }
-
-  if (fallbackAction) {
-    const agentId = settings.actions[fallbackAction] ?? "";
-    if (
-      agentId &&
-      agentId !== "default" &&
-      settings.agents[agentId]
-    ) {
-      return toCliTarget(settings.agents[agentId], agentId);
-    }
-  }
-
-  return toCliTarget({
-    command: getFallbackCommand(settings.agents),
-  });
-}
-
-function resolveStepFromPool(
-  step: WorkflowStep,
-  settings: FoolerySettings,
-  beatId: string | undefined,
-  fallbackAction: ActionName | undefined,
-): AgentTarget | null {
-  const poolAgents: Record<string, RegisteredAgentConfig> = {
-    ...settings.agents,
-  };
-
-  let excludeAgentId: string | undefined;
-  if (beatId && isReviewStep(step)) {
-    const actionStep = priorActionStep(step);
-    if (actionStep) {
-      excludeAgentId = getLastStepAgent(beatId, actionStep);
-    }
-  }
-
-  console.log(
-    `[getStepAgent] step="${step}" ` +
-      `dispatchMode="advanced" ` +
-      `beatId=${beatId ?? "n/a"} ` +
-      `fallbackAction=${fallbackAction ?? "n/a"} ` +
-      `excludeAgentId=${excludeAgentId ?? "none"} ` +
-      `registeredAgents=[${Object.keys(poolAgents).join(", ")}]`,
-  );
-  const poolAgent = resolvePoolAgent(
+  return resolveStepAgent(
     step,
-    settings.pools,
-    poolAgents,
-    excludeAgentId,
+    settings,
+    fallbackAction,
+    beatId,
   );
-  if (poolAgent) {
-    if (beatId && poolAgent.agentId) {
-      recordStepAgent(beatId, step, poolAgent.agentId);
-    }
-    console.log(
-      `[getStepAgent] step="${step}" => pool selection: ` +
-        `agentId=${poolAgent.agentId ?? "n/a"} ` +
-        `kind=${poolAgent.kind} ` +
-        `command=${poolAgent.command} ` +
-        `model=${poolAgent.model ?? "n/a"}`,
-    );
-    return poolAgent;
-  }
-  console.log(
-    `[getStepAgent] step="${step}" ` +
-      `pool returned null, falling back to action mapping`,
-  );
-  return null;
 }
 
 /** Reset the in-memory cache (useful for testing). */

@@ -28,6 +28,10 @@ interface PoolsSectionProps {
 }
 
 const STEP_LABELS: Record<keyof PoolsSettings, { label: string; description: string }> = {
+  orchestration: {
+    label: "Orchestration",
+    description: "Agent generates execution plans and step groupings",
+  },
   [WorkflowStep.Planning]: {
     label: "Planning",
     description: "Agent writes the implementation plan",
@@ -59,6 +63,7 @@ const STEP_LABELS: Record<keyof PoolsSettings, { label: string; description: str
 };
 
 const ALL_STEPS: ReadonlyArray<keyof PoolsSettings> = [
+  "orchestration",
   WorkflowStep.Planning,
   WorkflowStep.PlanReview,
   WorkflowStep.Implementation,

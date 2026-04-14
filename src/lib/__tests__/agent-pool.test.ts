@@ -183,6 +183,7 @@ describe("selectFromPool: excludeAgentId", () => {
 
 describe("resolvePoolAgent", () => {
   const emptyPools: PoolsSettings = {
+    orchestration: [],
     planning: [],
     plan_review: [],
     implementation: [],
@@ -443,6 +444,7 @@ describe("countDispatchAgentOccurrences", () => {
   };
 
   const pools: PoolsSettings = {
+    orchestration: [],
     planning: [{ agentId: "claude", weight: 1 }],
     plan_review: [],
     implementation: [
@@ -475,6 +477,7 @@ describe("countDispatchAgentOccurrences", () => {
 
 describe("swapPoolsAgent", () => {
   const basePools: PoolsSettings = {
+    orchestration: [],
     planning: [{ agentId: "claude", weight: 1 }],
     plan_review: [],
     implementation: [
@@ -501,12 +504,10 @@ describe("swapPoolsAgent", () => {
       scope_refinement: [{ agentId: "codex", weight: 5 }],
     });
     expect(result.updatedPools).toEqual({
+      orchestration: [],
       planning: [{ agentId: "codex", weight: 1 }],
       plan_review: [],
-      implementation: [
-        { agentId: "sonnet", weight: 2 },
-        { agentId: "codex", weight: 3 },
-      ],
+      implementation: [{ agentId: "sonnet", weight: 2 }, { agentId: "codex", weight: 3 }],
       implementation_review: [{ agentId: "codex", weight: 4 }],
       shipment: [{ agentId: "codex", weight: 1 }],
       shipment_review: [],
@@ -532,6 +533,7 @@ describe("swapPoolsAgent", () => {
 
   it("counts every matching pool entry across steps, not just affected steps", () => {
     const pools: PoolsSettings = {
+      orchestration: [],
       planning: [
         { agentId: "claude", weight: 1 },
         { agentId: "claude", weight: 2 },
@@ -552,12 +554,10 @@ describe("swapPoolsAgent", () => {
     expect(result.affectedEntries).toBe(5);
     expect(result.affectedSteps).toBe(4);
     expect(result.updatedPools).toEqual({
+      orchestration: [],
       planning: [{ agentId: "codex", weight: 3 }],
       plan_review: [],
-      implementation: [
-        { agentId: "sonnet", weight: 2 },
-        { agentId: "codex", weight: 3 },
-      ],
+      implementation: [{ agentId: "sonnet", weight: 2 }, { agentId: "codex", weight: 3 }],
       implementation_review: [],
       shipment: [{ agentId: "codex", weight: 1 }],
       shipment_review: [{ agentId: "codex", weight: 4 }],

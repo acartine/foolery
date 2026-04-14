@@ -36,6 +36,7 @@ const DEFAULT_ACTIONS = {
 };
 
 const DEFAULT_POOLS = {
+  orchestration: [],
   planning: [], plan_review: [],
   implementation: [], implementation_review: [],
   shipment: [], shipment_review: [],
@@ -221,6 +222,7 @@ describe("backfillMissingSettingsDefaults", () => {
         '[scopeRefinement]',
         `prompt = """${DEFAULT_SCOPE_REFINEMENT_PROMPT}"""`,
         '[pools]', 'planning = []', 'plan_review = []',
+        'orchestration = []',
         'implementation = []', 'implementation_review = []',
         'shipment = []', 'shipment_review = []',
         'scope_refinement = []',
