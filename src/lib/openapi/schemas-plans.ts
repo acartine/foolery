@@ -203,12 +203,13 @@ export const planComponentSchemas = {
 
   PersistedPlan: {
     type: "object",
-    required: ["artifact", "plan", "progress", "lineage"],
+    required: ["artifact", "plan", "progress", "lineage", "skillPrompt"],
     properties: {
       artifact: { $ref: "#/components/schemas/PlanArtifact" },
       plan: { $ref: "#/components/schemas/PlanDocument" },
       progress: { $ref: "#/components/schemas/PlanProgress" },
       lineage: { $ref: "#/components/schemas/PlanLineage" },
+      skillPrompt: { type: "string" },
     },
   },
 
@@ -250,11 +251,7 @@ export const planComponentSchemas = {
     required: ["data"],
     properties: {
       data: {
-        type: "object",
-        required: ["planId"],
-        properties: {
-          planId: { type: "string" },
-        },
+        $ref: "#/components/schemas/PersistedPlan",
       },
     },
   },

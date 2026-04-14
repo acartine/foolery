@@ -1,5 +1,4 @@
 import { EventEmitter } from "node:events";
-
 import {
   addEdge,
   listEdges,
@@ -37,6 +36,7 @@ import {
   mapPlanSummary,
   toExecutionPlanRecord,
 } from "@/lib/orchestration-plan-payload";
+import { buildExecutionPlanSkillPrompt } from "@/lib/orchestration-plan-skill-prompt";
 import {
   buildPlanTitle,
   canonicalizePlanId,
@@ -46,7 +46,6 @@ import {
 import { persistPlanPayload } from "@/lib/orchestration-plan-storage";
 
 const PLAN_TIMEOUT_MS = 3 * 60 * 1000;
-
 async function waitForSessionPlan(
   sessionId: string,
 ): Promise<OrchestrationPlan> {
@@ -419,19 +418,6 @@ async function loadPlanKnot(
   return matches[0] ?? null;
 }
 
-function toPlanRecord(
-  record: KnotRecord,
-  progress: PlanProgress,
-  lineage: PlanLineage,
-): PlanRecord {
-  const artifact = mapPlanArtifact(record);
-  const plan = mapExecutionPlanDocument(record);
-  if (!artifact || !plan) {
-    throw new Error("Plan record is missing execution plan data.");
-  }
-  return { artifact, plan, progress, lineage };
-}
-
 export async function createPlan(
   input: CreatePlanInput,
 ): Promise<{ planId: string }> {
@@ -493,10 +479,8 @@ export async function createPlan(
     input.replacesPlanId,
     input.repoPath,
   );
-
   return { planId: canonicalPlanId };
 }
-
 export async function getPlan(
   planId: string,
   repoPath?: string,
@@ -511,7 +495,22 @@ export async function getPlan(
     deriveProgress(plan, resolvedRepoPath),
     deriveLineage(planId, resolvedRepoPath),
   ]);
-  return toPlanRecord(record, progress, lineage);
+  const artifact = mapPlanArtifact(record);
+  if (!artifact) {
+    throw new Error("Plan record is missing execution plan data.");
+  }
+  return {
+    artifact,
+    plan,
+    progress,
+    lineage,
+    skillPrompt: buildExecutionPlanSkillPrompt(
+      artifact,
+      plan,
+      progress,
+      lineage,
+    ),
+  };
 }
 
 export async function listPlans(

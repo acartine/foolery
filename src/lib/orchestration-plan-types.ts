@@ -90,6 +90,7 @@ export interface PlanRecord {
   plan: PlanDocument;
   progress: PlanProgress;
   lineage: PlanLineage;
+  skillPrompt: string;
 }
 
 export interface PlanSummary {

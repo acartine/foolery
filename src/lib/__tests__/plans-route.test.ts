@@ -48,6 +48,7 @@ function makePersistedPlan(id = "plan-1") {
     lineage: {
       replacedByPlanIds: [],
     },
+    skillPrompt: "# Execution Plan Skill\n\n## Purpose\n- Repo: /repo",
   };
 }
 
@@ -56,10 +57,13 @@ beforeEach(() => {
 });
 
 describe("plans routes create/list", () => {
-  it("creates a persisted plan and returns its id", async () => {
+  it("creates a persisted plan and returns the full record", async () => {
     mockCreatePlan.mockResolvedValue({
       planId: "repo-plan-1",
     });
+    mockGetPlan.mockResolvedValue(
+      makePersistedPlan("repo-plan-1"),
+    );
 
     const response = await createPlanRoute(
       new NextRequest("http://localhost/api/plans", {
@@ -78,9 +82,10 @@ describe("plans routes create/list", () => {
     const json = await response.json();
 
     expect(response.status).toBe(201);
-    expect(json).toEqual({
-      data: { planId: "repo-plan-1" },
-    });
+    expect(json.data.artifact.id).toBe("repo-plan-1");
+    expect(json.data.skillPrompt).toContain(
+      "Execution Plan Skill",
+    );
     expect(mockCreatePlan).toHaveBeenCalledWith({
       repoPath: "/repo",
       beatIds: ["beat-1", "beat-2"],
@@ -89,6 +94,10 @@ describe("plans routes create/list", () => {
       model: "gpt-5.4",
       replacesPlanId: "plan-0",
     });
+    expect(mockGetPlan).toHaveBeenCalledWith(
+      "repo-plan-1",
+      "/repo",
+    );
   });
 
   it("returns 400 when beatIds is missing on create", async () => {
@@ -157,6 +166,7 @@ describe("plans routes read", () => {
 
     expect(response.status).toBe(200);
     expect(json.data.artifact.id).toBe("plan-1");
+    expect(json.data.skillPrompt).toContain("Execution Plan Skill");
     expect(mockGetPlan).toHaveBeenCalledWith(
       "plan-1",
       undefined,

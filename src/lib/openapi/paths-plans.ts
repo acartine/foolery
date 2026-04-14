@@ -58,10 +58,12 @@ export const plansPaths = {
       },
       responses: {
         "201": {
-          description: "Persisted plan created",
+          description: "Persisted plan created with execution guidance",
           content: {
             "application/json": {
-              schema: { $ref: "#/components/schemas/CreatePlanResponse" },
+              schema: {
+                $ref: "#/components/schemas/CreatePlanResponse",
+              },
             },
           },
         },

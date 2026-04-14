@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   createPlan,
+  getPlan,
   listPlans,
 } from "@/lib/orchestration-plan-manager";
 import { withServerTiming } from "@/lib/server-timing";
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
     },
     async ({ measure }) => {
       try {
-        const plan = await measure(
+        const created = await measure(
           "create",
           () =>
             createPlan({
@@ -111,6 +112,15 @@ export async function POST(request: NextRequest) {
               replacesPlanId,
             }),
         );
+        const plan = await measure(
+          "read_created",
+          () => getPlan(created.planId, repoPath),
+        );
+        if (!plan) {
+          throw new Error(
+            `Created plan ${created.planId} could not be loaded.`,
+          );
+        }
         return NextResponse.json(
           { data: plan },
           { status: 201 },

@@ -290,6 +290,16 @@ it("returns artifact, plan, progress, and lineage", async () => {
     replacesPlanId: "plan-0",
     replacedByPlanIds: ["plan-2"],
   });
+  expect(plan?.skillPrompt).toContain("# Execution Plan Skill");
+  expect(plan?.skillPrompt).toContain(
+    "- Step: a set of beats that may be executed in parallel.",
+  );
+  expect(plan?.skillPrompt).toContain(
+    "POST /api/terminal",
+  );
+  expect(plan?.skillPrompt).toContain(
+    "Wave 1, Step 2: `beat-2`",
+  );
 });
 
 it("resolves a plan from the repo registry when repoPath is omitted", async () => {
