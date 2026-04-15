@@ -9,8 +9,12 @@ CONFIG_DIR="${HOME}/.config/foolery"
 SETTINGS_FILE="${CONFIG_DIR}/settings.toml"
 
 _WIZARD_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=model-picker.sh
-source "${_WIZARD_SCRIPT_DIR}/model-picker.sh"
+_HAS_MODEL_PICKER=0
+if [[ -f "${_WIZARD_SCRIPT_DIR}/model-picker.sh" ]]; then
+  # shellcheck source=model-picker.sh
+  source "${_WIZARD_SCRIPT_DIR}/model-picker.sh"
+  _HAS_MODEL_PICKER=1
+fi
 # shellcheck source=toml-reader.sh
 source "${_WIZARD_SCRIPT_DIR}/toml-reader.sh"
 
@@ -484,7 +488,8 @@ _collect_discovered_models() {
 $models_list
 EOF
 
-  if ((${#models[@]} > _MODEL_SEARCH_THRESHOLD)); then
+  if ((_HAS_MODEL_PICKER && ${#models[@]} > _MODEL_SEARCH_THRESHOLD))
+  then
     _model_search_pick _wizard_heading _wizard_prompt \
       _prompt_model_manual "$aid" "${models[@]}"
     return
