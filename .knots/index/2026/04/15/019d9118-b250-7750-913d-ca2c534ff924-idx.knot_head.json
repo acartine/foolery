@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9118-b250-7750-913d-ca2c534ff924",
+  "occurred_at": "2026-04-15T12:23:28.080875Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8470",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Re-ground execution-plan taxonomy in Foolery",
+    "type": "work",
+    "updated_at": "2026-04-15T12:23:28.080875Z",
+    "workflow_id": "work_sdlc"
+  }
+}

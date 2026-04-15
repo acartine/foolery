@@ -1,0 +1,15 @@
+{
+  "event_id": "019d913b-108f-7531-b932-a6edd58bf169",
+  "occurred_at": "2026-04-15T13:01:00.431859Z",
+  "knot_id": "foolery-18e3",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[2026-04-15] Abandoned: the 97b8 design decision established that plan progress is derived from live beat states (only shipped counts), plans are immutable, and GET /api/plans/:id returns derived progress + skill prompt inline. Agents poll the plan endpoint and orchestrate individual knots directly — no mutable step state or step-driving routes are needed.",
+    "datetime": "2026-04-15T13:01:00.431859Z",
+    "entry_id": "019d913b-108f-7531-b932-a6dc0a68215d",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

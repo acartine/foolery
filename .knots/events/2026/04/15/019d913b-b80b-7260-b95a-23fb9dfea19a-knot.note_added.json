@@ -1,0 +1,15 @@
+{
+  "event_id": "019d913b-b80b-7260-b95a-23fb9dfea19a",
+  "occurred_at": "2026-04-15T13:01:43.307061Z",
+  "knot_id": "foolery-c0b2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[2026-04-15] Scope update: step-driving routes (ca9a) abandoned per 97b8 design decision — agents poll GET /api/plans/:id for derived progress + skill prompt and orchestrate individual knots directly. No mutable step state or start/complete/fail routes needed. Verification criteria updated: the POST/GET/list/next/start/complete/fail reference in the original body is superseded — only POST/GET/list flows apply. Remaining work: a9a2 (execution_plan type in Knots) and a431 (payload persistence in Knots), both in implementation. Foolery-side children (2fb5, 56e7) are shipped.",
+    "datetime": "2026-04-15T13:01:43.307061Z",
+    "entry_id": "019d913b-b80b-7260-b95a-23e4765d1e8e",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

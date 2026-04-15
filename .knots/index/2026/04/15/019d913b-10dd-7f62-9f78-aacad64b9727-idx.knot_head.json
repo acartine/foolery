@@ -1,0 +1,21 @@
+{
+  "event_id": "019d913b-10dd-7f62-9f78-aacad64b9727",
+  "occurred_at": "2026-04-15T13:01:00.509421Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-b7cf",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add end-to-end plan-driving coverage",
+    "type": "work",
+    "updated_at": "2026-04-15T13:01:00.509421Z",
+    "workflow_id": "work_sdlc"
+  }
+}

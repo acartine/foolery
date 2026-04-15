@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b2f6-79f2-8d89-1117d6e9b3b5",
+  "occurred_at": "2026-04-15T12:10:21.814815Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-fec0",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add orchestration pool key to settings schema",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.814815Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d90ba-cf32-7980-81fe-09540ad10776",
+  "occurred_at": "2026-04-15T10:40:55.090651Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1fd3",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add searchable model picker for large OpenCode model lists",
+    "type": "work",
+    "updated_at": "2026-04-15T10:40:55.090651Z",
+    "workflow_id": "work_sdlc"
+  }
+}

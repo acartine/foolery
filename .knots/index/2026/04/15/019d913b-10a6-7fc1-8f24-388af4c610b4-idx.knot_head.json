@@ -1,0 +1,21 @@
+{
+  "event_id": "019d913b-10a6-7fc1-8f24-388af4c610b4",
+  "occurred_at": "2026-04-15T13:01:00.454534Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-18e3",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Add plan step start/complete/fail routes",
+    "type": "work",
+    "updated_at": "2026-04-15T13:01:00.454534Z",
+    "workflow_id": "work_sdlc"
+  }
+}

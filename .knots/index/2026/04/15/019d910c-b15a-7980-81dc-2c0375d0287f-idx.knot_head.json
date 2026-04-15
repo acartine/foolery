@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b15a-7980-81dc-2c0375d0287f",
+  "occurred_at": "2026-04-15T12:10:21.402075Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dacc",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Make POST /api/plans client-scoped instead of repo-scoped",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.402075Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9119-b8f8-7150-bc3e-6009c5e50c98",
+  "occurred_at": "2026-04-15T12:24:35.320708Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-97b8",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Separate plan artifact lifecycle from runtime semantics",
+    "type": "work",
+    "updated_at": "2026-04-15T12:24:35.320708Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b30f-78e2-aeb4-58c2cee00c03",
+  "occurred_at": "2026-04-15T12:10:21.839876Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-27fe",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Wire orchestration agent resolution through new pool",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.839876Z",
+    "workflow_id": "work_sdlc"
+  }
+}

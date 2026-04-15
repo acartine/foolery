@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b19b-7970-82c8-feeea21c681f",
+  "occurred_at": "2026-04-15T12:10:21.467664Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4e28",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enhance orchestration prompt for code-aware grooming",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.467664Z",
+    "workflow_id": "work_sdlc"
+  }
+}

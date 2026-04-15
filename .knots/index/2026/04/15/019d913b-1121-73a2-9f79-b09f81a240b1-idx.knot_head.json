@@ -1,0 +1,21 @@
+{
+  "event_id": "019d913b-1121-73a2-9f79-b09f81a240b1",
+  "occurred_at": "2026-04-15T13:01:00.577451Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ca9a",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Drive Foolery plan steps from execution_plan payload",
+    "type": "work",
+    "updated_at": "2026-04-15T13:01:00.577451Z",
+    "workflow_id": "work_sdlc"
+  }
+}

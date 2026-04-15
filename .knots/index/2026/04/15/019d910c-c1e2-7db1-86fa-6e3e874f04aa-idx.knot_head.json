@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-c1e2-7db1-86fa-6e3e874f04aa",
+  "occurred_at": "2026-04-15T12:10:25.634464Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e819",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Persist and expose execution plans",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:25.634464Z",
+    "workflow_id": "work_sdlc"
+  }
+}

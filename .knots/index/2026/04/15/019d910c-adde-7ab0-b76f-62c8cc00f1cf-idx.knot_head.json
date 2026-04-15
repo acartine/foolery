@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-adde-7ab0-b76f-62c8cc00f1cf",
+  "occurred_at": "2026-04-15T12:10:20.510129Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-0cae",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add persisted plan API coverage",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:20.510129Z",
+    "workflow_id": "work_sdlc"
+  }
+}

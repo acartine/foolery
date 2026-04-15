@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b143-7e12-9fff-fae89bca1b6b",
+  "occurred_at": "2026-04-15T12:10:21.379265Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-23b7",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add immutable execution-plan revision edges",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.379265Z",
+    "workflow_id": "work_sdlc"
+  }
+}

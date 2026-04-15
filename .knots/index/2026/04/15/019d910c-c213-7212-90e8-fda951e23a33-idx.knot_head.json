@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-c213-7212-90e8-fda951e23a33",
+  "occurred_at": "2026-04-15T12:10:25.683738Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4fdd",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Configure orchestration planner selection",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:25.683738Z",
+    "workflow_id": "work_sdlc"
+  }
+}

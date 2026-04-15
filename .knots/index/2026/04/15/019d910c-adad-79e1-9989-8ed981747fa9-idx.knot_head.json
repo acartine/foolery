@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-adad-79e1-9989-8ed981747fa9",
+  "occurred_at": "2026-04-15T12:10:20.461842Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-1a3d",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Implement execution plan storage and types",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:20.461842Z",
+    "workflow_id": "work_sdlc"
+  }
+}

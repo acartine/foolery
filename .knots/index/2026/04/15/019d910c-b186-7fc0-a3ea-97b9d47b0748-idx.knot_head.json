@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b186-7fc0-a3ea-97b9d47b0748",
+  "occurred_at": "2026-04-15T12:10:21.446958Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-4d52",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Include dependency edges in orchestration prompt",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.446958Z",
+    "workflow_id": "work_sdlc"
+  }
+}

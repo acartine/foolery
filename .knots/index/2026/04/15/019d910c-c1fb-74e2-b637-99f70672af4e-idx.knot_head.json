@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-c1fb-74e2-b637-99f70672af4e",
+  "occurred_at": "2026-04-15T12:10:25.659237Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-08c3",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Improve prompt and step protocol",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:25.659237Z",
+    "workflow_id": "work_sdlc"
+  }
+}

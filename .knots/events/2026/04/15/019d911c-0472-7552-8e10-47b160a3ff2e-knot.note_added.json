@@ -1,0 +1,15 @@
+{
+  "event_id": "019d911c-0472-7552-8e10-47b160a3ff2e",
+  "occurred_at": "2026-04-15T12:27:05.714004Z",
+  "knot_id": "foolery-dd18",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[2026-04-15] Scope narrowed after review: the original concerns about taxonomy, persistence, and output-path Scene coupling are all resolved. The only remaining work is decoupling the generation path. Specifically, createPlan() in orchestration-plan-manager.ts:431 still delegates to createExplicitOrchestrationSession() + waitForSessionPlan(), which routes through the in-memory orchestration session store (session lifecycle, SSE event emitter, streaming state). The fix is to replace those two calls with a dedicated plan-generation function that invokes the Claude orchestration subprocess directly and returns the plan without touching the session store. The prompt-building and normalization code in orchestration-plan-normalization.ts and orchestration-plan-helpers.ts can be reused — the issue is only the session-store indirection, not the prompt or plan extraction logic.",
+    "datetime": "2026-04-15T12:27:05.714004Z",
+    "entry_id": "019d911c-0472-7552-8e10-47ac4881d440",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

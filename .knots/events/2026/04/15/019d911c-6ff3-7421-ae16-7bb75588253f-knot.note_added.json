@@ -1,0 +1,15 @@
+{
+  "event_id": "019d911c-6ff3-7421-ae16-7bb75588253f",
+  "occurred_at": "2026-04-15T12:27:33.235159Z",
+  "knot_id": "foolery-5b94",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "[2026-04-15] Partial progress: PlanStepProgress, NextPlanStep types exist in orchestration-plan-types.ts. deriveProgress() in orchestration-plan-manager.ts already computes nextStep by walking waves/steps to find the first incomplete one — satisfaction is derived from live beat states (only shipped counts). What remains: mutable per-step state for external agent driving. Currently there is no way to mark a step as started/in-progress/failed independently of beat state. Design question: should step execution state live in the execution_plan knot payload (requiring payload writes on start/complete/fail) or remain purely derived? The answer likely depends on 18e3 (step routes) since those routes need to either mutate payload or just signal beat-level transitions. Plan accordingly.",
+    "datetime": "2026-04-15T12:27:33.235159Z",
+    "entry_id": "019d911c-6ff3-7421-ae16-7bae556434bd",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

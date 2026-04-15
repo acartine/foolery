@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-b331-7c32-85fc-38d1d584ee7b",
+  "occurred_at": "2026-04-15T12:10:21.873979Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2fb5",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Adopt execution_plan knots in Foolery plan APIs",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:21.873979Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d913b-106c-76f3-80e2-a52da47247a4",
+  "occurred_at": "2026-04-15T13:01:00.396009Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5b94",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Implement plan next-step selection and step state",
+    "type": "work",
+    "updated_at": "2026-04-15T13:01:00.396009Z",
+    "workflow_id": "work_sdlc"
+  }
+}

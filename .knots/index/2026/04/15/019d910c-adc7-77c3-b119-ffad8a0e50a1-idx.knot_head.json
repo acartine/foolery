@@ -1,0 +1,21 @@
+{
+  "event_id": "019d910c-adc7-77c3-b119-ffad8a0e50a1",
+  "occurred_at": "2026-04-15T12:10:20.48709Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-ef9c",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add execution plan create/get/list API",
+    "type": "work",
+    "updated_at": "2026-04-15T12:10:20.48709Z",
+    "workflow_id": "work_sdlc"
+  }
+}

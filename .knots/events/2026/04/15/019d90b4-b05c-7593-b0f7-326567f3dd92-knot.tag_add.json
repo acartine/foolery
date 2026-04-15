@@ -1,0 +1,9 @@
+{
+  "event_id": "019d90b4-b05c-7593-b0f7-326567f3dd92",
+  "occurred_at": "2026-04-15T10:34:13.980541Z",
+  "knot_id": "foolery-1fd3",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-knots-1fd3-model-picker"
+  }
+}

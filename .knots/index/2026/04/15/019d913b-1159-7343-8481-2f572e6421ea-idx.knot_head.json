@@ -1,0 +1,21 @@
+{
+  "event_id": "019d913b-1159-7343-8481-2f572e6421ea",
+  "occurred_at": "2026-04-15T13:01:00.633569Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-85d7",
+    "profile_id": "autopilot",
+    "state": "abandoned",
+    "terminal": true,
+    "title": "Let external agents drive execution plans",
+    "type": "work",
+    "updated_at": "2026-04-15T13:01:00.633569Z",
+    "workflow_id": "work_sdlc"
+  }
+}

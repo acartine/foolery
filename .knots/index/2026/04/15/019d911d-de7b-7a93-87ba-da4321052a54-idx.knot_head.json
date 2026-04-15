@@ -1,0 +1,21 @@
+{
+  "event_id": "019d911d-de7b-7a93-87ba-da4321052a54",
+  "occurred_at": "2026-04-15T12:29:07.067006Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-56e7",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Create Foolery execution_plan knot and work tree",
+    "type": "work",
+    "updated_at": "2026-04-15T12:29:07.067006Z",
+    "workflow_id": "work_sdlc"
+  }
+}
