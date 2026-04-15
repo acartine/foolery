@@ -1,0 +1,17 @@
+{
+  "event_id": "019d91cb-4ed1-70b1-aa9c-b37e9588dff0",
+  "occurred_at": "2026-04-15T15:38:33.553134Z",
+  "knot_id": "foolery-6f55",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nValidate and normalize knot ID references in execution_plan payloads on write. Accept both bare IDs (e.g., \"a873\") and fully-qualified IDs (e.g., \"foolery-a873\") as input, but always canonicalize to the fully-qualified form before persisting. Display should always show fully-qualified IDs.\n\nVerification:\n1. Writing an execution_plan payload with bare knot IDs (e.g., \"a873\") stores them as fully-qualified (e.g., \"foolery-a873\").\n2. Writing with already-qualified IDs passes through unchanged.\n3. Writing with an ID that doesn't resolve to any known knot produces a warning or error.\n4. kno show --json always displays fully-qualified knot IDs in knot_ids arrays at all levels (top-level, wave, step).\n\nConstraints:\n- Apply to all knot_ids fields in the execution_plan schema (top-level, per-wave, per-step).\n- Do not silently drop unresolvable IDs — warn or reject.\n- Keep backward compatibility: existing payloads with bare IDs should still load, but normalize on next write.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Normalize knot ID references in execution_plan payloads",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

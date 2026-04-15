@@ -1,0 +1,77 @@
+{
+  "event_id": "019d91bf-c509-7382-9972-91c2eb1a457f",
+  "occurred_at": "2026-04-15T15:25:57.385092Z",
+  "knot_id": "foolery-79a3",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "assumptions": [
+        "Work knots carry hierarchy and dependencies; the execution_plan knot carries plan provenance and wave structure.",
+        "Slice 3 reuses the six existing April 13 knots instead of recreating them."
+      ],
+      "mode": "groom",
+      "objective": "Ship the Grooming to Execution Plan spec",
+      "repo_path": "/Users/cartine/foolery",
+      "summary": "Three-slice execution plan: persist and expose plans, let agents drive plans, improve generation quality.",
+      "waves": [
+        {
+          "name": "Persist and expose execution plans",
+          "objective": "Land execution-plan storage, APIs, and coverage.",
+          "steps": [
+            {
+              "notes": "Execution plan storage and types — persist execution plans as typed data.",
+              "step_index": 1
+            },
+            {
+              "notes": "Execution plan read/write API — expose create/get/list plan routes.",
+              "step_index": 2
+            },
+            {
+              "notes": "Persisted plan coverage — cover persistence and readback behavior.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 1
+        },
+        {
+          "name": "Let external agents drive execution plans",
+          "objective": "Expose next/start/complete/fail plan-driving behavior.",
+          "steps": [
+            {
+              "notes": "Next-step selection — choose the next executable plan step.",
+              "step_index": 1
+            },
+            {
+              "notes": "Step-driving routes — start, complete, and fail plan steps.",
+              "step_index": 2
+            },
+            {
+              "notes": "Plan-driving coverage — verify end-to-end plan driving flows.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 2
+        },
+        {
+          "name": "Improve execution plan generation quality",
+          "objective": "Improve planner selection, prompt context, and step protocol.",
+          "steps": [
+            {
+              "notes": "Planner selection and prompt foundations — land the first planner and prompt prerequisites.",
+              "step_index": 1
+            },
+            {
+              "notes": "Step protocol follow-through — complete planner follow-up and prompt step protocol work.",
+              "step_index": 2
+            },
+            {
+              "notes": "Plan quality cleanup — finish the final quality and cleanup pass.",
+              "step_index": 3
+            }
+          ],
+          "wave_index": 3
+        }
+      ]
+    }
+  }
+}

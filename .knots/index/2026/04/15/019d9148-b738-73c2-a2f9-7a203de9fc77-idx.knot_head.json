@@ -1,0 +1,106 @@
+{
+  "event_id": "019d9148-b738-73c2-a2f9-7a203de9fc77",
+  "occurred_at": "2026-04-15T13:15:55.064899Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "execution_plan": {
+      "assumptions": [
+        "Work knots carry hierarchy and dependencies; the execution_plan knot carries plan provenance and wave structure.",
+        "Slice 3 reuses the six existing April 13 knots instead of recreating them."
+      ],
+      "mode": "groom",
+      "objective": "Ship the Grooming to Execution Plan spec",
+      "repo_path": "/Users/cartine/foolery",
+      "waves": [
+        {
+          "name": "",
+          "objective": "",
+          "steps": [
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            }
+          ],
+          "wave_index": 0
+        },
+        {
+          "name": "",
+          "objective": "",
+          "steps": [
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            }
+          ],
+          "wave_index": 0
+        },
+        {
+          "name": "",
+          "objective": "",
+          "steps": [
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            },
+            {
+              "step_index": 0
+            }
+          ],
+          "wave_index": 0
+        }
+      ]
+    },
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-79a3",
+    "next_step_metadata": {
+      "action_kind": "gate",
+      "action_state": "review",
+      "output": {
+        "artifact_type": "approval"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "review",
+      "output": {
+        "artifact_type": "approval"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Ship local execution-plan API and driver",
+    "type": "execution_plan",
+    "updated_at": "2026-04-15T13:15:55.064899Z",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}
