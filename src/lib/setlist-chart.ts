@@ -55,6 +55,12 @@ export interface SetlistChartModel {
   rows: SetlistChartRow[];
 }
 
+const TERMINAL_SETLIST_STATES = new Set([
+  "shipped",
+  "abandoned",
+  "closed",
+]);
+
 interface SlotAssignment {
   slotIndex: number;
   order: number;
@@ -118,6 +124,21 @@ export function buildSetlistChart(
     }));
 
   return { slots, rows };
+}
+
+export function isTerminalSetlistState(
+  state: string | undefined,
+): boolean {
+  if (!state) return false;
+  return TERMINAL_SETLIST_STATES.has(state);
+}
+
+export function countWorkableSetlistRows(
+  chart: SetlistChartModel,
+): number {
+  return chart.rows.filter(
+    (row) => !isTerminalSetlistState(row.state),
+  ).length;
 }
 
 function buildRow(

@@ -3,7 +3,10 @@
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { SetlistChartModel } from "@/lib/setlist-chart";
+import {
+  isTerminalSetlistState,
+  type SetlistChartModel,
+} from "@/lib/setlist-chart";
 import { buildBeatFocusHref } from "@/lib/beat-navigation";
 
 export function SetlistChartPanel({
@@ -165,6 +168,7 @@ function ChartCell({
   waveLabel: string;
   detailHref: string | null;
 }) {
+  const isTerminal = isTerminalSetlistState(cell?.state);
   const isCompleted = cell?.state === "shipped";
 
   return (
@@ -179,7 +183,7 @@ function ChartCell({
         <div
           className={
             "w-full overflow-hidden rounded-sm border bg-transparent"
-            + (isCompleted
+            + (isTerminal
               ? " border-zinc-300/90 opacity-85"
               : " border-zinc-400")
           }
@@ -192,7 +196,7 @@ function ChartCell({
               href={detailHref ?? "#"}
               className={
                 "shrink-0 font-mono text-[11px] leading-none underline-offset-2"
-                + (isCompleted
+                + (isTerminal
                   ? " text-foreground/55 line-through italic hover:text-foreground/70 hover:underline"
                   : " font-semibold text-foreground hover:underline")
               }
@@ -212,7 +216,7 @@ function ChartCell({
             <div
               className={
                 "w-full border-t px-[4px] py-[2px] whitespace-normal break-words text-[11px] leading-tight"
-                + (isCompleted
+                + (isTerminal
                   ? " border-zinc-200 bg-stone-50/55 text-foreground/55 italic"
                   : " border-zinc-300 bg-stone-50/85 text-foreground/80")
               }
