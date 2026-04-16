@@ -103,8 +103,16 @@ describe("setlist chart helpers", () => {
   it("builds one slot per scheduled knot and orders rows by execution order", () => {
     const plan = makePlan();
     const beatMap = new Map<string, Beat>([
-      ["beat-next", makeBeat("beat-next", { priority: 0, description: "Top lane" })],
-      ["beat-last", makeBeat("beat-last", { priority: 4, description: "Bottom lane" })],
+      ["beat-next", makeBeat("beat-next", {
+        title: "Wire navigation",
+        priority: 0,
+        description: "Top lane",
+      })],
+      ["beat-last", makeBeat("beat-last", {
+        title: "Draw gantt chart",
+        priority: 4,
+        description: "Bottom lane",
+      })],
       ["beat-wave-fallback", makeBeat("beat-wave-fallback", { priority: 1 })],
     ]);
 
@@ -121,12 +129,14 @@ describe("setlist chart helpers", () => {
       "#2",
       "Last",
     ]);
+    expect(chart.rows[0]!.title).toBe("Wire navigation");
     expect(chart.rows[0]!.cells[0]?.beatId).toBe("beat-next");
+    expect(chart.rows[0]!.cells[0]?.title).toBe("Wire navigation");
     expect(chart.rows[1]!.cells[1]?.beatId).toBe("beat-wave-fallback");
     expect(chart.rows[2]!.cells[2]?.beatId).toBe("beat-last");
   });
 
-  it("uses knot ids when previewing execution plans", () => {
+  it("uses real knot titles when previewing execution plans", () => {
     const summary: PlanSummary = {
       artifact: {
         id: "plan-1",
@@ -143,8 +153,8 @@ describe("setlist chart helpers", () => {
       },
     };
     const beatMap = new Map<string, Beat>([
-      ["beat-next", makeBeat("beat-next", { description: "First description" })],
-      ["beat-last", makeBeat("beat-last", { description: "Second description" })],
+      ["beat-next", makeBeat("beat-next", { title: "First title" })],
+      ["beat-last", makeBeat("beat-last", { title: "Second title" })],
     ]);
 
     const preview = buildSetlistPlanPreview(summary, beatMap);
@@ -152,6 +162,7 @@ describe("setlist chart helpers", () => {
     expect(preview.previewBeats[0]).toMatchObject({
       id: "beat-next",
       label: "beat-next",
+      title: "First title",
     });
     expect(preview.totalBeats).toBe(2);
   });

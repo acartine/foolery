@@ -4,7 +4,11 @@ import {
   useMemo,
   useState,
 } from "react";
-import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  type UseQueryResult,
+  useQueries,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   GitBranch,
   ListMusic,
@@ -14,6 +18,7 @@ import { SetlistChartPanel } from "@/components/setlist-chart-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchBeat } from "@/lib/api";
 import { fetchPlan, fetchPlanSummaries, fetchRepoBeats } from "@/lib/plan-api";
 import { buildSetlistChart, buildSetlistPlanPreview } from "@/lib/setlist-chart";
 import type { PlanRecord, PlanSummary } from "@/lib/orchestration-plan-types";
@@ -31,7 +36,7 @@ export function SetlistView({
     beatsQuery,
     planSummaries,
     previews,
-    beatMap,
+    summaryBeatMap,
   } = useSetlistBaseData(repoPath);
   const selectedPlanId = useMemo(
     () => resolveSelectedPlanId(requestedPlanId, planSummaries),
@@ -40,7 +45,7 @@ export function SetlistView({
   const { planQuery, selectedPlanRecord, chart } = useSelectedPlanData(
     repoPath,
     selectedPlanId,
-    beatMap,
+    summaryBeatMap,
   );
   const emptyState = getEmptySetlistState(
     repoPath,
@@ -248,10 +253,7 @@ function useSetlistBaseData(repoPath?: string) {
     () => {
       const map = new Map<string, Beat>();
       for (const beat of repoBeats) {
-        map.set(beat.id, beat);
-        for (const alias of beat.aliases ?? []) {
-          map.set(alias, beat);
-        }
+        indexBeat(map, beat);
       }
       return map;
     },
@@ -271,7 +273,7 @@ function useSetlistBaseData(repoPath?: string) {
     planSummaries,
     repoBeats,
     previews,
-    beatMap,
+    summaryBeatMap: beatMap,
   };
 }
 
@@ -304,14 +306,64 @@ function useSelectedPlanData(
   const selectedPlanRecord = planQuery.data?.ok
     ? (planQuery.data.data ?? null)
     : null;
+  const missingBeatIds = useMemo(
+    () => selectedPlanRecord
+      ? Array.from(
+          new Set(
+            selectedPlanRecord.plan.beatIds.filter(
+              (beatId) => !beatMap.has(beatId),
+            ),
+          ),
+        )
+      : [],
+    [beatMap, selectedPlanRecord],
+  );
+  const missingBeatQueries = useQueries({
+    queries: missingBeatIds.map((beatId) => ({
+      queryKey: ["setlist-plan-beat", repoPath, beatId],
+      queryFn: () => fetchBeat(beatId, repoPath),
+      enabled: Boolean(repoPath && selectedPlanRecord),
+      staleTime: 15_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    })),
+  });
+  const chartBeatMap = useMemo(() => {
+    const map = new Map(beatMap);
+    missingBeatIds.forEach((beatId, index) => {
+      const result = missingBeatQueries[index]?.data;
+      if (!result?.ok || !result.data) {
+        return;
+      }
+      indexBeat(map, result.data, beatId);
+    });
+    return map;
+  }, [beatMap, missingBeatIds, missingBeatQueries]);
   const chart = useMemo(
     () => selectedPlanRecord
-      ? buildSetlistChart(selectedPlanRecord.plan, beatMap)
+      ? buildSetlistChart(
+          selectedPlanRecord.plan,
+          chartBeatMap,
+        )
       : null,
-    [beatMap, selectedPlanRecord],
+    [chartBeatMap, selectedPlanRecord],
   );
 
   return { planQuery, selectedPlanRecord, chart };
+}
+
+function indexBeat(
+  map: Map<string, Beat>,
+  beat: Beat,
+  requestedId?: string,
+): void {
+  if (requestedId) {
+    map.set(requestedId, beat);
+  }
+  map.set(beat.id, beat);
+  for (const alias of beat.aliases ?? []) {
+    map.set(alias, beat);
+  }
 }
 
 function PlanSummaryCard({
@@ -376,6 +428,11 @@ function PlanSummaryCard({
                 <span className="font-mono text-[11px] text-muted-foreground">
                   {beat.label}
                 </span>
+                {beat.title ? (
+                  <p className="text-sm font-medium leading-tight">
+                    {beat.title}
+                  </p>
+                ) : null}
               </div>
             ))}
             {preview.remainingBeats > 0 && (
