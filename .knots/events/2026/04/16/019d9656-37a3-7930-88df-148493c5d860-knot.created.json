@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9656-37a3-7930-88df-148493c5d860",
+  "occurred_at": "2026-04-16T12:48:45.9873Z",
+  "knot_id": "foolery-7a74",
+  "type": "knot.created",
+  "data": {
+    "body": "Diagnose why the Setlist screen shows beat not found when opening foolery-79a3 and clicking the first beat 1a3d. Trace UI routing, beat lookup, and underlying data without moving the knot to a terminal state.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Investigate setlist beat not found for foolery-79a3 1a3d",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
