@@ -185,6 +185,11 @@ function ChartCell({
               {cell.beatLabel}
             </Link>
           </div>
+          {cell.title !== cell.beatLabel ? (
+            <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[3px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
+              {cell.title}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

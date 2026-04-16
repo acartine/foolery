@@ -7,6 +7,7 @@ import type { Beat } from "@/lib/types";
 export interface SetlistPreviewBeat {
   id: string;
   label: string;
+  title?: string;
 }
 
 export interface SetlistPlanPreview {
@@ -138,7 +139,7 @@ function buildRow(
     beatId,
     detailBeatId,
     beatLabel: detailBeatId,
-    title: detailBeatId,
+    title: beat?.title ?? detailBeatId,
     description: normalizeDescription(beat?.description),
     state: beat?.state,
     type: beat?.type,
@@ -151,7 +152,7 @@ function buildRow(
     rankLabel: "",
     order: assignment?.order ?? Number.MAX_SAFE_INTEGER,
     beatLabel: detailBeatId,
-    title: detailBeatId,
+    title: beat?.title ?? detailBeatId,
     description: normalizeDescription(beat?.description),
     state: beat?.state,
     type: beat?.type,
@@ -184,6 +185,7 @@ function toPreviewBeat(
   return {
     id: displayId,
     label: displayId,
+    title: beat.title,
   };
 }
 
