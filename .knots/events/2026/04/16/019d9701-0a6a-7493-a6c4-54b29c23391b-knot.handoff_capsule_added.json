@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9701-0a6a-7493-a6c4-54b29c23391b",
+  "occurred_at": "2026-04-16T15:55:21.066502Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved. The Setlist surface now shows knot ids only and no longer derives visible labels from execution-plan notes or stored plan titles. Backend knot lookup now attempts kno rehydrate on NOT_FOUND so cold-stored knots can be restored when opened. Verified by lint, typecheck, full unit test suite, and production build.",
+    "datetime": "2026-04-16T15:55:16Z",
+    "entry_id": "019d9701-0a6a-7493-a6c4-54ae419770d6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

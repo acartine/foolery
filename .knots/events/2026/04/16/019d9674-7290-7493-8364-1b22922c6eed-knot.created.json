@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9674-7290-7493-8364-1b22922c6eed",
+  "occurred_at": "2026-04-16T13:21:47.152444Z",
+  "knot_id": "foolery-4a42",
+  "type": "knot.created",
+  "data": {
+    "body": "Remove Setlist fallback title/note scraping so rows show only knot ids when live beat data is missing. When a plan knot id is missing from the live list, use the kno CLI rehydrate path to restore it from warm/cold/event data before treating it as unavailable. Keep the fix isolated to Setlist and beat-detail lookup behavior.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Fix setlist missing-knot handling and cold rehydrate",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d967c-db02-7ba2-a952-a277319e9e11",
+  "occurred_at": "2026-04-16T13:30:58.178585Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the Setlist fix so chart and plan preview beats render knot ids only, without plan-derived title fallback. Added kno rehydrate-backed backend lookup when a knot is missing from the live cache. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build from the implementation worktree.",
+    "datetime": "2026-04-16T13:30:49Z",
+    "entry_id": "019d967c-db02-7ba2-a952-a26951884210",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

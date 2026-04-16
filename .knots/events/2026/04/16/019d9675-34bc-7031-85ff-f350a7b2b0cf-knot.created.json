@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9675-34bc-7031-85ff-f350a7b2b0cf",
+  "occurred_at": "2026-04-16T13:22:36.860521Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.created",
+  "data": {
+    "body": "Implement the Setlist fix: remove plan-derived title/note fallback so rows show knot ids instead of scraped plan text, and when a requested knot id is missing from the live list, use kno rehydrate to restore it from warm/cold/event data before returning not found.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Implement setlist id-only display and cold rehydrate",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

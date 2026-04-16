@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9701-a210-7652-a090-3c769cccda02",
+  "occurred_at": "2026-04-16T15:55:59.888621Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged implementation onto local main for manual playtesting on 2026-04-16; local main is ahead of origin/main by the implementation commit and merge commit. Shipment is not complete yet because this change has not been pushed to origin/main.",
+    "datetime": "2026-04-16T15:55:53Z",
+    "entry_id": "019d9701-a210-7652-a090-3c60094a4dae",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}
