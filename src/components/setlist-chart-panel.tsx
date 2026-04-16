@@ -165,6 +165,8 @@ function ChartCell({
   waveLabel: string;
   detailHref: string | null;
 }) {
+  const isCompleted = cell?.state === "shipped";
+
   return (
     <div
       className="flex min-w-0 flex-col justify-start rounded-[3px] px-[2px] py-[2px]"
@@ -174,20 +176,32 @@ function ChartCell({
       }}
     >
       {cell ? (
-        <div className="w-full overflow-hidden rounded-sm border border-zinc-400 bg-transparent">
+        <div
+          className={
+            "w-full overflow-hidden rounded-sm border bg-transparent"
+            + (isCompleted
+              ? " border-zinc-300/90 opacity-85"
+              : " border-zinc-400")
+          }
+        >
           <div
             className="flex items-center justify-between gap-2 overflow-hidden whitespace-nowrap px-[4px] py-[2px]"
             style={waveToneStyle(waveLabel, 0.6)}
           >
             <Link
               href={detailHref ?? "#"}
-              className="shrink-0 font-mono text-[11px] font-semibold leading-none text-foreground underline-offset-2 hover:underline"
+              className={
+                "shrink-0 font-mono text-[11px] leading-none underline-offset-2"
+                + (isCompleted
+                  ? " text-foreground/55 line-through italic hover:text-foreground/70 hover:underline"
+                  : " font-semibold text-foreground hover:underline")
+              }
             >
               {cell.beatLabel}
             </Link>
-            {cell.state === "shipped" ? (
+            {isCompleted ? (
               <span
-                className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/90 text-emerald-700"
+                className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/80 text-emerald-700"
                 title="Completed knot"
               >
                 <CheckCircle2 className="size-[10px]" />
@@ -195,7 +209,14 @@ function ChartCell({
             ) : null}
           </div>
           {cell.title !== cell.beatLabel ? (
-            <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[2px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
+            <div
+              className={
+                "w-full border-t px-[4px] py-[2px] whitespace-normal break-words text-[11px] leading-tight"
+                + (isCompleted
+                  ? " border-zinc-200 bg-stone-50/55 text-foreground/55 italic"
+                  : " border-zinc-300 bg-stone-50/85 text-foreground/80")
+              }
+            >
               {cell.title}
             </div>
           ) : null}
