@@ -1,0 +1,15 @@
+{
+  "event_id": "019d970d-1e8d-7f00-94e7-4923900c4319",
+  "occurred_at": "2026-04-16T16:08:32.653809Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved for the revision. Setlist now shows ids plus real knot titles only when the actual beat record exists; selected-plan missing beats are fetched individually so kno rehydrate can restore cold-stored knots before rendering their true titles. Verified with setlist tests, lint, typecheck, and build.",
+    "datetime": "2026-04-16T16:08:25Z",
+    "entry_id": "019d970d-1e8d-7f00-94e7-4913ebae0b59",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

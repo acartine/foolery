@@ -1,0 +1,20 @@
+{
+  "event_id": "019d973b-6283-7d31-957f-4e597a4ab405",
+  "occurred_at": "2026-04-16T16:59:04.707334Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "wave_index": 1
+        }
+      ]
+    }
+  },
+  "precondition": {
+    "profile_etag": "019d973b-3f37-7e01-aff6-2a92a043a414"
+  }
+}

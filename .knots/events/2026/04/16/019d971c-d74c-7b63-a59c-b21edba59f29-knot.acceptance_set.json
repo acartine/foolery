@@ -1,0 +1,9 @@
+{
+  "event_id": "019d971c-d74c-7b63-a59c-b21edba59f29",
+  "occurred_at": "2026-04-16T16:25:42.974312Z",
+  "knot_id": "foolery-fb52",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Setlist screen reduces the vertical gap between the Setlist label row and the summary card container to a minimal spacer.\n2. The top navigation renders Setlists and Escalations with matching font size and font weight.\n3. The implementation passes lint, typecheck, relevant tests, and build for the touched area."
+  }
+}

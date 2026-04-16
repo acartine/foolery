@@ -1,0 +1,17 @@
+{
+  "event_id": "019d973b-3f37-7e01-aff6-2a897166a775",
+  "occurred_at": "2026-04-16T16:58:55.671119Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.created",
+  "data": {
+    "body": "Follow-on plan covering the remaining open work under the Grooming to Execution Plan spec: land native execution_plan support in Knots, and repair the Foolery execution-plan API surface.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_design",
+    "title": "Finish native execution_plan rollout and Foolery repair",
+    "type": "execution_plan",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}

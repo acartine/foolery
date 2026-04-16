@@ -1,0 +1,25 @@
+{
+  "event_id": "019d973b-629e-7782-8136-92e111e87179",
+  "occurred_at": "2026-04-16T16:59:04.734567Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "wave_index": 1
+        },
+        {
+          "name": "Persist payload and rebuild plan path",
+          "objective": "Persist execution_plan payload in Knots and replace legacy Scene coupling in Foolery's plan API.",
+          "wave_index": 2
+        }
+      ]
+    }
+  },
+  "precondition": {
+    "profile_etag": "019d973b-628a-7a00-b566-ddcfea415f5a"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d971c-d73e-7ff0-9ae7-94e0620e0d55",
+  "occurred_at": "2026-04-16T16:25:42.974312Z",
+  "knot_id": "foolery-fb52",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nReduce the wasted vertical space around the Setlist section header and make the top navigation labels visually consistent by giving Setlists and Escalations the same bold type treatment.\n\nVerification:\n1. Open the beats UI and confirm the vertical gap between the Setlist label row and the summary card grid is visually tightened to a minimal spacer.\n2. Confirm the top navigation renders Setlists in bold and Escalations with the same font size, weight, and type treatment as Setlists.\n3. Run project validation for the touched files and confirm it passes.\n\nConstraints:\n- Keep the change scoped to Setlist/header/navigation presentation only.\n- Do implementation work in the dedicated Setlist worktree.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Tighten setlist header spacing and nav label weight",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

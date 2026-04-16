@@ -1,0 +1,15 @@
+{
+  "event_id": "019d970b-d728-7230-bee6-78660c361c32",
+  "occurred_at": "2026-04-16T16:07:08.839994Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Local playtest found that the first fix over-removed Setlist titles. Revising implementation so Setlist shows titles only from real knot records (live or rehydrated), never from execution-plan payload fallbacks.",
+    "datetime": "2026-04-16T16:00:00Z",
+    "entry_id": "019d970b-d728-7230-bee6-7850b9783b70",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

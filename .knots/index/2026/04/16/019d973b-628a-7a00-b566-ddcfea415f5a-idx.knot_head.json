@@ -1,0 +1,59 @@
+{
+  "event_id": "019d973b-628a-7a00-b566-ddcfea415f5a",
+  "occurred_at": "2026-04-16T16:59:04.707334Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "execution_plan": {
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "wave_index": 1
+        }
+      ]
+    },
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9bf4",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_design",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Finish native execution_plan rollout and Foolery repair",
+    "type": "execution_plan",
+    "updated_at": "2026-04-16T16:59:04.707334Z",
+    "workflow_id": "execution_plan_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019d973b-3f37-7e01-aff6-2a92a043a414"
+  }
+}

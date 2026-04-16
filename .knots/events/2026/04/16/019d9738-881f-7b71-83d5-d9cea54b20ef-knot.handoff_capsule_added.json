@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9738-881f-7b71-83d5-d9cea54b20ef",
+  "occurred_at": "2026-04-16T16:55:57.726996Z",
+  "knot_id": "foolery-1933",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review passed against the terminal-cue and workable-count acceptance criteria. Terminal Setlist styling now covers shipped and abandoned rows, while the selected execution-plan summary reports the remaining workable scheduled rows instead of the full scheduled total. The implementation had already passed bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Per user request, the branch was then merged onto local main for playtesting only and has not been pushed to origin/main.",
+    "datetime": "2026-04-16T16:55:50Z",
+    "entry_id": "019d9738-881f-7b71-83d5-d9b7740cfa02",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

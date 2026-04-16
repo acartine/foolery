@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9734-a409-78b2-b943-bd1dac1ddc98",
+  "occurred_at": "2026-04-16T16:51:42.723469Z",
+  "knot_id": "foolery-1933",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Terminal knots in the Setlist UI, including shipped and abandoned, share the stronger terminal visual cue.\n2. The selected execution-plan summary reports the count of workable scheduled knots instead of the full scheduled row count.\n3. Lint, typecheck, tests, and build pass after the change."
+  }
+}

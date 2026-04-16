@@ -1,0 +1,59 @@
+{
+  "event_id": "019d973b-79ec-7333-94f3-aeca9a185705",
+  "occurred_at": "2026-04-16T16:59:10.70013Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-a9a2",
+                "foolery-48c1"
+              ],
+              "notes": "Concurrent foundations: Knots-repo execution_plan type (a9a2) and Foolery compat-status removal (48c1).",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 1
+        },
+        {
+          "name": "Persist payload and rebuild plan path",
+          "objective": "Persist execution_plan payload in Knots and replace legacy Scene coupling in Foolery's plan API.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-a431",
+                "foolery-dd18"
+              ],
+              "notes": "Concurrent follow-ons: persist execution_plan payload in Knots (a431, needs a9a2) and rebuild POST /api/plans without Scene coupling (dd18, needs 48c1).",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 2
+        },
+        {
+          "name": "Live validate",
+          "objective": "Exercise the repaired execution-plan API end-to-end against a real Knots repo.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-54e9"
+              ],
+              "notes": "Live validation (54e9): exercise the repaired /api/plans against a real Knots repo. Blocked by 48c1 + dd18.",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 3
+        }
+      ]
+    }
+  },
+  "precondition": {
+    "profile_etag": "019d973b-79d3-7290-803f-46e4fa69adfe"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9732-479d-70d2-971a-c365f87de940",
+  "occurred_at": "2026-04-16T16:49:07.997207Z",
+  "knot_id": "foolery-dc04",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review passed against the completed-knot styling acceptance criteria. The Setlist chart now gives shipped knots a stronger completed treatment by striking through and italicizing the knot id, removing the bold emphasis from shipped ids, softening the title copy, and lightening the shipped cell border while leaving active knots unchanged. The implementation had already passed bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Per user request, the branch was then merged onto local main for playtesting only and has not been pushed to origin/main.",
+    "datetime": "2026-04-16T16:48:59Z",
+    "entry_id": "019d9732-479d-70d2-971a-c35febfc5c12",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

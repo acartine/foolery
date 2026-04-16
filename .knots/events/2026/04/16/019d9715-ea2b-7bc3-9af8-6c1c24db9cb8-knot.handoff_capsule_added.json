@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9715-ea2b-7bc3-9af8-6c1c24db9cb8",
+  "occurred_at": "2026-04-16T16:18:09.067513Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implemented the requested Setlist polish in the worktree only. Removed the redundant overview copy, changed the selected plan card to show scheduled-beat count from the actual chart rows, softened the selected card outline, tightened the beat id strip padding, and added a shipped-knot completion cue in the chart cells. Verified with the focused setlist chart test, full unit suite, lint, typecheck, and production build.",
+    "datetime": "2026-04-16T16:18:04Z",
+    "entry_id": "019d9715-ea2b-7bc3-9af8-6c056ccd2065",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

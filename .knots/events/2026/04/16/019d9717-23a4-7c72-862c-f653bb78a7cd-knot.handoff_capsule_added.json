@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9717-23a4-7c72-862c-f653bb78a7cd",
+  "occurred_at": "2026-04-16T16:19:29.316383Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review approved for the Setlist polish revision. The branch removes redundant overview copy, uses scheduled chart rows for the selected plan count, lightens the selected card treatment, tightens the knot-id strip spacing, and marks shipped knots with a completion cue. Verified with focused setlist tests, full unit suite, lint, typecheck, and production build.",
+    "datetime": "2026-04-16T16:19:24Z",
+    "entry_id": "019d9717-23a4-7c72-862c-f6470ed9bdbb",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d972d-9bf4-73c0-ba79-39d621bc726f",
+  "occurred_at": "2026-04-16T16:44:01.902623Z",
+  "knot_id": "foolery-dc04",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Shipped knots in the Setlist UI have a stronger completed visual cue than the current green marker alone.\n2. The shipped knot id row is de-emphasized and struck through without affecting non-shipped knots.\n3. Lint, typecheck, tests, and build pass after the change."
+  }
+}

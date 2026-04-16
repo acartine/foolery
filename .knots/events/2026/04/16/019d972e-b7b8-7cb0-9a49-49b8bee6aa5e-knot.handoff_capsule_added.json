@@ -1,0 +1,15 @@
+{
+  "event_id": "019d972e-b7b8-7cb0-9a49-49b8bee6aa5e",
+  "occurred_at": "2026-04-16T16:45:14.552449Z",
+  "knot_id": "foolery-dc04",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Strengthened the completed-knot cue in the Setlist chart without changing active knot styling. Shipped cells now de-emphasize the id row with line-through, italic, and non-bold text, soften the title panel to match, and slightly lighten the surrounding border while keeping the completion check marker. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Branch: worktree-foolery-setlist-completed-cue. Commit: 6a47690b8d67.",
+    "datetime": "2026-04-16T16:45:07Z",
+    "entry_id": "019d972e-b7b8-7cb0-9a49-49adac08b308",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

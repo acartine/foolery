@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9717-82fa-79a3-9675-607e737fb086",
+  "occurred_at": "2026-04-16T16:19:53.722961Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Merged the latest Setlist polish branch onto local main for playtesting on 2026-04-16. Local main is now ahead of origin/main by six commits total. The untracked Setlist screenshot files were left untouched. Shipment remains local-only because this merge was not pushed to origin/main.",
+    "datetime": "2026-04-16T16:19:48Z",
+    "entry_id": "019d9717-82fa-79a3-9675-6067a5899a56",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

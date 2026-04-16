@@ -1,0 +1,40 @@
+{
+  "event_id": "019d973b-79a9-7282-a092-996dfc8daad7",
+  "occurred_at": "2026-04-16T16:59:10.633552Z",
+  "knot_id": "foolery-9bf4",
+  "type": "knot.execution_plan_data_set",
+  "data": {
+    "execution_plan": {
+      "waves": [
+        {
+          "name": "Unblock both tracks",
+          "objective": "Land the Knots execution_plan type and rip out Foolery compat-status abstractions so downstream work can proceed.",
+          "steps": [
+            {
+              "knot_ids": [
+                "foolery-a9a2",
+                "foolery-48c1"
+              ],
+              "notes": "Concurrent foundations: Knots-repo execution_plan type (a9a2) and Foolery compat-status removal (48c1).",
+              "step_index": 1
+            }
+          ],
+          "wave_index": 1
+        },
+        {
+          "name": "Persist payload and rebuild plan path",
+          "objective": "Persist execution_plan payload in Knots and replace legacy Scene coupling in Foolery's plan API.",
+          "wave_index": 2
+        },
+        {
+          "name": "Live validate",
+          "objective": "Exercise the repaired execution-plan API end-to-end against a real Knots repo.",
+          "wave_index": 3
+        }
+      ]
+    }
+  },
+  "precondition": {
+    "profile_etag": "019d973b-62bf-73a0-80b2-cfbdae9614cd"
+  }
+}

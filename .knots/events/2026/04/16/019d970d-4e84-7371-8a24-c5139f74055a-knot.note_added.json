@@ -1,0 +1,15 @@
+{
+  "event_id": "019d970d-4e84-7371-8a24-c5139f74055a",
+  "occurred_at": "2026-04-16T16:08:44.932271Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Updated local main again after playtest feedback. Local main is now ahead of origin/main by four commits across the original Setlist fix and this title-restoration revision. This remains local-only for testing; shipment is still pending remote push.",
+    "datetime": "2026-04-16T16:08:25Z",
+    "entry_id": "019d970d-4e84-7371-8a24-c50e93548383",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

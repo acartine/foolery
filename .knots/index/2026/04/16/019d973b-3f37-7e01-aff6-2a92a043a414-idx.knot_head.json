@@ -1,0 +1,47 @@
+{
+  "event_id": "019d973b-3f37-7e01-aff6-2a92a043a414",
+  "occurred_at": "2026-04-16T16:58:55.671119Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-9bf4",
+    "next_step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "profile_id": "execution_plan_sdlc/autopilot",
+    "state": "ready_for_design",
+    "step_metadata": {
+      "action_kind": "produce",
+      "action_state": "design",
+      "output": {
+        "artifact_type": "note"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Finish native execution_plan rollout and Foolery repair",
+    "type": "execution_plan",
+    "updated_at": "2026-04-16T16:58:55.671119Z",
+    "workflow_id": "execution_plan_sdlc"
+  }
+}

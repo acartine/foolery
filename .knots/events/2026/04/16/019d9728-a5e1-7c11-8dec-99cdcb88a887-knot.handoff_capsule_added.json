@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9728-a5e1-7c11-8dec-99cdcb88a887",
+  "occurred_at": "2026-04-16T16:38:36.769095Z",
+  "knot_id": "foolery-fb52",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Implementation review passed against the acceptance criteria: the Setlist summary header spacing is tightened to a minimal gap, the Setlist heading now matches Escalations with text-base semibold tracking-tight styling, and the shared view-switcher tab typography was already consistent. Verified lint, typecheck, test, and build before merge. Per user request, the branch was then merged onto local main for playtesting only and has not been pushed to origin/main.",
+    "datetime": "2026-04-16T16:38:23Z",
+    "entry_id": "019d9728-a5e1-7c11-8dec-99ba278c8eb1",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

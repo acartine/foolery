@@ -1,0 +1,15 @@
+{
+  "event_id": "019d970c-c41b-7952-957d-53e809697dca",
+  "occurred_at": "2026-04-16T16:08:09.499686Z",
+  "knot_id": "foolery-f587",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Revised the Setlist implementation after local playtest feedback. The screen still refuses plan-derived title fallbacks, but selected-plan beats now fetch their real knot records so live or rehydrated knots show their actual titles again. Verified with focused setlist tests, lint, typecheck, and production build.",
+    "datetime": "2026-04-16T16:08:05Z",
+    "entry_id": "019d970c-c41b-7952-957d-53dccf093eb6",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "gpt-5"
+  }
+}

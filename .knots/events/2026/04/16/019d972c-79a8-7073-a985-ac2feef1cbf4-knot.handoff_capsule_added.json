@@ -1,0 +1,15 @@
+{
+  "event_id": "019d972c-79a8-7073-a985-ac2feef1cbf4",
+  "occurred_at": "2026-04-16T16:42:47.592911Z",
+  "knot_id": "foolery-fd2c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Clean handoff note replacing the prior shell-mangled one: the Setlist summary panel no longer uses the card header/content wrapper and instead uses a simple padded section that matches the Escalations headline container's effective top and left inset. The Setlist title keeps the same text-base semibold tracking-tight styling, and the plan grid begins five pixels below the title row so the icon/title no longer jumps right or down when toggling between Setlist and Escalations. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build. Branch: worktree-foolery-setlist-headline-align. Commit: 37c8c8044925.",
+    "datetime": "2026-04-16T16:42:26Z",
+    "entry_id": "019d972c-79a8-7073-a985-ac1fc646f91d",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

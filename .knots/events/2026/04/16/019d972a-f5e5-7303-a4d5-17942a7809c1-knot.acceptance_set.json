@@ -1,0 +1,9 @@
+{
+  "event_id": "019d972a-f5e5-7303-a4d5-17942a7809c1",
+  "occurred_at": "2026-04-16T16:41:08.317834Z",
+  "knot_id": "foolery-fd2c",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The Setlist summary header uses the same effective padding and title-row alignment as the Escalations headline container, eliminating the visible title/icon jump when switching views.\n2. The Setlist title remains bold and the title-to-content spacing stays minimal.\n3. Lint, typecheck, tests, and build pass after the change."
+  }
+}

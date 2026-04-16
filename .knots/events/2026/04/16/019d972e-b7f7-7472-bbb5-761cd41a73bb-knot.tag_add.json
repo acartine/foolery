@@ -1,0 +1,9 @@
+{
+  "event_id": "019d972e-b7f7-7472-bbb5-761cd41a73bb",
+  "occurred_at": "2026-04-16T16:45:14.61508Z",
+  "knot_id": "foolery-dc04",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-setlist-completed-cue"
+  }
+}

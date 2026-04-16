@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9720-451a-7451-9405-3d89a9ddfae2",
+  "occurred_at": "2026-04-16T16:29:27.706922Z",
+  "knot_id": "foolery-fb52",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "codex",
+    "content": "Tightened the Setlist summary header spacing by overriding the local card gap to about five pixels and promoted the Setlist label to the same text-base, semibold, tracking-tight section heading treatment used by Escalations. Verified with bun run lint, bunx tsc --noEmit, bun run test, and bun run build. The beats view switcher already used semibold button typography for Setlist and Escalations, so no nav-tab code change was needed.",
+    "datetime": "2026-04-16T16:29:20Z",
+    "entry_id": "019d9720-451a-7451-9405-3d7ef746a5ad",
+    "model": "gpt-5.4",
+    "username": "cartine",
+    "version": "codex-cli"
+  }
+}

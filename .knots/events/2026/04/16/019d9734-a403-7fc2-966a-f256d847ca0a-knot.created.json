@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9734-a403-7fc2-966a-f256d847ca0a",
+  "occurred_at": "2026-04-16T16:51:42.723469Z",
+  "knot_id": "foolery-1933",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nApply the stronger completed visual treatment to all terminal knots shown in the Setlist UI, including shipped and abandoned, and update the selected execution-plan summary to show the number of still-workable scheduled knots rather than the full scheduled row count.\n\nVerification:\n1. Open a Setlist plan containing both open and terminal knots and confirm shipped and abandoned rows share the de-emphasized terminal treatment while non-terminal knots keep the active styling.\n2. Confirm the selected plan summary badge/label reports the remaining workable scheduled knots rather than the full scheduled total.\n3. Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` and confirm they pass.\n\nConstraints:\n- Keep the change scoped to Setlist terminal-knot presentation and selected-plan count copy.\n- Do implementation work in the dedicated Setlist worktree.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Apply terminal Setlist cues and workable counts",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

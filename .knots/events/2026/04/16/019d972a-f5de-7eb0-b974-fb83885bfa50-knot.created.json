@@ -1,0 +1,17 @@
+{
+  "event_id": "019d972a-f5de-7eb0-b974-fb83885bfa50",
+  "occurred_at": "2026-04-16T16:41:08.317834Z",
+  "knot_id": "foolery-fd2c",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nRemove the visible headline jitter when switching between the Setlist and Escalations screens by giving the two views matching headline container padding, spacing, and title alignment.\n\nVerification:\n1. Open `/beats?view=setlist` and `/beats?view=finalcut` and toggle between them; the icon and title should stay on the same horizontal and vertical baseline instead of jumping right or down.\n2. Confirm the space between the Setlist title row and the plan summary grid remains tightly collapsed after the alignment change.\n3. Run `bun run lint`, `bunx tsc --noEmit`, `bun run test`, and `bun run build` and confirm they pass.\n\nConstraints:\n- Keep the change scoped to the Setlist/Escalations headline container presentation.\n- Do implementation work in the dedicated Setlist worktree.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot_no_planning",
+    "state": "ready_for_implementation",
+    "title": "Align Setlist and Escalations headline containers",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
