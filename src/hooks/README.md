@@ -19,3 +19,6 @@ Custom React hooks for Foolery UI state and side effects.
 - **`use-update-url.ts`** — Sync filter state to URL search params
 - **`use-wait-spinner.ts`** — Animated spinner state for long-running operations
 - **`use-window-focus-invalidation.ts`** — Invalidate React Query caches on window re-focus
+- **`use-terminal-theme-preference.ts`** — Persist and apply terminal theme preference
+- **`use-repo-switch-query-state.ts`** — Reset and repopulate query state on active-repo change
+- **`use-beats-screen-warmup.ts`** — Preload queries and caches on first beats-screen mount

@@ -17,5 +17,8 @@ Next.js API route handlers serving the Foolery REST API.
 - **`doctor/`** — Diagnostic health checks
 - **`lease-audit/`** — Knots lease audit log
 - **`scope-refinement/`** — Scope refinement status and triggers
+- **`plans/`** — Execution-plan persistence (`route.ts`, `[planId]/`, `helpers.ts`)
+- **`diagnostics/`** — Perf and runtime diagnostics (`perf/`)
+- **`app-update/`** — App update check endpoint
 - **`version/`** — App version endpoint
 - **`openapi.json/`** — Serves the OpenAPI 3.1.0 spec

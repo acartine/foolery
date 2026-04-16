@@ -44,11 +44,14 @@ SSE stream to xterm in browser → agent completes → workflow state advances.
 
 - **Backend factory**: `src/lib/backend-factory.ts` — `createBackend()`, `AutoRoutingBackend`
 - **Backend interface**: `src/lib/backend-port.ts` — `BackendPort` (all backends implement this)
+- **Execution backend**: `src/lib/execution-backend.ts` — `StructuredExecutionBackend` (lease/iteration/snapshot lifecycle)
 - **Session lifecycle**: `src/lib/terminal-manager.ts` — `createSession()`, `abortSession()`
 - **Orchestration**: `src/lib/orchestration-manager.ts` — `createOrchestrationSession()`
 - **Breakdown**: `src/lib/breakdown-manager.ts` — `createBreakdownSession()`
 - **Agent dispatch**: `src/lib/agent-pool.ts` — `selectFromPool()`
 - **Workflows**: `src/lib/workflows.ts` — step definitions, state mappings
+- **Registry**: `src/lib/registry.ts` — `loadRegistry()`, `addRepo()`, `removeRepo()`
+- **Diagnostics**: `src/lib/doctor.ts` — `runDoctor()`, `runDoctorFix()`
 - **Client API**: `src/lib/api.ts` — browser-side fetch wrappers
 - **Domain types**: `src/lib/types.ts` — `Beat`, `TerminalSession`, `Wave`, `MemoryWorkflowDescriptor`
 - **Validation**: `src/lib/schemas.ts` — Zod schemas for all inputs

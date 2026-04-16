@@ -1,5 +1,7 @@
 # Foolery Project Manifest
 
+> **Vocabulary:** Canonical domain terms are defined in **[TAXONOMY.md](../TAXONOMY.md)**. Current type and component names live in `src/` — treat the source tree as authoritative when this document and code disagree. This file has been aligned with the `Beat`-era naming; older revisions used `Bead` for the same concept.
+
 ## Project Overview
 
 **Foolery** is a keyboard-first orchestration app for agent-driven software work. It uses local memory-manager backends — Knots (`kno`) as the primary path, with Beads (`bd`) also supported — to track work items ("beats"), stage execution, dispatch agents, and review outcomes across repositories.
@@ -113,12 +115,12 @@ Repo-local memory data + Git
 
 ## Data Model
 
-### Bead Interface
+### Beat Interface
 
-All Beads conform to the following TypeScript interface:
+All Beats conform to the following TypeScript interface:
 
 ```typescript
-interface Bead {
+interface Beat {
   // Identifiers
   id: string;                    // Unique identifier (UUID)
 
@@ -129,8 +131,8 @@ interface Bead {
   acceptance?: string;           // Acceptance criteria
 
   // Classification
-  type: BeadType;               // Issue type (see enum below)
-  status: BeadStatus;           // Current status (see enum below)
+  type: BeatType;               // Issue type (see enum below)
+  status: BeatStatus;           // Current status (see enum below)
   priority: Priority;           // Priority level 0-4 (0=critical, 4=trivial)
   labels: string[];             // Tag labels for categorization
 
@@ -139,7 +141,7 @@ interface Bead {
   owner?: string;               // Issue creator/owner
 
   // Relationships
-  parent?: string;              // Parent Bead ID for subtasks
+  parent?: string;              // Parent Beat ID for subtasks
 
   // Timing
   due?: Date;                   // Due date
@@ -153,7 +155,7 @@ interface Bead {
 }
 ```
 
-### Type Enumeration (BeadType)
+### Type Enumeration (BeatType)
 - `bug`: Software defect
 - `feature`: New functionality
 - `task`: General work item
@@ -163,7 +165,7 @@ interface Bead {
 - `molecule`: Grouping of related work
 - `gate`: Dependency/blocker item
 
-### Status Enumeration (BeadStatus)
+### Status Enumeration (BeatStatus)
 - `open`: Not started, available for work
 - `in_progress`: Currently being worked on
 - `blocked`: Blocked by dependencies
@@ -210,8 +212,8 @@ All endpoints accept JSON, return JSON, and support multi-repo targeting via the
 ### Badge Components
 
 #### **StatusBadge**
-Displays Bead status with color coding.
-- **Props**: `status: BeadStatus`
+Displays Beat status with color coding.
+- **Props**: `status: BeatStatus`
 - **Colors**:
   - `open`: Blue
   - `in_progress`: Yellow
@@ -231,8 +233,8 @@ Displays priority level with icon and color.
   - `4`: Muted (trivial)
 
 #### **TypeBadge**
-Displays Bead type with icon.
-- **Props**: `type: BeadType`
+Displays Beat type with icon.
+- **Props**: `type: BeatType`
 - **Features**: Icon for each type, customizable styling
 
 #### **LabelBadge**
@@ -242,9 +244,9 @@ Displays custom labels/tags.
 
 ---
 
-### BeadTable
+### BeatTable
 
-Advanced table component for listing and managing Beads.
+Advanced table component for listing and managing Beats.
 
 **Features:**
 - TanStack Table integration (v8)
@@ -253,15 +255,15 @@ Advanced table component for listing and managing Beads.
 - Searchable title column
 - Pagination controls
 - Responsive design with horizontal scroll on mobile
-- Row click to open Bead detail view
+- Row click to open Beat detail view
 - Context menu for quick actions
 
 **Props:**
 ```typescript
-interface BeadTableProps {
-  beads: Bead[];
+interface BeatTableProps {
+  beats: Beat[];
   isLoading: boolean;
-  onBeadClick: (bead: Bead) => void;
+  onBeatClick: (beat: Beat) => void;
   onBulkClose?: (ids: string[]) => void;
   onBulkAssign?: (ids: string[], assignee: string) => void;
 }
@@ -269,9 +271,9 @@ interface BeadTableProps {
 
 ---
 
-### BeadForm
+### BeatForm
 
-Form component for creating and editing Beads.
+Form component for creating and editing Beats.
 
 **Features:**
 - react-hook-form with Zod validation
@@ -300,11 +302,11 @@ Command palette component for keyboard-driven navigation and actions.
 **Activation:** Cmd+K (macOS) or Ctrl+K (Windows/Linux)
 
 **Features:**
-- Fuzzy search across commands and Beads
+- Fuzzy search across commands and Beats
 - Command categories:
-  - Navigation (Go to Beads, Dashboard, etc.)
-  - Actions (Create Bead, Close Bead, Assign, etc.)
-  - Beads (Quick jump to recent/starred Beads)
+  - Navigation (Go to Beats, Dashboard, etc.)
+  - Actions (Create Beat, Close Beat, Assign, etc.)
+  - Beats (Quick jump to recent/starred Beats)
 - Keyboard navigation (Arrow keys, Enter to select)
 - Escape to close
 - Highlights matching text
@@ -314,9 +316,9 @@ Command palette component for keyboard-driven navigation and actions.
 
 ---
 
-### CreateBeadDialog
+### CreateBeatDialog
 
-Modal dialog for quick Bead creation.
+Modal dialog for quick Beat creation.
 
 **Features:**
 - Overlay backdrop with backdrop-blur
@@ -332,14 +334,14 @@ Modal dialog for quick Bead creation.
 
 ### DependencyTree
 
-Hierarchical visualization of Bead dependencies.
+Hierarchical visualization of Beat dependencies.
 
 **Features:**
 - Directed graph rendering
 - Visual distinction:
   - Solid lines: blocks/blocked-by relationships
   - Dashed lines: related relationships
-- Interactive nodes (click to jump to Bead)
+- Interactive nodes (click to jump to Beat)
 - Zoom and pan controls
 - Dependency summary (X blocks, Y blocked by, Z related)
 - Lightweight implementation (SVG-based or similar)
@@ -350,7 +352,7 @@ Hierarchical visualization of Bead dependencies.
 
 ### FilterBar
 
-Persistent filter controls for Bead listing.
+Persistent filter controls for Beat listing.
 
 **Features:**
 - Status filter: Multi-select dropdown
@@ -383,7 +385,7 @@ Persistent filter controls for Bead listing.
 
 **Pattern**: Sonner or similar library
 
-- Success confirmations (Bead created, updated, closed)
+- Success confirmations (Beat created, updated, closed)
 - Error messages (API failures, validation errors)
 - Auto-dismiss after 3-5 seconds
 - Multiple toasts stack vertically
@@ -398,15 +400,15 @@ Persistent filter controls for Bead listing.
 - Async mutation in background
 - Rollback on error with error toast
 - Show loading state during mutation
-- Example: Mark Bead as done → immediate UI update → API call → confirm or rollback
+- Example: Mark Beat as done → immediate UI update → API call → confirm or rollback
 
 ### URL-Based Routing
 
 **Pattern**: Deep linking via query params
 
-- Filter state in URL: `/beads?status=open&priority=0,1`
-- Selected Bead ID in URL: `/beads/[id]` or `/beads?id=xyz`
-- Sidebar state: `/beads?sidebar=closed`
+- Filter state in URL: `/beats?status=open&priority=0,1`
+- Selected Beat ID in URL: `/beats/[id]` or `/beats?id=xyz`
+- Sidebar state: `/beats?sidebar=closed`
 - Allows sharing filtered views and bookmarking
 - History navigation (back/forward) works as expected
 
@@ -416,7 +418,7 @@ Persistent filter controls for Bead listing.
 
 - Mobile (< 768px):
   - Single column layout
-  - Modal for BeadForm instead of sidebar
+  - Modal for BeatForm instead of sidebar
   - Vertical filter stacking
   - Touch-friendly button sizing (min 44px)
 
@@ -433,9 +435,9 @@ Persistent filter controls for Bead listing.
 
 **Pattern**: Friendly empty states with CTAs
 
-- No Beads: "No Beads found. [Create one →]"
+- No Beats: "No Beats found. [Create one →]"
 - No search results: "No results match your filters. [Clear filters]"
-- No dependencies: "This Bead has no dependencies"
+- No dependencies: "This Beat has no dependencies"
 - Loading state: Skeleton placeholders or spinner
 
 ### Error Boundary & Fallback
@@ -445,7 +447,7 @@ Persistent filter controls for Bead listing.
 - Catch component errors and display fallback UI
 - Log errors to console for debugging
 - Provide "Retry" button to recover
-- Don't let one Bead's error crash entire page
+- Don't let one Beat's error crash entire page
 
 ---
 
@@ -483,15 +485,15 @@ foolery/
 │   ├── components/           # React components
 │   │   ├── ui/               # shadcn/ui primitives
 │   │   ├── badges/           # StatusBadge, PriorityBadge, etc.
-│   │   ├── BeadTable.tsx
-│   │   ├── BeadForm.tsx
+│   │   ├── BeatTable.tsx
+│   │   ├── BeatForm.tsx
 │   │   ├── CommandPalette.tsx
-│   │   ├── CreateBeadDialog.tsx
+│   │   ├── CreateBeatDialog.tsx
 │   │   ├── DependencyTree.tsx
 │   │   └── FilterBar.tsx
 │   ├── lib/                  # Utilities and helpers
 │   │   ├── query-client.ts   # React Query configuration
-│   │   ├── bead-hooks.ts     # Custom hooks for Bead operations
+│   │   ├── beat-hooks.ts     # Custom hooks for Beat operations
 │   │   ├── store.ts          # Zustand store
 │   │   └── types.ts          # Type definitions
 │   └── stories/              # Storybook stories
@@ -542,19 +544,18 @@ foolery/
 **A:** No. At least one supported memory manager CLI (`kno` or `bd`) must be installed and accessible in the system PATH. Foolery is an orchestration interface, not a standalone memory manager.
 
 ### Q: How do I extend the data model?
-**A:** Add new fields to the `Bead` interface in `src/lib/types.ts`. Update forms, tables, and API routes to handle the new fields. The `metadata` field is available for custom data.
+**A:** Add new fields to the `Beat` interface in `src/lib/types.ts`. Update forms, tables, and API routes to handle the new fields. The `metadata` field is available for custom data.
 
 ---
 
 ## Glossary
 
-- **Beat**: A single issue, task, or work item managed by a memory manager CLI
-- **Knots**: Primary memory manager backend (`kno` CLI)
-- **Beads**: Alternative memory manager backend (`bd` CLI)
-- **Foolery**: Agentic orchestration interface for managing beats across repositories
-- **React Query**: Server state synchronization library
-- **Zustand**: Lightweight state management
-- **shadcn/ui**: Reusable component library based on Radix UI + Tailwind CSS
+Domain vocabulary (Beat, Knots, Beads, Wave, Lease, Profile, workflow states, etc.) is maintained in **[TAXONOMY.md](../TAXONOMY.md)**. See that file for canonical definitions, aliases, and overloads.
+
+- **Foolery**: Agentic orchestration interface for managing beats across repositories.
+- **React Query**: Server state synchronization library.
+- **Zustand**: Lightweight state management.
+- **shadcn/ui**: Reusable component library based on Radix UI + Tailwind CSS.
 
 ---
 

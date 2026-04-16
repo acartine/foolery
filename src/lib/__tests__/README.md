@@ -7,7 +7,8 @@ Unit and integration tests for `src/lib/` business logic.
 Tests are named `<module>.test.ts` and mirror the parent `lib/` module they cover. Helper and mock files are co-located:
 
 - **`mock-backend-port.ts`** — Shared mock `BackendPort` for backend contract tests
-- **`knots-backend-coverage-mocks.ts`** — Knots backend test fixtures
+- **`knots-backend-mocks.ts`** — General Knots backend mock fixtures
+- **`knots-backend-coverage-mocks.ts`** — Knots backend coverage-test fixtures
 - **`knots-guardrails-mocks.ts`** — Guardrail test data
 - **`doctor-mocks.ts`** — Doctor diagnostic test fixtures
 

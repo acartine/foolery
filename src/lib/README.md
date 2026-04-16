@@ -17,6 +17,9 @@ Core business logic, CLI wrappers, and domain types for Foolery.
 - **`terminal-manager.ts`** — Agent terminal session lifecycle (Take!/Scene! loops)
 - **`orchestration-manager.ts`** — Multi-agent orchestration session management
 - **`wave-planner.ts`** — Wave planning logic for scheduling beat execution
+- **`execution-backend.ts`** — `StructuredExecutionBackend` — lease/iteration/snapshot lifecycle for execution plans
+- **`doctor.ts`** — Diagnostic facade: `runDoctor()`, `runDoctorFix()`
+- **`registry.ts`** — Repo registry CRUD: `loadRegistry()`, `addRepo()`, `removeRepo()`, permission audits
 - **`openapi-spec.ts`** — Assembled OpenAPI 3.1.0 spec from `openapi/` submodules
 
 ## Key Types

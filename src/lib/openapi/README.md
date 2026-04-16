@@ -12,6 +12,8 @@ Modular OpenAPI 3.1.0 path and schema definitions assembled by `openapi-spec.ts`
 - **`paths-streaming.ts`** — Terminal, breakdown, and orchestration SSE endpoints
 - **`paths-settings.ts`** — Settings and agent configuration endpoints
 - **`paths-system.ts`** — Registry and system health endpoints
+- **`paths-plans.ts`** — Execution-plan persistence endpoints
+- **`schemas-plans.ts`** — Execution-plan request/response schemas
 
 ## Usage
 

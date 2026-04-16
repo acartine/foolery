@@ -7,6 +7,7 @@ Zustand state stores for global client-side state.
 - **`app-store.ts`** — `useAppStore` — filters, view mode, active repo, registered repos, command palette, page size
 - **`terminal-store.ts`** — `useTerminalStore` — terminal panel state, active sessions, scene queue, pending close
 - **`notification-store.ts`** — `useNotificationStore` — in-app notifications with read/unread tracking
+- **`scope-refinement-pending-store.ts`** — `useScopeRefinementPendingStore` — tracks beats with pending scope refinement
 
 ## Key Types
 
@@ -19,4 +20,4 @@ Zustand state stores for global client-side state.
 
 - `selectUnreadCount()` — Selector for unread notification count
 - `getActiveTerminal()` — Selector for the currently focused terminal session
-- `computeTogglePanel()` — Derives next panel visibility state on toggle
+- `selectIsPending()` — Selector for whether a beat has a pending scope refinement
