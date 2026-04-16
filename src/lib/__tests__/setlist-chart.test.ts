@@ -99,7 +99,7 @@ function makeParallelPlan(): PlanDocument {
   };
 }
 
-describe("setlist chart helpers", () => {
+describe("setlist chart helpers: scheduled rows", () => {
   it("builds one slot per scheduled knot and orders rows by execution order", () => {
     const plan = makePlan();
     const beatMap = new Map<string, Beat>([
@@ -136,6 +136,24 @@ describe("setlist chart helpers", () => {
     expect(chart.rows[2]!.cells[2]?.beatId).toBe("beat-last");
   });
 
+  it("excludes orphaned plan beat ids from scheduled rows", () => {
+    const chart = buildSetlistChart(
+      {
+        ...makePlan(),
+        beatIds: ["beat-next", "beat-last", "beat-wave-fallback", "beat-orphan"],
+      },
+      new Map(),
+    );
+
+    expect(chart.rows.map((row) => row.beatId)).toEqual([
+      "beat-next",
+      "beat-wave-fallback",
+      "beat-last",
+    ]);
+  });
+});
+
+describe("setlist chart helpers: preview data", () => {
   it("uses real knot titles when previewing execution plans", () => {
     const summary: PlanSummary = {
       artifact: {
@@ -166,7 +184,9 @@ describe("setlist chart helpers", () => {
     });
     expect(preview.totalBeats).toBe(2);
   });
+});
 
+describe("setlist chart helpers: display fallbacks", () => {
   it("includes step notes on the scheduled chart cell", () => {
     const chart = buildSetlistChart(makePlan(), new Map());
 

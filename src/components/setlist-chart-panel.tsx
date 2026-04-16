@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { SetlistChartModel } from "@/lib/setlist-chart";
@@ -175,7 +176,7 @@ function ChartCell({
       {cell ? (
         <div className="w-full overflow-hidden rounded-sm border border-zinc-400 bg-transparent">
           <div
-            className="overflow-hidden whitespace-nowrap px-[4px] py-[4px]"
+            className="flex items-center justify-between gap-2 overflow-hidden whitespace-nowrap px-[4px] py-[2px]"
             style={waveToneStyle(waveLabel, 0.6)}
           >
             <Link
@@ -184,9 +185,17 @@ function ChartCell({
             >
               {cell.beatLabel}
             </Link>
+            {cell.state === "shipped" ? (
+              <span
+                className="inline-flex size-[14px] shrink-0 items-center justify-center rounded-full bg-emerald-100/90 text-emerald-700"
+                title="Completed knot"
+              >
+                <CheckCircle2 className="size-[10px]" />
+              </span>
+            ) : null}
           </div>
           {cell.title !== cell.beatLabel ? (
-            <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[3px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
+            <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[2px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
               {cell.title}
             </div>
           ) : null}

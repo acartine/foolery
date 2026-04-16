@@ -17,7 +17,7 @@ import {
 import { SetlistChartPanel } from "@/components/setlist-chart-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { fetchBeat } from "@/lib/api";
 import { fetchPlan, fetchPlanSummaries, fetchRepoBeats } from "@/lib/plan-api";
 import { buildSetlistChart, buildSetlistPlanPreview } from "@/lib/setlist-chart";
@@ -68,6 +68,7 @@ export function SetlistView({
       planSummaries={planSummaries}
       previews={previews}
       selectedPlanId={selectedPlanId}
+      selectedScheduledBeatCount={chart?.rows.length ?? null}
       onSelectPlan={setRequestedPlanId}
       planQuery={planQuery}
       selectedPlanRecord={selectedPlanRecord}
@@ -130,6 +131,7 @@ function LoadedSetlistView({
   planSummaries,
   previews,
   selectedPlanId,
+  selectedScheduledBeatCount,
   onSelectPlan,
   planQuery,
   selectedPlanRecord,
@@ -139,6 +141,7 @@ function LoadedSetlistView({
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
+  selectedScheduledBeatCount: number | null;
   onSelectPlan: (planId: string) => void;
   planQuery: UseQueryResult<BdResult<PlanRecord>>;
   selectedPlanRecord: PlanRecord | null;
@@ -150,6 +153,7 @@ function LoadedSetlistView({
         planSummaries={planSummaries}
         previews={previews}
         selectedPlanId={selectedPlanId}
+        selectedScheduledBeatCount={selectedScheduledBeatCount}
         onSelectPlan={onSelectPlan}
       />
 
@@ -179,29 +183,22 @@ function SetlistSummaryPanel({
   planSummaries,
   previews,
   selectedPlanId,
+  selectedScheduledBeatCount,
   onSelectPlan,
 }: {
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
+  selectedScheduledBeatCount: number | null;
   onSelectPlan: (planId: string) => void;
 }) {
   return (
     <Card className="border-border/70 shadow-sm">
       <CardHeader className="gap-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <ListMusic className="size-4" />
-              Setlist
-            </div>
-            <CardTitle className="text-xl">
-              Execution-plan overview
-            </CardTitle>
-            <p className="max-w-3xl text-sm text-muted-foreground">
-              Browse persisted execution plans, scan the beats they include,
-              and open one plan at a time as a slot-based gantt chart.
-            </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <ListMusic className="size-4" />
+            Setlist
           </div>
           <Badge variant="outline" className="h-7 px-3 text-xs">
             {planSummaries.length} plan{planSummaries.length === 1 ? "" : "s"}
@@ -216,6 +213,11 @@ function SetlistSummaryPanel({
               plan={plan}
               preview={previews.get(plan.artifact.id)!}
               selected={plan.artifact.id === selectedPlanId}
+              selectedScheduledBeatCount={
+                plan.artifact.id === selectedPlanId
+                  ? selectedScheduledBeatCount
+                  : null
+              }
               onSelect={onSelectPlan}
             />
           ))}
@@ -370,20 +372,27 @@ function PlanSummaryCard({
   plan,
   preview,
   selected,
+  selectedScheduledBeatCount,
   onSelect,
 }: {
   plan: PlanSummary;
   preview: ReturnType<typeof buildSetlistPlanPreview>;
   selected: boolean;
+  selectedScheduledBeatCount: number | null;
   onSelect: (planId: string) => void;
 }) {
+  const beatCount = selectedScheduledBeatCount ?? preview.totalBeats;
+  const beatCountLabel = selectedScheduledBeatCount !== null
+    ? "scheduled"
+    : "beats";
+
   return (
     <button
       type="button"
       className={cn(
         "flex h-full flex-col rounded-xl border p-4 text-left transition-colors",
         selected
-          ? "border-primary bg-primary/5 shadow-sm"
+          ? "border-primary/35 bg-primary/[0.03] shadow-sm"
           : "border-border/70 bg-card hover:border-primary/40 hover:bg-accent/30",
       )}
       onClick={() => onSelect(plan.artifact.id)}
@@ -410,7 +419,7 @@ function PlanSummaryCard({
         <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
             <Music4 className="size-3.5" />
-            {preview.totalBeats} beats
+            {beatCount} {beatCountLabel}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1">
             <GitBranch className="size-3.5" />
