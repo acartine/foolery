@@ -3,7 +3,7 @@ import type {
   PlanDocument,
   PlanSummary,
 } from "@/lib/orchestration-plan-types";
-import type { Beat, BeatPriority } from "@/lib/types";
+import type { Beat } from "@/lib/types";
 
 export interface SetlistPreviewBeat {
   id: string;
@@ -23,43 +23,56 @@ export interface SetlistPlanPreview {
 
 export interface SetlistChartSlot {
   id: string;
-  label: string;
   waveLabel: string;
   detail: string;
 }
 
 export interface SetlistChartItem {
   beatId: string;
+  detailBeatId: string;
   beatLabel: string;
   title: string;
   description?: string;
   state?: string;
   type?: string;
+  notes?: string;
+  span: number;
 }
 
-export interface SetlistChartLane {
-  priority: BeatPriority;
+export interface SetlistChartRow {
+  beatId: string;
+  rankLabel: string;
+  order: number;
+  beatLabel: string;
+  title: string;
+  description?: string;
+  state?: string;
+  type?: string;
   label: string;
-  itemsCount: number;
-  cells: SetlistChartItem[][];
+  cells: Array<SetlistChartItem | null>;
 }
 
 export interface SetlistChartModel {
   slots: SetlistChartSlot[];
-  lanes: SetlistChartLane[];
+  rows: SetlistChartRow[];
 }
-
-const EXECUTION_PRIORITY_LABELS: Record<BeatPriority, string> = {
-  0: "Next",
-  1: "Soon",
-  2: "Queued",
-  3: "Later",
-  4: "Last",
-};
-const EXECUTION_PRIORITY_ORDER: BeatPriority[] = [0, 1, 2, 3, 4];
 
 interface PlanBeatMeta {
   title: string;
+}
+
+interface SlotAssignment {
+  slotIndex: number;
+  order: number;
+  notes?: string;
+  span: number;
+}
+
+interface ScheduledSegment {
+  beatIds: string[];
+  waveLabel: string;
+  detail: string;
+  notes?: string;
 }
 
 export function buildSetlistPlanPreview(
@@ -86,41 +99,73 @@ export function buildSetlistChart(
   plan: PlanDocument,
   beatMap: ReadonlyMap<string, Beat>,
 ): SetlistChartModel {
-  const slots = buildSlots(plan);
+  const {
+    slots,
+    slotByBeatId,
+  } = buildScheduledSlots(plan);
   const beatMeta = buildPlanBeatMeta(plan);
-  const slotByBeatId = assignBeatSlots(plan, slots);
-  const laneCells = createLaneCells(slots.length);
+  const rows = uniqueBeatIds(plan.beatIds)
+    .filter((beatId) => slotByBeatId.has(beatId))
+    .map((beatId) =>
+      buildRow(
+        beatId,
+        beatMap,
+        beatMeta,
+        slotByBeatId,
+        slots.length,
+      ))
+    .sort((left, right) =>
+      left.order - right.order ||
+      left.title.localeCompare(right.title) ||
+      left.beatId.localeCompare(right.beatId),
+    )
+    .map((row, index, allRows) => ({
+      ...row,
+      rankLabel: toRankLabel(index, allRows.length),
+      label: `${index + 1}`,
+    }));
 
-  for (const beatId of uniqueBeatIds(plan.beatIds)) {
-    const slotIndex = slotByBeatId.get(beatId) ?? 0;
-    const beat = beatMap.get(beatId);
-    const priority = beat?.priority ?? 2;
-    laneCells[priority][slotIndex]!.push({
-      beatId,
-      beatLabel: displayBeatLabel(beatId, beat?.aliases),
-      title: beat?.title ?? beatMeta.get(beatId)?.title ?? beatId,
-      description: normalizeDescription(beat?.description),
-      state: beat?.state,
-      type: beat?.type,
-    });
-  }
+  return { slots, rows };
+}
+
+function buildRow(
+  beatId: string,
+  beatMap: ReadonlyMap<string, Beat>,
+  beatMeta: ReadonlyMap<string, PlanBeatMeta>,
+  slotByBeatId: ReadonlyMap<string, SlotAssignment>,
+  slotCount: number,
+): SetlistChartRow {
+  const beat = beatMap.get(beatId);
+  const assignment = slotByBeatId.get(beatId);
+  const slotIndex = assignment?.slotIndex ?? 0;
+  const cells = Array.from(
+    { length: slotCount },
+    () => null as SetlistChartItem | null,
+  );
+
+  cells[slotIndex] = {
+    beatId,
+    detailBeatId: beat?.id ?? beatId,
+    beatLabel: displayBeatLabel(beatId, beat?.aliases),
+    title: beat?.title ?? beatMeta.get(beatId)?.title ?? beatId,
+    description: normalizeDescription(beat?.description),
+    state: beat?.state,
+    type: beat?.type,
+    notes: assignment?.notes,
+    span: assignment?.span ?? 1,
+  };
 
   return {
-    slots,
-    lanes: EXECUTION_PRIORITY_ORDER.map((priority) => {
-      const cells = laneCells[priority].map((cell) =>
-        [...cell].sort(compareChartItems),
-      );
-      return {
-        priority,
-        label: EXECUTION_PRIORITY_LABELS[priority],
-        itemsCount: cells.reduce(
-          (total, cell) => total + cell.length,
-          0,
-        ),
-        cells,
-      };
-    }),
+    beatId,
+    rankLabel: "",
+    order: assignment?.order ?? Number.MAX_SAFE_INTEGER,
+    beatLabel: displayBeatLabel(beatId, beat?.aliases),
+    title: beat?.title ?? beatMeta.get(beatId)?.title ?? beatId,
+    description: normalizeDescription(beat?.description),
+    state: beat?.state,
+    type: beat?.type,
+    label: "",
+    cells,
   };
 }
 
@@ -159,31 +204,6 @@ function normalizeDescription(
   return description?.trim() ? description.trim() : undefined;
 }
 
-function buildSlots(plan: PlanDocument): SetlistChartSlot[] {
-  const slots = plan.waves.flatMap((wave) => {
-    const waveLabel = `Wave ${wave.waveIndex}`;
-    return [...wave.steps]
-      .sort((left, right) => left.stepIndex - right.stepIndex)
-      .map((step) => ({
-        id: `${wave.waveIndex}-${step.stepIndex}`,
-        label: `Step ${step.stepIndex}`,
-        waveLabel,
-        detail: wave.name,
-      }));
-  });
-
-  return slots.length > 0
-    ? slots
-    : [
-        {
-          id: "1-1",
-          label: "Step 1",
-          waveLabel: "Wave 1",
-          detail: "Execution slot",
-        },
-      ];
-}
-
 function buildPlanBeatMeta(
   plan: PlanDocument,
 ): Map<string, PlanBeatMeta> {
@@ -196,66 +216,105 @@ function buildPlanBeatMeta(
   return meta;
 }
 
-function assignBeatSlots(
+function buildScheduledSlots(
   plan: PlanDocument,
-  slots: SetlistChartSlot[],
-): Map<string, number> {
-  const slotByBeatId = new Map<string, number>();
-  let nextSlotIndex = 0;
+): {
+  slots: SetlistChartSlot[];
+  slotByBeatId: Map<string, SlotAssignment>;
+} {
+  const segments = collectScheduledSegments(plan);
+  const slotByBeatId = new Map<string, SlotAssignment>();
+  const slots: SetlistChartSlot[] = [];
+  let slotIndex = 0;
+  let order = 0;
+
+  for (const segment of segments) {
+    slots.push({
+      id: `${segment.waveLabel}-${slotIndex}`,
+      waveLabel: segment.waveLabel,
+      detail: segment.detail,
+    });
+
+    for (const beatId of segment.beatIds) {
+      slotByBeatId.set(beatId, {
+        slotIndex,
+        order,
+        notes: segment.notes,
+        span: 1,
+      });
+      order += 1;
+    }
+
+    slotIndex += 1;
+  }
+
+  return {
+    slots: slots.length > 0
+      ? slots
+      : [
+          {
+            id: "unscheduled-0",
+            waveLabel: "Wave 1",
+            detail: "Execution slot",
+          },
+        ],
+    slotByBeatId,
+  };
+}
+
+function collectScheduledSegments(
+  plan: PlanDocument,
+): ScheduledSegment[] {
+  const scheduled: ScheduledSegment[] = [];
+  const seenBeatIds = new Set<string>();
 
   for (const wave of [...plan.waves].sort((left, right) =>
     left.waveIndex - right.waveIndex,
   )) {
-    const waveSteps = [...wave.steps].sort((left, right) =>
-      left.stepIndex - right.stepIndex,
-    );
-    const waveStartSlot = nextSlotIndex;
+    const waveLabel = `Wave ${wave.waveIndex}`;
 
-    for (const step of waveSteps) {
-      const slotIndex = Math.min(nextSlotIndex, slots.length - 1);
-      for (const beatId of step.beatIds) {
-        if (!slotByBeatId.has(beatId)) {
-          slotByBeatId.set(beatId, slotIndex);
+    for (const step of [...wave.steps].sort((left, right) =>
+      left.stepIndex - right.stepIndex,
+    )) {
+      const stepBeatIds = step.beatIds.filter((beatId) => {
+        if (seenBeatIds.has(beatId)) {
+          return false;
         }
+        seenBeatIds.add(beatId);
+        return true;
+      });
+
+      if (stepBeatIds.length > 0) {
+        scheduled.push({
+          beatIds: stepBeatIds,
+          waveLabel,
+          detail: wave.name,
+          notes: normalizeDescription(step.notes),
+        });
       }
-      nextSlotIndex += 1;
     }
 
     for (const beat of wave.beats) {
-      if (!slotByBeatId.has(beat.id)) {
-        slotByBeatId.set(beat.id, waveStartSlot);
+      if (seenBeatIds.has(beat.id)) {
+        continue;
       }
+      scheduled.push({
+        beatIds: [beat.id],
+        waveLabel,
+        detail: wave.name,
+      });
+      seenBeatIds.add(beat.id);
     }
   }
 
-  for (const beatId of uniqueBeatIds(plan.beatIds)) {
-    if (!slotByBeatId.has(beatId)) {
-      slotByBeatId.set(beatId, 0);
-    }
-  }
-
-  return slotByBeatId;
+  return scheduled;
 }
 
-function createLaneCells(
-  slotCount: number,
-): Record<BeatPriority, SetlistChartItem[][]> {
-  const createCells = () =>
-    Array.from({ length: slotCount }, () => [] as SetlistChartItem[]);
-
-  return {
-    0: createCells(),
-    1: createCells(),
-    2: createCells(),
-    3: createCells(),
-    4: createCells(),
-  };
-}
-
-function compareChartItems(
-  left: SetlistChartItem,
-  right: SetlistChartItem,
-): number {
-  return left.title.localeCompare(right.title) ||
-    left.beatId.localeCompare(right.beatId);
+function toRankLabel(
+  index: number,
+  total: number,
+): string {
+  if (index === 0) return "Next";
+  if (index === total - 1) return "Last";
+  return `#${index + 1}`;
 }

@@ -71,6 +71,8 @@ function useBeatsPageState() {
   const beatsView =
     parseBeatsView(searchParams.get("view"));
   const isListView = isListBeatsView(beatsView);
+  const supportsBeatDetail =
+    isListView || beatsView === "setlist";
   const viewPhase: ViewPhase =
     beatsView === "active" ? "active" : "queues";
   const isActiveView = beatsView === "active";
@@ -109,11 +111,15 @@ function useBeatsPageState() {
     activeRepo ?? undefined,
   );
   const detail = useBeatDetail({
-    beats, detailBeatId, detailRepo, isListView,
+    beats,
+    detailBeatId,
+    detailRepo,
+    isListView: supportsBeatDetail,
     activeRepo,
   });
   return {
     beatsView, isListView, viewPhase,
+    supportsBeatDetail,
     isActiveView, activeRepo,
     searchQuery, detailBeatId, detailRepo,
     beats, isLoading, loadError, isDegradedError,
@@ -172,7 +178,7 @@ function BeatsPageInner() {
         isDiagnosticsView={isDiagnosticsView}
         state={s}
       />
-      {s.isListView && (
+      {s.supportsBeatDetail && (
         <BeatDetailLightbox
           key={`${s.detailBeatId ?? "none"}:${
             s.detailRepo ?? "none"

@@ -39,6 +39,7 @@ function makePlan(): PlanDocument {
           {
             stepIndex: 1,
             beatIds: ["beat-next"],
+            notes: "Wire the nav first.",
           },
         ],
       },
@@ -54,6 +55,41 @@ function makePlan(): PlanDocument {
           {
             stepIndex: 1,
             beatIds: ["beat-last"],
+            notes: "Render the final chart slot.",
+          },
+        ],
+      },
+    ],
+    unassignedBeatIds: [],
+    assumptions: [],
+  };
+}
+
+function makeParallelPlan(): PlanDocument {
+  return {
+    repoPath: "/tmp/repo",
+    beatIds: ["beat-a", "beat-b", "beat-c"],
+    summary: "Parallel setlist view",
+    waves: [
+      {
+        waveIndex: 1,
+        name: "Parallel wave",
+        objective: "Run two knots together.",
+        agents: [],
+        beats: [
+          { id: "beat-a", title: "Beat A" },
+          { id: "beat-b", title: "Beat B" },
+          { id: "beat-c", title: "Beat C" },
+        ],
+        steps: [
+          {
+            stepIndex: 1,
+            beatIds: ["beat-a", "beat-b"],
+            notes: "Run these together.",
+          },
+          {
+            stepIndex: 2,
+            beatIds: ["beat-c"],
           },
         ],
       },
@@ -64,7 +100,7 @@ function makePlan(): PlanDocument {
 }
 
 describe("setlist chart helpers", () => {
-  it("builds equal-width slots and orders lanes from next to last", () => {
+  it("builds one slot per scheduled knot and orders rows by execution order", () => {
     const plan = makePlan();
     const beatMap = new Map<string, Beat>([
       ["beat-next", makeBeat("beat-next", { priority: 0, description: "Top lane" })],
@@ -74,17 +110,20 @@ describe("setlist chart helpers", () => {
 
     const chart = buildSetlistChart(plan, beatMap);
 
-    expect(chart.slots).toHaveLength(2);
-    expect(chart.lanes.map((lane) => lane.label)).toEqual([
+    expect(chart.slots).toHaveLength(3);
+    expect(chart.slots.map((slot) => slot.waveLabel)).toEqual([
+      "Wave 1",
+      "Wave 1",
+      "Wave 2",
+    ]);
+    expect(chart.rows.map((row) => row.rankLabel)).toEqual([
       "Next",
-      "Soon",
-      "Queued",
-      "Later",
+      "#2",
       "Last",
     ]);
-    expect(chart.lanes[0]!.cells[0]![0]!.beatId).toBe("beat-next");
-    expect(chart.lanes[1]!.cells[0]![0]!.beatId).toBe("beat-wave-fallback");
-    expect(chart.lanes[4]!.cells[1]![0]!.beatId).toBe("beat-last");
+    expect(chart.rows[0]!.cells[0]?.beatId).toBe("beat-next");
+    expect(chart.rows[1]!.cells[1]?.beatId).toBe("beat-wave-fallback");
+    expect(chart.rows[2]!.cells[2]?.beatId).toBe("beat-last");
   });
 
   it("uses beat descriptions when previewing execution plans", () => {
@@ -115,5 +154,33 @@ describe("setlist chart helpers", () => {
       description: "First description",
     });
     expect(preview.totalBeats).toBe(2);
+  });
+
+  it("includes step notes on the scheduled chart cell", () => {
+    const chart = buildSetlistChart(makePlan(), new Map());
+
+    expect(chart.rows[0]!.cells[0]).toMatchObject({
+      notes: "Wire the nav first.",
+    });
+  });
+
+  it("aligns parallel knots to the same horizontal span", () => {
+    const chart = buildSetlistChart(makeParallelPlan(), new Map());
+
+    expect(chart.slots).toHaveLength(2);
+    expect(chart.rows[0]!.cells[0]).toMatchObject({
+      beatId: "beat-a",
+      span: 1,
+      notes: "Run these together.",
+    });
+    expect(chart.rows[1]!.cells[0]).toMatchObject({
+      beatId: "beat-b",
+      span: 1,
+      notes: "Run these together.",
+    });
+    expect(chart.rows[2]!.cells[1]).toMatchObject({
+      beatId: "beat-c",
+      span: 1,
+    });
   });
 });

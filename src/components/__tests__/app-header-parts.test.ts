@@ -7,7 +7,6 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import {
   ActionButton,
-  ViewSwitcher,
   VersionBannerBar,
 } from "@/components/app-header-parts";
 import { Button } from "@/components/ui/button";

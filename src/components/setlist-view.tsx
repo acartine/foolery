@@ -8,7 +8,6 @@ import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import {
   GitBranch,
   ListMusic,
-  MapPinned,
   Music4,
 } from "lucide-react";
 import { SetlistChartPanel } from "@/components/setlist-chart-panel";
@@ -31,19 +30,12 @@ export function SetlistView({
     plansQuery,
     beatsQuery,
     planSummaries,
-    repoBeats,
     previews,
     beatMap,
   } = useSetlistBaseData(repoPath);
   const selectedPlanId = useMemo(
     () => resolveSelectedPlanId(requestedPlanId, planSummaries),
     [planSummaries, requestedPlanId],
-  );
-  const selectedPlan = useMemo(
-    () => planSummaries.find(
-      (plan) => plan.artifact.id === selectedPlanId,
-    ),
-    [planSummaries, selectedPlanId],
   );
   const { planQuery, selectedPlanRecord, chart } = useSelectedPlanData(
     repoPath,
@@ -67,15 +59,14 @@ export function SetlistView({
     />
   ) : (
     <LoadedSetlistView
+      repoPath={repoPath}
       planSummaries={planSummaries}
       previews={previews}
-      selectedPlan={selectedPlan}
       selectedPlanId={selectedPlanId}
       onSelectPlan={setRequestedPlanId}
       planQuery={planQuery}
       selectedPlanRecord={selectedPlanRecord}
       chart={chart}
-      repoBeats={repoBeats}
     />
   );
 }
@@ -130,28 +121,26 @@ function getEmptySetlistState(
 }
 
 function LoadedSetlistView({
+  repoPath,
   planSummaries,
   previews,
-  selectedPlan,
   selectedPlanId,
   onSelectPlan,
   planQuery,
   selectedPlanRecord,
   chart,
-  repoBeats,
 }: {
+  repoPath: string | undefined;
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
-  selectedPlan: PlanSummary | undefined;
   selectedPlanId: string | null;
   onSelectPlan: (planId: string) => void;
   planQuery: UseQueryResult<BdResult<PlanRecord>>;
   selectedPlanRecord: PlanRecord | null;
   chart: ReturnType<typeof buildSetlistChart> | null;
-  repoBeats: Beat[];
 }) {
   return (
-    <div className="flex min-h-[72vh] flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <SetlistSummaryPanel
         planSummaries={planSummaries}
         previews={previews}
@@ -159,32 +148,24 @@ function LoadedSetlistView({
         onSelectPlan={onSelectPlan}
       />
 
-      <Card className="flex min-h-[30rem] flex-1 flex-col border-border/70 shadow-sm">
-        <CardHeader className="gap-3 border-b border-border/60">
-          <SelectedPlanHeader
-            selectedPlan={selectedPlan}
+      <div>
+        {planQuery.isLoading && (
+          <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+            Loading selected execution plan...
+          </div>
+        )}
+        {!planQuery.isLoading && !planQuery.data?.ok && (
+          <div className="flex flex-1 items-center justify-center text-sm text-destructive">
+            {planQuery.data?.error ?? "Failed to load the selected plan."}
+          </div>
+        )}
+        {chart && selectedPlanRecord && (
+          <SetlistChartPanel
             chart={chart}
+            repoPath={repoPath}
           />
-        </CardHeader>
-        <CardContent className="flex flex-1 flex-col p-4">
-          {planQuery.isLoading && (
-            <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-              Loading selected execution plan...
-            </div>
-          )}
-          {!planQuery.isLoading && !planQuery.data?.ok && (
-            <div className="flex flex-1 items-center justify-center text-sm text-destructive">
-              {planQuery.data?.error ?? "Failed to load the selected plan."}
-            </div>
-          )}
-          {chart && selectedPlanRecord && (
-            <SetlistChartPanel
-              chart={chart}
-              beats={repoBeats}
-            />
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 }
@@ -264,7 +245,16 @@ function useSetlistBaseData(repoPath?: string) {
     [beatsQuery.data],
   );
   const beatMap = useMemo(
-    () => new Map(repoBeats.map((beat) => [beat.id, beat])),
+    () => {
+      const map = new Map<string, Beat>();
+      for (const beat of repoBeats) {
+        map.set(beat.id, beat);
+        for (const alias of beat.aliases ?? []) {
+          map.set(alias, beat);
+        }
+      }
+      return map;
+    },
     [repoBeats],
   );
   const previews = useMemo(
@@ -376,75 +366,33 @@ function PlanSummaryCard({
           </span>
         </div>
 
-        <div className="space-y-2 pt-1">
-          {preview.previewBeats.map((beat) => (
-            <div
-              key={beat.id}
-              className="rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  {beat.label}
-                </span>
+        {!selected && (
+          <div className="space-y-2 pt-1">
+            {preview.previewBeats.map((beat) => (
+              <div
+                key={beat.id}
+                className="rounded-lg border border-border/60 bg-background/80 px-3 py-2"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    {beat.label}
+                  </span>
+                </div>
+                <p className="text-sm font-medium leading-tight">
+                  {beat.title}
+                </p>
               </div>
-              <p className="text-sm font-medium leading-tight">
-                {beat.title}
+            ))}
+            {preview.remainingBeats > 0 && (
+              <p className="text-xs text-muted-foreground">
+                +{preview.remainingBeats} more beat
+                {preview.remainingBeats === 1 ? "" : "s"}
               </p>
-              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                {beat.description ?? "No description yet."}
-              </p>
-            </div>
-          ))}
-          {preview.remainingBeats > 0 && (
-            <p className="text-xs text-muted-foreground">
-              +{preview.remainingBeats} more beat
-              {preview.remainingBeats === 1 ? "" : "s"}
-            </p>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </button>
-  );
-}
-
-function SelectedPlanHeader({
-  selectedPlan,
-  chart,
-}: {
-  selectedPlan: PlanSummary | undefined;
-  chart: ReturnType<typeof buildSetlistChart> | null;
-}) {
-  if (!selectedPlan) {
-    return (
-      <div className="text-sm text-muted-foreground">
-        Pick an execution plan to render its setlist.
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPinned className="size-4" />
-          Selected plan
-        </div>
-        <h2 className="text-xl font-semibold">
-          {selectedPlan.plan.summary}
-        </h2>
-        <p className="max-w-3xl text-sm text-muted-foreground">
-          {selectedPlan.plan.objective ?? "No objective captured."}
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <Badge variant="outline" className="h-7 px-3 text-xs">
-          {chart?.slots.length ?? 0} slots
-        </Badge>
-        <Badge variant="outline" className="h-7 px-3 text-xs">
-          {selectedPlan.plan.beatIds.length} beats
-        </Badge>
-      </div>
-    </div>
   );
 }
 

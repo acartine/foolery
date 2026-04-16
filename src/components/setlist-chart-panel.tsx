@@ -1,70 +1,62 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { BeatPriorityBadge } from "@/components/beat-priority-badge";
-import { BeatTypeBadge } from "@/components/beat-type-badge";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { SetlistChartModel } from "@/lib/setlist-chart";
-import type { Beat } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { buildBeatFocusHref } from "@/lib/beat-navigation";
 
 export function SetlistChartPanel({
   chart,
-  beats,
+  repoPath,
 }: {
   chart: SetlistChartModel;
-  beats: Beat[];
+  repoPath?: string;
 }) {
-  return (
-    <div className="flex h-full flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">
-          Y-axis is execution priority from{" "}
-          <span className="font-medium text-foreground">
-            Next
-          </span>{" "}
-          to{" "}
-          <span className="font-medium text-foreground">
-            Last
-          </span>
-          . X-axis uses equal-width execution slots, not time estimates.
-        </p>
-        <Badge variant="secondary" className="h-7 px-3 text-xs">
-          {beats.length} repo beats indexed
-        </Badge>
-      </div>
+  const waveGroups = buildWaveGroups(chart);
+  const lastRowByWave = buildLastRowByWave(chart);
+  const searchParams = useSearchParams();
 
-      <div className="flex-1 overflow-auto rounded-xl border border-border/60">
+  return (
+    <div className="flex flex-col">
+      <div className="overflow-auto">
         <div
-          className="grid min-w-[60rem] border-b border-border/60 bg-muted/20"
+          className="grid w-full gap-x-0 gap-y-[4px] pb-[4px]"
           style={{
-            gridTemplateColumns: `10rem repeat(${chart.slots.length}, minmax(10rem, 1fr))`,
+            gridTemplateColumns: `repeat(${chart.slots.length}, minmax(0, 1fr))`,
           }}
         >
-          <AxisCell className="border-r border-border/60 font-semibold">
-            Priority
-          </AxisCell>
-          {chart.slots.map((slot) => (
-            <AxisCell key={slot.id}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {slot.waveLabel}
+          {waveGroups.map((wave) => (
+            <div
+              key={wave.id}
+              className="rounded-[3px] px-[4px] py-[4px]"
+              style={{
+                gridColumn: `span ${wave.span}`,
+                ...waveToneStyle(wave.waveLabel, 0.48),
+              }}
+            >
+              <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {wave.waveLabel}
               </div>
-              <div className="text-sm font-semibold">
-                {slot.label}
+              <div className="text-[11px] font-semibold text-foreground">
+                {wave.detail}
               </div>
-              <div className="text-xs text-muted-foreground">
-                {slot.detail}
-              </div>
-            </AxisCell>
+            </div>
           ))}
         </div>
 
-        {chart.lanes.map((lane) => (
-          <ChartLaneRow
-            key={lane.priority}
-            lane={lane}
-            slotCount={chart.slots.length}
-            slotIds={chart.slots.map((slot) => slot.id)}
+        {chart.rows.map((row, rowIndex) => (
+          <ChartRow
+            key={row.beatId}
+            row={row}
+            rowIndex={rowIndex}
+            slots={chart.slots}
+            lastRowByWave={lastRowByWave}
+            detailHrefBuilder={(beatId) =>
+              buildBeatFocusHref(
+                beatId,
+                searchParams.toString(),
+                { detailRepo: repoPath },
+              )}
           />
         ))}
       </div>
@@ -72,99 +64,220 @@ export function SetlistChartPanel({
   );
 }
 
-function ChartLaneRow({
-  lane,
-  slotCount,
-  slotIds,
+function buildWaveGroups(chart: SetlistChartModel) {
+  return chart.slots.reduce<Array<{
+    id: string;
+    waveLabel: string;
+    detail: string;
+    span: number;
+  }>>((groups, slot) => {
+    const previous = groups[groups.length - 1];
+    if (
+      previous &&
+      previous.waveLabel === slot.waveLabel &&
+      previous.detail === slot.detail
+    ) {
+      previous.span += 1;
+      return groups;
+    }
+
+    groups.push({
+      id: `${slot.waveLabel}-${groups.length}`,
+      waveLabel: slot.waveLabel,
+      detail: slot.detail,
+      span: 1,
+    });
+    return groups;
+  }, []);
+}
+
+function buildLastRowByWave(chart: SetlistChartModel) {
+  const lastRowByWave = new Map<string, number>();
+
+  chart.rows.forEach((row, rowIndex) => {
+    row.cells.forEach((cell, slotIndex) => {
+      if (!cell) {
+        return;
+      }
+      const waveLabel = chart.slots[slotIndex]?.waveLabel;
+      if (!waveLabel) {
+        return;
+      }
+      lastRowByWave.set(
+        waveLabel,
+        Math.max(lastRowByWave.get(waveLabel) ?? -1, rowIndex),
+      );
+    });
+  });
+
+  return lastRowByWave;
+}
+
+function ChartRow({
+  row,
+  rowIndex,
+  slots,
+  lastRowByWave,
+  detailHrefBuilder,
 }: {
-  lane: SetlistChartModel["lanes"][number];
-  slotCount: number;
-  slotIds: string[];
+  row: SetlistChartModel["rows"][number];
+  rowIndex: number;
+  slots: SetlistChartModel["slots"];
+  lastRowByWave: ReadonlyMap<string, number>;
+  detailHrefBuilder: (beatId: string) => string;
 }) {
   return (
     <div
-      className="grid border-b border-border/60 last:border-b-0"
+      className="grid gap-x-0"
       style={{
-        gridTemplateColumns: `10rem repeat(${slotCount}, minmax(10rem, 1fr))`,
+        gridTemplateColumns: `repeat(${slots.length}, minmax(0, 1fr))`,
       }}
     >
-      <div
-        className={
-          "flex min-h-32 flex-col justify-center border-r"
-          + " border-border/60 bg-muted/10 px-4 py-3"
-        }
-      >
-        <div className="flex items-center gap-2">
-          <BeatPriorityBadge priority={lane.priority} />
-          <span className="text-sm font-semibold">
-            {lane.label}
-          </span>
-        </div>
-        <div className="mt-1 text-xs text-muted-foreground">
-          {lane.itemsCount} task{lane.itemsCount === 1 ? "" : "s"}
-        </div>
-      </div>
-
-      {lane.cells.map((cell, slotIndex) => (
-        <ChartLaneCell
-          key={`${lane.priority}-${slotIds[slotIndex]}`}
-          cell={cell}
+      {slots.map((slot, slotIndex) => (
+        <ChartCell
+          key={`${row.beatId}-${slot.id}`}
+          cell={row.cells[slotIndex] ?? null}
+          columnStart={slotIndex + 1}
+          waveActive={rowIndex <= (lastRowByWave.get(slot.waveLabel) ?? -1)}
+          waveLabel={slot.waveLabel}
+          detailHref={
+            row.cells[slotIndex]
+              ? detailHrefBuilder(row.cells[slotIndex]!.detailBeatId)
+              : null
+          }
         />
       ))}
     </div>
   );
 }
 
-function ChartLaneCell({
+function ChartCell({
   cell,
+  columnStart,
+  waveActive,
+  waveLabel,
+  detailHref,
 }: {
-  cell: SetlistChartModel["lanes"][number]["cells"][number];
+  cell: SetlistChartModel["rows"][number]["cells"][number];
+  columnStart: number;
+  waveActive: boolean;
+  waveLabel: string;
+  detailHref: string | null;
 }) {
   return (
     <div
-      className={
-        "flex min-h-32 flex-col gap-2 border-r"
-        + " border-border/50 px-3 py-3 last:border-r-0"
-      }
+      className="flex min-w-0 flex-col justify-start rounded-[3px] px-[2px] py-[2px]"
+      style={{
+        gridColumn: `${columnStart} / span ${cell?.span ?? 1}`,
+        ...(waveActive ? waveToneStyle(waveLabel, 0.34) : {}),
+      }}
     >
-      {cell.map((item) => (
-        <div
-          key={item.beatId}
-          className="rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm"
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] text-muted-foreground">
-              {item.beatLabel}
-            </span>
-            {item.type && <BeatTypeBadge type={item.type} />}
-            {item.state && (
-              <Badge variant="outline" className="text-[10px]">
-                {item.state}
-              </Badge>
-            )}
+      {cell ? (
+        <div className="w-full overflow-hidden rounded-sm border border-zinc-400 bg-transparent">
+          <div
+            className="overflow-hidden whitespace-nowrap px-[4px] py-[4px]"
+            style={waveToneStyle(waveLabel, 0.6)}
+          >
+            <Link
+              href={detailHref ?? "#"}
+              className="shrink-0 font-mono text-[11px] font-semibold leading-none text-foreground underline-offset-2 hover:underline"
+            >
+              {cell.beatLabel}
+            </Link>
           </div>
-          <p className="mt-1 text-sm font-semibold leading-tight">
-            {item.title}
-          </p>
-          <p className="mt-1 line-clamp-3 text-xs text-muted-foreground">
-            {item.description ?? "No description yet."}
-          </p>
+          <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[3px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
+            {resolveSetlistTitle(cell)}
+          </div>
         </div>
-      ))}
+      ) : null}
     </div>
   );
 }
 
-function AxisCell({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("px-4 py-3", className)}>
-      {children}
-    </div>
+function resolveSetlistTitle(
+  cell: NonNullable<SetlistChartModel["rows"][number]["cells"][number]>,
+): string {
+  const titleCandidate = sanitizeDisplayText(
+    stripLeadingBeatPrefix(cell.title, cell.beatId, cell.beatLabel),
   );
+  if (titleCandidate && !looksLikeBeatIdentifier(titleCandidate, cell)) {
+    return titleCandidate;
+  }
+
+  const notesCandidate = sanitizeDisplayText(cell.notes);
+  if (notesCandidate) {
+    return notesCandidate;
+  }
+
+  return titleCandidate || cell.beatLabel;
+}
+
+function stripLeadingBeatPrefix(
+  title: string,
+  beatId: string,
+  beatLabel: string,
+): string {
+  const escapedBeatId = escapeRegExp(beatId);
+  const escapedBeatLabel = escapeRegExp(beatLabel);
+  return title
+    .replace(new RegExp(`^${escapedBeatId}[\\s:._-]*`, "i"), "")
+    .replace(new RegExp(`^${escapedBeatLabel}[\\s:._-]*`, "i"), "");
+}
+
+function sanitizeDisplayText(value: string | undefined): string {
+  if (!value) {
+    return "";
+  }
+  const trimmed = value.trim();
+  const cutoff = findTitleCutoff(trimmed);
+  return trimmed.slice(0, cutoff).trim();
+}
+
+function looksLikeBeatIdentifier(
+  value: string,
+  cell: NonNullable<SetlistChartModel["rows"][number]["cells"][number]>,
+): boolean {
+  const normalized = value.trim().toLowerCase();
+  const beatId = cell.beatId.toLowerCase();
+  const beatLabel = cell.beatLabel.toLowerCase();
+
+  return normalized.length === 0
+    || normalized === beatId
+    || normalized === beatLabel
+    || normalized === "foolery"
+    || normalized.startsWith("foolery ");
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findTitleCutoff(value: string): number {
+  for (let index = 40; index < value.length; index += 1) {
+    if (!/[A-Za-z0-9 ]/.test(value[index] ?? "")) {
+      return index;
+    }
+  }
+  return value.length;
+}
+
+function waveToneStyle(
+  waveLabel: string,
+  alpha: number,
+): { backgroundColor: string } {
+  const waveIndex = Number.parseInt(
+    waveLabel.replace(/[^0-9]/g, ""),
+    10,
+  );
+
+  switch (waveIndex) {
+    case 1:
+      return { backgroundColor: `rgba(236, 212, 255, ${alpha})` };
+    case 2:
+      return { backgroundColor: `rgba(206, 235, 255, ${alpha})` };
+    case 3:
+      return { backgroundColor: `rgba(212, 243, 225, ${alpha})` };
+    default:
+      return { backgroundColor: `rgba(240, 235, 255, ${alpha})` };
+  }
 }

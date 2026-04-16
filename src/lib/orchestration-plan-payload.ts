@@ -19,6 +19,8 @@ interface RawPlanStep {
   stepIndex?: unknown;
   beat_ids?: unknown;
   beatIds?: unknown;
+  knot_ids?: unknown;
+  knotIds?: unknown;
   notes?: unknown;
 }
 
@@ -29,6 +31,10 @@ interface RawPlanWave {
   objective?: unknown;
   agents?: unknown;
   beats?: unknown;
+  beat_ids?: unknown;
+  beatIds?: unknown;
+  knot_ids?: unknown;
+  knotIds?: unknown;
   notes?: unknown;
   steps?: unknown;
 }
@@ -113,7 +119,10 @@ function normalizeStep(
       stepIndex,
     ),
     beatIds: normalizeBeatIds(
-      raw.beat_ids ?? raw.beatIds,
+      raw.beat_ids ??
+        raw.beatIds ??
+        raw.knot_ids ??
+        raw.knotIds,
       fallbackBeatIds,
     ),
     notes: normalizeNotes(raw.notes),
@@ -152,14 +161,20 @@ function normalizeWave(
     raw.waveIndex ?? raw.wave_index,
     fallbackIndex,
   );
-  const beats = normalizeBeats(raw.beats);
-  const fallbackBeatIds = beats.map((beat) => beat.id);
   const rawSteps = Array.isArray(raw.steps)
     ? raw.steps.filter(
         (step): step is RawPlanStep =>
           Boolean(step) && typeof step === "object",
       )
     : [];
+  const explicitBeats = normalizeBeats(raw.beats);
+  const fallbackBeatIds = normalizeBeatIds(
+    raw.beat_ids ??
+      raw.beatIds ??
+      raw.knot_ids ??
+      raw.knotIds,
+    explicitBeats.map((beat) => beat.id),
+  );
   const steps =
     rawSteps.length > 0
       ? rawSteps.map((step, index) =>
@@ -172,6 +187,12 @@ function normalizeWave(
             fallbackBeatIds,
           ),
         ];
+  const beats = explicitBeats.length > 0
+    ? explicitBeats
+    : collectWaveBeatIds(steps, fallbackBeatIds).map((id) => ({
+      id,
+      title: id,
+    }));
 
   return {
     waveIndex,
@@ -209,6 +230,19 @@ function collectBeatIdsFromWaves(
   return Array.from(ids);
 }
 
+function collectWaveBeatIds(
+  steps: PlanStep[],
+  fallbackBeatIds: string[],
+): string[] {
+  const ids = new Set<string>(fallbackBeatIds);
+  for (const step of steps) {
+    for (const beatId of step.beatIds) {
+      ids.add(beatId);
+    }
+  }
+  return Array.from(ids);
+}
+
 export function isPlanKnot(record: KnotRecord): boolean {
   return record.type === "execution_plan";
 }
@@ -240,7 +274,10 @@ export function mapExecutionPlanDocument(
     normalizeWave(wave, index + 1),
   );
   const beatIds = normalizeBeatIds(
-    payload.beat_ids,
+    payload.beat_ids ??
+      payload.beatIds ??
+      payload.knot_ids ??
+      payload.knotIds,
     collectBeatIdsFromWaves(waves),
   );
 
