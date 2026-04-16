@@ -7,7 +7,8 @@ import {
 } from "@/lib/beats-view";
 
 describe("beats view helpers", () => {
-  it("parses search as a first-class beats view", () => {
+  it("parses setlist and search as first-class beats views", () => {
+    expect(parseBeatsView("setlist")).toBe("setlist");
     expect(parseBeatsView("search")).toBe("search");
     expect(parseBeatsView("active")).toBe("active");
     expect(parseBeatsView("legacy")).toBe("queues");
@@ -18,6 +19,7 @@ describe("beats view helpers", () => {
     expect(isListBeatsView("search")).toBe(true);
     expect(isListBeatsView("queues")).toBe(true);
     expect(isListBeatsView("active")).toBe(true);
+    expect(isListBeatsView("setlist")).toBe(false);
     expect(isListBeatsView("finalcut")).toBe(false);
   });
 

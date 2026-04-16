@@ -22,6 +22,7 @@ import {
 import {
   DiagnosticsView,
 } from "@/components/lease-audit-view";
+import { SetlistView } from "@/components/setlist-view";
 import { RepoSwitchLoadingState } from "@/components/repo-switch-loading-state";
 import {
   StreamingProgressBar,
@@ -126,6 +127,7 @@ function useBeatsPageState() {
 function BeatsPageInner() {
   const s = useBeatsPageState();
   const isFinalCutView = s.beatsView === "finalcut";
+  const isSetlistView = s.beatsView === "setlist";
   const isRetakesView = s.beatsView === "retakes";
   const isHistoryView = s.beatsView === "history";
   const isDiagnosticsView =
@@ -163,6 +165,7 @@ function BeatsPageInner() {
         </div>
       )}
       <BeatsViewBody
+        isSetlistView={isSetlistView}
         isFinalCutView={isFinalCutView}
         isRetakesView={isRetakesView}
         isHistoryView={isHistoryView}
@@ -205,11 +208,13 @@ function BeatsPageInner() {
 type PageState = ReturnType<typeof useBeatsPageState>;
 
 function BeatsViewBody({
+  isSetlistView,
   isFinalCutView, isRetakesView,
   isHistoryView,
   isDiagnosticsView,
   state: s,
 }: {
+  isSetlistView: boolean;
   isFinalCutView: boolean;
   isRetakesView: boolean;
   isHistoryView: boolean;
@@ -218,7 +223,9 @@ function BeatsViewBody({
 }) {
   return (
     <div className="mt-0.5">
-      {isFinalCutView ? (
+      {isSetlistView ? (
+        <SetlistView repoPath={s.activeRepo ?? undefined} />
+      ) : isFinalCutView ? (
         <FinalCutView />
       ) : isRetakesView ? (
         <RetakesView />

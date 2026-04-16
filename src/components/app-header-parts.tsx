@@ -4,7 +4,7 @@ import type { useRouter, useSearchParams } from "next/navigation";
 import {
   Plus, Megaphone, RotateCcw, Settings,
   X, History, PartyPopper,
-  Zap, Inbox, BarChart3,
+  Zap, Inbox, BarChart3, ListMusic,
 } from "lucide-react";
 import Image from "next/image";
 import { VersionBadge } from "@/components/version-badge";
@@ -332,6 +332,13 @@ export function ViewSwitcher(props: {
   return (
     <div className="ml-auto flex items-center gap-2">
       <div className="flex items-center gap-1 rounded-lg border bg-muted/20 p-1">
+        <ViewTab
+          view="setlist" current={beatsView}
+          icon={<ListMusic className="size-4" />}
+          label="Setlist"
+          title="Execution plans and gantt-style setlist"
+          setView={setView}
+        />
         <ViewTab
           view="queues" current={beatsView}
           icon={<Inbox className="size-4" />}

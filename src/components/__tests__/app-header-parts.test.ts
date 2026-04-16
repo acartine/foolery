@@ -1,3 +1,5 @@
+import path from "node:path";
+import { readFileSync } from "node:fs";
 import {
   Children, isValidElement, type ReactElement,
   type ReactNode,
@@ -5,6 +7,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import {
   ActionButton,
+  ViewSwitcher,
   VersionBannerBar,
 } from "@/components/app-header-parts";
 import { Button } from "@/components/ui/button";
@@ -172,5 +175,25 @@ describe("ActionButton", () => {
     });
 
     expect(tree).toBeNull();
+  });
+});
+
+describe("ViewSwitcher", () => {
+  it("renders Setlist as the first navigation tab", () => {
+    const source = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/components/app-header-parts.tsx",
+      ),
+      "utf8",
+    );
+
+    const setlistIdx = source.indexOf('view="setlist"');
+    const queuesIdx = source.indexOf('view="queues"');
+    const activeIdx = source.indexOf('view="active"');
+
+    expect(setlistIdx).toBeGreaterThan(-1);
+    expect(setlistIdx).toBeLessThan(queuesIdx);
+    expect(queuesIdx).toBeLessThan(activeIdx);
   });
 });
