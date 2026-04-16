@@ -193,13 +193,13 @@ function SetlistSummaryPanel({
   onSelectPlan: (planId: string) => void;
 }) {
   return (
-    <Card className="border-border/70 shadow-sm">
-      <CardHeader className="gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <Card className="gap-[5px] border-border/70 shadow-sm">
+      <CardHeader className="gap-1">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight">
             <ListMusic className="size-4" />
             Setlist
-          </div>
+          </h2>
           <Badge variant="outline" className="h-7 px-3 text-xs">
             {planSummaries.length} plan{planSummaries.length === 1 ? "" : "s"}
           </Badge>
