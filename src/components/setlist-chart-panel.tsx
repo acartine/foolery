@@ -185,80 +185,10 @@ function ChartCell({
               {cell.beatLabel}
             </Link>
           </div>
-          <div className="w-full border-t border-zinc-300 bg-stone-50/85 px-[4px] py-[3px] whitespace-normal break-words text-[11px] leading-tight text-foreground/80">
-            {resolveSetlistTitle(cell)}
-          </div>
         </div>
       ) : null}
     </div>
   );
-}
-
-function resolveSetlistTitle(
-  cell: NonNullable<SetlistChartModel["rows"][number]["cells"][number]>,
-): string {
-  const titleCandidate = sanitizeDisplayText(
-    stripLeadingBeatPrefix(cell.title, cell.beatId, cell.beatLabel),
-  );
-  if (titleCandidate && !looksLikeBeatIdentifier(titleCandidate, cell)) {
-    return titleCandidate;
-  }
-
-  const notesCandidate = sanitizeDisplayText(cell.notes);
-  if (notesCandidate) {
-    return notesCandidate;
-  }
-
-  return titleCandidate || cell.beatLabel;
-}
-
-function stripLeadingBeatPrefix(
-  title: string,
-  beatId: string,
-  beatLabel: string,
-): string {
-  const escapedBeatId = escapeRegExp(beatId);
-  const escapedBeatLabel = escapeRegExp(beatLabel);
-  return title
-    .replace(new RegExp(`^${escapedBeatId}[\\s:._-]*`, "i"), "")
-    .replace(new RegExp(`^${escapedBeatLabel}[\\s:._-]*`, "i"), "");
-}
-
-function sanitizeDisplayText(value: string | undefined): string {
-  if (!value) {
-    return "";
-  }
-  const trimmed = value.trim();
-  const cutoff = findTitleCutoff(trimmed);
-  return trimmed.slice(0, cutoff).trim();
-}
-
-function looksLikeBeatIdentifier(
-  value: string,
-  cell: NonNullable<SetlistChartModel["rows"][number]["cells"][number]>,
-): boolean {
-  const normalized = value.trim().toLowerCase();
-  const beatId = cell.beatId.toLowerCase();
-  const beatLabel = cell.beatLabel.toLowerCase();
-
-  return normalized.length === 0
-    || normalized === beatId
-    || normalized === beatLabel
-    || normalized === "foolery"
-    || normalized.startsWith("foolery ");
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function findTitleCutoff(value: string): number {
-  for (let index = 40; index < value.length; index += 1) {
-    if (!/[A-Za-z0-9 ]/.test(value[index] ?? "")) {
-      return index;
-    }
-  }
-  return value.length;
 }
 
 function waveToneStyle(

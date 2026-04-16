@@ -148,6 +148,17 @@ export const mockShowKnot = vi.fn(async (id: string) => {
   return { ok: true as const, data: knot };
 });
 
+export const mockRehydrateKnot = vi.fn(async (id: string) => {
+  const knot = store.knots.get(id);
+  if (!knot) {
+    return {
+      ok: false as const,
+      error: `knot '${id}' not found in cold storage`,
+    };
+  }
+  return { ok: true as const, data: knot };
+});
+
 export const mockNewKnot = vi.fn(
   async (
     title: string,
@@ -449,6 +460,8 @@ export function buildMockModule() {
       (mockListKnots as CastFn)(...a),
     showKnot: (...a: unknown[]) =>
       (mockShowKnot as CastFn)(...a),
+    rehydrateKnot: (...a: unknown[]) =>
+      (mockRehydrateKnot as CastFn)(...a),
     newKnot: (...a: unknown[]) =>
       (mockNewKnot as CastFn)(...a),
     updateKnot: (...a: unknown[]) =>

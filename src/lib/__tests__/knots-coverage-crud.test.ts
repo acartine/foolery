@@ -41,6 +41,7 @@ vi.mock("node:child_process", () => ({
 import {
   listKnots,
   showKnot,
+  rehydrateKnot,
   newKnot,
   claimKnot,
   pollKnot,
@@ -153,6 +154,42 @@ describe("showKnot", () => {
   it("returns error on invalid JSON", async () => {
     responseQueue.push({ stdout: "bad" });
     const result = await showKnot("42", "/repo");
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("Failed to parse");
+  });
+});
+
+describe("rehydrateKnot", () => {
+  it("parses successful output", async () => {
+    const record: KnotRecord = {
+      id: "42",
+      title: "Rehydrated",
+      state: "shipped",
+      updated_at: "2026-01-01T00:00:00Z",
+    };
+    responseQueue.push({ stdout: JSON.stringify(record) });
+    const result = await rehydrateKnot("42", "/repo");
+    expect(result.ok).toBe(true);
+    expect(result.data?.id).toBe("42");
+    expect(execFileCallArgs[0]).toContain("rehydrate");
+  });
+
+  it("returns error on non-zero exit", async () => {
+    responseQueue.push({
+      error: {
+        name: "Error", message: "fail",
+        code: 1 as unknown as string,
+      } as unknown as NodeJS.ErrnoException,
+      stderr: "rehydrate failed",
+    });
+    const result = await rehydrateKnot("42", "/repo");
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("rehydrate failed");
+  });
+
+  it("returns error on invalid JSON", async () => {
+    responseQueue.push({ stdout: "bad" });
+    const result = await rehydrateKnot("42", "/repo");
     expect(result.ok).toBe(false);
     expect(result.error).toContain("Failed to parse");
   });

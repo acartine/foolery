@@ -373,14 +373,9 @@ function PlanSummaryCard({
                 key={beat.id}
                 className="rounded-lg border border-border/60 bg-background/80 px-3 py-2"
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] text-muted-foreground">
-                    {beat.label}
-                  </span>
-                </div>
-                <p className="text-sm font-medium leading-tight">
-                  {beat.title}
-                </p>
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  {beat.label}
+                </span>
               </div>
             ))}
             {preview.remainingBeats > 0 && (

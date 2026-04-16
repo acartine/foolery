@@ -475,6 +475,24 @@ export async function showKnot(id: string, repoPath?: string): Promise<BdResult<
   }
 }
 
+export async function rehydrateKnot(
+  id: string,
+  repoPath?: string,
+): Promise<BdResult<KnotRecord>> {
+  const { stdout, stderr, exitCode } = await execWriteWithRetry(
+    ["rehydrate", id, "--json"],
+    { repoPath },
+  );
+  if (exitCode !== 0) {
+    return { ok: false, error: stderr || "knots rehydrate failed" };
+  }
+  try {
+    return { ok: true, data: parseJson<KnotRecord>(stdout) };
+  } catch {
+    return { ok: false, error: "Failed to parse knots rehydrate output" };
+  }
+}
+
 // ── Re-exports from knots-operations.ts ──────────────────────
 
 export type {

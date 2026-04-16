@@ -37,6 +37,7 @@ import {
   backendError,
   propagateError,
   fromKnots,
+  loadKnotRecordWithRehydrate,
   mapForProfiles,
   isBlockedByEdges,
   collectAliases,
@@ -345,14 +346,14 @@ export class KnotsBackend implements BackendPort {
     repoPath?: string,
   ): Promise<BackendResult<Beat>> {
     const rp = this.resolvePath(repoPath);
-    const knotResult = fromKnots(
-      await knots.showKnot(id, rp),
-    );
+    const knotResult = await loadKnotRecordWithRehydrate(id, rp);
     if (!knotResult.ok) {
       return propagateError<Beat>(knotResult);
     }
 
-    const edgesResult = await this.getEdgesForId(id, rp);
+    const knotId = knotResult.data!.id;
+
+    const edgesResult = await this.getEdgesForId(knotId, rp);
     if (!edgesResult.ok) {
       return propagateError<Beat>(edgesResult);
     }
@@ -367,7 +368,7 @@ export class KnotsBackend implements BackendPort {
       toBeat(
         knotResult.data!,
         edgesResult.data ?? [],
-        new Set([id]),
+        new Set([knotId]),
         new Map(),
         workflowMapResult.data ?? new Map(),
       ),
