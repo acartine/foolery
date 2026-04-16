@@ -126,7 +126,7 @@ describe("setlist chart helpers", () => {
     expect(chart.rows[2]!.cells[2]?.beatId).toBe("beat-last");
   });
 
-  it("uses beat descriptions when previewing execution plans", () => {
+  it("uses knot ids when previewing execution plans", () => {
     const summary: PlanSummary = {
       artifact: {
         id: "plan-1",
@@ -151,7 +151,7 @@ describe("setlist chart helpers", () => {
 
     expect(preview.previewBeats[0]).toMatchObject({
       id: "beat-next",
-      description: "First description",
+      label: "beat-next",
     });
     expect(preview.totalBeats).toBe(2);
   });
@@ -161,6 +161,19 @@ describe("setlist chart helpers", () => {
 
     expect(chart.rows[0]!.cells[0]).toMatchObject({
       notes: "Wire the nav first.",
+    });
+  });
+
+  it("uses knot ids instead of plan-derived titles when live beat data is missing", () => {
+    const chart = buildSetlistChart(makePlan(), new Map());
+
+    expect(chart.rows[0]!.beatLabel).toBe("beat-next");
+    expect(chart.rows[0]!.title).toBe("beat-next");
+    expect(chart.rows[1]!.beatLabel).toBe("beat-wave-fallback");
+    expect(chart.rows[1]!.title).toBe("beat-wave-fallback");
+    expect(chart.rows[0]!.cells[0]).toMatchObject({
+      beatLabel: "beat-next",
+      title: "beat-next",
     });
   });
 

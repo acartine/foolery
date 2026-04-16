@@ -18,6 +18,7 @@ import type {
   KnotProfileDefinition,
   KnotRecord,
 } from "@/lib/knots";
+import * as knots from "@/lib/knots";
 import {
   inferWorkflowMode,
   profileDisplayName,
@@ -115,6 +116,20 @@ export function fromKnots<T>(
     ok: false,
     error: { code, message, retryable: isRetryableByDefault(code) },
   };
+}
+
+export async function loadKnotRecordWithRehydrate(
+  id: string,
+  repoPath: string,
+): Promise<BackendResult<KnotRecord>> {
+  const direct = fromKnots(await knots.showKnot(id, repoPath));
+  if (direct.ok || direct.error?.code !== "NOT_FOUND") {
+    return direct;
+  }
+
+  return fromKnots(
+    await knots.rehydrateKnot(id, repoPath),
+  );
 }
 
 // ── Data normalisation ──────────────────────────────────────────────

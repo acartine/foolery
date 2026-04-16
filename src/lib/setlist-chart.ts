@@ -1,4 +1,3 @@
-import { displayBeatLabel } from "@/lib/beat-display";
 import type {
   PlanDocument,
   PlanSummary,
@@ -8,8 +7,6 @@ import type { Beat } from "@/lib/types";
 export interface SetlistPreviewBeat {
   id: string;
   label: string;
-  title: string;
-  description?: string;
 }
 
 export interface SetlistPlanPreview {
@@ -57,10 +54,6 @@ export interface SetlistChartModel {
   rows: SetlistChartRow[];
 }
 
-interface PlanBeatMeta {
-  title: string;
-}
-
 interface SlotAssignment {
   slotIndex: number;
   order: number;
@@ -103,14 +96,12 @@ export function buildSetlistChart(
     slots,
     slotByBeatId,
   } = buildScheduledSlots(plan);
-  const beatMeta = buildPlanBeatMeta(plan);
   const rows = uniqueBeatIds(plan.beatIds)
     .filter((beatId) => slotByBeatId.has(beatId))
     .map((beatId) =>
       buildRow(
         beatId,
         beatMap,
-        beatMeta,
         slotByBeatId,
         slots.length,
       ))
@@ -131,11 +122,11 @@ export function buildSetlistChart(
 function buildRow(
   beatId: string,
   beatMap: ReadonlyMap<string, Beat>,
-  beatMeta: ReadonlyMap<string, PlanBeatMeta>,
   slotByBeatId: ReadonlyMap<string, SlotAssignment>,
   slotCount: number,
 ): SetlistChartRow {
   const beat = beatMap.get(beatId);
+  const detailBeatId = beat?.id ?? beatId;
   const assignment = slotByBeatId.get(beatId);
   const slotIndex = assignment?.slotIndex ?? 0;
   const cells = Array.from(
@@ -145,9 +136,9 @@ function buildRow(
 
   cells[slotIndex] = {
     beatId,
-    detailBeatId: beat?.id ?? beatId,
-    beatLabel: displayBeatLabel(beatId, beat?.aliases),
-    title: beat?.title ?? beatMeta.get(beatId)?.title ?? beatId,
+    detailBeatId,
+    beatLabel: detailBeatId,
+    title: detailBeatId,
     description: normalizeDescription(beat?.description),
     state: beat?.state,
     type: beat?.type,
@@ -159,8 +150,8 @@ function buildRow(
     beatId,
     rankLabel: "",
     order: assignment?.order ?? Number.MAX_SAFE_INTEGER,
-    beatLabel: displayBeatLabel(beatId, beat?.aliases),
-    title: beat?.title ?? beatMeta.get(beatId)?.title ?? beatId,
+    beatLabel: detailBeatId,
+    title: detailBeatId,
     description: normalizeDescription(beat?.description),
     state: beat?.state,
     type: beat?.type,
@@ -182,19 +173,17 @@ function toPreviewBeat(
   beatMap: ReadonlyMap<string, Beat>,
 ): SetlistPreviewBeat | null {
   const beat = beatMap.get(beatId);
+  const displayId = beat?.id ?? beatId;
   if (!beat) {
     return {
-      id: beatId,
-      label: beatId,
-      title: beatId,
+      id: displayId,
+      label: displayId,
     };
   }
 
   return {
-    id: beatId,
-    label: displayBeatLabel(beat.id, beat.aliases),
-    title: beat.title,
-    description: normalizeDescription(beat.description),
+    id: displayId,
+    label: displayId,
   };
 }
 
@@ -202,18 +191,6 @@ function normalizeDescription(
   description: string | undefined,
 ): string | undefined {
   return description?.trim() ? description.trim() : undefined;
-}
-
-function buildPlanBeatMeta(
-  plan: PlanDocument,
-): Map<string, PlanBeatMeta> {
-  const meta = new Map<string, PlanBeatMeta>();
-  for (const wave of plan.waves) {
-    for (const beat of wave.beats) {
-      meta.set(beat.id, { title: beat.title });
-    }
-  }
-  return meta;
 }
 
 function buildScheduledSlots(

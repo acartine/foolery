@@ -8,10 +8,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   resetStore,
   insertKnot,
+  store,
   mockListProfiles,
   mockUpdateKnot,
   mockNewKnot,
   mockAddEdge,
+  mockRehydrateKnot,
+  mockShowKnot,
 } from "./knots-backend-coverage-mocks";
 
 vi.mock("@/lib/knots", async () => {
@@ -80,6 +83,32 @@ describe("KnotsBackend coverage: knot with notes and metadata", () => {
     const result = await backend.get("N3");
     expect(result.ok).toBe(true);
     expect(result.data?.notes).toContain("bob: Valid");
+  });
+
+  it("rehydrates a missing knot before returning not found", async () => {
+    const backend = new KnotsBackend("/repo");
+    insertKnot({
+      id: "CANON-1",
+      title: "Cold knot",
+      state: "shipped",
+    });
+    mockShowKnot.mockImplementationOnce(async () => ({
+      ok: false as const,
+      error: "knot 'SHORT-1' not found in local cache",
+    }));
+    mockRehydrateKnot.mockImplementationOnce(async () => ({
+      ok: true as const,
+      data: {
+        ...store.knots.get("CANON-1")!,
+      },
+    }));
+
+    const result = await backend.get("SHORT-1");
+
+    expect(mockRehydrateKnot).toHaveBeenCalledWith("SHORT-1", "/repo");
+    expect(result.ok).toBe(true);
+    expect(result.data?.id).toBe("CANON-1");
+    expect(result.data?.title).toBe("Cold knot");
   });
 });
 
