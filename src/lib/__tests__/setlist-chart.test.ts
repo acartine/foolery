@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildSetlistChart, buildSetlistPlanPreview } from "@/lib/setlist-chart";
+import {
+  buildSetlistChart,
+  buildSetlistPlanPreview,
+  countWorkableSetlistRows,
+  isTerminalSetlistState,
+} from "@/lib/setlist-chart";
 import type { PlanDocument, PlanSummary } from "@/lib/orchestration-plan-types";
 import type { Beat } from "@/lib/types";
 
@@ -226,5 +231,26 @@ describe("setlist chart helpers: display fallbacks", () => {
       beatId: "beat-c",
       span: 1,
     });
+  });
+
+  it("counts only non-terminal scheduled rows as remaining", () => {
+    const chart = buildSetlistChart(
+      makePlan(),
+      new Map<string, Beat>([
+        ["beat-next", makeBeat("beat-next", { state: "ready_for_implementation" })],
+        ["beat-last", makeBeat("beat-last", { state: "shipped" })],
+        ["beat-wave-fallback", makeBeat("beat-wave-fallback", { state: "abandoned" })],
+      ]),
+    );
+
+    expect(countWorkableSetlistRows(chart)).toBe(1);
+  });
+
+  it("treats shipped, abandoned, and closed as terminal setlist states", () => {
+    expect(isTerminalSetlistState("shipped")).toBe(true);
+    expect(isTerminalSetlistState("abandoned")).toBe(true);
+    expect(isTerminalSetlistState("closed")).toBe(true);
+    expect(isTerminalSetlistState("ready_for_implementation")).toBe(false);
+    expect(isTerminalSetlistState(undefined)).toBe(false);
   });
 });

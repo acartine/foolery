@@ -20,7 +20,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { fetchBeat } from "@/lib/api";
 import { fetchPlan, fetchPlanSummaries, fetchRepoBeats } from "@/lib/plan-api";
-import { buildSetlistChart, buildSetlistPlanPreview } from "@/lib/setlist-chart";
+import {
+  buildSetlistChart,
+  buildSetlistPlanPreview,
+  countWorkableSetlistRows,
+} from "@/lib/setlist-chart";
 import type { PlanRecord, PlanSummary } from "@/lib/orchestration-plan-types";
 import type { BdResult, Beat } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -68,7 +72,11 @@ export function SetlistView({
       planSummaries={planSummaries}
       previews={previews}
       selectedPlanId={selectedPlanId}
-      selectedScheduledBeatCount={chart?.rows.length ?? null}
+      selectedWorkableBeatCount={
+        chart
+          ? countWorkableSetlistRows(chart)
+          : null
+      }
       onSelectPlan={setRequestedPlanId}
       planQuery={planQuery}
       selectedPlanRecord={selectedPlanRecord}
@@ -131,7 +139,7 @@ function LoadedSetlistView({
   planSummaries,
   previews,
   selectedPlanId,
-  selectedScheduledBeatCount,
+  selectedWorkableBeatCount,
   onSelectPlan,
   planQuery,
   selectedPlanRecord,
@@ -141,7 +149,7 @@ function LoadedSetlistView({
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
-  selectedScheduledBeatCount: number | null;
+  selectedWorkableBeatCount: number | null;
   onSelectPlan: (planId: string) => void;
   planQuery: UseQueryResult<BdResult<PlanRecord>>;
   selectedPlanRecord: PlanRecord | null;
@@ -153,7 +161,7 @@ function LoadedSetlistView({
         planSummaries={planSummaries}
         previews={previews}
         selectedPlanId={selectedPlanId}
-        selectedScheduledBeatCount={selectedScheduledBeatCount}
+        selectedWorkableBeatCount={selectedWorkableBeatCount}
         onSelectPlan={onSelectPlan}
       />
 
@@ -183,13 +191,13 @@ function SetlistSummaryPanel({
   planSummaries,
   previews,
   selectedPlanId,
-  selectedScheduledBeatCount,
+  selectedWorkableBeatCount,
   onSelectPlan,
 }: {
   planSummaries: PlanSummary[];
   previews: Map<string, ReturnType<typeof buildSetlistPlanPreview>>;
   selectedPlanId: string | null;
-  selectedScheduledBeatCount: number | null;
+  selectedWorkableBeatCount: number | null;
   onSelectPlan: (planId: string) => void;
 }) {
   return (
@@ -213,9 +221,9 @@ function SetlistSummaryPanel({
               plan={plan}
               preview={previews.get(plan.artifact.id)!}
               selected={plan.artifact.id === selectedPlanId}
-              selectedScheduledBeatCount={
+              selectedWorkableBeatCount={
                 plan.artifact.id === selectedPlanId
-                  ? selectedScheduledBeatCount
+                  ? selectedWorkableBeatCount
                   : null
               }
               onSelect={onSelectPlan}
@@ -372,18 +380,18 @@ function PlanSummaryCard({
   plan,
   preview,
   selected,
-  selectedScheduledBeatCount,
+  selectedWorkableBeatCount,
   onSelect,
 }: {
   plan: PlanSummary;
   preview: ReturnType<typeof buildSetlistPlanPreview>;
   selected: boolean;
-  selectedScheduledBeatCount: number | null;
+  selectedWorkableBeatCount: number | null;
   onSelect: (planId: string) => void;
 }) {
-  const beatCount = selectedScheduledBeatCount ?? preview.totalBeats;
-  const beatCountLabel = selectedScheduledBeatCount !== null
-    ? "scheduled"
+  const beatCount = selectedWorkableBeatCount ?? preview.totalBeats;
+  const beatCountLabel = selectedWorkableBeatCount !== null
+    ? "remaining"
     : "beats";
 
   return (
