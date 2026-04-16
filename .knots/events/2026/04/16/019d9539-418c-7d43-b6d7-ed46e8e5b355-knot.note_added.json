@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9539-418c-7d43-b6d7-ed46e8e5b355",
+  "occurred_at": "2026-04-16T07:37:30.764902Z",
+  "knot_id": "foolery-3c9c",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Created under the default planning profile by mistake for an implementation request. Replaced by an implementation-start knot so the user request can be executed in the correct workflow state.",
+    "datetime": "2026-04-16T07:37:30.764902Z",
+    "entry_id": "019d9539-418c-7d43-b6d7-ed3adda313e2",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

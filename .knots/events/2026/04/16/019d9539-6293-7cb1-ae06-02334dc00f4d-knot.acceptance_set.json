@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9539-6293-7cb1-ae06-02334dc00f4d",
+  "occurred_at": "2026-04-16T07:37:39.211104Z",
+  "knot_id": "foolery-ad76",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. The header navigation renders a Setlist entry before the existing beats views.\n2. The Setlist screen exposes multiple execution-plan beats in a summary/selection surface that includes their descriptions.\n3. The selected execution plan renders as a non-time-based gantt chart that fills the page body and orders rows by execution priority from next to last.\n4. The implementation includes validation coverage for any new view logic that is practical in this turn."
+  }
+}

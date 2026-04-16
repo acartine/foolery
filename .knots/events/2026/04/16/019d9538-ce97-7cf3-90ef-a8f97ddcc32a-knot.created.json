@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9538-ce97-7cf3-90ef-a8f97ddcc32a",
+  "occurred_at": "2026-04-16T07:37:01.334698Z",
+  "knot_id": "foolery-3c9c",
+  "type": "knot.created",
+  "data": {
+    "body": "Goal:\nAdd a new Setlist screen to the beats UI. It should appear as the first top navigation button, show summary cards for one or more execution-plan beats with descriptions, and render the selected execution plan as a full-page gantt-style chart where the y-axis is execution priority (next at top, last at bottom) and the x-axis uses equal-width task slots rather than time.\n\nVerification:\n1. Open the beats UI and confirm the top navigation shows Setlist as the first button.\n2. Navigate to Setlist and confirm the summary widget lists execution-plan beats with descriptions.\n3. Select an execution plan and confirm the main body renders a gantt-style chart with priority ordered top-to-bottom and equal-width horizontal task slots.\n4. Run project validation for the touched area and confirm it passes.\n\nConstraints:\n- Follow the repo worktree policy and do implementation in a dedicated git worktree.\n- Preserve existing beats views and navigation behavior outside the new Setlist entry.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add setlist screen",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}
