@@ -65,6 +65,9 @@ export interface TakeLoopIterationTrace {
   childCloseAt?: string;
   childExitCode?: number | null;
   childSignal?: string | null;
+  exitReason?: string;
+  msSinceLastStdout?: number | null;
+  lastEventType?: string | null;
   spawnErrorAt?: string;
   spawnErrorMessage?: string;
   postExitStateObservedAt?: string;
@@ -275,6 +278,9 @@ function logInteractionLifecycle(
     childCloseAt: trace.childCloseAt,
     childExitCode: trace.childExitCode,
     childSignal: trace.childSignal,
+    exitReason: trace.exitReason,
+    msSinceLastStdout: trace.msSinceLastStdout,
+    lastEventType: trace.lastEventType,
     spawnErrorAt: trace.spawnErrorAt,
     spawnErrorMessage: trace.spawnErrorMessage,
     postExitState: trace.postExitState,
@@ -424,6 +430,9 @@ export function recordSessionFinishLifecycle(
     childCloseAt: latest.childCloseAt,
     childExitCode: latest.childExitCode,
     childSignal: latest.childSignal,
+    exitReason: latest.exitReason,
+    msSinceLastStdout: latest.msSinceLastStdout,
+    lastEventType: latest.lastEventType,
     spawnErrorAt: latest.spawnErrorAt,
     spawnErrorMessage: latest.spawnErrorMessage,
     postExitState: latest.postExitState,

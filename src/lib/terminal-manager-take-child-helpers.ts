@@ -33,6 +33,10 @@ import { resolveAgentCommand } from "@/lib/terminal-manager-types";
 import {
   createPromptDispatchHooks,
 } from "@/lib/terminal-manager-runtime-lifecycle";
+import {
+  captureChildCloseDiagnostics,
+  formatDiagnosticsForLog,
+} from "@/lib/agent-session-close-diagnostics";
 
 export interface DeferredHttpRefs {
   childRef: ChildProcess | null;
@@ -174,6 +178,9 @@ export function wireTakeChildClose(
 ): void {
   takeChild.on("close", (takeCode, signal) => {
     runtime.flushLineBuffer(takeChild);
+    const diag = captureChildCloseDiagnostics(
+      runtime.state,
+    );
     runtime.dispose();
     takeChild.stdout?.removeAllListeners();
     takeChild.stderr?.removeAllListeners();
@@ -181,14 +188,18 @@ export function wireTakeChildClose(
     console.log(
       `[terminal-manager] [${ctx.id}] [take-loop]` +
       ` child close: code=${takeCode}` +
+      formatDiagnosticsForLog(diag, signal) +
+      ` aborted=${ctx.sessionAborted()}` +
       ` iteration=${ctx.takeIteration.value}` +
-      ` beat=${ctx.beatId}` +
-      ` aborted=${ctx.sessionAborted()}`,
+      ` beat=${ctx.beatId}`,
     );
     recordTakeLoopLifecycle(ctx, "child_close", {
       claimedState: beatState,
       childExitCode: takeCode,
       childSignal: signal,
+      exitReason: diag.exitReason,
+      msSinceLastStdout: diag.msSinceLastStdout,
+      lastEventType: diag.lastEventType,
     });
     handleTakeIterationClose(
       ctx,
@@ -219,14 +230,21 @@ export function wireTakeChildError(
     `| beat: ${ctx.beatId.slice(0, 12)} ` +
     `| agent: ${effectiveDialect}]`;
   takeChild.on("error", (err) => {
+    const diag = captureChildCloseDiagnostics(
+      runtime.state,
+    );
     console.error(
       `[terminal-manager] [${ctx.id}] ` +
       `[take-loop] spawn error:`,
-      err.message,
+      err.message +
+      formatDiagnosticsForLog(diag, null),
     );
     recordTakeLoopLifecycle(ctx, "spawn_error", {
       claimedState: beatState,
       spawnErrorMessage: err.message,
+      exitReason: diag.exitReason,
+      msSinceLastStdout: diag.msSinceLastStdout,
+      lastEventType: diag.lastEventType,
     });
     runtime.dispose();
     ctx.pushEvent({
