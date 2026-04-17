@@ -451,9 +451,11 @@ describe("terminateProcessGroup", () => {
   it("sends SIGTERM then SIGKILL", () => {
     const killSpy = vi.spyOn(process, "kill")
       .mockImplementation(() => true);
+    const warnSpy = vi.spyOn(console, "warn")
+      .mockImplementation(() => {});
     const child = makeChild(false);
 
-    terminateProcessGroup(child, 1000);
+    terminateProcessGroup(child, "test_reason", 1000);
     expect(killSpy).toHaveBeenCalledWith(
       -12345, "SIGTERM",
     );
@@ -462,6 +464,7 @@ describe("terminateProcessGroup", () => {
       -12345, "SIGKILL",
     );
     killSpy.mockRestore();
+    warnSpy.mockRestore();
   });
 
   it("falls back to child.kill", () => {
@@ -469,9 +472,11 @@ describe("terminateProcessGroup", () => {
       .mockImplementation(() => {
         throw new Error("ESRCH");
       });
+    const warnSpy = vi.spyOn(console, "warn")
+      .mockImplementation(() => {});
     const child = makeChild(false);
 
-    terminateProcessGroup(child, 500);
+    terminateProcessGroup(child, "test_reason", 500);
     expect(child.kill).toHaveBeenCalledWith(
       "SIGTERM",
     );
@@ -480,5 +485,60 @@ describe("terminateProcessGroup", () => {
       "SIGKILL",
     );
     killSpy.mockRestore();
+    warnSpy.mockRestore();
+  });
+
+  it("logs at entry with pid, reason, and tag", () => {
+    const killSpy = vi.spyOn(process, "kill")
+      .mockImplementation(() => true);
+    const warnSpy = vi.spyOn(console, "warn")
+      .mockImplementation(() => {});
+    const child = makeChild(false);
+
+    terminateProcessGroup(
+      child, "watchdog_timeout", 1000,
+    );
+
+    const entryCall = warnSpy.mock.calls[0]?.[0] as string;
+    expect(entryCall).toContain(
+      "[terminate-process-group]",
+    );
+    expect(entryCall).toContain(
+      "reason=watchdog_timeout",
+    );
+    expect(entryCall).toContain("pid=12345");
+    expect(entryCall).toContain("delayMs=1000");
+
+    killSpy.mockRestore();
+    warnSpy.mockRestore();
+  });
+
+  it("logs SIGKILL branch when forced after delay", () => {
+    const killSpy = vi.spyOn(process, "kill")
+      .mockImplementation(() => true);
+    const warnSpy = vi.spyOn(console, "warn")
+      .mockImplementation(() => {});
+    const child = makeChild(false);
+
+    terminateProcessGroup(
+      child, "external_abort", 750,
+    );
+    warnSpy.mockClear();
+    vi.advanceTimersByTime(750);
+
+    const sigkillCall =
+      warnSpy.mock.calls[0]?.[0] as string;
+    expect(sigkillCall).toContain(
+      "[terminate-process-group]",
+    );
+    expect(sigkillCall).toContain("pid=12345");
+    expect(sigkillCall).toContain(
+      "reason=external_abort",
+    );
+    expect(sigkillCall).toContain("signal=SIGKILL");
+    expect(sigkillCall).toContain("750ms");
+
+    killSpy.mockRestore();
+    warnSpy.mockRestore();
   });
 });

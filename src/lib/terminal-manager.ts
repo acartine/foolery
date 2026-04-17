@@ -461,6 +461,6 @@ export function abortSession(id: string): boolean {
     return entry.abort != null;
   }
 
-  terminateProcessGroup(entry.process);
+  terminateProcessGroup(entry.process, "external_abort");
   return true;
 }

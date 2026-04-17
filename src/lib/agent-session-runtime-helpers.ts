@@ -301,7 +301,7 @@ function fireWatchdogTimeout(
     msSinceLastEvent,
     lastEventType,
   });
-  terminateProcessGroup(child);
+  terminateProcessGroup(child, "watchdog_timeout");
 }
 
 export function doResetWatchdog(
