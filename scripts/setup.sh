@@ -223,7 +223,13 @@ _discover_models() {
       fi
       ;;
     claude)
-      printf '%s\n' sonnet opus haiku
+      printf '%s\n' \
+        claude-opus-4.7 \
+        claude-sonnet-4.6 \
+        claude-opus-4.6 \
+        claude-sonnet-4.5 \
+        claude-haiku-4.5 \
+        claude-opus-4.5
       ;;
     gemini)
       printf '%s\n' gemini-2.5-pro gemini-2.5-flash
