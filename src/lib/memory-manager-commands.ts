@@ -1,6 +1,6 @@
 import { detectMemoryManagerType } from "@/lib/memory-manager-detection";
 import type { MemoryManagerType } from "@/lib/memory-managers";
-import { mapWorkflowStateToCompatStatus } from "@/lib/workflows";
+import { mapWorkflowStateToCompatStatus } from "@/lib/backends/beads-compat-status";
 import { updateKnot } from "@/lib/knots";
 import type { Beat } from "@/lib/types";
 
@@ -54,7 +54,7 @@ export function buildWorkflowStateCommand(
     const base = `kno next ${quoteId(id)} --expected-state ${quoteArg(normalizedState)} --actor-kind agent`;
     return options?.leaseId ? `${base} --lease ${quoteArg(options.leaseId)}` : base;
   }
-  const compatStatus = mapWorkflowStateToCompatStatus(normalizedState, "memory-manager-commands");
+  const compatStatus = mapWorkflowStateToCompatStatus(normalizedState);
   return `bd update ${quoteId(id)} --status ${quoteArg(compatStatus)} --add-label ${quoteArg(`wf:state:${normalizedState}`)}${beatsNoDaemonFlag(options)}`;
 }
 

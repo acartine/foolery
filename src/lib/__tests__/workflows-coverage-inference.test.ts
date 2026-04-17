@@ -9,7 +9,6 @@ import {
   builtinProfileDescriptor,
   defaultWorkflowDescriptor,
   deriveProfileId,
-  deriveBeadsWorkflowState,
   deriveWorkflowState,
   deriveWorkflowRuntimeState,
   inferWorkflowMode,
@@ -266,7 +265,6 @@ describe("deriveWorkflowRuntimeState", () => {
   it("derives runtime state for queue state", () => {
     const runtime = deriveWorkflowRuntimeState(workflow, "ready_for_planning");
     expect(runtime.state).toBe("ready_for_planning");
-    expect(runtime.compatStatus).toBe("open");
     expect(runtime.nextActionOwnerKind).toBe("agent");
     expect(runtime.requiresHumanAction).toBe(false);
     expect(runtime.isAgentClaimable).toBe(true);
@@ -275,14 +273,12 @@ describe("deriveWorkflowRuntimeState", () => {
   it("derives runtime state for active state", () => {
     const runtime = deriveWorkflowRuntimeState(workflow, "implementation");
     expect(runtime.state).toBe("implementation");
-    expect(runtime.compatStatus).toBe("in_progress");
     expect(runtime.isAgentClaimable).toBe(false);
   });
 
   it("derives runtime state for terminal state", () => {
     const runtime = deriveWorkflowRuntimeState(workflow, "shipped");
     expect(runtime.state).toBe("shipped");
-    expect(runtime.compatStatus).toBe("closed");
     expect(runtime.nextActionOwnerKind).toBe("none");
   });
 
@@ -337,20 +333,14 @@ describe("deriveProfileId metadata paths", () => {
 });
 
 describe("deriveWorkflowState additional branches", () => {
-  it("falls back to status when no label match", () => {
-    const state = deriveWorkflowState("in_progress", []);
-    expect(typeof state).toBe("string");
+  it("extracts state from labels", () => {
+    const state = deriveWorkflowState(["wf:state:implementation"]);
+    expect(state).toBe("implementation");
   });
-  it("returns initial state when no status or labels", () => {
+  it("returns initial state when no labels match", () => {
     const workflow = defaultWorkflowDescriptor();
-    const state = deriveWorkflowState(undefined, [], workflow);
+    const state = deriveWorkflowState([], workflow);
     expect(state).toBe(workflow.initialState);
-  });
-  it("maps unlabeled beads open status to implementation queue", () => {
-    expect(deriveBeadsWorkflowState("open", [])).toBe("ready_for_implementation");
-  });
-  it("maps unlabeled beads in_progress status to implementation", () => {
-    expect(deriveBeadsWorkflowState("in_progress", [])).toBe("implementation");
   });
 });
 

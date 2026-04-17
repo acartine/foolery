@@ -14,11 +14,13 @@ import type {
 import {
   builtinProfileDescriptor,
   builtinWorkflowDescriptors,
-  deriveBeadsProfileId,
-  deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
   resolveStep,
 } from "./workflows";
+import {
+  deriveBeadsProfileId,
+  deriveBeadsWorkflowState,
+} from "./backends/beads-compat-status";
 
 // ── Beat normalization ──────────────────────────────────────
 

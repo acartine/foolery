@@ -461,13 +461,9 @@ export type { WorkflowRuntimeState } from "@/lib/workflows-runtime";
 export {
   PROFILE_DESCRIPTIONS,
   profileDisplayName,
-  mapWorkflowStateToCompatStatus,
-  mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
   deriveProfileId,
   deriveWorkflowState,
-  deriveBeadsProfileId,
-  deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
   inferWorkflowMode,
   inferFinalCutState,

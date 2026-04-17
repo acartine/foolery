@@ -3,7 +3,7 @@
  * capability-aware API guard behavior.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { KNOTS_METADATA_KEYS } from "@/lib/knots-compat";
+import { KNOTS_METADATA_KEYS } from "@/lib/knots-constants";
 import {
   KNOTS_CAPABILITIES,
 } from "@/lib/backends/knots-backend";

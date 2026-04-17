@@ -9,17 +9,18 @@ import {
 } from "./bd-internal";
 import type { ExecResult } from "./bd-internal";
 import type { Beat, BdResult } from "./types";
-import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
   builtinProfileDescriptor,
-  deriveWorkflowRuntimeState,
   isWorkflowProfileLabel,
   isWorkflowStateLabel,
-  mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "./workflows";
+import {
+  mapStatusToDefaultWorkflowState,
+  mapWorkflowStateToCompatStatus,
+} from "./backends/beads-compat-status";
 import { showBeat } from "./bd-queries";
 
 // ── Helpers ─────────────────────────────────────────────────
@@ -79,9 +80,6 @@ function resolveWorkflowFields(
     typeof nextFields.status === "string"
       ? (nextFields.status as string)
       : undefined;
-  if (explicitStatus !== undefined) {
-    recordCompatStatusConsumed("bd:update-input-status");
-  }
 
   const workflowState =
     explicitWorkflowState ||
@@ -102,9 +100,7 @@ function resolveWorkflowFields(
     workflowState ?? workflow.initialState;
   const compatStatus =
     explicitStatus ??
-    deriveWorkflowRuntimeState(
-      workflow, resolvedState,
-    ).compatStatus;
+    mapWorkflowStateToCompatStatus(resolvedState);
 
   const existingLabels = Array.isArray(nextFields.labels)
     ? nextFields.labels.filter(

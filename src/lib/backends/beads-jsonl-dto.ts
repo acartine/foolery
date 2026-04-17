@@ -8,13 +8,15 @@
 import type { Beat, BeatPriority, Invariant, InvariantKind } from "@/lib/types";
 import {
   builtinProfileDescriptor,
-  deriveBeadsProfileId,
-  deriveBeadsWorkflowState,
   deriveWorkflowRuntimeState,
-  mapWorkflowStateToCompatStatus,
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
 } from "@/lib/workflows";
+import {
+  deriveBeadsProfileId,
+  deriveBeadsWorkflowState,
+  mapWorkflowStateToCompatStatus,
+} from "./beads-compat-status";
 
 // ── Raw JSONL record shape ──────────────────────────────────────
 
@@ -207,7 +209,7 @@ export function normalizeFromJsonl(raw: RawBead): Beat {
 export function denormalizeToJsonl(beat: Beat): RawBead {
   const workflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
   const beatState = beat.state || workflow.initialState;
-  const status = mapWorkflowStateToCompatStatus(beatState, "beads-jsonl-dto:denormalize");
+  const status = mapWorkflowStateToCompatStatus(beatState);
   const labels = withWorkflowProfileLabel(
     withWorkflowStateLabel(beat.labels ?? [], beatState),
     workflow.id,

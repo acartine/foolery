@@ -23,7 +23,6 @@ import {
   builtinProfileDescriptor,
   builtinWorkflowDescriptors,
   deriveWorkflowRuntimeState,
-  mapStatusToDefaultWorkflowState,
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "@/lib/workflows";
@@ -154,7 +153,7 @@ export class MockBackendPort implements BackendPort {
     const id = nextId();
     const now = isoNow();
     const workflow = builtinProfileDescriptor(input.profileId ?? input.workflowId);
-    const workflowState = mapStatusToDefaultWorkflowState("open", workflow);
+    const workflowState = workflow.initialState;
     const runtime = deriveWorkflowRuntimeState(workflow, workflowState);
     const beat: Beat = {
       id,
@@ -221,7 +220,10 @@ export class MockBackendPort implements BackendPort {
     const beat = this.beats.get(id);
     if (!beat) return backendError("NOT_FOUND", `Beat ${id} not found`);
     const closedWorkflow = builtinProfileDescriptor(beat.profileId ?? beat.workflowId);
-    beat.state = mapStatusToDefaultWorkflowState("closed", closedWorkflow);
+    beat.state =
+      closedWorkflow.terminalStates.find((s) => s !== "deferred")
+      ?? closedWorkflow.terminalStates[0]
+      ?? "shipped";
     beat.closed = isoNow();
     beat.updated = isoNow();
     return { ok: true };
