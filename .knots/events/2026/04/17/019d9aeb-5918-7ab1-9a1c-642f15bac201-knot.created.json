@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aeb-5918-7ab1-9a1c-642f15bac201",
+  "occurred_at": "2026-04-17T10:10:08.280558Z",
+  "knot_id": "foolery-6881",
+  "type": "knot.created",
+  "data": {
+    "body": "On main, onResult/onTurnEnded is only wired in src/lib/terminal-manager-initial-io.ts:62. The take-loop runtime in src/lib/terminal-manager-take-child.ts:194-209 creates createSessionRuntime WITHOUT any onResult/onTurnEnded handler. This means take iterations 2, 3, 4… have zero in-session followup capability — the code relies entirely on post-close agent rotation via buildNextTakePrompt. User asserted this was 'definitely 100% fixed' but the bug is still on main. Wire an onTurnEnded handler in spawnTakeChild/createTakeRuntimeBundle so every take iteration gets the same followup-on-turn-end semantics as the initial child. The followup content should be context-appropriate: if the beat is still in an active state after turn-ended but the agent is still alive, send a prompt asking it to complete its work or roll back. This knot DEPENDS on knot a401 (onTurnEnded rename) — must land after that one.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Wire onTurnEnded in take-loop runtime",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

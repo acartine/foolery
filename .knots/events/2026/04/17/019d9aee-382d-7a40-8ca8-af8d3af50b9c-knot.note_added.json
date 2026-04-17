@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9aee-382d-7a40-8ca8-af8d3af50b9c",
+  "occurred_at": "2026-04-17T10:13:16.461561Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Plan review: approved. Scope is tightly limited to 3 files, acceptance criteria map 1:1 to the plan, risks identified (state shape change isolated to createSessionRuntime), out-of-scope boundaries noted to prevent collision with sibling knots (a401, 062f, e750).",
+    "datetime": "2026-04-17T10:13:16.461561Z",
+    "entry_id": "019d9aee-382d-7a40-8ca8-af7adcbcd2b4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

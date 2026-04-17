@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aea-70df-7f12-9076-024e71f47d04",
+  "occurred_at": "2026-04-17T10:09:08.822705Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. When the watchdog setTimeout callback fires, a console.warn logs the tag [terminal-manager] [watchdog] with pid, timeoutMs, and reason=timeout before any termination.\n2. The onLifecycleEvent callback (if provided) receives an event with type='watchdog_fired' containing timeoutMs, msSinceLastEvent, lastEventType (may be null).\n3. terminateProcessGroup(child) is still called after the log/event.\n4. SessionRuntimeLifecycleEvent union in agent-session-runtime.ts has a new 'watchdog_fired' variant.\n5. All lint/typecheck/test/build pass."
+  }
+}

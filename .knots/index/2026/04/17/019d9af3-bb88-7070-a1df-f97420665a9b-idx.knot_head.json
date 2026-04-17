@@ -1,0 +1,37 @@
+{
+  "event_id": "019d9af3-bb88-7070-a1df-f97420665a9b",
+  "occurred_at": "2026-04-17T10:19:17.768201Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2782",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Log watchdog firing before SIGTERM",
+    "type": "work",
+    "updated_at": "2026-04-17T10:19:17.768201Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019d9af3-b013-7032-a4c2-076229109a9e"
+  }
+}

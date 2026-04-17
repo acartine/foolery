@@ -1,0 +1,34 @@
+{
+  "event_id": "019d9b18-9d8d-7ab2-8a68-e4b330061a14",
+  "occurred_at": "2026-04-17T10:59:34.925087Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-6881",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Wire onTurnEnded in take-loop runtime",
+    "type": "work",
+    "updated_at": "2026-04-17T10:59:34.925087Z",
+    "workflow_id": "work_sdlc"
+  }
+}

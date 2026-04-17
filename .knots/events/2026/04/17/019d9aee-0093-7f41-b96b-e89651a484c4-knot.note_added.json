@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9aee-0093-7f41-b96b-e89651a484c4",
+  "occurred_at": "2026-04-17T10:13:02.227049Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "## Implementation Plan — Log watchdog firing before SIGTERM\n\n### Files to touch (scope-limited)\n1. `src/lib/agent-session-runtime.ts` — add union variant + state field\n2. `src/lib/agent-session-runtime-helpers.ts` — change `doResetWatchdog` timeout callback\n3. `src/lib/__tests__/agent-session-runtime-lifecycle.test.ts` — unit test\n\n### Changes\n\n**agent-session-runtime.ts**\n- Extend `SessionRuntimeLifecycleEvent` union with a `watchdog_fired` variant: `{ type: \"watchdog_fired\"; timeoutMs: number; msSinceLastEvent: number; lastEventType?: string }`.\n- Extend `SessionRuntimeState` with `watchdogArmedAt: number | null`.\n- Init `watchdogArmedAt: null` in `createSessionRuntime`.\n\n**agent-session-runtime-helpers.ts**\n- In `doResetWatchdog`: before arming, set `state.watchdogArmedAt = Date.now()`.\n- In the timeout callback (lines 285-290): before `terminateProcessGroup(child)`:\n  - Compute `msSinceLastEvent = state.watchdogArmedAt ? Date.now() - state.watchdogArmedAt : 0`.\n  - Read `lastEventType` from `state.lastNormalizedEvent?.type` (string-guarded).\n  - `console.warn` with tag `[terminal-manager] [watchdog] timeout_fired pid=<pid> timeoutMs=<ms> msSinceLastEvent=<delta> lastEventType=<type|null> reason=timeout`.\n  - `config.onLifecycleEvent?.({ type: \"watchdog_fired\", timeoutMs: ms, msSinceLastEvent, lastEventType })`.\n\n**test**\n- New test under `runtime: watchdog` block: `emits watchdog_fired lifecycle + console.warn before termination`.\n- Use `vi.useFakeTimers()`, spy on `console.warn`, collect lifecycle events, advance timer, assert both.\n\n### Quality gates\n- `bun run lint` — passes\n- `bunx tsc --noEmit` — passes\n- `bun run test` — new test passes plus existing watchdog tests remain green\n- `bun run build` — passes\n\n### Risks\n- Adding `watchdogArmedAt` breaks `SessionRuntimeState` shape. Must update any factories that construct it inline — only `createSessionRuntime` in this repo does that.\n- Must not touch `onResult`, `terminateProcessGroup` body, or child_close logs (separate knots).\n\n### Out of scope (do NOT touch)\n- `handleResultEvent` / `onResult` (foolery-a401)\n- `terminateProcessGroup` body (foolery-062f)\n- `msSinceLastStdout` in child_close logs (foolery-e750)\n\n### Completion criteria\nAll 5 acceptance criteria met; handoff capsule added before SHIPPED.",
+    "datetime": "2026-04-17T10:13:02.227049Z",
+    "entry_id": "019d9aee-0093-7f41-b96b-e88bd8f6da0a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

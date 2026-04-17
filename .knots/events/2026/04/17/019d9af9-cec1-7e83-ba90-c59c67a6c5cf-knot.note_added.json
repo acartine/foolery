@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9af9-cec1-7e83-ba90-c59c67a6c5cf",
+  "occurred_at": "2026-04-17T10:25:55.905509Z",
+  "knot_id": "foolery-062f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation Plan — terminateProcessGroup entry logging\n\nRoot cause: src/lib/agent-session-runtime.ts:310 terminateProcessGroup emits no\nconsole log; three call sites produce silent SIGTERMs. Re-landing this fix for\n\"fake-fixed-already\" tag.\n\nFiles to modify:\n1. src/lib/agent-session-runtime.ts\n   - Change signature to: terminateProcessGroup(child, reason: string, delayMs = 5000)\n   - Add console.warn at entry with [terminal-manager] [terminate-process-group]\n     tag, pid, reason, delayMs.\n   - Add console.warn inside setTimeout SIGKILL branch with pid, reason,\n     signal=SIGKILL, note forced after delayMs.\n\n2. src/lib/agent-session-runtime-helpers.ts:304\n   - Update call: terminateProcessGroup(child, \"watchdog_timeout\")\n\n3. src/lib/terminal-manager.ts:464\n   - Update call: terminateProcessGroup(entry.process, \"external_abort\")\n\n4. src/lib/__tests__/agent-session-runtime-lifecycle.test.ts:456,474\n   - Update existing calls to pass reason.\n   - Add test asserting console.warn at entry with reason/pid/tag.\n   - Add test asserting SIGKILL branch logs when timer fires.\n\nTest strategy:\n- Vitest spies on console.warn, assert call arguments match the format.\n- Use vi.useFakeTimers to trigger the delayed SIGKILL branch.\n\nRisks: none — Option B (breaking change with all callers internal) is clean.\nAll callers are in-repo and counted via grep.\n\nQuality gates: bun run lint, bunx tsc --noEmit, bun run test, bun run build.",
+    "datetime": "2026-04-17T10:25:55.905509Z",
+    "entry_id": "019d9af9-cec1-7e83-ba90-c587402536c8",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

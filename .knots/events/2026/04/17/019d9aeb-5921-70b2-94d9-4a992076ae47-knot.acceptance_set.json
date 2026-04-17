@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aeb-5921-70b2-94d9-4a992076ae47",
+  "occurred_at": "2026-04-17T10:10:08.280558Z",
+  "knot_id": "foolery-6881",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. createTakeRuntimeBundle in terminal-manager-take-child.ts wires an onTurnEnded handler into createSessionRuntime.\n2. Handler logic: when a turn ends in the take-loop, check current beat state. If beat is still in an 'active' state (not queue/terminal), send a followup prompt instructing the agent to advance or roll back. If already advanced, return false (let the grace-period close handler finish the session).\n3. The handler uses runtime.sendUserTurn(child, prompt, 'take_loop_follow_up') rather than writing directly to stdin.\n4. A test in src/lib/__tests__/terminal-manager-take-child.test.ts (new or existing) verifies: a mock child emits a turn-ended signal → onTurnEnded fires → sendUserTurn is called with a followup prompt when the beat is still active.\n5. Test also verifies the handler DOES NOT send a followup when the beat has already advanced.\n6. All lint/typecheck/test/build pass.\n7. Depends on and lands after knots-a401 — check with kno show a401 before claiming implementation."
+  }
+}

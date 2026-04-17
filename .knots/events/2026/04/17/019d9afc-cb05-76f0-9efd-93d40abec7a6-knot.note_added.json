@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9afc-cb05-76f0-9efd-93d40abec7a6",
+  "occurred_at": "2026-04-17T10:29:11.557625Z",
+  "knot_id": "foolery-062f",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment Handoff Capsule — foolery-062f\n\nRoot cause:\nsrc/lib/agent-session-runtime.ts terminateProcessGroup SIGTERMs (and\nSIGKILLs after 5s) were silent, leaving zero trace of what killed any\nagent child across watchdog, external abort, and connection manager\npaths. This re-lands the fix for the \"fake-fixed-already\" class.\n\nFiles and functions touched (post-change):\n- src/lib/agent-session-runtime.ts\n  - terminateProcessGroup (lines 310-341): new signature + entry log +\n    SIGKILL branch log\n- src/lib/agent-session-runtime-helpers.ts\n  - fireWatchdogTimeout call site (line 304): passes \"watchdog_timeout\"\n- src/lib/terminal-manager.ts\n  - abortSession call site (line 464): passes \"external_abort\"\n- src/lib/__tests__/agent-session-runtime-lifecycle.test.ts\n  - describe(\"terminateProcessGroup\") (lines 447-544): 2 tests updated\n    with reason arg + console.warn spy; 2 new tests added asserting\n    entry log format and SIGKILL branch log format.\n\nNew function signature:\n  export function terminateProcessGroup(\n    child: ChildProcess,\n    reason: string,\n    delayMs = 5000,\n  ): void\n\nEntry log format:\n  [terminal-manager] [terminate-process-group] pid=<pid> reason=<reason> delayMs=<delayMs>\n\nSIGKILL log format:\n  [terminate-process-group] pid=<pid> reason=<reason> signal=SIGKILL (forced after <delayMs>ms)\n\nUpdated call sites with reasons:\n- agent-session-runtime-helpers.ts:304 -> \"watchdog_timeout\"\n- terminal-manager.ts:464 -> \"external_abort\"\n\nLocking tests:\n- \"logs at entry with pid, reason, and tag\" — spies console.warn,\n  asserts first call contains [terminate-process-group], reason=, pid=,\n  delayMs= after terminateProcessGroup(child, \"watchdog_timeout\", 1000).\n- \"logs SIGKILL branch when forced after delay\" — uses fake timers,\n  advances past delayMs, asserts the post-clear call contains\n  [terminate-process-group], pid=, reason=external_abort, signal=SIGKILL,\n  and the delay literal.\n\nCommit hash: 8929ae99 (on origin/main)\nBranch: worktree-foolery-062f\n\nQuality gates: bun run lint, bunx tsc --noEmit, bun run test (2711\npassed), bun run build — all green.\n\nTag preserved: fake-fixed-already (not removed per instructions).",
+    "datetime": "2026-04-17T10:29:11.557625Z",
+    "entry_id": "019d9afc-cb05-76f0-9efd-93c1561393a4",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

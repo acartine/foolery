@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aea-bc66-70e3-91e6-f9936b8bd485",
+  "occurred_at": "2026-04-17T10:09:28.152405Z",
+  "knot_id": "foolery-e750",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Child close console.log line includes: code, signal, exitReason, msSinceLastStdout, lastEventType, aborted, iteration, beat.\n2. Signal comes from Node's close event second argument.\n3. exitReason is read from the runtime state before runtime.dispose(). If no explicit reason was set, fallback to 'normal'.\n4. SessionRuntimeState exposes a lastStdoutAt field updated on each stdout chunk in doWireStdout.\n5. recordTakeLoopLifecycle 'child_close' event payload also includes signal, exitReason, msSinceLastStdout, lastEventType.\n6. Initial-io close handler mirrors the same enriched fields.\n7. All lint/typecheck/test/build pass."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aeb-201d-7980-af17-73e124badb8e",
+  "occurred_at": "2026-04-17T10:09:53.677675Z",
+  "knot_id": "foolery-a401",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. SessionRuntimeConfig.onResult renamed to onTurnEnded. Callback signature unchanged (returns boolean meaning 'followUpSent?').\n2. agent-session-runtime.ts no longer has the 'if (obj.type === \"result\")' payload gate. A transport-neutral turn-ended dispatcher handles triggering.\n3. Each transport adapter signals turn-ended in a way that does not require the runtime to know the payload shape:\n   - stdio (Claude): trigger when normalized event has type === 'result' (Claude's standard terminator)\n   - jsonrpc (Codex): trigger when translateTurnCompleted returns {type:'turn.completed'} OR when Codex sends turn.completed\n   - acp (Gemini): trigger on the equivalent ACP session turn end\n   - http (OpenCode): trigger on the session's 'turn end' HTTP event\n4. The trigger path is now centralized in a single helper like emitTurnEnded(runtime) that each transport calls.\n5. handleResultEvent (or its successor handleTurnEnded) schedules input close only if onTurnEnded was not provided or returned false.\n6. All existing callers (currently just terminal-manager-initial-io.ts) are updated.\n7. Tests updated/added to verify onTurnEnded fires for jsonrpc Codex, ACP Gemini, HTTP OpenCode, and stdio Claude — NOT only stdio.\n8. All lint/typecheck/test/build pass."
+  }
+}

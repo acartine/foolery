@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aeb-2027-7452-b052-0ce465ba6971",
+  "occurred_at": "2026-04-17T10:09:53.677675Z",
+  "knot_id": "foolery-a401",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "followup-refactor"
+  }
+}

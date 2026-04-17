@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9af3-dd57-7193-bb13-e521303cee06",
+  "occurred_at": "2026-04-17T10:19:26.423231Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Shipment review: APPROVED. Both commit hashes (c1704a95 implementation, 1a99ec1c merge) tagged on knot. origin/main has both at HEAD. All 5 acceptance criteria satisfied. Quality gates green (lint, tsc --noEmit, vitest 2698 passed, next build). Invariants upheld — no touch to out-of-scope files.",
+    "datetime": "2026-04-17T10:19:26.423231Z",
+    "entry_id": "019d9af3-dd57-7193-bb13-e510cad19289",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

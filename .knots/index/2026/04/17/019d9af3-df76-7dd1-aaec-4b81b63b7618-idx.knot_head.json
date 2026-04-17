@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9af3-df76-7dd1-aaec-4b81b63b7618",
+  "occurred_at": "2026-04-17T10:19:26.966144Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-2782",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Log watchdog firing before SIGTERM",
+    "type": "work",
+    "updated_at": "2026-04-17T10:19:26.966144Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aea-70d7-7af2-bd0c-7b04ce53d9dc",
+  "occurred_at": "2026-04-17T10:09:08.822705Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.created",
+  "data": {
+    "body": "The interactive session watchdog in src/lib/agent-session-runtime-helpers.ts:285-290 fires after 10 minutes of silence and calls terminateProcessGroup(child) with ZERO logging. When it fires, we have no way to tell from logs that a timeout occurred — the symptom is a silent child_close with code=0, identical to a graceful exit. This is the root cause of knot foolery-557d iteration 3 abruptly ending after ~10 min of Codex silence (logs at .foolery-logs/_server/2026-04-17/console.log around 07:34:09). Must emit both a console.warn and a structured lifecycle event BEFORE calling terminateProcessGroup, including timeoutMs, msSinceLastEvent (Date.now() - state.lastNormalizedEventAt or similar), and lastEventType from state.lastNormalizedEvent.type.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Log watchdog firing before SIGTERM",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

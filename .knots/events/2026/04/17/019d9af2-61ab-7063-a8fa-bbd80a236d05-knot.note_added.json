@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9af2-61ab-7063-a8fa-bbd80a236d05",
+  "occurred_at": "2026-04-17T10:17:49.22746Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation review: APPROVED. Diff on worktree-foolery-2782 @ c1704a95 matches all 5 acceptance criteria. Scope is clean — only the 3 in-plan files touched. The new fireWatchdogTimeout helper isolates the log+event emission before terminateProcessGroup, and the setTimeout callback is kept small. No spillover into onResult/handleResultEvent (foolery-a401), terminateProcessGroup body (foolery-062f), or child_close logs (foolery-e750). Unit test in agent-session-runtime-watchdog-fired.test.ts verifies invocation ordering via invocationCallOrder.",
+    "datetime": "2026-04-17T10:17:49.22746Z",
+    "entry_id": "019d9af2-61ab-7063-a8fa-bbceeeeeab09",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

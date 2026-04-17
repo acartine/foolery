@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aea-951c-7311-b223-5c79facf8637",
+  "occurred_at": "2026-04-17T10:09:18.099018Z",
+  "knot_id": "foolery-062f",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. terminateProcessGroup signature accepts an optional reason parameter: terminateProcessGroup(child, reasonOrDelayMs?, delayMs?) OR a new options object. Backward-compatible default OK.\n2. At entry, console.warn emits tag [terminal-manager] [terminate-process-group] with pid and reason.\n3. All existing call sites in the repo are updated to pass a meaningful reason: 'watchdog_timeout', 'external_abort', 'connection_reset', etc.\n4. The SIGKILL setTimeout branch also logs when it fires with pid and signal=SIGKILL.\n5. All lint/typecheck/test/build pass."
+  }
+}

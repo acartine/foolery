@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9b03-1478-7852-921b-4db48e5379d8",
+  "occurred_at": "2026-04-17T10:36:03.576453Z",
+  "knot_id": "foolery-f8ae",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "HANDOFF CAPSULE (foolery-f8ae shipment)\n\n## Scope change rationale\n\nOriginal body asked for a unit test that the watchdog emits\nwatchdog_fired. That test already shipped via foolery-2782\n(src/lib/__tests__/agent-session-runtime-watchdog-fired.test.ts).\nDuplicating it would be make-work. Scope was repurposed to the\nend-to-end observability canary that would have caught the 557d\nsilent-SIGTERM bug.\n\n## What this test locks\n\nFile: src/lib/__tests__/terminal-manager-watchdog-e2e.test.ts\nCommits: 144f4547 (initial), f781a08e (062f gate flip)\n\nExercises real createSessionRuntime + wireTakeChildClose with a\nmock ChildProcess and fake timers, then locks seven discrete,\nnamed assertions covering the FULL chain a 557d-style silent\nkill must leave visible:\n\n 1. watchdog_fired lifecycle event (timeoutMs, msSinceLastEvent).\n    Breaks the unit-level invariant from foolery-2782.\n 2. console.warn(\"[terminal-manager] [watchdog] timeout_fired\n    pid=77777 timeoutMs=50 ... reason=timeout\"). Breaks if the\n    watchdog is silenced.\n 3. process.kill(-pid, \"SIGTERM\") invoked. Breaks if\n    terminateProcessGroup no longer SIGTERMs the process group.\n 4. [watchdog] warn ordered BEFORE the SIGTERM. Breaks if the\n    cause log is moved after the effect.\n 5. console.warn(\"[terminal-manager] [terminate-process-group]\n    ... reason=watchdog_timeout\") (from foolery-062f,\n    commit 8929ae99). Breaks if 062f's terminate log is dropped\n    or its reason tag is regressed.\n 6. Enriched child_close console.log (from foolery-e750) with\n    signal=SIGTERM, exitReason=timeout, msSinceLastStdout=<num>,\n    lastEventType=null. Breaks if e750's diagnostic enrichment\n    is stripped.\n 7. recordTakeLoopLifecycle child_close payload carrying the\n    same childSignal / childExitCode / exitReason /\n    msSinceLastStdout / lastEventType fields so the interaction\n    log chain stays intact.\n\n## Future-agent warning\n\nIf you are about to silence, rename, or drop any of the log\nstrings named above, this test will fail with a specific named\nmessage. THE CORRECT RESPONSE IS TO FIX THE LOGGING, NOT THE\nTEST. Each of these log lines was paid for with a 557d-style\nproduction incident. Keep them.\n\n## Canary verified end-to-end\n\nMutation probed both the [watchdog] warn and the enriched\nchild_close log during implementation. Each mutation produced\nspecific named failures in 2 of the 7 tests; restoring the\noriginal code restored the green state.\n\n## Reference\n\nOriginal bug: foolery-557d (silent SIGTERM visibility gap).\nRelated shipped knots: foolery-2782 (watchdog log + unit test),\nfoolery-e750 (child_close enrichment), foolery-062f\n(terminateProcessGroup log).",
+    "datetime": "2026-04-17T10:36:03.576453Z",
+    "entry_id": "019d9b03-1478-7852-921b-4dab0d6ffa2a",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

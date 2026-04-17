@@ -1,0 +1,14 @@
+{
+  "event_id": "019d9afa-f0ee-7123-930f-a44c1e6741ec",
+  "occurred_at": "2026-04-17T10:27:10.190429Z",
+  "knot_id": "foolery-f8ae",
+  "type": "knot.state_set",
+  "data": {
+    "actor_kind": "agent",
+    "force": false,
+    "from": "plan_review",
+    "profile_id": "autopilot",
+    "to": "ready_for_implementation",
+    "workflow_id": "work_sdlc"
+  }
+}

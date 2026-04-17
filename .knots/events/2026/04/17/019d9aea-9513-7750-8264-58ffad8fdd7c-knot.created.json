@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aea-9513-7750-8264-58ffad8fdd7c",
+  "occurred_at": "2026-04-17T10:09:18.099018Z",
+  "knot_id": "foolery-062f",
+  "type": "knot.created",
+  "data": {
+    "body": "src/lib/agent-session-runtime.ts:295-316 terminateProcessGroup SIGTERMs a process group (and SIGKILLs after 5s) with ZERO logging. Every caller — watchdog timeout, external abort, connection manager — leaves no trace of what killed the child. Must emit a single console.warn at function entry with pid, a caller-provided reason string (new optional second argument), and the delayMs. Callers that already log their reason (watchdog fire log) can still pass a brief reason tag.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Log terminateProcessGroup at entry",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

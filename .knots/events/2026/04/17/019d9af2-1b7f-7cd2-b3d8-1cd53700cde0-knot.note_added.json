@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9af2-1b7f-7cd2-b3d8-1cd53700cde0",
+  "occurred_at": "2026-04-17T10:17:31.263734Z",
+  "knot_id": "foolery-2782",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation complete on branch worktree-foolery-2782 @ c1704a95. All 5 acceptance criteria met. Quality gates green: lint, tsc --noEmit, vitest (2698 tests), next build.",
+    "datetime": "2026-04-17T10:17:31.263734Z",
+    "entry_id": "019d9af2-1b7f-7cd2-b3d8-1ccb01822781",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

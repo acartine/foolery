@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9af8-0620-7533-b22f-90fa4b033ebb",
+  "occurred_at": "2026-04-17T10:23:59.008148Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-e750",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Enrich child_close log with diagnostics",
+    "type": "work",
+    "updated_at": "2026-04-17T10:23:59.008148Z",
+    "workflow_id": "work_sdlc"
+  }
+}

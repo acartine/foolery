@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aea-bc70-7120-b9ff-dc324a2f58d7",
+  "occurred_at": "2026-04-17T10:09:28.152405Z",
+  "knot_id": "foolery-e750",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "watchdog-logging"
+  }
+}

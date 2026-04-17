@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aeb-200d-7a33-bf7d-6359830a479e",
+  "occurred_at": "2026-04-17T10:09:53.677675Z",
+  "knot_id": "foolery-a401",
+  "type": "knot.created",
+  "data": {
+    "body": "src/lib/agent-session-runtime.ts currently exposes an onResult callback (line 103) that only fires when the normalized event has literal type === 'result' (line 204). This is payload-dependent and transport-dependent: Claude stream-json emits {type:'result'}, but Codex/jsonrpc emits {type:'turn.completed'} (see codex-jsonrpc-session.ts:411), Gemini ACP emits different shapes, OpenCode HTTP emits others. The result: onResult literally cannot fire for Codex. User asserted this was 'definitely 100% fixed' but the bug is still on main. Rename onResult → onTurnEnded and make firing a per-transport responsibility: each adapter (stdio normalizer, jsonrpcSession, acpSession, httpSession) emits a 'turn_ended' signal whenever it observes the end-of-turn for its protocol. The session runtime wires these into onTurnEnded regardless of JSON shape. Backward compat is NOT needed — this is a rename across internal callers.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Rename onResult to onTurnEnded and make it payload-agnostic",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

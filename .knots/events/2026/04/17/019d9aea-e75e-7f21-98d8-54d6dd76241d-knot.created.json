@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aea-e75e-7f21-98d8-54d6dd76241d",
+  "occurred_at": "2026-04-17T10:09:39.166523Z",
+  "knot_id": "foolery-f8ae",
+  "type": "knot.created",
+  "data": {
+    "body": "There is currently NO test that asserts the watchdog timer emits any log or lifecycle event when it fires. A prior commit (556916f2 on branch cd5e-watchdog-logging) added this logging but never merged to main — and no test caught the regression. Add a vitest spec that: (a) configures a SessionRuntime with watchdogTimeoutMs=50 and a spy onLifecycleEvent; (b) wires a mock child with stdout; (c) does NOT emit any normalized events; (d) advances vi.useFakeTimers() past 50ms; (e) asserts onLifecycleEvent received a 'watchdog_fired' event AND console.warn was called with the [watchdog] tag. This test is the guard — if a future refactor drops the logging, this test must fail.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Lock watchdog_fired event emission with test",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

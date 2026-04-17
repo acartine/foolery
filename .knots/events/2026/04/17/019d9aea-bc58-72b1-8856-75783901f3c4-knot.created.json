@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9aea-bc58-72b1-8856-75783901f3c4",
+  "occurred_at": "2026-04-17T10:09:28.152405Z",
+  "knot_id": "foolery-e750",
+  "type": "knot.created",
+  "data": {
+    "body": "src/lib/terminal-manager-take-child-helpers.ts:181-187 child-close log shows only code= and aborted=, dropping the close-event signal and the runtime.state.exitReason. When the watchdog SIGTERMs a child and the child catches it (exits code=0), the current log is indistinguishable from a genuinely clean finish. Must extend the child close console.log to include: signal (from close event), exitReason (from runtime.state.exitReason — already set to 'timeout'/'result_observed'/etc), msSinceLastStdout (Date.now() minus last stdout/response timestamp tracked in runtime state — add a lastStdoutAt timestamp to SessionRuntimeState if missing), and lastEventType (from runtime.state.lastNormalizedEvent?.type). Apply the same enrichment to the error handler wireTakeChildError and to initial-io's child close at terminal-manager-initial-io.ts:240.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Enrich child_close log with diagnostics",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

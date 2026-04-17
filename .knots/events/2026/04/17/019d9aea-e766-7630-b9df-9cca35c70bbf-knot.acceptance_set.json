@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9aea-e766-7630-b9df-9cca35c70bbf",
+  "occurred_at": "2026-04-17T10:09:39.166523Z",
+  "knot_id": "foolery-f8ae",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. New test file or new describe block in src/lib/__tests__/agent-session-runtime-lifecycle.test.ts explicitly covers the watchdog firing path.\n2. Test uses fake timers, spies on console.warn and onLifecycleEvent.\n3. Test asserts console.warn was called with a string matching /\\[watchdog\\].*timeout/i or similar pinning tag.\n4. Test asserts onLifecycleEvent received an event with type === 'watchdog_fired'.\n5. Test also asserts terminateProcessGroup was called (via spy or by observing SIGTERM on the mock child).\n6. The test fails if either the console.warn OR the lifecycle event is removed.\n7. All lint/typecheck/test/build pass."
+  }
+}

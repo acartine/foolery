@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9b03-1e9b-7ed1-a9ea-09646258e7fc",
+  "occurred_at": "2026-04-17T10:36:06.171463Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-f8ae",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Lock watchdog_fired event emission with test",
+    "type": "work",
+    "updated_at": "2026-04-17T10:36:06.171463Z",
+    "workflow_id": "work_sdlc"
+  }
+}
