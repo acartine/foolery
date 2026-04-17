@@ -24,8 +24,11 @@ describe("settings pools layout", () => {
     expect(labelSource).toContain('layout?: "inline" | "stacked";');
     expect(labelSource).toContain('layout = "inline"');
     expect(labelSource).toContain(
-      'isStacked ? "inline-flex flex-col items-start gap-1" : "inline-flex items-center gap-1.5"',
+      "inline-flex flex-col items-start gap-1",
     );
-    expect(labelSource).toContain('className="flex max-w-full flex-wrap items-center gap-1.5"');
+    expect(labelSource).toContain("inline-flex items-center gap-1.5");
+    expect(labelSource).toContain(
+      'className="flex max-w-full flex-wrap items-center gap-1.5"',
+    );
   });
 });

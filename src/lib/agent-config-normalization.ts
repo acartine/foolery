@@ -190,8 +190,60 @@ export function normalizeSettingsAgents(
   }
 
   normalizedRoot.agents = normalizedAgents;
+
+  const registeredIds = new Set(Object.keys(normalizedAgents));
+  pruneOrphanActionRefs(normalizedRoot, registeredIds, changedPaths);
+  pruneOrphanPoolRefs(normalizedRoot, registeredIds, changedPaths);
+
   return {
     normalized: normalizedRoot,
     changedPaths: Array.from(new Set(changedPaths)),
   };
+}
+
+const ACTION_KEYS = [
+  "take",
+  "scene",
+  "breakdown",
+  "scopeRefinement",
+] as const;
+
+function pruneOrphanActionRefs(
+  root: Record<string, unknown>,
+  registeredIds: Set<string>,
+  changedPaths: string[],
+): void {
+  if (registeredIds.size === 0) return;
+  if (!isRecord(root.actions)) return;
+  const actions = root.actions;
+  for (const key of ACTION_KEYS) {
+    const value = actions[key];
+    if (typeof value !== "string" || value === "") continue;
+    if (!registeredIds.has(value)) {
+      actions[key] = "";
+      changedPaths.push(`actions.${key}`);
+    }
+  }
+}
+
+function pruneOrphanPoolRefs(
+  root: Record<string, unknown>,
+  registeredIds: Set<string>,
+  changedPaths: string[],
+): void {
+  if (registeredIds.size === 0) return;
+  if (!isRecord(root.pools)) return;
+  const pools = root.pools;
+  for (const [step, entries] of Object.entries(pools)) {
+    if (!Array.isArray(entries)) continue;
+    const filtered = entries.filter((entry) => {
+      if (!isRecord(entry)) return true;
+      const agentId = entry.agentId;
+      return typeof agentId !== "string" || registeredIds.has(agentId);
+    });
+    if (filtered.length !== entries.length) {
+      pools[step] = filtered;
+      changedPaths.push(`pools.${step}`);
+    }
+  }
 }

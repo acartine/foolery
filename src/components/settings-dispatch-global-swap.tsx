@@ -209,12 +209,12 @@ function SwapControlsPanel({
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-2">
         <Select
           value={swapFromAgentId}
           onValueChange={onSwapFromChange}
         >
-          <SelectTrigger className="h-7 w-[170px] border-primary/20 bg-background/80">
+          <SelectTrigger className="h-7 flex-1 min-w-0 text-xs border-primary/20 bg-background/80">
             <SelectValue placeholder="current agent" />
           </SelectTrigger>
           <SelectContent>
@@ -224,14 +224,14 @@ function SwapControlsPanel({
             />
           </SelectContent>
         </Select>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-xs text-muted-foreground shrink-0">
           to
         </span>
         <Select
           value={swapToAgentId}
           onValueChange={onSwapToChange}
         >
-          <SelectTrigger className="h-7 w-[190px] border-primary/20 bg-background/80">
+          <SelectTrigger className="h-7 flex-1 min-w-0 text-xs border-primary/20 bg-background/80">
             <SelectValue placeholder="replacement agent" />
           </SelectTrigger>
           <SelectContent>
@@ -245,7 +245,7 @@ function SwapControlsPanel({
         <Button
           size="sm"
           variant="outline"
-          className="h-7 border-primary/20 bg-background/80"
+          className="h-7 shrink-0 border-primary/20 bg-background/80"
           disabled={!canSwap}
           onClick={onSwap}
         >

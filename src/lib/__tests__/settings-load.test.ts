@@ -107,6 +107,52 @@ describe("loadSettings", () => {
     await loadSettings();
     expect(mockReadFile).toHaveBeenCalledTimes(1);
   });
+
+  it("prunes orphan action agent ids not present in the agents registry", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[agents.claude-opus]',
+        'command = "claude"',
+        'model = "claude-opus-4.6"',
+        '[actions]',
+        'take = "claude"',
+        'scene = "claude-opus"',
+        'breakdown = "codex"',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.actions.take).toBe("");
+    expect(settings.actions.scene).toBe("claude-opus");
+    expect(settings.actions.breakdown).toBe("");
+  });
+
+  it("prunes orphan pool entries whose agent ids aren't registered", async () => {
+    mockReadFile.mockResolvedValue(
+      [
+        '[agents.claude-opus]',
+        'command = "claude"',
+        'model = "claude-opus-4.6"',
+        '[[pools.planning]]',
+        'agentId = "claude-opus"',
+        'weight = 1',
+        '[[pools.planning]]',
+        'agentId = "codex"',
+        'weight = 2',
+      ].join("\n"),
+    );
+    const settings = await loadSettings();
+    expect(settings.pools.planning).toEqual([
+      { agentId: "claude-opus", weight: 1 },
+    ]);
+  });
+
+  it("leaves unknown agent ids alone when no agents are registered", async () => {
+    mockReadFile.mockResolvedValue(
+      '[actions]\ntake = "claude"',
+    );
+    const settings = await loadSettings();
+    expect(settings.actions.take).toBe("claude");
+  });
 });
 
 describe("inspectSettingsDefaults", () => {
