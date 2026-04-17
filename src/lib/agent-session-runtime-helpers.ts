@@ -272,6 +272,38 @@ export function autoAnswerAskUser(
 
 // ── Watchdog ───────────────────────────────────────────
 
+function fireWatchdogTimeout(
+  child: ChildProcess,
+  state: SessionRuntimeState,
+  config: SessionRuntimeConfig,
+  ms: number,
+): void {
+  state.watchdogTimer = null;
+  if (state.resultObserved) return;
+  state.exitReason = "timeout";
+  const armedAt = state.watchdogArmedAt;
+  const msSinceLastEvent =
+    armedAt != null ? Date.now() - armedAt : 0;
+  const rawType = state.lastNormalizedEvent?.type;
+  const lastEventType =
+    typeof rawType === "string" ? rawType : undefined;
+  console.warn(
+    `[terminal-manager] [watchdog] timeout_fired ` +
+    `pid=${child.pid ?? "unknown"} ` +
+    `timeoutMs=${ms} ` +
+    `msSinceLastEvent=${msSinceLastEvent} ` +
+    `lastEventType=${lastEventType ?? "null"} ` +
+    `reason=timeout`,
+  );
+  config.onLifecycleEvent?.({
+    type: "watchdog_fired",
+    timeoutMs: ms,
+    msSinceLastEvent,
+    lastEventType,
+  });
+  terminateProcessGroup(child);
+}
+
 export function doResetWatchdog(
   child: ChildProcess,
   state: SessionRuntimeState,
@@ -282,10 +314,8 @@ export function doResetWatchdog(
   if (state.watchdogTimer) {
     clearTimeout(state.watchdogTimer);
   }
+  state.watchdogArmedAt = Date.now();
   state.watchdogTimer = setTimeout(() => {
-    state.watchdogTimer = null;
-    if (state.resultObserved) return;
-    state.exitReason = "timeout";
-    terminateProcessGroup(child);
+    fireWatchdogTimeout(child, state, config, ms);
   }, ms);
 }
