@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9ca3-cd24-7f61-ad2d-176737c15511",
+  "occurred_at": "2026-04-17T18:11:13.828637Z",
+  "knot_id": "foolery-37f1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation lives on branch worktree-foolery-54e9-live-plan-validation (commit 67a98229). The driver is scripts/test-plans-live.sh and scripts/test-plans-live.mjs. The shell script creates a disposable git worktree from /Users/cartine/stitch under .test-plans-live/<basename>, copies the source repo's .knots/ into it, picks (or accepts) beat ids, starts the dev server on FOOLERY_DEV_PORT (default 3327), and hands off to the Node validator with --base-url, --repo, --beats, and --dev-log. Caller-provided beat ids and worktree paths are honored via FOOLERY_PLAN_BEAT_IDS and FOOLERY_PLAN_WORKTREE; FOOLERY_PLAN_REPO selects the source. Cleanup preserves the disposable worktree on failure for forensic inspection.",
+    "datetime": "2026-04-17T18:11:13.828637Z",
+    "entry_id": "019d9ca3-cd24-7f61-ad2d-1750489612a6",
+    "model": "claude-opus-4-7",
+    "username": "claude",
+    "version": "4.7"
+  }
+}

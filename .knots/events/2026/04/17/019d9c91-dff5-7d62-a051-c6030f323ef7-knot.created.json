@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9c91-dff5-7d62-a051-c6030f323ef7",
+  "occurred_at": "2026-04-17T17:51:38.99727Z",
+  "knot_id": "foolery-c57a",
+  "type": "knot.created",
+  "data": {
+    "body": "Replace generic smoke-test failures with categorized diagnostics for planner startup issues, missing or ineligible beats, taxonomy drift, persistence/readback mismatches, and repoPath/addressability mistakes during live /api/plans validation.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Make execution-plan live validation failures actionable",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

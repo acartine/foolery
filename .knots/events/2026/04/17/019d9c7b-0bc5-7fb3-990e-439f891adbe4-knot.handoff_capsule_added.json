@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9c7b-0bc5-7fb3-990e-439f891adbe4",
+  "occurred_at": "2026-04-17T17:26:42.885745Z",
+  "knot_id": "foolery-dd18",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Implemented a dedicated execution-plan generation path for POST /api/plans that resolves explicit beats, builds execution-plan-native prompt context, and runs the planner subprocess directly without orchestration-session storage. Added unit coverage for the new generator and the persistence manager seam. Verification: bun run lint; bunx tsc --noEmit; bun run test; bun run build. Branch: worktree-foolery-dd18-execution-plan-path",
+    "datetime": "2026-04-17T17:26:36Z",
+    "entry_id": "019d9c7b-0bc5-7fb3-990e-438070b203de",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "unknown"
+  }
+}

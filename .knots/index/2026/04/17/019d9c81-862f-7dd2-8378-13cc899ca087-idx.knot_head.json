@@ -1,0 +1,37 @@
+{
+  "event_id": "019d9c81-862f-7dd2-8378-13cc899ca087",
+  "occurred_at": "2026-04-17T17:33:47.439427Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-dd18",
+    "profile_id": "autopilot",
+    "state": "shipment_review",
+    "step_metadata": {
+      "action_kind": "gate",
+      "action_state": "shipment_review",
+      "output": {
+        "artifact_type": "remote_main"
+      },
+      "owner": {
+        "agent_model": null,
+        "agent_name": null,
+        "agent_version": null,
+        "kind": "agent"
+      }
+    },
+    "terminal": false,
+    "title": "Replace legacy Scene coupling in POST /api/plans",
+    "type": "work",
+    "updated_at": "2026-04-17T17:33:47.439427Z",
+    "workflow_id": "work_sdlc"
+  },
+  "precondition": {
+    "profile_etag": "019d9c81-521f-7f40-8e69-a7552940a040"
+  }
+}

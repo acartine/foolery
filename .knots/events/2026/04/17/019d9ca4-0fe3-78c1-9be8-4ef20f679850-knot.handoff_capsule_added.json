@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9ca4-0fe3-78c1-9be8-4ef20f679850",
+  "occurred_at": "2026-04-17T18:11:30.91574Z",
+  "knot_id": "foolery-5b0c",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation lives on branch worktree-foolery-54e9-live-plan-validation (commit 67a98229). Structural assertions are in scripts/test-plans-live.mjs: verifyPlanShape() checks artifact.type === 'execution_plan', artifact.id, plan.repoPath, plan.beatIds (must include each requested beat), plan.waves[].waveIndex, plan.waves[].steps[].stepIndex, plan.waves[].steps[].beatIds, progress.waves, progress.nextStep, and a non-empty skillPrompt. checkBeatIdsCover() and checkWaves() emit specific issue.kind values (requested_beat_dropped, wave_missing_index, step_missing_beat_ids, etc.) under the structural_drift category. Persistence is independently verified by spawning kno -C <repo> show <planId> --json and asserting type === 'execution_plan' and the execution_plan payload exists, with separate persistence_missing, persistence_taxonomy_drift, and persistence_payload_missing categories.",
+    "datetime": "2026-04-17T18:11:30.91574Z",
+    "entry_id": "019d9ca4-0fe3-78c1-9be8-4ee4587ca7a5",
+    "model": "claude-opus-4-7",
+    "username": "claude",
+    "version": "4.7"
+  }
+}

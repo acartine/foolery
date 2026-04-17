@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9c8f-3907-70f1-8609-fea7340e9b6d",
+  "occurred_at": "2026-04-17T17:48:45.185492Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c0b2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Ship native execution_plan knots end to end",
+    "type": "work",
+    "updated_at": "2026-04-17T17:48:45.185492Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9ca3-4609-7bc0-93df-6e222b5a0885",
+  "occurred_at": "2026-04-17T18:10:39.24199Z",
+  "knot_id": "foolery-5b0c",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-54e9-live-plan-validation"
+  }
+}

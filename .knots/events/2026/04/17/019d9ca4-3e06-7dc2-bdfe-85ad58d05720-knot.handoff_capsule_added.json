@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9ca4-3e06-7dc2-bdfe-85ad58d05720",
+  "occurred_at": "2026-04-17T18:11:42.726966Z",
+  "knot_id": "foolery-c57a",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation lives on branch worktree-foolery-54e9-live-plan-validation (commit 67a98229). Failure handling in scripts/test-plans-live.mjs categorizes errors by phase: (1) Network/server: dev_server_unreachable, non_json_response. (2) Request validation: request_invalid_repo_path, beat_selection_invalid, beat_selection_missing. (3) Planner runtime: planner_runtime_failed (agent CLI/auth/missing), planner_output_invalid (no tagged plan emitted). (4) Generic create: plan_create_failed. (5) Readback: addressability_failed. (6) Structure: structural_drift with per-issue kinds. (7) Persistence: persistence_check_unrunnable, persistence_missing, persistence_unreadable, persistence_taxonomy_drift, persistence_payload_missing. Every failure JSON includes category, message, hint, response excerpt, context (baseUrl, repoPath, beatIds), and devLogPath. The shell driver preserves the disposable repo on failure so kno show <planId> --json can be run against the captured state.",
+    "datetime": "2026-04-17T18:11:42.726966Z",
+    "entry_id": "019d9ca4-3e06-7dc2-bdfe-85980e500c60",
+    "model": "claude-opus-4-7",
+    "username": "claude",
+    "version": "4.7"
+  }
+}

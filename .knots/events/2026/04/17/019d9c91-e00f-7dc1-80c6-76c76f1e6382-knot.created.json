@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9c91-e00f-7dc1-80c6-76c76f1e6382",
+  "occurred_at": "2026-04-17T17:51:39.023487Z",
+  "knot_id": "foolery-5b0c",
+  "type": "knot.created",
+  "data": {
+    "body": "Add live assertions that the plan returned by POST /api/plans is persisted in Knots, can be read back via GET /api/plans/:id, and still conforms to the plan/wave/step/beat contract used by the OpenAPI schema and execution-plan payload mapper.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Validate persisted plan structure and addressability live",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

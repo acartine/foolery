@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9cae-a4a3-72d1-b411-9227a2fd83bf",
+  "occurred_at": "2026-04-17T18:23:04.355119Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-5b0c",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Validate persisted plan structure and addressability live",
+    "type": "work",
+    "updated_at": "2026-04-17T18:23:04.355119Z",
+    "workflow_id": "work_sdlc"
+  }
+}

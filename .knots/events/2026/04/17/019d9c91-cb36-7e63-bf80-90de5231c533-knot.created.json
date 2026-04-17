@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9c91-cb36-7e63-bf80-90de5231c533",
+  "occurred_at": "2026-04-17T17:51:33.685939Z",
+  "knot_id": "foolery-37f1",
+  "type": "knot.created",
+  "data": {
+    "body": "Start Foolery on an ephemeral port, target a disposable git worktree derived from /Users/cartine/stitch, and exercise POST /api/plans plus GET /api/plans/:id against that real Knots repo without polluting the primary Stitch checkout.",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add isolated Stitch-backed live execution-plan API driver",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9ca4-6ce3-7070-9072-33ffff13718a",
+  "occurred_at": "2026-04-17T18:11:54.723786Z",
+  "knot_id": "foolery-54e9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "Implementation lives on branch worktree-foolery-54e9-live-plan-validation (commit 67a98229). The live execution-plan API harness is scripts/test-plans-live.{sh,mjs}, with the recipe documented in docs/API.md (Execution Plans), docs/DEVELOPING.md (Live Execution-Plan Validation), and scripts/README.md. Default target is /Users/cartine/stitch via a disposable git worktree at .test-plans-live/<basename>. The harness exercises POST /api/plans + GET /api/plans/:id, asserts plan/wave/step/beat structure, and independently verifies persistence via kno show. Quality gates pass (lint, tsc, vitest, build). The harness is doing its job: against the current main branch it surfaces a real planner_output/persistence drift where the readback returns plan.beatIds=[] even when planned_by edges are persisted correctly. That finding is the kind of taxonomy/path-coupling failure the parent acceptance criteria asked the harness to catch; addressing the underlying drift is a separate workstream. Children foolery-37f1, foolery-5b0c, and foolery-c57a all advanced to ready_for_implementation_review on the same branch/commit.",
+    "datetime": "2026-04-17T18:11:54.723786Z",
+    "entry_id": "019d9ca4-6ce3-7070-9072-33ee627b3431",
+    "model": "claude-opus-4-7",
+    "username": "claude",
+    "version": "4.7"
+  }
+}

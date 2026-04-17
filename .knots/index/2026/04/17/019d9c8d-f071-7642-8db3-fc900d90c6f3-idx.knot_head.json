@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9c8d-f071-7642-8db3-fc900d90c6f3",
+  "occurred_at": "2026-04-17T17:47:21.073012Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a431",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Persist execution_plan payload in Knots",
+    "type": "work",
+    "updated_at": "2026-04-17T17:47:21.073012Z",
+    "workflow_id": "work_sdlc"
+  }
+}

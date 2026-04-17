@@ -1,0 +1,13 @@
+{
+  "event_id": "019d9c81-5fee-76c3-b386-573f6c80e89f",
+  "occurred_at": "2026-04-17T17:33:37.646688Z",
+  "knot_id": "foolery-ca43",
+  "type": "knot.state_set",
+  "data": {
+    "force": true,
+    "from": "lease_terminated",
+    "profile_id": "lease",
+    "to": "lease_terminated",
+    "workflow_id": "lease_sdlc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9cae-b7cb-7323-a326-63358b72207c",
+  "occurred_at": "2026-04-17T18:23:09.252424Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-8a87",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Repair execution-plan taxonomy and spec alignment",
+    "type": "work",
+    "updated_at": "2026-04-17T18:23:09.252424Z",
+    "workflow_id": "work_sdlc"
+  }
+}

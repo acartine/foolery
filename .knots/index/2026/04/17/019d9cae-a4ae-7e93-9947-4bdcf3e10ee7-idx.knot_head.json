@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9cae-a4ae-7e93-9947-4bdcf3e10ee7",
+  "occurred_at": "2026-04-17T18:23:04.366932Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-c57a",
+    "profile_id": "autopilot_no_planning",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Make execution-plan live validation failures actionable",
+    "type": "work",
+    "updated_at": "2026-04-17T18:23:04.366932Z",
+    "workflow_id": "work_sdlc"
+  }
+}

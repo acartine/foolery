@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9c7b-22df-7352-afb8-f548b27ed463",
+  "occurred_at": "2026-04-17T17:26:48.799454Z",
+  "knot_id": "foolery-dd18",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-dd18-execution-plan-path"
+  }
+}

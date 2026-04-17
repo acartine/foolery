@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9c81-ce72-7f41-92b4-3df92eb8dc79",
+  "occurred_at": "2026-04-17T17:34:05.938453Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "unknown",
+    "content": "Implementation work pushed to branch feature/knots-a431-execution-plan-payload (commit 8c19fc0). Verification gap closed: added CLI smoke test (tests/cli_dispatch_execution_plan.rs) exercising kno update --execution-plan-file + show --json + rehydrate-after-eviction, plus a planned_by edge round-trip (src/app/tests_planned_by_edge.rs) confirming no parent_of cascade, no blocked_by gating, and exclusion from layout edges. make lint + make test green (1053 unit tests + integration suites, 0 failures).",
+    "datetime": "2026-04-17T17:34:05.938453Z",
+    "entry_id": "019d9c81-ce72-7f41-92b4-3de539e32700",
+    "model": "unknown",
+    "username": "unknown",
+    "version": "unknown"
+  }
+}

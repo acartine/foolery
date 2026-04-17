@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9c92-be7b-7361-9fe4-bc16734e92ef",
+  "occurred_at": "2026-04-17T17:52:35.96307Z",
+  "knot_id": "foolery-54e9",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planned a medium-size implementation centered on a new live smoke harness for `POST /api/plans` and `GET /api/plans/:id` against a disposable worktree derived from `/Users/cartine/stitch`, so the validation uses a real Knots repo without polluting the main Stitch checkout. The plan calls for structural plan/wave/step/beat assertions, independent persistence checks via `kno show`, and categorized diagnostics that separate planner startup, beat-selection, persistence, and addressability failures. Child knots created: `foolery-37f1`, `foolery-5b0c`, and `foolery-c57a`.",
+    "datetime": "2026-04-17T17:52:04Z",
+    "entry_id": "019d9c92-be7b-7361-9fe4-bc0cd54b96cb",
+    "model": "gpt-5",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

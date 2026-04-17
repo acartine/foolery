@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9c81-b1b2-7c10-8887-80b98b9b7599",
+  "occurred_at": "2026-04-17T17:33:58.578903Z",
+  "knot_id": "foolery-a431",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:feature/knots-a431-execution-plan-payload"
+  }
+}
