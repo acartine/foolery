@@ -32,6 +32,11 @@ import type {
 import type {
   PreparedTargets,
 } from "@/lib/terminal-manager-session-prep";
+import {
+  captureChildCloseDiagnostics,
+  formatDiagnosticsForLog,
+  type ChildCloseDiagnostics,
+} from "@/lib/agent-session-close-diagnostics";
 
 // ─── InitialChildState ──────────────────────────────
 
@@ -172,9 +177,12 @@ export function wireClose(
 ): void {
   child.on("close", async (code, signal) => {
     state.runtime.flushLineBuffer(child);
+    const diag = captureChildCloseDiagnostics(
+      state.runtime.state,
+    );
     logClose(
       id, beatId, isTakeLoop, code, signal,
-      entry.buffer.length,
+      entry.buffer.length, diag,
     );
     const exitReason =
       state.runtime.state.exitReason;
@@ -193,6 +201,9 @@ export function wireClose(
             prepared.beat.state ?? "unknown",
           childExitCode: code,
           childSignal: signal,
+          exitReason: diag.exitReason,
+          msSinceLastStdout: diag.msSinceLastStdout,
+          lastEventType: diag.lastEventType,
         },
       );
       handleTakeIterationClose(
@@ -233,18 +244,22 @@ function logClose(
   code: number | null,
   signal: string | null,
   bufLen: number,
+  diag: ChildCloseDiagnostics,
 ): void {
+  const diagStr = formatDiagnosticsForLog(diag, signal);
   if (isTakeLoop) {
     console.log(
       `[terminal-manager] [${id}] [take-loop] ` +
-      `initial child close: code=${code} ` +
-      `signal=${signal} beat=${beatId}`,
+      `initial child close: code=${code}` +
+      diagStr +
+      ` beat=${beatId}`,
     );
   } else {
     console.log(
       `[terminal-manager] [${id}] close: ` +
-      `code=${code} signal=${signal} ` +
-      `buffer=${bufLen} events`,
+      `code=${code}` +
+      diagStr +
+      ` buffer=${bufLen} events`,
     );
   }
 }

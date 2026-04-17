@@ -139,6 +139,14 @@ export interface SessionRuntimeState {
   resultObserved: boolean;
   exitReason: SessionExitReason | null;
   lastNormalizedEvent: JsonObject | null;
+  /**
+   * Wall-clock timestamp (ms since epoch) of the
+   * most recent stdout chunk from the child. Null
+   * until the first chunk arrives. Used by close
+   * handlers to report how long the child had been
+   * idle before exit.
+   */
+  lastStdoutAt: number | null;
 }
 
 // ── Runtime handle ─────────────────────────────────────
@@ -331,6 +339,7 @@ function doWireStdout(
 ): void {
   doResetWatchdog(child, state, config);
   child.stdout?.on("data", (chunk: Buffer) => {
+    state.lastStdoutAt = Date.now();
     const text = chunk.toString();
     config.interactionLog.logStdout(text);
     config.onLifecycleEvent?.({
@@ -424,6 +433,7 @@ export function createSessionRuntime(
     resultObserved: false,
     exitReason: null,
     lastNormalizedEvent: null,
+    lastStdoutAt: null,
   };
 
   return {
