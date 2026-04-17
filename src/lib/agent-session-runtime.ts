@@ -80,6 +80,12 @@ export type SessionRuntimeLifecycleEvent =
     type: "result_observed";
     eventType?: string;
     isError?: boolean;
+  }
+  | {
+    type: "watchdog_fired";
+    timeoutMs: number;
+    msSinceLastEvent: number;
+    lastEventType?: string;
   };
 
 // ── Runtime configuration ──────────────────────────────
@@ -128,6 +134,7 @@ export interface SessionRuntimeState {
   stdinClosed: boolean;
   closeInputTimer: NodeJS.Timeout | null;
   watchdogTimer: NodeJS.Timeout | null;
+  watchdogArmedAt: number | null;
   autoAnsweredToolUseIds: Set<string>;
   resultObserved: boolean;
   exitReason: SessionExitReason | null;
@@ -412,6 +419,7 @@ export function createSessionRuntime(
     stdinClosed: !config.capabilities.interactive,
     closeInputTimer: null,
     watchdogTimer: null,
+    watchdogArmedAt: null,
     autoAnsweredToolUseIds: new Set(),
     resultObserved: false,
     exitReason: null,
