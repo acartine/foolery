@@ -1,6 +1,10 @@
 /**
- * Workflow runtime state derivation, beat helpers, compat-status
- * mapping, pipeline ordering, and transition helpers.
+ * Workflow runtime state derivation, beat helpers, and related
+ * pipeline/transition helpers.
+ *
+ * This module is workflow-native: it operates on MemoryWorkflowDescriptor
+ * states and labels. Legacy Beads status mapping lives in
+ * src/lib/backends/beads-compat-status.ts and must not leak back here.
  *
  * Extracted from workflows.ts to stay within the 500-line limit.
  */
@@ -10,7 +14,6 @@ import type {
   MemoryWorkflowDescriptor,
   WorkflowMode,
 } from "@/lib/types";
-import { recordCompatStatusSerialized } from "@/lib/compat-status-usage";
 import {
   resolveStep,
   StepPhase,
@@ -62,16 +65,6 @@ export function profileDisplayName(
   return DISPLAY_NAMES[normalized] ?? normalized;
 }
 
-const TERMINAL_STATUS_STATES = new Set<string>([
-  "shipped",
-  "abandoned",
-  "closed",
-]);
-const LEGACY_TERMINAL_STATES = new Set<string>([
-  "closed",
-  "done",
-  "approved",
-]);
 const LEGACY_RETAKE_STATES = new Set<string>([
   "retake",
   "retry",
@@ -96,34 +89,28 @@ function normalizeState(
 }
 
 function firstActionState(
-  workflow?: MemoryWorkflowDescriptor,
+  workflow: MemoryWorkflowDescriptor,
 ): string {
   if (
-    workflow?.actionStates &&
+    workflow.actionStates &&
     workflow.actionStates.length > 0
   ) {
     return workflow.actionStates[0]!;
   }
-  if (workflow?.states?.includes("implementation")) {
+  if (workflow.states.includes("implementation")) {
     return "implementation";
   }
   return "in_progress";
 }
 
-function terminalStateForStatus(
-  status: string,
-  workflow?: MemoryWorkflowDescriptor,
+function terminalStateForDescriptor(
+  status: "closed" | "deferred",
+  workflow: MemoryWorkflowDescriptor,
 ): string {
-  if (status === "deferred") {
-    if (workflow?.states.includes("deferred")) return "deferred";
-    return "deferred";
-  }
-
-  if (workflow?.states.includes("shipped")) return "shipped";
-  if (workflow?.terminalStates.includes("closed")) {
-    return "closed";
-  }
-  if (workflow?.terminalStates.length) {
+  if (status === "deferred") return "deferred";
+  if (workflow.states.includes("shipped")) return "shipped";
+  if (workflow.terminalStates.includes("closed")) return "closed";
+  if (workflow.terminalStates.length) {
     return workflow.terminalStates[0]!;
   }
   return "closed";
@@ -134,59 +121,6 @@ function stepOwnerKind(
   step: WorkflowStep,
 ): ActionOwnerKind {
   return workflow.owners?.[step] ?? "agent";
-}
-
-// ── Compat-status mapping ────────────────────────────────────
-
-/** @internal Beats-backend compat: maps workflow state to status. */
-export function mapWorkflowStateToCompatStatus(
-  workflowState: string,
-  context = "workflow-state",
-): string {
-  recordCompatStatusSerialized(context);
-  const normalized = normalizeState(workflowState);
-  if (!normalized) return "open";
-
-  if (normalized === "deferred") return "deferred";
-  if (normalized === "blocked" || normalized === "rejected") {
-    return "blocked";
-  }
-  if (
-    TERMINAL_STATUS_STATES.has(normalized) ||
-    LEGACY_TERMINAL_STATES.has(normalized)
-  ) {
-    return "closed";
-  }
-  const resolved = resolveStep(normalized);
-  if (resolved?.phase === StepPhase.Queued) return "open";
-  if (
-    resolved?.phase === StepPhase.Active ||
-    LEGACY_IN_PROGRESS_STATES.has(normalized)
-  ) {
-    return "in_progress";
-  }
-  if (normalized === "open") return "open";
-  return "open";
-}
-
-/** @internal Beats-backend compat: maps status to workflow state. */
-export function mapStatusToDefaultWorkflowState(
-  status: string,
-  workflow?: MemoryWorkflowDescriptor,
-): string {
-  switch (status) {
-    case "closed":
-      return terminalStateForStatus("closed", workflow);
-    case "deferred":
-      return terminalStateForStatus("deferred", workflow);
-    case "blocked":
-      return workflow?.retakeState ?? "blocked";
-    case "in_progress":
-      return firstActionState(workflow);
-    case "open":
-    default:
-      return workflow?.initialState ?? "open";
-  }
 }
 
 // ── State normalization ──────────────────────────────────────
@@ -246,11 +180,11 @@ function remapLegacyStateForProfile(
     normalized === "done" ||
     normalized === "approved"
   ) {
-    return terminalStateForStatus("closed", workflow);
+    return terminalStateForDescriptor("closed", workflow);
   }
 
   if (normalized === "deferred") {
-    return terminalStateForStatus("deferred", workflow);
+    return terminalStateForDescriptor("deferred", workflow);
   }
 
   return workflow.initialState;
@@ -292,24 +226,13 @@ export function deriveProfileId(
   return explicit ?? DEFAULT_PROFILE_ID;
 }
 
-function hasExplicitProfileSelection(
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): boolean {
-  if (extractWorkflowProfileLabel(labels ?? [])) return true;
-  if (!metadata) return false;
-  return [
-    metadata.profileId,
-    metadata.fooleryProfileId,
-    metadata.workflowProfileId,
-    metadata.knotsProfileId,
-  ].some(
-    (v) => typeof v === "string" && v.trim().length > 0,
-  );
-}
-
+/**
+ * Label/descriptor-native workflow state derivation. Returns the state
+ * explicitly encoded on the labels, or the descriptor's initial state.
+ * Callers that need to map a legacy Beads status string to a state must
+ * use the beads-local deriveBeadsWorkflowState instead.
+ */
 export function deriveWorkflowState(
-  status: string | undefined,
   labels: string[] | undefined,
   workflow?: MemoryWorkflowDescriptor,
 ): string {
@@ -321,32 +244,7 @@ export function deriveWorkflowState(
   if (explicit) {
     return normalizeStateForWorkflow(explicit, descriptor);
   }
-
-  if (status) {
-    return mapStatusToDefaultWorkflowState(status, descriptor);
-  }
   return descriptor.initialState;
-}
-
-export function deriveBeadsProfileId(
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): string {
-  const explicit = deriveProfileId(labels, metadata);
-  if (hasExplicitProfileSelection(labels, metadata)) {
-    return explicit;
-  }
-  return "autopilot_no_planning";
-}
-
-export function deriveBeadsWorkflowState(
-  status: string | undefined,
-  labels: string[] | undefined,
-  metadata?: Record<string, unknown>,
-): string {
-  const profileId = deriveBeadsProfileId(labels, metadata);
-  const workflow = builtinProfileDescriptor(profileId);
-  return deriveWorkflowState(status, labels, workflow);
 }
 
 // ── Runtime state derivation ─────────────────────────────────
@@ -365,8 +263,6 @@ function ownerForCurrentState(
 
 export interface WorkflowRuntimeState {
   state: string;
-  /** @internal Beats-backend compat. */
-  compatStatus: string;
   nextActionState?: string;
   nextActionOwnerKind: ActionOwnerKind;
   requiresHumanAction: boolean;
@@ -386,7 +282,6 @@ export function deriveWorkflowRuntimeState(
 
   return {
     state: normalizedState,
-    compatStatus: mapWorkflowStateToCompatStatus(normalizedState),
     nextActionState: owner.nextActionState,
     nextActionOwnerKind: owner.ownerKind,
     requiresHumanAction: owner.ownerKind === "human",

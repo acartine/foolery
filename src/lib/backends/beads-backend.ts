@@ -30,12 +30,12 @@ import {
   builtinWorkflowDescriptors,
   deriveWorkflowRuntimeState,
   forwardTransitionTarget,
-  mapStatusToDefaultWorkflowState,
   resolveStep,
   StepPhase,
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
 } from "@/lib/workflows";
+import { mapStatusToDefaultWorkflowState } from "./beads-compat-status";
 import { getBeatsSkillPrompt } from "@/lib/beats-skill-prompts";
 import {
   applyFilters,

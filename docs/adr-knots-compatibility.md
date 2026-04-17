@@ -17,12 +17,14 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 5. Make prompts memory-manager-aware.
 6. Unsupported operations must return explicit capability-aligned API responses (not generic 500s).
 
-## Locked Mappings
+## Integration Constants
 
-| Concern | Mapping |
+Knots passes workflow-native states through directly; Foolery no longer translates them into a generic status vocabulary. The Knots backend preserves the raw workflow state in `bead.metadata.knotsState` and relies on workflow-aware helpers (`MemoryWorkflowDescriptor`, `deriveWorkflowState`) everywhere else.
+
+| Concern | Convention |
 |---|---|
-| Knots -> Foolery status | `idea/work_item -> open`; `implementing/implemented/reviewing/refining/approved -> in_progress`; `rejected -> blocked`; `deferred -> deferred`; `shipped/abandoned -> closed` |
-| Foolery -> Knots status | `open -> work_item`; `in_progress -> implementing`; `blocked -> rejected`; `deferred -> deferred`; `closed -> shipped` |
+| State handling | Workflow-native throughout; no generic status translation layer |
+| Close() target | `shipped` (see `KNOTS_CLOSE_TARGET_STATE`) |
 | Dependency add/remove | `addDependency(blocker, blocked)` -> `edge add blocked blocked_by blocker`; remove is inverse |
 | Hierarchy | parent-child uses `parent_of` edges |
 | Labels | Foolery labels map 1:1 to Knots tags |
@@ -30,18 +32,19 @@ Foolery historically assumed Beads/`bd`. We need robust end-to-end Knots support
 
 ## Canonical Source of Truth
 
-The locked mappings above are codified in [`src/lib/knots-compat.ts`](../src/lib/knots-compat.ts) as typed constants and pure functions. All new Knots backend code should import mapping constants from this module rather than using inline string literals.
+Knots-facing constants live in [`src/lib/knots-constants.ts`](../src/lib/knots-constants.ts):
 
-- `KNOTS_TO_FOOLERY_STATUS` / `FOOLERY_TO_KNOTS_STATUS` — bidirectional status maps
-- `mapKnotsStateToFooleryStatus()` / `mapFooleryStatusToKnotsState()` — normalizing lookup functions
 - `KNOTS_BLOCKED_BY_EDGE_KIND` / `KNOTS_PARENT_OF_EDGE_KIND` — edge kind constants
 - `KNOTS_CLOSE_TARGET_STATE` — close() target state
 - `KNOTS_METADATA_KEYS` — metadata key registry
+- `KNOTS_SUPPORTS_DELETE` / `KNOTS_SUPPORTS_SYNC` — capability flags
 
-Contract tests: [`src/lib/__tests__/knots-compat.test.ts`](../src/lib/__tests__/knots-compat.test.ts)
+Contract tests: [`src/lib/__tests__/knots-constants.test.ts`](../src/lib/__tests__/knots-constants.test.ts)
+
+The old bidirectional compat-status maps (`KNOTS_TO_FOOLERY_STATUS`, `FOOLERY_TO_KNOTS_STATUS`, `mapKnotsStateToFooleryStatus`, `mapFooleryStatusToKnotsState`) were removed. Beads JSONL persistence still needs to round-trip its own `open`/`in_progress`/`closed` field; that translation is isolated to [`src/lib/backends/beads-compat-status.ts`](../src/lib/backends/beads-compat-status.ts) and is treated as migration debt local to the Beads backend — no other Foolery run path imports it.
 
 ## Consequences
 
 1. Mixed memory manager repos are supported in one Foolery session.
-2. Existing Beads behavior remains unchanged.
+2. Beads JSONL round-trips through a backend-local status translation; all other code paths are workflow-native.
 3. A follow-up epic is required for full Knots-native UX/API model realignment.

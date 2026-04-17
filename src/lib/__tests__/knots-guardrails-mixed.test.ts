@@ -2,7 +2,7 @@
  * Knots guardrails: mixed All Repositories behavior.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { KNOTS_METADATA_KEYS } from "@/lib/knots-compat";
+import { KNOTS_METADATA_KEYS } from "@/lib/knots-constants";
 import { buildHierarchy } from "@/lib/beat-hierarchy";
 import { compareBeatsByPriorityThenState } from "@/lib/beat-sort";
 import type { Beat, BeatWithRepo } from "@/lib/types";

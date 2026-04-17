@@ -156,7 +156,7 @@ Two reference implementations are available:
 - **Beads** (JSONL): [src/lib/backends/beads-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/beads-backend.ts)
 - **Knots** (CLI adapter): [src/lib/backends/knots-backend.ts](https://github.com/acartine/foolery/blob/main/src/lib/backends/knots-backend.ts)
 
-Knots state mapping is codified in [src/lib/knots-compat.ts](https://github.com/acartine/foolery/blob/main/src/lib/knots-compat.ts), which provides bidirectional status maps (`KNOTS_TO_FOOLERY_STATUS` / `FOOLERY_TO_KNOTS_STATUS`), edge kind constants, and metadata key registries. See [docs/adr-knots-compatibility.md](https://github.com/acartine/foolery/blob/main/docs/adr-knots-compatibility.md) for the compatibility decisions behind these mappings.
+Knots-facing constants (edge kinds, metadata key registry, close target state, capability flags) live in [src/lib/knots-constants.ts](https://github.com/acartine/foolery/blob/main/src/lib/knots-constants.ts). Knots passes workflow-native states through directly — the raw state is preserved in `bead.metadata.knotsState` and there is no bidirectional status translation. See [docs/adr-knots-compatibility.md](https://github.com/acartine/foolery/blob/main/docs/adr-knots-compatibility.md) for the compatibility decisions.
 
 ### Beads capabilities
 

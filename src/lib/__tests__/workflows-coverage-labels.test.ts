@@ -12,8 +12,6 @@ import {
   extractWorkflowProfileLabel,
   withWorkflowStateLabel,
   withWorkflowProfileLabel,
-  mapWorkflowStateToCompatStatus,
-  mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
 } from "@/lib/workflows";
 
@@ -117,130 +115,6 @@ describe("withWorkflowProfileLabel", () => {
   it("normalizes empty profile to default", () => {
     const result = withWorkflowProfileLabel([], "");
     expect(result).toContain("wf:profile:autopilot");
-  });
-});
-
-describe("mapWorkflowStateToCompatStatus", () => {
-  it("maps deferred to deferred", () => {
-    expect(mapWorkflowStateToCompatStatus("deferred")).toBe("deferred");
-  });
-  it("maps blocked to blocked", () => {
-    expect(mapWorkflowStateToCompatStatus("blocked")).toBe("blocked");
-    expect(mapWorkflowStateToCompatStatus("rejected")).toBe("blocked");
-  });
-  it("maps terminal states to closed", () => {
-    expect(mapWorkflowStateToCompatStatus("shipped")).toBe("closed");
-    expect(mapWorkflowStateToCompatStatus("abandoned")).toBe("closed");
-    expect(mapWorkflowStateToCompatStatus("closed")).toBe("closed");
-    expect(mapWorkflowStateToCompatStatus("done")).toBe("closed");
-    expect(mapWorkflowStateToCompatStatus("approved")).toBe("closed");
-  });
-  it("maps queue states to open", () => {
-    expect(mapWorkflowStateToCompatStatus("ready_for_planning")).toBe("open");
-    expect(mapWorkflowStateToCompatStatus("ready_for_implementation")).toBe("open");
-  });
-  it("maps active states to in_progress", () => {
-    expect(mapWorkflowStateToCompatStatus("planning")).toBe("in_progress");
-    expect(mapWorkflowStateToCompatStatus("implementation")).toBe("in_progress");
-    expect(mapWorkflowStateToCompatStatus("shipment")).toBe("in_progress");
-  });
-  it("maps legacy in-progress states to in_progress", () => {
-    expect(mapWorkflowStateToCompatStatus("in_progress")).toBe("in_progress");
-    expect(mapWorkflowStateToCompatStatus("implementing")).toBe("in_progress");
-    expect(mapWorkflowStateToCompatStatus("implemented")).toBe("in_progress");
-    expect(mapWorkflowStateToCompatStatus("reviewing")).toBe("in_progress");
-  });
-  it("maps empty/null to open", () => {
-    expect(mapWorkflowStateToCompatStatus("")).toBe("open");
-  });
-  it("maps 'open' to open", () => {
-    expect(mapWorkflowStateToCompatStatus("open")).toBe("open");
-  });
-  it("maps unknown states to open", () => {
-    expect(mapWorkflowStateToCompatStatus("totally_unknown")).toBe("open");
-  });
-});
-
-describe("mapStatusToDefaultWorkflowState", () => {
-  const workflow = defaultWorkflowDescriptor();
-
-  it("maps closed status to shipped for autopilot", () => {
-    expect(mapStatusToDefaultWorkflowState("closed", workflow)).toBe("shipped");
-  });
-  it("maps deferred status to deferred", () => {
-    expect(mapStatusToDefaultWorkflowState("deferred", workflow)).toBe("deferred");
-  });
-  it("maps blocked status to retake state", () => {
-    expect(mapStatusToDefaultWorkflowState("blocked", workflow)).toBe(
-      workflow.retakeState,
-    );
-  });
-  it("maps in_progress to first action state", () => {
-    const result = mapStatusToDefaultWorkflowState("in_progress", workflow);
-    expect(workflow.actionStates).toContain(result);
-  });
-  it("maps open to initial state", () => {
-    expect(mapStatusToDefaultWorkflowState("open", workflow)).toBe(
-      workflow.initialState,
-    );
-  });
-  it("maps unknown status to initial state", () => {
-    expect(mapStatusToDefaultWorkflowState("unknown", workflow)).toBe(
-      workflow.initialState,
-    );
-  });
-  it("maps without workflow parameter", () => {
-    const result = mapStatusToDefaultWorkflowState("open");
-    expect(typeof result).toBe("string");
-  });
-  it("maps closed to closed if terminal includes closed", () => {
-    const fakeWorkflow: MemoryWorkflowDescriptor = {
-      id: "test", backingWorkflowId: "test", label: "Test",
-      mode: "granular_autonomous", initialState: "open",
-      states: ["open", "closed"], terminalStates: ["closed"],
-      finalCutState: null, retakeState: "open", promptProfileId: "test",
-    };
-    expect(mapStatusToDefaultWorkflowState("closed", fakeWorkflow)).toBe("closed");
-  });
-  it("maps in_progress to implementation if present in states", () => {
-    const fakeWorkflow: MemoryWorkflowDescriptor = {
-      id: "test", backingWorkflowId: "test", label: "Test",
-      mode: "granular_autonomous", initialState: "open",
-      states: ["open", "implementation", "closed"], terminalStates: ["closed"],
-      finalCutState: null, retakeState: "open", promptProfileId: "test",
-    };
-    expect(mapStatusToDefaultWorkflowState("in_progress", fakeWorkflow)).toBe(
-      "implementation",
-    );
-  });
-  it("falls back to in_progress when no action/implementation state", () => {
-    const fakeWorkflow: MemoryWorkflowDescriptor = {
-      id: "test", backingWorkflowId: "test", label: "Test",
-      mode: "granular_autonomous", initialState: "open",
-      states: ["open", "closed"], terminalStates: ["closed"],
-      finalCutState: null, retakeState: "open", promptProfileId: "test",
-    };
-    expect(mapStatusToDefaultWorkflowState("in_progress", fakeWorkflow)).toBe(
-      "in_progress",
-    );
-  });
-  it("maps blocked to 'blocked' if no retakeState", () => {
-    const fakeWorkflow: MemoryWorkflowDescriptor = {
-      id: "test", backingWorkflowId: "test", label: "Test",
-      mode: "granular_autonomous", initialState: "open",
-      states: ["open", "closed"], terminalStates: ["closed"],
-      finalCutState: null, retakeState: "open", promptProfileId: "test",
-    };
-    expect(mapStatusToDefaultWorkflowState("blocked", fakeWorkflow)).toBe("open");
-  });
-  it("maps deferred using terminalStateForStatus logic", () => {
-    const fakeWorkflow: MemoryWorkflowDescriptor = {
-      id: "test", backingWorkflowId: "test", label: "Test",
-      mode: "granular_autonomous", initialState: "open",
-      states: ["open", "deferred", "closed"], terminalStates: ["closed"],
-      finalCutState: null, retakeState: "open", promptProfileId: "test",
-    };
-    expect(mapStatusToDefaultWorkflowState("deferred", fakeWorkflow)).toBe("deferred");
   });
 });
 

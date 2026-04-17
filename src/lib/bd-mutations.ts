@@ -9,15 +9,16 @@ import type {
   BdResult,
   BeatDependency,
 } from "./types";
-import { recordCompatStatusConsumed } from "./compat-status-usage";
 import {
   builtinProfileDescriptor,
-  deriveWorkflowRuntimeState,
-  mapStatusToDefaultWorkflowState,
   normalizeStateForWorkflow,
   withWorkflowProfileLabel,
   withWorkflowStateLabel,
 } from "./workflows";
+import {
+  mapStatusToDefaultWorkflowState,
+  mapWorkflowStateToCompatStatus,
+} from "./backends/beads-compat-status";
 
 export async function createBeat(
   fields: Record<
@@ -50,9 +51,6 @@ export async function createBeat(
     typeof nextFields.status === "string"
       ? (nextFields.status as string)
       : undefined;
-  if (explicitStatus !== undefined) {
-    recordCompatStatusConsumed("bd:create-input-status");
-  }
   const workflowState =
     explicitWorkflowState ||
     (explicitStatus
@@ -62,9 +60,7 @@ export async function createBeat(
       : workflow.initialState);
   const compatStatus =
     explicitStatus ??
-    deriveWorkflowRuntimeState(
-      workflow, workflowState,
-    ).compatStatus;
+    mapWorkflowStateToCompatStatus(workflowState);
   nextFields.status = compatStatus;
 
   const existingLabels = Array.isArray(nextFields.labels)
