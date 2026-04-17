@@ -24,11 +24,9 @@
  *      `event="child_close"` carrying the matching
  *      enriched payload fields.
  *
- * NOTE (foolery-062f): when that knot lands it will add a
+ * NOTE (foolery-062f, shipped 8929ae99): requires the
  * `[terminate-process-group] reason=watchdog_timeout`
- * warn line. This test currently tolerates its absence;
- * once 062f merges, flip
- * `REQUIRE_TERMINATE_PROCESS_GROUP_LOG` to true.
+ * warn line. This assertion is now active.
  *
  * INTENT: this test is explicitly a fake-fix canary. If
  * any of the above log lines or events is silenced or
@@ -88,7 +86,9 @@ import type {
   TakeLoopContext,
 } from "@/lib/terminal-manager-take-loop";
 
-const REQUIRE_TERMINATE_PROCESS_GROUP_LOG = false;
+// foolery-062f has shipped, so the
+// [terminate-process-group] warn line is now required.
+const REQUIRE_TERMINATE_PROCESS_GROUP_LOG = true;
 
 // ── Fixtures ─────────────────────────────────────────
 
@@ -351,8 +351,8 @@ describe("e2e: watchdog fires -> SIGTERM", () => {
   });
 
   it(
-    "(gated) emits [terminate-process-group] warn " +
-    "when foolery-062f ships",
+    "emits [terminate-process-group] warn " +
+    "with reason=watchdog_timeout (foolery-062f)",
     () => {
       const h = armHarness(50);
       vi.advanceTimersByTime(60);
@@ -360,19 +360,13 @@ describe("e2e: watchdog fires -> SIGTERM", () => {
         h.warnSpy,
         "[terminate-process-group]",
       );
-      if (REQUIRE_TERMINATE_PROCESS_GROUP_LOG) {
-        expect(warnCall).toBeDefined();
-        const msg = warnCall?.[0] as string;
-        expect(msg).toContain(
-          "reason=watchdog_timeout",
-        );
-      } else {
-        // TODO(foolery-062f): flip
-        // REQUIRE_TERMINATE_PROCESS_GROUP_LOG to true
-        // once terminateProcessGroup emits its own
-        // warn log line.
-        expect(true).toBe(true);
-      }
+      expect(REQUIRE_TERMINATE_PROCESS_GROUP_LOG)
+        .toBe(true);
+      expect(warnCall).toBeDefined();
+      const msg = warnCall?.[0] as string;
+      expect(msg).toContain(
+        "reason=watchdog_timeout",
+      );
     },
   );
 });
