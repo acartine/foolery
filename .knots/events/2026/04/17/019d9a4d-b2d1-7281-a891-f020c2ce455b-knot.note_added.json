@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9a4d-b2d1-7281-a891-f020c2ce455b",
+  "occurred_at": "2026-04-17T07:17:56.561066Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "# Implementation Plan: Support Claude Opus 4.7 model selection\n\n## Complexity: Low\nStraightforward addition of a new model ID to existing lists. No new logic required.\n\n## Changes\n\n### 1. src/lib/settings-agent-scan.ts — Static model catalog (line 24)\n- Add \"claude-opus-4-7\" to the claude array in STATIC_PROVIDER_MODEL_IDS\n- Place it first in the list (newest model first)\n\n### 2. src/lib/settings-agent-scan.ts — Copilot credits map (line 80)\n- Add \"claude-opus-4.7\" entry to COPILOT_CREDITS (Copilot uses dot notation)\n- Set credits to 3 (same as other Opus models)\n\n### 3. scripts/agent-wizard.sh — CLI model discovery (line 176)\n- Already lists \"sonnet opus haiku\" as flavor names\n- No change needed; normalizeClaudeModel handles version extraction\n\n## Risks\n- None significant. normalizeClaudeModel regex already handles opus-X.Y patterns.\n- Copilot credit value of 3 is estimated.\n\n## Test Strategy\n1. Run bun run lint and bunx tsc --noEmit\n2. Run bun run test\n3. Start dev server, verify Opus 4.7 in settings UI model dropdown\n4. Select Opus 4.7 in UI, confirm persistence to config",
+    "datetime": "2026-04-17T07:17:56.561066Z",
+    "entry_id": "019d9a4d-b2d1-7281-a891-f01a16cbae29",
+    "model": "claude-opus-4-6",
+    "username": "Claude",
+    "version": "4.6"
+  }
+}

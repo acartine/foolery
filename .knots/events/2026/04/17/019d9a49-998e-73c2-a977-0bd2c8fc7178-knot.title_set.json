@@ -1,0 +1,10 @@
+{
+  "event_id": "019d9a49-998e-73c2-a977-0bd2c8fc7178",
+  "occurred_at": "2026-04-17T07:13:27.950535Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.title_set",
+  "data": {
+    "from": "Add support for Claude Opus 4.7",
+    "to": "Support Claude Opus 4.7 model selection"
+  }
+}

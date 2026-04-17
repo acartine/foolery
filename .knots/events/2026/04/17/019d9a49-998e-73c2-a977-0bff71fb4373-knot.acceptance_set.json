@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9a49-998e-73c2-a977-0bff71fb4373",
+  "occurred_at": "2026-04-17T07:13:27.950535Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.acceptance_set",
+  "data": {
+    "acceptance": "1. Settings UI displays Opus 4.7 as a selectable model option in the model dropdown (verify via chrome-devtools)\n2. Foolery CLI setup command includes Opus 4.7 in the interactive model selection prompt\n3. Selecting Opus 4.7 in the UI persists to configuration\n4. Selecting Opus 4.7 in the CLI setup persists to configuration\n5. When Opus 4.7 is selected, Claude Code operations use it as the active model"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9ab1-d4db-7750-8fe2-fd0346025e99",
+  "occurred_at": "2026-04-17T09:07:18.875407Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-557d",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Support Claude Opus 4.7 model selection",
+    "type": "work",
+    "updated_at": "2026-04-17T09:07:18.875407Z",
+    "workflow_id": "work_sdlc"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "event_id": "019d9a49-540a-7603-9fa3-3835dd374162",
+  "occurred_at": "2026-04-17T07:13:10.153984Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.created",
+  "data": {
+    "body": "as title says, we need to update the UI setttings agent scan as well as the foolery setup cli command so that you can now select Opus 4.7",
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "profile_id": "autopilot",
+    "state": "ready_for_planning",
+    "title": "Add support for Claude Opus 4.7",
+    "type": "work",
+    "workflow_id": "work_sdlc"
+  }
+}

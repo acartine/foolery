@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9a49-998e-73c2-a977-0be6807550fd",
+  "occurred_at": "2026-04-17T07:13:27.950535Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.description_set",
+  "data": {
+    "description": "Enable users to select Claude Opus 4.7 as their configured model in the Foolery UI settings and CLI setup command. Update both the settings agent scan UI and the foolery setup CLI to include Opus 4.7 in the model selection options."
+  }
+}

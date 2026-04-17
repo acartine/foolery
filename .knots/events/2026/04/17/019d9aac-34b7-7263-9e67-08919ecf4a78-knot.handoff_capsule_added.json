@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9aac-34b7-7263-9e67-08919ecf4a78",
+  "occurred_at": "2026-04-17T09:01:10.198841Z",
+  "knot_id": "foolery-557d",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Branch: worktree-foolery-557d-opus47\nCommit: f59d32d83928eb29d59b3fa6971613cad2347ecc\nVerification: bun run lint; bunx tsc --noEmit; bun run test; bun run build.\nLive checks: Settings UI scan dropdown included Opus 4.7, selecting it persisted agents/actions via API and settings.toml in isolated HOME; scripts/setup.sh _discover_models claude lists claude-opus-4.7; setup wizard persisted claude-claude-opus-4-7 and mapped take/scene/breakdown/scopeRefinement to it in isolated HOME.",
+    "datetime": "2026-04-17T09:01:10.198841Z",
+    "entry_id": "019d9aac-34b7-7263-9e67-0884ce3f68e6",
+    "model": "gpt-5",
+    "username": "unknown",
+    "version": "cli"
+  }
+}
