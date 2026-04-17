@@ -42,6 +42,9 @@ import {
   wireTakeChildClose,
   wireTakeChildError,
 } from "@/lib/terminal-manager-take-child-helpers";
+import {
+  handleTakeLoopTurnEnded,
+} from "@/lib/terminal-manager-take-follow-up";
 
 // ─── spawnTakeChild (entry point) ────────────────────
 
@@ -160,7 +163,12 @@ export function spawnTakeChild(
   );
 }
 
-function createTakeRuntimeBundle(
+/**
+ * Exported for the foolery-6881 wiring canary test.
+ * Do not call directly from production code paths —
+ * use `spawnTakeChild`.
+ */
+export function createTakeRuntimeBundle(
   ctx: TakeLoopContext,
   beatState: string | undefined,
   effectiveDialect: import("@/lib/agent-adapter").AgentDialect,
@@ -203,6 +211,13 @@ function createTakeRuntimeBundle(
     interactionLog: ctx.interactionLog,
     beatIds: [ctx.beatId],
     onLifecycleEvent: handleLifecycleEvent,
+    // foolery-6881: every take iteration must get the
+    // same in-session follow-up capability the initial
+    // child has (foolery-a401). Without this wiring, a
+    // turn ending on take 2+ would close stdin and exit
+    // even when the beat is still in an active state.
+    onTurnEnded: () =>
+      invokeTakeLoopTurnEnded(ctx, httpRefs),
     jsonrpcSession: sessions.jsonrpcSession,
     httpSession: sessions.httpSession,
     acpSession: sessions.acpSession,
@@ -214,4 +229,25 @@ function createTakeRuntimeBundle(
     jsonrpcSession: sessions.jsonrpcSession,
     acpSession: sessions.acpSession,
   };
+}
+
+/**
+ * Bridges the runtime's `onTurnEnded` callback to the
+ * async take-loop follow-up handler. Returns a Promise
+ * so the runtime suppresses its grace-period close
+ * until the handler resolves. The runtime also tolerates
+ * a synchronous `false` if refs aren't wired yet (belt
+ * and suspenders — httpRefs are populated by the time
+ * the runtime emits turn-ended).
+ */
+function invokeTakeLoopTurnEnded(
+  ctx: TakeLoopContext,
+  httpRefs: DeferredHttpRefs,
+): Promise<boolean> {
+  const runtime = httpRefs.runtimeRef;
+  const child = httpRefs.childRef;
+  if (!runtime || !child) {
+    return Promise.resolve(false);
+  }
+  return handleTakeLoopTurnEnded(ctx, runtime, child);
 }

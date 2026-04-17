@@ -19,6 +19,7 @@ export type TakeLoopLifecycleEvent =
   | "response_logged"
   | "normalized_event_observed"
   | "turn_ended"
+  | "take_loop_follow_up_sent"
   | "child_close"
   | "spawn_error"
   | "post_exit_state_observed"
@@ -62,6 +63,7 @@ export interface TakeLoopIterationTrace {
   firstNormalizedEventType?: string;
   resultObservedAt?: string;
   resultIsError?: boolean;
+  takeLoopFollowUpSentAt?: string;
   childCloseAt?: string;
   childExitCode?: number | null;
   childSignal?: string | null;
@@ -158,6 +160,9 @@ function applyEvent(
       break;
     case "turn_ended":
       trace.resultObservedAt ??= at;
+      break;
+    case "take_loop_follow_up_sent":
+      trace.takeLoopFollowUpSentAt ??= at;
       break;
     case "child_close":
       trace.childCloseAt ??= at;

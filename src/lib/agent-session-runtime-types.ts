@@ -94,10 +94,14 @@ export interface SessionRuntimeConfig {
    * end-of-turn and invokes `runtime.signalTurnEnded`
    * — this callback never inspects the payload shape.
    *
-   * Return true if a follow-up prompt was sent,
-   * which prevents stdin close scheduling.
+   * Return true (or a Promise resolving to true) if a
+   * follow-up prompt was sent, which prevents stdin
+   * close scheduling. Async callbacks let handlers
+   * consult live state (e.g. a backend beat lookup in
+   * the take-loop) before deciding whether to send a
+   * follow-up. See foolery-6881.
    */
-  onTurnEnded?: () => boolean;
+  onTurnEnded?: () => boolean | Promise<boolean>;
   onLifecycleEvent?: (
     event: SessionRuntimeLifecycleEvent,
   ) => void;

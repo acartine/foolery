@@ -76,11 +76,30 @@ function handleTurnEnded(
     eventType: info.eventType,
     isError: info.isError,
   });
-  const followUpSent =
-    config.onTurnEnded?.() ?? false;
-  if (!followUpSent) {
-    doScheduleInputClose(child, state, config);
+  const result = config.onTurnEnded?.() ?? false;
+  if (typeof result === "boolean") {
+    if (!result) {
+      doScheduleInputClose(child, state, config);
+    }
+    return;
   }
+  // Async handler (foolery-6881): suppress immediate
+  // grace-period close so the handler has time to
+  // inspect live state and send a follow-up prompt. If
+  // it resolves to false (no follow-up sent), schedule
+  // the close then.
+  result.then((followUpSent) => {
+    if (!followUpSent) {
+      doScheduleInputClose(child, state, config);
+    }
+  }).catch((err: unknown) => {
+    console.error(
+      `[terminal-manager] [${config.id}] ` +
+      `onTurnEnded handler threw:`,
+      err,
+    );
+    doScheduleInputClose(child, state, config);
+  });
 }
 
 // ── Process termination (re-export) ────────────────────
