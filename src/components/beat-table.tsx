@@ -197,6 +197,7 @@ function useFocusEffects(
 ) {
   const rowCount =
     table.getRowModel().rows.length;
+  const isInitialFocusRef = useRef(true);
 
   useEffect(() => {
     const rows = table.getRowModel().rows;
@@ -213,9 +214,28 @@ function useFocusEffects(
       : null;
     s.setFocusedRowId(first);
     const t = setTimeout(() => {
-      s.containerRef.current?.focus();
+      // preventScroll: focusing the container
+      // otherwise pushes the filter bar off-screen.
+      s.containerRef.current?.focus({
+        preventScroll: true,
+      });
     }, 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.filtersKey]);
+
+  useEffect(() => {
+    const id = s.focusedRowId;
+    if (!id) return;
+    if (isInitialFocusRef.current) {
+      isInitialFocusRef.current = false;
+      return;
+    }
+    const container = s.containerRef.current;
+    if (!container) return;
+    const row = container.querySelector<HTMLElement>(
+      `tr[data-beat-row-id="${CSS.escape(id)}"]`,
+    );
+    row?.scrollIntoView({ block: "nearest" });
+  }, [s.focusedRowId, s.containerRef]);
 }

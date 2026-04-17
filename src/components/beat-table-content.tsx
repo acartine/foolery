@@ -266,6 +266,7 @@ function BeatTableRow({
   return (
     <Fragment>
       <TableRow
+        data-beat-row-id={row.original.id}
         className={cn(
           "border-b-0",
           isFocused && "bg-muted/50",
