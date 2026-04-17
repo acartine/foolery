@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9be0-1649-7760-8d16-e579722abd7a",
+  "occurred_at": "2026-04-17T14:37:27.497856Z",
+  "knot_id": "foolery-a9a2",
+  "type": "knot.note_added",
+  "data": {
+    "agentname": "claude-code",
+    "content": "[Claude 2026-04-17] Implementation handoff.\n\nBranch: feature/knots-a9a2-execution-plan-builtin (pushed to origin)\nCommit: cf5e787db4c2e414806dde1cfd622d1ffd60b073\n\nAcceptance criteria verified:\n1. KnotType::ExecutionPlan is present in KnotType::ALL with parse/serde/alias tests (src/domain/knot_type.rs) — all 5 builtin types enumerated.\n2. execution_plan_sdlc is registered as a builtin workflow (src/installed_workflows/builtin.rs) alongside work/gate/lease/explore; bundle lives at loom/execution_plan_sdlc/dist/bundle.json; tests_parsing::builtin_workflow_refs_cover_all_builtin_knot_types confirms registry coverage.\n3. Default profile is autopilot with review owned by agent; semiauto overrides review owner to human. Design emits note; review emits approval. New test execution_plan_sdlc_profiles_encode_review_ownership_and_outputs asserts each of these acceptance facts explicitly so regressions trip immediately.\n4. Integration test tests/cli_workflows.rs::execution_plan_builtin_type_resolves_default_workflow_and_profile plus a local smoke run confirm kno new --type execution_plan creates type=execution_plan, workflow=execution_plan_sdlc, profile=autopilot, state=ready_for_design.\n\nDelta on this branch: a single focused regression test that pins down autopilot/semiauto review ownership and design/review output artifact types. No production code change was required — the execution_plan type and workflow landed previously via eed8737, a07cdd6, dc6e486.\n\nSanity: make sanity passes locally (1052 tests, 95.26% coverage, no ratchet regression, file-size lint clean).",
+    "datetime": "2026-04-17T14:37:27.497856Z",
+    "entry_id": "019d9be0-1649-7760-8d16-e56c6c2d38a6",
+    "model": "claude-opus-4-7",
+    "username": "Claude Opus 4.7",
+    "version": "unknown"
+  }
+}

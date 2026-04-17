@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9bd0-2871-7c73-bad4-e77b53468a42",
+  "occurred_at": "2026-04-17T14:20:03.569853Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Plan: contain compat-status to the beads backend, then remove shared-layer surface. Phase A — move mapWorkflowStateToCompatStatus + mapStatusToDefaultWorkflowState from workflows-runtime.ts into a new src/lib/backends/beads-compat-status.ts, drop WorkflowRuntimeState.compatStatus, and inline the status→state mapping inside deriveBeadsWorkflowState only (so shared deriveWorkflowState becomes label/descriptor-native). Phase B — delete compat-status-usage.ts + its test, delete mapKnotsStateToFooleryStatus / mapFooleryStatusToKnotsState from knots-compat.ts (zero live callers), rename the leftover constants file to knots-constants.ts. Phase C — relocate mapping-function tests into __tests__/beads-compat-status.test.ts, strip compatStatus assertions from workflows-coverage-{labels,inference}.test.ts, replace mapStatusToDefaultWorkflowState calls in mock-backend-port.ts with direct fixture literals, narrow docs/adr-knots-compatibility.md. Run bun lint/tsc/test/build after each phase. No new generic translation layer; beads keeps its mapping locally because beads still exists.",
+    "datetime": "2026-04-17T14:20:03.569853Z",
+    "entry_id": "019d9bd0-2871-7c73-bad4-e76b4340d56a",
+    "model": "claude-opus-4-7",
+    "username": "cartine",
+    "version": "4.7"
+  }
+}

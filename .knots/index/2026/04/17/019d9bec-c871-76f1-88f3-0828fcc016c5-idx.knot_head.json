@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9bec-c871-76f1-88f3-0828fcc016c5",
+  "occurred_at": "2026-04-17T14:51:19.537123Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-48c1",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Rip out compat-status abstractions from Foolery",
+    "type": "work",
+    "updated_at": "2026-04-17T14:51:19.537123Z",
+    "workflow_id": "work_sdlc"
+  }
+}

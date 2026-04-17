@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9be7-0ad0-75a2-ad35-0878a93c6461",
+  "occurred_at": "2026-04-17T14:45:03.312764Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Claude",
+    "content": "Implementation step complete for foolery-48c1 (Rip out compat-status abstractions).\n\nArtifact (remote_main): branch `worktree-foolery-48c1-ripout-compat-status` pushed to origin, commit `24af5f3b`.\n\nScope of the refactor:\n- Deleted the shared compat-status abstraction from Foolery run paths. `WorkflowRuntimeState.compatStatus` is gone; `deriveWorkflowState` now takes `(labels, descriptor?)` only — no status fallback in the shared runtime.\n- Deleted `src/lib/compat-status-usage.ts` (telemetry was dead) and `src/lib/knots-compat.ts` (bidirectional status maps were unused). Preserved edge-kind constants, metadata key registry, close-target state, and capability flags in new `src/lib/knots-constants.ts`.\n- Isolated the remaining beads-local status <-> workflow-state translation into `src/lib/backends/beads-compat-status.ts`. This module exists only because the Beads JSONL backend serializes issues with a generic status string; it is treated as migration debt local to the Beads backend. No Foolery run path outside beads-facing modules imports it.\n- Callers `bd-update.ts`, `bd-mutations.ts`, `memory-manager-commands.ts`, `beads-jsonl-dto.ts`, `beads-backend.ts`, `bd-queries.ts` now import from the beads-local module and invoke `mapWorkflowStateToCompatStatus(state)` directly at the persistence boundary.\n- `mock-backend-port.ts` no longer rides the compat layer; create/close use workflow descriptor states directly.\n- Tests: new `src/lib/backends/__tests__/beads-compat-status.test.ts` and `src/lib/__tests__/knots-constants.test.ts`. `workflows-coverage-*` and `workflows-agnostic` tests were updated for the new `deriveWorkflowState` signature and compatStatus removal.\n- Docs: `docs/adr-knots-compatibility.md` and `docs/FOOLERY_AGENT_MEMORY_CONTRACT.md` updated to describe workflow-native convention with Beads-only translation as isolated migration debt.\n\nVerification: `bun run lint`, `bunx tsc --noEmit`, `bun run test` (254 files, 2680 passing), `bun run build` all green.\n\nConstraint check: no replacement generic translation layer; the beads-local module is explicitly scoped to JSONL round-trip only. Workflow-aware logic is used everywhere else.\n\nNote on lease: lease `foolery-ca84` terminated before the completion command could be issued. The step-history entry for `implementation` already shows status `completed` with `to_state: ready_for_implementation`, so the knot is idle again. Tags `commit:24af5f3b` and `branch:worktree-foolery-48c1-ripout-compat-status` were added post-state-advance.",
+    "datetime": "2026-04-17T14:45:03.312764Z",
+    "entry_id": "019d9be7-0ad0-75a2-ad35-08630abfb7f8",
+    "model": "opus",
+    "username": "cartine",
+    "version": "4.7"
+  }
+}

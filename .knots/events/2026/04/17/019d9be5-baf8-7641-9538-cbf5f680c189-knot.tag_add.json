@@ -1,0 +1,9 @@
+{
+  "event_id": "019d9be5-baf8-7641-9538-cbf5f680c189",
+  "occurred_at": "2026-04-17T14:43:37.336086Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.tag_add",
+  "data": {
+    "tag": "branch:worktree-foolery-48c1-ripout-compat-status"
+  }
+}

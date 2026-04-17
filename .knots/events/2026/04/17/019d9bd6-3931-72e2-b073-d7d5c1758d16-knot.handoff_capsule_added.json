@@ -1,0 +1,15 @@
+{
+  "event_id": "019d9bd6-3931-72e2-b073-d7d5c1758d16",
+  "occurred_at": "2026-04-17T14:26:41.073571Z",
+  "knot_id": "foolery-48c1",
+  "type": "knot.handoff_capsule_added",
+  "data": {
+    "agentname": "Codex",
+    "content": "Planning refresh complete. The current tree still matches the compat-status inventory: shared compat surface remains in `workflows-runtime.ts` / `workflows.ts` / `compat-status-usage.ts` / `knots-compat.ts`, while live execution-path usage is confined to beads-facing modules. Implementation should proceed in three moves: (1) localize compat mapping helpers to a beads-only module and remove `WorkflowRuntimeState.compatStatus`, (2) delete dead shared compat telemetry and unused knots compat mapping helpers, and (3) move tests/docs to direct workflow-native behavior. No child knots were created because this remains a single cohesive medium-sized refactor under parent execution-plan knot `foolery-9bf4`. Constraints preserved: no replacement generic translation layer, and shared/knots-facing paths must become workflow-native. Implementation verification remains: grep shared compat references to zero outside beads, then run lint, tsc, test, and build.",
+    "datetime": "2026-04-17T14:26:41Z",
+    "entry_id": "019d9bd6-3931-72e2-b073-d7c9e862ac47",
+    "model": "gpt",
+    "username": "cartine",
+    "version": "5.4"
+  }
+}

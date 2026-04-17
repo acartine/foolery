@@ -1,0 +1,21 @@
+{
+  "event_id": "019d9beb-b782-7900-b09c-2b0bce21ef81",
+  "occurred_at": "2026-04-17T14:50:09.666618Z",
+  "type": "idx.knot_head",
+  "data": {
+    "blocked_from_state": null,
+    "deferred_from_state": null,
+    "gate": {
+      "owner_kind": "agent"
+    },
+    "invariants": [],
+    "knot_id": "foolery-a9a2",
+    "profile_id": "autopilot",
+    "state": "shipped",
+    "terminal": true,
+    "title": "Add execution_plan type and workflow to Knots",
+    "type": "work",
+    "updated_at": "2026-04-17T14:50:09.666618Z",
+    "workflow_id": "work_sdlc"
+  }
+}
