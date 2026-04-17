@@ -1,4 +1,3 @@
-import { EventEmitter } from "node:events";
 import { readFile } from "node:fs/promises";
 
 import { beforeEach, expect, it, vi } from "vitest";
@@ -6,8 +5,7 @@ import type { OrchestrationPlan } from "@/lib/types";
 
 const mockAddEdge = vi.fn();
 const mockBackendGet = vi.fn();
-const mockCreateExplicitSession = vi.fn();
-const mockGetSession = vi.fn();
+const mockGenerateExecutionPlan = vi.fn();
 const mockListEdges = vi.fn();
 const mockListKnots = vi.fn();
 const mockListRepos = vi.fn();
@@ -26,11 +24,9 @@ vi.mock("@/lib/knots", () => ({
   updateKnot: (...args: unknown[]) => mockUpdateKnot(...args),
 }));
 
-vi.mock("@/lib/orchestration-manager", () => ({
-  createExplicitOrchestrationSession: (...args: unknown[]) =>
-    mockCreateExplicitSession(...args),
-  getOrchestrationSession: (...args: unknown[]) =>
-    mockGetSession(...args),
+vi.mock("@/lib/orchestration-plan-generation", () => ({
+  generateExecutionPlan: (...args: unknown[]) =>
+    mockGenerateExecutionPlan(...args),
 }));
 
 vi.mock("@/lib/backend-instance", () => ({
@@ -120,18 +116,6 @@ function expectPersistedExecutionPlan(
   });
 }
 
-function completeSessionWithPlan(
-  entry: ReturnType<typeof makeSessionEntry>,
-  plan: OrchestrationPlan,
-) {
-  entry.session.plan = plan;
-  entry.session.status = "completed";
-  entry.emitter.emit("data", {
-    type: "exit",
-    data: "done",
-  });
-}
-
 function mockLineageEdges() {
   mockListEdges.mockImplementation(
     async (
@@ -159,20 +143,6 @@ function mockLiveBeatStates() {
     });
 }
 
-function makeSessionEntry() {
-  const emitter = new EventEmitter();
-  return {
-    emitter,
-    session: {
-      id: "orch-1",
-      repoPath: "/repo",
-      status: "running",
-      startedAt: "2026-04-14T00:00:00Z",
-      plan: undefined as OrchestrationPlan | undefined,
-    },
-  };
-}
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockListEdges.mockResolvedValue({ ok: true, data: [] });
@@ -182,9 +152,7 @@ beforeEach(() => {
 });
 
 it("creates a plan, persists execution_plan payload, and links beats", async () => {
-  const entry = makeSessionEntry();
-  mockCreateExplicitSession.mockResolvedValue({ id: "orch-1" });
-  mockGetSession.mockImplementation(() => entry);
+  mockGenerateExecutionPlan.mockResolvedValue(CREATED_PLAN);
   mockNewKnot.mockResolvedValue({ ok: true, data: { id: "1234" } });
   mockReplacedPlan();
   mockUpdateKnot.mockImplementation(async (_id, input) => {
@@ -192,27 +160,22 @@ it("creates a plan, persists execution_plan payload, and links beats", async () 
     return { ok: true };
   });
 
-  const promise = createPlan({
+  await expect(createPlan({
+    repoPath: "/repo",
+    beatIds: ["beat-1", "beat-2"],
+    objective: "Ship it",
+    mode: "groom",
+    replacesPlanId: "plan-0",
+  })).resolves.toEqual({
+    planId: "repo-1234",
+  });
+  expect(mockGenerateExecutionPlan).toHaveBeenCalledWith({
     repoPath: "/repo",
     beatIds: ["beat-1", "beat-2"],
     objective: "Ship it",
     mode: "groom",
     replacesPlanId: "plan-0",
   });
-  completeSessionWithPlan(entry, CREATED_PLAN);
-
-  await expect(promise).resolves.toEqual({
-    planId: "repo-1234",
-  });
-  expect(mockCreateExplicitSession).toHaveBeenCalledWith(
-    "/repo",
-    ["beat-1", "beat-2"],
-    "Ship it",
-    {
-      model: undefined,
-      mode: "groom",
-    },
-  );
   expect(mockNewKnot).toHaveBeenCalledWith(
     "Execution plan: Ship it",
     expect.objectContaining({ type: "execution_plan" }),
