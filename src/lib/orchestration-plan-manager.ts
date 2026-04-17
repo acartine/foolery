@@ -1,4 +1,3 @@
-import { EventEmitter } from "node:events";
 import {
   addEdge,
   listEdges,
@@ -10,12 +9,8 @@ import {
   type KnotEdge,
   type KnotRecord,
 } from "@/lib/knots";
-import {
-  createExplicitOrchestrationSession,
-  getOrchestrationSession,
-} from "@/lib/orchestration-manager";
 import { getBackend } from "@/lib/backend-instance";
-import type { OrchestrationPlan } from "@/lib/types";
+import { generateExecutionPlan } from "@/lib/orchestration-plan-generation";
 import type {
   CreatePlanInput,
   NextPlanStep,
@@ -44,73 +39,6 @@ import {
   resolvePlanLookupRepos,
 } from "@/lib/orchestration-plan-id-resolution";
 import { persistPlanPayload } from "@/lib/orchestration-plan-storage";
-
-const PLAN_TIMEOUT_MS = 3 * 60 * 1000;
-async function waitForSessionPlan(
-  sessionId: string,
-): Promise<OrchestrationPlan> {
-  const entry = getOrchestrationSession(sessionId);
-  if (!entry) {
-    throw new Error(`Session ${sessionId} not found.`);
-  }
-
-  const immediatePlan = entry.session.plan;
-  if (entry.session.status !== "running") {
-    if (!immediatePlan) {
-      throw new Error(
-        entry.session.error ??
-          "Orchestration finished without a plan.",
-      );
-    }
-    return immediatePlan;
-  }
-
-  return new Promise<OrchestrationPlan>(
-    (resolve, reject) => {
-      const emitter = entry.emitter as EventEmitter;
-      const timer = setTimeout(() => {
-        cleanup();
-        reject(
-          new Error(
-            `Timed out waiting for orchestration plan after ${PLAN_TIMEOUT_MS}ms.`,
-          ),
-        );
-      }, PLAN_TIMEOUT_MS);
-
-      function cleanup() {
-        clearTimeout(timer);
-        emitter.off("data", onData);
-      }
-
-      function onData() {
-        const current = getOrchestrationSession(sessionId);
-        if (!current) {
-          cleanup();
-          reject(
-            new Error(
-              `Session ${sessionId} disappeared before plan retrieval.`,
-            ),
-          );
-          return;
-        }
-        if (current.session.status === "running") return;
-        cleanup();
-        if (!current.session.plan) {
-          reject(
-            new Error(
-              current.session.error ??
-                "Orchestration finished without a plan.",
-            ),
-          );
-          return;
-        }
-        resolve(current.session.plan);
-      }
-
-      emitter.on("data", onData);
-    },
-  );
-}
 
 async function reconcileProvenanceEdges(
   planId: string,
@@ -428,16 +356,10 @@ export async function createPlan(
     );
   }
 
-  const session = await createExplicitOrchestrationSession(
-    input.repoPath,
+  const plan = await generateExecutionPlan({
+    ...input,
     beatIds,
-    input.objective,
-    {
-      model: input.model,
-      mode: input.mode ?? "groom",
-    },
-  );
-  const plan = await waitForSessionPlan(session.id);
+  });
   const payload = toExecutionPlanRecord(
     { ...input, beatIds },
     plan,
